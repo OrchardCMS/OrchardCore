@@ -14,6 +14,7 @@ namespace OrchardCore.Markdown.Handlers
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly HtmlEncoder _htmlEncoder;
         private HtmlString _bodyAspect;
+        private int _contentItemId;
 
         public MarkdownBodyPartHandler(ILiquidTemplateManager liquidTemplateManager, HtmlEncoder htmlEncoder)
         {
@@ -25,9 +26,10 @@ namespace OrchardCore.Markdown.Handlers
         {
             return context.ForAsync<BodyAspect>(async bodyAspect =>
             {
-                if (_bodyAspect != null)
+                if (bodyAspect != null && part.ContentItem.Id == _contentItemId)
                 {
                     bodyAspect.Body = _bodyAspect;
+
                     return;
                 }
 
@@ -46,10 +48,12 @@ namespace OrchardCore.Markdown.Handlers
                     var result = Markdig.Markdown.ToHtml(markdown ?? "");
 
                     bodyAspect.Body = _bodyAspect = new HtmlString(result);
+                    _contentItemId = part.ContentItem.Id;
                 }
                 catch
                 {
                     bodyAspect.Body = HtmlString.Empty;
+                    _contentItemId = default;
                 }
             });
         }
