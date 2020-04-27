@@ -11,28 +11,28 @@ namespace OrchardCore.Flows.Drivers
 {
     public class FlowMetadataDisplay : ContentDisplayDriver
     {
-        public override IDisplayResult Edit(ContentItem model, IUpdateModel updater)
+        public override IDisplayResult Edit(ContentItem contentItem, IUpdateModel updater)
         {
-            var flowMetadata = model.As<FlowMetadata>();
+            var model = contentItem.As<FlowMetadata>();
 
-            if (flowMetadata == null)
+            if (model == null)
             {
                 return null;
             }
 
             return Initialize<FlowMetadataEditViewModel>("FlowMetadata_Edit", m =>
             {
-                m.Alignment = flowMetadata.Alignment;
-                m.Size = flowMetadata.Size;
-                m.Classes = String.Join(" ", flowMetadata.Classes);
+                m.Alignment = model.Alignment;
+                m.Size = model.Size;
+                m.Classes = String.Join(" ", model.Classes);
             }).Location("Footer");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentItem contentItem, IUpdateModel updater)
         {
-            var flowMetadata = contentItem.As<FlowMetadata>();
+            var model = contentItem.As<FlowMetadata>();
 
-            if (flowMetadata == null)
+            if (model == null)
             {
                 return null;
             }
@@ -40,11 +40,10 @@ namespace OrchardCore.Flows.Drivers
             var viewModel = new FlowMetadataEditViewModel();
             if (await updater.TryUpdateModelAsync(viewModel, Prefix))
             {
-                contentItem.Alter<FlowMetadata>(model => {
-                    model.Alignment = viewModel.Alignment;
-                    model.Size = viewModel.Size;
-                    model.Classes = viewModel.Classes?.Split(" ", StringSplitOptions.RemoveEmptyEntries) ?? Array.Empty<string>();
-                });
+                model.Alignment = viewModel.Alignment;
+                model.Size = viewModel.Size;
+                model.Classes = viewModel.Classes?.Split(" ", StringSplitOptions.RemoveEmptyEntries) ?? Array.Empty<string>();
+                contentItem.Apply(model);
             }
 
             return Edit(contentItem, updater);
