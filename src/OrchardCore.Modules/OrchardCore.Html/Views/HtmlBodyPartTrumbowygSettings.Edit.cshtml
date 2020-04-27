@@ -17,11 +17,13 @@
 </div>
 
 <script asp-name="codemirror" depends-on="admin" at="Foot"></script>
+<script asp-name="codemirror-addon-display-autorefresh" at="Foot"></script>
 <script asp-name="codemirror-mode-javascript" at="Foot"></script>
 <script at="Foot">
     $(function () {
-        var optionsTexArea = document.getElementById('@Html.IdFor(x => x.Options)');
-        var editor = CodeMirror.fromTextArea(optionsTexArea, {
+        var optionsTextArea = document.getElementById('@Html.IdFor(x => x.Options)');
+        var editor = CodeMirror.fromTextArea(optionsTextArea, {
+            autoRefresh: true,
             lineNumbers: false,
             matchBrackets: true,
             mode: { name: "javascript" }
@@ -61,6 +63,5 @@
         </text>
     }
 }
-    setTimeout(function() { editor.refresh(); },1);
 });
 </script>

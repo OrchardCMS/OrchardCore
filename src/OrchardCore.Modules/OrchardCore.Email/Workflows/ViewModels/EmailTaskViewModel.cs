@@ -6,6 +6,8 @@ namespace OrchardCore.Email.Workflows.ViewModels
     {
         public string SenderExpression { get; set; }
 
+        public string AuthorExpression { get; set; }
+
         [Required]
         public string RecipientsExpression { get; set; }
 

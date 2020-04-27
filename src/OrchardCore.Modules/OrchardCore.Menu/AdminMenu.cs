@@ -30,7 +30,7 @@ namespace OrchardCore.Menu
             };
 
             builder.Add(S["Content"], design => design
-                    .Add(S["Menus"], "1.3", menus => menus
+                    .Add(S["Menus"], "am-" + S["Menus"], menus => menus
                         .Permission(Permissions.ManageMenu)
                         .Action("List", "Admin", rvd)
                         .LocalNav()

@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Options;
-using OrchardCore.Sitemaps.Services;
 
 namespace OrchardCore.Sitemaps.Routing
 {

@@ -13,7 +13,7 @@ namespace OrchardCore.OpenId.Tasks
     [BackgroundTask(Schedule = "*/30 * * * *", Description = "Performs various cleanup operations for OpenID-related features.")]
     public class OpenIdBackgroundTask : IBackgroundTask
     {
-        private readonly ILogger<OpenIdBackgroundTask> _logger;
+        private readonly ILogger _logger;
         private readonly IOpenIdServerService _serverService;
 
         public OpenIdBackgroundTask(

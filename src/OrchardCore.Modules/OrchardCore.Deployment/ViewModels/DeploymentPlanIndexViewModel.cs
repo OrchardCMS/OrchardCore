@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace OrchardCore.Deployment.ViewModels
 {
@@ -18,5 +20,15 @@ namespace OrchardCore.Deployment.ViewModels
     public class DeploymentPlanIndexOptions
     {
         public string Search { get; set; }
+        public DeploymentPlansBulkAction BulkAction { get; set; }
+
+        [BindNever]
+        public List<SelectListItem> DeploymentPlansBulkAction { get; set; }
+    }
+
+    public enum DeploymentPlansBulkAction
+    {
+        None,
+        Delete
     }
 }

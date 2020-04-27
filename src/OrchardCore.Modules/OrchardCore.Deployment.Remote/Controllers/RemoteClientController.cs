@@ -10,7 +10,6 @@ using OrchardCore.Admin;
 using OrchardCore.Deployment.Remote.Services;
 using OrchardCore.Deployment.Remote.ViewModels;
 using OrchardCore.DisplayManagement.Notify;
-using YesSql;
 
 namespace OrchardCore.Deployment.Remote.Controllers
 {
@@ -19,21 +18,20 @@ namespace OrchardCore.Deployment.Remote.Controllers
     {
         private readonly IDataProtector _dataProtector;
         private readonly IAuthorizationService _authorizationService;
-        private readonly ISession _session;
         private readonly INotifier _notifier;
         private readonly RemoteClientService _service;
+        private readonly IStringLocalizer S;
+        private readonly IHtmlLocalizer H;
 
         public RemoteClientController(
             IDataProtectionProvider dataProtectionProvider,
             RemoteClientService service,
             IAuthorizationService authorizationService,
-            ISession session,
             IStringLocalizer<RemoteClientController> stringLocalizer,
             IHtmlLocalizer<RemoteClientController> htmlLocalizer,
             INotifier notifier
             )
         {
-            _session = session;
             _authorizationService = authorizationService;
             S = stringLocalizer;
             H = htmlLocalizer;
@@ -41,9 +39,6 @@ namespace OrchardCore.Deployment.Remote.Controllers
             _service = service;
             _dataProtector = dataProtectionProvider.CreateProtector("OrchardCore.Deployment").ToTimeLimitedDataProtector();
         }
-
-        public IStringLocalizer S { get; }
-        public IHtmlLocalizer H { get; }
 
         public async Task<IActionResult> Index()
         {

@@ -13,7 +13,7 @@ namespace OrchardCore.Workflows.Activities
     {
         private readonly INotifier _notifier;
         private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
-        private readonly IStringLocalizer<NotifyTask> S;
+        private readonly IStringLocalizer S;
 
         public NotifyTask(INotifier notifier, IWorkflowExpressionEvaluator expressionvaluator, IStringLocalizer<NotifyTask> localizer)
         {

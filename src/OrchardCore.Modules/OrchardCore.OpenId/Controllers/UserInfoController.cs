@@ -6,7 +6,6 @@ using AspNet.Security.OpenIdConnect.Primitives;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using OpenIddict.Abstractions;
 using OrchardCore.Modules;
@@ -18,13 +17,11 @@ namespace OrchardCore.OpenId.Controllers
     [OpenIdController, SkipStatusCodePages]
     public class UserInfoController : Controller
     {
-        private readonly ILogger<UserInfoController> _logger;
-        private readonly IStringLocalizer<UserInfoController> S;
+        private readonly IStringLocalizer S;
 
-        public UserInfoController(IStringLocalizer<UserInfoController> localizer, ILogger<UserInfoController> logger)
+        public UserInfoController(IStringLocalizer<UserInfoController> localizer)
         {
             S = localizer;
-            _logger = logger;
         }
 
         // GET/POST: /connect/userinfo

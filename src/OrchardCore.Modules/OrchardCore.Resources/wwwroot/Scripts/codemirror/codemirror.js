@@ -3,7 +3,7 @@
 ** Any changes made directly to this file will be overwritten next time its asset group is processed by Gulp.
 */
 
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: https://codemirror.net/LICENSE
@@ -725,7 +725,8 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
           order.push(new BidiSpan(0, start, i$7));
         } else {
           var pos = i$7,
-              at = order.length;
+              at = order.length,
+              isRTL = direction == "rtl" ? 1 : 0;
 
           for (++i$7; i$7 < len && types[i$7] != "L"; ++i$7) {}
 
@@ -733,6 +734,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
             if (countsAsNum.test(types[j$2])) {
               if (pos < j$2) {
                 order.splice(at, 0, new BidiSpan(1, pos, j$2));
+                at += isRTL;
               }
 
               var nstart = j$2;
@@ -740,6 +742,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
               for (++j$2; j$2 < i$7 && countsAsNum.test(types[j$2]); ++j$2) {}
 
               order.splice(at, 0, new BidiSpan(2, nstart, j$2));
+              at += isRTL;
               pos = j$2;
             } else {
               ++j$2;
@@ -5408,7 +5411,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
   }
 
   function setScrollTop(cm, val, forceScroll) {
-    val = Math.min(cm.display.scroller.scrollHeight - cm.display.scroller.clientHeight, val);
+    val = Math.max(0, Math.min(cm.display.scroller.scrollHeight - cm.display.scroller.clientHeight, val));
 
     if (cm.display.scroller.scrollTop == val && !forceScroll) {
       return;
@@ -5425,7 +5428,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
 
 
   function setScrollLeft(cm, val, isScroller, forceScroll) {
-    val = Math.min(val, cm.display.scroller.scrollWidth - cm.display.scroller.clientWidth);
+    val = Math.max(0, Math.min(val, cm.display.scroller.scrollWidth - cm.display.scroller.clientWidth));
 
     if ((isScroller ? val == cm.doc.scrollLeft : Math.abs(cm.doc.scrollLeft - val) < 2) && !forceScroll) {
       return;
@@ -6253,6 +6256,8 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
         if (update.visible.from >= cm.display.viewFrom && update.visible.to <= cm.display.viewTo) {
           break;
         }
+      } else if (first) {
+        update.visible = visibleLines(cm.display, cm.doc, viewport);
       }
 
       if (!updateDisplayIfNeeded(cm, update)) {
@@ -9627,7 +9632,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
               origin: "paste"
             };
             makeChange(cm.doc, change);
-            setSelectionReplaceHistory(cm.doc, simpleSelection(pos, changeEnd(change)));
+            setSelectionReplaceHistory(cm.doc, simpleSelection(_clipPos(cm.doc, pos), _clipPos(cm.doc, changeEnd(change))));
           })();
         }
       };
@@ -10224,7 +10229,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
 
   function endOfLine(visually, cm, lineObj, lineNo, dir) {
     if (visually) {
-      if (cm.getOption("direction") == "rtl") {
+      if (cm.doc.direction == "rtl") {
         dir = -dir;
       }
 
@@ -10695,7 +10700,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
     var order = getOrder(line, cm.doc.direction);
 
     if (!order || order[0].level == 0) {
-      var firstNonWS = Math.max(0, line.text.search(/\S/));
+      var firstNonWS = Math.max(start.ch, line.text.search(/\S/));
       var inWS = pos.line == start.line && pos.ch <= firstNonWS && pos.ch;
       return Pos(start.line, inWS ? 0 : firstNonWS, start.sticky);
     }
@@ -11662,6 +11667,10 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       }
 
       cm.display.input.readOnlyChanged(val);
+    });
+    option("screenReaderLabel", null, function (cm, val) {
+      val = val === '' ? null : val;
+      cm.display.input.screenReaderLabelChanged(val);
     });
     option("disableInput", false, function (cm, val) {
       if (!val) {
@@ -12920,7 +12929,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
         scrollToCoords(this, this.doc.scrollLeft, this.doc.scrollTop);
         updateGutterSpace(this.display);
 
-        if (oldHeight == null || Math.abs(oldHeight - textHeight(this.display)) > .5) {
+        if (oldHeight == null || Math.abs(oldHeight - textHeight(this.display)) > .5 || this.options.lineWrapping) {
           estimateLineHeights(this);
         }
 
@@ -12994,7 +13003,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
     var oldPos = pos;
     var origDir = dir;
     var lineObj = getLine(doc, pos.line);
-    var lineDir = visually && doc.cm && doc.cm.getOption("direction") == "rtl" ? -dir : dir;
+    var lineDir = visually && doc.direction == "rtl" ? -dir : dir;
 
     function findNextLine() {
       var l = pos.line + lineDir;
@@ -13239,9 +13248,18 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
     on(div, "cut", onCopyCut);
   };
 
+  ContentEditableInput.prototype.screenReaderLabelChanged = function (label) {
+    // Label for screenreaders, accessibility
+    if (label) {
+      this.div.setAttribute('aria-label', label);
+    } else {
+      this.div.removeAttribute('aria-label');
+    }
+  };
+
   ContentEditableInput.prototype.prepareSelection = function () {
     var result = prepareSelection(this.cm, false);
-    result.focus = this.cm.state.focused;
+    result.focus = document.activeElement == this.div;
     return result;
   };
 
@@ -13372,7 +13390,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
 
   ContentEditableInput.prototype.focus = function () {
     if (this.cm.options.readOnly != "nocursor") {
-      if (!this.selectionInEditor()) {
+      if (!this.selectionInEditor() || document.activeElement != this.div) {
         this.showSelection(this.prepareSelection(), true);
       }
 
@@ -14031,6 +14049,15 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
     this.textarea = this.wrapper.firstChild;
   };
 
+  TextareaInput.prototype.screenReaderLabelChanged = function (label) {
+    // Label for screenreaders, accessibility
+    if (label) {
+      this.textarea.setAttribute('aria-label', label);
+    } else {
+      this.textarea.removeAttribute('aria-label');
+    }
+  };
+
   TextareaInput.prototype.prepareSelection = function () {
     // Redraw the selection and/or cursor
     var cm = this.cm,
@@ -14559,6 +14586,6 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
 
   CodeMirror.fromTextArea = fromTextArea;
   addLegacyProps(CodeMirror);
-  CodeMirror.version = "5.51.0";
+  CodeMirror.version = "5.53.2";
   return CodeMirror;
 });

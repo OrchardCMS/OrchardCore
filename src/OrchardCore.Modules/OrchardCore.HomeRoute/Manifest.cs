@@ -6,6 +6,7 @@ using OrchardCore.Modules.Manifest;
     Website = "https://orchardproject.net",
     Version = "2.0.0"
 )]
+
 [assembly: Feature(
     Id = "OrchardCore.HomeRoute",
     Name = "Home Route",

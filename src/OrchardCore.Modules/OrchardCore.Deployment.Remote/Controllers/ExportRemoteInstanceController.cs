@@ -27,6 +27,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
         private readonly ISession _session;
         private readonly RemoteInstanceService _service;
         private readonly INotifier _notifier;
+        private readonly IHtmlLocalizer H;
 
         public ExportRemoteInstanceController(
             IAuthorizationService authorizationService,
@@ -34,17 +35,15 @@ namespace OrchardCore.Deployment.Remote.Controllers
             RemoteInstanceService service,
             IDeploymentManager deploymentManager,
             INotifier notifier,
-            IHtmlLocalizer<ExportRemoteInstanceController> h)
+            IHtmlLocalizer<ExportRemoteInstanceController> localizer)
         {
             _authorizationService = authorizationService;
             _deploymentManager = deploymentManager;
             _session = session;
             _service = service;
             _notifier = notifier;
-            H = h;
+            H = localizer;
         }
-
-        public IHtmlLocalizer H { get; }
 
         [HttpPost]
         public async Task<IActionResult> Execute(int id, string remoteInstanceId)

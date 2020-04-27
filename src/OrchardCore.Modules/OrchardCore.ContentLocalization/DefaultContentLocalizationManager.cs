@@ -22,7 +22,7 @@ namespace OrchardCore.ContentLocalization
         private readonly ISession _session;
         private readonly Microsoft.AspNetCore.Http.IHttpContextAccessor _httpContextAccessor;
         private readonly ILocalizationService _localizationService;
-        private readonly ILogger<DefaultContentLocalizationManager> _logger;
+        private readonly ILogger _logger;
         private readonly Entities.IIdGenerator _iidGenerator;
 
         public IEnumerable<IContentLocalizationHandler> Handlers { get; private set; }

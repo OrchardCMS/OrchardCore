@@ -17,11 +17,14 @@ namespace OrchardCore.Email.Services
 {
     public class SmtpService : ISmtpService
     {
-        private readonly SmtpSettings _options;
-        private readonly ILogger<SmtpService> _logger;
-        private readonly ISiteService _siteService;
-        private static readonly char[] EmailsSeparator = new char[] { ',', ';', ' ' };
         private const string EmailExtension = ".eml";
+        
+        private static readonly char[] EmailsSeparator = new char[] { ',', ';', ' ' };
+        
+        private readonly SmtpSettings _options;
+        private readonly ISiteService _siteService;
+        private readonly ILogger _logger;
+        private readonly IStringLocalizer S;
 
         public SmtpService(
             IOptions<SmtpSettings> options,
@@ -33,10 +36,8 @@ namespace OrchardCore.Email.Services
             _options = options.Value;
             _siteService = siteService;
             _logger = logger;
-            this.S = S;
+            S = stringLocalizer;
         }
-
-        public IStringLocalizer S { get; }
 
         public async Task<SmtpResult> SendAsync(MailMessage message)
         {

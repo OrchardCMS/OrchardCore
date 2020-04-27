@@ -13,7 +13,7 @@ namespace OrchardCore.Email.Workflows.Activities
     {
         private readonly ISmtpService _smtpService;
         private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
-        private readonly IStringLocalizer<EmailTask> S;
+        private readonly IStringLocalizer S;
 
         public EmailTask(
             ISmtpService smtpService,
@@ -82,7 +82,8 @@ namespace OrchardCore.Email.Workflows.Activities
 
             var message = new MailMessage
             {
-                From = author.Trim(),
+                // Author and Sender are both not required fields.
+                From = author?.Trim() ?? sender?.Trim(),
                 To = recipients.Trim(),
                 Subject = subject.Trim(),
                 Body = body?.Trim(),

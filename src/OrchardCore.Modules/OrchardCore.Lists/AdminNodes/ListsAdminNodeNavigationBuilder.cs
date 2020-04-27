@@ -20,7 +20,7 @@ namespace OrchardCore.Lists.AdminNodes
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly IContentManager _contentManager;
         private readonly ISession _session;
-        private readonly ILogger<ListsAdminNodeNavigationBuilder> _logger;
+        private readonly ILogger _logger;
         private ListsAdminNode _node;
         private ContentTypeDefinition _contentType;
 

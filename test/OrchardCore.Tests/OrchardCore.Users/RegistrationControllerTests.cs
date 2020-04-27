@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
@@ -30,7 +31,7 @@ namespace OrchardCore.Tests.OrchardCore.Users
         [Fact]
         public async Task UsersShouldNotBeAbleToRegisterIfNotAllowed()
         {
-            var mockUserManager = MockUserManager<IUser>().Object;
+            var mockUserManager = UsersMockHelper.MockUserManager<IUser>().Object;
             var settings = new RegistrationSettings { UsersCanRegister = UserRegistrationType.NoRegistration };
             var mockSiteService = Mock.Of<ISiteService>(ss =>
                 ss.GetSiteSettingsAsync() == Task.FromResult(
@@ -44,6 +45,7 @@ namespace OrchardCore.Tests.OrchardCore.Users
                 Mock.Of<IAuthorizationService>(),
                 mockSiteService,
                 Mock.Of<INotifier>(),
+                Mock.Of<IEmailAddressValidator>(),
                 Mock.Of<ILogger<RegistrationController>>(),
                 Mock.Of<IHtmlLocalizer<RegistrationController>>(),
                 Mock.Of<IStringLocalizer<RegistrationController>>());
@@ -59,7 +61,7 @@ namespace OrchardCore.Tests.OrchardCore.Users
         [Fact]
         public async Task UsersShouldBeAbleToRegisterIfAllowed()
         {
-            var mockUserManager = MockUserManager<IUser>().Object;
+            var mockUserManager = UsersMockHelper.MockUserManager<IUser>().Object;
             var settings = new RegistrationSettings { UsersCanRegister = UserRegistrationType.AllowRegistration };
             var mockSiteService = Mock.Of<ISiteService>(ss =>
                 ss.GetSiteSettingsAsync() == Task.FromResult(
@@ -73,6 +75,7 @@ namespace OrchardCore.Tests.OrchardCore.Users
                 Mock.Of<IAuthorizationService>(),
                 mockSiteService,
                 Mock.Of<INotifier>(),
+                Mock.Of<IEmailAddressValidator>(),
                 Mock.Of<ILogger<RegistrationController>>(),
                 Mock.Of<IHtmlLocalizer<RegistrationController>>(),
                 Mock.Of<IStringLocalizer<RegistrationController>>());
@@ -99,6 +102,9 @@ namespace OrchardCore.Tests.OrchardCore.Users
             mockServiceProvider
                 .Setup(x => x.GetService(typeof(ITempDataDictionaryFactory)))
                 .Returns(Mock.Of<ITempDataDictionaryFactory>());
+            mockServiceProvider
+                .Setup(x => x.GetService(typeof(IObjectModelValidator)))
+                .Returns(Mock.Of<IObjectModelValidator>());
 
             var mockHttpContext = new Mock<HttpContext>();
             mockHttpContext
@@ -118,7 +124,7 @@ namespace OrchardCore.Tests.OrchardCore.Users
         public static Mock<SignInManager<TUser>> MockSignInManager<TUser>(UserManager<TUser> userManager = null) where TUser : class
         {
             var context = new Mock<HttpContext>();
-            var manager = userManager ?? MockUserManager<TUser>().Object;
+            var manager = userManager ?? UsersMockHelper.MockUserManager<TUser>().Object;
             return new Mock<SignInManager<TUser>>(
                 manager,
                 new HttpContextAccessor { HttpContext = context.Object },
@@ -128,26 +134,6 @@ namespace OrchardCore.Tests.OrchardCore.Users
                 null,
                 null)
             { CallBase = true };
-        }
-
-        public static Mock<UserManager<TUser>> MockUserManager<TUser>() where TUser : class
-        {
-            IList<IUserValidator<TUser>> UserValidators = new List<IUserValidator<TUser>>();
-            IList<IPasswordValidator<TUser>> PasswordValidators = new List<IPasswordValidator<TUser>>();
-
-            var store = new Mock<IUserStore<TUser>>();
-            UserValidators.Add(new UserValidator<TUser>());
-            PasswordValidators.Add(new PasswordValidator<TUser>());
-            var mgr = new Mock<UserManager<TUser>>(store.Object,
-                null,
-                null,
-                UserValidators,
-                PasswordValidators,
-                null,
-                null,
-                null,
-                null);
-            return mgr;
         }
     }
 }
