@@ -17,9 +17,9 @@ namespace OrchardCore.Forms.Drivers
             var formPart = model.As<FormPart>();
             if (formPart != null)
             {
-                context.Shape.Metadata.Wrappers.Add($"Form_Wrapper");
+                formItemShape.Metadata.Wrappers.Add($"Form_Wrapper");
             }
-                        
+
             //We don't need to return a shape result
             return Task.FromResult<IDisplayResult>(null);
         }
