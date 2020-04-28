@@ -8,6 +8,7 @@ using OrchardCore.ContentManagement;
 using OrchardCore.Contents.Workflows.Handlers;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
+using OrchardCore.Workflows.Helpers;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
 
@@ -60,13 +61,24 @@ namespace OrchardCore.Contents.Workflows.Activities
         public async override Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
             var contentItemId = await GetContentItemIdAsync(workflowContext);
-            var contentItem = await ContentManager.GetAsync(contentItemId, VersionOptions.Latest);
+            var contentItem = await ContentManager.GetAsync(contentItemId, VersionOptions.DraftRequired);
+
+            if (contentItem == null)
+            {
+                contentItem = workflowContext.Input.GetValue<IContent>(ContentsHandler.ContentItemInputKey)?.ContentItem;
+
+                if (contentItem?.ContentItemId != contentItemId)
+                {
+                    throw new InvalidOperationException($"The {workflowContext.WorkflowType.Name}:{DisplayText} activity failed to retrieve a content item.");
+                }
+            }
 
             if (!String.IsNullOrWhiteSpace(ContentProperties.Expression))
             {
                 var contentProperties = await _expressionEvaluator.EvaluateAsync(ContentProperties, workflowContext);
                 contentItem.Merge(JObject.Parse(contentProperties), new JsonMergeSettings { MergeArrayHandling = MergeArrayHandling.Replace });
             }
+
             await ContentManager.UpdateAsync(contentItem);
             workflowContext.LastResult = contentItem;
             workflowContext.CorrelationId = contentItem.ContentItemId;
