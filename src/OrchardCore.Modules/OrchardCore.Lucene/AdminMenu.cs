@@ -24,17 +24,17 @@ namespace OrchardCore.Lucene
             builder
                 .Add(S["Search"], NavigationConstants.AdminMenuSearchPosition, search => search
                     .AddClass("search").Id("search")
-                    .Add(S["Indexing"], S["Indexing"], import => import
-                        .Add(S["Lucene Indices"], "7", indexes => indexes
+                    .Add(S["Indexing"], "am-" + S["Indexing"], import => import
+                        .Add(S["Lucene Indices"], "am-" + S["Lucene Indices"], indexes => indexes
                             .Action("Index", "Admin", new { area = "OrchardCore.Lucene" })
                             .Permission(Permissions.ManageIndexes)
                             .LocalNav())
-                        .Add(S["Run Lucene Query"], "8", queries => queries
+                        .Add(S["Run Lucene Query"], "am-" + S["Run Lucene Query"], queries => queries
                             .Action("Query", "Admin", new { area = "OrchardCore.Lucene" })
                             .Permission(Permissions.ManageIndexes)
                             .LocalNav()))
                     .Add(S["Settings"], settings => settings
-                        .Add(S["Search"], S["Search"], entry => entry
+                        .Add(S["Search"], "am-" + S["Search"], entry => entry
                             .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = "search" })
                             .Permission(Permissions.ManageIndexes)
                             .LocalNav()

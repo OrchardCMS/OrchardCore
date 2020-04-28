@@ -25,7 +25,7 @@ namespace OrchardCore.Users.Workflows.Activities
         private readonly LinkGenerator _linkGenerator;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IUpdateModelAccessor _updateModelAccessor;
-        private readonly IStringLocalizer<RegisterUserTask> S;
+        private readonly IStringLocalizer S;
 
         public RegisterUserTask(
             IUserService userService,

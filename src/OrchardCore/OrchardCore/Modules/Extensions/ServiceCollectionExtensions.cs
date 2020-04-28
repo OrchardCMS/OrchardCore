@@ -255,7 +255,13 @@ namespace Microsoft.Extensions.DependencyInjection
                 {
                     // And delete a cookie that may have been created by another instance.
                     var httpContextAccessor = serviceProvider.GetRequiredService<IHttpContextAccessor>();
-                    httpContextAccessor.HttpContext.Response.Cookies.Delete(cookieName);
+
+                    // Use case when creating a container in a deferred task.
+                    if (!httpContextAccessor.HttpContext.Response.HasStarted)
+                    {
+                        httpContextAccessor.HttpContext.Response.Cookies.Delete(cookieName);
+                    }
+
                     return;
                 }
 

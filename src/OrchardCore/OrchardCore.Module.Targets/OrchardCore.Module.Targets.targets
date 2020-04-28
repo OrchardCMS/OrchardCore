@@ -2,7 +2,7 @@
 
   <!--
     This file is packaged with "OrchardCore.Module.Targets.nupkg" in "./build" such that any
-    Module that references it will embedd in its assembly all assets files and mapping infos.
+    Module that references it will embed in its assembly all assets files and mapping infos.
     Here we use some msbuild properties that would not be evaluated in the `.props` file.
     It also prevents VS from adding / keeping some unnecessary lines in the project file.
   -->

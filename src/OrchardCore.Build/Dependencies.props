@@ -8,7 +8,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageManagement Include="Azure.Storage.Blobs" Version="12.2.0" />
+    <PackageManagement Include="AngleSharp" Version="0.14.0" />
+    <PackageManagement Include="Azure.Storage.Blobs" Version="12.4.1" />
     <PackageManagement Include="Castle.Core" Version="4.4.0" />
     <PackageManagement Include="Irony.Core" Version="1.0.7" />
     <PackageManagement Include="Fluid.Core" Version="1.0.0-beta-9637" />
@@ -17,15 +18,15 @@
     <PackageManagement Include="Lucene.Net" Version="4.8.0-beta00007" />
     <PackageManagement Include="Lucene.Net.Analysis.Common" Version="4.8.0-beta00007" />
     <PackageManagement Include="Lucene.Net.QueryParser" Version="4.8.0-beta00007" />
-    <PackageManagement Include="MailKit" Version="2.5.1" />
-    <PackageManagement Include="Markdig" Version="0.18.1" />
-    <PackageManagement Include="MessagePack" Version="2.0.335" />
+    <PackageManagement Include="MailKit" Version="2.6.0" />
+    <PackageManagement Include="Markdig" Version="0.20.0" />
+    <PackageManagement Include="MessagePack" Version="2.1.115" />
     <PackageManagement Include="Microsoft.NET.Test.Sdk" Version="16.2.0" />
     <PackageManagement Include="MiniProfiler.AspNetCore.Mvc" Version="4.1.0" />
     <PackageManagement Include="Moq" Version="4.13.1" />
     <PackageManagement Include="ncrontab" Version="3.3.1" />
     <PackageManagement Include="Newtonsoft.Json" Version="12.0.3" />
-    <PackageManagement Include="NLog.Web.AspNetCore" Version="4.9.0" />
+    <PackageManagement Include="NLog.Web.AspNetCore" Version="4.9.1" />
     <PackageManagement Include="NodaTime" Version="2.4.7" />
     <PackageManagement Include="OpenIddict" Version="2.0.1" />
     <PackageManagement Include="OpenIddict.Core" Version="2.0.1" />

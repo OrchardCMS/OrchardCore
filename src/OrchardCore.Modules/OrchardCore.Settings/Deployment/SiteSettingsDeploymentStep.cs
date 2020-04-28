@@ -9,7 +9,7 @@ namespace OrchardCore.Settings.Deployment
     {
         public SiteSettingsDeploymentStep()
         {
-            Name = "SiteSettings";
+            Name = nameof(SiteSettings);
         }
 
         public string[] Settings { get; set; }

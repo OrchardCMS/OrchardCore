@@ -1,6 +1,7 @@
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
+using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentFields.ViewModels;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
@@ -9,13 +10,13 @@ using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Liquid;
 
-namespace OrchardCore.ContentFields.Fields
+namespace OrchardCore.ContentFields.Drivers
 {
     public class HtmlFieldDisplayDriver : ContentFieldDisplayDriver<HtmlField>
     {
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly HtmlEncoder _htmlEncoder;
-        private readonly IStringLocalizer<HtmlFieldDisplayDriver> S;
+        private readonly IStringLocalizer S;
 
         public HtmlFieldDisplayDriver(ILiquidTemplateManager liquidTemplateManager, IStringLocalizer<HtmlFieldDisplayDriver> localizer, HtmlEncoder htmlEncoder)
         {

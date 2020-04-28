@@ -1,0 +1,15 @@
+<td>
+    {% a controller: "Todo", action: "Edit", route_todoid: Model.TodoId , route_returnurl: Request.Path %}
+        {{ Model.Text }}
+    {% enda %}
+</td>
+
+<td>{{ Model.DueDate }}</td>
+
+<td>{{ Model.IsCompleted }}</td>
+
+<td>
+    {% a action: "Delete" , class: "btn btn-danger", route_todoid: Model.TodoId %}
+        Delete
+    {% enda %}
+</td>
