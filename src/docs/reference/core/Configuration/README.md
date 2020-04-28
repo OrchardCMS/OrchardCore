@@ -39,13 +39,14 @@ Each Orchard Core module has its own configuration section under the `OrchardCor
 }
 ```
 
-In addition you can specify a `Tenant` setting by using the Tenant Name, in this example the `Default` tenant. The tenant must exist and you need to include a `State` key for it to be recognized by `IShellConfiguration`. The value of the key is not important as the value in the `tenants.json` file will be used. The tenant name is case sensitive.
+### Tenant Postconfiguration
+
+To configure the values for a tenant after it has been created you can specify a section named for the tenant.
 
 ```
 {
   "OrchardCore": {
     "Default": {
-      "State": "Placeholder",
       "OrchardCore_Media": {
         ... specific tenant configuration configuration ...
       }
@@ -80,11 +81,16 @@ Additionally these `appsettings.json` files do not need the `OrchardCore` sectio
 Environment variables are also translated into `IShellConfiguration`, for example
 
 ```
-OrchardCore__OrchardCore.Media__MaxFileSize
+OrchardCore__OrchardCore_Media__MaxFileSize
 
-OrchardCore__Default__State
 OrchardCore__Default__OrchardCore_Media__MaxFileSize
+
+OrchardCore__MyTenant__OrchardCore_Media__MaxFileSize
 ```
+
+!!! note
+    To support Linux the underscore `_` is used as a seperator, e.g. `OrchardCore_Media`
+    `OrchardCore.Media` is supported for backwards compatability, but users should migrate to the `_` pattern.
 
 ### Order of hierarchy
 
@@ -104,7 +110,7 @@ By default an Orchard Core site will use `CreateDefaultBuilder` in the Startup P
 
 ### Configuration during Deployment
 
-Azure App Settings are supported as Environment Variables on a Windows Environment, and Linux support is coming.
+Azure App Settings are supported as Environment Variables on a Windows Environment, or a Linux Environment.
 
 Azure DevOps, or other CI/CD pipelines, are supported, on all platforms, and Json Path Transformations can be used to transform `appsettings.json` files and provide app secrets from pipeline variables, or secret key stores like Azure Key Vault.
 
