@@ -1,0 +1,14 @@
+@using OrchardCore.ContentManagement
+@using OrchardCore.Forms.Models;
+@using OrchardCore.Mvc.Utilities;
+
+@inject OrchardCore.ContentManagement.Display.IContentItemDisplayManager ContentItemDisplayManager
+
+@{
+    var formPart = ((ContentItem)Model.ContentItem).As<FormPart>();
+}
+
+<form action="@formPart.Action" method="@formPart.Method">
+    @Html.AntiForgeryToken()
+    @await DisplayAsync(Model.Metadata.ChildContent)
+</form>
