@@ -25,8 +25,8 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
                 // Act
                 var recipe = context.GetContentStepRecipe(context.OriginalBlogPost, jItem =>
                 {
-                    jItem[nameof(ContentItem.ContentItemId)] = "newContentItemid";
-                    jItem[nameof(ContentItem.ContentItemVersionId)] = "newVersion";
+                    jItem[nameof(ContentItem.ContentItemId)] = "newcontentitemid";
+                    jItem[nameof(ContentItem.ContentItemVersionId)] = "newversion";
                     jItem[nameof(ContentItem.DisplayText)] = "new version";
                     jItem[nameof(AutoroutePart)][nameof(AutoroutePart.Path)] = "blog/another";
                 });
@@ -55,7 +55,6 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
                             x.ContentType == "BlogPost").ListAsync();
 
                         Assert.Single(blogPosts);
-
                     });
                 }
             }

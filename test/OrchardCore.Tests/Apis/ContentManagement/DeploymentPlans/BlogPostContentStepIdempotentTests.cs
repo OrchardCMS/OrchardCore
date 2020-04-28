@@ -23,7 +23,7 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
                 // Act
                 var recipe = context.GetContentStepRecipe(context.OriginalBlogPost, jItem =>
                 {
-                    jItem[nameof(ContentItem.ContentItemVersionId)] = "newVersion";
+                    jItem[nameof(ContentItem.ContentItemVersionId)] = "newversion";
                     jItem[nameof(ContentItem.DisplayText)] = "new version";
                 });
 
@@ -46,7 +46,7 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
                             Assert.False(originalVersion?.Latest);
                             Assert.False(originalVersion?.Published);
 
-                            var newVersion = blogPosts.FirstOrDefault(x => x.ContentItemVersionId == "newVersion");
+                            var newVersion = blogPosts.FirstOrDefault(x => x.ContentItemVersionId == "newversion");
                             Assert.Equal("new version", newVersion?.DisplayText);
                             Assert.True(newVersion?.Latest);
                             Assert.True(newVersion?.Published);
