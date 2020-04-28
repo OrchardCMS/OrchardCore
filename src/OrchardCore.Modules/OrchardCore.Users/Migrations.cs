@@ -47,5 +47,21 @@ namespace OrchardCore.Users
 
             return 4;
         }
+
+        public int UpdateFrom4()
+        {
+            SchemaBuilder.CreateMapIndexTable(nameof(UserTokenIndex), table => table
+                .Column<string>(nameof(UserTokenIndex.UserId), c => c.NotNull())
+                .Column<string>(nameof(UserTokenIndex.LoginProvider), c => c.NotNull())
+                .Column<string>(nameof(UserTokenIndex.Name), c => c.NotNull()));
+
+            SchemaBuilder.AlterTable(nameof(UserTokenIndex), table => table
+                .CreateIndex("IDX_UserTokenIndex",
+                    nameof(UserTokenIndex.UserId),
+                    nameof(UserTokenIndex.LoginProvider),
+                    nameof(UserTokenIndex.Name)));
+
+            return 5;
+        }
     }
 }

@@ -140,6 +140,7 @@ namespace OrchardCore.Users
             services.TryAddScoped<IUserSecurityStampStore<IUser>>(sp => sp.GetRequiredService<UserStore>());
             services.TryAddScoped<IUserLoginStore<IUser>>(sp => sp.GetRequiredService<UserStore>());
             services.TryAddScoped<IUserClaimStore<IUser>>(sp => sp.GetRequiredService<UserStore>());
+            services.TryAddScoped<IUserAuthenticationTokenStore<IUser>>(sp => sp.GetRequiredService<UserStore>());
 
             services.ConfigureApplicationCookie(options =>
             {
@@ -167,6 +168,7 @@ namespace OrchardCore.Users
             services.AddSingleton<IIndexProvider, UserByRoleNameIndexProvider>();
             services.AddSingleton<IIndexProvider, UserByLoginInfoIndexProvider>();
             services.AddSingleton<IIndexProvider, UserByClaimIndexProvider>();
+            services.AddSingleton<IIndexProvider, UserTokenIndexProvider>();
             services.AddScoped<IDataMigration, Migrations>();
 
             services.AddScoped<IUserService, UserService>();

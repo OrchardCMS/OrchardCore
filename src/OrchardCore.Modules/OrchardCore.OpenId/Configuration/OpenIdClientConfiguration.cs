@@ -68,6 +68,7 @@ namespace OrchardCore.OpenId.Configuration
             options.GetClaimsFromUserInfoEndpoint = true;
             options.ResponseMode = settings.ResponseMode;
             options.ResponseType = settings.ResponseType;
+            options.SaveTokens = settings.StoreExternalTokens;
 
             options.CallbackPath = settings.CallbackPath ?? options.CallbackPath;
 

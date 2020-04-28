@@ -4,6 +4,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Modules;
@@ -21,23 +22,29 @@ namespace OrchardCore.Users.Services
         IUserPasswordStore<IUser>,
         IUserEmailStore<IUser>,
         IUserSecurityStampStore<IUser>,
-        IUserLoginStore<IUser>
+        IUserLoginStore<IUser>,
+        IUserAuthenticationTokenStore<IUser>
     {
+        private const string TokenProtector = "OrchardCore.UserStore.Token";
+
         private readonly ISession _session;
         private readonly IRoleService _roleService;
         private readonly ILookupNormalizer _keyNormalizer;
         private readonly ILogger _logger;
+        private readonly IDataProtectionProvider _dataProtectionProvider;
 
         public UserStore(ISession session,
             IRoleService roleService,
             ILookupNormalizer keyNormalizer,
             ILogger<UserStore> logger,
-            IEnumerable<IUserEventHandler> handlers)
+            IEnumerable<IUserEventHandler> handlers,
+            IDataProtectionProvider dataProtectionProvider)
         {
             _session = session;
             _roleService = roleService;
             _keyNormalizer = keyNormalizer;
             _logger = logger;
+            _dataProtectionProvider = dataProtectionProvider;
             Handlers = handlers;
         }
         public IEnumerable<IUserEventHandler> Handlers { get; private set; }
@@ -524,5 +531,112 @@ namespace OrchardCore.Users.Services
         }
 
         #endregion IUserClaimStore<IUser>
+
+        #region IUserAuthenticationTokenStore
+        public async Task<string> GetTokenAsync(IUser user, string loginProvider, string name, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            if (string.IsNullOrWhiteSpace(loginProvider))
+            {
+                throw new ArgumentNullException(nameof(loginProvider));
+            }
+
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                throw new ArgumentNullException(name);
+            }
+
+            var userId = await GetUserIdAsync(user, cancellationToken);
+
+            var userToken = await _session
+                .Query<UserToken, UserTokenIndex>(index => index.UserId == userId &&
+                                                           index.LoginProvider == loginProvider &&
+                                                           index.Name == name)
+                .FirstOrDefaultAsync();
+
+            if (userToken != null)
+            {
+                return _dataProtectionProvider.CreateProtector(TokenProtector).Unprotect(userToken.Value);
+            }
+
+            return null;
+        }
+
+        public async Task RemoveTokenAsync(IUser user, string loginProvider, string name, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            if (string.IsNullOrWhiteSpace(loginProvider))
+            {
+                throw new ArgumentNullException(nameof(loginProvider));
+            }
+
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                throw new ArgumentNullException(name);
+            }
+
+            var userId = await GetUserIdAsync(user, cancellationToken);
+
+            var userToken = await _session
+                .Query<UserToken, UserTokenIndex>(index => index.UserId == userId &&
+                                                           index.Name == name &&
+                                                           index.LoginProvider == loginProvider)
+                .FirstOrDefaultAsync();
+
+            if (userToken != null)
+            {
+                _session.Delete(userToken);
+
+                await _session.CommitAsync();
+            }
+        }
+
+        public async Task SetTokenAsync(IUser user, string loginProvider, string name, string value, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            if (string.IsNullOrWhiteSpace(loginProvider))
+            {
+                throw new ArgumentNullException(nameof(loginProvider));
+            }
+
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                throw new ArgumentNullException(nameof(name));
+            }
+
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                throw new ArgumentNullException(nameof(value));
+            }
+
+            // remove the old token when present.
+            await RemoveTokenAsync(user, loginProvider, name, cancellationToken);
+
+            // store the new token
+            var userId = await GetUserIdAsync(user, cancellationToken);
+            var userToken = new UserToken
+            {
+                UserId = userId,
+                LoginProvider = loginProvider,
+                Name = name,
+                Value = _dataProtectionProvider.CreateProtector(TokenProtector).Protect(value)
+            };
+            _session.Save(userToken);
+
+            await _session.CommitAsync();
+        }
+        #endregion
     }
 }
