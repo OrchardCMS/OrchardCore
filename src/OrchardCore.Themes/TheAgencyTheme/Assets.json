@@ -1,16 +1,9 @@
 [
   {
-    "generateRTL": true,
     "inputs": [
       "Assets/scss/styles.scss"
     ],
     "output": "wwwroot/Styles/styles.css"
-  },
-  {
-    "inputs": [
-      "Assets/scss/bootstrap-oc.scss"
-    ],
-    "output": "wwwroot/Styles/bootstrap-oc.css"
   },
   {
     "inputs": [

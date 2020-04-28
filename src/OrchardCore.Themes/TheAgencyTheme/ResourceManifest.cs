@@ -18,12 +18,6 @@ namespace OrchardCore.Themes.TheAgencyTheme
                 .DefineStyle("TheAgencyTheme")
                 .SetUrl("~/TheAgencyTheme/Styles/styles.min.css", "~/TheAgencyTheme/Styles/styles.css")
                 .SetVersion("6.0.0");
-
-            manifest
-                .DefineStyle("TheAgencyTheme-bootstrap-oc")
-                .SetDependencies("TheAgencyTheme")
-                .SetUrl("~/TheAgencyTheme/Styles/bootstrap-oc.min.css", "~/TheAgencyTheme/Styles/bootstrap-oc.css")
-                .SetVersion("1.0.0");
         }
     }
 }
