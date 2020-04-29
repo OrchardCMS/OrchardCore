@@ -37,6 +37,6 @@ namespace OrchardCore.DisplayManagement.ModelBinding
         public bool TryValidateModel(object model, string prefix)
             => _updateModel.TryValidateModel(model, Prefix(prefix));
 
-        public bool IsContentUpdater => _updateModel.IsContentUpdater;
+        public bool IsContained => _updateModel.IsContained;
     }
 }
