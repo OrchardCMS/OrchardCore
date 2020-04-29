@@ -68,7 +68,7 @@ Sample content:
 
 #### HTML Editor
 
-To define what HTML to render when the editor is selected from the settings, a shape named `HtmlBody_Editor__{Name}` corresponding to a file `Body-{Name}.Editor.cshtml` can be created.
+To define what HTML to render when the editor is selected from the settings, a shape named `HtmlBody_Edit__{Name}` corresponding to a file `Body-{Name}.Edit.cshtml` can be created.
 
 Sample content:
 
@@ -86,8 +86,8 @@ Sample content:
 ### Overriding the predefined editors
 
 You can override the HTML editor for the `Default` editor by creating a shape file named  
-`HtmlBody.Editor.cshtml`. The Wysiwyg editor is defined by using the file named  
-`HtmlBody-Wysiwyg.Editor.cshtml`.
+`HtmlBody.Edit.cshtml`. The Wysiwyg editor is defined by using the file named  
+`HtmlBody-Wysiwyg.Edit.cshtml`.
 
 ## CREDITS
 
