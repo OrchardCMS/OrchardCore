@@ -11,4 +11,8 @@
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.ResourceManagement.Abstractions\OrchardCore.ResourceManagement.Abstractions.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <EmbeddedResource Remove="package-lock.json" />
+  </ItemGroup>
+
 </Project>
