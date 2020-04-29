@@ -11,7 +11,7 @@ namespace OrchardCore.ContentPreview.Drivers
     {
         public override Task<IDisplayResult> EditAsync(ContentItem model, BuildEditorContext context)
         {
-            if (!context.Updater.IsContentUpdater)
+            if (context.Updater.IsContained)
             {
                 return null;
             }

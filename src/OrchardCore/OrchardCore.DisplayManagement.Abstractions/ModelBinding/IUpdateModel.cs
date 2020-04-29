@@ -13,6 +13,6 @@ namespace OrchardCore.DisplayManagement.ModelBinding
         bool TryValidateModel(object model);
         bool TryValidateModel(object model, string prefix);
         ModelStateDictionary ModelState { get; }
-        public bool IsContentUpdater { get; }
+        public bool IsContained { get; }
     }
 }

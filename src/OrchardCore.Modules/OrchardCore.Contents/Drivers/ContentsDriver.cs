@@ -66,7 +66,7 @@ namespace OrchardCore.Contents.Drivers
                 return null;
             }
 
-            if (!context.Updater.IsContentUpdater)
+            if (context.Updater.IsContained)
             {
                 return null;
             }

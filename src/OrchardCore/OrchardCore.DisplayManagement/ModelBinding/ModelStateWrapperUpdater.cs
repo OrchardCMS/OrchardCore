@@ -56,6 +56,6 @@ namespace OrchardCore.DisplayManagement.ModelBinding
             return result;
         }
 
-        public bool IsContentUpdater => !(_updater is ModelStateWrapperUpdater) && _updater.IsContentUpdater;
+        public bool IsContained => _updater.IsContained || _updater is ModelStateWrapperUpdater  ;
     }
 }
