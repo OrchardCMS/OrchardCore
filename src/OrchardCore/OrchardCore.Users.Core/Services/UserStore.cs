@@ -551,13 +551,7 @@ namespace OrchardCore.Users.Services
             }
 
             var userId = await GetUserIdAsync(user, cancellationToken);
-
-            var userToken = await _session
-                .Query<UserToken, UserTokenIndex>(index => index.UserId == userId &&
-                                                           index.LoginProvider == loginProvider &&
-                                                           index.Name == name)
-                .FirstOrDefaultAsync();
-
+            var userToken = await GetUserTokenAsync(userId, loginProvider, name, cancellationToken);
             if (userToken != null)
             {
                 return _dataProtectionProvider.CreateProtector(TokenProtector).Unprotect(userToken.Value);
@@ -584,13 +578,7 @@ namespace OrchardCore.Users.Services
             }
 
             var userId = await GetUserIdAsync(user, cancellationToken);
-
-            var userToken = await _session
-                .Query<UserToken, UserTokenIndex>(index => index.UserId == userId &&
-                                                           index.Name == name &&
-                                                           index.LoginProvider == loginProvider)
-                .FirstOrDefaultAsync();
-
+            var userToken = await GetUserTokenAsync(userId, loginProvider, name, cancellationToken);
             if (userToken != null)
             {
                 _session.Delete(userToken);
@@ -621,21 +609,32 @@ namespace OrchardCore.Users.Services
                 throw new ArgumentNullException(nameof(value));
             }
 
-            // remove the old token when present.
-            await RemoveTokenAsync(user, loginProvider, name, cancellationToken);
-
-            // store the new token
             var userId = await GetUserIdAsync(user, cancellationToken);
-            var userToken = new UserToken
+            var userToken = await GetUserTokenAsync(userId, loginProvider, name, cancellationToken);
+
+            userToken ??= new UserToken
             {
                 UserId = userId,
                 LoginProvider = loginProvider,
-                Name = name,
-                Value = _dataProtectionProvider.CreateProtector(TokenProtector).Protect(value)
+                Name = name
             };
+
+            // Encrypt the token
+            userToken.Value = _dataProtectionProvider.CreateProtector(TokenProtector).Protect(value);
             _session.Save(userToken);
 
             await _session.CommitAsync();
+        }
+
+        private async Task<UserToken> GetUserTokenAsync(string userId, string loginProvider, string name, CancellationToken cancellationToken)
+        {
+            var userToken = await _session
+                .Query<UserToken, UserTokenIndex>(index => index.UserId == userId &&
+                                                           index.LoginProvider == loginProvider &&
+                                                           index.Name == name)
+                .FirstOrDefaultAsync();
+
+            return userToken;
         }
         #endregion
     }
