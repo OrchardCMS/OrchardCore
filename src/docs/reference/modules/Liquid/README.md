@@ -752,19 +752,19 @@ Invokes the `link` tag helper from the `Orchard.ResourceManagement` package.
 
 ### `meta`
 
-Invokes the `meta` tag helper from the `Orchard.ResourceManagement` package. [see this section](../Resources/Readme.md#meta-tags)
+Invokes the `meta` tag helper from the `Orchard.ResourceManagement` package. [see this section](../Resources/#meta-tags)
 
 ### `resources`
 
-Invokes the `resources` tag helper from the `Orchard.ResourceManagement` package. [see this section](../Resources/Readme.md#rendering)
+Invokes the `resources` tag helper from the `Orchard.ResourceManagement` package. [see this section](../Resources/#rendering)
 
 ### `script`
 
-Invokes the `script` tag helper from the `Orchard.ResourceManagement` package. [see this section](../Resources/Readme.md#inline-definition)
+Invokes the `script` tag helper from the `Orchard.ResourceManagement` package. [see this section](../Resources/#inline-definition)
 
 ### `style`
 
-Invokes the `style` tag helper from the `Orchard.ResourceManagement` package. [see this section](../Resources/Readme.md#inline-definition)
+Invokes the `style` tag helper from the `Orchard.ResourceManagement` package. [see this section](../Resources/#inline-definition)
 
 ### `a`
 

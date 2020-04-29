@@ -23,13 +23,13 @@ namespace OrchardCore.Deployment
 
             builder
                 .Add(S["Configuration"], configuration => configuration
-                    .Add(S["Import/Export"], S["Import/Export"], import => import
-                        .Add(S["Deployment Plans"], S["Deployment Plans"], deployment => deployment
+                    .Add(S["Import/Export"], "am-" + S["Import/Export"], import => import
+                        .Add(S["Deployment Plans"], "am-" + S["Deployment Plans"], deployment => deployment
                             .Action("Index", "DeploymentPlan", new { area = "OrchardCore.Deployment" })
                             .Permission(Permissions.Export)
                             .LocalNav()
                         )
-                        .Add(S["Package Import"], S["Package Import"], deployment => deployment
+                        .Add(S["Package Import"], "am-" + S["Package Import"], deployment => deployment
                             .Action("Index", "Import", new { area = "OrchardCore.Deployment" })
                             .Permission(Permissions.Import)
                             .LocalNav()

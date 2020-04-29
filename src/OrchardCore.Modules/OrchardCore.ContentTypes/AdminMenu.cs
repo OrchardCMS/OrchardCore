@@ -26,12 +26,12 @@ namespace OrchardCore.ContentTypes
             var adminControllerName = typeof(AdminController).ControllerName();
 
             builder.Add(S["Content"], content => content
-                .Add(S["Content Definition"], S["Content Definition"], contentDefinition => contentDefinition
-                    .Add(S["Content Types"], "1", contentTypes => contentTypes
+                .Add(S["Content Definition"], "am-" + S["Content Definition"], contentDefinition => contentDefinition
+                    .Add(S["Content Types"], "am1-" + S["Content Types"], contentTypes => contentTypes
                         .Action(nameof(AdminController.List), adminControllerName, new { area = "OrchardCore.ContentTypes" })
                         .Permission(Permissions.ViewContentTypes)
                         .LocalNav())
-                    .Add(S["Content Parts"], "2", contentParts => contentParts
+                    .Add(S["Content Parts"], "am2-" + S["Content Parts"], contentParts => contentParts
                         .Action(nameof(AdminController.ListParts), adminControllerName, new { area = "OrchardCore.ContentTypes" })
                         .Permission(Permissions.ViewContentTypes)
                         .LocalNav())

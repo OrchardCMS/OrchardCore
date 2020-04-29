@@ -26,7 +26,7 @@ Vue.component('mediaFieldThumbsContainer', {
                          <div class="media-container-main-item-title card-body">\
                                 <a href="javascript:;" class="btn btn-light btn-sm float-right inline-media-button delete-button"\
                                     v-on:click.stop="selectAndDeleteMedia(media)"><i class="fa fa-trash"></i></a>\
-                                <a :href="media.url" class="btn btn-light btn-sm float-right inline-media-button view-button""><i class="fa fa-download"></i></a> \
+                                <a :href="media.url" target="_blank" class="btn btn-light btn-sm float-right inline-media-button view-button""><i class="fa fa-download"></i></a> \
                                 <span class="media-filename card-text small" :title="media.mediaPath">{{ media.isNew ? media.name.substr(36) : media.name }}</span>\
                          </div>\
                     </div>\

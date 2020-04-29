@@ -26,7 +26,7 @@ namespace OrchardCore.Facebook
             {
                 builder.Add(S["Configuration"], configuration => configuration
                         .Add(S["Settings"], settings => settings
-                            .Add(S["Facebook App"], S["Facebook App"], settings => settings
+                            .Add(S["Facebook App"], "am-" + S["Facebook App"], settings => settings
                             .AddClass("facebookApp").Id("facebookApp")
                             .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = FacebookConstants.Features.Core })
                             .Permission(Permissions.ManageFacebookApp)
@@ -58,7 +58,7 @@ namespace OrchardCore.Facebook
             {
                 builder.Add(S["Security"], security => security
                         .Add(S["Authentication"], authentication => authentication
-                        .Add(S["Facebook"], S["Facebook"], settings => settings
+                        .Add(S["Facebook"], "am-" + S["Facebook"], settings => settings
                         .AddClass("facebook").Id("facebook")
                             .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = FacebookConstants.Features.Login })
                             .Permission(Permissions.ManageFacebookApp)

@@ -88,7 +88,7 @@ namespace OrchardCore.DisplayManagement.Views
                 placement.DefaultPosition = context.DefaultPosition;
             }
 
-            // If there are no placement or it's explicitely noop then stop rendering execution
+            // If there are no placement or it's explicitly noop then stop rendering execution
             if (String.IsNullOrEmpty(placement.Location) || placement.Location == "-")
             {
                 return;
