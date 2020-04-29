@@ -511,7 +511,7 @@ namespace OrchardCore.Users.Controllers
 
             ViewData["ReturnUrl"] = returnUrl;
             ViewData["LoginProvider"] = info.LoginProvider;
-            
+
             model.NoPassword = settings.NoPasswordForExternalUsers;
             model.NoEmail = settings.NoEmailForExternalUsers;
             model.NoUsername = settings.NoUsernameForExternalUsers;
