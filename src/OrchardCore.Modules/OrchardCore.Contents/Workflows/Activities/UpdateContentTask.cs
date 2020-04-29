@@ -61,15 +61,19 @@ namespace OrchardCore.Contents.Workflows.Activities
         public async override Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
             var contentItemId = await GetContentItemIdAsync(workflowContext);
+
+            // Use 'DraftRequired' so that we mutate a new version unless the type is not 'Versionable'.
             var contentItem = await ContentManager.GetAsync(contentItemId, VersionOptions.DraftRequired);
 
             if (contentItem == null)
             {
+                // If e.g. in the same scope of a related 'ContentCreatedEvent', the content item is not yet persisted
+                // nor cached, so we fallback to the workflow context input that has been set by the 'ContentsHandler'.
                 contentItem = workflowContext.Input.GetValue<IContent>(ContentsHandler.ContentItemInputKey)?.ContentItem;
 
-                if (contentItem?.ContentItemId != contentItemId)
+                if (!String.Equals(contentItem?.ContentItemId, contentItemId, StringComparison.OrdinalIgnoreCase))
                 {
-                    throw new InvalidOperationException($"The {workflowContext.WorkflowType.Name}:{DisplayText} activity failed to retrieve a content item.");
+                    throw new InvalidOperationException($"The {workflowContext.WorkflowType.Name}:{DisplayText} activity failed to retrieve the related content item.");
                 }
             }
 
