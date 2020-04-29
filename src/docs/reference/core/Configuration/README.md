@@ -39,9 +39,30 @@ Each Orchard Core module has its own configuration section under the `OrchardCor
 }
 ```
 
+### Tenant Preconfiguration
+
+To pre configure the setup values for a tenant before it has been created you can specify a section named for the tenant,
+with a `State` value of `Uninitialized`
+
+```
+{
+  "OrchardCore": {
+    "MyTenant": {
+      "State": "Uninitialized",
+      "RequestUrlPrefix": "mytenant",
+      "ConnectionString": "...",
+      "DatabaseProvider": "SqlConnection"
+    }
+  }
+}
+```
+
+The preconfigured tenant will then appear in the `Tenants` list in the admin, and these values will be used when the tenant is setup.
+
 ### Tenant Postconfiguration
 
-To configure the values for a tenant after it has been created you can specify a section named for the tenant.
+To configure the values for a tenant after it has been created you can specify a section named for the tenant,
+without a state value.
 
 ```
 {
@@ -124,3 +145,10 @@ If building with the nightly dev builds from the `MyGet` package feed, the CI/CD
   </packageSources>
 </configuration>
 ```
+
+### Alternate locations
+
+The `IShellConfiguration` values stored in the `App_Data` folder, and individual tenants `appsettings.json` files, can also be stored in alternate locations.
+
+Refer to the [Shells Section](../Shells/README.md) for more details on this.
+
