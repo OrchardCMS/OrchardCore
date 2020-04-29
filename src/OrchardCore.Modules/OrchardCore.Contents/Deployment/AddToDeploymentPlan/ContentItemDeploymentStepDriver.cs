@@ -1,21 +1,23 @@
-using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
-using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Mvc.ModelBinding;
 
 namespace OrchardCore.Contents.Deployment.AddToDeploymentPlan
 {
     public class ContentItemDeploymentStepDriver : DisplayDriver<DeploymentStep, ContentItemDeploymentStep>
     {
+        private readonly IContentManager _contentManager;
         private readonly IStringLocalizer S;
 
-        public ContentItemDeploymentStepDriver(IStringLocalizer<ContentItemDeploymentStepDriver> stringLocalizer)
+        public ContentItemDeploymentStepDriver(IContentManager contentManager,
+            IStringLocalizer<ContentItemDeploymentStepDriver> stringLocalizer)
         {
+            _contentManager = contentManager;
             S = stringLocalizer;
         }
 
@@ -32,7 +34,7 @@ namespace OrchardCore.Contents.Deployment.AddToDeploymentPlan
         {
             return Initialize<ContentItemDeploymentStepViewModel>("ContentItemDeploymentStep_Fields_Edit", model =>
             {
-                model.ContentItem = step.ContentItem?.ToString();
+                model.ContentItemId = step.ContentItemId;
             }).Location("Content");
         }
 
@@ -40,35 +42,17 @@ namespace OrchardCore.Contents.Deployment.AddToDeploymentPlan
         {
             var model = new ContentItemDeploymentStepViewModel();
 
-            await updater.TryUpdateModelAsync(model, Prefix, x => x.ContentItem);
-
-            try
+            if (await updater.TryUpdateModelAsync(model, Prefix, x => x.ContentItemId))
             {
-                // Parse this to use the content item json convertor to validate the supplied json format.
-                var jItem = JObject.Parse(model.ContentItem);
-                jItem.Remove(nameof(ContentItem.Id));
-
-                var contentItem = jItem.ToObject<ContentItem>();
-                if (String.IsNullOrEmpty(contentItem.ContentItemId))
+                var contentItem = await _contentManager.GetAsync(model.ContentItemId);
+                if (contentItem == null)
                 {
-                    updater.ModelState.AddModelError(nameof(step.ContentItem), S["You must supply a content item id."]);
+                    updater.ModelState.AddModelError(Prefix, nameof(step.ContentItemId), S["Your content item does not exist."]);
                 }
-
-                if (String.IsNullOrEmpty(contentItem.ContentItemVersionId))
+                else
                 {
-                    updater.ModelState.AddModelError(nameof(step.ContentItem), S["You must supply a content item version id."]);
+                    step.ContentItemId = model.ContentItemId;
                 }
-
-                if (String.IsNullOrEmpty(contentItem.ContentType))
-                {
-                    updater.ModelState.AddModelError(nameof(step.ContentItem), S["You must supply a content type."]);
-                }
-
-                step.ContentItem = jItem;
-            }
-            catch
-            {
-                updater.ModelState.AddModelError(nameof(step.ContentItem), S["Your content item contains invalid JSON."]);
             }
 
             return Edit(step);

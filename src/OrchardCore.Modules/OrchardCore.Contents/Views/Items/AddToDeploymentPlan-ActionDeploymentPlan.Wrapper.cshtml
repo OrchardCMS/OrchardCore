@@ -4,5 +4,7 @@
 @if (!Context.Items.ContainsKey("AddToDeploymentPlan_Modal__ActionDeploymentPlan"))
 {
     Context.Items["AddToDeploymentPlan_Modal__ActionDeploymentPlan"] = new object();
-    @await DisplayAsync(await New.AddToDeploymentPlan_Modal__ActionDeploymentPlan())
+    <zone name="Footer">
+        @await DisplayAsync(await New.AddToDeploymentPlan_Modal__ActionDeploymentPlan())
+    </zone>
 }

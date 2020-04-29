@@ -47,7 +47,7 @@ namespace OrchardCore.Contents.Deployment.AddToDeploymentPlan
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddContentItem(int deploymentPlanId, string returnUrl, string contentItemId, bool latest)
+        public async Task<IActionResult> AddContentItem(int deploymentPlanId, string returnUrl, string contentItemId)
         {
             if (!(await _authorizationService.AuthorizeAsync(User, OrchardCore.Deployment.CommonPermissions.ManageDeploymentPlan) &&
                 await _authorizationService.AuthorizeAsync(User, OrchardCore.Deployment.CommonPermissions.Export)
@@ -63,7 +63,7 @@ namespace OrchardCore.Contents.Deployment.AddToDeploymentPlan
                 return NotFound();
             }
 
-            var contentItem = await _contentManager.GetAsync(contentItemId, latest == false ? VersionOptions.Published : VersionOptions.Latest);
+            var contentItem = await _contentManager.GetAsync(contentItemId);
 
             if (contentItem == null)
             {
@@ -78,7 +78,7 @@ namespace OrchardCore.Contents.Deployment.AddToDeploymentPlan
             }
 
             var step = (ContentItemDeploymentStep)_factories.FirstOrDefault(x => x.Name == nameof(ContentItemDeploymentStep)).Create();
-            step.ContentItem = JObject.FromObject(contentItem);
+            step.ContentItemId = contentItem.ContentItemId;
 
             deploymentPlan.DeploymentSteps.Add(step);
 
@@ -126,7 +126,7 @@ namespace OrchardCore.Contents.Deployment.AddToDeploymentPlan
                     return Forbid();
                 }
                 var step = (ContentItemDeploymentStep)_factories.FirstOrDefault(x => x.Name == nameof(ContentItemDeploymentStep)).Create();
-                step.ContentItem = JObject.FromObject(item);
+                step.ContentItemId = item.ContentItemId;
 
                 deploymentPlan.DeploymentSteps.Add(step);
             }

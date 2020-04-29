@@ -4,5 +4,7 @@
 @if (!Context.Items.ContainsKey("ClickToDeploy_Modal__ActionDeploymentTarget"))
 {
     Context.Items["ClickToDeploy_Modal__ActionDeploymentTarget"] = new object();
-    @await DisplayAsync(await New.ClickToDeploy_Modal__ActionDeploymentTarget())
+    <zone name="Footer">
+        @await DisplayAsync(await New.ClickToDeploy_Modal__ActionDeploymentTarget())
+    </zone>
 }

@@ -31,20 +31,6 @@ namespace OrchardCore.Contents.Deployment.AddToDeploymentPlan
                     }
                 });
 
-            builder.Describe("AdminListOptions")
-                .OnDisplaying(async context =>
-                {
-                    if (await _deploymentPlanService.DoesUserHavePermissionsAsync())
-                    {
-                        dynamic shape = context.Shape;
-                        var shapeFactory = context.ServiceProvider.GetRequiredService<IShapeFactory>();
-                        var addToDeploymentPlanShape = await shapeFactory.CreateAsync("AddToDeploymentPlan_Modal__ContentsBulkActionDeploymentPlan");
-
-                        // Don't use Items.Add() or the collection won't be sorted
-                        shape.Add(addToDeploymentPlanShape);
-                    }
-                });
-
             builder.Describe("AdminBulkActions")
                 .OnDisplaying(async context =>
                 {
@@ -55,6 +41,9 @@ namespace OrchardCore.Contents.Deployment.AddToDeploymentPlan
                         var bulkActionsShape = await shapeFactory.CreateAsync("AddToDeploymentPlan__Button__ContentsBulkAction");
                         // Don't use Items.Add() or the collection won't be sorted
                         shape.Add(bulkActionsShape, ":20");
+
+                        var addToDeploymentPlanModal = await shapeFactory.CreateAsync("AddToDeploymentPlan_Modal__ContentsBulkActionDeploymentPlan");
+                        shape.Add(addToDeploymentPlanModal);
                     }
                 });
         }

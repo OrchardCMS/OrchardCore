@@ -10,23 +10,25 @@
     var exportDraftId = Guid.NewGuid().ToString("n");
 }
 
+<div class="dropdown-divider"></div>
 @if (hasDraft)
 {
     <a asp-action="Display" asp-controller="ViewAsJson" asp-area="OrchardCore.Contents" asp-route-contentItemId="@contentItem.ContentItemId" asp-route-returnUrl="@FullRequestPath" asp-route-latest="true" class="dropdown-item btn btn-primary btn-sm">@T["View Draft as JSON"]</a>
-    <a id="@exportDraftId" asp-action="Export" asp-controller="ViewAsJson" asp-area="OrchardCore.Contents" asp-route-contentItemId="@contentItem.ContentItemId" asp-route-latest="@Boolean.TrueString" class="dropdown-item btn btn-primary btn-sm" itemprop="UnsafeUrl">@T["Export Draft as JSON"]</a>
+    <a id="@exportDraftId" asp-action="Export" asp-controller="ViewAsJson" asp-area="OrchardCore.Contents" asp-route-contentItemId="@contentItem.ContentItemId" asp-route-latest="@Boolean.TrueString" class="dropdown-item btn btn-primary btn-sm" itemprop="UnsafeUrl">@T["Download Draft as JSON"]</a>
+
 
     if (hasPublished)
     {
-        <a asp-action="Display" asp-controller="ViewAsJson" asp-area="OrchardCore.Contents" asp-route-contentItemId="@contentItem.ContentItemId" asp-route-returnUrl="@FullRequestPath" class="dropdown-item btn btn-primary btn-sm">@T["View Published as JSON"]</a>
-        <a id="@exportPublishedId" asp-action="Export" asp-controller="ViewAsJson" asp-area="OrchardCore.Contents" asp-route-contentItemId="@contentItem.ContentItemId" class="dropdown-item btn btn-primary btn-sm" itemprop="UnsafeUrl">@T["Export Published as JSON"]</a>
+        <div class="dropdown-divider"></div>
 
+        <a asp-action="Display" asp-controller="ViewAsJson" asp-area="OrchardCore.Contents" asp-route-contentItemId="@contentItem.ContentItemId" asp-route-returnUrl="@FullRequestPath" class="dropdown-item btn btn-primary btn-sm">@T["View Published as JSON"]</a>
+        <a id="@exportPublishedId" asp-action="Export" asp-controller="ViewAsJson" asp-area="OrchardCore.Contents" asp-route-contentItemId="@contentItem.ContentItemId" class="dropdown-item btn btn-primary btn-sm" itemprop="UnsafeUrl">@T["Download Published as JSON"]</a>
     }
 }
 else
 {
     <a asp-action="Display" asp-controller="ViewAsJson" asp-area="OrchardCore.Contents" asp-route-contentItemId="@contentItem.ContentItemId" asp-route-returnUrl="@FullRequestPath" class="dropdown-item btn btn-primary btn-sm">@T["View as JSON"]</a>
-    <a id="@exportId" asp-action="Export" asp-controller="ViewAsJson" asp-area="OrchardCore.Contents" asp-route-contentItemId="@contentItem.ContentItemId" class="dropdown-item btn btn-primary btn-sm" itemprop="UnsafeUrl">@T["Export as JSON"]</a>
-
+    <a id="@exportId" asp-action="Export" asp-controller="ViewAsJson" asp-area="OrchardCore.Contents" asp-route-contentItemId="@contentItem.ContentItemId" class="dropdown-item btn btn-primary btn-sm" itemprop="UnsafeUrl">@T["Download as JSON"]</a>
 }
 
 <script at="Foot">

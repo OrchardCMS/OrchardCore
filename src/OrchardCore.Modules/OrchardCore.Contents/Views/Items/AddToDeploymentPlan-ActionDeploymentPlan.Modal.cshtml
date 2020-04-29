@@ -44,7 +44,6 @@
         $('#modalAddToDeploymentPlanActionDeploymentPlan').on('show.bs.modal', function (event) {
             var button = $(event.relatedTarget) // Button that triggered the modal
             var contentItemId = button.data('content-item-id');
-            var latest = button.data('latest');
 
             $('.add-to-deployment-plan').on('click', function () {
                 var targetButton = this;
@@ -62,9 +61,6 @@
                         }
                     }
                     deployForm.append($("<input type=\"hidden\" name=\"contentItemId\" + value=\"" + contentItemId + "\"/>"));
-                    if (latest) {
-                        deployForm.append($("<input type=\"hidden\" name=\"latest\" + value=\"" + latest + "\"/>"));
-                    }
                     $("body").append(deployForm);
                     deployForm.submit();
                 }

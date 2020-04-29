@@ -1,89 +1,91 @@
 @model dynamic
 @using Microsoft.AspNetCore.Routing
-<div class="modal fade" id="modalClickToDeployContentBulkActionTarget" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">@T["Available Targets"]</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="row">
-                    @foreach (var target in Model.Targets)
-                    {
-                        var routeWithId = new RouteValueDictionary(target.Route);
-                        routeWithId["id"] = Model.ClickToDeployPlanId;
-                        var returnUrl = Context.Request.Query["returnUrl"];
-                        routeWithId["returnUrl"] = FullRequestPath;
-                        <div class="col-sm-12 col-md-6 col-lg-4 d-flex align-items-stretch card-item">
-                            <div class="card w-100 mb-3">
-                                <div class="card-body">
-                                    <h4 class="card-title">@target.Name</h4>
-                                    <p>@target.Description</p>
-                                </div>
-                                <div class="card-footer text-muted text-xs-right">
-                                    <button type="button" class="click-to-deploy-bulk-action text-white btn btn-primary btn-sm" data-dismiss="modal" data-target-url="@Url.RouteUrl(routeWithId)">@T["Select"]</button>
+<zone name="Footer">
+    <div class="modal fade" id="modalClickToDeployContentBulkActionTarget" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">@T["Available Targets"]</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        @foreach (var target in Model.Targets)
+                        {
+                            var routeWithId = new RouteValueDictionary(target.Route);
+                            routeWithId["id"] = Model.ClickToDeployPlanId;
+                            var returnUrl = Context.Request.Query["returnUrl"];
+                            routeWithId["returnUrl"] = FullRequestPath;
+                            <div class="col-sm-12 col-md-6 col-lg-4 d-flex align-items-stretch card-item">
+                                <div class="card w-100 mb-3">
+                                    <div class="card-body">
+                                        <h4 class="card-title">@target.Name</h4>
+                                        <p>@target.Description</p>
+                                    </div>
+                                    <div class="card-footer text-muted text-xs-right">
+                                        <button type="button" class="click-to-deploy-bulk-action text-white btn btn-primary btn-sm" data-dismiss="modal" data-target-url="@Url.RouteUrl(routeWithId)">@T["Select"]</button>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    }
+                        }
+                    </div>
                 </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">@T["Cancel"]</button>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">@T["Cancel"]</button>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-<script at="Foot" depends-on="jQuery">
-    $(function () {
-        $('#clickToDeployAction').on('click', function () {
-            if ($(":checkbox[name='itemIds']:checked").length > 1) {
-                var $this = $(this);
-                confirmDialog({
-                    ...$this.data(), callback: function (r) {
-                        if (r) {
-                            $('#modalClickToDeployContentBulkActionTarget').modal('show');
-                        }
-                    }
-                });
-            }
-        });
-
-        $('#modalClickToDeployContentBulkActionTarget').on('show.bs.modal', function () {
-            var itemIds = $(":checkbox[name='itemIds']:checked");
-            if (itemIds.length > 1) {
-                $('.click-to-deploy-bulk-action').on('click', function () {
-                    var targetButton = this;
-                    var magicToken = $("input[name=__RequestVerificationToken]").first();
-                    if (magicToken) {
-                        var hrefParts = $(targetButton).data("target-url").split("?");
-                        var deployForm = $("<form action=\"" + hrefParts[0] + "\" method=\"POST\" />");
-                        deployForm.append(magicToken.clone());
-                        if (hrefParts.length > 1) {
-                            var queryParts = hrefParts[1].split("&");
-                            for (var i = 0; i < queryParts.length; i++) {
-                                var queryPartKVP = queryParts[i].split("=");
-                                //trusting hrefs in the page here
-                                deployForm.append($("<input type=\"hidden\" name=\"" + decodeURIComponent(queryPartKVP[0]) + "\" value=\"" + decodeURIComponent(queryPartKVP[1]) + "\" />"));
+    <script at="Foot" depends-on="jQuery">
+        $(function () {
+            $('#clickToDeployAction').on('click', function () {
+                if ($(":checkbox[name='itemIds']:checked").length > 1) {
+                    var $this = $(this);
+                    confirmDialog({
+                        ...$this.data(), callback: function (r) {
+                            if (r) {
+                                $('#modalClickToDeployContentBulkActionTarget').modal('show');
                             }
                         }
-                        for (var i = 0; i < itemIds.length; i++) {
-                            deployForm.append($("<input type=\"hidden\" name=\"ClickToDeploy.ItemIds[" + i + "]\" + value=\"" + itemIds[i].value + "\"/>"));
+                    });
+                }
+            });
+
+            $('#modalClickToDeployContentBulkActionTarget').on('show.bs.modal', function () {
+                var itemIds = $(":checkbox[name='itemIds']:checked");
+                if (itemIds.length > 1) {
+                    $('.click-to-deploy-bulk-action').on('click', function () {
+                        var targetButton = this;
+                        var magicToken = $("input[name=__RequestVerificationToken]").first();
+                        if (magicToken) {
+                            var hrefParts = $(targetButton).data("target-url").split("?");
+                            var deployForm = $("<form action=\"" + hrefParts[0] + "\" method=\"POST\" />");
+                            deployForm.append(magicToken.clone());
+                            if (hrefParts.length > 1) {
+                                var queryParts = hrefParts[1].split("&");
+                                for (var i = 0; i < queryParts.length; i++) {
+                                    var queryPartKVP = queryParts[i].split("=");
+                                    //trusting hrefs in the page here
+                                    deployForm.append($("<input type=\"hidden\" name=\"" + decodeURIComponent(queryPartKVP[0]) + "\" value=\"" + decodeURIComponent(queryPartKVP[1]) + "\" />"));
+                                }
+                            }
+                            for (var i = 0; i < itemIds.length; i++) {
+                                deployForm.append($("<input type=\"hidden\" name=\"ClickToDeploy.ItemIds[" + i + "]\" + value=\"" + itemIds[i].value + "\"/>"));
+                            }
+                            $("body").append(deployForm);
+                            deployForm.submit();
                         }
-                        $("body").append(deployForm);
-                        deployForm.submit();
-                    }
-                })
-            }
+                    })
+                }
 
-        })
+            })
 
-        $('#modalClickToDeployContentBulkActionTarget').on('hide.bs.modal', function () {
-            $('.click-to-deploy-bulk-action').off('click');
-        })
-    });
-</script>
+            $('#modalClickToDeployContentBulkActionTarget').on('hide.bs.modal', function () {
+                $('.click-to-deploy-bulk-action').off('click');
+            })
+        });
+    </script>
+</zone>

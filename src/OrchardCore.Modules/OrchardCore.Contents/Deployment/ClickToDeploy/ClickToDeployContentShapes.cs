@@ -41,30 +41,6 @@ namespace OrchardCore.Contents.Deployment.ClickToDeploy
                     }
                 });
 
-            builder.Describe("AdminListOptions")
-                .OnDisplaying(async context =>
-                {
-                    if (await _deploymentPlanService.DoesUserHaveExportPermissionAsync())
-                    {
-                        var siteSettings = await _siteService.GetSiteSettingsAsync();
-                        var clickToDeploySettings = siteSettings.As<ClickToDeploySettings>();
-                        if (clickToDeploySettings.ClickToDeployPlanId != 0)
-                        {
-                            dynamic shape = context.Shape;
-                            var shapeFactory = context.ServiceProvider.GetRequiredService<IShapeFactory>();
-                            var targets = await _deploymentManager.GetDeploymentTargetsAsync();
-                            var targetShape = await shapeFactory.CreateAsync("ClickToDeploy_Modal__ContentsBulkActionDeploymentTarget", Arguments.From(new
-                            {
-                                Targets = targets,
-                                clickToDeploySettings.ClickToDeployPlanId
-                            }));
-
-                            // Don't use Items.Add() or the collection won't be sorted
-                            shape.Add(targetShape);
-                        }
-                    }
-                });
-
             builder.Describe("AdminBulkActions")
                 .OnDisplaying(async context =>
                 {
@@ -80,6 +56,16 @@ namespace OrchardCore.Contents.Deployment.ClickToDeploy
 
                             // Don't use Items.Add() or the collection won't be sorted
                             shape.Add(bulkActionsShape, ":10");
+
+                            var targets = await _deploymentManager.GetDeploymentTargetsAsync();
+                            var targetModal = await shapeFactory.CreateAsync("ClickToDeploy_Modal__ContentsBulkActionDeploymentTarget", Arguments.From(new
+                            {
+                                Targets = targets,
+                                clickToDeploySettings.ClickToDeployPlanId
+                            }));
+
+                            // Don't use Items.Add() or the collection won't be sorted
+                            shape.Add(targetModal);
                         }
                     }
                 });

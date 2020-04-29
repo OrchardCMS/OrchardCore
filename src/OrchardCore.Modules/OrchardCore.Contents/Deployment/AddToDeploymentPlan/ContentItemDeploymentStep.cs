@@ -1,4 +1,3 @@
-using Newtonsoft.Json.Linq;
 using OrchardCore.Deployment;
 
 namespace OrchardCore.Contents.Deployment.AddToDeploymentPlan
@@ -13,6 +12,6 @@ namespace OrchardCore.Contents.Deployment.AddToDeploymentPlan
             Name = nameof(ContentItemDeploymentStep);
         }
 
-        public JObject ContentItem { get; set; }
+        public string ContentItemId { get; set; }
     }
 }
