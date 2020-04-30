@@ -21,7 +21,7 @@ using OrchardCore.Facebook;
     Name = "Facebook Login",
     Category = "Facebook",
     Description = "Authenticates users from facebook.",
-    Dependencies = new[] { FacebookConstants.Features.Core }
+    Dependencies = new[] { FacebookConstants.Features.Core, "OrchardCore.Users" }
 )]
 
 [assembly: Feature(

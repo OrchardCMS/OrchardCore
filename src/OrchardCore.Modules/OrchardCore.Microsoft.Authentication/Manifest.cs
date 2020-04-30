@@ -13,12 +13,14 @@ using OrchardCore.Microsoft.Authentication;
     Id = MicrosoftAuthenticationConstants.Features.MicrosoftAccount,
     Name = "Microsoft Account Authentication",
     Category = "Microsoft Authentication",
-    Description = "Authenticates users with their Microsoft Account."
+    Description = "Authenticates users with their Microsoft Account.",
+    Dependencies = new[] { "OrchardCore.Users" }
 )]
 
 [assembly: Feature(
     Id = MicrosoftAuthenticationConstants.Features.AAD,
     Name = "Microsoft Azure Active Directory Authentication",
     Category = "Microsoft Authentication",
-    Description = "Authenticates users with their Azure Active Directory Account."
+    Description = "Authenticates users with their Azure Active Directory Account.",
+    Dependencies = new[] { "OrchardCore.Users" }
 )]
