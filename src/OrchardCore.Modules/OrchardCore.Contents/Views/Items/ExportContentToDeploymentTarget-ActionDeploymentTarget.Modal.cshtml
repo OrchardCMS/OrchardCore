@@ -15,8 +15,6 @@
                         {
                             var routeWithId = new RouteValueDictionary(target.Route);
                             routeWithId["id"] = Site.As<ExportContentToDeploymentTargetSettings>().ExportContentToDeploymentTargetPlanId;
-                            @* TODO what is this? *@
-                            var returnUrl = Context.Request.Query["returnUrl"];
                             routeWithId["returnUrl"] = FullRequestPath;
                             <div class="col-sm-12 col-md-6 col-lg-4 d-flex align-items-stretch card-item">
                                 <div class="card w-100 mb-3">
