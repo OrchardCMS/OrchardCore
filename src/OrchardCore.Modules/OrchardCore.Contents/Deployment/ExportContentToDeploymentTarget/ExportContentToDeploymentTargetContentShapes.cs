@@ -8,7 +8,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget
 {
-    [Feature("OrchardCore.Contents.ExportContentToDeploymentTarget")]
+    [Feature("OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget")]
     public class ExportContentToDeploymentTargetContentShapes : IShapeTableProvider
     {
         private readonly IDeploymentPlanService _deploymentPlanService;

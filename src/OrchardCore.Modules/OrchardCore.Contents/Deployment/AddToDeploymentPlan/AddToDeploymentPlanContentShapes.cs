@@ -8,7 +8,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Contents.Deployment.AddToDeploymentPlan
 {
-    [Feature("OrchardCore.Contents.AddToDeploymentPlan")]
+    [Feature("OrchardCore.Contents.Deployment.AddToDeploymentPlan")]
     public class AddToDeploymentPlanContentShapes : IShapeTableProvider
     {
         private readonly IDeploymentPlanService _deploymentPlanService;

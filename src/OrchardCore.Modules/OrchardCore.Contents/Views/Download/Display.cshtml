@@ -22,15 +22,17 @@
 
 <h1>@RenderTitleSegments(T["View As JSON {0}", Html.Raw(typeDisplayName)])</h1>
 
-<form asp-action="Export" asp-route-contentItemId="@contentItem.ContentItemId" method="post" enctype="multipart/form-data">
+<form asp-action="Download" asp-route-contentItemId="@contentItem.ContentItemId" method="post" enctype="multipart/form-data">
     <div class="form-group">
-        <div class="d-flex flex-row-reverse pb-2">
-            <i class="far fa-copy" id="json-copy-to-clipboard"></i>
+        <div class="d-flex flex-row-reverse">
+            <div class="btn">
+                <i class="far fa-copy" id="json-copy-to-clipboard"></i>
+            </div>
         </div>
         <textarea asp-for="ContentItemJson" class="form-control"></textarea>
     </div>
 
-    <button class="btn btn-success" type="submit">@T["Export as JSON"]</button>
+    <button class="btn btn-success" type="submit">@T["Download"]</button>
 
     @if (!String.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
     {

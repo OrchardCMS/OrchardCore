@@ -28,7 +28,7 @@ using OrchardCore.Modules.Manifest;
 )]
 
 [assembly: Feature(
-    Id = "OrchardCore.Contents.ExportContentToDeploymentTarget",
+    Id = "OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget",
     Name = "Export Content To Deployment Target",
     Description = "Adds a export to deployment target action to the content item list.",
     Dependencies = new[] { "OrchardCore.Contents", "OrchardCore.Deployment" },
@@ -36,7 +36,7 @@ using OrchardCore.Modules.Manifest;
 )]
 
 [assembly: Feature(
-    Id = "OrchardCore.Contents.AddToDeploymentPlan",
+    Id = "OrchardCore.Contents.Deployment.AddToDeploymentPlan",
     Name = "Add Content To Deployment Plan",
     Description = "Adds a add to deployment plan action for the content item list.",
     Dependencies = new[] { "OrchardCore.Contents", "OrchardCore.Deployment" },
@@ -44,9 +44,9 @@ using OrchardCore.Modules.Manifest;
 )]
 
 [assembly: Feature(
-    Id = "OrchardCore.Contents.ViewAsJson",
-    Name = "View Or Export Content As JSON",
-    Description = "View or export content as JSON from the content item list.",
+    Id = "OrchardCore.Contents.Deployment.Download",
+    Name = "View Or Download Content As JSON",
+    Description = "View or download content as JSON from the content item list.",
     Dependencies = new[] { "OrchardCore.Contents", "OrchardCore.Deployment" },
     Category = "Content Management"
 )]

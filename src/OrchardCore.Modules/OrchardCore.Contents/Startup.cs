@@ -15,8 +15,8 @@ using OrchardCore.Contents.AdminNodes;
 using OrchardCore.Contents.Controllers;
 using OrchardCore.Contents.Deployment;
 using OrchardCore.Contents.Deployment.AddToDeploymentPlan;
+using OrchardCore.Contents.Deployment.Download;
 using OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget;
-using OrchardCore.Contents.Deployment.ViewAsJson;
 using OrchardCore.Contents.Drivers;
 using OrchardCore.Contents.Feeds.Builders;
 using OrchardCore.Contents.Handlers;
@@ -238,7 +238,7 @@ namespace OrchardCore.Contents
         }
     }
 
-    [Feature("OrchardCore.Contents.ExportContentToDeploymentTarget")]
+    [Feature("OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget")]
     public class ExportContentToDeploymentTargetStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
@@ -256,7 +256,7 @@ namespace OrchardCore.Contents
         }
     }
 
-    [Feature("OrchardCore.Contents.AddToDeploymentPlan")]
+    [Feature("OrchardCore.Contents.Deployment.AddToDeploymentPlan")]
     public class AddToDeploymentPlanStartup : StartupBase
     {
         private readonly AdminOptions _adminOptions;
@@ -295,37 +295,37 @@ namespace OrchardCore.Contents
         }
     }
 
-    [Feature("OrchardCore.Contents.ViewAsJson")]
-    public class ViewAsJsonStartup : StartupBase
+    [Feature("OrchardCore.Contents.Deployment.Download")]
+    public class DownloadStartup : StartupBase
     {
         private readonly AdminOptions _adminOptions;
 
-        public ViewAsJsonStartup(IOptions<AdminOptions> adminOptions)
+        public DownloadStartup(IOptions<AdminOptions> adminOptions)
         {
             _adminOptions = adminOptions.Value;
         }
 
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<IContentDisplayDriver, ViewAsJsonContentDriver>();
+            services.AddScoped<IContentDisplayDriver, DownloadContentDriver>();
         }
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            var viewAsJsonControllerName = typeof(ViewAsJsonController).ControllerName();
+            var downloadControllerName = typeof(DownloadController).ControllerName();
 
             routes.MapAreaControllerRoute(
-               name: "ViewAsJsonDisplay",
+               name: "DownloadDisplay",
                areaName: "OrchardCore.Contents",
-               pattern: _adminOptions.AdminUrlPrefix + "/ViewAsJson/Display/{contentItemId}",
-               defaults: new { controller = viewAsJsonControllerName, action = nameof(ViewAsJsonController.Display) }
+               pattern: _adminOptions.AdminUrlPrefix + "/Download/Display/{contentItemId}",
+               defaults: new { controller = downloadControllerName, action = nameof(DownloadController.Display) }
            );
 
             routes.MapAreaControllerRoute(
-               name: "ViewAsJsonExport",
+               name: "DownloadDownload",
                areaName: "OrchardCore.Contents",
-               pattern: _adminOptions.AdminUrlPrefix + "/ViewAsJson/Export/{contentItemId}",
-               defaults: new { controller = viewAsJsonControllerName, action = nameof(ViewAsJsonController.Export) }
+               pattern: _adminOptions.AdminUrlPrefix + "/Download/Download/{contentItemId}",
+               defaults: new { controller = downloadControllerName, action = nameof(DownloadController.Download) }
            );
         }
     }

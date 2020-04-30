@@ -1,6 +1,6 @@
 using OrchardCore.ContentManagement;
 
-namespace OrchardCore.Contents.Deployment.ViewAsJson
+namespace OrchardCore.Contents.Deployment.Download
 {
     public class DisplayJsonContentItemViewModel
     {

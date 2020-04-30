@@ -3,13 +3,13 @@ using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.ViewModels;
 using OrchardCore.DisplayManagement.Views;
 
-namespace OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget
+namespace OrchardCore.Contents.Deployment.Download
 {
-    public class ViewAsJsonContentDriver : ContentDisplayDriver
+    public class DownloadContentDriver : ContentDisplayDriver
     {
         public override IDisplayResult Display(ContentItem model)
         {
-            return Shape("ViewAsJson_SummaryAdmin__Button__Actions", new ContentItemViewModel(model)).Location("SummaryAdmin", "ActionsMenu:20");
+            return Shape("Download_SummaryAdmin__Button__Actions", new ContentItemViewModel(model)).Location("SummaryAdmin", "ActionsMenu:20");
         }
     }
 }

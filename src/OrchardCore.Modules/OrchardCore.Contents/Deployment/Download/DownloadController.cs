@@ -7,16 +7,16 @@ using OrchardCore.Admin;
 using OrchardCore.ContentManagement;
 using OrchardCore.Modules;
 
-namespace OrchardCore.Contents.Deployment.ViewAsJson
+namespace OrchardCore.Contents.Deployment.Download
 {
     [Admin]
-    [Feature("OrchardCore.Contents.ViewAsJson")]
-    public class ViewAsJsonController : Controller
+    [Feature("OrchardCore.Contents.Deployment.Download")]
+    public class DownloadController : Controller
     {
         private readonly IAuthorizationService _authorizationService;
         private readonly IContentManager _contentManager;
 
-        public ViewAsJsonController(
+        public DownloadController(
             IAuthorizationService authorizationService,
             IContentManager contentManager
             )
@@ -26,7 +26,7 @@ namespace OrchardCore.Contents.Deployment.ViewAsJson
         }
 
         [HttpGet]
-        public async Task<IActionResult> Display(string contentItemId, string returnUrl, bool latest = false)
+        public async Task<IActionResult> Display(string contentItemId, bool latest = false)
         {
             if (!await _authorizationService.AuthorizeAsync(User, OrchardCore.Deployment.CommonPermissions.Export))
             {
@@ -47,20 +47,17 @@ namespace OrchardCore.Contents.Deployment.ViewAsJson
                 return Forbid();
             }
 
-            var jItem = JObject.FromObject(contentItem);
-            jItem.Remove(nameof(ContentItem.Id));
-
             var model = new DisplayJsonContentItemViewModel
             {
                 ContentItem = contentItem,
-                ContentItemJson = jItem.ToString()
+                ContentItemJson = JObject.FromObject(contentItem).ToString()
             };
 
             return View(model);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Export(string contentItemId, string returnUrl, bool latest = false)
+        public async Task<IActionResult> Download(string contentItemId, bool latest = false)
         {
             if (!await _authorizationService.AuthorizeAsync(User, OrchardCore.Deployment.CommonPermissions.Export))
             {
@@ -82,7 +79,6 @@ namespace OrchardCore.Contents.Deployment.ViewAsJson
             }
 
             var jItem = JObject.FromObject(contentItem);
-            jItem.Remove(nameof(ContentItem.Id));
 
             return File(Encoding.UTF8.GetBytes(jItem.ToString()), "application/json", $"{contentItem.ContentItemId}.json");
         }

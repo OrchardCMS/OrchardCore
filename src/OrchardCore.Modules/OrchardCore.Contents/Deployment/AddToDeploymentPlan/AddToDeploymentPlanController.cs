@@ -1,12 +1,9 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Admin;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Records;
@@ -18,7 +15,7 @@ using YesSql.Services;
 
 namespace OrchardCore.Contents.Deployment.AddToDeploymentPlan
 {
-    [Feature("OrchardCore.Contents.AddToDeploymentPlan")]
+    [Feature("OrchardCore.Contents.Deployment.AddToDeploymentPlan")]
     [Admin]
     public class AddToDeploymentPlanController : Controller
     {
