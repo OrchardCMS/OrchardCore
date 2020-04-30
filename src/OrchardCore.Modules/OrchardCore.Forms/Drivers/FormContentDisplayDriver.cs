@@ -13,14 +13,14 @@ namespace OrchardCore.Forms.Drivers
         public override Task<IDisplayResult> DisplayAsync(ContentItem model, BuildDisplayContext context)
         {
             var formItemShape = context.Shape;
-            //If content item contains FormPart add Form Wrapper.
+            // If the content item contains FormPart add Form Wrapper.
             var formPart = model.As<FormPart>();
             if (formPart != null)
             {
-                formItemShape.Metadata.Wrappers.Add($"Form_Wrapper");
+                formItemShape.Metadata.Wrappers.Add("Form_Wrapper");
             }
 
-            //We don't need to return a shape result
+            // We don't need to return a shape result
             return Task.FromResult<IDisplayResult>(null);
         }
     }
