@@ -3,7 +3,7 @@ using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.ViewModels;
 using OrchardCore.DisplayManagement.Views;
 
-namespace OrchardCore.Contents.Deployment.ClickToDeploy
+namespace OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget
 {
     public class ViewAsJsonContentDriver : ContentDisplayDriver
     {

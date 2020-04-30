@@ -1,0 +1,10 @@
+@Model.Metadata.ChildContent
+
+@* Inject the modal window only once per page *@
+@if (!Context.Items.ContainsKey("ExportContentToDeploymentTarget_Modal__ActionDeploymentTarget"))
+{
+    Context.Items["ExportContentToDeploymentTarget_Modal__ActionDeploymentTarget"] = new object();
+    <zone name="Footer">
+        @await DisplayAsync(await New.ExportContentToDeploymentTarget_Modal__ActionDeploymentTarget())
+    </zone>
+}

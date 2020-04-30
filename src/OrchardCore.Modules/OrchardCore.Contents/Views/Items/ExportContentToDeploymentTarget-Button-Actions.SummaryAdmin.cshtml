@@ -1,0 +1,31 @@
+@inject IAuthorizationService AuthorizationService
+@inject IContentManager ContentManager
+
+@{
+    ContentItem contentItem = Model.ContentItem;
+    var hasPublished = await ContentManager.HasPublishedVersionAsync(contentItem);
+    var hasDraft = contentItem.HasDraft();
+    bool deploymentEnabled = false;
+
+    if (Site.As<ExportContentToDeploymentTargetSettings>().ExportContentToDeploymentTargetPlanId != 0 && await AuthorizationService.AuthorizeAsync(User, OrchardCore.Deployment.CommonPermissions.Export))
+    {
+        deploymentEnabled = true;
+    }
+}
+
+<div class="dropdown-divider"></div>
+@if (deploymentEnabled)
+{
+    if (hasDraft)
+    {
+        <button class="dropdown-item btn-sm" type="button" data-toggle="modal" data-target="#modalExportContentToDeploymentTargetActionTarget" data-content-item-id="@contentItem.ContentItemId" data-latest=@Boolean.TrueString>@T["Export Draft to Deployment Target"]</button>
+        if (hasPublished)
+        {
+            <button class="dropdown-item btn-sm" type="button" data-toggle="modal" data-target="#modalExportContentToDeploymentTargetActionTarget" data-content-item-id="@contentItem.ContentItemId">@T["Export Published to Deployment Target"]</button>
+        }
+    }
+    else
+    {
+        <button class="dropdown-item btn-sm" type="button" data-toggle="modal" data-target="#modalExportContentToDeploymentTargetActionTarget" data-content-item-id="@contentItem.ContentItemId">@T["Export to Deployment Target"]</button>
+    }
+}

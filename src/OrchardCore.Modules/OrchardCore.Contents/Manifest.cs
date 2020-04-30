@@ -28,9 +28,9 @@ using OrchardCore.Modules.Manifest;
 )]
 
 [assembly: Feature(
-    Id = "OrchardCore.Contents.ClickToDeploy",
-    Name = "Click to Deploy Content",
-    Description = "Adds a deploy action to the content item list.",
+    Id = "OrchardCore.Contents.ExportContentToDeploymentTarget",
+    Name = "Export Content To Deployment Target",
+    Description = "Adds a export to deployment target action to the content item list.",
     Dependencies = new[] { "OrchardCore.Contents", "OrchardCore.Deployment" },
     Category = "Content Management"
 )]
@@ -38,7 +38,7 @@ using OrchardCore.Modules.Manifest;
 [assembly: Feature(
     Id = "OrchardCore.Contents.AddToDeploymentPlan",
     Name = "Add Content To Deployment Plan",
-    Description = "Add content to deployment plan action for the content item list.",
+    Description = "Adds a add to deployment plan action for the content item list.",
     Dependencies = new[] { "OrchardCore.Contents", "OrchardCore.Deployment" },
     Category = "Content Management"
 )]

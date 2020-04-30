@@ -6,16 +6,16 @@ using OrchardCore.Entities;
 using OrchardCore.Modules;
 using OrchardCore.Settings;
 
-namespace OrchardCore.Contents.Deployment.ClickToDeploy
+namespace OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget
 {
-    [Feature("OrchardCore.Contents.ClickToDeploy")]
-    public class ClickToDeployContentShapes : IShapeTableProvider
+    [Feature("OrchardCore.Contents.ExportContentToDeploymentTarget")]
+    public class ExportContentToDeploymentTargetContentShapes : IShapeTableProvider
     {
         private readonly IDeploymentPlanService _deploymentPlanService;
         private readonly ISiteService _siteService;
         private readonly IDeploymentManager _deploymentManager;
 
-        public ClickToDeployContentShapes(
+        public ExportContentToDeploymentTargetContentShapes(
             IDeploymentPlanService deploymentPlanService,
             ISiteService siteService,
             IDeploymentManager deploymentManager)
@@ -33,10 +33,10 @@ namespace OrchardCore.Contents.Deployment.ClickToDeploy
                     if (await _deploymentPlanService.DoesUserHaveExportPermissionAsync())
                     {
                         var siteSettings = await _siteService.GetSiteSettingsAsync();
-                        var clickToDeploySettings = siteSettings.As<ClickToDeploySettings>();
-                        if (clickToDeploySettings.ClickToDeployPlanId != 0)
+                        var exportContentToDeploymentTargetSettings = siteSettings.As<ExportContentToDeploymentTargetSettings>();
+                        if (exportContentToDeploymentTargetSettings.ExportContentToDeploymentTargetPlanId != 0)
                         {
-                            displaying.Shape.Metadata.Wrappers.Add("ClickToDeploy_Wrapper__ActionDeploymentTarget");
+                            displaying.Shape.Metadata.Wrappers.Add("ExportContentToDeploymentTarget_Wrapper__ActionDeploymentTarget");
                         }
                     }
                 });
@@ -47,21 +47,21 @@ namespace OrchardCore.Contents.Deployment.ClickToDeploy
                     if (await _deploymentPlanService.DoesUserHaveExportPermissionAsync())
                     {
                         var siteSettings = await _siteService.GetSiteSettingsAsync();
-                        var clickToDeploySettings = siteSettings.As<ClickToDeploySettings>();
-                        if (clickToDeploySettings.ClickToDeployPlanId != 0)
+                        var exportContentToDeploymentTargetSettings = siteSettings.As<ExportContentToDeploymentTargetSettings>();
+                        if (exportContentToDeploymentTargetSettings.ExportContentToDeploymentTargetPlanId != 0)
                         {
                             dynamic shape = context.Shape;
                             var shapeFactory = context.ServiceProvider.GetRequiredService<IShapeFactory>();
-                            var bulkActionsShape = await shapeFactory.CreateAsync("ClickToDeploy__Button__ContentsBulkAction");
+                            var bulkActionsShape = await shapeFactory.CreateAsync("ExportContentToDeploymentTarget__Button__ContentsBulkAction");
 
                             // Don't use Items.Add() or the collection won't be sorted
                             shape.Add(bulkActionsShape, ":10");
 
                             var targets = await _deploymentManager.GetDeploymentTargetsAsync();
-                            var targetModal = await shapeFactory.CreateAsync("ClickToDeploy_Modal__ContentsBulkActionDeploymentTarget", Arguments.From(new
+                            var targetModal = await shapeFactory.CreateAsync("ExportContentToDeploymentTarget_Modal__ContentsBulkActionDeploymentTarget", Arguments.From(new
                             {
                                 Targets = targets,
-                                clickToDeploySettings.ClickToDeployPlanId
+                                exportContentToDeploymentTargetSettings.ExportContentToDeploymentTargetPlanId
                             }));
 
                             // Don't use Items.Add() or the collection won't be sorted

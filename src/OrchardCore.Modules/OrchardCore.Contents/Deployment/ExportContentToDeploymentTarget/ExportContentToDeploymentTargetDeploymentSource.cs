@@ -9,15 +9,15 @@ using OrchardCore.DisplayManagement.ModelBinding;
 using YesSql;
 using YesSql.Services;
 
-namespace OrchardCore.Contents.Deployment.ClickToDeploy
+namespace OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget
 {
-    public class ClickToDeployContentDeploymentSource : IDeploymentSource
+    public class ExportContentToDeploymentTargetDeploymentSource : IDeploymentSource
     {
         private readonly IContentManager _contentManager;
         private readonly ISession _session;
         private readonly IUpdateModelAccessor _updateModelAccessor;
 
-        public ClickToDeployContentDeploymentSource(
+        public ExportContentToDeploymentTargetDeploymentSource(
             IContentManager contentManager,
             ISession session,
             IUpdateModelAccessor updateModelAccessor)
@@ -29,9 +29,9 @@ namespace OrchardCore.Contents.Deployment.ClickToDeploy
 
         public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
         {
-            var clickToDeployContentDeploymentStep = step as ClickToDeployContentDeploymentStep;
+            var exportContentToDeploymentTargetContentDeploymentStep = step as ExportContentToDeploymentTargetDeploymentStep;
 
-            if (clickToDeployContentDeploymentStep == null)
+            if (exportContentToDeploymentTargetContentDeploymentStep == null)
             {
                 return;
             }
@@ -42,8 +42,8 @@ namespace OrchardCore.Contents.Deployment.ClickToDeploy
                 new JProperty("data", data)
             ));
 
-            var model = new ClickToDeployModel();
-            await _updateModelAccessor.ModelUpdater.TryUpdateModelAsync(model, "ClickToDeploy", m => m.ItemIds, m => m.Latest, m => m.ContentItemId);
+            var model = new ExportContentToDeploymentTargetModel();
+            await _updateModelAccessor.ModelUpdater.TryUpdateModelAsync(model, "ExportContentToDeploymentTarget", m => m.ItemIds, m => m.Latest, m => m.ContentItemId);
 
             if (!string.IsNullOrEmpty(model.ContentItemId))
             {
@@ -67,11 +67,9 @@ namespace OrchardCore.Contents.Deployment.ClickToDeploy
                     data.Add(objectData);
                 }
             }
-
-            return;
         }
 
-        public class ClickToDeployModel
+        public class ExportContentToDeploymentTargetModel
         {
             public IEnumerable<int> ItemIds { get; set; }
             public string ContentItemId { get; set; }

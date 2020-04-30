@@ -9,20 +9,20 @@
   "categories": [],
   "tags": [],
   "variables": {
-    "clickToDeployStep": "[js:uuid()]"
+    "exportContentToDeploymentTargetStep": "[js:uuid()]"
   },
   "steps": [
     {
       "name": "deployment",
       "Plans": [
         {
-          "Name": "Click to deploy",
+          "Name": "Export content to deployment plan target",
           "Steps": [
             {
-              "Type": "ClickToDeployContentDeploymentStep",
+              "Type": "ExportContentToDeploymentTargetDeploymentStep",
               "Step": {
-                "Id": "[js: variables('clickToDeployStep')]",
-                "Name": "ClickToDeployContentDeploymentStep"
+                "Id": "[js: variables('exportContentToDeploymentTargetStep')]",
+                "Name": "ExportContentToDeploymentTargetDeploymentStep"
               }
             }
           ]

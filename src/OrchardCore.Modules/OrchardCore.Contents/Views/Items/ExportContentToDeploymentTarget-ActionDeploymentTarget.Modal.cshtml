@@ -1,10 +1,6 @@
-@using Microsoft.AspNetCore.Routing
-@using OrchardCore.Contents.Deployment.ClickToDeploy
-@using OrchardCore.Entities
-@using OrchardCore.Deployment.Services
 @inject IDeploymentManager DeploymentManager
 
-<div class="modal fade" id="modalClickToDeployActionTargets" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div class="modal fade" id="modalExportContentToDeploymentTargetActionTarget" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -18,7 +14,7 @@
                     @foreach (var target in await DeploymentManager.GetDeploymentTargetsAsync())
                     {
                         var routeWithId = new RouteValueDictionary(target.Route);
-                        routeWithId["id"] = Site.As<ClickToDeploySettings>().ClickToDeployPlanId;
+                        routeWithId["id"] = Site.As<ExportContentToDeploymentTargetSettings>().ExportContentToDeploymentTargetPlanId;
                         @* TODO what is this? *@
                         var returnUrl = Context.Request.Query["returnUrl"];
                         routeWithId["returnUrl"] = FullRequestPath;
@@ -29,7 +25,7 @@
                                     <p>@target.Description</p>
                                 </div>
                                 <div class="card-footer text-muted text-xs-right">
-                                    <button type="button" class="click-to-deploy text-white btn btn-primary btn-sm" data-dismiss="modal" data-target-url="@Url.RouteUrl(routeWithId)">@T["Select"]</button>
+                                    <button type="button" class="export-to-deployment-target text-white btn btn-primary btn-sm" data-dismiss="modal" data-target-url="@Url.RouteUrl(routeWithId)">@T["Select"]</button>
                                 </div>
                             </div>
                         </div>
@@ -45,37 +41,37 @@
 
 <script at="Foot" depends-on="jQuery">
     $(function () {
-        $('#modalClickToDeployActionTargets').on('show.bs.modal', function (event) {
+        $('#modalExportContentToDeploymentTargetActionTarget').on('show.bs.modal', function (event) {
             var button = $(event.relatedTarget) // Button that triggered the modal
             var contentItemId = button.data('content-item-id');
             var latest = button.data('latest');
 
-            $('.click-to-deploy').on('click', function () {
+            $('.export-to-deployment-target').on('click', function () {
                 var targetButton = this;
                 var magicToken = $("input[name=__RequestVerificationToken]").first();
                 if (magicToken) {
                     var hrefParts = $(targetButton).data("target-url").split("?");
-                    var deployForm = $("<form action=\"" + hrefParts[0] + "\" method=\"POST\" />");
-                    deployForm.append(magicToken.clone());
+                    var exportForm = $("<form action=\"" + hrefParts[0] + "\" method=\"POST\" />");
+                    exportForm.append(magicToken.clone());
                     if (hrefParts.length > 1) {
                         var queryParts = hrefParts[1].split("&");
                         for (var i = 0; i < queryParts.length; i++) {
                             var queryPartKVP = queryParts[i].split("=");
                             //trusting hrefs in the page here
-                            deployForm.append($("<input type=\"hidden\" name=\"" + decodeURIComponent(queryPartKVP[0]) + "\" value=\"" + decodeURIComponent(queryPartKVP[1]) + "\" />"));
+                            exportForm.append($("<input type=\"hidden\" name=\"" + decodeURIComponent(queryPartKVP[0]) + "\" value=\"" + decodeURIComponent(queryPartKVP[1]) + "\" />"));
                         }
                     }
-                    deployForm.append($("<input type=\"hidden\" name=\"ClickToDeploy.ContentItemId\" + value=\"" + contentItemId + "\"/>"));
+                    exportForm.append($("<input type=\"hidden\" name=\"ExportContentToDeploymentTarget.ContentItemId\" + value=\"" + contentItemId + "\"/>"));
                     if (latest) {
-                        deployForm.append($("<input type=\"hidden\" name=\"ClickToDeploy.Latest\" + value=\"" + latest + "\"/>"));
+                        exportForm.append($("<input type=\"hidden\" name=\"ExportContentToDeploymentTarget.Latest\" + value=\"" + latest + "\"/>"));
                     }
-                    $("body").append(deployForm);
-                    deployForm.submit();
+                    $("body").append(exportForm);
+                    exportForm.submit();
                 }
             })
         })
-        $('#modalClickToDeployActionTargets').on('hide.bs.modal', function () {
-            $('.click-to-deploy').off('click');
+        $('#modalExportContentToDeploymentTargetActionTarget').on('hide.bs.modal', function () {
+            $('.export-to-deployment-target').off('click');
         })
     });
 </script>

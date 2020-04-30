@@ -15,7 +15,7 @@ using OrchardCore.Contents.AdminNodes;
 using OrchardCore.Contents.Controllers;
 using OrchardCore.Contents.Deployment;
 using OrchardCore.Contents.Deployment.AddToDeploymentPlan;
-using OrchardCore.Contents.Deployment.ClickToDeploy;
+using OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget;
 using OrchardCore.Contents.Deployment.ViewAsJson;
 using OrchardCore.Contents.Drivers;
 using OrchardCore.Contents.Feeds.Builders;
@@ -238,21 +238,21 @@ namespace OrchardCore.Contents
         }
     }
 
-    [Feature("OrchardCore.Contents.ClickToDeploy")]
-    public class ClickToDeployStartup : StartupBase
+    [Feature("OrchardCore.Contents.ExportContentToDeploymentTarget")]
+    public class ExportContentToDeploymentTargetStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<INavigationProvider, ClickToDeployAdminMenu>();
-            services.AddScoped<IDisplayDriver<ISite>, ClickToDeploySettingsDisplayDriver>();
+            services.AddScoped<INavigationProvider, ExportContentToDeploymentTargetAdminMenu>();
+            services.AddScoped<IDisplayDriver<ISite>, ExportContentToDeploymentTargetSettingsDisplayDriver>();
 
-            services.AddTransient<IDeploymentSource, ClickToDeployContentDeploymentSource>();
-            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<ClickToDeployContentDeploymentStep>());
-            services.AddScoped<IDisplayDriver<DeploymentStep>, ClickToDeployContentDeploymentStepDriver>();
+            services.AddTransient<IDeploymentSource, ExportContentToDeploymentTargetDeploymentSource>();
+            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<ExportContentToDeploymentTargetDeploymentStep>());
+            services.AddScoped<IDisplayDriver<DeploymentStep>, ExportContentToDeploymentTargetDeploymentStepDriver>();
 
-            services.AddScoped<IShapeTableProvider, ClickToDeployContentShapes>();
-            services.AddScoped<IDataMigration, ClickToDeployMigrations>();
-            services.AddScoped<IContentDisplayDriver, ClickToDeployContentDriver>();
+            services.AddScoped<IShapeTableProvider, ExportContentToDeploymentTargetContentShapes>();
+            services.AddScoped<IDataMigration, ExportContentToDeploymentTargetMigrations>();
+            services.AddScoped<IContentDisplayDriver, ExportContentToDeploymentTargetContentDriver>();
         }
     }
 

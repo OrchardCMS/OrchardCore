@@ -6,15 +6,15 @@ using OrchardCore.Entities;
 using OrchardCore.Recipes.Services;
 using OrchardCore.Settings;
 
-namespace OrchardCore.Contents.Deployment.ClickToDeploy
+namespace OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget
 {
-    public class ClickToDeployMigrations : DataMigration
+    public class ExportContentToDeploymentTargetMigrations : DataMigration
     {
         private readonly IRecipeMigrator _recipeMigrator;
         private readonly IDeploymentPlanService _deploymentPlanService;
         private readonly ISiteService _siteService;
 
-        public ClickToDeployMigrations(
+        public ExportContentToDeploymentTargetMigrations(
             IRecipeMigrator recipeMigrator,
             IDeploymentPlanService deploymentPlanService,
             ISiteService siteService
@@ -27,15 +27,15 @@ namespace OrchardCore.Contents.Deployment.ClickToDeploy
 
         public async Task<int> CreateAsync()
         {
-            await _recipeMigrator.ExecuteAsync("clicktodeploy.recipe.json", this);
+            await _recipeMigrator.ExecuteAsync("exportcontenttodeploymenttarget.recipe.json", this);
 
             var deploymentPlans = await _deploymentPlanService.GetAllDeploymentPlansAsync();
-            var clickToDeployPlan = deploymentPlans.FirstOrDefault(x => x.DeploymentSteps.Any(x => x.Name == nameof(ClickToDeployContentDeploymentStep)));
+            var exportContentToDeploymentTargetPlan = deploymentPlans.FirstOrDefault(x => x.DeploymentSteps.Any(x => x.Name == nameof(ExportContentToDeploymentTargetDeploymentStep)));
 
-            if (clickToDeployPlan != null)
+            if (exportContentToDeploymentTargetPlan != null)
             {
                 var siteSettings = await _siteService.LoadSiteSettingsAsync();
-                siteSettings.Alter<ClickToDeploySettings>(nameof(ClickToDeploySettings), aspect => aspect.ClickToDeployPlanId = clickToDeployPlan.Id);
+                siteSettings.Alter<ExportContentToDeploymentTargetSettings>(nameof(ExportContentToDeploymentTargetSettings), aspect => aspect.ExportContentToDeploymentTargetPlanId = exportContentToDeploymentTargetPlan.Id);
 
                 await _siteService.UpdateSiteSettingsAsync(siteSettings);
             }

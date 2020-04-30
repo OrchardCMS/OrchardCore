@@ -1,14 +1,14 @@
-<a id="clickToDeployBulkAction" class="dropdown-item" data-title="@T["Bulk Action"]" data-message="@T["Are you sure you want to export this/these item(s)?"]">@T["Export to deployment target"]</a>
+<a id="exportContentToDeploymentTargetBulkAction" class="dropdown-item" data-title="@T["Bulk Action"]" data-message="@T["Are you sure you want to export these items?"]">@T["Export to deployment target"]</a>
 
 <script at="Foot" depends-on="jQuery">
     $(function () {
-        $('#clickToDeployBulkAction').on('click', function () {
+        $('#exportContentToDeploymentTargetBulkAction').on('click', function () {
             if ($(":checkbox[name='itemIds']:checked").length > 1) {
                 var $this = $(this);
                 confirmDialog({
                     ...$this.data(), callback: function (r) {
                         if (r) {
-                            $('#modalClickToDeployContentBulkActionTarget').modal('show');
+                            $('#modalExportContentToDeploymentTargetContentBulkActionTarget').modal('show');
                         }
                     }
                 });
