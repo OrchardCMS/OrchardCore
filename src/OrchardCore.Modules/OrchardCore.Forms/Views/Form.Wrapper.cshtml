@@ -7,18 +7,14 @@
 
 @{
     var formPart = ((ContentItem)Model.ContentItem).As<FormPart>();
-    var widgets = (JArray)((JObject)Model.ContentItem.Content)["FlowPart"]["Widgets"];
-    bool hasFileInput = false;
-
-    if(widgets.Count() > 0 )
-    {
-        hasFileInput = widgets?.Where( a=> a["InputPart"] != null && a["InputPart"]["Type"]?.Value<string>() == "file" )?.Count() > 0;   
-    }
-
-    string encType = hasFileInput ? "multipart/form-data" : "application/x-www-form-urlencoded";  
+    string encType = formPart.Method == "POST" ? formPart.EncType : string.Empty;
 }
 
-<form action="@formPart.Action" method="@formPart.Method"  enctype="@encType"  >
-    @Html.AntiForgeryToken()
+<form action="@formPart.Action" method="@formPart.Method"  enctype="@encType">
+    @if(formPart.EnableAntiForgeryToken)
+    {
+        @Html.AntiForgeryToken()
+    }
+
     @await DisplayAsync(Model.Metadata.ChildContent)
 </form>
