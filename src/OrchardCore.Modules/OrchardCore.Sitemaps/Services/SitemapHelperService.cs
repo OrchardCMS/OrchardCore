@@ -42,7 +42,7 @@ namespace OrchardCore.Sitemaps.Services
             if (path.IndexOfAny(InvalidCharactersForPath) > -1 || path.IndexOf(' ') > -1 || path.IndexOf("//") > -1)
             {
                 var invalidCharactersForMessage = string.Join(", ", InvalidCharactersForPath.Select(c => $"\"{c}\""));
-                updater.ModelState.AddModelError(Prefix, Path, S["Please do not use any of the following characters in your permalink: {0}. No spaces are allowed (please use dashes or underscores instead), or consecutive slashes.", invalidCharactersForMessage]);
+                updater.ModelState.AddModelError(Prefix, Path, S["Please do not use any of the following characters in your permalink: {0}. No spaces are allowed, or consecutive slashes (please use dashes or underscores instead).", invalidCharactersForMessage]);
             }
 
             // Precludes possibility of collision with Autoroute as Autoroute excludes . as a valid path character.
