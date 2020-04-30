@@ -6,6 +6,7 @@ using OrchardCore.Modules.Manifest;
     Website = "https://orchardproject.net",
     Version = "2.0.0"
 )]
+
 [assembly: Feature(
     Id = "OrchardCore.Templates",
     Name = "Templates",
@@ -18,6 +19,6 @@ using OrchardCore.Modules.Manifest;
     Id = "OrchardCore.AdminTemplates",
     Name = "Admin Templates",
     Description = "The Admin Templates module provides a way to write custom admin shape templates.",
-    Dependencies = new[] { "OrchardCore.Liquid" },
+    Dependencies = new[] { "OrchardCore.Templates", "OrchardCore.Liquid" },
     Category = "Development"
 )]

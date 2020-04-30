@@ -370,13 +370,8 @@ namespace OrchardCore.Data.Migration
                 {
                     await UpdateAsync(featureId);
                 }
-                catch (Exception ex)
+                catch (Exception ex) when (!ex.IsFatal())
                 {
-                    if (ex.IsFatal())
-                    {
-                        throw;
-                    }
-
                     _logger.LogError(ex, "Could not run migrations automatically on '{FeatureName}'", featureId);
                 }
             }

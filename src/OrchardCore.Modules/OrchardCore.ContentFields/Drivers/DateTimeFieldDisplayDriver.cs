@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentFields.ViewModels;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
@@ -7,7 +8,7 @@ using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Modules;
 
-namespace OrchardCore.ContentFields.Fields
+namespace OrchardCore.ContentFields.Drivers
 {
     public class DateTimeFieldDisplayDriver : ContentFieldDisplayDriver<DateTimeField>
     {
