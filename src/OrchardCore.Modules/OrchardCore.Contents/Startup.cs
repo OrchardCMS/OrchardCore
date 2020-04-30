@@ -330,8 +330,6 @@ namespace OrchardCore.Contents
         }
     }
 
-
-
     [RequireFeatures("OrchardCore.AdminMenu")]
     public class AdminMenuStartup : StartupBase
     {

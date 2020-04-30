@@ -16,7 +16,6 @@ namespace OrchardCore.Deployment.Remote.Services
             _session = session;
         }
 
-        //TODO candidate for distributed cache document.
         public async Task<RemoteInstanceList> GetRemoteInstanceListAsync()
         {
             if (_remoteInstanceList != null)

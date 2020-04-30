@@ -118,7 +118,6 @@ namespace OrchardCore.Contents.Deployment.AddToDeploymentPlan
                 if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContent, item))
                 {
                     _notifier.Warning(H["Couldn't add selected content to deployment plan."]);
-                    _session.Cancel();
 
                     return Forbid();
                 }

@@ -1,43 +1,44 @@
 @inject IDeploymentManager DeploymentManager
-
-<div class="modal fade" id="modalExportContentToDeploymentTargetActionTarget" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">@T["Available Targets"]</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="row">
-                    @foreach (var target in await DeploymentManager.GetDeploymentTargetsAsync())
-                    {
-                        var routeWithId = new RouteValueDictionary(target.Route);
-                        routeWithId["id"] = Site.As<ExportContentToDeploymentTargetSettings>().ExportContentToDeploymentTargetPlanId;
-                        @* TODO what is this? *@
-                        var returnUrl = Context.Request.Query["returnUrl"];
-                        routeWithId["returnUrl"] = FullRequestPath;
-                        <div class="col-sm-12 col-md-6 col-lg-4 d-flex align-items-stretch card-item">
-                            <div class="card w-100 mb-3">
-                                <div class="card-body">
-                                    <h4 class="card-title">@target.Name</h4>
-                                    <p>@target.Description</p>
-                                </div>
-                                <div class="card-footer text-muted text-xs-right">
-                                    <button type="button" class="export-to-deployment-target text-white btn btn-primary btn-sm" data-dismiss="modal" data-target-url="@Url.RouteUrl(routeWithId)">@T["Select"]</button>
+<zone name="Footer">
+    <div class="modal fade" id="modalExportContentToDeploymentTargetActionTarget" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">@T["Available Targets"]</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        @foreach (var target in await DeploymentManager.GetDeploymentTargetsAsync())
+                        {
+                            var routeWithId = new RouteValueDictionary(target.Route);
+                            routeWithId["id"] = Site.As<ExportContentToDeploymentTargetSettings>().ExportContentToDeploymentTargetPlanId;
+                            @* TODO what is this? *@
+                            var returnUrl = Context.Request.Query["returnUrl"];
+                            routeWithId["returnUrl"] = FullRequestPath;
+                            <div class="col-sm-12 col-md-6 col-lg-4 d-flex align-items-stretch card-item">
+                                <div class="card w-100 mb-3">
+                                    <div class="card-body">
+                                        <h4 class="card-title">@target.Name</h4>
+                                        <p>@target.Description</p>
+                                    </div>
+                                    <div class="card-footer text-muted text-xs-right">
+                                        <button type="button" class="export-to-deployment-target text-white btn btn-primary btn-sm" data-dismiss="modal" data-target-url="@Url.RouteUrl(routeWithId)">@T["Select"]</button>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    }
+                        }
+                    </div>
                 </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">@T["Cancel"]</button>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">@T["Cancel"]</button>
+                </div>
             </div>
         </div>
     </div>
-</div>
+</zone>
 
 <script at="Foot" depends-on="jQuery">
     $(function () {

@@ -6,14 +6,13 @@ using Microsoft.AspNetCore.Http;
 using OrchardCore.Deployment.Indexes;
 using YesSql;
 
-namespace OrchardCore.Deployment.Services
+namespace OrchardCore.Deployment
 {
     public class DeploymentPlanService : IDeploymentPlanService
     {
         private readonly YesSql.ISession _session;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthorizationService _authorizationService;
-        // TODO this would now need to be memory cached.
         private Dictionary<string, DeploymentPlan> _deploymentPlans;
 
         public DeploymentPlanService(

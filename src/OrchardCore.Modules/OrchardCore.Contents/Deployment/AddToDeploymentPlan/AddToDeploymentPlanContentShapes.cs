@@ -1,10 +1,8 @@
 using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.Deployment.Services;
+using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
-using OrchardCore.Entities;
 using OrchardCore.Modules;
-using OrchardCore.Settings;
 
 namespace OrchardCore.Contents.Deployment.AddToDeploymentPlan
 {

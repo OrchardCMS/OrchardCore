@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace OrchardCore.Deployment.Services
+namespace OrchardCore.Deployment
 {
     public interface IDeploymentPlanService
     {

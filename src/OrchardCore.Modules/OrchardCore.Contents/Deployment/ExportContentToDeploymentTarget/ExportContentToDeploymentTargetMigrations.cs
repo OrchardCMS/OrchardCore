@@ -1,7 +1,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.Data.Migration;
-using OrchardCore.Deployment.Services;
+using OrchardCore.Deployment;
 using OrchardCore.Entities;
 using OrchardCore.Recipes.Services;
 using OrchardCore.Settings;
