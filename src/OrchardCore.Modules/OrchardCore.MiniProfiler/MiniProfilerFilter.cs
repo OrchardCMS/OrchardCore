@@ -13,23 +13,23 @@ namespace OrchardCore.MiniProfiler
     {
         private readonly ILayoutAccessor _layoutAccessor;
         private readonly IShapeFactory _shapeFactory;
-        private readonly MiniProfilerSettings _settings;
+        private readonly MiniProfilerOptions _options;
 
         public MiniProfilerFilter(
             ILayoutAccessor layoutAccessor,
             IShapeFactory shapeFactory,
-            IOptions<MiniProfilerSettings> options)
+            IOptions<MiniProfilerOptions> options)
         {
             _layoutAccessor = layoutAccessor;
             _shapeFactory = shapeFactory;
-            _settings = options.Value;
+            _options = options.Value;
         }
 
         public async Task OnResultExecutionAsync(ResultExecutingContext context, ResultExecutionDelegate next)
         {
-            // Should only run on the front-end for a full view
+            // Should only run on the front-end (or optionally also on the admin) for a full view.
             if ((context.Result is ViewResult || context.Result is PageResult) &&
-                (_settings.EnableOnAdmin || !AdminAttribute.IsApplied(context.HttpContext)))
+                (_options.EnableOnAdmin || !AdminAttribute.IsApplied(context.HttpContext)))
             {
                 dynamic layout = await _layoutAccessor.GetLayoutAsync();
                 var footerZone = layout.Zones["Footer"];
