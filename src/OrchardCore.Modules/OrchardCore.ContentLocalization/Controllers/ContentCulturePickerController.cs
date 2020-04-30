@@ -22,7 +22,7 @@ namespace OrchardCore.ContentLocalization.Controllers
         private readonly ISiteService _siteService;
         private readonly ILocalizationService _locationService;
         private readonly IContentCulturePickerService _culturePickerService;
-        private readonly IOptions<CulturePickerOptions> _culturePickerOptions;
+        private readonly CulturePickerOptions _culturePickerOptions;
 
         public ContentCulturePickerController(
             ISiteService siteService,
@@ -33,7 +33,7 @@ namespace OrchardCore.ContentLocalization.Controllers
             _siteService = siteService;
             _locationService = locationService;
             _culturePickerService = culturePickerService;
-            _culturePickerOptions = culturePickerOptions;
+            _culturePickerOptions = culturePickerOptions.Value;
         }
 
         [HttpGet]
@@ -62,7 +62,7 @@ namespace OrchardCore.ContentLocalization.Controllers
                     Response.Cookies.Append(
                         CookieRequestCultureProvider.DefaultCookieName,
                         CookieRequestCultureProvider.MakeCookieValue(new RequestCulture(targetCulture)),
-                        new CookieOptions { Expires = DateTime.UtcNow.AddDays(_culturePickerOptions.Value.CookieLifeTime) }
+                        new CookieOptions { Expires = DateTime.UtcNow.AddDays(_culturePickerOptions.CookieLifeTime) }
                     );
                 }
 
