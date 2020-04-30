@@ -129,7 +129,7 @@ namespace OrchardCore.Autoroute.Drivers
             if (autoroute.Path?.IndexOfAny(InvalidCharactersForPath) > -1 || autoroute.Path?.IndexOf(' ') > -1 || autoroute.Path?.IndexOf("//") > -1)
             {
                 var invalidCharactersForMessage = string.Join(", ", InvalidCharactersForPath.Select(c => $"\"{c}\""));
-                updater.ModelState.AddModelError(Prefix, nameof(autoroute.Path), S["Please do not use any of the following characters in your permalink: {0}. No spaces are allowed, or consecutive slashes (please use dashes or underscores instead).", invalidCharactersForMessage]);
+                updater.ModelState.AddModelError(Prefix, nameof(autoroute.Path), S["Please do not use any of the following characters in your permalink: {0}. No spaces, or consecutive slashes, are allowed (please use dashes or underscores instead).", invalidCharactersForMessage]);
             }
 
             if (autoroute.Path?.Length > MaxPathLength)
