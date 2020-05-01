@@ -12,6 +12,7 @@ using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.FileStorage;
 using OrchardCore.FileStorage.AzureBlob;
 using OrchardCore.Media.Core;
+using OrchardCore.Media.Core.Events;
 using OrchardCore.Media.Events;
 using OrchardCore.Modules;
 
@@ -103,6 +104,8 @@ namespace OrchardCore.Media.Azure
 
                     return new DefaultMediaFileStore(fileStore, mediaUrlBase, mediaOptions.CdnBaseUrl, mediaEventHandlers, mediaCreatingEventHandlers, logger);
                 }));
+
+                services.AddSingleton<IMediaEventHandler, DefaultMediaFileStoreCacheEventHandler>();
 
                 services.AddScoped<IModularTenantEvents, CreateMediaBlobContainerEvent>();
             }
