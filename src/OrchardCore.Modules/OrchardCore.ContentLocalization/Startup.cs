@@ -5,6 +5,7 @@ using Fluid;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
+using IConfiguration = Microsoft.Extensions.Configuration.IConfiguration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
@@ -41,14 +42,17 @@ namespace OrchardCore.ContentLocalization
             TemplateContext.GlobalMemberAccessStrategy.Register<LocalizationPartViewModel>();
         }
 
-        public Startup(IOptions<AdminOptions> adminOptions)
+        public Startup(IConfiguration configuration, IOptions<AdminOptions> adminOptions)
         {
+            Configuration = configuration;
             _adminOptions = adminOptions.Value;
         }
 
+        public IConfiguration Configuration { get; set; }
+
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddTransient<IConfigureOptions<CulturePickerOptions>, CulturePickerOptionsConfiguration>();
+            services.Configure<CulturePickerOptions>(Configuration.GetSection("OrchardCore_ContentLocalization_CulturePickerOptions"));
 
             services.AddScoped<IContentPartIndexHandler, LocalizationPartIndexHandler>();
             services.AddSingleton<ILocalizationEntries, LocalizationEntries>();

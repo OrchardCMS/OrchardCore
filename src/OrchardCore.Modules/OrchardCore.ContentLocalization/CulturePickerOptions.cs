@@ -2,6 +2,8 @@ namespace OrchardCore.ContentLocalization
 {
     public class CulturePickerOptions
     {
-        public int CookieLifeTime { get; set; }
+        public static readonly int DefaultCookieLifeTime = 14;
+
+        public int CookieLifeTime { get; set; } = DefaultCookieLifeTime;
     }
 }
