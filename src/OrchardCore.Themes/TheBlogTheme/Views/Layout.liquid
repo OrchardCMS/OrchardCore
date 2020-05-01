@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>{{ "PageTitle" | shape_new | shape_stringify }}</title>
     {% resources type: "Meta" %}
-    <link type="image/x-icon" rel="shortcut icon" href="/TheBlogTheme/favicon.ico">
+    {{ Site.Properties.TheBlogThemeSettings.TheBlogThemeSettings.Head.Text | raw }}
 
     <!-- Bootstrap core CSS -->
     {% style name:"theblogtheme-vendor-bootstrap", version:"4" %}
@@ -58,5 +58,6 @@
         {% render_section "Footer", required: false %}
     </footer>
     {% resources type: "FootScript" %}
+    {{ Site.Properties.TheBlogThemeSettings.TheBlogThemeSettings.Foot.Text | raw }}
 </body>
 </html>

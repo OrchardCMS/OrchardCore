@@ -2,10 +2,9 @@
 @using OrchardCore.Entities
 @using OrchardCore.ContentManagement
 @{ 
-    var siteSettings = await siteService.GetSiteSettingsAsync();
-        var themeSettings = siteSettings.As<ContentItem>("ThemeSettings");
-        var head = themeSettings?.Content?.ThemeSettings?.Head.Text ?? string.Empty;
-        var foot = themeSettings?.Content?.ThemeSettings?.Foot.Text ?? string.Empty;
+    var themeSettings = Site.As<ContentItem>("TheThemeSettings");
+    var head = themeSettings?.Content?.TheThemeSettings?.Head.Text ?? string.Empty;
+    var foot = themeSettings?.Content?.TheThemeSettings?.Foot.Text ?? string.Empty;
 }
 <!DOCTYPE html>
 <html lang="@Orchard.CultureName()">

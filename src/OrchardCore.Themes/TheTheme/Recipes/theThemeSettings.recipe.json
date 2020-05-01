@@ -1,0 +1,100 @@
+{
+  "name": "TheThemeSettings",
+  "displayName": "TheTheme settings",
+  "description": "Enables the TheThemeSettings content type.",
+  "author": "The Orchard Core Team",
+  "website": "https://orchardcore.net",
+  "version": "1.0.0-rc1",
+  "issetuprecipe": false,
+  "categories": [ "default" ],
+  "tags": [ "theme", "settings" ],
+  "steps": [
+    {
+      "name": "feature",
+      "disable": [],
+      "enable": [
+        "OrchardCore.CustomSettings"
+      ]
+    },
+    {
+      "name": "ContentDefinition",
+      "ContentTypes": [
+        {
+          "Name": "TheThemeSettings",
+          "DisplayName": "TheTheme",
+          "Settings": {
+            "ContentTypeSettings": {
+              "Stereotype": "CustomSettings",
+              "Securable": true
+            },
+            "FullTextAspectSettings": {}
+          },
+          "ContentTypePartDefinitionRecords": [
+            {
+              "PartName": "TheThemeSettings",
+              "Name": "TheThemeSettings",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "Position": "0"
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "ContentParts": [
+        {
+          "Name": "TheThemeSettings",
+          "Settings": {},
+          "ContentPartFieldDefinitionRecords": [
+            {
+              "FieldName": "TextField",
+              "Name": "Head",
+              "Settings": {
+                "ContentPartFieldSettings": {
+                  "DisplayName": "Head",
+                  "Editor": "CodeMirror",
+                  "Position": "0"
+                },
+                "TextFieldSettings": {
+                  "Hint": "Html code used in the head of each page."
+                },
+                "ContentIndexSettings": {}
+              }
+            },
+            {
+              "FieldName": "TextField",
+              "Name": "Foot",
+              "Settings": {
+                "ContentPartFieldSettings": {
+                  "DisplayName": "Foot",
+                  "Editor": "CodeMirror",
+                  "Position": "1"
+                },
+                "TextFieldSettings": {
+                  "Hint": "Html Code used in the footer of each page."
+                },
+                "ContentIndexSettings": {}
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "custom-settings",
+      "TheThemeSettings": {
+        "ContentType": "TheThemeSettings",
+        "DisplayText": null,
+        "TheThemeSettings": {
+          "Head": {
+            "Text": "<link type=\"image/x-icon\" rel=\"shortcut icon\" href=\"/TheTheme/favicon.ico\" />"
+          },
+          "Foot": {
+            "Text": null
+          }
+        }
+      }
+    }
+  ]
+}
