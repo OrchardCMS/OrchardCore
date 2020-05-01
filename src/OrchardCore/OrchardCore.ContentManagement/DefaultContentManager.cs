@@ -422,7 +422,7 @@ namespace OrchardCore.ContentManagement
             var skip = 0;
             var take = ImportBatchSize;
 
-            var batchedContentItems = contentItems.Skip(skip).Take(take);
+            var batchedContentItems = contentItems.Take(take);
 
             while (batchedContentItems.Any())
             {
@@ -541,7 +541,7 @@ namespace OrchardCore.ContentManagement
 
                 skip += ImportBatchSize;
                 take += ImportBatchSize;
-                batchedContentItems = batchedContentItems.Skip(skip).Take(take);
+                batchedContentItems = contentItems.Skip(skip).Take(take);
             }
         }
 
