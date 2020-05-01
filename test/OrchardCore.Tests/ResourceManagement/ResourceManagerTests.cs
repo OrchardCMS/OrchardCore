@@ -357,10 +357,10 @@ namespace OrchardCore.Tests.ResourceManagement
             resourceManager.RegisterMeta(new MetaEntry { Name = "description", Content = "Some content" });
             resourceManager.RegisterMeta(new MetaEntry { HttpEquiv = "refresh", Content = "3;url=https://www.orchardcore.net/" });
 
-            var builder = new HtmlContentBuilder();
-            resourceManager.RenderMeta(builder);
+            var htmlBuilder = new HtmlContentBuilder();
+            resourceManager.RenderMeta(htmlBuilder);
 
-            var document = await ParseHtmlAsync(builder);
+            var document = await ParseHtmlAsync(htmlBuilder);
             var metas = document
                 .QuerySelectorAll<IHtmlMetaElement>("meta");
 
@@ -384,10 +384,10 @@ namespace OrchardCore.Tests.ResourceManagement
             resourceManager.RegisterLink(new LinkEntry { Rel = "icon", Href = "/favicon.ico" });
             resourceManager.RegisterLink(new LinkEntry { Rel = "alternate", Type = "application/pdf", Href = "/pdf" });
 
-            var builder = new HtmlContentBuilder();
-            resourceManager.RenderHeadLink(builder);
+            var htmlBuilder = new HtmlContentBuilder();
+            resourceManager.RenderHeadLink(htmlBuilder);
 
-            var document = await ParseHtmlAsync(builder);
+            var document = await ParseHtmlAsync(htmlBuilder);
             var links = document
                 .QuerySelectorAll<IHtmlLinkElement>("link");
 
@@ -423,10 +423,10 @@ namespace OrchardCore.Tests.ResourceManagement
             var customStyle = ".my-class { prop: value; }";
             resourceManager.RegisterStyle(new HtmlString($"<style>{customStyle}</style>"));
 
-            var builder = new HtmlContentBuilder();
-            resourceManager.RenderStylesheet(builder);
+            var htmlBuilder = new HtmlContentBuilder();
+            resourceManager.RenderStylesheet(htmlBuilder);
 
-            var document = await ParseHtmlAsync(builder);
+            var document = await ParseHtmlAsync(htmlBuilder);
             var links = document
                 .QuerySelectorAll<IHtmlLinkElement>("link");
             var styles = document
@@ -476,10 +476,10 @@ namespace OrchardCore.Tests.ResourceManagement
             var customScript = "doSomeAction();";
             resourceManager.RegisterHeadScript(new HtmlString($"<script>{customScript}</script>"));
 
-            var builder = new HtmlContentBuilder();
-            resourceManager.RenderHeadScript(builder);
+            var htmlBuilder = new HtmlContentBuilder();
+            resourceManager.RenderHeadScript(htmlBuilder);
 
-            var document = await ParseHtmlAsync(builder);
+            var document = await ParseHtmlAsync(htmlBuilder);
             var scripts = document
                 .QuerySelectorAll<IHtmlScriptElement>("script");
 
@@ -526,10 +526,10 @@ namespace OrchardCore.Tests.ResourceManagement
             var customScript = "doSomeAction();";
             resourceManager.RegisterFootScript(new HtmlString($"<script>{customScript}</script>"));
 
-            var builder = new HtmlContentBuilder();
-            resourceManager.RenderFootScript(builder);
+            var htmlBuilder = new HtmlContentBuilder();
+            resourceManager.RenderFootScript(htmlBuilder);
 
-            var document = await ParseHtmlAsync(builder);
+            var document = await ParseHtmlAsync(htmlBuilder);
             var scripts = document
                 .QuerySelectorAll<IHtmlScriptElement>("script");
 
@@ -571,10 +571,10 @@ namespace OrchardCore.Tests.ResourceManagement
 
             var requireSetting = resourceManager.RegisterResource("script", "required");
 
-            var builder = new HtmlContentBuilder();
-            resourceManager.RenderLocalScript(requireSetting, builder);
+            var htmlBuilder = new HtmlContentBuilder();
+            resourceManager.RenderLocalScript(requireSetting, htmlBuilder);
 
-            var document = await ParseHtmlAsync(builder);
+            var document = await ParseHtmlAsync(htmlBuilder);
             var scripts = document
                 .QuerySelectorAll<IHtmlScriptElement>("script");
 

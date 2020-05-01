@@ -186,7 +186,7 @@ namespace OrchardCore.ContentManagement
         /// <param name="jsonPath">The json path of the contained content item</param>
         public static Task<ContentItem> GetAsync(this IContentManager contentManager, string id, string jsonPath)
         {
-            return contentManager.GetAsync(id, jsonPath, VersionOptions.Latest);
+            return contentManager.GetAsync(id, jsonPath, VersionOptions.Published);
         }
 
         /// <summary>
