@@ -77,7 +77,11 @@ public void ConfigureServices(IServiceCollection services)
 }
 ```
 
-This will thus make the SMTP port use this configuration despite any other value defined from site settings. Note that on the admin there will be no indication that this override happened (and the value displayed there will still be the one configured in site settings) so if you choose to do this you'll need to let your users know.
+This will thus make the SMTP port use this configuration despite any other value defined from site settings. 
+
+!!! note 
+    On the admin there will be no indication that this override happened, and the value displayed there will still be 
+    the one configured in site settings, so if you choose to do this you'll need to let your users know.
 
 ### `ORCHARD_APP_DATA` Environment Variable
 
