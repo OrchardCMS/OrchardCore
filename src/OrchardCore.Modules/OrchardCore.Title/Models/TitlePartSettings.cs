@@ -22,5 +22,10 @@ namespace OrchardCore.Title.Models
         /// The pattern used to build the Title.
         /// </summary>
         public string Pattern { get; set; }
+
+        /// <summary>
+        /// Render TitlePart.
+        /// </summary>
+        public bool RenderTitle { get; set; }
     }
 }

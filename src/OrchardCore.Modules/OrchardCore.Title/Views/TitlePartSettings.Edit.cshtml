@@ -21,6 +21,14 @@
         </select>
     </div>
 </div>
+<div class="form-group pb-1">
+    <div class="custom-control custom-checkbox">
+        <input asp-for="RenderTitle" class="custom-control-input" />
+        <label asp-for="RenderTitle" class="custom-control-label">@T["Render Title"]</label>
+        <span class="hint">@T["Check to renter Title. <br/> (It is suggested to use ContentItem.DisplayText in template and keep this unchecked.)"]</span>
+    </div>
+</div>
+
 <div class="row mb-3">
     <div class="col-lg">
         <label asp-for="Pattern">@T["Pattern"]</label>

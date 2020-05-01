@@ -21,13 +21,20 @@ namespace OrchardCore.Title.Drivers
 
         public override IDisplayResult Display(TitlePart titlePart, BuildPartDisplayContext context)
         {
-            return Initialize<TitlePartViewModel>(GetDisplayShapeType(context), model =>
+            var settings = context.TypePartDefinition.GetSettings<TitlePartSettings>();
+            if (settings.RenderTitle)
             {
-                model.Title = titlePart.ContentItem.DisplayText;
-                model.TitlePart = titlePart;
-            })
-            .Location("Detail", "Header:5")
-            .Location("Summary", "Header:5");
+                return Initialize<TitlePartViewModel>(GetDisplayShapeType(context), model =>
+               {
+                   model.Title = titlePart.ContentItem.DisplayText;
+                   model.TitlePart = titlePart;
+               })
+               .Location("Detail", "Header:5")
+               .Location("Summary", "Header:5");
+            }
+
+            return null;
+
         }
 
         public override IDisplayResult Edit(TitlePart titlePart, BuildPartEditorContext context)
