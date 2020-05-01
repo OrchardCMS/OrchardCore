@@ -25,7 +25,7 @@ namespace OrchardCore.Sitemaps.Routing
 
             if (!String.IsNullOrEmpty(path))
             {
-                (var found, var sitemapId) = await _entries.TryGetSitemapIdAsync(path);
+                (var found, var sitemapId) = await _entries.TryGetSitemapIdByPathAsync(path);
 
                 if (found)
                 {

@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
@@ -60,12 +61,12 @@ namespace OrchardCore.Sitemaps.Services
             if (string.IsNullOrEmpty(sitemapId))
             {
                 routeExists = (await _sitemapManager.GetSitemapsAsync())
-                    .Any(p => p.Path == path);
+                    .Any(p => String.Equals(p.Path, path, StringComparison.OrdinalIgnoreCase));
             }
             else
             {
                 routeExists = (await _sitemapManager.GetSitemapsAsync())
-                    .Any(p => p.SitemapId != sitemapId && p.Path == path);
+                    .Any(p => p.SitemapId != sitemapId && String.Equals(p.Path, path, StringComparison.OrdinalIgnoreCase));
             }
 
             if (routeExists)

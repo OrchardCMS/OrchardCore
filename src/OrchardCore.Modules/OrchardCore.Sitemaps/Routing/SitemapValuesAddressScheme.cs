@@ -34,7 +34,7 @@ namespace OrchardCore.Sitemaps.Routing
                 return Enumerable.Empty<Endpoint>();
             }
 
-            (var found, var path) = _entries.TryGetPathAsync(sitemapId).GetAwaiter().GetResult();
+            (var found, var path) = _entries.TryGetPathBySitemapIdAsync(sitemapId).GetAwaiter().GetResult();
 
             if (!found)
             {

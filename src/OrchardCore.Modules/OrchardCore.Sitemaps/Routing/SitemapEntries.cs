@@ -14,28 +14,28 @@ namespace OrchardCore.Sitemaps.Routing
         {
         }
 
-        public async Task<(bool, string)> TryGetPathAsync(string sitemapId)
+        public async Task<(bool, string)> TryGetSitemapIdByPathAsync(string path)
         {
             var document = await GetDocumentAsync();
 
-            if (document.SitemapIds.TryGetValue(sitemapId, out var path))
-            {
-                return (true, path);
-            }
-
-            return (false, path);
-        }
-
-        public async Task<(bool, string)> TryGetSitemapIdAsync(string path)
-        {
-            var document = await GetDocumentAsync();
-
-            if (document.SitemapPaths.TryGetValue(path, out var sitemapId))
+            if (document.SitemapIds.TryGetValue(path, out var sitemapId))
             {
                 return (true, sitemapId);
             }
 
             return (false, sitemapId);
+        }
+
+        public async Task<(bool, string)> TryGetPathBySitemapIdAsync(string sitemapId)
+        {
+            var document = await GetDocumentAsync();
+
+            if (document.SitemapPaths.TryGetValue(sitemapId, out var path))
+            {
+                return (true, path);
+            }
+
+            return (false, path);
         }
 
         public async Task BuildEntriesAsync(IEnumerable<SitemapType> sitemaps)
@@ -47,8 +47,8 @@ namespace OrchardCore.Sitemaps.Routing
 
         private void BuildEntries(SitemapRouteDocument document, IEnumerable<SitemapType> sitemaps)
         {
-            document.SitemapPaths.Clear();
             document.SitemapIds.Clear();
+            document.SitemapPaths.Clear();
 
             foreach (var sitemap in sitemaps)
             {
@@ -57,8 +57,8 @@ namespace OrchardCore.Sitemaps.Routing
                     continue;
                 }
 
-                document.SitemapPaths[sitemap.Path] = sitemap.SitemapId;
-                document.SitemapIds[sitemap.SitemapId] = sitemap.Path;
+                document.SitemapIds[sitemap.Path] = sitemap.SitemapId;
+                document.SitemapPaths[sitemap.SitemapId] = sitemap.Path;
             }
         }
 
