@@ -37,7 +37,7 @@
                             <span class="dropdown-menu dropdown-menu-right" aria-labelledby="bulk-action-menu-button">
                                 @foreach (var item in Model.Options.ContentsBulkAction)
                                 {
-                                    <a class="dropdown-item" href="javascript:void(0)" data-action="@item.Value" data-title="@T["Bulk Action"]" data-message="@T["Are you sure you want to {0} this/these item(s)?", @item.Text.ToLower()]">@item.Text</a>
+                                    <a class="dropdown-item" href="javascript:void(0)" data-action="@item.Value" data-title="@T["Bulk Action"]" data-message="@T["Are you sure you want to {0} these items?", @item.Text.ToLower()]">@item.Text</a>
                                 }
                             </span>
                         </span>
@@ -89,7 +89,7 @@
         var filters = $(".filter");
         var selectAllCtrl = $("#select-all");
         var selectedItems = $("#selected-items");
-        var contentItemsCheckboxes = $(":checkbox[name='itemIds']");
+        var itemsCheckboxes = $(":checkbox[name='itemIds']");
 
         function displayActionsOrFilters() {
             if ($(":checkbox[name='itemIds']:checked").length > 1) {
@@ -119,12 +119,12 @@
         });
 
         selectAllCtrl.click(function(){
-            contentItemsCheckboxes.not(this).prop("checked", this.checked);
+            itemsCheckboxes.not(this).prop("checked", this.checked);
             selectedItems.text($(":checkbox[name='itemIds']:checked").length + ' @T["selected"]');
             displayActionsOrFilters();
         });
 
-        contentItemsCheckboxes.on("click", function () {
+        itemsCheckboxes.on("click", function () {
             var itemsCount = $(":checkbox[name='itemIds']").length;
             var selectedItemsCount = $(":checkbox[name='itemIds']:checked").length;
 

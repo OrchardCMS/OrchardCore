@@ -11,6 +11,7 @@ using OrchardCore.Admin.Drivers;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Theming;
 using OrchardCore.Environment.Shell.Configuration;
+using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Mvc.Routing;
@@ -69,20 +70,14 @@ namespace OrchardCore.Admin
 
     public class AdminPagesStartup : StartupBase
     {
-        private readonly AdminOptions _adminOptions;
-
-        public AdminPagesStartup(IOptions<AdminOptions> adminOptions)
-        {
-            _adminOptions = adminOptions.Value;
-        }
-
         public override int Order => 1000;
 
         public override void ConfigureServices(IServiceCollection services)
         {
             services.Configure<RazorPagesOptions>((options) =>
             {
-                options.Conventions.Add(new AdminPageRouteModelConvention(_adminOptions.AdminUrlPrefix));
+                var adminOptions = ShellScope.Services.GetRequiredService<IOptions<AdminOptions>>().Value;
+                options.Conventions.Add(new AdminPageRouteModelConvention(adminOptions.AdminUrlPrefix));
             });
         }
     }
