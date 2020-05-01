@@ -42,7 +42,7 @@ namespace OrchardCore.Data.Documents
         void AfterCommitFailure<T>(DocumentStoreCommitFailureDelegate afterCommit);
 
         /// <summary>
-        /// Commits the related document store/>.
+        /// Commits the related document store.
         /// </summary>
         Task CommitAsync();
     }
