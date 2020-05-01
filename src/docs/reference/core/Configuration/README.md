@@ -75,6 +75,8 @@ public void ConfigureServices(IServiceCollection services)
 }
 ```
 
+This will thus make the SMTP port use this configuration despite any other value defined from site settings. Note that on the admin there will be no indication that this override happened (and the value displayed there will still be the one configured in site settings) so if you choose to do this you'll need to let your users know.
+
 ### `ORCHARD_APP_DATA` Environment Variable
 
 The location of the `App_Data` folder can be configured by setting the `ORCHARD_APP_DATA` environment variable. Paths can be relative to the application path (./App_Data), absolute (/path/from/root), or fully qualified (D:\Path\To\App_Data). If the folder does not exist the application will attempt to create it.
