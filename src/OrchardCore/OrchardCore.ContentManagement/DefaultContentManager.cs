@@ -20,7 +20,7 @@ namespace OrchardCore.ContentManagement
 {
     public class DefaultContentManager : IContentManager
     {
-        private const int _importBatchSize = 500;
+        private const int ImportBatchSize = 500;
 
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly ISession _session;
@@ -420,7 +420,7 @@ namespace OrchardCore.ContentManagement
         public async Task ImportAsync(IEnumerable<ContentItem> contentItems)
         {
             var skip = 0;
-            var take = _importBatchSize;
+            var take = ImportBatchSize;
 
             var batchedContentItems = contentItems.Skip(skip).Take(take);
 
@@ -539,8 +539,8 @@ namespace OrchardCore.ContentManagement
                     }
                 }
 
-                skip += _importBatchSize;
-                take += _importBatchSize;
+                skip += ImportBatchSize;
+                take += ImportBatchSize;
                 batchedContentItems = batchedContentItems.Skip(skip).Take(take);
             }
         }
