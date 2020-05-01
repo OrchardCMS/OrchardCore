@@ -1,20 +1,18 @@
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Autoroute.Models;
 using OrchardCore.ContentManagement;
-using OrchardCore.Lists.Models;
-using OrchardCore.Tests.Apis.Context;
-using OrchardCore.Environment.Shell;
-using Xunit;
-using Microsoft.Extensions.DependencyInjection;
-using YesSql;
 using OrchardCore.ContentManagement.Records;
-using System.Linq;
+using OrchardCore.Environment.Shell;
+using OrchardCore.Lists.Models;
 using OrchardCore.Taxonomies.Fields;
-using YesSql.Services;
-using System.Collections.Generic;
-using System.Net;
-using Microsoft.AspNetCore.Mvc;
-using OrchardCore.Autoroute.Drivers;
+using OrchardCore.Tests.Apis.Context;
+using Xunit;
+using YesSql;
 
 namespace OrchardCore.Tests.Apis.ContentManagement.ContentApiController
 {
@@ -264,7 +262,7 @@ namespace OrchardCore.Tests.Apis.ContentManagement.ContentApiController
                         var session = scope.ServiceProvider.GetRequiredService<ISession>();
                         var blogPosts = await session.Query<ContentItem, ContentItemIndex>(x =>
                             x.ContentType == "BlogPost").ListAsync();
-                         
+
                         Assert.Single(blogPosts);
                     });
                 }
