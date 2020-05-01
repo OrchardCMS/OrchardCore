@@ -68,12 +68,14 @@ For example, the Email module allows SMTP configuration via the `SmtpSettings` c
 ```
 public void ConfigureServices(IServiceCollection services)
 {
-    services.AddOrchardCms(builder => builder.ConfigureServices(services =>
-        services.PostConfigure<SmtpSettings>(settings =>
-        {
-            // You could e.g. fetch the configuration values from and injected IShellConfiguration instance here.
-            settings.Port = 255;
-        })));
+    services
+        .AddOrchardCms()
+        .ConfigureServices(configure =>
+            configure.PostConfigure<SmtpSettings>(settings =>
+            {
+                // You could e.g. fetch the configuration values from an injected IShellConfiguration instance here.
+                settings.Port = 255;
+            }));
 }
 ```
 
