@@ -3,8 +3,9 @@ namespace OrchardCore.MiniProfiler
     public class MiniProfilerOptions
     {
         /// <summary>
-        /// Gets or sets whether to enable Mini Profiler on the admin too, not just the frontend. Defaults to <c>false</c>.
+        /// Gets or sets whether to allow Mini Profiler on the admin too when the feature is enabled, not just on the
+        /// frontend. Defaults to <c>false</c>.
         /// </summary>
-        public bool EnableOnAdmin { get; set; }
+        public bool AllowOnAdmin { get; set; }
     }
 }

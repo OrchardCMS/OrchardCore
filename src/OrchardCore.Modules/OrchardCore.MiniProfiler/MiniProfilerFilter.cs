@@ -29,7 +29,7 @@ namespace OrchardCore.MiniProfiler
         {
             // Should only run on the front-end (or optionally also on the admin) for a full view.
             if ((context.Result is ViewResult || context.Result is PageResult) &&
-                (_options.EnableOnAdmin || !AdminAttribute.IsApplied(context.HttpContext)))
+                (_options.AllowOnAdmin || !AdminAttribute.IsApplied(context.HttpContext)))
             {
                 dynamic layout = await _layoutAccessor.GetLayoutAsync();
                 var footerZone = layout.Zones["Footer"];
