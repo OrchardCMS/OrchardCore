@@ -36,6 +36,12 @@ namespace OrchardCore.Contents.Workflows.Activities
             set => SetProperty(value);
         }
 
+        public bool Publish
+        {
+            get => GetProperty<bool>();
+            set => SetProperty(value);
+        }
+
         public WorkflowExpression<string> ContentItemIdExpression
         {
             get => GetProperty(() => new WorkflowExpression<string>());
@@ -84,9 +90,16 @@ namespace OrchardCore.Contents.Workflows.Activities
             }
 
             await ContentManager.UpdateAsync(contentItem);
+
+            if (Publish)
+            {
+                await ContentManager.PublishAsync(contentItem);
+            }
+
             workflowContext.LastResult = contentItem;
             workflowContext.CorrelationId = contentItem.ContentItemId;
             workflowContext.Properties[ContentsHandler.ContentItemInputKey] = contentItem;
+
             return Outcomes("Done");
         }
     }

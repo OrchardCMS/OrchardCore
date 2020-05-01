@@ -26,6 +26,7 @@ namespace OrchardCore.Contents.Workflows.Drivers
             model.ContentType = activity.ContentType;
             model.ContentItemIdExpression = activity.Content.Expression;
             model.ContentProperties = activity.ContentProperties.Expression;
+            model.Publish = activity.Publish;
         }
 
         protected override void UpdateActivity(UpdateContentTaskViewModel model, UpdateContentTask activity)
@@ -33,6 +34,7 @@ namespace OrchardCore.Contents.Workflows.Drivers
             activity.ContentType = model.ContentType;
             activity.Content = new WorkflowExpression<IContent>(model.ContentItemIdExpression);
             activity.ContentProperties = new WorkflowExpression<string>(model.ContentProperties);
+            activity.Publish = model.Publish;
         }
     }
 }
