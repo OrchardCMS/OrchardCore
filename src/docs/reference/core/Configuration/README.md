@@ -59,7 +59,9 @@ In addition you can specify a `Tenant` setting by using the Tenant Name, in this
 }
 ```
 
-You can also configure options from code in the web project's `Startup` class as explained in the [ASP.NET documentation](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/configuration/options). A lot of Orchard features have options support while they don't offer default static configuration behavior so for those you need to write your own configuration code.
+You can also configure `IOptions` from code in the web project's `Startup` class as explained in the [ASP.NET documentation](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/configuration/options). 
+
+A lot of Orchard Core features are configured through the admin UI with site settings stored in the database. If you wish to override the site settings, you can do this with your own configuration code.
 
 For example, the Email module allows SMTP configuration via the `SmtpSettings` class which by default is populated from the given tenant's site settings, as set on the admin. However, you can override the site settings from the `Startup` class like this (note that we use `PostConfigure` to override the site settings' values but if the module doesn't use site settings you can just use `Configure`):
 
