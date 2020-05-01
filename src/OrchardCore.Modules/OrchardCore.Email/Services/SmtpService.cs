@@ -43,7 +43,7 @@ namespace OrchardCore.Email.Services
 
             try
             {
-                // Set the MailMessage.From, to avoid the confusion between _options.DefaultSender (Author) and submittor (Sender)
+                // Set the MailMessage.From, to avoid the confusion between _options.DefaultSender (Author) and submitter (Sender)
                 message.From = String.IsNullOrWhiteSpace(message.From)
                     ? _options.DefaultSender
                     : message.From;
