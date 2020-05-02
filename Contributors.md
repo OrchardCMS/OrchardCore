@@ -1,7 +1,7 @@
 # Contributors ✨
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-158-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-160-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
@@ -66,7 +66,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
   </tr>
   <tr>
     <td align="center"><a href="https://github.com/PiemP"><img src="https://avatars0.githubusercontent.com/u/2736009?v=4" width="100px;" alt=""/><br /><sub><b>tempcode</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=PiemP" title="Code">💻</a> <a href="#translation-PiemP" title="Translation">🌍</a></td>
-    <td align="center"><a href="https://lombiq.com/"><img src="https://avatars3.githubusercontent.com/u/1976647?v=4" width="100px;" alt=""/><br /><sub><b>Zoltán Lehóczky</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=Piedone" title="Code">💻</a> <a href="#question-Piedone" title="Answering Questions">💬</a></td>
+    <td align="center"><a href="https://lombiq.com/"><img src="https://avatars3.githubusercontent.com/u/1976647?v=4" width="100px;" alt=""/><br /><sub><b>Zoltán Lehóczky</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=Piedone" title="Code">💻</a> <a href="#question-Piedone" title="Answering Questions">💬</a> <a href="https://github.com/OrchardCMS/OrchardCore/commits?author=Piedone" title="Documentation">📖</a></td>
     <td align="center"><a href="https://articles.runtings.co.uk/"><img src="https://avatars2.githubusercontent.com/u/1038062?v=4" width="100px;" alt=""/><br /><sub><b>Matthew Harris</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=rtpHarry" title="Code">💻</a></td>
     <td align="center"><a href="http://peterkeating.co.uk"><img src="https://avatars1.githubusercontent.com/u/651190?v=4" width="100px;" alt=""/><br /><sub><b>Peter Keating</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=peterkeating" title="Code">💻</a> <a href="#plugin-peterkeating" title="Plugin/utility libraries">🔌</a></td>
     <td align="center"><a href="http://twitter.com/_nemke_"><img src="https://avatars3.githubusercontent.com/u/350314?v=4" width="100px;" alt=""/><br /><sub><b>Nemanja Đorđević</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=neman" title="Code">💻</a></td>
@@ -213,6 +213,8 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <td align="center"><a href="https://github.com/mguma"><img src="https://avatars1.githubusercontent.com/u/1769143?v=4" width="100px;" alt=""/><br /><sub><b>Marco Guetg</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=mguma" title="Code">💻</a></td>
     <td align="center"><a href="https://github.com/zhhbo"><img src="https://avatars3.githubusercontent.com/u/8653043?v=4" width="100px;" alt=""/><br /><sub><b>朱</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=zhhbo" title="Code">💻</a></td>
     <td align="center"><a href="https://github.com/Devqon"><img src="https://avatars3.githubusercontent.com/u/9316480?v=4" width="100px;" alt=""/><br /><sub><b>Sander Geerts</b></sub></a><br /><a href="#question-Devqon" title="Answering Questions">💬</a></td>
+    <td align="center"><a href="http://www.blockcode.com.tw"><img src="https://avatars1.githubusercontent.com/u/12048035?v=4" width="100px;" alt=""/><br /><sub><b>Justin Liao</b></sub></a><br /><a href="#translation-jaliao" title="Translation">🌍</a></td>
+    <td align="center"><a href="https://github.com/grexican"><img src="https://avatars0.githubusercontent.com/u/73737?v=4" width="100px;" alt=""/><br /><sub><b>Eli Gassert</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=grexican" title="Code">💻</a> <a href="https://github.com/OrchardCMS/OrchardCore/commits?author=grexican" title="Documentation">📖</a></td>
   </tr>
 </table>
 
