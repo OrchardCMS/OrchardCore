@@ -4,8 +4,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>{{ "PageTitle" | shape_new | shape_stringify }}</title>
-    {% resources type: "Meta" %}    
-    {{ Site.Properties.TheAgencyThemeSettings.TheAgencyThemeSettings.Head.Text | raw }}
+    {% resources type: "Meta" %}
+    {% shape "TheAgencyThemeHeadSettings" %}
 
     <!-- Bootstrap core CSS -->
     {% style name:"theagencytheme-vendor-bootstrap", version:"4" %}
@@ -55,7 +55,8 @@
         {% render_section "Content" %}
     </div>
     {% render_section "Footer", required: false %}
-    {% resources type: "FootScript" %}        
+    {% resources type: "FootScript" %}   
+    {% shape "TheAgencyThemeFootSettings" %}
     {{ Site.Properties.TheAgencyThemeSettings.TheAgencyThemeSettings.Foot.Text | raw }}
 </body>
 </html>
