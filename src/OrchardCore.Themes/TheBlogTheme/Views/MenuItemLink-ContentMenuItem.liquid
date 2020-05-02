@@ -1,4 +1,5 @@
 {% assign contentMenuItem = Model.ContentItem.Content.ContentMenuItemPart %}
+
 {% if Model.HasItems %}
     <a href="{{ contentMenuItem.SelectedContentItem.ContentItemIds.first | display_url }}" class="nav-link dropdown-toggle" data-toggle="dropdown">{{ contentMenuItem.Name }}<b class="caret"></b></a>
 {% else %}
