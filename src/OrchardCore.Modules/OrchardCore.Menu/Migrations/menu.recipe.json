@@ -144,7 +144,7 @@
               "Name": "SelectedContentItem",
               "Settings": {
                 "ContentPartFieldSettings": {
-                  "DisplayName": "Selected ContentItem",
+                  "DisplayName": "Selected Content Item",
                   "Position": "0"
                 },
                 "ContentPickerFieldSettings": {
