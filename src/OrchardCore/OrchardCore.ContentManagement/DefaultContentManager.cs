@@ -480,7 +480,7 @@ namespace OrchardCore.ContentManagement
                         // Consumers should implement validated handlers to alter the success of that operation.
                         await ReversedHandlers.InvokeAsync((handler, context) => handler.ImportedAsync(context), context, _logger);
 
-                        //TODO can be removed when sessionHelper.Save() implemented.
+                        // Re-enlist content item here in case of session queries.
                         _session.Save(importingItem);
                     }
                     else
@@ -534,7 +534,7 @@ namespace OrchardCore.ContentManagement
                         // Consumers should implement validated handlers to alter the success of that operation.
                         await ReversedHandlers.InvokeAsync((handler, context) => handler.ImportedAsync(context), context, _logger);
 
-                        //TODO can be removed when sessionHelper.Save() implemented.
+                        // Re-enlist content item here in case of session queries.
                         _session.Save(originalVersion);
                     }
                 }
@@ -740,7 +740,6 @@ namespace OrchardCore.ContentManagement
             }
 
             // Re-enlist content item here in case of session queries.
-            // TODO remove when sessionHelper.Save() implemented;
             _session.Save(contentItem);
 
             return result;
@@ -823,7 +822,7 @@ namespace OrchardCore.ContentManagement
                 }
             }
 
-            // TODO remove when sessionHelper.Save() implemented.
+            // Re-enlist content item here in case of session queries.
             _session.Save(updatingVersion);
 
             return result;
@@ -906,7 +905,6 @@ namespace OrchardCore.ContentManagement
                 {
                     version.Published = false;
                     version.Latest = false;
-                    // TODO implement sessionHelper.Save
                     _session.Save(version);
                 }
 
