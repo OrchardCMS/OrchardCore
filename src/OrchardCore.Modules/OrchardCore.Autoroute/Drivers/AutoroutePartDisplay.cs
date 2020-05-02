@@ -144,7 +144,6 @@ namespace OrchardCore.Autoroute.Drivers
                 if (possibleConflicts.Any())
                 {
                     var hasConflict = false;
-                    // This logic is different to the check in the handler as here we checking
                     if (possibleConflicts.Any(x => x.ContentItemId != autoroute.ContentItem.ContentItemId) ||
                         possibleConflicts.Any(x => !string.IsNullOrEmpty(x.ContainedContentItemId) && x.ContainedContentItemId != autoroute.ContentItem.ContentItemId))
                     {
