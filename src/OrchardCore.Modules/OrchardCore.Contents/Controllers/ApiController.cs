@@ -1,6 +1,9 @@
+using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement;
 using OrchardCore.Contents;
 using OrchardCore.Mvc.Utilities;
@@ -14,13 +17,16 @@ namespace OrchardCore.Content.Controllers
     {
         private readonly IContentManager _contentManager;
         private readonly IAuthorizationService _authorizationService;
+        private readonly IStringLocalizer S;
 
         public ApiController(
             IContentManager contentManager,
-            IAuthorizationService authorizationService)
+            IAuthorizationService authorizationService,
+            IStringLocalizer<ApiController> stringLocalizer)
         {
             _authorizationService = authorizationService;
             _contentManager = contentManager;
+            S = stringLocalizer;
         }
 
         [Route("{contentItemId}"), HttpGet]
@@ -81,9 +87,18 @@ namespace OrchardCore.Content.Controllers
                 var newContentItem = await _contentManager.NewAsync(model.ContentType);
                 newContentItem.Merge(model);
 
-                await _contentManager.UpdateAndCreateAsync(newContentItem, draft ? VersionOptions.DraftRequired : VersionOptions.Published);
-
-                contentItem = newContentItem;
+                var result = await _contentManager.UpdateValidateAndCreateAsync(newContentItem, draft ? VersionOptions.DraftRequired : VersionOptions.Published);
+                if (result.Succeeded)
+                {
+                    contentItem = newContentItem;
+                }
+                else
+                {
+                    return Problem(
+                        title: S["One or more validation errors occurred."],
+                        detail: string.Join(',', result.Errors),
+                        statusCode: (int)HttpStatusCode.BadRequest);
+                }
             }
             else
             {
@@ -93,11 +108,23 @@ namespace OrchardCore.Content.Controllers
                 }
 
                 contentItem.Merge(model);
-                await _contentManager.UpdateAsync(contentItem);
 
-                if (!draft)
+                await _contentManager.UpdateAsync(contentItem);
+                var result = await _contentManager.ValidateAsync(contentItem);
+
+                if (result.Succeeded)
                 {
-                    await _contentManager.PublishAsync(contentItem);
+                    if (!draft)
+                    {
+                        await _contentManager.PublishAsync(contentItem);
+                    }
+                }
+                else
+                {
+                    return Problem(
+                        title: S["One or more validation errors occurred."],
+                        detail: string.Join(',', result.Errors),
+                        statusCode: (int)HttpStatusCode.BadRequest);
                 }
             }
 

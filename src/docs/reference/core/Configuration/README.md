@@ -1,23 +1,26 @@
 # Configuration
 
-Orchard Core extends ASP.NET Core `IConfiguration` with `IShellConfiguration`.
+Orchard Core extends ASP.NET Core `IConfiguration` with `IShellConfiguration` to allow tenant-specific configuration on top of the application-wide one.
 
-To learn more about ASP.NET Core `IConfiguration` visit <https://docs.microsoft.com/en-us/aspnet/core/fundamentals/configuration>
+To learn more about ASP.NET Core `IConfiguration` visit <https://docs.microsoft.com/en-us/aspnet/core/fundamentals/configuration>.
+
+Note that while this documentation page explains configuration happening in the root web app project on the example of `OrchardCore.Cms.Web.csproj` if you use Orchard from NuGet packages in your own web app then same is available in that web app project too.
+
 
 ## Config Sources
 
 Orchard Core supports a hierarchy of Configuration Sources
 
-* The `Startup` ASP.NET Core Project, e.g. `OrchardCore.Cms.Web.csproj`, `appsettings.json`, or by environment  `appsettings.Development.json`
-* Global Tenant Configuration `App_Data/appsettings.json`, or by environment `App_Data/appsettings.Development.json`  
-* Individual Tenant Configuration files located under each Tenant Folder in the `App_Data/Sites/{tenant_name}/appsettings.json` folder. **Note:** These are mutable files, and do not support an Environment version
-* Environment Variables, or AppSettings as Environment Variables via Azure
+* The `Startup` ASP.NET Core Project, e.g. `OrchardCore.Cms.Web.csproj`, `appsettings.json`, or by environment  `appsettings.Development.json`.
+* Global Tenant Configuration `App_Data/appsettings.json`, or by environment `App_Data/appsettings.Development.json`.
+* Individual Tenant Configuration files located under each Tenant Folder in the `App_Data/Sites/{tenant_name}/appsettings.json` folder. **Note:** These are mutable files, and do not support an Environment version.
+* Environment Variables, or AppSettings as Environment Variables via Azure.
 
 The Configuration Sources are loaded in the above order, and settings lower in the hierarchy will override values configured higher up, i.e. an Global Tenant value will always be overridden by an Environment Variable.
 
 ### `IShellConfiguration` in the `OrchardCore.Cms.Web.csproj` Startup Project
 
-Orchard Core stores all Configuration data under the `OrchardCore` section in `appsettings.json` files
+Orchard Core stores all Configuration data under the `OrchardCore` section in `appsettings.json` files:
 
 ```
 {
@@ -27,7 +30,7 @@ Orchard Core stores all Configuration data under the `OrchardCore` section in `a
 }
 ```
 
-Each Orchard Core module has its own configuration section under the `OrchardCore` section
+Each Orchard Core module has its own configuration section under the `OrchardCore` section:
 
 ```
 {
@@ -38,6 +41,8 @@ Each Orchard Core module has its own configuration section under the `OrchardCor
   }
 }
 ```
+
+See the `appsettings.json` file for more examples.
 
 In addition you can specify a `Tenant` setting by using the Tenant Name, in this example the `Default` tenant. The tenant must exist and you need to include a `State` key for it to be recognized by `IShellConfiguration`. The value of the key is not important as the value in the `tenants.json` file will be used. The tenant name is case sensitive.
 
@@ -53,6 +58,32 @@ In addition you can specify a `Tenant` setting by using the Tenant Name, in this
   }
 }
 ```
+
+You can also configure `IOptions` from code in the web project's `Startup` class as explained in the [ASP.NET documentation](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/configuration/options). 
+
+A lot of Orchard Core features are configured through the admin UI with site settings stored in the database. If you wish to override the site settings, you can do this with your own configuration code.
+
+For example, the Email module allows SMTP configuration via the `SmtpSettings` class which by default is populated from the given tenant's site settings, as set on the admin. However, you can override the site settings from the `Startup` class like this (note that we use `PostConfigure` to override the site settings' values but if the module doesn't use site settings you can just use `Configure`):
+
+```
+public void ConfigureServices(IServiceCollection services)
+{
+    services
+        .AddOrchardCms()
+        .ConfigureServices(configure =>
+            configure.PostConfigure<SmtpSettings>(settings =>
+            {
+                // You could e.g. fetch the configuration values from an injected IShellConfiguration instance here.
+                settings.Port = 255;
+            }));
+}
+```
+
+This will thus make the SMTP port use this configuration despite any other value defined from site settings. 
+
+!!! note 
+    On the admin there will be no indication that this override happened, and the value displayed there will still be 
+    the one configured in site settings, so if you choose to do this you'll need to let your users know.
 
 ### `ORCHARD_APP_DATA` Environment Variable
 

@@ -16,7 +16,7 @@ namespace OrchardCore.Environment.Shell
     /// <summary>
     /// All <see cref="ShellContext"/> are pre-created when <see cref="InitializeAsync"/> is called on startup and where we first load
     /// all <see cref="ShellSettings"/> that we also need to register in the <see cref="IRunningShellTable"/> to serve incoming requests.
-    /// For each <see cref="ShellContext"/> a service container and then a request pilpeline are only built on the first matching request.
+    /// For each <see cref="ShellContext"/> a service container and then a request pipeline are only built on the first matching request.
     /// </summary>
     public class ShellHost : IShellHost, IDisposable
     {

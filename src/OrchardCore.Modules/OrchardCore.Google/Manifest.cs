@@ -3,9 +3,9 @@ using OrchardCore.Google;
 
 [assembly: Module(
     Name = "Google",
-    Author = "The Orchard Team",
-    Website = "https://orchardproject.net",
-    Version = "2.0.0",
+    Author = ManifestConstants.OrchardCoreTeam,
+    Website = ManifestConstants.OrchardCoreWebsite,
+    Version = ManifestConstants.OrchardCoreVersion,
     Category = "Google"
 )]
 
@@ -13,7 +13,8 @@ using OrchardCore.Google;
     Id = GoogleConstants.Features.GoogleAuthentication,
     Name = "Google Authentication",
     Category = "Google",
-    Description = "Authenticates users with their Google Account."
+    Description = "Authenticates users with their Google Account.",
+    Dependencies = new[] { "OrchardCore.Users" }
 )]
 
 [assembly: Feature(
