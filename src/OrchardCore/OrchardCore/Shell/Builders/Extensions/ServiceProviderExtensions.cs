@@ -41,7 +41,7 @@ namespace OrchardCore.Environment.Shell.Builders
 
                     if (service.Lifetime == ServiceLifetime.Singleton)
                     {
-                        // An host singleton is shared accross tenant containers but only registered instances are not disposed
+                        // An host singleton is shared across tenant containers but only registered instances are not disposed
                         // by the DI, so we check if it is disposable or if it uses a factory which may return a different type.
 
                         if (typeof(IDisposable).IsAssignableFrom(service.GetImplementationType()) || service.ImplementationFactory != null)
