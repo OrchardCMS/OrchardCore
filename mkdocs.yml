@@ -146,6 +146,7 @@ nav:
             - Health Check: docs/reference/modules/HealthChecks/README.md
             - Localization: docs/reference/modules/Localize/README.md
             - Logging Serilog: docs/reference/core/Logging.Serilog/readme.md
+            - Mini Profiler: docs/reference/modules/MiniProfiler/README.md
             - Modules: docs/reference/core/Modules/README.md
             - OpenId: docs/reference/modules/OpenId/README.md
             - Razor Helpers: docs/reference/core/Razor/README.md

@@ -1,7 +1,7 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   
   <!-- 
-    This file is included in the Nuget packages as "build\$(TargetFramework)\$(AssemblyName).props" file.
+    This file is included in the NuGet packages as "build\$(TargetFramework)\$(AssemblyName).props" file.
     It contains the logic to be referenced as a module by the main application.
   -->
   <ItemGroup>

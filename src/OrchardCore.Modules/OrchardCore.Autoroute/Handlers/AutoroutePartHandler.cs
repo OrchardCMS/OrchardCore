@@ -261,7 +261,8 @@ namespace OrchardCore.Autoroute.Handlers
                         var autoroutePart = contentItem.As<AutoroutePart>();
                         if (setHomepage && autoroutePart != null && autoroutePart.SetHomepage)
                         {
-                            await SetHomeRoute(autoroutePart, homeRoute => {
+                            await SetHomeRoute(autoroutePart, homeRoute =>
+                            {
                                 homeRoute[_options.ContentItemIdKey] = containerContentItemId;
                                 homeRoute[_options.JsonPathKey] = jItem.Path;
                             });
@@ -354,7 +355,7 @@ namespace OrchardCore.Autoroute.Handlers
 
             while (true)
             {
-                // Unversioned length + seperator char + version length.
+                // Unversioned length + separator char + version length.
                 var quantityCharactersToTrim = unversionedPath.Length + 1 + version.ToString().Length - AutoroutePartDisplay.MaxPathLength;
                 if (quantityCharactersToTrim > 0)
                 {

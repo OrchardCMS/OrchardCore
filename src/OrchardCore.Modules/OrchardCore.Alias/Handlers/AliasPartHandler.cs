@@ -145,7 +145,7 @@ namespace OrchardCore.Alias.Handlers
 
             while (true)
             {
-                // Unversioned length + seperator char + version length.
+                // Unversioned length + separator char + version length.
                 var quantityCharactersToTrim = unversionedAlias.Length + 1 + version.ToString().Length - AliasPartDisplayDriver.MaxAliasLength;
                 if (quantityCharactersToTrim > 0)
                 {
