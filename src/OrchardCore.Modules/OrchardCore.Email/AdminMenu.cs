@@ -23,7 +23,7 @@ namespace OrchardCore.Email
             builder
                 .Add(S["Configuration"], configuration => configuration
                     .Add(S["Settings"], settings => settings
-                       .Add(S["SMTP"], S["SMTP"].PrefixPosition(), entry => entry
+                       .Add(S["Smtp"], S["Smtp"].PrefixPosition(), entry => entry
                        .AddClass("email").Id("email")
                           .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = SmtpSettingsDisplayDriver.GroupId })
                           .Permission(Permissions.ManageEmailSettings)
