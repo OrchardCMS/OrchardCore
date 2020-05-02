@@ -1,7 +1,7 @@
 namespace OrchardCore.ContentManagement.Metadata.Records
 {
     /// <summary>
-    /// Reprensents a field name.
+    /// Represents a field name.
     /// </summary>
     public class ContentFieldDefinitionRecord
     {

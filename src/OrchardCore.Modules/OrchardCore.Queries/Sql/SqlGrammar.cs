@@ -135,7 +135,7 @@ namespace OrchardCore.Queries.Sql
             betweenExpr.Rule = expression + notOpt + "BETWEEN" + expression + "AND" + expression;
             inExpr.Rule = expression + notOpt + "IN" + "(" + functionArguments + ")";
             notOpt.Rule = Empty | NOT;
-            //funCall covers some psedo-operators and special forms like ANY(...), SOME(...), ALL(...), EXISTS(...), IN(...)
+            //funCall covers some pseudo-operators and special forms like ANY(...), SOME(...), ALL(...), EXISTS(...), IN(...)
             funCall.Rule = Id + "(" + functionArguments + ")";
             functionArguments.Rule = selectStatement | expressionList | "*";
             parameter.Rule = "@" + Id | "@" + Id + ":" + term;
