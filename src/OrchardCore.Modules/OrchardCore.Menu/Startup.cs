@@ -48,9 +48,9 @@ namespace OrchardCore.Menu
             services.AddContentPart<LinkMenuItemPart>()
                 .UseDisplayDriver<LinkMenuItemPartDisplayDriver>();
 
-            // ContentPickerMenuItemPart
-            services.AddContentPart<ContentPickerMenuItemPart>()
-                .UseDisplayDriver<ContentPickerMenuItemPartDisplayDriver>();
+            // ContentMenuItemPart
+            services.AddContentPart<ContentMenuItemPart>()
+                .UseDisplayDriver<ContentMenuItemPartDisplayDriver>();
 
             services.AddTagHelpers<MenuTagHelper>();
         }

@@ -3,11 +3,11 @@ using OrchardCore.Menu.Models;
 
 namespace OrchardCore.Menu.ViewModels
 {
-    public class ContentPickerMenuItemPartEditViewModel
+    public class ContentMenuItemPartEditViewModel
     {
         public string Name { get; set; }
 
         [BindNever]
-        public ContentPickerMenuItemPart MenuItemPart { get; set; }
+        public ContentMenuItemPart MenuItemPart { get; set; }
     }
 }

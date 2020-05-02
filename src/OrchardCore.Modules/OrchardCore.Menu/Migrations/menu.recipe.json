@@ -83,8 +83,8 @@
           ]
         },
         {
-          "Name": "ContentPickerMenuItem",
-          "DisplayName": "Content Picker Menu Item",
+          "Name": "ContentMenuItem",
+          "DisplayName": "Content Menu Item",
           "Settings": {
             "ContentTypeSettings": {
               "Stereotype": "MenuItem"
@@ -93,8 +93,8 @@
           },
           "ContentTypePartDefinitionRecords": [
             {
-              "PartName": "ContentPickerMenuItemPart",
-              "Name": "ContentPickerMenuItemPart",
+              "PartName": "ContentMenuItemPart",
+              "Name": "ContentMenuItemPart",
               "Settings": {
                 "ContentTypePartSettings": {
                   "Position": "0"
@@ -102,8 +102,8 @@
               }
             },
             {
-              "PartName": "ContentPickerMenuItem",
-              "Name": "ContentPickerMenuItem",
+              "PartName": "ContentMenuItem",
+              "Name": "ContentMenuItem",
               "Settings": {
                 "ContentTypePartSettings": {
                   "Position": "1"
@@ -130,11 +130,11 @@
           }
         },
         {
-          "Name": "ContentPickerMenuItemPart",
+          "Name": "ContentMenuItemPart",
           "Settings": {
             "ContentPartSettings": {
               "Attachable": true,
-              "DisplayName": "Content Picker Menu Item",
+              "DisplayName": "Content Menu Item",
               "Description": "Provides a menu link behavior with the Content Picker for your content item."
             }
           },

@@ -4,9 +4,9 @@
 
 @{
     ContentItem contentItem = Model.ContentItem;
-    var menuItemPart = contentItem.As<ContentPickerMenuItemPart>();
+    var menuItemPart = contentItem.As<ContentMenuItemPart>();
     var routeValues = new RouteValueDictionary(AutorouteOptions.Value.GlobalRouteValues);
-    routeValues[AutorouteOptions.Value.ContentItemIdKey] = menuItemPart.ContentItem.Content.ContentPickerMenuItemPart.SelectedContentItem.ContentItemIds[0];
+    routeValues[AutorouteOptions.Value.ContentItemIdKey] = menuItemPart.ContentItem.Content.ContentMenuItemPart.SelectedContentItem.ContentItemIds[0];
     var linkUrl = Url.RouteUrl(routeValues);
 }
 

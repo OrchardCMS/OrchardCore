@@ -2,7 +2,7 @@ using OrchardCore.ContentManagement;
 
 namespace OrchardCore.Menu.Models
 {
-    public class ContentPickerMenuItemPart : ContentPart
+    public class ContentMenuItemPart : ContentPart
     {
         /// <summary>
         /// The name of the link
