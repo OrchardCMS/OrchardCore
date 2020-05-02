@@ -4,7 +4,6 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement;
 using OrchardCore.FileStorage;
@@ -18,15 +17,12 @@ namespace OrchardCore.Media.Services
     public class AttachedMediaFieldFileService
     {
         private readonly IMediaFileStore _fileStore;
-        private readonly IStringLocalizer<AttachedMediaFieldFileService> T;
-        private readonly ILogger<AttachedMediaFieldFileService> _logger;
+        private readonly ILogger _logger;
 
         public AttachedMediaFieldFileService(IMediaFileStore fileStore,
-            IStringLocalizer<AttachedMediaFieldFileService> stringLocalizer,
             ILogger<AttachedMediaFieldFileService> logger)
         {
             _fileStore = fileStore;
-            T = stringLocalizer;
             _logger = logger;
 
             MediaFieldsFolder = "mediafields";
@@ -54,7 +50,7 @@ namespace OrchardCore.Media.Services
         {
             if (items == null)
             {
-                throw new System.ArgumentNullException(nameof(items));
+                throw new ArgumentNullException(nameof(items));
             }
 
             await EnsureGlobalDirectoriesAsync();
@@ -70,7 +66,7 @@ namespace OrchardCore.Media.Services
             await _fileStore.TryCreateDirectoryAsync(MediaFieldsTempSubFolder);
         }
 
-        // Files just uploaded and then inmediately discarded.
+        // Files just uploaded and then immediately discarded.
         private async Task RemoveTemporaryAsync(List<EditMediaFieldItemInfo> items)
         {
             foreach (var item in items.Where(i => i.IsRemoved && i.IsNew))

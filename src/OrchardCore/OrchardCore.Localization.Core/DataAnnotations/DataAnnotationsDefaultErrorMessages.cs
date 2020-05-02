@@ -1,14 +1,17 @@
 using Microsoft.Extensions.Localization;
 
-namespace OrchardCore.Localization.Core.DataAnnotations
+namespace OrchardCore.Localization.DataAnnotations
 {
-    internal class DataAnnotationsDefaultErrorMessages
+    /// <summary>
+    /// This is just a marker class to allow the POExtractor to extract the default error messages for data annotations attributes.
+    /// </summary>
+    internal sealed class DataAnnotationsDefaultErrorMessages
     {
-        private readonly IStringLocalizer<DataAnnotationsDefaultErrorMessages> S;
+        private readonly IStringLocalizer S = null;
 
-        public DataAnnotationsDefaultErrorMessages(IStringLocalizer<DataAnnotationsDefaultErrorMessages> localizer)
+        private DataAnnotationsDefaultErrorMessages()
         {
-            S = localizer;
+
         }
 
         public string AssociatedMetadataTypeTypeDescriptorMetadataTypeContainsUnknownProperties => S["The associated metadata type for type '{0}' contains the following unknown properties or fields: {1}. Please make sure that the names of these members match the names of the properties on the main type."];

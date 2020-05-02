@@ -3,20 +3,24 @@ using OrchardCore.Microsoft.Authentication;
 
 [assembly: Module(
     Name = "Microsoft Authentication",
-    Author = "The Orchard Team",
-    Website = "https://orchardproject.net",
-    Version = "2.0.0",
+    Author = ManifestConstants.OrchardCoreTeam,
+    Website = ManifestConstants.OrchardCoreWebsite,
+    Version = ManifestConstants.OrchardCoreVersion,
     Category = "Microsoft Authentication"
 )]
+
 [assembly: Feature(
     Id = MicrosoftAuthenticationConstants.Features.MicrosoftAccount,
     Name = "Microsoft Account Authentication",
     Category = "Microsoft Authentication",
-    Description = "Authenticates users with their Microsoft Account."
+    Description = "Authenticates users with their Microsoft Account.",
+    Dependencies = new[] { "OrchardCore.Users" }
 )]
+
 [assembly: Feature(
     Id = MicrosoftAuthenticationConstants.Features.AAD,
     Name = "Microsoft Azure Active Directory Authentication",
     Category = "Microsoft Authentication",
-    Description = "Authenticates users with their Azure Active Directory Account."
+    Description = "Authenticates users with their Azure Active Directory Account.",
+    Dependencies = new[] { "OrchardCore.Users" }
 )]

@@ -28,7 +28,6 @@ using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Users;
 using OrchardCore.Users.Models;
-using OrchardCore.Users.Services;
 
 namespace OrchardCore.Demo
 {

@@ -25,8 +25,8 @@ namespace OrchardCore.Users.Controllers
         private readonly INotifier _notifier;
         private readonly IEmailAddressValidator _emailAddressValidator;
         private readonly ILogger _logger;
-        private readonly IStringLocalizer<RegistrationController> S;
-        private readonly IHtmlLocalizer<RegistrationController> H;
+        private readonly IStringLocalizer S;
+        private readonly IHtmlLocalizer H;
 
         public RegistrationController(
             UserManager<IUser> userManager,
@@ -77,6 +77,14 @@ namespace OrchardCore.Users.Controllers
             if (!string.IsNullOrEmpty(model.Email) && !_emailAddressValidator.Validate(model.Email))
             {
                 ModelState.AddModelError("Email", S["Invalid email."]);
+
+                // Check if user with same email already exists
+                var userWithEmail = await _userManager.FindByEmailAsync(model.Email);
+
+                if (userWithEmail != null)
+                {
+                    ModelState.AddModelError("Email", S["A user with the same email already exists."]);
+                }
             }
             
             ViewData["ReturnUrl"] = returnUrl;

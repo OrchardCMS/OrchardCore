@@ -13,21 +13,18 @@ namespace OrchardCore.Workflows.Http.Filters
         private readonly IWorkflowTypeRouteEntries _workflowTypeRouteEntries;
         private readonly IWorkflowInstanceRouteEntries _workflowRouteEntries;
         private readonly IWorkflowTypeStore _workflowTypeStore;
-        private readonly IWorkflowStore _workflowStore;
 
         public WorkflowActionFilter(
             IWorkflowManager workflowManager,
             IWorkflowTypeRouteEntries workflowTypeRouteEntries,
             IWorkflowInstanceRouteEntries workflowRouteEntries,
-            IWorkflowTypeStore workflowTypeStore,
-            IWorkflowStore workflowStore
+            IWorkflowTypeStore workflowTypeStore
         )
         {
             _workflowManager = workflowManager;
             _workflowTypeRouteEntries = workflowTypeRouteEntries;
             _workflowRouteEntries = workflowRouteEntries;
             _workflowTypeStore = workflowTypeStore;
-            _workflowStore = workflowStore;
         }
 
         public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)

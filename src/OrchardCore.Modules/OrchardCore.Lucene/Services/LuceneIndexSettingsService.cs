@@ -20,7 +20,7 @@ namespace OrchardCore.Lucene
         private LuceneIndexSettingsDocument _document;
         private IChangeToken _changeToken;
 
-        public LuceneIndexSettingsService(IStore store, ISignal signal)
+        public LuceneIndexSettingsService(ISignal signal)
         {
             _signal = signal;
         }

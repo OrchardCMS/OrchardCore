@@ -154,7 +154,7 @@ namespace OrchardCore.Menu.Controllers
             // Look for the target menu item in the hierarchy
             JObject menuItem = FindMenuItem(menu.Content, menuItemId);
 
-            // Couldn't find targetted menu item
+            // Couldn't find targeted menu item
             if (menuItem == null)
             {
                 return NotFound();
@@ -200,7 +200,7 @@ namespace OrchardCore.Menu.Controllers
             // Look for the target menu item in the hierarchy
             JObject menuItem = FindMenuItem(menu.Content, menuItemId);
 
-            // Couldn't find targetted menu item
+            // Couldn't find targeted menu item
             if (menuItem == null)
             {
                 return NotFound();
@@ -255,7 +255,7 @@ namespace OrchardCore.Menu.Controllers
             // Look for the target menu item in the hierarchy
             var menuItem = FindMenuItem(menu.Content, menuItemId);
 
-            // Couldn't find targetted menu item
+            // Couldn't find targeted menu item
             if (menuItem == null)
             {
                 return NotFound();

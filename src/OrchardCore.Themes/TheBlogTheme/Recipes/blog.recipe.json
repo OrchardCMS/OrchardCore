@@ -2,9 +2,9 @@
   "name": "Blog",
   "displayName": "Blog",
   "description": "Provides a functional Blog with CMS features.",
-  "author": "The Orchard Team",
-  "website": "https://orchardproject.net",
-  "version": "2.0",
+  "author": "The Orchard Core Team",
+  "website": "https://orchardcore.net",
+  "version": "1.0.0-rc2",
   "issetuprecipe": true,
   "categories": [ "default" ],
   "tags": [ "blog" ],
@@ -603,7 +603,21 @@
                   "Position": "0"
                 }
               }
-            }
+            },
+            {
+              "PartName": "AutoroutePart",
+              "Name": "AutoroutePart",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "Position": "2"
+                },
+                "AutoroutePartSettings": {
+                  "AllowCustomPath": true,
+                  "Pattern": "{{ Model.ContentItem | display_text | slugify }}",
+                  "ManageContainedItemRoutes": true
+                }
+              }
+            }           
           ]
         },
         {
@@ -629,6 +643,20 @@
               "Settings": {
                 "ContentTypePartSettings": {
                   "Position": "0"
+                }
+              }
+            },
+            {
+              "PartName": "AutoroutePart",
+              "Name": "AutoroutePart",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "Position": "2"
+                },
+                "AutoroutePartSettings": {
+                  "AllowCustomPath": true,
+                  "Pattern": "{{ Model.ContentItem | display_text | slugify }}",
+                  "ManageContainedItemRoutes": true
                 }
               }
             }
@@ -699,7 +727,7 @@
                   "Multiple": false
                 }
               }  
-            },   			
+            },              
             {
               "FieldName": "TaxonomyField",
               "Name": "Tags",
@@ -746,7 +774,22 @@
               "Name": "Subtitle",
               "Settings": {
                 "ContentPartFieldSettings": {
-                  "DisplayName": "Subtitle"
+                  "DisplayName": "Subtitle",
+                  "Position": "0"
+                }
+              }
+            },
+            {
+              "FieldName": "MediaField",
+              "Name": "Image",
+              "Settings": {
+                "ContentPartFieldSettings": {
+                  "DisplayName": "Banner Image",
+                  "Position": "0"
+                },
+                "MediaFieldSettings": {
+                  "Required": false,
+                  "Multiple": false
                 }
               }
             }
@@ -978,6 +1021,12 @@
                 "DisplayText": "Earth",
                 "TitlePart": {
                   "Title": "Earth"
+                },
+                "AutoroutePart": {
+                  "Path": "earth"
+                },
+                "TermPart": {
+                  "TaxonomyContentItemId": "[js: variables('tagsContentItemId')]"
                 }
               },
               {
@@ -986,6 +1035,12 @@
                 "DisplayText": "Exploration",
                 "TitlePart": {
                   "Title": "Exploration"
+                },
+                "AutoroutePart": {
+                  "Path": "exploration"
+                },
+                "TermPart": {
+                  "TaxonomyContentItemId": "[js: variables('tagsContentItemId')]"
                 }
               },
               {
@@ -994,10 +1049,20 @@
                 "DisplayText": "Space",
                 "TitlePart": {
                   "Title": "Space"
+                },
+                "AutoroutePart": {
+                  "Path": "space"
+                },
+                "TermPart": {
+                  "TaxonomyContentItemId": "[js: variables('tagsContentItemId')]"
                 }
               }
             ],
             "TermContentType": "Tag"
+          },
+          "AutoroutePart": {
+            "Path": "tags",
+            "RouteContainedItems": true
           }
         },
         {
@@ -1025,10 +1090,20 @@
                 },
                 "TitlePart": {
                   "Title": "Travel"
+                },
+                "AutoroutePart": {
+                  "Path": "travel"
+                },
+                "TermPart": {
+                  "TaxonomyContentItemId": "[js: variables('categoriesContentItemId')]"
                 }
               }
             ],
             "TermContentType": "Category"
+          },
+          "AutoroutePart": {
+            "Path": "categories",
+            "RouteContainedItems": true
           }
         },
         {
@@ -1129,6 +1204,11 @@
           "Article": {
             "Subtitle": {
               "Text": "This is what I do."
+            },
+            "Image": {
+              "Paths": [
+                "about-bg.jpg"
+              ]
             }
           }
         },
@@ -1157,6 +1237,10 @@
     {
       "name": "media",
       "Files": [
+        {
+          "TargetPath": "about-bg.jpg",
+          "SourcePath": "../wwwroot/img/about-bg.jpg"
+        },
         {
           "TargetPath": "home-bg.jpg",
           "SourcePath": "../wwwroot/img/home-bg.jpg"

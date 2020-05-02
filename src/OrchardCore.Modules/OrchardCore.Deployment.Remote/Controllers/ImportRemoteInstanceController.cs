@@ -19,7 +19,6 @@ namespace OrchardCore.Deployment.Remote.Controllers
         private readonly RemoteClientService _remoteClientService;
         private readonly IDeploymentManager _deploymentManager;
         private readonly IDataProtector _dataProtector;
-        private readonly IHtmlLocalizer H;
 
         public ImportRemoteInstanceController(
             IDataProtectionProvider dataProtectionProvider,
@@ -30,7 +29,6 @@ namespace OrchardCore.Deployment.Remote.Controllers
             _deploymentManager = deploymentManager;
             _remoteClientService = remoteClientService;
             _dataProtector = dataProtectionProvider.CreateProtector("OrchardCore.Deployment").ToTimeLimitedDataProtector();
-            H = localizer;
         }
 
         /// <remarks>

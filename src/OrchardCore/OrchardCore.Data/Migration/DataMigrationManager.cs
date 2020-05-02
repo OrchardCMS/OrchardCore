@@ -178,7 +178,7 @@ namespace OrchardCore.Data.Migration
                 var current = 0;
                 if (dataMigrationRecord != null)
                 {
-                    // This can be null if a failed create migration has occured and the data migration record was saved.
+                    // This can be null if a failed create migration has occurred and the data migration record was saved.
                     current = dataMigrationRecord.Version.HasValue ? dataMigrationRecord.Version.Value : current;
                 }
                 else
@@ -370,13 +370,8 @@ namespace OrchardCore.Data.Migration
                 {
                     await UpdateAsync(featureId);
                 }
-                catch (Exception ex)
+                catch (Exception ex) when (!ex.IsFatal())
                 {
-                    if (ex.IsFatal())
-                    {
-                        throw;
-                    }
-
                     _logger.LogError(ex, "Could not run migrations automatically on '{FeatureName}'", featureId);
                 }
             }

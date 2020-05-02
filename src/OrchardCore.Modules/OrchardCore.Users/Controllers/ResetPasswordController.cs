@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using OrchardCore.DisplayManagement;
 using OrchardCore.Entities;
 using OrchardCore.Modules;
 using OrchardCore.Settings;
@@ -25,14 +24,13 @@ namespace OrchardCore.Users.Controllers
         private readonly UserManager<IUser> _userManager;
         private readonly ISiteService _siteService;
         private readonly IEnumerable<IPasswordRecoveryFormEvents> _passwordRecoveryFormEvents;
-        private readonly ILogger<ResetPasswordController> _logger;
-        private readonly IStringLocalizer<ResetPasswordController> S;
+        private readonly ILogger _logger;
+        private readonly IStringLocalizer S;
 
         public ResetPasswordController(
             IUserService userService,
             UserManager<IUser> userManager,
             ISiteService siteService,
-            IDisplayHelper displayHelper,
             IStringLocalizer<ResetPasswordController> stringLocalizer,
             ILogger<ResetPasswordController> logger,
             IEnumerable<IPasswordRecoveryFormEvents> passwordRecoveryFormEvents)

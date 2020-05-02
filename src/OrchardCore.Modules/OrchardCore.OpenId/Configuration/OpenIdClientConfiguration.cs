@@ -22,7 +22,7 @@ namespace OrchardCore.OpenId.Configuration
     {
         private readonly IOpenIdClientService _clientService;
         private readonly IDataProtectionProvider _dataProtectionProvider;
-        private readonly ILogger<OpenIdClientConfiguration> _logger;
+        private readonly ILogger _logger;
 
         public OpenIdClientConfiguration(
             IOpenIdClientService clientService,

@@ -42,7 +42,7 @@ namespace OrchardCore.Users.Controllers
         private readonly IClock _clock;
         private readonly IDistributedCache _distributedCache;
         private readonly IEnumerable<IExternalLoginEventHandler> _externalLoginHandlers;
-        private readonly IStringLocalizer<AccountController> S;
+        private readonly IStringLocalizer S;
 
         public AccountController(
             IUserService userService,
@@ -134,7 +134,7 @@ namespace OrchardCore.Users.Controllers
                     }
                     catch (Exception ex)
                     {
-                        _logger.LogError(ex, "An error occured while validating DefaultExternalLogin token");
+                        _logger.LogError(ex, "An error occurred while validating DefaultExternalLogin token");
                     }
                 }
             }
@@ -404,7 +404,7 @@ namespace OrchardCore.Users.Controllers
 
                 if (user != null)
                 {
-                    // Link external login to an axisting user
+                    // Link external login to an existing user
                     ViewData["UserName"] = user.UserName;
                     ViewData["Email"] = email;
 
@@ -447,7 +447,7 @@ namespace OrchardCore.Users.Controllers
                                 ConfirmPassword = null
                             }, S["Confirm your account"], _logger);
 
-                            // If the registration was successfull we can link the external provider and redirect the user
+                            // If the registration was successful we can link the external provider and redirect the user
                             if (user != null)
                             {
                                 var identityResult = await _signInManager.UserManager.AddLoginAsync(user, new UserLoginInfo(info.LoginProvider, info.ProviderKey, info.ProviderDisplayName));
