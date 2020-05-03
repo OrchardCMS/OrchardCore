@@ -67,7 +67,7 @@ The preconfigured tenant will then appear in the `Tenants` list in the admin, an
 ### Tenant Postconfiguration
 
 To configure the values for a tenant after it has been created you can specify a section named for the tenant,
-without a state value.
+without having to provide a state value.
 
 ```
 {
@@ -95,8 +95,8 @@ public void ConfigureServices(IServiceCollection services)
 {
     services
         .AddOrchardCms()
-        .ConfigureServices(configure =>
-            configure.PostConfigure<SmtpSettings>(settings =>
+        .ConfigureServices(tenantServices =>
+            tenantServices.PostConfigure<SmtpSettings>(settings =>
             {
                 // You could e.g. fetch the configuration values from an injected IShellConfiguration instance here.
                 settings.Port = 255;
