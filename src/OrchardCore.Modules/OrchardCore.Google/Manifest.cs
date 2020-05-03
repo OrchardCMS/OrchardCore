@@ -13,8 +13,7 @@ using OrchardCore.Google;
     Id = GoogleConstants.Features.GoogleAuthentication,
     Name = "Google Authentication",
     Category = "Google",
-    Description = "Authenticates users with their Google Account.",
-    Dependencies = new[] { "OrchardCore.Users" }
+    Description = "Authenticates users with their Google Account."
 )]
 
 [assembly: Feature(

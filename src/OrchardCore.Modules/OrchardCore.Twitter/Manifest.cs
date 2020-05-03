@@ -21,5 +21,5 @@ using OrchardCore.Twitter;
     Name = "Sign in with Twitter",
     Category = "Twitter",
     Description = "Authenticates users with their Twitter Account.",
-    Dependencies = new[] { TwitterConstants.Features.Twitter, "OrchardCore.Users" }
+    Dependencies = new[] { TwitterConstants.Features.Twitter }
 )]
