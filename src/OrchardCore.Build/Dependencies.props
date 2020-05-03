@@ -30,7 +30,7 @@
     <PackageManagement Include="NodaTime" Version="2.4.7" />
     <PackageManagement Include="OpenIddict" Version="2.0.1" />
     <PackageManagement Include="OpenIddict.Core" Version="2.0.1" />
-    <PackageManagement Include="OrchardCore.Translations.All" Version="1.0.0-rc1-100729" />
+    <PackageManagement Include="OrchardCore.Translations.All" Version="1.0.0-rc2-106802" />
     <PackageManagement Include="Serilog.AspNetCore" Version="3.2.0" />
     <PackageManagement Include="SixLabors.ImageSharp.Web" Version="1.0.0-rc0001" />
     <PackageManagement Include="xunit.analyzers" Version="0.10.0" />
