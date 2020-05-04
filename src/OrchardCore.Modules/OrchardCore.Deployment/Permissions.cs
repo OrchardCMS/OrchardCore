@@ -9,7 +9,7 @@ namespace OrchardCore.Deployment
     {
         public static readonly Permission ManageDeploymentPlan = new Permission("ManageDeploymentPlan", "Manage deployment plan");
         public static readonly Permission Export = new Permission("Export", "Export Data");
-        public static readonly Permission Import = new Permission("Import", "Import Data");
+        public static readonly Permission Import = new Permission("Import", "Import Data", isSecurityCritical: true);
 
         public Task<IEnumerable<Permission>> GetPermissionsAsync()
         {

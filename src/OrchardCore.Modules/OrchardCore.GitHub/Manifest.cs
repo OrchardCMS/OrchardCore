@@ -13,6 +13,5 @@ using OrchardCore.GitHub;
     Id = GitHubConstants.Features.GitHubAuthentication,
     Name = "GitHub Authentication",
     Category = "GitHub",
-    Description = "Authenticates users with their GitHub Account.",
-    Dependencies = new[] { "OrchardCore.Users" }
+    Description = "Authenticates users with their GitHub Account."
 )]
