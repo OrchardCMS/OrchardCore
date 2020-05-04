@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.Contents.Workflows.Handlers;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Helpers;
@@ -16,11 +17,21 @@ namespace OrchardCore.Contents.Workflows.Activities
 {
     public class UpdateContentTask : ContentTask
     {
+        private readonly IUpdateModelAccessor _updateModelAccessor;
         private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
 
-        public UpdateContentTask(IContentManager contentManager, IWorkflowExpressionEvaluator expressionEvaluator, IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer<UpdateContentTask> localizer)
+        private bool _fromDriver;
+        private bool _fromHandler;
+
+        public UpdateContentTask(
+            IContentManager contentManager,
+            IUpdateModelAccessor updateModelAccessor,
+            IWorkflowExpressionEvaluator expressionEvaluator,
+            IWorkflowScriptEvaluator scriptEvaluator,
+            IStringLocalizer<UpdateContentTask> localizer)
             : base(contentManager, scriptEvaluator, localizer)
         {
+            _updateModelAccessor = updateModelAccessor;
             _expressionEvaluator = expressionEvaluator;
         }
 
@@ -37,6 +48,12 @@ namespace OrchardCore.Contents.Workflows.Activities
         }
 
         public bool Publish
+        {
+            get => GetProperty<bool>();
+            set => SetProperty(value);
+        }
+
+        public bool Inline
         {
             get => GetProperty<bool>();
             set => SetProperty(value);
@@ -61,26 +78,56 @@ namespace OrchardCore.Contents.Workflows.Activities
 
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            return Outcomes(S["Done"]);
+            return Outcomes(S["Done"], S["Failed"]);
+        }
+
+        public override Task OnInputReceivedAsync(WorkflowExecutionContext workflowContext, IDictionary<string, object> input)
+        {
+            // The activity may be executed inline from the 'UserTaskEventContentDriver'.
+            if (input.GetValue<string>("UserAction") != null)
+            {
+                _fromDriver = true;
+            }
+
+            // The activity may be executed inline from the 'ContentsHandler'.
+            if (input.GetValue<IContent>(ContentsHandler.ContentItemInputKey) != null)
+            {
+                _fromHandler = true;
+            }
+
+            return Task.CompletedTask;
         }
 
         public async override Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
             var contentItemId = await GetContentItemIdAsync(workflowContext);
 
-            // Use 'DraftRequired' so that we mutate a new version unless the type is not 'Versionable'.
-            var contentItem = await ContentManager.GetAsync(contentItemId, VersionOptions.DraftRequired);
+            if (contentItemId == null)
+            {
+                throw new InvalidOperationException($"The {workflowContext.WorkflowType.Name}:{DisplayText} activity failed to evaluate the 'ContentItemId'.");
+            }
+
+            // Check if the activity is executed inline as a content driver or as a content handler.
+            var asDriver = _fromDriver && String.Equals(workflowContext.CorrelationId, contentItemId, StringComparison.OrdinalIgnoreCase);
+            var asHandler = _fromHandler && String.Equals(workflowContext.CorrelationId, contentItemId, StringComparison.OrdinalIgnoreCase);
+            var asDriverOrHandler = asDriver || asHandler;
+
+            ContentItem contentItem = null;
+
+            if (!asHandler)
+            {
+                // Use 'DraftRequired' so that we mutate a new version unless the type is not 'Versionable'.
+                contentItem = await ContentManager.GetAsync(contentItemId, VersionOptions.DraftRequired);
+            }
+            else
+            {
+                // If executed as an handler we use the content item that has been passed to the workflow context input.
+                contentItem = workflowContext.Input.GetValue<IContent>(ContentsHandler.ContentItemInputKey)?.ContentItem;
+            }
 
             if (contentItem == null)
             {
-                // If e.g. in the same scope of a related 'ContentCreatedEvent', the content item is not yet persisted
-                // nor cached, so we fallback to the workflow context input that has been set by the 'ContentsHandler'.
-                contentItem = workflowContext.Input.GetValue<IContent>(ContentsHandler.ContentItemInputKey)?.ContentItem;
-
-                if (!String.Equals(contentItem?.ContentItemId, contentItemId, StringComparison.OrdinalIgnoreCase))
-                {
-                    throw new InvalidOperationException($"The {workflowContext.WorkflowType.Name}:{DisplayText} activity failed to retrieve the related content item.");
-                }
+                throw new InvalidOperationException($"The {workflowContext.WorkflowType.Name}:{DisplayText} activity failed to retrieve the content item.");
             }
 
             if (!String.IsNullOrWhiteSpace(ContentProperties.Expression))
@@ -89,18 +136,41 @@ namespace OrchardCore.Contents.Workflows.Activities
                 contentItem.Merge(JObject.Parse(contentProperties), new JsonMergeSettings { MergeArrayHandling = MergeArrayHandling.Replace });
             }
 
-            await ContentManager.UpdateAsync(contentItem);
-
-            if (Publish)
+            // Drivers / handlers are not intended to call content manager methods.
+            if (!asDriverOrHandler)
             {
-                await ContentManager.PublishAsync(contentItem);
+                await ContentManager.UpdateAsync(contentItem);
             }
 
-            workflowContext.LastResult = contentItem;
             workflowContext.CorrelationId = contentItem.ContentItemId;
             workflowContext.Properties[ContentsHandler.ContentItemInputKey] = contentItem;
 
-            return Outcomes("Done");
+            var result = await ContentManager.ValidateAsync(contentItem);
+
+            if (result.Succeeded)
+            {
+                // Drivers / handlers are not intended to call content manager methods.
+                if (Publish && !asDriverOrHandler)
+                {
+                    await ContentManager.PublishAsync(contentItem);
+                }
+
+                workflowContext.LastResult = contentItem;
+                return Outcomes("Done");
+            }
+            else
+            {
+                // Drivers / handlers are intended to add errors to the model state.
+                if (asDriverOrHandler)
+                {
+                    _updateModelAccessor.ModelUpdater.ModelState.AddModelError(nameof(UpdateContentTask),
+                        $"The {workflowContext.WorkflowType.Name}:{DisplayText} activity failed to update the content item: "
+                        + String.Join(", ", result.Errors));
+                }
+
+                workflowContext.LastResult = result;
+                return Outcomes("Failed");
+            }
         }
     }
 }

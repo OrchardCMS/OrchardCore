@@ -3,11 +3,12 @@
 @{
     var actions = Model.Actions;
 }
-@if (actions.Count <= 2)
+@if (actions.Count <= 1)
 {
     @foreach (var action in actions)
     {
-        <button type="submit" name="submit.Save" class="btn btn-warning" value="user-task.@action">@T[action]</button>
+        <button type="submit" name="submit.Save" class="btn btn-warning" value="user-task.@action">@T[action] @T["and Save"]</button>
+        <button type="submit" name="submit.Publish" class="btn btn-warning" value="user-task.@action">@T[action] @T["and Publish"]</button>
     }
 }
 else
@@ -19,7 +20,8 @@ else
         <div class="dropdown-menu" aria-labelledby="userActionsButtonGroup">
             @foreach (var action in actions)
             {
-                <button type="submit" name="submit.Save" class="dropdown-item" value="user-task.@action">@T[action]</button>
+                <button type="submit" name="submit.Save" class="dropdown-item" value="user-task.@action">@T[action] @T["and Save"]</button>
+                <button type="submit" name="submit.Publish" class="dropdown-item" value="user-task.@action">@T[action] @T["and Publish"]</button>
             }
         </div>
     </div>

@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -88,17 +89,24 @@ namespace OrchardCore.Content.Controllers
                 newContentItem.Merge(model);
 
                 var result = await _contentManager.UpdateValidateAndCreateAsync(newContentItem, draft ? VersionOptions.DraftRequired : VersionOptions.Published);
-                if (result.Succeeded)
-                {
-                    contentItem = newContentItem;
-                }
-                else
+
+                if (!result.Succeeded)
                 {
                     return Problem(
                         title: S["One or more validation errors occurred."],
                         detail: string.Join(',', result.Errors),
                         statusCode: (int)HttpStatusCode.BadRequest);
                 }
+                else if (!ModelState.IsValid)
+                {
+                    // A workflow activity acting as an inline handler may have added some model state errors.
+                    return Problem(
+                        title: S["One or more validation errors occurred."],
+                        detail: String.Join(", ", ModelState.Values.SelectMany(x => x.Errors.Select(x => x.ErrorMessage))),
+                        statusCode: (int)HttpStatusCode.BadRequest);
+                }
+
+                contentItem = newContentItem;
             }
             else
             {
@@ -112,19 +120,25 @@ namespace OrchardCore.Content.Controllers
                 await _contentManager.UpdateAsync(contentItem);
                 var result = await _contentManager.ValidateAsync(contentItem);
 
-                if (result.Succeeded)
-                {
-                    if (!draft)
-                    {
-                        await _contentManager.PublishAsync(contentItem);
-                    }
-                }
-                else
+                if (!result.Succeeded)
                 {
                     return Problem(
                         title: S["One or more validation errors occurred."],
                         detail: string.Join(',', result.Errors),
                         statusCode: (int)HttpStatusCode.BadRequest);
+                }
+                else if (!ModelState.IsValid)
+                {
+                    // A workflow activity acting as an inline handler may have added some model state errors.
+                    return Problem(
+                        title: S["One or more validation errors occurred."],
+                        detail: String.Join(", ", ModelState.Values.SelectMany(x => x.Errors.Select(x => x.ErrorMessage))),
+                        statusCode: (int)HttpStatusCode.BadRequest);
+                }
+
+                if (!draft)
+                {
+                    await _contentManager.PublishAsync(contentItem);
                 }
             }
 

@@ -59,7 +59,7 @@ namespace OrchardCore.Workflows.UserTasks.Drivers
         public override async Task<IDisplayResult> UpdateAsync(ContentItem model, IUpdateModel updater)
         {
             var httpContext = _httpContextAccessor.HttpContext;
-            var action = (string)httpContext.Request.Form["submit.Save"];
+            var action = (string)httpContext.Request.Form["submit.Save"] ?? httpContext.Request.Form["submit.Publish"];
             if (action?.StartsWith("user-task.", StringComparison.Ordinal) == true)
             {
                 action = action.Substring("user-task.".Length);
