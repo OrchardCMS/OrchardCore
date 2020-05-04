@@ -53,12 +53,6 @@ namespace OrchardCore.Contents.Workflows.Activities
             set => SetProperty(value);
         }
 
-        public bool Inline
-        {
-            get => GetProperty<bool>();
-            set => SetProperty(value);
-        }
-
         public WorkflowExpression<string> ContentItemIdExpression
         {
             get => GetProperty(() => new WorkflowExpression<string>());
