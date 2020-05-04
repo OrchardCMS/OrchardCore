@@ -539,9 +539,6 @@ namespace OrchardCore.Contents.Controllers
 
             // The content item needs to be marked as saved in case the drivers or the handlers have executed some query which
             // would flush the saved entities, and then also done some other mutations, inside the above 'UpdateEditorAsync()'.
-            // Note: We don't need it in 'CreatePost()' but just because 'CreateAsync()' does it after calling the handlers.
-            // TODO: To be implemented transparently.
-
             _session.Save(contentItem);
 
             await conditionallyPublish(contentItem);

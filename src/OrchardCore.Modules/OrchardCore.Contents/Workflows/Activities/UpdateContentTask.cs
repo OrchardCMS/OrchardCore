@@ -20,8 +20,8 @@ namespace OrchardCore.Contents.Workflows.Activities
         private readonly IUpdateModelAccessor _updateModelAccessor;
         private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
 
-        private bool _fromDriver;
-        private bool _fromHandler;
+        private bool _fromContentDriver;
+        private bool _fromContentHandler;
 
         public UpdateContentTask(
             IContentManager contentManager,
@@ -80,13 +80,13 @@ namespace OrchardCore.Contents.Workflows.Activities
             // The activity may be executed inline from the 'UserTaskEventContentDriver'.
             if (input.GetValue<string>("UserAction") != null)
             {
-                _fromDriver = true;
+                _fromContentDriver = true;
             }
 
             // The activity may be executed inline from the 'ContentsHandler'.
             if (input.GetValue<IContent>(ContentsHandler.ContentItemInputKey) != null)
             {
-                _fromHandler = true;
+                _fromContentHandler = true;
             }
 
             return Task.CompletedTask;
@@ -102,13 +102,15 @@ namespace OrchardCore.Contents.Workflows.Activities
             }
 
             // Check if the activity is executed inline as a content driver or as a content handler.
-            var asDriver = _fromDriver && String.Equals(workflowContext.CorrelationId, contentItemId, StringComparison.OrdinalIgnoreCase);
-            var asHandler = _fromHandler && String.Equals(workflowContext.CorrelationId, contentItemId, StringComparison.OrdinalIgnoreCase);
-            var asDriverOrHandler = asDriver || asHandler;
+            var correlated = String.Equals(workflowContext.CorrelationId, contentItemId, StringComparison.OrdinalIgnoreCase);
+
+            var asContentDriver = _fromContentDriver && correlated;
+            var asContentHandler = _fromContentHandler && correlated;
+            var asDriverOrHandler = asContentDriver || asContentHandler;
 
             ContentItem contentItem = null;
 
-            if (!asHandler)
+            if (!asContentHandler)
             {
                 // Use 'DraftRequired' so that we mutate a new version unless the type is not 'Versionable'.
                 contentItem = await ContentManager.GetAsync(contentItemId, VersionOptions.DraftRequired);
@@ -139,16 +141,13 @@ namespace OrchardCore.Contents.Workflows.Activities
             workflowContext.CorrelationId = contentItem.ContentItemId;
             workflowContext.Properties[ContentsHandler.ContentItemInputKey] = contentItem;
 
-            // If not acting as a driver / handler, we should call 'ValidateAsync()' that replaces the regular driver validations,
-            // idem if acting as an handler as we are executing after the regular validations. And if acting as a driver after an
-            // edit 'UserAction', even if we are executing before the part / field drivers, if we added some specific data we may
-            // need to call some custom validate handlers. So we always call the content manager 'ValidateAsync()' method.
-
+            // We call 'ValidateAsync()' that replaces some part / field driver validations, even if acting as an handler
+            // as we are executing after them, and as a driver we may still need to call some custom validation handlers.
             var result = await ContentManager.ValidateAsync(contentItem);
 
             if (result.Succeeded)
             {
-                // Drivers / handlers are not intended to call content manager methods.
+                // Content drivers / handlers are not intended to call content manager methods.
                 if (Publish && !asDriverOrHandler)
                 {
                     await ContentManager.PublishAsync(contentItem);
@@ -159,7 +158,7 @@ namespace OrchardCore.Contents.Workflows.Activities
             }
             else
             {
-                // Drivers / handlers are intended to add errors to the model state.
+                // Content drivers / handlers are intended to add errors to the model state.
                 if (asDriverOrHandler)
                 {
                     _updateModelAccessor.ModelUpdater.ModelState.AddModelError(nameof(UpdateContentTask),
