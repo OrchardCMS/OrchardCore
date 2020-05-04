@@ -540,14 +540,14 @@ namespace OrchardCore.Users.Services
                 throw new ArgumentNullException(nameof(user));
             }
 
-            if (string.IsNullOrWhiteSpace(loginProvider))
+            if (string.IsNullOrEmpty(loginProvider))
             {
-                throw new ArgumentNullException(nameof(loginProvider));
+                throw new ArgumentException(nameof(loginProvider));
             }
 
-            if (string.IsNullOrWhiteSpace(name))
+            if (string.IsNullOrEmpty(name))
             {
-                throw new ArgumentNullException(name);
+                throw new ArgumentException(nameof(name));
             }
 
             var userId = await GetUserIdAsync(user, cancellationToken);
@@ -567,14 +567,14 @@ namespace OrchardCore.Users.Services
                 throw new ArgumentNullException(nameof(user));
             }
 
-            if (string.IsNullOrWhiteSpace(loginProvider))
+            if (string.IsNullOrEmpty(loginProvider))
             {
-                throw new ArgumentNullException(nameof(loginProvider));
+                throw new ArgumentException(nameof(loginProvider));
             }
 
-            if (string.IsNullOrWhiteSpace(name))
+            if (string.IsNullOrEmpty(name))
             {
-                throw new ArgumentNullException(name);
+                throw new ArgumentException(nameof(name));
             }
 
             var userId = await GetUserIdAsync(user, cancellationToken);
@@ -594,19 +594,19 @@ namespace OrchardCore.Users.Services
                 throw new ArgumentNullException(nameof(user));
             }
 
-            if (string.IsNullOrWhiteSpace(loginProvider))
+            if (string.IsNullOrEmpty(loginProvider))
             {
-                throw new ArgumentNullException(nameof(loginProvider));
+                throw new ArgumentException(nameof(loginProvider));
             }
 
-            if (string.IsNullOrWhiteSpace(name))
+            if (string.IsNullOrEmpty(name))
             {
-                throw new ArgumentNullException(nameof(name));
+                throw new ArgumentException(nameof(name));
             }
 
-            if (string.IsNullOrWhiteSpace(value))
+            if (string.IsNullOrEmpty(value))
             {
-                throw new ArgumentNullException(nameof(value));
+                throw new ArgumentException(nameof(value));
             }
 
             var userId = await GetUserIdAsync(user, cancellationToken);
