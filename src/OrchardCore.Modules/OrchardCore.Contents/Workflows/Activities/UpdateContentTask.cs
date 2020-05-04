@@ -145,6 +145,11 @@ namespace OrchardCore.Contents.Workflows.Activities
             workflowContext.CorrelationId = contentItem.ContentItemId;
             workflowContext.Properties[ContentsHandler.ContentItemInputKey] = contentItem;
 
+            // If not acting as a driver / handler, we should call 'ValidateAsync()' that replaces the regular driver validations,
+            // idem if acting as an handler as we are executing after the regular validations. And if acting as a driver after an
+            // edit 'UserAction', even if we are executing before the part / field drivers, if we added some specific data we may
+            // need to call some custom validate handlers. So we always call the content manager 'ValidateAsync()' method.
+
             var result = await ContentManager.ValidateAsync(contentItem);
 
             if (result.Succeeded)
