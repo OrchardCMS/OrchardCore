@@ -4,6 +4,8 @@ using Fluid;
 using Microsoft.AspNetCore.Html;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore;
+using OrchardCore.Infrastructure.SafeCodeFilters;
+using OrchardCore.Infrastructure.Script;
 using OrchardCore.Liquid;
 
 public static class ContentRazorHelperExtensions
@@ -12,13 +14,27 @@ public static class ContentRazorHelperExtensions
     /// Converts Markdown string to HTML.
     /// </summary>
     /// <param name="markdown">The markdown to convert.</param>
-    public static async Task<IHtmlContent> MarkdownToHtmlAsync(this IOrchardHelper orchardHelper, string markdown)
+    public static async Task<IHtmlContent> MarkdownToHtmlAsync(this IOrchardHelper orchardHelper, string markdown, bool sanitize = true)
     {
-        var liquidTemplateManager = orchardHelper.HttpContext.RequestServices.GetRequiredService<ILiquidTemplateManager>();
-        var htmlEncoder = orchardHelper.HttpContext.RequestServices.GetRequiredService<HtmlEncoder>();
+        var safeCodeFilterManager = orchardHelper.HttpContext.RequestServices.GetRequiredService<ISafeCodeFilterManager>();
 
-        markdown = await liquidTemplateManager.RenderAsync(markdown, htmlEncoder);
+        if (!sanitize)
+        {
+            var liquidTemplateManager = orchardHelper.HttpContext.RequestServices.GetRequiredService<ILiquidTemplateManager>();
+            var htmlEncoder = orchardHelper.HttpContext.RequestServices.GetRequiredService<HtmlEncoder>();
 
-        return new HtmlString(Markdig.Markdown.ToHtml(markdown));
+            markdown = await liquidTemplateManager.RenderAsync(markdown, htmlEncoder);
+        }
+
+        markdown = await safeCodeFilterManager.ProcessAsync(markdown);
+        markdown = Markdig.Markdown.ToHtml(markdown);
+
+        if (sanitize)
+        {
+            var sanitizer = orchardHelper.HttpContext.RequestServices.GetRequiredService<IHtmlScriptSanitizer>();
+            markdown = sanitizer.Sanitize(markdown);
+        }
+
+        return new HtmlString(markdown);
     }
 }

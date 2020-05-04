@@ -6,8 +6,11 @@ using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Infrastructure.SafeCodeFilters;
+using OrchardCore.Infrastructure.Script;
 using OrchardCore.Liquid;
 using OrchardCore.Markdown.Fields;
+using OrchardCore.Markdown.Settings;
 using OrchardCore.Markdown.ViewModels;
 
 namespace OrchardCore.Markdown.Drivers
@@ -16,12 +19,20 @@ namespace OrchardCore.Markdown.Drivers
     {
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly HtmlEncoder _htmlEncoder;
+        private readonly IHtmlScriptSanitizer _htmlScriptSanitizer;
+        private readonly ISafeCodeFilterManager _safeCodeFilterManager;
         private readonly IStringLocalizer S;
 
-        public MarkdownFieldDisplayDriver(ILiquidTemplateManager liquidTemplateManager, IStringLocalizer<MarkdownFieldDisplayDriver> localizer, HtmlEncoder htmlEncoder)
+        public MarkdownFieldDisplayDriver(ILiquidTemplateManager liquidTemplateManager,
+            HtmlEncoder htmlEncoder,
+            IHtmlScriptSanitizer htmlScriptSanitizer,
+            ISafeCodeFilterManager safeCodeFilterManager,
+            IStringLocalizer<MarkdownFieldDisplayDriver> localizer)
         {
             _liquidTemplateManager = liquidTemplateManager;
             _htmlEncoder = htmlEncoder;
+            _htmlScriptSanitizer = htmlScriptSanitizer;
+            _safeCodeFilterManager = safeCodeFilterManager;
             S = localizer;
         }
 
@@ -29,15 +40,21 @@ namespace OrchardCore.Markdown.Drivers
         {
             return Initialize<MarkdownFieldViewModel>(GetDisplayShapeType(context), async model =>
             {
+                var settings = context.PartFieldDefinition.GetSettings<MarkdownFieldSettings>();
                 model.Markdown = field.Markdown;
                 model.Field = field;
                 model.Part = context.ContentPart;
                 model.PartFieldDefinition = context.PartFieldDefinition;
 
-                model.Markdown = await _liquidTemplateManager.RenderAsync(field.Markdown, _htmlEncoder, model,
-                    scope => scope.SetValue("ContentItem", field.ContentItem));
+                if (settings.AllowCustomScripts)
+                {
+                    model.Markdown = await _liquidTemplateManager.RenderAsync(field.Markdown, _htmlEncoder, model,
+                        scope => scope.SetValue("ContentItem", field.ContentItem));
+                }
 
+                model.Markdown = await _safeCodeFilterManager.ProcessAsync(model.Markdown ?? "");
                 model.Html = Markdig.Markdown.ToHtml(model.Markdown ?? "");
+                model.Html = _htmlScriptSanitizer.Sanitize(model.Html ?? "");
             })
             .Location("Detail", "Content")
             .Location("Summary", "Content");

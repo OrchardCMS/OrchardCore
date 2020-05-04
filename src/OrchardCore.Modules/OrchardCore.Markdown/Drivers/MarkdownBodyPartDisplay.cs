@@ -6,8 +6,11 @@ using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Infrastructure.SafeCodeFilters;
+using OrchardCore.Infrastructure.Script;
 using OrchardCore.Liquid;
 using OrchardCore.Markdown.Models;
+using OrchardCore.Markdown.Settings;
 using OrchardCore.Markdown.ViewModels;
 
 namespace OrchardCore.Markdown.Drivers
@@ -16,18 +19,26 @@ namespace OrchardCore.Markdown.Drivers
     {
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly HtmlEncoder _htmlEncoder;
+        private readonly IHtmlScriptSanitizer _htmlScriptSanitizer;
+        private readonly ISafeCodeFilterManager _safeCodeFilterManager;
         private readonly IStringLocalizer S;
 
-        public MarkdownBodyPartDisplay(ILiquidTemplateManager liquidTemplateManager, IStringLocalizer<MarkdownBodyPartDisplay> localizer, HtmlEncoder htmlEncoder)
+        public MarkdownBodyPartDisplay(ILiquidTemplateManager liquidTemplateManager,
+            HtmlEncoder htmlEncoder,
+            IHtmlScriptSanitizer htmlScriptSanitizer,
+            ISafeCodeFilterManager safeCodeFilterManager,
+            IStringLocalizer<MarkdownBodyPartDisplay> localizer)
         {
             _liquidTemplateManager = liquidTemplateManager;
             _htmlEncoder = htmlEncoder;
+            _htmlScriptSanitizer = htmlScriptSanitizer;
+            _safeCodeFilterManager = safeCodeFilterManager;
             S = localizer;
         }
 
-        public override IDisplayResult Display(MarkdownBodyPart MarkdownBodyPart, BuildPartDisplayContext context)
+        public override IDisplayResult Display(MarkdownBodyPart markdownBodyPart, BuildPartDisplayContext context)
         {
-            return Initialize<MarkdownBodyPartViewModel>(GetDisplayShapeType(context), m => BuildViewModel(m, MarkdownBodyPart))
+            return Initialize<MarkdownBodyPartViewModel>(GetDisplayShapeType(context), m => BuildViewModel(m, markdownBodyPart, context.TypePartDefinition.GetSettings<MarkdownBodyPartSettings>()))
                 .Location("Detail", "Content:10")
                 .Location("Summary", "Content:10");
         }
@@ -63,16 +74,21 @@ namespace OrchardCore.Markdown.Drivers
             return Edit(model, context);
         }
 
-        private async ValueTask BuildViewModel(MarkdownBodyPartViewModel model, MarkdownBodyPart MarkdownBodyPart)
+        private async ValueTask BuildViewModel(MarkdownBodyPartViewModel model, MarkdownBodyPart markdownBodyPart, MarkdownBodyPartSettings settings)
         {
-            model.Markdown = MarkdownBodyPart.Markdown;
-            model.MarkdownBodyPart = MarkdownBodyPart;
-            model.ContentItem = MarkdownBodyPart.ContentItem;
+            model.Markdown = markdownBodyPart.Markdown;
+            model.MarkdownBodyPart = markdownBodyPart;
+            model.ContentItem = markdownBodyPart.ContentItem;
 
-            model.Markdown = await _liquidTemplateManager.RenderAsync(MarkdownBodyPart.Markdown, _htmlEncoder, model,
-                scope => scope.SetValue("ContentItem", model.ContentItem));
+            if (settings.AllowCustomScripts)
+            {
+                model.Markdown = await _liquidTemplateManager.RenderAsync(markdownBodyPart.Markdown, _htmlEncoder, model,
+                    scope => scope.SetValue("ContentItem", model.ContentItem));
+            }
 
+            model.Markdown = await _safeCodeFilterManager.ProcessAsync(model.Markdown ?? "");
             model.Html = Markdig.Markdown.ToHtml(model.Markdown ?? "");
+            model.Html = _htmlScriptSanitizer.Sanitize(model.Html ?? "");
         }
     }
 }

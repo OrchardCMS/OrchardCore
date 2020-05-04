@@ -1,1 +1,9 @@
-@model OrchardCore.Markdown.Settings.MarkdownBodyPartSettings
+@model MarkdownBodyPartSettingsViewModel
+
+<div class="form-group col-md-6">
+    <div class="custom-control custom-checkbox">
+        <input type="checkbox" class="custom-control-input" asp-for="AllowCustomScripts" checked="@Model.AllowCustomScripts" />
+        <label class="custom-control-label" asp-for="AllowCustomScripts">@T["Allow custom scripts"]</label>
+        <span class="hint">— @T["Whether the Markdown is sanitized or not in order to remove custom scripts."]</span>
+    </div>
+</div>

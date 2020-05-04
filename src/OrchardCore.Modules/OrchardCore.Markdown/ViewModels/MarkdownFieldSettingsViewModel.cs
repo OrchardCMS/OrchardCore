@@ -1,6 +1,6 @@
-namespace OrchardCore.Markdown.Settings
+namespace OrchardCore.Markdown.ViewModels
 {
-    public class MarkdownFieldSettings
+    public class MarkdownFieldSettingsViewModel
     {
         public bool AllowCustomScripts { get; set; }
         public string Hint { get; set; }

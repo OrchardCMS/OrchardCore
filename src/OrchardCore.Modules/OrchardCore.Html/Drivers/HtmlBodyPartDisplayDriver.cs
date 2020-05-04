@@ -9,6 +9,7 @@ using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Html.Models;
 using OrchardCore.Html.Settings;
 using OrchardCore.Html.ViewModels;
+using OrchardCore.Infrastructure.SafeCodeFilters;
 using OrchardCore.Infrastructure.Script;
 using OrchardCore.Liquid;
 
@@ -19,19 +20,25 @@ namespace OrchardCore.Html.Drivers
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly IHtmlScriptSanitizer _htmlScriptSanitizer;
         private readonly HtmlEncoder _htmlEncoder;
+        private readonly ISafeCodeFilterManager _safeCodeFilterManager;
         private readonly IStringLocalizer S;
 
-        public HtmlBodyPartDisplayDriver(ILiquidTemplateManager liquidTemplateManager, IStringLocalizer<HtmlBodyPartDisplayDriver> localizer, HtmlEncoder htmlEncoder, IHtmlScriptSanitizer htmlScriptSanitizer)
+        public HtmlBodyPartDisplayDriver(ILiquidTemplateManager liquidTemplateManager,
+            IHtmlScriptSanitizer htmlScriptSanitizer,
+            HtmlEncoder htmlEncoder,
+            ISafeCodeFilterManager safeCodeFilterManager,
+            IStringLocalizer<HtmlBodyPartDisplayDriver> localizer)
         {
             _liquidTemplateManager = liquidTemplateManager;
             _htmlScriptSanitizer = htmlScriptSanitizer;
             _htmlEncoder = htmlEncoder;
+            _safeCodeFilterManager = safeCodeFilterManager;
             S = localizer;
         }
 
         public override IDisplayResult Display(HtmlBodyPart HtmlBodyPart, BuildPartDisplayContext context)
         {
-            return Initialize<HtmlBodyPartViewModel>(GetDisplayShapeType(context), m => BuildViewModelAsync(m, HtmlBodyPart))
+            return Initialize<HtmlBodyPartViewModel>(GetDisplayShapeType(context), m => BuildViewModelAsync(m, HtmlBodyPart, context.TypePartDefinition.GetSettings<HtmlBodyPartSettings>()))
                 .Location("Detail", "Content:5")
                 .Location("Summary", "Content:10");
         }
@@ -62,21 +69,26 @@ namespace OrchardCore.Html.Drivers
                 }
                 else
                 {
-                    model.Html = (settings.AllowCustomScripts) ? viewModel.Html : _htmlScriptSanitizer.Sanitize(viewModel.Html);
+                    model.Html = settings.AllowCustomScripts ? viewModel.Html : _htmlScriptSanitizer.Sanitize(viewModel.Html);
                 }
             }
 
             return Edit(model, context);
         }
 
-        private async ValueTask BuildViewModelAsync(HtmlBodyPartViewModel model, HtmlBodyPart htmlBodyPart)
+        private async ValueTask BuildViewModelAsync(HtmlBodyPartViewModel model, HtmlBodyPart htmlBodyPart, HtmlBodyPartSettings settings)
         {
             model.Html = htmlBodyPart.Html;
             model.HtmlBodyPart = htmlBodyPart;
             model.ContentItem = htmlBodyPart.ContentItem;
 
-            model.Html = await _liquidTemplateManager.RenderAsync(htmlBodyPart.Html, _htmlEncoder, model,
-                scope => scope.SetValue("ContentItem", model.ContentItem));
+            if (settings.AllowCustomScripts)
+            {
+                model.Html = await _liquidTemplateManager.RenderAsync(htmlBodyPart.Html, _htmlEncoder, model,
+                    scope => scope.SetValue("ContentItem", model.ContentItem));
+            }
+
+            model.Html = await _safeCodeFilterManager.ProcessAsync(model.Html);
         }
     }
 }

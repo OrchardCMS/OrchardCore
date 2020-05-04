@@ -37,11 +37,12 @@ namespace OrchardCore.Html.Settings
             var model = new HtmlSettingsViewModel();
             var settings = new HtmlBodyPartSettings();
 
-            await context.Updater.TryUpdateModelAsync(model, Prefix);
+            if (await context.Updater.TryUpdateModelAsync(model, Prefix))
+            {
+                settings.AllowCustomScripts = model.AllowCustomScripts;
 
-            settings.AllowCustomScripts = model.AllowCustomScripts;
-
-            context.Builder.WithSettings(settings);
+                context.Builder.WithSettings(settings);
+            }
 
             return Edit(contentTypePartDefinition, context.Updater);
         }
