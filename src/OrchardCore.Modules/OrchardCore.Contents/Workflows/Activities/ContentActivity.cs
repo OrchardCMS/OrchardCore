@@ -16,10 +16,6 @@ namespace OrchardCore.Contents.Workflows.Activities
     {
         protected readonly IStringLocalizer S;
 
-        protected bool _fromContentDriver;
-        protected bool _fromContentHandler;
-        protected string _originalCorrelationId;
-
         protected ContentActivity(IContentManager contentManager, IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer localizer)
         {
             ContentManager = contentManager;
@@ -30,6 +26,12 @@ namespace OrchardCore.Contents.Workflows.Activities
         protected IContentManager ContentManager { get; }
 
         protected IWorkflowScriptEvaluator ScriptEvaluator { get; }
+
+        protected bool FromContentDriver { get; private set; }
+
+        protected bool FromContentHandler { get; private set; }
+
+        protected string OriginalCorrelationId { get; private set; }
 
         public override LocalizedString Category => S["Content"];
 
@@ -52,16 +54,16 @@ namespace OrchardCore.Contents.Workflows.Activities
             // The activity may be executed inline from the 'UserTaskEventContentDriver'.
             if (input.GetValue<string>("UserAction") != null)
             {
-                _fromContentDriver = true;
+                FromContentDriver = true;
             }
 
             // The activity may be executed inline from the 'ContentsHandler'.
             if (input.GetValue<IContent>(ContentsHandler.ContentItemInputKey) != null)
             {
-                _fromContentHandler = true;
+                FromContentHandler = true;
             }
 
-            _originalCorrelationId = workflowContext.CorrelationId;
+            OriginalCorrelationId = workflowContext.CorrelationId;
 
             return Task.CompletedTask;
         }

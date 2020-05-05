@@ -37,9 +37,9 @@ namespace OrchardCore.Contents.Workflows.Activities
             }
 
             // Check if the activity is executed inline as a correlated content driver or correlated content handler.
-            var correlated = String.Equals(_originalCorrelationId, content.ContentItem.ContentItemId, StringComparison.OrdinalIgnoreCase);
+            var correlated = String.Equals(OriginalCorrelationId, content.ContentItem.ContentItemId, StringComparison.OrdinalIgnoreCase);
 
-            if ((_fromContentDriver || _fromContentHandler) && correlated)
+            if ((FromContentDriver || FromContentHandler) && correlated)
             {
                 // Drivers / handlers are not intended to call content manager methods.
                 return Outcomes("Noop");

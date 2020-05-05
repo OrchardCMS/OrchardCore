@@ -82,10 +82,10 @@ namespace OrchardCore.Contents.Workflows.Activities
             }
 
             // Check if the activity is executed inline as a correlated content driver or correlated content handler.
-            var correlated = String.Equals(_originalCorrelationId, contentItemId, StringComparison.OrdinalIgnoreCase);
+            var correlated = String.Equals(OriginalCorrelationId, contentItemId, StringComparison.OrdinalIgnoreCase);
 
-            var asContentDriver = _fromContentDriver && correlated;
-            var asContentHandler = _fromContentHandler && correlated;
+            var asContentDriver = FromContentDriver && correlated;
+            var asContentHandler = FromContentHandler && correlated;
             var asDriverOrHandler = asContentDriver || asContentHandler;
 
             ContentItem contentItem = null;
