@@ -54,6 +54,14 @@
     <span class="hint">@T["extra scopes except openid and profile"]</span>
 </div>
 
+<div class="form-group" asp-validation-class-for="StoreExternalTokens">
+    <div class="custom-control custom-checkbox">
+        <input type="checkbox" class="custom-control-input" asp-for="StoreExternalTokens">
+        <label class="custom-control-label" asp-for="StoreExternalTokens">@T["Store tokens"]</label>
+        <span class="hint">— @T["Store external authentication tokens for reuse"]</span>
+    </div>
+</div>
+
 <h3>@T["Code Authentication Flow"]</h3>
 <h5 class="mb-3"><a class="hint" href="http://openid.net/specs/openid-connect-core-1_0.html#CodeFlowAuth" target="_blank">@T["see: "]http://openid.net/specs/openid-connect-core-1_0.html#CodeFlowAuth</a></h5>
 <div class="form-group" asp-validation-class-for="UseCodeFlow">
@@ -135,9 +143,9 @@
 
         $("#@Html.IdFor(m => m.ResponseMode), #@Html.IdFor(m => m.UseCodeFlow), #@Html.IdFor(m => m.UseCodeIdTokenFlow),#@Html.IdFor(m => m.UseCodeTokenFlow), #@Html.IdFor(m => m.UseCodeIdTokenTokenFlow), #@Html.IdFor(m => m.UseIdTokenFlow),#@Html.IdFor(m => m.UseIdTokenTokenFlow)").change(function () {
             if (this !=@Html.IdFor(m => m.ResponseMode)) {
-                $('input[type="checkbox"]').not(this).prop('checked', false);
+                $('input[type="checkbox"]').not(this).not(@Html.IdFor(m => m.StoreExternalTokens)).prop('checked', false);
             } else {
-                $('input[type="checkbox"]').not(@Html.IdFor(m => m.UseCodeFlow)).prop('checked', false);
+                $('input[type="checkbox"]').not(@Html.IdFor(m => m.UseCodeFlow)).not(@Html.IdFor(m => m.StoreExternalTokens)).prop('checked', false);
             }
             refreshFlows();
         });
