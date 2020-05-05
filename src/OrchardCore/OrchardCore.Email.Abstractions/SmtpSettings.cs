@@ -35,7 +35,7 @@ namespace OrchardCore.Email
 
         [Range(0, 65535)]
 
-        ///Gets or sets the SMTP port number. Defaults to <c>5</c>.
+        ///Gets or sets the SMTP port number. Defaults to <c>25</c>.
         public int Port { get; set; } = 25;
 
         /// <summary>
