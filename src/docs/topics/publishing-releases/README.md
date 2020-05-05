@@ -28,7 +28,7 @@ Update the source so everything looks like on the new version.
 - [ ] Change docker version in _.travis.yml_ and _appveyor.yml_.
 
 ### Test the release
-Make sure everything works alright.
+Make sure everything works all right.
 
 - [ ] Test the [guides](https://docs.orchardcore.net/en/dev/docs/guides/).
 - [ ] Test NuGet packages.
