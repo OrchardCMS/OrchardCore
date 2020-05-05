@@ -61,8 +61,15 @@ $(function () {
     });
 
     $(document).on('click', '.widget-list-delete', function () {
-        $(this).closest('.widget-template').remove();
-        $(document).trigger('contentpreview:render');
+        var $this = $(this);
+        confirmDialog(_objectSpread({}, $this.data(), {
+            callback: function callback(r) {
+                if (r) {
+                    $this.closest('.widget-template').remove();
+                    $(document).trigger('contentpreview:render');
+                }
+            }
+        }));
     });
 
     $(document).on('change', '.widget-editor-footer label', function () {

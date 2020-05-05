@@ -66,7 +66,7 @@ namespace OrchardCore.Localization
             // Load tenant-specific .po file from /App_Data/Sites/[Tenant]/Localization
             yield return new PhysicalFileInfo(new FileInfo(PathExtensions.Combine(_shellDataContainer, _resourcesContainer, poFileName)));
 
-            // Load each modules .po file for extending localization when using Orchard Core as a Nuget package
+            // Load each modules .po file for extending localization when using Orchard Core as a NuGet package
             foreach (var extension in extensions)
             {
                 // \src\OrchardCore.Cms.Web\Localization\OrchardCore.Cms.Web\fr-CA.po

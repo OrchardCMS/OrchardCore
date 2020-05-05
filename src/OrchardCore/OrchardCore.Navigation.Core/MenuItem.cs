@@ -6,8 +6,8 @@ using OrchardCore.Security.Permissions;
 namespace OrchardCore.Navigation
 {
     /// <summary>
-    /// Represents a menu item descrbibed by an <see cref="INavigationProvider"/> implementation.
-    /// A menu item can desbribe child menu items.
+    /// Represents a menu item described by an <see cref="INavigationProvider"/> implementation.
+    /// A menu item can describe child menu items.
     /// </summary>
     public class MenuItem
     {

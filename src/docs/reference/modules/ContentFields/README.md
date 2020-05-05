@@ -32,7 +32,7 @@ From a `Content` template, you can reference a field's value like this
 (if the content type is `Article` and has a Text Field named `MyField`):
 
 ``` liquid tab="Liquid"
-{{ Model.ContentItem.Content.Article.MyField.Value }}
+{{ Model.ContentItem.Content.Article.MyField.Text }}
 ```
 
 ``` html tab="Razor"
@@ -253,10 +253,10 @@ This template will need to render an `<option>` tag. Here is an example for a Wy
 <option value="Wysiwyg" selected="@(currentEditor == "Wysiwyg")">@T["Wysiwyg editor"]</option>
 ```
 
-Then you can create the editor shape by adding a file named `{FIELDTYPE}_Editor__{EDITORNAME}` which is
-represented by a template file named `{FIELDTYPE}-{EDITORNAME}.Editor.cshtml`.
+Then you can create the editor shape by adding a file named `{FIELDTYPE}_Edit__{EDITORNAME}` which is
+represented by a template file named `{FIELDTYPE}-{EDITORNAME}.Edit.cshtml`.
 
-For instance the filename for the Wysiwyg editor on the Html Field is named `HtmlField-Wysiwyg.Editor.cshtml`.
+For instance the filename for the Wysiwyg editor on the Html Field is named `HtmlField-Wysiwyg.Edit.cshtml`.
 
 ### Customising Display Driver Registration
 
