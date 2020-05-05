@@ -1,4 +1,6 @@
 using Markdig;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using OrchardCore.Infrastructure.Script;
 using Xunit;
 
@@ -6,7 +8,7 @@ namespace OrchardCore.Tests.Script
 {
     public class HtmlScriptSanitizerTests
     {
-        private static readonly HtmlScriptSanitizer _sanitizer = new HtmlScriptSanitizer();
+        private static readonly HtmlScriptSanitizer _sanitizer = new HtmlScriptSanitizer(Options.Create(new HtmlScriptSanitizerOptions()));
 
         [Theory]
         [InlineData("<script>alert('xss')</script><div onload=\"alert('xss')\">Test<img src=\"test.gif\" style=\"background-image: url(javascript:alert('xss')); margin: 10px\"></div>", "<div>Test<img src=\"test.gif\" style=\"margin: 10px\"></div>")]
@@ -174,6 +176,27 @@ alert(s);
 
             // Test
             Assert.NotEqual(html, output);
+        }
+
+        [Fact]
+        public void ShouldConfigureSanitizer()
+        {
+            var services = new ServiceCollection();
+            services.Configure<HtmlScriptSanitizerOptions>(o =>
+            {
+                o.Configure = (sanitizer) =>
+                {
+                    sanitizer.AllowedAttributes.Add("class");
+                };
+            });
+
+            services.AddScoped<IHtmlScriptSanitizer, HtmlScriptSanitizer>();
+
+            var sanitizer = services.BuildServiceProvider().GetService<IHtmlScriptSanitizer>();
+
+            var input = @"<a href=""bar"" class=""foo"">baz</a>";
+            var sanitized = sanitizer.Sanitize(input);
+            Assert.Equal(input, sanitized);
         }
     }
 }

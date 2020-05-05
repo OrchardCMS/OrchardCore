@@ -54,7 +54,11 @@ namespace OrchardCore.Markdown.Drivers
 
                 model.Markdown = await _safeCodeFilterManager.ProcessAsync(model.Markdown ?? "");
                 model.Html = Markdig.Markdown.ToHtml(model.Markdown ?? "");
-                model.Html = _htmlScriptSanitizer.Sanitize(model.Html ?? "");
+
+                if (!settings.AllowCustomScripts)
+                {
+                    model.Html = _htmlScriptSanitizer.Sanitize(model.Html ?? "");
+                }
             })
             .Location("Detail", "Content")
             .Location("Summary", "Content");

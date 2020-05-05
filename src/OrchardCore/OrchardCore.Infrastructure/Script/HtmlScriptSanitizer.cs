@@ -5,10 +5,15 @@ namespace OrchardCore.Infrastructure.Script
 {
     public class HtmlScriptSanitizer : IHtmlScriptSanitizer
     {
-
         private readonly HtmlSanitizer _sanitizer = new HtmlSanitizer();
 
-        // TODO Provide configuration options.
+        public HtmlScriptSanitizer(IOptions<HtmlScriptSanitizerOptions> options)
+        {
+            if (options.Value.Configure != null)
+            {
+                options.Value.Configure.Invoke(_sanitizer);
+            }
+        }
 
         public string Sanitize(string html)
         {

@@ -71,7 +71,7 @@ namespace OrchardCore.ContentFields.Drivers
                 }
                 else
                 {
-                    field.Html = (settings.AllowCustomScripts) ? viewModel.Html : _htmlScriptSanitizer.Sanitize(viewModel.Html);
+                    field.Html = settings.AllowCustomScripts ? viewModel.Html : _htmlScriptSanitizer.Sanitize(viewModel.Html);
                 }
             }
 
