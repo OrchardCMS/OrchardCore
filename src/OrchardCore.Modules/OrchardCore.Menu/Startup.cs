@@ -48,6 +48,10 @@ namespace OrchardCore.Menu
             services.AddContentPart<LinkMenuItemPart>()
                 .UseDisplayDriver<LinkMenuItemPartDisplayDriver>();
 
+            // ContentMenuItemPart
+            services.AddContentPart<ContentMenuItemPart>()
+                .UseDisplayDriver<ContentMenuItemPartDisplayDriver>();
+
             services.AddTagHelpers<MenuTagHelper>();
         }
 

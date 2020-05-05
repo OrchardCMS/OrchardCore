@@ -451,7 +451,8 @@
       "profile": "https://lombiq.com/",
       "contributions": [
         "code",
-        "question"
+        "question",
+        "doc"
       ]
     },
     {
@@ -1499,6 +1500,16 @@
       "profile": "http://www.blockcode.com.tw",
       "contributions": [
         "translation"
+      ]
+    },
+    {
+      "login": "grexican",
+      "name": "Eli Gassert",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/73737?v=4",
+      "profile": "https://github.com/grexican",
+      "contributions": [
+        "code",
+        "doc"
       ]
     }
   ],
