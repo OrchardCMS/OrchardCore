@@ -300,6 +300,7 @@ Gives access to the current site settings, e.g `Site.SiteName`.
 | `UseCdn` | `false` | Enable/disable the use of a CDN. | 
 | `ResourceDebugMode` | `Disabled` | Provides options for whether src or debug-src is used for loading scripts and stylesheets | 
 | `CdnBaseUrl` | `https://localhost:44300` | If provided a CDN Base url is prepended to local scripts and stylesheets  | 
+| `Meta` |  | The meta to render in the head section of the current theme.| 
 
 ### Request
 
@@ -702,29 +703,92 @@ The content of this block can then be reused from the Layout using the `{% rende
 
 ASP.NET Core MVC provides a set of tag helpers to render predefined HTML outputs. The Liquid module provides a way to call into these Tag Helpers using custom liquid tags.
 
+
+### `form`
+
+Invokes the `form` tag helper of ASP.NET Core.
+
+```liquid
+{% form action:"Create", controller: "Todo", method: "post" %}
+    ... ... ...
+{% endform %}
+```
+
+###  `input`
+
+Using `helper` invokes the `input` tag helper of ASP.NET Core and binds `Text` of the Model
+
+```liquid
+{% helper "input", for: "Text", class: "form-control" %}
+```
+
+### `label`
+
+Using `helper` invokes the `label` tag helper of ASP.NET Core and binds `Text` of the Model
+
+```liquid
+{% helper "label", for: "Text" %}
+```
+
+### `validation_summary`
+
+Using `helper` invokes the `validation_summary` tag helper of ASP.NET Core with `div`  
+
+```liquid
+{% helper "div", validation_summary: "All" %}
+```
+
+### `validation_for`
+
+Using `helper` invokes the `validation_for` tag helper of ASP.NET Core with `span` and binds `Text` of the Model
+
+```liquid
+{% helper "span", validation_for: "Text" %}
+```
+
 ### `link`
 
 Invokes the `link` tag helper from the `Orchard.ResourceManagement` package.
 
 ### `meta`
 
-Invokes the `meta` tag helper from the `Orchard.ResourceManagement` package.
+Invokes the `meta` tag helper from the `Orchard.ResourceManagement` package. [see this section](../Resources/#meta-tags)
 
 ### `resources`
 
-Invokes the `resources` tag helper from the `Orchard.ResourceManagement` package.
+Invokes the `resources` tag helper from the `Orchard.ResourceManagement` package. [see this section](../Resources/#rendering)
 
 ### `script`
 
-Invokes the `script` tag helper from the `Orchard.ResourceManagement` package.
+Invokes the `script` tag helper from the `Orchard.ResourceManagement` package. [see this section](../Resources/#inline-definition)
 
 ### `style`
 
-Invokes the `style` tag helper from the `Orchard.ResourceManagement` package.
+Invokes the `style` tag helper from the `Orchard.ResourceManagement` package. [see this section](../Resources/#inline-definition)
 
 ### `a`
 
 Invokes the `a` content link tag helper from the `OrchardCore.Contents` package.
+
+### `route_*`
+Route data can be added using `route_*` to tag helper of ASP.NET Core that supports route data using `asp-route-*` attribute.
+
+In following example, `route_returnUrl` adds `returnUrl` to form action.
+
+```liquid
+{% form action: "Update", method: "post",  route_returnUrl: Request.Query["returnurl"] %}
+    ... ... ...
+{% endform %}
+```
+
+In following example, `route_todoid` adds `Model.TodoId` to hyperlink.
+
+```liquid
+{% a action: "Delete" , controller: "Todo", class: "btn btn-danger", route_todoid: Model.TodoId %}
+    Delete
+{% enda %}
+```
+
 
 ### `antiforgerytoken`
 

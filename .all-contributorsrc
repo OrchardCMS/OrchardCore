@@ -17,9 +17,15 @@
       "profile": "http://about.me/sebastienros",
       "contributions": [
         "code",
-        "review",
+        "content",
+        "eventOrganizing",
+        "maintenance",
         "projectManagement",
-        "tutorial"
+        "question",
+        "review",
+        "tutorial",
+        "talk",
+        "video"
       ]
     },
     {
@@ -29,9 +35,13 @@
       "profile": "http://antoinegriffard.com",
       "contributions": [
         "code",
+        "content",
+        "doc",
+        "question",
+        "maintenance",
         "review",
-        "translation",
-        "content"
+        "tool",
+        "translation"
       ]
     },
     {
@@ -50,7 +60,8 @@
       "profile": "https://github.com/jtkech",
       "contributions": [
         "code",
-        "review"
+        "review",
+        "question"
       ]
     },
     {
@@ -62,7 +73,8 @@
         "code",
         "review",
         "translation",
-        "tutorial"
+        "tutorial",
+        "question"
       ]
     },
     {
@@ -73,7 +85,8 @@
       "contributions": [
         "code",
         "review",
-        "tutorial"
+        "tutorial",
+        "question"
       ]
     },
     {
@@ -84,7 +97,8 @@
       "contributions": [
         "code",
         "review",
-        "translation"
+        "translation",
+        "question"
       ]
     },
     {
@@ -115,7 +129,8 @@
       "profile": "https://kevinchalet.com/",
       "contributions": [
         "code",
-        "review"
+        "review",
+        "question"
       ]
     },
     {
@@ -133,7 +148,8 @@
       "avatar_url": "https://avatars2.githubusercontent.com/u/4681586?v=4",
       "profile": "https://github.com/jptissot",
       "contributions": [
-        "code"
+        "code",
+        "question"
       ]
     },
     {
@@ -276,7 +292,8 @@
         "code",
         "blog",
         "video",
-        "tutorial"
+        "tutorial",
+        "question"
       ]
     },
     {
@@ -385,7 +402,8 @@
       "avatar_url": "https://avatars2.githubusercontent.com/u/3008547?v=4",
       "profile": "https://github.com/netwavebe",
       "contributions": [
-        "code"
+        "code",
+        "question"
       ]
     },
     {
@@ -432,7 +450,9 @@
       "avatar_url": "https://avatars3.githubusercontent.com/u/1976647?v=4",
       "profile": "https://lombiq.com/",
       "contributions": [
-        "code"
+        "code",
+        "question",
+        "doc"
       ]
     },
     {
@@ -450,7 +470,8 @@
       "avatar_url": "https://avatars1.githubusercontent.com/u/651190?v=4",
       "profile": "http://peterkeating.co.uk",
       "contributions": [
-        "code"
+        "code",
+        "plugin"
       ]
     },
     {
@@ -679,7 +700,8 @@
       "avatar_url": "https://avatars1.githubusercontent.com/u/96801?v=4",
       "profile": "https://www.davidhayden.me",
       "contributions": [
-        "code"
+        "code",
+        "blog"
       ]
     },
     {
@@ -859,7 +881,8 @@
       "avatar_url": "https://avatars0.githubusercontent.com/u/1165609?v=4",
       "profile": "http://bertrandleroy.net",
       "contributions": [
-        "code"
+        "code",
+        "plugin"
       ]
     },
     {
@@ -1374,7 +1397,9 @@
       "contributions": [
         "code",
         "blog",
-        "review"
+        "review",
+        "question",
+        "eventOrganizing"
       ]
     },
     {
@@ -1392,7 +1417,8 @@
       "avatar_url": "https://avatars1.githubusercontent.com/u/1375119?v=4",
       "profile": "https://github.com/Flarescape",
       "contributions": [
-        "translation"
+        "translation",
+        "question"
       ]
     },
     {
@@ -1429,6 +1455,61 @@
       "profile": "https://github.com/nakamura2000",
       "contributions": [
         "translation"
+      ]
+    },
+    {
+      "login": "gvkries",
+      "name": "Georg von Kries",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/7062785?v=4",
+      "profile": "https://www.simplesyn.net",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "mguma",
+      "name": "Marco Guetg",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/1769143?v=4",
+      "profile": "https://github.com/mguma",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "zhhbo",
+      "name": "朱",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/8653043?v=4",
+      "profile": "https://github.com/zhhbo",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "Devqon",
+      "name": "Sander Geerts",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/9316480?v=4",
+      "profile": "https://github.com/Devqon",
+      "contributions": [
+        "question"
+      ]
+    },
+    {
+      "login": "jaliao",
+      "name": "Justin Liao",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/12048035?v=4",
+      "profile": "http://www.blockcode.com.tw",
+      "contributions": [
+        "translation"
+      ]
+    },
+    {
+      "login": "grexican",
+      "name": "Eli Gassert",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/73737?v=4",
+      "profile": "https://github.com/grexican",
+      "contributions": [
+        "code",
+        "doc"
       ]
     }
   ],

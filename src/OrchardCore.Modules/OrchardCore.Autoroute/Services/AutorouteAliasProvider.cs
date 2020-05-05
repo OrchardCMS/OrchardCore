@@ -26,10 +26,11 @@ namespace OrchardCore.Autoroute.Services
                     alias = "/" + alias;
                 }
 
-                string contentItemId;
-                if (_autorouteEntries.TryGetContentItemId(alias, out contentItemId))
+                if (_autorouteEntries.TryGetEntryByPath(alias, out var entry))
                 {
-                    return Task.FromResult(contentItemId);
+                    // TODO this requires more work, and interface changes to support contained content items.
+                    // as it will require returning the id and jsonPath.
+                    return Task.FromResult(entry.ContentItemId);
                 }
             }
 

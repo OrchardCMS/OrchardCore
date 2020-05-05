@@ -179,7 +179,7 @@ Keep these things in mind when working with the deployment step editor:
 The following configuration values are used by default and can be customized:
 
 ```json
-    "OrchardCore.Media": {
+    "OrchardCore_Media": {
 
       // The accepted sizes for custom width and height
       "SupportedSizes": [ 16, 32, 50, 100, 160, 240, 480, 600, 1024, 2048 ],

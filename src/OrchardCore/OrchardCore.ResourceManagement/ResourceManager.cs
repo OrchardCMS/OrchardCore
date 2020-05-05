@@ -22,6 +22,7 @@ namespace OrchardCore.ResourceManagement
         private Dictionary<string, MetaEntry> _metas;
         private List<IHtmlContent> _headScripts;
         private List<IHtmlContent> _footScripts;
+        private List<IHtmlContent> _styles;
         private readonly HashSet<string> _localScripts;
 
         private readonly IResourceManifestState _resourceManifestState;
@@ -134,6 +135,16 @@ namespace OrchardCore.ResourceManagement
             }
 
             _footScripts.Add(script);
+        }
+
+        public void RegisterStyle(IHtmlContent style)
+        {
+            if (_styles == null)
+            {
+                _styles = new List<IHtmlContent>();
+            }
+
+            _styles.Add(style);
         }
 
         public void NotRequired(string resourceType, string resourceName)
@@ -346,6 +357,13 @@ namespace OrchardCore.ResourceManagement
         public List<IHtmlContent> DoGetRegisteredFootScripts()
         {
             return _footScripts ?? EmptyList<IHtmlContent>.Instance;
+        }
+
+        public IEnumerable<IHtmlContent> GetRegisteredStyles() => DoGetRegisteredStyles();
+
+        public List<IHtmlContent> DoGetRegisteredStyles()
+        {
+            return _styles ?? EmptyList<IHtmlContent>.Instance;
         }
 
         public IEnumerable<ResourceRequiredContext> GetRequiredResources(string resourceType)
@@ -563,6 +581,20 @@ namespace OrchardCore.ResourceManagement
                 first = false;
 
                 builder.AppendHtml(context.GetHtmlContent(_options.ContentBasePath));
+            }
+
+            var registeredStyles = DoGetRegisteredStyles();
+            for (var i = 0; i < registeredStyles.Count; i++)
+            {
+                var context = registeredStyles[i];
+                if (!first)
+                {
+                    builder.AppendHtml(System.Environment.NewLine);
+                }
+
+                first = false;
+
+                builder.AppendHtml(context);
             }
         }
 

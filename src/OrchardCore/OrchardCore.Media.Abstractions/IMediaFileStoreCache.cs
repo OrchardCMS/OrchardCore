@@ -9,5 +9,7 @@ namespace OrchardCore.Media
     public interface IMediaFileStoreCache : IFileStoreCache
     {
         Task<bool> PurgeAsync();
+        Task<bool> TryDeleteFileAsync(string path);
+        Task<bool> TryDeleteDirectoryAsync(string path);
     }
 }
