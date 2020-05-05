@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.AzureAD.UI;
 using Microsoft.AspNetCore.Authentication.MicrosoftAccount;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
@@ -30,7 +29,6 @@ namespace OrchardCore.Microsoft.Authentication
             services.AddScoped<IDisplayDriver<ISite>, MicrosoftAccountSettingsDisplayDriver>();
             services.AddScoped<INavigationProvider, AdminMenuMicrosoftAccount>();
             services.AddRecipeExecutionStep<MicrosoftAccountSettingsStep>();
-
             // Register the options initializers required by the Microsoft Account Handler.
             services.TryAddEnumerable(new[]
             {
@@ -39,12 +37,6 @@ namespace OrchardCore.Microsoft.Authentication
                 ServiceDescriptor.Transient<IConfigureOptions<MicrosoftAccountOptions>, MicrosoftAccountOptionsConfiguration>(),
                 // Built-in initializers:
                 ServiceDescriptor.Transient<IPostConfigureOptions<MicrosoftAccountOptions>, OAuthPostConfigureOptions<MicrosoftAccountOptions,MicrosoftAccountHandler>>()
-            });
-
-            // Disabling same-site cookie policy is required for the login redirect to properly authenticate the user.
-            services.ConfigureApplicationCookie(options =>
-            {
-                options.Cookie.SameSite = SameSiteMode.None;
             });
         }
     }
@@ -60,7 +52,6 @@ namespace OrchardCore.Microsoft.Authentication
             services.AddRecipeExecutionStep<AzureADSettingsStep>();
             services.AddScoped<IDisplayDriver<ISite>, AzureADSettingsDisplayDriver>();
             services.AddScoped<INavigationProvider, AdminMenuAAD>();
-
             // Register the options initializers required by the Policy Scheme, Cookie and OpenId Connect Handler.
             services.TryAddEnumerable(new[]
             {
@@ -71,12 +62,6 @@ namespace OrchardCore.Microsoft.Authentication
                 ServiceDescriptor.Transient<IConfigureOptions<OpenIdConnectOptions>, OpenIdConnectOptionsConfiguration>(),
                 // Built-in initializers:
                 ServiceDescriptor.Singleton<IPostConfigureOptions<OpenIdConnectOptions>, OpenIdConnectPostConfigureOptions>(),
-            });
-
-            // Disabling same-site cookie policy is required for the login redirect to properly authenticate the user.
-            services.ConfigureApplicationCookie(options =>
-            {
-                options.Cookie.SameSite = SameSiteMode.None;
             });
         }
     }
