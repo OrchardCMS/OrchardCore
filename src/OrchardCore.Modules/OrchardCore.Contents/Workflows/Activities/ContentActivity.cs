@@ -15,8 +15,10 @@ namespace OrchardCore.Contents.Workflows.Activities
     public abstract class ContentActivity : Activity
     {
         protected readonly IStringLocalizer S;
+
         protected bool _fromContentDriver;
         protected bool _fromContentHandler;
+        protected string _originalCorrelationId;
 
         protected ContentActivity(IContentManager contentManager, IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer localizer)
         {
@@ -58,6 +60,8 @@ namespace OrchardCore.Contents.Workflows.Activities
             {
                 _fromContentHandler = true;
             }
+
+            _originalCorrelationId = workflowContext.CorrelationId;
 
             return Task.CompletedTask;
         }

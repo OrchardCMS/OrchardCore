@@ -81,8 +81,8 @@ namespace OrchardCore.Contents.Workflows.Activities
                 throw new InvalidOperationException($"The {workflowContext.WorkflowType.Name}:{DisplayText} activity failed to evaluate the 'ContentItemId'.");
             }
 
-            // Check if the activity is executed inline as a correlated content driver or as a correlated content handler.
-            var correlated = String.Equals(workflowContext.CorrelationId, contentItemId, StringComparison.OrdinalIgnoreCase);
+            // Check if the activity is executed inline as a correlated content driver or correlated content handler.
+            var correlated = String.Equals(_originalCorrelationId, contentItemId, StringComparison.OrdinalIgnoreCase);
 
             var asContentDriver = _fromContentDriver && correlated;
             var asContentHandler = _fromContentHandler && correlated;
@@ -134,6 +134,7 @@ namespace OrchardCore.Contents.Workflows.Activities
                 }
 
                 workflowContext.LastResult = contentItem;
+
                 return Outcomes("Done");
             }
 
@@ -146,6 +147,7 @@ namespace OrchardCore.Contents.Workflows.Activities
             }
 
             workflowContext.LastResult = result;
+
             return Outcomes("Failed");
         }
     }

@@ -36,11 +36,12 @@ namespace OrchardCore.Contents.Workflows.Activities
                 throw new InvalidOperationException($"The {workflowContext.WorkflowType.Name}:{DisplayText} activity failed to retrieve the content item.");
             }
 
-            // Check if the activity is executed inline as a correlated content driver or as a correlated content handler.
-            var correlated = String.Equals(workflowContext.CorrelationId, content.ContentItem.ContentItemId, StringComparison.OrdinalIgnoreCase);
+            // Check if the activity is executed inline as a correlated content driver or correlated content handler.
+            var correlated = String.Equals(_originalCorrelationId, content.ContentItem.ContentItemId, StringComparison.OrdinalIgnoreCase);
 
             if ((_fromContentDriver || _fromContentHandler) && correlated)
             {
+                // Drivers / handlers are not intended to call content manager methods.
                 return Outcomes("Noop");
             }
 

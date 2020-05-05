@@ -75,10 +75,12 @@ namespace OrchardCore.Contents.Workflows.Activities
             if (result.Succeeded)
             {
                 workflowContext.LastResult = contentItem;
+
                 return Outcomes("Done");
             }
 
             workflowContext.LastResult = result;
+
             return Outcomes("Failed");
         }
     }

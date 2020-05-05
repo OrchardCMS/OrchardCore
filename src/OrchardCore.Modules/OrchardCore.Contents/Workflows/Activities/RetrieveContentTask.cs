@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
@@ -29,7 +30,19 @@ namespace OrchardCore.Contents.Workflows.Activities
         public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
             var contentItemId = await GetContentItemIdAsync(workflowContext);
+
+            if (contentItemId == null)
+            {
+                throw new InvalidOperationException($"The {workflowContext.WorkflowType.Name}:{DisplayText} activity failed to evaluate the 'ContentItemId'.");
+            }
+
             var contentItem = await ContentManager.GetAsync(contentItemId, VersionOptions.Latest);
+
+            if (contentItem == null)
+            {
+                throw new InvalidOperationException($"The {workflowContext.WorkflowType.Name}:{DisplayText} activity failed to retrieve the content item.");
+            }
+
             workflowContext.LastResult = contentItem;
 
             return Outcomes("Retrieved");

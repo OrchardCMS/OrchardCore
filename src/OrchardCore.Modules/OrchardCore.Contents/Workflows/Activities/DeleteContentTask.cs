@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
@@ -23,12 +24,27 @@ namespace OrchardCore.Contents.Workflows.Activities
 
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            return Outcomes(S["Deleted"]);
+            return Outcomes(S["Deleted"], S["Noop"]);
         }
 
         public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
             var content = await GetContentAsync(workflowContext);
+
+            if (content == null)
+            {
+                throw new InvalidOperationException($"The {workflowContext.WorkflowType.Name}:{DisplayText} activity failed to retrieve the content item.");
+            }
+
+            // Check if the activity is executed inline as a correlated content driver or correlated content handler.
+            var correlated = String.Equals(_originalCorrelationId, content.ContentItem.ContentItemId, StringComparison.OrdinalIgnoreCase);
+
+            if ((_fromContentDriver || _fromContentHandler) && correlated)
+            {
+                // Drivers / handlers are not intended to call content manager methods.
+                return Outcomes("Noop");
+            }
+
             await ContentManager.RemoveAsync(content.ContentItem);
 
             return Outcomes("Deleted");
