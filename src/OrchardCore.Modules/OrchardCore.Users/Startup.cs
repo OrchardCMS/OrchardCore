@@ -160,7 +160,8 @@ namespace OrchardCore.Users
                 // 2019-12-10; Removed, since https://github.com/aspnet/Announcements/issues/390
                 // 2020-02-17; Reenabled since we have compensation logic for backwardscompatibility
                 // 2020-03-23; Moved the SameSiteNode.None to the Startup of the OIDC Server
-                options.Cookie.SameSite = SameSiteMode.Strict;
+                // 2020-05-05; Removed to fix external login providers
+                // options.Cookie.SameSite = SameSiteMode.Strict;
             });
 
             services.AddSingleton<IIndexProvider, UserIndexProvider>();
