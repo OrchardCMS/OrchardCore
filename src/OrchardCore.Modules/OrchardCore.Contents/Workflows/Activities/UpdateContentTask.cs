@@ -20,9 +20,6 @@ namespace OrchardCore.Contents.Workflows.Activities
         private readonly IUpdateModelAccessor _updateModelAccessor;
         private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
 
-        private bool _fromContentDriver;
-        private bool _fromContentHandler;
-
         public UpdateContentTask(
             IContentManager contentManager,
             IUpdateModelAccessor updateModelAccessor,
@@ -75,23 +72,6 @@ namespace OrchardCore.Contents.Workflows.Activities
             return Outcomes(S["Done"], S["Failed"]);
         }
 
-        public override Task OnInputReceivedAsync(WorkflowExecutionContext workflowContext, IDictionary<string, object> input)
-        {
-            // The activity may be executed inline from the 'UserTaskEventContentDriver'.
-            if (input.GetValue<string>("UserAction") != null)
-            {
-                _fromContentDriver = true;
-            }
-
-            // The activity may be executed inline from the 'ContentsHandler'.
-            if (input.GetValue<IContent>(ContentsHandler.ContentItemInputKey) != null)
-            {
-                _fromContentHandler = true;
-            }
-
-            return Task.CompletedTask;
-        }
-
         public async override Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
             var contentItemId = await GetContentItemIdAsync(workflowContext);
@@ -101,7 +81,7 @@ namespace OrchardCore.Contents.Workflows.Activities
                 throw new InvalidOperationException($"The {workflowContext.WorkflowType.Name}:{DisplayText} activity failed to evaluate the 'ContentItemId'.");
             }
 
-            // Check if the activity is executed inline as a content driver or as a content handler.
+            // Check if the activity is executed inline as a correlated content driver or as a correlated content handler.
             var correlated = String.Equals(workflowContext.CorrelationId, contentItemId, StringComparison.OrdinalIgnoreCase);
 
             var asContentDriver = _fromContentDriver && correlated;
@@ -156,19 +136,17 @@ namespace OrchardCore.Contents.Workflows.Activities
                 workflowContext.LastResult = contentItem;
                 return Outcomes("Done");
             }
-            else
-            {
-                // Content drivers / handlers are intended to add errors to the model state.
-                if (asDriverOrHandler)
-                {
-                    _updateModelAccessor.ModelUpdater.ModelState.AddModelError(nameof(UpdateContentTask),
-                        $"The {workflowContext.WorkflowType.Name}:{DisplayText} activity failed to update the content item: "
-                        + String.Join(", ", result.Errors));
-                }
 
-                workflowContext.LastResult = result;
-                return Outcomes("Failed");
+            // Content drivers / handlers are intended to add errors to the model state.
+            if (asDriverOrHandler)
+            {
+                _updateModelAccessor.ModelUpdater.ModelState.AddModelError(nameof(UpdateContentTask),
+                    $"The {workflowContext.WorkflowType.Name}:{DisplayText} activity failed to update the content item: "
+                    + String.Join(", ", result.Errors));
             }
+
+            workflowContext.LastResult = result;
+            return Outcomes("Failed");
         }
     }
 }

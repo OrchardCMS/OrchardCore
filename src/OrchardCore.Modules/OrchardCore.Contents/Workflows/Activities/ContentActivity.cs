@@ -15,6 +15,8 @@ namespace OrchardCore.Contents.Workflows.Activities
     public abstract class ContentActivity : Activity
     {
         protected readonly IStringLocalizer S;
+        protected bool _fromContentDriver;
+        protected bool _fromContentHandler;
 
         protected ContentActivity(IContentManager contentManager, IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer localizer)
         {
@@ -41,6 +43,23 @@ namespace OrchardCore.Contents.Workflows.Activities
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
             return Outcomes(S["Done"]);
+        }
+
+        public override Task OnInputReceivedAsync(WorkflowExecutionContext workflowContext, IDictionary<string, object> input)
+        {
+            // The activity may be executed inline from the 'UserTaskEventContentDriver'.
+            if (input.GetValue<string>("UserAction") != null)
+            {
+                _fromContentDriver = true;
+            }
+
+            // The activity may be executed inline from the 'ContentsHandler'.
+            if (input.GetValue<IContent>(ContentsHandler.ContentItemInputKey) != null)
+            {
+                _fromContentHandler = true;
+            }
+
+            return Task.CompletedTask;
         }
 
         public override ActivityExecutionResult Execute(WorkflowExecutionContext workflowContext, ActivityContext activityContext)

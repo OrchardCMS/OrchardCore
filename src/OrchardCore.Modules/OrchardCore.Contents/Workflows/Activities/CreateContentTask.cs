@@ -68,20 +68,18 @@ namespace OrchardCore.Contents.Workflows.Activities
             }
 
             var result = await ContentManager.UpdateValidateAndCreateAsync(contentItem, Publish ? VersionOptions.Published : VersionOptions.Draft);
+
+            workflowContext.CorrelationId = contentItem.ContentItemId;
+            workflowContext.Properties[ContentsHandler.ContentItemInputKey] = contentItem;
+
             if (result.Succeeded)
             {
                 workflowContext.LastResult = contentItem;
-                workflowContext.CorrelationId = contentItem.ContentItemId;
-                workflowContext.Properties[ContentsHandler.ContentItemInputKey] = contentItem;
-
                 return Outcomes("Done");
             }
-            else
-            {
-                workflowContext.LastResult = result;
 
-                return Outcomes("Failed");
-            }
+            workflowContext.LastResult = result;
+            return Outcomes("Failed");
         }
     }
 }
