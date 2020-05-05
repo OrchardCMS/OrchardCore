@@ -149,16 +149,16 @@
                 return $(this).data("action");
             })
             .one("click", function () {
-            if ($(":checkbox[name='itemIds']:checked").length > 1) {
-                var $this = $(this);
-                confirmDialog({...$this.data(), callback: function(r) {
-                    if (r) {
-                        $("[name='Options.BulkAction']").val($this.data("action"));
-                        $("[name='submit.BulkAction']").click();
-                    }
-                }});
-            }
-        });
+                if ($(":checkbox[name='itemIds']:checked").length > 1) {
+                    var $this = $(this);
+                    confirmDialog({...$this.data(), callback: function(r) {
+                        if (r) {
+                            $("[name='Options.BulkAction']").val($this.data("action"));
+                            $("[name='submit.BulkAction']").click();
+                        }
+                    }});
+                }
+            });
 
         function displayActionsOrFilters() {
             if ($(":checkbox[name='itemIds']:checked").length > 1) {
