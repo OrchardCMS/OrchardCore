@@ -177,7 +177,7 @@ else
 ## Mark active item in a menu
 
 Some times you need to set a menu item as active if it is the currently displayed one.
-Because menus are cached, this must be done from javascript. OrchardCore.Menus module provides a script to help you with that.
+Because menus are cached, this must be done from javascript. OrchardCore.Menu module provides a script to help you with that.
 
 ``` javascript
 function activateLinks(options,cb)
