@@ -221,21 +221,19 @@
             $("[name='submit.Filter']").click();
         });
 
-        $(".dropdown-menu .dropdown-item")
-            .filter(function() {
-                return $(this).data("action");
-            })
-            .one("click", function () {
-                if ($(":checkbox[name='tenantNames']:checked").length > 1) {
-                    var $this = $(this);
-                    confirmDialog({title: $this.data('title'), message: $this.data('message'), callback: function(r) {
-                        if (r) {
-                            $("[name='BulkAction']").val($this.data("action"));
-                            $("[name='submit.BulkAction']").click();
-                        }
-                    }});
-                }
-            });
+        $(".dropdown-menu .dropdown-item").filter(function() {
+            return $(this).data("action");
+        }).one("click", function () {
+            if ($(":checkbox[name='tenantNames']:checked").length > 1) {
+                var $this = $(this);
+                confirmDialog({title: $this.data('title'), message: $this.data('message'), callback: function(r) {
+                    if (r) {
+                        $("[name='BulkAction']").val($this.data("action"));
+                        $("[name='submit.BulkAction']").click();
+                    }
+                }});
+            }
+        });
 
         function displayActionsOrFilters() {
             if ($(":checkbox[name='tenantNames']:checked").length > 1) {
