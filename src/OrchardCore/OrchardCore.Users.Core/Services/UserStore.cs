@@ -542,12 +542,12 @@ namespace OrchardCore.Users.Services
 
             if (string.IsNullOrEmpty(loginProvider))
             {
-                throw new ArgumentException(nameof(loginProvider));
+                throw new ArgumentException("The login provider cannot be null or empty.", nameof(loginProvider));
             }
 
             if (string.IsNullOrEmpty(name))
             {
-                throw new ArgumentException(nameof(name));
+                throw new ArgumentException("The name cannot be null or empty.", nameof(name));
             }
 
             string tokenValue = null;
@@ -569,12 +569,12 @@ namespace OrchardCore.Users.Services
 
             if (string.IsNullOrEmpty(loginProvider))
             {
-                throw new ArgumentException(nameof(loginProvider));
+                throw new ArgumentException("The login provider cannot be null or empty.", nameof(loginProvider));
             }
 
             if (string.IsNullOrEmpty(name))
             {
-                throw new ArgumentException(nameof(name));
+                throw new ArgumentException("The name cannot be null or empty.", nameof(name));
             }
 
             var userToken = GetUserToken(user, loginProvider, name);
@@ -595,17 +595,17 @@ namespace OrchardCore.Users.Services
 
             if (string.IsNullOrEmpty(loginProvider))
             {
-                throw new ArgumentException(nameof(loginProvider));
+                throw new ArgumentException("The login provider cannot be null or empty.", nameof(loginProvider));
             }
 
             if (string.IsNullOrEmpty(name))
             {
-                throw new ArgumentException(nameof(name));
+                throw new ArgumentException("The name cannot be null or empty.", nameof(name));
             }
 
             if (string.IsNullOrEmpty(value))
             {
-                throw new ArgumentException(nameof(value));
+                throw new ArgumentException("The value cannot be null or empty.", nameof(value));
             }
 
             var userToken = GetUserToken(user, loginProvider, name);
