@@ -8,7 +8,7 @@ using OrchardCore.Infrastructure.Script;
 public static class HtmlScriptSanitizerExtensions
 {
     /// <summary>
-    /// Santizies a string of html.
+    /// Sanitizes a string of html.
     /// </summary>
     /// <param name="html">The html to sanitize.</param>
     public static async Task<IHtmlContent> SanitizeHtmlAsync(this IOrchardHelper orchardHelper, string html)
