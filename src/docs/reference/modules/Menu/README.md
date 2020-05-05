@@ -182,7 +182,8 @@ Because menus are cached, this must be done from javascript. OrchardCore.Menu mo
 ``` javascript
 function activateLinks(options,cb)
 ```
-| Parameter | Description 
+
+| Parameter | Description|
 | -------- | ----------- |
 | `options: {class:'active',selector:null,traverse:0}` | Use `class` to define what class you want to add to the parent of the anchor tag that has the current url as href. If you want to apply it to a child, set the `selector` property. Use the `traverse` to a positive number in order to seek a less specific url in the menu tree then the currently displayed on. ex. If you have a link to '/todo-items' in menu and you have navigated to '/todo-items/Create', it will try to find the item with traverse item less segments in the menu and activate it. |
 | `cb: function( items )` | If it finds an active item, the call back is hit for extra configuration. ex. Expand a menu item if the active one is nested.|
