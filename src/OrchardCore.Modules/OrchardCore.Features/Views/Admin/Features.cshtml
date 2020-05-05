@@ -190,7 +190,9 @@
             }
         });
 
-        $(".dropdown-menu a").on('click', function () {
+        $(".dropdown-menu a").filter(function() {
+            return $(this).data("action");
+        }).one('click', function () {
             $("[name='BulkAction']").val($(this).data('action'));
             $("[name='submit.BulkAction']").click();
         });
