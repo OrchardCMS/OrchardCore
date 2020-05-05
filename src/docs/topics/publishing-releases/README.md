@@ -45,8 +45,8 @@ Update everything in the [Translations project](https://github.com/OrchardCMS/Or
 ### Prepare the documentation
 Update the docs so they contain information about the new release so once the release is out you'll just need to point to new information.
 
-- [ ] Create release notes in a specific documentation section
-  - Overview
+- [ ] Create release notes in a specific documentation section. You can take the previous release notes as a template.
+  - Overview on the release's highlights and goals.
   - Upgrade steps
   - New features
   - Full changelog. You can generate this with [github-changelog](https://github.com/cfpb/github-changelog) with the `changelog OrchardCMS OrchardCore <previous version> <current version>` command, e.g. `changelog OrchardCMS OrchardCore 1.0.0-rc1 1.0.0-rc2`.
