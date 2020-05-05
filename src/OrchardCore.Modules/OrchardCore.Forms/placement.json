@@ -1,0 +1,10 @@
+{
+    "TitlePart": [
+      {
+        // hides title part for form and label type
+        "displayType": "Detail",
+        "contentType": ["Form", "Label"],
+        "place": "-"
+      }
+    ]
+  }
