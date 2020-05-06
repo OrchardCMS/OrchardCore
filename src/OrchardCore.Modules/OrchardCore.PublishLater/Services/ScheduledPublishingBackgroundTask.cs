@@ -38,12 +38,6 @@ namespace OrchardCore.PublishLater.Services
 
             foreach (var item in itemsToPublish)
             {
-                if (item.Published || !item.Latest)
-                {
-                    _logger.LogWarning("An invalid publish task was found for {ContentItemId}.", item.ContentItemId);
-                    continue;
-                }
-
                 _logger.LogDebug("Publishing scheduled content item {ContentItemId}.", item.ContentItemId);
                 await serviceProvider.GetRequiredService<IContentManager>().PublishAsync(item);
             }
