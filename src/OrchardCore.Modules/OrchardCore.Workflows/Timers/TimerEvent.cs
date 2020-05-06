@@ -59,11 +59,6 @@ namespace OrchardCore.Workflows.Timers
         {
             if (IsExpired())
             {
-                //if (OriginalCorrelationId != null)
-                //{
-                //    workflowContext.CorrelationId = OriginalCorrelationId;
-                //}
-
                 workflowContext.LastResult = "TimerEvent";
                 return Outcomes("Done");
             }
