@@ -44,7 +44,7 @@ namespace OrchardCore.Contents.Workflows.Handlers
 
         public override Task VersionedAsync(VersionContentContext context)
         {
-            return TriggerWorkflowEventAsync(nameof(VersionContentContext), context.ContentItem);
+            return TriggerWorkflowEventAsync(nameof(ContentVersionedEvent), context.ContentItem);
         }
 
         private Task TriggerWorkflowEventAsync(string name, ContentItem contentItem)
