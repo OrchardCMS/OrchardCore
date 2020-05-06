@@ -40,7 +40,7 @@ namespace OrchardCore.PublishLater.Services
 
             foreach (var item in itemsToPublish)
             {
-                _logger.LogDebug($"Publishing content item {item.ContentItemId}.");
+                _logger.LogDebug("Publishing scheduled content item {ContentItemId}.", item.ContentItemId);
                 await serviceProvider.GetRequiredService<IContentManager>().PublishAsync(item);
             }
         }
