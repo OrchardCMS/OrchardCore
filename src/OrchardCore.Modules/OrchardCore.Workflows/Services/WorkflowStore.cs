@@ -72,42 +72,32 @@ namespace OrchardCore.Workflows.Services
             return _session.GetAsync<Workflow>(ids.ToArray());
         }
 
-        public async Task<IEnumerable<Workflow>> ListAsync(string workflowTypeId, IEnumerable<string> blockingActivityIds)
+        public Task<IEnumerable<Workflow>> ListAsync(string workflowTypeId, IEnumerable<string> blockingActivityIds)
         {
-            var query = await _session
+            return _session
                 .Query<Workflow, WorkflowBlockingActivitiesIndex>(index =>
                     index.WorkflowTypeId == workflowTypeId &&
-                    index.ActivityId.IsIn(blockingActivityIds)
-                ).ListAsync();
-
-            return query.ToList();
+                    index.ActivityId.IsIn(blockingActivityIds))
+                .ListAsync();
         }
 
-        public async Task<IEnumerable<Workflow>> ListAsync(string workflowTypeId, string activityName, string correlationId = null)
+        public Task<IEnumerable<Workflow>> ListAsync(string workflowTypeId, string activityName, string correlationId = null)
         {
-            var query = await _session
+            return _session
                 .Query<Workflow, WorkflowBlockingActivitiesIndex>(index =>
                     index.WorkflowTypeId == workflowTypeId &&
                     index.ActivityName == activityName &&
                     index.WorkflowCorrelationId == (correlationId ?? ""))
                 .ListAsync();
-
-            return query.ToList();
         }
 
-        public async Task<IEnumerable<Workflow>> ListByActivityNameAsync(string activityName, string correlationId = null)
+        public Task<IEnumerable<Workflow>> ListByActivityNameAsync(string activityName, string correlationId = null, bool isAlwaysCorrelated = false)
         {
-            var query = await _session
-                .QueryIndex<WorkflowBlockingActivitiesIndex>(index =>
+            return _session
+                .Query<Workflow, WorkflowBlockingActivitiesIndex>(index =>
                     index.ActivityName == activityName &&
-                    index.WorkflowCorrelationId == (correlationId ?? ""))
+                    isAlwaysCorrelated || (index.WorkflowCorrelationId == (correlationId ?? "")))
                 .ListAsync();
-
-            var pendingWorkflowIndexes = query.ToList();
-            var pendingWorkflowIds = pendingWorkflowIndexes.Select(x => x.WorkflowId).Distinct().ToArray();
-            var pendingWorkflows = await _session.Query<Workflow, WorkflowIndex>(x => x.WorkflowId.IsIn(pendingWorkflowIds)).ListAsync();
-
-            return pendingWorkflows.ToList();
         }
 
         public async Task SaveAsync(Workflow workflow)

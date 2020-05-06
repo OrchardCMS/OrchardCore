@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using NCrontab;
 using OrchardCore.Modules;
@@ -46,12 +45,6 @@ namespace OrchardCore.Workflows.Timers
             set => SetProperty(value);
         }
 
-        private string OriginalCorrelationId
-        {
-            get => GetProperty<string>();
-            set => SetProperty(value);
-        }
-
         public override bool CanExecute(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
             return StartedUtc == null || IsExpired();
@@ -62,25 +55,14 @@ namespace OrchardCore.Workflows.Timers
             return Outcomes(S["Done"]);
         }
 
-        public override ActivityExecutionResult Execute(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-        {
-            if (OriginalCorrelationId == null)
-            {
-                OriginalCorrelationId = workflowContext.CorrelationId;
-                workflowContext.CorrelationId = null;
-            }
-
-            return Halt();
-        }
-
         public override ActivityExecutionResult Resume(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
             if (IsExpired())
             {
-                if (OriginalCorrelationId != null)
-                {
-                    workflowContext.CorrelationId = OriginalCorrelationId;
-                }
+                //if (OriginalCorrelationId != null)
+                //{
+                //    workflowContext.CorrelationId = OriginalCorrelationId;
+                //}
 
                 workflowContext.LastResult = "TimerEvent";
                 return Outcomes("Done");
