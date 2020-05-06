@@ -6,7 +6,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OrchardCore.BackgroundTasks;
 using OrchardCore.ContentManagement;
-using OrchardCore.ContentManagement.Records;
 using OrchardCore.Modules;
 using OrchardCore.PublishLater.Indexes;
 using YesSql;
@@ -30,7 +29,6 @@ namespace OrchardCore.PublishLater.Services
             var itemsToPublish = await serviceProvider
                 .GetRequiredService<ISession>()
                 .Query<ContentItem, PublishLaterPartIndex>(index => index.ScheduledPublishUtc < _clock.UtcNow)
-                .With<ContentItemIndex>(index => index.Latest && !index.Published)
                 .ListAsync();
 
             if (!itemsToPublish.Any())
@@ -40,6 +38,11 @@ namespace OrchardCore.PublishLater.Services
 
             foreach (var item in itemsToPublish)
             {
+                if (item.Published || !item.Latest)
+                {
+                    _logger.LogWarning("An invalid publish task was found for {ContentItemId}.", item.ContentItemId);
+                }
+
                 _logger.LogDebug("Publishing scheduled content item {ContentItemId}.", item.ContentItemId);
                 await serviceProvider.GetRequiredService<IContentManager>().PublishAsync(item);
             }
