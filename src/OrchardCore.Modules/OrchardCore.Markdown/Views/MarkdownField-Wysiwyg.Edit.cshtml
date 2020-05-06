@@ -22,21 +22,25 @@
 
 <script at="Foot">
     $(function () {
-        var simplemde = new SimpleMDE({
-            element: document.getElementById("@Html.IdFor(m => m.Markdown)"),
-            forceSync: true,
-            toolbar: simplemdeToolbar,
-            autoDownloadFontAwesome: false
-        });
+        var markdownElement = document.getElementById("@Html.IdFor(m => m.Markdown)");
+        // When part rendered by a flow part only the elements scripts are rendered, so the html element will not exist. 
+        if (markdownElement) {
+            var simplemde = new SimpleMDE({
+                element: markdownElement,
+                forceSync: true,
+                toolbar: simplemdeToolbar,
+                autoDownloadFontAwesome: false
+            });
 
-        simplemde.codemirror.on('change', function () {
-            $(document).trigger('contentpreview:render');
-        });
+            simplemde.codemirror.on('change', function () {
+                $(document).trigger('contentpreview:render');
+            });
 
-        @if(culture.IsRightToLeft())
-        {
-            <text>$('.editor-toolbar').attr('style', 'direction:rtl;text-align:right');
-$('.CodeMirror').attr('style', 'text-align:right');</text>
+            @if(culture.IsRightToLeft())
+            {
+                <text>$('.editor-toolbar').attr('style', 'direction:rtl;text-align:right');
+                $('.CodeMirror').attr('style', 'text-align:right');</text>
+            }
         }
     });
 </script>

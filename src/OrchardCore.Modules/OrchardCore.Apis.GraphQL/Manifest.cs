@@ -2,9 +2,9 @@ using OrchardCore.Modules.Manifest;
 
 [assembly: Module(
     Name = "GraphQL",
-    Author = "The Orchard Team",
-    Website = "https://orchardproject.net",
-    Version = "2.0.0",
+    Author = ManifestConstants.OrchardCoreTeam,
+    Website = ManifestConstants.OrchardCoreWebsite,
+    Version = ManifestConstants.OrchardCoreVersion,
     Description = "Apis using the GraphQL Specification.",
     Category = "Api"
 )]

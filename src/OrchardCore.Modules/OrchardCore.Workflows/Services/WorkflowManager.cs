@@ -358,7 +358,12 @@ namespace OrchardCore.Workflows.Services
                     if (transition != null)
                     {
                         var destinationActivity = workflowContext.WorkflowType.Activities.SingleOrDefault(x => x.ActivityId == transition.DestinationActivityId);
-                        scheduled.Push(destinationActivity);
+
+                        // Check that the activity doesn't point to itself.
+                        if (destinationActivity != activity)
+                        {
+                            scheduled.Push(destinationActivity);
+                        }
                     }
                 }
 
