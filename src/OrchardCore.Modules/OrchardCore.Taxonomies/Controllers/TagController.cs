@@ -26,7 +26,6 @@ namespace OrchardCore.Taxonomies.Controllers
         private readonly IEnumerable<IContentHandler> _contentHandlers;
         private readonly ISession _session;
         private readonly ILogger _logger;
-        private readonly IUpdateModelAccessor _updateModelAccessor;
 
         public TagController(
             IContentManager contentManager,
@@ -34,8 +33,7 @@ namespace OrchardCore.Taxonomies.Controllers
             IContentDefinitionManager contentDefinitionManager,
             IEnumerable<IContentHandler> contentHandlers,
             ISession session,
-            ILogger<TagController> logger,
-            IUpdateModelAccessor updateModelAccessor)
+            ILogger<TagController> logger)
         {
             _contentManager = contentManager;
             _authorizationService = authorizationService;
@@ -43,7 +41,6 @@ namespace OrchardCore.Taxonomies.Controllers
             _contentHandlers = contentHandlers;
             _session = session;
             _logger = logger;
-            _updateModelAccessor = updateModelAccessor;
         }
 
         [HttpPost]
@@ -77,7 +74,7 @@ namespace OrchardCore.Taxonomies.Controllers
 
             // Create tag term but only run content handlers not content item display manager update editor.
             // This creates empty parts, if parts are attached to the tag term, with empty data.
-            // But still generates valid autoroute paths from the handler. 
+            // But still generates valid autoroute paths from the handler.
             var contentItem = await _contentManager.NewAsync(part.TermContentType);
             contentItem.DisplayText = displayText;
             contentItem.Weld<TermPart>();
