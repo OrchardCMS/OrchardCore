@@ -178,7 +178,7 @@ namespace OrchardCore.Data.Migration
                 var current = 0;
                 if (dataMigrationRecord != null)
                 {
-                    // This can be null if a failed create migration has occured and the data migration record was saved.
+                    // This can be null if a failed create migration has occurred and the data migration record was saved.
                     current = dataMigrationRecord.Version.HasValue ? dataMigrationRecord.Version.Value : current;
                 }
                 else

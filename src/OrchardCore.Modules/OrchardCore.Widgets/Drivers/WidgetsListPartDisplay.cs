@@ -94,7 +94,7 @@ namespace OrchardCore.Widgets.Drivers
 
             await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-            part.Widgets.Clear();
+            var zonedContentItems = new Dictionary<string, List<ContentItem>>();
 
             // Remove any content or the zones would be merged and not be cleared
             part.Content.Widgets.RemoveAll();
@@ -106,18 +106,28 @@ namespace OrchardCore.Widgets.Drivers
                 var prefix = model.Prefixes[i];
 
                 var contentItem = await _contentManager.NewAsync(contentType);
+                if (part.Widgets.ContainsKey(zone))
+                {
+                    var existing = part.Widgets[zone].FirstOrDefault(x => String.Equals(x.ContentItemId, model.Prefixes[i], StringComparison.OrdinalIgnoreCase));
+                    if (existing != null)
+                    {
+                        contentItem.ContentItemId = model.Prefixes[i];
+                    }
+                }
 
                 contentItem.Weld(new WidgetMetadata());
 
                 var widgetModel = await contentItemDisplayManager.UpdateEditorAsync(contentItem, context.Updater, context.IsNew, htmlFieldPrefix: prefix);
 
-                if (!part.Widgets.ContainsKey(zone))
+                if (!zonedContentItems.ContainsKey(zone))
                 {
-                    part.Widgets.Add(zone, new List<ContentItem>());
+                    zonedContentItems.Add(zone, new List<ContentItem>());
                 }
 
-                part.Widgets[zone].Add(contentItem);
+                zonedContentItems[zone].Add(contentItem);
             }
+
+            part.Widgets = zonedContentItems;
 
             return Edit(part, context);
         }

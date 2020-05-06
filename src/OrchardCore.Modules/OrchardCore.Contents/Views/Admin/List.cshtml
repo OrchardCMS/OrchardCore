@@ -84,7 +84,7 @@
                         <span class="dropdown-menu dropdown-menu-right" aria-labelledby="bulk-action-menu-button">
                             @foreach (var item in Model.Options.ContentsBulkAction)
                             {
-                                <a class="dropdown-item bulk-action-item" href="javascript:void(0)" data-action="@item.Value" data-title="@T["Bulk Action"]" data-message="@T["Are you sure you want to {0} these items?", @item.Text.ToLower()]">@item.Text</a>
+                                <a class="dropdown-item" href="javascript:void(0)" data-action="@item.Value" data-title="@T["Bulk Action"]" data-message="@T["Are you sure you want to {0} these items?", @item.Text.ToLower()]">@item.Text</a>
                             }
                             @await DisplayAsync(await New.AdminBulkActions())
                         </span>
@@ -145,7 +145,9 @@
             $("[name='submit.Filter']").click();
         });
 
-        $(".dropdown-menu .bulk-action-item").on("click", function () {
+        $(".dropdown-menu .dropdown-item").filter(function() {
+            return $(this).data("action");
+        }).one("click", function () {
             if ($(":checkbox[name='itemIds']:checked").length > 1) {
                 var $this = $(this);
                 confirmDialog({...$this.data(), callback: function(r) {

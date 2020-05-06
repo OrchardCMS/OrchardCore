@@ -86,7 +86,7 @@ namespace OrchardCore.Facebook.Login.Configuration
             }
             catch
             {
-                _logger.LogError("The Facebook secret keycould not be decrypted. It may have been encrypted using a different key.");
+                _logger.LogError("The Facebook secret key could not be decrypted. It may have been encrypted using a different key.");
             }
 
             if (loginSettings.CallbackPath.HasValue)
