@@ -140,6 +140,7 @@ namespace OrchardCore.Users
             services.TryAddScoped<IUserSecurityStampStore<IUser>>(sp => sp.GetRequiredService<UserStore>());
             services.TryAddScoped<IUserLoginStore<IUser>>(sp => sp.GetRequiredService<UserStore>());
             services.TryAddScoped<IUserClaimStore<IUser>>(sp => sp.GetRequiredService<UserStore>());
+            services.TryAddScoped<IUserAuthenticationTokenStore<IUser>>(sp => sp.GetRequiredService<UserStore>());
 
             services.ConfigureApplicationCookie(options =>
             {
@@ -153,14 +154,6 @@ namespace OrchardCore.Users
 
                 options.LoginPath = "/" + userOptions.Value.LoginPath;
                 options.AccessDeniedPath = "/Error/403";
-
-                // Disabling same-site is required for OpenID's module prompt=none support to work correctly.
-                // Note: it has no practical impact on the security of the site since all endpoints are always
-                // protected by antiforgery checks, that are enforced with or without this setting being changed.
-                // 2019-12-10; Removed, since https://github.com/aspnet/Announcements/issues/390
-                // 2020-02-17; Reenabled since we have compensation logic for backwardscompatibility
-                // 2020-03-23; Moved the SameSiteNode.None to the Startup of the OIDC Server
-                options.Cookie.SameSite = SameSiteMode.Strict;
             });
 
             services.AddSingleton<IIndexProvider, UserIndexProvider>();

@@ -31,10 +31,10 @@ namespace OrchardCore.Email
         public string ReplyTo { get; set; }
 
         /// <summary>
-        /// Gets or sets the actual submittor of the email.
+        /// Gets or sets the actual submitter of the email.
         /// </summary>
         /// <remark>
-        /// This property is required if not the same as <see cref="From"/>, for more informaton please refer to https://ietf.org/rfc/rfc822.txt.
+        /// This property is required if not the same as <see cref="From"/>, for more information please refer to https://ietf.org/rfc/rfc822.txt.
         /// </remark>
         public string Sender { get; set; }
 

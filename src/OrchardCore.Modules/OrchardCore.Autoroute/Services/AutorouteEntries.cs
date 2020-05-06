@@ -32,7 +32,7 @@ namespace OrchardCore.Autoroute.Services
             lock (this)
             {
                 // Evict all entries related to a container item from autoroute entries.
-                // This is necesary to account for deletions, disabling of an item, or disabling routing of contained items.
+                // This is necessary to account for deletions, disabling of an item, or disabling routing of contained items.
                 foreach (var entry in entries.Where(x => String.IsNullOrEmpty(x.ContainedContentItemId)))
                 {
                     var entriesToRemove = _paths.Values.Where(x => x.ContentItemId == entry.ContentItemId && !String.IsNullOrEmpty(x.ContainedContentItemId));
@@ -72,7 +72,7 @@ namespace OrchardCore.Autoroute.Services
         public void RemoveEntries(IEnumerable<AutorouteEntry> entries)
         {
             lock (this)
-            {        
+            {
                 foreach (var entry in entries)
                 {
                     // Evict all entries related to a container item from autoroute entries.

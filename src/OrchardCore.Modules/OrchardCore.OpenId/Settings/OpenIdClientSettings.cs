@@ -15,5 +15,6 @@ namespace OrchardCore.OpenId.Settings
         public IEnumerable<string> Scopes { get; set; }
         public string ResponseType { get; set; }
         public string ResponseMode { get; set; }
+        public bool StoreExternalTokens{ get; set; }
     }
 }

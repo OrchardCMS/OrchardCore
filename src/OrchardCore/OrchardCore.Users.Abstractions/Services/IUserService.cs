@@ -14,7 +14,7 @@ namespace OrchardCore.Users.Services
         /// </summary>
         /// <param name="userName">The username.</param>
         /// <param name="password">The user password.</param>
-        /// <param name="reportError">The error reported in case failure happened during the authntication process.</param>
+        /// <param name="reportError">The error reported in case failure happened during the authentication process.</param>
         /// <returns>A <see cref="IUser"/> that represents an authenticated user.</returns>
         Task<IUser> AuthenticateAsync(string userName, string password, Action<string, string> reportError);
 

@@ -44,6 +44,8 @@ namespace OrchardCore.Media.Processing
             set => _match = value;
         }
 
+        public ProcessingBehavior ProcessingBehavior => ProcessingBehavior.CommandOnly;
+
         /// <inheritdoc/>
         public bool IsValidRequest(HttpContext context)
         {

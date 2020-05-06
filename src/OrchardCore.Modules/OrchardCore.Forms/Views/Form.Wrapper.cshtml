@@ -1,0 +1,20 @@
+@using OrchardCore.ContentManagement
+@using OrchardCore.Forms.Models;
+@using OrchardCore.Mvc.Utilities;
+@using Newtonsoft.Json.Linq;
+
+@inject OrchardCore.ContentManagement.Display.IContentItemDisplayManager ContentItemDisplayManager
+
+@{
+    var formPart = ((ContentItem)Model.ContentItem).As<FormPart>();
+    string encType = formPart.Method == "POST" ? formPart.EncType : string.Empty;
+}
+
+<form action="@formPart.Action" method="@formPart.Method"  enctype="@encType">
+    @if(formPart.EnableAntiForgeryToken)
+    {
+        @Html.AntiForgeryToken()
+    }
+
+    @await DisplayAsync(Model.Metadata.ChildContent)
+</form>
