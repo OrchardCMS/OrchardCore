@@ -1,7 +1,7 @@
+using System.ComponentModel;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.Data.Migration;
-using OrchardCore.Title.Models;
 
 namespace OrchardCore.Forms
 {
@@ -22,8 +22,9 @@ namespace OrchardCore.Forms
                 .WithDescription("Turns your content item into a form."));
 
             _contentDefinitionManager.AlterTypeDefinition("Form", type => type
-                .WithPart("TitlePart")
-                .MergeSettings<TitlePartSettings>( setting => setting.RenderTitle = false )
+                .WithPart("TitlePart", part => part
+                    .WithSettings<TitlePartSettings>(new TitlePartSettings { RenderTitle = false })
+                )
                 .WithPart("FormPart")
                 .WithPart("FlowPart")
                 .Stereotype("Widget"));
@@ -41,8 +42,9 @@ namespace OrchardCore.Forms
                 .WithDescription("Provides label properties."));
 
             _contentDefinitionManager.AlterTypeDefinition("Label", type => type
-                .WithPart("TitlePart")
-                .MergeSettings<TitlePartSettings>(setting => setting.RenderTitle = false)
+                .WithPart("TitlePart", part => part
+                    .WithSettings<TitlePartSettings>(new TitlePartSettings { RenderTitle = false })
+                )
                 .WithPart("FormElementPart")
                 .WithPart("LabelPart")
                 .Stereotype("Widget"));
@@ -108,15 +110,24 @@ namespace OrchardCore.Forms
 
         public int UpdateFrom1()
         {
-            _contentDefinitionManager.AlterTypeDefinition("Form", type => type                
-                .MergeSettings<TitlePartSettings>(setting => setting.RenderTitle = false)
+            _contentDefinitionManager.AlterTypeDefinition("Form", type => type
+                .WithPart("TitlePart", part => part.MergeSettings<TitlePartSettings>(setting => setting.RenderTitle = false))
             );
 
-            _contentDefinitionManager.AlterTypeDefinition("Label", type => type               
-                .MergeSettings<TitlePartSettings>(setting => setting.RenderTitle = false)
+            _contentDefinitionManager.AlterTypeDefinition("Label", type => type
+                .WithPart("TitlePart", part => part.MergeSettings<TitlePartSettings>(setting => setting.RenderTitle = false))
             );
 
             return 2;
+        }
+        internal class TitlePartSettings
+        {
+            public int Options { get; set; }
+
+            public string Pattern { get; set; }
+
+            [DefaultValue(true)]
+            public bool RenderTitle { get; set; }
         }
     }
 }
