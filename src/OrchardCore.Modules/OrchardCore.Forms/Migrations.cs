@@ -1,6 +1,7 @@
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.Data.Migration;
+using OrchardCore.Title.Models;
 
 namespace OrchardCore.Forms
 {
@@ -22,6 +23,7 @@ namespace OrchardCore.Forms
 
             _contentDefinitionManager.AlterTypeDefinition("Form", type => type
                 .WithPart("TitlePart")
+                .MergeSettings<TitlePartSettings>( setting => setting.RenderTitle = false )
                 .WithPart("FormPart")
                 .WithPart("FlowPart")
                 .Stereotype("Widget"));
@@ -40,6 +42,7 @@ namespace OrchardCore.Forms
 
             _contentDefinitionManager.AlterTypeDefinition("Label", type => type
                 .WithPart("TitlePart")
+                .MergeSettings<TitlePartSettings>(setting => setting.RenderTitle = false)
                 .WithPart("FormElementPart")
                 .WithPart("LabelPart")
                 .Stereotype("Widget"));
@@ -100,7 +103,20 @@ namespace OrchardCore.Forms
                 .WithPart("ValidationPart")
                 .Stereotype("Widget"));
 
-            return 1;
+            return 2;
+        }
+
+        public int UpdateFrom1()
+        {
+            _contentDefinitionManager.AlterTypeDefinition("Form", type => type                
+                .MergeSettings<TitlePartSettings>(setting => setting.RenderTitle = false)
+            );
+
+            _contentDefinitionManager.AlterTypeDefinition("Label", type => type               
+                .MergeSettings<TitlePartSettings>(setting => setting.RenderTitle = false)
+            );
+
+            return 2;
         }
     }
 }
