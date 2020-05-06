@@ -294,7 +294,7 @@ namespace OrchardCore.DisplayManagement.Razor
 
         private RenderAsyncDelegate SectionDelegate(RenderAsyncDelegate oldDelegate, dynamic shape)
         {
-            RenderAsyncDelegate newDelegate = async () =>
+            return async () =>
             {
                 BeginWriteSectionZone();
                 PushWriter(_writer);
@@ -304,7 +304,6 @@ namespace OrchardCore.DisplayManagement.Razor
                 EndWriteSectionZone();
                 shape.RenderAsyncDelegate = null;
             };
-            return newDelegate;
         }
 
         private void BeginWriteSectionZone()
