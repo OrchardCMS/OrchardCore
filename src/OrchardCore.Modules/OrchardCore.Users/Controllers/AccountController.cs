@@ -290,6 +290,16 @@ namespace OrchardCore.Users.Controllers
                 await workflowManager.TriggerEventAsync(nameof(Workflows.Activities.UserLoggedInEvent),
                     input: input, correlationId: ((User)user).Id.ToString());
             }
+
+            if (info != null)
+            {
+                var identityResult = await _signInManager.UpdateExternalAuthenticationTokensAsync(info);
+                if (!identityResult.Succeeded)
+                {
+                    _logger.LogError("Error updating the external authentication tokens.");
+                }
+            }
+
             return RedirectToLocal(returnUrl);
         }
 

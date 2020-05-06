@@ -4,6 +4,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Modules;
@@ -21,23 +22,29 @@ namespace OrchardCore.Users.Services
         IUserPasswordStore<IUser>,
         IUserEmailStore<IUser>,
         IUserSecurityStampStore<IUser>,
-        IUserLoginStore<IUser>
+        IUserLoginStore<IUser>,
+        IUserAuthenticationTokenStore<IUser>
     {
+        private const string TokenProtector = "OrchardCore.UserStore.Token";
+
         private readonly ISession _session;
         private readonly IRoleService _roleService;
         private readonly ILookupNormalizer _keyNormalizer;
         private readonly ILogger _logger;
+        private readonly IDataProtectionProvider _dataProtectionProvider;
 
         public UserStore(ISession session,
             IRoleService roleService,
             ILookupNormalizer keyNormalizer,
             ILogger<UserStore> logger,
-            IEnumerable<IUserEventHandler> handlers)
+            IEnumerable<IUserEventHandler> handlers,
+            IDataProtectionProvider dataProtectionProvider)
         {
             _session = session;
             _roleService = roleService;
             _keyNormalizer = keyNormalizer;
             _logger = logger;
+            _dataProtectionProvider = dataProtectionProvider;
             Handlers = handlers;
         }
         public IEnumerable<IUserEventHandler> Handlers { get; private set; }
@@ -524,5 +531,106 @@ namespace OrchardCore.Users.Services
         }
 
         #endregion IUserClaimStore<IUser>
+
+        #region IUserAuthenticationTokenStore
+        public Task<string> GetTokenAsync(IUser user, string loginProvider, string name, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            if (string.IsNullOrEmpty(loginProvider))
+            {
+                throw new ArgumentException("The login provider cannot be null or empty.", nameof(loginProvider));
+            }
+
+            if (string.IsNullOrEmpty(name))
+            {
+                throw new ArgumentException("The name cannot be null or empty.", nameof(name));
+            }
+
+            string tokenValue = null;
+            var userToken = GetUserToken(user, loginProvider, name);
+            if (userToken != null)
+            {
+                tokenValue = _dataProtectionProvider.CreateProtector(TokenProtector).Unprotect(userToken.Value);
+            }
+
+            return Task.FromResult(tokenValue);
+        }
+
+        public Task RemoveTokenAsync(IUser user, string loginProvider, string name, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            if (string.IsNullOrEmpty(loginProvider))
+            {
+                throw new ArgumentException("The login provider cannot be null or empty.", nameof(loginProvider));
+            }
+
+            if (string.IsNullOrEmpty(name))
+            {
+                throw new ArgumentException("The name cannot be null or empty.", nameof(name));
+            }
+
+            var userToken = GetUserToken(user, loginProvider, name);
+            if (userToken != null)
+            {
+                ((User)user).UserTokens.Remove(userToken);
+            }
+
+            return Task.CompletedTask;
+        }
+
+        public Task SetTokenAsync(IUser user, string loginProvider, string name, string value, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            if (string.IsNullOrEmpty(loginProvider))
+            {
+                throw new ArgumentException("The login provider cannot be null or empty.", nameof(loginProvider));
+            }
+
+            if (string.IsNullOrEmpty(name))
+            {
+                throw new ArgumentException("The name cannot be null or empty.", nameof(name));
+            }
+
+            if (string.IsNullOrEmpty(value))
+            {
+                throw new ArgumentException("The value cannot be null or empty.", nameof(value));
+            }
+
+            var userToken = GetUserToken(user, loginProvider, name);
+
+            if (userToken == null)
+            {
+                userToken = new UserToken
+                {
+                    LoginProvider = loginProvider,
+                    Name = name
+                };
+                ((User)user).UserTokens.Add(userToken);
+            }
+
+            // Encrypt the token
+            userToken.Value = _dataProtectionProvider.CreateProtector(TokenProtector).Protect(value);
+
+            return Task.CompletedTask;
+        }
+
+        private static UserToken GetUserToken(IUser user, string loginProvider, string name)
+        {
+            return ((User)user).UserTokens.FirstOrDefault(ut => ut.LoginProvider == loginProvider &&
+                                                                ut.Name == name);
+        }
+        #endregion
     }
 }
