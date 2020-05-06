@@ -250,7 +250,7 @@ namespace OrchardCore.Contents
             services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<ExportContentToDeploymentTargetDeploymentStep>());
             services.AddScoped<IDisplayDriver<DeploymentStep>, ExportContentToDeploymentTargetDeploymentStepDriver>();
 
-            services.AddScoped<IShapeTableProvider, ExportContentToDeploymentTargetContentShapes>();
+            services.AddScoped<IShapeTableProvider, ExportContentToDeploymentTargetShapes>();
             services.AddScoped<IDataMigration, ExportContentToDeploymentTargetMigrations>();
             services.AddScoped<IContentDisplayDriver, ExportContentToDeploymentTargetContentDriver>();
         }
@@ -271,7 +271,7 @@ namespace OrchardCore.Contents
             services.AddTransient<IDeploymentSource, ContentItemDeploymentSource>();
             services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<ContentItemDeploymentStep>());
             services.AddScoped<IDisplayDriver<DeploymentStep>, ContentItemDeploymentStepDriver>();
-            services.AddScoped<IShapeTableProvider, AddToDeploymentPlanContentShapes>();
+            services.AddScoped<IShapeTableProvider, AddToDeploymentPlanShapes>();
             services.AddScoped<IContentDisplayDriver, AddToDeploymentPlanContentDriver>();
         }
 

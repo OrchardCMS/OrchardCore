@@ -46,7 +46,7 @@
             var button = $(event.relatedTarget) // Button that triggered the modal
             var contentItemId = button.data('content-item-id');
 
-            $('.add-to-deployment-plan').on('click', function () {
+            $('.add-to-deployment-plan').one('click', function () {
                 var targetButton = this;
                 var magicToken = $("input[name=__RequestVerificationToken]").first();
                 if (magicToken) {
@@ -66,9 +66,6 @@
                     deployForm.submit();
                 }
             })
-        })
-        $('#modalAddToDeploymentPlanActionDeploymentPlan').on('hide.bs.modal', function () {
-            $('.add-to-deployment-plan').off('click');
         })
     });
 </script>

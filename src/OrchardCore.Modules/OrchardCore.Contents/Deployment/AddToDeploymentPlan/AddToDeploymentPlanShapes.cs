@@ -7,11 +7,11 @@ using OrchardCore.Modules;
 namespace OrchardCore.Contents.Deployment.AddToDeploymentPlan
 {
     [Feature("OrchardCore.Contents.Deployment.AddToDeploymentPlan")]
-    public class AddToDeploymentPlanContentShapes : IShapeTableProvider
+    public class AddToDeploymentPlanShapes : IShapeTableProvider
     {
         private readonly IDeploymentPlanService _deploymentPlanService;
 
-        public AddToDeploymentPlanContentShapes(
+        public AddToDeploymentPlanShapes(
             IDeploymentPlanService deploymentPlanService
             )
         {

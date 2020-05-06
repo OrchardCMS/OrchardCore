@@ -43,7 +43,7 @@
         $('#modalAddToDeploymentPlanContentsBulkActionDeploymentPlan').on('show.bs.modal', function () {
             var itemIds = $(":checkbox[name='itemIds']:checked");
             if (itemIds.length > 1) {
-                $('.add-to-deployment-plan-bulk-action').on('click', function () {
+                $('.add-to-deployment-plan-bulk-action').one('click', function () {
                     var targetButton = this;
                     var magicToken = $("input[name=__RequestVerificationToken]").first();
                     if (magicToken) {
@@ -66,10 +66,6 @@
                     }
                 })
             }
-        })
-
-        $('#modalAddToDeploymentPlanContentsBulkActionDeploymentPlan').on('hide.bs.modal', function () {
-            $('.add-to-deployment-plan-bulk-action').off('click');
         })
     });
 </script>

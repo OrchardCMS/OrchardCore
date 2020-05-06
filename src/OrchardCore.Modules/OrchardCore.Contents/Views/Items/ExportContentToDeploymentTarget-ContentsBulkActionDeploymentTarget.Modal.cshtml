@@ -37,28 +37,14 @@
             </div>
         </div>
     </div>
-
 </zone>
 
 <script at="Foot" depends-on="jQuery">
     $(function () {
-        $('#exportContentToDeploymentTargetAction').on('click', function () {
-            if ($(":checkbox[name='itemIds']:checked").length > 1) {
-                var $this = $(this);
-                confirmDialog({
-                    ...$this.data(), callback: function (r) {
-                        if (r) {
-                            $('#modalExportContentToDeploymentTargetContentBulkActionTarget').modal('show');
-                        }
-                    }
-                });
-            }
-        });
-
         $('#modalExportContentToDeploymentTargetContentBulkActionTarget').on('show.bs.modal', function () {
             var itemIds = $(":checkbox[name='itemIds']:checked");
             if (itemIds.length > 1) {
-                $('.export-to-deployment-target-bulk-action').on('click', function () {
+                $('.export-to-deployment-target-bulk-action').one('click', function () {
                     var targetButton = this;
                     var magicToken = $("input[name=__RequestVerificationToken]").first();
                     if (magicToken) {
@@ -81,11 +67,6 @@
                     }
                 })
             }
-
-        })
-
-        $('#modalExportContentToDeploymentTargetContentBulkActionTarget').on('hide.bs.modal', function () {
-            $('.export-to-deployment-target-bulk-action').off('click');
         })
     });
 </script>

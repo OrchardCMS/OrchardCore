@@ -10,13 +10,13 @@ using OrchardCore.Settings;
 namespace OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget
 {
     [Feature("OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget")]
-    public class ExportContentToDeploymentTargetContentShapes : IShapeTableProvider
+    public class ExportContentToDeploymentTargetShapes : IShapeTableProvider
     {
         private readonly IDeploymentPlanService _deploymentPlanService;
         private readonly ISiteService _siteService;
         private readonly IDeploymentManager _deploymentManager;
 
-        public ExportContentToDeploymentTargetContentShapes(
+        public ExportContentToDeploymentTargetShapes(
             IDeploymentPlanService deploymentPlanService,
             ISiteService siteService,
             IDeploymentManager deploymentManager)

@@ -8,6 +8,7 @@
                 confirmDialog({
                     ...$this.data(), callback: function (r) {
                         if (r) {
+                            console.log('t')
                             $('#modalExportContentToDeploymentTargetContentBulkActionTarget').modal('show');
                         }
                     }

@@ -45,7 +45,7 @@
             var contentItemId = button.data('content-item-id');
             var latest = button.data('latest');
 
-            $('.export-to-deployment-target').on('click', function () {
+            $('.export-to-deployment-target').one('click', function () {
                 var targetButton = this;
                 var magicToken = $("input[name=__RequestVerificationToken]").first();
                 if (magicToken) {
@@ -68,9 +68,6 @@
                     exportForm.submit();
                 }
             })
-        })
-        $('#modalExportContentToDeploymentTargetActionTarget').on('hide.bs.modal', function () {
-            $('.export-to-deployment-target').off('click');
         })
     });
 </script>
