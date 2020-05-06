@@ -298,7 +298,7 @@ namespace OrchardCore.Sitemaps.Controllers
 
             _notifier.Success(H["Sitemap index deleted successfully"]);
 
-            return RedirectToAction(nameof(Edit));
+            return RedirectToAction(nameof(List));
         }
 
         [HttpPost]
