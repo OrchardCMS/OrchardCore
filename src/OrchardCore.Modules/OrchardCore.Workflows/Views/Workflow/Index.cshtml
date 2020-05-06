@@ -150,7 +150,7 @@
 
         $(".dropdown-menu .dropdown-item").filter(function() {
             return $(this).data("action");
-        }).one("click", function () {
+        }).on("click", function () {
             if ($(":checkbox[name='itemIds']:checked").length > 1) {
                 var $this = $(this);
                 confirmDialog({title: $this.data('title'), message: $this.data('message'), callback: function(r) {
