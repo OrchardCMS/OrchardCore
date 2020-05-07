@@ -1,9 +1,9 @@
+using System.Security.Claims;
+using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
 using Microsoft.AspNetCore.Identity;
 using OrchardCore.Liquid;
-using System.Security.Claims;
-using System.Threading.Tasks;
 
 namespace OrchardCore.Users.Liquid
 {
