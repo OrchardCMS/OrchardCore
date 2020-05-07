@@ -108,9 +108,6 @@ namespace OrchardCore.Contents.Workflows.Activities
                 await ContentManager.UpdateAsync(contentItem);
             }
 
-            workflowContext.CorrelationId = contentItem.ContentItemId;
-            workflowContext.Properties[ContentsHandler.ContentItemInputKey] = contentItem;
-
             var result = await ContentManager.ValidateAsync(contentItem);
 
             if (result.Succeeded)
@@ -120,6 +117,8 @@ namespace OrchardCore.Contents.Workflows.Activities
                     await ContentManager.PublishAsync(contentItem);
                 }
 
+                workflowContext.CorrelationId = contentItem.ContentItemId;
+                workflowContext.Properties[ContentsHandler.ContentItemInputKey] = contentItem;
                 workflowContext.LastResult = contentItem;
 
                 return Outcomes("Done");

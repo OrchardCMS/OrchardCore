@@ -69,11 +69,10 @@ namespace OrchardCore.Contents.Workflows.Activities
 
             var result = await ContentManager.UpdateValidateAndCreateAsync(contentItem, Publish ? VersionOptions.Published : VersionOptions.Draft);
 
-            workflowContext.CorrelationId = contentItem.ContentItemId;
-            workflowContext.Properties[ContentsHandler.ContentItemInputKey] = contentItem;
-
             if (result.Succeeded)
             {
+                workflowContext.CorrelationId = contentItem.ContentItemId;
+                workflowContext.Properties[ContentsHandler.ContentItemInputKey] = contentItem;
                 workflowContext.LastResult = contentItem;
 
                 return Outcomes("Done");
