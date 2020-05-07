@@ -20,7 +20,7 @@ Do some housekeeping on GitHub in the [main repo](https://github.com/OrchardCMS/
 ### Prepare the code
 Update the source so everything looks like on the new version.
 
-- [ ] Create code generation templates.
+- [ ] Update code generation templates in `OrchardCore.ProjectTemplates`.
 - [ ] Make sure that [OrchardCore.Samples works](https://github.com/OrchardCMS/OrchardCore.Samples).
 - [ ] Create a `release/<version name>` branch out of `dev`.
 - [ ] Update the `OrchardCore.Commons.props` file: Update `VersionPrefix` for release versions (like "1.0.0") and `VersionSuffix` for pre-release versions (like "rc2", for the full version to be e.g. "1.0.0-rc2").
