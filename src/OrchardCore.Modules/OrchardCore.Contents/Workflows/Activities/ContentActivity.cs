@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
@@ -32,6 +33,12 @@ namespace OrchardCore.Contents.Workflows.Activities
         protected bool FromContentHandler { get; private set; }
 
         protected string OriginalCorrelationId { get; private set; }
+
+        protected bool AsCorrelatedContentDriver { get; private set; }
+
+        protected bool AsCorrelatedContentHandler { get; private set; }
+
+        protected bool AsCorrelatedContentDriverOrHandler { get; private set; }
 
         public override LocalizedString Category => S["Content"];
 
@@ -75,35 +82,40 @@ namespace OrchardCore.Contents.Workflows.Activities
 
         protected virtual async Task<IContent> GetContentAsync(WorkflowExecutionContext workflowContext)
         {
-            // Try and evaluate a content item from the Content expression, if provided.
+            IContent content;
+
+            // Try to evaluate a content item from the Content expression, if provided.
             if (!string.IsNullOrWhiteSpace(Content.Expression))
             {
                 var expression = new WorkflowExpression<object> { Expression = Content.Expression };
-                var contentItemResult = await ScriptEvaluator.EvaluateAsync(expression, workflowContext);
+                var result = await ScriptEvaluator.EvaluateAsync(expression, workflowContext);
 
-                if (contentItemResult is ContentItem contentItem)
+                if (result is ContentItem contentItem)
                 {
-                    return contentItem;
+                    content = contentItem;
                 }
-                else if (contentItemResult is string contentItemId)
+                else if (result is string contentItemId)
                 {
-                    // Latest is used to allow fetching unpublished content items
-                    return await ContentManager.GetAsync(contentItemId, VersionOptions.Latest);
+                    content = new ContentItemIdExpressionContent() { ContentItem = new ContentItem() { ContentItemId = contentItemId } };
                 }
-
-                // Try to map the result to a content item
-                var contentItemJson = JsonConvert.SerializeObject(contentItemResult);
-                var res = JsonConvert.DeserializeObject<ContentItem>(contentItemJson);
-
-                return res;
+                else
+                {
+                    // Try to map the result to a content item.
+                    var json = JsonConvert.SerializeObject(result);
+                    content = JsonConvert.DeserializeObject<ContentItem>(json);
+                }
+            }
+            else
+            {
+                // If no expression was provided, see if the content item was provided as an input or as a property.
+                content = workflowContext.Input.GetValue<IContent>(ContentsHandler.ContentItemInputKey)
+                    ?? workflowContext.Properties.GetValue<IContent>(ContentsHandler.ContentItemInputKey);
             }
 
-            // If no expression was provided, see if the content item was provided as an input or as a property.
-            var content = workflowContext.Input.GetValue<IContent>(ContentsHandler.ContentItemInputKey)
-                ?? workflowContext.Properties.GetValue<IContent>(ContentsHandler.ContentItemInputKey);
-
-            if (content != null)
+            if (content != null && content.ContentItem.ContentItemId != null)
             {
+                UpdateCorrelatedDriverAndHandlerProperties(content.ContentItem.ContentItemId);
+
                 return content;
             }
 
@@ -112,17 +124,36 @@ namespace OrchardCore.Contents.Workflows.Activities
 
         protected virtual async Task<string> GetContentItemIdAsync(WorkflowExecutionContext workflowContext)
         {
-            // Try and evaluate a content item id from the Content expression, if provided.
+            // Try to evaluate a content item id from the Content expression, if provided.
             if (!string.IsNullOrWhiteSpace(Content.Expression))
             {
                 var expression = new WorkflowExpression<object> { Expression = Content.Expression };
                 var contentItemIdResult = await ScriptEvaluator.EvaluateAsync(expression, workflowContext);
+
                 if (contentItemIdResult is string contentItemId)
                 {
+                    UpdateCorrelatedDriverAndHandlerProperties(contentItemId);
+
                     return contentItemId;
                 }
             }
+
             return null;
+        }
+
+        protected void UpdateCorrelatedDriverAndHandlerProperties(string contentItemId)
+        {
+            var correlated = String.Equals(OriginalCorrelationId, contentItemId, StringComparison.OrdinalIgnoreCase);
+
+            AsCorrelatedContentDriver = FromContentDriver && correlated;
+            AsCorrelatedContentHandler = FromContentHandler && correlated;
+
+            AsCorrelatedContentDriverOrHandler = AsCorrelatedContentDriver || AsCorrelatedContentHandler;
+        }
+
+        protected class ContentItemIdExpressionContent : IContent
+        {
+            public ContentItem ContentItem { get; set; }
         }
     }
 }

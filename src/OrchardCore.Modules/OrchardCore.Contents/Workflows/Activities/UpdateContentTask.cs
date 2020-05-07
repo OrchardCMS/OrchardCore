@@ -81,23 +81,14 @@ namespace OrchardCore.Contents.Workflows.Activities
                 throw new InvalidOperationException($"The {workflowContext.WorkflowType.Name}:{DisplayText} activity failed to evaluate the 'ContentItemId'.");
             }
 
-            // Check if the activity is executed inline as a correlated content driver or correlated content handler.
-            var correlated = String.Equals(OriginalCorrelationId, contentItemId, StringComparison.OrdinalIgnoreCase);
-
-            var asContentDriver = FromContentDriver && correlated;
-            var asContentHandler = FromContentHandler && correlated;
-            var asDriverOrHandler = asContentDriver || asContentHandler;
-
             ContentItem contentItem = null;
 
-            if (!asContentHandler)
+            if (!AsCorrelatedContentHandler)
             {
-                // Use 'DraftRequired' so that we mutate a new version unless the type is not 'Versionable'.
                 contentItem = await ContentManager.GetAsync(contentItemId, VersionOptions.DraftRequired);
             }
             else
             {
-                // If executed as an handler we use the content item that has been passed to the workflow context input.
                 contentItem = workflowContext.Input.GetValue<IContent>(ContentsHandler.ContentItemInputKey)?.ContentItem;
             }
 
@@ -112,8 +103,7 @@ namespace OrchardCore.Contents.Workflows.Activities
                 contentItem.Merge(JObject.Parse(contentProperties), new JsonMergeSettings { MergeArrayHandling = MergeArrayHandling.Replace });
             }
 
-            // Drivers / handlers are not intended to call content manager methods.
-            if (!asDriverOrHandler)
+            if (!AsCorrelatedContentDriverOrHandler)
             {
                 await ContentManager.UpdateAsync(contentItem);
             }
@@ -121,14 +111,11 @@ namespace OrchardCore.Contents.Workflows.Activities
             workflowContext.CorrelationId = contentItem.ContentItemId;
             workflowContext.Properties[ContentsHandler.ContentItemInputKey] = contentItem;
 
-            // We call 'ValidateAsync()' that replaces some part / field driver validations, even if acting as an handler
-            // as we are executing after them, and as a driver we may still need to call some custom validation handlers.
             var result = await ContentManager.ValidateAsync(contentItem);
 
             if (result.Succeeded)
             {
-                // Content drivers / handlers are not intended to call content manager methods.
-                if (Publish && !asDriverOrHandler)
+                if (Publish && !AsCorrelatedContentDriverOrHandler)
                 {
                     await ContentManager.PublishAsync(contentItem);
                 }
@@ -138,8 +125,7 @@ namespace OrchardCore.Contents.Workflows.Activities
                 return Outcomes("Done");
             }
 
-            // Content drivers / handlers are intended to add errors to the model state.
-            if (asDriverOrHandler)
+            if (AsCorrelatedContentDriverOrHandler)
             {
                 _updateModelAccessor.ModelUpdater.ModelState.AddModelError(nameof(UpdateContentTask),
                     $"The {workflowContext.WorkflowType.Name}:{DisplayText} activity failed to update the content item: "
