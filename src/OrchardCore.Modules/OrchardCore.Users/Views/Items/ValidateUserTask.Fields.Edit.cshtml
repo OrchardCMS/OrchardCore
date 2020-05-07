@@ -8,6 +8,7 @@
 
 <fieldset class="form-group" asp-validation-class-for="Roles">
     <label asp-for="Roles">@T["Roles"]</label>
-    @await Component.InvokeAsync("SelectRoles", new { selectedRoles = Model.Roles, htmlName = Html.NameFor(m => m.Roles), except = new[] { "Anonymous", "Authenticated" }  })
+    @await Component.InvokeAsync("SelectRoles", new { selectedRoles = Model.Roles, htmlName = Html.NameFor(m => m.Roles), except = new[] { "Anonymous", "Authenticated" } })
     <span asp-validation-for="Roles"></span>
+    <span class="hint">@T["The InRole outcome will be triggerred if the user has at least one of the selected roles."]</span>
 </fieldset>

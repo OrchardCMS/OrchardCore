@@ -16,7 +16,7 @@ namespace OrchardCore.Users.Workflows.Activities
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly UserManager<IUser> _userManager;
-        private readonly IStringLocalizer T;
+        private readonly IStringLocalizer S;
         private readonly IRoleService _roleService;
 
         public ValidateUserTask(UserManager<IUser> userManager, IHttpContextAccessor httpContextAccessor, IStringLocalizer<ValidateUserTask> localizer, IRoleService roleService)
@@ -24,12 +24,12 @@ namespace OrchardCore.Users.Workflows.Activities
             _httpContextAccessor = httpContextAccessor;
             _userManager = userManager;
             _roleService = roleService;
-            T = localizer;
+            S = localizer;
         }
 
         public override string Name => nameof(ValidateUserTask);
 
-        public override LocalizedString Category => T["User"];
+        public override LocalizedString Category => S["User"];
 
         public bool SetUser
         {
@@ -43,15 +43,11 @@ namespace OrchardCore.Users.Workflows.Activities
             set => SetProperty(value);
         }
 
-        public override LocalizedString DisplayText => T["Validate User Task"];
+        public override LocalizedString DisplayText => S["Validate User Task"];
 
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            var outcomes = Roles.Select(x => T[x]).ToList();
-            outcomes.Add(T["Authenticated"]);
-            outcomes.Add(T["Anonymous"]);
-
-            return Outcomes(outcomes.ToArray());
+            return Outcomes(S["Anonymous"], S["Authenticated"], S["InRole"]);
         }
 
         public async override Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
@@ -66,11 +62,6 @@ namespace OrchardCore.Users.Workflows.Activities
                     workflowContext.Properties["User"] = user;
                 }
 
-                var outcomes = new List<string>
-                {
-                    "Authenticated"
-                };
-
                 if (Roles.Any())
                 {
                     var userRoleNames = await _userManager.GetRolesAsync(await _userManager.GetUserAsync(user));
@@ -78,12 +69,12 @@ namespace OrchardCore.Users.Workflows.Activities
                     {
                         if (userRoleNames.Contains(role, StringComparer.CurrentCultureIgnoreCase))
                         {
-                            outcomes.Add(role);
+                            workflowContext.LastResult = userRoleNames;
+                            return Outcomes("InRole");
                         }
                     }
                 }
-
-                return Outcomes(outcomes.ToArray());
+                return Outcomes("Authenticated");
             }
 
             return Outcomes("Anonymous");
