@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement;
+using OrchardCore.Contents.Workflows.Handlers;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Models;
@@ -43,6 +44,8 @@ namespace OrchardCore.Contents.Workflows.Activities
                 throw new InvalidOperationException($"The {workflowContext.WorkflowType.Name}:{DisplayText} activity failed to retrieve the content item.");
             }
 
+            workflowContext.CorrelationId = contentItem.ContentItemId;
+            workflowContext.Properties[ContentsHandler.ContentItemInputKey] = contentItem;
             workflowContext.LastResult = contentItem;
 
             return Outcomes("Retrieved");

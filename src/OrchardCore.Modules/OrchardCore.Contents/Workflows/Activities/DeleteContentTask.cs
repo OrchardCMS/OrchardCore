@@ -41,7 +41,20 @@ namespace OrchardCore.Contents.Workflows.Activities
                 return Outcomes("Noop");
             }
 
-            await ContentManager.RemoveAsync(content.ContentItem);
+            var contentItem = await ContentManager.GetAsync(content.ContentItem.ContentItemId, VersionOptions.Latest);
+
+            if (contentItem != null)
+            {
+                await ContentManager.RemoveAsync(contentItem);
+            }
+            else if (content is ContentItemIdExpressionContent)
+            {
+                throw new InvalidOperationException($"The {workflowContext.WorkflowType.Name}:{DisplayText} activity failed to retrieve the content item.");
+            }
+            else
+            {
+                await ContentManager.RemoveAsync(content.ContentItem);
+            }
 
             return Outcomes("Deleted");
         }

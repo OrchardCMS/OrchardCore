@@ -59,13 +59,13 @@ namespace OrchardCore.Contents.Workflows.Activities
         public override Task OnInputReceivedAsync(WorkflowExecutionContext workflowContext, IDictionary<string, object> input)
         {
             // The activity may be executed inline from the 'UserTaskEventContentDriver'.
-            if (input.GetValue<string>("UserAction") != null)
+            if (input?.GetValue<string>("UserAction") != null)
             {
                 FromContentDriver = true;
             }
 
             // The activity may be executed inline from the 'ContentsHandler'.
-            if (input.GetValue<IContent>(ContentsHandler.ContentItemInputKey) != null)
+            if (input?.GetValue<IContent>(ContentsHandler.ContentItemInputKey) != null)
             {
                 FromContentHandler = true;
             }
