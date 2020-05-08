@@ -72,23 +72,27 @@ namespace OrchardCore.Workflows.Services
             return _session.GetAsync<Workflow>(ids.ToArray());
         }
 
-        public Task<IEnumerable<Workflow>> ListAsync(string workflowTypeId, IEnumerable<string> blockingActivityIds)
+        public async Task<IEnumerable<Workflow>> ListAsync(string workflowTypeId, IEnumerable<string> blockingActivityIds)
         {
-            return _session
+            var query = await _session
                 .Query<Workflow, WorkflowBlockingActivitiesIndex>(index =>
                     index.WorkflowTypeId == workflowTypeId &&
-                    index.ActivityId.IsIn(blockingActivityIds))
-                .ListAsync();
+                    index.ActivityId.IsIn(blockingActivityIds)
+                ).ListAsync();
+
+            return query.ToList();
         }
 
-        public Task<IEnumerable<Workflow>> ListAsync(string workflowTypeId, string activityName, string correlationId = null)
+        public async Task<IEnumerable<Workflow>> ListAsync(string workflowTypeId, string activityName, string correlationId = null)
         {
-            return _session
+            var query = await _session
                 .Query<Workflow, WorkflowBlockingActivitiesIndex>(index =>
                     index.WorkflowTypeId == workflowTypeId &&
                     index.ActivityName == activityName &&
                     index.WorkflowCorrelationId == (correlationId ?? ""))
                 .ListAsync();
+
+            return query.ToList();
         }
 
         public async Task<IEnumerable<Workflow>> ListByActivityNameAsync(string activityName, string correlationId = null, bool isAlwaysCorrelated = false)

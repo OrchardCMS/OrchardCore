@@ -42,16 +42,18 @@ namespace OrchardCore.Workflows.Services
             return _session.Query<WorkflowType, WorkflowTypeIndex>().ListAsync();
         }
 
-        public Task<IEnumerable<WorkflowType>> GetByStartActivityAsync(string activityName)
+        public async Task<IList<WorkflowType>> GetByStartActivityAsync(string activityName)
         {
-            return _session
+            var query = await _session
                 .Query<WorkflowType, WorkflowTypeStartActivitiesIndex>(index =>
                     index.StartActivityName == activityName &&
                     index.IsEnabled)
                 .ListAsync();
+
+            return query.ToList();
         }
 
-        public Task SaveAsync(WorkflowType workflowType)
+        public async Task SaveAsync(WorkflowType workflowType)
         {
             var isNew = workflowType.Id == 0;
             _session.Save(workflowType);
@@ -59,12 +61,12 @@ namespace OrchardCore.Workflows.Services
             if (isNew)
             {
                 var context = new WorkflowTypeCreatedContext(workflowType);
-                return _handlers.InvokeAsync((handler, context) => handler.CreatedAsync(context), context, _logger);
+                await _handlers.InvokeAsync((handler, context) => handler.CreatedAsync(context), context, _logger);
             }
             else
             {
                 var context = new WorkflowTypeUpdatedContext(workflowType);
-                return _handlers.InvokeAsync((handler, context) => handler.UpdatedAsync(context), context, _logger);
+                await _handlers.InvokeAsync((handler, context) => handler.UpdatedAsync(context), context, _logger);
             }
         }
 
