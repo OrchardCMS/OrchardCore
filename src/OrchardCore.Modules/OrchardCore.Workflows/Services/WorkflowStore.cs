@@ -99,8 +99,11 @@ namespace OrchardCore.Workflows.Services
                     isAlwaysCorrelated || (index.WorkflowCorrelationId == (correlationId ?? "")))
                 .ListAsync();
 
-            var pendingWorkflowIds = query.Select(x => x.WorkflowId).Distinct().ToArray();
-            return await _session.Query<Workflow, WorkflowIndex>(x => x.WorkflowId.IsIn(pendingWorkflowIds)).ListAsync();
+            var pendingWorkflowIndexes = query.ToList();
+            var pendingWorkflowIds = pendingWorkflowIndexes.Select(x => x.WorkflowId).Distinct().ToArray();
+            var pendingWorkflows = await _session.Query<Workflow, WorkflowIndex>(x => x.WorkflowId.IsIn(pendingWorkflowIds)).ListAsync();
+
+            return pendingWorkflows.ToList();
         }
 
         public async Task SaveAsync(Workflow workflow)
