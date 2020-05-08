@@ -67,8 +67,7 @@ namespace OrchardCore.Workflows.Http.Services
                 }
 
                 skip += pageSize;
-                var pendingWorkflowIndexes = query.ToList();
-                var pendingWorkflowIds = pendingWorkflowIndexes.Select(x => x.WorkflowId).Distinct().ToArray();
+                var pendingWorkflowIds = query.Select(x => x.WorkflowId).Distinct().ToArray();
                 var pendingWorkflows = await _session.Query<Workflow, WorkflowIndex>(x => x.WorkflowId.IsIn(pendingWorkflowIds)).ListAsync();
 
                 var workflowRouteEntryQuery =
