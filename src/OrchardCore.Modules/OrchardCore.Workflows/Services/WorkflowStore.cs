@@ -63,8 +63,7 @@ namespace OrchardCore.Workflows.Services
 
         public Task<IEnumerable<Workflow>> GetAsync(IEnumerable<string> workflowIds)
         {
-            var workflowIdList = workflowIds.ToList();
-            return _session.Query<Workflow, WorkflowBlockingActivitiesIndex>(x => x.WorkflowCorrelationId.IsIn(workflowIdList)).ListAsync();
+            return _session.Query<Workflow, WorkflowBlockingActivitiesIndex>(x => x.WorkflowId.IsIn(workflowIds)).ListAsync();
         }
 
         public Task<IEnumerable<Workflow>> GetAsync(IEnumerable<int> ids)
