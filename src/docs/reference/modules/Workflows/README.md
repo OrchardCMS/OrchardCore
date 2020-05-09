@@ -201,7 +201,7 @@ For example, if you have a workflow that starts with the **Content Created Event
 {{ Workflow.Input.ContentItem.DisplayText }}
 ```
 
-For more examples of supported content item filters, see the documentation on [Liquid](..//OrchardCore.Modules/OrchardCore.Liquid/).
+For more examples of supported content item filters, see the documentation on [Liquid](../Liquid/README.md).
 
 ## Activities out of the box
 
