@@ -174,6 +174,37 @@ namespace OrchardCore.Autoroute.Handlers
 
         }
 
+        public override async Task ValidatingAsync(ValidateContentContext context, AutoroutePart part)
+        {
+            // Only validate the path if it's not empty.
+            if (String.IsNullOrWhiteSpace(part.Path))
+            {
+                return;
+            }
+
+            if (part.Path == "/")
+            {
+                context.Fail(S["Your permalink can't be set to the homepage, please use the homepage option instead."]);
+            }
+
+            if (part.Path?.IndexOfAny(AutoroutePartDisplay.InvalidCharactersForPath) > -1 || part.Path?.IndexOf(' ') > -1 || part.Path?.IndexOf("//") > -1)
+            {
+                var invalidCharactersForMessage = string.Join(", ", AutoroutePartDisplay.InvalidCharactersForPath.Select(c => $"\"{c}\""));
+                context.Fail(S["Please do not use any of the following characters in your permalink: {0}. No spaces, or consecutive slashes, are allowed (please use dashes or underscores instead).", invalidCharactersForMessage]);
+            }
+
+            if (part.Path?.Length > AutoroutePartDisplay.MaxPathLength)
+            {
+                context.Fail(S["Your permalink is too long. The permalink can only be up to {0} characters.", AutoroutePartDisplay.MaxPathLength]);
+            }
+
+            if (!await IsAbsolutePathUniqueAsync(part.Path, part.ContentItem.ContentItemId))
+            {
+                context.Fail(S["Your permalink is already in use."]);
+            }
+
+        }
+
         public override async Task UpdatedAsync(UpdateContentContext context, AutoroutePart part)
         {
             await GenerateContainerPathFromPattern(part);

@@ -10,7 +10,6 @@ Orchard Core consists of two distinct projects:
 [![Documentation](https://readthedocs.org/projects/orchardcore/badge/)](https://docs.orchardcore.net/)
 [![Crowdin](https://badges.crowdin.net/orchard-core/localized.svg)](https://crowdin.com/project/orchard-core)
 
-
 ## Build Status
 
 Stable (master): 
@@ -59,3 +58,11 @@ Docker images and parameters can be found at <https://hub.docker.com/u/orchardpr
 ### Documentation
 
 The documentation can be accessed here: <https://docs.orchardcore.net/>
+
+## Code of Conduct
+
+See [CODE-OF-CONDUCT](./CODE-OF-CONDUCT.md)
+
+## .NET Foundation
+
+This project is supported by the [.NET Foundation](http://www.dotnetfoundation.org).

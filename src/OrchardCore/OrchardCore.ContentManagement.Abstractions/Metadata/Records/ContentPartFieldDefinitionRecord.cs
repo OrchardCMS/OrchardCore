@@ -10,7 +10,7 @@ namespace OrchardCore.ContentManagement.Metadata.Records
     public class ContentPartFieldDefinitionRecord : IMessagePackSerializationCallbackReceiver
     {
         /// <summary>
-        /// Gets or set the field name, e.g. BooleanField.
+        /// Gets or sets the field name, e.g. BooleanField.
         /// </summary>
         public string FieldName { get; set; }
 

@@ -45,8 +45,6 @@ namespace OrchardCore.Media.Services
         /// <param name="context"></param>
         public async Task Invoke(HttpContext context)
         {
-            //TODO for 3.0 and endpoint routing, validate it is not an endpoint
-
             // Support only Head requests or Get Requests.
             if (!HttpMethods.IsGet(context.Request.Method) && !HttpMethods.IsHead(context.Request.Method))
             {
