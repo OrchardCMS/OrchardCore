@@ -49,8 +49,6 @@ namespace OrchardCore.Workflows.Http
 
             services.AddScoped<ILiquidTemplateEventHandler, SignalLiquidTemplateHandler>();
             services.AddLiquidFilter<SignalUrlFilter>("signal_url");
-
-            services.AddTransient<IModularTenantEvents, HttpRequestRouteActivator>();
         }
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
