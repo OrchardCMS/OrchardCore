@@ -46,8 +46,12 @@ namespace OrchardCore.Workflows.Http.Filters
                 {
                     if (workflowTypes.TryGetValue(Int32.Parse(entry.WorkflowId), out var workflowType))
                     {
-                        var activity = workflowType.Activities.Single(x => x.IsStart && x.ActivityId == entry.ActivityId);
-                        await _workflowManager.StartWorkflowAsync(workflowType, activity);
+                        var activity = workflowType.Activities.Single(x => x.ActivityId == entry.ActivityId);
+
+                        if (activity.IsStart)
+                        {
+                            await _workflowManager.StartWorkflowAsync(workflowType, activity);
+                        }
                     }
                 }
             }
