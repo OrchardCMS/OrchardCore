@@ -67,7 +67,8 @@ Fire up Visual Studio, create a new solution file (`.sln`) by creating a new ASP
 
 Now that we created a new Web Application we need to add proper dependencies so that this new Web Application be targeted as an Orchard Core application.
 
-See [Adding Orchard Core Nuget Feed](#adding-orchard-core-nuget-feed)
+!!! note
+    If you want to use the `dev` packages, [configure the OrchardCore Dev url in your Package sources](../devPackageSource.md)
 
 ![image](../assets/images/templates/orchard-screencast-2.gif)
 
@@ -205,6 +206,3 @@ using OrchardCore.DisplayManagement.Manifest;
     Description = "The TemplateTheme."
 )]
 ```
-
-!!! note
-    If you want to use the `dev` packages, [configure the OrchardCore Dev url in your Package sources](../devPackageSource.md)
