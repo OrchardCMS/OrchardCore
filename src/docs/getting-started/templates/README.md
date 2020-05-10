@@ -153,9 +153,15 @@ Fire up Visual Studio, open Orchard Core solution file (`.sln`), select `Orchard
 
 For marking this new Class Library as an Orchard Module we will now need to reference `OrchardCore.Module.Targets` Nuget package.
 
-See [adding Orchard Core Nuget Feed](#adding-orchard-core-nuget-feed).
+!!! note
+    If you want to use the `dev` packages, [configure the OrchardCore Dev url in your Package sources](../devPackageSource.md)
 
-Each of these `*.Targets` Nuget packages are used to mark a Class Library as a specific Orchard Core functionality. `OrchardCore.Module.Targets` is the one we are interested in for now. We will mark our new Class Library as a module by adding `OrchardCore.Module.Targets` as a dependency. For doing so you will need to right click on `MyModule.OrchardCore` project and select "Manage Nuget Packages" option. To find the packages in Nuget Package Manager you will need to check "include prerelease" and make sure you have Orchard Core feed that we added earlier selected. Once you have found it, click on the Install button on the right panel next to Version : Latest prerelease x.x.x.x
+Each of these `*.Targets` Nuget packages are used to mark a Class Library as a specific Orchard Core functionality.  
+`OrchardCore.Module.Targets` is the one we are interested in for now.  
+We will mark our new Class Library as a module by adding `OrchardCore.Module.Targets` as a dependency.  
+For doing so you will need to right click on `MyModule.OrchardCore` project and select "Manage Nuget Packages" option.  
+To find the packages in Nuget Package Manager you will need to check "include prerelease" and make sure you have Orchard Core feed that we added earlier selected.  
+Once you have found it, click on the Install button on the right panel next to Version : Latest prerelease x.x.x.x
 
 ![image](../assets/images/templates/38450558-f4b83098-39ed-11e8-93c7-0fd9e5112dff.png)
 
