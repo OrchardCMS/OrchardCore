@@ -142,14 +142,18 @@ namespace OrchardCore.Workflows.Http.Controllers
                     _logger.LogDebug("Invoking new workflow of type '{WorkflowTypeId}' with start activity '{ActivityId}'", workflowType.WorkflowTypeId, startActivity.ActivityId);
                 }
 
-                await _workflowManager.StartWorkflowAsync(workflowType, startActivity);
+                // If this is not a singleton workflow or there is not already an halted instance, start a new workflow.
+                if (!workflowType.IsSingleton || !await _workflowStore.HasHaltedInstanceAsync(workflowType.WorkflowTypeId))
+                {
+                    await _workflowManager.StartWorkflowAsync(workflowType, startActivity);
+                }
             }
             else
             {
-                // Otherwise, we need to resume a halted workflow.
-                var workflow = (await _workflowStore.ListAsync(workflowType.WorkflowTypeId, new[] { startActivity.ActivityId })).FirstOrDefault();
+                // Otherwise, we need to resume all halted workflows on this activity.
+                var workflows = await _workflowStore.ListAsync(workflowType.WorkflowTypeId, new[] { startActivity.ActivityId });
 
-                if (workflow == null)
+                if (!workflows.Any())
                 {
                     if (_logger.IsEnabled(LogLevel.Warning))
                     {
@@ -159,16 +163,19 @@ namespace OrchardCore.Workflows.Http.Controllers
                     return NotFound();
                 }
 
-                var blockingActivity = workflow.BlockingActivities.FirstOrDefault(x => x.ActivityId == startActivity.ActivityId);
-
-                if (blockingActivity != null)
+                foreach (var workflow in workflows)
                 {
-                    if (_logger.IsEnabled(LogLevel.Debug))
-                    {
-                        _logger.LogDebug("Resuming workflow with ID '{WorkflowId}' on activity '{ActivityId}'", workflow.WorkflowId, blockingActivity.ActivityId);
-                    }
+                    var blockingActivity = workflow.BlockingActivities.FirstOrDefault(x => x.ActivityId == startActivity.ActivityId);
 
-                    await _workflowManager.ResumeWorkflowAsync(workflow, blockingActivity);
+                    if (blockingActivity != null)
+                    {
+                        if (_logger.IsEnabled(LogLevel.Debug))
+                        {
+                            _logger.LogDebug("Resuming workflow with ID '{WorkflowId}' on activity '{ActivityId}'", workflow.WorkflowId, blockingActivity.ActivityId);
+                        }
+
+                        await _workflowManager.ResumeWorkflowAsync(workflow, blockingActivity);
+                    }
                 }
             }
 
