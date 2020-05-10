@@ -135,10 +135,10 @@ namespace MyModule
             // Adding our menu items to the builder.
             // The builder represents the full admin menu tree.
             builder
-                .Add(S["My Root View"], "after",  rootView => rootView               
-                    .Add(S["Child One"],"1", childOne => childOne
+                .Add(S["My Root View"], S["My Root View"].PrefixPosition(),  rootView => rootView               
+                    .Add(S["Child One"], S["Child One"].PrefixPosition(), childOne => childOne
                         .Action("ChildOne", "DemoNav", new { area = "MyModule"}))
-                    .Add(S["Child Two"], "2", childTwo => childTwo
+                    .Add(S["Child Two"], S["Child Two"].PrefixPosition(), childTwo => childTwo
                         .Action("ChildTwo", "DemoNav", new { area = "MyModule"})));
 
             return Task.CompletedTask;
@@ -146,6 +146,9 @@ namespace MyModule
     }
 }
 ```
+
+!!! note
+    We suggest to use the `PrefixPosition` extension method for the second parameter (`position`) if you want to keep an alphabetical sort when the strings will be translated in other languages.
 
 Then you have to register this service in the `Startup.cs` file of the module.
 
