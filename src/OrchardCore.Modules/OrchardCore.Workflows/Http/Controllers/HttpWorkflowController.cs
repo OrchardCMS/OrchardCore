@@ -91,7 +91,7 @@ namespace OrchardCore.Workflows.Http.Controllers
                 return NotFound();
             }
 
-            if(!workflowType.IsEnabled)
+            if (!workflowType.IsEnabled)
             {
                 if (_logger.IsEnabled(LogLevel.Warning))
                 {
@@ -137,14 +137,14 @@ namespace OrchardCore.Workflows.Http.Controllers
             // If the activity is a start activity, start a new workflow.
             if (startActivity.IsStart)
             {
-                if (_logger.IsEnabled(LogLevel.Debug))
-                {
-                    _logger.LogDebug("Invoking new workflow of type '{WorkflowTypeId}' with start activity '{ActivityId}'", workflowType.WorkflowTypeId, startActivity.ActivityId);
-                }
-
                 // If this is not a singleton workflow or there is not already an halted instance, start a new workflow.
                 if (!workflowType.IsSingleton || !await _workflowStore.HasHaltedInstanceAsync(workflowType.WorkflowTypeId))
                 {
+                    if (_logger.IsEnabled(LogLevel.Debug))
+                    {
+                        _logger.LogDebug("Invoking new workflow of type '{WorkflowTypeId}' with start activity '{ActivityId}'", workflowType.WorkflowTypeId, startActivity.ActivityId);
+                    }
+
                     await _workflowManager.StartWorkflowAsync(workflowType, startActivity);
                 }
             }
