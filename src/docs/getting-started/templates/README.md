@@ -206,9 +206,5 @@ using OrchardCore.DisplayManagement.Manifest;
 )]
 ```
 
-## Adding Orchard Core Nuget Feed
-
-In order to be able to use the __dev__ feed from Visual Studio, open the Tools menu under Nuget Package Manager --> Package Manager Settings.
-The feed url is <https://www.myget.org/F/orchardcore-preview/api/v3/index.json>
-
-![image](../assets/images/templates/38450422-63670f1c-39eb-11e8-9c14-0743f0a4da42.png)
+!!! note
+    If you want to use the `dev` packages, [configure the OrchardCore Dev url in your Package sources](../devPackageSource.md)
