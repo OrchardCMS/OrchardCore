@@ -23,6 +23,8 @@ namespace OrchardCore.Workflows.Http.Models
         public void OnAfterDeserialize() => RouteValues = new RouteValueDictionary(RouteDataValues);
         public void OnBeforeSerialize() => RouteDataValues = RouteValues.ToDictionary(kv => kv.Key, kv => kv.Value);
 
+        public string CorrelationId { get; set; }
+
         public string ControllerName => RouteValues.GetValue<string>("controller");
         public string ActionName => RouteValues.GetValue<string>("action");
         public string AreaName => RouteValues.GetValue<string>("area");

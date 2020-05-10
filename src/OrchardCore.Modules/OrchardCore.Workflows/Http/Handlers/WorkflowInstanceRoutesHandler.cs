@@ -41,7 +41,7 @@ namespace OrchardCore.Workflows.Http.Handlers
         {
             var workflow = context.Workflow;
             var workflowType = await _workflowTypeStore.GetAsync(workflow.WorkflowTypeId);
-            var entries = WorkflowRouteEntries.GetWorkflowRoutesEntries(workflowType, context.Workflow, _activityLibrary);
+            var entries = WorkflowInstanceRouteEntries.GetWorkflowRoutesEntries(workflowType, context.Workflow, _activityLibrary);
 
             await _workflowRouteEntries.AddEntriesAsync(entries);
         }
