@@ -58,7 +58,7 @@ plugins:
   
 # Page tree
 nav:
-    - About Orchard Core: docs/README.md
+    - About Orchard Core: README.md
     - Getting started: 
         - Create a CMS Web application: docs/getting-started/README.md
         - Configure Dev package source: docs/getting-started/devPackageSource.md
@@ -162,8 +162,4 @@ nav:
     - Resources: 
         - Learning: docs/resources/README.md
         - Workshops: docs/resources/workshops/README.md
-    - Releases: 
-        - 1.0.0-rc1: docs/releases/1.0.0-rc1.md
-        - 1.0.0-beta3: docs/releases/1.0.0-beta3.md
-        - 1.0.0-beta2: docs/releases/1.0.0-beta2.md
     
