@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Filters;
+using OrchardCore.Workflows.Helpers;
 using OrchardCore.Workflows.Http.Services;
 using OrchardCore.Workflows.Services;
 
@@ -50,7 +51,7 @@ namespace OrchardCore.Workflows.Http.Filters
 
                         if (activity.IsStart)
                         {
-                            await _workflowManager.StartWorkflowAsync(workflowType, activity);
+                            await _workflowManager.StartWorkflowAsync(workflowType, activity, null, routeValues.GetValue<string>("correlationid"));
                         }
                     }
                 }
@@ -60,10 +61,13 @@ namespace OrchardCore.Workflows.Http.Filters
             {
                 var workflowIds = workflowEntries.Select(x => x.WorkflowId).ToList();
                 var workflows = (await _workflowStore.GetAsync(workflowIds)).ToDictionary(x => x.WorkflowId);
+                var correlationId = routeValues.GetValue<string>("correlationid");
 
                 foreach (var entry in workflowEntries)
                 {
-                    if (workflows.TryGetValue(entry.WorkflowId, out var workflow))
+                    if (workflows.TryGetValue(entry.WorkflowId, out var workflow) &&
+                        (String.IsNullOrWhiteSpace(correlationId) ||
+                        workflow.CorrelationId == correlationId))
                     {
                         var blockingActivity = workflow.BlockingActivities.Single(x => x.ActivityId == entry.ActivityId);
                         await _workflowManager.ResumeWorkflowAsync(workflow, blockingActivity);

@@ -62,7 +62,7 @@ namespace OrchardCore.Workflows.Http.Activities
         {
             var httpContext = _httpContextAccessor.HttpContext;
             var httpRequest = httpContext.Request;
-            var isHttpMethodMatch = string.Equals(HttpMethod, httpRequest.Method, System.StringComparison.OrdinalIgnoreCase);
+            var isHttpMethodMatch = String.Equals(HttpMethod, httpRequest.Method, StringComparison.OrdinalIgnoreCase);
 
             if (!isHttpMethodMatch)
                 return false;
@@ -99,7 +99,7 @@ namespace OrchardCore.Workflows.Http.Activities
             return a.All(x =>
             {
                 var valueA = x.Value?.ToString();
-                return b.ContainsKey(x.Key) && string.Equals(valueA, b[x.Key]?.ToString(), StringComparison.OrdinalIgnoreCase);
+                return b.ContainsKey(x.Key) && String.Equals(valueA, b[x.Key]?.ToString(), StringComparison.OrdinalIgnoreCase);
             });
         }
     }

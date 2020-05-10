@@ -1,9 +1,6 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Routing;
-using OrchardCore.Workflows.Helpers;
 using OrchardCore.Workflows.Http.Activities;
 using OrchardCore.Workflows.Http.Models;
 using OrchardCore.Workflows.Indexes;
@@ -15,20 +12,6 @@ namespace OrchardCore.Workflows.Http.Services
 {
     internal class WorkflowInstanceRouteEntries : WorkflowRouteEntries<WorkflowRouteDocument>, IWorkflowInstanceRouteEntries
     {
-        protected override IEnumerable<WorkflowRoutesEntry> GetWorkflowRoutesEntries(WorkflowRouteDocument document, string httpMethod, RouteValueDictionary routeValues)
-        {
-            var entries = base.GetWorkflowRoutesEntries(document, httpMethod, routeValues);
-
-            var correlationId = routeValues.GetValue<string>("correlationid");
-
-            if (String.IsNullOrWhiteSpace(correlationId))
-            {
-                return entries;
-            }
-
-            return entries.Where(x => x.CorrelationId == correlationId).ToArray();
-        }
-
         protected override async Task<WorkflowRouteDocument> CreateDocumentAsync()
         {
             var workflowTypeDictionary = (await Session.Query<WorkflowType, WorkflowTypeIndex>().ListAsync()).ToDictionary(x => x.WorkflowTypeId);
@@ -81,7 +64,6 @@ namespace OrchardCore.Workflows.Http.Services
                     ActivityId = x.ActivityId,
                     HttpMethod = activity.HttpMethod,
                     RouteValues = activity.RouteValues,
-                    CorrelationId = workflow.CorrelationId
                 };
 
                 return entry;
