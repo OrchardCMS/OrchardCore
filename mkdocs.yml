@@ -61,7 +61,7 @@ nav:
     - About Orchard Core: README.md
     - Getting started: 
         - Create a CMS Web application: docs/getting-started/README.md
-        - Configure Dev package source: docs/getting-started/devPackageSource.md
+        - Configure Dev package source: docs/getting-started/dev-package-source.md
         - Recipes and Starter Themes: docs/getting-started/starter-recipes.md
         - Code Generation Templates: docs/getting-started/templates/README.md
         - Create a Theme: docs/getting-started/theme.md
