@@ -16,7 +16,7 @@ namespace OrchardCore.Workflows.Http.Services
         {
             var entries = base.GetWorkflowRouteEntries(httpMethod, routeValues);
 
-            var correlationId = routeValues.GetValue<string>("correlationId");
+            var correlationId = routeValues.GetValue<string>("correlationid");
 
             if (String.IsNullOrWhiteSpace(correlationId))
             {
