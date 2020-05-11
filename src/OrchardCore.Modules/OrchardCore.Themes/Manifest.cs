@@ -5,7 +5,7 @@ using OrchardCore.Modules.Manifest;
     Author = ManifestConstants.OrchardCoreTeam,
     Website = ManifestConstants.OrchardCoreWebsite,
     Version = ManifestConstants.OrchardCoreVersion,
-    Description = "Themes.",
+    Description = "The Themes modules allows you to specify the Front and the Admin theme.",
     Dependencies = new[] { "OrchardCore.Admin" },
     Category = "Theming"
 )]
