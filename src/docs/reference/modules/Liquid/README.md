@@ -11,11 +11,10 @@ All outputs are encoded into HTML by default.
 This means that any HTML reserved chars will be converted to the corresponding HTML entities.  
 If you need to render some raw HTML chars you can use the `raw` filter.
 
-## Content Item Filters
+## Filters
 
 All the default filters that are available in the standard Liquid syntax are available in OrchardCore.  
 On top of that each Orchard module can provide custom filters for their own purpose.  
-Here is a list of common filters that apply to content items.
 
 ### `display_url`
 
