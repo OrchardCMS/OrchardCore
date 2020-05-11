@@ -29,7 +29,7 @@ namespace OrchardCore.Contents.Deployment.AddToDeploymentPlan
                     }
                 });
 
-            builder.Describe("AdminBulkActions")
+            builder.Describe("Contents__BulkActions")
                 .OnDisplaying(async context =>
                 {
                     if (await _deploymentPlanService.DoesUserHavePermissionsAsync())
@@ -38,7 +38,7 @@ namespace OrchardCore.Contents.Deployment.AddToDeploymentPlan
                         var shapeFactory = context.ServiceProvider.GetRequiredService<IShapeFactory>();
                         var bulkActionsShape = await shapeFactory.CreateAsync("AddToDeploymentPlan__Button__ContentsBulkAction");
                         // Don't use Items.Add() or the collection won't be sorted
-                        shape.Add(bulkActionsShape, ":20");
+                        shape.Add(bulkActionsShape, ":10");
 
                         var addToDeploymentPlanModal = await shapeFactory.CreateAsync("AddToDeploymentPlan_Modal__ContentsBulkActionDeploymentPlan");
                         shape.Add(addToDeploymentPlanModal);

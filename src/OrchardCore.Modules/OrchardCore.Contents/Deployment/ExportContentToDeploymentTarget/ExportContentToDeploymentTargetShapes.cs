@@ -42,7 +42,7 @@ namespace OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget
                     }
                 });
 
-            builder.Describe("AdminBulkActions")
+            builder.Describe("Contents__BulkActions")
                 .OnDisplaying(async context =>
                 {
                     if (await _deploymentPlanService.DoesUserHaveExportPermissionAsync())
@@ -56,7 +56,7 @@ namespace OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget
                             var bulkActionsShape = await shapeFactory.CreateAsync("ExportContentToDeploymentTarget__Button__ContentsBulkAction");
 
                             // Don't use Items.Add() or the collection won't be sorted
-                            shape.Add(bulkActionsShape, ":10");
+                            shape.Add(bulkActionsShape, ":20");
 
                             var targets = await _deploymentManager.GetDeploymentTargetsAsync();
                             var targetModal = await shapeFactory.CreateAsync("ExportContentToDeploymentTarget_Modal__ContentsBulkActionDeploymentTarget", Arguments.From(new
