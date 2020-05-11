@@ -97,17 +97,17 @@ namespace OrchardCore.Resources
             manifest
                 .DefineStyle("bootstrap-select")
                 .SetUrl("~/OrchardCore.Resources/Styles/bootstrap-select.min.css", "~/OrchardCore.Resources/Styles/bootstrap-select.css")
-                .SetCdn("https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.15/dist/css/bootstrap-select.min.css", "https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.15/dist/css/bootstrap-select.css")
-                .SetCdnIntegrity("sha384-/x1b+qqwEyDuakOh834wkfypntILzu90VoPEoC45hQvN/y/SYwMk3I2zNcZPFQMs", "sha384-2SInsNcvpWKcX5ay/DFjcQ6qioLQU5eA8brwxJKwqUb0jQUhc7ooyVMxIXM123td")
-                .SetVersion("1.13.15");
+                .SetCdn("https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.16/dist/css/bootstrap-select.min.css", "https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.16/dist/css/bootstrap-select.css")
+                .SetCdnIntegrity("sha384-+zhwRiYrK5ABm+MgtCplBuZsVMTUX5AgDRM4jefsxaCYmLer5uZYcuM/Ll+bL+pw", "sha384-6BF3aQqeuulEMCsl+qF7AiJ44nnSyAz2Z3b/IUZSjpAZinZKhTZEw35q7kcnTvjg")
+                .SetVersion("1.13.16");
 
             manifest
                 .DefineScript("bootstrap-select")
                 .SetDependencies("jQuery")
                 .SetUrl("~/OrchardCore.Resources/Scripts/bootstrap-select.min.js", "~/OrchardCore.Resources/Scripts/bootstrap-select.js")
-                .SetCdn("https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.15/dist/js/bootstrap-select.min.js", "https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.15/dist/js/bootstrap-select.js")
-                .SetCdnIntegrity("sha384-fSJacRNiqwuGQg4sAAs0X8bVHsAZBEG5VT+tQIhIqCxFzgR1YazUQR1/VV33DW/J", "sha384-bJ5K5K98YoRRsVHQQzrmWa1StRs86MFN+3Ui/PP8aHAwRZ5M93dWCfFzwRjvkVF3")
-                .SetVersion("1.13.15");
+                .SetCdn("https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.16/dist/js/bootstrap-select.min.js", "https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.16/dist/js/bootstrap-select.js")
+                .SetCdnIntegrity("sha384-0R91SaW5dPDmtqfvh2MrtOwDawrhmwqdNann7l4U8eojZxFb6bOIyXBIBKLMhP1i", "sha384-f37Npebi+IcoUY3NL7kQw2MC3k1qQPgAG2/iRbSxL/ThocKzU5UcuhBp/I5l6Aql")
+                .SetVersion("1.13.16");
 
             manifest
                 .DefineScript("codemirror")
@@ -195,7 +195,6 @@ namespace OrchardCore.Resources
 
             manifest
                 .DefineScript("font-awesome")
-                .SetDependencies("font-awesome-config")
                 .SetUrl("~/OrchardCore.Resources/Vendor/fontawesome-free/js/all.min.js", "~/OrchardCore.Resources/Vendor/fontawesome-free/js/all.js")
                 .SetCdn("https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/js/all.min.js", "https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.13.0/js/all.js")
                 .SetCdnIntegrity("sha384-ujbKXb9V3HdK7jcWL6kHL1c+2Lj4MR4Gkjl7UtwpSHg/ClpViddK9TI7yU53frPN", "sha384-Z4FE6Znluj29FL1tQBLSSjn1Pr72aJzuelbmGmqSAFTeFd42hQ4WHTc0JC30kbQi")

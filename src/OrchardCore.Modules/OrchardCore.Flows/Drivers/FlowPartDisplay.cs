@@ -63,18 +63,25 @@ namespace OrchardCore.Flows.Drivers
 
             await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-            part.Widgets.Clear();
+            var contentItems = new List<ContentItem>();
 
             for (var i = 0; i < model.Prefixes.Length; i++)
             {
                 var contentItem = await _contentManager.NewAsync(model.ContentTypes[i]);
+                var existing = part.Widgets.FirstOrDefault(x => String.Equals(x.ContentItemId, model.Prefixes[i], StringComparison.OrdinalIgnoreCase));
+                if (existing != null)
+                {
+                    contentItem.ContentItemId = model.Prefixes[i];
+                }
 
                 contentItem.Weld(new FlowMetadata());
 
                 var widgetModel = await contentItemDisplayManager.UpdateEditorAsync(contentItem, context.Updater, context.IsNew, htmlFieldPrefix: model.Prefixes[i]);
 
-                part.Widgets.Add(contentItem);
+                contentItems.Add(contentItem);
             }
+
+            part.Widgets = contentItems;
 
             return Edit(part, context);
         }

@@ -54,7 +54,7 @@ namespace OrchardCore.Contents.Workflows.Activities
 
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            return Outcomes(S["Done"]);
+            return Outcomes(S["Done"], S["Failed"]);
         }
 
         public async override Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
@@ -68,10 +68,22 @@ namespace OrchardCore.Contents.Workflows.Activities
                 contentItem.Merge(JObject.Parse(contentProperties), new JsonMergeSettings { MergeArrayHandling = MergeArrayHandling.Replace });
             }
             await ContentManager.UpdateAsync(contentItem);
-            workflowContext.LastResult = contentItem;
-            workflowContext.CorrelationId = contentItem.ContentItemId;
-            workflowContext.Properties[ContentsHandler.ContentItemInputKey] = contentItem;
-            return Outcomes("Done");
+
+            var result = await ContentManager.ValidateAsync(contentItem);
+            if (result.Succeeded)
+            {
+                workflowContext.LastResult = contentItem;
+                workflowContext.CorrelationId = contentItem.ContentItemId;
+                workflowContext.Properties[ContentsHandler.ContentItemInputKey] = contentItem;
+
+                return Outcomes("Done");
+            }
+            else
+            {
+                workflowContext.LastResult = result;
+
+                return Outcomes("Failed");
+            }
         }
     }
 }

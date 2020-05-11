@@ -6,7 +6,7 @@ In this guide you will download and install community managed localization files
 
 - The current version of the .NET Core SDK. You can download it from here [https://www.microsoft.com/net/download/core](https://www.microsoft.com/net/download/core).
 - A text editor and a terminal where you can type dotnet commands.
-- An already running Orchard Core CMS website. You can follow the guide [Creating an Orchard Core CMS website](../create-cms-application) if you haven't done it yet.
+- An already running Orchard Core CMS website. You can follow the guide [Creating an Orchard Core CMS website](../create-cms-application/README.md) if you haven't done it yet.
 
 ## Downloading the localization files
 

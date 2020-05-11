@@ -10,7 +10,7 @@ theme:
     primary: blue
     accent: light blue
   static_templates:
-    - 404.html
+    - docs/404.html
     
 extra:
   social:
@@ -61,6 +61,7 @@ nav:
     - About Orchard Core: README.md
     - Getting started: 
         - Create a CMS Web application: docs/getting-started/README.md
+        - Configure Dev package source: docs/getting-started/dev-package-source.md
         - Recipes and Starter Themes: docs/getting-started/starter-recipes.md
         - Code Generation Templates: docs/getting-started/templates/README.md
         - Create a Theme: docs/getting-started/theme.md
@@ -130,6 +131,7 @@ nav:
                 - Twitter: docs/reference/modules/Twitter/README.md
                 - GitHub: docs/reference/modules/GitHub/README.md
                 - Google: docs/reference/modules/Google/README.md
+            - Users: docs/reference/modules/Users/README.md
         - Core Modules: 
     #        - How to use Core Modules: docs/reference/core/README.md
             - Features: docs/reference/modules/Features/README.md
@@ -145,6 +147,7 @@ nav:
             - Health Check: docs/reference/modules/HealthChecks/README.md
             - Localization: docs/reference/modules/Localize/README.md
             - Logging Serilog: docs/reference/core/Logging.Serilog/readme.md
+            - Mini Profiler: docs/reference/modules/MiniProfiler/README.md
             - Modules: docs/reference/core/Modules/README.md
             - OpenId: docs/reference/modules/OpenId/README.md
             - Razor Helpers: docs/reference/core/Razor/README.md
