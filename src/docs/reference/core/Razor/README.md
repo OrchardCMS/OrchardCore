@@ -18,20 +18,20 @@ Many extensions methods are available in Razor with `@Orchard`.
 | `GetContentItemByVersionIdAsync(string contentItemVersionId)` | OrchardCore.Contents | Loads a content item by its version id. |
 | `QueryContentItemsAsync(Func<IQuery<ContentItem, ContentItemIndex>, IQuery<ContentItem>> query)` | OrchardCore.Contents | Query content items. |
 | `GetRecentContentItemsByContentTypeAsync(string contentType, int maxContentItems = 10)` | OrchardCore.Contents | Loads content items of a specific type. |
-| `LiquidToHtmlAsync(string liquid)` | [OrchardCore.Liquid](../../Modules/Liquid/#razor-helpers) | Parses a liquid string to HTML. |
-| `LiquidToHtmlAsync(string liquid, object model)` | [OrchardCore.Liquid](../../Modules/Liquid/#razor-helpers) | Parses a liquid string to HTML. |
+| `LiquidToHtmlAsync(string liquid)` | [OrchardCore.Liquid](../../Modules/Liquid/README.md#razor-helpers) | Parses a liquid string to HTML. |
+| `LiquidToHtmlAsync(string liquid, object model)` | [OrchardCore.Liquid](../../Modules/Liquid/README.md#razor-helpers) | Parses a liquid string to HTML. |
 | `QueryListItemsCountAsync(string listContentItemId, Expression<Func<ContentItemIndex, bool>> itemPredicate = null)` | OrchardCore.Lists | Returns list count. |
-| `QueryListItemsAsync(string listContentItemId, Expression<Func<ContentItemIndex, bool>> itemPredicate = null)` | [OrchardCore.List](../../Modules/List/#orchard-helpers) | Returns list items. |
-| `MarkdownToHtmlAsync(string listContentItemId, Expression<Func<ContentItemIndex, bool>> itemPredicate = null)` | [OrchardCore.Markdown](../../Modules/Markdown/#razor-helper) | Converts Markdown string to HTML. |
-| `AssetUrl(string assetPath, int? width = null, int? height = null, ResizeMode resizeMode = ResizeMode.Undefined, bool appendVersion = false)` | [OrchardCore.Media](../../Modules/Media/#razor-helpers) | Returns the relative URL of the specifier asset path with optional resizing parameters. |
-| `ImageResizeUrl(string imagePath, int? width = null, int? height = null, ResizeMode resizeMode = ResizeMode.Undefined)` | [OrchardCore.Media](../../Modules/Media/#razor-helpers) | Returns a URL with custom resizing parameters for an existing image path. |
-| `ContentQueryAsync(string queryName)` | [OrchardCore.Queries](../../Modules/Queries/#razor-helpers) | Returns a List of Content items |
-| `ContentQueryAsync(string queryName, IDictionary<string, object> parameters)` | [OrchardCore.Queries](../../Modules/Queries/#razor-helpers) | Returns a List of Content items |
-| `QueryAsync(string liquid, object model)` | [OrchardCore.Queries](../../Modules/Queries/#razor-helpers) | Returns a List of objects |
-| `QueryAsync(string queryName, IDictionary<string, object> parameters)` | [OrchardCore.Queries](../../Modules/Queries/#razor-helpers) | Returns a List of objects |
-| `GetTaxonomyTermAsync(string taxonomyContentItemId, string termContentItemId)` | [OrchardCore.Taxonomies](../../Modules/Taxonomies/#orchard-helpers) | Returns a the term from its content item id and taxonomy. |
-| `GetInheritedTermsAsync(string taxonomyContentItemId, string termContentItemId)` | [OrchardCore.Taxonomies](../../Modules/Taxonomies/#orchard-helpers) | Returns the list of terms including their parents. |
-| `QueryCategorizedContentItemsAsync(string taxonomy(Func<IQuery<ContentItem, TaxonomyIndex>, IQuery<ContentItem>> query)` | [OrchardCore.Taxonomies](../../Modules/Taxonomies/#orchard-helpers) | Query content items. |
+| `QueryListItemsAsync(string listContentItemId, Expression<Func<ContentItemIndex, bool>> itemPredicate = null)` | [OrchardCore.List](../../Modules/List/README.md#orchard-helpers) | Returns list items. |
+| `MarkdownToHtmlAsync(string listContentItemId, Expression<Func<ContentItemIndex, bool>> itemPredicate = null)` | [OrchardCore.Markdown](../../Modules/Markdown/README.md#razor-helper) | Converts Markdown string to HTML. |
+| `AssetUrl(string assetPath, int? width = null, int? height = null, ResizeMode resizeMode = ResizeMode.Undefined, bool appendVersion = false)` | [OrchardCore.Media](../../Modules/Media/README.md#razor-helpers) | Returns the relative URL of the specifier asset path with optional resizing parameters. |
+| `ImageResizeUrl(string imagePath, int? width = null, int? height = null, ResizeMode resizeMode = ResizeMode.Undefined)` | [OrchardCore.Media](../../Modules/Media/README.md#razor-helpers) | Returns a URL with custom resizing parameters for an existing image path. |
+| `ContentQueryAsync(string queryName)` | [OrchardCore.Queries](../../Modules/Queries/README.md#razor-helpers) | Returns a List of Content items |
+| `ContentQueryAsync(string queryName, IDictionary<string, object> parameters)` | [OrchardCore.Queries](../../Modules/Queries/README.md#razor-helpers) | Returns a List of Content items |
+| `QueryAsync(string liquid, object model)` | [OrchardCore.Queries](../../Modules/Queries/README.md#razor-helpers) | Returns a List of objects |
+| `QueryAsync(string queryName, IDictionary<string, object> parameters)` | [OrchardCore.Queries](../../Modules/Queries/README.md#razor-helpers) | Returns a List of objects |
+| `GetTaxonomyTermAsync(string taxonomyContentItemId, string termContentItemId)` | [OrchardCore.Taxonomies](../../Modules/Taxonomies/README.md#orchard-helpers) | Returns a the term from its content item id and taxonomy. |
+| `GetInheritedTermsAsync(string taxonomyContentItemId, string termContentItemId)` | [OrchardCore.Taxonomies](../../Modules/Taxonomies/README.md#orchard-helpers) | Returns the list of terms including their parents. |
+| `QueryCategorizedContentItemsAsync(string taxonomy(Func<IQuery<ContentItem, TaxonomyIndex>, IQuery<ContentItem>> query)` | [OrchardCore.Taxonomies](../../Modules/Taxonomies/README.md#orchard-helpers) | Query content items. |
 
 ## How to use
 

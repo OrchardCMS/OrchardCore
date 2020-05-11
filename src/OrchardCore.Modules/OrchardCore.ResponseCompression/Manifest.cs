@@ -5,6 +5,6 @@ using OrchardCore.Modules.Manifest;
     Author = ManifestConstants.OrchardCoreTeam,
     Website = ManifestConstants.OrchardCoreWebsite,
     Version = ManifestConstants.OrchardCoreVersion,
-    Description = "Compresses responses.",
+    Description = "The Response Compression module allows to enable the gzip compression.",
     Category = "Infrastructure"
 )]
