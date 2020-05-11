@@ -1,6 +1,6 @@
 # Display
 
-Orchard Core allows you to customize the look and feel of your application by integrating your own [theme](../glossary/#Theme) or by overriding the rendering of the [templates](../glossary/#Template) in Razor or Liquid syntax.
+Orchard Core allows you to customize the look and feel of your application by integrating your own [theme](../../glossary/README.md#Theme) or by overriding the rendering of the [templates](../../glossary/README.md#Template) in Razor or Liquid syntax.
 
 ## Customize your Display
 
