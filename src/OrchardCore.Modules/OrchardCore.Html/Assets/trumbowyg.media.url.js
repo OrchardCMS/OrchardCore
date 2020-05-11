@@ -18,7 +18,10 @@
                             mediaApp.selectedMedias = [];
                             var modal = $('#mediaModalBody').modal();
                             $('#mediaBodySelectButton').on('click', function (v) {
-                                var mediaBodyContent = "";
+                                //avoid multiple image insert
+                                trumbowyg.restoreRange();
+                                trumbowyg.range.deleteContents();
+                                
                                 for (i = 0; i < mediaApp.selectedMedias.length; i++) {
                                     var img = document.createElement("img");
                                     img.src = mediaApp.selectedMedias[i].url;
