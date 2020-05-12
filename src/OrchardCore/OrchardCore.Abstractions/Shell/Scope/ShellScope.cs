@@ -330,7 +330,7 @@ namespace OrchardCore.Environment.Shell.Scope
 
                 for (var i = 0; i < deferredTasks.Length; i++)
                 {
-                    // Then create a new scope (maybe based on a new shell) to execute tasks.
+                    // Then create a new scope (maybe based on a new shell) for each task.
                     using (var scope = await shellHost.GetScopeAsync(ShellContext.Settings))
                     {
                         scope.StartAsyncFlow();
