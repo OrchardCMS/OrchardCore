@@ -172,6 +172,19 @@ Output
 <h3>Services</h3>
 ```
 
+### `json`
+
+Serializes the input value to a json string. To format the json indented, pass the `true` argument to the liquid filter.
+
+Example:
+
+```liquid
+
+{{ Model.ContentItem.Content | json }}
+
+{{ Model.ContentItem.Content | json: true }}
+```
+
 ### `jsonparse`
 
 Converts a json string to a JObject. 
