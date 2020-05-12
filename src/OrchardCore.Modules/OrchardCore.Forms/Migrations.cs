@@ -120,6 +120,7 @@ namespace OrchardCore.Forms
 
             return 2;
         }
+        
         internal class TitlePartSettings
         {
             public int Options { get; set; }
