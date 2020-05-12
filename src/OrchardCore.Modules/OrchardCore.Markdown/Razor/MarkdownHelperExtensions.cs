@@ -7,6 +7,7 @@ using OrchardCore;
 using OrchardCore.Infrastructure.SafeCodeFilters;
 using OrchardCore.Infrastructure.Script;
 using OrchardCore.Liquid;
+using OrchardCore.Markdown.Services;
 
 public static class ContentRazorHelperExtensions
 {
@@ -17,6 +18,7 @@ public static class ContentRazorHelperExtensions
     public static async Task<IHtmlContent> MarkdownToHtmlAsync(this IOrchardHelper orchardHelper, string markdown, bool sanitize = true)
     {
         var safeCodeFilterManager = orchardHelper.HttpContext.RequestServices.GetRequiredService<ISafeCodeFilterManager>();
+        var markdownService = orchardHelper.HttpContext.RequestServices.GetRequiredService<IMarkdownService>();
 
         if (!sanitize)
         {
@@ -27,7 +29,7 @@ public static class ContentRazorHelperExtensions
         }
 
         markdown = await safeCodeFilterManager.ProcessAsync(markdown);
-        markdown = Markdig.Markdown.ToHtml(markdown);
+        markdown = markdownService.ToHtml(markdown ?? "");
 
         if (sanitize)
         {

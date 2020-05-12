@@ -1,11 +1,17 @@
+using System.Linq;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using GraphQL.Types;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Apis.GraphQL;
+using OrchardCore.ContentManagement.Metadata;
+using OrchardCore.Infrastructure.SafeCodeFilters;
+using OrchardCore.Infrastructure.Script;
 using OrchardCore.Liquid;
 using OrchardCore.Markdown.Models;
+using OrchardCore.Markdown.Services;
+using OrchardCore.Markdown.Settings;
 using OrchardCore.Markdown.ViewModels;
 
 namespace OrchardCore.Markdown.GraphQL
@@ -34,20 +40,41 @@ namespace OrchardCore.Markdown.GraphQL
             }
 
             var serviceProvider = ctx.ResolveServiceProvider();
-            var liquidTemplateManager = serviceProvider.GetService<ILiquidTemplateManager>();
-            var htmlEncoder = serviceProvider.GetService<HtmlEncoder>();
+            var markdownService = serviceProvider.GetRequiredService<IMarkdownService>();
+            var safeCodeFilterManager = serviceProvider.GetRequiredService<ISafeCodeFilterManager>();
+            var contentDefinitionManager = serviceProvider.GetRequiredService<IContentDefinitionManager>();
 
-            var model = new MarkdownBodyPartViewModel()
+            var contentTypeDefinition = contentDefinitionManager.GetTypeDefinition(ctx.Source.ContentItem.ContentType);
+            var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => string.Equals(x.PartDefinition.Name, "MarkdownBodyPart"));
+            var settings = contentTypePartDefinition.GetSettings<MarkdownBodyPartSettings>();
+
+            var markdown = ctx.Source.Markdown;
+            if (settings.AllowCustomScripts)
             {
-                Markdown = ctx.Source.Markdown,
-                MarkdownBodyPart = ctx.Source,
-                ContentItem = ctx.Source.ContentItem
-            };
+                var liquidTemplateManager = serviceProvider.GetService<ILiquidTemplateManager>();
+                var htmlEncoder = serviceProvider.GetService<HtmlEncoder>();
 
-            var markdown = await liquidTemplateManager.RenderAsync(ctx.Source.Markdown, htmlEncoder, model,
-                scope => scope.SetValue("ContentItem", model.ContentItem));
+                var model = new MarkdownBodyPartViewModel()
+                {
+                    Markdown = ctx.Source.Markdown,
+                    MarkdownBodyPart = ctx.Source,
+                    ContentItem = ctx.Source.ContentItem
+                };
 
-            return Markdig.Markdown.ToHtml(markdown);
+                markdown = await liquidTemplateManager.RenderAsync(ctx.Source.Markdown, htmlEncoder, model,
+                    scope => scope.SetValue("ContentItem", model.ContentItem));
+            }
+
+            markdown = await safeCodeFilterManager.ProcessAsync(markdown);
+            markdown = markdownService.ToHtml(markdown);
+
+            if (!settings.AllowCustomScripts)
+            {
+                var htmlSanitizer = serviceProvider.GetRequiredService<IHtmlScriptSanitizer>();
+                markdown = htmlSanitizer.Sanitize(markdown);
+            }
+
+            return markdown;
         }
     }
 }

@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
@@ -9,6 +10,7 @@ using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Infrastructure.SafeCodeFilters;
 using OrchardCore.Infrastructure.Script;
 using OrchardCore.Liquid;
 
@@ -17,15 +19,21 @@ namespace OrchardCore.ContentFields.Drivers
     public class HtmlFieldDisplayDriver : ContentFieldDisplayDriver<HtmlField>
     {
         private readonly ILiquidTemplateManager _liquidTemplateManager;
-        private readonly IHtmlScriptSanitizer _htmlScriptSanitizer;
         private readonly HtmlEncoder _htmlEncoder;
+        private readonly IHtmlScriptSanitizer _htmlScriptSanitizer;
+        private readonly ISafeCodeFilterManager _safeCodeFilterManager;
         private readonly IStringLocalizer S;
 
-        public HtmlFieldDisplayDriver(ILiquidTemplateManager liquidTemplateManager, IStringLocalizer<HtmlFieldDisplayDriver> localizer, HtmlEncoder htmlEncoder, IHtmlScriptSanitizer htmlScriptSanitizer)
+        public HtmlFieldDisplayDriver(ILiquidTemplateManager liquidTemplateManager,
+            HtmlEncoder htmlEncoder,
+            IHtmlScriptSanitizer htmlScriptSanitizer,
+            ISafeCodeFilterManager safeCodeFilterManager,
+            IStringLocalizer<HtmlFieldDisplayDriver> localizer)
         {
             _liquidTemplateManager = liquidTemplateManager;
-            _htmlScriptSanitizer = htmlScriptSanitizer;
             _htmlEncoder = htmlEncoder;
+            _htmlScriptSanitizer = htmlScriptSanitizer;
+            _safeCodeFilterManager = safeCodeFilterManager;
             S = localizer;
         }
 
@@ -38,8 +46,15 @@ namespace OrchardCore.ContentFields.Drivers
                 model.Part = context.ContentPart;
                 model.PartFieldDefinition = context.PartFieldDefinition;
 
-                model.Html = await _liquidTemplateManager.RenderAsync(field.Html, _htmlEncoder, model,
-                    scope => scope.SetValue("ContentItem", field.ContentItem));
+                var settings = context.PartFieldDefinition.GetSettings<HtmlFieldSettings>();
+                if (settings.AllowCustomScripts)
+                {
+                    model.Html = await _liquidTemplateManager.RenderAsync(field.Html, _htmlEncoder, model,
+                        scope => scope.SetValue("ContentItem", field.ContentItem));
+                }
+
+                model.Html = await _safeCodeFilterManager.ProcessAsync(model.Html);
+
             })
             .Location("Detail", "Content")
             .Location("Summary", "Content");

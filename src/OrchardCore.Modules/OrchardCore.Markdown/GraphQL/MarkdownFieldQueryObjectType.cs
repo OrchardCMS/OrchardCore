@@ -4,8 +4,11 @@ using GraphQL.Types;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Apis.GraphQL;
+using OrchardCore.ContentManagement.Metadata;
+using OrchardCore.Infrastructure.SafeCodeFilters;
 using OrchardCore.Liquid;
 using OrchardCore.Markdown.Fields;
+using OrchardCore.Markdown.Services;
 
 namespace OrchardCore.Markdown.GraphQL
 {
@@ -33,11 +36,30 @@ namespace OrchardCore.Markdown.GraphQL
             }
 
             var serviceProvider = ctx.ResolveServiceProvider();
+
+            var markdownService = serviceProvider.GetRequiredService<IMarkdownService>();
+            var safeCodeFilterManager = serviceProvider.GetRequiredService<ISafeCodeFilterManager>();
+            //var contentDefinitionManager = serviceProvider.GetRequiredService<IContentDefinitionManager>();
+
+            //TODO this will not work, because we don not know which part is it on.
+            // need more context. Probably there is something in the registration of graphql to give us that.
+            //var contentTypeDefinition = contentDefinitionManager.GetTypeDefinition(ctx.Source.ContentItem.ContentType);
+            //var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => string.Equals(x.PartDefinition.Name, "MarkdownBodyPart"));
+            //var settings = contentTypePartDefinition.GetSettings<MarkdownFieldSettings>();
+
+            var markdown = ctx.Source.Markdown;
             var liquidTemplateManager = serviceProvider.GetService<ILiquidTemplateManager>();
             var htmlEncoder = serviceProvider.GetService<HtmlEncoder>();
 
-            var markdown = await liquidTemplateManager.RenderAsync(ctx.Source.Markdown, htmlEncoder);
-            return Markdig.Markdown.ToHtml(markdown);
+            markdown = await liquidTemplateManager.RenderAsync(markdown, htmlEncoder);
+
+            markdown = await safeCodeFilterManager.ProcessAsync(markdown);
+
+            markdown = markdownService.ToHtml(markdown);
+
+            //TODO sanitize.
+
+            return markdown;
         }
     }
 }

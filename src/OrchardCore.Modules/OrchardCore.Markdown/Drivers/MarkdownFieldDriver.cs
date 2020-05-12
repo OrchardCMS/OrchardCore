@@ -10,6 +10,7 @@ using OrchardCore.Infrastructure.SafeCodeFilters;
 using OrchardCore.Infrastructure.Script;
 using OrchardCore.Liquid;
 using OrchardCore.Markdown.Fields;
+using OrchardCore.Markdown.Services;
 using OrchardCore.Markdown.Settings;
 using OrchardCore.Markdown.ViewModels;
 
@@ -21,18 +22,21 @@ namespace OrchardCore.Markdown.Drivers
         private readonly HtmlEncoder _htmlEncoder;
         private readonly IHtmlScriptSanitizer _htmlScriptSanitizer;
         private readonly ISafeCodeFilterManager _safeCodeFilterManager;
+        private readonly IMarkdownService _markdownService;
         private readonly IStringLocalizer S;
 
         public MarkdownFieldDisplayDriver(ILiquidTemplateManager liquidTemplateManager,
             HtmlEncoder htmlEncoder,
             IHtmlScriptSanitizer htmlScriptSanitizer,
             ISafeCodeFilterManager safeCodeFilterManager,
+            IMarkdownService markdownService,
             IStringLocalizer<MarkdownFieldDisplayDriver> localizer)
         {
             _liquidTemplateManager = liquidTemplateManager;
             _htmlEncoder = htmlEncoder;
             _htmlScriptSanitizer = htmlScriptSanitizer;
             _safeCodeFilterManager = safeCodeFilterManager;
+            _markdownService = markdownService;
             S = localizer;
         }
 
@@ -40,6 +44,7 @@ namespace OrchardCore.Markdown.Drivers
         {
             return Initialize<MarkdownFieldViewModel>(GetDisplayShapeType(context), async model =>
             {
+
                 var settings = context.PartFieldDefinition.GetSettings<MarkdownFieldSettings>();
                 model.Markdown = field.Markdown;
                 model.Field = field;
@@ -53,7 +58,7 @@ namespace OrchardCore.Markdown.Drivers
                 }
 
                 model.Markdown = await _safeCodeFilterManager.ProcessAsync(model.Markdown ?? "");
-                model.Html = Markdig.Markdown.ToHtml(model.Markdown ?? "");
+                model.Html = _markdownService.ToHtml(model.Markdown ?? "");
 
                 if (!settings.AllowCustomScripts)
                 {
