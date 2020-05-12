@@ -9,6 +9,7 @@ using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Liquid;
+using OrchardCore.Mvc.ModelBinding;
 
 namespace OrchardCore.ContentFields.Drivers
 {
@@ -61,7 +62,7 @@ namespace OrchardCore.ContentFields.Drivers
                 if (!string.IsNullOrEmpty(viewModel.Html) && !_liquidTemplateManager.Validate(viewModel.Html, out var errors))
                 {
                     var fieldName = context.PartFieldDefinition.DisplayName();
-                    context.Updater.ModelState.AddModelError(nameof(field.Html), S["{0} doesn't contain a valid Liquid expression. Details: {1}", fieldName, string.Join(" ", errors)]);
+                    context.Updater.ModelState.AddModelError(field, Prefix, f => f.Html, S["{0} doesn't contain a valid Liquid expression. Details: {1}", fieldName, string.Join(" ", errors)]);
                 }
                 else
                 {
