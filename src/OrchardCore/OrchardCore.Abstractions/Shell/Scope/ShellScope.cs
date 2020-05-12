@@ -257,6 +257,7 @@ namespace OrchardCore.Environment.Shell.Scope
                         }
 
                         await scope.BeforeDisposeAsync();
+                        await scope.DisposeAsync();
                     }
 
                     ShellContext.IsActivated = true;
