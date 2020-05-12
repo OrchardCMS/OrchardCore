@@ -28,7 +28,6 @@ namespace OrchardCore.Environment.Shell.Scope
         private readonly HashSet<string> _deferredSignals = new HashSet<string>();
         private readonly List<Func<ShellScope, Task>> _deferredTasks = new List<Func<ShellScope, Task>>();
 
-        private bool _disposeShellContext = false;
         private bool _disposed = false;
 
         public ShellScope(ShellContext shellContext)
@@ -205,6 +204,7 @@ namespace OrchardCore.Environment.Shell.Scope
                 await execute(this);
 
                 await BeforeDisposeAsync();
+                await DisposeAsync();
             }
         }
 
@@ -315,8 +315,6 @@ namespace OrchardCore.Environment.Shell.Scope
                 }
             }
 
-            _disposeShellContext = await TerminateShellAsync();
-
             var deferredTasks = _deferredTasks.ToArray();
 
             // Check if there are pending tasks.
@@ -330,15 +328,15 @@ namespace OrchardCore.Environment.Shell.Scope
                 // Dispose this scope.
                 await DisposeAsync();
 
-                // Then create a new scope (maybe based on a new shell) to execute tasks.
-                using (var scope = await shellHost.GetScopeAsync(ShellContext.Settings))
+                for (var i = 0; i < deferredTasks.Length; i++)
                 {
-                    scope.StartAsyncFlow();
-
-                    var logger = scope.ServiceProvider.GetService<ILogger<ShellScope>>();
-
-                    for (var i = 0; i < deferredTasks.Length; i++)
+                    // Then create a new scope (maybe based on a new shell) to execute tasks.
+                    using (var scope = await shellHost.GetScopeAsync(ShellContext.Settings))
                     {
+                        scope.StartAsyncFlow();
+
+                        var logger = scope.ServiceProvider.GetService<ILogger<ShellScope>>();
+
                         var task = deferredTasks[i];
 
                         try
@@ -351,9 +349,10 @@ namespace OrchardCore.Environment.Shell.Scope
                                 "Error while processing deferred task '{TaskName}' on tenant '{TenantName}'.",
                                 task.GetType().FullName, ShellContext.Settings.Name);
                         }
-                    }
 
-                    await scope.BeforeDisposeAsync();
+                        await scope.BeforeDisposeAsync();
+                        await scope.DisposeAsync();
+                    }
                 }
             }
         }
@@ -402,7 +401,7 @@ namespace OrchardCore.Environment.Shell.Scope
                 return;
             }
 
-            var disposeShellContext = _disposeShellContext || await TerminateShellAsync();
+            var disposeShellContext = await TerminateShellAsync();
 
             _serviceScope.Dispose();
 
