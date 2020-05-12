@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.13.0",
-    "bootstrap": "4.4.1",
+    "bootstrap": "4.5.0",
     "bootstrap-scss": "4.4.1",
     "bootstrap-select": "1.13.17",
     "bootstrap-slider": "10.6.2",
