@@ -72,6 +72,21 @@ namespace OrchardCore.DisplayManagement.Zones
             return htmlContentBuilder;
         }
 
+        [Shape]
+        public async Task<IHtmlContent> AspSection(dynamic RenderAsyncDelegate, dynamic Shape)
+        {
+            var htmlContentBuilder = new HtmlContentBuilder();
+
+            if (RenderAsyncDelegate != null)
+            {
+                await RenderAsyncDelegate();
+            }
+
+            htmlContentBuilder.AppendHtml((string)Shape.HtmlContent);
+            
+            return htmlContentBuilder;
+        }
+
         public static IEnumerable<string> HarvestAndSortTabs(IEnumerable<dynamic> shapes)
         {
             var tabs = new List<string>();

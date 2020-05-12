@@ -1,7 +1,9 @@
 using System;
+using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.DependencyInjection;
@@ -22,6 +24,7 @@ namespace OrchardCore.DisplayManagement.Razor
         private IShapeFactory _shapeFactory;
         private IOrchardDisplayHelper _orchardHelper;
         private ISite _site;
+        private StringWriter _writer;
 
         public override ViewContext ViewContext
         {
@@ -269,6 +272,51 @@ namespace OrchardCore.DisplayManagement.Razor
             var zone = ThemeLayout[name];
 
             return zone != null && zone.Items.Count > 0;
+        }
+
+        public new void DefineSection(string name, RenderAsyncDelegate section)
+        {
+            var zone = ThemeLayout.Zones[name];
+
+            var sectionShape = new Shape();
+            sectionShape.Metadata.Type = "AspSection";
+            sectionShape.Properties[nameof(RenderAsyncDelegate)] = SectionDelegate(section, sectionShape);
+
+            if (zone is Zones.ZoneOnDemand zoneOnDemand)
+            {
+                zoneOnDemand.AddAsync(sectionShape).GetAwaiter().GetResult();
+            }
+            else
+            {
+                zone.Add(sectionShape);
+            }
+        }
+
+        private RenderAsyncDelegate SectionDelegate(RenderAsyncDelegate oldDelegate, dynamic shape)
+        {
+            return async () =>
+            {
+                BeginWriteSectionZone();
+                PushWriter(_writer);
+                await oldDelegate();
+                PopWriter();
+                shape.HtmlContent = _writer.ToString();
+                EndWriteSectionZone();
+                shape.RenderAsyncDelegate = null;
+            };
+        }
+
+        private void BeginWriteSectionZone()
+        {
+            if (_writer == null)
+            {
+                _writer = new StringWriter();
+            }
+        }
+
+        private void EndWriteSectionZone()
+        {
+            _writer.GetStringBuilder().Clear();
         }
 
         /// <summary>
