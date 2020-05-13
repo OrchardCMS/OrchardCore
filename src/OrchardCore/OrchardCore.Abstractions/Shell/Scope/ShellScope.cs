@@ -204,6 +204,7 @@ namespace OrchardCore.Environment.Shell.Scope
                 await execute(this);
 
                 await BeforeDisposeAsync();
+
                 await DisposeAsync();
             }
         }
@@ -257,6 +258,7 @@ namespace OrchardCore.Environment.Shell.Scope
                         }
 
                         await scope.BeforeDisposeAsync();
+
                         await scope.DisposeAsync();
                     }
 
@@ -316,67 +318,33 @@ namespace OrchardCore.Environment.Shell.Scope
                 }
             }
 
-            var deferredTasks = _deferredTasks.ToArray();
-
             // Check if there are pending tasks.
-            if (deferredTasks.Any())
+            if (_deferredTasks.Any())
             {
-                _deferredTasks.Clear();
-
-                // Resolve 'IShellHost' before disposing the scope which may dispose the shell.
-                var shellHost = ShellContext.ServiceProvider.GetRequiredService<IShellHost>();
-
-                // Dispose this scope.
-                await DisposeAsync();
-
-                // Create a new scope that may be based on a new shell if it has been released.
-                ShellScope deferredScope;
-                try
+                foreach (var task in _deferredTasks)
                 {
-                    // May fail if the shell is disabled and has been disposed by its last scope.
-                    deferredScope = await shellHost.GetScopeAsync(ShellContext.Settings);
-                }
-                catch
-                {
-                    return;
-                }
-
-                // A main active scope prevents the shell from being disposed if disabled while executing the deferred tasks.
-                using (deferredScope)
-                {
-                    for (var i = 0; i < deferredTasks.Length; i++)
+                    // Create a new scope to execute each deferred task.
+                    using (var scope = new ShellScope(ShellContext))
                     {
-                        // Create a new scope to execute each deferred task.
-                        using (var scope = deferredScope.ShellContext.CreateScope())
+                        scope.StartAsyncFlow();
+
+                        var logger = scope.ServiceProvider.GetService<ILogger<ShellScope>>();
+
+                        try
                         {
-                            if (scope == null)
-                            {
-                                return;
-                            }
-
-                            scope.StartAsyncFlow();
-
-                            var logger = scope.ServiceProvider.GetService<ILogger<ShellScope>>();
-
-                            var task = deferredTasks[i];
-
-                            try
-                            {
-                                await task(scope);
-                            }
-                            catch (Exception e)
-                            {
-                                logger?.LogError(e,
-                                    "Error while processing deferred task '{TaskName}' on tenant '{TenantName}'.",
-                                    task.GetType().FullName, ShellContext.Settings.Name);
-                            }
-
-                            await scope.BeforeDisposeAsync();
-                            await scope.DisposeAsync();
+                            await task(scope);
                         }
-                    }
+                        catch (Exception e)
+                        {
+                            logger?.LogError(e,
+                                "Error while processing deferred task '{TaskName}' on tenant '{TenantName}'.",
+                                task.GetType().FullName, ShellContext.Settings.Name);
+                        }
 
-                    await deferredScope.DisposeAsync();
+                        await scope.BeforeDisposeAsync();
+
+                        await scope.DisposeAsync();
+                    }
                 }
             }
         }
