@@ -16,7 +16,7 @@ namespace OrchardCore.ContentFields.Drivers
     {
         private readonly IStringLocalizer S;
 
-        public DateFieldDisplayDriver(IStringLocalizer<TextFieldDisplayDriver> localizer)
+        public DateFieldDisplayDriver(IStringLocalizer<DateFieldDisplayDriver> localizer)
         {
             S = localizer;
         }

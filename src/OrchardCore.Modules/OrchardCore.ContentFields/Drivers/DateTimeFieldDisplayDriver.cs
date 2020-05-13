@@ -21,7 +21,7 @@ namespace OrchardCore.ContentFields.Drivers
         private readonly ILocalClock _localClock;
 
         public DateTimeFieldDisplayDriver(ILocalClock localClock,
-        IStringLocalizer<TextFieldDisplayDriver> localizer)
+        IStringLocalizer<DateTimeFieldDisplayDriver> localizer)
         {
             _localClock = localClock;
             S = localizer;
