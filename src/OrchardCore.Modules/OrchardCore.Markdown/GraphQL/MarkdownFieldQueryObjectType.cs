@@ -34,9 +34,6 @@ namespace OrchardCore.Markdown.GraphQL
             Field<StringGraphType>()
                 .Name("html")
                 .Description(S["the HTML representation of the markdown content"])
-                //.me
-                //.FieldWithMeta()
-
                 .ResolveLockedAsync(ToHtml);
         }
 
