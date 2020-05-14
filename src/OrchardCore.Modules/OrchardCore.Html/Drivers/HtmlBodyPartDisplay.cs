@@ -9,6 +9,7 @@ using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Html.Models;
 using OrchardCore.Html.ViewModels;
 using OrchardCore.Liquid;
+using OrchardCore.Mvc.ModelBinding;
 
 namespace OrchardCore.Html.Drivers
 {
@@ -47,12 +48,12 @@ namespace OrchardCore.Html.Drivers
         {
             var viewModel = new HtmlBodyPartViewModel();
 
-            if (await updater.TryUpdateModelAsync(viewModel, Prefix, t => t.Html))
+            if (await updater.TryUpdateModelAsync(viewModel, Prefix, vm => vm.Html))
             {
                 if (!string.IsNullOrEmpty(viewModel.Html) && !_liquidTemplateManager.Validate(viewModel.Html, out var errors))
                 {
                     var partName = context.TypePartDefinition.DisplayName();
-                    context.Updater.ModelState.AddModelError(nameof(model.Html), S["{0} doesn't contain a valid Liquid expression. Details: {1}", partName, string.Join(" ", errors)]);
+                    updater.ModelState.AddModelError(viewModel, Prefix, vm => vm.Html, S["{0} doesn't contain a valid Liquid expression. Details: {1}", partName, string.Join(" ", errors)]);
                 }
                 else
                 {

@@ -9,6 +9,7 @@ using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Liquid;
 using OrchardCore.Markdown.Models;
 using OrchardCore.Markdown.ViewModels;
+using OrchardCore.Mvc.ModelBinding;
 
 namespace OrchardCore.Markdown.Drivers
 {
@@ -47,12 +48,12 @@ namespace OrchardCore.Markdown.Drivers
         {
             var viewModel = new MarkdownBodyPartViewModel();
 
-            if (await context.Updater.TryUpdateModelAsync(viewModel, Prefix, t => t.Markdown))
+            if (await context.Updater.TryUpdateModelAsync(viewModel, Prefix, vm => vm.Markdown))
             {
                 if (!string.IsNullOrEmpty(viewModel.Markdown) && !_liquidTemplateManager.Validate(viewModel.Markdown, out var errors))
                 {
                     var partName = context.TypePartDefinition.DisplayName();
-                    context.Updater.ModelState.AddModelError(nameof(model.Markdown), S["{0} doesn't contain a valid Liquid expression. Details: {1}", partName, string.Join(" ", errors)]);
+                    updater.ModelState.AddModelError(viewModel, Prefix, vm => vm.Markdown, S["{0} doesn't contain a valid Liquid expression. Details: {1}", partName, string.Join(" ", errors)]);
                 }
                 else
                 {

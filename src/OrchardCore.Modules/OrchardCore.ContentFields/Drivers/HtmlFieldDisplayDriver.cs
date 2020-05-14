@@ -57,12 +57,12 @@ namespace OrchardCore.ContentFields.Drivers
         {
             var viewModel = new EditHtmlFieldViewModel();
 
-            if (await updater.TryUpdateModelAsync(viewModel, Prefix, f => f.Html))
+            if (await updater.TryUpdateModelAsync(viewModel, Prefix, vm => vm.Html))
             {
                 if (!string.IsNullOrEmpty(viewModel.Html) && !_liquidTemplateManager.Validate(viewModel.Html, out var errors))
                 {
                     var fieldName = context.PartFieldDefinition.DisplayName();
-                    context.Updater.ModelState.AddModelError(field, Prefix, f => f.Html, S["{0} doesn't contain a valid Liquid expression. Details: {1}", fieldName, string.Join(" ", errors)]);
+                    context.Updater.ModelState.AddModelError(viewModel, Prefix, vm => vm.Html, S["{0} doesn't contain a valid Liquid expression. Details: {1}", fieldName, string.Join(" ", errors)]);
                 }
                 else
                 {
