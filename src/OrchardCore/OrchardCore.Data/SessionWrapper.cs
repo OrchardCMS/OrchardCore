@@ -30,8 +30,6 @@ namespace OrchardCore.Data
                 return Task.CompletedTask;
             }
 
-            // TODO: See what to do when 'CommitAsync()' is called explicitly as in 'UserStore'.
-
             if (!_canceled)
             {
                 // A save followed by a query and then a mutation, needs another save to persist the last mutation.
@@ -45,6 +43,8 @@ namespace OrchardCore.Data
                 // A cancel followed by a query, a mutation and then a save, needs another cancel to not persist the last mutation.
                 _session.Cancel();
             }
+
+            // TODO: See what to do when 'CommitAsync()' is called explicitly as in 'UserStore'.
 
             return _session.CommitAsync();
         }
