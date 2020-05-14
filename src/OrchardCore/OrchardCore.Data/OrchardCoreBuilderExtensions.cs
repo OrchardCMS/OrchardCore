@@ -98,7 +98,7 @@ namespace Microsoft.Extensions.DependencyInjection
                     return store;
                 });
 
-                services.AddScoped(sp =>
+                services.AddScoped<ISession>(sp =>
                 {
                     var store = sp.GetService<IStore>();
 
@@ -113,12 +113,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
                     session.RegisterIndexes(scopedServices.ToArray());
 
-                    ShellScope.RegisterBeforeDispose(scope =>
-                    {
-                        return session.CommitAsync();
-                    });
-
-                    return session;
+                    return new SessionWrapper(session);
                 });
 
                 services.AddScoped<ISessionHelper, SessionHelper>();
