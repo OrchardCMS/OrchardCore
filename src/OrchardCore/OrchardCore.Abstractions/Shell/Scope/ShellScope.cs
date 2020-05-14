@@ -318,13 +318,25 @@ namespace OrchardCore.Environment.Shell.Scope
                 }
             }
 
-            // Check if there are pending tasks.
             if (_deferredTasks.Any())
             {
+                var shellHost = ShellContext.ServiceProvider.GetRequiredService<IShellHost>();
+
                 foreach (var task in _deferredTasks)
                 {
-                    // Create a new scope to execute each deferred task.
-                    using (var scope = new ShellScope(ShellContext))
+                    ShellScope scope;
+
+                    try
+                    {
+                        // May fail if a shell was released before being disabled.
+                        scope = await shellHost.GetScopeAsync(ShellContext.Settings);
+                    }
+                    catch
+                    {
+                        scope = new ShellScope(ShellContext);
+                    }
+
+                    using (scope)
                     {
                         scope.StartAsyncFlow();
 
