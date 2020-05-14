@@ -32,7 +32,7 @@ namespace OrchardCore.Data
 
             if (!_canceled)
             {
-                // A save followed by a query and then a mutation, needs another save to persist the last mutation.
+                // A save followed by a query, and then a mutation, needs another save to persist the last mutation.
                 foreach (var item in _saved)
                 {
                     _session.Save(item);
