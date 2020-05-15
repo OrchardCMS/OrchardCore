@@ -26,6 +26,7 @@
                 //avoid multiple image insert
                 trumbowyg.restoreRange();
                 trumbowyg.range.deleteContents();
+                $(window).trigger('scroll');
 
                 for (i = 0; i < mediaApp.selectedMedias.length; i++) {
                   var img = document.createElement("img");
@@ -34,8 +35,8 @@
                   trumbowyg.range.insertNode(img);
                 }
 
-                trumbowyg.syncTextarea();
-                $(document).trigger('contentpreview:render');
+                trumbowyg.$c.trigger('tbwchange');
+                trumbowyg.$c.focus();
                 $('#mediaModalBody').modal('hide');
                 return true;
               });

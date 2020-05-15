@@ -22,14 +22,18 @@
                                 trumbowyg.restoreRange();
                                 trumbowyg.range.deleteContents();
 
+                                $(window).trigger('scroll');
+
                                 for (i = 0; i < mediaApp.selectedMedias.length; i++) {
                                     var img = document.createElement("img");
                                     img.src = mediaApp.selectedMedias[i].url;
                                     img.alt = mediaApp.selectedMedias[i].name;
                                     trumbowyg.range.insertNode(img);
                                 }
-                                trumbowyg.syncTextarea();
-                                $(document).trigger('contentpreview:render');
+                                
+                                trumbowyg.$c.trigger('tbwchange');
+                                trumbowyg.$c.focus();
+
                                 $('#mediaModalHtmlField').modal('hide');
                                 return true;
                             });
