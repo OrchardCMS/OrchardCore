@@ -15,6 +15,7 @@ using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.Theming;
 using OrchardCore.Modules;
+using OrchardCore.Mvc.ModelBinding;
 
 namespace OrchardCore.ContentManagement.Display
 {
@@ -170,6 +171,26 @@ namespace OrchardCore.ContentManagement.Display
 
             await _contentHandlers.InvokeAsync((handler, updateContentContext) => handler.UpdatingAsync(updateContentContext), updateContentContext, _logger);
             await _handlers.InvokeAsync((handler, contentItem, context) => handler.UpdateEditorAsync(contentItem, context), contentItem, context, _logger);
+            var validateContentContext = new ValidateContentContext(updateContentContext.UpdatingItem);
+            await _contentHandlers.InvokeAsync((handler, validateContentContext) => handler.ValidatingAsync(validateContentContext), validateContentContext, _logger);
+            await _contentHandlers.InvokeAsync((handler, validateContentContext) => handler.ValidatedAsync(validateContentContext), validateContentContext, _logger);
+            if (!validateContentContext.ContentValidateResult.Succeeded)
+            {
+                foreach (var error in validateContentContext.ContentValidateResult.Errors)
+                {
+                    if (error.MemberNames.Any())
+                    {
+                        foreach (var member in error.MemberNames)
+                        {
+                            context.Updater.ModelState.AddModelError(context.HtmlFieldPrefix, member, error.ErrorMessage);
+                        }
+                    }
+                    else
+                    {
+                        context.Updater.ModelState.AddModelError(context.HtmlFieldPrefix, string.Empty, error.ErrorMessage);
+                    }
+                }
+            }
             await _contentHandlers.Reverse().InvokeAsync((handler, updateContentContext) => handler.UpdatedAsync(updateContentContext), updateContentContext, _logger);
 
             return context.Shape;
