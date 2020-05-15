@@ -28,6 +28,7 @@ namespace OrchardCore.OpenId.ViewModels
 
         public string Scopes { get; set; }
         public string ResponseMode { get; set; }
+        public bool StoreExternalTokens { get; set; }
         public bool UseCodeFlow { get; set; }
         public bool UseCodeIdTokenTokenFlow { get; set; }
         public bool UseCodeIdTokenFlow { get; set; }

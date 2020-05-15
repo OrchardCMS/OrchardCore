@@ -1,3 +1,4 @@
+using Newtonsoft.Json.Linq;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement;
 using Xunit;
@@ -40,6 +41,90 @@ namespace OrchardCore.Tests.Data
             // assert
             var actual = contentItem.Get<CustomPart>(nameof(CustomPart));
             Assert.Equal(actual.Field?.Text, value);
+        }
+
+        [Fact] 
+        public void MergeReflectsChangesToWellKnownProperties()
+        {
+            // Setup
+            var contentItem = new ContentItem
+            {
+                DisplayText = "original value"
+            };
+
+            var newContentItem = new ContentItem
+            {
+                DisplayText = "merged value"
+            };
+
+            // Act
+            contentItem.Merge(newContentItem);
+
+            // Test
+            var content = (JObject)contentItem.Content;
+            Assert.False(content.ContainsKey(nameof(contentItem.DisplayText)));
+        }
+
+        [Fact]
+        public void MergeRemovesWellKnownPropertiesFromData()
+        {
+            // Setup
+            var contentItem = new ContentItem
+            {
+                DisplayText = "original value"
+            };
+
+            var newContentItem = new ContentItem
+            {
+                DisplayText = "merged value"
+            };
+
+            // Act
+            contentItem.Merge(newContentItem);
+
+            // Test
+            var content = (JObject)contentItem.Content;
+            Assert.False(content.ContainsKey(nameof(contentItem.DisplayText)));
+        }
+
+        [Fact]
+        public void MergeMaintainsDocumentId()
+        {
+            // Setup
+            var contentItem = new ContentItem
+            {
+                Id = 1,
+            };
+
+            var newContentItem = new ContentItem
+            {
+                Id = 2
+            };
+
+            // Act
+            contentItem.Merge(newContentItem);
+
+            // Test
+            Assert.Equal(contentItem.Id, contentItem.Id);
+        }
+
+        [Fact]
+        public void MergeReflectsChangesToElements()
+        {
+            // Setup
+            var value = "merged value";
+            var contentItem = new ContentItem();
+
+            var newContentItem = new ContentItem();
+            newContentItem.Weld<CustomPart>();
+            newContentItem.Alter<CustomPart>(x => x.Value = value);
+
+            // Act
+            contentItem.Merge(newContentItem);
+
+            // Test
+            var mergedPart = contentItem.As<CustomPart>();
+            Assert.Equal(value, mergedPart?.Value);
         }
 
         public class CustomPart : ContentPart

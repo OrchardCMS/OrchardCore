@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Fluid;
+using Microsoft.Extensions.Localization;
 using OrchardCore.Alias.Drivers;
 using OrchardCore.Alias.Indexes;
 using OrchardCore.Alias.Models;
@@ -22,17 +23,39 @@ namespace OrchardCore.Alias.Handlers
         private readonly ITagCache _tagCache;
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly ISession _session;
+        private readonly IStringLocalizer S;
 
         public AliasPartHandler(
             IContentDefinitionManager contentDefinitionManager,
             ITagCache tagCache,
             ILiquidTemplateManager liquidTemplateManager,
-            ISession session)
+            ISession session,
+            IStringLocalizer<AliasPartHandler> stringLocalizer)
         {
             _contentDefinitionManager = contentDefinitionManager;
             _tagCache = tagCache;
             _liquidTemplateManager = liquidTemplateManager;
             _session = session;
+            S = stringLocalizer;
+        }
+
+        public override async Task ValidatingAsync(ValidateContentContext context, AliasPart part)
+        {
+            // Only validate the alias if it's not empty.
+            if (String.IsNullOrWhiteSpace(part.Alias))
+            {
+                return;
+            }
+
+            if (part.Alias.Length > AliasPartDisplayDriver.MaxAliasLength)
+            {
+                context.Fail(S["Your alias is too long. The alias can only be up to {0} characters.", AliasPartDisplayDriver.MaxAliasLength]);
+            }
+
+            if (!await IsAliasUniqueAsync(part.Alias, part))
+            {
+                context.Fail(S["Your alias is already in use."]);
+            }
         }
 
         public async override Task UpdatedAsync(UpdateContentContext context, AliasPart part)
@@ -122,7 +145,7 @@ namespace OrchardCore.Alias.Handlers
 
             while (true)
             {
-                // Unversioned length + seperator char + version length.
+                // Unversioned length + separator char + version length.
                 var quantityCharactersToTrim = unversionedAlias.Length + 1 + version.ToString().Length - AliasPartDisplayDriver.MaxAliasLength;
                 if (quantityCharactersToTrim > 0)
                 {

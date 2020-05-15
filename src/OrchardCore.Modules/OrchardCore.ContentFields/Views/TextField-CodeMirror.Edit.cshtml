@@ -22,13 +22,16 @@
 <script asp-name="codemirror-mode-xml" at="Foot"></script>
 <script at="Foot">
     $(function () {
-        var optionsTexArea = document.getElementById('@Html.IdFor(x => x.Text)');
-        var editor = CodeMirror.fromTextArea(optionsTexArea, {
-            autoRefresh: true,
-            lineNumbers: false,
-            lineWrapping: true,
-            matchBrackets: true,
-            mode: { name: "htmlmixed" }
-        });
+        var optionsTextArea = document.getElementById('@Html.IdFor(x => x.Text)');
+        // When part rendered by a flow part only the elements scripts are rendered, so the html element will not exist.
+        if (optionsTextArea) {
+            var editor = CodeMirror.fromTextArea(optionsTextArea, {
+                autoRefresh: true,
+                lineNumbers: false,
+                lineWrapping: true,
+                matchBrackets: true,
+                mode: { name: "htmlmixed" }
+            });
+        }
     });
 </script>

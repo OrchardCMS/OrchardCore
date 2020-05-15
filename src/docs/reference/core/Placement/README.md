@@ -43,7 +43,7 @@ For shapes that are built from a content item, you can filter by the following b
 
 Placement information consists of:
 
-- `place` (Optional): The actual location of the shape in the rendered zone.
+- `place` (Optional): The actual location of the shape in the rendered zone. A value of "-" will hide the shape.
 - `alternates` (Optional): An array of alternate shape types to add to the current shape's metadata.
 - `wrappers` (Optional): An array of shape types to use as wrappers for the current shape.
 - `shape` (Optional): A substitution shape type.
@@ -183,7 +183,7 @@ Result:
 
 ## Shape differentiators
 
-You can find information about shape differentiators in the [Templates documentation](../../modules/Templates/#content-field-differentiator)
+You can find information about shape differentiators in the [Templates documentation](../../modules/Templates/README.md#content-field-differentiator)
 
 ## Tabs
 
