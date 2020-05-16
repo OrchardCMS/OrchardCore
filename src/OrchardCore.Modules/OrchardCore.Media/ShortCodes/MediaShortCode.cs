@@ -1,19 +1,21 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using System.Web;
 using OrchardCore.DisplayManagement;
-using OrchardCore.Infrastructure.SafeCodeFilters;
+using OrchardCore.Infrastructure.Html;
+using OrchardCore.ShortCodes;
 
-namespace OrchardCore.Media.SafeCodeFilters
+namespace OrchardCore.Media.ShortCodes
 {
-    public class MediaSafeCodeFilter : ISafeCodeFilter
+    public class MediaShortCode : IShortCode
     {
+        private readonly IHtmlSanitizerService _htmlSanitizerService;
         private readonly IMediaFileStore _mediaFileStore;
 
-        public MediaSafeCodeFilter(IMediaFileStore mediaFileStore)
+        public MediaShortCode(IMediaFileStore mediaFileStore, IHtmlSanitizerService htmlSanitizerService)
         {
             _mediaFileStore = mediaFileStore;
+            _htmlSanitizerService = htmlSanitizerService;
         }
 
         public ValueTask<string> ProcessAsync(string text)
@@ -24,7 +26,7 @@ namespace OrchardCore.Media.SafeCodeFilters
             }
 
             // optimize code path if nothing to do
-            if (!text.Contains("[media]", StringComparison.OrdinalIgnoreCase) && !text.Contains("[/media]", StringComparison.OrdinalIgnoreCase))
+            if (!text.Contains("[media]", StringComparison.OrdinalIgnoreCase) || !text.Contains("[/media]", StringComparison.OrdinalIgnoreCase))
             {
                 return new ValueTask<string>(text);
             }
@@ -59,13 +61,8 @@ namespace OrchardCore.Media.SafeCodeFilters
 
                     url = _mediaFileStore.MapPathToPublicUrl(url);
 
-                    // TODO Is this enough?
-                    // The JavascriptEncoder (DI) by default does not handle diacritics
-                    // It can be configured to support different code pages.
-                    url = HttpUtility.JavaScriptStringEncode(url);
-
-                    // TODO Alternative might be to html sanitize the tag.
-                    var tag = String.Format("<img src=\"{0}\">", url);
+                    var tag = "<img src=\"" + url + "\">";
+                    tag = _htmlSanitizerService.Sanitize(tag);
 
                     sb.Builder.Insert(start, tag);
                 }

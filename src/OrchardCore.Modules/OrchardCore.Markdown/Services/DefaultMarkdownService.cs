@@ -10,7 +10,10 @@ namespace OrchardCore.Markdown.Services
         public DefaultMarkdownService(IOptions<MarkdownPipelineOptions> options)
         {
             var builder = new MarkdownPipelineBuilder();
-            options.Value.Configure.Invoke(builder);
+            if (options.Value.Configure != null)
+            {
+                options.Value.Configure.Invoke(builder);
+            }
             _markdownPipeline = builder.Build();
         }
 

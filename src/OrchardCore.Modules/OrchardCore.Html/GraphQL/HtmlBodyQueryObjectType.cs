@@ -9,7 +9,7 @@ using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Html.Models;
 using OrchardCore.Html.Settings;
 using OrchardCore.Html.ViewModels;
-using OrchardCore.Infrastructure.SafeCodeFilters;
+using OrchardCore.ShortCodes.Services;
 using OrchardCore.Liquid;
 
 namespace OrchardCore.Html.GraphQL
@@ -30,7 +30,7 @@ namespace OrchardCore.Html.GraphQL
         private static async Task<object> RenderHtml(ResolveFieldContext<HtmlBodyPart> ctx)
         {
             var serviceProvider = ctx.ResolveServiceProvider();
-            var safeCodeFilterManager = serviceProvider.GetRequiredService<ISafeCodeFilterManager>();
+            var shortCodeService = serviceProvider.GetRequiredService<IShortCodeService>();
             var contentDefinitionManager = serviceProvider.GetRequiredService<IContentDefinitionManager>();
 
             var contentTypeDefinition = contentDefinitionManager.GetTypeDefinition(ctx.Source.ContentItem.ContentType);
@@ -38,7 +38,7 @@ namespace OrchardCore.Html.GraphQL
             var settings = contentTypePartDefinition.GetSettings<HtmlBodyPartSettings>();
 
             var html = ctx.Source.Html;
-            if (settings.AllowCustomScripts)
+            if (!settings.SanitizeHtml)
             {
                 var model = new HtmlBodyPartViewModel()
                 {
@@ -54,7 +54,7 @@ namespace OrchardCore.Html.GraphQL
                     scope => scope.SetValue("ContentItem", model.ContentItem));
             }
 
-            return await safeCodeFilterManager.ProcessAsync(html);
+            return await shortCodeService.ProcessAsync(html);
         }
     }
 }

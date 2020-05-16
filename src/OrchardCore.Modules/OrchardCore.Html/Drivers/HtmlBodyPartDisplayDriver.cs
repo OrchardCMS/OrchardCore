@@ -9,7 +9,7 @@ using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Html.Models;
 using OrchardCore.Html.Settings;
 using OrchardCore.Html.ViewModels;
-using OrchardCore.Infrastructure.SafeCodeFilters;
+using OrchardCore.ShortCodes.Services;
 using OrchardCore.Infrastructure.Html;
 using OrchardCore.Liquid;
 
@@ -20,19 +20,19 @@ namespace OrchardCore.Html.Drivers
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly IHtmlSanitizerService _htmlSanitizerService;
         private readonly HtmlEncoder _htmlEncoder;
-        private readonly ISafeCodeFilterManager _safeCodeFilterManager;
+        private readonly IShortCodeService _shortCodeService;
         private readonly IStringLocalizer S;
 
         public HtmlBodyPartDisplayDriver(ILiquidTemplateManager liquidTemplateManager,
             IHtmlSanitizerService htmlSanitizerService,
             HtmlEncoder htmlEncoder,
-            ISafeCodeFilterManager safeCodeFilterManager,
+            IShortCodeService shortCodeService,
             IStringLocalizer<HtmlBodyPartDisplayDriver> localizer)
         {
             _liquidTemplateManager = liquidTemplateManager;
             _htmlSanitizerService = htmlSanitizerService;
             _htmlEncoder = htmlEncoder;
-            _safeCodeFilterManager = safeCodeFilterManager;
+            _shortCodeService = shortCodeService;
             S = localizer;
         }
 
@@ -69,9 +69,7 @@ namespace OrchardCore.Html.Drivers
                 }
                 else
                 {
-                    //model.Html = settings.SanitizeHtml ? _htmlSanitizerService.Sanitize(viewModel.Html) : viewModel.Html; 
-
-                    model.Html = settings.AllowCustomScripts ? viewModel.Html : _htmlSanitizerService.Sanitize(viewModel.Html);
+                    model.Html = settings.SanitizeHtml ? _htmlSanitizerService.Sanitize(viewModel.Html) : viewModel.Html;
                 }
             }
 
@@ -84,13 +82,13 @@ namespace OrchardCore.Html.Drivers
             model.HtmlBodyPart = htmlBodyPart;
             model.ContentItem = htmlBodyPart.ContentItem;
 
-            if (settings.AllowCustomScripts)
+            if (!settings.SanitizeHtml)
             {
                 model.Html = await _liquidTemplateManager.RenderAsync(htmlBodyPart.Html, _htmlEncoder, model,
                     scope => scope.SetValue("ContentItem", model.ContentItem));
             }
 
-            model.Html = await _safeCodeFilterManager.ProcessAsync(model.Html);
+            model.Html = await _shortCodeService.ProcessAsync(model.Html);
         }
     }
 }

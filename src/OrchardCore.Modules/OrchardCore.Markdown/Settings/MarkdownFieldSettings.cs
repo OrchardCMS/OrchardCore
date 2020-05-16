@@ -1,8 +1,11 @@
+using System.ComponentModel;
+
 namespace OrchardCore.Markdown.Settings
 {
     public class MarkdownFieldSettings
     {
-        public bool AllowCustomScripts { get; set; }
+        [DefaultValue(true)]
+        public bool SanitizeHtml { get; set; } = true;
         public string Hint { get; set; }
     }
 }

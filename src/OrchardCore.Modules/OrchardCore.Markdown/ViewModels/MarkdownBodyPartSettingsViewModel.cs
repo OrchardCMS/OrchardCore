@@ -2,6 +2,6 @@ namespace OrchardCore.Markdown.ViewModels
 {
     public class MarkdownBodyPartSettingsViewModel
     {
-        public bool AllowCustomScripts { get; set; }
+        public bool SanitizeHtml { get; set; }
     }
 }

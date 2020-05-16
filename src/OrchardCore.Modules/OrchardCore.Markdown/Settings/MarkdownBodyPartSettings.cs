@@ -1,7 +1,10 @@
+using System.ComponentModel;
+
 namespace OrchardCore.Markdown.Settings
 {
     public class MarkdownBodyPartSettings
     {
-        public bool AllowCustomScripts { get; set; }
+        [DefaultValue(true)]
+        public bool SanitizeHtml { get; set; } = true;
     }
 }

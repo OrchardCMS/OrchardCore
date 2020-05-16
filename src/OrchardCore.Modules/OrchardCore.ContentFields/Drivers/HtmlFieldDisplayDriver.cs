@@ -9,7 +9,7 @@ using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Infrastructure.SafeCodeFilters;
+using OrchardCore.ShortCodes.Services;
 using OrchardCore.Infrastructure.Html;
 using OrchardCore.Liquid;
 
@@ -20,19 +20,19 @@ namespace OrchardCore.ContentFields.Drivers
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly HtmlEncoder _htmlEncoder;
         private readonly IHtmlSanitizerService _htmlSanitizerService;
-        private readonly ISafeCodeFilterManager _safeCodeFilterManager;
+        private readonly IShortCodeService _shortCodeService;
         private readonly IStringLocalizer S;
 
         public HtmlFieldDisplayDriver(ILiquidTemplateManager liquidTemplateManager,
             HtmlEncoder htmlEncoder,
             IHtmlSanitizerService htmlSanitizerService,
-            ISafeCodeFilterManager safeCodeFilterManager,
+            IShortCodeService shortCodeService,
             IStringLocalizer<HtmlFieldDisplayDriver> localizer)
         {
             _liquidTemplateManager = liquidTemplateManager;
             _htmlEncoder = htmlEncoder;
             _htmlSanitizerService = htmlSanitizerService;
-            _safeCodeFilterManager = safeCodeFilterManager;
+            _shortCodeService = shortCodeService;
             S = localizer;
         }
 
@@ -46,13 +46,13 @@ namespace OrchardCore.ContentFields.Drivers
                 model.PartFieldDefinition = context.PartFieldDefinition;
 
                 var settings = context.PartFieldDefinition.GetSettings<HtmlFieldSettings>();
-                if (settings.AllowCustomScripts)
+                if (!settings.SanitizeHtml)
                 {
                     model.Html = await _liquidTemplateManager.RenderAsync(field.Html, _htmlEncoder, model,
                         scope => scope.SetValue("ContentItem", field.ContentItem));
                 }
 
-                model.Html = await _safeCodeFilterManager.ProcessAsync(model.Html);
+                model.Html = await _shortCodeService.ProcessAsync(model.Html);
 
             })
             .Location("Detail", "Content")
@@ -85,7 +85,7 @@ namespace OrchardCore.ContentFields.Drivers
                 }
                 else
                 {
-                    field.Html = settings.AllowCustomScripts ? viewModel.Html : _htmlSanitizerService.Sanitize(viewModel.Html);
+                    field.Html = settings.SanitizeHtml ? _htmlSanitizerService.Sanitize(viewModel.Html) : viewModel.Html;
                 }
             }
 

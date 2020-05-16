@@ -22,7 +22,7 @@ namespace OrchardCore.Markdown.Settings
                 {
                     var settings = contentTypePartDefinition.GetSettings<MarkdownBodyPartSettings>();
 
-                    model.AllowCustomScripts = settings.AllowCustomScripts;
+                    model.SanitizeHtml = settings.SanitizeHtml;
                 })
                 .Location("Editor");
         }
@@ -39,7 +39,7 @@ namespace OrchardCore.Markdown.Settings
 
             if (await context.Updater.TryUpdateModelAsync(model, Prefix))
             {
-                settings.AllowCustomScripts = model.AllowCustomScripts;
+                settings.SanitizeHtml = model.SanitizeHtml;
 
                 context.Builder.WithSettings(settings);
             }

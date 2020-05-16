@@ -22,7 +22,6 @@ namespace Microsoft.Extensions.DependencyInjection
                 .AddMvc()
                 .AddEmailAddressValidator()
                 .AddHtmlSanitizer()
-                .AddSafeCodeFilters()
                 .AddSetupFeatures("OrchardCore.Setup")
 
                 .AddDataAccess()

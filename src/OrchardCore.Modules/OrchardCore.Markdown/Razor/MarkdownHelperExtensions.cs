@@ -4,7 +4,7 @@ using Fluid;
 using Microsoft.AspNetCore.Html;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore;
-using OrchardCore.Infrastructure.SafeCodeFilters;
+using OrchardCore.ShortCodes.Services;
 using OrchardCore.Infrastructure.Html;
 using OrchardCore.Liquid;
 using OrchardCore.Markdown.Services;
@@ -17,9 +17,14 @@ public static class ContentRazorHelperExtensions
     /// <param name="markdown">The markdown to convert.</param>
     public static async Task<IHtmlContent> MarkdownToHtmlAsync(this IOrchardHelper orchardHelper, string markdown, bool sanitize = true)
     {
-        var safeCodeFilterManager = orchardHelper.HttpContext.RequestServices.GetRequiredService<ISafeCodeFilterManager>();
+        var shortCodeService = orchardHelper.HttpContext.RequestServices.GetRequiredService<IShortCodeService>();
         var markdownService = orchardHelper.HttpContext.RequestServices.GetRequiredService<IMarkdownService>();
 
+        // The default Markdown option is to entity escape html
+        // so filters must be run after the markdown has been processed.
+        markdown = markdownService.ToHtml(markdown ?? "");
+
+        // The liquid rendering is for backwards compatability and can be removed in a future version.
         if (!sanitize)
         {
             var liquidTemplateManager = orchardHelper.HttpContext.RequestServices.GetRequiredService<ILiquidTemplateManager>();
@@ -28,8 +33,7 @@ public static class ContentRazorHelperExtensions
             markdown = await liquidTemplateManager.RenderAsync(markdown, htmlEncoder);
         }
 
-        markdown = await safeCodeFilterManager.ProcessAsync(markdown);
-        markdown = markdownService.ToHtml(markdown ?? "");
+        markdown = await shortCodeService.ProcessAsync(markdown);
 
         if (sanitize)
         {

@@ -15,7 +15,7 @@ namespace OrchardCore.ContentFields.Settings
             {
                 var settings = partFieldDefinition.GetSettings<HtmlFieldSettings>();
 
-                model.AllowCustomScripts = settings.AllowCustomScripts;
+                model.SanitizeHtml = settings.SanitizeHtml;
                 model.Hint = settings.Hint;
             })
             .Location("Editor");
@@ -28,7 +28,7 @@ namespace OrchardCore.ContentFields.Settings
 
             await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-            settings.AllowCustomScripts = model.AllowCustomScripts;
+            settings.SanitizeHtml = model.SanitizeHtml;
             settings.Hint = model.Hint;
 
             context.Builder.WithSettings(settings);

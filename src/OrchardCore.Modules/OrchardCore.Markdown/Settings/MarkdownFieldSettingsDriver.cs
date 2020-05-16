@@ -15,7 +15,7 @@ namespace OrchardCore.Markdown.Settings
 
                 var settings = partFieldDefinition.GetSettings<MarkdownFieldSettings>();
 
-                model.AllowCustomScripts = settings.AllowCustomScripts;
+                model.SanitizeHtml = settings.SanitizeHtml;
                 model.Hint = settings.Hint;
             }).Location("Content");
         }
@@ -27,7 +27,7 @@ namespace OrchardCore.Markdown.Settings
 
             if (await context.Updater.TryUpdateModelAsync(model, Prefix))
             {
-                settings.AllowCustomScripts = model.AllowCustomScripts;
+                settings.SanitizeHtml = model.SanitizeHtml;
                 settings.Hint = model.Hint;
 
                 context.Builder.WithSettings(settings);

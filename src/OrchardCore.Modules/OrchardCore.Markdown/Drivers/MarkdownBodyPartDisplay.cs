@@ -6,7 +6,7 @@ using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Infrastructure.SafeCodeFilters;
+using OrchardCore.ShortCodes.Services;
 using OrchardCore.Infrastructure.Html;
 using OrchardCore.Liquid;
 using OrchardCore.Markdown.Models;
@@ -21,21 +21,21 @@ namespace OrchardCore.Markdown.Drivers
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly HtmlEncoder _htmlEncoder;
         private readonly IHtmlSanitizerService _htmlSanitizerService;
-        private readonly ISafeCodeFilterManager _safeCodeFilterManager;
+        private readonly IShortCodeService _shortCodeService;
         private readonly IMarkdownService _markdownService;
         private readonly IStringLocalizer S;
 
         public MarkdownBodyPartDisplay(ILiquidTemplateManager liquidTemplateManager,
             HtmlEncoder htmlEncoder,
             IHtmlSanitizerService htmlSanitizerService,
-            ISafeCodeFilterManager safeCodeFilterManager,
+            IShortCodeService shortCodeService,
             IMarkdownService markdownService,
             IStringLocalizer<MarkdownBodyPartDisplay> localizer)
         {
             _liquidTemplateManager = liquidTemplateManager;
             _htmlEncoder = htmlEncoder;
             _htmlSanitizerService = htmlSanitizerService;
-            _safeCodeFilterManager = safeCodeFilterManager;
+            _shortCodeService = shortCodeService;
             _markdownService = markdownService;
             S = localizer;
         }
@@ -84,16 +84,20 @@ namespace OrchardCore.Markdown.Drivers
             model.MarkdownBodyPart = markdownBodyPart;
             model.ContentItem = markdownBodyPart.ContentItem;
 
-            if (settings.AllowCustomScripts)
+            // The default Markdown option is to entity escape html
+            // so filters must be run after the markdown has been processed.
+            model.Html = _markdownService.ToHtml(model.Markdown ?? "");
+
+            // The liquid rendering is for backwards compatability and can be removed in a future version.
+            if (!settings.SanitizeHtml)
             {
-                model.Markdown = await _liquidTemplateManager.RenderAsync(markdownBodyPart.Markdown, _htmlEncoder, model,
+                model.Html = await _liquidTemplateManager.RenderAsync(model.Html, _htmlEncoder, model,
                     scope => scope.SetValue("ContentItem", model.ContentItem));
             }
 
-            model.Markdown = await _safeCodeFilterManager.ProcessAsync(model.Markdown ?? "");
-            model.Html = _markdownService.ToHtml(model.Markdown ?? "");
+            model.Html = await _shortCodeService.ProcessAsync(model.Html ?? "");
 
-            if (!settings.AllowCustomScripts)
+            if (settings.SanitizeHtml)
             {
                 model.Html = _htmlSanitizerService.Sanitize(model.Html ?? "");
             }

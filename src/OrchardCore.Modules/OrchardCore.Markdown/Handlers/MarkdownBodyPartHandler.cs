@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Html;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Models;
-using OrchardCore.Infrastructure.SafeCodeFilters;
+using OrchardCore.ShortCodes.Services;
 using OrchardCore.Infrastructure.Html;
 using OrchardCore.Liquid;
 using OrchardCore.Markdown.Models;
@@ -19,7 +19,7 @@ namespace OrchardCore.Markdown.Handlers
     public class MarkdownBodyPartHandler : ContentPartHandler<MarkdownBodyPart>
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
-        private readonly ISafeCodeFilterManager _safeCodeFilterManager;
+        private readonly IShortCodeService _shortCodeService;
         private readonly IMarkdownService _markdownService;
         private readonly IHtmlSanitizerService _htmlSanitizerService;
         private readonly ILiquidTemplateManager _liquidTemplateManager;
@@ -28,14 +28,14 @@ namespace OrchardCore.Markdown.Handlers
         private int _contentItemId;
 
         public MarkdownBodyPartHandler(IContentDefinitionManager contentDefinitionManager,
-            ISafeCodeFilterManager safeCodeFilterManager,
+            IShortCodeService shortCodeService,
             IMarkdownService markdownService,
             IHtmlSanitizerService htmlSanitizerService,
             ILiquidTemplateManager liquidTemplateManager,
             HtmlEncoder htmlEncoder)
         {
             _contentDefinitionManager = contentDefinitionManager;
-            _safeCodeFilterManager = safeCodeFilterManager;
+            _shortCodeService = shortCodeService;
             _markdownService = markdownService;
             _htmlSanitizerService = htmlSanitizerService;
             _liquidTemplateManager = liquidTemplateManager;
@@ -59,30 +59,33 @@ namespace OrchardCore.Markdown.Handlers
                     var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => String.Equals(x.PartDefinition.Name, "MarkdownBodyPart"));
                     var settings = contentTypePartDefinition.GetSettings<MarkdownBodyPartSettings>();
 
-                    var markdown = part.Markdown;
+                    // The default Markdown option is to entity escape html
+                    // so filters must be run after the markdown has been processed.
+                    var html = _markdownService.ToHtml(part.Markdown);
 
-                    if (settings.AllowCustomScripts)
+                    // The liquid rendering is for backwards compatability and can be removed in a future version.
+                    if (!settings.SanitizeHtml)
                     {
                         var model = new MarkdownBodyPartViewModel()
                         {
                             Markdown = part.Markdown,
+                            Html = html,
                             MarkdownBodyPart = part,
                             ContentItem = part.ContentItem
                         };
 
-                        markdown = await _liquidTemplateManager.RenderAsync(markdown, _htmlEncoder, model,
+                        html = await _liquidTemplateManager.RenderAsync(html, _htmlEncoder, model,
                             scope => scope.SetValue("ContentItem", model.ContentItem));
                     }
 
-                    markdown = await _safeCodeFilterManager.ProcessAsync(markdown);
-                    markdown = _markdownService.ToHtml(markdown);
+                    html = await _shortCodeService.ProcessAsync(html);
 
-                    if (!settings.AllowCustomScripts)
+                    if (settings.SanitizeHtml)
                     {
-                        markdown = _htmlSanitizerService.Sanitize(markdown);
+                        html = _htmlSanitizerService.Sanitize(html);
                     }
 
-                    bodyAspect.Body = _bodyAspect = new HtmlString(markdown);
+                    bodyAspect.Body = _bodyAspect = new HtmlString(html);
                     _contentItemId = part.ContentItem.Id;
                 }
                 catch

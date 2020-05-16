@@ -11,7 +11,7 @@ using Newtonsoft.Json.Linq;
 using OrchardCore.Apis.GraphQL;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
-using OrchardCore.Infrastructure.SafeCodeFilters;
+using OrchardCore.ShortCodes.Services;
 using OrchardCore.Infrastructure.Html;
 using OrchardCore.Liquid;
 using OrchardCore.Markdown.Fields;
@@ -47,7 +47,7 @@ namespace OrchardCore.Markdown.GraphQL
 
             var serviceProvider = ctx.ResolveServiceProvider();
             var markdownService = serviceProvider.GetRequiredService<IMarkdownService>();
-            var safeCodeFilterManager = serviceProvider.GetRequiredService<ISafeCodeFilterManager>();
+            var shortCodeService = serviceProvider.GetRequiredService<IShortCodeService>();
 
             var contentDefinitionManager = serviceProvider.GetRequiredService<IContentDefinitionManager>();
 
@@ -63,9 +63,12 @@ namespace OrchardCore.Markdown.GraphQL
 
             var settings = contentPartFieldDefintion.GetSettings<MarkdownFieldSettings>();
 
-            var markdown = ctx.Source.Markdown;
+            // The default Markdown option is to entity escape html
+            // so filters must be run after the markdown has been processed.
+            var html = markdownService.ToHtml(ctx.Source.Markdown);
 
-            if (settings.AllowCustomScripts)
+            // The liquid rendering is for backwards compatability and can be removed in a future version.
+            if (!settings.SanitizeHtml)
             {
                 var liquidTemplateManager = serviceProvider.GetService<ILiquidTemplateManager>();
                 var htmlEncoder = serviceProvider.GetService<HtmlEncoder>();
@@ -73,26 +76,25 @@ namespace OrchardCore.Markdown.GraphQL
                 var model = new MarkdownFieldViewModel()
                 {
                     Markdown = ctx.Source.Markdown,
+                    Html = html,
                     Field = ctx.Source,
                     Part = ctx.Source.ContentItem.Get<ContentPart>(partName),
                     PartFieldDefinition = contentPartFieldDefintion
                 };
 
-                markdown = await liquidTemplateManager.RenderAsync(markdown, htmlEncoder, model,
+                html = await liquidTemplateManager.RenderAsync(html, htmlEncoder, model,
                     scope => scope.SetValue("ContentItem", ctx.Source.ContentItem));
             }
 
-            markdown = await safeCodeFilterManager.ProcessAsync(markdown);
+            html = await shortCodeService.ProcessAsync(html);
 
-            markdown = markdownService.ToHtml(markdown);
-
-            if (!settings.AllowCustomScripts)
+            if (settings.SanitizeHtml)
             {
                 var htmlSanitizerService = serviceProvider.GetRequiredService<IHtmlSanitizerService>();
-                markdown = htmlSanitizerService.Sanitize(markdown);
+                html = htmlSanitizerService.Sanitize(html);
             }
 
-            return markdown;
+            return html;
         }
     }
 }

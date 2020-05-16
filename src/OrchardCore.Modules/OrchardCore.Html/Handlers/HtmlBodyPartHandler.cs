@@ -8,7 +8,7 @@ using OrchardCore.ContentManagement.Models;
 using OrchardCore.Html.Models;
 using OrchardCore.Html.Settings;
 using OrchardCore.Html.ViewModels;
-using OrchardCore.Infrastructure.SafeCodeFilters;
+using OrchardCore.ShortCodes.Services;
 using OrchardCore.Liquid;
 
 namespace OrchardCore.Html.Handlers
@@ -16,19 +16,19 @@ namespace OrchardCore.Html.Handlers
     public class HtmlBodyPartHandler : ContentPartHandler<HtmlBodyPart>
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
-        private readonly ISafeCodeFilterManager _safeCodeFilterManager;
+        private readonly IShortCodeService _shortCodeService;
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly HtmlEncoder _htmlEncoder;
         private HtmlString _bodyAspect;
         private int _contentItemId;
 
         public HtmlBodyPartHandler(IContentDefinitionManager contentDefinitionManager,
-            ISafeCodeFilterManager safeCodeFilterManager,
+            IShortCodeService shortCodeService,
             ILiquidTemplateManager liquidTemplateManager,
             HtmlEncoder htmlEncoder)
         {
             _contentDefinitionManager = contentDefinitionManager;
-            _safeCodeFilterManager = safeCodeFilterManager;
+            _shortCodeService = shortCodeService;
             _liquidTemplateManager = liquidTemplateManager;
             _htmlEncoder = htmlEncoder;
         }
@@ -51,7 +51,7 @@ namespace OrchardCore.Html.Handlers
                     var settings = contentTypePartDefinition.GetSettings<HtmlBodyPartSettings>();
 
                     var html = part.Html;
-                    if (settings.AllowCustomScripts)
+                    if (!settings.SanitizeHtml)
                     {
                         var model = new HtmlBodyPartViewModel()
                         {
@@ -64,7 +64,7 @@ namespace OrchardCore.Html.Handlers
                             scope => scope.SetValue("ContentItem", model.ContentItem));
                     }
 
-                    html = await _safeCodeFilterManager.ProcessAsync(html);
+                    html = await _shortCodeService.ProcessAsync(html);
 
                     bodyAspect.Body = _bodyAspect = new HtmlString(html);
                     _contentItemId = part.ContentItem.Id;

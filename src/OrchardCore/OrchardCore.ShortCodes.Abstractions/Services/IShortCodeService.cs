@@ -1,8 +1,8 @@
 using System.Threading.Tasks;
 
-namespace OrchardCore.Infrastructure.SafeCodeFilters
+namespace OrchardCore.ShortCodes.Services
 {
-    public interface ISafeCodeFilterManager
+    public interface IShortCodeService
     {
         ValueTask<string> ProcessAsync(string input);
     }

@@ -18,11 +18,11 @@ namespace OrchardCore.Html.Settings
                 return null;
             }
 
-            return Initialize<HtmlSettingsViewModel>("HtmlBodyPartSettings_Edit", model =>
+            return Initialize<HtmlBodyPartSettingsViewModel>("HtmlBodyPartSettings_Edit", model =>
             {
                 var settings = contentTypePartDefinition.GetSettings<HtmlBodyPartSettings>();
 
-                model.AllowCustomScripts = settings.AllowCustomScripts;
+                model.SanitizeHtml = settings.SanitizeHtml;
             })
             .Location("Editor");
         }
@@ -34,12 +34,12 @@ namespace OrchardCore.Html.Settings
                 return null;
             }
 
-            var model = new HtmlSettingsViewModel();
+            var model = new HtmlBodyPartSettingsViewModel();
             var settings = new HtmlBodyPartSettings();
 
             if (await context.Updater.TryUpdateModelAsync(model, Prefix))
             {
-                settings.AllowCustomScripts = model.AllowCustomScripts;
+                settings.SanitizeHtml = model.SanitizeHtml;
 
                 context.Builder.WithSettings(settings);
             }
