@@ -24,7 +24,7 @@ namespace OrchardCore.Localization
         /// <param name="messageId">The message Id.</param>
         /// <param name="context">The message context.</param>
         /// <param name="translations">a list of translations</param>
-        public CultureDictionaryRecord(string messageId, string context, params string[] translations)
+        public CultureDictionaryRecord(string messageId, string context, string[] translations)
         {
             Key = GetKey(messageId, context);
             Translations = translations;
