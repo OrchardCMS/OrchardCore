@@ -1,4 +1,3 @@
-using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
@@ -11,7 +10,7 @@ using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Infrastructure.SafeCodeFilters;
-using OrchardCore.Infrastructure.Script;
+using OrchardCore.Infrastructure.Html;
 using OrchardCore.Liquid;
 
 namespace OrchardCore.ContentFields.Drivers
@@ -20,19 +19,19 @@ namespace OrchardCore.ContentFields.Drivers
     {
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly HtmlEncoder _htmlEncoder;
-        private readonly IHtmlScriptSanitizer _htmlScriptSanitizer;
+        private readonly IHtmlSanitizerService _htmlSanitizerService;
         private readonly ISafeCodeFilterManager _safeCodeFilterManager;
         private readonly IStringLocalizer S;
 
         public HtmlFieldDisplayDriver(ILiquidTemplateManager liquidTemplateManager,
             HtmlEncoder htmlEncoder,
-            IHtmlScriptSanitizer htmlScriptSanitizer,
+            IHtmlSanitizerService htmlSanitizerService,
             ISafeCodeFilterManager safeCodeFilterManager,
             IStringLocalizer<HtmlFieldDisplayDriver> localizer)
         {
             _liquidTemplateManager = liquidTemplateManager;
             _htmlEncoder = htmlEncoder;
-            _htmlScriptSanitizer = htmlScriptSanitizer;
+            _htmlSanitizerService = htmlSanitizerService;
             _safeCodeFilterManager = safeCodeFilterManager;
             S = localizer;
         }
@@ -86,7 +85,7 @@ namespace OrchardCore.ContentFields.Drivers
                 }
                 else
                 {
-                    field.Html = settings.AllowCustomScripts ? viewModel.Html : _htmlScriptSanitizer.Sanitize(viewModel.Html);
+                    field.Html = settings.AllowCustomScripts ? viewModel.Html : _htmlSanitizerService.Sanitize(viewModel.Html);
                 }
             }
 

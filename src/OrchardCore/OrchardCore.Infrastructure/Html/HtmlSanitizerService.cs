@@ -1,13 +1,13 @@
 using Ganss.XSS;
 using Microsoft.Extensions.Options;
 
-namespace OrchardCore.Infrastructure.Script
+namespace OrchardCore.Infrastructure.Html
 {
-    public class HtmlScriptSanitizer : IHtmlScriptSanitizer
+    public class HtmlSanitizerService : IHtmlSanitizerService
     {
         private readonly HtmlSanitizer _sanitizer = new HtmlSanitizer();
 
-        public HtmlScriptSanitizer(IOptions<HtmlScriptSanitizerOptions> options)
+        public HtmlSanitizerService(IOptions<HtmlSanitizerOptions> options)
         {
             if (options.Value.Configure != null)
             {

@@ -10,7 +10,7 @@ using OrchardCore.Html.Models;
 using OrchardCore.Html.Settings;
 using OrchardCore.Html.ViewModels;
 using OrchardCore.Infrastructure.SafeCodeFilters;
-using OrchardCore.Infrastructure.Script;
+using OrchardCore.Infrastructure.Html;
 using OrchardCore.Liquid;
 
 namespace OrchardCore.Html.Drivers
@@ -18,19 +18,19 @@ namespace OrchardCore.Html.Drivers
     public class HtmlBodyPartDisplayDriver : ContentPartDisplayDriver<HtmlBodyPart>
     {
         private readonly ILiquidTemplateManager _liquidTemplateManager;
-        private readonly IHtmlScriptSanitizer _htmlScriptSanitizer;
+        private readonly IHtmlSanitizerService _htmlSanitizerService;
         private readonly HtmlEncoder _htmlEncoder;
         private readonly ISafeCodeFilterManager _safeCodeFilterManager;
         private readonly IStringLocalizer S;
 
         public HtmlBodyPartDisplayDriver(ILiquidTemplateManager liquidTemplateManager,
-            IHtmlScriptSanitizer htmlScriptSanitizer,
+            IHtmlSanitizerService htmlSanitizerService,
             HtmlEncoder htmlEncoder,
             ISafeCodeFilterManager safeCodeFilterManager,
             IStringLocalizer<HtmlBodyPartDisplayDriver> localizer)
         {
             _liquidTemplateManager = liquidTemplateManager;
-            _htmlScriptSanitizer = htmlScriptSanitizer;
+            _htmlSanitizerService = htmlSanitizerService;
             _htmlEncoder = htmlEncoder;
             _safeCodeFilterManager = safeCodeFilterManager;
             S = localizer;
@@ -69,7 +69,9 @@ namespace OrchardCore.Html.Drivers
                 }
                 else
                 {
-                    model.Html = settings.AllowCustomScripts ? viewModel.Html : _htmlScriptSanitizer.Sanitize(viewModel.Html);
+                    //model.Html = settings.SanitizeHtml ? _htmlSanitizerService.Sanitize(viewModel.Html) : viewModel.Html; 
+
+                    model.Html = settings.AllowCustomScripts ? viewModel.Html : _htmlSanitizerService.Sanitize(viewModel.Html);
                 }
             }
 

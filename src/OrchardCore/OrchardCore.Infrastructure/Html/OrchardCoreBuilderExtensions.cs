@@ -1,4 +1,4 @@
-using OrchardCore.Infrastructure.Script;
+using OrchardCore.Infrastructure.Html;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -8,11 +8,11 @@ namespace Microsoft.Extensions.DependencyInjection
         /// Adds html script sanitization services.
         /// </summary>
         /// <param name="builder">The <see cref="OrchardCoreBuilder"/>.</param>
-        public static OrchardCoreBuilder AddScriptProtection(this OrchardCoreBuilder builder)
+        public static OrchardCoreBuilder AddHtmlSanitizer(this OrchardCoreBuilder builder)
         {
             builder.ConfigureServices(services =>
             {
-                services.AddScoped<IHtmlScriptSanitizer, HtmlScriptSanitizer>();
+                services.AddScoped<IHtmlSanitizerService, HtmlSanitizerService>();
             });
 
             return builder;

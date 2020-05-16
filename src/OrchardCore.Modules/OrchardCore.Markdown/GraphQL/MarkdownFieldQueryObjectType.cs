@@ -12,7 +12,7 @@ using OrchardCore.Apis.GraphQL;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Infrastructure.SafeCodeFilters;
-using OrchardCore.Infrastructure.Script;
+using OrchardCore.Infrastructure.Html;
 using OrchardCore.Liquid;
 using OrchardCore.Markdown.Fields;
 using OrchardCore.Markdown.Services;
@@ -88,8 +88,8 @@ namespace OrchardCore.Markdown.GraphQL
 
             if (!settings.AllowCustomScripts)
             {
-                var htmlSanitizer = serviceProvider.GetRequiredService<IHtmlScriptSanitizer>();
-                markdown = htmlSanitizer.Sanitize(markdown);
+                var htmlSanitizerService = serviceProvider.GetRequiredService<IHtmlSanitizerService>();
+                markdown = htmlSanitizerService.Sanitize(markdown);
             }
 
             return markdown;

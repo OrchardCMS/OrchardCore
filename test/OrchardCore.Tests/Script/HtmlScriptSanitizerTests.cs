@@ -1,14 +1,14 @@
 using Markdig;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using OrchardCore.Infrastructure.Script;
+using OrchardCore.Infrastructure.Html;
 using Xunit;
 
 namespace OrchardCore.Tests.Script
 {
     public class HtmlScriptSanitizerTests
     {
-        private static readonly HtmlScriptSanitizer _sanitizer = new HtmlScriptSanitizer(Options.Create(new HtmlScriptSanitizerOptions()));
+        private static readonly HtmlSanitizerService _sanitizer = new HtmlSanitizerService(Options.Create(new HtmlSanitizerOptions()));
 
         [Theory]
         [InlineData("<script>alert('xss')</script><div onload=\"alert('xss')\">Test<img src=\"test.gif\" style=\"background-image: url(javascript:alert('xss')); margin: 10px\"></div>", "<div>Test<img src=\"test.gif\" style=\"margin: 10px\"></div>")]
@@ -182,7 +182,7 @@ alert(s);
         public void ShouldConfigureSanitizer()
         {
             var services = new ServiceCollection();
-            services.Configure<HtmlScriptSanitizerOptions>(o =>
+            services.Configure<HtmlSanitizerOptions>(o =>
             {
                 o.Configure = (sanitizer) =>
                 {
@@ -190,9 +190,9 @@ alert(s);
                 };
             });
 
-            services.AddScoped<IHtmlScriptSanitizer, HtmlScriptSanitizer>();
+            services.AddScoped<IHtmlSanitizerService, HtmlSanitizerService>();
 
-            var sanitizer = services.BuildServiceProvider().GetService<IHtmlScriptSanitizer>();
+            var sanitizer = services.BuildServiceProvider().GetService<IHtmlSanitizerService>();
 
             var input = @"<a href=""bar"" class=""foo"">baz</a>";
             var sanitized = sanitizer.Sanitize(input);

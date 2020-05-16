@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Html;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore;
 using OrchardCore.Infrastructure.SafeCodeFilters;
-using OrchardCore.Infrastructure.Script;
+using OrchardCore.Infrastructure.Html;
 using OrchardCore.Liquid;
 using OrchardCore.Markdown.Services;
 
@@ -33,7 +33,7 @@ public static class ContentRazorHelperExtensions
 
         if (sanitize)
         {
-            var sanitizer = orchardHelper.HttpContext.RequestServices.GetRequiredService<IHtmlScriptSanitizer>();
+            var sanitizer = orchardHelper.HttpContext.RequestServices.GetRequiredService<IHtmlSanitizerService>();
             markdown = sanitizer.Sanitize(markdown);
         }
 

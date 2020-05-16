@@ -3,9 +3,9 @@ using Microsoft.AspNetCore.Html;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore;
 using OrchardCore.Infrastructure.SafeCodeFilters;
-using OrchardCore.Infrastructure.Script;
+using OrchardCore.Infrastructure.Html;
 
-public static class HtmlScriptSanitizerExtensions
+public static class HtmlSanitizerExtensions
 {
     /// <summary>
     /// Sanitizes a string of html.
@@ -17,7 +17,7 @@ public static class HtmlScriptSanitizerExtensions
 
         html = await safeCodeFilterManager.ProcessAsync(html);
 
-        var sanitizer = orchardHelper.HttpContext.RequestServices.GetRequiredService<IHtmlScriptSanitizer>();
+        var sanitizer = orchardHelper.HttpContext.RequestServices.GetRequiredService<IHtmlSanitizerService>();
         html = sanitizer.Sanitize(html);
 
         return new HtmlString(html);

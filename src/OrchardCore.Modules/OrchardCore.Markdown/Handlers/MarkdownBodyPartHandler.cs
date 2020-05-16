@@ -7,7 +7,7 @@ using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Models;
 using OrchardCore.Infrastructure.SafeCodeFilters;
-using OrchardCore.Infrastructure.Script;
+using OrchardCore.Infrastructure.Html;
 using OrchardCore.Liquid;
 using OrchardCore.Markdown.Models;
 using OrchardCore.Markdown.Services;
@@ -21,7 +21,7 @@ namespace OrchardCore.Markdown.Handlers
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly ISafeCodeFilterManager _safeCodeFilterManager;
         private readonly IMarkdownService _markdownService;
-        private readonly IHtmlScriptSanitizer _htmlScriptSanitizer;
+        private readonly IHtmlSanitizerService _htmlSanitizerService;
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly HtmlEncoder _htmlEncoder;
         private HtmlString _bodyAspect;
@@ -30,14 +30,14 @@ namespace OrchardCore.Markdown.Handlers
         public MarkdownBodyPartHandler(IContentDefinitionManager contentDefinitionManager,
             ISafeCodeFilterManager safeCodeFilterManager,
             IMarkdownService markdownService,
-            IHtmlScriptSanitizer htmlScriptSanitizer,
+            IHtmlSanitizerService htmlSanitizerService,
             ILiquidTemplateManager liquidTemplateManager,
             HtmlEncoder htmlEncoder)
         {
             _contentDefinitionManager = contentDefinitionManager;
             _safeCodeFilterManager = safeCodeFilterManager;
             _markdownService = markdownService;
-            _htmlScriptSanitizer = htmlScriptSanitizer;
+            _htmlSanitizerService = htmlSanitizerService;
             _liquidTemplateManager = liquidTemplateManager;
             _htmlEncoder = htmlEncoder;
         }
@@ -79,7 +79,7 @@ namespace OrchardCore.Markdown.Handlers
 
                     if (!settings.AllowCustomScripts)
                     {
-                        markdown = _htmlScriptSanitizer.Sanitize(markdown);
+                        markdown = _htmlSanitizerService.Sanitize(markdown);
                     }
 
                     bodyAspect.Body = _bodyAspect = new HtmlString(markdown);

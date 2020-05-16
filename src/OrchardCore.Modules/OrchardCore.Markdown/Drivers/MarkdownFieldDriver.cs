@@ -7,7 +7,7 @@ using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Infrastructure.SafeCodeFilters;
-using OrchardCore.Infrastructure.Script;
+using OrchardCore.Infrastructure.Html;
 using OrchardCore.Liquid;
 using OrchardCore.Markdown.Fields;
 using OrchardCore.Markdown.Services;
@@ -20,21 +20,21 @@ namespace OrchardCore.Markdown.Drivers
     {
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly HtmlEncoder _htmlEncoder;
-        private readonly IHtmlScriptSanitizer _htmlScriptSanitizer;
+        private readonly IHtmlSanitizerService _htmlSanitizerService;
         private readonly ISafeCodeFilterManager _safeCodeFilterManager;
         private readonly IMarkdownService _markdownService;
         private readonly IStringLocalizer S;
 
         public MarkdownFieldDisplayDriver(ILiquidTemplateManager liquidTemplateManager,
             HtmlEncoder htmlEncoder,
-            IHtmlScriptSanitizer htmlScriptSanitizer,
+            IHtmlSanitizerService htmlSanitizerService,
             ISafeCodeFilterManager safeCodeFilterManager,
             IMarkdownService markdownService,
             IStringLocalizer<MarkdownFieldDisplayDriver> localizer)
         {
             _liquidTemplateManager = liquidTemplateManager;
             _htmlEncoder = htmlEncoder;
-            _htmlScriptSanitizer = htmlScriptSanitizer;
+            _htmlSanitizerService = htmlSanitizerService;
             _safeCodeFilterManager = safeCodeFilterManager;
             _markdownService = markdownService;
             S = localizer;
@@ -62,7 +62,7 @@ namespace OrchardCore.Markdown.Drivers
 
                 if (!settings.AllowCustomScripts)
                 {
-                    model.Html = _htmlScriptSanitizer.Sanitize(model.Html ?? "");
+                    model.Html = _htmlSanitizerService.Sanitize(model.Html ?? "");
                 }
             })
             .Location("Detail", "Content")
