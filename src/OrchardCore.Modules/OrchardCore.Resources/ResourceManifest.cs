@@ -97,17 +97,17 @@ namespace OrchardCore.Resources
             manifest
                 .DefineStyle("bootstrap-select")
                 .SetUrl("~/OrchardCore.Resources/Styles/bootstrap-select.min.css", "~/OrchardCore.Resources/Styles/bootstrap-select.css")
-                .SetCdn("https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.16/dist/css/bootstrap-select.min.css", "https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.16/dist/css/bootstrap-select.css")
-                .SetCdnIntegrity("sha384-+zhwRiYrK5ABm+MgtCplBuZsVMTUX5AgDRM4jefsxaCYmLer5uZYcuM/Ll+bL+pw", "sha384-6BF3aQqeuulEMCsl+qF7AiJ44nnSyAz2Z3b/IUZSjpAZinZKhTZEw35q7kcnTvjg")
-                .SetVersion("1.13.16");
+                .SetCdn("https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.17/dist/css/bootstrap-select.min.css", "https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.17/dist/css/bootstrap-select.css")
+                .SetCdnIntegrity("sha384-4VrsKsu8ei1Ey+aaM9aKxZf6kwZAzi9VAule5Owa012ZwHIw4XdZF3DRV3TL29po", "sha384-P8wP2x41Lu1DByhfELrakT0P9b5RvCFY7gelQ16gEef2OGFG7q/k6ytMEx8fvrFb")
+                .SetVersion("1.13.17");
 
             manifest
                 .DefineScript("bootstrap-select")
                 .SetDependencies("jQuery")
                 .SetUrl("~/OrchardCore.Resources/Scripts/bootstrap-select.min.js", "~/OrchardCore.Resources/Scripts/bootstrap-select.js")
-                .SetCdn("https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.16/dist/js/bootstrap-select.min.js", "https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.16/dist/js/bootstrap-select.js")
-                .SetCdnIntegrity("sha384-0R91SaW5dPDmtqfvh2MrtOwDawrhmwqdNann7l4U8eojZxFb6bOIyXBIBKLMhP1i", "sha384-f37Npebi+IcoUY3NL7kQw2MC3k1qQPgAG2/iRbSxL/ThocKzU5UcuhBp/I5l6Aql")
-                .SetVersion("1.13.16");
+                .SetCdn("https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.17/dist/js/bootstrap-select.min.js", "https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.17/dist/js/bootstrap-select.js")
+                .SetCdnIntegrity("sha384-vZHItSjiaeaa+fcNthtymKys5rxEOQ30i0gepK/bHdxByApBXUVkUvJwmaorQHW+", "sha384-N18QyApph3arAgOSkvDBbC4p2Nmrg5yqThKLK7l9n2FOpbodYX0vW0ediUB7Po6n")
+                .SetVersion("1.13.17");
 
             manifest
                 .DefineScript("codemirror")

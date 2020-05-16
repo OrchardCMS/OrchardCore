@@ -369,6 +369,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{E33D95DF-E864-4D14-A561-D59E8AC06811}"
 	ProjectSection(SolutionItems) = preProject
 		mkdocs.yml = mkdocs.yml
+		src\README.md = src\README.md
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Docs", "src\docs\OrchardCore.Docs.csproj", "{A37CD7CB-6B26-483A-9D5A-3E80B6CB115F}"
