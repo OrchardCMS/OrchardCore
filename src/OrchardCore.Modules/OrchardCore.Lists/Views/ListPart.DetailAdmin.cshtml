@@ -42,7 +42,7 @@ else
                     <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
                         @foreach (var containedContentTypeDefinition in Model.ContainedContentTypeDefinitions)
                         {
-                            <a class="dropdown-item" asp-action="Create" asp-controller="Admin" asp-route-id="@containedContentTypeDefinition.Name" asp-route-area="OrchardCore.Contents" asp-route-ListPart.ContainerId="@Model.ListPart.ContentItem.ContentItemId" asp-route-ListPart.EnableOrdering="@Model.EnableOrdering">@containedContentTypeDefinition.DisplayName</a>
+                            <a class="dropdown-item" asp-action="Create" asp-controller="Admin" asp-route-id="@containedContentTypeDefinition.Name" asp-route-area="OrchardCore.Contents" asp-route-ListPart.ContainerId="@Model.ListPart.ContentItem.ContentItemId" asp-route-ListPart.EnableOrdering="@Model.EnableOrdering" asp-route-returnUrl="@FullRequestPath">@containedContentTypeDefinition.DisplayName</a>
                         }
                     </div>
                 </div>
