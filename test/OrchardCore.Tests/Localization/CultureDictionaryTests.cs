@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using OrchardCore.Localization;
 using Xunit;
 
@@ -5,6 +7,7 @@ namespace OrchardCore.Tests.Localization
 {
     public class CultureDictionaryTests
     {
+        private static PluralizationRuleDelegate _arPluralRule = n => (n == 0 ? 0 : n == 1 ? 1 : n == 2 ? 2 : n % 100 >= 3 && n % 100 <= 10 ? 3 : n % 100 >= 11 ? 4 : 5);
         private static PluralizationRuleDelegate _csPluralRule = n => ((n == 1) ? 0 : (n >= 2 && n <= 4) ? 1 : 2);
 
         [Fact]
@@ -49,6 +52,29 @@ namespace OrchardCore.Tests.Localization
             dictionary.MergeTranslations(new[] { record });
 
             Assert.Throws<PluralFormNotFoundException>(() => dictionary["ball", 5]);
+        }
+
+        [Fact]
+        public void EnumerateCultureDictionary()
+        {
+            // Arrange
+            var dictionary = new CultureDictionary("ar", _arPluralRule);
+            dictionary.MergeTranslations(new List<CultureDictionaryRecord>
+            {
+                new CultureDictionaryRecord("Hello", null, new[] { "مرحبا" }),
+                new CultureDictionaryRecord("Bye", null, new[] { "مع السلامة" })
+            });
+
+            // Act & Assert
+            Assert.NotEmpty(dictionary);
+
+            foreach (var record in dictionary)
+            {
+                Assert.NotNull(record.Key);
+                Assert.Single(record.Translations);
+            }
+
+            Assert.Equal(2, dictionary.Count());
         }
     }
 }
