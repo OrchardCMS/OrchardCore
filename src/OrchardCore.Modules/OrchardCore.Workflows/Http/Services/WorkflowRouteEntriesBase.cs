@@ -11,7 +11,7 @@ namespace OrchardCore.Workflows.Http.Services
         private readonly object _syncLock = new object();
         private IDictionary<string, IList<WorkflowRoutesEntry>> _entries = new Dictionary<string, IList<WorkflowRoutesEntry>>();
 
-        public virtual IEnumerable<WorkflowRoutesEntry> GetWorkflowRouteEntries(string httpMethod, RouteValueDictionary routeValues)
+        public IEnumerable<WorkflowRoutesEntry> GetWorkflowRouteEntries(string httpMethod, RouteValueDictionary routeValues)
         {
             var controllerName = routeValues.GetValue<string>("controller");
             var actionName = routeValues.GetValue<string>("action");
