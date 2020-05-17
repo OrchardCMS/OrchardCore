@@ -6,7 +6,7 @@
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 /*!
- * Bootstrap-select v1.13.15 (https://developer.snapappointments.com/bootstrap-select)
+ * Bootstrap-select v1.13.17 (https://developer.snapappointments.com/bootstrap-select)
  *
  * Copyright 2012-2020 SnapAppointments, LLC
  * Licensed under MIT (https://github.com/snapappointments/bootstrap-select/blob/master/LICENSE)
@@ -816,6 +816,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       MENU: '.' + classNames.MENU
     };
     var elementTemplates = {
+      div: document.createElement('div'),
       span: document.createElement('span'),
       i: document.createElement('i'),
       subtext: document.createElement('small'),
@@ -824,8 +825,10 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       whitespace: document.createTextNode("\xA0"),
       fragment: document.createDocumentFragment()
     };
+    elementTemplates.noResults = elementTemplates.li.cloneNode(false);
+    elementTemplates.noResults.className = 'no-results';
     elementTemplates.a.setAttribute('role', 'option');
-    if (version.major === '4') elementTemplates.a.className = 'dropdown-item';
+    elementTemplates.a.className = 'dropdown-item';
     elementTemplates.subtext.className = 'text-muted';
     elementTemplates.text = elementTemplates.span.cloneNode(false);
     elementTemplates.text.className = 'text';
@@ -859,7 +862,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
           }
         }
 
-        if (typeof classes !== 'undefined' && classes !== '') a.classList.add.apply(a.classList, classes.split(' '));
+        if (typeof classes !== 'undefined' && classes !== '') a.classList.add.apply(a.classList, classes.split(/\s+/));
         if (inline) a.setAttribute('style', inline);
         return a;
       },
@@ -925,6 +928,13 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       }
     };
 
+    function showNoResults(searchMatch, searchValue) {
+      if (!searchMatch.length) {
+        elementTemplates.noResults.innerHTML = this.options.noneResultsText.replace('{0}', '"' + htmlEscape(searchValue) + '"');
+        this.$menuInner[0].firstChild.appendChild(elementTemplates.noResults);
+      }
+    }
+
     var Selectpicker = function Selectpicker(element, options) {
       var that = this; // bootstrap-select has been initialized - revert valHooks.select.set back to its original function
 
@@ -984,7 +994,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       this.init();
     };
 
-    Selectpicker.VERSION = '1.13.15'; // part of this is duplicated in i18n/defaults-en_US.js. Make sure to update both.
+    Selectpicker.VERSION = '1.13.17'; // part of this is duplicated in i18n/defaults-en_US.js. Make sure to update both.
 
     Selectpicker.DEFAULTS = {
       noneSelectedText: 'Nothing selected',
@@ -1169,7 +1179,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
           donebutton = '<div class="bs-donebutton">' + '<div class="btn-group btn-block">' + '<button type="button" class="btn btn-sm ' + classNames.BUTTONCLASS + '">' + this.options.doneButtonText + '</button>' + '</div>' + '</div>';
         }
 
-        drop = '<div class="dropdown bootstrap-select' + showTick + inputGroup + '">' + '<button type="button" class="' + this.options.styleBase + ' dropdown-toggle" ' + (this.options.display === 'static' ? 'data-display="static"' : '') + 'data-toggle="dropdown"' + autofocus + ' role="combobox" aria-owns="' + this.selectId + '" aria-haspopup="listbox" aria-expanded="false">' + '<div class="filter-option">' + '<div class="filter-option-inner">' + '<div class="filter-option-inner-inner"></div>' + '</div> ' + '</div>' + (version.major === '4' ? '' : '<span class="bs-caret">' + this.options.template.caret + '</span>') + '</button>' + '<div class="' + classNames.MENU + ' ' + (version.major === '4' ? '' : classNames.SHOW) + '">' + header + searchbox + actionsbox + '<div class="inner ' + classNames.SHOW + '" role="listbox" id="' + this.selectId + '" tabindex="-1" ' + multiselectable + '>' + '<ul class="' + classNames.MENU + ' inner ' + (version.major === '4' ? classNames.SHOW : '') + '" role="presentation">' + '</ul>' + '</div>' + donebutton + '</div>' + '</div>';
+        drop = '<div class="dropdown bootstrap-select' + showTick + inputGroup + '">' + '<button type="button" tabindex="-1" class="' + this.options.styleBase + ' dropdown-toggle" ' + (this.options.display === 'static' ? 'data-display="static"' : '') + 'data-toggle="dropdown"' + autofocus + ' role="combobox" aria-owns="' + this.selectId + '" aria-haspopup="listbox" aria-expanded="false">' + '<div class="filter-option">' + '<div class="filter-option-inner">' + '<div class="filter-option-inner-inner"></div>' + '</div> ' + '</div>' + (version.major === '4' ? '' : '<span class="bs-caret">' + this.options.template.caret + '</span>') + '</button>' + '<div class="' + classNames.MENU + ' ' + (version.major === '4' ? '' : classNames.SHOW) + '">' + header + searchbox + actionsbox + '<div class="inner ' + classNames.SHOW + '" role="listbox" id="' + this.selectId + '" tabindex="-1" ' + multiselectable + '>' + '<ul class="' + classNames.MENU + ' inner ' + (version.major === '4' ? classNames.SHOW : '') + '" role="presentation">' + '</ul>' + '</div>' + donebutton + '</div>' + '</div>';
         return $(drop);
       },
       setPositionData: function setPositionData() {
@@ -1436,7 +1446,8 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         }
       },
       setPlaceholder: function setPlaceholder() {
-        var updateIndex = false;
+        var that = this,
+            updateIndex = false;
 
         if (this.options.title && !this.multiple) {
           if (!this.selectpicker.view.titleOption) this.selectpicker.view.titleOption = document.createElement('option'); // this option doesn't create a new <li> element, but does add a new option at the start,
@@ -1444,8 +1455,11 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
           updateIndex = true;
           var element = this.$element[0],
-              isSelected = false,
-              titleNotAppended = !this.selectpicker.view.titleOption.parentNode;
+              selectTitleOption = false,
+              titleNotAppended = !this.selectpicker.view.titleOption.parentNode,
+              selectedIndex = element.selectedIndex,
+              selectedOption = element.options[selectedIndex],
+              navigation = window.performance && window.performance.getEntriesByType('navigation');
 
           if (titleNotAppended) {
             // Use native JS to prepend option (faster)
@@ -1454,8 +1468,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
             // the selected item may have been changed by user or programmatically before the bootstrap select plugin runs,
             // if so, the select will have the data-selected attribute
 
-            var $opt = $(element.options[element.selectedIndex]);
-            isSelected = $opt.attr('selected') === undefined && this.$element.data('selected') === undefined;
+            selectTitleOption = !selectedOption || selectedIndex === 0 && selectedOption.defaultSelected === false && this.$element.data('selected') === undefined;
           }
 
           if (titleNotAppended || this.selectpicker.view.titleOption.index !== 0) {
@@ -1465,7 +1478,15 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
           // set using selectedIndex, as setting the selected attr to true here doesn't work in IE11
 
 
-          if (isSelected) element.selectedIndex = 0;
+          if (selectTitleOption && navigation.length && navigation[0].type !== 'back_forward') {
+            element.selectedIndex = 0;
+          } else if (document.readyState !== 'complete') {
+            // if navigation type is back_forward, there's a chance the select will have its value set by BFCache
+            // wait for that value to be set, then run render again
+            window.addEventListener('pageshow', function () {
+              if (that.selectpicker.view.displayedValue !== element.value) that.render();
+            });
+          }
         }
 
         return updateIndex;
@@ -1525,7 +1546,8 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
         function addOptgroup(index, selectOptions) {
           var optgroup = selectOptions[index],
-              previous = selectOptions[index - 1],
+              // skip placeholder option
+          previous = index - 1 < startIndex ? false : selectOptions[index - 1],
               next = selectOptions[index + 1],
               options = optgroup.querySelectorAll('option' + optionSelector);
           if (!options.length) return;
@@ -1573,13 +1595,13 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
           }
         }
 
-        for (var len = selectOptions.length; startIndex < len; startIndex++) {
-          var item = selectOptions[startIndex];
+        for (var len = selectOptions.length, i = startIndex; i < len; i++) {
+          var item = selectOptions[i];
 
           if (item.tagName !== 'OPTGROUP') {
             addOption(item, {});
           } else {
-            addOptgroup(startIndex, selectOptions);
+            addOptgroup(i, selectOptions);
           }
         }
 
@@ -1619,6 +1641,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
               break;
           }
 
+          item.element = liElement;
           mainElements.push(liElement); // count the number of characters in the option - not perfect, but should work in most cases
 
           if (item.display) combinedLength += item.display.length;
@@ -1660,7 +1683,10 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
             countMax,
             hasContent = false;
         button.classList.toggle('bs-placeholder', that.multiple ? !selectedCount : !getSelectValues(element, selectedOptions));
-        this.tabIndex();
+
+        if (!that.multiple && selectedOptions.length === 1) {
+          that.selectpicker.view.displayedValue = getSelectValues(element, selectedOptions);
+        }
 
         if (this.options.selectedTextFormat === 'static') {
           titleFragment = generateOption.text.call(this, {
@@ -1780,7 +1806,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         if (version.major < 4) {
           newElement.classList.add('bs3');
 
-          if (newElement.parentNode.classList.contains('input-group') && (newElement.previousElementSibling || newElement.nextElementSibling) && (newElement.previousElementSibling || newElement.nextElementSibling).classList.contains('input-group-addon')) {
+          if (newElement.parentNode.classList && newElement.parentNode.classList.contains('input-group') && (newElement.previousElementSibling || newElement.nextElementSibling) && (newElement.previousElementSibling || newElement.nextElementSibling).classList.contains('input-group-addon')) {
             newElement.classList.add('bs3-has-addon');
           }
         }
@@ -1802,17 +1828,17 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       },
       liHeight: function liHeight(refresh) {
         if (!refresh && (this.options.size === false || Object.keys(this.sizeInfo).length)) return;
-        var newElement = document.createElement('div'),
-            menu = document.createElement('div'),
-            menuInner = document.createElement('div'),
+        var newElement = elementTemplates.div.cloneNode(false),
+            menu = elementTemplates.div.cloneNode(false),
+            menuInner = elementTemplates.div.cloneNode(false),
             menuInnerInner = document.createElement('ul'),
-            divider = document.createElement('li'),
-            dropdownHeader = document.createElement('li'),
-            li = document.createElement('li'),
-            a = document.createElement('a'),
-            text = document.createElement('span'),
+            divider = elementTemplates.li.cloneNode(false),
+            dropdownHeader = elementTemplates.li.cloneNode(false),
+            li,
+            a = elementTemplates.a.cloneNode(false),
+            text = elementTemplates.span.cloneNode(false),
             header = this.options.header && this.$menu.find('.' + classNames.POPOVERHEADER).length > 0 ? this.$menu.find('.' + classNames.POPOVERHEADER)[0].cloneNode(true) : null,
-            search = this.options.liveSearch ? document.createElement('div') : null,
+            search = this.options.liveSearch ? elementTemplates.div.cloneNode(false) : null,
             actions = this.options.actionsBox && this.multiple && this.$menu.find('.bs-actionsbox').length > 0 ? this.$menu.find('.bs-actionsbox')[0].cloneNode(true) : null,
             doneButton = this.options.doneButton && this.multiple && this.$menu.find('.bs-donebutton').length > 0 ? this.$menu.find('.bs-donebutton')[0].cloneNode(true) : null,
             firstOption = this.$element.find('option')[0];
@@ -1829,8 +1855,22 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         divider.className = classNames.DIVIDER;
         dropdownHeader.className = 'dropdown-header';
         text.appendChild(document.createTextNode("\u200B"));
-        a.appendChild(text);
-        li.appendChild(a);
+
+        if (this.selectpicker.current.data.length) {
+          for (var i = 0; i < this.selectpicker.current.data.length; i++) {
+            var data = this.selectpicker.current.data[i];
+
+            if (data.type === 'option') {
+              li = data.element;
+              break;
+            }
+          }
+        } else {
+          li = elementTemplates.li.cloneNode(false);
+          a.appendChild(text);
+          li.appendChild(a);
+        }
+
         dropdownHeader.appendChild(text.cloneNode(true));
 
         if (this.selectpicker.view.widestOption) {
@@ -2228,25 +2268,13 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       checkDisabled: function checkDisabled() {
         if (this.isDisabled()) {
           this.$newElement[0].classList.add(classNames.DISABLED);
-          this.$button.addClass(classNames.DISABLED).attr('tabindex', -1).attr('aria-disabled', true);
+          this.$button.addClass(classNames.DISABLED).attr('aria-disabled', true);
         } else {
           if (this.$button[0].classList.contains(classNames.DISABLED)) {
             this.$newElement[0].classList.remove(classNames.DISABLED);
             this.$button.removeClass(classNames.DISABLED).attr('aria-disabled', false);
           }
-
-          if (this.$button.attr('tabindex') == -1 && !this.$element.data('tabindex')) {
-            this.$button.removeAttr('tabindex');
-          }
         }
-      },
-      tabIndex: function tabIndex() {
-        if (this.$element.data('tabindex') !== this.$element.attr('tabindex') && this.$element.attr('tabindex') !== -98 && this.$element.attr('tabindex') !== '-98') {
-          this.$element.data('tabindex', this.$element.attr('tabindex'));
-          this.$button.attr('tabindex', this.$element.data('tabindex'));
-        }
-
-        this.$element.attr('tabindex', -98);
       },
       clickListener: function clickListener() {
         var that = this,
@@ -2467,6 +2495,24 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
             that.deselectAll();
           }
         });
+        this.$button.on('focus' + EVENT_KEY, function (e) {
+          var tabindex = that.$element[0].getAttribute('tabindex'); // only change when button is actually focused
+
+          if (tabindex !== undefined && e.originalEvent && e.originalEvent.isTrusted) {
+            // apply select element's tabindex to ensure correct order is followed when tabbing to the next element
+            this.setAttribute('tabindex', tabindex); // set element's tabindex to -1 to allow for reverse tabbing
+
+            that.$element[0].setAttribute('tabindex', -1);
+            that.selectpicker.view.tabindex = tabindex;
+          }
+        }).on('blur' + EVENT_KEY, function (e) {
+          // revert everything to original tabindex
+          if (that.selectpicker.view.tabindex !== undefined && e.originalEvent && e.originalEvent.isTrusted) {
+            that.$element[0].setAttribute('tabindex', that.selectpicker.view.tabindex);
+            this.setAttribute('tabindex', -1);
+            that.selectpicker.view.tabindex = undefined;
+          }
+        });
         this.$element.on('change' + EVENT_KEY, function () {
           that.render();
           that.$element.trigger('changed' + EVENT_KEY, changedArguments);
@@ -2476,8 +2522,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         });
       },
       liveSearchListener: function liveSearchListener() {
-        var that = this,
-            noResults = document.createElement('li');
+        var that = this;
         this.$button.on('click.bs.dropdown.data-api', function () {
           if (!!that.$searchbox.val()) {
             that.$searchbox.val('');
@@ -2540,12 +2585,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
             that.$menuInner.scrollTop(0);
             that.selectpicker.search.elements = searchMatch;
             that.createView(true);
-
-            if (!searchMatch.length) {
-              noResults.className = 'no-results';
-              noResults.innerHTML = that.options.noneResultsText.replace('{0}', '"' + htmlEscape(searchValue) + '"');
-              that.$menuInner[0].firstChild.appendChild(noResults);
-            }
+            showNoResults.call(that, searchMatch, searchValue);
           } else {
             that.$menuInner.scrollTop(0);
             that.createView(false);
@@ -2801,6 +2841,8 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         }
       },
       mobile: function mobile() {
+        // ensure mobile is set to true if mobile function is called after init
+        this.options.mobile = true;
         this.$element[0].classList.add('mobile-device');
       },
       refresh: function refresh() {
@@ -2808,9 +2850,9 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         var config = $.extend({}, this.options, this.$element.data());
         this.options = config;
         this.checkDisabled();
+        this.buildData();
         this.setStyle();
         this.render();
-        this.buildData();
         this.buildList();
         this.setWidth();
         this.setSize(true);
@@ -2950,19 +2992,23 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     $.fn.selectpicker.noConflict = function () {
       $.fn.selectpicker = old;
       return this;
-    }; // wait until whole page has loaded to set function in case Bootstrap isn't available yet
+    }; // get Bootstrap's keydown event handler for either Bootstrap 4 or Bootstrap 3
 
 
-    var bootstrapKeydown = function bootstrapKeydown() {};
+    function keydownHandler() {
+      if ($.fn.dropdown) {
+        // wait to define until function is called in case Bootstrap isn't loaded yet
+        var bootstrapKeydown = $.fn.dropdown.Constructor._dataApiKeydownHandler || $.fn.dropdown.Constructor.prototype.keydown;
+        return bootstrapKeydown.apply(this, arguments);
+      }
+    }
 
-    $(document).off('keydown.bs.dropdown.data-api').on('keydown.bs.dropdown.data-api', ':not(.bootstrap-select) > [data-toggle="dropdown"]', bootstrapKeydown).on('keydown.bs.dropdown.data-api', ':not(.bootstrap-select) > .dropdown-menu', bootstrapKeydown).on('keydown' + EVENT_KEY, '.bootstrap-select [data-toggle="dropdown"], .bootstrap-select [role="listbox"], .bootstrap-select .bs-searchbox input', Selectpicker.prototype.keydown).on('focusin.modal', '.bootstrap-select [data-toggle="dropdown"], .bootstrap-select [role="listbox"], .bootstrap-select .bs-searchbox input', function (e) {
+    $(document).off('keydown.bs.dropdown.data-api').on('keydown.bs.dropdown.data-api', ':not(.bootstrap-select) > [data-toggle="dropdown"]', keydownHandler).on('keydown.bs.dropdown.data-api', ':not(.bootstrap-select) > .dropdown-menu', keydownHandler).on('keydown' + EVENT_KEY, '.bootstrap-select [data-toggle="dropdown"], .bootstrap-select [role="listbox"], .bootstrap-select .bs-searchbox input', Selectpicker.prototype.keydown).on('focusin.modal', '.bootstrap-select [data-toggle="dropdown"], .bootstrap-select [role="listbox"], .bootstrap-select .bs-searchbox input', function (e) {
       e.stopPropagation();
     }); // SELECTPICKER DATA-API
     // =====================
 
     $(window).on('load' + EVENT_KEY + '.data-api', function () {
-      // get Bootstrap's keydown event handler for either Bootstrap 4 or Bootstrap 3
-      bootstrapKeydown = $.fn.dropdown.Constructor._dataApiKeydownHandler || $.fn.dropdown.Constructor.prototype.keydown;
       $('.selectpicker').each(function () {
         var $selectpicker = $(this);
         Plugin.call($selectpicker, $selectpicker.data());
