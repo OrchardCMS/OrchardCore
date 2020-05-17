@@ -1,5 +1,8 @@
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Linq.Expressions;
+using OrchardCore.ContentManagement.Metadata.Models;
 
 namespace OrchardCore.ContentManagement.Handlers
 {
@@ -11,25 +14,23 @@ namespace OrchardCore.ContentManagement.Handlers
 
         public ContentValidateResult ContentValidateResult { get; } = new ContentValidateResult();
 
-        public string BuildPrefix<TPart>(string memberName)
-        {
-            if (string.IsNullOrWhiteSpace(memberName))
-                return string.Empty;
-            return $"{typeof(TPart).Name}.{memberName}";
-        }
+        public string Prefix { get; internal set; }
     }
 
     public static class ValidateContentContextExtensions
     {
+
         public static void Fail(this ValidateContentContext context, params ValidationResult[] errors)
         {
             context.ContentValidateResult.Fail(errors);
         }
-        public static void Fail<TPart>(this ValidateContentContext context, string errorMessage, params string[] memberNames) where TPart : ContentPart
+
+        public static void Fail(this ValidateContentContext context, string errorMessage, params string[] memberNames)
         {
             if (memberNames.Any())
             {
-                context.ContentValidateResult.Fail(new ValidationResult(errorMessage, memberNames.Select(x => context.BuildPrefix<TPart>(x))));
+                var prefix = context.Prefix;
+                context.ContentValidateResult.Fail(new ValidationResult(errorMessage, memberNames.Select(x => String.IsNullOrWhiteSpace(prefix) ? x : $"{prefix}.{x}")));
             }
             else
             {
