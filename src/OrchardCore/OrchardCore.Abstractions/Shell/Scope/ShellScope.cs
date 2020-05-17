@@ -326,6 +326,7 @@ namespace OrchardCore.Environment.Shell.Scope
                 {
                     ShellScope scope;
 
+                    // Create a new scope (maybe based on a new shell) for each task.
                     try
                     {
                         // May fail if a shell was released before being disabled.
@@ -333,6 +334,7 @@ namespace OrchardCore.Environment.Shell.Scope
                     }
                     catch
                     {
+                        // Fallback to a scope based on the current shell that is not yet disposed.
                         scope = new ShellScope(ShellContext);
                     }
 
