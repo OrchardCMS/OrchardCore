@@ -28,6 +28,11 @@ namespace OrchardCore.Workflows.Services
             return FilterByWorkflowTypeId(_session.Query<Workflow, WorkflowIndex>(), workflowTypeId).CountAsync();
         }
 
+        public async Task<bool> HasHaltedInstanceAsync(string workflowTypeId)
+        {
+            return (await _session.Query<Workflow, WorkflowBlockingActivitiesIndex>(x => x.WorkflowTypeId == workflowTypeId).FirstOrDefaultAsync()) != null;
+        }
+
         public Task<IEnumerable<Workflow>> ListAsync(string workflowTypeId = null, int? skip = null, int? take = null)
         {
             var query = (IQuery<Workflow>)FilterByWorkflowTypeId(_session.Query<Workflow, WorkflowIndex>(), workflowTypeId)
@@ -71,45 +76,36 @@ namespace OrchardCore.Workflows.Services
             return _session.GetAsync<Workflow>(ids.ToArray());
         }
 
-        public async Task<IEnumerable<Workflow>> ListAsync(string workflowTypeId, IEnumerable<string> blockingActivityIds)
+        public Task<IEnumerable<Workflow>> ListAsync(string workflowTypeId, IEnumerable<string> blockingActivityIds)
         {
-            var query = await _session
+            return _session
                 .Query<Workflow, WorkflowBlockingActivitiesIndex>(index =>
                     index.WorkflowTypeId == workflowTypeId &&
-                    index.ActivityId.IsIn(blockingActivityIds)
-                ).ListAsync();
+                    index.ActivityId.IsIn(blockingActivityIds))
+                .ListAsync();
 
-            return query.ToList();
         }
 
-        public async Task<IEnumerable<Workflow>> ListAsync(string workflowTypeId, string activityName, string correlationId = null)
+        public Task<IEnumerable<Workflow>> ListAsync(string workflowTypeId, string activityName, string correlationId = null)
         {
-            var query = await _session
+            return _session
                 .Query<Workflow, WorkflowBlockingActivitiesIndex>(index =>
                     index.WorkflowTypeId == workflowTypeId &&
                     index.ActivityName == activityName &&
                     index.WorkflowCorrelationId == (correlationId ?? ""))
                 .ListAsync();
-
-            return query.ToList();
         }
 
-        public async Task<IEnumerable<Workflow>> ListByActivityNameAsync(string activityName, string correlationId = null)
+        public Task<IEnumerable<Workflow>> ListByActivityNameAsync(string activityName, string correlationId = null)
         {
-            var query = await _session
-                .QueryIndex<WorkflowBlockingActivitiesIndex>(index =>
+            return _session
+                .Query<Workflow, WorkflowBlockingActivitiesIndex>(index =>
                     index.ActivityName == activityName &&
                     index.WorkflowCorrelationId == (correlationId ?? ""))
                 .ListAsync();
-
-            var pendingWorkflowIndexes = query.ToList();
-            var pendingWorkflowIds = pendingWorkflowIndexes.Select(x => x.WorkflowId).Distinct().ToArray();
-            var pendingWorkflows = await _session.Query<Workflow, WorkflowIndex>(x => x.WorkflowId.IsIn(pendingWorkflowIds)).ListAsync();
-
-            return pendingWorkflows.ToList();
         }
 
-        public async Task SaveAsync(Workflow workflow)
+        public Task SaveAsync(Workflow workflow)
         {
             var isNew = workflow.Id == 0;
             _session.Save(workflow);
@@ -117,21 +113,21 @@ namespace OrchardCore.Workflows.Services
             if (isNew)
             {
                 var context = new WorkflowCreatedContext(workflow);
-                await _handlers.InvokeAsync((handler, context) => handler.CreatedAsync(context), context, _logger);
+                return _handlers.InvokeAsync((handler, context) => handler.CreatedAsync(context), context, _logger);
             }
             else
             {
                 var context = new WorkflowUpdatedContext(workflow);
-                await _handlers.InvokeAsync((handler, context) => handler.UpdatedAsync(context), context, _logger);
+                return _handlers.InvokeAsync((handler, context) => handler.UpdatedAsync(context), context, _logger);
             }
         }
 
-        public async Task DeleteAsync(Workflow workflow)
+        public Task DeleteAsync(Workflow workflow)
         {
             _session.Delete(workflow);
 
             var context = new WorkflowDeletedContext(workflow);
-            await _handlers.InvokeAsync((handler, context) => handler.DeletedAsync(context), context, _logger);
+            return _handlers.InvokeAsync((handler, context) => handler.DeletedAsync(context), context, _logger);
         }
 
         private IQuery<Workflow, WorkflowIndex> FilterByWorkflowTypeId(IQuery<Workflow, WorkflowIndex> query, string workflowTypeId)

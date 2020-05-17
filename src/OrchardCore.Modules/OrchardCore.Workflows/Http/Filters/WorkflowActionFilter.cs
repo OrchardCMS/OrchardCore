@@ -52,7 +52,11 @@ namespace OrchardCore.Workflows.Http.Filters
 
                         if (activity.IsStart)
                         {
-                            await _workflowManager.StartWorkflowAsync(workflowType, activity, null, correlationId);
+                            // If this is not a singleton workflow or there is not already an halted instance, start a new workflow.
+                            if (!workflowType.IsSingleton || !await _workflowStore.HasHaltedInstanceAsync(workflowType.WorkflowTypeId))
+                            {
+                                await _workflowManager.StartWorkflowAsync(workflowType, activity, null, correlationId);
+                            }
                         }
                     }
                 }
