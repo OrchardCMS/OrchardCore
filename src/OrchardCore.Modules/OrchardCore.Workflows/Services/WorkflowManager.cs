@@ -127,8 +127,14 @@ namespace OrchardCore.Workflows.Services
             // Start new workflows.
             foreach (var workflowType in workflowTypesToStart)
             {
-                // If this is a singleton workflow or if the event is exclusive, and there's already an instance, then skip.
-                if ((workflowType.IsSingleton || isExclusive) && haltedWorkflows.Any(x => x.WorkflowTypeId == workflowType.WorkflowTypeId))
+                // If this is a singleton workflow and there's already an halted instance, then skip.
+                if (workflowType.IsSingleton && await _workflowStore.HasHaltedInstanceAsync(workflowType.WorkflowTypeId))
+                {
+                    continue;
+                }
+
+                // If the event is exclusive and there's already an instance halted on this activity type, then skip.
+                if (isExclusive && haltedWorkflows.Any(x => x.WorkflowTypeId == workflowType.WorkflowTypeId))
                 {
                     continue;
                 }
