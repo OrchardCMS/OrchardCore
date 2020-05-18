@@ -97,11 +97,18 @@ namespace OrchardCore.Workflows.Services
 
         public Task<IEnumerable<Workflow>> ListByActivityNameAsync(string activityName, string correlationId = null, bool isAlwaysCorrelated = false)
         {
-            return _session
-                .Query<Workflow, WorkflowBlockingActivitiesIndex>(index =>
-                    index.ActivityName == activityName &&
-                    isAlwaysCorrelated || (index.WorkflowCorrelationId == (correlationId ?? "")))
-                .ListAsync();
+            var query = _session.Query<Workflow, WorkflowBlockingActivitiesIndex>();
+
+            if (isAlwaysCorrelated)
+            {
+                query = query.Where(index => index.ActivityName == activityName);
+            }
+            else
+            {
+                query = query.Where(index => index.ActivityName == activityName && index.WorkflowCorrelationId == (correlationId ?? ""));
+            }
+
+            return query.ListAsync();
         }
 
         public Task SaveAsync(Workflow workflow)
