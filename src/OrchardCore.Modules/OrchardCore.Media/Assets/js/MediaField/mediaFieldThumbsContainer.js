@@ -65,7 +65,6 @@ Vue.component('mediaFieldThumbsContainer', {
         self.T.mediaNotFound = $('#t-media-not-found').val();
         self.T.discardWarning = $('#t-discard-warning').val();
         self.T.noImages = $('#t-no-images').val();
-        self.T.idPrefix = self.idPrefix;
     },
     methods: {
         selectAndDeleteMedia: function (media) {            
