@@ -4,6 +4,7 @@ function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaI
     var initialPaths = target.data("init");
 
     var mediaFieldEditor = $(el);
+    var idprefix = mediaFieldEditor.attr("id");
     var mediaFieldApp;
 
     mediaFieldApps.push(mediaFieldApp = new Vue({
@@ -11,7 +12,8 @@ function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaI
         data: {
             mediaItems: [],
             selectedMedia: null,
-            smallThumbs: false
+            smallThumbs: false,
+            idPrefix: idprefix
         },
         created: function () {
             var self = this;
@@ -100,12 +102,6 @@ function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaI
             });
             
             var selector = '#' + idOfUploadButton;
-
-            $(document).bind('drop dragover', function (e) {
-                e.preventDefault();
-            });
-
-            
             var editorId = mediaFieldEditor.attr('id');
 
             $(selector).fileupload({
@@ -132,11 +128,22 @@ function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaI
                 },
                 done: function (e, data) {
                     var newMediaItems = [];
+                    var errormsg = "";
+                    
                     if (data.result.files.length > 0) {
                         for (var i = 0; i < data.result.files.length; i++) {
                             data.result.files[i].isNew = true;
-                            newMediaItems.push(data.result.files[i]);
+                            //if error is defined probably the file type is not allowed
+                            if(data.result.files[i].error === undefined || data.result.files[i].error === null)
+                                newMediaItems.push(data.result.files[i]);
+                            else
+                                errormsg += data.result.files[i].error + "\n";
                         }
+                    }
+                    
+                    if (errormsg !== "") {
+                        alert(errormsg);
+                        return;
                     }
 
                     if (newMediaItems.length > 1 && allowMultiple === false) {
@@ -144,6 +151,7 @@ function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaI
                         mediaFieldApp.mediaItems.push(newMediaItems[0]);
                     } else {
                         mediaFieldApp.mediaItems = mediaFieldApp.mediaItems.concat(newMediaItems);
+                        
                     }
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
@@ -171,8 +179,8 @@ function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaI
                     if (index > -1) {
                         removed = this.mediaItems[index];
                         removed.isRemoved = true;
-                        this.mediaItems.splice([index], 1, removed);
-                        //this.mediaItems.splice(index, 1);
+                        //this.mediaItems.splice([index], 1, removed);
+                        this.mediaItems.splice(index, 1);
                     }
                 }
                 else {
@@ -180,8 +188,8 @@ function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaI
                     if (this.mediaItems.length === 1) {
                         removed = this.mediaItems[index];
                         removed.isRemoved = true;
-                        this.mediaItems.splice(0, 1, removed);                        
-                        //this.mediaItems.splice(0, 1);
+                        //this.mediaItems.splice(0, 1, removed);                        
+                        this.mediaItems.splice(0, 1);
                     }
                 }
                 this.selectedMedia = null;

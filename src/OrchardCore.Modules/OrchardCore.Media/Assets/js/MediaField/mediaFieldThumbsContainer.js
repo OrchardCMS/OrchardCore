@@ -2,13 +2,13 @@
 // different media field editors share this component to present the thumbs.
 Vue.component('mediaFieldThumbsContainer', {
     template: '\
-       <div id="mediaContainerMain" v-cloak>\
+       <div :id="idPrefix + \'_mediaContainerMain\'" v-cloak>\
          <div v-if="mediaItems.length < 1" class="card text-center">\
              <div class= "card-body" >\
                 <span class="hint">{{T.noImages}}</span>\
              </div>\
          </div>\
-         <draggable :list="mediaItems" element="ol" class="row media-items-grid" >\
+         <draggable :list="mediaItems" tag="ol" class="row media-items-grid" >\
             <li v-for="media in mediaItems"\
                 :key="media.vuekey" \
                 class="media-container-main-list-item card"\
@@ -54,7 +54,8 @@ Vue.component('mediaFieldThumbsContainer', {
     props: {
         mediaItems: Array,
         selectedMedia: Object,
-        thumbSize: Number
+        thumbSize: Number,
+        idPrefix: String
     },
     created: function () {
 
@@ -64,6 +65,7 @@ Vue.component('mediaFieldThumbsContainer', {
         self.T.mediaNotFound = $('#t-media-not-found').val();
         self.T.discardWarning = $('#t-discard-warning').val();
         self.T.noImages = $('#t-no-images').val();
+        self.T.idPrefix = self.idPrefix;
     },
     methods: {
         selectAndDeleteMedia: function (media) {            

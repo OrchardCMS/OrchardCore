@@ -1,0 +1,9 @@
+@Model.Metadata.ChildContent
+
+@* Inject the modal window only once per page *@
+@if (!Context.Items.ContainsKey("Resource_Wrapper__MediaField"))
+{
+    Context.Items["Resource_Wrapper__MediaField"] = new object();
+    @await DisplayAsync(await New.Resource_Scripts__MediaField())
+    @await DisplayAsync(await New.Resource_Localization__MediaField())
+}
