@@ -6,7 +6,7 @@ namespace OrchardCore.Contents.Workflows.Activities
 {
     public class ContentDeletedEvent : ContentEvent
     {
-        public ContentDeletedEvent(IContentManager contentManager, IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer<ContentCreatedEvent> localizer) : base(contentManager, scriptEvaluator, localizer)
+        public ContentDeletedEvent(IContentManager contentManager, IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer<ContentDeletedEvent> localizer) : base(contentManager, scriptEvaluator, localizer)
         {
         }
 
