@@ -1,5 +1,6 @@
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Routing;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Records;
@@ -23,10 +24,27 @@ namespace OrchardCore.Lists.Services
             _contentDefinitionManager = contentDefinitionManager;
         }
 
+        public async Task ApplyRouteValues(ListContentsViewModel model, IUpdateModel updateModel, RouteValueDictionary routeValueDictionary)
+        {
+            var viewModel = new ListPartContentAdminFilterModel();
+            if (await updateModel.TryUpdateModelAsync(viewModel, nameof(ListPart)))
+            {
+                if (viewModel.ShowListContentTypes)
+                {
+                    routeValueDictionary.TryAdd("ShowListContentTypes", viewModel.ShowListContentTypes);
+                }
+
+                if (!string.IsNullOrEmpty(viewModel.ListContentItemId))
+                {
+                    routeValueDictionary.TryAdd("ListContentItemId", viewModel.ListContentItemId);
+                }
+            }
+        }
+
         public async Task FilterAsync(IQuery<ContentItem> query, ListContentsViewModel model, PagerParameters pagerParameters, IUpdateModel updateModel)
         {
             var viewModel = new ListPartContentAdminFilterModel();
-            if (await updateModel.TryUpdateModelAsync(viewModel, ""))
+            if (await updateModel.TryUpdateModelAsync(viewModel, nameof(ListPart)))
             {
                 // Show list content items
                 if (viewModel.ShowListContentTypes)
@@ -39,6 +57,8 @@ namespace OrchardCore.Lists.Services
                         .Select(x => x.Name);
 
                     query.With<ContentItemIndex>(x => x.ContentType.IsIn(listableTypes));
+                    // We are able to mutate query options when required.
+                    model.Options.SelectedContentType = null;
                 }
 
                 // Show contained elements for the specified list

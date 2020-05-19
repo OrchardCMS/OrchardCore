@@ -20,6 +20,7 @@ using OrchardCore.Contents.ViewModels;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.DisplayManagement.Zones;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Routing;
@@ -83,6 +84,7 @@ namespace OrchardCore.Contents.Controllers
             var pager = new Pager(pagerParameters, siteSettings.PageSize);
 
             var query = _session.Query<ContentItem, ContentItemIndex>();
+
 
             if (!string.IsNullOrEmpty(model.Options.DisplayText))
             {
@@ -182,6 +184,10 @@ namespace OrchardCore.Contents.Controllers
                 model.Options.CreatableTypes = creatableList;
             }
 
+            //TODO move back here, or keep higher, so they can alter options as well.
+            //SqliteException: SQLite Error 1: 'no such column: LocalizedContentItemIndex.Latest'.
+            // TODO when we have this higher (which allows queries to changes model.Options)
+            // We get the above error.
             // Invoke any service that could alter the query
             await _contentAdminFilters.InvokeAsync((filter, query, model, pagerParameters, updateModel) => filter.FilterAsync(query, model, pagerParameters, updateModel), query, model, pagerParameters, _updateModelAccessor.ModelUpdater, _logger);
 
@@ -225,37 +231,109 @@ namespace OrchardCore.Contents.Controllers
                 new SelectListItem() { Text = S["Delete"], Value = nameof(ContentsBulkAction.Remove) }
             };
 
-            var ContentTypeOptions = (await GetListableTypesAsync())
+            var contentTypeOptions = (await GetListableTypesAsync())
                 .Select(ctd => new KeyValuePair<string, string>(ctd.Name, ctd.DisplayName))
                 .ToList().OrderBy(kvp => kvp.Value);
 
             model.Options.ContentTypeOptions = new List<SelectListItem>();
             model.Options.ContentTypeOptions.Add(new SelectListItem() { Text = S["All content types"], Value = "" });
-            foreach (var option in ContentTypeOptions)
+            foreach (var option in contentTypeOptions)
             {
                 model.Options.ContentTypeOptions.Add(new SelectListItem() { Text = option.Value, Value = option.Key });
             }
+
+            var shapeFactory = (IShapeFactory)New;
+
+            // The shape to listen for events here is ContentsAdminListZones.
+            var zones = (dynamic)await shapeFactory.CreateAsync("ContentsAdminListZones", () =>
+            {
+                var zoneHolding = new ZoneHolding(() => shapeFactory.CreateAsync("Zone"));
+
+                // Pass the model.Options value in so shape creating events have access to the defaults.
+                var shape = (dynamic)zoneHolding;
+                shape.Options = model.Options;
+
+                return new ValueTask<IShape>(zoneHolding);
+            });
 
             var viewModel = new ListContentsViewModel
             {
                 ContentItems = contentItemSummaries,
                 Pager = pagerShape,
-                Options = model.Options
+                Options = model.Options,
+                Zones = zones
             };
 
-            return View(viewModel);
+            var search = await shapeFactory.CreateAsync("ContentsAdminList__Search", BuildContentOptionsViewModel(model.Options));
+            search.Metadata.Prefix = "Options";
+            zones.Search.Add(search, ":10");
+
+            var create = await shapeFactory.CreateAsync("ContentsAdminList__Create", BuildContentOptionsViewModel(model.Options));
+            create.Metadata.Prefix = "Options";
+            zones.Create.Add(create, ":10");
+
+            var startIndex = (pagerShape.Page - 1) * (pagerShape.PageSize) + 1;
+            var summary = await shapeFactory.CreateAsync("ContentsAdminList__Summary", Arguments.From(new
+            {
+                StartIndex = startIndex,
+                EndIndex = startIndex + contentItemSummaries.Count - 1,
+                ContentItemsCount = contentItemSummaries.Count,
+                TotalItemCount = pagerShape.TotalItemCount
+            }));
+            zones.Summary.Add(summary, ":10");
+            var bulksActions = await shapeFactory.CreateAsync("ContentsAdminList__BulkActions", BuildContentOptionsViewModel(model.Options));
+            bulksActions.Metadata.Prefix = "Options";
+            zones.Actions.Add(bulksActions, ":10");
+
+            var filters = await shapeFactory.CreateAsync("ContentsAdminList__Filters", BuildContentOptionsViewModel(model.Options));
+            filters.Metadata.Prefix = "Options";
+            zones.Actions.Add(filters, ":10");
+
+            var shapeViewModel = await shapeFactory.CreateAsync("ContentsAdminList", BuildListContentsViewModel(viewModel));
+
+            return View(shapeViewModel);
+        }
+
+        private static Action<ListContentsViewModel> BuildListContentsViewModel(ListContentsViewModel model)
+        {
+            return viewModel =>
+            {
+                viewModel.ContentItems = model.ContentItems;
+                viewModel.Pager = model.Pager;
+                viewModel.Options = model.Options;
+                viewModel.Zones = model.Zones;
+            };
+        }
+
+        private static Action<ViewModels.ContentOptions> BuildContentOptionsViewModel(ViewModels.ContentOptions model)
+        {
+            return m =>
+            {
+                m.ContentTypeOptions = model.ContentTypeOptions;
+                m.ContentStatuses = model.ContentStatuses;
+                m.ContentSorts = model.ContentSorts;
+                m.ContentsBulkAction = model.ContentsBulkAction;
+                m.CreatableTypes = model.CreatableTypes;
+            };
         }
 
         [HttpPost, ActionName("List")]
         [FormValueRequired("submit.Filter")]
-        public ActionResult ListFilterPOST(ListContentsViewModel model)
+        public async Task<ActionResult> ListFilterPOST(ListContentsViewModel model)
         {
-            return RedirectToAction("List", new RouteValueDictionary {
+            var routeValueDictionary = new RouteValueDictionary {
                 { "Options.OrderBy", model.Options.OrderBy },
                 { "Options.ContentsStatus", model.Options.ContentsStatus },
                 { "Options.SelectedContentType", model.Options.SelectedContentType },
                 { "Options.DisplayText", model.Options.DisplayText }
-            });
+            };
+
+            // we need interceptors here, to adapt the routevalues
+
+            await _contentAdminFilters.InvokeAsync((filter, model, updateModel, routeValueDictionary) => filter.ApplyRouteValues(model, updateModel, routeValueDictionary), model, _updateModelAccessor.ModelUpdater, routeValueDictionary, _logger);
+
+
+            return RedirectToAction("List", routeValueDictionary);
         }
 
         [HttpPost, ActionName("List")]
