@@ -83,8 +83,11 @@ namespace OrchardCore.Contents.Controllers
             var siteSettings = await _siteService.GetSiteSettingsAsync();
             var pager = new Pager(pagerParameters, siteSettings.PageSize);
 
-            var query = _session.Query<ContentItem, ContentItemIndex>();
+            // Because admin filters can add a different index to the query this must be added as a Query<ContentItem>()
+            var query = _session.Query<ContentItem>();
 
+            // Process filter mutations first as they can alter the model options.
+            await _contentAdminFilters.InvokeAsync((filter, query, model, pagerParameters, updateModel) => filter.FilterAsync(query, model, pagerParameters, updateModel), query, model, pagerParameters, _updateModelAccessor.ModelUpdater, _logger);
 
             if (!string.IsNullOrEmpty(model.Options.DisplayText))
             {
@@ -152,19 +155,19 @@ namespace OrchardCore.Contents.Controllers
             switch (model.Options.OrderBy)
             {
                 case ContentsOrder.Modified:
-                    query = query.OrderByDescending(x => x.ModifiedUtc);
+                    query = query.With<ContentItemIndex>().OrderByDescending(x => x.ModifiedUtc);
                     break;
                 case ContentsOrder.Published:
-                    query = query.OrderByDescending(cr => cr.PublishedUtc);
+                    query = query.With<ContentItemIndex>().OrderByDescending(cr => cr.PublishedUtc);
                     break;
                 case ContentsOrder.Created:
-                    query = query.OrderByDescending(cr => cr.CreatedUtc);
+                    query = query.With<ContentItemIndex>().OrderByDescending(cr => cr.CreatedUtc);
                     break;
                 case ContentsOrder.Title:
-                    query = query.OrderBy(cr => cr.DisplayText);
+                    query = query.With<ContentItemIndex>().OrderBy(cr => cr.DisplayText);
                     break;
                 default:
-                    query = query.OrderByDescending(cr => cr.ModifiedUtc);
+                    query = query.With<ContentItemIndex>().OrderByDescending(cr => cr.ModifiedUtc);
                     break;
             }
 
@@ -189,7 +192,7 @@ namespace OrchardCore.Contents.Controllers
             // TODO when we have this higher (which allows queries to changes model.Options)
             // We get the above error.
             // Invoke any service that could alter the query
-            await _contentAdminFilters.InvokeAsync((filter, query, model, pagerParameters, updateModel) => filter.FilterAsync(query, model, pagerParameters, updateModel), query, model, pagerParameters, _updateModelAccessor.ModelUpdater, _logger);
+            //await _contentAdminFilters.InvokeAsync((filter, query, model, pagerParameters, updateModel) => filter.FilterAsync(query, model, pagerParameters, updateModel), query, model, pagerParameters, _updateModelAccessor.ModelUpdater, _logger);
 
             var maxPagedCount = siteSettings.MaxPagedCount;
             if (maxPagedCount > 0 && pager.PageSize > maxPagedCount)
