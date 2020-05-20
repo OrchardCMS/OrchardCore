@@ -32,6 +32,11 @@ namespace OrchardCore.Content.Controllers
         [Route("{contentItemId}"), HttpGet]
         public async Task<IActionResult> Get(string contentItemId)
         {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.AccessContentApi))
+            {
+                return this.ChallengeOrForbid();
+            }
+
             var contentItem = await _contentManager.GetAsync(contentItemId);
 
             if (contentItem == null)
@@ -39,8 +44,7 @@ namespace OrchardCore.Content.Controllers
                 return NotFound();
             }
 
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.GetApiContent) ||
-                !await _authorizationService.AuthorizeAsync(User, Permissions.ViewContent, contentItem))
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ViewContent, contentItem))
             {
                 return this.ChallengeOrForbid();
             }
@@ -52,6 +56,11 @@ namespace OrchardCore.Content.Controllers
         [Route("{contentItemId}")]
         public async Task<IActionResult> Delete(string contentItemId)
         {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.AccessContentApi))
+            {
+                return this.ChallengeOrForbid();
+            }
+
             var contentItem = await _contentManager.GetAsync(contentItemId);
 
             if (contentItem == null)
@@ -72,6 +81,11 @@ namespace OrchardCore.Content.Controllers
         [HttpPost]
         public async Task<IActionResult> Post(ContentItem model, bool draft = false)
         {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.AccessContentApi))
+            {
+                return this.ChallengeOrForbid();
+            }
+
             // It is really important to keep the proper method calls order with the ContentManager
             // so that all event handlers gets triggered in the right sequence.
 
