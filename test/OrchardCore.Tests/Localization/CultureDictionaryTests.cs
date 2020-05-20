@@ -61,8 +61,8 @@ namespace OrchardCore.Tests.Localization
             var dictionary = new CultureDictionary("ar", _arPluralRule);
             dictionary.MergeTranslations(new List<CultureDictionaryRecord>
             {
-                new CultureDictionaryRecord("Hello", null, new[] { "مرحبا" }),
-                new CultureDictionaryRecord("Bye", null, new[] { "مع السلامة" })
+                new CultureDictionaryRecord("Hello", "مرحبا"),
+                new CultureDictionaryRecord("Bye", "مع السلامة")
             });
 
             // Act & Assert
