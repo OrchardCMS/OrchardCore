@@ -54,30 +54,30 @@ namespace OrchardCore.Contents
             return new[] {
                 new PermissionStereotype {
                     Name = "Administrator",
-                    Permissions = new[] {PublishContent, EditContent, DeleteContent, PreviewContent, CloneContent, AccessContentApi}
+                    Permissions = new[] { PublishContent, EditContent, DeleteContent, PreviewContent, CloneContent, AccessContentApi}
                 },
                 new PermissionStereotype {
                     Name = "Editor",
-                    Permissions = new[] {PublishContent, EditContent, DeleteContent, PreviewContent, CloneContent, AccessContentApi }
+                    Permissions = new[] { PublishContent, EditContent, DeleteContent, PreviewContent, CloneContent }
                 },
                 new PermissionStereotype {
                     Name = "Moderator"
                 },
                 new PermissionStereotype {
                     Name = "Author",
-                    Permissions = new[] {PublishOwnContent, EditOwnContent, DeleteOwnContent, PreviewOwnContent, CloneOwnContent, AccessContentApi }
+                    Permissions = new[] { PublishOwnContent, EditOwnContent, DeleteOwnContent, PreviewOwnContent, CloneOwnContent }
                 },
                 new PermissionStereotype {
                     Name = "Contributor",
-                    Permissions = new[] {EditOwnContent, PreviewOwnContent, CloneOwnContent, AccessContentApi }
+                    Permissions = new[] { EditOwnContent, PreviewOwnContent, CloneOwnContent }
                 },
                 new PermissionStereotype {
                     Name = "Authenticated",
-                    Permissions = new[] {ViewContent }
+                    Permissions = new[] { ViewContent }
                 },
                 new PermissionStereotype {
                     Name = "Anonymous",
-                    Permissions = new[] {ViewContent}
+                    Permissions = new[] { ViewContent}
                 },
             };
         }
