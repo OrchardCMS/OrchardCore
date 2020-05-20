@@ -9,15 +9,18 @@ using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Infrastructure.Html;
 
 namespace OrchardCore.ContentFields.Drivers
 {
     public class LinkFieldDisplayDriver : ContentFieldDisplayDriver<LinkField>
     {
+        private readonly IHtmlSanitizerService _htmlSanitizerService;
         private readonly IStringLocalizer S;
 
-        public LinkFieldDisplayDriver(IStringLocalizer<LinkFieldDisplayDriver> localizer)
+        public LinkFieldDisplayDriver(IHtmlSanitizerService htmlSanitizerService, IStringLocalizer<LinkFieldDisplayDriver> localizer)
         {
+            _htmlSanitizerService = htmlSanitizerService;
             S = localizer;
         }
 
@@ -81,8 +84,16 @@ namespace OrchardCore.ContentFields.Drivers
                     updater.ModelState.AddModelError(Prefix, S["The text default value is required for {0}.", context.PartFieldDefinition.DisplayName()]);
                 }
 
-                // Run this through a sanitizer in case someone puts html in it.
-                // No settings.
+                if (!string.IsNullOrEmpty(field.Url) || !string.IsNullOrEmpty(field.Text))
+                {
+                    // Test the input against the sanitizer.
+                    var aTag = @"<a href=""" + (field.Url ?? "") + @""">" + (field.Text ?? "") + "</a>";
+                    var sanitized = _htmlSanitizerService.Sanitize(aTag);
+                    if (!string.Equals(aTag, sanitized, StringComparison.OrdinalIgnoreCase))
+                    {
+                        updater.ModelState.AddModelError(Prefix, S["{0} and {1} is an invalid link tag.", field.Url, field.Text]);
+                    }
+                }
             }
 
             return Edit(field, context);
