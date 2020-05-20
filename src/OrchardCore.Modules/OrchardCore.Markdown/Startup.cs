@@ -1,4 +1,5 @@
 using Fluid;
+using Markdig;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
@@ -12,6 +13,7 @@ using OrchardCore.Markdown.Filters;
 using OrchardCore.Markdown.Handlers;
 using OrchardCore.Markdown.Indexing;
 using OrchardCore.Markdown.Models;
+using OrchardCore.Markdown.Services;
 using OrchardCore.Markdown.Settings;
 using OrchardCore.Markdown.ViewModels;
 using OrchardCore.Modules;
@@ -45,6 +47,13 @@ namespace OrchardCore.Markdown
             services.AddScoped<IContentFieldIndexHandler, MarkdownFieldIndexHandler>();
 
             services.AddLiquidFilter<Markdownify>("markdownify");
+
+            services.Configure<MarkdownPipelineOptions>(o =>
+            {
+                o.Configure = (pipeline) => pipeline.DisableHtml();
+            });
+
+            services.AddScoped<IMarkdownService, DefaultMarkdownService>();
         }
     }
 }
