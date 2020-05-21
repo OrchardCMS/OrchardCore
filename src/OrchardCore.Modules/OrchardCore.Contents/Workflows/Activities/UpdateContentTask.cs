@@ -38,12 +38,6 @@ namespace OrchardCore.Contents.Workflows.Activities
 
         public override LocalizedString DisplayText => S["Update Content Task"];
 
-        public string ContentType
-        {
-            get => GetProperty<string>();
-            set => SetProperty(value);
-        }
-
         public bool Publish
         {
             get => GetProperty<bool>();
@@ -60,11 +54,6 @@ namespace OrchardCore.Contents.Workflows.Activities
         {
             get => GetProperty(() => new WorkflowExpression<string>(JsonConvert.SerializeObject(new { DisplayText = S["Enter a title"].Value }, Formatting.Indented)));
             set => SetProperty(value);
-        }
-
-        public override bool CanExecute(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
-        {
-            return !String.IsNullOrEmpty(ContentType);
         }
 
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)

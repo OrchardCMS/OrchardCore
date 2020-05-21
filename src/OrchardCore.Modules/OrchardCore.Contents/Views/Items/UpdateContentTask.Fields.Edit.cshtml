@@ -1,13 +1,6 @@
 @using OrchardCore.Contents.Workflows.ViewModels
 @model UpdateContentTaskViewModel
 
-<div class="form-group" asp-validation-class-for="ContentType">
-    <label asp-for="ContentType">@T["Content Type"]</label>
-    <select asp-for="ContentType" asp-items="@Model.AvailableContentTypes" class="form-control" asp-validation-class-for="ContentType"></select>
-    <span asp-validation-for="ContentType"></span>
-    <span class="hint">@T["Select the type of content to update."]</span>
-</div>
-
 <div class="form-group" asp-validation-class-for="ContentItemIdExpression">
     <label asp-for="ContentItemIdExpression">@T["Content Item ID"]</label>
     <input type="text" asp-for="ContentItemIdExpression" class="form-control code" asp-validation-class-for="ContentItemIdExpression" />

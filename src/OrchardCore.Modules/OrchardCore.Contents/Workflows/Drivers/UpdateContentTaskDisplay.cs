@@ -23,7 +23,6 @@ namespace OrchardCore.Contents.Workflows.Drivers
                 .Select(x => new SelectListItem { Text = x.DisplayName, Value = x.Name })
                 .ToList();
 
-            model.ContentType = activity.ContentType;
             model.ContentItemIdExpression = activity.Content.Expression;
             model.ContentProperties = activity.ContentProperties.Expression;
             model.Publish = activity.Publish;
@@ -31,7 +30,6 @@ namespace OrchardCore.Contents.Workflows.Drivers
 
         protected override void UpdateActivity(UpdateContentTaskViewModel model, UpdateContentTask activity)
         {
-            activity.ContentType = model.ContentType;
             activity.Content = new WorkflowExpression<IContent>(model.ContentItemIdExpression);
             activity.ContentProperties = new WorkflowExpression<string>(model.ContentProperties);
             activity.Publish = model.Publish;
