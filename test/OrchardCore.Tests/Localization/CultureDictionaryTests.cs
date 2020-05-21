@@ -44,11 +44,16 @@ namespace OrchardCore.Tests.Localization
         [Fact]
         public void IntexerThrowsPluralFormNotFoundExceptionIfSpecifiedPluralFormDoesntExist()
         {
+            // Arrange
             var dictionary = new CultureDictionary("cs", _csPluralRule);
             var record = new CultureDictionaryRecord("ball", "míč", "míče");
             dictionary.MergeTranslations(new[] { record });
 
-            Assert.Throws<PluralFormNotFoundException>(() => dictionary["ball", 5]);
+            // Act & Assert
+            var exception = Assert.Throws<PluralFormNotFoundException>(() => dictionary["ball", 5]);
+            Assert.Equal("ball", exception.Form.Key);
+            Assert.Equal(5, exception.Form.Form);
+            Assert.Equal("cs", exception.Form.Culture.Name);
         }
     }
 }
