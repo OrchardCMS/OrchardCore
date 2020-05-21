@@ -1,15 +1,6 @@
 @model ContentOptions
 @using OrchardCore.Contents.ViewModels;
-<div class="form-group col-2 mb-n1" style="display:none" id="actions">
-    <span class="dropdown mt-1">
-        <button class="btn btn-sm btn-light dropdown-toggle" type="button" id="bulk-action-menu-button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            @T["Actions"]
-        </button>
-        <span class="dropdown-menu dropdown-menu-right" aria-labelledby="bulk-action-menu-button">
-            @foreach (var item in Model.ContentsBulkAction)
-            {
-                <a class="dropdown-item" href="javascript:void(0)" data-action="@item.Value" data-title="@T["Bulk Action"]" data-message="@T["Are you sure you want to {0} these items?", @item.Text.ToLower()]">@item.Text</a>
-            }
-        </span>
-    </span>
-</div>
+@foreach (var item in Model.ContentsBulkAction)
+{
+    <a class="dropdown-item" href="javascript:void(0)" data-action="@item.Value" data-title="@T["Bulk Action"]" data-message="@T["Are you sure you want to {0} these items?", @item.Text.ToLower()]">@item.Text</a>
+}

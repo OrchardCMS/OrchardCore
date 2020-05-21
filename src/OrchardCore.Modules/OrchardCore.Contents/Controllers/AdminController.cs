@@ -20,6 +20,7 @@ using OrchardCore.Contents.ViewModels;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.Zones;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
@@ -43,6 +44,7 @@ namespace OrchardCore.Contents.Controllers
         private readonly IHtmlLocalizer H;
         private readonly IStringLocalizer S;
         private readonly IUpdateModelAccessor _updateModelAccessor;
+        private readonly IShapeFactory _shapeFactory;
         private readonly dynamic New;
         private readonly ILogger _logger;
 
@@ -73,6 +75,7 @@ namespace OrchardCore.Contents.Controllers
 
             H = htmlLocalizer;
             S = stringLocalizer;
+            _shapeFactory = shapeFactory;
             New = shapeFactory;
             _logger = logger;
         }
@@ -86,6 +89,8 @@ namespace OrchardCore.Contents.Controllers
             // Because admin filters can add a different index to the query this must be added as a Query<ContentItem>()
             var query = _session.Query<ContentItem>();
 
+            //TODO move entire query producer to service interface.
+            // TODO move all query mutations, and options building to defaultcontentadminfilter.
             // Process filter mutations first as they can alter the model options.
             await _contentAdminFilters.InvokeAsync((filter, query, model, pagerParameters, updateModel) => filter.FilterAsync(query, model, pagerParameters, updateModel), query, model, pagerParameters, _updateModelAccessor.ModelUpdater, _logger);
 
@@ -245,12 +250,10 @@ namespace OrchardCore.Contents.Controllers
                 model.Options.ContentTypeOptions.Add(new SelectListItem() { Text = option.Value, Value = option.Key });
             }
 
-            var shapeFactory = (IShapeFactory)New;
-
             // The shape to listen for events here is ContentsAdminListZones.
-            var zones = (dynamic)await shapeFactory.CreateAsync("ContentsAdminListZones", () =>
+            var zones = (dynamic)await _shapeFactory.CreateAsync("ContentsAdminListZones", () =>
             {
-                var zoneHolding = new ZoneHolding(() => shapeFactory.CreateAsync("Zone"));
+                var zoneHolding = new ZoneHolding(() => _shapeFactory.CreateAsync("Zone"));
 
                 // Pass the model.Options value in so shape creating events have access to the defaults.
                 var shape = (dynamic)zoneHolding;
@@ -259,65 +262,73 @@ namespace OrchardCore.Contents.Controllers
                 return new ValueTask<IShape>(zoneHolding);
             });
 
-            var viewModel = new ListContentsViewModel
-            {
-                ContentItems = contentItemSummaries,
-                Pager = pagerShape,
-                Options = model.Options,
-                Zones = zones
-            };
-
-            var search = await shapeFactory.CreateAsync("ContentsAdminList__Search", BuildContentOptionsViewModel(model.Options));
+            var search = await _shapeFactory.CreateAsync("ContentsAdminList__Search", BuildContentOptionsViewModel(model.Options));
             search.Metadata.Prefix = "Options";
-            zones.Search.Add(search, ":10");
+            await AddToZone("Search", zones, search, ":10");
 
-            var create = await shapeFactory.CreateAsync("ContentsAdminList__Create", BuildContentOptionsViewModel(model.Options));
+            var create = await _shapeFactory.CreateAsync("ContentsAdminList__Create", BuildContentOptionsViewModel(model.Options));
             create.Metadata.Prefix = "Options";
-            zones.Create.Add(create, ":10");
+            await AddToZone("Create", zones, create, ":10");
 
             var startIndex = (pagerShape.Page - 1) * (pagerShape.PageSize) + 1;
-            var summary = await shapeFactory.CreateAsync("ContentsAdminList__Summary", Arguments.From(new
+            var summary = await _shapeFactory.CreateAsync("ContentsAdminList__Summary", Arguments.From(new
             {
                 StartIndex = startIndex,
                 EndIndex = startIndex + contentItemSummaries.Count - 1,
                 ContentItemsCount = contentItemSummaries.Count,
                 TotalItemCount = pagerShape.TotalItemCount
             }));
-            zones.Summary.Add(summary, ":10");
-            var bulksActions = await shapeFactory.CreateAsync("ContentsAdminList__BulkActions", BuildContentOptionsViewModel(model.Options));
-            bulksActions.Metadata.Prefix = "Options";
-            zones.Actions.Add(bulksActions, ":10");
+            await AddToZone("Summary", zones, summary, ":10");
 
-            var filters = await shapeFactory.CreateAsync("ContentsAdminList__Filters", BuildContentOptionsViewModel(model.Options));
+            var bulkActions = (dynamic)await _shapeFactory.CreateAsync("ContentsAdminListBulkActions", () =>
+                new ValueTask<IShape>(new ZoneHolding(() => _shapeFactory.CreateAsync("Zone"))));
+
+            var bulksActionsShape = await _shapeFactory.CreateAsync("ContentsAdminList__BulkActions", BuildContentOptionsViewModel(model.Options));
+            bulksActionsShape.Metadata.Prefix = "Options";
+
+            await AddToZone("BulkActions", bulkActions, bulksActionsShape, ":10");
+
+            await AddToZone("Actions", zones, bulkActions, ":10");
+
+            var filters = await _shapeFactory.CreateAsync("ContentsAdminList__Filters", BuildContentOptionsViewModel(model.Options));
             filters.Metadata.Prefix = "Options";
-            zones.Actions.Add(filters, ":10");
+            await AddToZone("Actions", zones, filters, ":10");
 
-            var shapeViewModel = await shapeFactory.CreateAsync("ContentsAdminList", BuildListContentsViewModel(viewModel));
+            var shapeViewModel = await _shapeFactory.CreateAsync<ListContentsViewModel>("ContentsAdminList", viewModel =>
+            {
+                viewModel.ContentItems = contentItemSummaries;
+                viewModel.Pager = pagerShape;
+                viewModel.Options = model.Options;
+                viewModel.Zones = zones;
+            });
 
             return View(shapeViewModel);
-        }
 
-        private static Action<ListContentsViewModel> BuildListContentsViewModel(ListContentsViewModel model)
-        {
-            return viewModel =>
+            //TODO move these to private methods when we are done.
+            static async Task AddToZone(string zoneName, dynamic zones, IShape shape, string position)
             {
-                viewModel.ContentItems = model.ContentItems;
-                viewModel.Pager = model.Pager;
-                viewModel.Options = model.Options;
-                viewModel.Zones = model.Zones;
-            };
-        }
+                var zone = zones.Zones[zoneName];
+                if (zone is ZoneOnDemand zoneOnDemand)
+                {
+                    await zoneOnDemand.AddAsync(shape, position);
+                }
+                else if (zone is Shape zoneShape)
+                {
+                    zoneShape.Add(shape, position);
+                }
+            }
 
-        private static Action<ViewModels.ContentOptions> BuildContentOptionsViewModel(ViewModels.ContentOptions model)
-        {
-            return m =>
+            static Action<ViewModels.ContentOptions> BuildContentOptionsViewModel(ViewModels.ContentOptions model)
             {
-                m.ContentTypeOptions = model.ContentTypeOptions;
-                m.ContentStatuses = model.ContentStatuses;
-                m.ContentSorts = model.ContentSorts;
-                m.ContentsBulkAction = model.ContentsBulkAction;
-                m.CreatableTypes = model.CreatableTypes;
-            };
+                return m =>
+                {
+                    m.ContentTypeOptions = model.ContentTypeOptions;
+                    m.ContentStatuses = model.ContentStatuses;
+                    m.ContentSorts = model.ContentSorts;
+                    m.ContentsBulkAction = model.ContentsBulkAction;
+                    m.CreatableTypes = model.CreatableTypes;
+                };
+            }
         }
 
         [HttpPost, ActionName("List")]
