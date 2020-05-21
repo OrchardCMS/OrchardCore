@@ -52,7 +52,7 @@ namespace OrchardCore.Tests.Localization
             // Act & Assert
             var exception = Assert.Throws<PluralFormNotFoundException>(() => dictionary["ball", 5]);
             Assert.Equal("ball", exception.Form.Key);
-            Assert.Equal(5, exception.Form.Form);
+            Assert.Equal(_csPluralRule(5), exception.Form.Form);
             Assert.Equal("cs", exception.Form.Culture.Name);
         }
     }
