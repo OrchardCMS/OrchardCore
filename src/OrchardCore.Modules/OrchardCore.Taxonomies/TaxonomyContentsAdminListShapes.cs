@@ -7,6 +7,8 @@ using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
+using OrchardCore.DisplayManagement.Shapes;
+using OrchardCore.DisplayManagement.Zones;
 using OrchardCore.Entities;
 using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Modules;
@@ -65,7 +67,17 @@ namespace OrchardCore.Taxonomies
                         });
 
                         taxonomyShape.Metadata.Prefix = "Taxonomy" + taxonomy.ContentItemId;
-                        shape.Actions.Add(taxonomyShape, ":40." + position.ToString());
+
+                        var zone = shape.Zones["Actions"];
+                        if (zone is ZoneOnDemand zoneOnDemand)
+                        {
+                            await zoneOnDemand.AddAsync(taxonomyShape, ":40." + position.ToString());
+                        }
+                        else if (zone is Shape zoneShape)
+                        {
+                            zoneShape.Add(taxonomyShape, ":40." + position.ToString());
+                        }
+
                         position += 5;
                     }
                 });

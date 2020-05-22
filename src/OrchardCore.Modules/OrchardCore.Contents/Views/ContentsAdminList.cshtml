@@ -1,18 +1,13 @@
 @model ListContentsViewModel
-@using OrchardCore.Contents.ViewModels;
-@{
-    var createLinkText = T["Create New Content"];
-    var contentTypeDisplayName = Model.Options.ContentTypeOptions.Find(x => x.Value == Model.Options.SelectedContentType && x.Value != null)?.Text;
-    if (!string.IsNullOrWhiteSpace(contentTypeDisplayName))
-    {
-        createLinkText = T["Create New {0}", (string)contentTypeDisplayName];
-    }
-}
-@* Move back to form *@
+
+<script asp-name="bootstrap-select" depends-on="admin" at="Foot"></script>
+<style asp-name="bootstrap-select"></style>
+
 <!-- Hidden submit button do not remove -->
 <input type="submit" name="submit.Filter" id="submitFilter" class="d-none" />
 <input type="submit" name="submit.BulkAction" class="d-none" />
 <input asp-for="Options.BulkAction" type="hidden" />
+
 <div class="row">
     <div class="col-xl-4 col-sm-6">
         @await DisplayAsync(Model.Header.Search)
@@ -53,12 +48,8 @@
 
 @await DisplayAsync(Model.Pager)
 
-
-
-@* TODO move this into appropriate shapes. After the layout gets flexed*@
 <script at="Foot" type="text/javascript">
     $(function () {
-
         var actions = $("#actions");
         var items = $("#items");
         var filters = $(".filter");
@@ -71,20 +62,21 @@
             $("[name='submit.Filter']").click();
         });
 
-        $(".dropdown-menu .dropdown-item").filter(function() {
+        $(".dropdown-menu .dropdown-item").filter(function () {
             return $(this).data("action");
         }).on("click", function () {
             if ($(":checkbox[name='itemIds']:checked").length > 1) {
                 var $this = $(this);
-                confirmDialog({...$this.data(), callback: function(r) {
-                    if (r) {
-                        $("[name='Options.BulkAction']").val($this.data("action"));
-                        $("[name='submit.BulkAction']").click();
+                confirmDialog({
+                    ...$this.data(), callback: function (r) {
+                        if (r) {
+                            $("[name='Options.BulkAction']").val($this.data("action"));
+                            $("[name='submit.BulkAction']").click();
+                        }
                     }
-                }});
+                });
             }
         });
-
         function displayActionsOrFilters() {
             if ($(":checkbox[name='itemIds']:checked").length > 1) {
                 actions.show();

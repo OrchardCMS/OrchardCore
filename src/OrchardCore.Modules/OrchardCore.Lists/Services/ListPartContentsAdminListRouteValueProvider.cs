@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Routing;
 using OrchardCore.Contents.Services;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Lists.Models;
+using OrchardCore.Lists.ViewModels;
 
 namespace OrchardCore.Lists.Services
 {

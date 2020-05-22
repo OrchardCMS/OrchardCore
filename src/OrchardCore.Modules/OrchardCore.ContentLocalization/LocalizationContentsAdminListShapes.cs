@@ -6,6 +6,8 @@ using Microsoft.Extensions.Localization;
 using OrchardCore.ContentLocalization.ViewModels;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
+using OrchardCore.DisplayManagement.Shapes;
+using OrchardCore.DisplayManagement.Zones;
 using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Localization;
 using OrchardCore.Modules;
@@ -37,7 +39,15 @@ namespace OrchardCore.ContentLocalization
                     });
                     localizationShape.Metadata.Prefix = "Localization";
 
-                    shape.Actions.Add(localizationShape, ":20");
+                    var zone = shape.Zones["Actions"];
+                    if (zone is ZoneOnDemand zoneOnDemand)
+                    {
+                        await zoneOnDemand.AddAsync(localizationShape, ":20");
+                    }
+                    else if (zone is Shape zoneShape)
+                    {
+                        zoneShape.Add(localizationShape, ":20");
+                    }
                 });
         }
     }
