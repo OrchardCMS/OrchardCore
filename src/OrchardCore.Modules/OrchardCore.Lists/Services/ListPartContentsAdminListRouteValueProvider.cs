@@ -6,11 +6,11 @@ using OrchardCore.Lists.Models;
 
 namespace OrchardCore.Lists.Services
 {
-    public class ListPartContentAdminRouteValueProvider : IContentAdminRouteValueProvider
+    public class ListPartContentsAdminListRouteValueProvider : IContentsAdminListRouteValueProvider
     {
         public async Task ProvideRouteValuesAsync(IUpdateModel updateModel, RouteValueDictionary routeValueDictionary)
         {
-            var viewModel = new ListPartContentAdminFilterModel();
+            var viewModel = new ListPartContentAdminFilterViewModel();
             if (await updateModel.TryUpdateModelAsync(viewModel, nameof(ListPart)))
             {
                 if (viewModel.ShowListContentTypes)

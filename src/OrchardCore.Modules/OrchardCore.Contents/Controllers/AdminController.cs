@@ -40,8 +40,8 @@ namespace OrchardCore.Contents.Controllers
         private readonly IContentItemDisplayManager _contentItemDisplayManager;
         private readonly INotifier _notifier;
         private readonly IAuthorizationService _authorizationService;
-        private readonly IContentAdminListQueryProvider _contentAdminListQueryProvider;
-        private readonly IEnumerable<IContentAdminRouteValueProvider> _contentAdminRouteValueProviders;
+        private readonly IContentsAdminListQueryProvider _contentsAdminListQueryProvider;
+        private readonly IEnumerable<IContentsAdminListRouteValueProvider> _contentsAdminListRouteValueProviders;
         private readonly IHtmlLocalizer H;
         private readonly IStringLocalizer S;
         private readonly IUpdateModelAccessor _updateModelAccessor;
@@ -58,8 +58,8 @@ namespace OrchardCore.Contents.Controllers
             INotifier notifier,
             ISession session,
             IShapeFactory shapeFactory,
-            IContentAdminListQueryProvider contentAdminListQueryProvider,
-            IEnumerable<IContentAdminRouteValueProvider> contentAdminRouteValueProviders,
+            IContentsAdminListQueryProvider contentsAdminListQueryProvider,
+            IEnumerable<IContentsAdminListRouteValueProvider> contentsAdminListRouteValueProviders,
             ILogger<AdminController> logger,
             IHtmlLocalizer<AdminController> htmlLocalizer,
             IStringLocalizer<AdminController> stringLocalizer,
@@ -73,8 +73,8 @@ namespace OrchardCore.Contents.Controllers
             _contentManager = contentManager;
             _contentDefinitionManager = contentDefinitionManager;
             _updateModelAccessor = updateModelAccessor;
-            _contentAdminListQueryProvider = contentAdminListQueryProvider;
-            _contentAdminRouteValueProviders = contentAdminRouteValueProviders;
+            _contentsAdminListQueryProvider = contentsAdminListQueryProvider;
+            _contentsAdminListRouteValueProviders = contentsAdminListRouteValueProviders;
 
             H = htmlLocalizer;
             S = stringLocalizer;
@@ -183,7 +183,7 @@ namespace OrchardCore.Contents.Controllers
             }
 
             // With the model populated we filter the query, allowing the filters to mutate the view model.
-            var query = await _contentAdminListQueryProvider.ProvideQueryAsync(_updateModelAccessor.ModelUpdater);
+            var query = await _contentsAdminListQueryProvider.ProvideQueryAsync(_updateModelAccessor.ModelUpdater);
 
             var maxPagedCount = siteSettings.MaxPagedCount;
             if (maxPagedCount > 0 && pager.PageSize > maxPagedCount)
@@ -254,7 +254,7 @@ namespace OrchardCore.Contents.Controllers
         {
             var routeValueDictionary = new RouteValueDictionary();
 
-            await _contentAdminRouteValueProviders.InvokeAsync((routeValueProvider, updateModel, routeValueDictionary) => routeValueProvider.ProvideRouteValuesAsync(updateModel, routeValueDictionary), _updateModelAccessor.ModelUpdater, routeValueDictionary, _logger);
+            await _contentsAdminListRouteValueProviders.InvokeAsync((routeValueProvider, updateModel, routeValueDictionary) => routeValueProvider.ProvideRouteValuesAsync(updateModel, routeValueDictionary), _updateModelAccessor.ModelUpdater, routeValueDictionary, _logger);
 
             return RedirectToAction("List", routeValueDictionary);
         }

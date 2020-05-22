@@ -7,7 +7,7 @@ using OrchardCore.DisplayManagement.ModelBinding;
 
 namespace OrchardCore.ContentLocalization.Services
 {
-    public class LocalizationPartContentAdminRouteValueProvider : IContentAdminRouteValueProvider
+    public class LocalizationPartContentsAdminListRouteValueProvider : IContentsAdminListRouteValueProvider
     {
         public async Task ProvideRouteValuesAsync(IUpdateModel updateModel, RouteValueDictionary routeValueDictionary)
         {

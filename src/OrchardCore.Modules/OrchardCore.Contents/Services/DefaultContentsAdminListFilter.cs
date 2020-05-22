@@ -1,13 +1,8 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
@@ -15,20 +10,19 @@ using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Contents.ViewModels;
 using OrchardCore.DisplayManagement.ModelBinding;
-using OrchardCore.Navigation;
 using YesSql;
 using YesSql.Services;
 
 namespace OrchardCore.Contents.Services
 {
-    public class DefaultContentAdminFilter : IContentAdminFilter
+    public class DefaultContentsAdminListFilter : IContentsAdminListFilter
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly IContentManager _contentManager;
         private readonly IAuthorizationService _authorizationService;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public DefaultContentAdminFilter(
+        public DefaultContentsAdminListFilter(
             IContentDefinitionManager contentDefinitionManager,
             IContentManager contentManager,
             IAuthorizationService authorizationService,

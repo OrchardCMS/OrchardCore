@@ -14,11 +14,11 @@ using YesSql.Services;
 
 namespace OrchardCore.ContentLocalization.Services
 {
-    public class LocalizationPartContentAdminFilter : IContentAdminFilter
+    public class LocalizationPartContentsAdminListFilter : IContentsAdminListFilter
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
 
-        public LocalizationPartContentAdminFilter(IContentDefinitionManager contentDefinitionManager)
+        public LocalizationPartContentsAdminListFilter(IContentDefinitionManager contentDefinitionManager)
         {
             _contentDefinitionManager = contentDefinitionManager;
         }

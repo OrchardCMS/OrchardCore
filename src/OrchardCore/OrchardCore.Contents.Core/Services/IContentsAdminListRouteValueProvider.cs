@@ -4,7 +4,7 @@ using OrchardCore.DisplayManagement.ModelBinding;
 
 namespace OrchardCore.Contents.Services
 {
-    public interface IContentAdminRouteValueProvider
+    public interface IContentsAdminListRouteValueProvider
     {
         Task ProvideRouteValuesAsync(IUpdateModel updateModel, RouteValueDictionary routeValueDictionary);
     }

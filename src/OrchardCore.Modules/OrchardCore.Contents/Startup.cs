@@ -113,9 +113,9 @@ namespace OrchardCore.Contents
                 }
             });
 
-            services.AddScoped<IContentAdminFilter, DefaultContentAdminFilter>();
-            services.AddScoped<IContentAdminRouteValueProvider, DefaultContentAdminRouteValueProvider>();
-            services.AddScoped<IContentAdminListQueryProvider, DefaultContentAdminListQueryProvider>();
+            services.AddScoped<IContentsAdminListFilter, DefaultContentsAdminListFilter>();
+            services.AddScoped<IContentsAdminListRouteValueProvider, DefaultContentsAdminListRouteValueProvider>();
+            services.AddScoped<IContentsAdminListQueryProvider, DefaultContentsAdminListQueryProvider>();
         }
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

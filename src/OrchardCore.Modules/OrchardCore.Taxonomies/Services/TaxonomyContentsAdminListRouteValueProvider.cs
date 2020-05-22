@@ -10,11 +10,11 @@ using OrchardCore.Taxonomies.ViewModels;
 
 namespace OrchardCore.Taxonomies.Services
 {
-    public class TaxonomyContentAdminRouteValueProvider : IContentAdminRouteValueProvider
+    public class TaxonomyContentsAdminListRouteValueProvider : IContentsAdminListRouteValueProvider
     {
         private readonly ISiteService _siteService;
 
-        public TaxonomyContentAdminRouteValueProvider(ISiteService siteService)
+        public TaxonomyContentsAdminListRouteValueProvider(ISiteService siteService)
         {
             _siteService = siteService;
         }

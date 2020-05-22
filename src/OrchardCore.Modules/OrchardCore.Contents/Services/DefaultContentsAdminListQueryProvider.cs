@@ -2,27 +2,25 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement;
-using OrchardCore.Contents.ViewModels;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Modules;
-using OrchardCore.Navigation;
 using YesSql;
 
 namespace OrchardCore.Contents.Services
 {
-    public class DefaultContentAdminListQueryProvider : IContentAdminListQueryProvider
+    public class DefaultContentsAdminListQueryProvider : IContentsAdminListQueryProvider
     {
         private readonly ISession _session;
-        private readonly IEnumerable<IContentAdminFilter> _contentAdminFilters;
+        private readonly IEnumerable<IContentsAdminListFilter> _contentsAdminListFilters;
         private readonly ILogger _logger;
 
-        public DefaultContentAdminListQueryProvider(
+        public DefaultContentsAdminListQueryProvider(
             ISession session,
-            IEnumerable<IContentAdminFilter> contentAdminFilters,
-            ILogger<DefaultContentAdminListQueryProvider> logger)
+            IEnumerable<IContentsAdminListFilter> contentsAdminListFilters,
+            ILogger<DefaultContentsAdminListQueryProvider> logger)
         {
             _session = session;
-            _contentAdminFilters = contentAdminFilters;
+            _contentsAdminListFilters = contentsAdminListFilters;
             _logger = logger;
         }
 
@@ -31,7 +29,7 @@ namespace OrchardCore.Contents.Services
             // Because admin filters can add a different index to the query this must be added as a Query<ContentItem>()
             var query = _session.Query<ContentItem>();
 
-            await _contentAdminFilters.InvokeAsync((filter, query, updateModel) => filter.FilterAsync(query, updateModel), query, updateModel, _logger);
+            await _contentsAdminListFilters.InvokeAsync((filter, query, updateModel) => filter.FilterAsync(query, updateModel), query, updateModel, _logger);
 
             return query;
         }

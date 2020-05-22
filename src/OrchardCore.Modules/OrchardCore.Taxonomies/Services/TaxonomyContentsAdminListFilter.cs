@@ -12,11 +12,11 @@ using YesSql;
 
 namespace OrchardCore.Taxonomies.Services
 {
-    public class TaxonomyContentAdminFilter : IContentAdminFilter
+    public class TaxonomyContentsAdminListFilter : IContentsAdminListFilter
     {
         private readonly ISiteService _siteService;
 
-        public TaxonomyContentAdminFilter(ISiteService siteService)
+        public TaxonomyContentsAdminListFilter(ISiteService siteService)
         {
             _siteService = siteService;
         }

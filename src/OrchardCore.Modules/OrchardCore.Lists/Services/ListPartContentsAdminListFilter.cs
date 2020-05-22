@@ -1,32 +1,30 @@
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Routing;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Contents.Services;
-using OrchardCore.Contents.ViewModels;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Lists.Indexes;
 using OrchardCore.Lists.Models;
-using OrchardCore.Navigation;
+using OrchardCore.Lists.ViewModels;
 using YesSql;
 using YesSql.Services;
 
 namespace OrchardCore.Lists.Services
 {
-    public class ListPartContentAdminFilter : IContentAdminFilter
+    public class ListPartContentsAdminListFilter : IContentsAdminListFilter
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
 
-        public ListPartContentAdminFilter(IContentDefinitionManager contentDefinitionManager)
+        public ListPartContentsAdminListFilter(IContentDefinitionManager contentDefinitionManager)
         {
             _contentDefinitionManager = contentDefinitionManager;
         }
 
         public async Task FilterAsync(IQuery<ContentItem> query, IUpdateModel updateModel)
         {
-            var viewModel = new ListPartContentAdminFilterModel();
+            var viewModel = new ListPartContentAdminFilterViewModel();
             if (await updateModel.TryUpdateModelAsync(viewModel, nameof(ListPart)))
             {
                 // Show list content items
@@ -49,11 +47,5 @@ namespace OrchardCore.Lists.Services
                 }
             }
         }
-    }
-
-    public class ListPartContentAdminFilterModel
-    {
-        public bool ShowListContentTypes { get; set; }
-        public string ListContentItemId { get; set; }
     }
 }
