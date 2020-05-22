@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json.Linq;
 using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Mvc.Utilities;
 
@@ -116,6 +117,11 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
                         else
                         {
                             value = v.ToObjectValue();
+                        }
+
+                        if (value is JObject jObject && property.PropertyType != typeof(JObject))
+                        {
+                            value = jObject.ToObject(property.PropertyType);
                         }
 
                         setter(h, value);
