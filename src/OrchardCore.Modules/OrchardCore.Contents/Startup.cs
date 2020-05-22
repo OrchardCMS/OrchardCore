@@ -112,6 +112,10 @@ namespace OrchardCore.Contents
                     options.JsonPathKey = "jsonPath";
                 }
             });
+
+            services.AddScoped<IContentAdminFilter, DefaultContentAdminFilter>();
+            services.AddScoped<IContentAdminRouteValueProvider, DefaultContentAdminRouteValueProvider>();
+            services.AddScoped<IContentAdminListQueryProvider, DefaultContentAdminListQueryProvider>();
         }
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

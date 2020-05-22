@@ -14,7 +14,6 @@ using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.Contents.Services;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data.Migration;
-using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Feeds;
 using OrchardCore.Indexing;
@@ -55,7 +54,8 @@ namespace OrchardCore.Lists
             services.AddScoped<IContentDisplayDriver, ContainedPartDisplayDriver>();
             services.AddScoped<IContentHandler, ContainedPartHandler>();
             services.AddContentPart<ContainedPart>();
-            services.AddTransient<IContentAdminFilter, ListPartContentAdminFilter>();
+            services.AddScoped<IContentAdminFilter, ListPartContentAdminFilter>();
+            services.AddScoped<IContentAdminRouteValueProvider, ListPartContentAdminRouteValueProvider>();
 
             // List Part
             services.AddContentPart<ListPart>()
@@ -73,8 +73,6 @@ namespace OrchardCore.Lists
             services.AddContentPart<ListPart>()
                 .UseDisplayDriver<ListPartFeedDisplayDriver>()
                 .AddHandler<ListPartFeedHandler>();
-
-            services.AddScoped<IShapeTableProvider, ListContentsAdminListShapes>();
         }
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

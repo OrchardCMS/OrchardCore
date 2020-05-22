@@ -12,8 +12,8 @@ using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Modules;
 using OrchardCore.Settings;
 using OrchardCore.Taxonomies.Models;
-using OrchardCore.Taxonomies.Services;
 using OrchardCore.Taxonomies.Settings;
+using OrchardCore.Taxonomies.ViewModels;
 
 namespace OrchardCore.Taxonomies
 {
@@ -24,7 +24,7 @@ namespace OrchardCore.Taxonomies
 
         public void Discover(ShapeTableBuilder builder)
         {
-            builder.Describe("ContentsAdminListZones")
+            builder.Describe("ContentsAdminListHeader")
                 .OnCreated(async context =>
                 {
                     var shape = (dynamic)context.Shape;
@@ -58,7 +58,7 @@ namespace OrchardCore.Taxonomies
                             var item = new SelectListItem() { Text = sb.Builder.ToString(), Value = "Term:" + term.ContentItemId };
                             terms.Add(item);
                         }
-                        var taxonomyShape = await context.ShapeFactory.CreateAsync<TaxonomyContentAdminFilterModel>("ContentsAdminList__TaxonomyFilter", m =>
+                        var taxonomyShape = await context.ShapeFactory.CreateAsync<TaxonomyContentAdminFilterViewModel>("ContentsAdminList__TaxonomyFilter", m =>
                         {
                             m.DisplayText = taxonomy.DisplayText;
                             m.Taxonomies = terms;

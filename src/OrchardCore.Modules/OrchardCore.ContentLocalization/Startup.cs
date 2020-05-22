@@ -58,6 +58,7 @@ namespace OrchardCore.ContentLocalization
             services.AddScoped<IAuthorizationHandler, LocalizeContentAuthorizationHandler>();
 
             services.AddScoped<IContentAdminFilter, LocalizationPartContentAdminFilter>();
+            services.AddScoped<IContentAdminRouteValueProvider, LocalizationPartContentAdminRouteValueProvider>();
             services.AddScoped<IShapeTableProvider, LocalizationContentsAdminListShapes>();
         }
 

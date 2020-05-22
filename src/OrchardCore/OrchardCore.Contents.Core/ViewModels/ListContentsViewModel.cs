@@ -15,7 +15,7 @@ namespace OrchardCore.Contents.ViewModels
         public ContentOptions Options { get; set; }
 
         [BindNever]
-        public dynamic Zones { get; set; }
+        public dynamic Header { get; set; }
 
         [BindNever]
         public List<dynamic> ContentItems { get; set; }

@@ -1,13 +1,4 @@
-@model OrchardCore.ContentLocalization.Services.LocalizationContentAdminFilterModel
-@{
-    var formActionWithoutTypeName = Url.RouteUrl(new { area = "OrchardCore.Contents", controller = "Admin", action = "List", contentTypeId = "" });
-}
-@* TODO this is an example only. It's really more useful as par of a menu"*@
-@*<div class="form-group mb-n1 filter">
-    <div class="btn-group mt-1">
-        <a class="dropdown-item" href="@formActionWithoutTypeName?Localization.ShowLocalizedContentTypes=True">@T["Show Localized Content (example)"]</a>
-    </div>
-</div>*@
+@model LocalizationContentAdminFilterViewModel
 
 <div class="form-group mb-n1 filter">
     <div class="btn-group mt-1">

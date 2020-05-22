@@ -3,7 +3,7 @@ using System.Linq;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
-using OrchardCore.ContentLocalization.Services;
+using OrchardCore.ContentLocalization.ViewModels;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.Environment.Shell.Scope;
@@ -17,7 +17,7 @@ namespace OrchardCore.ContentLocalization
     {
         public void Discover(ShapeTableBuilder builder)
         {
-            builder.Describe("ContentsAdminListZones")
+            builder.Describe("ContentsAdminListHeader")
                 .OnCreated(async context =>
                 {
                     var shape = (dynamic)context.Shape;
@@ -31,7 +31,7 @@ namespace OrchardCore.ContentLocalization
                     };
                     cultures.AddRange(supportedCultures.Select(culture => new SelectListItem() { Text = culture, Value = culture }));
 
-                    var localizationShape = await context.ShapeFactory.CreateAsync<LocalizationContentAdminFilterModel>("ContentsAdminList__LocalizationPartFilter", m =>
+                    var localizationShape = await context.ShapeFactory.CreateAsync<LocalizationContentAdminFilterViewModel>("ContentsAdminList__LocalizationPartFilter", m =>
                     {
                         m.Cultures = cultures;
                     });

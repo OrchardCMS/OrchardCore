@@ -120,6 +120,7 @@ namespace OrchardCore.Taxonomies
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<IContentAdminFilter, TaxonomyContentAdminFilter>();
+            services.AddScoped<IContentAdminRouteValueProvider, TaxonomyContentAdminRouteValueProvider>();
             services.AddScoped<IShapeTableProvider, TaxonomyContentsAdminListShapes>();
 
             services.AddScoped<INavigationProvider, AdminMenu>();

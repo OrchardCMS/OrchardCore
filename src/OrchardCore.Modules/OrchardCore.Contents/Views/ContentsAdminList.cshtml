@@ -15,20 +15,20 @@
 <input asp-for="Options.BulkAction" type="hidden" />
 <div class="row">
     <div class="col-xl-4 col-sm-6">
-        @await DisplayAsync(Model.Zones.Search)
+        @await DisplayAsync(Model.Header.Search)
     </div>
     <div class="col-xl-8 col-sm-6 d-flex justify-content-start flex-row-reverse">
-        @await DisplayAsync(Model.Zones.Create)
+        @await DisplayAsync(Model.Header.Create)
     </div>
 </div>
 <ul class="list-group with-checkbox">
     <li class="list-group-item bg-light">
         <div class="row">
             <div class="col">
-                @await DisplayAsync(Model.Zones.Summary)
+                @await DisplayAsync(Model.Header.Summary)
             </div>
             <div class="col d-flex justify-content-start flex-row-reverse">
-                @await DisplayAsync(Model.Zones.Actions)
+                @await DisplayAsync(Model.Header.Actions)
             </div>
         </div>
     </li>
