@@ -65,14 +65,18 @@ namespace OrchardCore.Workflows.Http.Activities
             var isHttpMethodMatch = String.Equals(HttpMethod, httpRequest.Method, StringComparison.OrdinalIgnoreCase);
 
             if (!isHttpMethodMatch)
+            {
                 return false;
+            }
 
             var routeValues = RouteValues;
             var currentRouteValues = httpContext.Request.RouteValues;
             var isRouteMatch = RouteMatches(routeValues, currentRouteValues);
 
             if (!isRouteMatch)
+            {
                 return false;
+            }
 
             return true;
         }

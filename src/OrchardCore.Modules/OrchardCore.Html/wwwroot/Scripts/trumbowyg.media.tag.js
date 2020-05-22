@@ -26,7 +26,7 @@
                 var mediaBodyContent = "";
 
                 for (i = 0; i < mediaApp.selectedMedias.length; i++) {
-                  mediaBodyContent += ' {{ "' + mediaApp.selectedMedias[i].mediaPath + '" | asset_url | img_tag }}';
+                  mediaBodyContent += ' [media]' + mediaApp.selectedMedias[i].mediaPath + '[/media]';
                 }
 
                 var node = document.createTextNode(mediaBodyContent);

@@ -7,27 +7,38 @@ using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Html.Models;
+using OrchardCore.Html.Settings;
 using OrchardCore.Html.ViewModels;
+using OrchardCore.ShortCodes.Services;
+using OrchardCore.Infrastructure.Html;
 using OrchardCore.Liquid;
 
 namespace OrchardCore.Html.Drivers
 {
-    public class HtmlBodyPartDisplay : ContentPartDisplayDriver<HtmlBodyPart>
+    public class HtmlBodyPartDisplayDriver : ContentPartDisplayDriver<HtmlBodyPart>
     {
         private readonly ILiquidTemplateManager _liquidTemplateManager;
+        private readonly IHtmlSanitizerService _htmlSanitizerService;
         private readonly HtmlEncoder _htmlEncoder;
+        private readonly IShortCodeService _shortCodeService;
         private readonly IStringLocalizer S;
 
-        public HtmlBodyPartDisplay(ILiquidTemplateManager liquidTemplateManager, IStringLocalizer<HtmlBodyPartDisplay> localizer, HtmlEncoder htmlEncoder)
+        public HtmlBodyPartDisplayDriver(ILiquidTemplateManager liquidTemplateManager,
+            IHtmlSanitizerService htmlSanitizerService,
+            HtmlEncoder htmlEncoder,
+            IShortCodeService shortCodeService,
+            IStringLocalizer<HtmlBodyPartDisplayDriver> localizer)
         {
             _liquidTemplateManager = liquidTemplateManager;
+            _htmlSanitizerService = htmlSanitizerService;
             _htmlEncoder = htmlEncoder;
+            _shortCodeService = shortCodeService;
             S = localizer;
         }
 
         public override IDisplayResult Display(HtmlBodyPart HtmlBodyPart, BuildPartDisplayContext context)
         {
-            return Initialize<HtmlBodyPartViewModel>(GetDisplayShapeType(context), m => BuildViewModelAsync(m, HtmlBodyPart))
+            return Initialize<HtmlBodyPartViewModel>(GetDisplayShapeType(context), m => BuildViewModelAsync(m, HtmlBodyPart, context.TypePartDefinition.GetSettings<HtmlBodyPartSettings>()))
                 .Location("Detail", "Content:5")
                 .Location("Summary", "Content:10");
         }
@@ -47,6 +58,8 @@ namespace OrchardCore.Html.Drivers
         {
             var viewModel = new HtmlBodyPartViewModel();
 
+            var settings = context.TypePartDefinition.GetSettings<HtmlBodyPartSettings>();
+
             if (await updater.TryUpdateModelAsync(viewModel, Prefix, t => t.Html))
             {
                 if (!string.IsNullOrEmpty(viewModel.Html) && !_liquidTemplateManager.Validate(viewModel.Html, out var errors))
@@ -56,21 +69,26 @@ namespace OrchardCore.Html.Drivers
                 }
                 else
                 {
-                    model.Html = viewModel.Html;
+                    model.Html = settings.SanitizeHtml ? _htmlSanitizerService.Sanitize(viewModel.Html) : viewModel.Html;
                 }
             }
 
             return Edit(model, context);
         }
 
-        private async ValueTask BuildViewModelAsync(HtmlBodyPartViewModel model, HtmlBodyPart htmlBodyPart)
+        private async ValueTask BuildViewModelAsync(HtmlBodyPartViewModel model, HtmlBodyPart htmlBodyPart, HtmlBodyPartSettings settings)
         {
             model.Html = htmlBodyPart.Html;
             model.HtmlBodyPart = htmlBodyPart;
             model.ContentItem = htmlBodyPart.ContentItem;
 
-            model.Html = await _liquidTemplateManager.RenderAsync(htmlBodyPart.Html, _htmlEncoder, model,
-                scope => scope.SetValue("ContentItem", model.ContentItem));
+            if (!settings.SanitizeHtml)
+            {
+                model.Html = await _liquidTemplateManager.RenderAsync(htmlBodyPart.Html, _htmlEncoder, model,
+                    scope => scope.SetValue("ContentItem", model.ContentItem));
+            }
+
+            model.Html = await _shortCodeService.ProcessAsync(model.Html);
         }
     }
 }

@@ -91,7 +91,7 @@ namespace OrchardCore.Workflows.Http.Controllers
                 return NotFound();
             }
 
-            if(!workflowType.IsEnabled)
+            if (!workflowType.IsEnabled)
             {
                 if (_logger.IsEnabled(LogLevel.Warning))
                 {

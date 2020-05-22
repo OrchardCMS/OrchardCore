@@ -31,6 +31,7 @@ namespace OrchardCore.ContentManagement
 
             services.AddOptions<ContentOptions>();
             services.AddScoped<IContentPartHandlerResolver, ContentPartHandlerResolver>();
+
             return services;
         }
 

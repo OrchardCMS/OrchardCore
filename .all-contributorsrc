@@ -366,6 +366,7 @@
       "avatar_url": "https://avatars1.githubusercontent.com/u/49494169?v=4",
       "profile": "https://github.com/microposmp",
       "contributions": [
+        "translation",
         "code"
       ]
     },
@@ -1510,6 +1511,15 @@
       "contributions": [
         "code",
         "doc"
+      ]
+    },
+    {
+      "login": "Kanoktomas",
+      "name": "kanoktomas",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/53531226?v=4",
+      "profile": "https://github.com/Kanoktomas",
+      "contributions": [
+        "translation"
       ]
     }
   ],
