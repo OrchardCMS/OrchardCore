@@ -42,6 +42,7 @@ namespace OrchardCore.Workflows.Http.Filters
             {
                 var workflowTypeIds = workflowTypeEntries.Select(x => Int32.Parse(x.WorkflowId)).ToList();
                 var workflowTypes = (await _workflowTypeStore.GetAsync(workflowTypeIds)).ToDictionary(x => x.Id);
+                var correlationId = routeValues.GetValue<string>("correlationid");
 
                 foreach (var entry in workflowTypeEntries)
                 {
@@ -51,7 +52,11 @@ namespace OrchardCore.Workflows.Http.Filters
 
                         if (activity.IsStart)
                         {
-                            await _workflowManager.StartWorkflowAsync(workflowType, activity, null, routeValues.GetValue<string>("correlationid"));
+                            // If this is not a singleton workflow or there is not already an halted instance, start a new workflow.
+                            if (!workflowType.IsSingleton || !await _workflowStore.HasHaltedInstanceAsync(workflowType.WorkflowTypeId))
+                            {
+                                await _workflowManager.StartWorkflowAsync(workflowType, activity, null, correlationId);
+                            }
                         }
                     }
                 }
