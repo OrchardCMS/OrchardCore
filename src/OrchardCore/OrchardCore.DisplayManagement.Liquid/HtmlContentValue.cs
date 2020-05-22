@@ -45,7 +45,7 @@ namespace OrchardCore.DisplayManagement.Liquid
             return true;
         }
 
-        public override double ToNumberValue()
+        public override decimal ToNumberValue()
         {
             return 0;
         }
