@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Routing;
+using OrchardCore.Contents.ViewModels;
 using OrchardCore.DisplayManagement.ModelBinding;
 
 namespace OrchardCore.Contents.Services
@@ -8,7 +9,7 @@ namespace OrchardCore.Contents.Services
     {
         public async Task ProvideRouteValuesAsync(IUpdateModel updateModel, RouteValueDictionary routeValueDictionary)
         {
-            var model = new ViewModels.ContentOptions();
+            var model = new ContentOptionsViewModel();
             if (await updateModel.TryUpdateModelAsync(model, "Options"))
             {
                 routeValueDictionary.TryAdd("Options.OrderBy", model.OrderBy);

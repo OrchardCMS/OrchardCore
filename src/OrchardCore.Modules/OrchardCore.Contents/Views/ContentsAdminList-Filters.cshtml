@@ -1,5 +1,4 @@
-@model ContentOptions
-@using OrchardCore.Contents.ViewModels;
+@model ContentOptionsViewModel
 @{
     var formActionWithoutTypeName = Url.RouteUrl(new { area = "OrchardCore.Contents", controller = "Admin", action = "List", contentTypeId = "" });
 }

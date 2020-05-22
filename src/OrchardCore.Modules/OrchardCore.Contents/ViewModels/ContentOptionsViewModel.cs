@@ -4,9 +4,9 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace OrchardCore.Contents.ViewModels
 {
-    public class ContentOptions
+    public class ContentOptionsViewModel
     {
-        public ContentOptions()
+        public ContentOptionsViewModel()
         {
             OrderBy = ContentsOrder.Modified;
             BulkAction = ViewModels.ContentsBulkAction.None;
@@ -28,9 +28,6 @@ namespace OrchardCore.Contents.ViewModels
         #region Lists to populate
 
         [BindNever]
-        public List<SelectListItem> Cultures { get; set; }
-
-        [BindNever]
         public List<SelectListItem> ContentStatuses { get; set; }
 
         [BindNever]
@@ -44,9 +41,6 @@ namespace OrchardCore.Contents.ViewModels
 
         [BindNever]
         public List<SelectListItem> CreatableTypes { get; set; }
-
-        [BindNever]
-        public List<SelectListItem> Users { get; set; }
 
         #endregion Lists to populate
     }

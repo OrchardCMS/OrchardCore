@@ -7,12 +7,12 @@ namespace OrchardCore.Contents.ViewModels
     {
         public ListContentsViewModel()
         {
-            Options = new ContentOptions();
+            Options = new ContentOptionsViewModel();
         }
 
         public int? Page { get; set; }
 
-        public ContentOptions Options { get; set; }
+        public ContentOptionsViewModel Options { get; set; }
 
         [BindNever]
         public dynamic Header { get; set; }

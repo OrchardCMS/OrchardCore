@@ -24,7 +24,7 @@ namespace OrchardCore.Lists.Services
             _contentDefinitionManager = contentDefinitionManager;
         }
 
-        public async Task FilterAsync(IQuery<ContentItem> query, ListContentsViewModel model, PagerParameters pagerParameters, IUpdateModel updateModel)
+        public async Task FilterAsync(IQuery<ContentItem> query, IUpdateModel updateModel)
         {
             var viewModel = new ListPartContentAdminFilterModel();
             if (await updateModel.TryUpdateModelAsync(viewModel, nameof(ListPart)))

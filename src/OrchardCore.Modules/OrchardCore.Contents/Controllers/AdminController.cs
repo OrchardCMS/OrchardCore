@@ -183,7 +183,7 @@ namespace OrchardCore.Contents.Controllers
             }
 
             // With the model populated we filter the query, allowing the filters to mutate the view model.
-            var query = await _contentAdminListQueryProvider.ProvideQueryAsync(model, pagerParameters, _updateModelAccessor.ModelUpdater);
+            var query = await _contentAdminListQueryProvider.ProvideQueryAsync(_updateModelAccessor.ModelUpdater);
 
             var maxPagedCount = siteSettings.MaxPagedCount;
             if (maxPagedCount > 0 && pager.PageSize > maxPagedCount)
@@ -261,7 +261,7 @@ namespace OrchardCore.Contents.Controllers
 
         [HttpPost, ActionName("List")]
         [FormValueRequired("submit.BulkAction")]
-        public async Task<ActionResult> ListPOST(ViewModels.ContentOptions options, IEnumerable<int> itemIds)
+        public async Task<ActionResult> ListPOST(ContentOptionsViewModel options, IEnumerable<int> itemIds)
         {
             if (itemIds?.Count() > 0)
             {
@@ -720,7 +720,7 @@ namespace OrchardCore.Contents.Controllers
             }
         }
 
-        private static Action<ViewModels.ContentOptions> BuildContentOptionsViewModel(ViewModels.ContentOptions model)
+        private static Action<ContentOptionsViewModel> BuildContentOptionsViewModel(ContentOptionsViewModel model)
         {
             return m =>
             {

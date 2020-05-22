@@ -8,9 +8,7 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Contents.Services;
-using OrchardCore.Contents.ViewModels;
 using OrchardCore.DisplayManagement.ModelBinding;
-using OrchardCore.Navigation;
 using YesSql;
 using YesSql.Services;
 
@@ -25,7 +23,7 @@ namespace OrchardCore.ContentLocalization.Services
             _contentDefinitionManager = contentDefinitionManager;
         }
 
-        public async Task FilterAsync(IQuery<ContentItem> query, ListContentsViewModel model, PagerParameters pagerParameters, IUpdateModel updateModel)
+        public async Task FilterAsync(IQuery<ContentItem> query, IUpdateModel updateModel)
         {
             var viewModel = new LocalizationContentAdminFilterViewModel();
             if (await updateModel.TryUpdateModelAsync(viewModel, "Localization"))

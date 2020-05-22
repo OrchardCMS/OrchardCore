@@ -2,10 +2,8 @@ using System;
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.Contents.Services;
-using OrchardCore.Contents.ViewModels;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Entities;
-using OrchardCore.Navigation;
 using OrchardCore.Settings;
 using OrchardCore.Taxonomies.Indexing;
 using OrchardCore.Taxonomies.Settings;
@@ -23,7 +21,7 @@ namespace OrchardCore.Taxonomies.Services
             _siteService = siteService;
         }
 
-        public async Task FilterAsync(IQuery<ContentItem> query, ListContentsViewModel model, PagerParameters pagerParameters, IUpdateModel updateModel)
+        public async Task FilterAsync(IQuery<ContentItem> query, IUpdateModel updateModel)
         {
             var settings = (await _siteService.GetSiteSettingsAsync()).As<TaxonomyContentsAdminListSettings>();
             foreach (var contentItemId in settings.TaxonomyContentItemIds)
@@ -44,10 +42,6 @@ namespace OrchardCore.Taxonomies.Services
                             viewModel.SelectedContentItemId = viewModel.SelectedContentItemId.Substring(5);
                             query.With<TaxonomyIndex>(x => x.TermContentItemId == viewModel.SelectedContentItemId);
                         }
-
-                        // We are able to mutate query options when required.
-                        // TODO doesn't work
-                        model.Options.SelectedContentType = null;
                     }
                 }
             }
