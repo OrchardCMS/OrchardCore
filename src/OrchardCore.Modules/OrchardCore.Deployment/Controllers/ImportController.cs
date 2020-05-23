@@ -99,5 +99,42 @@ namespace OrchardCore.Deployment.Controllers
 
             return RedirectToAction("Index");
         }
+
+        [HttpPost]
+        public async Task<IActionResult> ImportJson(string json)
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.Import))
+            {
+                return Forbid();
+            }
+
+            if (!string.IsNullOrWhiteSpace(json))
+            {
+                var tempArchiveFolder = PathExtensions.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+
+                try
+                {
+                    Directory.CreateDirectory(tempArchiveFolder);
+                    System.IO.File.WriteAllText(Path.Combine(tempArchiveFolder, "Recipe.json"), json);
+
+                    await _deploymentManager.ImportDeploymentPackageAsync(new PhysicalFileProvider(tempArchiveFolder));
+
+                    _notifier.Success(H["Deployment package imported"]);
+                }
+                finally
+                {
+                    if (Directory.Exists(tempArchiveFolder))
+                    {
+                        Directory.Delete(tempArchiveFolder, true);
+                    }
+                }
+            }
+            else
+            {
+                _notifier.Error(H["Please provide a recipe in json."]);
+            }
+
+            return RedirectToAction("Index");
+        }
     }
 }

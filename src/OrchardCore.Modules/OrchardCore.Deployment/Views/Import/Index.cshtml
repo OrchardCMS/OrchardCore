@@ -1,5 +1,6 @@
 <h1>@RenderTitleSegments(T["Import Deployment Package"])</h1>
 
+<h2>@T["Import from file"]</h2>
 <form asp-action="Import" enctype="multipart/form-data">
     <nav class="admin-toolbar">
         <ul class="navbar-nav">
@@ -9,4 +10,10 @@
             </li>
         </ul>
     </nav>
+</form>
+
+<h2>@T["Import from json"]</h2>
+<form asp-action="ImportJson">
+    <textarea class="form-control mb-2" rows="20" id="json" name="json"></textarea>
+    <button class="btn btn-primary" type="submit">@T["Import"]</button>
 </form>
