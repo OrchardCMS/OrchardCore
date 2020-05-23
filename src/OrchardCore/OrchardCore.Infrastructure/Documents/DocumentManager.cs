@@ -108,7 +108,10 @@ namespace OrchardCore.Documents
                 _options.CheckConcurrency.Value);
             }
 
-            // Still update the cache after committing.
+            // Set the scoped cache in case of multiple updates.
+            _volatileCache = document;
+
+            // But still update the shared cache after committing.
             _documentStore.AfterCommitSuccess<TDocument>(() =>
             {
                 return SetInternalAsync(document);
