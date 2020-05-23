@@ -36,16 +36,16 @@ namespace OrchardCore.Media.ShortCodes
                 sb.Builder.Append(text);
 
                 var index = -1;
-                var allIndexes = new List<int>();
+                var allIndices = new List<int>();
 
                 // [media]
 
                 while (-1 != (index = text.IndexOf("[media]", index + 1, StringComparison.Ordinal)))
                 {
-                    allIndexes.Add(index);
+                    allIndices.Add(index);
                 }
 
-                foreach (var start in allIndexes)
+                foreach (var start in allIndices)
                 {
                     var end = text.IndexOf("[/media]", start, StringComparison.Ordinal);
 
@@ -56,7 +56,7 @@ namespace OrchardCore.Media.ShortCodes
 
                     var url = text.Substring(start + 7, end - start - 7);
 
-                    // substitue [media] with <img>
+                    // substitute [media] with <img>
                     sb.Builder.Remove(start, end - start + 8);
 
                     url = _mediaFileStore.MapPathToPublicUrl(url);
