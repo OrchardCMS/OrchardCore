@@ -58,8 +58,6 @@ namespace OrchardCore.Sitemaps.Services
 
             await _documentManager.UpdateAsync(existing);
             await _sitemapEntries.BuildEntriesAsync(existing.Sitemaps.Values);
-
-            return;
         }
 
         public async Task UpdateSitemapAsync(SitemapType sitemap)
@@ -71,8 +69,6 @@ namespace OrchardCore.Sitemaps.Services
 
             await _documentManager.UpdateAsync(existing);
             await _sitemapEntries.BuildEntriesAsync(existing.Sitemaps.Values);
-
-            return;
         }
 
         public async Task UpdateSitemapAsync()
@@ -80,8 +76,6 @@ namespace OrchardCore.Sitemaps.Services
             var existing = await LoadDocumentAsync();
             await _documentManager.UpdateAsync(existing);
             await _sitemapEntries.BuildEntriesAsync(existing.Sitemaps.Values);
-
-            return;
         }
 
         /// <summary>

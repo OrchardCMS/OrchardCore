@@ -129,7 +129,7 @@ namespace OrchardCore.Autoroute.Services
         /// </summary>
         private Task<AutorouteDocument> GetDocumentAsync() => DocumentManager.GetImmutableAsync(CreateDocumentAsync);
 
-        private async Task<AutorouteDocument> CreateDocumentAsync()
+        protected virtual async Task<AutorouteDocument> CreateDocumentAsync()
         {
             var indexes = await Session.QueryIndex<AutoroutePartIndex>(i => i.Published).ListAsync();
             var entries = indexes.Select(i => new AutorouteEntry(i.ContentItemId, i.Path, i.ContainedContentItemId, i.JsonPath));
