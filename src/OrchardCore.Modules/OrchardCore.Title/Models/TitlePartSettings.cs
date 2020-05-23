@@ -24,7 +24,7 @@ namespace OrchardCore.Title.Models
         public string Pattern { get; set; }
 
         /// <summary>
-        /// Get or Set whether to render the title in views
+        /// Gets or sets whether to render the title in display views.
         /// </summary>
         [DefaultValue(true)]
         public bool RenderTitle { get; set; } = true;
