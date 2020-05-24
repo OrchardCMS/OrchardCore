@@ -64,6 +64,7 @@ namespace OrchardCore.OpenId.Drivers
                 model.SignedOutCallbackPath = settings.SignedOutCallbackPath;
                 model.SignedOutRedirectUri = settings.SignedOutRedirectUri;
                 model.ResponseMode = settings.ResponseMode;
+                model.StoreExternalTokens = settings.StoreExternalTokens;
 
                 if (settings.ResponseType == OpenIdConnectResponseType.Code)
                 {
@@ -116,6 +117,7 @@ namespace OrchardCore.OpenId.Drivers
                 settings.SignedOutCallbackPath = model.SignedOutCallbackPath;
                 settings.SignedOutRedirectUri = model.SignedOutRedirectUri;
                 settings.ResponseMode = model.ResponseMode;
+                settings.StoreExternalTokens = model.StoreExternalTokens;
 
                 bool useClientSecret = true;
 

@@ -183,7 +183,7 @@ Result:
 
 ## Shape differentiators
 
-You can find information about shape differentiators in the [Templates documentation](../../modules/Templates/#content-field-differentiator)
+You can find information about shape differentiators in the [Templates documentation](../../modules/Templates/README.md#content-field-differentiator)
 
 ## Tabs
 
