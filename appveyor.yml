@@ -77,7 +77,7 @@ deploy:
   - provider: NuGet
     on:
       branch: dev
-    server: https://nuget.cloudsmith.io/orchardcore/dev/v3/index.json
+    server: https://nuget.cloudsmith.io/orchardcore/preview/v3/index.json
     api_key:
       secure: ql3vT7BSpSrlvrZjpsf2zbw9A41J43ZhJUaibyI7Y3QHFFk69ecNXHOcXf0ykvm3
     skip_symbols: true
