@@ -150,9 +150,11 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       } else if (ch == "`") {
         state.tokenize = tokenQuasi;
         return tokenQuasi(stream, state);
-      } else if (ch == "#") {
+      } else if (ch == "#" && stream.peek() == "!") {
         stream.skipToEnd();
-        return ret("error", "error");
+        return ret("meta", "meta");
+      } else if (ch == "#" && stream.eatWhile(wordRE)) {
+        return ret("variable", "property");
       } else if (ch == "<" && stream.match("!--") || ch == "-" && stream.match("->")) {
         stream.skipToEnd();
         return ret("comment", "comment");
@@ -166,6 +168,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
           }
         }
 
+        if (ch == "?" && stream.eat(".")) return ret(".");
         return ret("operator", "operator", stream.current());
       } else if (wordRE.test(ch)) {
         stream.eatWhile(wordRE);
@@ -597,7 +600,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
       if (type == "operator") {
         if (/\+\+|--/.test(value) || isTS && value == "!") return cont(me);
-        if (isTS && value == "<" && cx.stream.match(/^([^>]|<.*?>)*>\s*\(/, false)) return cont(pushlex(">"), commasep(typeexpr, ">"), poplex, me);
+        if (isTS && value == "<" && cx.stream.match(/^([^<>]|<[^<>]*>)*>\s*\(/, false)) return cont(pushlex(">"), commasep(typeexpr, ">"), poplex, me);
         if (value == "?") return cont(expression, expect(":"), expr);
         return cont(expr);
       }
@@ -1011,11 +1014,11 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
       if (type == "variable" || cx.style == "keyword") {
         cx.marked = "property";
-        return cont(isTS ? classfield : functiondef, classBody);
+        return cont(classfield, classBody);
       }
 
-      if (type == "number" || type == "string") return cont(isTS ? classfield : functiondef, classBody);
-      if (type == "[") return cont(expression, maybetype, expect("]"), isTS ? classfield : functiondef, classBody);
+      if (type == "number" || type == "string") return cont(classfield, classBody);
+      if (type == "[") return cont(expression, maybetype, expect("]"), classfield, classBody);
 
       if (value == "*") {
         cx.marked = "keyword";
