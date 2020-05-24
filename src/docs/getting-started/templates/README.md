@@ -15,7 +15,7 @@ dotnet new -i OrchardCore.ProjectTemplates::1.0.0-rc1-*
 This will use the most stable release of Orchard Core. In order to use the latest `dev` branch of Orchard Core, the following command can be used:
 
 ```CMD
-dotnet new -i OrchardCore.ProjectTemplates::1.0.0-rc1-* --nuget-source https://www.myget.org/F/orchardcore-preview/api/v3/index.json  
+dotnet new -i OrchardCore.ProjectTemplates::1.0.0-rc1-* --nuget-source https://nuget.cloudsmith.io/orchardcore/preview/v3/index.json  
 ```
 
 ## Create a new website
