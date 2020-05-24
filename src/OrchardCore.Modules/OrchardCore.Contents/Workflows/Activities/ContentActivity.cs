@@ -28,17 +28,35 @@ namespace OrchardCore.Contents.Workflows.Activities
 
         protected IWorkflowScriptEvaluator ScriptEvaluator { get; }
 
+        /// <summary>
+        /// whether the activity is executed inline from a content driver.
+        /// </summary>
         protected bool FromContentDriver { get; private set; }
 
+        /// <summary>
+        /// whether the activity is executed inline from a content handler.
+        /// </summary>
         protected bool FromContentHandler { get; private set; }
 
+        /// <summary>
+        /// The original correlation id when the workflow is started / resumed.
+        /// </summary>
         protected string OriginalCorrelationId { get; private set; }
 
-        protected bool AsCorrelatedContentDriver { get; private set; }
+        /// <summary>
+        /// whether the activity is executed inline from a correlated content driver.
+        /// </summary>
+        protected bool AsContentDriver { get; private set; }
 
-        protected bool AsCorrelatedContentHandler { get; private set; }
+        /// <summary>
+        /// whether the activity is executed inline from a correlated content handler.
+        /// </summary>
+        protected bool AsContentHandler { get; private set; }
 
-        protected bool AsCorrelatedContentDriverOrHandler { get; private set; }
+        /// <summary>
+        /// whether the activity is executed inline from a correlated content driver / handler.
+        /// </summary>
+        protected bool AsContentDriverOrHandler { get; private set; }
 
         public override LocalizedString Category => S["Content"];
 
@@ -114,7 +132,7 @@ namespace OrchardCore.Contents.Workflows.Activities
 
             if (content != null && content.ContentItem.ContentItemId != null)
             {
-                UpdateCorrelatedDriverAndHandlerProperties(content.ContentItem.ContentItemId);
+                UpdateContentDriverAndHandlerProperties(content.ContentItem.ContentItemId);
 
                 return content;
             }
@@ -132,7 +150,7 @@ namespace OrchardCore.Contents.Workflows.Activities
 
                 if (contentItemIdResult is string contentItemId)
                 {
-                    UpdateCorrelatedDriverAndHandlerProperties(contentItemId);
+                    UpdateContentDriverAndHandlerProperties(contentItemId);
 
                     return contentItemId;
                 }
@@ -141,14 +159,13 @@ namespace OrchardCore.Contents.Workflows.Activities
             return null;
         }
 
-        protected void UpdateCorrelatedDriverAndHandlerProperties(string contentItemId)
+        protected void UpdateContentDriverAndHandlerProperties(string contentItemId)
         {
             var correlated = String.Equals(OriginalCorrelationId, contentItemId, StringComparison.OrdinalIgnoreCase);
 
-            AsCorrelatedContentDriver = FromContentDriver && correlated;
-            AsCorrelatedContentHandler = FromContentHandler && correlated;
-
-            AsCorrelatedContentDriverOrHandler = AsCorrelatedContentDriver || AsCorrelatedContentHandler;
+            AsContentDriver = FromContentDriver && correlated;
+            AsContentHandler = FromContentHandler && correlated;
+            AsContentDriverOrHandler = AsContentDriver || AsContentHandler;
         }
 
         protected class ContentItemIdExpressionContent : IContent

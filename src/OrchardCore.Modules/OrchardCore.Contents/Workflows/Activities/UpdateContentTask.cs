@@ -72,7 +72,7 @@ namespace OrchardCore.Contents.Workflows.Activities
 
             ContentItem contentItem = null;
 
-            if (!AsCorrelatedContentHandler)
+            if (!AsContentHandler)
             {
                 contentItem = await ContentManager.GetAsync(contentItemId, VersionOptions.DraftRequired);
             }
@@ -92,7 +92,7 @@ namespace OrchardCore.Contents.Workflows.Activities
                 contentItem.Merge(JObject.Parse(contentProperties), new JsonMergeSettings { MergeArrayHandling = MergeArrayHandling.Replace });
             }
 
-            if (!AsCorrelatedContentDriverOrHandler)
+            if (!AsContentDriverOrHandler)
             {
                 await ContentManager.UpdateAsync(contentItem);
             }
@@ -101,7 +101,7 @@ namespace OrchardCore.Contents.Workflows.Activities
 
             if (result.Succeeded)
             {
-                if (Publish && !AsCorrelatedContentDriverOrHandler)
+                if (Publish && !AsContentDriverOrHandler)
                 {
                     await ContentManager.PublishAsync(contentItem);
                 }
@@ -113,7 +113,7 @@ namespace OrchardCore.Contents.Workflows.Activities
                 return Outcomes("Done");
             }
 
-            if (AsCorrelatedContentDriverOrHandler)
+            if (AsContentDriverOrHandler)
             {
                 _updateModelAccessor.ModelUpdater.ModelState.AddModelError(nameof(UpdateContentTask),
                     $"The {workflowContext.WorkflowType.Name}:{DisplayText} activity failed to update the content item: "
