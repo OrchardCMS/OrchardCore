@@ -55,15 +55,7 @@ namespace OrchardCore.Autoroute.Services
             await DocumentManager.UpdateAsync(document);
         }
 
-        // For unit tests only
-        public bool TryGetEntryByPath(AutorouteDocument document, string path, out AutorouteEntry entry)
-            => document.ContentItemIds.TryGetValue(path, out entry);
-
-        // For unit tests only
-        public bool TryGetEntryByContentItemId(AutorouteDocument document, string contentItemId, out AutorouteEntry entry)
-            => document.Paths.TryGetValue(contentItemId, out entry);
-
-        public void AddEntries(AutorouteDocument document, IEnumerable<AutorouteEntry> entries)
+        private static void AddEntries(AutorouteDocument document, IEnumerable<AutorouteEntry> entries)
         {
             // Evict all entries related to a container item from autoroute entries.
             // This is necessary to account for deletions, disabling of an item, or disabling routing of contained items.
@@ -102,7 +94,7 @@ namespace OrchardCore.Autoroute.Services
             }
         }
 
-        public void RemoveEntries(AutorouteDocument document, IEnumerable<AutorouteEntry> entries)
+        private static void RemoveEntries(AutorouteDocument document, IEnumerable<AutorouteEntry> entries)
         {
             foreach (var entry in entries)
             {

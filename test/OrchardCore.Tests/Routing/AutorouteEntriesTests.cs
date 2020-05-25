@@ -259,18 +259,17 @@ namespace OrchardCore.Tests.Routing
 
         private class StubDocumentstore : IDocumentStore
         {
+            public Task<T> GetMutableAsync<T>(Func<Task<T>> factoryAsync = null) where T : class, new() => throw new NotImplementedException();
+            public Task<T> GetImmutableAsync<T>(Func<Task<T>> factoryAsync = null) where T : class, new() => throw new NotImplementedException();
+            public Task UpdateAsync<T>(T document, Func<T, Task> updateCache, bool checkConcurrency = false) => throw new NotImplementedException();
+
+            public void Cancel() => throw new NotImplementedException();
             public void AfterCommitFailure<T>(DocumentStoreCommitFailureDelegate afterCommit) => throw new NotImplementedException();
 
             public void AfterCommitSuccess<T>(DocumentStoreCommitSuccessDelegate afterCommit)
-            {
-                ShellScope.RegisterBeforeDispose(scope => afterCommit());
-            }
+                => ShellScope.RegisterBeforeDispose(scope => afterCommit());
 
-            public void Cancel() => throw new NotImplementedException();
             public Task CommitAsync() => throw new NotImplementedException();
-            public Task<T> GetImmutableAsync<T>(Func<Task<T>> factoryAsync = null) where T : class, new() => throw new NotImplementedException();
-            public Task<T> GetMutableAsync<T>(Func<Task<T>> factoryAsync = null) where T : class, new() => throw new NotImplementedException();
-            public Task UpdateAsync<T>(T document, Func<T, Task> updateCache, bool checkConcurrency = false) => throw new NotImplementedException();
         }
     }
 }
