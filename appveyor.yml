@@ -77,10 +77,9 @@ deploy:
   - provider: NuGet
     on:
       branch: dev
-    server: https://nuget.pkg.github.com/OrchardCMS/index.json
-    username: sebastienros
+    server: https://nuget.cloudsmith.io/orchardcore/preview/v2/package
     api_key:
-      secure: AJx82moR9XibIs1lxvDToOle/7BqC+XX6ztrJ6CMSU+85/dqM3dvHUdf0LVymAzV
+      secure: ql3vT7BSpSrlvrZjpsf2zbw9A41J43ZhJUaibyI7Y3QHFFk69ecNXHOcXf0ykvm3
     skip_symbols: true
     artifact: /.*\.nupkg/
   - provider: NuGet
