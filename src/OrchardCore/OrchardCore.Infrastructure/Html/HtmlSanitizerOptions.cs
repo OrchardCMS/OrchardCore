@@ -5,6 +5,6 @@ namespace OrchardCore.Infrastructure.Html
 {
     public class HtmlSanitizerOptions
     {
-        public Action<Ganss.XSS.HtmlSanitizer> Configure { get; set; }
+        public Action<HtmlSanitizer> Configure { get; set; }
     }
 }

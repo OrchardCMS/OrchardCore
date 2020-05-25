@@ -12,6 +12,13 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             builder.ConfigureServices(services =>
             {
+                services.Configure<HtmlSanitizerOptions>(o =>
+                {
+                    o.Configure = (sanitizer) =>
+                    {
+                        sanitizer.AllowedAttributes.Add("class");
+                    };
+                });
                 services.AddScoped<IHtmlSanitizerService, HtmlSanitizerService>();
             });
 
