@@ -72,13 +72,13 @@ namespace OrchardCore.Contents.Workflows.Activities
 
             ContentItem contentItem = null;
 
-            if (!AsContentHandler)
+            if (!InlineFromContentEvent)
             {
                 contentItem = await ContentManager.GetAsync(contentItemId, VersionOptions.DraftRequired);
             }
             else
             {
-                contentItem = workflowContext.Input.GetValue<IContent>(ContentsHandler.ContentItemInputKey)?.ContentItem;
+                contentItem = workflowContext.Input.GetValue<IContent>(ContentItemInputKey)?.ContentItem;
             }
 
             if (contentItem == null)
@@ -92,7 +92,7 @@ namespace OrchardCore.Contents.Workflows.Activities
                 contentItem.Merge(JObject.Parse(contentProperties), new JsonMergeSettings { MergeArrayHandling = MergeArrayHandling.Replace });
             }
 
-            if (!AsContentDriverOrHandler)
+            if (!InlineFromContentEvent)
             {
                 await ContentManager.UpdateAsync(contentItem);
             }
@@ -101,19 +101,19 @@ namespace OrchardCore.Contents.Workflows.Activities
 
             if (result.Succeeded)
             {
-                if (Publish && !AsContentDriverOrHandler)
+                if (Publish && !InlineFromContentEvent)
                 {
                     await ContentManager.PublishAsync(contentItem);
                 }
 
                 workflowContext.CorrelationId = contentItem.ContentItemId;
-                workflowContext.Properties[ContentsHandler.ContentItemInputKey] = contentItem;
+                workflowContext.Properties[ContentItemInputKey] = contentItem;
                 workflowContext.LastResult = contentItem;
 
                 return Outcomes("Done");
             }
 
-            if (AsContentDriverOrHandler)
+            if (InlineFromContentEvent)
             {
                 _updateModelAccessor.ModelUpdater.ModelState.AddModelError(nameof(UpdateContentTask),
                     $"The {workflowContext.WorkflowType.Name}:{DisplayText} activity failed to update the content item: "

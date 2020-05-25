@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
+using OrchardCore.ContentManagement.Workflows;
 using OrchardCore.Contents.Workflows.Activities;
 using OrchardCore.Workflows.Services;
 
@@ -8,7 +9,7 @@ namespace OrchardCore.Contents.Workflows.Handlers
 {
     public class ContentsHandler : ContentHandlerBase
     {
-        public const string ContentItemInputKey = "ContentItem";
+        public const string ContentItemInputKey = ContentEventConstants.ContentItemInputKey;
 
         private readonly IWorkflowManager _workflowManager;
 
@@ -50,7 +51,7 @@ namespace OrchardCore.Contents.Workflows.Handlers
         private Task TriggerWorkflowEventAsync(string name, ContentItem contentItem)
         {
             return _workflowManager.TriggerEventAsync(name,
-                input: new { ContentItem = contentItem },
+                input: new { ContentItem = contentItem, ContentEventConstants.FromContentEvent },
                 correlationId: contentItem.ContentItemId
             );
         }

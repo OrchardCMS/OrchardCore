@@ -72,7 +72,7 @@ namespace OrchardCore.Contents.Workflows.Activities
             if (result.Succeeded)
             {
                 workflowContext.CorrelationId = contentItem.ContentItemId;
-                workflowContext.Properties[ContentsHandler.ContentItemInputKey] = contentItem;
+                workflowContext.Properties[ContentItemInputKey] = contentItem;
                 workflowContext.LastResult = contentItem;
 
                 return Outcomes("Done");

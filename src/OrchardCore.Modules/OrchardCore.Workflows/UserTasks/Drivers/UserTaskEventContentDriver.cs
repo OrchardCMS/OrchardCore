@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Localization;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
+using OrchardCore.ContentManagement.Workflows;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.DisplayManagement.Views;
@@ -72,7 +73,7 @@ namespace OrchardCore.Workflows.UserTasks.Drivers
                 }
                 else
                 {
-                    var input = new { UserAction = action };
+                    var input = new { UserAction = action, ContentItem = model, ContentEventConstants.FromContentEvent };
                     await _workflowManager.TriggerEventAsync(nameof(UserTaskEvent), input, model.ContentItemId);
                 }
             }

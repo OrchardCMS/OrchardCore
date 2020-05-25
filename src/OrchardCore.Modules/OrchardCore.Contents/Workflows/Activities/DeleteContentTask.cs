@@ -36,7 +36,7 @@ namespace OrchardCore.Contents.Workflows.Activities
                 throw new InvalidOperationException($"The {workflowContext.WorkflowType.Name}:{DisplayText} activity failed to retrieve the content item.");
             }
 
-            if (AsContentDriverOrHandler)
+            if (InlineFromContentEvent)
             {
                 return Outcomes("Noop");
             }

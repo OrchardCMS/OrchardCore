@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using Newtonsoft.Json;
 using OrchardCore.ContentManagement;
-using OrchardCore.Contents.Workflows.Handlers;
+using OrchardCore.ContentManagement.Workflows;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Helpers;
@@ -15,6 +15,8 @@ namespace OrchardCore.Contents.Workflows.Activities
 {
     public abstract class ContentActivity : Activity
     {
+        public const string ContentItemInputKey = ContentEventConstants.ContentItemInputKey;
+
         protected readonly IStringLocalizer S;
 
         protected ContentActivity(IContentManager contentManager, IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer localizer)
@@ -29,34 +31,19 @@ namespace OrchardCore.Contents.Workflows.Activities
         protected IWorkflowScriptEvaluator ScriptEvaluator { get; }
 
         /// <summary>
-        /// whether the activity is executed inline from a content driver.
+        /// Whether the activity is executed inline from a content event.
         /// </summary>
-        protected bool FromContentDriver { get; private set; }
+        protected bool FromContentEvent { get; private set; }
 
         /// <summary>
-        /// whether the activity is executed inline from a content handler.
-        /// </summary>
-        protected bool FromContentHandler { get; private set; }
-
-        /// <summary>
-        /// The original correlation id when the workflow is started / resumed.
+        /// The original correlation id when the workflow is started or resumed.
         /// </summary>
         protected string OriginalCorrelationId { get; private set; }
 
         /// <summary>
-        /// whether the activity is executed inline from a correlated content driver.
+        /// Whether the activity is executed inline from a correlated content event.
         /// </summary>
-        protected bool AsContentDriver { get; private set; }
-
-        /// <summary>
-        /// whether the activity is executed inline from a correlated content handler.
-        /// </summary>
-        protected bool AsContentHandler { get; private set; }
-
-        /// <summary>
-        /// whether the activity is executed inline from a correlated content driver / handler.
-        /// </summary>
-        protected bool AsContentDriverOrHandler { get; private set; }
+        protected bool InlineFromContentEvent { get; private set; }
 
         public override LocalizedString Category => S["Content"];
 
@@ -76,16 +63,9 @@ namespace OrchardCore.Contents.Workflows.Activities
 
         public override Task OnInputReceivedAsync(WorkflowExecutionContext workflowContext, IDictionary<string, object> input)
         {
-            // The activity may be executed inline from the 'UserTaskEventContentDriver'.
-            if (input?.GetValue<string>("UserAction") != null)
+            if (input?.GetValue<string>(ContentEventConstants.FromContentEvent) != null)
             {
-                FromContentDriver = true;
-            }
-
-            // The activity may be executed inline from the 'ContentsHandler'.
-            if (input?.GetValue<IContent>(ContentsHandler.ContentItemInputKey) != null)
-            {
-                FromContentHandler = true;
+                FromContentEvent = true;
             }
 
             OriginalCorrelationId = workflowContext.CorrelationId;
@@ -126,13 +106,13 @@ namespace OrchardCore.Contents.Workflows.Activities
             else
             {
                 // If no expression was provided, see if the content item was provided as an input or as a property.
-                content = workflowContext.Input.GetValue<IContent>(ContentsHandler.ContentItemInputKey)
-                    ?? workflowContext.Properties.GetValue<IContent>(ContentsHandler.ContentItemInputKey);
+                content = workflowContext.Input.GetValue<IContent>(ContentItemInputKey)
+                    ?? workflowContext.Properties.GetValue<IContent>(ContentItemInputKey);
             }
 
             if (content != null && content.ContentItem.ContentItemId != null)
             {
-                UpdateContentDriverAndHandlerProperties(content.ContentItem.ContentItemId);
+                UpdateInlineFromContentEventProperty(content.ContentItem.ContentItemId);
 
                 return content;
             }
@@ -150,7 +130,7 @@ namespace OrchardCore.Contents.Workflows.Activities
 
                 if (contentItemIdResult is string contentItemId)
                 {
-                    UpdateContentDriverAndHandlerProperties(contentItemId);
+                    UpdateInlineFromContentEventProperty(contentItemId);
 
                     return contentItemId;
                 }
@@ -159,13 +139,9 @@ namespace OrchardCore.Contents.Workflows.Activities
             return null;
         }
 
-        protected void UpdateContentDriverAndHandlerProperties(string contentItemId)
+        protected void UpdateInlineFromContentEventProperty(string contentItemId)
         {
-            var correlated = String.Equals(OriginalCorrelationId, contentItemId, StringComparison.OrdinalIgnoreCase);
-
-            AsContentDriver = FromContentDriver && correlated;
-            AsContentHandler = FromContentHandler && correlated;
-            AsContentDriverOrHandler = AsContentDriver || AsContentHandler;
+            InlineFromContentEvent = FromContentEvent && String.Equals(OriginalCorrelationId, contentItemId, StringComparison.OrdinalIgnoreCase);
         }
 
         protected class ContentItemIdExpressionContent : IContent
