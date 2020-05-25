@@ -803,16 +803,16 @@ namespace OrchardCore.ContentManagement
 
                 await Handlers.InvokeAsync((handler, context) => handler.PublishingAsync(context), publishContext, _logger);
                 await ReversedHandlers.InvokeAsync((handler, context) => handler.PublishedAsync(context), publishContext, _logger);
+            }
 
-                // Restore values that may have been altered by handlers.
-                if (modifiedUtc.HasValue)
-                {
-                    updatingVersion.ModifiedUtc = modifiedUtc;
-                }
-                if (publishedUtc.HasValue)
-                {
-                    updatingVersion.PublishedUtc = publishedUtc;
-                }
+            // Restore values that may have been altered by handlers.
+            if (modifiedUtc.HasValue)
+            {
+                updatingVersion.ModifiedUtc = modifiedUtc;
+            }
+            if (publishedUtc.HasValue)
+            {
+                updatingVersion.PublishedUtc = publishedUtc;
             }
 
             return result;
