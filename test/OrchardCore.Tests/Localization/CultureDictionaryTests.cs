@@ -11,7 +11,7 @@ namespace OrchardCore.Tests.Localization
         public void MergeAddsRecordToEmptyDictionary()
         {
             var dictionary = new CultureDictionary("cs", _csPluralRule);
-            var record = new CultureDictionaryRecord("ball", null, new[] { "míč", "míče", "míčů" });
+            var record = new CultureDictionaryRecord("ball", "míč", "míče", "míčů");
 
             dictionary.MergeTranslations(new[] { record });
 
@@ -22,8 +22,8 @@ namespace OrchardCore.Tests.Localization
         public void MergeOverwritesTranslationsForSameKeys()
         {
             var dictionary = new CultureDictionary("cs", _csPluralRule);
-            var record = new CultureDictionaryRecord("ball", null, new[] { "míč", "míče", "míčů" });
-            var record2 = new CultureDictionaryRecord("ball", null, new[] { "balón", "balóny", "balónů" });
+            var record = new CultureDictionaryRecord("ball","míč", "míče", "míčů");
+            var record2 = new CultureDictionaryRecord("ball", "balón", "balóny", "balónů");
 
             dictionary.MergeTranslations(new[] { record });
             dictionary.MergeTranslations(new[] { record2 });
@@ -45,7 +45,7 @@ namespace OrchardCore.Tests.Localization
         public void IntexerThrowsPluralFormNotFoundExceptionIfSpecifiedPluralFormDoesntExist()
         {
             var dictionary = new CultureDictionary("cs", _csPluralRule);
-            var record = new CultureDictionaryRecord("ball", null, new[] { "míč", "míče" });
+            var record = new CultureDictionaryRecord("ball", "míč", "míče");
             dictionary.MergeTranslations(new[] { record });
 
             Assert.Throws<PluralFormNotFoundException>(() => dictionary["ball", 5]);

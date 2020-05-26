@@ -37,10 +37,9 @@ namespace OrchardCore.PublishLater.Drivers
             .Location("SummaryAdmin", "Meta:25");
         }
 
-        public override IDisplayResult Edit(PublishLaterPart part)
+        public override IDisplayResult Edit(PublishLaterPart part, BuildPartEditorContext context)
         {
-            return Initialize<PublishLaterPartViewModel>(
-                $"{nameof(PublishLaterPart)}_Edit",
+            return Initialize<PublishLaterPartViewModel>(GetEditorShapeType(context),
                 model => PopulateViewModel(part, model))
             .Location("Actions:10");
         }
@@ -49,7 +48,7 @@ namespace OrchardCore.PublishLater.Drivers
         {
             var httpContext = _httpContextAccessor.HttpContext;
 
-            if (await _authorizationService.AuthorizeAsync(httpContext?.User, Permissions.PublishContent, part.ContentItem))
+            if (await _authorizationService.AuthorizeAsync(httpContext?.User, CommonPermissions.PublishContent, part.ContentItem))
             {
                 var viewModel = new PublishLaterPartViewModel();
 
