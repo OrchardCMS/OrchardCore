@@ -86,10 +86,10 @@ nav:
         - Navigate between pages: docs/topics/navigation/README.md
         - Query and Search data: docs/topics/search/README.md
         - Secure your application: docs/topics/security/README.md
-        - Contributing to the docs: docs/topics/docs-contributions/README.md
 #        - Data: docs/topics/data/README.md
 #        - Configuration: docs/topics/configuration/README.md
         - Workflows: docs/topics/workflows/README.md
+        - Contributing to the docs: docs/topics/docs-contributions/README.md
     - Reference: 
         - CMS Modules: 
             - Content Types: docs/reference/modules/ContentTypes/README.md
