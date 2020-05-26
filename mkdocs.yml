@@ -86,6 +86,7 @@ nav:
         - Navigate between pages: docs/topics/navigation/README.md
         - Query and Search data: docs/topics/search/README.md
         - Secure your application: docs/topics/security/README.md
+        - Contributing to the docs: docs/topics/docs-contributions/README.md
 #        - Data: docs/topics/data/README.md
 #        - Configuration: docs/topics/configuration/README.md
         - Workflows: docs/topics/workflows/README.md
@@ -162,5 +163,4 @@ nav:
     - Resources: 
         - Learning: docs/resources/README.md
         - Workshops: docs/resources/workshops/README.md
-        - Branding: docs/resources/branding/README.md
     
