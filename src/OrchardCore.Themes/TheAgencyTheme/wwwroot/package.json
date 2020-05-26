@@ -1,7 +1,7 @@
 {
     "title": "Agency",
     "name": "startbootstrap-agency",
-    "version": "6.0.0",
+    "version": "6.0.1",
     "scripts": {
         "build": "npm run clean && npm run build:pug && npm run build:scss && npm run build:scripts && npm run build:assets",
         "build:assets": "node scripts/build-assets.js",
@@ -36,17 +36,17 @@
         "url": "https://github.com/BlackrockDigital/startbootstrap-agency.git"
     },
     "dependencies": {
-        "bootstrap": "4.4.1"
+        "bootstrap": "4.5.0"
     },
     "devDependencies": {
-        "autoprefixer": "9.7.6",
+        "autoprefixer": "9.8.0",
         "browser-sync": "2.26.7",
-        "chokidar": "3.3.1",
-        "concurrently": "5.1.0",
-        "postcss": "7.0.27",
-        "prettier": "2.0.4",
+        "chokidar": "3.4.0",
+        "concurrently": "5.2.0",
+        "postcss": "7.0.30",
+        "prettier": "2.0.5",
         "pug": "2.0.4",
-        "sass": "1.26.3",
-        "shelljs": "0.8.3"
+        "sass": "1.26.5",
+        "shelljs": "0.8.4"
     }
 }

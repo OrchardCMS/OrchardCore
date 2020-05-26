@@ -171,13 +171,13 @@ Azure App Settings are supported as Environment Variables on a Windows Environme
 
 Azure DevOps, or other CI/CD pipelines, are supported, on all platforms, and Json Path Transformations can be used to transform `appsettings.json` files and provide app secrets from pipeline variables, or secret key stores like Azure Key Vault.
 
-If building with the nightly dev builds from the `MyGet` package feed, the CI/CD pipeline will need to use a `NuGet.Config` with the location of the `MyGet` package feed.
+If building with the nightly dev builds from the preview package feed, the CI/CD pipeline will need to use a `NuGet.Config` with the location of the `MyGet` package feed.
 
 ```
 <configuration>
   <packageSources>
     <add key="nuget" value="https://api.nuget.org/v3/index.json"/>
-    <add key="myget" value="https://www.myget.org/F/orchardcore-preview/api/v3/index.json" />
+    <add key="preview" value="https://nuget.cloudsmith.io/orchardcore/preview/v3/index.json" />
   </packageSources>
 </configuration>
 ```

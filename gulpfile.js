@@ -1,4 +1,4 @@
-var fs = require("file-system"),
+var fs = require("graceful-fs"),
     glob = require("glob"),
     path = require("path-posix"),
     merge = require("merge-stream"),
