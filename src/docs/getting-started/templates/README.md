@@ -142,8 +142,11 @@ dotnet new ocmodulecms -n ModuleName.OrchardCore
 
 dotnet new ocmodulecms -n ModuleName.OrchardCore --AddPart true
 
-dotnet new ocmodulecms -n ModuleName.OrchardCore --AddPart true --PartName TestPart 
+dotnet new ocmodulecms -n ModuleName.OrchardCore --AddPart true --PartName Test 
 ```
+
+!!! note
+    `Part` is appended automatically to the end of the supplied `PartName`
 
 ### New module from Visual Studio (manual way)
 
@@ -195,7 +198,9 @@ Last step is to add our new module to the `OrchardCore.Cms.Web` project as a ref
 
 #### Theme commands
 
+```CMD
 `dotnet new octheme -n "ThemeName.OrchardCore"`
+```
 
 ### New theme from Visual Studio (manual way)
 
