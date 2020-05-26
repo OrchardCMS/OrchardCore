@@ -4,6 +4,7 @@ namespace OrchardCore.Google.Authentication.Settings
 {
     public class GoogleAuthenticationSettings
     {
+        //parameters for authentication
         public string ClientID { get; set; }
         public string ClientSecret { get; set; }
         public PathString CallbackPath { get; set; }
