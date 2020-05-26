@@ -1,6 +1,5 @@
 # Localization
 
-[root](../../../../README.md#status)
 Orchard Core allows you to translate your strings with .po files and your contents in different cultures.
 
 ## Localize your Site
