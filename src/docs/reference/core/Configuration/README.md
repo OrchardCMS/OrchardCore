@@ -18,6 +18,9 @@ Orchard Core supports a hierarchy of Configuration Sources
 
 The Configuration Sources are loaded in the above order, and settings lower in the hierarchy will override values configured higher up, i.e. an Global Tenant value will always be overridden by an Environment Variable.
 
+!!! note 
+    Modules can expose configuration via `IOptions` objects, `IShellConfiguration` keys (like the ones supplied in `appsettings.json` files) or both. However, one is not guarantee for the other. For example, the Email module allows SMTP configuration via the `SmtpSettings` class exposed via `IOptions` but to supply those settings from an `appsettings.json` file you'll need read out `IShellConfiguration` keys in your own app's code, see below.
+
 ### `IShellConfiguration` in the `OrchardCore.Cms.Web.csproj` Startup Project
 
 Orchard Core stores all Configuration data under the `OrchardCore` section in `appsettings.json` files:
@@ -99,6 +102,7 @@ public void ConfigureServices(IServiceCollection services)
             tenantServices.PostConfigure<SmtpSettings>(settings =>
             {
                 // You could e.g. fetch the configuration values from an injected IShellConfiguration instance here.
+                // That in turn can then load configuration from e.g. appsettings.json files.
                 settings.Port = 255;
             }));
 }
