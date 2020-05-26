@@ -12,5 +12,5 @@ They are the most up to date versions but not the most stable and can contain br
 In order to be able to use the __preview__ feed from Visual Studio, open the Tools menu under NuGet Package Manager --> Package Manager Settings.
 The feed url is <https://nuget.cloudsmith.io/orchardcore/preview/v3/index.json>
 
-![image](assets/addMyGetPackageSource.png)
+![image](assets/add-preview-package-source.png)
 
