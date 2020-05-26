@@ -55,6 +55,10 @@ markdown_extensions:
 plugins:
   - search
   - git-revision-date-localized
+  - exclude:
+      glob:
+        # Excluding the large node folder with all its MD files. We can't exclude everything apart from docs because there are links to e.g. C# files too.
+        - "*node_modules*"
   
 # Page tree
 nav:
