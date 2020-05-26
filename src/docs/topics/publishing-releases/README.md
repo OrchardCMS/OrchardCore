@@ -31,7 +31,7 @@ Update the source so everything looks like on the new version.
 Make sure everything works all right.
 
 - [ ] Test the [guides](https://docs.orchardcore.net/en/dev/docs/guides/).
-- [ ] Test NuGet packages.
+- [ ] Test NuGet packages from the Cloudsmith feed (branches under `release/` are automatically published too).
 
 ### Prepare and publish Orchard Core Translations
 
