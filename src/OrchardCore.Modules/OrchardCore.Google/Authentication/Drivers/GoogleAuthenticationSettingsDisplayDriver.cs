@@ -12,6 +12,7 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Google.Authentication.Drivers
 {
+//drivers connection
     public class GoogleAuthenticationSettingsDisplayDriver : SectionDisplayDriver<ISite, GoogleAuthenticationSettings>
     {
         private readonly IAuthorizationService _authorizationService;
@@ -36,7 +37,9 @@ namespace OrchardCore.Google.Authentication.Drivers
 
         public override async Task<IDisplayResult> EditAsync(GoogleAuthenticationSettings settings, BuildEditorContext context)
         {
+        //variable to contain user parameters 
             var user = _httpContextAccessor.HttpContext?.User;
+            //instruction for missing user
             if (user == null || !await _authorizationService.AuthorizeAsync(user, Permissions.ManageGoogleAuthentication))
             {
                 return null;
@@ -45,11 +48,14 @@ namespace OrchardCore.Google.Authentication.Drivers
             return Initialize<GoogleAuthenticationSettingsViewModel>("GoogleAuthenticationSettings_Edit", model =>
             {
                 model.ClientID = settings.ClientID;
+                //if user set protection field
                 if (!string.IsNullOrWhiteSpace(settings.ClientSecret))
                 {
+                //protection of client account 
                     var protector = _dataProtectionProvider.CreateProtector(GoogleConstants.Features.GoogleAuthentication);
                     model.ClientSecret = protector.Unprotect(settings.ClientSecret);
                 }
+                //if protection field was left blank
                 else
                 {
                     model.ClientSecret = string.Empty;
