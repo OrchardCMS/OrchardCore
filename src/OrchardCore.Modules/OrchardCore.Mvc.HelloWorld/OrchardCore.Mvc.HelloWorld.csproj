@@ -1,5 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk.Razor">
 
+  //including of Framework
   <PropertyGroup>
     <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
@@ -10,6 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    //including of another project's modules resorses
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Module.Targets\OrchardCore.Module.Targets.csproj" />
   </ItemGroup>
 
