@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -35,6 +36,7 @@ namespace OrchardCore.ContentManagement.Display
         private readonly IThemeManager _themeManager;
         private readonly ILayoutAccessor _layoutAccessor;
         private readonly ILogger _logger;
+        private readonly IContentPartHandlerResolver _contentPartHandlerResolver;
 
         public ContentItemDisplayManager(
             IEnumerable<IContentDisplayHandler> handlers,
@@ -44,7 +46,8 @@ namespace OrchardCore.ContentManagement.Display
             IShapeFactory shapeFactory,
             IThemeManager themeManager,
             ILogger<ContentItemDisplayManager> logger,
-            ILayoutAccessor layoutAccessor
+            ILayoutAccessor layoutAccessor,
+            IContentPartHandlerResolver contentPartHandlerResolver
             ) : base(shapeTableManager, shapeFactory, themeManager)
         {
             _handlers = handlers;
@@ -55,6 +58,7 @@ namespace OrchardCore.ContentManagement.Display
             _themeManager = themeManager;
             _layoutAccessor = layoutAccessor;
             _logger = logger;
+            _contentPartHandlerResolver = contentPartHandlerResolver;
         }
 
         public async Task<IShape> BuildDisplayAsync(ContentItem contentItem, IUpdateModel updater, string displayType, string groupId)
@@ -138,6 +142,20 @@ namespace OrchardCore.ContentManagement.Display
             return context.Shape;
         }
 
+        async Task<ValidationResult[]> ValidateAsync(string partName, object model)
+        {
+            var part = model as ContentPart;
+            var handlers = _contentPartHandlerResolver.GetHandlers(partName);
+            var validateContentContext = new ValidateContentContext(part.ContentItem);
+            await handlers.InvokeAsync((handler, validateContentContext) => handler.ValidatingAsync(validateContentContext, part), validateContentContext, _logger);
+            await handlers.InvokeAsync((handler, validateContentContext) => handler.ValidatedAsync(validateContentContext, part), validateContentContext, _logger);
+            if (!validateContentContext.ContentValidateResult.Succeeded)
+            {
+                return validateContentContext.ContentValidateResult.Errors.ToArray();
+            }
+            return Array.Empty<ValidationResult>();
+        }
+
         public async Task<IShape> UpdateEditorAsync(ContentItem contentItem, IUpdateModel updater, bool isNew, string groupId, string htmlFieldPrefix)
         {
             if (contentItem == null)
@@ -170,27 +188,8 @@ namespace OrchardCore.ContentManagement.Display
             var updateContentContext = new UpdateContentContext(contentItem);
 
             await _contentHandlers.InvokeAsync((handler, updateContentContext) => handler.UpdatingAsync(updateContentContext), updateContentContext, _logger);
+            context.SetValidationHandler(new UpdateEditorContext.ValidationHandler(ValidateAsync));
             await _handlers.InvokeAsync((handler, contentItem, context) => handler.UpdateEditorAsync(contentItem, context), contentItem, context, _logger);
-            var validateContentContext = new ValidateContentContext(updateContentContext.UpdatingItem);
-            await _contentHandlers.InvokeAsync((handler, validateContentContext) => handler.ValidatingAsync(validateContentContext), validateContentContext, _logger);
-            await _contentHandlers.InvokeAsync((handler, validateContentContext) => handler.ValidatedAsync(validateContentContext), validateContentContext, _logger);
-            if (!validateContentContext.ContentValidateResult.Succeeded)
-            {
-                foreach (var error in validateContentContext.ContentValidateResult.Errors)
-                {
-                    if (error.MemberNames.Any())
-                    {
-                        foreach (var member in error.MemberNames)
-                        {
-                            context.Updater.ModelState.AddModelError(context.HtmlFieldPrefix, member, error.ErrorMessage);
-                        }
-                    }
-                    else
-                    {
-                        context.Updater.ModelState.AddModelError(context.HtmlFieldPrefix, string.Empty, error.ErrorMessage);
-                    }
-                }
-            }
             await _contentHandlers.Reverse().InvokeAsync((handler, updateContentContext) => handler.UpdatedAsync(updateContentContext), updateContentContext, _logger);
 
             return context.Shape;

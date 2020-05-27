@@ -112,6 +112,9 @@ namespace OrchardCore.Autoroute.Drivers
                 {
                     await updater.TryUpdateModelAsync(model, Prefix, t => t.SetHomepage);
                 }
+
+                var errors = await context.ValidateAsync(model);
+                updater.ModelState.BindValidationResults(Prefix, errors);
             }
 
             return Edit(model, context);

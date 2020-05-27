@@ -316,7 +316,6 @@ namespace OrchardCore.ContentManagement.Handlers
                 if (part != null)
                 {
                     var partHandlers = _contentPartHandlerResolver.GetHandlers(partName);
-                    context.Prefix = partName;
                     await partHandlers.InvokeAsync((handler, context, part) => handler.ValidatingAsync(context, part), context, part, _logger);
                     // TODO: This can be removed in a future release as the recommended way is to use ContentOptions.
                     // Iteratate existing handler registrations as multiple handlers maybe not be registered with ContentOptions.
@@ -341,7 +340,6 @@ namespace OrchardCore.ContentManagement.Handlers
                 if (part != null)
                 {
                     var partHandlers = _contentPartHandlerResolver.GetHandlers(partName);
-                    context.Prefix = partName;
                     await partHandlers.InvokeAsync((handler, context, part) => handler.ValidatedAsync(context, part), context, part, _logger);
                     // TODO: This can be removed in a future release as the recommended way is to use ContentOptions.
                     // Iteratate existing handler registrations as multiple handlers maybe not be registered with ContentOptions.

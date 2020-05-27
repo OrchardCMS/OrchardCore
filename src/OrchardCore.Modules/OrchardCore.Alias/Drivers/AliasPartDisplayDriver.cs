@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Alias.Indexes;
@@ -38,6 +39,9 @@ namespace OrchardCore.Alias.Drivers
         public override async Task<IDisplayResult> UpdateAsync(AliasPart model, IUpdateModel updater, UpdatePartEditorContext context)
         {
             await updater.TryUpdateModelAsync(model, Prefix, t => t.Alias);
+
+            var errors = await context.ValidateAsync(model);
+            updater.ModelState.BindValidationResults(Prefix, errors);
 
             return Edit(model, context);
         }

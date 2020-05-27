@@ -14,7 +14,6 @@ namespace OrchardCore.ContentManagement.Handlers
 
         public ContentValidateResult ContentValidateResult { get; } = new ContentValidateResult();
 
-        public string Prefix { get; internal set; }
     }
 
     public static class ValidateContentContextExtensions
@@ -29,8 +28,7 @@ namespace OrchardCore.ContentManagement.Handlers
         {
             if (memberNames.Any())
             {
-                var prefix = context.Prefix;
-                context.ContentValidateResult.Fail(new ValidationResult(errorMessage, memberNames.Select(x => String.IsNullOrWhiteSpace(prefix) ? x : $"{prefix}.{x}")));
+                context.ContentValidateResult.Fail(new ValidationResult(errorMessage, memberNames));
             }
             else
             {
