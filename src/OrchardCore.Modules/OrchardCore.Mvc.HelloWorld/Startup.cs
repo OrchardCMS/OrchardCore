@@ -14,7 +14,8 @@ namespace OrchardCore.Mvc.HelloWorld
         {
             _configuration = configuration;
         }
-
+        
+        //default configuration
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
             if (string.IsNullOrEmpty(_configuration["Sample"]))
