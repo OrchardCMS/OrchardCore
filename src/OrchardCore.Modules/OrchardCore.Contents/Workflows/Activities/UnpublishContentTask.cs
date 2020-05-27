@@ -36,25 +36,32 @@ namespace OrchardCore.Contents.Workflows.Activities
                 throw new InvalidOperationException($"The {workflowContext.WorkflowType.Name}:{DisplayText} activity failed to retrieve the content item.");
             }
 
-            if (InlineFromContentEvent)
+            if (IsInlineFromContentEventOfSameContentItemId(content.ContentItem.ContentItemId))
             {
                 return Outcomes("Noop");
             }
 
             var contentItem = await ContentManager.GetAsync(content.ContentItem.ContentItemId, VersionOptions.Latest);
 
-            if (contentItem != null)
+            if (contentItem == null)
             {
-                await ContentManager.UnpublishAsync(contentItem);
+                if (content is ContentItemIdExpressionContent)
+                {
+                    throw new InvalidOperationException($"The {workflowContext.WorkflowType.Name}:{DisplayText} activity failed to retrieve the content item.");
+                }
+
+                contentItem = content.ContentItem;
             }
-            else if (content is ContentItemIdExpressionContent)
+
+            if (IsInlineFromStartingContentEventOfSameContentType(contentItem.ContentType))
             {
-                throw new InvalidOperationException($"The {workflowContext.WorkflowType.Name}:{DisplayText} activity failed to retrieve the content item.");
+                if (ContentEventInfo.Name == nameof(ContentUnpublishedEvent))
+                {
+                    throw new InvalidOperationException($"The '{workflowContext.WorkflowType.Name}:{DisplayText}' can't unpublish the content item as it is executed inline from a starting '{nameof(ContentUnpublishedEvent.DisplayText)}' of the same content type.");
+                }
             }
-            else
-            {
-                await ContentManager.UnpublishAsync(content.ContentItem);
-            }
+
+            await ContentManager.UnpublishAsync(contentItem);
 
             return Outcomes("Unpublished");
         }

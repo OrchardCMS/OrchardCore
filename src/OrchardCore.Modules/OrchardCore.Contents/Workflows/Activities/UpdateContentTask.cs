@@ -5,7 +5,7 @@ using Microsoft.Extensions.Localization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
-using OrchardCore.Contents.Workflows.Handlers;
+using OrchardCore.ContentManagement.Workflows;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
@@ -67,23 +67,38 @@ namespace OrchardCore.Contents.Workflows.Activities
 
             if (contentItemId == null)
             {
-                throw new InvalidOperationException($"The {workflowContext.WorkflowType.Name}:{DisplayText} activity failed to evaluate the 'ContentItemId'.");
+                throw new InvalidOperationException($"The {workflowContext.WorkflowType.Name}:{DisplayText} failed to evaluate the 'ContentItemId'.");
             }
+
+            var inlineFromContentEventOfSameContentItemId = IsInlineFromContentEventOfSameContentItemId(contentItemId);
 
             ContentItem contentItem = null;
 
-            if (!InlineFromContentEvent)
+            if (!inlineFromContentEventOfSameContentItemId)
             {
                 contentItem = await ContentManager.GetAsync(contentItemId, VersionOptions.DraftRequired);
             }
             else
             {
-                contentItem = workflowContext.Input.GetValue<IContent>(ContentItemInputKey)?.ContentItem;
+                contentItem = workflowContext.Input.GetValue<IContent>(ContentEventConstants.ContentItemInputKey)?.ContentItem;
             }
 
             if (contentItem == null)
             {
-                throw new InvalidOperationException($"The {workflowContext.WorkflowType.Name}:{DisplayText} activity failed to retrieve the content item.");
+                throw new InvalidOperationException($"The '{workflowContext.WorkflowType.Name}:{DisplayText}' failed to retrieve the content item.");
+            }
+
+            if (!inlineFromContentEventOfSameContentItemId && IsInlineFromStartingContentEventOfSameContentType(contentItem.ContentType))
+            {
+                if (ContentEventInfo.Name == nameof(ContentUpdatedEvent))
+                {
+                    throw new InvalidOperationException($"The '{workflowContext.WorkflowType.Name}:{DisplayText}' can't update the content item as it is executed inline from a starting '{nameof(ContentUpdatedEvent.DisplayText)}' of the same content type.");
+                }
+
+                if (Publish && ContentEventInfo.Name == nameof(ContentPublishedEvent))
+                {
+                    throw new InvalidOperationException($"The '{workflowContext.WorkflowType.Name}:{DisplayText}' can't publish the content item as it is executed inline from a starting '{nameof(ContentPublishedEvent.DisplayText)}' of the same content type.");
+                }
             }
 
             if (!String.IsNullOrWhiteSpace(ContentProperties.Expression))
@@ -92,7 +107,7 @@ namespace OrchardCore.Contents.Workflows.Activities
                 contentItem.Merge(JObject.Parse(contentProperties), new JsonMergeSettings { MergeArrayHandling = MergeArrayHandling.Replace });
             }
 
-            if (!InlineFromContentEvent)
+            if (!inlineFromContentEventOfSameContentItemId)
             {
                 await ContentManager.UpdateAsync(contentItem);
             }
@@ -101,22 +116,22 @@ namespace OrchardCore.Contents.Workflows.Activities
 
             if (result.Succeeded)
             {
-                if (Publish && !InlineFromContentEvent)
+                if (Publish && !inlineFromContentEventOfSameContentItemId)
                 {
                     await ContentManager.PublishAsync(contentItem);
                 }
 
                 workflowContext.CorrelationId = contentItem.ContentItemId;
-                workflowContext.Properties[ContentItemInputKey] = contentItem;
+                workflowContext.Properties[ContentEventConstants.ContentItemInputKey] = contentItem;
                 workflowContext.LastResult = contentItem;
 
                 return Outcomes("Done");
             }
 
-            if (InlineFromContentEvent)
+            if (inlineFromContentEventOfSameContentItemId)
             {
                 _updateModelAccessor.ModelUpdater.ModelState.AddModelError(nameof(UpdateContentTask),
-                    $"The {workflowContext.WorkflowType.Name}:{DisplayText} activity failed to update the content item: "
+                    $"The '{workflowContext.WorkflowType.Name}:{DisplayText}' failed to update the content item: "
                     + String.Join(", ", result.Errors));
             }
 

@@ -36,25 +36,32 @@ namespace OrchardCore.Contents.Workflows.Activities
                 throw new InvalidOperationException($"The {workflowContext.WorkflowType.Name}:{DisplayText} activity failed to retrieve the content item.");
             }
 
-            if (InlineFromContentEvent)
+            if (IsInlineFromContentEventOfSameContentItemId(content.ContentItem.ContentItemId))
             {
                 return Outcomes("Noop");
             }
 
             var contentItem = await ContentManager.GetAsync(content.ContentItem.ContentItemId, VersionOptions.DraftRequired);
 
-            if (contentItem != null)
+            if (contentItem == null)
             {
-                await ContentManager.PublishAsync(contentItem);
+                if (content is ContentItemIdExpressionContent)
+                {
+                    throw new InvalidOperationException($"The {workflowContext.WorkflowType.Name}:{DisplayText} activity failed to retrieve the content item.");
+                }
+
+                contentItem = content.ContentItem;
             }
-            else if (content is ContentItemIdExpressionContent)
+
+            if (IsInlineFromStartingContentEventOfSameContentType(contentItem.ContentType))
             {
-                throw new InvalidOperationException($"The {workflowContext.WorkflowType.Name}:{DisplayText} activity failed to retrieve the content item.");
+                if (ContentEventInfo.Name == nameof(ContentPublishedEvent))
+                {
+                    throw new InvalidOperationException($"The '{workflowContext.WorkflowType.Name}:{DisplayText}' can't publish the content item as it is executed inline from a starting '{nameof(ContentPublishedEvent.DisplayText)}' of the same content type.");
+                }
             }
-            else
-            {
-                await ContentManager.PublishAsync(content.ContentItem);
-            }
+
+            await ContentManager.PublishAsync(contentItem);
 
             return Outcomes("Published");
         }

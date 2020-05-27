@@ -9,8 +9,6 @@ namespace OrchardCore.Contents.Workflows.Handlers
 {
     public class ContentsHandler : ContentHandlerBase
     {
-        public const string ContentItemInputKey = ContentEventConstants.ContentItemInputKey;
-
         private readonly IWorkflowManager _workflowManager;
 
         public ContentsHandler(IWorkflowManager workflowManager)
@@ -50,8 +48,15 @@ namespace OrchardCore.Contents.Workflows.Handlers
 
         private Task TriggerWorkflowEventAsync(string name, ContentItem contentItem)
         {
+            var eventInfo = new ContentEventInfo()
+            {
+                Name = name,
+                ContentType = contentItem.ContentType,
+                ContentItemId = contentItem.ContentItemId
+            };
+
             return _workflowManager.TriggerEventAsync(name,
-                input: new { ContentItem = contentItem, ContentEventConstants.FromContentEvent },
+                input: new { ContentItem = contentItem, ContentEvent = eventInfo },
                 correlationId: contentItem.ContentItemId
             );
         }

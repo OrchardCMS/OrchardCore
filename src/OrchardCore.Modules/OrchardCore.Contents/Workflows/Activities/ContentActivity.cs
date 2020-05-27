@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using Newtonsoft.Json;
@@ -15,8 +16,6 @@ namespace OrchardCore.Contents.Workflows.Activities
 {
     public abstract class ContentActivity : Activity
     {
-        public const string ContentItemInputKey = ContentEventConstants.ContentItemInputKey;
-
         protected readonly IStringLocalizer S;
 
         protected ContentActivity(IContentManager contentManager, IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer localizer)
@@ -31,19 +30,9 @@ namespace OrchardCore.Contents.Workflows.Activities
         protected IWorkflowScriptEvaluator ScriptEvaluator { get; }
 
         /// <summary>
-        /// Whether the activity is executed inline from a content event.
+        /// Content event infos when executed inline from a <see cref="ContentEvent"/>
         /// </summary>
-        protected bool FromContentEvent { get; private set; }
-
-        /// <summary>
-        /// The original correlation id when the workflow is started or resumed.
-        /// </summary>
-        protected string OriginalCorrelationId { get; private set; }
-
-        /// <summary>
-        /// Whether the activity is executed inline from a correlated content event.
-        /// </summary>
-        protected bool InlineFromContentEvent { get; private set; }
+        protected ContentEventInfo ContentEventInfo { get; private set; }
 
         public override LocalizedString Category => S["Content"];
 
@@ -63,12 +52,17 @@ namespace OrchardCore.Contents.Workflows.Activities
 
         public override Task OnInputReceivedAsync(WorkflowExecutionContext workflowContext, IDictionary<string, object> input)
         {
-            if (input?.GetValue<string>(ContentEventConstants.FromContentEvent) != null)
-            {
-                FromContentEvent = true;
-            }
+            ContentEventInfo = input?.GetValue<ContentEventInfo>(ContentEventConstants.ContentEventInputKey);
 
-            OriginalCorrelationId = workflowContext.CorrelationId;
+            return Task.CompletedTask;
+        }
+
+        public override Task OnWorkflowStartingAsync(WorkflowExecutionContext context, CancellationToken cancellationToken = default)
+        {
+            if (ContentEventInfo != null)
+            {
+                ContentEventInfo.IsStart = true;
+            }
 
             return Task.CompletedTask;
         }
@@ -106,14 +100,12 @@ namespace OrchardCore.Contents.Workflows.Activities
             else
             {
                 // If no expression was provided, see if the content item was provided as an input or as a property.
-                content = workflowContext.Input.GetValue<IContent>(ContentItemInputKey)
-                    ?? workflowContext.Properties.GetValue<IContent>(ContentItemInputKey);
+                content = workflowContext.Input.GetValue<IContent>(ContentEventConstants.ContentItemInputKey)
+                    ?? workflowContext.Properties.GetValue<IContent>(ContentEventConstants.ContentItemInputKey);
             }
 
             if (content != null && content.ContentItem.ContentItemId != null)
             {
-                UpdateInlineFromContentEventProperty(content.ContentItem.ContentItemId);
-
                 return content;
             }
 
@@ -130,8 +122,6 @@ namespace OrchardCore.Contents.Workflows.Activities
 
                 if (contentItemIdResult is string contentItemId)
                 {
-                    UpdateInlineFromContentEventProperty(contentItemId);
-
                     return contentItemId;
                 }
             }
@@ -139,9 +129,14 @@ namespace OrchardCore.Contents.Workflows.Activities
             return null;
         }
 
-        protected void UpdateInlineFromContentEventProperty(string contentItemId)
+        protected bool IsInlineFromContentEventOfSameContentItemId(string contentItemId)
         {
-            InlineFromContentEvent = FromContentEvent && String.Equals(OriginalCorrelationId, contentItemId, StringComparison.OrdinalIgnoreCase);
+            return ContentEventInfo != null && String.Equals(ContentEventInfo.ContentItemId, contentItemId, StringComparison.OrdinalIgnoreCase);
+        }
+
+        protected bool IsInlineFromStartingContentEventOfSameContentType(string contentType)
+        {
+            return ContentEventInfo != null && ContentEventInfo.IsStart && ContentEventInfo.ContentType == contentType;
         }
 
         protected class ContentItemIdExpressionContent : IContent

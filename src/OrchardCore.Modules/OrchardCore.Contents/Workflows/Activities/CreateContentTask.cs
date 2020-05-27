@@ -5,7 +5,7 @@ using Microsoft.Extensions.Localization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
-using OrchardCore.Contents.Workflows.Handlers;
+using OrchardCore.ContentManagement.Workflows;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Models;
@@ -59,6 +59,24 @@ namespace OrchardCore.Contents.Workflows.Activities
 
         public async override Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
+            if (IsInlineFromStartingContentEventOfSameContentType(ContentType))
+            {
+                if (ContentEventInfo.Name == nameof(ContentUpdatedEvent))
+                {
+                    throw new InvalidOperationException($"The '{workflowContext.WorkflowType.Name}:{DisplayText}' can't update the content item as it is executed inline from a starting '{nameof(ContentUpdatedEvent.DisplayText)}' of the same content type.");
+                }
+
+                if (ContentEventInfo.Name == nameof(ContentCreatedEvent))
+                {
+                    throw new InvalidOperationException($"The '{workflowContext.WorkflowType.Name}:{DisplayText}' can't create the content item as it is executed inline from a starting '{nameof(ContentCreatedEvent.DisplayText)}' of the same content type.");
+                }
+
+                if (Publish && ContentEventInfo.Name == nameof(ContentPublishedEvent))
+                {
+                    throw new InvalidOperationException($"The '{workflowContext.WorkflowType.Name}:{DisplayText}' can't publish the content item as it is executed inline from a starting '{nameof(ContentPublishedEvent.DisplayText)}' of the same content type.");
+                }
+            }
+
             var contentItem = await ContentManager.NewAsync(ContentType);
 
             if (!String.IsNullOrWhiteSpace(ContentProperties.Expression))
@@ -72,7 +90,7 @@ namespace OrchardCore.Contents.Workflows.Activities
             if (result.Succeeded)
             {
                 workflowContext.CorrelationId = contentItem.ContentItemId;
-                workflowContext.Properties[ContentItemInputKey] = contentItem;
+                workflowContext.Properties[ContentEventConstants.ContentItemInputKey] = contentItem;
                 workflowContext.LastResult = contentItem;
 
                 return Outcomes("Done");
