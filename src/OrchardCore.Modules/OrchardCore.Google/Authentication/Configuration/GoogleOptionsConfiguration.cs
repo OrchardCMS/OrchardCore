@@ -42,7 +42,8 @@ namespace OrchardCore.Google.Authentication.Configuration
 
             if (!_googleAuthenticationService.CheckSettings(settings))
                 return;
-
+            
+            //creation of authentication scheme
             options.AddScheme(GoogleDefaults.AuthenticationScheme, builder =>
             {
                 builder.DisplayName = "Google";
@@ -60,19 +61,23 @@ namespace OrchardCore.Google.Authentication.Configuration
             options.ClientId = settings?.ClientID ?? string.Empty;
             try
             {
+            //decryption of user secret
                 options.ClientSecret = _dataProtectionProvider.CreateProtector(GoogleConstants.Features.GoogleAuthentication).Unprotect(settings.ClientSecret);
             }
             catch
             {
+            //Wrong decryption error
                 _logger.LogError("The Consumer Secret could not be decrypted. It may have been encrypted using a different key.");
             }
-
+            
+            //if callback path field not empty
             if (settings.CallbackPath.HasValue)
             {
                 options.CallbackPath = settings.CallbackPath;
             }
         }
 
+        //Wrong method was calld error
         public void Configure(GoogleOptions options) => Debug.Fail("This infrastructure method shouldn't be called.");
 
         private async Task<GoogleAuthenticationSettings> GetGoogleAuthenticationSettingsAsync()
@@ -80,6 +85,7 @@ namespace OrchardCore.Google.Authentication.Configuration
             var settings = await _googleAuthenticationService.GetSettingsAsync();
             if (!_googleAuthenticationService.CheckSettings(settings))
             {
+            //wrong Coogle login 
                 _logger.LogWarning("Google Authentication is not correctly configured.");
                 return null;
             }
