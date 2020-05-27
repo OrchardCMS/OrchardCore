@@ -1,3 +1,11 @@
+/*
+	*Azure Active Directory Enterprise Identity Management (Azure AD)
+	provides single sign-on and multi-factor authentication
+	to help protect users from 99.9% of cyber attacks.
+	-------------------------------------------------------
+	string constants - abbreviations
+*/
+
 namespace OrchardCore.Microsoft.Authentication
 {
     public static class MicrosoftAuthenticationConstants
