@@ -1,3 +1,8 @@
+/*
+	Sets Microsoft auth. and Azure Active Directory (versatile management platform) layout
+	for admin.
+*/
+
 using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
@@ -21,6 +26,9 @@ namespace OrchardCore.Microsoft.Authentication
             _shellDescriptor = shellDescriptor;
         }
 
+        /*
+			Adding (~) layout for admin
+        */
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
             if (String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
@@ -52,6 +60,9 @@ namespace OrchardCore.Microsoft.Authentication
             _shellDescriptor = shellDescriptor;
         }
 
+        /*
+			Adding (~) layout for admin
+        */
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
             if (String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
