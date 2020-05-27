@@ -9,7 +9,7 @@ namespace OrchardCore.AdminMenu
     public interface IAdminMenuService
     {
         /// <summary>
-        /// Returns all the admin menus for udpate.
+        /// Returns all the admin menus for update.
         /// </summary>
         Task<Models.AdminMenuList> LoadAdminMenuListAsync();
 
