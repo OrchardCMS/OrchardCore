@@ -26,6 +26,7 @@ namespace OrchardCore.Google.Authentication.Recipes
             {
                 return;
             }
+            //creation of variables for Google authentication
             var model = context.Step.ToObject<GoogleAuthenticationSettingsViewModel>();
             var settings = await _googleAuthenticationService.GetSettingsAsync();
             settings.ClientID = model.ClientID;
