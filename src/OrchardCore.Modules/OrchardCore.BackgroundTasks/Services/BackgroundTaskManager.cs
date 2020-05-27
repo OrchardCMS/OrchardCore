@@ -1,3 +1,7 @@
+/*
+	service for editing and deleting background tasks
+*/
+
 using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
@@ -60,6 +64,10 @@ namespace OrchardCore.BackgroundTasks.Services
             return document;
         }
 
+        /*
+			revove (~) element/record/etc of background task
+			and save it
+        */
         public async Task RemoveAsync(string name)
         {
             var document = await LoadDocumentAsync();
@@ -71,6 +79,7 @@ namespace OrchardCore.BackgroundTasks.Services
 
         public async Task UpdateAsync(string name, BackgroundTaskSettings settings)
         {
+        	// check for availability of editing
             if (settings.IsReadonly)
             {
                 throw new ArgumentException("The object is read-only");
