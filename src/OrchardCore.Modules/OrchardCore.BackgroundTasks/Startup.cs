@@ -1,3 +1,13 @@
+/*
+	creates directories:
+		<admin_url_prefix>/BackgroundTasks/Create
+		                                  /Edit
+		                                  /Enable
+		                                  /Disable
+
+	(~) makes initial setup of an services, (~environment), etc. for backgound tasks
+*/
+
 using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
@@ -22,6 +32,9 @@ namespace OrchardCore.BackgroundTasks
             _adminOptions = adminOptions.Value;
         }
 
+        /*
+        	(~) adding sevices
+        */
         public override void ConfigureServices(IServiceCollection services)
         {
             services
@@ -31,6 +44,10 @@ namespace OrchardCore.BackgroundTasks
                 .AddScoped<IBackgroundTaskSettingsProvider, BackgroundTaskSettingsProvider>();
         }
 
+        /*
+			forms paths (~directories)
+			with the controller (~UI) and the corresponding action ...
+        */
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
             var backgroundTaskControllerName = typeof(BackgroundTaskController).ControllerName();
