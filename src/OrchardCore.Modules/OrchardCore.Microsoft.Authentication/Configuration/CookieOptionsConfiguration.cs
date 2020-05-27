@@ -1,3 +1,7 @@
+/*
+	Configures cookie optionus
+*/
+
 using System;
 using System.Diagnostics;
 using Microsoft.AspNetCore.Authentication.AzureAD.UI;
@@ -18,6 +22,9 @@ namespace OrchardCore.Microsoft.Authentication.Configuration
             _tenantPrefix = "/" + shellSettings.RequestUrlPrefix;
         }
 
+        /*
+			Sets 'cookie auth. options' for external identity
+        */
         public void Configure(string name, CookieAuthenticationOptions options)
         {
             if (name != "Identity.External")
