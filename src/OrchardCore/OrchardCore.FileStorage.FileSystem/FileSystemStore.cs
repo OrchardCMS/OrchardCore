@@ -187,7 +187,6 @@ namespace OrchardCore.FileStorage.FileSystem
         public Task<Stream> GetFileStreamAsync(IFileStoreEntry fileStoreEntry)
         {
             var physicalPath = GetPhysicalPath(fileStoreEntry.Path);
-            
             if (!File.Exists(physicalPath))
             {
                 throw new FileStoreException($"Cannot get file stream because the file '{fileStoreEntry.Path}' does not exist.");
