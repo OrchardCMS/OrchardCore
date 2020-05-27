@@ -1,3 +1,8 @@
+/*
+	Provides settings from 'background task',
+	using 'background task manager class'
+*/
+
 using System.Threading.Tasks;
 using Microsoft.Extensions.Primitives;
 
@@ -14,6 +19,10 @@ namespace OrchardCore.BackgroundTasks.Services
 
         public IChangeToken ChangeToken => _backgroundTaskManager.ChangeToken;
 
+        /*
+			@return settings received from 'backgound task'
+			        OR null
+        */
         public async Task<BackgroundTaskSettings> GetSettingsAsync(IBackgroundTask task)
         {
             var document = await _backgroundTaskManager.GetDocumentAsync();
