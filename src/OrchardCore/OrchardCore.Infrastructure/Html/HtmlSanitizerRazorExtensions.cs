@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using OrchardCore;
 using OrchardCore.Infrastructure.Html;
 
-public static class HtmlSanitizerExtensions
+public static class HtmlSanitizerRazorExtensions
 {
     /// <summary>
     /// Sanitizes a string of html.

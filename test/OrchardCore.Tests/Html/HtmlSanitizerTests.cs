@@ -27,12 +27,10 @@ namespace OrchardCore.Tests.Html
         public void ShouldConfigureSanitizer()
         {
             var services = new ServiceCollection();
-            services.Configure<HtmlSanitizerOptions>(o =>
+            services.AddOptions<HtmlSanitizerOptions>();
+            services.ConfigureHtmlSanitizer((sanitizer) =>
             {
-                o.Configure = (sanitizer) =>
-                {
-                    sanitizer.AllowedAttributes.Add("class");
-                };
+                sanitizer.AllowedAttributes.Add("class");
             });
 
             services.AddScoped<IHtmlSanitizerService, HtmlSanitizerService>();

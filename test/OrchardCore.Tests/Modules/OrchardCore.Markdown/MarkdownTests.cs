@@ -1,3 +1,5 @@
+using System;
+using J2N.Collections.Generic;
 using Markdig;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Markdown.Services;
@@ -11,13 +13,8 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Markdown
         public void ShouldConfigureMarkdownPipeline()
         {
             var services = new ServiceCollection();
-            services.Configure<MarkdownPipelineOptions>(o =>
-            {
-                o.Configure = (pipeline) =>
-                {
-                    pipeline.DisableHtml();
-                };
-            });
+            services.AddOptions<MarkdownPipelineOptions>();
+            services.ConfigureMarkdownPipeline((pipeline) => pipeline.DisableHtml());
 
             services.AddScoped<IMarkdownService, DefaultMarkdownService>();
 
@@ -35,7 +32,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Markdown
             var services = new ServiceCollection();
             services.Configure<MarkdownPipelineOptions>(o =>
             {
-                o.Configure = null;
+                o.Configure2 = new List<Action<MarkdownPipelineBuilder>>();
             });
 
             services.AddScoped<IMarkdownService, DefaultMarkdownService>();
