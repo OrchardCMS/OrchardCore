@@ -1,3 +1,7 @@
+/*
+	Configuration of Microsoft authentication
+*/
+
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Linq;
