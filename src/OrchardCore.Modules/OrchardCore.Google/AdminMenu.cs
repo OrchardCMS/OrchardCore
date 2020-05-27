@@ -8,6 +8,7 @@ using OrchardCore.Navigation;
 namespace OrchardCore.Google
 {
     [Feature(GoogleConstants.Features.GoogleAuthentication)]
+    //Authentication menu for admins
     public class GoogleAuthenticationAdminMenu : INavigationProvider
     {
         private readonly ShellDescriptor _shellDescriptor;
@@ -23,8 +24,10 @@ namespace OrchardCore.Google
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
+        // if user name is admin
             if (String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
             {
+            //adding of new class and fields. Filling them with values
                 builder.Add(S["Security"], security => security
                         .Add(S["Authentication"], authentication => authentication
                         .Add(S["Google"], "16", settings => settings
