@@ -1,3 +1,10 @@
+/*
+	(MVC pattern)
+
+	Implementing user (admin) actions on 'background tasks'
+		(Index, Create, Create post, Edit, Delete, Enable, Disable)
+*/
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
