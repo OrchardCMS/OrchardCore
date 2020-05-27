@@ -1,6 +1,7 @@
 using OrchardCore.Modules.Manifest;
 using OrchardCore.Google;
 
+//General information about this modul
 [assembly: Module(
     Name = "Google",
     Author = "The Orchard Team",
