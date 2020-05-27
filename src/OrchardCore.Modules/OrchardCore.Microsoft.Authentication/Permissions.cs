@@ -1,3 +1,7 @@
+/*
+	class Permissoins gives the role 'Administrator' with 'ManageMicrosoftAuthentication' permission 
+*/
+
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
