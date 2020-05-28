@@ -1,0 +1,9 @@
+[
+
+  {
+    "inputs": [
+      "Assets/scss/forms.edit.scss"
+    ],
+    "output": "wwwroot/Styles/forms.edit.css"
+  }
+]

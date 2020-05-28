@@ -1,0 +1,23 @@
+@using OrchardCore.Mvc.Utilities;
+
+@using OrchardCore.ContentManagement.Metadata.Settings;
+@inject OrchardCore.ContentManagement.Metadata.IContentDefinitionManager ContentDefinitionManager
+
+@{
+    var contentItem = (IContent)Model.ContentItem;
+    var contentTypeDisplayText = ContentDefinitionManager.GetTypeDefinition((string)Model.ContentItem.ContentType).DisplayName;
+    var forText = ((ContentItem)Model.ContentItem).As<OrchardCore.Forms.Models.LabelPart>().For;
+    string contentType = Model.ContentItem.ContentType;
+}
+
+<style asp-src="~/OrchardCore.Forms/Styles/forms.edit.css"
+       debug-src="~/OrchardCore.Forms/Styles/forms.edit.min.css"
+       depends-on="~/OrchardCore.Flows/Styles/flows.edit.css"
+       at="Head"></style>
+
+
+<label class="inline-label w-auto">
+    <span class="label-display-text">@(Model.ContentItem.ContentItem.DisplayText ?? contentTypeDisplayText)</span>
+    <span class="badge badge-secondary" style="display: inline-block;">@forText</span>
+    <span class="badge badge-light" style="display: inline-block; vertical-align:top">@contentTypeDisplayText</span>
+</label>

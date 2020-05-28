@@ -1,0 +1,15 @@
+@using OrchardCore.ContentManagement.Metadata.Settings;
+@inject OrchardCore.ContentManagement.Metadata.IContentDefinitionManager ContentDefinitionManager
+
+@{
+    var contentItem = (IContent)Model.ContentItem;
+    var contentTypeDisplayText = ContentDefinitionManager.GetTypeDefinition((string)Model.ContentItem.ContentType).DisplayName;
+    var btnText = ((ContentItem)Model.ContentItem).As<OrchardCore.Forms.Models.ButtonPart>().Text;
+}
+
+
+<div class="inline-button w-auto">
+    <span>@btnText</span>
+    <span class="badge badge-info label-display-text">@(Model.ContentItem.DisplayText ?? contentTypeDisplayText)</span>
+    <span class="badge badge-light">@contentTypeDisplayText</span>
+</div>

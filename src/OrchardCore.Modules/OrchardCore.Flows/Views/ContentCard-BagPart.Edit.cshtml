@@ -1,35 +1,57 @@
+@*Alternate this shape using in Module - like ContentCard-FlowPart.Edit.cshtml *@
+@using OrchardCore.ContentManagement.Metadata.Settings;
+@using OrchardCore.DisplayManagement.Shapes;
 @inject OrchardCore.ContentManagement.Metadata.IContentDefinitionManager ContentDefinitionManager
 
 @{
-    ContentItem contentItem = Model.ContentItem;
-    var contentType = ContentDefinitionManager.GetTypeDefinition(contentItem.ContentType).DisplayName;
+    var contentItem = (IContent)Model.ContentItem;
+    var contentTypeDisplayText = ContentDefinitionManager.GetTypeDefinition((string)Model.ContentItem.ContentType).DisplayName;
+    var contentItemDisplayText = contentItem.ContentItem.DisplayText;
+
+    string cssNocollapse = Model.IsCollapsible == false ? "widget-nocollapse" : string.Empty;
 }
 
-<div class="widget widget-editor card my-1 @(Model.Inline != true ? "collapsed" : "")">
+<div class="widget widget-editor card my-1 @cssNocollapse @(Model.Inline != true && Model.IsCollapsible != false ? "collapsed" : "")">
     <div class="widget-editor-header card-header text-muted py-1 pl-3 pr-1">
         @if (Model.CanMove != false)
         {
             <div class="widget-editor-handle"><i class="fas fa-arrows-alt"></i></div>
         }
-        <button type="button" class="btn btn-outline-secondary btn-sm widget-editor-btn-toggle widget-editor-btn-collapse"><i class="fa fa-angle-down" aria-hidden="true"></i></button>
-        <button type="button" class="btn btn-outline-secondary btn-sm widget-editor-btn-toggle widget-editor-btn-expand"><i class="fa fa-angle-up" aria-hidden="true"></i></button>
-        @T["{0} — <span class=\"hint\">{1}</span>", contentItem.DisplayText, contentType]
-        @if (Model.CanDelete != false)
+
+        @if (Model.IsCollapsible != false)
         {
-            <div class="btn-group btn-group-sm float-right" role="group">
-                @* We don't render an Insert button as the container type is not known here *@
-                <button type="button" class="btn btn-danger widget-delete" data-title="@T["Delete"]" data-message="@T["Are you sure you want to remove this item?"]"><i class="fa fa-trash" aria-hidden="true"></i></button>
-            </div>
+            <button type="button" class="btn btn-outline-secondary btn-sm widget-editor-btn-toggle widget-editor-btn-collapse mr-2"><i class="fa fa-angle-down" aria-hidden="true"></i></button>
+            <button type="button" class="btn btn-outline-secondary btn-sm widget-editor-btn-toggle widget-editor-btn-expand mr-2"><i class="fa fa-angle-right" aria-hidden="true"></i></button>
         }
-    </div>
-    <div class="widget-editor-body card-body px-2 py-1">
-        <div class="w-100">
-            @if (Model.ContentEditor != null)
+
+
+        @*Display Default Header text for all Content Card*@
+        <div class="widget-card-title">
+            <span class="widget-editor-header-text">@T["{0}", contentItemDisplayText]</span>
+            <span class="badge badge-primary">@contentTypeDisplayText</span>
+        </div>
+
+
+        <div class="btn-group btn-group-sm" role="group">
+            @if (Model.Footer != null)
             {
-                @await DisplayAsync(Model.ContentEditor)
+                @await DisplayAsync(Model.Footer)
+            }
+
+            @if (Model.CanDelete != false)
+            {
+                <button type="button" class="btn btn-danger widget-delete" data-title="@T["Delete"]" data-message="@T["Are you sure you want to remove this item?"]"><i class="fa fa-trash" aria-hidden="true"></i></button>
             }
         </div>
     </div>
 
-    @* We don't render a footer *@
+    @if (Model.Content != null && Model.Content is Shape && Model.Content.Items.Count > 0)
+    {
+        <div class="widget-editor-body card-body px-2 py-1">
+            <div class="w-100">
+                @await DisplayAsync(Model.Content)
+            </div>
+        </div>
+    }
 </div>
+

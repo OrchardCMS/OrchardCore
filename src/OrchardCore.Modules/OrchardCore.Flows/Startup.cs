@@ -9,6 +9,7 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data.Migration;
+using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.Flows.Controllers;
 using OrchardCore.Flows.Drivers;
 using OrchardCore.Flows.Handlers;
@@ -19,6 +20,7 @@ using OrchardCore.Flows.ViewModels;
 using OrchardCore.Indexing;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
+using OrchardCore.ResourceManagement;
 
 namespace OrchardCore.Flows
 {
@@ -41,6 +43,11 @@ namespace OrchardCore.Flows
 
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.AddScoped<IResourceManifestProvider, ResourceManifest>();
+
+            // Add Content Card Shapes
+            services.AddScoped<IShapeTableProvider, Shapes>();
+
             // Flow Part
             services.AddContentPart<FlowPart>()
                 .UseDisplayDriver<FlowPartDisplay>();

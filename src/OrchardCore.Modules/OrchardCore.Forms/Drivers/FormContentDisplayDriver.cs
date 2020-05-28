@@ -1,9 +1,8 @@
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
-using OrchardCore.ContentManagement.Metadata;
-using OrchardCore.DisplayManagement.Views;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Forms.Models;
 
 namespace OrchardCore.Forms.Drivers
@@ -22,6 +21,25 @@ namespace OrchardCore.Forms.Drivers
 
             // We don't need to return a shape result
             return Task.FromResult<IDisplayResult>(null);
+        }
+
+        public override IDisplayResult Edit(ContentItem model)
+        {
+
+            if (model.ContentType == "Label" ||
+                model.ContentType == "Button" ||
+                model.ContentType == "TextArea" ||
+                model.ContentType == "Input" ||
+                model.ContentType == "Validation")
+            {
+                return Dynamic($"ContentCard_Inline", shape =>
+                {
+                    shape.ContentItem = model;
+                    shape.Metadata.Alternates.Add($"ContentCard_Inline__{model.ContentType}");
+                }).Location("Inline");
+            }
+            // We don't need to return a shape result
+            return null;
         }
     }
 }

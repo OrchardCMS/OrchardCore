@@ -1,8 +1,13 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
+using OrchardCore.ContentManagement.Metadata;
+using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Flows.Models;
@@ -16,17 +21,20 @@ namespace OrchardCore.Flows.Controllers
         private readonly IContentItemDisplayManager _contentItemDisplayManager;
         private readonly IShapeFactory _shapeFactory;
         private readonly IUpdateModelAccessor _updateModelAccessor;
+        private readonly IContentDefinitionManager _contentDefinitionManager;
 
         public AdminController(
             IContentManager contentManager,
             IContentItemDisplayManager contentItemDisplayManager,
             IShapeFactory shapeFactory,
-            IUpdateModelAccessor updateModelAccessor)
+            IUpdateModelAccessor updateModelAccessor,
+            IContentDefinitionManager contentDefinitionManager)
         {
             _contentItemDisplayManager = contentItemDisplayManager;
             _contentManager = contentManager;
             _shapeFactory = shapeFactory;
             _updateModelAccessor = updateModelAccessor;
+            _contentDefinitionManager = contentDefinitionManager;
         }
 
         public async Task<IActionResult> BuildEditor(string id, string prefix, string prefixesName, string contentTypesName, string targetId, bool flowmetadata, string parentContentType, string partName)
@@ -48,10 +56,39 @@ namespace OrchardCore.Flows.Controllers
                 colSize = (int)Math.Round((double)metadata.Size / 100.0 * 12);
 
                 cardCollectionType = nameof(FlowPart);
+
             }
             else
             {
                 cardCollectionType = nameof(BagPart);
+            }
+
+            // Get Contained Content Types
+            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(parentContentType);
+            IEnumerable<ContentTypeDefinition> containedContentTypeDefinitions = null;
+
+            foreach (var part in contentTypeDefinition.Parts)
+            {
+                if (string.Equals(part.Name, partName, StringComparison.OrdinalIgnoreCase))
+                {
+                    IEnumerable<string> contentTypes = null;
+
+                    if (part.PartDefinition.Name == nameof(FlowPart))
+                    {
+                        var settings = part.GetSettings<FlowPartSettings>();
+                        contentTypes = settings.ContainedContentTypes;
+                    }
+
+                    else if (part.PartDefinition.Name == nameof(FlowPart))
+                    {
+                        var settings = part.GetSettings<BagPartSettings>();
+                        contentTypes = settings.ContainedContentTypes;
+                    }
+
+                    containedContentTypeDefinitions = GetContainedContentTypes(contentTypes);
+
+                    break;
+                }
             }
 
             //Create a Card Shape
@@ -64,6 +101,7 @@ namespace OrchardCore.Flows.Controllers
                 BuildEditor: true,
                 ParentContentType: parentContentType,
                 CollectionPartName: partName,
+                WidgetContentTypes: containedContentTypeDefinitions,
                 //Card Specific Properties
                 TargetId: targetId,
                 Inline: true,
@@ -82,6 +120,11 @@ namespace OrchardCore.Flows.Controllers
             if (flowmetadata)
             {
                 contentCard.ColumnSize = colSize;
+                contentCard.CanInsert = true;
+            }
+            else
+            {
+                contentCard.CanInsert = false;
             }
 
             var model = new BuildEditorViewModel
@@ -89,6 +132,18 @@ namespace OrchardCore.Flows.Controllers
                 EditorShape = contentCard
             };
             return View("Display", model);
+        }
+
+        private IEnumerable<ContentTypeDefinition> GetContainedContentTypes(IEnumerable<string> contentTypes)
+        {
+            if (contentTypes == null || !contentTypes.Any())
+            {
+                return _contentDefinitionManager.ListTypeDefinitions().Where(t => t.GetSettings<ContentTypeSettings>().Stereotype == "Widget");
+            }
+
+            return contentTypes
+                .Select(contentType => _contentDefinitionManager.GetTypeDefinition(contentType))
+                .Where(t => t.GetSettings<ContentTypeSettings>().Stereotype == "Widget");
         }
     }
 }

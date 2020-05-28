@@ -1,5 +1,7 @@
 using System;
+using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
+using OrchardCore.DisplayManagement.Shapes;
 
 namespace OrchardCore.Widgets
 {
@@ -16,6 +18,90 @@ namespace OrchardCore.Widgets
 
         public void Discover(ShapeTableBuilder builder)
         {
+            builder.Describe("ContentCard")
+                .OnCreating(context =>
+                {
+                    context.CreateAsync = async () =>
+                    {
+                        dynamic cardShape = new Shape();
+
+                        dynamic headerShape = await context.ShapeFactory.CreateAsync("ContentZone");
+                        dynamic footerShape = await context.ShapeFactory.CreateAsync("ContentZone");
+                        dynamic contentShape = await context.ShapeFactory.CreateAsync("ContentZone");
+
+                        cardShape.Properties["Header"] = headerShape;
+                        cardShape.Properties["Footer"] = footerShape;
+                        cardShape.Properties["Content"] = contentShape;
+
+                        return cardShape as IShape;
+                    };
+                })
+                .OnCreated(async context =>
+                {
+
+                    dynamic cardShape = context.Shape;
+
+                    IShape attribTool = await context.ShapeFactory.New.ToolShapeAttributes();
+                    attribTool.Metadata.Name = "ToolShapeAttributes";
+
+                    attribTool.Properties["Content"] = await context.ShapeFactory.CreateAsync("ContentZone");
+                    attribTool.Properties["Actions"] = await context.ShapeFactory.CreateAsync("ContentZone");
+
+                    cardShape.Footer.Add(attribTool, "before");
+
+                })
+                .OnDisplaying(async context =>
+                {
+                    dynamic cardShape = context.Shape;
+
+                    var contentItem = cardShape.ContentItem;
+                    cardShape.ContentTypeValue = contentItem.ContentType;
+
+                    // Set Modal ID for ToolShapeAttributes
+                    cardShape.Footer.ToolShapeAttributes.ModalId = $"ShapeAttributesModal_{cardShape.ContentItem.ContentItemId}";
+                    cardShape.Footer.ToolShapeAttributes.ContentItemDisplayText = cardShape.ContentItem.DisplayText;
+                    cardShape.Footer.ToolShapeAttributes.ContentType = cardShape.ContentItem.ContentType;
+
+                    //AJAX will not have CollectionShape.
+                    var updater = cardShape.CollectionShape?.Updater ?? cardShape.Updater;
+
+                    //Assign prefix
+                    if (String.IsNullOrEmpty(cardShape.PrefixValue))
+                    {
+                        cardShape.PrefixValue = Guid.NewGuid().ToString("n");
+                    }
+
+                    //Build Editor for Content Item
+                    // AJAX request is new request and will not have CollectionShape.
+                    var isNew = cardShape.CollectionShape == null ? true : false;
+
+                    var ContentItemDisplayManager = (OrchardCore.ContentManagement.Display.IContentItemDisplayManager)context.ServiceProvider.GetService(typeof(OrchardCore.ContentManagement.Display.IContentItemDisplayManager));
+                    dynamic contentItemEditor = await ContentItemDisplayManager.BuildEditorAsync(contentItem, updater, isNew, "", cardShape.PrefixValue);
+                    contentItemEditor.Metadata.Name = "ContentEditor";
+
+                    //We don't show Actions and Side bar the parent editor has its own buttons.
+                    contentItemEditor.Actions = null;
+                    contentItemEditor.Sidebar = null;
+
+                    //Move Content Footer to Card Footer, if any
+                    foreach (var item in contentItemEditor.Footer)
+                    {
+                        cardShape.Footer.Add(item);
+                    }
+
+                    contentItemEditor.Footer = null;
+
+                    cardShape.ContentEditor = contentItemEditor;
+
+                    dynamic contentDisplay = await ContentItemDisplayManager.BuildDisplayAsync(contentItem, updater, cardShape.DisplayType ?? "Detail");
+                    contentDisplay.Metadata.Name = "ContentPreview";
+                    cardShape.ContentPreview = contentDisplay;
+
+                    cardShape.Content.Add(cardShape.ContentEditor);
+
+
+                });
+
             builder.Describe(ContentCardEdit)
                 .OnDisplaying(context =>
                 {
@@ -129,6 +215,24 @@ namespace OrchardCore.Widgets
                             //e.g. ContentCard_Frame__Grid__LeftColumn__Client, ContentCard_Frame__LandingPage__Clients__Client
                             contentCardFrame.Metadata.Alternates.Add($"{ContentCardFrame}__{parentContentType}__{namedPart}__{contentType}");
                         }
+                    }
+
+                    if (contentCardFrame.ChildContent.BuildEditor == true)
+                    {
+                        //Change Shape type to Editor, this shape will be rendered from within Other Frame
+                        contentCardFrame.ChildContent.Metadata.Alternates.Clear();
+                        contentCardFrame.ChildContent.Metadata.Type = "ContentCard_Editor";
+
+                    }
+
+                    else if (contentCardFrame.ChildContent.BuildDisplay == true)
+                    {
+                        //Hide the Delete
+                        contentCardFrame.ChildContent.CanDelete = false;
+
+                        //Change Shape type to Preview, this shape will be rendered from within Other Frame
+                        contentCardFrame.ChildContent.Metadata.Alternates.Clear();
+                        contentCardFrame.ChildContent.Metadata.Type = "ContentCard_Preview";
                     }
                 });
 

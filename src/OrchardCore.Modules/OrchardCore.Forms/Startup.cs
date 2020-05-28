@@ -4,10 +4,12 @@ using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.Data.Migration;
+using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.Forms.Drivers;
 using OrchardCore.Forms.Filters;
 using OrchardCore.Forms.Models;
 using OrchardCore.Modules;
+using OrchardCore.ResourceManagement;
 
 namespace OrchardCore.Forms
 {
@@ -32,6 +34,11 @@ namespace OrchardCore.Forms
                 options.Filters.Add<ImportModelStateAttribute>();
                 options.Filters.Add<ImportModelStatePageFilter>();
             });
+
+            services.AddScoped<IResourceManifestProvider, ResourceManifest>();
+
+            // Add Content Card Shapes
+            services.AddScoped<IShapeTableProvider, Shapes>();
 
             services.AddScoped<IContentDisplayDriver, FormContentDisplayDriver>();
 

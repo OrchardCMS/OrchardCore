@@ -1,0 +1,69 @@
+@using System.Web;
+@using Microsoft.AspNetCore.Routing;
+@using OrchardCore.ContentManagement;
+@using OrchardCore.ContentManagement.Metadata.Settings;
+@using OrchardCore.ContentManagement.Metadata.Models;
+@using OrchardCore.DisplayManagement.ModelBinding;
+
+@inject OrchardCore.ContentManagement.Metadata.IContentDefinitionManager ContentDefinitionManager
+@inject OrchardCore.ContentManagement.Display.IContentItemDisplayManager ContentItemDisplayManager
+@inject IContentManager ContentManager
+
+
+@{
+    IEnumerable<ContentTypeDefinition> widgetContentTypes = Model.WidgetContentTypes as IEnumerable<ContentTypeDefinition>;
+
+    if (Context.Items["InsertToolWidget.AllWidget.Edit"] == null || widgetContentTypes == null)
+    {
+        IEnumerable<ContentTypeDefinition> widgetContentTypesAll = ContentDefinitionManager.ListTypeDefinitions().Where(t => t.GetSettings<ContentTypeSettings>().Stereotype == "Widget");
+
+        // Register resources for all widgets
+        if (Context.Items["InsertToolWidget.AllWidget.Edit"] == null)
+        {
+            Context.Items["InsertToolWidget.AllWidget.Edit"] = new object();
+            //Render content to temp zone
+            var tempZone = Guid.NewGuid().ToString();
+            @foreach (var type in widgetContentTypesAll)
+            {
+                // Render a mock widget so that its resources are included in the page
+                var contentItem = await ContentManager.NewAsync(type.Name);
+                var updater = new NullModelUpdater();
+                await DisplayAsync(await ContentItemDisplayManager.BuildEditorAsync(contentItem, updater, true, "", Guid.NewGuid().ToString("n")));
+            }
+        }
+
+        // If Part settings doens't have pre-selected content types then show all content types.
+        if (widgetContentTypes == null)
+        {
+            widgetContentTypes = widgetContentTypesAll;
+        }
+    }
+
+
+    var widgetTitle = Model.AppendWidget == true ? T["Add Item"] : T["Insert Item"];
+    RouteValueDictionary routes = Model.BuildEditorRouteValues ?? new RouteValueDictionary();
+}
+@if (Model.CanInsert != false)
+{
+    <div class="btn-group">
+
+        <button type="button" title="@widgetTitle" class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <i class="fa fa-plus" aria-hidden="true"></i>
+            <span>@widgetTitle</span>
+        </button>
+        <div class="dropdown-menu dropdown-menu-right">
+            @foreach (var type in widgetContentTypes.OrderBy(w => w.DisplayName))
+            {
+                routes["id"] = type.Name;
+                var buildEditorUrl = @Url.Action("BuildEditor", "Admin", routes);
+
+                <a class="dropdown-item btn-sm tool-insert-widget"
+                   data-append="@Model.AppendWidget"
+                   data-widget-type="@type.Name"
+                   data-target-id="@Model.TargetId"
+                   data-buildeditorurl="@buildEditorUrl"
+                   href="javascript:;">@type.DisplayName</a>
+            }
+        </div>
+    </div>
+}

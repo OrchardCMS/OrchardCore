@@ -1,0 +1,13 @@
+@using OrchardCore.ContentManagement.Metadata.Settings;
+@inject OrchardCore.ContentManagement.Metadata.IContentDefinitionManager ContentDefinitionManager
+
+@{
+    var contentItem = (IContent)Model.ContentItem;
+    var contentTypeDisplayText = ContentDefinitionManager.GetTypeDefinition((string)Model.ContentItem.ContentType).DisplayName;
+    var contentItemDisplayText = contentItem.ContentItem.DisplayText;
+
+}
+<div class="inline-input w-auto">
+    <span class="badge badge-info label-display-text" style="display: inline-block;">@contentItemDisplayText</span>
+    <span class="badge badge-light" style="display: inline-block; vertical-align:top">@contentTypeDisplayText</span>
+</div>

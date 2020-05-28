@@ -5,5 +5,7 @@ namespace OrchardCore.Forms.Models
     public class ValidationPart : ContentPart
     {
         public string For { get; set; }
+        public string ErrorMessage { get; set; }
+
     }
 }

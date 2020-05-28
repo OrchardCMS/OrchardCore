@@ -1,4 +1,21 @@
 .widget-editor {
+    > .widget-editor-header {
+        display: flex;
+        align-items: flex-start;
+
+        > * {
+            flex: 0 0 auto;
+        }
+
+        > .widget-card-title {
+            flex: 1 1 auto;
+        }
+
+        > .btn-group {
+            white-space: normal;
+        }
+    }
+
     .card-body, .card-footer {
         display: inherit;
     }
@@ -15,7 +32,23 @@
         }
     }
 
-    &:not(.collapsed) {
+    &.widget-inline {
+        border-style: dashed;
+
+        > .widget-editor-header {
+            background: initial !important;
+
+            .widget-editor-btn-expand {
+                display: none;
+            }
+
+            .widget-editor-btn-collapse {
+                display: none;
+            }
+        }
+    }
+
+    &:not(.collapsed):not(.widget-inline) {
         > .widget-editor-header {
             .widget-editor-btn-expand {
                 display: none;
@@ -63,5 +96,144 @@
             top: 5px;
             margin-left: -10px;
         }
+    }
+}
+
+.btn-widget-add-below-wrapper {
+    min-height: 5px;
+
+    &:hover {
+        > .btn-widget-add-below {
+            border-width: 5px;
+            opacity: 1;
+        }
+    }
+}
+
+.btn-widget-add-below {
+    height: 1px;
+    position: relative;
+    opacity: 0.1;
+    transition: 0.3s opacity;
+
+    > .btn-group {
+        margin: 0 auto;
+        bottom: 17px;
+
+        > button {
+            > span {
+                display: none;
+            }
+        }
+    }
+}
+
+[dir="ltr"] .btn-widget-add-below {
+    > .btn-group {
+        left: calc(-14px + 50%);
+    }
+}
+
+[dir="rtl"] .btn-widget-add-below {
+    > .btn-group {
+        right: calc(-14px + 50%);
+    }
+}
+
+.modal.sidebar {
+    text-align: initial;
+    visibility: initial !important;
+
+    &.left,
+    &.right {
+        .modal-dialog {
+            position: fixed;
+            margin: auto;
+            width: 320px;
+            height: 100%;
+            -webkit-transform: translate3d(0%, 0, 0);
+            -ms-transform: translate3d(0%, 0, 0);
+            -o-transform: translate3d(0%, 0, 0);
+            transform: translate3d(0%, 0, 0);
+        }
+
+        .modal-header {
+            border-bottom-color: #EEEEEE;
+            background-color: #FAFAFA;
+        }
+
+        .modal-content {
+            height: 100%;
+            border-radius: 0;
+            border: none;
+        }
+
+        .modal-body {
+            padding: 15px 15px 15px;
+            height: calc(100vh - 162px);
+            white-space: normal;
+            overflow-y: auto;
+        }
+    }
+
+    &.fade {
+        &.left {
+            .modal-dialog {
+                left: -320px;
+                -webkit-transition: opacity 0.5s linear, left 0.5s ease-out;
+                -moz-transition: opacity 0.5s linear, left 0.5s ease-out;
+                -o-transition: opacity 0.5s linear, left 0.5s ease-out;
+                transition: opacity 0.5s linear, left 0.5s ease-out;
+            }
+
+            &.show {
+                .modal-dialog {
+                    left: 0;
+                }
+            }
+        }
+
+        &.right {
+            .modal-dialog {
+                right: -320px;
+                -webkit-transition: opacity 0.5s linear, right 0.5s ease-out;
+                -moz-transition: opacity 0.5s linear, right 0.5s ease-out;
+                -o-transition: opacity 0.5s linear, right 0.5s ease-out;
+                transition: opacity 0.5s linear, right 0.5s ease-out;
+            }
+
+            &.show {
+                .modal-dialog {
+                    right: 0;
+                }
+            }
+        }
+    }
+}
+
+/* Extra small devices (portrait phones, less than 576px) */
+@media (max-width: 575.98px) {
+    .sidebar.left .modal-dialog,
+    .sidebar.right .modal-dialog {
+        width: 320px !important;
+        max-width: 320px !important;
+    }
+}
+
+/*  Small devices (landscape phones, less than 768px) */
+@media (min-width: 576px) and (max-width: 767.98px) {
+    .sidebar.left .modal-dialog,
+    .sidebar.right .modal-dialog {
+        width: 420px !important;
+        max-width: 420px !important;
+    }
+}
+
+/*  Medium devices (tablets, less than 992px) */
+@media (min-width: 768px) {
+    .sidebar.left .modal-dialog,
+    .sidebar.right .modal-dialog {
+        width: 60vw !important;
+        max-width: 60vw !important;
     }
 }

@@ -1,0 +1,32 @@
+<button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#@Model.ModalId">
+    <i class="fas fa-code"></i>
+</button>
+
+<!-- Modal -->
+<div class="modal sidebar right fade" id="@Model.ModalId" tabindex="-1" role="dialog" aria-labelledby="modalTitle_@Model.ModalId" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title " id="modalTitle_@Model.ModalId">
+                    <i class="fas fa-code"></i>
+                    <span class="label-display-text">@Model.ContentItemDisplayText</span>
+                    <span class="badge badge-primary">@Model.ContentType</span>
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                @*TODO Attribute Editor*@
+                Coming Soon : Attributes Editor
+            </div>
+            <div class="modal-footer">
+                @if (Model.Actions != null)
+                {
+                    @await DisplayAsync(Model.Actions)
+                }
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>

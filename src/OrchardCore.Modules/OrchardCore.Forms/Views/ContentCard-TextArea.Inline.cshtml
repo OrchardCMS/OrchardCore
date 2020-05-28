@@ -1,0 +1,21 @@
+@using OrchardCore.Mvc.Utilities;
+
+@using OrchardCore.ContentManagement.Metadata.Settings;
+@inject OrchardCore.ContentManagement.Metadata.IContentDefinitionManager ContentDefinitionManager
+
+@{
+    var contentItem = (IContent)Model.ContentItem;
+    var contentTypeDisplayText = ContentDefinitionManager.GetTypeDefinition((string)Model.ContentItem.ContentType).DisplayName;
+    var defaultValue = ((ContentItem)Model.ContentItem).As<OrchardCore.Forms.Models.TextAreaPart>().DefaultValue;
+    var placeHolderValue = ((ContentItem)Model.ContentItem).As<OrchardCore.Forms.Models.TextAreaPart>().Placeholder;
+
+    string contentType = Model.ContentItem.ContentType;
+}
+
+<label class="col">
+    <span>@(defaultValue ?? placeHolderValue ?? Model.ContentItem.ContentType)</span>
+    <span class="badge badge-info label-display-text" style="display: inline-block;">@Model.ContentItem.DisplayText</span>
+    <span class="badge badge-light" style="display: inline-block; vertical-align:top">@contentTypeDisplayText</span>
+
+
+</label>

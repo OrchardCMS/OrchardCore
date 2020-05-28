@@ -11,6 +11,7 @@ using OrchardCore.Data.Migration;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
+using OrchardCore.ResourceManagement;
 using OrchardCore.Widgets.Controllers;
 using OrchardCore.Widgets.Drivers;
 using OrchardCore.Widgets.Models;
@@ -29,6 +30,8 @@ namespace OrchardCore.Widgets
 
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.AddScoped<IResourceManifestProvider, ResourceManifest>();
+
             //Add Widget Card Shapes
             services.AddScoped<IShapeTableProvider, ContentCardShapes>();
             // Widgets List Part
