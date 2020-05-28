@@ -1,6 +1,8 @@
 @using OrchardCore.Forms.ViewModels;
 @model InputPartEditViewModel
 
+<style asp-name="oc-forms-edit" at="Head"></style>
+
 <div class="form-group">
     <label asp-for="Type">@T["Type"]</label>
     <select asp-for="Type" class="form-control content-preview-select">

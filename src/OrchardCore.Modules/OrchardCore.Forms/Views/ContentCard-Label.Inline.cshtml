@@ -10,11 +10,6 @@
     string contentType = Model.ContentItem.ContentType;
 }
 
-<style asp-src="~/OrchardCore.Forms/Styles/forms.edit.css"
-       debug-src="~/OrchardCore.Forms/Styles/forms.edit.min.css"
-       depends-on="~/OrchardCore.Flows/Styles/flows.edit.css"
-       at="Head"></style>
-
 
 <label class="inline-label w-auto">
     <span class="label-display-text">@(Model.ContentItem.ContentItem.DisplayText ?? contentTypeDisplayText)</span>

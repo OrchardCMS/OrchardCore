@@ -1,6 +1,8 @@
 @using OrchardCore.Forms.ViewModels;
 @model TextAreaPartEditViewModel
 
+<style asp-name="oc-forms-edit" at="Head"></style>
+
 <div class="form-group">
     <label asp-for="Placeholder">@T["Placeholder Text"]</label>
     <input asp-for="Placeholder" type="text" class="form-control content-preview-text" />

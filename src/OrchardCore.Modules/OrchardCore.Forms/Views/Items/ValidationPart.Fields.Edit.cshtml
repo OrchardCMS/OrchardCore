@@ -1,6 +1,8 @@
 @using OrchardCore.Forms.ViewModels;
 @model ValidationPartEditViewModel
 
+<style asp-name="oc-forms-edit" at="Head"></style>
+
 <div class="form-group">
     <label asp-for="For">@T["For"]</label>
     <input asp-for="For" type="text" class="form-control content-preview-text" />

@@ -1,6 +1,8 @@
 @using OrchardCore.Forms.ViewModels;
 @model FormInputElementPartEditViewModel
 
+<style asp-name="oc-forms-edit" at="Head"></style>
+
 <div class="form-group">
     <label asp-for="Name">@T["Name"]</label>
     <input asp-for="Name" type="text" class="form-control content-preview-text content-caption-text" />

@@ -1,6 +1,8 @@
 @using OrchardCore.Forms.ViewModels;
 @model ButtonPartEditViewModel
 
+<style asp-name="oc-forms-edit" at="Head"></style>
+
 <div class="form-group">
     <label asp-for="Text">@T["Text"]</label>
     <input asp-for="Text" type="text" class="form-control content-preview-text" />
