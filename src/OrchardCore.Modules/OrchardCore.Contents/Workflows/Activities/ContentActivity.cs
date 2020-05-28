@@ -30,7 +30,7 @@ namespace OrchardCore.Contents.Workflows.Activities
         protected IWorkflowScriptEvaluator ScriptEvaluator { get; }
 
         /// <summary>
-        /// Contextual data when executed inline from a <see cref="ContentEvent"/>
+        /// A <see cref="ContentEventContext"/> that is updated if executed inline from a <see cref="ContentEvent"/>
         /// </summary>
         protected ContentEventContext InlineContentEvent { get; private set; } = new ContentEventContext();
 
