@@ -12,7 +12,9 @@ namespace OrchardCore.Settings
         /// </summary>
         [JsonIgnore]
         public bool IsReadonly { get; set; }
-
+        
+        //a lot of parameters of page 
+        //limitations, permissions, ets.
         public string BaseUrl { get; set; }
         public string Calendar { get; set; }
         public int MaxPagedCount { get; set; }
