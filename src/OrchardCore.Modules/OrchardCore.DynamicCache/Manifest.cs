@@ -5,6 +5,6 @@ using OrchardCore.Modules.Manifest;
     Author = ManifestConstants.OrchardCoreTeam,
     Website = ManifestConstants.OrchardCoreWebsite,
     Version = ManifestConstants.OrchardCoreVersion,
-    Description = "Dynamic Cache.",
+    Description = "The Dynamic Cache module adds tag helpers to cache items dynamically.",
     Category = "Performance"
 )]

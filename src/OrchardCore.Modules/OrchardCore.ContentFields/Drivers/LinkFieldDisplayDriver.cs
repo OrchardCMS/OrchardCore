@@ -80,6 +80,9 @@ namespace OrchardCore.ContentFields.Drivers
                 {
                     updater.ModelState.AddModelError(Prefix, S["The text default value is required for {0}.", context.PartFieldDefinition.DisplayName()]);
                 }
+
+                // Run this through a sanitizer in case someone puts html in it.
+                // No settings.
             }
 
             return Edit(field, context);

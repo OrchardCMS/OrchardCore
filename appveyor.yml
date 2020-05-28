@@ -41,7 +41,7 @@ install:
   - ps: $IsDevBranch = ($env:APPVEYOR_REPO_BRANCH -eq "dev" -And -not $env:APPVEYOR_PULL_REQUEST_NUMBER)
 # Uncomment to download a specific version of dotnet
 #  - ps: Invoke-WebRequest "https://raw.githubusercontent.com/dotnet/cli/master/scripts/obtain/dotnet-install.ps1" -OutFile "dotnet-install.ps1" 
-# - ps: .\dotnet-install.ps1 --Version 3.1.201
+# - ps: .\dotnet-install.ps1 --Version 3.1.300
 
 build_script:
   - dotnet build -c Release
@@ -77,10 +77,9 @@ deploy:
   - provider: NuGet
     on:
       branch: dev
-    server: https://nuget.pkg.github.com/OrchardCMS/index.json
-    username: sebastienros
+    server: https://nuget.cloudsmith.io/orchardcore/preview/v2/package
     api_key:
-      secure: AJx82moR9XibIs1lxvDToOle/7BqC+XX6ztrJ6CMSU+85/dqM3dvHUdf0LVymAzV
+      secure: ql3vT7BSpSrlvrZjpsf2zbw9A41J43ZhJUaibyI7Y3QHFFk69ecNXHOcXf0ykvm3
     skip_symbols: true
     artifact: /.*\.nupkg/
   - provider: NuGet
