@@ -1,3 +1,9 @@
+/*
+	Provides the Azure AD Settings Step data model.
+	
+	See 'AzureADSettingsStep' class description below
+*/
+
 using System;
 using System.Threading.Tasks;
 using OrchardCore.Microsoft.Authentication.Services;
