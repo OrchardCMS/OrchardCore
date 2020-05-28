@@ -1,3 +1,12 @@
+/*
+	Provides Edit and Update (at the end delegetes exec. to 'Edit' method) 
+	methods, which do some (~) auth. logic, 
+	modify the corresponding data model, including (~) give it a binding to the interface part:
+	_________________
+	*//*29*//* }).Location("Content:0").OnGroup(MicrosoftAuthenticationConstants.Features.AAD);
+	_________________
+*/
+
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
