@@ -2,8 +2,11 @@
 @inject OrchardCore.Modules.IClock Clock
 @using System.Globalization
 
+//main page 
+//view of all this settings are created and executed here
 <p class="alert alert-warning">@T["The current tenant will be reloaded when the settings are saved."]</p>
 
+//paragraph for class name
 <div class="form-group" asp-validation-class-for="SiteName">
     <label asp-for="SiteName">@T["Site name"]</label>
     <input asp-for="SiteName" class="form-control" />
@@ -11,6 +14,7 @@
     <span class="hint">@T["The site name."]</span>
 </div>
 
+//paragraph for change format of page titles
 <div class="form-group" asp-validation-class-for="PageTitleFormat">
     <label asp-for="PageTitleFormat">@T["Page title format"]</label>
     <input asp-for="PageTitleFormat" class="form-control" />
