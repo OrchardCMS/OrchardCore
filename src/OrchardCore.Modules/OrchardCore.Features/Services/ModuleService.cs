@@ -1,34 +1,30 @@
-﻿using Microsoft.AspNetCore.Mvc.Localization;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc.Localization;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Features;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Environment.Shell.Descriptor;
 using OrchardCore.Features.Models;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace OrchardCore.Features.Services
 {
     public class ModuleService : IModuleService
     {
         private readonly IExtensionManager _extensionManager;
-        private readonly IShellDescriptorManager _shellDescriptorManager;
         private readonly IShellFeaturesManager _shellFeaturesManager;
         private readonly INotifier _notifier;
-        private readonly IHtmlLocalizer<ModuleService> H;
+        private readonly IHtmlLocalizer H;
 
         public ModuleService(
                 IExtensionManager extensionManager,
-                IShellDescriptorManager shellDescriptorManager,
                 IShellFeaturesManager shellFeaturesManager,
                 IHtmlLocalizer<ModuleService> htmlLocalizer,
                 INotifier notifier)
         {
             _notifier = notifier;
             _extensionManager = extensionManager;
-            _shellDescriptorManager = shellDescriptorManager;
             _shellFeaturesManager = shellFeaturesManager;
             H = htmlLocalizer;
         }
@@ -39,7 +35,7 @@ namespace OrchardCore.Features.Services
         /// <returns>An enumeration of the available features together with its state (enabled / disabled).</returns>
         public async Task<IEnumerable<ModuleFeature>> GetAvailableFeaturesAsync()
         {
-            var enabledFeatures = 
+            var enabledFeatures =
                 await _shellFeaturesManager.GetEnabledFeaturesAsync();
 
             var availableFeatures = _extensionManager.GetFeatures();

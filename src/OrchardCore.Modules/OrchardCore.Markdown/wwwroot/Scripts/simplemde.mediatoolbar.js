@@ -67,7 +67,7 @@ $(function () {
         var mediaMarkdownContent = "";
 
         for (i = 0; i < mediaApp.selectedMedias.length; i++) {
-          mediaMarkdownContent += ' {{ "' + mediaApp.selectedMedias[i].mediaPath + '" | asset_url | img_tag }}';
+          mediaMarkdownContent += ' [media]' + mediaApp.selectedMedias[i].mediaPath + '[/media]';
         }
 
         var cm = editor.codemirror;

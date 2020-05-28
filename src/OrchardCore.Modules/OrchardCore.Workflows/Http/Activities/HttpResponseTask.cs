@@ -16,8 +16,8 @@ namespace OrchardCore.Workflows.Http.Activities
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
-        private readonly IStringLocalizer<HttpResponseTask> S;
-        
+        private readonly IStringLocalizer S;
+
         public HttpResponseTask(
             IStringLocalizer<HttpResponseTask> localizer,
             IHttpContextAccessor httpContextAccessor,
@@ -30,9 +30,9 @@ namespace OrchardCore.Workflows.Http.Activities
         }
 
         public override string Name => nameof(HttpResponseTask);
-        
+
         public override LocalizedString DisplayText => S["Http Response Task"];
-        
+
         public override LocalizedString Category => S["HTTP"];
 
         public WorkflowExpression<string> Content

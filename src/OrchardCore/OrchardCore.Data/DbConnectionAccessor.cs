@@ -22,7 +22,7 @@ namespace OrchardCore.Data
 
         /// <inheritdocs />
         public DbConnection CreateConnection()
-        {          
+        {
             return _store.Configuration.ConnectionFactory.CreateConnection();
         }
     }

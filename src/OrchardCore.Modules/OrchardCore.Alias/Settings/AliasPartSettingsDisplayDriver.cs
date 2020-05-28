@@ -13,7 +13,7 @@ namespace OrchardCore.Alias.Settings
     public class AliasPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver
     {
         private readonly ILiquidTemplateManager _templateManager;
-        private readonly IStringLocalizer<AliasPartSettingsDisplayDriver> S;
+        private readonly IStringLocalizer S;
 
         public AliasPartSettingsDisplayDriver(ILiquidTemplateManager templateManager, IStringLocalizer<AliasPartSettingsDisplayDriver> localizer)
         {
@@ -33,6 +33,7 @@ namespace OrchardCore.Alias.Settings
                 var settings = contentTypePartDefinition.GetSettings<AliasPartSettings>();
 
                 model.Pattern = settings.Pattern;
+                model.Options = settings.Options;
                 model.AliasPartSettings = settings;
             }).Location("Content");
         }
@@ -46,7 +47,7 @@ namespace OrchardCore.Alias.Settings
 
             var model = new AliasPartSettingsViewModel();
 
-            if (await context.Updater.TryUpdateModelAsync(model, Prefix, m => m.Pattern))
+            if (await context.Updater.TryUpdateModelAsync(model, Prefix, m => m.Pattern, m => m.Options))
             {
                 if (!string.IsNullOrEmpty(model.Pattern) && !_templateManager.Validate(model.Pattern, out var errors))
                 {
@@ -54,7 +55,7 @@ namespace OrchardCore.Alias.Settings
                 }
                 else
                 {
-                    context.Builder.WithSettings(new AliasPartSettings { Pattern = model.Pattern });
+                    context.Builder.WithSettings(new AliasPartSettings { Pattern = model.Pattern, Options = model.Options });
                 }
             }
 

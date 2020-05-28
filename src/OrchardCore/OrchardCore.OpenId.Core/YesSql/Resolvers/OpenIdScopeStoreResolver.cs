@@ -51,7 +51,7 @@ namespace OrchardCore.OpenId.YesSql.Resolvers
                 return typeof(OpenIdScopeStore<>).MakeGenericType(key);
             });
 
-            return (IOpenIddictScopeStore<TScope>) _provider.GetRequiredService(type);
+            return (IOpenIddictScopeStore<TScope>)_provider.GetRequiredService(type);
         }
 
         // Note: OrchardCore YesSql resolvers are registered as scoped dependencies as their inner

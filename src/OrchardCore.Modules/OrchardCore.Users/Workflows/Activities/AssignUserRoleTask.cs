@@ -1,6 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Localization;
@@ -18,9 +16,8 @@ namespace OrchardCore.Users.Workflows.Activities
         private readonly UserManager<IUser> _userManager;
         private readonly IUserService _userService;
         private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
+        private readonly IStringLocalizer S;
 
-        private readonly IStringLocalizer<AssignUserRoleTask> S;
-        
         public AssignUserRoleTask(UserManager<IUser> userManager, IUserService userService, IWorkflowExpressionEvaluator expressionvaluator, IStringLocalizer<AssignUserRoleTask> localizer)
         {
             _userManager = userManager;
@@ -30,9 +27,9 @@ namespace OrchardCore.Users.Workflows.Activities
         }
 
         public override string Name => nameof(AssignUserRoleTask);
-        
+
         public override LocalizedString DisplayText => S["Assign User Role Task"];
-        
+
         public override LocalizedString Category => S["User"];
 
         public WorkflowExpression<string> UserName

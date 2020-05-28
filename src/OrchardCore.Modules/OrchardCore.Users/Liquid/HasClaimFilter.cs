@@ -1,13 +1,7 @@
-using System;
-using System.Collections.Generic;
 using System.Security.Claims;
-using System.Linq;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.Security.Permissions;
 using OrchardCore.Liquid;
 
 namespace OrchardCore.Users.Liquid
@@ -24,7 +18,7 @@ namespace OrchardCore.Users.Liquid
             {
                 ret = principal.HasClaim(claimType, claimName);
             }
-            
+
             return new ValueTask<FluidValue>(ret ? BooleanValue.True : BooleanValue.False);
         }
     }

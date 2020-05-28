@@ -1,0 +1,13 @@
+{% assign name = Model.PartFieldDefinition.PartDefinition.Name | append: '-' | append: Model.PartFieldDefinition.Name | html_class %}
+
+<div class="d-inline term-badge field field-type-taxonomyfield field-name-{{ name }}">
+    {% assign categoryTerms = Model.Field | taxonomy_terms %}
+    {% for categoryTerm in categoryTerms %}
+        {% a display_for: categoryTerm %}
+            <span class="badge badge-secondary">
+                <i class="{{ categoryTerm.Content.Category.Icon.Text }} fa-xs align-middle"></i>
+                <span class="align-middle"> {{ categoryTerm.DisplayText }} </span>
+            </span>
+        {% enda %}
+    {% endfor %}
+</div>

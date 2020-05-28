@@ -46,6 +46,10 @@ namespace OrchardCore.Deployment
             services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<CustomFileDeploymentStep>());
             services.AddScoped<IDisplayDriver<DeploymentStep>, CustomFileDeploymentStepDriver>();
 
+            // Recipe File deployment step
+            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<RecipeFileDeploymentStep>());
+            services.AddScoped<IDisplayDriver<DeploymentStep>, RecipeFileDeploymentStepDriver>();
+
             services.AddSingleton<IIndexProvider, DeploymentPlanIndexProvider>();
             services.AddTransient<IDataMigration, Migrations>();
 

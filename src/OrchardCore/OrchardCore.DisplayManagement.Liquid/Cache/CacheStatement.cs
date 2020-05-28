@@ -15,7 +15,7 @@ namespace OrchardCore.DynamicCache.Liquid
 {
     public class CacheStatement : TagStatement
     {
-        private static readonly char[] SplitChars = new [] { ',', ' ' };
+        private static readonly char[] SplitChars = new[] { ',', ' ' };
         private readonly ArgumentsExpression _arguments;
 
         public CacheStatement(ArgumentsExpression arguments, List<Statement> statements = null) : base(statements)
@@ -39,15 +39,15 @@ namespace OrchardCore.DynamicCache.Liquid
 
             if (dynamicCache == null || cacheScopeManager == null)
             {
-                logger.LogInformation(@"Liquid cache block entered without an available IDynamicCacheService or ICacheScopeManager. 
-                                        The contents of the cache block will not be cached. 
+                logger.LogInformation(@"Liquid cache block entered without an available IDynamicCacheService or ICacheScopeManager.
+                                        The contents of the cache block will not be cached.
                                         To enable caching, make sure that a feature that contains an implementation of IDynamicCacheService and ICacheScopeManager is enabled (for example, 'Dynamic Cache').");
 
                 await writer.WriteAsync(await EvaluateStatementsAsync(encoder, context));
 
                 return Completion.Normal;
             }
-            
+
             // TODO: Create a configuration setting in the UI
             var debugMode = false;
 
@@ -71,7 +71,7 @@ namespace OrchardCore.DynamicCache.Liquid
             {
                 cacheContext.WithExpirySliding(slidingDuration);
             }
-            
+
             var cacheResult = await dynamicCache.GetCachedValueAsync(cacheContext);
             if (cacheResult != null)
             {
@@ -79,7 +79,7 @@ namespace OrchardCore.DynamicCache.Liquid
 
                 return Completion.Normal;
             }
-            
+
             cacheScopeManager.EnterScope(cacheContext);
             String content;
 
@@ -109,7 +109,7 @@ namespace OrchardCore.DynamicCache.Liquid
             }
 
             await dynamicCache.SetCachedValueAsync(cacheContext, content);
-            
+
             await writer.WriteAsync(content);
 
             return Completion.Normal;

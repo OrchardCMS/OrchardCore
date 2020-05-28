@@ -10,6 +10,7 @@ using OrchardCore.Admin;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.DisplayManagement.Layout;
 using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.Theming;
 using OrchardCore.DisplayManagement.Zones;
 using OrchardCore.Environment.Cache;
@@ -39,7 +40,6 @@ namespace OrchardCore.Layers.Services
             IContentItemDisplayManager contentItemDisplayManager,
             IUpdateModelAccessor modelUpdaterAccessor,
             IScriptingManager scriptingManager,
-            IServiceProvider serviceProvider,
             IMemoryCache memoryCache,
             ISignal signal,
             IThemeManager themeManager,
@@ -137,9 +137,9 @@ namespace OrchardCore.Layers.Services
                     {
                         await zoneOnDemand.AddAsync(wrapper);
                     }
-                    else
+                    else if (contentZone is Shape shape)
                     {
-                        contentZone.Add(wrapper);
+                        shape.Add(wrapper);
                     }
                 }
             }

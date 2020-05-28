@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Localization;
@@ -97,6 +96,7 @@ namespace OrchardCore.DisplayManagement.RazorPages
         }
 
         private dynamic _themeLayout;
+
         public dynamic ThemeLayout
         {
             get
@@ -152,6 +152,7 @@ namespace OrchardCore.DisplayManagement.RazorPages
         }
 
         private IPageTitleBuilder _pageTitleBuilder;
+
         public IPageTitleBuilder Title
         {
             get

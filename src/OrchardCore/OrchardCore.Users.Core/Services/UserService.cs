@@ -17,7 +17,7 @@ namespace OrchardCore.Users.Services
         private readonly SignInManager<IUser> _signInManager;
         private readonly UserManager<IUser> _userManager;
         private readonly IOptions<IdentityOptions> _identityOptions;
-        private readonly IStringLocalizer<UserService> S;
+        private readonly IStringLocalizer S;
 
         public UserService(
             SignInManager<IUser> signInManager,
@@ -88,8 +88,21 @@ namespace OrchardCore.Users.Services
                 ProcessValidationErrors(identityResult.Errors, newUser, reportError);
                 return null;
             }
-            
+
             return user;
+        }
+
+        public async Task<bool> ChangeEmailAsync(IUser user, string newEmail, Action<string, string> reportError)
+        {
+            var token = await _userManager.GenerateChangeEmailTokenAsync(user, newEmail);
+            var identityResult = await _userManager.ChangeEmailAsync(user, newEmail, token);
+
+            if (!identityResult.Succeeded)
+            {
+                ProcessValidationErrors(identityResult.Errors, (User)user, reportError);
+            }
+
+            return identityResult.Succeeded;
         }
 
         public async Task<bool> ChangePasswordAsync(IUser user, string currentPassword, string newPassword, Action<string, string> reportError)
@@ -238,6 +251,9 @@ namespace OrchardCore.Users.Services
                         break;
 
                     // Email
+                    case "DuplicateEmail":
+                        reportError("Email", S["Email '{0}' is already used.", user.Email]);
+                        break;
                     case "InvalidEmail":
                         reportError("Email", S["Email '{0}' is invalid.", user.Email]);
                         break;

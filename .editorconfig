@@ -50,3 +50,4 @@ dotnet_style_null_propagation                              = true : suggestion
 dotnet_style_explicit_tuple_names                          = true : suggestion
 
 trim_trailing_whitespace = true
+insert_final_newline = true

@@ -16,6 +16,7 @@ using OrchardCore.Menu.Models;
 using OrchardCore.Menu.TagHelpers;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
+using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Menu
@@ -34,16 +35,22 @@ namespace OrchardCore.Menu
             services.AddScoped<IDataMigration, Migrations>();
             services.AddScoped<IShapeTableProvider, MenuShapes>();
             services.AddScoped<IPermissionProvider, Permissions>();
+            services.AddScoped<INavigationProvider, AdminMenu>();
 
             // MenuPart
             services.AddScoped<IContentHandler, MenuContentHandler>();
-            services.AddScoped<IContentPartDisplayDriver, MenuPartDisplayDriver>();
-            services.AddContentPart<MenuPart>();
+            services.AddContentPart<MenuPart>()
+                .UseDisplayDriver<MenuPartDisplayDriver>();
+
             services.AddContentPart<MenuItemsListPart>();
 
             // LinkMenuItemPart
-            services.AddScoped<IContentPartDisplayDriver, LinkMenuItemPartDisplayDriver>();
-            services.AddContentPart<LinkMenuItemPart>();
+            services.AddContentPart<LinkMenuItemPart>()
+                .UseDisplayDriver<LinkMenuItemPartDisplayDriver>();
+
+            // ContentMenuItemPart
+            services.AddContentPart<ContentMenuItemPart>()
+                .UseDisplayDriver<ContentMenuItemPartDisplayDriver>();
 
             services.AddTagHelpers<MenuTagHelper>();
         }

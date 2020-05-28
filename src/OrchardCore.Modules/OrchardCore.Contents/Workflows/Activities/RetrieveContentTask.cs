@@ -16,9 +16,9 @@ namespace OrchardCore.Contents.Workflows.Activities
         }
 
         public override string Name => nameof(RetrieveContentTask);
-        
+
         public override LocalizedString DisplayText => S["Retrieve Content Task"];
-        
+
         public override LocalizedString Category => S["Content"];
 
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)

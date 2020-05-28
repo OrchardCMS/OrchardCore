@@ -18,6 +18,11 @@ namespace OrchardCore.ContentManagement.Display
             services.AddScoped<IPlacementNodeFilterProvider, ContentTypePlacementNodeFilterProvider>();
             services.AddScoped<IPlacementNodeFilterProvider, ContentPartPlacementNodeFilterProvider>();
 
+            services.AddScoped<IContentPartDisplayDriverResolver, ContentPartDisplayDriverResolver>();
+            services.AddScoped<IContentFieldDisplayDriverResolver, ContentFieldDisplayDriverResolver>();
+
+            services.AddOptions<ContentDisplayOptions>();
+
             services.AddLiquidFilter<ConsoleLogFilter>("console_log");
 
             return services;

@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.TagHelpers.Cache;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Logging;
 using OrchardCore.DisplayManagement;
 using OrchardCore.Environment.Cache;
 
@@ -83,23 +82,21 @@ namespace OrchardCore.DynamicCache.TagHelpers
         /// Prefix used by <see cref="CacheTagHelper"/> instances when creating entries in <see cref="IDynamicCacheService"/>.
         /// </summary>
         public static readonly string CacheKeyPrefix = nameof(DynamicCacheTagHelper);
+
         private const string CachePriorityAttributeName = "priority";
         private readonly IDynamicCacheService _dynamicCacheService;
         private readonly ICacheScopeManager _cacheScopeManager;
-        private readonly ILogger<DynamicCacheTagHelper> _logger;
         private readonly DynamicCacheTagHelperService _dynamicCacheTagHelperService;
 
         public DynamicCacheTagHelper(
             IDynamicCacheService dynamicCacheService,
             ICacheScopeManager cacheScopeManager,
-            ILogger<DynamicCacheTagHelper> logger,
             HtmlEncoder htmlEncoder,
             DynamicCacheTagHelperService dynamicCacheTagHelperService)
 
         {
             _dynamicCacheService = dynamicCacheService;
             _cacheScopeManager = cacheScopeManager;
-            _logger = logger;
             HtmlEncoder = htmlEncoder;
             _dynamicCacheTagHelperService = dynamicCacheTagHelperService;
         }
@@ -193,7 +190,6 @@ namespace OrchardCore.DynamicCache.TagHelpers
 
         public async Task<IHtmlContent> ProcessContentAsync(TagHelperOutput output, CacheContext cacheContext)
         {
-
             IHtmlContent content = null;
 
             while (content == null)
@@ -238,8 +234,6 @@ namespace OrchardCore.DynamicCache.TagHelpers
 
                                 content = formattingContext.Html;
                             }
-
-
                         }
                         else
                         {

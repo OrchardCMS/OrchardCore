@@ -1,0 +1,247 @@
+@model ContentTypesSitemapSourceViewModel
+@using OrchardCore.Sitemaps.Models
+<h5>@T["Content Types"]</h5>
+
+@*Panel Switcher*@
+<div class="form-group custom-control custom-checkbox">
+    <input asp-for="IndexAll" class="custom-control-input" />
+    <label asp-for="IndexAll" class="custom-control-label">@T["Index All Content Types"]</label>
+</div>
+
+<div id="ContentTypesSitemapSource_LimitItems_Container" class="form-group custom-control custom-checkbox" style="@(Model.IndexAll ? "display: none" : "")">
+    <input asp-for="LimitItems" class="custom-control-input" />
+    <label asp-for="LimitItems" class="custom-control-label">@T["Limit Items"]</label>
+    <span class="hint">@T["Limit the amount of content items to provide from this source. Note: Only one content type is selectable when this option is selected."]</span>
+</div>
+
+@*Index All Panel*@
+<div id="index-all-row" class="row @(Model.IndexAll ? "" : "collapse")">
+    <div class="col-6">
+        <div class="card mb-4">
+            <div class="card-header">
+                @T["Index All Content Types"]
+            </div>
+            <div class="card-body">
+                <div class="form-group" asp-validation-class-for="ChangeFrequency">
+                    <label asp-for="ChangeFrequency">@T["Change Frequency"] </label>
+                    <select asp-for="ChangeFrequency" class="form-control w-25" asp-items="Html.GetEnumSelectList<ChangeFrequency>()"></select>
+                    <span class="hint">@T["The default frequency these content types are likely to change."]</span>
+                </div>
+                <div class="form-group" asp-validation-class-for="Priority">
+                    <label asp-for="Priority">@T["Priority"] </label>
+                    <select asp-for="Priority" class="form-control w-25">
+                        <option value="0">@T["0.0"]</option>
+                        <option value="1">@T["0.1"]</option>
+                        <option value="2">@T["0.2"]</option>
+                        <option value="3">@T["0.3"]</option>
+                        <option value="4">@T["0.4"]</option>
+                        <option value="5">@T["0.5"]</option>
+                        <option value="6">@T["0.6"]</option>
+                        <option value="7">@T["0.7"]</option>
+                        <option value="8">@T["0.8"]</option>
+                        <option value="9">@T["0.9"]</option>
+                        <option value="10">@T["1.0"]</option>
+                    </select>
+                    <span class="hint">@T["The default priority of these content types relative to other content on your site."]</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*Content Types Selection Panel*@
+<div id="index-selected-row" class="row @(Model.IndexAll || Model.LimitItems ? "collapse" : "")">
+    <div class="col col-xl-9">
+        <div class="card mb-4">
+            <div class="card-header">
+                @T["Select Content Types"]
+            </div>
+            <div class="card-body px-4">
+                <ul class="list-group">
+                    @for (int i = 0; i < Model.ContentTypes.Length; i++)
+                    {
+                        var checkd = Model.ContentTypes[i].IsChecked;
+                        var notChecked = !checkd;
+                        <li class="list-group-item d-flex row px-0">
+                            @* Select content types *@
+                            <div class="col-12 col-md-4">
+                                <input type="hidden" name="@Html.NameFor(m => m.ContentTypes[i].ContentTypeName)"
+                                       value="@Model.ContentTypes[i].ContentTypeName" />
+                                <div class="form-group custom-control custom-checkbox">
+                                    <input asp-for="ContentTypes[i].IsChecked" class="custom-control-input content-type-checkbox" />
+                                    <label asp-for="ContentTypes[i].IsChecked" class="custom-control-label">@Model.ContentTypes[i].ContentTypeDisplayName</label>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <div class="form-group" asp-validation-class-for="ContentTypes[i].ChangeFrequency">
+                                    <label asp-for="ContentTypes[i].ChangeFrequency">@T["Change Frequency"] </label>
+                                    <select asp-for="ContentTypes[i].ChangeFrequency" class="form-control" asp-items="Html.GetEnumSelectList<ChangeFrequency>()" disabled="@notChecked"></select>
+                                    <span class="hint">@T["The default frequency these content types are likely to change."]</span>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <div class="form-group" asp-validation-class-for="ContentTypes[i].Priority">
+                                    <label asp-for="ContentTypes[i].Priority">@T["Priority"] </label>
+                                    <select asp-for="ContentTypes[i].Priority" class="form-control" disabled="@notChecked">
+                                        <option value="0">@T["0.0"]</option>
+                                        <option value="1">@T["0.1"]</option>
+                                        <option value="2">@T["0.2"]</option>
+                                        <option value="3">@T["0.3"]</option>
+                                        <option value="4">@T["0.4"]</option>
+                                        <option value="5">@T["0.5"]</option>
+                                        <option value="6">@T["0.6"]</option>
+                                        <option value="7">@T["0.7"]</option>
+                                        <option value="8">@T["0.8"]</option>
+                                        <option value="9">@T["0.9"]</option>
+                                        <option value="10">@T["1.0"]</option>
+                                    </select>
+                                    <span class="hint">@T["The default priority of these content types relative to other content on your site."]</span>
+                                </div>
+                            </div>
+                        </li>
+                    }
+                </ul>
+                <span class="hint">@T["The content types to add to the sitemap."]</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*Limited Content Types Selection panel*@
+<div id="index-limit-row" class="row @(Model.IndexAll || !Model.LimitItems ? "collapse" : "")">
+    <div class="col col-xl-9">
+        <div class="card mb-4">
+            <div class="card-header">
+                @T["Select Content Types"]
+            </div>
+            <div class="card-body px-4">
+                <ul class="list-group">
+                    @for (int i = 0; i < Model.LimitedContentTypes.Length; i++)
+                    {
+                        var checkd = String.Equals(Model.LimitedContentTypes[i].ContentTypeName, Model.LimitedContentType);
+                        var notChecked = !checkd;
+                        <li class="list-group-item d-flex row px-0">
+                            @* Select content types *@
+                            <div class="col-12 col-md-3">
+                                <input type="hidden" name="@Html.NameFor(m => m.LimitedContentTypes[i].ContentTypeName)"
+                                       value="@Model.LimitedContentTypes[i].ContentTypeName" />
+                                <div class="form-group custom-control custom-radio">
+                                    <input type="radio" id="LimitedContentTypes_@i" asp-for="LimitedContentType" value="@Model.LimitedContentTypes[i].ContentTypeName" class="custom-control-input content-type-radio" />
+                                    <label for="LimitedContentTypes_@i" class="custom-control-label">@Model.LimitedContentTypes[i].ContentTypeDisplayName</label>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-3 ">
+                                <div class="form-group" asp-validation-class-for="LimitedContentTypes[i].ChangeFrequency">
+                                    <label asp-for="LimitedContentTypes[i].ChangeFrequency">@T["Change Frequency"] </label>
+                                    <select asp-for="LimitedContentTypes[i].ChangeFrequency" class="form-control" asp-items="Html.GetEnumSelectList<ChangeFrequency>()" disabled="@notChecked"></select>
+                                    <span class="hint">@T["The default frequency these content types are likely to change."]</span>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-3">
+                                <div class="form-group" asp-validation-class-for="LimitedContentTypes[i].Priority">
+                                    <label asp-for="LimitedContentTypes[i].Priority">@T["Priority"] </label>
+                                    <select asp-for="LimitedContentTypes[i].Priority" class="form-control" disabled="@notChecked">
+                                        <option value="0">@T["0.0"]</option>
+                                        <option value="1">@T["0.1"]</option>
+                                        <option value="2">@T["0.2"]</option>
+                                        <option value="3">@T["0.3"]</option>
+                                        <option value="4">@T["0.4"]</option>
+                                        <option value="5">@T["0.5"]</option>
+                                        <option value="6">@T["0.6"]</option>
+                                        <option value="7">@T["0.7"]</option>
+                                        <option value="8">@T["0.8"]</option>
+                                        <option value="9">@T["0.9"]</option>
+                                        <option value="10">@T["1.0"]</option>
+                                    </select>
+                                    <span class="hint">@T["The default priority of these content types relative to other content on your site."]</span>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-3 limit-items">
+                                <div class="d-flex flex-column justify-content-center content-types-take-container">
+                                    <div class="form-group form-inline">
+                                        <label asp-for="LimitedContentTypes[i].Skip" class="form-label pr-3">@T["Skip"]</label>
+                                        <input asp-for="LimitedContentTypes[i].Skip" class="form-control w-100" readonly="@notChecked" />
+                                    </div>
+                                    <div class="form-group form-inline">
+                                        <label asp-for="LimitedContentTypes[i].Take" class="form-label pr-3">@T["Take"]</label>
+                                        <input asp-for="LimitedContentTypes[i].Take" class="form-control w-100" readonly="@notChecked" />
+                                    </div>
+                                    <span class="hint">@T["Adjust quantity of content items in sitemap."]</span>
+                                </div>
+                            </div>
+                        </li>
+                    }
+                </ul>
+                <span class="hint">@T["The content types to add to the sitemap."]</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script at="Foot" depends-on="jquery">
+    $(function () {
+        function switchContentTypesCheckBoxes() {
+            var indexAll = $('#ContentTypesSitemapSource_IndexAll').prop('checked');
+            var limitItems = $('#ContentTypesSitemapSource_LimitItems').prop('checked');
+            if (indexAll) {
+                $('#index-all-row').show();
+                $('#index-selected-row').hide();
+                $('#index-limit-row').hide();
+                $('#ContentTypesSitemapSource_LimitItems_Container').hide();
+            } else {
+                $('#index-all-row').hide();
+                $('#ContentTypesSitemapSource_LimitItems_Container').show();
+                if (limitItems) {
+                    $('#index-selected-row').hide();
+                    $('#index-limit-row').show();
+                } else {
+                    $('#index-selected-row').show();
+                    $('#index-limit-row').hide();
+                }
+            }
+        }
+
+        $('.content-type-checkbox').on('click', function (e) {
+            var listItem = $(e.target).closest('.list-group-item');
+
+            var selected = $(e.target).prop('checked');
+            $(listItem).find('select, input:not(.content-type-checkbox)').each(function () {
+                selected ? $(this).prop('readonly', false) : $(this).prop('readonly', true);
+            });
+        });
+
+        $('.content-type-radio').on('click', function (e) {
+            var selectedContentType = $(e.target).val();
+
+            $('#index-limit-row .list-group-item').each(function () {
+                var contentType = $(this).find('.content-type-radio').first().val();
+                if (contentType === selectedContentType) {
+                    $(this).find('select, input:not(.content-type-radio)').each(function () {
+                        $(this).prop('readonly', false);
+                    });
+                    $(this).find('select').each(function () {
+                        $(this).prop('disabled', false);
+                    });
+                } else {
+                    $(this).find('input:not(.content-type-radio)').each(function () {
+                        $(this).prop('readonly', true);
+                    });
+                    
+                    $(this).find('select').each(function () {
+                        $(this).prop('disabled', true);
+                    });
+                }
+            });
+        });
+
+        $('#ContentTypesSitemapSource_IndexAll').change(function () {
+            switchContentTypesCheckBoxes();
+        });
+
+        $('#ContentTypesSitemapSource_LimitItems').change(function () {
+            switchContentTypesCheckBoxes();
+        });
+
+    });
+</script>
+

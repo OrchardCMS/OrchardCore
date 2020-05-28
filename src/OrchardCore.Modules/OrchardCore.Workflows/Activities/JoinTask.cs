@@ -9,8 +9,8 @@ namespace OrchardCore.Workflows.Activities
 {
     public class JoinTask : TaskActivity
     {
-        private readonly IStringLocalizer<JoinTask> S;
-        
+        private readonly IStringLocalizer S;
+
         public enum JoinMode
         {
             WaitAll,
@@ -23,9 +23,9 @@ namespace OrchardCore.Workflows.Activities
         }
 
         public override string Name => nameof(JoinTask);
-        
+
         public override LocalizedString DisplayText => S["Join Task"];
-        
+
         public override LocalizedString Category => S["Control Flow"];
 
         public JoinMode Mode

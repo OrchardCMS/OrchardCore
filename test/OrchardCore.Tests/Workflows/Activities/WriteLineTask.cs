@@ -23,9 +23,9 @@ namespace OrchardCore.Tests.Workflows.Activities
         }
 
         public override string Name => nameof(WriteLineTask);
-        
+
         public override LocalizedString DisplayText => S["Write Line Task"];
-        
+
         public override LocalizedString Category => S["Test"];
 
         public WorkflowExpression<string> Text

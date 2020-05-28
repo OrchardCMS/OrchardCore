@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
@@ -12,7 +13,7 @@ namespace OrchardCore.Email.Workflows.Activities
     {
         private readonly ISmtpService _smtpService;
         private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
-        private readonly IStringLocalizer<EmailTask> S;
+        private readonly IStringLocalizer S;
 
         public EmailTask(
             ISmtpService smtpService,
@@ -21,13 +22,19 @@ namespace OrchardCore.Email.Workflows.Activities
         )
         {
             _smtpService = smtpService;
-            _expressionEvaluator = expressionEvaluator;           
+            _expressionEvaluator = expressionEvaluator;
             S = localizer;
         }
 
         public override string Name => nameof(EmailTask);
         public override LocalizedString DisplayText => S["Email Task"];
         public override LocalizedString Category => S["Messaging"];
+
+        public WorkflowExpression<string> Author
+        {
+            get => GetProperty(() => new WorkflowExpression<string>());
+            set => SetProperty(value);
+        }
 
         public WorkflowExpression<string> Sender
         {
@@ -67,6 +74,7 @@ namespace OrchardCore.Email.Workflows.Activities
 
         public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
+            var author = await _expressionEvaluator.EvaluateAsync(Author, workflowContext);
             var sender = await _expressionEvaluator.EvaluateAsync(Sender, workflowContext);
             var recipients = await _expressionEvaluator.EvaluateAsync(Recipients, workflowContext);
             var subject = await _expressionEvaluator.EvaluateAsync(Subject, workflowContext);
@@ -74,15 +82,17 @@ namespace OrchardCore.Email.Workflows.Activities
 
             var message = new MailMessage
             {
+                // Author and Sender are both not required fields.
+                From = author?.Trim() ?? sender?.Trim(),
                 To = recipients.Trim(),
                 Subject = subject.Trim(),
                 Body = body?.Trim(),
                 IsBodyHtml = IsBodyHtml
             };
 
-            if (!string.IsNullOrWhiteSpace(sender))
+            if (!String.IsNullOrWhiteSpace(sender))
             {
-                message.From = sender.Trim();
+                message.Sender = sender.Trim();
             }
 
             var result = await _smtpService.SendAsync(message);

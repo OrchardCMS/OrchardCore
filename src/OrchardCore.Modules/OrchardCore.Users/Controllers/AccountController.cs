@@ -42,7 +42,7 @@ namespace OrchardCore.Users.Controllers
         private readonly IClock _clock;
         private readonly IDistributedCache _distributedCache;
         private readonly IEnumerable<IExternalLoginEventHandler> _externalLoginHandlers;
-        private readonly IStringLocalizer<AccountController> S;
+        private readonly IStringLocalizer S;
 
         public AccountController(
             IUserService userService,
@@ -134,14 +134,14 @@ namespace OrchardCore.Users.Controllers
                     }
                     catch (Exception ex)
                     {
-                        _logger.LogError(ex, "An error occured while validating DefaultExternalLogin token");
+                        _logger.LogError(ex, "An error occurred while validating DefaultExternalLogin token");
                     }
                 }
             }
             return RedirectToAction(nameof(Login));
         }
 
-        async Task<bool> AddConfirmEmailError(IUser user)
+        private async Task<bool> AddConfirmEmailError(IUser user)
         {
             var registrationSettings = (await _siteService.GetSiteSettingsAsync()).As<RegistrationSettings>();
             if (registrationSettings.UsersMustValidateEmail == true)
@@ -153,12 +153,12 @@ namespace OrchardCore.Users.Controllers
                     return true;
                 }
             }
-            
+
             return false;
         }
-        
-        bool AddUserEnabledError(IUser user)
-        {           
+
+        private bool AddUserEnabledError(IUser user)
+        {
             var localUser = user as User;
 
             if (localUser == null || !localUser.IsEnabled)
@@ -166,7 +166,7 @@ namespace OrchardCore.Users.Controllers
                 ModelState.AddModelError(String.Empty, S["Your account is disabled. Please contact an administrator."]);
                 return true;
             }
-            
+
             return false;
         }
 
@@ -180,7 +180,7 @@ namespace OrchardCore.Users.Controllers
             if (model == null)
                 throw new ArgumentNullException(nameof(model));
 
-            if (ModelState.IsValid)
+            if (TryValidateModel(model) && ModelState.IsValid)
             {
                 var disableLocalLogin = (await _siteService.GetSiteSettingsAsync()).As<LoginSettings>().DisableLocalLogin;
                 if (disableLocalLogin)
@@ -239,7 +239,7 @@ namespace OrchardCore.Users.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ChangePassword(ChangePasswordViewModel model)
         {
-            if (ModelState.IsValid)
+            if (TryValidateModel(model) && ModelState.IsValid)
             {
                 var user = await _userService.GetAuthenticatedUserAsync(User);
                 if (await _userService.ChangePasswordAsync(user, model.CurrentPassword, model.Password, (key, message) => ModelState.AddModelError(key, message)))
@@ -290,9 +290,18 @@ namespace OrchardCore.Users.Controllers
                 await workflowManager.TriggerEventAsync(nameof(Workflows.Activities.UserLoggedInEvent),
                     input: input, correlationId: ((User)user).Id.ToString());
             }
+
+            if (info != null)
+            {
+                var identityResult = await _signInManager.UpdateExternalAuthenticationTokensAsync(info);
+                if (!identityResult.Succeeded)
+                {
+                    _logger.LogError("Error updating the external authentication tokens.");
+                }
+            }
+
             return RedirectToLocal(returnUrl);
         }
-
 
         [HttpPost]
         [AllowAnonymous]
@@ -405,7 +414,7 @@ namespace OrchardCore.Users.Controllers
 
                 if (user != null)
                 {
-                    // Link external login to an axisting user
+                    // Link external login to an existing user
                     ViewData["UserName"] = user.UserName;
                     ViewData["Email"] = email;
 
@@ -448,7 +457,7 @@ namespace OrchardCore.Users.Controllers
                                 ConfirmPassword = null
                             }, S["Confirm your account"], _logger);
 
-                            // If the registration was successfull we can link the external provider and redirect the user
+                            // If the registration was successful we can link the external provider and redirect the user
                             if (user != null)
                             {
                                 var identityResult = await _signInManager.UserManager.AddLoginAsync(user, new UserLoginInfo(info.LoginProvider, info.ProviderKey, info.ProviderDisplayName));
@@ -490,7 +499,6 @@ namespace OrchardCore.Users.Controllers
 
             if (info == null)
             {
-
                 _logger.LogWarning("Error loading external login info.");
                 return NotFound();
             }
@@ -573,7 +581,6 @@ namespace OrchardCore.Users.Controllers
                 return NotFound();
             }
 
-
             if (user == null)
             {
                 _logger.LogWarning("Suspicious login detected from external provider. {provider} with key [{providerKey}] for {identity}",
@@ -613,7 +620,7 @@ namespace OrchardCore.Users.Controllers
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var model = new ExternalLoginsViewModel { CurrentLogins = await _userManager.GetLoginsAsync(user) };
@@ -693,7 +700,7 @@ namespace OrchardCore.Users.Controllers
             return RedirectToAction(nameof(ExternalLogins));
         }
 
-        async Task<string> GenerateUsername(ExternalLoginInfo info)
+        private async Task<string> GenerateUsername(ExternalLoginInfo info)
         {
             var now = new TimeSpan(_clock.UtcNow.Ticks) - new TimeSpan(DateTime.UnixEpoch.Ticks);
             var ret = string.Concat("u" + Convert.ToInt32(now.TotalSeconds).ToString());

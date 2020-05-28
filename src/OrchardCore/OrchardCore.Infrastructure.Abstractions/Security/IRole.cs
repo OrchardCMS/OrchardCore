@@ -4,6 +4,6 @@ namespace OrchardCore.Security
     {
         string RoleName { get; }
 
-        string RoleDescription{ get; }
+        string RoleDescription { get; }
     }
 }

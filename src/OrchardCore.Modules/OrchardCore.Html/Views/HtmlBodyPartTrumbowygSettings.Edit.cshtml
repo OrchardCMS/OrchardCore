@@ -4,7 +4,7 @@
         <div class="custom-control custom-checkbox">
             <input type="checkbox" class="custom-control-input" asp-for="InsertMediaWithUrl" checked="@Model.InsertMediaWithUrl" />
             <label class="custom-control-label" asp-for="InsertMediaWithUrl">@T["Insert Media with url"]</label>
-            <span class="hint">— @T["Whether the url is used when selected from Insert Media (By default, the Liquid Tag is inserted)."]</span>
+            <span class="hint">— @T["Whether the url is used when selected from Insert Media (By default, the Short Code is inserted)."]</span>
         </div>
     </div>
     <div class="form-group row">
@@ -17,11 +17,13 @@
 </div>
 
 <script asp-name="codemirror" depends-on="admin" at="Foot"></script>
+<script asp-name="codemirror-addon-display-autorefresh" at="Foot"></script>
 <script asp-name="codemirror-mode-javascript" at="Foot"></script>
 <script at="Foot">
     $(function () {
-        var optionsTexArea = document.getElementById('@Html.IdFor(x => x.Options)');
-        var editor = CodeMirror.fromTextArea(optionsTexArea, {
+        var optionsTextArea = document.getElementById('@Html.IdFor(x => x.Options)');
+        var editor = CodeMirror.fromTextArea(optionsTextArea, {
+            autoRefresh: true,
             lineNumbers: false,
             matchBrackets: true,
             mode: { name: "javascript" }
@@ -61,6 +63,5 @@
         </text>
     }
 }
-    setTimeout(function() { editor.refresh(); },1);
 });
 </script>

@@ -1,6 +1,6 @@
+using System.Collections.Generic;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Recipes.Models;
-using System.Collections.Generic;
 
 namespace OrchardCore.Setup.Services
 {

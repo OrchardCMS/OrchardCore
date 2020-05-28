@@ -3,7 +3,7 @@ using OrchardCore.Deployment;
 namespace OrchardCore.ContentTypes.Deployment
 {
     /// <summary>
-    /// Adds selected content definitions to a <see cref="DeploymentPlanResult"/>. 
+    /// Adds selected content definitions to a <see cref="DeploymentPlanResult"/>.
     /// </summary>
     public class ContentDefinitionDeploymentStep : DeploymentStep
     {
@@ -12,7 +12,7 @@ namespace OrchardCore.ContentTypes.Deployment
             Name = "ContentDefinition";
         }
 
-        public bool IncludeAll { get; set; } = true;
+        public bool IncludeAll { get; set; }
 
         public string[] ContentTypes { get; set; }
 

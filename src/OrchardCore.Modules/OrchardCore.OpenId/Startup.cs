@@ -7,9 +7,11 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OpenIddict.Mvc;
 using OpenIddict.Server;
@@ -43,9 +45,13 @@ namespace OrchardCore.OpenId
     public class Startup : StartupBase
     {
         private readonly AdminOptions _adminOptions;
+        private readonly ILogger _logger;
 
-        public Startup(IOptions<AdminOptions> adminOptions)
-            => _adminOptions = adminOptions.Value;
+        public Startup(IOptions<AdminOptions> adminOptions, ILogger<Startup> logger)
+        {
+            _adminOptions = adminOptions.Value;
+            _logger = logger;
+        }
 
         public override void ConfigureServices(IServiceCollection services)
         {
@@ -64,13 +70,18 @@ namespace OrchardCore.OpenId
             services.TryAddEnumerable(new[]
             {
                 ServiceDescriptor.Scoped<IPermissionProvider, Permissions>(),
-                ServiceDescriptor.Scoped<INavigationProvider, AdminMenu>()
+                ServiceDescriptor.Scoped<INavigationProvider, AdminMenu>(),
             });
-
         }
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
+            var httpContextAccessor = serviceProvider.GetRequiredService<IHttpContextAccessor>();
+            if (!httpContextAccessor.HttpContext.Request.IsHttps)
+            {
+                _logger.LogCritical("OpenId module requires a site that runs on https.");
+            }
+
             // Application
             var applicationControllerName = typeof(ApplicationController).ControllerName();
 
@@ -192,6 +203,7 @@ namespace OrchardCore.OpenId
                 ServiceDescriptor.Scoped<IDisplayManager<OpenIdServerSettings>, DisplayManager<OpenIdServerSettings>>(),
                 ServiceDescriptor.Scoped<IRecipeStepHandler, OpenIdServerSettingsStep>(),
                 ServiceDescriptor.Scoped<IRecipeStepHandler, OpenIdApplicationStep>(),
+                ServiceDescriptor.Scoped<IRecipeStepHandler, OpenIdScopeStep>(),
 
                 ServiceDescriptor.Singleton<IBackgroundTask, OpenIdBackgroundTask>(),
 
@@ -305,6 +317,7 @@ namespace OrchardCore.OpenId
             {
                 ServiceDescriptor.Scoped<IDisplayDriver<OpenIdValidationSettings>, OpenIdValidationSettingsDisplayDriver>(),
                 ServiceDescriptor.Scoped<IDisplayManager<OpenIdValidationSettings>, DisplayManager<OpenIdValidationSettings>>(),
+                ServiceDescriptor.Scoped<IRecipeStepHandler, OpenIdValidationSettingsStep>()
             });
 
             // Note: the OpenIddict extensions add an authentication options initializer that takes care of

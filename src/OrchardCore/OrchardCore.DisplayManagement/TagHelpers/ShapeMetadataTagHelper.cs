@@ -12,7 +12,7 @@ namespace OrchardCore.DisplayManagement.TagHelpers
         public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
         {
             var shape = (IShape)context.Items[typeof(IShape)];
-            
+
             if (shape != null && output.Attributes.ContainsName("display-type"))
             {
                 shape.Metadata.DisplayType = Convert.ToString(output.Attributes["display-type"].Value);

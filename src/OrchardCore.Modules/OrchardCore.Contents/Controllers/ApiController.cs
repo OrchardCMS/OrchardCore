@@ -1,8 +1,12 @@
+using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement;
 using OrchardCore.Contents;
+using OrchardCore.Mvc.Utilities;
 
 namespace OrchardCore.Content.Controllers
 {
@@ -13,13 +17,16 @@ namespace OrchardCore.Content.Controllers
     {
         private readonly IContentManager _contentManager;
         private readonly IAuthorizationService _authorizationService;
+        private readonly IStringLocalizer S;
 
         public ApiController(
             IContentManager contentManager,
-            IAuthorizationService authorizationService)
+            IAuthorizationService authorizationService,
+            IStringLocalizer<ApiController> stringLocalizer)
         {
             _authorizationService = authorizationService;
             _contentManager = contentManager;
+            S = stringLocalizer;
         }
 
         [Route("{contentItemId}"), HttpGet]
@@ -32,9 +39,10 @@ namespace OrchardCore.Content.Controllers
                 return NotFound();
             }
 
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ViewContent, contentItem))
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.GetApiContent) ||
+                !await _authorizationService.AuthorizeAsync(User, Permissions.ViewContent, contentItem))
             {
-                return Unauthorized();
+                return this.ChallengeOrForbid();
             }
 
             return Ok(contentItem);
@@ -53,7 +61,7 @@ namespace OrchardCore.Content.Controllers
 
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.DeleteContent, contentItem))
             {
-                return Unauthorized();
+                return this.ChallengeOrForbid();
             }
 
             await _contentManager.RemoveAsync(contentItem);
@@ -62,51 +70,62 @@ namespace OrchardCore.Content.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post(ContentItem newContentItem, bool draft = false)
+        public async Task<IActionResult> Post(ContentItem model, bool draft = false)
         {
-            var contentItem = await _contentManager.GetAsync(newContentItem.ContentItemId, VersionOptions.DraftRequired);
+            // It is really important to keep the proper method calls order with the ContentManager
+            // so that all event handlers gets triggered in the right sequence.
+
+            var contentItem = await _contentManager.GetAsync(model.ContentItemId, VersionOptions.DraftRequired);
 
             if (contentItem == null)
             {
                 if (!await _authorizationService.AuthorizeAsync(User, Permissions.PublishContent))
                 {
-                    return Unauthorized();
+                    return this.ChallengeOrForbid();
                 }
 
-                await _contentManager.CreateAsync(newContentItem, VersionOptions.DraftRequired);
+                var newContentItem = await _contentManager.NewAsync(model.ContentType);
+                newContentItem.Merge(model);
 
-                contentItem = newContentItem;
+                var result = await _contentManager.UpdateValidateAndCreateAsync(newContentItem, draft ? VersionOptions.DraftRequired : VersionOptions.Published);
+                if (result.Succeeded)
+                {
+                    contentItem = newContentItem;
+                }
+                else
+                {
+                    return Problem(
+                        title: S["One or more validation errors occurred."],
+                        detail: string.Join(',', result.Errors),
+                        statusCode: (int)HttpStatusCode.BadRequest);
+                }
             }
             else
             {
                 if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContent, contentItem))
                 {
-                    return Unauthorized();
+                    return this.ChallengeOrForbid();
                 }
-            }
 
-            if (contentItem != newContentItem)
-            {
-                contentItem.DisplayText = newContentItem.DisplayText;
-                contentItem.ModifiedUtc = newContentItem.ModifiedUtc;
-                contentItem.PublishedUtc = newContentItem.PublishedUtc;
-                contentItem.CreatedUtc = newContentItem.CreatedUtc;
-                contentItem.Owner = newContentItem.Owner;
-                contentItem.Author = newContentItem.Author;
-
-                contentItem.Apply(newContentItem);
+                contentItem.Merge(model);
 
                 await _contentManager.UpdateAsync(contentItem);
-            }
+                var result = await _contentManager.ValidateAsync(contentItem);
 
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            if (!draft)
-            {
-                await _contentManager.PublishAsync(contentItem);
+                if (result.Succeeded)
+                {
+                    if (!draft)
+                    {
+                        await _contentManager.PublishAsync(contentItem);
+                    }
+                }
+                else
+                {
+                    return Problem(
+                        title: S["One or more validation errors occurred."],
+                        detail: string.Join(',', result.Errors),
+                        statusCode: (int)HttpStatusCode.BadRequest);
+                }
             }
 
             return Ok(contentItem);

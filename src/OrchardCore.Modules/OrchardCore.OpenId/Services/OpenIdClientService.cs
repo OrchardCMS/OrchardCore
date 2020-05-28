@@ -14,7 +14,7 @@ namespace OrchardCore.OpenId.Services
     public class OpenIdClientService : IOpenIdClientService
     {
         private readonly ISiteService _siteService;
-        private readonly IStringLocalizer<OpenIdClientService> S;
+        private readonly IStringLocalizer S;
 
         public OpenIdClientService(
             ISiteService siteService,
@@ -105,8 +105,6 @@ namespace OrchardCore.OpenId.Services
                     nameof(settings.ResponseMode)
                 }));
             }
-
-
 
             return Task.FromResult(results.ToImmutable());
         }

@@ -1,4 +1,4 @@
-﻿namespace OrchardCore.ContentManagement.Handlers
+namespace OrchardCore.ContentManagement.Handlers
 {
     public class InitializingContentContext : ContentContextBase
     {

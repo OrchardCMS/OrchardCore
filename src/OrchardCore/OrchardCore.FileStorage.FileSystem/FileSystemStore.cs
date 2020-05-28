@@ -186,17 +186,18 @@ namespace OrchardCore.FileStorage.FileSystem
 
         public Task<Stream> GetFileStreamAsync(IFileStoreEntry fileStoreEntry)
         {
-            if (!File.Exists(fileStoreEntry.Path))
+            var physicalPath = GetPhysicalPath(fileStoreEntry.Path);
+            if (!File.Exists(physicalPath))
             {
                 throw new FileStoreException($"Cannot get file stream because the file '{fileStoreEntry.Path}' does not exist.");
             }
 
-            var stream = File.OpenRead(fileStoreEntry.Path);
+            var stream = File.OpenRead(physicalPath);
 
             return Task.FromResult<Stream>(stream);
         }
 
-        public async Task CreateFileFromStreamAsync(string path, Stream inputStream, bool overwrite = false)
+        public async Task<string> CreateFileFromStreamAsync(string path, Stream inputStream, bool overwrite = false)
         {
             var physicalPath = GetPhysicalPath(path);
 
@@ -219,6 +220,8 @@ namespace OrchardCore.FileStorage.FileSystem
             {
                 await inputStream.CopyToAsync(outputStream);
             }
+
+            return path;
         }
 
         /// <summary>

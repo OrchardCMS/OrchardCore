@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
@@ -23,9 +24,9 @@ namespace OrchardCore.Contents.Workflows.Activities
         }
 
         public override string Name => nameof(CreateContentTask);
-        
+
         public override LocalizedString Category => S["Content"];
-        
+
         public override LocalizedString DisplayText => S["Create Content Task"];
 
         public string ContentType
@@ -48,34 +49,39 @@ namespace OrchardCore.Contents.Workflows.Activities
 
         public override bool CanExecute(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            return !string.IsNullOrEmpty(ContentType);
+            return !String.IsNullOrEmpty(ContentType);
         }
 
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            return Outcomes(S["Done"]);
+            return Outcomes(S["Done"], S["Failed"]);
         }
 
         public async override Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
             var contentItem = await ContentManager.NewAsync(ContentType);
 
-            if (!string.IsNullOrWhiteSpace(ContentProperties.Expression))
+            if (!String.IsNullOrWhiteSpace(ContentProperties.Expression))
             {
                 var contentProperties = await _expressionEvaluator.EvaluateAsync(ContentProperties, workflowContext);
-                var contentItemFromJson = JsonConvert.DeserializeObject<ContentItem>(contentProperties);
-                contentItem.DisplayText = contentItemFromJson.DisplayText;
-                contentItem.Apply(contentItemFromJson);
+                contentItem.Merge(JObject.Parse(contentProperties));
             }
 
-            var versionOptions = Publish ? VersionOptions.Published : VersionOptions.Draft;
-            await ContentManager.CreateAsync(contentItem, versionOptions);
+            var result = await ContentManager.UpdateValidateAndCreateAsync(contentItem, Publish ? VersionOptions.Published : VersionOptions.Draft);
+            if (result.Succeeded)
+            {
+                workflowContext.LastResult = contentItem;
+                workflowContext.CorrelationId = contentItem.ContentItemId;
+                workflowContext.Properties[ContentsHandler.ContentItemInputKey] = contentItem;
 
-            workflowContext.LastResult = contentItem;
-            workflowContext.CorrelationId = contentItem.ContentItemId;
-            workflowContext.Properties[ContentsHandler.ContentItemInputKey] = contentItem;
+                return Outcomes("Done");
+            }
+            else
+            {
+                workflowContext.LastResult = result;
 
-            return Outcomes("Done");
+                return Outcomes("Failed");
+            }
         }
     }
 }

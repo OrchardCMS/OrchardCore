@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
@@ -23,7 +24,7 @@ using YesSql.Services;
 
 namespace OrchardCore.Users.Controllers
 {
-    public class AdminController : Controller, IUpdateModel
+    public class AdminController : Controller
     {
         private readonly UserManager<IUser> _userManager;
         private readonly ISession _session;
@@ -32,9 +33,11 @@ namespace OrchardCore.Users.Controllers
         private readonly IDisplayManager<User> _userDisplayManager;
         private readonly INotifier _notifier;
         private readonly IUserService _userService;
+        private readonly IUpdateModelAccessor _updateModelAccessor;
 
         private readonly dynamic New;
         private readonly IHtmlLocalizer H;
+        private readonly IStringLocalizer S;
 
         public AdminController(
             IDisplayManager<User> userDisplayManager,
@@ -45,8 +48,9 @@ namespace OrchardCore.Users.Controllers
             INotifier notifier,
             ISiteService siteService,
             IShapeFactory shapeFactory,
-            IHtmlLocalizer<AdminController> htmlLocalizer
-            )
+            IHtmlLocalizer<AdminController> htmlLocalizer,
+            IStringLocalizer<AdminController> stringLocalizer,
+            IUpdateModelAccessor updateModelAccessor)
         {
             _userDisplayManager = userDisplayManager;
             _authorizationService = authorizationService;
@@ -55,15 +59,18 @@ namespace OrchardCore.Users.Controllers
             _notifier = notifier;
             _siteService = siteService;
             _userService = userService;
+            _updateModelAccessor = updateModelAccessor;
 
             New = shapeFactory;
             H = htmlLocalizer;
+            S = stringLocalizer;
         }
+
         public async Task<ActionResult> Index(UserIndexOptions options, PagerParameters pagerParameters)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var siteSettings = await _siteService.GetSiteSettingsAsync();
@@ -134,10 +141,10 @@ namespace OrchardCore.Users.Controllers
             foreach (var user in results)
             {
                 userEntries.Add(new UserEntry
-                    {
-                        Id = user.Id,
-                        Shape = await _userDisplayManager.BuildDisplayAsync(user, updater: this, displayType: "SummaryAdmin")
-                    }
+                {
+                    Id = user.Id,
+                    Shape = await _userDisplayManager.BuildDisplayAsync(user, updater: _updateModelAccessor.ModelUpdater, displayType: "SummaryAdmin")
+                }
                 );
             }
 
@@ -149,24 +156,24 @@ namespace OrchardCore.Users.Controllers
             };
 
             model.Options.UserFilters = new List<SelectListItem>() {
-                new SelectListItem() { Text = H["All"].Value, Value = nameof(UsersFilter.All) },
-                //new SelectListItem() { Text = H["Approved"].Value, Value = nameof(UsersFilter.Approved) },
-                //new SelectListItem() { Text = H["Email pending"].Value, Value = nameof(UsersFilter.EmailPending) },
-                //new SelectListItem() { Text = H["Pending"].Value, Value = nameof(UsersFilter.Pending) }
+                new SelectListItem() { Text = S["All"], Value = nameof(UsersFilter.All) },
+                //new SelectListItem() { Text = S["Approved"], Value = nameof(UsersFilter.Approved) },
+                //new SelectListItem() { Text = S["Email pending"], Value = nameof(UsersFilter.EmailPending) },
+                //new SelectListItem() { Text = S["Pending"], Value = nameof(UsersFilter.Pending) }
             };
 
             model.Options.UserSorts = new List<SelectListItem>() {
-                new SelectListItem() { Text = H["Name"].Value, Value = nameof(UsersOrder.Name) },
-                new SelectListItem() { Text = H["Email"].Value, Value = nameof(UsersOrder.Email) },
-                //new SelectListItem() { Text = H["Created date"].Value, Value = nameof(UsersOrder.CreatedUtc) },
-                //new SelectListItem() { Text = H["Last Login date"].Value, Value = nameof(UsersOrder.LastLoginUtc) }
+                new SelectListItem() { Text = S["Name"], Value = nameof(UsersOrder.Name) },
+                new SelectListItem() { Text = S["Email"], Value = nameof(UsersOrder.Email) },
+                //new SelectListItem() { Text = S["Created date"], Value = nameof(UsersOrder.CreatedUtc) },
+                //new SelectListItem() { Text = S["Last Login date"], Value = nameof(UsersOrder.LastLoginUtc) }
             };
 
             model.Options.UsersBulkAction = new List<SelectListItem>() {
-                new SelectListItem() { Text = H["Approve"].Value, Value = nameof(UsersBulkAction.Approve) },
-                new SelectListItem() { Text = H["Enable"].Value, Value = nameof(UsersBulkAction.Enable) },
-                new SelectListItem() { Text = H["Disable"].Value, Value = nameof(UsersBulkAction.Disable) },
-                new SelectListItem() { Text = H["Delete"].Value, Value = nameof(UsersBulkAction.Delete) }
+                new SelectListItem() { Text = S["Approve"], Value = nameof(UsersBulkAction.Approve) },
+                new SelectListItem() { Text = S["Enable"], Value = nameof(UsersBulkAction.Enable) },
+                new SelectListItem() { Text = S["Disable"], Value = nameof(UsersBulkAction.Disable) },
+                new SelectListItem() { Text = S["Delete"], Value = nameof(UsersBulkAction.Delete) }
             };
 
             return View(model);
@@ -236,10 +243,10 @@ namespace OrchardCore.Users.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
-            var shape = await _userDisplayManager.BuildEditorAsync(new User(), updater: this, isNew: true);
+            var shape = await _userDisplayManager.BuildEditorAsync(new User(), updater: _updateModelAccessor.ModelUpdater, isNew: true);
 
             return View(shape);
         }
@@ -250,12 +257,12 @@ namespace OrchardCore.Users.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var user = new User();
 
-            var shape = await _userDisplayManager.UpdateEditorAsync(user, updater: this, isNew: true);
+            var shape = await _userDisplayManager.UpdateEditorAsync(user, updater: _updateModelAccessor.ModelUpdater, isNew: true);
 
             if (!ModelState.IsValid)
             {
@@ -278,7 +285,7 @@ namespace OrchardCore.Users.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var user = await _userManager.FindByIdAsync(id) as User;
@@ -287,7 +294,7 @@ namespace OrchardCore.Users.Controllers
                 return NotFound();
             }
 
-            var shape = await _userDisplayManager.BuildEditorAsync(user, updater: this, isNew: false);
+            var shape = await _userDisplayManager.BuildEditorAsync(user, updater: _updateModelAccessor.ModelUpdater, isNew: false);
 
             return View(shape);
         }
@@ -298,7 +305,7 @@ namespace OrchardCore.Users.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var user = await _userManager.FindByIdAsync(id) as User;
@@ -307,7 +314,7 @@ namespace OrchardCore.Users.Controllers
                 return NotFound();
             }
 
-            var shape = await _userDisplayManager.UpdateEditorAsync(user, updater: this, isNew: false);
+            var shape = await _userDisplayManager.UpdateEditorAsync(user, updater: _updateModelAccessor.ModelUpdater, isNew: false);
 
             if (!ModelState.IsValid)
             {
@@ -336,7 +343,7 @@ namespace OrchardCore.Users.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var user = await _userManager.FindByIdAsync(id) as User;
@@ -371,7 +378,7 @@ namespace OrchardCore.Users.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var user = await _userManager.FindByIdAsync(id) as User;
@@ -391,7 +398,7 @@ namespace OrchardCore.Users.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var user = await _userManager.FindByEmailAsync(model.Email) as User;

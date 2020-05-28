@@ -3,8 +3,11 @@ using Fluid;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+using OrchardCore.Admin;
 using OrchardCore.AdminMenu.Services;
 using OrchardCore.ContentLocalization.Handlers;
+using OrchardCore.ContentLocalization.Models;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Handlers;
@@ -18,6 +21,7 @@ using OrchardCore.Liquid;
 using OrchardCore.Lists.AdminNodes;
 using OrchardCore.Lists.Drivers;
 using OrchardCore.Lists.Feeds;
+using OrchardCore.Lists.Handlers;
 using OrchardCore.Lists.Indexes;
 using OrchardCore.Lists.Liquid;
 using OrchardCore.Lists.Models;
@@ -32,31 +36,42 @@ namespace OrchardCore.Lists
 {
     public class Startup : StartupBase
     {
+        private readonly AdminOptions _adminOptions;
+
         static Startup()
         {
             TemplateContext.GlobalMemberAccessStrategy.Register<ListPartViewModel>();
+        }
+
+        public Startup(IOptions<AdminOptions> adminOptions)
+        {
+            _adminOptions = adminOptions.Value;
         }
 
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton<IIndexProvider, ContainedPartIndexProvider>();
             services.AddScoped<IContentDisplayDriver, ContainedPartDisplayDriver>();
+            services.AddScoped<IContentHandler, ContainedPartHandler>();
             services.AddContentPart<ContainedPart>();
             services.AddTransient<IContentAdminFilter, ListPartContentAdminFilter>();
 
             // List Part
-            services.AddScoped<IContentPartDisplayDriver, ListPartDisplayDriver>();
-            services.AddContentPart<ListPart>();
-            services.AddScoped<IContentPartHandler, ListPartHandler>();
+            services.AddContentPart<ListPart>()
+                .UseDisplayDriver<ListPartDisplayDriver>()
+                .AddHandler<ListPartHandler>();
+
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, ListPartSettingsDisplayDriver>();
             services.AddScoped<IDataMigration, Migrations>();
             services.AddScoped<IContentItemIndexHandler, ContainedPartContentIndexHandler>();
+            services.AddScoped<IContainerService, ContainerService>();
 
             // Feeds
             // TODO: Create feature
             services.AddScoped<IFeedQueryProvider, ListFeedQuery>();
-            services.AddScoped<IContentPartDisplayDriver, ListPartFeedDisplayDriver>();
-            services.AddScoped<IContentPartHandler, ListPartFeedHandler>();
+            services.AddContentPart<ListPart>()
+                .UseDisplayDriver<ListPartFeedDisplayDriver>()
+                .AddHandler<ListPartFeedHandler>();
         }
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
@@ -65,11 +80,17 @@ namespace OrchardCore.Lists
                 name: "ListFeed",
                 areaName: "OrchardCore.Feeds",
                 pattern: "Contents/Lists/{contentItemId}/rss",
-                defaults: new { controller = "Feed", action = "Index", format = "rss"}
+                defaults: new { controller = "Feed", action = "Index", format = "rss" }
+            );
+
+            routes.MapAreaControllerRoute(
+                name: "ListOrder",
+                areaName: "OrchardCore.Lists",
+                pattern: _adminOptions.AdminUrlPrefix + "/Lists/Order/{containerId?}",
+                defaults: new { controller = "Order", action = "UpdateContentItemOrders" }
             );
         }
     }
-
 
     [RequireFeatures("OrchardCore.AdminMenu")]
     public class AdminMenuStartup : StartupBase
@@ -81,6 +102,7 @@ namespace OrchardCore.Lists
             services.AddScoped<IDisplayDriver<MenuItem>, ListsAdminNodeDriver>();
         }
     }
+
     [RequireFeatures("OrchardCore.ContentLocalization")]
     public class ContentLocalizationStartup : StartupBase
     {
@@ -88,7 +110,8 @@ namespace OrchardCore.Lists
         {
             services.AddScoped<IContentLocalizationPartHandler, ContainedPartLocalizationHandler>();
             services.AddScoped<IContentLocalizationPartHandler, ListPartLocalizationHandler>();
-            services.AddScoped<IContentPartHandler, ContainedPartHandler>();
+            services.AddContentPart<LocalizationPart>()
+                .AddHandler<LocalizationContainedPartHandler>();
         }
     }
 
@@ -101,5 +124,4 @@ namespace OrchardCore.Lists
             services.AddLiquidFilter<ListItemsFilter>("list_items");
         }
     }
-
 }

@@ -1,4 +1,3 @@
-
 using System.Globalization;
 using OrchardCore.Localization;
 using Xunit;
