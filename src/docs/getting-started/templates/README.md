@@ -68,7 +68,7 @@ Fire up Visual Studio, create a new solution file (`.sln`) by creating a new ASP
 Now that we created a new Web Application we need to add proper dependencies so that this new Web Application be targeted as an Orchard Core application.
 
 !!! note
-    If you want to use the `dev` packages, [configure the OrchardCore Dev url in your Package sources](../dev-package-source.md)
+    If you want to use the `preview` packages, [configure the OrchardCore Preview url in your Package sources](../preview-package-source.md)
 
 ![image](../assets/images/templates/orchard-screencast-2.gif)
 
@@ -157,7 +157,7 @@ Fire up Visual Studio, open Orchard Core solution file (`.sln`), select `Orchard
 For marking this new Class Library as an Orchard Module we will now need to reference `OrchardCore.Module.Targets` NuGet package.
 
 !!! note
-    If you want to use the `dev` packages, [configure the OrchardCore Dev url in your Package sources](../dev-package-source.md)
+    If you want to use the `preview` packages, [configure the OrchardCore Preview url in your Package sources](../preview-package-source.md)
 
 Each of these `*.Targets` NuGet packages are used to mark a Class Library as a specific Orchard Core functionality.  
 `OrchardCore.Module.Targets` is the one we are interested in for now.  
