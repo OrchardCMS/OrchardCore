@@ -18,8 +18,10 @@ using OrchardCore.Settings.Recipes;
 using OrchardCore.Settings.Services;
 using OrchardCore.Setup.Events;
 
+//
 namespace OrchardCore.Settings
 {
+     //anotger file necessary for advanced features for admins and editors
     /// <summary>
     /// These services are registered on the tenant service collection
     /// </summary>
