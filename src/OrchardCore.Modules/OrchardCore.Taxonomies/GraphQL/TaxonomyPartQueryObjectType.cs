@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using GraphQL.Types;
+using Newtonsoft.Json.Linq;
 using OrchardCore.Apis.GraphQL;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.GraphQL.Queries.Types;
@@ -20,6 +21,19 @@ namespace OrchardCore.Taxonomies.GraphQL
                 .Description("the content items")
                 .PagingArguments()
                 .Resolve(x => x.Page(x.Source.Terms));
+
+            Field<StringGraphType>()
+                .Name("contentItemsJson")
+                .Description("the content items in JSON format")
+                .Resolve(ctx =>
+                {
+                    if (ctx.Source.Content.Terms is JArray termsArray)
+                    {
+                        return termsArray.ToString();
+                    }
+
+                    return null;
+                });
         }
     }
 }
