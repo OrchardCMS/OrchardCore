@@ -1,3 +1,7 @@
+/*
+    Similar to AzureADSettingsStep.cs
+*/
+
 using System;
 using System.Threading.Tasks;
 using OrchardCore.Microsoft.Authentication.Services;
