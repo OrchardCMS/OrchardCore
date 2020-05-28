@@ -34,14 +34,14 @@ namespace OrchardCore.Contents.Workflows.Activities
 
             if (contentItemId == null)
             {
-                throw new InvalidOperationException($"The {workflowContext.WorkflowType.Name}:{DisplayText} activity failed to evaluate the 'ContentItemId'.");
+                throw new InvalidOperationException($"The '{nameof(RetrieveContentTask)}' failed to evaluate the 'ContentItemId'.");
             }
 
             var contentItem = await ContentManager.GetAsync(contentItemId, VersionOptions.Latest);
 
             if (contentItem == null)
             {
-                throw new InvalidOperationException($"The {workflowContext.WorkflowType.Name}:{DisplayText} activity failed to retrieve the content item.");
+                throw new InvalidOperationException($"The '{nameof(RetrieveContentTask)}' failed to retrieve the content item.");
             }
 
             workflowContext.CorrelationId = contentItem.ContentItemId;

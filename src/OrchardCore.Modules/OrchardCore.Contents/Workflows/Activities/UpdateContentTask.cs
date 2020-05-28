@@ -67,7 +67,7 @@ namespace OrchardCore.Contents.Workflows.Activities
 
             if (contentItemId == null)
             {
-                throw new InvalidOperationException($"The {workflowContext.WorkflowType.Name}:{DisplayText} failed to evaluate the 'ContentItemId'.");
+                throw new InvalidOperationException($"The {nameof(UpdateContentTask)} failed to evaluate the 'ContentItemId'.");
             }
 
             var isInlineContentEventOfSameContentItemId = IsInlineContentEventOfSameContentItemId(contentItemId);
@@ -85,19 +85,19 @@ namespace OrchardCore.Contents.Workflows.Activities
 
             if (contentItem == null)
             {
-                throw new InvalidOperationException($"The '{workflowContext.WorkflowType.Name}:{DisplayText}' failed to retrieve the content item.");
+                throw new InvalidOperationException($"The '{nameof(UpdateContentTask)}' failed to retrieve the content item.");
             }
 
             if (!isInlineContentEventOfSameContentItemId && IsInlineStartingContentEventOfSameContentType(contentItem.ContentType))
             {
                 if (InlineContentEvent.Name == nameof(ContentUpdatedEvent))
                 {
-                    throw new InvalidOperationException($"The '{workflowContext.WorkflowType.Name}:{DisplayText}' can't update the content item as it is executed inline from a starting '{nameof(ContentUpdatedEvent.DisplayText)}' of the same content type.");
+                    throw new InvalidOperationException($"The '{nameof(UpdateContentTask)}' can't update the content item as it is executed inline from a starting '{nameof(ContentUpdatedEvent)}' of the same content type.");
                 }
 
                 if (Publish && InlineContentEvent.Name == nameof(ContentPublishedEvent))
                 {
-                    throw new InvalidOperationException($"The '{workflowContext.WorkflowType.Name}:{DisplayText}' can't publish the content item as it is executed inline from a starting '{nameof(ContentPublishedEvent.DisplayText)}' of the same content type.");
+                    throw new InvalidOperationException($"The '{nameof(UpdateContentTask)}' can't publish the content item as it is executed inline from a starting '{nameof(ContentPublishedEvent)}' of the same content type.");
                 }
             }
 
@@ -131,7 +131,7 @@ namespace OrchardCore.Contents.Workflows.Activities
             if (isInlineContentEventOfSameContentItemId)
             {
                 _updateModelAccessor.ModelUpdater.ModelState.AddModelError(nameof(UpdateContentTask),
-                    $"The '{workflowContext.WorkflowType.Name}:{DisplayText}' failed to update the content item: "
+                    $"The '{workflowContext.WorkflowType.Name}:{nameof(UpdateContentTask)}' failed to update the content item: "
                     + String.Join(", ", result.Errors));
             }
 

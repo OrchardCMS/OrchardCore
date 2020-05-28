@@ -33,7 +33,7 @@ namespace OrchardCore.Contents.Workflows.Activities
 
             if (content == null)
             {
-                throw new InvalidOperationException($"The {workflowContext.WorkflowType.Name}:{DisplayText} activity failed to retrieve the content item.");
+                throw new InvalidOperationException($"The '{nameof(PublishContentTask)}' failed to retrieve the content item.");
             }
 
             if (IsInlineContentEventOfSameContentItemId(content.ContentItem.ContentItemId))
@@ -47,7 +47,7 @@ namespace OrchardCore.Contents.Workflows.Activities
             {
                 if (content is ContentItemIdExpressionResult)
                 {
-                    throw new InvalidOperationException($"The {workflowContext.WorkflowType.Name}:{DisplayText} activity failed to retrieve the content item.");
+                    throw new InvalidOperationException($"The '{nameof(PublishContentTask)}' failed to retrieve the content item.");
                 }
 
                 contentItem = content.ContentItem;
@@ -57,7 +57,7 @@ namespace OrchardCore.Contents.Workflows.Activities
             {
                 if (InlineContentEvent.Name == nameof(ContentPublishedEvent))
                 {
-                    throw new InvalidOperationException($"The '{workflowContext.WorkflowType.Name}:{DisplayText}' can't publish the content item as it is executed inline from a starting '{nameof(ContentPublishedEvent.DisplayText)}' of the same content type.");
+                    throw new InvalidOperationException($"The '{nameof(PublishContentTask)}' can't publish the content item as it is executed inline from a starting '{nameof(ContentPublishedEvent)}' of the same content type.");
                 }
             }
 
