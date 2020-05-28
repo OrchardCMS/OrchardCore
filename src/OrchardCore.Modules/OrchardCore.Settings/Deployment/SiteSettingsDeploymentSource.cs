@@ -29,6 +29,8 @@ namespace OrchardCore.Settings.Deployment
             {
                 switch (settingName)
                 {
+                
+                    // creation of all editable properties of this module              
                     case "BaseUrl":
                         data.Add(new JProperty(nameof(ISite.BaseUrl), site.BaseUrl));
                         break;
