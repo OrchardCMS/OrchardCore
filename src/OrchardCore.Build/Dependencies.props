@@ -23,6 +23,7 @@
     <PackageManagement Include="Markdig" Version="0.20.0" />
     <PackageManagement Include="MessagePack" Version="2.1.115" />
     <PackageManagement Include="Microsoft.NET.Test.Sdk" Version="16.2.0" />
+    <PackageManagement Include="MimeKit" Version="2.7.0" />
     <PackageManagement Include="MiniProfiler.AspNetCore.Mvc" Version="4.1.0" />
     <PackageManagement Include="Moq" Version="4.14.1" />
     <PackageManagement Include="ncrontab" Version="3.3.1" />

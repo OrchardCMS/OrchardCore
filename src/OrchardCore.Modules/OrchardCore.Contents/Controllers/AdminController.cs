@@ -119,8 +119,12 @@ namespace OrchardCore.Contents.Controllers
             if (!string.IsNullOrEmpty(model.Options.SelectedContentType))
             {
                 var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(model.Options.SelectedContentType);
+
                 if (contentTypeDefinition == null)
+                {
                     return NotFound();
+                }
+
                 contentTypeDefinitions = contentTypeDefinitions.Append(contentTypeDefinition);
 
                 // We display a specific type even if it's not listable so that admin pages
@@ -536,10 +540,6 @@ namespace OrchardCore.Contents.Controllers
                 _session.Cancel();
                 return View("Edit", model);
             }
-
-            // The content item needs to be marked as saved in case the drivers or the handlers have executed some query which
-            // would flush the saved entities, and then also done some other mutations, inside the above 'UpdateEditorAsync()'.
-            _session.Save(contentItem);
 
             await conditionallyPublish(contentItem);
 
