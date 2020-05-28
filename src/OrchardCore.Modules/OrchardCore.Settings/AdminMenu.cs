@@ -9,6 +9,7 @@ namespace OrchardCore.Settings
     {
         private readonly IStringLocalizer S;
 
+        //special menu possibilities for admins
         public AdminMenu(IStringLocalizer<AdminMenu> localizer)
         {
             S = localizer;
