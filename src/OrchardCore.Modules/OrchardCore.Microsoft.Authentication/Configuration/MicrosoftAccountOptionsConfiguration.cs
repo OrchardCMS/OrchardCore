@@ -1,3 +1,10 @@
+/*
+	Provides several overloads of the Configure method.
+	
+	GetMicrosoftAccountSettingsAsync() returns 'microsoft account settings'
+	if if all of them passed validation.
+*/
+
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Linq;
