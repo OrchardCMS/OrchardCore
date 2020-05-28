@@ -48,7 +48,7 @@ namespace OrchardCore.Contents.Workflows.Handlers
 
         private Task TriggerWorkflowEventAsync(string name, ContentItem contentItem)
         {
-            var eventInfo = new ContentEventInfo()
+            var contentEvent = new ContentEventContext()
             {
                 Name = name,
                 ContentType = contentItem.ContentType,
@@ -56,7 +56,7 @@ namespace OrchardCore.Contents.Workflows.Handlers
             };
 
             return _workflowManager.TriggerEventAsync(name,
-                input: new { ContentItem = contentItem, ContentEvent = eventInfo },
+                input: new { ContentItem = contentItem, ContentEvent = contentEvent },
                 correlationId: contentItem.ContentItemId
             );
         }

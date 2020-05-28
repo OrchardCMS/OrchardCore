@@ -30,9 +30,9 @@ namespace OrchardCore.Contents.Workflows.Activities
         protected IWorkflowScriptEvaluator ScriptEvaluator { get; }
 
         /// <summary>
-        /// Content event infos when executed inline from a <see cref="ContentEvent"/>
+        /// Contextual data when executed inline from a <see cref="ContentEvent"/>
         /// </summary>
-        protected ContentEventInfo ContentEventInfo { get; private set; }
+        protected ContentEventContext InlineContentEvent { get; private set; } = new ContentEventContext();
 
         public override LocalizedString Category => S["Content"];
 
@@ -52,18 +52,19 @@ namespace OrchardCore.Contents.Workflows.Activities
 
         public override Task OnInputReceivedAsync(WorkflowExecutionContext workflowContext, IDictionary<string, object> input)
         {
-            ContentEventInfo = input?.GetValue<ContentEventInfo>(ContentEventConstants.ContentEventInputKey);
+            var context = input?.GetValue<ContentEventContext>(ContentEventConstants.ContentEventInputKey);
+
+            if (context != null)
+            {
+                InlineContentEvent = context;
+            }
 
             return Task.CompletedTask;
         }
 
         public override Task OnWorkflowStartingAsync(WorkflowExecutionContext context, CancellationToken cancellationToken = default)
         {
-            if (ContentEventInfo != null)
-            {
-                ContentEventInfo.IsStart = true;
-            }
-
+            InlineContentEvent.IsStart = true;
             return Task.CompletedTask;
         }
 
@@ -88,7 +89,7 @@ namespace OrchardCore.Contents.Workflows.Activities
                 }
                 else if (result is string contentItemId)
                 {
-                    content = new ContentItemIdExpressionContent() { ContentItem = new ContentItem() { ContentItemId = contentItemId } };
+                    content = new ContentItemIdExpressionResult(contentItemId);
                 }
                 else
                 {
@@ -129,19 +130,20 @@ namespace OrchardCore.Contents.Workflows.Activities
             return null;
         }
 
-        protected bool IsInlineFromContentEventOfSameContentItemId(string contentItemId)
-        {
-            return ContentEventInfo != null && String.Equals(ContentEventInfo.ContentItemId, contentItemId, StringComparison.OrdinalIgnoreCase);
-        }
+        protected bool IsInlineContentEventOfSameContentItemId(string contentItemId)
+            => String.Equals(InlineContentEvent.ContentItemId, contentItemId, StringComparison.OrdinalIgnoreCase);
 
-        protected bool IsInlineFromStartingContentEventOfSameContentType(string contentType)
-        {
-            return ContentEventInfo != null && ContentEventInfo.IsStart && ContentEventInfo.ContentType == contentType;
-        }
+        protected bool IsInlineStartingContentEventOfSameContentType(string contentType)
+            => InlineContentEvent.IsStart && InlineContentEvent.ContentType == contentType;
 
-        protected class ContentItemIdExpressionContent : IContent
+        protected class ContentItemIdExpressionResult : IContent
         {
-            public ContentItem ContentItem { get; set; }
+            public ContentItemIdExpressionResult(string contentItemId)
+            {
+                ContentItem = new ContentItem() { ContentItemId = contentItemId };
+            }
+
+            public ContentItem ContentItem { get; }
         }
     }
 }

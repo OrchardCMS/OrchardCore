@@ -73,14 +73,14 @@ namespace OrchardCore.Workflows.UserTasks.Drivers
                 }
                 else
                 {
-                    var eventInfo = new ContentEventInfo()
+                    var contentEvent = new ContentEventContext()
                     {
                         Name = nameof(UserTaskEvent),
                         ContentType = model.ContentType,
                         ContentItemId = model.ContentItemId
                     };
 
-                    var input = new { UserAction = action, ContentItem = model, ContentEvent = eventInfo };
+                    var input = new { UserAction = action, ContentItem = model, ContentEvent = contentEvent };
                     await _workflowManager.TriggerEventAsync(nameof(UserTaskEvent), input, model.ContentItemId);
                 }
             }

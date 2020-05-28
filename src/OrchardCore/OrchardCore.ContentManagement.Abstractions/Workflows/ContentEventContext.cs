@@ -1,6 +1,6 @@
 namespace OrchardCore.ContentManagement.Workflows
 {
-    public class ContentEventInfo
+    public class ContentEventContext
     {
         public string Name { get; set; }
         public string ContentType { get; set; }

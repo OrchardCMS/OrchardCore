@@ -36,7 +36,7 @@ namespace OrchardCore.Contents.Workflows.Activities
                 throw new InvalidOperationException($"The {workflowContext.WorkflowType.Name}:{DisplayText} activity failed to retrieve the content item.");
             }
 
-            if (IsInlineFromContentEventOfSameContentItemId(content.ContentItem.ContentItemId))
+            if (IsInlineContentEventOfSameContentItemId(content.ContentItem.ContentItemId))
             {
                 return Outcomes("Noop");
             }
@@ -45,7 +45,7 @@ namespace OrchardCore.Contents.Workflows.Activities
 
             if (contentItem == null)
             {
-                if (content is ContentItemIdExpressionContent)
+                if (content is ContentItemIdExpressionResult)
                 {
                     throw new InvalidOperationException($"The {workflowContext.WorkflowType.Name}:{DisplayText} activity failed to retrieve the content item.");
                 }
@@ -53,9 +53,9 @@ namespace OrchardCore.Contents.Workflows.Activities
                 contentItem = content.ContentItem;
             }
 
-            if (IsInlineFromStartingContentEventOfSameContentType(contentItem.ContentType))
+            if (IsInlineStartingContentEventOfSameContentType(contentItem.ContentType))
             {
-                if (ContentEventInfo.Name == nameof(ContentUnpublishedEvent))
+                if (InlineContentEvent.Name == nameof(ContentUnpublishedEvent))
                 {
                     throw new InvalidOperationException($"The '{workflowContext.WorkflowType.Name}:{DisplayText}' can't unpublish the content item as it is executed inline from a starting '{nameof(ContentUnpublishedEvent.DisplayText)}' of the same content type.");
                 }

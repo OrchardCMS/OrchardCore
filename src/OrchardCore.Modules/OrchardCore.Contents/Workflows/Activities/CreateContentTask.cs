@@ -59,19 +59,19 @@ namespace OrchardCore.Contents.Workflows.Activities
 
         public async override Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            if (IsInlineFromStartingContentEventOfSameContentType(ContentType))
+            if (IsInlineStartingContentEventOfSameContentType(ContentType))
             {
-                if (ContentEventInfo.Name == nameof(ContentUpdatedEvent))
+                if (InlineContentEvent.Name == nameof(ContentUpdatedEvent))
                 {
                     throw new InvalidOperationException($"The '{workflowContext.WorkflowType.Name}:{DisplayText}' can't update the content item as it is executed inline from a starting '{nameof(ContentUpdatedEvent.DisplayText)}' of the same content type.");
                 }
 
-                if (ContentEventInfo.Name == nameof(ContentCreatedEvent))
+                if (InlineContentEvent.Name == nameof(ContentCreatedEvent))
                 {
                     throw new InvalidOperationException($"The '{workflowContext.WorkflowType.Name}:{DisplayText}' can't create the content item as it is executed inline from a starting '{nameof(ContentCreatedEvent.DisplayText)}' of the same content type.");
                 }
 
-                if (Publish && ContentEventInfo.Name == nameof(ContentPublishedEvent))
+                if (Publish && InlineContentEvent.Name == nameof(ContentPublishedEvent))
                 {
                     throw new InvalidOperationException($"The '{workflowContext.WorkflowType.Name}:{DisplayText}' can't publish the content item as it is executed inline from a starting '{nameof(ContentPublishedEvent.DisplayText)}' of the same content type.");
                 }
