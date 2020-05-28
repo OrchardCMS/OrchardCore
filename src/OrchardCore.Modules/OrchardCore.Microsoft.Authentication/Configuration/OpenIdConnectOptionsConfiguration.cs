@@ -1,3 +1,15 @@
+/*
+	OpenID Connect (standatd) is a simple identity layer 
+	on top of the OAuth 2.0 protocol, which allows computing clients 
+	to verify the identity of an end-user based on the authentication 
+	performed by an authorization server, as well as to obtain 
+	basic profile information about the end-user in an interoperable 
+	and REST-like manner. In technical terms, OpenID Connect 
+	specifies a RESTful HTTP API, using JSON as a data format.
+	------------------------------------------------------------------------------
+	(~) provides configuration methods of OpenID Connect
+*/
+
 using System;
 using System.Diagnostics;
 using Microsoft.AspNetCore.Authentication.AzureAD.UI;
@@ -26,6 +38,7 @@ namespace OrchardCore.Microsoft.Authentication.Configuration
 
             options.ClientId = azureADOptions.ClientId;
             options.ClientSecret = azureADOptions.ClientSecret;
+            // 'URI' - Uniform Resource Identifier
             options.Authority = new Uri(new Uri(azureADOptions.Instance), azureADOptions.TenantId).ToString();
             options.CallbackPath = azureADOptions.CallbackPath ?? options.CallbackPath;
             options.SignedOutCallbackPath = azureADOptions.SignedOutCallbackPath ?? options.SignedOutCallbackPath;
