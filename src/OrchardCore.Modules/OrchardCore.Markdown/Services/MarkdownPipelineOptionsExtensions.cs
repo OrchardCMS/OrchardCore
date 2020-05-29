@@ -13,7 +13,7 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             services.Configure<MarkdownPipelineOptions>(o =>
             {
-                o.Configure2.Add(action);
+                o.Configure.Add(action);
             });
         }
     }

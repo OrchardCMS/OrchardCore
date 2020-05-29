@@ -41,5 +41,31 @@ namespace OrchardCore.Tests.Html
             var sanitized = sanitizer.Sanitize(input);
             Assert.Equal(input, sanitized);
         }
+
+        [Fact]
+        public void ShouldReconfigureSanitizer()
+        {
+            // Setup. With defaults.
+            var services = new ServiceCollection();
+            services.AddOptions<HtmlSanitizerOptions>();
+            services.ConfigureHtmlSanitizer((sanitizer) =>
+            {
+                sanitizer.AllowedAttributes.Add("class");
+            });
+
+            // Act. Reconfigure to remove defaults.
+            services.Configure<HtmlSanitizerOptions>(o => {
+                o.Configure.Clear();
+            });
+
+            // Test.
+            services.AddScoped<IHtmlSanitizerService, HtmlSanitizerService>();
+
+            var sanitizer = services.BuildServiceProvider().GetService<IHtmlSanitizerService>();
+
+            var input = @"<a href=""bar"" class=""foo"">baz</a>";
+            var sanitized = sanitizer.Sanitize(input);
+            Assert.Equal(@"<a href=""bar"">baz</a>", sanitized);
+        }
     }
 }

@@ -11,7 +11,7 @@ namespace OrchardCore.Infrastructure.Html
         {
             foreach(var action in options.Value.Configure)
             {
-                action.Invoke(_sanitizer);
+                action?.Invoke(_sanitizer);
             }
         }
 

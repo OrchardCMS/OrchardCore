@@ -6,6 +6,6 @@ namespace OrchardCore.Infrastructure.Html
 {
     public class HtmlSanitizerOptions
     {
-        public IList<Action<HtmlSanitizer>> Configure { get; set; } = new List<Action<HtmlSanitizer>>();
+        public IList<Action<HtmlSanitizer>> Configure { get; } = new List<Action<HtmlSanitizer>>();
     }
 }
