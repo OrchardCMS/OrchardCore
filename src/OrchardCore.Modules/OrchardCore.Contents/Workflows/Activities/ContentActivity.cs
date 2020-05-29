@@ -30,9 +30,9 @@ namespace OrchardCore.Contents.Workflows.Activities
         protected IWorkflowScriptEvaluator ScriptEvaluator { get; }
 
         /// <summary>
-        /// A <see cref="ContentEventContext"/> that is updated if executed inline from a <see cref="ContentEvent"/>
+        /// A <see cref="ContentEventContext"/> updated when executed inline from a <see cref="ContentEvent"/>
         /// </summary>
-        protected ContentEventContext InlineContentEvent { get; private set; } = new ContentEventContext();
+        protected ContentEventContext InlineEvent { get; private set; } = new ContentEventContext();
 
         public override LocalizedString Category => S["Content"];
 
@@ -56,7 +56,7 @@ namespace OrchardCore.Contents.Workflows.Activities
 
             if (context != null)
             {
-                InlineContentEvent = context;
+                InlineEvent = context;
             }
 
             return Task.CompletedTask;
@@ -64,7 +64,7 @@ namespace OrchardCore.Contents.Workflows.Activities
 
         public override Task OnWorkflowStartingAsync(WorkflowExecutionContext context, CancellationToken cancellationToken = default)
         {
-            InlineContentEvent.IsStart = true;
+            InlineEvent.IsStart = true;
             return Task.CompletedTask;
         }
 
@@ -78,7 +78,7 @@ namespace OrchardCore.Contents.Workflows.Activities
             IContent content;
 
             // Try to evaluate a content item from the Content expression, if provided.
-            if (!string.IsNullOrWhiteSpace(Content.Expression))
+            if (!String.IsNullOrWhiteSpace(Content.Expression))
             {
                 var expression = new WorkflowExpression<object> { Expression = Content.Expression };
                 var result = await ScriptEvaluator.EvaluateAsync(expression, workflowContext);
@@ -129,12 +129,6 @@ namespace OrchardCore.Contents.Workflows.Activities
 
             return null;
         }
-
-        protected bool IsInlineContentEventOfSameContentItemId(string contentItemId)
-            => String.Equals(InlineContentEvent.ContentItemId, contentItemId, StringComparison.OrdinalIgnoreCase);
-
-        protected bool IsInlineStartingContentEventOfSameContentType(string contentType)
-            => InlineContentEvent.IsStart && InlineContentEvent.ContentType == contentType;
 
         protected class ContentItemIdExpressionResult : IContent
         {

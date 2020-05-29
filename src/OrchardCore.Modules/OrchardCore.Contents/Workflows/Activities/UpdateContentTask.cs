@@ -70,11 +70,11 @@ namespace OrchardCore.Contents.Workflows.Activities
                 throw new InvalidOperationException($"The {nameof(UpdateContentTask)} failed to evaluate the 'ContentItemId'.");
             }
 
-            var isInlineContentEventOfSameContentItemId = IsInlineContentEventOfSameContentItemId(contentItemId);
+            var inlineEventOfSameContentItemId = String.Equals(InlineEvent.ContentItemId, contentItemId, StringComparison.OrdinalIgnoreCase);
 
             ContentItem contentItem = null;
 
-            if (!isInlineContentEventOfSameContentItemId)
+            if (!inlineEventOfSameContentItemId)
             {
                 contentItem = await ContentManager.GetAsync(contentItemId, VersionOptions.DraftRequired);
             }
@@ -88,14 +88,14 @@ namespace OrchardCore.Contents.Workflows.Activities
                 throw new InvalidOperationException($"The '{nameof(UpdateContentTask)}' failed to retrieve the content item.");
             }
 
-            if (!isInlineContentEventOfSameContentItemId && IsInlineStartingContentEventOfSameContentType(contentItem.ContentType))
+            if (!inlineEventOfSameContentItemId && InlineEvent.IsStart && InlineEvent.ContentType == contentItem.ContentType)
             {
-                if (InlineContentEvent.Name == nameof(ContentUpdatedEvent))
+                if (InlineEvent.Name == nameof(ContentUpdatedEvent))
                 {
                     throw new InvalidOperationException($"The '{nameof(UpdateContentTask)}' can't update the content item as it is executed inline from a starting '{nameof(ContentUpdatedEvent)}' of the same content type.");
                 }
 
-                if (Publish && InlineContentEvent.Name == nameof(ContentPublishedEvent))
+                if (Publish && InlineEvent.Name == nameof(ContentPublishedEvent))
                 {
                     throw new InvalidOperationException($"The '{nameof(UpdateContentTask)}' can't publish the content item as it is executed inline from a starting '{nameof(ContentPublishedEvent)}' of the same content type.");
                 }
@@ -107,7 +107,7 @@ namespace OrchardCore.Contents.Workflows.Activities
                 contentItem.Merge(JObject.Parse(contentProperties), new JsonMergeSettings { MergeArrayHandling = MergeArrayHandling.Replace });
             }
 
-            if (!isInlineContentEventOfSameContentItemId)
+            if (!inlineEventOfSameContentItemId)
             {
                 await ContentManager.UpdateAsync(contentItem);
             }
@@ -116,7 +116,7 @@ namespace OrchardCore.Contents.Workflows.Activities
 
             if (result.Succeeded)
             {
-                if (Publish && !isInlineContentEventOfSameContentItemId)
+                if (Publish && !inlineEventOfSameContentItemId)
                 {
                     await ContentManager.PublishAsync(contentItem);
                 }
@@ -128,7 +128,7 @@ namespace OrchardCore.Contents.Workflows.Activities
                 return Outcomes("Done");
             }
 
-            if (isInlineContentEventOfSameContentItemId)
+            if (inlineEventOfSameContentItemId)
             {
                 _updateModelAccessor.ModelUpdater.ModelState.AddModelError(nameof(UpdateContentTask),
                     $"The '{workflowContext.WorkflowType.Name}:{nameof(UpdateContentTask)}' failed to update the content item: "

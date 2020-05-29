@@ -36,7 +36,7 @@ namespace OrchardCore.Contents.Workflows.Activities
                 throw new InvalidOperationException($"The '{nameof(DeleteContentTask)}' failed to retrieve the content item.");
             }
 
-            if (IsInlineContentEventOfSameContentItemId(content.ContentItem.ContentItemId))
+            if (String.Equals(InlineEvent.ContentItemId, content.ContentItem.ContentItemId, StringComparison.OrdinalIgnoreCase))
             {
                 return Outcomes("Noop");
             }
@@ -53,9 +53,9 @@ namespace OrchardCore.Contents.Workflows.Activities
                 contentItem = content.ContentItem;
             }
 
-            if (IsInlineStartingContentEventOfSameContentType(contentItem.ContentType))
+            if (InlineEvent.IsStart && InlineEvent.ContentType == contentItem.ContentType && InlineEvent.Name == nameof(ContentDeletedEvent))
             {
-                if (InlineContentEvent.Name == nameof(ContentDeletedEvent))
+                if (InlineEvent.Name == nameof(ContentDeletedEvent))
                 {
                     throw new InvalidOperationException($"The '{nameof(DeleteContentTask)}' can't delete the content item as it is executed inline from a starting '{nameof(ContentDeletedEvent)}' of the same content type.");
                 }

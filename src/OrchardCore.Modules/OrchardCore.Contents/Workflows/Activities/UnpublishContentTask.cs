@@ -36,7 +36,7 @@ namespace OrchardCore.Contents.Workflows.Activities
                 throw new InvalidOperationException($"The '{nameof(UnpublishContentTask)}' failed to retrieve the content item.");
             }
 
-            if (IsInlineContentEventOfSameContentItemId(content.ContentItem.ContentItemId))
+            if (String.Equals(InlineEvent.ContentItemId, content.ContentItem.ContentItemId, StringComparison.OrdinalIgnoreCase))
             {
                 return Outcomes("Noop");
             }
@@ -53,12 +53,9 @@ namespace OrchardCore.Contents.Workflows.Activities
                 contentItem = content.ContentItem;
             }
 
-            if (IsInlineStartingContentEventOfSameContentType(contentItem.ContentType))
+            if (InlineEvent.IsStart && InlineEvent.ContentType == contentItem.ContentType && InlineEvent.Name == nameof(ContentUnpublishedEvent))
             {
-                if (InlineContentEvent.Name == nameof(ContentUnpublishedEvent))
-                {
-                    throw new InvalidOperationException($"The '{nameof(UnpublishContentTask)}' can't unpublish the content item as it is executed inline from a starting '{nameof(ContentUnpublishedEvent)}' of the same content type.");
-                }
+                throw new InvalidOperationException($"The '{nameof(UnpublishContentTask)}' can't unpublish the content item as it is executed inline from a starting '{nameof(ContentUnpublishedEvent)}' of the same content type.");
             }
 
             await ContentManager.UnpublishAsync(contentItem);
