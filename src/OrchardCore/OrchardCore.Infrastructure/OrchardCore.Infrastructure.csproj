@@ -10,7 +10,7 @@
 
   <ItemGroup>
     <PackageReference Include="HtmlSanitizer" />
-    <PackageReference Include="MailKit" />
+    <PackageReference Include="MimeKit" />
   </ItemGroup>
   
   <ItemGroup>
