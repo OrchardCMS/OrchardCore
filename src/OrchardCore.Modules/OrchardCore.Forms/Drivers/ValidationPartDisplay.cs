@@ -32,7 +32,7 @@ namespace OrchardCore.Forms.Drivers
             if (await updater.TryUpdateModelAsync(viewModel, Prefix))
             {
                 part.For = viewModel.For?.Trim();
-                part.ErrorMessage = part.ErrorMessage?.Trim();
+                part.ErrorMessage = viewModel.ErrorMessage?.Trim();
             }
 
             return Edit(part);
