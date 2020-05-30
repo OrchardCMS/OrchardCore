@@ -52,19 +52,15 @@ namespace OrchardCore.Contents.Workflows.Activities
 
         public override Task OnInputReceivedAsync(WorkflowExecutionContext workflowContext, IDictionary<string, object> input)
         {
-            var context = input?.GetValue<ContentEventContext>(ContentEventConstants.ContentEventInputKey);
+            var contentEvent = input?.GetValue<ContentEventContext>(ContentEventConstants.ContentEventInputKey);
 
-            if (context != null)
+            if (contentEvent != null)
             {
-                InlineEvent = context;
+                InlineEvent = contentEvent;
+
+                InlineEvent.IsStart = workflowContext.Status == WorkflowStatus.Starting;
             }
 
-            return Task.CompletedTask;
-        }
-
-        public override Task OnWorkflowStartingAsync(WorkflowExecutionContext context, CancellationToken cancellationToken = default)
-        {
-            InlineEvent.IsStart = true;
             return Task.CompletedTask;
         }
 

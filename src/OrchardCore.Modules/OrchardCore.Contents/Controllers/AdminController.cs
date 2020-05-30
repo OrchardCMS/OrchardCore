@@ -412,14 +412,14 @@ namespace OrchardCore.Contents.Controllers
 
             await _contentManager.CreateAsync(contentItem, VersionOptions.Draft);
 
-            // A workflow activity acting as an inline create handler may have added some model state errors.
+            await conditionallyPublish(contentItem);
+
+            // A workflow activity acting as an inline handler may have added some model state errors.
             if (!ModelState.IsValid)
             {
                 _session.Cancel();
                 return View(model);
             }
-
-            await conditionallyPublish(contentItem);
 
             if ((!string.IsNullOrEmpty(returnUrl)) && (!stayOnSamePage))
             {
