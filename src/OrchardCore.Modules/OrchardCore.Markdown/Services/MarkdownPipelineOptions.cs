@@ -6,6 +6,6 @@ namespace OrchardCore.Markdown.Services
 {
     public class MarkdownPipelineOptions
     {
-        public IList<Action<MarkdownPipelineBuilder>> Configure { get; } = new List<Action<MarkdownPipelineBuilder>>();
+        public List<Action<MarkdownPipelineBuilder>> Configure { get; } = new List<Action<MarkdownPipelineBuilder>>();
     }
 }
