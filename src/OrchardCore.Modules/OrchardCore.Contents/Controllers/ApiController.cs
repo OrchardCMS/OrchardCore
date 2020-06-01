@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
+using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.Contents;
 using OrchardCore.Mvc.Utilities;
@@ -121,7 +122,7 @@ namespace OrchardCore.Content.Controllers
                     return this.ChallengeOrForbid();
                 }
 
-                contentItem.Merge(model);
+                contentItem.Merge(model, new JsonMergeSettings { MergeArrayHandling = MergeArrayHandling.Replace });
 
                 await _contentManager.UpdateAsync(contentItem);
                 var result = await _contentManager.ValidateAsync(contentItem);

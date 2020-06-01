@@ -783,7 +783,7 @@ namespace OrchardCore.ContentManagement
                 await RemovePublishedVersionAsync(updatingVersion, evictionVersions);
             }
 
-            updatingVersion.Merge(updatedVersion);
+            updatingVersion.Merge(updatedVersion, new JsonMergeSettings { MergeArrayHandling = MergeArrayHandling.Replace });
             updatingVersion.Latest = importingLatest;
             updatingVersion.Published = importingPublished;
 
