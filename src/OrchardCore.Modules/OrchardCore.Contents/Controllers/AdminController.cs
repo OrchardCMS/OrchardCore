@@ -543,6 +543,13 @@ namespace OrchardCore.Contents.Controllers
 
             await conditionallyPublish(contentItem);
 
+            // A workflow activity acting as an inline handler may have added some model state errors.
+            if (!ModelState.IsValid)
+            {
+                _session.Cancel();
+                return View("Edit", model);
+            }
+
             if (returnUrl == null)
             {
                 return RedirectToAction("Edit", new RouteValueDictionary { { "ContentItemId", contentItem.ContentItemId } });
