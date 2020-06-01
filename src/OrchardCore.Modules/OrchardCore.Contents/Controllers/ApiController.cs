@@ -16,6 +16,8 @@ namespace OrchardCore.Content.Controllers
     [Authorize(AuthenticationSchemes = "Api"), IgnoreAntiforgeryToken, AllowAnonymous]
     public class ApiController : Controller
     {
+        private static readonly JsonMergeSettings UpdateJsonMergeSettings = new JsonMergeSettings { MergeArrayHandling = MergeArrayHandling.Replace };
+
         private readonly IContentManager _contentManager;
         private readonly IAuthorizationService _authorizationService;
         private readonly IStringLocalizer S;
@@ -122,7 +124,7 @@ namespace OrchardCore.Content.Controllers
                     return this.ChallengeOrForbid();
                 }
 
-                contentItem.Merge(model, new JsonMergeSettings { MergeArrayHandling = MergeArrayHandling.Replace });
+                contentItem.Merge(model, UpdateJsonMergeSettings);
 
                 await _contentManager.UpdateAsync(contentItem);
                 var result = await _contentManager.ValidateAsync(contentItem);

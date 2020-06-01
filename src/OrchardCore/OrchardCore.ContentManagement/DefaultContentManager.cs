@@ -21,6 +21,7 @@ namespace OrchardCore.ContentManagement
     public class DefaultContentManager : IContentManager
     {
         private const int ImportBatchSize = 500;
+        private static readonly JsonMergeSettings UpdateJsonMergeSettings = new JsonMergeSettings { MergeArrayHandling = MergeArrayHandling.Replace };
 
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly ISession _session;
@@ -783,7 +784,7 @@ namespace OrchardCore.ContentManagement
                 await RemovePublishedVersionAsync(updatingVersion, evictionVersions);
             }
 
-            updatingVersion.Merge(updatedVersion, new JsonMergeSettings { MergeArrayHandling = MergeArrayHandling.Replace });
+            updatingVersion.Merge(updatedVersion, UpdateJsonMergeSettings);
             updatingVersion.Latest = importingLatest;
             updatingVersion.Published = importingPublished;
 
