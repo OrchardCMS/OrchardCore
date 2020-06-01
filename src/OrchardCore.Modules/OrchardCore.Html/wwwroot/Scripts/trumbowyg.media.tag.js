@@ -26,7 +26,7 @@
                 var mediaBodyContent = "";
 
                 for (i = 0; i < mediaApp.selectedMedias.length; i++) {
-                  mediaBodyContent += ' [media]' + mediaApp.selectedMedias[i].mediaPath + '[/media]';
+                  mediaBodyContent += ' [image]' + mediaApp.selectedMedias[i].mediaPath + '[/image]';
                 }
 
                 var node = document.createTextNode(mediaBodyContent);
