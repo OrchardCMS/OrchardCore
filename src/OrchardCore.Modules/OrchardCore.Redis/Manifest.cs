@@ -31,6 +31,14 @@ using OrchardCore.Modules.Manifest;
 )]
 
 [assembly: Feature(
+    Id = "OrchardCore.Redis.Lock",
+    Name = "Redis Lock",
+    Description = "Distributed Lock using Redis.",
+    Dependencies = new[] { "OrchardCore.Redis" },
+    Category = "Distributed"
+)]
+
+[assembly: Feature(
     Id = "OrchardCore.Redis.DataProtection",
     Name = "Redis DataProtection",
     Description = "Distributed DataProtection using Redis.",

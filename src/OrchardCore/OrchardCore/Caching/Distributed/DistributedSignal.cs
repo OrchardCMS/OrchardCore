@@ -2,7 +2,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Primitives;
 using OrchardCore.Environment.Cache;
 
-namespace OrchardCore.Distributed
+namespace OrchardCore.Caching.Distributed
 {
     /// <summary>
     /// Distributed implementation of <see cref="Signal"/> using an <see cref="IMessageBus"/>.

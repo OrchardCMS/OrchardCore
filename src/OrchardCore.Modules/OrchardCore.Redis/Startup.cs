@@ -5,10 +5,11 @@ using Microsoft.Extensions.Caching.StackExchangeRedis;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using OrchardCore.Distributed;
+using OrchardCore.Caching.Distributed;
 using OrchardCore.Environment.Cache;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Configuration;
+using OrchardCore.Locking.Distributed;
 using OrchardCore.Modules;
 using OrchardCore.Redis.Options;
 using OrchardCore.Redis.Services;
@@ -69,6 +70,18 @@ namespace OrchardCore.Redis
             if (services.Any(d => d.ServiceType == typeof(IRedisService)))
             {
                 services.AddSingleton<IMessageBus, RedisBus>();
+            }
+        }
+    }
+
+    [Feature("OrchardCore.Redis.Lock")]
+    public class RedisLockStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            if (services.Any(d => d.ServiceType == typeof(IRedisService)))
+            {
+                services.AddSingleton<IDistributedLock, RedisLock>();
             }
         }
     }

@@ -1,6 +1,6 @@
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
-using OrchardCore.Distributed;
+using OrchardCore.Caching.Distributed;
 using OrchardCore.Environment.Cache;
 using OrchardCore.Environment.Cache.CacheContextProviders;
 using OrchardCore.Infrastructure.Cache;
