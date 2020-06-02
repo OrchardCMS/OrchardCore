@@ -122,7 +122,17 @@ services
     });
 ```
 
-This will thus make the SMTP port use this configuration despite any other value defined from site settings. 
+This will thus make the SMTP port use this configuration despite any other value defined from site settings. The second example's configuration value can come from e.g. an `appsettings.json` file like below:
+
+```
+{
+  "OrchardCore": {
+    "SmtpSettings": {
+      "Password":  "password"
+    }
+  }
+}
+```
 
 !!! note 
     On the admin there will be no indication that this override happened, and the value displayed there will still be 
