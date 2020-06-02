@@ -9,9 +9,9 @@ namespace OrchardCore.Infrastructure.Html
 
         public HtmlSanitizerService(IOptions<HtmlSanitizerOptions> options)
         {
-            if (options.Value.Configure != null)
+            foreach(var action in options.Value.Configure)
             {
-                options.Value.Configure.Invoke(_sanitizer);
+                action?.Invoke(_sanitizer);
             }
         }
 
