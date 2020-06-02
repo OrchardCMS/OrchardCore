@@ -77,7 +77,7 @@ without having to provide a state value.
   "OrchardCore": {
     "Default": {
       "OrchardCore_Media": {
-        ... specific tenant configuration configuration ...
+        ... specific tenant configuration ...
       }
     }
   }
@@ -146,7 +146,7 @@ Additionally these `appsettings.json` files do not need the `OrchardCore` sectio
 ```
 {
   "OrchardCore_Media": {
-    ... specific tenant configuration configuration ...
+    ... specific tenant configuration ...
   }
 }
 ```
@@ -164,8 +164,8 @@ OrchardCore__MyTenant__OrchardCore_Media__MaxFileSize
 ```
 
 !!! note
-    To support Linux the underscore `_` is used as a seperator, e.g. `OrchardCore_Media`
-    `OrchardCore.Media` is supported for backwards compatability, but users should migrate to the `_` pattern.
+    To support Linux the underscore `_` is used as a separator, e.g. `OrchardCore_Media`
+    `OrchardCore.Media` is supported for backwards compatibility, but users should migrate to the `_` pattern.
 
 ### Order of hierarchy
 
