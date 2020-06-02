@@ -19,7 +19,7 @@ namespace OrchardCore.Locking
         /// Waits indefinitely until acquiring a named lock with a given expiration for the current tenant.
         /// This is a non distributed version where the expiration time is not used to auto release the lock.
         /// </summary>
-        public async Task<IDisposable> AcquireLockAsync(string key, TimeSpan? expiration = null)
+        public async Task<ILocker> AcquireLockAsync(string key, TimeSpan? expiration = null)
         {
             var semaphore = _semaphores.GetOrAdd(key, (name) => new SemaphoreSlim(1));
 
@@ -31,7 +31,7 @@ namespace OrchardCore.Locking
         /// Tries to acquire a named lock in a given timeout with a given expiration for the current tenant.
         /// This is a non distributed version where the expiration time is not used to auto release the lock.
         /// </summary>
-        public async Task<(IDisposable locker, bool locked)> TryAcquireLockAsync(string key, TimeSpan timeout, TimeSpan? expiration = null)
+        public async Task<(ILocker locker, bool locked)> TryAcquireLockAsync(string key, TimeSpan timeout, TimeSpan? expiration = null)
         {
             var semaphore = _semaphores.GetOrAdd(key, (name) => new SemaphoreSlim(1));
 
@@ -43,7 +43,7 @@ namespace OrchardCore.Locking
             return (null, false);
         }
 
-        private class Locker : IDisposable
+        private class Locker : ILocker
         {
             private readonly SemaphoreSlim _semaphore;
             private bool _disposed;

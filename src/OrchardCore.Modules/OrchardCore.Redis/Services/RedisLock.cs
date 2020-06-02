@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Locking;
 using OrchardCore.Locking.Distributed;
 using StackExchange.Redis;
 
@@ -33,7 +34,7 @@ namespace OrchardCore.Redis.Services
         /// Waits indefinitely until acquiring a named lock with a given expiration for the current tenant.
         /// After 'expiration' the lock is auto released, a null value is equivalent to 'TimeSpan.MaxValue'.
         /// </summary>
-        public async Task<IDisposable> AcquireLockAsync(string key, TimeSpan? expiration = null)
+        public async Task<ILocker> AcquireLockAsync(string key, TimeSpan? expiration = null)
         {
             return (await TryAcquireLockAsync(key, TimeSpan.MaxValue, expiration)).locker;
         }
@@ -42,7 +43,7 @@ namespace OrchardCore.Redis.Services
         /// Tries to acquire a named lock in a given timeout with a given expiration for the current tenant.
         /// After 'expiration' the lock is auto released, a null value is equivalent to 'TimeSpan.MaxValue'.
         /// </summary>
-        public async Task<(IDisposable locker, bool locked)> TryAcquireLockAsync(string key, TimeSpan timeout, TimeSpan? expiration = null)
+        public async Task<(ILocker locker, bool locked)> TryAcquireLockAsync(string key, TimeSpan timeout, TimeSpan? expiration = null)
         {
             using (var cts = new CancellationTokenSource(timeout))
             {
@@ -120,7 +121,7 @@ namespace OrchardCore.Redis.Services
             }
         }
 
-        private class Locker : IAsyncDisposable, IDisposable
+        private class Locker : ILocker, IAsyncDisposable
         {
             private readonly RedisLock _lock;
             private readonly string _key;
@@ -136,7 +137,7 @@ namespace OrchardCore.Redis.Services
             {
                 if (_disposed)
                 {
-                    return new ValueTask();
+                    return default;
                 }
 
                 _disposed = true;
