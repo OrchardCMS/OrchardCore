@@ -19,7 +19,7 @@ Orchard Core supports a hierarchy of Configuration Sources
 The Configuration Sources are loaded in the above order, and settings lower in the hierarchy will override values configured higher up, i.e. an Global Tenant value will always be overridden by an Environment Variable.
 
 !!! note 
-    Modules can expose configuration via `IOptions` objects, `IShellConfiguration` keys (like the ones supplied in `appsettings.json` files) or both. However, one is not guarantee for the other. For example, the Email module allows SMTP configuration via the `SmtpSettings` class exposed via `IOptions` but to supply those settings from an `appsettings.json` file you'll need read out `IShellConfiguration` keys in your own app's code, see below.
+    Not all modules, even if they expose `IOptions`-based configuration, have built-in support for `IShellConfiguration` keys. So the patterns in the `appsettings.json` examples below won't necessarily work for just any module out of the box. Keep reading on how you can combine the two.
 
 ### `IShellConfiguration` in the `OrchardCore.Cms.Web.csproj` Startup Project
 
@@ -94,18 +94,32 @@ For example, the Email module allows SMTP configuration via the `SmtpSettings` c
 However, you can override the site settings from the `Startup` class like this (note that we use `PostConfigure` to override the site settings values but if the module doesn't use site settings you can just use `Configure`):
 
 ```
-public void ConfigureServices(IServiceCollection services)
-{
-    services
-        .AddOrchardCms()
-        .ConfigureServices(tenantServices =>
-            tenantServices.PostConfigure<SmtpSettings>(settings =>
-            {
-                // You could e.g. fetch the configuration values from an injected IShellConfiguration instance here.
-                // That in turn can then load configuration from e.g. appsettings.json files.
-                settings.Port = 255;
-            }));
-}
+services
+    .AddOrchardCms()
+    .ConfigureServices(tenantServices =>
+        tenantServices.PostConfigure<SmtpSettings>(settings =>
+        {
+            settings.Port = 255;
+        }));
+
+// Or if you want to make use of IShellConfiguration as seen above:
+services
+    .AddOrchardCms()
+    .ConfigureServices((tenantServices, serviceProvider) =>
+    {
+        // Instead of IShellConfiguration you could fetch the configuration 
+        // values from an injected Configuration instance here too. While that 
+        // would also allow you to access standard ASP.NET Core configuration 
+        // keys it wouldn't have support for all the hierarchical sources 
+        // detailed above.
+        var shellConfiguration = serviceProvider.GetRequiredService<IShellConfiguration>();
+        var password = shellConfiguration.GetValue<string>("SmtpSettings:Password");
+
+        tenantServices.PostConfigure<SmtpSettings>(settings =>
+        {
+            settings.Password = password;
+        });
+    });
 ```
 
 This will thus make the SMTP port use this configuration despite any other value defined from site settings. 
