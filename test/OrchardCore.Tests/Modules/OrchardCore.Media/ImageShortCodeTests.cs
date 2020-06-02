@@ -1,5 +1,8 @@
+using System.IO;
 using System.Linq;
+using System.Text.Encodings.Web;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
@@ -8,6 +11,7 @@ using OrchardCore.Infrastructure.Html;
 using OrchardCore.Media.Core;
 using OrchardCore.Media.Events;
 using OrchardCore.Media.ShortCodes;
+using OrchardCore.ShortCodes;
 using Xunit;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.Media
@@ -42,8 +46,23 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Media
             new HtmlSanitizerService(Options.Create(new HtmlSanitizerOptions()))
         );
 
-        var processed = await mediaShortCode.ProcessAsync(text);
-            Assert.Equal(expected, processed);
+            var shortCodeContext = new ShortCodeContext(mediaShortCode.Name);
+            var shortCodeOutput = new ShortCodeOutput(mediaShortCode.Name, encoder =>
+            {
+                var shortCodeContent = new DefaultShortCodeContent();
+                shortCodeContent.SetHtmlContent(text);
+
+                return Task.FromResult<ShortCodeContent>(shortCodeContent);
+            });
+
+            await mediaShortCode.ProcessAsync(shortCodeContext, shortCodeOutput);
+
+            using (var writer = new StringWriter())
+            {
+                shortCodeOutput.WriteTo(writer, NullHtmlEncoder.Default);
+
+                Assert.Equal(expected, writer.ToString());
+            }
         }
     }
 }

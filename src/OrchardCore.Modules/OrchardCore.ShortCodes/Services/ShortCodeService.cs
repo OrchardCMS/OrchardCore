@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.IO;
+using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 
 namespace OrchardCore.ShortCodes.Services
@@ -16,10 +18,31 @@ namespace OrchardCore.ShortCodes.Services
         {
             foreach (var shortCode in _shortCodes)
             {
-                input = await shortCode.ProcessAsync(input);
+                input = await GetContentAsync(shortCode, input);
             }
 
             return input;
+        }
+
+        private async Task<string> GetContentAsync(IShortCode shortCode, string input)
+        {
+            var shortCodeContext = new ShortCodeContext(shortCode.Name);
+            var shortCodeOutput = new ShortCodeOutput(shortCode.Name, encoder =>
+            {
+                var shortCodeContent = new DefaultShortCodeContent();
+                shortCodeContent.SetHtmlContent(input);
+
+                return Task.FromResult<ShortCodeContent>(shortCodeContent);
+            });
+
+            await shortCode.ProcessAsync(shortCodeContext, shortCodeOutput);
+
+            using (var writer = new StringWriter())
+            {
+                shortCodeOutput.WriteTo(writer, HtmlEncoder.Default);
+
+                return writer.ToString();
+            }
         }
     }
 }

@@ -4,6 +4,10 @@ namespace OrchardCore.ShortCodes
 {
     public interface IShortCode
     {
-        ValueTask<string> ProcessAsync(string input);
+        string Name { get; }
+
+        void Process(ShortCodeContext context, ShortCodeOutput output);
+
+        Task ProcessAsync(ShortCodeContext context, ShortCodeOutput output);
     }
 }
