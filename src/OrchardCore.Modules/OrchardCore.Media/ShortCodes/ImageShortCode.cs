@@ -4,6 +4,8 @@ using OrchardCore.ShortCodes;
 
 namespace OrchardCore.Media.ShortCodes
 {
+    [ShortCodeTarget("image")]
+    [ShortCodeTarget("media")]
     public class ImageShortCode : ShortCode
     {
         private readonly IHtmlSanitizerService _htmlSanitizerService;
@@ -15,12 +17,13 @@ namespace OrchardCore.Media.ShortCodes
             _htmlSanitizerService = htmlSanitizerService;
         }
 
-        public override string Name => "media";
-
         public async override Task ProcessAsync(ShortCodeContext context, ShortCodeOutput output)
         {
             var url = await output.GetChildContentAsync();
-            var tag = "<img src=\"" + url.GetContent() + "\"/>";
+            var publicUrl = _mediaFileStore.MapPathToPublicUrl(url.GetContent());
+            var tag = "<img src=\"" + publicUrl + "\">";
+            tag = _htmlSanitizerService.Sanitize(tag);
+
             output.Content.AppendHtml(tag);
         }
     }

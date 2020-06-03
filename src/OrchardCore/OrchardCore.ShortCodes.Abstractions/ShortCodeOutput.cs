@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
@@ -8,29 +10,30 @@ namespace OrchardCore.ShortCodes
 {
     public class ShortCodeOutput : IHtmlContent
     {
+        private static IEnumerable<string> _shortCodeTargets;
+
         private readonly Func<HtmlEncoder, Task<ShortCodeContent>> _getChildContentAsync;
+
         private ShortCodeContent _content;
         private bool _wasSuppressOutputCalled;
+        private string _selectedShortCode;
+        private (string Content, ShortCodeSpan Span) _selectedShortCodeContent;
 
-        public ShortCodeOutput(string shortCodeName)
+        public ShortCodeOutput(IShortCode shortCode)
             : this(
-                  shortCodeName,
+                  shortCode,
                   encoder => Task.FromResult<ShortCodeContent>(new DefaultShortCodeContent()))
         {
 
         }
 
-        public ShortCodeOutput(string shortCodeName, Func<HtmlEncoder, Task<ShortCodeContent>> getChildContentAsync)
+        public ShortCodeOutput(IShortCode shortCode, Func<HtmlEncoder, Task<ShortCodeContent>> getChildContentAsync)
         {
-            ShortCodeName = shortCodeName;
+            ShortCode = shortCode;
             _getChildContentAsync = getChildContentAsync;
         }
 
-        private string StartShortCode => $"[{ShortCodeName}]";
-
-        private string EndShortCode => $"[/{ShortCodeName}]";
-
-        public string ShortCodeName { get; set; }
+        public IShortCode ShortCode { get; }
 
         public bool IsContentModified => _wasSuppressOutputCalled || _content?.IsModified == true;
 
@@ -65,7 +68,7 @@ namespace OrchardCore.ShortCodes
 
         public void SuppressOutput()
         {
-            ShortCodeName = null;
+            _selectedShortCode = null;
             _wasSuppressOutputCalled = true;
             _content?.Clear();
         }
@@ -82,35 +85,55 @@ namespace OrchardCore.ShortCodes
                 throw new ArgumentNullException(nameof(encoder));
             }
 
-            var childContent = GetChildContentAsync(HtmlEncoder.Default).GetAwaiter().GetResult();
-            var markup = childContent.GetContent();
-            var content = ExtractShortCodeContent(markup);
-            if (content.Span == ShortCodeSpan.Default)
-            {
-                writer.Write(content.Content);
-            }
-            else
-            {
-                var before = markup.Substring(0, content.Span.Start - StartShortCode.Length);
-                var after = markup.Substring(content.Span.End + EndShortCode.Length);
-
-                writer.Write(before + Content.GetContent() + after);
-            }
+            writer.Write(Content.GetContent());
         }
 
         private (string Content, ShortCodeSpan Span) ExtractShortCodeContent(string markup)
         {
-            var startShortCodeIndex = markup.IndexOf(StartShortCode) + StartShortCode.Length;
-            var endShortCodeIndex = markup.IndexOf(EndShortCode);
-
-            if (startShortCodeIndex == -1 || endShortCodeIndex == -1)
+            if (_selectedShortCodeContent.Content != null && !_selectedShortCodeContent.Span.Equals(ShortCodeSpan.Default))
             {
-                return (markup, ShortCodeSpan.Default);
+                return _selectedShortCodeContent;
             }
 
-            var content = markup[startShortCodeIndex..endShortCodeIndex];
+            foreach (var shortCodeName in GetShortCodeTargets())
+            {
+                var startShortCode = $"[{shortCodeName}]";
+                var endShortCode = $"[/{shortCodeName}]";
+                var startShortCodeIndex = markup.IndexOf(startShortCode) + startShortCode.Length;
+                var endShortCodeIndex = markup.IndexOf(endShortCode);
 
-            return (content, new ShortCodeSpan(startShortCodeIndex, endShortCodeIndex));
+                if (startShortCodeIndex == -1 || endShortCodeIndex == -1)
+                {
+                    continue;
+                }
+
+                _selectedShortCode = shortCodeName;
+
+                var content = markup[startShortCodeIndex..endShortCodeIndex];
+                _selectedShortCodeContent = (content, new ShortCodeSpan(startShortCodeIndex, endShortCodeIndex));
+
+                return _selectedShortCodeContent;
+            }
+
+            return (markup, ShortCodeSpan.Default);
+        }
+
+        private IEnumerable<string> GetShortCodeTargets()
+        {
+            if (_shortCodeTargets != null)
+            {
+                return _shortCodeTargets;
+            }
+
+            _shortCodeTargets = Enumerable.Empty<string>();
+            var shortCodeTargetAttributes = ShortCode.GetType()
+                .GetCustomAttributes(typeof(ShortCodeTargetAttribute), false);
+            if (shortCodeTargetAttributes.Length > 0)
+            {
+                _shortCodeTargets = shortCodeTargetAttributes.OfType<ShortCodeTargetAttribute>().Select(a => a.Name);
+            }
+
+            return _shortCodeTargets;
         }
     }
 }

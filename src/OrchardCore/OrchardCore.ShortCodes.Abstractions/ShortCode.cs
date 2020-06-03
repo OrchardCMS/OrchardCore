@@ -4,8 +4,6 @@ namespace OrchardCore.ShortCodes
 {
     public abstract class ShortCode : IShortCode
     {
-        public abstract string Name { get; }
-
         public virtual void Process(ShortCodeContext context, ShortCodeOutput output)
         {
 

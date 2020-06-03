@@ -1,6 +1,6 @@
 using System.IO;
 using System.Linq;
-using System.Text.Encodings.Web;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.Extensions.Logging;
@@ -37,32 +37,38 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Media
         public async Task ShouldProcess(string text, string expected)
         {
             var mediaShortCode = new ImageShortCode(
-            new DefaultMediaFileStore(Mock.Of<IFileStore>(),
-                "/media",
-                string.Empty,
-                Enumerable.Empty<IMediaEventHandler>(),
-                Enumerable.Empty<IMediaCreatingEventHandler>(),
-                Mock.Of<ILogger<DefaultMediaFileStore>>()),
-            new HtmlSanitizerService(Options.Create(new HtmlSanitizerOptions()))
-        );
-
-            var shortCodeContext = new ShortCodeContext(mediaShortCode.Name);
-            var shortCodeOutput = new ShortCodeOutput(mediaShortCode.Name, encoder =>
+                new DefaultMediaFileStore(Mock.Of<IFileStore>(),
+                    "/media",
+                    string.Empty,
+                    Enumerable.Empty<IMediaEventHandler>(),
+                    Enumerable.Empty<IMediaCreatingEventHandler>(),
+                    Mock.Of<ILogger<DefaultMediaFileStore>>()),
+                new HtmlSanitizerService(Options.Create(new HtmlSanitizerOptions()))
+            );
+            var stringBuilder = new StringBuilder(text);
+            var shortCodeContext = new ShortCodeContext();
+            var shortCodeParser = new ShortCodeParser();
+            var shortCodeOccurences = shortCodeParser.Parse(stringBuilder.ToString());
+            foreach (var shortCodeOccurence in shortCodeOccurences)
             {
-                var shortCodeContent = new DefaultShortCodeContent();
-                shortCodeContent.SetHtmlContent(text);
+                var shortCodeOutput = new ShortCodeOutput(mediaShortCode, encoder =>
+                {
+                    var shortCodeContent = new DefaultShortCodeContent();
+                    shortCodeContent.SetHtmlContent(shortCodeOccurence.Text);
 
-                return Task.FromResult<ShortCodeContent>(shortCodeContent);
-            });
+                    return Task.FromResult<ShortCodeContent>(shortCodeContent);
+                });
 
-            await mediaShortCode.ProcessAsync(shortCodeContext, shortCodeOutput);
+                await mediaShortCode.ProcessAsync(shortCodeContext, shortCodeOutput);
 
-            using (var writer = new StringWriter())
-            {
-                shortCodeOutput.WriteTo(writer, NullHtmlEncoder.Default);
-
-                Assert.Equal(expected, writer.ToString());
+                using (var writer = new StringWriter())
+                {
+                    shortCodeOutput.WriteTo(writer, NullHtmlEncoder.Default);
+                    stringBuilder.Replace(shortCodeOccurence.Text, writer.ToString());
+                }
             }
+
+            Assert.Equal(expected, stringBuilder.ToString());
         }
     }
 }
