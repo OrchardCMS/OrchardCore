@@ -6,5 +6,6 @@ using OrchardCore.Modules.Manifest;
     Author = ManifestConstants.OrchardCoreTeam,
     Website = ManifestConstants.OrchardCoreWebsite,
     Version = ManifestConstants.OrchardCoreVersion,
-    Description = "A theme adapted for blogs."
+    Description = "A theme adapted for blogs.",
+    Tags = new[] { "Blog", "Bootstrap", "Liquid" }
 )]
