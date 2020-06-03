@@ -3,7 +3,7 @@
 ** Any changes made directly to this file will be overwritten next time its asset group is processed by Gulp.
 */
 
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 /**!
  * @fileOverview Kickass library to create and place poppers near their reference elements.
@@ -2626,7 +2626,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
   Popper.Defaults = Defaults;
   return Popper;
 });
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 /*!
   * Bootstrap v4.4.1 (https://getbootstrap.com/)
@@ -2915,9 +2915,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
    * ------------------------------------------------------------------------
    */
 
-  var Alert =
-  /*#__PURE__*/
-  function () {
+  var Alert = /*#__PURE__*/function () {
     function Alert(element) {
       this._element = element;
     } // Getters
@@ -3084,9 +3082,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
    * ------------------------------------------------------------------------
    */
 
-  var Button =
-  /*#__PURE__*/
-  function () {
+  var Button = /*#__PURE__*/function () {
     function Button(element) {
       this._element = element;
     } // Getters
@@ -3334,9 +3330,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
    * ------------------------------------------------------------------------
    */
 
-  var Carousel =
-  /*#__PURE__*/
-  function () {
+  var Carousel = /*#__PURE__*/function () {
     function Carousel(element, config) {
       this._items = null;
       this._interval = null;
@@ -3891,9 +3885,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
    * ------------------------------------------------------------------------
    */
 
-  var Collapse =
-  /*#__PURE__*/
-  function () {
+  var Collapse = /*#__PURE__*/function () {
     function Collapse(element, config) {
       this._isTransitioning = false;
       this._element = element;
@@ -4286,9 +4278,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
    * ------------------------------------------------------------------------
    */
 
-  var Dropdown =
-  /*#__PURE__*/
-  function () {
+  var Dropdown = /*#__PURE__*/function () {
     function Dropdown(element, config) {
       this._element = element;
       this._popper = null;
@@ -4796,9 +4786,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
    * ------------------------------------------------------------------------
    */
 
-  var Modal =
-  /*#__PURE__*/
-  function () {
+  var Modal = /*#__PURE__*/function () {
     function Modal(element, config) {
       this._config = this._getConfig(config);
       this._element = element;
@@ -5550,9 +5538,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
    * ------------------------------------------------------------------------
    */
 
-  var Tooltip =
-  /*#__PURE__*/
-  function () {
+  var Tooltip = /*#__PURE__*/function () {
     function Tooltip(element, config) {
       if (typeof Popper === 'undefined') {
         throw new TypeError('Bootstrap\'s tooltips require Popper.js (https://popper.js.org/)');
@@ -6230,9 +6216,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
    * ------------------------------------------------------------------------
    */
 
-  var Popover =
-  /*#__PURE__*/
-  function (_Tooltip) {
+  var Popover = /*#__PURE__*/function (_Tooltip) {
     _inheritsLoose(Popover, _Tooltip);
 
     function Popover() {
@@ -6417,9 +6401,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
    * ------------------------------------------------------------------------
    */
 
-  var ScrollSpy =
-  /*#__PURE__*/
-  function () {
+  var ScrollSpy = /*#__PURE__*/function () {
     function ScrollSpy(element, config) {
       var _this = this;
 
@@ -6710,9 +6692,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
    * ------------------------------------------------------------------------
    */
 
-  var Tab =
-  /*#__PURE__*/
-  function () {
+  var Tab = /*#__PURE__*/function () {
     function Tab(element) {
       this._element = element;
     } // Getters
@@ -6945,9 +6925,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
    * ------------------------------------------------------------------------
    */
 
-  var Toast =
-  /*#__PURE__*/
-  function () {
+  var Toast = /*#__PURE__*/function () {
     function Toast(element, config) {
       this._element = element;
       this._config = this._getConfig(config);
@@ -7209,7 +7187,7 @@ $(function () {
       return false;
     }
 
-    confirmDialog(_objectSpread({}, _this.data(), {
+    confirmDialog(_objectSpread(_objectSpread({}, _this.data()), {}, {
       callback: function callback(resp) {
         if (resp) {
           var url = _this.attr('href');
@@ -7260,7 +7238,7 @@ $(function () {
       var unsafeUrlPrompt = _this.data("unsafe-url");
 
       if (unsafeUrlPrompt && unsafeUrlPrompt.length > 0) {
-        confirmDialog(_objectSpread({}, _this.data(), {
+        confirmDialog(_objectSpread(_objectSpread({}, _this.data()), {}, {
           callback: function callback(resp) {
             if (resp) {
               form.submit();
@@ -7271,7 +7249,7 @@ $(function () {
       }
 
       if (_this.filter("[itemprop~='RemoveUrl']").length == 1) {
-        confirmDialog(_objectSpread({}, _this.data(), {
+        confirmDialog(_objectSpread(_objectSpread({}, _this.data()), {}, {
           callback: function callback(resp) {
             if (resp) {
               form.submit();
@@ -7467,7 +7445,7 @@ function unSetCompactStatus() {
   isCompactExplicit = false;
   persistAdminPreferences();
 }
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 /*!
  * perfect-scrollbar v1.3.0
@@ -9030,7 +9008,7 @@ $(function () {
     lastWidth = width;
   });
 });
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 /**!
  * Sortable

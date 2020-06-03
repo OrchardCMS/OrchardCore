@@ -18,10 +18,10 @@
     "postinstall": "run-s install:*"
   },
   "devDependencies": {
-    "@babel/core": "^7.9.6",
-    "@babel/preset-env": "^7.9.6",
-    "@babel/preset-flow": "7.9.0",
-    "all-contributors-cli": "^6.14.2",
+    "@babel/core": "^7.10.2",
+    "@babel/preset-env": "^7.10.2",
+    "@babel/preset-flow": "7.10.1",
+    "all-contributors-cli": "^6.15.0",
     "es6-promise": "4.2.8",
     "glob": "^7.1.6",
     "graceful-fs": "4.2.4",
@@ -48,7 +48,7 @@
     "merge-stream": "2.0.0",
     "npm-run-all": "^4.1.5",
     "path-posix": "1.0.0",
-    "postcss": "7.0.30",
+    "postcss": "7.0.32",
     "postcss-rtl": "^1.7.3",
     "typescript": "^3.9.3"
   }
