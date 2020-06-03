@@ -127,9 +127,9 @@ namespace OrchardCore.Redis.Services
             private readonly string _key;
             private bool _disposed;
 
-            public Locker(RedisLock lock_, string key)
+            public Locker(RedisLock redislock, string key)
             {
-                _lock = lock_;
+                _lock = redislock;
                 _key = key;
             }
 
