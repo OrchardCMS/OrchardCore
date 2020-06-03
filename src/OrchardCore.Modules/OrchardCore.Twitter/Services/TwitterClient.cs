@@ -9,10 +9,10 @@ namespace OrchardCore.Twitter.Services
 {
     public class TwitterClient
     {
-        private static readonly HttpClient _client = new HttpClient();
+        internal static HttpClient _client = new HttpClient();
         private readonly ILogger _logger;
 
-        public TwitterClient(HttpClient client, ILogger<TwitterClient> logger)
+        public TwitterClient(ILogger<TwitterClient> logger)
         {
             _client.BaseAddress = new Uri("https://api.twitter.com");
             _client.DefaultRequestHeaders.Accept.Clear();
