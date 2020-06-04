@@ -11,7 +11,7 @@
     var formContentTypeClassName = "form-" + ((string)Model.ContentItem.ContentType).HtmlClassify();
 }
 
-<form action="@formPart.Action" method="@formPart.Method"  enctype="@encType" class="form-content  @formContentTypeClassName">
+<form action="@formPart.Action" method="@formPart.Method"  enctype="@encType" class="form-content @formContentTypeClassName">
     @if(formPart.EnableAntiForgeryToken)
     {
         @Html.AntiForgeryToken()
