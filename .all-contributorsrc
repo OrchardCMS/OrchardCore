@@ -1521,6 +1521,15 @@
       "contributions": [
         "translation"
       ]
+    },
+    {
+      "login": "ArieGato",
+      "name": "Arjan Vermunt",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/1059562?v=4",
+      "profile": "https://github.com/ArieGato",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7
