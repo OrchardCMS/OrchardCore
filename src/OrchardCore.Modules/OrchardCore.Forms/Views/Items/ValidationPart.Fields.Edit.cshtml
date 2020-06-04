@@ -5,12 +5,12 @@
 
 <div class="form-group">
     <label asp-for="For">@T["For"]</label>
-    <input asp-for="For" type="text" class="form-control content-preview-text" />
+    <input asp-for="For" type="text" class="form-control content-preview-text" data-card-bind="For" />
     <span class="hint">@T["The field name that this validation is for."]</span>
 </div>
 
 <div class="form-group">
     <label asp-for="ErrorMessage">@T["Error Message"]</label>
-    <input asp-for="ErrorMessage" type="text" class="form-control content-preview-text content-caption-text" />
+    <input asp-for="ErrorMessage" type="text" class="form-control content-preview-text" data-card-bind="ErrorMessage" />
     <span class="hint">@T["The validation error message to display."]</span>
 </div>

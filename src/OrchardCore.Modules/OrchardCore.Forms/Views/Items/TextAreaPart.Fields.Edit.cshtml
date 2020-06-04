@@ -5,12 +5,12 @@
 
 <div class="form-group">
     <label asp-for="Placeholder">@T["Placeholder Text"]</label>
-    <input asp-for="Placeholder" type="text" class="form-control content-preview-text" />
+    <input asp-for="Placeholder" type="text" class="form-control content-preview-text" data-card-bind="Placeholder" />
     <span class="hint">@T["The text to display when the textarea has no value."]</span>
 </div>
 
 <div class="form-group">
     <label asp-for="DefaultValue">@T["Default Value"]</label>
-    <input asp-for="DefaultValue" type="text" class="form-control content-preview-text" />
+    <input asp-for="DefaultValue" type="text" class="form-control content-preview-text" data-card-bind="DefaultValue" />
     <span class="hint">@T["The default value for this textarea."]</span>
 </div>

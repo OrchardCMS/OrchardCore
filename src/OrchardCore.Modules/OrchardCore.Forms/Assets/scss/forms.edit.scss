@@ -1,7 +1,14 @@
-.contentcard-label, .contentcard-input, .contentcard-text-area, .contentcard-button, .contentcard-validation, .contentcard-validation-summary {
+.contentcard-label,
+.contentcard-input,
+.contentcard-text-area,
+.contentcard-button,
+.contentcard-validation,
+.contentcard-validation-summary {
     > .widget-editor.card {
         border-radius: initial;
         border-color: initial;
+        border-style: dashed;
+        background-color: initial;
 
         > .widget-editor-header.card-header {
             border-bottom: none;
@@ -11,34 +18,50 @@
     }
 }
 
-.contentcard-label > .widget-editor.card {
-    border-style: dashed;
-    background-color: initial;
-}
-
-.contentcard-input > .widget-editor.card {
-    border-style: inset;
-}
-
-.contentcard-text-area > .widget-editor.card {
-    border-style: inset;
-}
-
-.contentcard-button > .widget-editor.card {
-    border-style: outset;
-    background-color: #f0f0f0;
-}
-
-.contentcard-validation > .widget-editor.card {
-    border-style: dashed;
-    background-color: initial;
-}
-
-.contentcard-validation-summary > .widget-editor.card {
-    border-style: dashed;
-    background-color: initial;
-}
 
 .contentcard-validation-summary .hint {
-    color: #dc3545 !important
+    color: #dc3545 !important;
+}
+
+.inline-card-item {
+    > div {
+
+        &.inline-button {
+            display: block;
+            border-style: solid;
+            border-color: #bbb #888 #666 #aaa;
+            border-width: 1px 2px 2px 1px;
+            background-color: lightgray;
+            color: #000;
+            text-align: center;
+            margin: 5px;
+            padding: 3px 3px 3px 3px;
+            width: 95%;
+        }
+
+        &.inline-input {
+            margin: 5px;
+            padding: 3px 3px 3px 8px;
+            line-height: 1.5rem;
+            min-height: 32px;
+            background-color: white;
+            border: 1px solid darkgray;
+            box-shadow: 1px 1px 1px 0 lightgray inset;
+            width: 95%;
+        }
+
+        &.inline-textarea {
+            margin: 5px;
+            padding: 3px 3px 3px 8px;
+            line-height: 1.5rem;
+            min-height: 32px;
+            background-color: white;
+            border: 1px solid darkgray;
+            box-shadow: 1px 1px 1px 0 lightgray inset;
+            resize: both;
+            height: 60px;
+            width: 95%;
+            overflow: scroll;
+        }
+    }
 }

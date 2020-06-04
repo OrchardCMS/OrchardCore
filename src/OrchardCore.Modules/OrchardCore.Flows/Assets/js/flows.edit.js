@@ -30,14 +30,31 @@ $(function () {
     });
 
 
-    $(document).on('keyup', '.widget-editor .form-group input.content-caption-text', function () {
+    $(document).on('keyup', '.widget-editor .form-group input[data-card-bind], .widget-editor', function (e) {
+
+        // Do nothing if it's inline view
+        if ($(e.target).parent().is(".inline-card-item")) {
+            return;
+        }
         var title = $(this).val();
         var widgetEditor = $(this).closest('.widget-editor');
-        var headerTextLabel = widgetEditor
-            .find('.widget-editor-header .widget-editor-header-text, .widget-editor-header .label-display-text')
-            .filter(function () {
-                return $(this).closest('.widget-editor').is(widgetEditor);
-            }).html(title);
+        var data = $(this).data('card-bind');
 
+        //find bound element
+        var boundElement = widgetEditor
+            .find('[data-card-bind*=' + data + ']')
+            .filter(function () {
+                return $(this).closest('.widget-editor').is(widgetEditor) && e.target != this;
+            });
+
+        //trigger change event,to allow each bound element to configure display differently.
+        boundElement.each(function () {
+            $(this).trigger('contentcard:change', [data, title]);
+        });
+    });
+
+    $(document).on('contentcard:change', 'span[data-card-bind], label[data-card-bind], div[data-card-bind]', function (evt, prop, val) {
+        // default - change inner html with value
+        $(this).html(val);
     });
 });

@@ -27,7 +27,7 @@
 
         @*Display Default Header text for all Content Card*@
         <div class="widget-card-title">
-            <span class="widget-editor-header-text">@T["{0}", contentItemDisplayText]</span>
+            <span data-card-bind="Title">@T["{0}", contentItemDisplayText]</span>
             <span class="badge badge-primary">@contentTypeDisplayText</span>
         </div>
 
@@ -54,4 +54,3 @@
         </div>
     }
 </div>
-

@@ -11,8 +11,11 @@
 }
 
 
-<label class="inline-label w-auto">
-    <span class="label-display-text">@(Model.ContentItem.ContentItem.DisplayText ?? contentTypeDisplayText)</span>
-    <span class="badge badge-secondary" style="display: inline-block;">@forText</span>
-    <span class="badge badge-light" style="display: inline-block; vertical-align:top">@contentTypeDisplayText</span>
-</label>
+<div class="w-auto">
+    <span class="badge badge-secondary" data-card-bind="For">@forText</span>
+    <span class="badge badge-light">@contentTypeDisplayText</span>
+</div>
+
+<div class="inline-card-item">
+    <span data-card-bind="Title">@(Model.ContentItem.ContentItem.DisplayText ?? contentTypeDisplayText)</span>
+</div>

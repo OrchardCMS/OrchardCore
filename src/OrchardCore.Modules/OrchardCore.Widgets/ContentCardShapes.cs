@@ -41,8 +41,8 @@ namespace OrchardCore.Widgets
 
                     dynamic cardShape = context.Shape;
 
-                    IShape attribTool = await context.ShapeFactory.New.ToolShapeAttributes();
-                    attribTool.Metadata.Name = "ToolShapeAttributes";
+                    IShape attribTool = await context.ShapeFactory.New.ToolWidgetSettings();
+                    attribTool.Metadata.Name = "ToolWidgetSettings";
 
                     attribTool.Properties["Content"] = await context.ShapeFactory.CreateAsync("ContentZone");
                     attribTool.Properties["Actions"] = await context.ShapeFactory.CreateAsync("ContentZone");
@@ -56,11 +56,6 @@ namespace OrchardCore.Widgets
 
                     var contentItem = cardShape.ContentItem;
                     cardShape.ContentTypeValue = contentItem.ContentType;
-
-                    // Set Modal ID for ToolShapeAttributes
-                    cardShape.Footer.ToolShapeAttributes.ModalId = $"ShapeAttributesModal_{cardShape.ContentItem.ContentItemId}";
-                    cardShape.Footer.ToolShapeAttributes.ContentItemDisplayText = cardShape.ContentItem.DisplayText;
-                    cardShape.Footer.ToolShapeAttributes.ContentType = cardShape.ContentItem.ContentType;
 
                     //AJAX will not have CollectionShape.
                     var updater = cardShape.CollectionShape?.Updater ?? cardShape.Updater;
@@ -98,6 +93,26 @@ namespace OrchardCore.Widgets
                     cardShape.ContentPreview = contentDisplay;
 
                     cardShape.Content.Add(cardShape.ContentEditor);
+
+                    if (cardShape.ContentEditor.WidgetSettings.Items.Count > 0)
+                    {
+                        //Move AttributeSettings to ToolWidgetSettings Content, if any
+                        foreach (var item in cardShape.ContentEditor.WidgetSettings)
+                        {
+                            cardShape.Footer.ToolWidgetSettings.Content.Add(item);
+                        }
+                        cardShape.ContentEditor.WidgetSettings = null;
+
+                        // Set Modal ID for ToolWidgetSettings
+                        cardShape.Footer.ToolWidgetSettings.ModalId = $"WidgetSettingsModal_{cardShape.ContentItem.ContentItemId}";
+                        cardShape.Footer.ToolWidgetSettings.ContentItemDisplayText = cardShape.ContentItem.DisplayText;
+                        cardShape.Footer.ToolWidgetSettings.ContentType = cardShape.ContentItem.ContentType;
+                    }
+                    else
+                    {
+                        //Content Item doesn't support attributes
+                        cardShape.Footer.Remove("ToolWidgetSettings");
+                    }
 
 
                 });

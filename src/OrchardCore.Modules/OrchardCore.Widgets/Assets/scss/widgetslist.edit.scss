@@ -16,12 +16,14 @@
         }
     }
 
-    .card-body, .card-footer {
+    .card-body,
+    .card-footer {
         display: inherit;
     }
 
     &.collapsed {
-        .card-body, .card-footer {
+        .card-body,
+        .card-footer {
             display: none;
         }
 
@@ -66,7 +68,8 @@
     }
 }
 
-.widget-editor-btn-collapse, .collapsed .widget-editor-btn-expand {
+.widget-editor-btn-collapse,
+.collapsed .widget-editor-btn-expand {
     display: inline-block;
 }
 
@@ -140,6 +143,24 @@
     }
 }
 
+.inline-card-item {
+    width: 100%;
+    position: relative;
+
+    > * {
+        width: 100%;
+    }
+    
+    &::after {
+        content: " ";
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        right: 0;
+        left: 0;
+    }
+}
+
 .modal.sidebar {
     text-align: initial;
     visibility: initial !important;
@@ -158,8 +179,8 @@
         }
 
         .modal-header {
-            border-bottom-color: #EEEEEE;
-            background-color: #FAFAFA;
+            border-bottom-color: #eeeeee;
+            background-color: #fafafa;
         }
 
         .modal-content {

@@ -5,9 +5,13 @@
     var contentItem = (IContent)Model.ContentItem;
     var contentTypeDisplayText = ContentDefinitionManager.GetTypeDefinition((string)Model.ContentItem.ContentType).DisplayName;
     var contentItemDisplayText = contentItem.ContentItem.DisplayText;
-
+    var inputPart = ((ContentItem)Model.ContentItem).As<OrchardCore.Forms.Models.InputPart>();
 }
-<div class="inline-input w-auto">
-    <span class="badge badge-info label-display-text" style="display: inline-block;">@contentItemDisplayText</span>
-    <span class="badge badge-light" style="display: inline-block; vertical-align:top">@contentTypeDisplayText</span>
+<div class="w-auto">
+    <span class="badge badge-info" data-card-bind="Title">@contentItemDisplayText</span>
+    <span class="badge badge-light">@contentTypeDisplayText</span>
+</div>
+
+<div class="inline-card-item">
+    <div class="inline-input" data-card-bind="DefaultValue"> @inputPart.DefaultValue</div>
 </div>

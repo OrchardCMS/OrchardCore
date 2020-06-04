@@ -6,16 +6,16 @@
 @{
     var contentItem = (IContent)Model.ContentItem;
     var contentTypeDisplayText = ContentDefinitionManager.GetTypeDefinition((string)Model.ContentItem.ContentType).DisplayName;
-    var defaultValue = ((ContentItem)Model.ContentItem).As<OrchardCore.Forms.Models.TextAreaPart>().DefaultValue;
-    var placeHolderValue = ((ContentItem)Model.ContentItem).As<OrchardCore.Forms.Models.TextAreaPart>().Placeholder;
+    var contentItemDisplayText = contentItem.ContentItem.DisplayText;
 
-    string contentType = Model.ContentItem.ContentType;
+    var textAreaPart = ((ContentItem)Model.ContentItem).As<OrchardCore.Forms.Models.TextAreaPart>();
 }
 
-<label class="col">
-    <span>@(defaultValue ?? placeHolderValue ?? Model.ContentItem.ContentType)</span>
-    <span class="badge badge-info label-display-text" style="display: inline-block;">@Model.ContentItem.DisplayText</span>
-    <span class="badge badge-light" style="display: inline-block; vertical-align:top">@contentTypeDisplayText</span>
+<div class="w-auto">
+    <span class="badge badge-info" data-card-bind="Title">@contentItemDisplayText</span>
+    <span class="badge badge-light">@contentTypeDisplayText</span>
+</div>
 
-
-</label>
+<div class="inline-card-item">
+    <div class="inline-textarea" data-card-bind="DefaultValue">@textAreaPart.DefaultValue</div>
+</div>

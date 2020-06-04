@@ -34,6 +34,8 @@ namespace OrchardCore.Widgets
 
             //Add Widget Card Shapes
             services.AddScoped<IShapeTableProvider, ContentCardShapes>();
+            services.AddScoped<IContentDisplayDriver, WidgetAttributesDisplay>();
+
             // Widgets List Part
             services.AddContentPart<WidgetsListPart>()
                 .UseDisplayDriver<WidgetsListPartDisplay>();

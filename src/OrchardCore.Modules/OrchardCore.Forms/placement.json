@@ -1,0 +1,101 @@
+{
+
+  "TitlePart_Edit": [
+    {
+      "place": "FormSettings:5",
+      "contentType": [
+        "Form",
+        "Label"
+      ]
+    }
+  ],
+
+  "FormInputElementPart_Fields_Edit": [
+    {
+      "place": "FormSettings:5",
+      "contentType": [
+        "Input",
+        "Button",
+        "TextArea",
+        "Select"
+      ]
+    }
+  ],
+
+  "FormElementPart_Fields_Edit": [
+    {
+      "place": "FormSettings:5",
+      "contentType": [
+        "Form",
+        "Label",
+        "Input",
+        "Button",
+        "TextArea",
+        "Select"
+      ]
+    }
+  ],
+
+
+
+  "FormPart_Fields_Edit": [
+    {
+      "place": "FormSettings:10",
+      "contentType": [
+        "Form"
+      ]
+    }
+  ],
+
+  "FormPart_WorkflowField_Edit": [
+    {
+      "place": "WorkflowSettings:10",
+      "contentType": [
+        "Form"
+      ]
+    }
+  ],
+
+  "LabelPart_Fields_Edit": [
+    {
+      "place": "FormSettings:10",
+      "contentType": [
+        "Label"
+      ]
+    }
+  ],
+
+  "InputPart_Fields_Edit": [
+    {
+      "place": "FormSettings:10",
+      "contentType": [
+        "Input"
+      ]
+    }
+  ],
+  "ButtonPart_Fields_Edit": [
+    {
+      "place": "FormSettings:10",
+      "contentType": [
+        "Button"
+      ]
+    }
+  ],
+  "ValidationPart_Fields_Edit": [
+    {
+      "place": "FormSettings:10",
+      "contentType": [
+        "Validation"
+      ]
+    }
+  ],
+
+  "TextAreaPart_Fields_Edit": [
+    {
+      "place": "FormSettings:10",
+      "contentType": [
+        "TextArea"
+      ]
+    }
+  ]
+}

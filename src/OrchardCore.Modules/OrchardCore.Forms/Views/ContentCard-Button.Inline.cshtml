@@ -4,12 +4,16 @@
 @{
     var contentItem = (IContent)Model.ContentItem;
     var contentTypeDisplayText = ContentDefinitionManager.GetTypeDefinition((string)Model.ContentItem.ContentType).DisplayName;
+    var contentItemDisplayText = contentItem.ContentItem.DisplayText;
+
     var btnText = ((ContentItem)Model.ContentItem).As<OrchardCore.Forms.Models.ButtonPart>().Text;
 }
 
 
-<div class="inline-button w-auto">
-    <span>@btnText</span>
-    <span class="badge badge-info label-display-text">@(Model.ContentItem.DisplayText ?? contentTypeDisplayText)</span>
+<div class="w-auto">
+    <span class="badge badge-info" data-card-bind="Title">@contentItemDisplayText</span>
     <span class="badge badge-light">@contentTypeDisplayText</span>
+</div>
+<div class="inline-card-item">
+    <div class="inline-button" data-card-bind="Text">@btnText</div>
 </div>

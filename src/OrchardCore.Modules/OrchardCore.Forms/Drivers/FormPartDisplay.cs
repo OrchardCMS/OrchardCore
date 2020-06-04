@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.DisplayManagement.ModelBinding;
@@ -11,14 +12,27 @@ namespace OrchardCore.Forms.Drivers
     {
         public override IDisplayResult Edit(FormPart part)
         {
-            return Initialize<FormPartEditViewModel>("FormPart_Fields_Edit", m =>
-            {
-                m.Action = part.Action;
-                m.Method = part.Method;
-                m.WorkflowTypeId = part.WorkflowTypeId;
-                m.EncType = part.EncType;
-                m.EnableAntiForgeryToken = part.EnableAntiForgeryToken;
-            });
+            var results = new List<IDisplayResult>();
+
+            results.Add(
+                Initialize<FormPartEditViewModel>("FormPart_Fields_Edit", m =>
+                {
+                    m.Action = part.Action;
+                    m.Method = part.Method;
+                    m.EncType = part.EncType;
+                    m.EnableAntiForgeryToken = part.EnableAntiForgeryToken;
+                })
+            );
+
+
+            results.Add(
+               Initialize<FormPartEditViewModel>("FormPart_WorkflowField_Edit", m =>
+               {
+                   m.WorkflowTypeId = part.WorkflowTypeId;
+               })
+           );
+
+            return Combine(results.ToArray());
         }
 
         public async override Task<IDisplayResult> UpdateAsync(FormPart part, IUpdateModel updater)

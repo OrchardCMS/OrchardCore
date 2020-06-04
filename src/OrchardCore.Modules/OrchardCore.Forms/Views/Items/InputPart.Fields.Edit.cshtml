@@ -5,7 +5,7 @@
 
 <div class="form-group">
     <label asp-for="Type">@T["Type"]</label>
-    <select asp-for="Type" class="form-control content-preview-select">
+    <select asp-for="Type" class="form-control content-preview-select" data-card-bind="Type">
         <option value="text">@T["Text"]</option>
         <option value="number">@T["Number"]</option>
         <option value="email">@T["Email"]</option>
@@ -34,12 +34,12 @@
 
 <div class="form-group">
     <label asp-for="Placeholder">@T["Placeholder Text"]</label>
-    <input asp-for="Placeholder" type="text" class="form-control content-preview-text" />
+    <input asp-for="Placeholder" type="text" class="form-control content-preview-text" data-card-bind="Placeholder" />
     <span class="hint">@T["The text to display when the field has no value."]</span>
 </div>
 
 <div class="form-group">
     <label asp-for="DefaultValue">@T["Default Value"]</label>
-    <input asp-for="DefaultValue" type="text" class="form-control content-preview-text" />
+    <input asp-for="DefaultValue" type="text" class="form-control content-preview-text" data-card-bind="DefaultValue" />
     <span class="hint">@T["The default value for this field."]</span>
 </div>

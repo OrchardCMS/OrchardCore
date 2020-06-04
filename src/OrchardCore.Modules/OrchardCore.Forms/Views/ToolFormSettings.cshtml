@@ -1,5 +1,11 @@
+@using OrchardCore.DisplayManagement.Zones
+
+@{
+    var tabs = (IEnumerable<string>)ZoneShapes.HarvestAndSortTabs(Model.Content);
+}
+
 <button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#@Model.ModalId">
-    <i class="fas fa-code"></i>
+    <i class="fas fa-cog"></i>
 </button>
 
 <!-- Modal -->
@@ -8,8 +14,8 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title " id="modalTitle_@Model.ModalId">
-                    <i class="fas fa-code"></i>
-                    <span class="label-display-text">@Model.ContentItemDisplayText</span>
+                    <i class="fas fa-cog"></i>
+                    <span data-card-bind="Title">@Model.ContentItemDisplayText</span>
                     <span class="badge badge-primary">@Model.ContentType</span>
                 </h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -17,8 +23,11 @@
                 </button>
             </div>
             <div class="modal-body">
-                @*TODO Attribute Editor*@
-                Coming Soon : Attributes Editor
+                @if (tabs.Any())
+                {
+                    @await DisplayAsync(await New.LocalNavigation(ContentItem: Model.ContentItem, Tabs: tabs))
+                }
+                @await DisplayAsync(Model.Content)
             </div>
             <div class="modal-footer">
                 @if (Model.Actions != null)

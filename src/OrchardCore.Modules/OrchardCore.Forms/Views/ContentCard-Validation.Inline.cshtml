@@ -1,3 +1,24 @@
-<label class="inline-validation">
-    <span class="label-display-text w-100 field-validation-error text-danger">@(Model.ContentItem.DisplayText ?? @Model.ContentItem.ContentType) </span>
-</label>
+@using OrchardCore.Mvc.Utilities;
+@using OrchardCore.ContentManagement.Metadata.Settings;
+
+@inject OrchardCore.ContentManagement.Metadata.IContentDefinitionManager ContentDefinitionManager
+
+@{
+    var contentItem = (IContent)Model.ContentItem;
+    var contentTypeDisplayText = ContentDefinitionManager.GetTypeDefinition((string)Model.ContentItem.ContentType).DisplayName;
+    var contentItemDisplayText = contentItem.ContentItem.DisplayText;
+
+    var validationPart = ((ContentItem)Model.ContentItem).As<OrchardCore.Forms.Models.ValidationPart>();
+
+}
+
+<div class="w-auto">
+    <span data-card-bind="For" class="badge badge-secondary">@validationPart.For</span>
+    <span class="badge badge-light">@contentTypeDisplayText</span>
+</div>
+
+<div class="inline-card-item">
+    <div class="w-100 field-validation-error text-danger" data-card-bind="ErrorMessage">
+        @validationPart.ErrorMessage
+    </div>
+</div>

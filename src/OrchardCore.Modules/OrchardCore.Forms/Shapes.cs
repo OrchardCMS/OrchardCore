@@ -1,6 +1,5 @@
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
-using OrchardCore.DisplayManagement.Shapes;
 
 namespace OrchardCore.Forms
 {
@@ -14,8 +13,8 @@ namespace OrchardCore.Forms
 
                 dynamic cardShape = context.Shape;
 
-                IShape settingTool = await context.ShapeFactory.New.ToolFormWidgetSettings();
-                settingTool.Metadata.Name = "ToolFormWidgetSettings";
+                IShape settingTool = await context.ShapeFactory.New.ToolFormSettings();
+                settingTool.Metadata.Name = "ToolFormSettings";
 
                 settingTool.Properties["Content"] = await context.ShapeFactory.CreateAsync("ContentZone");
                 settingTool.Properties["Actions"] = await context.ShapeFactory.CreateAsync("ContentZone");
@@ -25,6 +24,11 @@ namespace OrchardCore.Forms
 
                 IShape formWorkflowTool = await context.ShapeFactory.New.ToolFormWorkflow();
                 formWorkflowTool.Metadata.Name = "ToolFormWorkflow";
+
+                formWorkflowTool.Properties["Content"] = await context.ShapeFactory.CreateAsync("ContentZone");
+                formWorkflowTool.Properties["Actions"] = await context.ShapeFactory.CreateAsync("ContentZone");
+
+
                 cardShape.Footer.Add(formWorkflowTool, "before");
 
             })
@@ -36,20 +40,14 @@ namespace OrchardCore.Forms
 
                 if (cardShape.ContentItem.ContentType == "Form")
                 {
-                    var flowPart = cardShape.ContentEditor.Parts.FlowPart;
-                    var parts = (cardShape.ContentEditor.Parts as Shape);
+                    //Move WorkflowSettings to ToolFormWorkflow Content, if any
+                    foreach (var item in cardShape.ContentEditor.WorkflowSettings)
+                    {
+                        cardShape.Footer.ToolFormWorkflow.Content.Add(item);
+                    }
+                    cardShape.ContentEditor.WorkflowSettings = null;
 
-                    // Currently Shape doesn't have Remove shape by shape object.
-                    // So Remove it from Items property ( here Items is List<IPositioned> )
-                    var items = parts.Items as System.Collections.IList;
-                    items.Remove(flowPart);
-
-                    // Move FlowPart to content
-                    cardShape.Content.Add(flowPart);
-
-                    // Move rest of Form editor to Modal
-                    cardShape.Footer.ToolFormWidgetSettings.Content.Add(cardShape.ContentEditor);
-
+                    //Configure ToolFormWorkflow Shape
                     cardShape.Footer.ToolFormWorkflow.ModalId = $"ToolFormWorkflow_{cardShape.ContentItem.ContentItemId}";
                     cardShape.Footer.ToolFormWorkflow.ContentItemDisplayText = cardShape.ContentItem.DisplayText;
                     cardShape.Footer.ToolFormWorkflow.ContentType = cardShape.ContentItem.ContentType;
@@ -89,11 +87,8 @@ namespace OrchardCore.Forms
                         {
                             cardShape.Header.Add(item);
                         }
-
                         cardShape.ContentEditor.Inline = null;
 
-                        // Move rest of editor to Modal
-                        cardShape.Footer.ToolFormWidgetSettings.Content.Add(cardShape.ContentEditor);
                         hasSettingsTool = true;
 
                         // Remove Content Section not to render Body of ContentCard
@@ -104,14 +99,22 @@ namespace OrchardCore.Forms
 
                 if (hasSettingsTool)
                 {
+                    // Move FormSettings to ToolFormSettings Footer, if any
+                    foreach (var item in cardShape.ContentEditor.FormSettings)
+                    {
+                        cardShape.Footer.ToolFormSettings.Content.Add(item);
+                    }
+                    cardShape.ContentEditor.FormSettings = null;
+
+
                     // Set Modal ID for ToolWidgetSettings
-                    cardShape.Footer.ToolFormWidgetSettings.ModalId = $"ToolFormWidgetSettings_{cardShape.ContentItem.ContentItemId}";
-                    cardShape.Footer.ToolFormWidgetSettings.ContentItemDisplayText = cardShape.ContentItem.DisplayText;
-                    cardShape.Footer.ToolFormWidgetSettings.ContentType = cardShape.ContentItem.ContentType;
+                    cardShape.Footer.ToolFormSettings.ModalId = $"ToolFormSettings_{cardShape.ContentItem.ContentItemId}";
+                    cardShape.Footer.ToolFormSettings.ContentItemDisplayText = cardShape.ContentItem.DisplayText;
+                    cardShape.Footer.ToolFormSettings.ContentType = cardShape.ContentItem.ContentType;
                 }
                 else
                 {
-                    cardShape.Footer.Remove("ToolFormWidgetSettings");
+                    cardShape.Footer.Remove("ToolFormSettings");
                 }
             });
         }
