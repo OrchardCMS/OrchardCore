@@ -31,11 +31,11 @@ namespace OrchardCore.Taxonomies
                 {
                     var shape = (dynamic)context.Shape;
 
-                    var S = ShellScope.Services.GetRequiredService<IStringLocalizer<TaxonomyContentsAdminListShapes>>();
-                    var siteService = ShellScope.Services.GetRequiredService<ISiteService>();
+                    var S = context.ServiceProvider.GetRequiredService<IStringLocalizer<TaxonomyContentsAdminListShapes>>();
+                    var siteService = context.ServiceProvider.GetRequiredService<ISiteService>();
                     var settings = (await siteService.GetSiteSettingsAsync()).As<TaxonomyContentsAdminListSettings>();
 
-                    var contentManager = ShellScope.Services.GetRequiredService<IContentManager>();
+                    var contentManager = context.ServiceProvider.GetRequiredService<IContentManager>();
                     var taxonomies = await contentManager.GetAsync(settings.TaxonomyContentItemIds);
 
                     var position = 5;

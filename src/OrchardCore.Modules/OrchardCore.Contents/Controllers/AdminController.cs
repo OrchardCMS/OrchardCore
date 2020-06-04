@@ -99,15 +99,10 @@ namespace OrchardCore.Contents.Controllers
             if (!string.IsNullOrEmpty(model.Options.SelectedContentType))
             {
                 var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(model.Options.SelectedContentType);
-                if (contentTypeDefinition == null){
+                if (contentTypeDefinition == null)
+                {
                     return NotFound();
                 }
-
-                contentTypeDefinitions = contentTypeDefinitions.Append(contentTypeDefinition);
-
-                // We display a specific type even if it's not listable so that admin pages
-                // can reuse the Content list page for specific types.
-                query = query.With<ContentItemIndex>(x => x.ContentType == model.Options.SelectedContentType);
 
                 // Allows non creatable types to be created by another admin page.
                 if (model.Options.CanCreateSelectedContentType)
@@ -116,16 +111,6 @@ namespace OrchardCore.Contents.Controllers
                     {
                         new SelectListItem(new LocalizedString(contentTypeDefinition.DisplayName, contentTypeDefinition.DisplayName).Value, contentTypeDefinition.Name)
                     };
-                }
-            }
-            else
-            {
-                contentTypeDefinitions = _contentDefinitionManager.ListTypeDefinitions();
-
-                var listableTypes = (await GetListableTypesAsync()).Select(t => t.Name).ToArray();
-                if (listableTypes.Any())
-                {
-                    query = query.With<ContentItemIndex>(x => x.ContentType.IsIn(listableTypes));
                 }
             }
 
@@ -730,23 +715,13 @@ namespace OrchardCore.Contents.Controllers
         {
             return m =>
             {
-                if (ctd.GetSettings<ContentTypeSettings>().Listable)
-                {
-                    var authorized = await _authorizationService.AuthorizeAsync(User, Permissions.EditContent, await _contentManager.NewAsync(ctd.Name));
-                    if (authorized)
-                    {
-                        listable.Add(ctd);
-                    }
-                }
-            }
-            return listable;
+                m.ContentTypeOptions = model.ContentTypeOptions;
+                m.ContentStatuses = model.ContentStatuses;
+                m.ContentSorts = model.ContentSorts;
+                m.ContentsBulkAction = model.ContentsBulkAction;
+                m.CreatableTypes = model.CreatableTypes;
+
+            };
         }
-
-        //ActionResult ListableTypeList(int? containerId)
-        //{
-        //    var viewModel = Shape.ViewModel(ContentTypes: GetListableTypes(containerId.HasValue), ContainerId: containerId);
-
-        //    return View("ListableTypeList", viewModel);
-        //}
     }
 }

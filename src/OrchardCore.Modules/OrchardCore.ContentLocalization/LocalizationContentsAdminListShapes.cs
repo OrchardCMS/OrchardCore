@@ -24,8 +24,8 @@ namespace OrchardCore.ContentLocalization
                 {
                     var shape = (dynamic)context.Shape;
 
-                    var S = ShellScope.Services.GetRequiredService<IStringLocalizer<LocalizationContentsAdminListShapes>>();
-                    var localizationService = ShellScope.Services.GetRequiredService<ILocalizationService>();
+                    var S = context.ServiceProvider.GetRequiredService<IStringLocalizer<LocalizationContentsAdminListShapes>>();
+                    var localizationService = context.ServiceProvider.GetRequiredService<ILocalizationService>();
                     var supportedCultures = await localizationService.GetSupportedCulturesAsync();
                     var cultures = new List<SelectListItem>
                     {
