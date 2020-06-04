@@ -542,7 +542,10 @@ namespace OrchardCore.Contents.Controllers
 
             var model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, _updateModelAccessor.ModelUpdater, false);
 
-            await conditionallyPublish(contentItem);
+            if (ModelState.IsValid)
+            {
+                await conditionallyPublish(contentItem);
+            }
 
             // A workflow activity acting as an inline handler may have added some model state errors.
             if (!ModelState.IsValid)
