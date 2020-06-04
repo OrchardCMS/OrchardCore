@@ -21,7 +21,7 @@ Ideally you would specify only the Unicode ranges that you will actually use.
 
 It is recommended to use the encoders registered in the DI containers instead of using the static ones.
 
-Don't call `HtmlEncore.Default` or any other `TextEncoder` but instead inject one in your service constructor like this:
+Don't call `HtmlEncode.Default` or any other `TextEncoder` but instead inject one in your service constructor like this:
 
 ```c#
 public class MyService
