@@ -67,7 +67,7 @@ $(function () {
         var mediaMarkdownContent = "";
 
         for (i = 0; i < mediaApp.selectedMedias.length; i++) {
-          mediaMarkdownContent += ' [media]' + mediaApp.selectedMedias[i].mediaPath + '[/media]';
+          mediaMarkdownContent += ' [image]' + mediaApp.selectedMedias[i].mediaPath + '[/image]';
         }
 
         var cm = editor.codemirror;

@@ -9,12 +9,11 @@ namespace OrchardCore.Twitter.Services
 {
     public class TwitterClient
     {
-        private readonly HttpClient _client;
+        internal static HttpClient _client = new HttpClient();
         private readonly ILogger _logger;
 
-        public TwitterClient(HttpClient client, ILogger<TwitterClient> logger)
+        public TwitterClient(ILogger<TwitterClient> logger)
         {
-            _client = client;
             _client.BaseAddress = new Uri("https://api.twitter.com");
             _client.DefaultRequestHeaders.Accept.Clear();
             _client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
@@ -32,7 +31,7 @@ namespace OrchardCore.Twitter.Services
                     for (int i = 0; i < optionalParameters.Length; i++)
                     {
                         var optionalParameter = optionalParameters[i];
-                        var parts = optionalParameter.Split('=');
+                        var parts = optionalParameter.Split('=', 2);
                         if (parts.Length != 2)
                         {
                             _logger.LogWarning("Parameter {Parameter} ignored, has wrong format", optionalParameter);

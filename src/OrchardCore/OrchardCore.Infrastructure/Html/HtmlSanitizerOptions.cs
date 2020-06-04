@@ -1,10 +1,11 @@
 using System;
+using System.Collections.Generic;
 using Ganss.XSS;
 
 namespace OrchardCore.Infrastructure.Html
 {
     public class HtmlSanitizerOptions
     {
-        public Action<Ganss.XSS.HtmlSanitizer> Configure { get; set; }
+        public List<Action<HtmlSanitizer>> Configure { get; } = new List<Action<HtmlSanitizer>>();
     }
 }
