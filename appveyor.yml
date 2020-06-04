@@ -6,7 +6,7 @@ branches:
   only:
     - master
     - dev
-    - release/*
+    - /release\/.*/
 
 # Do not build if there are only documentation changes
 skip_commits:
@@ -85,7 +85,7 @@ deploy:
     artifact: /.*\.nupkg/
   - provider: NuGet
     on:
-      branch: release/*
+      branch: /release\/.*/
     server: https://nuget.cloudsmith.io/orchardcore/preview/v2/package
     api_key:
       secure: ql3vT7BSpSrlvrZjpsf2zbw9A41J43ZhJUaibyI7Y3QHFFk69ecNXHOcXf0ykvm3
