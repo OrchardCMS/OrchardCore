@@ -24,6 +24,7 @@ var fs = require("graceful-fs"),
     babel = require('gulp-babel'),
     agencytheme = require('./src/OrchardCore.Themes/TheAgencyTheme/wwwroot/gulpfile'),
     blogtheme = require('./src/OrchardCore.Themes/TheBlogTheme/wwwroot/gulpfile');
+    comingsoontheme = require('./src/OrchardCore.Themes/TheComingSoonTheme/wwwroot/gulpfile');
 
 // For compat with older versions of Node.js.
 require("es6-promise").polyfill();
