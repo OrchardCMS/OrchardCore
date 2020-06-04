@@ -64,6 +64,11 @@ namespace OrchardCore.Themes.TheComingSoonTheme
                 .SetUrl("~/TheComingSoonTheme/js/coming-soon.min.js", "TheComingSoonTheme/js/coming-soon.js")
                 .SetVersion("5.0.7");
 
+            manifest
+                .DefineStyle("TheComingSoonTheme-bootstrap-oc")
+                .SetUrl("~/TheComingSoonTheme/css/bootstrap-oc.min.css", "~/TheComingSoonTheme/css/bootstrap-oc.css")
+                .SetVersion("1.0.0");
+
         }
     }
 }
