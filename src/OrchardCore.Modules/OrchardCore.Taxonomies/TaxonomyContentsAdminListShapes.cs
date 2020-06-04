@@ -45,8 +45,8 @@ namespace OrchardCore.Taxonomies
                         PopulateTermEntries(termEntries, taxonomy.As<TaxonomyPart>().Terms, 0);
                         var terms = new List<SelectListItem>
                             {
-                                new SelectListItem() { Text = S["Clear {0} Filter", taxonomy.DisplayText], Value = ""  },
-                                new SelectListItem() { Text = S["All {0}", taxonomy.DisplayText], Value = "Taxonomy:" + taxonomy.ContentItemId }
+                                new SelectListItem() { Text = S["Clear filter"], Value = ""  },
+                                new SelectListItem() { Text = S["Show all"], Value = "Taxonomy:" + taxonomy.ContentItemId }
                             };
 
                         foreach (var term in termEntries)
