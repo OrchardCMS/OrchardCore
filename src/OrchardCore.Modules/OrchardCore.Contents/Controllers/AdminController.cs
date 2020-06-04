@@ -512,6 +512,12 @@ namespace OrchardCore.Contents.Controllers
             {
                 await _contentManager.PublishAsync(contentItem);
 
+                // A workflow activity acting as an inline handler may have added some model state errors.
+                if (!ModelState.IsValid)
+                {
+                    return;
+                }
+
                 var typeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
 
                 _notifier.Success(string.IsNullOrWhiteSpace(typeDefinition.DisplayName)
@@ -535,11 +541,6 @@ namespace OrchardCore.Contents.Controllers
             }
 
             var model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, _updateModelAccessor.ModelUpdater, false);
-            if (!ModelState.IsValid)
-            {
-                _session.Cancel();
-                return View("Edit", model);
-            }
 
             await conditionallyPublish(contentItem);
 

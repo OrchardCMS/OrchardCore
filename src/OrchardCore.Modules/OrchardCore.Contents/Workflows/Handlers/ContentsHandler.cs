@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
@@ -55,10 +56,13 @@ namespace OrchardCore.Contents.Workflows.Handlers
                 ContentItemId = contentItem.ContentItemId
             };
 
-            return _workflowManager.TriggerEventAsync(name,
-                input: new { ContentItem = contentItem, ContentEvent = contentEvent },
-                correlationId: contentItem.ContentItemId
-            );
+            var input = new Dictionary<string, object>
+            {
+                { ContentEventConstants.ContentItemInputKey, contentItem },
+                { ContentEventConstants.ContentEventInputKey, contentEvent }
+            };
+
+            return _workflowManager.TriggerEventAsync(name, input, correlationId: contentItem.ContentItemId);
         }
     }
 }

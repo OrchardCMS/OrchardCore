@@ -4,5 +4,6 @@ namespace OrchardCore.ContentManagement.Workflows
     {
         public const string ContentItemInputKey = "ContentItem";
         public const string ContentEventInputKey = "ContentEvent";
+        public const string UserActionInputKey = "UserAction";
     }
 }

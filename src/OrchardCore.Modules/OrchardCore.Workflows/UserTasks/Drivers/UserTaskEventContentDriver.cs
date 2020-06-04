@@ -80,8 +80,14 @@ namespace OrchardCore.Workflows.UserTasks.Drivers
                         ContentItemId = model.ContentItemId
                     };
 
-                    var input = new { UserAction = action, ContentItem = model, ContentEvent = contentEvent };
-                    await _workflowManager.TriggerEventAsync(nameof(UserTaskEvent), input, model.ContentItemId);
+                    var input = new Dictionary<string, object>
+                    {
+                        { ContentEventConstants.UserActionInputKey, action },
+                        { ContentEventConstants.ContentItemInputKey, model },
+                        { ContentEventConstants.ContentEventInputKey, contentEvent }
+                    };
+
+                    await _workflowManager.TriggerEventAsync(nameof(UserTaskEvent), input, correlationId: model.ContentItemId);
                 }
             }
 

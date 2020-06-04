@@ -55,7 +55,7 @@ namespace OrchardCore.Contents.Workflows.Activities
 
             if (InlineEvent.IsStart && InlineEvent.ContentType == contentItem.ContentType && InlineEvent.Name == nameof(ContentUnpublishedEvent))
             {
-                throw new InvalidOperationException($"The '{nameof(UnpublishContentTask)}' can't unpublish the content item as it is executed inline from a starting '{nameof(ContentUnpublishedEvent)}' of the same content type.");
+                throw new InvalidOperationException($"The '{nameof(UnpublishContentTask)}' can't unpublish the content item and then trigger a '{nameof(ContentUnpublishedEvent)}', as it is executed inline from the same starting event, which would result in an infinitive loop.");
             }
 
             await ContentManager.UnpublishAsync(contentItem);

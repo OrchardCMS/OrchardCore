@@ -63,17 +63,17 @@ namespace OrchardCore.Contents.Workflows.Activities
             {
                 if (InlineEvent.Name == nameof(ContentUpdatedEvent))
                 {
-                    throw new InvalidOperationException($"The '{nameof(CreateContentTask)}' can't update the content item as it is executed inline from a starting '{nameof(ContentUpdatedEvent)}' of the same content type.");
+                    throw new InvalidOperationException($"The '{nameof(CreateContentTask)}' can't update the content item and then trigger a '{nameof(ContentUpdatedEvent)}', as it is executed inline from the same starting event, which would result in an infinitive loop.");
                 }
 
                 if (InlineEvent.Name == nameof(ContentCreatedEvent))
                 {
-                    throw new InvalidOperationException($"The '{nameof(CreateContentTask)}' can't create the content item as it is executed inline from a starting '{nameof(ContentCreatedEvent)}' of the same content type.");
+                    throw new InvalidOperationException($"The '{nameof(CreateContentTask)}' can't create the content item and then trigger a '{nameof(ContentCreatedEvent)}', as it is executed inline from the same starting event, which would result in an infinitive loop.");
                 }
 
                 if (Publish && InlineEvent.Name == nameof(ContentPublishedEvent))
                 {
-                    throw new InvalidOperationException($"The '{nameof(CreateContentTask)}' can't publish the content item as it is executed inline from a starting '{nameof(ContentPublishedEvent)}' of the same content type.");
+                    throw new InvalidOperationException($"The '{nameof(CreateContentTask)}' can't publish the content item and then trigger a '{nameof(ContentPublishedEvent)}', as it is executed inline from the same starting event, which would result in an infinitive loop.");
                 }
             }
 
