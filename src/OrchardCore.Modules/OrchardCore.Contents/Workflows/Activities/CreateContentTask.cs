@@ -21,8 +21,8 @@ namespace OrchardCore.Contents.Workflows.Activities
 
         public CreateContentTask(
             IContentManager contentManager,
-            IWorkflowExpressionEvaluator expressionEvaluator, 
-            IWorkflowScriptEvaluator scriptEvaluator, 
+            IWorkflowExpressionEvaluator expressionEvaluator,
+            IWorkflowScriptEvaluator scriptEvaluator,
             IStringLocalizer<CreateContentTask> localizer,
             JavaScriptEncoder javaScriptEncoder)
             : base(contentManager, scriptEvaluator, localizer)

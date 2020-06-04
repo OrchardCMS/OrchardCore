@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using Newtonsoft.Json;
@@ -19,17 +20,20 @@ namespace OrchardCore.Contents.Workflows.Activities
     {
         private readonly IUpdateModelAccessor _updateModelAccessor;
         private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
+        private readonly JavaScriptEncoder _javaScriptEncoder;
 
         public UpdateContentTask(
             IContentManager contentManager,
             IUpdateModelAccessor updateModelAccessor,
             IWorkflowExpressionEvaluator expressionEvaluator,
             IWorkflowScriptEvaluator scriptEvaluator,
-            IStringLocalizer<UpdateContentTask> localizer)
+            IStringLocalizer<UpdateContentTask> localizer,
+            JavaScriptEncoder javaScriptEncoder)
             : base(contentManager, scriptEvaluator, localizer)
         {
             _updateModelAccessor = updateModelAccessor;
             _expressionEvaluator = expressionEvaluator;
+            _javaScriptEncoder = javaScriptEncoder;
         }
 
         public override string Name => nameof(UpdateContentTask);
@@ -103,7 +107,7 @@ namespace OrchardCore.Contents.Workflows.Activities
 
             if (!String.IsNullOrWhiteSpace(ContentProperties.Expression))
             {
-                var contentProperties = await _expressionEvaluator.EvaluateAsync(ContentProperties, workflowContext);
+                var contentProperties = await _expressionEvaluator.EvaluateAsync(ContentProperties, workflowContext, _javaScriptEncoder);
                 contentItem.Merge(JObject.Parse(contentProperties), new JsonMergeSettings { MergeArrayHandling = MergeArrayHandling.Replace });
             }
 
