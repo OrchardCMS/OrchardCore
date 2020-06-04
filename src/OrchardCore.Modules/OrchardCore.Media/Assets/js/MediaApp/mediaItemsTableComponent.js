@@ -9,6 +9,10 @@ Vue.component('mediaItemsTable', {
                        {{ T.nameHeader }} \
                          <sort-indicator colname="name" :selectedcolname="sortBy" :asc="sortAsc"></sort-indicator> \
                     </th> \
+                    <th scope="col" v-on:click="changeSort(\'lastModify\')"> \
+                       {{ T.lastModifyHeader }} \
+                         <sort-indicator colname="lastModify" :selectedcolname="sortBy" :asc="sortAsc"></sort-indicator> \
+                    </th> \
                     <th scope="col" v-on:click="changeSort(\'size\')"> \
                         <span class="optional-col"> \
                             {{ T.sizeHeader }} \
@@ -47,6 +51,9 @@ Vue.component('mediaItemsTable', {
                                 </div> \
                             </td> \
                             <td> \
+                            <div class="text-col"> {{ printDateTime(media.lastModify) }} </div> \
+                            </td> \
+                            <td> \
                                 <div class="text-col optional-col"> {{ isNaN(media.size)? 0 : Math.round(media.size / 1024) }} KB</div> \
                             </td> \
                             <td> \
@@ -72,6 +79,7 @@ Vue.component('mediaItemsTable', {
         var self = this;
         self.T.imageHeader = $('#t-image-header').val();
         self.T.nameHeader = $('#t-name-header').val();
+        self.T.lastModifyHeader = $('#t-lastModify-header').val();
         self.T.sizeHeader = $('#t-size-header').val();
         self.T.typeHeader = $('#t-type-header').val();
         self.T.editButton = $('#t-edit-button').val();
@@ -102,6 +110,10 @@ Vue.component('mediaItemsTable', {
         },
         dragStart: function (media, e) {
             bus.$emit('mediaDragStartRequested', media, e);
+        },
+        printDateTime: function (datemillis){
+            var d = new Date(datemillis);
+            return d.toLocaleString();            
         }
     }
 });
