@@ -8,7 +8,6 @@ using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.Zones;
-using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Localization;
 using OrchardCore.Modules;
 
