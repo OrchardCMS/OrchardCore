@@ -39,8 +39,8 @@ cache:
 install:
   - ps: $env:BuildNumber= $env:APPVEYOR_BUILD_NUMBER
   - ps: $IsMasterBranch = ($env:APPVEYOR_REPO_BRANCH -eq "master" -And -not $env:APPVEYOR_PULL_REQUEST_NUMBER)
-  - ps: $IsDevBranch = (($env:APPVEYOR_REPO_BRANCH -eq "dev" -And -not $env:APPVEYOR_PULL_REQUEST_NUMBER)
-  - ps: $IsReleaseBranch = (($env:APPVEYOR_REPO_BRANCH -eq "release/rc2" -And -not $env:APPVEYOR_PULL_REQUEST_NUMBER)
+  - ps: $IsDevBranch = ($env:APPVEYOR_REPO_BRANCH -eq "dev" -And -not $env:APPVEYOR_PULL_REQUEST_NUMBER)
+  - ps: $IsReleaseBranch = ($env:APPVEYOR_REPO_BRANCH -eq "release/rc2" -And -not $env:APPVEYOR_PULL_REQUEST_NUMBER)
   - ps: $GeneratePackages = ($IsMasterBranch -or $IsDevBranch -or $IsReleaseBranch)
 
 # Uncomment to download a specific version of dotnet
