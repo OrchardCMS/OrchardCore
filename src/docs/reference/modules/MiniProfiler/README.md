@@ -1,4 +1,4 @@
-# Orchard Core Mini Profiler
+# Mini Profiler (`OrchardCore.MiniProfiler`)
 
 The module lets you use [Mini Profiler](https://miniprofiler.com/) to troubleshoot performance issues and generally to profile the performance of the application. Just enable the corresponding feature.
 
