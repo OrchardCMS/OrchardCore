@@ -100,8 +100,12 @@ gulp.task("build-blogtheme", function(done){
 	return buildBlogTheme(done);
 });
 
+gulp.task("build-comingsoontheme", function(done){
+	return buildComingSoonTheme(done);
+});
+
 gulp.task("build-themes", function(done){
-    buildAgencyTheme( ()=> buildBlogTheme (done) );
+    buildAgencyTheme(() => buildBlogTheme (() => buildComingSoonTheme(done)) );
 });
 
 
@@ -129,7 +133,15 @@ function buildBlogTheme(done){
         process.chdir(cwd);
         done();
     });
-    
+}
+
+function buildComingSoonTheme(done){
+    var cwd = process.cwd();      
+    process.chdir('./src/OrchardCore.Themes/TheComingSoonTheme/wwwroot');    
+	comingsoontheme.build( ()=> {
+        process.chdir(cwd);
+        done();
+    });
 }
 
 /*
