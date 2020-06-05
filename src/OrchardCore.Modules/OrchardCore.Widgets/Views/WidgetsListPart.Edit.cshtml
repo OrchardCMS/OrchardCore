@@ -7,11 +7,8 @@
 @model WidgetsListPartEditViewModel
 
 @inject IContentManager ContentManager
-@*inject OrchardCore.ContentManagement.Metadata.IContentDefinitionManager ContentDefinitionManager*@
-@* @inject OrchardCore.ContentManagement.Display.IContentItemDisplayManager ContentItemDisplayManager *@
 
 @{
-    //var widgetContentTypes = ContentDefinitionManager.ListTypeDefinitions().Where(t => t.GetSettings<ContentTypeSettings>().Stereotype == "Widget");
     var parentContentType = Model.WidgetsListPart.ContentItem.ContentType;
     string partName = ((dynamic)Model).Metadata.Name;
 }
@@ -54,6 +51,8 @@
                                     Inline: false,
                                     CanMove: true,
                                     CanDelete: true,
+                                    CanInsert: false,
+                                    InsertArea : "OrchardCore.Widgets",
                                     //Input hidden
                                     //Prefixes
                                     PrefixValue: widget.ContentItemId,
@@ -132,7 +131,6 @@
                                 CanInsert: true,
                                 AppendWidget: true,
                                 TargetId: widgetTemplatePlaceholderId,
-                                InsertArea: "OrchardCore.Widgets",
                                 BuildEditorRouteValues: new RouteValueDictionary(new
                                 {
                                     area = "OrchardCore.Widgets",
@@ -141,8 +139,8 @@
                                     zonesName = Html.NameFor(x => x.Zones),
                                     zone = zone,
                                     targetId = widgetTemplatePlaceholderId,
-                                    parentContentType = "",
-                                    partName = ""
+                                    parentContentType = parentContentType,
+                                    partName = partName
                                 })))
                         </div>
                     </div>

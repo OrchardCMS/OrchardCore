@@ -11,31 +11,42 @@
 
 
 @{
+    async Task RegisterResourceAsync(ContentTypeDefinition type)
+    {
+        if (Context.Items["InsertToolWidget.AllWidget.Edit:" + type.Name] == null)
+        {
+            Context.Items["InsertToolWidget.AllWidget.Edit:" + type.Name] = new object();
+
+            // Render a mock widget so that its resources are included in the page
+            var contentItem = await ContentManager.NewAsync(type.Name);
+            var updater = new NullModelUpdater();
+            await DisplayAsync(await ContentItemDisplayManager.BuildEditorAsync(contentItem, updater, true, "", Guid.NewGuid().ToString("n")));
+        }
+    }
+
     IEnumerable<ContentTypeDefinition> widgetContentTypes = Model.WidgetContentTypes as IEnumerable<ContentTypeDefinition>;
 
-    if (Context.Items["InsertToolWidget.AllWidget.Edit"] == null || widgetContentTypes == null)
+    if (widgetContentTypes == null)
     {
-        IEnumerable<ContentTypeDefinition> widgetContentTypesAll = ContentDefinitionManager.ListTypeDefinitions().Where(t => t.GetSettings<ContentTypeSettings>().Stereotype == "Widget");
-
-        // Register resources for all widgets
         if (Context.Items["InsertToolWidget.AllWidget.Edit"] == null)
         {
-            Context.Items["InsertToolWidget.AllWidget.Edit"] = new object();
-            //Render content to temp zone
-            var tempZone = Guid.NewGuid().ToString();
-            @foreach (var type in widgetContentTypesAll)
-            {
-                // Render a mock widget so that its resources are included in the page
-                var contentItem = await ContentManager.NewAsync(type.Name);
-                var updater = new NullModelUpdater();
-                await DisplayAsync(await ContentItemDisplayManager.BuildEditorAsync(contentItem, updater, true, "", Guid.NewGuid().ToString("n")));
-            }
-        }
+            // Get All widget definitions
+            widgetContentTypes = ContentDefinitionManager.ListTypeDefinitions().Where(t => t.GetSettings<ContentTypeSettings>().Stereotype == "Widget");
 
-        // If Part settings doens't have pre-selected content types then show all content types.
-        if (widgetContentTypes == null)
+            // Register resources for all widgets
+            foreach (var type in widgetContentTypes)
+            {
+                await RegisterResourceAsync(type);
+            }
+
+            // Save in context for current request
+            Context.Items["InsertToolWidget.AllWidget.Edit"] = widgetContentTypes;
+
+        }
+        else
         {
-            widgetContentTypes = widgetContentTypesAll;
+            // Get from context for current request
+            widgetContentTypes = (IEnumerable<ContentTypeDefinition>)Context.Items["InsertToolWidget.AllWidget.Edit"];
         }
     }
 
@@ -49,11 +60,15 @@
 
         <button type="button" title="@widgetTitle" class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             <i class="fa fa-plus" aria-hidden="true"></i>
-            <span>@widgetTitle</span>
+            @if (Model.AppendWidget == true)
+            {
+                <span>@widgetTitle</span>
+            }
         </button>
         <div class="dropdown-menu dropdown-menu-right">
             @foreach (var type in widgetContentTypes.OrderBy(w => w.DisplayName))
             {
+                await RegisterResourceAsync(type);
                 routes["id"] = type.Name;
                 var buildEditorUrl = @Url.Action("BuildEditor", "Admin", routes);
 

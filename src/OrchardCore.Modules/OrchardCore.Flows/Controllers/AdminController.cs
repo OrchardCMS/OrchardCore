@@ -77,15 +77,15 @@ namespace OrchardCore.Flows.Controllers
                     {
                         var settings = part.GetSettings<FlowPartSettings>();
                         contentTypes = settings.ContainedContentTypes;
+                        containedContentTypeDefinitions = GetContainedContentTypes(contentTypes, true);
                     }
 
-                    else if (part.PartDefinition.Name == nameof(FlowPart))
+                    else if (part.PartDefinition.Name == nameof(BagPart))
                     {
                         var settings = part.GetSettings<BagPartSettings>();
                         contentTypes = settings.ContainedContentTypes;
+                        containedContentTypeDefinitions = GetContainedContentTypes(contentTypes, false);
                     }
-
-                    containedContentTypeDefinitions = GetContainedContentTypes(contentTypes);
 
                     break;
                 }
@@ -121,10 +121,12 @@ namespace OrchardCore.Flows.Controllers
             {
                 contentCard.ColumnSize = colSize;
                 contentCard.CanInsert = true;
+                contentCard.HasFlowMetadata = true;
             }
             else
             {
                 contentCard.CanInsert = false;
+                contentCard.HasFlowMetadata = false;
             }
 
             var model = new BuildEditorViewModel
@@ -134,16 +136,24 @@ namespace OrchardCore.Flows.Controllers
             return View("Display", model);
         }
 
-        private IEnumerable<ContentTypeDefinition> GetContainedContentTypes(IEnumerable<string> contentTypes)
+        private IEnumerable<ContentTypeDefinition> GetContainedContentTypes(IEnumerable<string> contentTypes, bool onlyWidgets)
         {
             if (contentTypes == null || !contentTypes.Any())
             {
                 return _contentDefinitionManager.ListTypeDefinitions().Where(t => t.GetSettings<ContentTypeSettings>().Stereotype == "Widget");
             }
 
-            return contentTypes
-                .Select(contentType => _contentDefinitionManager.GetTypeDefinition(contentType))
-                .Where(t => t.GetSettings<ContentTypeSettings>().Stereotype == "Widget");
+            if (onlyWidgets)
+            {
+                return contentTypes
+                    .Select(contentType => _contentDefinitionManager.GetTypeDefinition(contentType))
+                    .Where(t => t.GetSettings<ContentTypeSettings>().Stereotype == "Widget");
+            }
+            else
+            {
+                return contentTypes
+                    .Select(contentType => _contentDefinitionManager.GetTypeDefinition(contentType));
+            }
         }
     }
 }

@@ -35,13 +35,21 @@ namespace OrchardCore.Flows
                cardShape.Footer.ToolInsertWidget.WidgetContentTypes = cardShape.WidgetContentTypes;
                cardShape.Footer.ToolInsertWidget.BuildEditorRouteValues = new RouteValueDictionary(new
                {
-                   area = "OrchardCore.Flows",
+                   // Set default to flows module
+                   area = cardShape.InsertArea ?? "OrchardCore.Flows",
+
                    prefixesName = cardShape.PrefixesName,
                    contentTypesName = cardShape.ContentTypesName,
                    targetId = cardShape.TargetId,
-                   flowmetadata = true,
                    parentContentType = cardShape.ParentContentType,
-                   partName = cardShape.CollectionPartName
+                   partName = cardShape.CollectionPartName,
+
+                   //Flow Specific If Any
+                   flowmetadata = cardShape.HasFlowMetadata,
+
+                   //Zone Specific In Any
+                   zone = cardShape.ZoneValue,
+                   zonesName = cardShape.ZonesName
                });
 
                if (cardShape.CollectionShapeType != nameof(FlowPart))

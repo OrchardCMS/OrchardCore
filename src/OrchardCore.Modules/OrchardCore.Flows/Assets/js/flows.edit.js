@@ -57,4 +57,10 @@ $(function () {
         // default - change inner html with value
         $(this).html(val);
     });
+
+    $(document).on('click', '.btn.toggleAll', function (e) {
+        e.preventDefault();
+        $('.toggleAll > svg').toggleClass('fa-angle-double-up fa-angle-double-down');
+        $('.widget.widget-editor.card').filter(':not(.widget-nocollapse)').toggleClass('collapsed');
+    })
 });

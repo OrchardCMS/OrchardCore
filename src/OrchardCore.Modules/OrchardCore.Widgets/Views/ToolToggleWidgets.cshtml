@@ -1,9 +1,3 @@
-<button class="toggleAll btn btn-secondary btn-sm" onclick="toggleWidgets(); return false;" title="@T["Toggle all widgets"]">
+<button type="button" class="toggleAll btn btn-secondary btn-sm" title="@T["Toggle all widgets"]">
     <i class="fa fa-angle-double-up" aria-hidden="true"></i>
 </button>
-<script asp-name="ContentCard-ToolToggleWidgets-Script" at="Foot">
-    function toggleWidgets(){
-        $('.toggleAll > svg').toggleClass('fa-angle-double-up fa-angle-double-down');
-        $('.widget.widget-editor.card').filter(':not(.widget-nocollapse)').toggleClass('collapsed');
-    }
-</script>

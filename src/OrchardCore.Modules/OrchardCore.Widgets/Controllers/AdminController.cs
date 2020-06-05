@@ -59,6 +59,8 @@ namespace OrchardCore.Widgets.Controllers
                 Inline: true,
                 CanMove: true,
                 CanDelete: true,
+                CanInsert: false,
+                InsertArea: "OrchardCore.Widgets",
                 //Input hidden
                 //Prefixes
                 HtmlFieldPrefix: prefix,

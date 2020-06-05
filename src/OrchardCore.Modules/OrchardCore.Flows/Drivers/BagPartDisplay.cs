@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
@@ -20,16 +21,19 @@ namespace OrchardCore.Flows.Drivers
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly IContentManager _contentManager;
         private readonly IServiceProvider _serviceProvider;
+        private readonly IStringLocalizer S;
 
         public BagPartDisplay(
             IContentManager contentManager,
             IContentDefinitionManager contentDefinitionManager,
-            IServiceProvider serviceProvider
-            )
+            IServiceProvider serviceProvider,
+            IStringLocalizer<FlowPartDisplay> localizer)
         {
             _contentDefinitionManager = contentDefinitionManager;
             _contentManager = contentManager;
             _serviceProvider = serviceProvider;
+            S = localizer;
+
         }
 
         public override IDisplayResult Display(BagPart bagPart, BuildPartDisplayContext context)
@@ -80,6 +84,14 @@ namespace OrchardCore.Flows.Drivers
             }
 
             part.ContentItems = contentItems;
+
+            var settings = context.TypePartDefinition.GetSettings<BagPartSettings>();
+
+            if (settings.ContainedContentTypes.Any()
+                && contentItems.Select(c => c.ContentType).Except(settings.ContainedContentTypes).Any())
+            {
+                context.Updater.ModelState.AddModelError(Prefix, S["{0} in {1} has invalid content types.", context.TypePartDefinition.DisplayName(), context.TypePartDefinition.ContentTypeDefinition]);
+            }
 
             return Edit(part, context);
         }
