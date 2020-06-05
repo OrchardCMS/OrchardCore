@@ -6,6 +6,7 @@ using BenchmarkDotNet.Attributes;
 using Fluid;
 using Fluid.Values;
 using Microsoft.AspNetCore.Html;
+using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Implementation;
@@ -34,7 +35,9 @@ namespace OrchardCore.Benchmark
                 new Dictionary<string, ShapeDescriptor>(),
                 new Dictionary<string, ShapeBinding>()
             );
+
             var shapeFactory = new DefaultShapeFactory(
+                serviceProvider: new ServiceCollection().BuildServiceProvider(),
                 events: Enumerable.Empty<IShapeFactoryEvents>(),
                 shapeTableManager: new TestShapeTableManager(defaultShapeTable),
                 themeManager: new MockThemeManager(new ExtensionInfo("path", new ManifestInfo(new ModuleAttribute()), (x, y) => Enumerable.Empty<IFeatureInfo>())));

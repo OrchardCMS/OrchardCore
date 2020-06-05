@@ -20,7 +20,7 @@
                             $('#mediaHtmlFieldSelectButton').on('click', function (v) {
                                 var mediaBodyContent = "";
                                 for (i = 0; i < mediaApp.selectedMedias.length; i++) {
-                                    mediaBodyContent += ' {{ "' + mediaApp.selectedMedias[i].mediaPath + '" | asset_url | img_tag }}';
+                                    mediaBodyContent += ' [image]' + mediaApp.selectedMedias[i].mediaPath + '[/image]';
                                 }
                                 var node = document.createTextNode(mediaBodyContent);
                                 trumbowyg.restoreRange();

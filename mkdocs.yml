@@ -55,13 +55,17 @@ markdown_extensions:
 plugins:
   - search
   - git-revision-date-localized
+  - exclude:
+      glob:
+        # Excluding the large node folder with all its MD files. We can't exclude everything apart from docs because there are links to e.g. C# files too.
+        - "*node_modules*"
   
 # Page tree
 nav:
     - About Orchard Core: README.md
     - Getting started: 
         - Create a CMS Web application: docs/getting-started/README.md
-        - Configure Dev package source: docs/getting-started/dev-package-source.md
+        - Configure Preview package source: docs/getting-started/preview-package-source.md
         - Recipes and Starter Themes: docs/getting-started/starter-recipes.md
         - Code Generation Templates: docs/getting-started/templates/README.md
         - Create a Theme: docs/getting-started/theme.md
@@ -78,6 +82,7 @@ nav:
         - Integrate Facebook plugins: docs/guides/integrate-facebook-plugins/README.md
         - Run code on startup: docs/guides/run-code-on-startup/README.md
         - Create a custom admin theme: docs/guides/create-admin-theme/README.md
+        - Customize encoding settings: docs/guides/encoding-settings/README.md
     - Key Topics: 
         - Manage your Content: docs/topics/content-management/README.md
         - Customize the Display: docs/topics/display/README.md
@@ -89,6 +94,7 @@ nav:
 #        - Data: docs/topics/data/README.md
 #        - Configuration: docs/topics/configuration/README.md
         - Workflows: docs/topics/workflows/README.md
+        - Contributing to the docs: docs/topics/docs-contributions/README.md
     - Reference: 
         - CMS Modules: 
             - Content Types: docs/reference/modules/ContentTypes/README.md
@@ -162,4 +168,5 @@ nav:
     - Resources: 
         - Learning: docs/resources/README.md
         - Workshops: docs/resources/workshops/README.md
+        - Branding: docs/resources/branding/README.md
     

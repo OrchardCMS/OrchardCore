@@ -1,1 +1,9 @@
-@model OrchardCore.Markdown.Settings.MarkdownBodyPartSettings
+@model MarkdownBodyPartSettingsViewModel
+
+<div class="form-group col-md-6">
+    <div class="custom-control custom-checkbox">
+        <input type="checkbox" class="custom-control-input" asp-for="SanitizeHtml" checked="@Model.SanitizeHtml" />
+        <label class="custom-control-label" asp-for="SanitizeHtml">@T["Sanitize Html"]</label>
+        <span class="hint">— @T["Whether the Html output from the Markdown is sanitized to prevent custom scripts."]</span>
+    </div>
+</div>
