@@ -122,7 +122,7 @@ services
     });
 ```
 
-This will thus make the SMTP port use this configuration despite any other value defined from site settings. The second example's configuration value can come from e.g. an `appsettings.json` file like below:
+This will make the SMTP port use this configuration despite any other value defined in site settings. The second example's configuration value can come from e.g. an `appsettings.json` file like below:
 
 ```
 {
