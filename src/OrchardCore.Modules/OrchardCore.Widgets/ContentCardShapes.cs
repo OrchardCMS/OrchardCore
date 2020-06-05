@@ -60,60 +60,61 @@ namespace OrchardCore.Widgets
                     //AJAX will not have CollectionShape.
                     var updater = cardShape.CollectionShape?.Updater ?? cardShape.Updater;
 
-                    //Assign prefix
-                    if (String.IsNullOrEmpty(cardShape.PrefixValue))
+                    if (cardShape.BuildEditor == true)
                     {
-                        cardShape.PrefixValue = Guid.NewGuid().ToString("n");
-                    }
-
-                    //Build Editor for Content Item
-                    // AJAX request is new request and will not have CollectionShape.
-                    var isNew = cardShape.CollectionShape == null ? true : false;
-
-                    var ContentItemDisplayManager = (OrchardCore.ContentManagement.Display.IContentItemDisplayManager)context.ServiceProvider.GetService(typeof(OrchardCore.ContentManagement.Display.IContentItemDisplayManager));
-                    dynamic contentItemEditor = await ContentItemDisplayManager.BuildEditorAsync(contentItem, updater, isNew, "", cardShape.PrefixValue);
-                    contentItemEditor.Metadata.Name = "ContentEditor";
-
-                    //We don't show Actions and Side bar the parent editor has its own buttons.
-                    contentItemEditor.Actions = null;
-                    contentItemEditor.Sidebar = null;
-
-                    //Move Content Footer to Card Footer, if any
-                    foreach (var item in contentItemEditor.Footer)
-                    {
-                        cardShape.Footer.Add(item);
-                    }
-
-                    contentItemEditor.Footer = null;
-
-                    cardShape.ContentEditor = contentItemEditor;
-
-                    dynamic contentDisplay = await ContentItemDisplayManager.BuildDisplayAsync(contentItem, updater, cardShape.DisplayType ?? "Detail");
-                    contentDisplay.Metadata.Name = "ContentPreview";
-                    cardShape.ContentPreview = contentDisplay;
-
-                    cardShape.Content.Add(cardShape.ContentEditor);
-
-                    if (cardShape.ContentEditor.WidgetSettings.Items.Count > 0)
-                    {
-                        //Move AttributeSettings to ToolWidgetSettings Content, if any
-                        foreach (var item in cardShape.ContentEditor.WidgetSettings)
+                        //Assign prefix
+                        if (String.IsNullOrEmpty(cardShape.PrefixValue))
                         {
-                            cardShape.Footer.ToolWidgetSettings.Content.Add(item);
+                            cardShape.PrefixValue = Guid.NewGuid().ToString("n");
                         }
-                        cardShape.ContentEditor.WidgetSettings = null;
 
-                        // Set Modal ID for ToolWidgetSettings
-                        cardShape.Footer.ToolWidgetSettings.ModalId = $"WidgetSettingsModal_{cardShape.ContentItem.ContentItemId}";
-                        cardShape.Footer.ToolWidgetSettings.ContentItemDisplayText = cardShape.ContentItem.DisplayText;
-                        cardShape.Footer.ToolWidgetSettings.ContentType = cardShape.ContentItem.ContentType;
+                        //Build Editor for Content Item
+                        // AJAX request is new request and will not have CollectionShape.
+                        var isNew = cardShape.CollectionShape == null ? true : false;
+
+                        var ContentItemDisplayManager = (OrchardCore.ContentManagement.Display.IContentItemDisplayManager)context.ServiceProvider.GetService(typeof(OrchardCore.ContentManagement.Display.IContentItemDisplayManager));
+                        dynamic contentItemEditor = await ContentItemDisplayManager.BuildEditorAsync(contentItem, updater, isNew, "", cardShape.PrefixValue);
+                        contentItemEditor.Metadata.Name = "ContentEditor";
+
+                        //We don't show Actions and Side bar the parent editor has its own buttons.
+                        contentItemEditor.Actions = null;
+                        contentItemEditor.Sidebar = null;
+
+                        //Move Content Footer to Card Footer, if any
+                        foreach (var item in contentItemEditor.Footer)
+                        {
+                            cardShape.Footer.Add(item);
+                        }
+
+                        contentItemEditor.Footer = null;
+
+                        cardShape.ContentEditor = contentItemEditor;
+
+                        if (cardShape.ContentEditor.WidgetSettings.Items.Count > 0)
+                        {
+                            //Move AttributeSettings to ToolWidgetSettings Content, if any
+                            foreach (var item in cardShape.ContentEditor.WidgetSettings)
+                            {
+                                cardShape.Footer.ToolWidgetSettings.Content.Add(item);
+                            }
+                            cardShape.ContentEditor.WidgetSettings = null;
+
+                            // Set Modal ID for ToolWidgetSettings
+                            cardShape.Footer.ToolWidgetSettings.ModalId = $"WidgetSettingsModal_{cardShape.ContentItem.ContentItemId}";
+                            cardShape.Footer.ToolWidgetSettings.ContentItemDisplayText = cardShape.ContentItem.DisplayText;
+                            cardShape.Footer.ToolWidgetSettings.ContentType = cardShape.ContentItem.ContentType;
+                        }
+                        else
+                        {
+                            //Content Item doesn't support attributes
+                            cardShape.Footer.Remove("ToolWidgetSettings");
+                        }
                     }
                     else
                     {
-                        //Content Item doesn't support attributes
                         cardShape.Footer.Remove("ToolWidgetSettings");
-                    }
 
+                    }
 
                 });
 
@@ -238,10 +239,16 @@ namespace OrchardCore.Widgets
                         contentCardFrame.ChildContent.Metadata.Alternates.Clear();
                         contentCardFrame.ChildContent.Metadata.Type = "ContentCard_Editor";
 
+                        // Add editor as Content of ContentCard
+                        contentCardFrame.ChildContent.Content.Add(contentCardFrame.ChildContent.ContentEditor);
+
                     }
 
-                    else if (contentCardFrame.ChildContent.BuildDisplay == true)
+                    else
                     {
+                        // ContentCard Content will be emplty by default
+                        // Content can be configured in Frame alternates
+
                         //Hide the Delete
                         contentCardFrame.ChildContent.CanDelete = false;
 
