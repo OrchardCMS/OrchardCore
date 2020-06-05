@@ -110,7 +110,7 @@ services
         // Instead of IShellConfiguration you could fetch the configuration 
         // values from an injected IConfiguration instance here too. While that 
         // would also allow you to access standard ASP.NET Core configuration 
-        // keys it wouldn't have support for all the hierarchical sources 
+        // keys it won't have support for all the hierarchical sources 
         // detailed above.
         var shellConfiguration = serviceProvider.GetRequiredService<IShellConfiguration>();
         var password = shellConfiguration.GetValue<string>("SmtpSettings:Password");
