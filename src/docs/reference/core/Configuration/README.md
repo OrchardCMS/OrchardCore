@@ -108,7 +108,7 @@ services
     .ConfigureServices((tenantServices, serviceProvider) =>
     {
         // Instead of IShellConfiguration you could fetch the configuration 
-        // values from an injected Configuration instance here too. While that 
+        // values from an injected IConfiguration instance here too. While that 
         // would also allow you to access standard ASP.NET Core configuration 
         // keys it wouldn't have support for all the hierarchical sources 
         // detailed above.
@@ -215,4 +215,3 @@ If building with the nightly dev builds from the preview package feed, the CI/CD
 The `IShellConfiguration` values stored in the `App_Data` folder, and individual tenants `appsettings.json` files, can also be stored in alternate locations.
 
 Refer to the [Shells Section](../Shells/README.md) for more details on this.
-
