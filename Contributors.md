@@ -1,7 +1,7 @@
 # Contributors ✨
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-161-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-162-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
@@ -216,6 +216,9 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <td align="center"><a href="http://www.blockcode.com.tw"><img src="https://avatars1.githubusercontent.com/u/12048035?v=4" width="100px;" alt=""/><br /><sub><b>Justin Liao</b></sub></a><br /><a href="#translation-jaliao" title="Translation">🌍</a></td>
     <td align="center"><a href="https://github.com/grexican"><img src="https://avatars0.githubusercontent.com/u/73737?v=4" width="100px;" alt=""/><br /><sub><b>Eli Gassert</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=grexican" title="Code">💻</a> <a href="https://github.com/OrchardCMS/OrchardCore/commits?author=grexican" title="Documentation">📖</a></td>
     <td align="center"><a href="https://github.com/Kanoktomas"><img src="https://avatars0.githubusercontent.com/u/53531226?v=4" width="100px;" alt=""/><br /><sub><b>kanoktomas</b></sub></a><br /><a href="#translation-Kanoktomas" title="Translation">🌍</a></td>
+  </tr>
+  <tr>
+    <td align="center"><a href="https://github.com/ArieGato"><img src="https://avatars1.githubusercontent.com/u/1059562?v=4" width="100px;" alt=""/><br /><sub><b>Arjan Vermunt</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=ArieGato" title="Code">💻</a></td>
   </tr>
 </table>
 
