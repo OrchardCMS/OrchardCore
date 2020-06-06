@@ -19,7 +19,7 @@ var _root = {
 };
 var bus = new Vue();
 
-function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl) {
+function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl, pathBase) {
   if (initialized) {
     return;
   }
@@ -53,7 +53,7 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
         },
         created: function created() {
           var self = this;
-          self.dragDropThumbnail.src = '/OrchardCore.Media/Images/drag-thumbnail.png';
+          self.dragDropThumbnail.src = (pathBase || '') + '/OrchardCore.Media/Images/drag-thumbnail.png';
           bus.$on('folderSelected', function (folder) {
             self.selectedFolder = folder;
           });
@@ -267,7 +267,7 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
               return;
             }
 
-            confirmDialog(_objectSpread({}, $("#deleteFolder").data(), {
+            confirmDialog(_objectSpread(_objectSpread({}, $("#deleteFolder").data()), {}, {
               callback: function callback(resp) {
                 if (resp) {
                   $.ajax({
@@ -309,7 +309,7 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
               return;
             }
 
-            confirmDialog(_objectSpread({}, $("#deleteMedia").data(), {
+            confirmDialog(_objectSpread(_objectSpread({}, $("#deleteMedia").data()), {}, {
               callback: function callback(resp) {
                 if (resp) {
                   var paths = [];
@@ -352,7 +352,7 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
               return;
             }
 
-            confirmDialog(_objectSpread({}, $("#deleteMedia").data(), {
+            confirmDialog(_objectSpread(_objectSpread({}, $("#deleteMedia").data()), {}, {
               callback: function callback(resp) {
                 if (resp) {
                   $.ajax({
@@ -719,7 +719,7 @@ Vue.component('folder', {
         return;
       }
 
-      confirmDialog(_objectSpread({}, $("#moveMedia").data(), {
+      confirmDialog(_objectSpread(_objectSpread({}, $("#moveMedia").data()), {}, {
         callback: function callback(resp) {
           if (resp) {
             $.ajax({
