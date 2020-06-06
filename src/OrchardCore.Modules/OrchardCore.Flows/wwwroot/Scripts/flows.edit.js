@@ -53,7 +53,15 @@ $(function () {
   });
   $(document).on('click', '.btn.toggleAll', function (e) {
     e.preventDefault();
-    $('.toggleAll > svg').toggleClass('fa-angle-double-up fa-angle-double-down');
-    $('.widget.widget-editor.card').filter(':not(.widget-nocollapse)').toggleClass('collapsed');
+    var that = $(this);
+    var iscollapsed = that.find('svg').is('.fa-angle-double-down');
+
+    if (iscollapsed) {
+      $('.toggleAll > svg.fa-angle-double-down').toggleClass('fa-angle-double-down fa-angle-double-up');
+      $('.widget-template .widget.widget-editor.card.collapsed').filter(':not(.widget-nocollapse)').removeClass('collapsed');
+    } else {
+      $('.toggleAll > svg.fa-angle-double-up').toggleClass('fa-angle-double-down fa-angle-double-up');
+      $('.widget-template .widget.widget-editor.card').filter(':not(.widget-nocollapse):not(.collapsed)').addClass('collapsed');
+    }
   });
 });
