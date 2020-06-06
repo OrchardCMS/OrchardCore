@@ -382,6 +382,11 @@ namespace OrchardCore.Contents.Controllers
             {
                 await _contentManager.PublishAsync(contentItem);
 
+                if (!ModelState.IsValid)
+                {
+                    return;
+                }
+
                 var typeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
 
                 _notifier.Success(string.IsNullOrWhiteSpace(typeDefinition.DisplayName)
@@ -404,17 +409,18 @@ namespace OrchardCore.Contents.Controllers
 
             var model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, _updateModelAccessor.ModelUpdater, true);
 
-            if (!ModelState.IsValid)
+            if (ModelState.IsValid)
             {
-                _session.Cancel();
-                return View(model);
+                await _contentManager.CreateAsync(contentItem, VersionOptions.Draft);
             }
 
-            await _contentManager.CreateAsync(contentItem, VersionOptions.Draft);
+            if (ModelState.IsValid)
+            {
+                await conditionallyPublish(contentItem);
+            }
 
-            await conditionallyPublish(contentItem);
-
-            // A workflow activity acting as an inline handler may have added some model state errors.
+            // We check the model state after calling all handlers because they trigger WF content events so, even they are not
+            // intended to add model errors (only drivers), a WF content task may be executed inline and add some model errors.
             if (!ModelState.IsValid)
             {
                 _session.Cancel();
@@ -512,7 +518,6 @@ namespace OrchardCore.Contents.Controllers
             {
                 await _contentManager.PublishAsync(contentItem);
 
-                // A workflow activity acting as an inline handler may have added some model state errors.
                 if (!ModelState.IsValid)
                 {
                     return;
@@ -547,7 +552,8 @@ namespace OrchardCore.Contents.Controllers
                 await conditionallyPublish(contentItem);
             }
 
-            // A workflow activity acting as an inline handler may have added some model state errors.
+            // We check the model state after calling all handlers because they trigger WF content events so, even they are not
+            // intended to add model errors (only drivers), a WF content task may be executed inline and add some model errors.
             if (!ModelState.IsValid)
             {
                 _session.Cancel();

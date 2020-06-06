@@ -114,9 +114,10 @@ namespace OrchardCore.Content.Controllers
                         detail: string.Join(',', result.Errors),
                         statusCode: (int)HttpStatusCode.BadRequest);
                 }
+                // We check the model state after calling all handlers because they trigger WF content events so, even they are not
+                // intended to add model errors (only drivers), a WF content task may be executed inline and add some model errors.
                 else if (!ModelState.IsValid)
                 {
-                    // A workflow activity acting as an inline handler may have added some model state errors.
                     return Problem(
                         title: S["One or more validation errors occurred."],
                         detail: String.Join(", ", ModelState.Values.SelectMany(x => x.Errors.Select(x => x.ErrorMessage))),
@@ -144,9 +145,10 @@ namespace OrchardCore.Content.Controllers
                         detail: string.Join(',', result.Errors),
                         statusCode: (int)HttpStatusCode.BadRequest);
                 }
+                // We check the model state after calling all handlers because they trigger WF content events so, even they are not
+                // intended to add model errors (only drivers), a WF content task may be executed inline and add some model errors.
                 else if (!ModelState.IsValid)
                 {
-                    // A workflow activity acting as an inline handler may have added some model state errors.
                     return Problem(
                         title: S["One or more validation errors occurred."],
                         detail: String.Join(", ", ModelState.Values.SelectMany(x => x.Errors.Select(x => x.ErrorMessage))),
