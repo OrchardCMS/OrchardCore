@@ -149,6 +149,13 @@ namespace OrchardCore.Contents.Controllers
                 {
                     query = query.With<ContentItemIndex>(x => x.ContentType.IsIn(listableTypes));
                 }
+
+                // Exclude non listable content types
+                var nonListableTypes = GetNonListableTypes().Select(t => t.Name).ToArray();
+                if (nonListableTypes.Any())
+                {
+                    query = query.With<ContentItemIndex>(i => !i.ContentType.IsIn(nonListableTypes));
+                }
             }
 
             switch (model.Options.OrderBy)
@@ -726,5 +733,8 @@ namespace OrchardCore.Contents.Controllers
             }
             return listable;
         }
+
+        private IEnumerable<ContentTypeDefinition> GetNonListableTypes()
+            => _contentDefinitionManager.ListTypeDefinitions().Where(d => !d.GetSettings<ContentTypeSettings>().Listable);
     }
 }
