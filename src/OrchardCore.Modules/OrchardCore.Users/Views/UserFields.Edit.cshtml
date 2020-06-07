@@ -42,6 +42,16 @@
     </div>
 }
 
+@if (Model.IsNewUser)
+{
+    <div class="form-group">
+        <div class="custom-control custom-checkbox">
+            <input asp-for="GeneratePassword" type="checkbox" class="custom-control-input">
+            <label class="custom-control-label" asp-for="GeneratePassword">@T["Generate Password"]</label>
+        </div>
+    </div>
+}
+
 <h6>@T["Roles"]</h6>
 <div class="form-group col-md-3">
     @for (var i = 0; i < Model.Roles.Length; i++)

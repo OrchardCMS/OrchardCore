@@ -21,6 +21,10 @@ namespace OrchardCore.Users.ViewModels
 
         public bool EmailConfirmed { get; set; }
 
+        public bool GeneratePassword { get; set; }
+        
+        public bool IsNewUser { get; set; }
+
         public RoleViewModel[] Roles { get; set; }
     }
 }

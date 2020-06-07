@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
@@ -63,6 +64,7 @@ namespace OrchardCore.Users.Drivers
                 model.Email = await _userManager.GetEmailAsync(user);
                 model.Roles = roles;
                 model.EmailConfirmed = user.EmailConfirmed;
+                model.IsNewUser = user.Id == 0 ? true : false; 
             }).Location("Content:1"));
         }
 
@@ -114,6 +116,12 @@ namespace OrchardCore.Users.Drivers
 
             if (context.Updater.ModelState.IsValid)
             {
+                if (model.GeneratePassword)
+                {
+                    var password = GenerateRandomPassword();
+                    await _userManager.AddPasswordAsync(user, password);
+                }
+
                 var roleNames = model.Roles.Where(x => x.IsSelected).Select(x => x.Role).ToList();
 
                 if (context.IsNew)
@@ -160,5 +168,47 @@ namespace OrchardCore.Users.Drivers
             var roleNames = await _roleProvider.GetRoleNamesAsync();
             return roleNames.Except(new[] { "Anonymous", "Authenticated" }, StringComparer.OrdinalIgnoreCase);
         }
+
+                private string GenerateRandomPassword()
+        {
+            var options = _userManager.Options.Password;
+
+            var length = options.RequiredLength;
+            var nonAlphanumeric = options.RequireNonAlphanumeric;
+            var digit = options.RequireDigit;
+            var lowercase = options.RequireLowercase;
+            var uppercase = options.RequireUppercase;
+
+            var password = new StringBuilder();
+            Random random = new Random();
+
+            while (password.Length < length)
+            {
+                char c = (char)random.Next(32, 126);
+
+                password.Append(c);
+
+                if (char.IsDigit(c))
+                    digit = false;
+                else if (char.IsLower(c))
+                    lowercase = false;
+                else if (char.IsUpper(c))
+                    uppercase = false;
+                else if (!char.IsLetterOrDigit(c))
+                    nonAlphanumeric = false;
+            }
+
+            if (nonAlphanumeric)
+                password.Append((char)random.Next(33, 48));
+            if (digit)
+                password.Append((char)random.Next(48, 58));
+            if (lowercase)
+                password.Append((char)random.Next(97, 123));
+            if (uppercase)
+                password.Append((char)random.Next(65, 91));
+
+            return password.ToString();
+        }
+    }
     }
 }
