@@ -15,7 +15,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
     {
         public Expression Shape { get; }
 
-        public override Task<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context)
+        public override ValueTask<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context)
         {
             if (!context.AmbientValues.TryGetValue("Services", out var services))
             {
@@ -29,12 +29,12 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
             var tokenSet = antiforgery.GetAndStoreTokens(httpContext);
 
             writer.Write("<input name=\"");
-            HtmlEncoder.Default.Encode(writer, tokenSet.FormFieldName);
+            encoder.Encode(writer, tokenSet.FormFieldName);
             writer.Write("\" type=\"hidden\" value=\"");
-            HtmlEncoder.Default.Encode(writer, tokenSet.RequestToken);
+            encoder.Encode(writer, tokenSet.RequestToken);
             writer.Write("\" />");
 
-            return Task.FromResult(Completion.Normal);
+            return new ValueTask<Completion>(Completion.Normal);
         }
     }
 }

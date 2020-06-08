@@ -1,8 +1,8 @@
-﻿using System;
+using System;
 using Microsoft.AspNetCore.Builder;
-using OrchardCore.Modules;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
+using OrchardCore.Modules;
 
 namespace OrchardCore.Mvc.HelloWorld
 {
@@ -15,18 +15,18 @@ namespace OrchardCore.Mvc.HelloWorld
             _configuration = configuration;
         }
 
-        public override void Configure(IApplicationBuilder builder, IRouteBuilder routes, IServiceProvider serviceProvider)
+        public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
             if (string.IsNullOrEmpty(_configuration["Sample"]))
             {
                 throw new Exception(":(");
             }
-            
-            routes.MapAreaRoute
+
+            routes.MapAreaControllerRoute
             (
                 name: "Home",
                 areaName: "OrchardCore.Mvc.HelloWorld",
-                template: "",
+                pattern: "",
                 defaults: new { controller = "Home", action = "Index" }
             );
         }

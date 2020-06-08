@@ -6,6 +6,8 @@ using Microsoft.Extensions.Options;
 using OrchardCore.Data;
 using OrchardCore.Data.Migration;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Models;
+using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Modules;
 using YesSql;
 using YesSql.Indexes;
@@ -16,11 +18,15 @@ using YesSql.Provider.SqlServer;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
+    /// <summary>
+    /// Provides extension methods for <see cref="OrchardCoreBuilder"/> to add database access functionality.
+    /// </summary>
     public static class OrchardCoreBuilderExtensions
     {
         /// <summary>
         /// Adds tenant level data access services.
         /// </summary>
+        /// <param name="builder">The <see cref="OrchardCoreBuilder"/>.</param>
         public static OrchardCoreBuilder AddDataAccess(this OrchardCoreBuilder builder)
         {
             builder.ConfigureServices(services =>
@@ -29,10 +35,10 @@ namespace Microsoft.Extensions.DependencyInjection
                 services.AddScoped<IModularTenantEvents, AutomaticDataMigrations>();
 
                 // Adding supported databases
-                services.TryAddDataProvider(name: "Sql Server", value: "SqlConnection", hasConnectionString: true, hasTablePrefix: true, isDefault: false);
+                services.TryAddDataProvider(name: "Sql Server", value: "SqlConnection", hasConnectionString: true, sampleConnectionString: "Server=localhost;Database=Orchard;User Id=username;Password=password", hasTablePrefix: true, isDefault: false);
                 services.TryAddDataProvider(name: "Sqlite", value: "Sqlite", hasConnectionString: false, hasTablePrefix: false, isDefault: true);
-                services.TryAddDataProvider(name: "MySql", value: "MySql", hasConnectionString: true, hasTablePrefix: true, isDefault: false);
-                services.TryAddDataProvider(name: "Postgres", value: "Postgres", hasConnectionString: true, hasTablePrefix: true, isDefault: false);
+                services.TryAddDataProvider(name: "MySql", value: "MySql", hasConnectionString: true, sampleConnectionString: "Server=localhost;Database=Orchard;Uid=username;Pwd=password", hasTablePrefix: true, isDefault: false);
+                services.TryAddDataProvider(name: "Postgres", value: "Postgres", hasConnectionString: true, sampleConnectionString: "Server=localhost;Port=5432;Database=Orchard;User Id=username;Password=password", hasTablePrefix: true, isDefault: false);
 
                 // Configuring data access
 
@@ -40,20 +46,20 @@ namespace Microsoft.Extensions.DependencyInjection
                 {
                     var shellSettings = sp.GetService<ShellSettings>();
 
-                    if (shellSettings.DatabaseProvider == null)
+                    // Before the setup a 'DatabaseProvider' may be configured without a required 'ConnectionString'.
+                    if (shellSettings.State == TenantState.Uninitialized || shellSettings["DatabaseProvider"] == null)
                     {
                         return null;
                     }
 
-                    var storeConfiguration = new YesSql.Configuration();
+                    IConfiguration storeConfiguration = new YesSql.Configuration();
 
-                    // Disabling query gating as it's failing to improve performance right now
-                    //storeConfiguration.DisableQueryGating();
-
-                    switch (shellSettings.DatabaseProvider)
+                    switch (shellSettings["DatabaseProvider"])
                     {
                         case "SqlConnection":
-                            storeConfiguration.UseSqlServer(shellSettings.ConnectionString, IsolationLevel.ReadUncommitted);
+                            storeConfiguration
+                                .UseSqlServer(shellSettings["ConnectionString"], IsolationLevel.ReadUncommitted)
+                                .UseBlockIdGenerator();
                             break;
                         case "Sqlite":
                             var shellOptions = sp.GetService<IOptions<ShellOptions>>();
@@ -61,24 +67,30 @@ namespace Microsoft.Extensions.DependencyInjection
                             var databaseFolder = Path.Combine(option.ShellsApplicationDataPath, option.ShellsContainerName, shellSettings.Name);
                             var databaseFile = Path.Combine(databaseFolder, "yessql.db");
                             Directory.CreateDirectory(databaseFolder);
-                            storeConfiguration.UseSqLite($"Data Source={databaseFile};Cache=Shared", IsolationLevel.ReadUncommitted);
+                            storeConfiguration
+                                .UseSqLite($"Data Source={databaseFile};Cache=Shared", IsolationLevel.ReadUncommitted)
+                                .UseDefaultIdGenerator();
                             break;
                         case "MySql":
-                            storeConfiguration.UseMySql(shellSettings.ConnectionString, IsolationLevel.ReadUncommitted);
+                            storeConfiguration
+                                .UseMySql(shellSettings["ConnectionString"], IsolationLevel.ReadUncommitted)
+                                .UseBlockIdGenerator();
                             break;
                         case "Postgres":
-                            storeConfiguration.UsePostgreSql(shellSettings.ConnectionString, IsolationLevel.ReadUncommitted);
+                            storeConfiguration
+                                .UsePostgreSql(shellSettings["ConnectionString"], IsolationLevel.ReadUncommitted)
+                                .UseBlockIdGenerator();
                             break;
                         default:
-                            throw new ArgumentException("Unknown database provider: " + shellSettings.DatabaseProvider);
+                            throw new ArgumentException("Unknown database provider: " + shellSettings["DatabaseProvider"]);
                     }
 
-                    if (!string.IsNullOrWhiteSpace(shellSettings.TablePrefix))
+                    if (!string.IsNullOrWhiteSpace(shellSettings["TablePrefix"]))
                     {
-                        storeConfiguration.TablePrefix = shellSettings.TablePrefix + "_";
+                        storeConfiguration = storeConfiguration.SetTablePrefix(shellSettings["TablePrefix"] + "_");
                     }
 
-                    var store = new Store(storeConfiguration);
+                    var store = StoreFactory.CreateAsync(storeConfiguration).GetAwaiter().GetResult();
                     var indexes = sp.GetServices<IIndexProvider>();
 
                     store.RegisterIndexes(indexes);
@@ -101,8 +113,17 @@ namespace Microsoft.Extensions.DependencyInjection
 
                     session.RegisterIndexes(scopedServices.ToArray());
 
+                    ShellScope.RegisterBeforeDispose(scope =>
+                    {
+                        return session.CommitAsync();
+                    });
+
                     return session;
                 });
+
+                services.AddScoped<ISessionHelper, SessionHelper>();
+
+                services.AddTransient<IDbConnectionAccessor, DbConnectionAccessor>();
             });
 
             return builder;

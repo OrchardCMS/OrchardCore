@@ -1,17 +1,20 @@
-using Microsoft.Extensions.Localization;
-using OrchardCore.Navigation;
 using System;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Localization;
+using OrchardCore.ContentTypes.Controllers;
+using OrchardCore.Mvc.Core.Utilities;
+using OrchardCore.Navigation;
 
-namespace OrchardCore.ContentTypes {
-    public class AdminMenu : INavigationProvider {
+namespace OrchardCore.ContentTypes
+{
+    public class AdminMenu : INavigationProvider
+    {
+        private readonly IStringLocalizer S;
 
         public AdminMenu(IStringLocalizer<AdminMenu> localizer)
         {
-            T = localizer;
+            S = localizer;
         }
-
-        public IStringLocalizer T { get; set; }
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
@@ -20,18 +23,19 @@ namespace OrchardCore.ContentTypes {
                 return Task.CompletedTask;
             }
 
-            builder.Add(T["Content Definition"], "2", contentDefinition => contentDefinition
-                .AddClass("content-definition").Id("contentdefinition")
-                .LinkToFirstChild(true)
-                    .Add(T["Content Types"], "1", contentTypes => contentTypes
-                        .Action("List", "Admin", new { area = "OrchardCore.ContentTypes" })
+            var adminControllerName = typeof(AdminController).ControllerName();
+
+            builder.Add(S["Content"], content => content
+                .Add(S["Content Definition"], S["Content Definition"].PrefixPosition("9"), contentDefinition => contentDefinition
+                    .Add(S["Content Types"], S["Content Types"].PrefixPosition("1"), contentTypes => contentTypes
+                        .Action(nameof(AdminController.List), adminControllerName, new { area = "OrchardCore.ContentTypes" })
                         .Permission(Permissions.ViewContentTypes)
                         .LocalNav())
-                    .Add(T["Content Parts"], "2", contentParts => contentParts
-                        .Action("ListParts", "Admin", new { area = "OrchardCore.ContentTypes" })
+                    .Add(S["Content Parts"], S["Content Parts"].PrefixPosition("2"), contentParts => contentParts
+                        .Action(nameof(AdminController.ListParts), adminControllerName, new { area = "OrchardCore.ContentTypes" })
                         .Permission(Permissions.ViewContentTypes)
                         .LocalNav())
-                    );
+                    ));
 
             return Task.CompletedTask;
         }

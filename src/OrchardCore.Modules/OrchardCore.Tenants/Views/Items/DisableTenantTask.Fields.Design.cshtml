@@ -1,0 +1,7 @@
+@model TenantTaskViewModel<DisableTenantTask>
+
+<header>
+    <h4><i class="fa fa-trash"></i>@Model.Activity.GetTitleOrDefault(() => T["Disable Tenant"])</h4>
+</header>
+
+<em>@Model.Activity.TenantName</em>

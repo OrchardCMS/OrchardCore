@@ -1,14 +1,19 @@
 // Core variables and mixins
-@import "variables.scss";
-@import "mixins.scss";
+@import "base/variables.scss";
+@import "base/mixins.scss";
+
 // Global CSS
-@import "global.scss";
+@import "base/page.scss";
+
 // Components
-@import "navbar.scss";
-@import "masthead.scss";
-@import "services.scss";
-@import "portfolio.scss";
-@import "timeline.scss";
-@import "team.scss";
-@import "contact.scss";
-@import "footer.scss";
+@import "components/buttons.scss";
+@import "components/navbar.scss";
+
+// Layout
+@import "layout/masthead.scss";
+@import "layout/services.scss";
+@import "layout/portfolio.scss";
+@import "layout/timeline.scss";
+@import "layout/team.scss";
+@import "layout/contact.scss";
+@import "layout/footer.scss";

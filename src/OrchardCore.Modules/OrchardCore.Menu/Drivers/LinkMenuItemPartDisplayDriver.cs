@@ -7,15 +7,13 @@ using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Menu.Models;
 using OrchardCore.Menu.ViewModels;
 
-namespace OrchardCore.Lists.Drivers
+namespace OrchardCore.Menu.Drivers
 {
     public class LinkMenuItemPartDisplayDriver : ContentPartDisplayDriver<LinkMenuItemPart>
     {
         private readonly IContentManager _contentManager;
 
-        public LinkMenuItemPartDisplayDriver(
-            IContentManager contentManager
-            )
+        public LinkMenuItemPartDisplayDriver(IContentManager contentManager)
         {
             _contentManager = contentManager;
         }

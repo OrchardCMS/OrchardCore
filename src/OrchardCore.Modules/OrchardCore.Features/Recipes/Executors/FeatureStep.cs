@@ -24,30 +24,25 @@ namespace OrchardCore.Features.Recipes.Executors
             _shellFeatureManager = shellFeatureManager;
         }
 
-        public async Task ExecuteAsync(RecipeExecutionContext context)
+        public Task ExecuteAsync(RecipeExecutionContext context)
         {
             if (!String.Equals(context.Name, "Feature", StringComparison.OrdinalIgnoreCase))
             {
-                return;
+                return Task.CompletedTask;
             }
 
             var step = context.Step.ToObject<FeatureStepModel>();
-
             var features = _extensionManager.GetFeatures();
 
-            if (step.Disable.Any())
-            {
-                var featuresToDisable = features.Where(x => step.Disable.Contains(x.Id)).ToList();
+            var featuresToDisable = features.Where(x => step.Disable.Contains(x.Id)).ToList();
+            var featuresToEnable = features.Where(x => step.Enable.Contains(x.Id)).ToList();
 
-                await _shellFeatureManager.DisableFeaturesAsync(featuresToDisable, true);
+            if (featuresToDisable.Count > 0 || featuresToEnable.Count > 0)
+            {
+                return _shellFeatureManager.UpdateFeaturesAsync(featuresToDisable, featuresToEnable, true);
             }
 
-            if (step.Enable.Any())
-            {
-                var featuresToEnable = features.Where(x => step.Enable.Contains(x.Id)).ToList();
-
-                await _shellFeatureManager.EnableFeaturesAsync(featuresToEnable, true);
-            }
+            return Task.CompletedTask;
         }
 
         private class FeatureStepModel

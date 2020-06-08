@@ -3,33 +3,44 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
-using System.Text;
+using System.Runtime.CompilerServices;
 using Microsoft.AspNetCore.Html;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
+using Microsoft.Extensions.Options;
 
 namespace OrchardCore.ResourceManagement
 {
     public class ResourceManager : IResourceManager
     {
         private readonly Dictionary<ResourceTypeName, RequireSettings> _required = new Dictionary<ResourceTypeName, RequireSettings>();
-        private readonly Dictionary<string, IList<ResourceRequiredContext>> _builtResources;
+        private readonly Dictionary<string, ResourceRequiredContext[]> _builtResources;
         private readonly IEnumerable<IResourceManifestProvider> _providers;
+        private readonly IFileVersionProvider _fileVersionProvider;
         private ResourceManifest _dynamicManifest;
 
         private List<LinkEntry> _links;
         private Dictionary<string, MetaEntry> _metas;
         private List<IHtmlContent> _headScripts;
         private List<IHtmlContent> _footScripts;
+        private List<IHtmlContent> _styles;
+        private readonly HashSet<string> _localScripts;
 
         private readonly IResourceManifestState _resourceManifestState;
+        private readonly ResourceManagementOptions _options;
 
         public ResourceManager(
             IEnumerable<IResourceManifestProvider> resourceProviders,
-            IResourceManifestState resourceManifestState)
+            IResourceManifestState resourceManifestState,
+            IOptions<ResourceManagementOptions> options,
+            IFileVersionProvider fileVersionProvider)
         {
             _resourceManifestState = resourceManifestState;
+            _options = options.Value;
             _providers = resourceProviders;
+            _fileVersionProvider = fileVersionProvider;
 
-            _builtResources = new Dictionary<string, IList<ResourceRequiredContext>>(StringComparer.OrdinalIgnoreCase);
+            _builtResources = new Dictionary<string, ResourceRequiredContext[]>(StringComparer.OrdinalIgnoreCase);
+            _localScripts = new HashSet<string>();
         }
 
         public IEnumerable<ResourceManifest> ResourceManifests
@@ -49,71 +60,61 @@ namespace OrchardCore.ResourceManagement
             }
         }
 
-        public ResourceManifest InlineManifest
-        {
-            get
-            {
-                if(_dynamicManifest == null)
-                {
-                    _dynamicManifest = new ResourceManifest();
-                }
-
-                return _dynamicManifest;
-            }
-        }
+        public ResourceManifest InlineManifest => _dynamicManifest ?? (_dynamicManifest = new ResourceManifest());
 
         public RequireSettings RegisterResource(string resourceType, string resourceName)
         {
             if (resourceType == null)
             {
-                throw new ArgumentNullException(nameof(resourceType));
+                return ThrowArgumentNullException<RequireSettings>(nameof(resourceType));
             }
 
             if (resourceName == null)
             {
-                throw new ArgumentNullException(nameof(resourceName));
+                return ThrowArgumentNullException<RequireSettings>(nameof(resourceName));
             }
 
-            RequireSettings settings;
             var key = new ResourceTypeName(resourceType, resourceName);
-            if (!_required.TryGetValue(key, out settings))
+            if (!_required.TryGetValue(key, out var settings))
             {
-                settings = new RequireSettings { Type = resourceType, Name = resourceName };
+                settings = new RequireSettings(_options)
+                {
+                    Type = resourceType,
+                    Name = resourceName
+                };
                 _required[key] = settings;
             }
             _builtResources[resourceType] = null;
             return settings;
         }
 
-        public RequireSettings Include(string resourceType, string resourcePath, string resourceDebugPath)
-        {
-            return RegisterUrl(resourceType, resourcePath, resourceDebugPath, null);
-        }
-
-        public RequireSettings RegisterUrl(string resourceType, string resourcePath, string resourceDebugPath, string relativeFromPath)
+        public RequireSettings RegisterUrl(string resourceType, string resourcePath, string resourceDebugPath)
         {
             if (resourceType == null)
             {
-                throw new ArgumentNullException(nameof(resourceType));
+                return ThrowArgumentNullException<RequireSettings>(nameof(resourceType));
             }
+
             if (resourcePath == null)
             {
-                throw new ArgumentNullException(nameof(resourcePath));
+                return ThrowArgumentNullException<RequireSettings>(nameof(resourcePath));
             }
 
             // ~/ ==> convert to absolute path (e.g. /orchard/..)
+
             if (resourcePath.StartsWith("~/", StringComparison.Ordinal))
             {
-                // For tilde slash paths, drop the leading ~ to make it work with the underlying IFileProvider.
-                resourcePath = resourcePath.Substring(1);
-            }
-            if (resourceDebugPath != null && resourceDebugPath.StartsWith("~/", StringComparison.Ordinal))
-            {
-                // For tilde slash paths, drop the leading ~ to make it work with the underlying IFileProvider.
-                resourceDebugPath = resourceDebugPath.Substring(1);
+                resourcePath = _options.ContentBasePath + resourcePath.Substring(1);
             }
 
-            return RegisterResource(resourceType, resourcePath).Define(d => d.SetUrl(resourcePath, resourceDebugPath));
+            if (resourceDebugPath != null && resourceDebugPath.StartsWith("~/", StringComparison.Ordinal))
+            {
+                resourceDebugPath = _options.ContentBasePath + resourceDebugPath.Substring(1);
+            }
+
+            return RegisterResource(
+                resourceType,
+                GetResourceKey(resourcePath, resourceDebugPath)).Define(d => d.SetUrl(resourcePath, resourceDebugPath));
         }
 
         public void RegisterHeadScript(IHtmlContent script)
@@ -136,16 +137,28 @@ namespace OrchardCore.ResourceManagement
             _footScripts.Add(script);
         }
 
+        public void RegisterStyle(IHtmlContent style)
+        {
+            if (_styles == null)
+            {
+                _styles = new List<IHtmlContent>();
+            }
+
+            _styles.Add(style);
+        }
+
         public void NotRequired(string resourceType, string resourceName)
         {
             if (resourceType == null)
             {
-                throw new ArgumentNullException(nameof(resourceType));
+                ThrowArgumentNullException(nameof(resourceType));
+                return;
             }
 
             if (resourceName == null)
             {
-                throw new ArgumentNullException(nameof(resourceName));
+                ThrowArgumentNullException(nameof(resourceName));
+                return;
             }
 
             var key = new ResourceTypeName(resourceType, resourceName);
@@ -167,52 +180,14 @@ namespace OrchardCore.ResourceManagement
             // using the action.
             var name = settings.Name ?? "";
             var type = settings.Type;
-            ResourceDefinition resource;
 
-            var resources = (from p in ResourceManifests
-                            from r in p.GetResources(type)
-                            where name.Equals(r.Key, StringComparison.OrdinalIgnoreCase)
-                            select r.Value).SelectMany(x => x);
-
-            if(!String.IsNullOrEmpty(settings.Version))
-            {
-                // Specific version, filter
-                var upper = GetUpperBoundVersion(settings.Version);
-                var lower = GetLowerBoundVersion(settings.Version);
-                resources = from r in resources
-                            let version = r.Version != null ? new Version(r.Version) : null
-                            where lower <= version && version < upper 
-                            select r;
-            }
-
-            // Use the highest version of all matches
-            resource = (from r in resources
-                        let version = r.Version != null ? new Version(r.Version) : null
-                        orderby version descending
-                        select r).FirstOrDefault();
+            var stream = ResourceManifests.SelectMany(x => x.GetResources(type));
+            var resource = FindMatchingResource(stream, settings, name);
 
             if (resource == null && _dynamicManifest != null)
             {
-                resources = (from r in _dynamicManifest.GetResources(type)
-                            where name.Equals(r.Key, StringComparison.OrdinalIgnoreCase)
-                            select r.Value).SelectMany(x => x);
-
-                if (!String.IsNullOrEmpty(settings.Version))
-                {
-                    // Specific version, filter
-                    var upper = GetUpperBoundVersion(settings.Version);
-                    var lower = GetLowerBoundVersion(settings.Version);
-                    resources = from r in resources
-                                let version = r.Version != null ? new Version(r.Version) : null
-                                where lower <= version && version < upper
-                                select r;
-                }
-
-                // Use the highest version of all matches
-                resource = (from r in resources
-                            let version = r.Version != null ? new Version(r.Version) : null
-                            orderby version descending
-                            select r).FirstOrDefault();
+                stream = _dynamicManifest.GetResources(type);
+                resource = FindMatchingResource(stream, settings, name);
             }
 
             if (resolveInlineDefinitions && resource == null)
@@ -229,22 +204,65 @@ namespace OrchardCore.ResourceManagement
             return resource;
         }
 
+        private ResourceDefinition FindMatchingResource(
+            IEnumerable<KeyValuePair<string, IList<ResourceDefinition>>> stream,
+            RequireSettings settings,
+            string name)
+        {
+            Version lower = null;
+            Version upper = null;
+            if (!String.IsNullOrEmpty(settings.Version))
+            {
+                // Specific version, filter
+                lower = GetLowerBoundVersion(settings.Version);
+                upper = GetUpperBoundVersion(settings.Version);
+            }
+
+            ResourceDefinition resource = null;
+            foreach (var r in stream)
+            {
+                if (String.Equals(r.Key, name, StringComparison.OrdinalIgnoreCase))
+                {
+                    foreach (var resourceDefinition in r.Value)
+                    {
+                        var version = resourceDefinition.Version != null
+                            ? new Version(resourceDefinition.Version)
+                            : null;
+
+                        if (lower != null)
+                        {
+                            if (lower > version || version >= upper)
+                            {
+                                continue;
+                            }
+                        }
+
+                        // Use the highest version of all matches
+                        if (resource == null
+                            || (resourceDefinition.Version != null && new Version(resource.Version) < version))
+                        {
+                            resource = resourceDefinition;
+                        }
+                    }
+                }
+            }
+
+            return resource;
+        }
+
         /// <summary>
         /// Returns the upper bound value of a required version number.
-        /// For instance, 3.1.0 returns 3.1.1, 4 returns 5.0.0, 6.1 returns 6.2.0 
+        /// For instance, 3.1.0 returns 3.1.1, 4 returns 5.0.0, 6.1 returns 6.2.0
         /// </summary>
         private Version GetUpperBoundVersion(string minimumVersion)
         {
-            Version version;
-
-            if (!Version.TryParse(minimumVersion, out version))
+            if (!Version.TryParse(minimumVersion, out var version))
             {
                 // Is is a single number?
-                int major;
-                if (int.TryParse(minimumVersion, out major))
+                if (int.TryParse(minimumVersion, out var major))
                 {
                     return new Version(major + 1, 0, 0);
-                }                
+                }
             }
 
             if (version.Build != -1)
@@ -256,36 +274,38 @@ namespace OrchardCore.ResourceManagement
             {
                 return new Version(version.Major, version.Minor + 1, 0);
             }
-            
+
             return version;
         }
 
         /// <summary>
         /// Returns the lower bound value of a required version number.
-        /// For instance, 3.1.0 returns 3.1.0, 4 returns 4.0.0, 6.1 returns 6.1.0 
+        /// For instance, 3.1.0 returns 3.1.0, 4 returns 4.0.0, 6.1 returns 6.1.0
         /// </summary>
         private Version GetLowerBoundVersion(string minimumVersion)
         {
-            Version version;
-
-            if (!Version.TryParse(minimumVersion, out version))
+            if (!Version.TryParse(minimumVersion, out var version))
             {
                 // Is is a single number?
-                int major;
-                if (int.TryParse(minimumVersion, out major))
+                if (int.TryParse(minimumVersion, out var major))
                 {
                     return new Version(major, 0, 0);
                 }
             }
-            
+
             return version;
         }
 
         private bool ResolveInlineDefinitions(string resourceType)
         {
             bool anyWereDefined = false;
-            foreach (var settings in ResolveRequiredResources(resourceType).Where(settings => settings.InlineDefinition != null))
+            foreach (var settings in ResolveRequiredResources(resourceType))
             {
+                if (settings.InlineDefinition == null)
+                {
+                    continue;
+                }
+
                 // defining it on the fly
                 var resource = FindResource(settings, false);
                 if (resource == null)
@@ -302,69 +322,105 @@ namespace OrchardCore.ResourceManagement
 
         private IEnumerable<RequireSettings> ResolveRequiredResources(string resourceType)
         {
-            return _required.Where(r => r.Key.Type == resourceType).Select(r => r.Value);
-        }
-
-        public IEnumerable<LinkEntry> GetRegisteredLinks()
-        {
-            if (_links == null)
+            foreach (var (key, value) in _required)
             {
-                return Enumerable.Empty<LinkEntry>();
+                if (key.Type == resourceType)
+                {
+                    yield return value;
+                }
             }
-
-            return _links.AsReadOnly();
         }
 
-        public IEnumerable<MetaEntry> GetRegisteredMetas()
-        {
-            if(_metas == null)
-            {
-                return Enumerable.Empty<MetaEntry>();
-            }
+        public IEnumerable<LinkEntry> GetRegisteredLinks() => DoGetRegisteredLinks();
 
-            return _metas.Values;
+        private List<LinkEntry> DoGetRegisteredLinks()
+        {
+            return _links ?? EmptyList<LinkEntry>.Instance;
         }
 
-        public IEnumerable<IHtmlContent> GetRegisteredHeadScripts()
+        public IEnumerable<MetaEntry> GetRegisteredMetas() => DoGetRegisteredMetas();
+
+        private Dictionary<string, MetaEntry>.ValueCollection DoGetRegisteredMetas()
         {
-            return _headScripts == null ? Enumerable.Empty<IHtmlContent>() : _headScripts;
+            return _metas?.Values ?? EmptyValueCollection<MetaEntry>.Instance;
         }
 
-        public IEnumerable<IHtmlContent> GetRegisteredFootScripts()
+        public IEnumerable<IHtmlContent> GetRegisteredHeadScripts() => DoGetRegisteredHeadScripts();
+
+        public List<IHtmlContent> DoGetRegisteredHeadScripts()
         {
-            return _footScripts == null ? Enumerable.Empty<IHtmlContent>() : _footScripts;
+            return _headScripts ?? EmptyList<IHtmlContent>.Instance;
+        }
+
+        public IEnumerable<IHtmlContent> GetRegisteredFootScripts() => DoGetRegisteredFootScripts();
+
+        public List<IHtmlContent> DoGetRegisteredFootScripts()
+        {
+            return _footScripts ?? EmptyList<IHtmlContent>.Instance;
+        }
+
+        public IEnumerable<IHtmlContent> GetRegisteredStyles() => DoGetRegisteredStyles();
+
+        public List<IHtmlContent> DoGetRegisteredStyles()
+        {
+            return _styles ?? EmptyList<IHtmlContent>.Instance;
         }
 
         public IEnumerable<ResourceRequiredContext> GetRequiredResources(string resourceType)
+            => DoGetRequiredResources(resourceType);
+
+        private ResourceRequiredContext[] DoGetRequiredResources(string resourceType)
         {
-            IList<ResourceRequiredContext> requiredResources;
-            if (_builtResources.TryGetValue(resourceType, out requiredResources) && requiredResources != null)
+            if (_builtResources.TryGetValue(resourceType, out var requiredResources) && requiredResources != null)
             {
                 return requiredResources;
             }
+
             var allResources = new OrderedDictionary();
             foreach (var settings in ResolveRequiredResources(resourceType))
             {
                 var resource = FindResource(settings);
                 if (resource == null)
                 {
-                    throw new InvalidOperationException($"Could not find a resource of type '{settings.Type}' named '{settings.Name}' with version '{settings.Version ?? "any"}.");
+                    throw new InvalidOperationException($"Could not find a resource of type '{settings.Type}' named '{settings.Name}' with version '{settings.Version ?? "any"}'.");
+                }
+
+                // Register any additional dependencies for the resource here,
+                // rather than in Combine as they are additive, and should not be Combined.
+                if (settings.Dependencies != null)
+                {
+                    resource.SetDependencies(settings.Dependencies);
                 }
 
                 ExpandDependencies(resource, settings, allResources);
             }
-            requiredResources = (from DictionaryEntry entry in allResources
-                                 select new ResourceRequiredContext { Resource = (ResourceDefinition)entry.Key, Settings = (RequireSettings)entry.Value }).ToList();
+
+            requiredResources = new ResourceRequiredContext[allResources.Count];
+            var i = 0;
+            foreach (DictionaryEntry entry in allResources)
+            {
+                requiredResources[i++] = new ResourceRequiredContext
+                {
+                    Resource = (ResourceDefinition)entry.Key,
+                    Settings = (RequireSettings)entry.Value,
+                    FileVersionProvider = _fileVersionProvider
+                };
+            }
+
             _builtResources[resourceType] = requiredResources;
             return requiredResources;
         }
 
-        protected virtual void ExpandDependencies(ResourceDefinition resource, RequireSettings settings, OrderedDictionary allResources)
+        protected virtual void ExpandDependencies(
+            ResourceDefinition resource,
+            RequireSettings settings,
+            OrderedDictionary allResources)
         {
             if (resource == null)
             {
                 return;
             }
+
             // Settings is given so they can cascade down into dependencies. For example, if Foo depends on Bar, and Foo's required
             // location is Head, so too should Bar's location.
             // forge the effective require settings for this resource
@@ -372,20 +428,35 @@ namespace OrchardCore.ResourceManagement
             // (2) If no require already exists, form a new settings object based on the given one but with its own type/name.
             settings = allResources.Contains(resource)
                 ? ((RequireSettings)allResources[resource]).Combine(settings)
-                : new RequireSettings { Type = resource.Type, Name = resource.Name }.Combine(settings);
+                : new RequireSettings(_options) { Type = resource.Type, Name = resource.Name }.Combine(settings);
+
             if (resource.Dependencies != null)
             {
-                var dependencies = from d in resource.Dependencies
-                                   let segments = d.Split(':')
-                                   let name = segments[0]
-                                   let version = segments.Length > 1 ? segments[1] : null
-                                   select FindResource(new RequireSettings { Type = resource.Type, Name = name, Version = version });
-                foreach (var dependency in dependencies)
+                // share search instance
+                var tempSettings = new RequireSettings();
+
+                for (var i = 0; i < resource.Dependencies.Count; i++)
                 {
+                    var d = resource.Dependencies[i];
+                    var idx = d.IndexOf(':');
+                    var name = d;
+                    string version = null;
+                    if (idx != -1)
+                    {
+                        name = d.Substring(0, idx);
+                        version = d.Substring(idx + 1);
+                    }
+
+                    tempSettings.Type = resource.Type;
+                    tempSettings.Name = name;
+                    tempSettings.Version = version;
+
+                    var dependency = FindResource(tempSettings);
                     if (dependency == null)
                     {
                         continue;
                     }
+
                     ExpandDependencies(dependency, settings, allResources);
                 }
             }
@@ -394,9 +465,21 @@ namespace OrchardCore.ResourceManagement
 
         public void RegisterLink(LinkEntry link)
         {
-            if(_links == null)
+            if (_links == null)
             {
                 _links = new List<LinkEntry>();
+            }
+
+            var href = link.Href;
+
+            if (href != null && href.StartsWith("~/", StringComparison.Ordinal))
+            {
+                link.Href = _options.ContentBasePath + href.Substring(1);
+            }
+
+            if (link.AppendVersion)
+            {
+                link.Href = _fileVersionProvider.AddFileVersionToPath(_options.ContentBasePath, link.Href);
             }
 
             _links.Add(link);
@@ -409,12 +492,12 @@ namespace OrchardCore.ResourceManagement
                 return;
             }
 
-            if(_metas == null)
+            if (_metas == null)
             {
                 _metas = new Dictionary<string, MetaEntry>();
             }
 
-            var index = meta.Name ?? meta.HttpEquiv ?? "charset";
+            var index = meta.Name ?? meta.Property ?? meta.HttpEquiv ?? "charset";
 
             _metas[index] = meta;
         }
@@ -426,7 +509,7 @@ namespace OrchardCore.ResourceManagement
                 return;
             }
 
-            var index = meta.Name ?? meta.HttpEquiv;
+            var index = meta.Name ?? meta.Property ?? meta.HttpEquiv;
 
             if (String.IsNullOrEmpty(index))
             {
@@ -438,8 +521,7 @@ namespace OrchardCore.ResourceManagement
                 _metas = new Dictionary<string, MetaEntry>();
             }
 
-            MetaEntry existingMeta;
-            if (_metas.TryGetValue(index, out existingMeta))
+            if (_metas.TryGetValue(index, out var existingMeta))
             {
                 meta = MetaEntry.Combine(existingMeta, meta, contentSeparator);
             }
@@ -451,11 +533,11 @@ namespace OrchardCore.ResourceManagement
         {
             var first = true;
 
-            foreach (var meta in this.GetRegisteredMetas())
+            foreach (var meta in DoGetRegisteredMetas())
             {
                 if (!first)
                 {
-                    builder.AppendHtml(Environment.NewLine);
+                    builder.AppendHtml(System.Environment.NewLine);
                 }
 
                 first = false;
@@ -468,11 +550,13 @@ namespace OrchardCore.ResourceManagement
         {
             var first = true;
 
-            foreach (var link in this.GetRegisteredLinks())
+            var registeredLinks = DoGetRegisteredLinks();
+            for (var i = 0; i < registeredLinks.Count; i++)
             {
+                var link = registeredLinks[i];
                 if (!first)
                 {
-                    builder.AppendHtml(Environment.NewLine);
+                    builder.AppendHtml(System.Environment.NewLine);
                 }
 
                 first = false;
@@ -481,48 +565,31 @@ namespace OrchardCore.ResourceManagement
             }
         }
 
-        public void RenderStylesheet(IHtmlContentBuilder builder, RequireSettings settings)
+        public void RenderStylesheet(IHtmlContentBuilder builder)
         {
             var first = true;
 
-            var styleSheets = this.GetRequiredResources("stylesheet");
+            var styleSheets = DoGetRequiredResources("stylesheet");
 
             foreach (var context in styleSheets)
             {
                 if (!first)
                 {
-                    builder.AppendHtml(Environment.NewLine);
+                    builder.AppendHtml(System.Environment.NewLine);
                 }
 
                 first = false;
 
-                builder.AppendHtml(context.GetHtmlContent(settings, "/"));
-            }
-        }
-
-        public void RenderHeadScript(IHtmlContentBuilder builder, RequireSettings settings)
-        {
-            var headScripts = this.GetRequiredResources("script");
-
-            var first = true;
-
-            foreach (var context in headScripts.Where(r => r.Settings.Location == ResourceLocation.Head))
-            {
-                if (!first)
-                {
-                    builder.AppendHtml(Environment.NewLine);
-                }
-
-                first = false;
-
-                builder.AppendHtml(context.GetHtmlContent(settings, "/"));
+                builder.AppendHtml(context.GetHtmlContent(_options.ContentBasePath));
             }
 
-            foreach (var context in GetRegisteredHeadScripts())
+            var registeredStyles = DoGetRegisteredStyles();
+            for (var i = 0; i < registeredStyles.Count; i++)
             {
+                var context = registeredStyles[i];
                 if (!first)
                 {
-                    builder.AppendHtml(Environment.NewLine);
+                    builder.AppendHtml(System.Environment.NewLine);
                 }
 
                 first = false;
@@ -531,29 +598,36 @@ namespace OrchardCore.ResourceManagement
             }
         }
 
-        public void RenderFootScript(IHtmlContentBuilder builder, RequireSettings settings)
+        public void RenderHeadScript(IHtmlContentBuilder builder)
         {
-            var footScripts = this.GetRequiredResources("script");
+            var headScripts = DoGetRequiredResources("script");
 
             var first = true;
 
-            foreach (var context in footScripts.Where(r => r.Settings.Location == ResourceLocation.Foot))
+            foreach (var context in headScripts)
             {
+                if (context.Settings.Location != ResourceLocation.Head)
+                {
+                    continue;
+                }
+
                 if (!first)
                 {
-                    builder.AppendHtml(Environment.NewLine);
+                    builder.AppendHtml(System.Environment.NewLine);
                 }
 
                 first = false;
 
-                builder.AppendHtml(context.GetHtmlContent(settings, "/"));
+                builder.AppendHtml(context.GetHtmlContent(_options.ContentBasePath));
             }
 
-            foreach (var context in GetRegisteredFootScripts())
+            var registeredHeadScripts = DoGetRegisteredHeadScripts();
+            for (var i = 0; i < registeredHeadScripts.Count; i++)
             {
+                var context = registeredHeadScripts[i];
                 if (!first)
                 {
-                    builder.AppendHtml(Environment.NewLine);
+                    builder.AppendHtml(System.Environment.NewLine);
                 }
 
                 first = false;
@@ -562,45 +636,122 @@ namespace OrchardCore.ResourceManagement
             }
         }
 
-        private class ResourceTypeName : IEquatable<ResourceTypeName>
+        public void RenderFootScript(IHtmlContentBuilder builder)
         {
-            private readonly string _type;
-            private readonly string _name;
+            var footScripts = DoGetRequiredResources("script");
 
-            public string Type { get { return _type; } }
-            public string Name { get { return _name; } }
+            var first = true;
+            foreach (var context in footScripts)
+            {
+                if (context.Settings.Location != ResourceLocation.Foot)
+                {
+                    continue;
+                }
+
+                if (!first)
+                {
+                    builder.AppendHtml(System.Environment.NewLine);
+                }
+
+                first = false;
+
+                builder.AppendHtml(context.GetHtmlContent(_options.ContentBasePath));
+            }
+
+            var registeredFootScripts = DoGetRegisteredFootScripts();
+            for (var i = 0; i < registeredFootScripts.Count; i++)
+            {
+                var context = registeredFootScripts[i];
+                if (!first)
+                {
+                    builder.AppendHtml(System.Environment.NewLine);
+                }
+
+                first = false;
+
+                builder.AppendHtml(context);
+            }
+        }
+
+        public void RenderLocalScript(RequireSettings settings, IHtmlContentBuilder builder)
+        {
+            var localScripts = DoGetRequiredResources("script");
+
+            var first = true;
+
+            foreach (var context in localScripts)
+            {
+                if (context.Settings.Location == ResourceLocation.Unspecified
+                    && (_localScripts.Add(context.Settings.Name) || context.Settings.Name == settings.Name))
+                {
+                    if (!first)
+                    {
+                        builder.AppendHtml(System.Environment.NewLine);
+                    }
+
+                    first = false;
+
+                    builder.AppendHtml(context.GetHtmlContent(_options.ContentBasePath));
+                }
+            }
+        }
+
+        private readonly struct ResourceTypeName : IEquatable<ResourceTypeName>
+        {
+            public readonly string Type;
+            public readonly string Name;
 
             public ResourceTypeName(string resourceType, string resourceName)
             {
-                _type = resourceType;
-                _name = resourceName;
+                Type = resourceType;
+                Name = resourceName;
             }
 
             public bool Equals(ResourceTypeName other)
             {
-                if (other == null)
-                {
-                    return false;
-                }
-
-                return _type.Equals(other._type) && _name.Equals(other._name);
+                return Type == other.Type && Name == other.Name;
             }
 
             public override int GetHashCode()
             {
-                return _type.GetHashCode() << 17 + _name.GetHashCode();
+                return HashCode.Combine(Type, Name);
             }
 
-            public override string ToString()
+            public override string ToString() => "(" + Type + ", " + Name + ")";
+        }
+
+        private string GetResourceKey(string releasePath, string debugPath)
+        {
+            if (_options.DebugMode && !string.IsNullOrWhiteSpace(debugPath))
             {
-                var sb = new StringBuilder();
-                sb.Append("(");
-                sb.Append(_type);
-                sb.Append(", ");
-                sb.Append(_name);
-                sb.Append(")");
-                return sb.ToString();
+                return debugPath;
             }
+            else
+            {
+                return releasePath;
+            }
+        }
+
+        private static class EmptyList<T>
+        {
+            public static readonly List<T> Instance = new List<T>();
+        }
+
+        private static class EmptyValueCollection<T>
+        {
+            public static readonly Dictionary<string, T>.ValueCollection Instance = new Dictionary<string, T>.ValueCollection(new Dictionary<string, T>());
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private static void ThrowArgumentNullException(string paramName)
+        {
+            ThrowArgumentNullException<object>(paramName);
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private static T ThrowArgumentNullException<T>(string paramName)
+        {
+            throw new ArgumentNullException(paramName);
         }
     }
 }

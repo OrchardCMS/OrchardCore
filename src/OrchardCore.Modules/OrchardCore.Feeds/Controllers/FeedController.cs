@@ -3,38 +3,36 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Feeds.Models;
 
 namespace OrchardCore.Feeds.Controllers
 {
-    public class FeedController : Controller, IUpdateModel
+    public class FeedController : Controller
     {
         private readonly IEnumerable<IFeedBuilderProvider> _feedFormatProviders;
         private readonly IEnumerable<IFeedQueryProvider> _feedQueryProviders;
         private readonly IFeedItemBuilder _feedItemBuilder;
         private readonly IServiceProvider _serviceProvider;
+        private readonly IUpdateModelAccessor _updateModelAccessor;
 
         public FeedController(
             IEnumerable<IFeedQueryProvider> feedQueryProviders,
             IEnumerable<IFeedBuilderProvider> feedFormatProviders,
             IFeedItemBuilder feedItemBuilder,
-            ILogger<FeedController> logger,
-            IServiceProvider serviceProvider)
+            IServiceProvider serviceProvider,
+            IUpdateModelAccessor updateModelAccessor)
         {
             _feedQueryProviders = feedQueryProviders;
             _feedFormatProviders = feedFormatProviders;
             _feedItemBuilder = feedItemBuilder;
             _serviceProvider = serviceProvider;
-            Logger = logger;
+            _updateModelAccessor = updateModelAccessor;
         }
-
-        ILogger Logger { get; }
 
         public async Task<ActionResult> Index(string format)
         {
-            var context = new FeedContext(this, format);
+            var context = new FeedContext(_updateModelAccessor.ModelUpdater, format);
 
             var bestFormatterMatch = _feedFormatProviders
                 .Select(provider => provider.Match(context))
@@ -49,8 +47,14 @@ namespace OrchardCore.Feeds.Controllers
 
             context.Builder = bestFormatterMatch.FeedBuilder;
 
-            var bestQueryMatch = _feedQueryProviders
-                .Select(provider => provider.Match(context))
+            var queryMatches = new List<FeedQueryMatch>();
+
+            foreach (var provider in _feedQueryProviders)
+            {
+                queryMatches.Add(await provider.MatchAsync(context));
+            }
+
+            var bestQueryMatch = queryMatches
                 .Where(match => match != null && match.FeedQuery != null)
                 .OrderByDescending(match => match.Priority)
                 .FirstOrDefault();

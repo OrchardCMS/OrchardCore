@@ -5,14 +5,14 @@ using System.Threading.Tasks;
 using Fluid;
 using Fluid.Ast;
 using Fluid.Tags;
-using OrchardCore.Environment.Cache;
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Environment.Cache;
 
 namespace OrchardCore.DynamicCache.Liquid
 {
     public class CacheDependencyTag : ArgumentsTag
     {
-        public override async Task<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context, FilterArgument[] arguments)
+        public override async ValueTask<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context, FilterArgument[] arguments)
         {
             if (arguments.Length < 1)
             {

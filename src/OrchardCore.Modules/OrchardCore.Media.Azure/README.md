@@ -1,3 +1,0 @@
-# Azure (OrchardCore.Azure)
-
-TBD

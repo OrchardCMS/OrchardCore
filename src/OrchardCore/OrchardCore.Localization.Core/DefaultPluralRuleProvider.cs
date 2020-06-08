@@ -4,8 +4,9 @@ using System.Globalization;
 namespace OrchardCore.Localization
 {
     /// <summary>
-    /// This class provides the pluralization rules based on the Unicode Common Locale Data Repository.
+    /// Provides pluralization rules based on the Unicode Common Locale Data Repository.
     /// c.f. http://www.unicode.org/cldr/charts/latest/supplemental/language_plural_rules.html
+    /// c.f. https://github.com/unicode-org/cldr/blob/master/common/supplemental/plurals.xml
     /// </summary>
     public class DefaultPluralRuleProvider : IPluralRuleProvider
     {
@@ -15,7 +16,7 @@ namespace OrchardCore.Localization
         {
             Rules = new Dictionary<string, PluralizationRuleDelegate>();
 
-            AddRule(new[] { "ay", "bo", "cgg", "dz", "fa", "id", "ja", "jbo", "ka", "kk", "km", "ko", "ky", "lo", "ms", "my", "sah", "su", "th", "tt", "ug", "vi", "wo", "zh-CN", "zh-HK", "zh-TW" }, n => 0);
+            AddRule(new[] { "ay", "bo", "cgg", "dz", "fa", "id", "ja", "jbo", "ka", "kk", "km", "ko", "ky", "lo", "ms", "my", "sah", "su", "th", "tt", "ug", "vi", "wo", "zh" }, n => 0);
             AddRule(new[] { "ach", "ak", "am", "arn", "br", "fil", "fr", "gun", "ln", "mfe", "mg", "mi", "oc", "pt-BR", "tg", "ti", "tr", "uz", "wa" }, n => (n > 1 ? 1 : 0));
             AddRule(new[] { "af", "an", "anp", "as", "ast", "az", "bg", "bn", "brx", "ca", "da", "de", "doi", "el", "en", "eo", "es", "es-AR", "et", "eu", "ff", "fi", "fo", "fur", "fy", "gl", "gu", "ha", "he", "hi", "hne", "hu", "hy", "ia", "it", "kl", "kn", "ku", "lb", "mai", "ml", "mn", "mni", "mr", "nah", "nap", "nb", "ne", "nl", "nn", "no", "nso", "or", "pa", "pap", "pms", "ps", "pt", "rm", "rw", "sat", "sco", "sd", "se", "si", "so", "son", "sq", "sv", "sw", "ta", "te", "tk", "ur", "yo" }, n => (n != 1 ? 1 : 0));
             AddRule(new[] { "is" }, n => (n % 10 != 1 || n % 100 == 11 ? 1 : 0));
@@ -38,6 +39,22 @@ namespace OrchardCore.Localization
             AddRule(new[] { "ar" }, n => (n == 0 ? 0 : n == 1 ? 1 : n == 2 ? 2 : n % 100 >= 3 && n % 100 <= 10 ? 3 : n % 100 >= 11 ? 4 : 5));
         }
 
+        /// <inheritdocs />
+        public int Order => 0;
+
+        /// <inheritdocs />
+        public bool TryGetRule(CultureInfo culture, out PluralizationRuleDelegate rule)
+        {
+            var cultureForPlural = GetBaseCulture(culture);
+
+            if (Rules.TryGetValue(cultureForPlural.Name, out rule))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
         private static void AddRule(string[] cultures, PluralizationRuleDelegate rule)
         {
             foreach (var culture in cultures)
@@ -46,23 +63,17 @@ namespace OrchardCore.Localization
             }
         }
 
-        public int Order => 0;
-
-        bool IPluralRuleProvider.TryGetRule(CultureInfo culture, out PluralizationRuleDelegate rule)
+        /// <example>zh-Hans-CN -> zh-Hans -> zh</example>
+        private CultureInfo GetBaseCulture(CultureInfo culture)
         {
-            rule = null;
+            var returnCulture = culture;
 
-            if (Rules.TryGetValue(culture.Name, out rule))
+            while (returnCulture.Parent.Name != "") // Stop at Invariant culture
             {
-                return true;
+                returnCulture = returnCulture.Parent;
             }
 
-            if (culture.Parent != null && Rules.TryGetValue(culture.Parent.Name, out rule))
-            {
-                return true;
-            }
-
-            return false;
+            return returnCulture;
         }
     }
 }

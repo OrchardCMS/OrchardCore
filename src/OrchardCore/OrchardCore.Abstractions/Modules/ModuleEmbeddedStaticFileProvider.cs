@@ -10,7 +10,7 @@ namespace OrchardCore.Modules
     /// This custom <see cref="IFileProvider"/> implementation provides the file contents
     /// of embedded files in Module assemblies whose path is under a Module 'wwwroot' folder.
     /// </summary>
-    public class ModuleEmbeddedStaticFileProvider : IFileProvider
+    public class ModuleEmbeddedStaticFileProvider : IModuleStaticFileProvider
     {
         private readonly IApplicationContext _applicationContext;
 
@@ -44,7 +44,7 @@ namespace OrchardCore.Modules
                 var module = path.Substring(0, index);
 
                 // Check if it is an existing module.
-                if (application.Modules.Any(m=> m.Name == module))
+                if (application.Modules.Any(m => m.Name == module))
                 {
                     // Resolve the embedded file subpath: "wwwroot/**/*.*"
                     var fileSubPath = Module.WebRoot + path.Substring(index + 1);

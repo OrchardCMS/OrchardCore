@@ -1,9 +1,9 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.Environment.Commands;
 using System.IO;
-using Xunit;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
-using OrchardCore.Tests.Stubs;
+using OrchardCore.Environment.Commands;
+using OrchardCore.Localization;
+using Xunit;
 
 namespace OrchardCore.Tests.Commands
 {
@@ -17,7 +17,8 @@ namespace OrchardCore.Tests.Commands
 
             services.AddScoped<ICommandManager, DefaultCommandManager>();
             services.AddScoped<ICommandHandler, MyCommand>();
-            services.AddScoped<IStringLocalizer<DefaultCommandManager>, NullStringLocalizer<DefaultCommandManager>>();
+            services.AddSingleton<IStringLocalizerFactory, NullStringLocalizerFactory>();
+            services.AddTransient(typeof(IStringLocalizer<>), typeof(StringLocalizer<>));
 
             _manager = services.BuildServiceProvider().GetService<ICommandManager>();
         }
@@ -40,7 +41,9 @@ namespace OrchardCore.Tests.Commands
 
         public class MyCommand : DefaultCommandHandler
         {
-            public MyCommand() : base(null) { }
+            public MyCommand() : base(null)
+            {
+            }
 
             public string FooBar()
             {

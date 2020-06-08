@@ -11,7 +11,7 @@ using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Menu.Models;
 using OrchardCore.Menu.ViewModels;
 
-namespace OrchardCore.Lists.Drivers
+namespace OrchardCore.Menu.Drivers
 {
     public class MenuPartDisplayDriver : ContentPartDisplayDriver<MenuPart>
     {
@@ -68,7 +68,7 @@ namespace OrchardCore.Lists.Drivers
         {
             ContentItem menuItem = null;
 
-            foreach(var index in indexes)
+            foreach (var index in indexes)
             {
                 menuItem = menuItems.MenuItems[index];
                 menuItems = menuItem.As<MenuItemsListPart>();
@@ -82,7 +82,7 @@ namespace OrchardCore.Lists.Drivers
 
             return newObj;
         }
-        
+
         private JObject ProcessItem(MenuItemsListPart originalItems, JObject item)
         {
             var contentItem = GetMenuItemAt(originalItems, item["index"].ToString().Split('-').Select(x => Convert.ToInt32(x)).ToArray());

@@ -8,13 +8,12 @@ namespace OrchardCore.Recipes
 {
     public class AdminMenu : INavigationProvider
     {
+        private readonly IStringLocalizer S;
 
         public AdminMenu(IStringLocalizer<AdminMenu> localizer)
         {
-            T = localizer;
+            S = localizer;
         }
-
-        public IStringLocalizer T { get; set; }
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
@@ -23,9 +22,9 @@ namespace OrchardCore.Recipes
                 return Task.CompletedTask;
             }
 
-            builder.Add(T["Configuration"], configuration => configuration
+            builder.Add(S["Configuration"], configuration => configuration
                 .AddClass("recipes").Id("recipes")
-                .Add(T["Recipes"], "1", recipes => recipes
+                .Add(S["Recipes"], S["Recipes"].PrefixPosition(), recipes => recipes
                     .Permission(StandardPermissions.SiteOwner)
                     .Action("Index", "Admin", new { area = "OrchardCore.Recipes" })
                     .LocalNav())

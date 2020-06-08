@@ -1,8 +1,8 @@
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
-using OrchardCore.Autoroute.Services;
 using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Routing;
 using OrchardCore.Liquid;
 
 namespace OrchardCore.Autoroute.Liquid
@@ -24,15 +24,14 @@ namespace OrchardCore.Autoroute.Liquid
             {
                 return new LiquidPropertyAccessor(async alias =>
                 {
-                    if (!alias.StartsWith("/"))
+                    if (!alias.StartsWith('/'))
                     {
                         alias = "/" + alias;
                     }
 
-                    string contentItemId;
-                    if (_autorouteEntries.TryGetContentItemId(alias, out contentItemId))
+                    if (_autorouteEntries.TryGetEntryByPath(alias, out var entry))
                     {
-                        return FluidValue.Create(await _contentManager.GetAsync(contentItemId));
+                        return FluidValue.Create(await _contentManager.GetAsync(entry.ContentItemId, entry.JsonPath));
                     }
 
                     return NilValue.Instance;

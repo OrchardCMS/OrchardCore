@@ -1,18 +1,21 @@
-﻿using System;
+using System;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 
 namespace OrchardCore.ResourceManagement.TagHelpers
 {
-
     [HtmlTargetElement("link", Attributes = SrcAttributeName)]
     public class LinkTagHelper : TagHelper
     {
         private const string SrcAttributeName = "asp-src";
+        private const string AppendVersionAttributeName = "asp-append-version";
 
         public string Rel { get; set; }
 
         [HtmlAttributeName(SrcAttributeName)]
         public string Src { get; set; }
+
+        [HtmlAttributeName(AppendVersionAttributeName)]
+        public bool? AppendVersion { get; set; }
 
         public string Title { get; set; }
 
@@ -56,7 +59,12 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                 linkEntry.Type = Type;
             }
 
-            foreach(var attribute in output.Attributes)
+            if (AppendVersion.HasValue)
+            {
+                linkEntry.AppendVersion = AppendVersion.Value;
+            }
+
+            foreach (var attribute in output.Attributes)
             {
                 if (String.Equals(attribute.Name, "href", StringComparison.OrdinalIgnoreCase))
                 {

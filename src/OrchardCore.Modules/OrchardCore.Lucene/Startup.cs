@@ -3,19 +3,26 @@ using Lucene.Net.Analysis.Standard;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+using OrchardCore.Admin;
 using OrchardCore.BackgroundTasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentTypes.Editors;
+using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.Navigation;
+using OrchardCore.Lucene.Controllers;
+using OrchardCore.Lucene.Deployment;
 using OrchardCore.Lucene.Drivers;
 using OrchardCore.Lucene.Handlers;
+using OrchardCore.Lucene.Model;
 using OrchardCore.Lucene.Recipes;
 using OrchardCore.Lucene.Services;
 using OrchardCore.Lucene.Settings;
 using OrchardCore.Modules;
+using OrchardCore.Mvc.Core.Utilities;
+using OrchardCore.Navigation;
 using OrchardCore.Queries;
 using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
@@ -28,9 +35,19 @@ namespace OrchardCore.Lucene
     /// </summary>
     public class Startup : StartupBase
     {
+        private readonly AdminOptions _adminOptions;
+
+        public Startup(IOptions<AdminOptions> adminOptions)
+        {
+            _adminOptions = adminOptions.Value;
+        }
+
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton<LuceneIndexingState>();
+            services.AddSingleton<LuceneIndexSettingsService>();
+            services.AddSingleton<LuceneIndexManager>();
+            services.AddSingleton<LuceneAnalyzerManager>();
             services.AddScoped<LuceneIndexingService>();
             services.AddScoped<ISearchQueryService, SearchQueryService>();
 
@@ -38,8 +55,6 @@ namespace OrchardCore.Lucene
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, ContentPartFieldIndexSettingsDisplayDriver>();
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddScoped<IPermissionProvider, Permissions>();
-            services.AddSingleton<LuceneIndexManager>();
-            services.AddSingleton<LuceneAnalyzerManager>();
 
             services.Configure<LuceneOptions>(o =>
                 o.Analyzers.Add(new LuceneAnalyzer(LuceneSettings.StandardAnalyzer,
@@ -55,30 +70,71 @@ namespace OrchardCore.Lucene
             services.AddScoped<IQuerySource, LuceneQuerySource>();
             services.AddScoped<LuceneQuerySource>();
             services.AddRecipeExecutionStep<LuceneIndexStep>();
+
+            services.AddScoped<IShapeTableProvider, SearchShapesTableProvider>();
+            services.AddShapeAttributes<SearchShapes>();
         }
 
-        public override void Configure(IApplicationBuilder app, IRouteBuilder routes, IServiceProvider serviceProvider)
+        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            routes.MapAreaRoute(
+            routes.MapAreaControllerRoute(
                 name: "Lucene.Search",
                 areaName: "OrchardCore.Lucene",
-                template: "Search/{id?}",
-                defaults: new { controller = "Search", action = "Index", id = "" }
+                pattern: "Search",
+                defaults: new { controller = "Search", action = "Search" }
             );
 
-            routes.MapAreaRoute(
-                name: "Api.Lucene.Content",
+            var adminControllerName = typeof(AdminController).ControllerName();
+
+            routes.MapAreaControllerRoute(
+                name: "Lucene.Index",
                 areaName: "OrchardCore.Lucene",
-                template: "api/lucene/content",
-                defaults: new { controller = "Api", action = "Content" }
+                pattern: _adminOptions.AdminUrlPrefix + "/Lucene/Index",
+                defaults: new { controller = adminControllerName, action = nameof(AdminController.Index) }
             );
 
-            routes.MapAreaRoute(
-                name: "Api.Lucene.Documents",
+            routes.MapAreaControllerRoute(
+                name: "Lucene.Delete",
                 areaName: "OrchardCore.Lucene",
-                template: "api/lucene/documents",
-                defaults: new { controller = "Api", action = "Documents" }
+                pattern: _adminOptions.AdminUrlPrefix + "/Lucene/Delete/{id}",
+                defaults: new { controller = adminControllerName, action = nameof(AdminController.Delete) }
             );
+
+            routes.MapAreaControllerRoute(
+                name: "Lucene.Query",
+                areaName: "OrchardCore.Lucene",
+                pattern: _adminOptions.AdminUrlPrefix + "/Lucene/Query",
+                defaults: new { controller = adminControllerName, action = nameof(AdminController.Query) }
+            );
+
+            routes.MapAreaControllerRoute(
+                name: "Lucene.Rebuild",
+                areaName: "OrchardCore.Lucene",
+                pattern: _adminOptions.AdminUrlPrefix + "/Lucene/Rebuild/{id}",
+                defaults: new { controller = adminControllerName, action = nameof(AdminController.Rebuild) }
+            );
+
+            routes.MapAreaControllerRoute(
+                name: "Lucene.Reset",
+                areaName: "OrchardCore.Lucene",
+                pattern: _adminOptions.AdminUrlPrefix + "/Lucene/Reset/{id}",
+                defaults: new { controller = adminControllerName, action = nameof(AdminController.Reset) }
+            );
+        }
+    }
+
+    [RequireFeatures("OrchardCore.Deployment")]
+    public class DeploymentStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddTransient<IDeploymentSource, LuceneIndexDeploymentSource>();
+            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<LuceneIndexDeploymentStep>());
+            services.AddScoped<IDisplayDriver<DeploymentStep>, LuceneIndexDeploymentStepDriver>();
+
+            services.AddTransient<IDeploymentSource, LuceneSettingsDeploymentSource>();
+            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<LuceneSettingsDeploymentStep>());
+            services.AddScoped<IDisplayDriver<DeploymentStep>, LuceneSettingsDeploymentStepDriver>();
         }
     }
 

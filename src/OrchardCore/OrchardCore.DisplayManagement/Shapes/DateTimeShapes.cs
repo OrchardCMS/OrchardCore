@@ -2,6 +2,7 @@ using System;
 using System.Globalization;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
+using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Descriptors;
@@ -9,24 +10,27 @@ using OrchardCore.Modules;
 
 namespace OrchardCore.DisplayManagement.Shapes
 {
+    [Feature(Application.DefaultFeatureId)]
     public class DateTimeShapes : IShapeAttributeProvider
     {
         private const string LongDateTimeFormat = "dddd, MMMM d, yyyy h:mm:ss tt";
         private readonly IClock _clock;
         private readonly ILocalClock _localClock;
+        private readonly IStringLocalizer S;
+        private readonly IHtmlLocalizer H;
 
         public DateTimeShapes(
             IClock clock,
-            IPluralStringLocalizer<DateTimeShapes> localizer,
+            IStringLocalizer<DateTimeShapes> localizer,
+            IHtmlLocalizer<DateTimeShapes> htmlLocalizer,
             ILocalClock localClock
             )
         {
             _localClock = localClock;
             _clock = clock;
-            T = localizer;
+            S = localizer;
+            H = htmlLocalizer;
         }
-
-        IPluralStringLocalizer T { get; }
 
         [Shape]
         public IHtmlContent TimeSpan(IHtmlHelper Html, DateTime? Utc, DateTime? Origin)
@@ -37,43 +41,43 @@ namespace OrchardCore.DisplayManagement.Shapes
             var time = _clock.UtcNow - Utc.Value;
 
             if (time.TotalYears() > 1)
-                return Html.Raw(Html.Encode(T["1 year ago", "{0} years ago", time.TotalYears(), time.TotalYears()].Value));
+                return H.Plural(time.TotalYears(), "1 year ago", "{0} years ago");
             if (time.TotalYears() < -1)
-                return Html.Raw(Html.Encode(T["in 1 year", "in {0} years", -time.TotalYears(), -time.TotalYears()].Value));
+                return H.Plural(-time.TotalYears(), "in 1 year", "in {0} years");
 
             if (time.TotalMonths() > 1)
-                return Html.Raw(Html.Encode(T["1 month ago", "{0} months ago", time.TotalMonths(), time.TotalMonths()].Value));
+                return H.Plural(time.TotalMonths(), "1 month ago", "{0} months ago");
             if (time.TotalMonths() < -1)
-                return Html.Raw(Html.Encode(T["in 1 month", "in {0} months", -time.TotalMonths(), -time.TotalMonths()].Value));
+                return H.Plural(-time.TotalMonths(), "in 1 month", "in {0} months");
 
             if (time.TotalWeeks() > 1)
-                return Html.Raw(Html.Encode(T["1 week ago", "{0} weeks ago", time.TotalWeeks(), time.TotalWeeks()].Value));
+                return H.Plural(time.TotalWeeks(), "1 week ago", "{0} weeks ago");
             if (time.TotalWeeks() < -1)
-                return Html.Raw(Html.Encode(T["in 1 week", "in {0} weeks", -time.TotalWeeks(), -time.TotalWeeks()].Value));
+                return H.Plural(-time.TotalWeeks(), "in 1 week", "in {0} weeks");
 
             if (time.TotalHours > 24)
-                return Html.Raw(Html.Encode(T["1 day ago", "{0} days ago", time.Days, time.Days].Value));
+                return H.Plural(time.Days, "1 day ago", "{0} days ago");
             if (time.TotalHours < -24)
-                return Html.Raw(Html.Encode(T["in 1 day", "in {0} days", -time.Days, -time.Days].Value));
+                return H.Plural(-time.Days, "in 1 day", "in {0} days");
 
             if (time.TotalMinutes > 60)
-                return Html.Raw(Html.Encode(T["1 hour ago", "{0} hours ago", time.Hours, time.Hours].Value));
+                return H.Plural(time.Hours, "1 hour ago", "{0} hours ago");
             if (time.TotalMinutes < -60)
-                return Html.Raw(Html.Encode(T["in 1 hour", "in {0} hours", -time.Hours, -time.Hours].Value));
+                return H.Plural(-time.Hours, "in 1 hour", "in {0} hours");
 
             if (time.TotalSeconds > 60)
-                return Html.Raw(Html.Encode(T["1 minute ago", "{0} minutes ago", time.Minutes, time.Minutes].Value));
+                return H.Plural(time.Minutes, "1 minute ago", "{0} minutes ago");
             if (time.TotalSeconds < -60)
-                return Html.Raw(Html.Encode(T["in 1 minute", "in {0} minutes", -time.Minutes, -time.Minutes].Value));
+                return H.Plural(-time.Minutes, "in 1 minute", "in {0} minutes");
 
             if (time.TotalSeconds > 10)
-                return Html.Raw(Html.Encode(T["1 second ago", "{0} seconds ago", time.Seconds, time.Seconds].Value)); //aware that the singular won't be used
+                return H.Plural(time.Seconds, "1 second ago", "{0} seconds ago"); //aware that the singular won't be used
             if (time.TotalSeconds < -10)
-                return Html.Raw(Html.Encode(T["in 1 second", "in {0} seconds", -time.Seconds, -time.Seconds].Value));
+                return H.Plural(-time.Seconds, "in 1 second", "in {0} seconds");
 
             return time.TotalMilliseconds > 0
-                       ? Html.Raw(Html.Encode(T["a moment ago", "a moment ago", 0]))
-                       : Html.Raw(Html.Encode(T["in a moment", "in a moment", 0]));
+                       ? H["a moment ago"]
+                       : H["in a moment"];
         }
 
         [Shape]
@@ -84,9 +88,7 @@ namespace OrchardCore.DisplayManagement.Shapes
 
             if (Format == null)
             {
-                // We use the Plural localizer so we don't need to resolve another one.
-                // Internally it will use the string localizer by passing 0 as count.
-                Format = T[LongDateTimeFormat, LongDateTimeFormat, 0].Value;
+                Format = S[LongDateTimeFormat].Value;
             }
 
             return Html.Raw(Html.Encode(zonedTime.ToString(Format, CultureInfo.CurrentUICulture)));

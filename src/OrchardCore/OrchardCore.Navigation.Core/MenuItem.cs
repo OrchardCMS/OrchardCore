@@ -1,13 +1,13 @@
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Security.Permissions;
-using System.Collections.Generic;
 
 namespace OrchardCore.Navigation
 {
     /// <summary>
-    /// Represents a menu item descrbibed by an <see cref="INavigationProvider"/> implementation.
-    /// A menu item can desbribe child menu items.
+    /// Represents a menu item described by an <see cref="INavigationProvider"/> implementation.
+    /// A menu item can describe child menu items.
     /// </summary>
     public class MenuItem
     {
@@ -44,6 +44,11 @@ namespace OrchardCore.Navigation
         /// The relative position of the menu item among its siblings. e.g., 10, 0, "after".
         /// </summary>
         public string Position { get; set; }
+
+        /// <summary>
+        /// The priority of the menu item in case there are other menu items that could be marked as selected for the request.
+        /// </summary>
+        public int Priority { get; set; }
 
         /// <summary>
         /// Whether the menu item should link to the same url as its first child.

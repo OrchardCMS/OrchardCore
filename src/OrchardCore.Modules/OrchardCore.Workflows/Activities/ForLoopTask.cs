@@ -10,17 +10,19 @@ namespace OrchardCore.Workflows.Activities
     public class ForLoopTask : TaskActivity
     {
         private readonly IWorkflowScriptEvaluator _scriptEvaluator;
+        private readonly IStringLocalizer S;
 
         public ForLoopTask(IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer<ForLoopTask> localizer)
         {
             _scriptEvaluator = scriptEvaluator;
-            T = localizer;
+            S = localizer;
         }
 
-        private IStringLocalizer T { get; }
-
         public override string Name => nameof(ForLoopTask);
-        public override LocalizedString Category => T["Control Flow"];
+
+        public override LocalizedString DisplayText => S["For Loop Task"];
+
+        public override LocalizedString Category => S["Control Flow"];
 
         /// <summary>
         /// An expression evaluating to the start value.
@@ -37,6 +39,15 @@ namespace OrchardCore.Workflows.Activities
         public WorkflowExpression<double> To
         {
             get => GetProperty(() => new WorkflowExpression<double>("10"));
+            set => SetProperty(value);
+        }
+
+        /// <summary>
+        /// An expression evaluating to the end value.
+        /// </summary>
+        public WorkflowExpression<double> Step
+        {
+            get => GetProperty(() => new WorkflowExpression<double>("1"));
             set => SetProperty(value);
         }
 
@@ -60,7 +71,7 @@ namespace OrchardCore.Workflows.Activities
 
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            return Outcomes(T["Iterate"], T["Done"]);
+            return Outcomes(S["Iterate"], S["Done"]);
         }
 
         public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
@@ -75,7 +86,12 @@ namespace OrchardCore.Workflows.Activities
                 to = await _scriptEvaluator.EvaluateAsync(To, workflowContext);
             }
 
-            if(Index < from)
+            if (!double.TryParse(Step.Expression, out var step))
+            {
+                step = await _scriptEvaluator.EvaluateAsync(Step, workflowContext);
+            }
+
+            if (Index < from)
             {
                 Index = from;
             }
@@ -84,7 +100,7 @@ namespace OrchardCore.Workflows.Activities
             {
                 workflowContext.LastResult = Index;
                 workflowContext.Properties[LoopVariableName] = Index;
-                Index++;
+                Index += step;
                 return Outcomes("Iterate");
             }
             else

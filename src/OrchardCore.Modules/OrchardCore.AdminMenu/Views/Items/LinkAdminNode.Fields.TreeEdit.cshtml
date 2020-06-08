@@ -1,0 +1,87 @@
+@model LinkAdminNodeViewModel
+
+<style asp-src="~/OrchardCore.AdminMenu/Styles/admin-menu.min.css" debug-src="~/OrchardCore.AdminMenu/Styles/admin-menu.css" at="Head" depends-on="admin"></style>
+<style asp-src="~/OrchardCore.AdminMenu/Styles/admin-menu-icon-picker.min.css" debug-src="~/OrchardCore.AdminMenu/Styles/admin-menu-icon-picker.css" at="Head" depends-on="admin"></style>
+
+<script asp-name="vuejs" at="Foot"></script>
+<script asp-src="~/OrchardCore.AdminMenu/Scripts/admin-menu.min.js" debug-src="~/OrchardCore.AdminMenu/Scripts/admin-menu.js" at="Foot" depends-on="admin"></script>
+<script asp-src="~/OrchardCore.AdminMenu/Scripts/admin-menu-icon-picker.min.js" debug-src="~/OrchardCore.AdminMenu/Scripts/admin-menu-icon-picker.js" at="Foot" depends-on="admin"></script>
+
+<h5>@T["Link"]</h5>
+
+<div class="form-group" asp-validation-class-for="LinkText">
+    <label asp-for="LinkText">@T["Link Text"]</label>
+    <input asp-for="LinkText" class="form-control" />
+    <span asp-validation-for="LinkText"></span>
+    <span class="hint">@T["The Link Text as it will be shown in the tree."]</span>
+</div>
+
+<div class="form-group">
+    <label asp-for="LinkUrl">@T["Link Url"]</label>
+    <input asp-for="LinkUrl" class="form-control" />
+    <span class="hint">@T["The url of the link. A link will be shown only if it or one of their children have a url. The url will be relative to the root of the admin site"]</span>
+</div>
+
+<div class="form-group">
+    <label asp-for="IconClass">@T["Icon"]</label>
+
+    <div class="input-group mb-3">
+        <div class="btn-toolbar" role="toolbar" aria-label="Icon Selector Toolbar">
+
+            <div class="btn-group input-group mr-2" role="group" aria-label="Icon Selector">
+                <button type="button" class="btn btn-primary sample-icon">
+                    <i id="@("sample-icon-" + Html.IdFor(m=>m.IconClass))" class="@Model.IconClass"></i>
+                </button>
+                <input type="hidden" name="@Html.NameFor(m=>m.IconClass)" id="@Html.IdFor(m => m.IconClass)" value="@Model.IconClass" />
+                <button type="button"
+                        class="btn btn-primary icon-picker-trigger"
+                        data-related-node="@Html.IdFor(m => m.IconClass)">
+                    @T["Pick"]
+                </button>
+            </div>
+
+            <div class="btn-group" role="group" aria-label="Remove Icon Button">
+                <button type="button" class="btn btn-secondary remove-icon" data-related-node="@Html.IdFor(m => m.IconClass)">
+                    <div style="pointer-events:none;">
+                        <i class="fa fa-trash"></i>
+                    </div>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <span class="hint">@T["Select an icon to display when this link is a first level menu item."]</span>
+</div>
+
+<div id="iconPickerVue">
+    <div class="modal" id="iconPickerModal" tabindex="-1" role="dialog" aria-labelledby="iconPickerModal" aria-hidden="true">
+        <div class="modal-dialog" role="dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">@T["Pick an icon"]</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body p-0">
+                    <div id="inline-picker" class="icp icp-auto" data-placement="inline"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script at="Foot">
+    $(function () {
+        $('.icon-picker-trigger').on('click', function (e) {
+            var node = $(e.target).data('related-node');
+            iconPickerVue.show(node, 'sample-icon-' + node);
+        });
+
+        $('button.remove-icon').on('click', function (e) {
+            var node = $(e.target).data('related-node');
+            $('#' + node).val('');
+            $('#sample-icon-' + node).replaceWith('<i id="sample-icon-' + node + '" class=" "></i>'); // changing the class to empty string is not enough.
+        });
+    });
+</script>

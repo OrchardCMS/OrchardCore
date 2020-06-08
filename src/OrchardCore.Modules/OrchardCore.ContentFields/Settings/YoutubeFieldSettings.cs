@@ -6,5 +6,6 @@ namespace OrchardCore.ContentFields.Settings
         public string Label { get; set; }
         public int Width { get; set; }
         public int Height { get; set; }
+        public bool Required { get; set; }
     }
 }

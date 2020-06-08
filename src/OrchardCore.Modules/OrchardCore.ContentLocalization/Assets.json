@@ -1,0 +1,9 @@
+[
+  {
+    "generateSourceMaps": false,
+    "inputs": [
+      "Assets/contentLocalization.scss"
+    ],
+    "output": "wwwroot/Styles/contentLocalization.css"
+  }
+]

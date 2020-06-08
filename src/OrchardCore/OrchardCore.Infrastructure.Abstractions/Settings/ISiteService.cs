@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Primitives;
 
 namespace OrchardCore.Settings
@@ -9,7 +9,12 @@ namespace OrchardCore.Settings
     public interface ISiteService
     {
         /// <summary>
-        /// Return the site settings for the current tenant.
+        /// Returns the site settings for update.
+        /// </summary>
+        Task<ISite> LoadSiteSettingsAsync();
+
+        /// <summary>
+        /// Return the site settings for the current tenant in read-only.
         /// </summary>
         Task<ISite> GetSiteSettingsAsync();
 

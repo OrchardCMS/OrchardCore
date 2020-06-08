@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using OrchardCore.Environment.Extensions.Features;
 
 namespace OrchardCore.Environment.Extensions

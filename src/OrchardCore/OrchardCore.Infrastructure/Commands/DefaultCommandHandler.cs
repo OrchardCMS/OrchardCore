@@ -10,12 +10,13 @@ namespace OrchardCore.Environment.Commands
 {
     public abstract class DefaultCommandHandler : ICommandHandler
     {
+        protected readonly IStringLocalizer S;
+
         protected DefaultCommandHandler(IStringLocalizer localizer)
         {
-            T = localizer;
+            S = localizer;
         }
 
-        public IStringLocalizer T { get; set; }
         public CommandContext Context { get; set; }
 
         public Task ExecuteAsync(CommandContext context)
@@ -41,11 +42,11 @@ namespace OrchardCore.Environment.Commands
             PropertyInfo propertyInfo = GetType().GetProperty(commandSwitch.Key, BindingFlags.Instance | BindingFlags.Public | BindingFlags.IgnoreCase);
             if (propertyInfo == null)
             {
-                throw new InvalidOperationException(T["Switch \"{0}\" was not found", commandSwitch.Key]);
+                throw new InvalidOperationException(S["Switch \"{0}\" was not found", commandSwitch.Key]);
             }
             if (!propertyInfo.GetCustomAttributes(typeof(OrchardSwitchAttribute), false).Any())
             {
-                throw new InvalidOperationException(T["A property \"{0}\" exists but is not decorated with \"{1}\"", commandSwitch.Key, typeof(OrchardSwitchAttribute).Name]);
+                throw new InvalidOperationException(S["A property \"{0}\" exists but is not decorated with \"{1}\"", commandSwitch.Key, typeof(OrchardSwitchAttribute).Name]);
             }
 
             // Set the value
@@ -54,22 +55,16 @@ namespace OrchardCore.Environment.Commands
                 object value = ConvertToType(propertyInfo.PropertyType, commandSwitch.Value);
                 propertyInfo.SetValue(this, value, null /*index*/);
             }
-            catch (Exception ex)
+            catch (Exception ex) when (!ex.IsFatal())
             {
-                if (ex.IsFatal())
-                {
-                    throw;
-                }
-
                 //TODO: (ngm) fix this message
-                string message = T["Error converting value \"{0}\" to \"{1}\" for switch \"{2}\"",
+                string message = S["Error converting value \"{0}\" to \"{1}\" for switch \"{2}\"",
                     commandSwitch.Value,
                     propertyInfo.PropertyType.FullName,
                     commandSwitch.Key];
                 throw new InvalidOperationException(message, ex);
             }
         }
-
 
         private async Task InvokeAsync(CommandContext context)
         {
@@ -79,10 +74,23 @@ namespace OrchardCore.Environment.Commands
             object[] invokeParameters = GetInvokeParametersForMethod(context.CommandDescriptor.MethodInfo, arguments);
             if (invokeParameters == null)
             {
-                throw new InvalidOperationException(T["Command arguments \"{0}\" don't match command definition", string.Join(" ", arguments)]);
+                throw new InvalidOperationException(S["Command arguments \"{0}\" don't match command definition", string.Join(" ", arguments)]);
             }
 
             this.Context = context;
+
+            if (context.CommandDescriptor.MethodInfo.ReturnType == typeof(Task<string>))
+            {
+                var taskResult = await (Task<string>)context.CommandDescriptor.MethodInfo.Invoke(this, invokeParameters);
+                await context.Output.WriteAsync(taskResult);
+                return;
+            }
+            else if (typeof(Task).IsAssignableFrom(context.CommandDescriptor.MethodInfo.ReturnType))
+            {
+                await (Task)context.CommandDescriptor.MethodInfo.Invoke(this, invokeParameters);
+                return;
+            }
+
             var result = context.CommandDescriptor.MethodInfo.Invoke(this, invokeParameters);
             if (result is string)
             {
@@ -157,7 +165,7 @@ namespace OrchardCore.Environment.Commands
             {
                 if (!supportedSwitches.Contains(commandSwitch))
                 {
-                    throw new InvalidOperationException(T["Method \"{0}\" does not support switch \"{1}\".", methodInfo.Name, commandSwitch]);
+                    throw new InvalidOperationException(S["Method \"{0}\" does not support switch \"{1}\".", methodInfo.Name, commandSwitch]);
                 }
             }
         }

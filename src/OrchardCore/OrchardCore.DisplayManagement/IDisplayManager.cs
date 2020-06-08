@@ -1,5 +1,5 @@
-using OrchardCore.DisplayManagement.ModelBinding;
 using System.Threading.Tasks;
+using OrchardCore.DisplayManagement.ModelBinding;
 
 namespace OrchardCore.DisplayManagement
 {

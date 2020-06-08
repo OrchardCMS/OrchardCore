@@ -1,0 +1,28 @@
+#graphiql .editorWrap {
+    overflow-x: unset;
+}
+
+.graphiql-explorer-root {
+    height: 100%;
+}
+
+.left-sidebar-compact #graphiql {
+    left: 48px;
+    transition: left 0.2s ease-in-out, width 0.2s ease-in-out;
+}
+
+.graphiql-container .docExplorerShow {
+    white-space: nowrap;
+}
+
+.graphiql-container .doc-explorer-title, .graphiql-container .history-title, .graphiql-container .doc-explorer-back {
+    overflow: unset;
+}
+
+.graphiql-container .topBar {
+    height: unset;
+}
+
+.graphiql-explorer-node svg{
+    margin-left: 0 !important;
+}

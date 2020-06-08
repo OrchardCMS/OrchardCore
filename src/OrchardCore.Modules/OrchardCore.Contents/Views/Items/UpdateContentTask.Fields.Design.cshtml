@@ -1,0 +1,7 @@
+@model ContentTaskViewModel<UpdateContentTask>
+
+<header>
+    <h4><i class="fa fa-pencil-square-o"></i>@Model.Activity.GetTitleOrDefault(() => T["Update Content"])</h4>
+</header>
+
+<em>@Model.Activity.ContentType</em>

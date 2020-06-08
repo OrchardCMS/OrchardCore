@@ -4,15 +4,16 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 using OrchardCore.Data;
+using OrchardCore.Email;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Modules;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Setup.Services;
 using OrchardCore.Setup.ViewModels;
-using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.Modules;
-using Microsoft.Extensions.Logging;
 
 namespace OrchardCore.Setup.Controllers
 {
@@ -21,10 +22,11 @@ namespace OrchardCore.Setup.Controllers
         private readonly ISetupService _setupService;
         private readonly ShellSettings _shellSettings;
         private readonly IShellHost _shellHost;
-        private readonly IShellSettingsManager _shellSettingsManager;
         private readonly IEnumerable<DatabaseProvider> _databaseProviders;
         private readonly IClock _clock;
-        private readonly ILogger<SetupController> _logger;
+        private readonly ILogger _logger;
+        private readonly IStringLocalizer S;
+        private readonly IEmailAddressValidator _emailAddressValidator;
 
         public SetupController(
             ILogger<SetupController> logger,
@@ -33,28 +35,25 @@ namespace OrchardCore.Setup.Controllers
             ShellSettings shellSettings,
             IEnumerable<DatabaseProvider> databaseProviders,
             IShellHost shellHost,
-            IShellSettingsManager shellSettingsManager,
-            IStringLocalizer<SetupController> t)
+            IStringLocalizer<SetupController> localizer,
+            IEmailAddressValidator emailAddressValidator)
         {
             _logger = logger;
             _clock = clock;
-            _shellSettingsManager = shellSettingsManager;
             _shellHost = shellHost;
             _setupService = setupService;
             _shellSettings = shellSettings;
             _databaseProviders = databaseProviders;
-
-            T = t;
+            S = localizer;
+            _emailAddressValidator = emailAddressValidator;
         }
-
-        public IStringLocalizer T { get; set; }
 
         public async Task<ActionResult> Index(string token)
         {
             var recipes = await _setupService.GetSetupRecipesAsync();
             var defaultRecipe = recipes.FirstOrDefault(x => x.Tags.Contains("default")) ?? recipes.FirstOrDefault();
 
-            if (!string.IsNullOrWhiteSpace(_shellSettings.Secret))
+            if (!string.IsNullOrWhiteSpace(_shellSettings["Secret"]))
             {
                 if (string.IsNullOrEmpty(token) || !await IsTokenValid(token))
                 {
@@ -73,10 +72,10 @@ namespace OrchardCore.Setup.Controllers
 
             CopyShellSettingsValues(model);
 
-            if (!String.IsNullOrEmpty(_shellSettings.TablePrefix))
+            if (!String.IsNullOrEmpty(_shellSettings["TablePrefix"]))
             {
                 model.DatabaseConfigurationPreset = true;
-                model.TablePrefix = _shellSettings.TablePrefix;
+                model.TablePrefix = _shellSettings["TablePrefix"];
             }
 
             return View(model);
@@ -85,7 +84,7 @@ namespace OrchardCore.Setup.Controllers
         [HttpPost, ActionName("Index")]
         public async Task<ActionResult> IndexPOST(SetupViewModel model)
         {
-            if (!string.IsNullOrWhiteSpace(_shellSettings.Secret))
+            if (!string.IsNullOrWhiteSpace(_shellSettings["Secret"]))
             {
                 if (string.IsNullOrEmpty(model.Secret) || !await IsTokenValid(model.Secret))
                 {
@@ -103,32 +102,37 @@ namespace OrchardCore.Setup.Controllers
             {
                 if (selectedProvider != null && selectedProvider.HasConnectionString && String.IsNullOrWhiteSpace(model.ConnectionString))
                 {
-                    ModelState.AddModelError(nameof(model.ConnectionString), T["The connection string is mandatory for this provider."]);
+                    ModelState.AddModelError(nameof(model.ConnectionString), S["The connection string is mandatory for this provider."]);
                 }
             }
 
             if (String.IsNullOrEmpty(model.Password))
             {
-                ModelState.AddModelError(nameof(model.Password), T["The password is required."]);
+                ModelState.AddModelError(nameof(model.Password), S["The password is required."]);
             }
 
             if (model.Password != model.PasswordConfirmation)
             {
-                ModelState.AddModelError(nameof(model.PasswordConfirmation), T["The password confirmation doesn't match the password."]);
+                ModelState.AddModelError(nameof(model.PasswordConfirmation), S["The password confirmation doesn't match the password."]);
             }
 
             RecipeDescriptor selectedRecipe = null;
-            if (!string.IsNullOrEmpty(_shellSettings.RecipeName))
+            if (!string.IsNullOrEmpty(_shellSettings["RecipeName"]))
             {
-                selectedRecipe = model.Recipes.FirstOrDefault(x => x.Name == _shellSettings.RecipeName);
+                selectedRecipe = model.Recipes.FirstOrDefault(x => x.Name == _shellSettings["RecipeName"]);
                 if (selectedRecipe == null)
                 {
-                    ModelState.AddModelError(nameof(model.RecipeName), T["Invalid recipe."]);
+                    ModelState.AddModelError(nameof(model.RecipeName), S["Invalid recipe."]);
                 }
             }
             else if (String.IsNullOrEmpty(model.RecipeName) || (selectedRecipe = model.Recipes.FirstOrDefault(x => x.Name == model.RecipeName)) == null)
             {
-                ModelState.AddModelError(nameof(model.RecipeName), T["Invalid recipe."]);
+                ModelState.AddModelError(nameof(model.RecipeName), S["Invalid recipe."]);
+            }
+
+            if (!_emailAddressValidator.Validate(model.Email))
+            {
+                ModelState.AddModelError(nameof(model.Email), S["Invalid email."]);
             }
 
             if (!ModelState.IsValid)
@@ -150,11 +154,11 @@ namespace OrchardCore.Setup.Controllers
                 SiteTimeZone = model.SiteTimeZone
             };
 
-            if (!string.IsNullOrEmpty(_shellSettings.ConnectionString))
+            if (!string.IsNullOrEmpty(_shellSettings["ConnectionString"]))
             {
-                setupContext.DatabaseProvider = _shellSettings.DatabaseProvider;
-                setupContext.DatabaseConnectionString = _shellSettings.ConnectionString;
-                setupContext.DatabaseTablePrefix = _shellSettings.TablePrefix;
+                setupContext.DatabaseProvider = _shellSettings["DatabaseProvider"];
+                setupContext.DatabaseConnectionString = _shellSettings["ConnectionString"];
+                setupContext.DatabaseTablePrefix = _shellSettings["TablePrefix"];
             }
             else
             {
@@ -181,26 +185,31 @@ namespace OrchardCore.Setup.Controllers
 
         private void CopyShellSettingsValues(SetupViewModel model)
         {
-            if (!String.IsNullOrEmpty(_shellSettings.ConnectionString))
+            if (!String.IsNullOrEmpty(_shellSettings["ConnectionString"]))
             {
                 model.DatabaseConfigurationPreset = true;
-                model.ConnectionString = _shellSettings.ConnectionString;
+                model.ConnectionString = _shellSettings["ConnectionString"];
             }
 
-            if (!String.IsNullOrEmpty(_shellSettings.RecipeName))
+            if (!String.IsNullOrEmpty(_shellSettings["RecipeName"]))
             {
                 model.RecipeNamePreset = true;
-                model.RecipeName = _shellSettings.RecipeName;
+                model.RecipeName = _shellSettings["RecipeName"];
             }
 
-            if (!String.IsNullOrEmpty(_shellSettings.DatabaseProvider))
+            if (!String.IsNullOrEmpty(_shellSettings["DatabaseProvider"]))
             {
                 model.DatabaseConfigurationPreset = true;
-                model.DatabaseProvider = _shellSettings.DatabaseProvider;
+                model.DatabaseProvider = _shellSettings["DatabaseProvider"];
             }
             else
             {
                 model.DatabaseProvider = model.DatabaseProviders.FirstOrDefault(p => p.IsDefault)?.Value;
+            }
+
+            if (!String.IsNullOrEmpty(_shellSettings["Description"]))
+            {
+                model.Description = _shellSettings["Description"];
             }
         }
 
@@ -208,21 +217,29 @@ namespace OrchardCore.Setup.Controllers
         {
             try
             {
-                using (var scope = await _shellHost.GetScopeAsync(_shellSettingsManager.GetSettings(ShellHelper.DefaultShellName)))
+                var result = false;
+
+                var shellScope = await _shellHost.GetScopeAsync(ShellHelper.DefaultShellName);
+
+                await shellScope.UsingAsync(scope =>
                 {
-                    var dataProtectionProvider = scope.ServiceProvider.GetService<IDataProtectionProvider>();
-                    ITimeLimitedDataProtector dataProtector = dataProtectionProvider.CreateProtector("Tokens").ToTimeLimitedDataProtector();
+                    var dataProtectionProvider = scope.ServiceProvider.GetRequiredService<IDataProtectionProvider>();
+                    var dataProtector = dataProtectionProvider.CreateProtector("Tokens").ToTimeLimitedDataProtector();
 
                     var tokenValue = dataProtector.Unprotect(token, out var expiration);
 
                     if (_clock.UtcNow < expiration.ToUniversalTime())
                     {
-                        if (_shellSettings.Secret == tokenValue)
+                        if (_shellSettings["Secret"] == tokenValue)
                         {
-                            return true;
+                            result = true;
                         }
                     }
-                }
+
+                    return Task.CompletedTask;
+                });
+
+                return result;
             }
             catch (Exception ex)
             {

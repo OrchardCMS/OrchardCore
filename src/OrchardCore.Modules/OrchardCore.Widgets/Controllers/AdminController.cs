@@ -1,41 +1,35 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Localization;
-using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
+using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Widgets.Models;
 using OrchardCore.Widgets.ViewModels;
 
 namespace OrchardCore.Widgets.Controllers
 {
-    public class AdminController : Controller, IUpdateModel
+    public class AdminController : Controller
     {
         private readonly IContentManager _contentManager;
         private readonly IContentItemDisplayManager _contentItemDisplayManager;
+        private readonly IShapeFactory _shapeFactory;
+        private readonly IUpdateModelAccessor _updateModelAccessor;
 
         public AdminController(
             IContentManager contentManager,
             IContentItemDisplayManager contentItemDisplayManager,
-            ILogger<AdminController> logger,
-            IHtmlLocalizer<AdminController> localizer
-            )
+            IShapeFactory shapeFactory,
+            IUpdateModelAccessor updateModelAccessor)
         {
             _contentItemDisplayManager = contentItemDisplayManager;
             _contentManager = contentManager;
-
-            T = localizer;
-            Logger = logger;
+            _shapeFactory = shapeFactory;
+            _updateModelAccessor = updateModelAccessor;
         }
 
-        public IHtmlLocalizer T { get; }
-        public dynamic New { get; set; }
-
-        public ILogger Logger { get; set; }
-
-        public async Task<IActionResult> BuildEditor(string id, string prefix, string prefixesName, string contentTypesName, string zonesName, string zone, string targetId)
+        public async Task<IActionResult> BuildEditor(string id, string prefix, string prefixesName, string contentTypesName, string zonesName, string zone, string targetId, string parentContentType, string partName)
         {
             if (String.IsNullOrWhiteSpace(id))
             {
@@ -46,18 +40,41 @@ namespace OrchardCore.Widgets.Controllers
 
             contentItem.Weld(new WidgetMetadata());
 
-            dynamic editor = await _contentItemDisplayManager.BuildEditorAsync(contentItem, this, true, htmlFieldPrefix: prefix);
+            string cardCollectionType = nameof(WidgetsListPart);
 
-            editor.ZonesName = zonesName;
-            editor.PrefixesName = prefixesName;
-            editor.ContentTypesName = contentTypesName;
-            editor.TargetId = targetId;
-            editor.Zone = zone;
-            editor.Inline = true;
+            //Create a Card Shape
+            dynamic contentCard = await _shapeFactory.New.ContentCard(
+                //Updater is the controller for AJAX Requests
+                Updater: _updateModelAccessor.ModelUpdater,
+                //Shape Specific
+                CollectionShapeType: cardCollectionType,
+                ContentItem: contentItem,
+                BuildEditor: true,
+                ParentContentType: parentContentType,
+                CollectionPartName: partName,
+                //WidgetListPart Specific
+                ZoneValue: zone,
+                //Card Specific Properties
+                TargetId: targetId,
+                Inline: true,
+                CanMove: true,
+                CanDelete: true,
+                //Input hidden
+                //Prefixes
+                HtmlFieldPrefix: prefix,
+                PrefixesId: prefixesName.Replace('.', '_'),
+                PrefixesName: prefixesName,
+                //ContentTypes
+                ContentTypesId: contentTypesName.Replace('.', '_'),
+                ContentTypesName: contentTypesName,
+                //Zones
+                ZonesId: zonesName.Replace('.', '_'),
+                ZonesName: zonesName
+            );
 
             var model = new BuildEditorViewModel
             {
-                EditorShape = editor
+                EditorShape = contentCard
             };
 
             return View("Display", model);

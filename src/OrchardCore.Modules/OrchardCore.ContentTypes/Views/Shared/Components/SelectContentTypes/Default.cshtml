@@ -1,15 +1,13 @@
-﻿@model SelectContentTypesViewModel
+@model SelectContentTypesViewModel
 
 <div class="row">
     @for (var i = 0; i < Model.ContentTypeSelections.Length; i++)
     {
         var contentType = Model.ContentTypeSelections[i];
         <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 col-xl-2">
-            <div class="checkbox">
-                <label for="@Html.IdFor(m => m.ContentTypeSelections[i])">
-                    <input id="@Html.IdFor(m => m.ContentTypeSelections[i])" name="@Model.HtmlName" type="checkbox" checked="@contentType.IsSelected" value="@contentType.ContentTypeDefinition.Name" />
-                    @contentType.ContentTypeDefinition.DisplayName
-                </label>
+            <div class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input" id="@Html.IdFor(m => m.ContentTypeSelections[i])" name="@Model.HtmlName" checked="@contentType.IsSelected" value="@contentType.ContentTypeDefinition.Name">
+                <label class="custom-control-label" for="@Html.IdFor(m => m.ContentTypeSelections[i])">@contentType.ContentTypeDefinition.DisplayName</label>
             </div>
         </div>
     }

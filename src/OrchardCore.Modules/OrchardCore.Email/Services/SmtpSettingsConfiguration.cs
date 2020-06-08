@@ -11,7 +11,7 @@ namespace OrchardCore.Email.Services
     {
         private readonly ISiteService _site;
         private readonly IDataProtectionProvider _dataProtectionProvider;
-        private readonly ILogger<SmtpSettingsConfiguration> _logger;
+        private readonly ILogger _logger;
 
         public SmtpSettingsConfiguration(
             ISiteService site,
@@ -34,7 +34,8 @@ namespace OrchardCore.Email.Services
             options.PickupDirectoryLocation = settings.PickupDirectoryLocation;
             options.Host = settings.Host;
             options.Port = settings.Port;
-            options.EnableSsl = settings.EnableSsl;
+            options.EncryptionMethod = settings.EncryptionMethod;
+            options.AutoSelectEncryption = settings.AutoSelectEncryption;
             options.RequireCredentials = settings.RequireCredentials;
             options.UseDefaultCredentials = settings.UseDefaultCredentials;
             options.UserName = settings.UserName;

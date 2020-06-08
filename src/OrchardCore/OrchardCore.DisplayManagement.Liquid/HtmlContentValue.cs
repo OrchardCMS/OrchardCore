@@ -45,7 +45,7 @@ namespace OrchardCore.DisplayManagement.Liquid
             return true;
         }
 
-        public override double ToNumberValue()
+        public override decimal ToNumberValue()
         {
             return 0;
         }
@@ -57,7 +57,7 @@ namespace OrchardCore.DisplayManagement.Liquid
 
         public override void WriteTo(TextWriter writer, TextEncoder encoder, CultureInfo cultureInfo)
         {
-            _value.WriteTo(writer, HtmlEncoder.Default);
+            _value.WriteTo(writer, (HtmlEncoder)encoder);
         }
 
         public override object ToObjectValue()

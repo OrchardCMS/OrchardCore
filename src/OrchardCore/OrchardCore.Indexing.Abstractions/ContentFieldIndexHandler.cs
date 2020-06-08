@@ -27,7 +27,11 @@ namespace OrchardCore.Indexing
                 {
                     keys.Add($"{key}.{partFieldDefinition.Name}");
                 }
-                keys.Add($"{typePartDefinition.Name}.{partFieldDefinition.Name}");
+
+                if (!keys.Contains($"{typePartDefinition.Name}.{partFieldDefinition.Name}"))
+                {
+                    keys.Add($"{typePartDefinition.Name}.{partFieldDefinition.Name}");
+                }
 
                 var buildFieldIndexContext = new BuildFieldIndexContext(context.DocumentIndex, context.ContentItem, keys, contentPart, typePartDefinition, partFieldDefinition, settings);
 

@@ -7,14 +7,13 @@
     {
         @await DisplayAsync(Model.Editor.Content)
     }
-    
+
     @if (Model.Editor.Content != null)
     {
-        <fieldset class="form-group">
+        <div class="form-group">
             @await DisplayAsync(Model.Editor.Actions)
-        </fieldset>
+        </div>
     }
 
     <input type="hidden" asp-for="SourceName" />
-
 </form>

@@ -5,12 +5,13 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Builder.Internal;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using OrchardCore.Hosting.ShellBuilders;
+using OrchardCore.Environment.Shell.Builders;
+using OrchardCore.Environment.Shell.Scope;
 
 namespace OrchardCore.Modules
 {
@@ -20,15 +21,16 @@ namespace OrchardCore.Modules
     /// </summary>
     public class ModularTenantRouterMiddleware
     {
-        private readonly RequestDelegate _next;
+        private readonly IFeatureCollection _features;
         private readonly ILogger _logger;
         private readonly ConcurrentDictionary<string, SemaphoreSlim> _semaphores = new ConcurrentDictionary<string, SemaphoreSlim>();
 
         public ModularTenantRouterMiddleware(
+            IFeatureCollection features,
             RequestDelegate next,
             ILogger<ModularTenantRouterMiddleware> logger)
         {
-            _next = next;
+            _features = features;
             _logger = logger;
         }
 
@@ -39,54 +41,61 @@ namespace OrchardCore.Modules
                 _logger.LogInformation("Begin Routing Request");
             }
 
-            var shellContext = httpContext.Features.Get<ShellContext>();
+            var shellContext = ShellScope.Context;
 
             // Define a PathBase for the current request that is the RequestUrlPrefix.
             // This will allow any view to reference ~/ as the tenant's base url.
             // Because IIS or another middleware might have already set it, we just append the tenant prefix value.
-            if (!string.IsNullOrEmpty(shellContext.Settings.RequestUrlPrefix))
+            if (!String.IsNullOrEmpty(shellContext.Settings.RequestUrlPrefix))
             {
-                httpContext.Request.PathBase += ("/" + shellContext.Settings.RequestUrlPrefix);
-                httpContext.Request.Path = httpContext.Request.Path.ToString().Substring(httpContext.Request.PathBase.Value.Length);
+                PathString prefix = "/" + shellContext.Settings.RequestUrlPrefix;
+                httpContext.Request.PathBase += prefix;
+                httpContext.Request.Path.StartsWithSegments(prefix, StringComparison.OrdinalIgnoreCase, out PathString remainingPath);
+                httpContext.Request.Path = remainingPath;
             }
 
             // Do we need to rebuild the pipeline ?
             if (shellContext.Pipeline == null)
             {
-                var semaphore = _semaphores.GetOrAdd(shellContext.Settings.Name, (name) => new SemaphoreSlim(1));
-
-                // Building a pipeline for a given shell can't be done by two requests.
-                await semaphore.WaitAsync();
-
-                try
-                {
-                    if (shellContext.Pipeline == null)
-                    {
-                        shellContext.Pipeline = BuildTenantPipeline(shellContext.ServiceProvider, httpContext.RequestServices);
-                    }
-                }
-
-                finally
-                {
-                    semaphore.Release();
-                    _semaphores.TryRemove(shellContext.Settings.Name, out semaphore);
-                }
+                await InitializePipelineAsync(shellContext);
             }
 
             await shellContext.Pipeline.Invoke(httpContext);
         }
 
-        // Build the middleware pipeline for the current tenant
-        public RequestDelegate BuildTenantPipeline(IServiceProvider rootServiceProvider, IServiceProvider scopeServiceProvider)
+        private async Task InitializePipelineAsync(ShellContext shellContext)
         {
-            var appBuilder = new ApplicationBuilder(rootServiceProvider);
+            var semaphore = _semaphores.GetOrAdd(shellContext.Settings.Name, _ => new SemaphoreSlim(1));
+
+            // Building a pipeline for a given shell can't be done by two requests.
+            await semaphore.WaitAsync();
+
+            try
+            {
+                if (shellContext.Pipeline == null)
+                {
+                    shellContext.Pipeline = BuildTenantPipeline();
+                }
+            }
+            finally
+            {
+                semaphore.Release();
+            }
+        }
+
+        // Build the middleware pipeline for the current tenant
+        private IShellPipeline BuildTenantPipeline()
+        {
+            var appBuilder = new ApplicationBuilder(ShellScope.Context.ServiceProvider, _features);
 
             // Create a nested pipeline to configure the tenant middleware pipeline
             var startupFilters = appBuilder.ApplicationServices.GetService<IEnumerable<IStartupFilter>>();
 
+            var shellPipeline = new ShellRequestPipeline();
+
             Action<IApplicationBuilder> configure = builder =>
             {
-                ConfigureTenantPipeline(builder, scopeServiceProvider);
+                ConfigureTenantPipeline(builder);
             };
 
             foreach (var filter in startupFilters.Reverse())
@@ -96,36 +105,26 @@ namespace OrchardCore.Modules
 
             configure(appBuilder);
 
-            var pipeline = appBuilder.Build();
+            shellPipeline.Next = appBuilder.Build();
 
-            return pipeline;
+            return shellPipeline;
         }
 
-        private void ConfigureTenantPipeline(IApplicationBuilder appBuilder, IServiceProvider scopeServiceProvider)
+        private void ConfigureTenantPipeline(IApplicationBuilder appBuilder)
         {
             var startups = appBuilder.ApplicationServices.GetServices<IStartup>();
 
-            // IStartup instances are ordered by module dependency with an Order of 0 by default.
-            // OrderBy performs a stable sort so order is preserved among equal Order values.
-            startups = startups.OrderBy(s => s.Order);
+            // IStartup instances are ordered by module dependency with an 'ConfigureOrder' of 0 by default.
+            // OrderBy performs a stable sort so order is preserved among equal 'ConfigureOrder' values.
+            startups = startups.OrderBy(s => s.ConfigureOrder);
 
-            var tenantRouteBuilder = appBuilder.ApplicationServices.GetService<IModularTenantRouteBuilder>();
-            var routeBuilder = tenantRouteBuilder.Build(appBuilder);
-
-            // In the case of several tenants, they will all be checked by ShellSettings. To optimize
-            // the TenantRoute resolution we can create a single Router type that would index the
-            // TenantRoute object by their ShellSettings. This way there would just be one lookup.
-            // And the ShellSettings test in TenantRoute would also be useless.
-            foreach (var startup in startups)
+            appBuilder.UseRouting().UseEndpoints(routes =>
             {
-                startup.Configure(appBuilder, routeBuilder, scopeServiceProvider);
-            }
-
-            tenantRouteBuilder.Configure(routeBuilder);
-
-            var router = routeBuilder.Build();
-
-            appBuilder.UseRouter(router);
+                foreach (var startup in startups)
+                {
+                    startup.Configure(appBuilder, routes, ShellScope.Services);
+                }
+            });
         }
     }
 }

@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -30,7 +31,7 @@ namespace OrchardCore.OpenId.Configuration
         IConfigureNamedOptions<OpenIddictValidationOptions>,
         IConfigureNamedOptions<JwtBearerOptions>
     {
-        private readonly ILogger<OpenIdServerConfiguration> _logger;
+        private readonly ILogger _logger;
         private readonly IRunningShellTable _runningShellTable;
         private readonly ShellSettings _shellSettings;
         private readonly IOpenIdServerService _serverService;
@@ -86,7 +87,7 @@ namespace OrchardCore.OpenId.Configuration
         public void Configure(string name, OpenIddictServerOptions options)
         {
             // Ignore OpenIddict handler instances that don't correspond to the instance managed by the OpenID module.
-            if (!string.Equals(name, OpenIddictServerDefaults.AuthenticationScheme, StringComparison.Ordinal))
+            if (!string.Equals(name, OpenIddictServerDefaults.AuthenticationScheme))
             {
                 return;
             }
@@ -97,20 +98,21 @@ namespace OrchardCore.OpenId.Configuration
                 return;
             }
 
+            // Note: in Orchard, transport security is usually configured via the dedicated HTTPS module.
+            // To make configuration easier and avoid having to configure it in two different features,
+            // the transport security requirement enforced by OpenIddict by default is always turned off.
+            options.AllowInsecureHttp = true;
+
             options.ApplicationCanDisplayErrors = true;
             options.EnableRequestCaching = true;
             options.IgnoreScopePermissions = true;
+            options.Issuer = settings.Authority;
             options.UseRollingTokens = settings.UseRollingTokens;
-            options.AllowInsecureHttp = settings.TestingModeEnabled;
+            options.UseReferenceTokens = settings.UseReferenceTokens;
 
             foreach (var key in _serverService.GetSigningKeysAsync().GetAwaiter().GetResult())
             {
                 options.SigningCredentials.AddKey(key);
-            }
-
-            if (!string.IsNullOrEmpty(settings.Authority))
-            {
-                options.Issuer = new Uri(settings.Authority, UriKind.Absolute);
             }
 
             if (settings.AccessTokenFormat == OpenIdServerSettings.TokenFormat.JWT)
@@ -137,7 +139,7 @@ namespace OrchardCore.OpenId.Configuration
         public void Configure(string name, JwtBearerOptions options)
         {
             // Ignore JWT handler instances that don't correspond to the private instance managed by the OpenID module.
-            if (!string.Equals(name, OpenIdConstants.Schemes.Userinfo, StringComparison.Ordinal))
+            if (!string.Equals(name, OpenIdConstants.Schemes.Userinfo))
             {
                 return;
             }
@@ -153,9 +155,9 @@ namespace OrchardCore.OpenId.Configuration
 
             // If an authority was explicitly set in the OpenID server options,
             // prefer it to the dynamic tenant comparison as it's more efficient.
-            if (!string.IsNullOrEmpty(settings.Authority))
+            if (settings.Authority != null)
             {
-                options.TokenValidationParameters.ValidIssuer = settings.Authority;
+                options.TokenValidationParameters.ValidIssuer = settings.Authority.AbsoluteUri;
             }
             else
             {
@@ -166,8 +168,8 @@ namespace OrchardCore.OpenId.Configuration
                         throw new SecurityTokenInvalidIssuerException("The token issuer is not valid.");
                     }
 
-                    var tenant = _runningShellTable.Match(uri.Authority, uri.AbsolutePath);
-                    if (tenant == null || !string.Equals(tenant.Name, _shellSettings.Name, StringComparison.Ordinal))
+                    var tenant = _runningShellTable.Match(new HostString(uri.Authority), uri.AbsolutePath);
+                    if (tenant == null || !string.Equals(tenant.Name, _shellSettings.Name))
                     {
                         throw new SecurityTokenInvalidIssuerException("The token issuer is not valid.");
                     }
@@ -182,12 +184,19 @@ namespace OrchardCore.OpenId.Configuration
         public void Configure(string name, OpenIddictValidationOptions options)
         {
             // Ignore validation handler instances that don't correspond to the private instance managed by the OpenID module.
-            if (!string.Equals(name, OpenIdConstants.Schemes.Userinfo, StringComparison.Ordinal))
+            if (!string.Equals(name, OpenIdConstants.Schemes.Userinfo))
             {
                 return;
             }
 
             options.Audiences.Add(OpenIdConstants.Prefixes.Tenant + _shellSettings.Name);
+
+            var serverSettings = GetServerSettingsAsync().GetAwaiter().GetResult();
+            if (serverSettings == null)
+            {
+                return;
+            }
+            options.UseReferenceTokens = serverSettings.UseReferenceTokens;
         }
 
         public void Configure(OpenIddictValidationOptions options) => Debug.Fail("This infrastructure method shouldn't be called.");

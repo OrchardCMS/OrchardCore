@@ -1,0 +1,54 @@
+@model HtmlBodyPartViewModel
+@{
+    var settings = Model.TypePartDefinition.GetSettings<HtmlBodyPartSettings>();
+    var trumbowygSettings = Model.TypePartDefinition.GetSettings<HtmlBodyPartTrumbowygEditorSettings>();
+    var culture = await Orchard.GetContentCultureAsync(Model.ContentItem) ?? CultureInfo.CurrentUICulture;
+}
+
+<script asp-name="trumbowyg-plugins" depends-on="admin" version="2" at="Foot"></script>
+<style asp-name="trumbowyg-plugins" version="2"></style>
+@if (trumbowygSettings.InsertMediaWithUrl)
+{
+    <script asp-src="~/OrchardCore.Html/Scripts/trumbowyg.media.url.min.js" debug-src="~/OrchardCore.Html/Scripts/trumbowyg.media.url.js" depends-on="trumbowyg" at="Foot"></script>
+}
+else
+{
+    <script asp-src="~/OrchardCore.Html/Scripts/trumbowyg.media.tag.min.js" debug-src="~/OrchardCore.Html/Scripts/trumbowyg.media.tag.js" depends-on="trumbowyg" at="Foot"></script>
+}
+
+<div class="form-group">
+    <label asp-for="Html">@Model.TypePartDefinition.DisplayName()</label>
+    @if (culture.IsRightToLeft())
+    {
+        <div style="text-align:right">
+            <textarea asp-for="Html" rows="5" class="form-control"></textarea>
+        </div>
+    }
+    else
+    {
+        <textarea asp-for="Html" rows="5" class="form-control"></textarea>
+    }
+    <span class="hint">@T["The body of the content item."]</span>
+</div>
+
+<script at="Foot">
+    $(function () {
+@{ 
+    if (culture.GetLanguageDirection() == LanguageDirection.RTL)
+    {
+        <text>
+        jQuery.trumbowyg.langs.@culture.TwoLetterISOLanguageName = {
+            _dir: '@culture.GetLanguageDirection()'
+        };
+        </text>
+    }
+}
+        var settings = @Html.Raw(trumbowygSettings.Options);
+        settings['lang'] = '@culture.TwoLetterISOLanguageName';
+
+        $('#@Html.IdFor(m => m.Html)').trumbowyg(settings).on('tbwchange', function () {
+            $(document).trigger('contentpreview:render');
+        });
+    });
+    $.trumbowyg.svgPath = '/OrchardCore.Resources/Styles/ui/icons.svg';
+</script>

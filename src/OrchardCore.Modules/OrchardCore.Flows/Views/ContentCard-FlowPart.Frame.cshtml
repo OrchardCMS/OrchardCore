@@ -1,0 +1,5 @@
+@* This template can be Overridden to change the row behavior of widget collection *@
+@* For ROOT DIV its CSS classes widget-template and col-md-* are required - Do not remove then in customization*@
+<div class="widget-template col-md-@Model.ColumnSize px-1">
+    @await DisplayAsync(Model.ChildContent)
+</div>

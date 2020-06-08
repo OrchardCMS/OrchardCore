@@ -12,12 +12,10 @@ namespace OrchardCore.Forms.Workflows
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddActivity<ValidateAntiforgeryTokenTask, ValidateAntiforgeryTokenTaskDisplay>();
-            services.AddActivity<ValidateNoCaptchaTask, ValidateNoCaptchaTaskDisplay>();
             services.AddActivity<AddModelValidationErrorTask, AddModelValidationErrorTaskDisplay>();
             services.AddActivity<ValidateFormTask, ValidateFormTaskDisplay>();
             services.AddActivity<ValidateFormFieldTask, ValidateFormFieldTaskDisplay>();
             services.AddActivity<BindModelStateTask, BindModelStateTaskDisplay>();
-            services.AddAntiforgery();
         }
     }
 }

@@ -14,5 +14,6 @@ namespace OrchardCore.OpenId.Services
         Task<ImmutableArray<ValidationResult>> ValidateSettingsAsync(OpenIdServerSettings settings);
         Task<ImmutableArray<(X509Certificate2 certificate, StoreLocation location, StoreName name)>> GetAvailableCertificatesAsync();
         Task<ImmutableArray<SecurityKey>> GetSigningKeysAsync();
+        Task PruneSigningKeysAsync();
     }
 }

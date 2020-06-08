@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 
 namespace OrchardCore.Demo
@@ -14,7 +14,8 @@ namespace OrchardCore.Demo
 
         public async Task Invoke(HttpContext httpContext)
         {
-            httpContext.Response.Headers.Add("Orchard", "2.0");
+            // If the tenant pipeline is re-executed on error, the header is already set.
+            httpContext.Response.Headers["Orchard"] = "2.0";
             await _next.Invoke(httpContext);
         }
     }

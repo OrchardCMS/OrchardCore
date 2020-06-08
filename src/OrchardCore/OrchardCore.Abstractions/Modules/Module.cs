@@ -22,10 +22,6 @@ namespace OrchardCore.Modules
         {
             if (!string.IsNullOrWhiteSpace(name))
             {
-                Name = name;
-                SubPath = Application.ModulesRoot + Name;
-                Root = SubPath + '/';
-
                 Assembly = Assembly.Load(new AssemblyName(name));
 
                 Assets = Assembly.GetCustomAttributes<ModuleAssetAttribute>()
@@ -38,35 +34,52 @@ namespace OrchardCore.Modules
                 ModuleInfo =
                     moduleInfos.Where(f => !(f is ModuleMarkerAttribute)).FirstOrDefault() ??
                     moduleInfos.Where(f => f is ModuleMarkerAttribute).FirstOrDefault() ??
-                    new ModuleAttribute { Name = Name };
+                    new ModuleAttribute { Name = name };
 
                 var features = Assembly.GetCustomAttributes<Manifest.FeatureAttribute>()
                     .Where(f => !(f is ModuleAttribute)).ToList();
 
-                ModuleInfo.Id = Name;
-
                 if (isApplication)
                 {
                     ModuleInfo.Name = Application.ModuleName;
-                    ModuleInfo.Description = "Provides core features defined at the application level";
-                    ModuleInfo.Priority = int.MinValue.ToString();
-                    ModuleInfo.Category = "Application";
+                    ModuleInfo.Description = Application.ModuleDescription;
+                    ModuleInfo.Priority = Application.ModulePriority;
+                    ModuleInfo.Category = Application.ModuleCategory;
                     ModuleInfo.DefaultTenantOnly = true;
 
-                    if (features.Any())
+                    // Adds the application primary feature.
+                    features.Insert(0, new Manifest.FeatureAttribute()
                     {
-                        features.Insert(0, new Manifest.FeatureAttribute()
-                        {
-                            Id = ModuleInfo.Id,
-                            Name = ModuleInfo.Name,
-                            Description = ModuleInfo.Description,
-                            Priority = ModuleInfo.Priority,
-                            Category = ModuleInfo.Category
-                        });
-                    }
+                        Id = name,
+                        Name = Application.ModuleName,
+                        Description = Application.ModuleDescription,
+                        Priority = Application.ModulePriority,
+                        Category = Application.ModuleCategory,
+                        DefaultTenantOnly = true
+                    });
+
+                    // Adds the application default feature.
+                    features.Insert(1, new Manifest.FeatureAttribute()
+                    {
+                        Id = Application.DefaultFeatureId,
+                        Name = Application.DefaultFeatureName,
+                        Description = Application.DefaultFeatureDescription,
+                        Priority = Application.ModulePriority,
+                        Category = Application.ModuleCategory,
+                        DefaultTenantOnly = true
+                    });
                 }
 
                 ModuleInfo.Features.AddRange(features);
+
+                // The 'ModuleInfo.Id' allows a module project to change its 'AssemblyName'
+                // without to update the code. If not provided, the assembly name is used.
+
+                var logicalName = ModuleInfo.Id ?? name;
+
+                Name = ModuleInfo.Id = logicalName;
+                SubPath = Application.ModulesRoot + Name;
+                Root = SubPath + '/';
             }
             else
             {
@@ -106,7 +119,7 @@ namespace OrchardCore.Modules
         {
             if (!_fileInfos.TryGetValue(subpath, out var fileInfo))
             {
-                if (!AssetPaths.Contains(Root + subpath, StringComparer.Ordinal))
+                if (!AssetPaths.Contains(Root + subpath))
                 {
                     return new NotFoundFileInfo(subpath);
                 }

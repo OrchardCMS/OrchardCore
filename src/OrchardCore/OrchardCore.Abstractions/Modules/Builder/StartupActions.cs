@@ -16,6 +16,6 @@ namespace Microsoft.Extensions.DependencyInjection
 
         public ICollection<Action<IServiceCollection, IServiceProvider>> ConfigureServicesActions { get; } = new List<Action<IServiceCollection, IServiceProvider>>();
 
-        public ICollection<Action<IApplicationBuilder, IRouteBuilder, IServiceProvider>> ConfigureActions { get; } = new List<Action<IApplicationBuilder, IRouteBuilder, IServiceProvider>>();
+        public ICollection<Action<IApplicationBuilder, IEndpointRouteBuilder, IServiceProvider>> ConfigureActions { get; } = new List<Action<IApplicationBuilder, IEndpointRouteBuilder, IServiceProvider>>();
     }
 }

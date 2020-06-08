@@ -1,0 +1,16 @@
+@model dynamic
+@if ((bool)Model.HasItems)
+{
+    TagBuilder tag = Tag(Model, "ul");
+
+    foreach (var item in Model.Items)
+    {
+        tag.InnerHtml.AppendHtml(await DisplayAsync(item));
+    }
+
+    @tag
+}
+else
+{
+    <p class="alert alert-warning">@T["The list is empty"]</p>
+}

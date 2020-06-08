@@ -3,8 +3,8 @@ using System.IO;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
+using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Implementation;
-using OrchardCore.DynamicCache.Services;
 using OrchardCore.Environment.Cache;
 
 namespace OrchardCore.DynamicCache.EventHandlers
@@ -15,16 +15,21 @@ namespace OrchardCore.DynamicCache.EventHandlers
     /// </summary>
     public class DynamicCacheShapeDisplayEvents : IShapeDisplayEvents
     {
-        private readonly HashSet<CacheContext> _cached = new HashSet<CacheContext>();
-        private readonly HashSet<CacheContext> _openScopes = new HashSet<CacheContext>();
+        private readonly Dictionary<string, CacheContext> _cached = new Dictionary<string, CacheContext>();
+        private readonly Dictionary<string, CacheContext> _openScopes = new Dictionary<string, CacheContext>();
 
         private readonly IDynamicCacheService _dynamicCacheService;
         private readonly ICacheScopeManager _cacheScopeManager;
+        private readonly HtmlEncoder _htmlEncoder;
 
-        public DynamicCacheShapeDisplayEvents(IDynamicCacheService dynamicCacheService, ICacheScopeManager cacheScopeManager)
+        public DynamicCacheShapeDisplayEvents(
+            IDynamicCacheService dynamicCacheService,
+            ICacheScopeManager cacheScopeManager,
+            HtmlEncoder htmlEncoder)
         {
             _dynamicCacheService = dynamicCacheService;
             _cacheScopeManager = cacheScopeManager;
+            _htmlEncoder = htmlEncoder;
         }
 
         public async Task DisplayingAsync(ShapeDisplayContext context)
@@ -33,12 +38,11 @@ namespace OrchardCore.DynamicCache.EventHandlers
             var debugMode = false;
 
             // The shape has cache settings and no content yet
-            if (context.ShapeMetadata.IsCached && context.ChildContent == null)
+            if (context.Shape.Metadata.IsCached && context.ChildContent == null)
             {
-
-                var cacheContext = context.ShapeMetadata.Cache();
+                var cacheContext = context.Shape.Metadata.Cache();
                 _cacheScopeManager.EnterScope(cacheContext);
-                _openScopes.Add(cacheContext);
+                _openScopes[cacheContext.CacheId] = cacheContext;
 
                 var cachedContent = await _dynamicCacheService.GetCachedValueAsync(cacheContext);
 
@@ -46,36 +50,24 @@ namespace OrchardCore.DynamicCache.EventHandlers
                 {
                     // The contents of this shape was found in the cache.
                     // Add the cacheContext to _cached so that we don't try to cache the content again in the DisplayedAsync method.
-                    _cached.Add(cacheContext);
+                    _cached[cacheContext.CacheId] = cacheContext;
                     context.ChildContent = new HtmlString(cachedContent);
                 }
                 else if (debugMode)
                 {
-                    context.ShapeMetadata.Wrappers.Add("CachedShapeWrapper");
+                    context.Shape.Metadata.Wrappers.Add("CachedShapeWrapper");
                 }
             }
         }
 
         public async Task DisplayedAsync(ShapeDisplayContext context)
         {
-            var cacheContext = context.ShapeMetadata.Cache();
+            var cacheContext = context.Shape.Metadata.Cache();
 
             // If the shape is not configured to be cached, continue as usual
             if (cacheContext == null)
             {
-                if (context.ChildContent != null)
-                {
-                    string content;
-
-                    using (var sw = new StringWriter())
-                    {
-                        context.ChildContent.WriteTo(sw, HtmlEncoder.Default);
-                        content = sw.ToString();
-                    }
-                    
-                    context.ChildContent = new HtmlString(content);
-                }
-                else
+                if (context.ChildContent == null)
                 {
                     context.ChildContent = HtmlString.Empty;
                 }
@@ -90,24 +82,29 @@ namespace OrchardCore.DynamicCache.EventHandlers
 
             // If the ChildContent was retrieved form the cache, then the Cache Context will be present in the _cached collection (see the DisplayingAsync method in this class).
             // So, if the cache context is not present in the _cached collection, we need to insert the ChildContent value into the cache:
-            if (!_cached.Contains(cacheContext) && context.ChildContent != null)
+            if (!_cached.ContainsKey(cacheContext.CacheId) && context.ChildContent != null)
             {
-                using (var sw = new StringWriter())
+                // The content is pre-encoded in the cache so we don't have to do it every time it's rendered
+                using (var sb = StringBuilderPool.GetInstance())
                 {
-                    context.ChildContent.WriteTo(sw, HtmlEncoder.Default);
-                    await _dynamicCacheService.SetCachedValueAsync(cacheContext, sw.ToString());
+                    using (var sw = new StringWriter(sb.Builder))
+                    {
+                        context.ChildContent.WriteTo(sw, _htmlEncoder);
+                        await _dynamicCacheService.SetCachedValueAsync(cacheContext, sw.ToString());
+                        await sw.FlushAsync();
+                    }
                 }
             }
         }
 
         public Task DisplayingFinalizedAsync(ShapeDisplayContext context)
         {
-            var cacheContext = context.ShapeMetadata.Cache();
+            var cacheContext = context.Shape.Metadata.Cache();
 
-            if (cacheContext != null && _openScopes.Contains(cacheContext))
+            if (cacheContext != null && _openScopes.ContainsKey(cacheContext.CacheId))
             {
                 _cacheScopeManager.ExitScope();
-                _openScopes.Remove(cacheContext);
+                _openScopes.Remove(cacheContext.CacheId);
             }
 
             return Task.CompletedTask;

@@ -1,0 +1,101 @@
+@using OrchardCore.Tenants.Workflows.ViewModels
+@model CreateTenantTaskViewModel
+
+<div class="form-group" asp-validation-class-for="TenantNameExpression">
+    <label asp-for="TenantNameExpression">@T["Name"] <span asp-validation-for="TenantNameExpression"></span></label>
+    <input type="text" asp-for="TenantNameExpression" class="form-control code" autofocus />
+    <span class="hint">@T["Select the name of the tenant to create."]</span>
+</div>
+
+<div class="form-group" asp-validation-class-for="DescriptionExpression">
+    <label asp-for="DescriptionExpression">@T["Description"] <span asp-validation-for="DescriptionExpression"></span></label>
+    <input type="text" asp-for="DescriptionExpression" class="form-control code" autofocus />
+    <span class="hint">@T["(Optional) the description of the tenant to create."]</span>
+</div>
+
+<div class="form-group" asp-validation-class-for="RequestUrlPrefixExpression">
+    <label asp-for="RequestUrlPrefixExpression">@T["Url Prefix"] <span asp-validation-for="RequestUrlPrefixExpression"></span></label>
+    <input type="text" asp-for="RequestUrlPrefixExpression" class="form-control code" />
+    <span class="hint">@T["(Optional) Example: If prefix is \"site1\", the tenant URL prefix is \"http://orchardproject.net/site1\""]</span>
+</div>
+
+<div class="form-group" asp-validation-class-for="RequestUrlHostExpression">
+    <label asp-for="RequestUrlHostExpression">@T["Host name"] <span asp-validation-for="RequestUrlHostExpression"></span></label>
+    <input type="text" asp-for="RequestUrlHostExpression" class="form-control code" />
+    <span class="hint">@T["Example: If host is \"orchardproject.net\", the tenant site URL is \"http://orchardproject.net/\". With Liquid support."]</span>
+</div>
+
+<div class="form-group" asp-validation-class-for="DatabaseProviderExpression">
+    <label asp-for="DatabaseProviderExpression">@T["What type of database to use?"] <span asp-validation-for="DatabaseProviderExpression"></span></label>
+    <input type="text" asp-for="DatabaseProviderExpression" class="form-control code" />
+</div>
+
+<div class="form-group" asp-validation-class-for="TablePrefixExpression">
+    <label asp-for="TablePrefixExpression">@T["Table Prefix"] <span asp-validation-for="TablePrefixExpression"></span></label>
+    <input type="text" asp-for="TablePrefixExpression" class="form-control code" />
+</div>
+
+<div class="form-group" asp-validation-class-for="ConnectionStringExpression">
+    <label asp-for="ConnectionStringExpression">@T["Connection string"] <span asp-validation-for="ConnectionStringExpression"></span></label>
+    <input type="text" asp-for="ConnectionStringExpression" class="form-control code" />
+</div>
+
+<div class="form-group" asp-validation-class-for="RecipeNameExpression">
+    <label asp-for="RecipeNameExpression">@T["Recipe"] <span asp-validation-for="RecipeNameExpression"></span></label>
+    <input type="text" asp-for="RecipeNameExpression" class="form-control code" />
+</div>
+
+<script asp-name="codemirror" depends-on="admin" at="Foot"></script>
+<script asp-name="codemirror-mode-javascript" at="Foot"></script>
+<script asp-name="codemirror-addon-display-autorefresh" at="Foot"></script>
+<script asp-name="codemirror-addon-mode-simple" at="Foot"></script>
+<script asp-name="codemirror-addon-mode-multiplex" at="Foot"></script>
+<script asp-name="codemirror-mode-xml" at="Foot"></script>
+<script asp-src="~/OrchardCore.Liquid/codemirror/liquid.js" at="Foot"></script>
+
+<script at="Foot">
+$(function () {
+    var editorRupTn = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.TenantNameExpression)'), {
+        lineNumbers: true,
+        styleActiveLine: true,
+        matchBrackets: true,
+        mode: { name: "liquid" },
+      });
+    var editorRup = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.RequestUrlPrefixExpression)'), {
+        lineNumbers: true,
+        styleActiveLine: true,
+        matchBrackets: true,
+        mode: { name: "liquid" },
+      });
+    var editorRuh = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.RequestUrlHostExpression)'), {
+        lineNumbers: true,
+        styleActiveLine: true,
+        matchBrackets: true,
+        mode: { name: "liquid" },
+      });
+    var editorDp = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.DatabaseProviderExpression)'), {
+        lineNumbers: true,
+        styleActiveLine: true,
+        matchBrackets: true,
+        mode: { name: "liquid" },
+      });
+    var editorTp = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.TablePrefixExpression)'), {
+        lineNumbers: true,
+        styleActiveLine: true,
+        matchBrackets: true,
+        mode: { name: "liquid" },
+      });
+    var editorCs = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.ConnectionStringExpression)'), {
+        lineNumbers: true,
+        styleActiveLine: true,
+        matchBrackets: true,
+        mode: { name: "liquid" },
+      });
+    var editorRn = CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.RecipeNameExpression)'), {
+        lineNumbers: true,
+        styleActiveLine: true,
+        matchBrackets: true,
+        mode: { name: "liquid" },
+      });
+});
+</script>

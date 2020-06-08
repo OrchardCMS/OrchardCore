@@ -10,6 +10,7 @@ namespace OrchardCore.Contents.Scripting
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton<IGlobalMethodProvider, ContentMethodsProvider>();
+            services.AddSingleton<IGlobalMethodProvider, UrlMethodsProvider>();
         }
     }
 }

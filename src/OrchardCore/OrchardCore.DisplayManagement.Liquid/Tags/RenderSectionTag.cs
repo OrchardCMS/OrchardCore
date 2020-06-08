@@ -6,20 +6,21 @@ using Fluid;
 using Fluid.Ast;
 using Fluid.Tags;
 using Microsoft.AspNetCore.Html;
+using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.Liquid.Ast;
 
 namespace OrchardCore.DisplayManagement.Liquid.Tags
 {
     public class RenderSectionTag : ArgumentsTag
     {
-        public override async Task<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context, FilterArgument[] args)
+        public override async ValueTask<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context, FilterArgument[] args)
         {
             if (!context.AmbientValues.TryGetValue("ThemeLayout", out dynamic layout))
             {
                 throw new ArgumentException("ThemeLayout missing while invoking 'render_section'");
             }
 
-            if (!context.AmbientValues.TryGetValue("DisplayHelper", out dynamic displayHelper))
+            if (!context.AmbientValues.TryGetValue("DisplayHelper", out var item) || !(item is IDisplayHelper displayHelper))
             {
                 throw new ArgumentException("DisplayHelper missing while invoking 'render_section'");
             }
@@ -27,16 +28,16 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
             var arguments = (FilterArguments)(await new ArgumentsExpression(args).EvaluateAsync(context)).ToObjectValue();
 
             var name = arguments["name"].Or(arguments.At(0)).ToStringValue();
-            var required = arguments.HasNamed("required") ? Convert.ToBoolean(arguments["required"].ToStringValue()) : false;
+            var required = arguments.HasNamed("required") && Convert.ToBoolean(arguments["required"].ToStringValue());
             var zone = layout[name];
 
-            if (required && zone != null && zone.Items.Count == 0)
+            if (required && zone != null && zone is Shape && zone.Items.Count == 0)
             {
                 throw new InvalidOperationException("Zone not found while invoking 'render_section': " + name);
             }
 
-            var htmlContent = await(Task<IHtmlContent>)displayHelper(zone);
-            htmlContent.WriteTo(writer, HtmlEncoder.Default);
+            IHtmlContent htmlContent = await displayHelper.ShapeExecuteAsync(zone);
+            htmlContent.WriteTo(writer, (HtmlEncoder)encoder);
             return Completion.Normal;
         }
     }

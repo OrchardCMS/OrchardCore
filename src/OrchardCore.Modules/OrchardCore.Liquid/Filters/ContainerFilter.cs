@@ -1,12 +1,11 @@
 using System;
+using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
 using OrchardCore.ContentManagement;
-using System.Threading.Tasks;
 
 namespace OrchardCore.Liquid.Filters
 {
-
     public class ContainerFilter : ILiquidFilter
     {
         private readonly IContentManager _contentManager;
@@ -16,7 +15,7 @@ namespace OrchardCore.Liquid.Filters
             _contentManager = contentManager;
         }
 
-        public async Task<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
+        public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
         {
             var contentItem = input.ToObjectValue() as ContentItem;
 

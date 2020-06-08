@@ -3,27 +3,28 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using YesSql;
+using OrchardCore.Mvc.Utilities;
 
 namespace OrchardCore.Lucene.Controllers
 {
+    [Route("api/lucene")]
+    [ApiController]
+    [Authorize(AuthenticationSchemes = "Api"), IgnoreAntiforgeryToken, AllowAnonymous]
     public class ApiController : Controller
     {
         private readonly IAuthorizationService _authorizationService;
         private readonly LuceneQuerySource _luceneQuerySource;
-        private readonly ISession _session;
 
         public ApiController(
             IAuthorizationService authorizationService,
-            LuceneQuerySource luceneQuerySource,
-            ISession session)
+            LuceneQuerySource luceneQuerySource)
         {
             _authorizationService = authorizationService;
             _luceneQuerySource = luceneQuerySource;
-            _session = session;
         }
 
         [HttpPost, HttpGet]
+        [Route("content")]
         public async Task<IActionResult> Content(
             string indexName,
             string query,
@@ -31,7 +32,7 @@ namespace OrchardCore.Lucene.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.QueryLuceneApi))
             {
-                return Unauthorized();
+                return this.ChallengeOrForbid();
             }
 
             var luceneQuery = new LuceneQuery
@@ -41,7 +42,9 @@ namespace OrchardCore.Lucene.Controllers
                 ReturnContentItems = true
             };
 
-            var queryParameters = JsonConvert.DeserializeObject<Dictionary<string, object>>(parameters ?? "");
+            var queryParameters = parameters != null ?
+                JsonConvert.DeserializeObject<Dictionary<string, object>>(parameters)
+                : new Dictionary<string, object>();
 
             var result = await _luceneQuerySource.ExecuteQueryAsync(luceneQuery, queryParameters);
 
@@ -49,6 +52,7 @@ namespace OrchardCore.Lucene.Controllers
         }
 
         [HttpPost, HttpGet]
+        [Route("documents")]
         public async Task<IActionResult> Documents(
             string indexName,
             string query,
@@ -56,7 +60,7 @@ namespace OrchardCore.Lucene.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.QueryLuceneApi))
             {
-                return Unauthorized();
+                return this.ChallengeOrForbid();
             }
 
             var luceneQuery = new LuceneQuery
@@ -65,11 +69,13 @@ namespace OrchardCore.Lucene.Controllers
                 Template = query
             };
 
-            var queryParameters = JsonConvert.DeserializeObject<Dictionary<string, object>>(parameters ?? "");
+            var queryParameters = parameters != null ?
+                JsonConvert.DeserializeObject<Dictionary<string, object>>(parameters)
+                : new Dictionary<string, object>();
 
             var result = await _luceneQuerySource.ExecuteQueryAsync(luceneQuery, queryParameters);
 
-            return new ObjectResult(result);
+            return new ObjectResult(result.Items);
         }
     }
 }

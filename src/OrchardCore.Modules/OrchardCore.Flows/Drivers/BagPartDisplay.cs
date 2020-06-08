@@ -40,9 +40,10 @@ namespace OrchardCore.Flows.Drivers
             {
                 m.BagPart = bagPart;
                 m.BuildPartDisplayContext = context;
-                m.Settings = context.TypePartDefinition.Settings.ToObject<BagPartSettings>();
+                m.Settings = context.TypePartDefinition.GetSettings<BagPartSettings>();
             })
-            .Location("Detail", "Content:5");
+            .Location("Detail", "Content:5")
+            .Location("Summary", "Content:5");
         }
 
         public override IDisplayResult Edit(BagPart bagPart, BuildPartEditorContext context)
@@ -55,29 +56,37 @@ namespace OrchardCore.Flows.Drivers
             });
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(BagPart part, BuildPartEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(BagPart part, UpdatePartEditorContext context)
         {
             var contentItemDisplayManager = _serviceProvider.GetRequiredService<IContentItemDisplayManager>();
             var model = new BagPartEditViewModel { BagPart = part };
 
             await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-            part.ContentItems.Clear();
+            var contentItems = new List<ContentItem>();
 
             for (var i = 0; i < model.Prefixes.Length; i++)
             {
                 var contentItem = await _contentManager.NewAsync(model.ContentTypes[i]);
+                var existing = part.ContentItems.FirstOrDefault(x => String.Equals(x.ContentItemId, model.Prefixes[i], StringComparison.OrdinalIgnoreCase));
+                if (existing != null)
+                {
+                    contentItem.ContentItemId = model.Prefixes[i];
+                }
+
                 var widgetModel = await contentItemDisplayManager.UpdateEditorAsync(contentItem, context.Updater, context.IsNew, htmlFieldPrefix: model.Prefixes[i]);
 
-                part.ContentItems.Add(contentItem);
+                contentItems.Add(contentItem);
             }
+
+            part.ContentItems = contentItems;
 
             return Edit(part, context);
         }
 
         private IEnumerable<ContentTypeDefinition> GetContainedContentTypes(ContentTypePartDefinition typePartDefinition)
         {
-            var settings = typePartDefinition.Settings.ToObject<BagPartSettings>();
+            var settings = typePartDefinition.GetSettings<BagPartSettings>();
             return settings.ContainedContentTypes.Select(contentType => _contentDefinitionManager.GetTypeDefinition(contentType));
         }
     }

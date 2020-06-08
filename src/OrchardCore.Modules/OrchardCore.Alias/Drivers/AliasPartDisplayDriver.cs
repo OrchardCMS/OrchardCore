@@ -1,54 +1,67 @@
-using System.Linq;
 using System.Threading.Tasks;
-using OrchardCore.ContentManagement.Display.ContentDisplay;
-using OrchardCore.ContentManagement.Metadata;
-using OrchardCore.DisplayManagement.ModelBinding;
-using OrchardCore.DisplayManagement.Views;
+using Microsoft.Extensions.Localization;
+using OrchardCore.Alias.Indexes;
 using OrchardCore.Alias.Models;
 using OrchardCore.Alias.Settings;
 using OrchardCore.Alias.ViewModels;
+using OrchardCore.ContentManagement.Display.ContentDisplay;
+using OrchardCore.ContentManagement.Display.Models;
+using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Mvc.ModelBinding;
+using YesSql;
 
 namespace OrchardCore.Alias.Drivers
 {
     public class AliasPartDisplayDriver : ContentPartDisplayDriver<AliasPart>
     {
-        private readonly IContentDefinitionManager _contentDefinitionManager;
+        // Maximum length that MySql can support in an index under utf8 collation.
+        public const int MaxAliasLength = 767;
 
-        public AliasPartDisplayDriver(IContentDefinitionManager contentDefinitionManager)
+        private readonly ISession _session;
+        private readonly IStringLocalizer S;
+
+        public AliasPartDisplayDriver(
+            ISession session,
+            IStringLocalizer<AliasPartDisplayDriver> localizer
+        )
         {
-            _contentDefinitionManager = contentDefinitionManager;
+            _session = session;
+            S = localizer;
         }
 
-        public override IDisplayResult Edit(AliasPart aliasPart)
+        public override IDisplayResult Edit(AliasPart aliasPart, BuildPartEditorContext context)
         {
-            return Initialize<AliasPartViewModel>("AliasPart_Edit", m => BuildViewModel(m, aliasPart));
+            return Initialize<AliasPartViewModel>(GetEditorShapeType(context), m => BuildViewModel(m, aliasPart, context.TypePartDefinition.GetSettings<AliasPartSettings>()));
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(AliasPart model, IUpdateModel updater)
+        public override async Task<IDisplayResult> UpdateAsync(AliasPart model, IUpdateModel updater, UpdatePartEditorContext context)
         {
-            var settings = GetAliasPartSettings(model);
-
             await updater.TryUpdateModelAsync(model, Prefix, t => t.Alias);
-            
-            return Edit(model);
+
+            await ValidateAsync(model, updater);
+
+            return Edit(model, context);
         }
 
-        public AliasPartSettings GetAliasPartSettings(AliasPart part)
+        private void BuildViewModel(AliasPartViewModel model, AliasPart part, AliasPartSettings settings)
         {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(part.ContentItem.ContentType);
-            var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(p => p.PartDefinition.Name == nameof(AliasPart));
-            var settings = contentTypePartDefinition.GetSettings<AliasPartSettings>();
-
-            return settings;
-        }
-
-        private void BuildViewModel(AliasPartViewModel model, AliasPart part)
-        {
-            var settings = GetAliasPartSettings(part);
-
             model.Alias = part.Alias;
             model.AliasPart = part;
             model.Settings = settings;
+        }
+
+        private async Task ValidateAsync(AliasPart alias, IUpdateModel updater)
+        {
+            if (alias.Alias?.Length > MaxAliasLength)
+            {
+                updater.ModelState.AddModelError(Prefix, nameof(alias.Alias), S["Your alias is too long. The alias can only be up to {0} characters.", MaxAliasLength]);
+            }
+
+            if (alias.Alias != null && (await _session.QueryIndex<AliasPartIndex>(o => o.Alias == alias.Alias && o.ContentItemId != alias.ContentItem.ContentItemId).CountAsync()) > 0)
+            {
+                updater.ModelState.AddModelError(Prefix, nameof(alias.Alias), S["Your alias is already in use."]);
+            }
         }
     }
 }

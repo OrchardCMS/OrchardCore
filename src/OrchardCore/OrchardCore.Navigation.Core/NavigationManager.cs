@@ -14,8 +14,6 @@ namespace OrchardCore.Navigation
 {
     public class NavigationManager : INavigationManager
     {
-        private static string[] Schemes = { "http", "https", "tel", "mailto" };
-
         private readonly IEnumerable<INavigationProvider> _navigationProviders;
         private readonly ILogger _logger;
         protected readonly ShellSettings _shellSettings;
@@ -63,7 +61,7 @@ namespace OrchardCore.Navigation
             Merge(menuItems);
 
             // Remove unauthorized menu items
-            menuItems = Authorize(menuItems, actionContext.HttpContext.User);
+            menuItems = await AuthorizeAsync(menuItems, actionContext.HttpContext.User);
 
             // Compute Url and RouteValues properties to Href
             menuItems = ComputeHref(menuItems, actionContext);
@@ -101,7 +99,7 @@ namespace OrchardCore.Navigation
                         items.RemoveAt(j);
 
                         // If the item to merge is more authoritative then use its values
-                        if (cursor.Position != null && source.Position == null)
+                        if (cursor.Priority > source.Priority)
                         {
                             source.Culture = cursor.Culture;
                             source.Href = cursor.Href;
@@ -119,6 +117,30 @@ namespace OrchardCore.Navigation
 
                             source.Classes.Clear();
                             source.Classes.AddRange(cursor.Classes);
+                        }
+
+                        //Fallback to get the same behavior than before having the Priority var
+                        if (cursor.Priority == source.Priority)
+                        {
+                            if (cursor.Position != null && source.Position == null)
+                            {
+                                source.Culture = cursor.Culture;
+                                source.Href = cursor.Href;
+                                source.Id = cursor.Id;
+                                source.LinkToFirstChild = cursor.LinkToFirstChild;
+                                source.LocalNav = cursor.LocalNav;
+                                source.Position = cursor.Position;
+                                source.Resource = cursor.Resource;
+                                source.RouteValues = cursor.RouteValues;
+                                source.Text = cursor.Text;
+                                source.Url = cursor.Url;
+
+                                source.Permissions.Clear();
+                                source.Permissions.AddRange(cursor.Permissions);
+
+                                source.Classes.Clear();
+                                source.Classes.AddRange(cursor.Classes);
+                            }
                         }
                     }
                 }
@@ -155,61 +177,40 @@ namespace OrchardCore.Navigation
         /// <returns></returns>
         private string GetUrl(string menuItemUrl, RouteValueDictionary routeValueDictionary, ActionContext actionContext)
         {
-            string url;
-            if (routeValueDictionary == null || routeValueDictionary.Count == 0)
-            {
-                if (String.IsNullOrEmpty(menuItemUrl))
-                {
-                    return "#";
-                }
-                else
-                {
-                    url = menuItemUrl;
-                }
-            }
-            else
+            if (routeValueDictionary?.Count > 0)
             {
                 if (_urlHelper == null)
                 {
                     _urlHelper = _urlHelperFactory.GetUrlHelper(actionContext);
                 }
 
-                url = _urlHelper.RouteUrl(new UrlRouteContext { Values = routeValueDictionary });
+                return _urlHelper.RouteUrl(new UrlRouteContext { Values = routeValueDictionary });
             }
 
-            if (!string.IsNullOrEmpty(url) &&
-                actionContext?.HttpContext != null &&
-                !(url.StartsWith("/") ||
-                Schemes.Any(scheme => url.StartsWith(scheme + ":"))))
+            if (String.IsNullOrEmpty(menuItemUrl))
             {
-                if (url.StartsWith("~/"))
-                {
-                    if (!String.IsNullOrEmpty(_shellSettings.RequestUrlPrefix))
-                    {
-                        url = _shellSettings.RequestUrlPrefix + "/" + url.Substring(2);
-                    }
-                    else
-                    {
-                        url = url.Substring(2);
-                    }
-                }
-
-                if (!url.StartsWith("#"))
-                {
-                    var appPath = actionContext.HttpContext.Request.PathBase.ToString();
-                    if (appPath == "/")
-                        appPath = "";
-                    url = appPath + "/" + url;
-                }
+                return "#";
             }
 
-            return url;
+            if (menuItemUrl[0] == '/' || menuItemUrl.IndexOf("://", StringComparison.Ordinal) >= 0)
+            {
+                // Return the unescaped url and let the browser generate all uri components.
+                return menuItemUrl;
+            }
+
+            if (menuItemUrl.StartsWith("~/", StringComparison.Ordinal))
+            {
+                menuItemUrl = menuItemUrl.Substring(2);
+            }
+
+            // Use the unescaped 'Value' to not encode some possible reserved delimiters.
+            return actionContext.HttpContext.Request.PathBase.Add('/' + menuItemUrl).Value;
         }
 
         /// <summary>
         /// Updates the items by checking for permissions
         /// </summary>
-        private List<MenuItem> Authorize(IEnumerable<MenuItem> items, ClaimsPrincipal user)
+        private async Task<List<MenuItem>> AuthorizeAsync(IEnumerable<MenuItem> items, ClaimsPrincipal user)
         {
             var filtered = new List<MenuItem>();
 
@@ -228,7 +229,7 @@ namespace OrchardCore.Navigation
                 {
                     foreach (var permission in item.Permissions)
                     {
-                        if (_authorizationService.AuthorizeAsync(user, permission, item.Resource).GetAwaiter().GetResult())
+                        if (await _authorizationService.AuthorizeAsync(user, permission, item.Resource))
                         {
                             filtered.Add(item);
                         }
@@ -238,7 +239,7 @@ namespace OrchardCore.Navigation
                 // Process child items
                 var oldItems = item.Items;
 
-                item.Items = Authorize(item.Items, user).ToList();
+                item.Items = (await AuthorizeAsync(item.Items, user)).ToList();
             }
 
             return filtered;

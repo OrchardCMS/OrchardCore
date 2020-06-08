@@ -6,11 +6,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Modules;
 using OrchardCore.Security.Services;
+using OrchardCore.Users.Handlers;
 using OrchardCore.Users.Models;
-using OrchardCore.Users.Services;
 using OrchardCore.Users.ViewModels;
 
 namespace OrchardCore.Users.Drivers
@@ -18,30 +20,28 @@ namespace OrchardCore.Users.Drivers
     public class UserDisplayDriver : DisplayDriver<User>
     {
         private readonly UserManager<IUser> _userManager;
-        private readonly IUserService _userService;
-        private readonly IRoleProvider _roleProvider;
-        private readonly IUserStore<IUser> _userStore;
-        private readonly IUserEmailStore<IUser> _userEmailStore;
+        private readonly IRoleService _roleService;
         private readonly IUserRoleStore<IUser> _userRoleStore;
-        private readonly IStringLocalizer T;
+        private readonly ILogger _logger;
+        private readonly IStringLocalizer S;
 
         public UserDisplayDriver(
             UserManager<IUser> userManager,
-            IUserService userService,
-            IRoleProvider roleProvider,
-            IUserStore<IUser> userStore,
-            IUserEmailStore<IUser> userEmailStore,
+            IRoleService roleService,
             IUserRoleStore<IUser> userRoleStore,
+            ILogger<UserDisplayDriver> logger,
+            IEnumerable<IUserEventHandler> handlers,
             IStringLocalizer<UserDisplayDriver> stringLocalizer)
         {
             _userManager = userManager;
-            _userService = userService;
-            _roleProvider = roleProvider;
-            _userStore = userStore;
-            _userEmailStore = userEmailStore;
+            _roleService = roleService;
             _userRoleStore = userRoleStore;
-            T = stringLocalizer;
+            _logger = logger;
+            Handlers = handlers;
+            S = stringLocalizer;
         }
+
+        public IEnumerable<IUserEventHandler> Handlers { get; private set; }
 
         public override IDisplayResult Display(User user)
         {
@@ -65,6 +65,7 @@ namespace OrchardCore.Users.Drivers
                 model.Roles = roles;
                 model.EmailConfirmed = user.EmailConfirmed;
                 model.IsNewUser = user.Id == 0 ? true : false; 
+                model.IsEnabled = user.IsEnabled;
             }).Location("Content:1"));
         }
 
@@ -79,38 +80,47 @@ namespace OrchardCore.Users.Drivers
 
             model.UserName = model.UserName?.Trim();
             model.Email = model.Email?.Trim();
-            user.EmailConfirmed = model.EmailConfirmed;
+
+            if (!model.IsEnabled && user.IsEnabled)
+            {
+                user.IsEnabled = model.IsEnabled;
+                var userContext = new UserContext(user);
+                await Handlers.InvokeAsync((handler, context) => handler.DisabledAsync(userContext), userContext, _logger);
+            }
+            else if (model.IsEnabled && !user.IsEnabled)
+            {
+                user.IsEnabled = model.IsEnabled;
+                var userContext = new UserContext(user);
+                await Handlers.InvokeAsync((handler, context) => handler.EnabledAsync(userContext), userContext, _logger);
+            }
 
             if (string.IsNullOrWhiteSpace(model.UserName))
             {
-                context.Updater.ModelState.AddModelError("UserName", T["A user name is required."]);
+                context.Updater.ModelState.AddModelError("UserName", S["A user name is required."]);
             }
 
             if (string.IsNullOrWhiteSpace(model.Email))
             {
-                context.Updater.ModelState.AddModelError("Email", T["An email is required."]);
+                context.Updater.ModelState.AddModelError("Email", S["An email is required."]);
             }
 
-            await _userStore.SetUserNameAsync(user, model.UserName, default(CancellationToken));
-            await _userEmailStore.SetEmailAsync(user, model.Email, default(CancellationToken));
-
-            var userWithSameName = await _userStore.FindByNameAsync(_userManager.NormalizeKey(model.UserName), default(CancellationToken));
+            var userWithSameName = await _userManager.FindByNameAsync(model.UserName);
             if (userWithSameName != null)
             {
-                var userWithSameNameId = await _userStore.GetUserIdAsync(userWithSameName, default(CancellationToken));
+                var userWithSameNameId = await _userManager.GetUserIdAsync(userWithSameName);
                 if (userWithSameNameId != model.Id)
                 {
-                    context.Updater.ModelState.AddModelError(string.Empty, T["The user name is already used."]);
+                    context.Updater.ModelState.AddModelError(string.Empty, S["The user name is already used."]);
                 }
             }
 
-            var userWithSameEmail = await _userEmailStore.FindByEmailAsync(_userManager.NormalizeKey(model.Email), default(CancellationToken));
+            var userWithSameEmail = await _userManager.FindByEmailAsync(model.Email);
             if (userWithSameEmail != null)
             {
-                var userWithSameEmailId = await _userStore.GetUserIdAsync(userWithSameEmail, default(CancellationToken));
+                var userWithSameEmailId = await _userManager.GetUserIdAsync(userWithSameEmail);
                 if (userWithSameEmailId != model.Id)
                 {
-                    context.Updater.ModelState.AddModelError(string.Empty, T["The email is already used."]);
+                    context.Updater.ModelState.AddModelError(string.Empty, S["The email is already used."]);
                 }
             }
 
@@ -121,6 +131,15 @@ namespace OrchardCore.Users.Drivers
                     var password = GenerateRandomPassword();
                     await _userManager.AddPasswordAsync(user, password);
                 }
+                
+                await _userManager.SetUserNameAsync(user, model.UserName);
+                await _userManager.SetEmailAsync(user, model.Email);
+
+                if (model.EmailConfirmed)
+                {
+                    var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                    await _userManager.ConfirmEmailAsync(user, token);
+                }
 
                 var roleNames = model.Roles.Where(x => x.IsSelected).Select(x => x.Role).ToList();
 
@@ -129,7 +148,7 @@ namespace OrchardCore.Users.Drivers
                     // Add new roles
                     foreach (var role in roleNames)
                     {
-                        await _userRoleStore.AddToRoleAsync(user, _userManager.NormalizeKey(role), default(CancellationToken));
+                        await _userRoleStore.AddToRoleAsync(user, _userManager.NormalizeName(role), default(CancellationToken));
                     }
                 }
                 else
@@ -146,15 +165,15 @@ namespace OrchardCore.Users.Drivers
 
                     foreach (var role in rolesToRemove)
                     {
-                        await _userRoleStore.RemoveFromRoleAsync(user, _userManager.NormalizeKey(role), default(CancellationToken));
+                        await _userRoleStore.RemoveFromRoleAsync(user, _userManager.NormalizeName(role), default(CancellationToken));
                     }
 
                     // Add new roles
                     foreach (var role in roleNames)
                     {
-                        if (!await _userRoleStore.IsInRoleAsync(user, _userManager.NormalizeKey(role), default(CancellationToken)))
+                        if (!await _userRoleStore.IsInRoleAsync(user, _userManager.NormalizeName(role), default(CancellationToken)))
                         {
-                            await _userRoleStore.AddToRoleAsync(user, _userManager.NormalizeKey(role), default(CancellationToken));
+                            await _userRoleStore.AddToRoleAsync(user, _userManager.NormalizeName(role), default(CancellationToken));
                         }
                     }
                 }
@@ -165,7 +184,7 @@ namespace OrchardCore.Users.Drivers
 
         private async Task<IEnumerable<string>> GetRoleNamesAsync()
         {
-            var roleNames = await _roleProvider.GetRoleNamesAsync();
+            var roleNames = await _roleService.GetRoleNamesAsync();
             return roleNames.Except(new[] { "Anonymous", "Authenticated" }, StringComparer.OrdinalIgnoreCase);
         }
 
@@ -209,6 +228,5 @@ namespace OrchardCore.Users.Drivers
 
             return password.ToString();
         }
-    }
     }
 }

@@ -84,14 +84,6 @@ namespace OrchardCore.Forms
                 .WithPart("ButtonPart")
                 .Stereotype("Widget"));
 
-            // NoCaptcha
-            _contentDefinitionManager.AlterPartDefinition("NoCaptchaPart", part => part
-                .WithDescription("Provides captcha properties."));
-
-            _contentDefinitionManager.AlterTypeDefinition("NoCaptcha", type => type
-                .WithPart("NoCaptchaPart")
-                .Stereotype("Widget"));
-
             // Validation Summary
             _contentDefinitionManager.AlterPartDefinition("ValidationSummaryPart", part => part
                 .WithDescription("Displays a validation summary."));

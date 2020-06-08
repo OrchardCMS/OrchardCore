@@ -1,5 +1,5 @@
-///<reference path="../../../../OrchardCore.Resources/Assets/jQuery/Typings/jquery-latest.d.ts" />
-///<reference path="../../../../OrchardCore.Resources/Assets/jQuery/Typings/bootstrap-3.d.ts" />
+///<reference path="../../../node_modules/@types/jquery/index.d.ts" />
+///<reference path="../../../node_modules/@types/bootstrap/index.d.ts" />
 
 interface JQuery {
     workflowEditor(): JQuery;

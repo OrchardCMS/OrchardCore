@@ -1,9 +1,10 @@
-using Microsoft.AspNetCore.Hosting;
+using System.IO;
 using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Hosting;
 
 namespace OrchardCore.Tests.Stubs
 {
-    public class StubHostingEnvironment : IHostingEnvironment
+    public class StubHostingEnvironment : IHostEnvironment
     {
         private string _rootPath;
         private IFileProvider _contentRootFileProvider;
@@ -23,13 +24,14 @@ namespace OrchardCore.Tests.Stubs
 
         public string ContentRootPath
         {
-            get { return _rootPath; }
+            get { return _rootPath ?? Directory.GetCurrentDirectory(); }
             set
             {
                 _contentRootFileProvider = new PhysicalFileProvider(value);
                 _rootPath = value;
             }
         }
+
         public IFileProvider ContentRootFileProvider
         {
             get { return _contentRootFileProvider; }

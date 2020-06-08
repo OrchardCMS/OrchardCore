@@ -1,6 +1,5 @@
 using System;
 using System.Threading.Tasks;
-using OrchardCore.Modules;
 
 namespace OrchardCore.Modules
 {
@@ -25,7 +24,7 @@ namespace OrchardCore.Modules
                     break;
             }
 
-            return clock.ConvertToTimeZone(new DateTimeOffset(dateTime), timeZone);
+            return clock.ConvertToTimeZone(new DateTimeOffset(dateTimeUtc), timeZone);
         }
 
         /// <summary>
@@ -47,7 +46,7 @@ namespace OrchardCore.Modules
                     break;
             }
 
-            return localClock.ConvertToLocalAsync(new DateTimeOffset(dateTime));
+            return localClock.ConvertToLocalAsync(new DateTimeOffset(dateTimeUtc));
         }
     }
 }

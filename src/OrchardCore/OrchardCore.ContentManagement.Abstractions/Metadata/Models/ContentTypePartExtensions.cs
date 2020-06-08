@@ -7,7 +7,7 @@ namespace OrchardCore.ContentManagement.Metadata.Models
     {
         public static string DisplayName(this ContentTypePartDefinition typePart)
         {
-            var displayName = typePart.Settings.ToObject<ContentTypePartSettings>().DisplayName;
+            var displayName = typePart.GetSettings<ContentTypePartSettings>().DisplayName;
 
             if (String.IsNullOrEmpty(displayName))
             {
@@ -19,7 +19,7 @@ namespace OrchardCore.ContentManagement.Metadata.Models
 
         public static string Description(this ContentTypePartDefinition typePart)
         {
-            var description = typePart.Settings.ToObject<ContentTypePartSettings>().Description;
+            var description = typePart.GetSettings<ContentTypePartSettings>().Description;
 
             if (String.IsNullOrEmpty(description))
             {
@@ -31,7 +31,12 @@ namespace OrchardCore.ContentManagement.Metadata.Models
 
         public static string Editor(this ContentTypePartDefinition typePart)
         {
-            return typePart.Settings.ToObject<ContentTypePartSettings>().Editor;
+            return typePart.GetSettings<ContentTypePartSettings>().Editor;
+        }
+
+        public static string DisplayMode(this ContentTypePartDefinition typePart)
+        {
+            return typePart.GetSettings<ContentTypePartSettings>().DisplayMode;
         }
     }
 }

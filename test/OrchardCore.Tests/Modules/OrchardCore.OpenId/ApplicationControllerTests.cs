@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -15,7 +17,6 @@ using OrchardCore.Environment.Shell.Descriptor.Models;
 using OrchardCore.OpenId.Abstractions.Managers;
 using OrchardCore.OpenId.Controllers;
 using OrchardCore.OpenId.ViewModels;
-using OrchardCore.Security.Services;
 using OrchardCore.Settings;
 using Xunit;
 
@@ -31,14 +32,13 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
                 Mock.Of<ISiteService>(),
                 Mock.Of<IStringLocalizer<ApplicationController>>(),
                 Mock.Of<IAuthorizationService>(),
-                Mock.Of<IRoleProvider>(),
                 Mock.Of<IOpenIdApplicationManager>(),
                 Mock.Of<IHtmlLocalizer<ApplicationController>>(),
                 Mock.Of<INotifier>(),
                 Mock.Of<ShellDescriptor>());
 
             var result = await controller.Create();
-            Assert.IsType<UnauthorizedResult>(result);
+            Assert.IsType<ForbidResult>(result);
         }
 
         [Fact]
@@ -49,7 +49,6 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
                 Mock.Of<ISiteService>(),
                 Mock.Of<IStringLocalizer<ApplicationController>>(),
                 MockAuthorizationServiceMock().Object,
-                Mock.Of<IRoleProvider>(),
                 Mock.Of<IOpenIdApplicationManager>(),
                 Mock.Of<IHtmlLocalizer<ApplicationController>>(),
                 Mock.Of<INotifier>(),
@@ -62,7 +61,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
         }
 
         [Theory]
-        [InlineData(OpenIddictConstants.ClientTypes.Public,"ClientSecret", true,false, false)]
+        [InlineData(OpenIddictConstants.ClientTypes.Public, "ClientSecret", true, false, false)]
         [InlineData(OpenIddictConstants.ClientTypes.Public, "", true, false, true)]
         [InlineData(OpenIddictConstants.ClientTypes.Confidential, "ClientSecret", true, false, true)]
         [InlineData(OpenIddictConstants.ClientTypes.Confidential, "", true, false, false)]
@@ -73,7 +72,6 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
                 Mock.Of<ISiteService>(),
                 MockStringLocalizer().Object,
                 MockAuthorizationServiceMock().Object,
-                Mock.Of<IRoleProvider>(),
                 Mock.Of<IOpenIdApplicationManager>(),
                 Mock.Of<IHtmlLocalizer<ApplicationController>>(),
                 Mock.Of<INotifier>(),
@@ -98,19 +96,17 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
             Assert.Equal(expectValidModel, controller.ModelState.IsValid);
         }
 
-        [Theory(Skip = "Multi uri is not implemented yet see https://github.com/OrchardCMS/OrchardCore/pull/2165")]
+        [Theory]
         [InlineData("nonUrlString", false)]
         [InlineData("http://localhost http://localhost:8080 nonUrlString", false)]
         [InlineData("http://localhost http://localhost:8080", true)]
         public async Task RedirectUrisAreValid(string uris, bool expectValidModel)
         {
-
             var controller = new ApplicationController(
                 Mock.Of<IShapeFactory>(),
                 Mock.Of<ISiteService>(),
                 MockStringLocalizer().Object,
                 MockAuthorizationServiceMock().Object,
-                Mock.Of<IRoleProvider>(),
                 Mock.Of<IOpenIdApplicationManager>(),
                 Mock.Of<IHtmlLocalizer<ApplicationController>>(),
                 Mock.Of<INotifier>(),
@@ -122,6 +118,18 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
             model.Type = OpenIddictConstants.ClientTypes.Public;
             model.AllowAuthorizationCodeFlow = true;
             model.RedirectUris = uris;
+
+            var validationContext = new ValidationContext(model);
+            var localizerMock = new Mock<IStringLocalizer<CreateOpenIdApplicationViewModel>>();
+            localizerMock.Setup(x => x[It.IsAny<string>(), It.IsAny<object[]>()])
+                .Returns((string name, object[] args) => new LocalizedString(name, string.Format(name, args)));
+            validationContext.InitializeServiceProvider((t) => localizerMock.Object);
+
+            foreach (var validation in model.Validate(validationContext))
+            {
+                controller.ModelState.AddModelError(validation.MemberNames.First(), validation.ErrorMessage);
+            }
+
             var result = await controller.Create(model);
             if (expectValidModel)
             {
@@ -158,7 +166,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
         {
             var localizerMock = new Mock<IStringLocalizer<ApplicationController>>();
             localizerMock.Setup(x => x[It.IsAny<string>()]).Returns(new LocalizedString("TextToLocalize", "localizedText"));
-            
+
             return localizerMock;
         }
     }
