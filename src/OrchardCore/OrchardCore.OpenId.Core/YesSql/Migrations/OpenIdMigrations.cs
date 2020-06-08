@@ -109,8 +109,6 @@ namespace OrchardCore.OpenId.YesSql.Migrations
                     new[] { nameof(OpenIdAuthorizationIndex.ApplicationId), nameof(OpenIdAuthorizationIndex.Subject) });
                 table.CreateIndex($"IX_{nameof(OpenIdAuthorizationIndex)}_{nameof(OpenIdAuthorizationIndex.ApplicationId)}_{nameof(OpenIdAuthorizationIndex.Subject)}_{nameof(OpenIdAuthorizationIndex.Status)}",
                     new[] { nameof(OpenIdAuthorizationIndex.ApplicationId), nameof(OpenIdAuthorizationIndex.Subject), nameof(OpenIdAuthorizationIndex.Status) });
-                table.CreateIndex($"IX_{nameof(OpenIdAuthorizationIndex)}_{nameof(OpenIdAuthorizationIndex.ApplicationId)}_{nameof(OpenIdAuthorizationIndex.Subject)}_{nameof(OpenIdAuthorizationIndex.Status)}_{nameof(OpenIdAuthorizationIndex.Type)}",
-                    new[] { nameof(OpenIdAuthorizationIndex.ApplicationId), nameof(OpenIdAuthorizationIndex.Subject), nameof(OpenIdAuthorizationIndex.Status), nameof(OpenIdAuthorizationIndex.Type) });
                 table.CreateIndex($"IX_{nameof(OpenIdAuthorizationIndex)}_{nameof(OpenIdAuthorizationIndex.Status)}_{nameof(OpenIdAuthorizationIndex.Type)}_{nameof(OpenIdAuthorizationIndex.AuthorizationId)}",
                     new[] { nameof(OpenIdAuthorizationIndex.Status), nameof(OpenIdAuthorizationIndex.Type), nameof(OpenIdAuthorizationIndex.AuthorizationId) });
             });
@@ -134,12 +132,22 @@ namespace OrchardCore.OpenId.YesSql.Migrations
                     new[] { nameof(OpenIdTokenIndex.ApplicationId), nameof(OpenIdTokenIndex.Subject) });
                 table.CreateIndex($"IX_{nameof(OpenIdTokenIndex)}_{nameof(OpenIdTokenIndex.ApplicationId)}_{nameof(OpenIdTokenIndex.Subject)}_{nameof(OpenIdTokenIndex.Status)}",
                     new[] { nameof(OpenIdTokenIndex.ApplicationId), nameof(OpenIdTokenIndex.Subject), nameof(OpenIdTokenIndex.Status) });
-                table.CreateIndex($"IX_{nameof(OpenIdTokenIndex)}_{nameof(OpenIdTokenIndex.ApplicationId)}_{nameof(OpenIdTokenIndex.Subject)}_{nameof(OpenIdTokenIndex.Status)}_{nameof(OpenIdTokenIndex.Type)}",
-                    new[] { nameof(OpenIdTokenIndex.ApplicationId), nameof(OpenIdTokenIndex.Subject), nameof(OpenIdTokenIndex.Status), nameof(OpenIdTokenIndex.Type) });
                 table.CreateIndex($"IX_{nameof(OpenIdTokenIndex)}_{nameof(OpenIdTokenIndex.Status)}_{nameof(OpenIdTokenIndex.ExpirationDate)}",
                     new[] { nameof(OpenIdTokenIndex.Status), nameof(OpenIdTokenIndex.ExpirationDate) });
             });
-
+            if (SchemaBuilder.Dialect.Name != "MySql")
+            {
+                SchemaBuilder.AlterTable(nameof(OpenIdAuthorizationIndex), table =>
+                {
+                    table.CreateIndex($"IX_{nameof(OpenIdAuthorizationIndex)}_{nameof(OpenIdAuthorizationIndex.ApplicationId)}_{nameof(OpenIdAuthorizationIndex.Subject)}_{nameof(OpenIdAuthorizationIndex.Status)}_{nameof(OpenIdAuthorizationIndex.Type)}",
+                        new[] { nameof(OpenIdAuthorizationIndex.ApplicationId), nameof(OpenIdAuthorizationIndex.Subject), nameof(OpenIdAuthorizationIndex.Status), nameof(OpenIdAuthorizationIndex.Type) });
+                });
+                SchemaBuilder.AlterTable(nameof(OpenIdTokenIndex), table =>
+                {
+                    table.CreateIndex($"IX_{nameof(OpenIdTokenIndex)}_{nameof(OpenIdTokenIndex.ApplicationId)}_{nameof(OpenIdTokenIndex.Subject)}_{nameof(OpenIdTokenIndex.Status)}_{nameof(OpenIdTokenIndex.Type)}",
+                    new[] { nameof(OpenIdTokenIndex.ApplicationId), nameof(OpenIdTokenIndex.Subject), nameof(OpenIdTokenIndex.Status), nameof(OpenIdTokenIndex.Type) });
+                });
+            }
             return 4;
         }
     }
