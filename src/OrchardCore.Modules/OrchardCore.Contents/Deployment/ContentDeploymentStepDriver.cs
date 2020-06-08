@@ -24,6 +24,7 @@ namespace OrchardCore.Contents.Deployment
             return Initialize<ContentDeploymentStepViewModel>("ContentDeploymentStep_Fields_Edit", model =>
             {
                 model.ContentTypes = step.ContentTypes;
+                model.ExportDatesAndIds = step.ExportDatesAndIds;
             }).Location("Content");
         }
 
@@ -32,7 +33,7 @@ namespace OrchardCore.Contents.Deployment
             // Initializes the value to empty otherwise the model is not updated if no type is selected.
             step.ContentTypes = Array.Empty<string>();
 
-            await updater.TryUpdateModelAsync(step, Prefix, x => x.ContentTypes);
+            await updater.TryUpdateModelAsync(step, Prefix, x => x.ContentTypes, x => x.ExportDatesAndIds);
 
             return Edit(step);
         }
