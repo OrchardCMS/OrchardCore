@@ -1,0 +1,11 @@
+@model AllFeaturesDeploymentStepViewModel
+
+<h5>@T["All Features"]</h5>
+
+<div class="form-group">
+    <div class="custom-control custom-checkbox">
+        <input type="checkbox" class="custom-control-input" asp-for="ExportDisableFeatures" />
+        <label class="custom-control-label" asp-for="ExportDisableFeatures">@T["Export disable features"]</label>
+        <span class="hint">@T["Check if the disable features have to be exported."]</span>
+    </div>
+</div>
