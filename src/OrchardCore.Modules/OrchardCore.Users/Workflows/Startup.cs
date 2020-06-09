@@ -22,4 +22,13 @@ namespace OrchardCore.Users.Workflows
             services.AddActivity<AssignUserRoleTask, AssignUserRoleTaskDisplay>();
         }
     }
+
+    [RequireFeatures("OrchardCore.Workflows", "OrchardCore.Users.ResetPassword")]
+    public class ResetPasswordStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddActivity<ResetUserPasswordTask, ResetUserPasswordTaskDisplay>();
+        }
+    }
 }
