@@ -15,6 +15,13 @@
     <span class="hint">@T["The sender's email address. Required if not the same as the From email address. With Liquid support."]</span>
 </div>
 
+<div class="form-group" asp-validation-class-for="ReplyToExpression">
+    <label asp-for="SenderExpression">@T["ReplyTo"]</label>
+    <input type="text" asp-for="ReplyToExpression" class="form-control code" />
+    <span asp-validation-for="ReplyToExpression"></span>
+    <span class="hint">@T["The \"reply to\" email address. Required if not the same as the From email address. With Liquid support."]</span>
+</div>
+
 <div class="form-group" asp-validation-class-for="RecipientsExpression">
     <label asp-for="RecipientsExpression">@T["Recipients"]</label>
     <input type="text" asp-for="RecipientsExpression" class="form-control code" />
