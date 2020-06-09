@@ -13,6 +13,6 @@ namespace OrchardCore.Contents.Deployment
         }
 
         public string[] ContentTypes { get; set; }
-        public bool ExportDatesAndIds { get; set; } = true;
+        public bool ExportAsSetupRecipe { get; set; }
     }
 }

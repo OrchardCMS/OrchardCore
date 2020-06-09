@@ -12,6 +12,6 @@ namespace OrchardCore.Contents.Deployment
             Name = "AllContent";
         }
 
-        public bool ExportDatesAndIds { get; set; } = true;
+        public bool ExportAsSetupRecipe { get; set; }
     }
 }

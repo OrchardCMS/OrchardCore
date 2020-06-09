@@ -22,13 +22,13 @@ namespace OrchardCore.Contents.Deployment
         {
             return Initialize<AllContentDeploymentStepViewModel>("AllContentDeploymentStep_Fields_Edit", model =>
             {
-                model.ExportDatesAndIds = step.ExportDatesAndIds;
+                model.ExportAsSetupRecipe = step.ExportAsSetupRecipe;
             }).Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(AllContentDeploymentStep step, IUpdateModel updater)
         {            
-            await updater.TryUpdateModelAsync(step, Prefix, x => x.ExportDatesAndIds);
+            await updater.TryUpdateModelAsync(step, Prefix, x => x.ExportAsSetupRecipe);
 
             return Edit(step);
         }
