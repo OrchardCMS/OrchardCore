@@ -102,7 +102,10 @@ namespace OrchardCore.DynamicCache.Liquid
                 debugContent.WriteLine($"   EXPIRES AFTER: {cacheContext.ExpiresAfter}");
                 debugContent.WriteLine($" EXPIRES SLIDING: {cacheContext.ExpiresSliding}");
                 debugContent.WriteLine("-->");
+
                 debugContent.WriteLine(content);
+
+                debugContent.WriteLine();
                 debugContent.WriteLine($"<!-- END CACHE BLOCK: {cacheContext.CacheId} -->");
 
                 content = debugContent.ToString();

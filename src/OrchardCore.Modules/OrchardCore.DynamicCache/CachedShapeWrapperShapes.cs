@@ -27,6 +27,7 @@ namespace OrchardCore.DynamicCache
 
             contentBuilder.AppendHtml(metadata.ChildContent);
 
+            contentBuilder.AppendLine();
             contentBuilder.AppendHtmlLine($"<!-- END CACHED SHAPE: {cache.CacheId} -->");
 
             return contentBuilder;
