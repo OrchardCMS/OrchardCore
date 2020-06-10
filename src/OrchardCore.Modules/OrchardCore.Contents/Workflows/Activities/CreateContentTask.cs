@@ -71,17 +71,22 @@ namespace OrchardCore.Contents.Workflows.Activities
             {
                 if (InlineEvent.Name == nameof(ContentUpdatedEvent))
                 {
-                    throw new InvalidOperationException($"The '{nameof(CreateContentTask)}' can't update the content item and then trigger a '{nameof(ContentUpdatedEvent)}', as it is executed inline from the same starting event, which would result in an infinitive loop.");
+                    throw new InvalidOperationException($"The '{nameof(CreateContentTask)}' can't update the content item as it is executed inline from a starting '{nameof(ContentUpdatedEvent)}' of the same content type, which would result in an infinitive loop.");
                 }
 
                 if (InlineEvent.Name == nameof(ContentCreatedEvent))
                 {
-                    throw new InvalidOperationException($"The '{nameof(CreateContentTask)}' can't create the content item and then trigger a '{nameof(ContentCreatedEvent)}', as it is executed inline from the same starting event, which would result in an infinitive loop.");
+                    throw new InvalidOperationException($"The '{nameof(CreateContentTask)}' can't create the content item as it is executed inline from a starting '{nameof(ContentCreatedEvent)}' of the same content type, which would result in an infinitive loop.");
                 }
 
                 if (Publish && InlineEvent.Name == nameof(ContentPublishedEvent))
                 {
-                    throw new InvalidOperationException($"The '{nameof(CreateContentTask)}' can't publish the content item and then trigger a '{nameof(ContentPublishedEvent)}', as it is executed inline from the same starting event, which would result in an infinitive loop.");
+                    throw new InvalidOperationException($"The '{nameof(CreateContentTask)}' can't publish the content item as it is executed inline from a starting '{nameof(ContentPublishedEvent)}' of the same content type, which would result in an infinitive loop.");
+                }
+
+                if (!Publish && InlineEvent.Name == nameof(ContentDraftSavedEvent))
+                {
+                    throw new InvalidOperationException($"The '{nameof(CreateContentTask)}' can't create the content item as it is executed inline from a starting '{nameof(ContentDraftSavedEvent)}' of the same content type, which would result in an infinitive loop.");
                 }
             }
 
@@ -93,10 +98,19 @@ namespace OrchardCore.Contents.Workflows.Activities
                 contentItem.Merge(JObject.Parse(contentProperties));
             }
 
-            var result = await ContentManager.UpdateValidateAndCreateAsync(contentItem, Publish ? VersionOptions.Published : VersionOptions.Draft);
+            var result = await ContentManager.UpdateValidateAndCreateAsync(contentItem, VersionOptions.Draft);
 
             if (result.Succeeded)
             {
+                if (Publish)
+                {
+                    await ContentManager.PublishAsync(contentItem);
+                }
+                else
+                {
+                    await ContentManager.SaveDraftAsync(contentItem);
+                }
+
                 workflowContext.CorrelationId = contentItem.ContentItemId;
                 workflowContext.Properties[ContentEventConstants.ContentItemInputKey] = contentItem;
                 workflowContext.LastResult = contentItem;

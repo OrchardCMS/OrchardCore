@@ -55,7 +55,7 @@ namespace OrchardCore.Contents.Workflows.Activities
 
             if (InlineEvent.IsStart && InlineEvent.ContentType == contentItem.ContentType && InlineEvent.Name == nameof(ContentPublishedEvent))
             {
-                throw new InvalidOperationException($"The '{nameof(PublishContentTask)}' can't publish the content item and then trigger a '{nameof(ContentPublishedEvent)}', as it is executed inline from the same starting event, which would result in an infinitive loop.");
+                throw new InvalidOperationException($"The '{nameof(PublishContentTask)}' can't publish the content item as it is executed inline from a starting '{nameof(ContentPublishedEvent)}' of the same content type, which would result in an infinitive loop.");
             }
 
             await ContentManager.PublishAsync(contentItem);

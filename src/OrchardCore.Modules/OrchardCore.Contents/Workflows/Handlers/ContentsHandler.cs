@@ -27,6 +27,11 @@ namespace OrchardCore.Contents.Workflows.Handlers
             return TriggerWorkflowEventAsync(nameof(ContentUpdatedEvent), context.ContentItem);
         }
 
+        public override Task DraftSavedAsync(SaveDraftContentContext context)
+        {
+            return TriggerWorkflowEventAsync(nameof(ContentDraftSavedEvent), context.ContentItem);
+        }
+
         public override Task PublishedAsync(PublishContentContext context)
         {
             return TriggerWorkflowEventAsync(nameof(ContentPublishedEvent), context.ContentItem);

@@ -55,7 +55,7 @@ namespace OrchardCore.Contents.Workflows.Activities
 
             if (InlineEvent.IsStart && InlineEvent.ContentType == contentItem.ContentType && InlineEvent.Name == nameof(ContentDeletedEvent))
             {
-                throw new InvalidOperationException($"The '{nameof(DeleteContentTask)}' can't delete the content item and then trigger a '{nameof(ContentDeletedEvent)}', as it is executed inline from the same starting event, which would result in an infinitive loop.");
+                throw new InvalidOperationException($"The '{nameof(DeleteContentTask)}' can't delete the content item as it is executed inline from a starting '{nameof(ContentDeletedEvent)}' of the same content type, which would result in an infinitive loop.");
             }
 
             await ContentManager.RemoveAsync(contentItem);

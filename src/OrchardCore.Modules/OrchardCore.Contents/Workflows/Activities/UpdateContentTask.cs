@@ -76,6 +76,19 @@ namespace OrchardCore.Contents.Workflows.Activities
 
             var inlineEventOfSameContentItemId = String.Equals(InlineEvent.ContentItemId, contentItemId, StringComparison.OrdinalIgnoreCase);
 
+            if (inlineEventOfSameContentItemId)
+            {
+                if (InlineEvent.Name == nameof(ContentPublishedEvent))
+                {
+                    throw new InvalidOperationException($"The '{nameof(UpdateContentTask)}' can't update the content item as it is executed inline from a '{nameof(ContentPublishedEvent)}' of the same content item, please use an event that is triggered earlier.");
+                }
+
+                if (InlineEvent.Name == nameof(ContentDraftSavedEvent))
+                {
+                    throw new InvalidOperationException($"The '{nameof(UpdateContentTask)}' can't update the content item as it is executed inline from a '{nameof(ContentDraftSavedEvent)}' of the same content item, please use an event that is triggered earlier.");
+                }
+            }
+
             ContentItem contentItem = null;
 
             if (!inlineEventOfSameContentItemId)
@@ -96,12 +109,17 @@ namespace OrchardCore.Contents.Workflows.Activities
             {
                 if (InlineEvent.Name == nameof(ContentUpdatedEvent))
                 {
-                    throw new InvalidOperationException($"The '{nameof(UpdateContentTask)}' can't update the content item and then trigger a '{nameof(ContentUpdatedEvent)}', as it is executed inline from the same starting event, which would result in an infinitive loop.");
+                    throw new InvalidOperationException($"The '{nameof(UpdateContentTask)}' can't update the content item as it is executed inline from a starting '{nameof(ContentUpdatedEvent)}' of the same content type, which would result in an infinitive loop.");
                 }
 
                 if (Publish && InlineEvent.Name == nameof(ContentPublishedEvent))
                 {
-                    throw new InvalidOperationException($"The '{nameof(UpdateContentTask)}' can't publish the content item and then trigger a '{nameof(ContentPublishedEvent)}', as it is executed inline from the same starting event, which would result in an infinitive loop.");
+                    throw new InvalidOperationException($"The '{nameof(UpdateContentTask)}' can't publish the content item as it is executed inline from a starting '{nameof(ContentPublishedEvent)}' of the same content type, which would result in an infinitive loop.");
+                }
+
+                if (!Publish && InlineEvent.Name == nameof(ContentDraftSavedEvent))
+                {
+                    throw new InvalidOperationException($"The '{nameof(UpdateContentTask)}' can't update the content item as it is executed inline from a starting '{nameof(ContentDraftSavedEvent)}' of the same content type, which would result in an infinitive loop.");
                 }
             }
 
@@ -120,9 +138,16 @@ namespace OrchardCore.Contents.Workflows.Activities
 
             if (result.Succeeded)
             {
-                if (Publish && !inlineEventOfSameContentItemId)
+                if (!inlineEventOfSameContentItemId)
                 {
-                    await ContentManager.PublishAsync(contentItem);
+                    if (Publish)
+                    {
+                        await ContentManager.PublishAsync(contentItem);
+                    }
+                    else
+                    {
+                        await ContentManager.SaveDraftAsync(contentItem);
+                    }
                 }
 
                 workflowContext.CorrelationId = contentItem.ContentItemId;

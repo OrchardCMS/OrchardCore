@@ -242,6 +242,22 @@ namespace OrchardCore.ContentManagement
             return await LoadAsync(contentItem);
         }
 
+        public async Task SaveDraftAsync(ContentItem contentItem)
+        {
+            if (!contentItem.Latest || contentItem.Published)
+            {
+                return;
+            }
+
+            var context = new SaveDraftContentContext(contentItem);
+
+            await Handlers.InvokeAsync((handler, context) => handler.DraftSavingAsync(context), context, _logger);
+
+            _session.Save(contentItem);
+
+            await ReversedHandlers.InvokeAsync((handler, context) => handler.DraftSavedAsync(context), context, _logger);
+        }
+
         public async Task PublishAsync(ContentItem contentItem)
         {
             if (contentItem.Published)
@@ -713,6 +729,10 @@ namespace OrchardCore.ContentManagement
                 await Handlers.InvokeAsync((handler, context) => handler.PublishingAsync(context), publishContext, _logger);
                 await ReversedHandlers.InvokeAsync((handler, context) => handler.PublishedAsync(context), publishContext, _logger);
             }
+            else
+            {
+                await SaveDraftAsync(contentItem);
+            }
 
             // Restore values that may have been altered by handlers.
             if (modifiedUtc.HasValue)
@@ -804,6 +824,10 @@ namespace OrchardCore.ContentManagement
 
                 await Handlers.InvokeAsync((handler, context) => handler.PublishingAsync(context), publishContext, _logger);
                 await ReversedHandlers.InvokeAsync((handler, context) => handler.PublishedAsync(context), publishContext, _logger);
+            }
+            else
+            {
+                await SaveDraftAsync(updatingVersion);
             }
 
             // Restore values that may have been altered by handlers.

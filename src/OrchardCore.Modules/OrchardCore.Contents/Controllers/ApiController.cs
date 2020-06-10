@@ -105,7 +105,7 @@ namespace OrchardCore.Content.Controllers
                 var newContentItem = await _contentManager.NewAsync(model.ContentType);
                 newContentItem.Merge(model);
 
-                var result = await _contentManager.UpdateValidateAndCreateAsync(newContentItem, draft ? VersionOptions.DraftRequired : VersionOptions.Published);
+                var result = await _contentManager.UpdateValidateAndCreateAsync(newContentItem, VersionOptions.Draft);
 
                 if (!result.Succeeded)
                 {
@@ -154,11 +154,15 @@ namespace OrchardCore.Content.Controllers
                         detail: String.Join(", ", ModelState.Values.SelectMany(x => x.Errors.Select(x => x.ErrorMessage))),
                         statusCode: (int)HttpStatusCode.BadRequest);
                 }
+            }
 
-                if (!draft)
-                {
-                    await _contentManager.PublishAsync(contentItem);
-                }
+            if (!draft)
+            {
+                await _contentManager.PublishAsync(contentItem);
+            }
+            else
+            {
+                await _contentManager.SaveDraftAsync(contentItem);
             }
 
             return Ok(contentItem);
