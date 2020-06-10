@@ -89,6 +89,10 @@ namespace OrchardCore.Settings.Deployment
                         data.Add(new JProperty(nameof(ISite.HomeRoute), JObject.FromObject(site.HomeRoute)));
                         break;
 
+                    case "CacheMode":
+                        data.Add(new JProperty(nameof(ISite.CacheMode), site.CacheMode));
+                        break;
+
                     default:
                         data.Add(new JProperty(settingName, site.Properties[settingName]));
                         break;
