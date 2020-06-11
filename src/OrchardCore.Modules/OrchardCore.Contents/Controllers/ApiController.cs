@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
+using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.Contents;
 using OrchardCore.Mvc.Utilities;
@@ -15,6 +16,8 @@ namespace OrchardCore.Content.Controllers
     [Authorize(AuthenticationSchemes = "Api"), IgnoreAntiforgeryToken, AllowAnonymous]
     public class ApiController : Controller
     {
+        private static readonly JsonMergeSettings UpdateJsonMergeSettings = new JsonMergeSettings { MergeArrayHandling = MergeArrayHandling.Replace };
+
         private readonly IContentManager _contentManager;
         private readonly IAuthorizationService _authorizationService;
         private readonly IStringLocalizer S;
@@ -32,6 +35,11 @@ namespace OrchardCore.Content.Controllers
         [Route("{contentItemId}"), HttpGet]
         public async Task<IActionResult> Get(string contentItemId)
         {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.AccessContentApi))
+            {
+                return this.ChallengeOrForbid();
+            }
+
             var contentItem = await _contentManager.GetAsync(contentItemId);
 
             if (contentItem == null)
@@ -39,8 +47,7 @@ namespace OrchardCore.Content.Controllers
                 return NotFound();
             }
 
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.GetApiContent) ||
-                !await _authorizationService.AuthorizeAsync(User, Permissions.ViewContent, contentItem))
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ViewContent, contentItem))
             {
                 return this.ChallengeOrForbid();
             }
@@ -52,6 +59,11 @@ namespace OrchardCore.Content.Controllers
         [Route("{contentItemId}")]
         public async Task<IActionResult> Delete(string contentItemId)
         {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.AccessContentApi))
+            {
+                return this.ChallengeOrForbid();
+            }
+
             var contentItem = await _contentManager.GetAsync(contentItemId);
 
             if (contentItem == null)
@@ -72,6 +84,11 @@ namespace OrchardCore.Content.Controllers
         [HttpPost]
         public async Task<IActionResult> Post(ContentItem model, bool draft = false)
         {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.AccessContentApi))
+            {
+                return this.ChallengeOrForbid();
+            }
+
             // It is really important to keep the proper method calls order with the ContentManager
             // so that all event handlers gets triggered in the right sequence.
 
@@ -107,7 +124,7 @@ namespace OrchardCore.Content.Controllers
                     return this.ChallengeOrForbid();
                 }
 
-                contentItem.Merge(model);
+                contentItem.Merge(model, UpdateJsonMergeSettings);
 
                 await _contentManager.UpdateAsync(contentItem);
                 var result = await _contentManager.ValidateAsync(contentItem);

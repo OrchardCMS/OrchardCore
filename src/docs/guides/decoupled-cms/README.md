@@ -72,7 +72,7 @@ This will allow for the Razor Pages to be reloaded without the need to recompile
 ```
 
 !!! hint "Nightly builds"
-    If you are using the nightly builds of Orchard Core (MyGet feed) then you should use the package `OrchardCore.Application.Cms.Core.Targets` instead.
+    If you are using the nightly builds of Orchard Core (preview feed) then you should use the package `OrchardCore.Application.Cms.Core.Targets` instead.
 
 This will add the packages from Orchard Core CMS
 
@@ -280,7 +280,7 @@ Expanding the `MarkdownBodyPart` node reveals the `Markdown` field with the cont
 ```
 
 !!! warning "Release packages"
-    If you are not using the latest MyGet packages then this `ConsoleLog` method is not available and the project won't compile. You can then skip this line.
+    If you are not using the preview feed packages then this `ConsoleLog` method is not available and the project won't compile. You can then skip this line.
 
 - Refresh the blog post page to reveal the Markdown text.
 - Finally, we can process the Markdown content and convert it to HTML with this code:
@@ -325,7 +325,7 @@ We can now update the Razor Page to use the alias instead of the content item id
 ```
 
 !!! warning "Release packages"
-    If you are not using the latest MyGet packages then this method is called `GetContentItemByAliasAsync(string alias)`.
+    If you are not using preview feed packages then this method is called `GetContentItemByAliasAsync(string alias)`.
 
 The changes consist in using the `slug` name in both the route and the local property, and also use a new method to load a content item with an alias.
 
@@ -334,7 +334,7 @@ The changes consist in using the `slug` name in both the route and the local pro
 ### Generating the slug using a custom pattern
 
 !!! warning "Skip on dev"
-    This step is unnecessary if you use the packages from the MyGet feed, or tge source code from the __dev__ branch. If you still follow these steps you'll notice the configuration is already defined.
+    This step is unnecessary if you use the packages from the preview feed, or the source code from the __dev__ branch. If you still follow these steps you'll notice the configuration is already defined.
 
 The __Alias Part__ provides some custom settings in order to let it be generated automatically. In our case we want it to be generated from the __Title__, automatically. To provide such patterns the CMS uses a templating language named __Liquid__, together with some custom functions to manipulate content items properties.
 
