@@ -54,6 +54,8 @@ The `OrchardCore.Resources` module provides some commonly used ones:
 | bootstrap             | Style  | 3.4.0, 4.4.1  | -              |
 | bootstrap-select      | Script | 1.13.17       | -              |
 | bootstrap-select      | Style  | 1.13.17       | -              |
+| bootstrap-slider      | Script | 11.0.2        | -              |
+| bootstrap-slider      | Style  | 11.0.2        | -              |
 | codemirror            | Script | 5.54.0        | -              |
 | codemirror            | Style  | 5.54.0        | -              |
 | font-awesome          | Style  | 4.7.0, 5.13.0 | -              |
