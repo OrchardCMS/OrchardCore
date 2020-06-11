@@ -10,20 +10,21 @@ namespace OrchardCore.Workflows.Activities
 {
     public class LogTask : TaskActivity
     {
-        private readonly ILogger<LogTask> _logger;
+        private readonly ILogger _logger;
         private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
+        private readonly IStringLocalizer S;
 
-        public LogTask(ILogger<LogTask> logger, IWorkflowExpressionEvaluator expressionEvaluator, IStringLocalizer<NotifyTask> localizer)
+        public LogTask(ILogger<LogTask> logger, IWorkflowExpressionEvaluator expressionEvaluator, IStringLocalizer<LogTask> localizer)
         {
             _logger = logger;
             _expressionEvaluator = expressionEvaluator;
-            T = localizer;
+            S = localizer;
         }
-
-        private IStringLocalizer T { get; }
         public override string Name => nameof(LogTask);
-        public override LocalizedString DisplayText => T["Log Task"];
-        public override LocalizedString Category => T["Primitives"];
+
+        public override LocalizedString DisplayText => S["Log Task"];
+
+        public override LocalizedString Category => S["Primitives"];
 
         public LogLevel LogLevel
         {
@@ -39,12 +40,12 @@ namespace OrchardCore.Workflows.Activities
 
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            return Outcomes(T["Done"]);
+            return Outcomes(S["Done"]);
         }
 
         public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            var text = await _expressionEvaluator.EvaluateAsync(Text, workflowContext);
+            var text = await _expressionEvaluator.EvaluateAsync(Text, workflowContext, null);
             var logLevel = LogLevel;
 
             _logger.Log(logLevel, 0, text, null, (state, error) => state.ToString());

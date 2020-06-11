@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using OrchardCore.Environment.Extensions.Features;
 
@@ -9,13 +9,13 @@ namespace OrchardCore.DisplayManagement.Descriptors
         private readonly IList<ShapeAlterationBuilder> _alterationBuilders = new List<ShapeAlterationBuilder>();
         private readonly IFeatureInfo _feature;
 
-        public ShapeTableBuilder(IFeatureInfo feature, IList<string> excludedFeatureIds = null)
+        public ShapeTableBuilder(IFeatureInfo feature, IReadOnlyCollection<string> excludedFeatureIds = null)
         {
             _feature = feature;
-            ExcludedFeatureIds = excludedFeatureIds ?? new List<string>();
+            ExcludedFeatureIds = excludedFeatureIds ?? new HashSet<string>();
         }
 
-        public IList<string> ExcludedFeatureIds { get; }
+        public IReadOnlyCollection<string> ExcludedFeatureIds { get; }
 
         public ShapeAlterationBuilder Describe(string shapeType)
         {

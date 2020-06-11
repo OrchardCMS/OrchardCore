@@ -60,7 +60,14 @@ function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaI
                 return Math.round(this.selectedMedia.size / 1024);
             },
             canAddMedia: function () {
-                return this.mediaItems.length === 0 || this.mediaItems.length > 0 && allowMultiple;
+                var nonRemovedMediaItems = [];
+                for (var i = 0; i < this.mediaItems.length; i++) {
+                    if (!this.mediaItems[i].isRemoved) {
+                        nonRemovedMediaItems.push(this.mediaItems[i]);
+                    }
+                }
+
+                return nonRemovedMediaItems.length === 0 || nonRemovedMediaItems.length > 0 && allowMultiple;
             },
             thumbSize: function () {
                 return this.smallThumbs ? 120 : 240;

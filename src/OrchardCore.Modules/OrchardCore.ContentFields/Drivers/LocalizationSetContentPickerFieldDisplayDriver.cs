@@ -1,10 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using OrchardCore.ContentFields.Services;
-using OrchardCore.ContentFields.ViewModels;
 using Microsoft.Extensions.Localization;
+using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentFields.Settings;
+using OrchardCore.ContentFields.ViewModels;
+using OrchardCore.ContentLocalization;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
@@ -12,15 +13,15 @@ using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Modules;
-using OrchardCore.ContentLocalization;
 
-namespace OrchardCore.ContentFields.Fields
+namespace OrchardCore.ContentFields.Drivers
 {
     [RequireFeatures("OrchardCore.ContentLocalization")]
     public class LocalizationSetContentPickerFieldDisplayDriver : ContentFieldDisplayDriver<LocalizationSetContentPickerField>
     {
         private readonly IContentManager _contentManager;
         private readonly IContentLocalizationManager _contentLocalizationManager;
+        private readonly IStringLocalizer S;
 
         public LocalizationSetContentPickerFieldDisplayDriver(
             IContentManager contentManager,
@@ -28,12 +29,9 @@ namespace OrchardCore.ContentFields.Fields
             IContentLocalizationManager contentLocalizationManager)
         {
             _contentManager = contentManager;
-            T = localizer;
+            S = localizer;
             _contentLocalizationManager = contentLocalizationManager;
-
         }
-
-        public IStringLocalizer T { get; set; }
 
         public override IDisplayResult Display(LocalizationSetContentPickerField field, BuildFieldDisplayContext context)
         {
@@ -43,8 +41,8 @@ namespace OrchardCore.ContentFields.Fields
                 model.Part = context.ContentPart;
                 model.PartFieldDefinition = context.PartFieldDefinition;
             })
-            .Location("Content")
-            .Location("SummaryAdmin", "");
+            .Location("Detail", "Content")
+            .Location("Summary", "Content");
         }
 
         public override IDisplayResult Edit(LocalizationSetContentPickerField field, BuildFieldEditorContext context)
@@ -90,18 +88,18 @@ namespace OrchardCore.ContentFields.Fields
             }
 
             field.LocalizationSets = viewModel.LocalizationSets == null
-                ? new string[0] : viewModel.LocalizationSets.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+                ? new string[0] : viewModel.LocalizationSets.Split(',', StringSplitOptions.RemoveEmptyEntries);
 
             var settings = context.PartFieldDefinition.GetSettings<LocalizationSetContentPickerFieldSettings>();
 
             if (settings.Required && field.LocalizationSets.Length == 0)
             {
-                updater.ModelState.AddModelError(Prefix, T["The {0} field is required.", context.PartFieldDefinition.DisplayName()]);
+                updater.ModelState.AddModelError(Prefix, S["The {0} field is required.", context.PartFieldDefinition.DisplayName()]);
             }
 
             if (!settings.Multiple && field.LocalizationSets.Length > 1)
             {
-                updater.ModelState.AddModelError(Prefix, T["The {0} field cannot contain multiple items.", context.PartFieldDefinition.DisplayName()]);
+                updater.ModelState.AddModelError(Prefix, S["The {0} field cannot contain multiple items.", context.PartFieldDefinition.DisplayName()]);
             }
 
             return Edit(field, context);

@@ -1,4 +1,4 @@
-var fs = require("file-system"),
+var fs = require("graceful-fs"),
     glob = require("glob"),
     path = require("path-posix"),
     merge = require("merge-stream"),
@@ -11,16 +11,20 @@ var fs = require("file-system"),
     sourcemaps = require("gulp-sourcemaps"),
     less = require("gulp-less"),
     scss = require("gulp-sass"),
-    cssnano = require("gulp-cssnano"),
+    minify = require("gulp-minifier"),
     typescript = require("gulp-typescript"),
     terser = require("gulp-terser"),
     rename = require("gulp-rename"),
     concat = require("gulp-concat"),
     header = require("gulp-header"),
-    eol = require("gulp-eol");
-    util = require('gulp-util');
-    postcss = require('gulp-postcss');
-    rtl = require('postcss-rtl');
+    eol = require("gulp-eol"),
+    util = require('gulp-util'),
+    postcss = require('gulp-postcss'),
+    rtl = require('postcss-rtl'),
+    babel = require('gulp-babel'),
+    agencytheme = require('./src/OrchardCore.Themes/TheAgencyTheme/wwwroot/gulpfile'),
+    blogtheme = require('./src/OrchardCore.Themes/TheBlogTheme/wwwroot/gulpfile');
+    comingsoontheme = require('./src/OrchardCore.Themes/TheComingSoonTheme/wwwroot/gulpfile');
 
 // For compat with older versions of Node.js.
 require("es6-promise").polyfill();
@@ -33,7 +37,7 @@ require("events").EventEmitter.prototype._maxListeners = 100;
 */
 
 // Incremental build (each asset group is built only if one or more inputs are newer than the output).
-gulp.task("build", function () {
+gulp.task("build-assets", function () {
     var assetGroupTasks = getAssetGroups().map(function (assetGroup) {
         var doRebuild = false;
         return createAssetGroupTask(assetGroup, doRebuild);
@@ -42,7 +46,7 @@ gulp.task("build", function () {
 });
 
 // Full rebuild (all assets groups are built regardless of timestamps).
-gulp.task("rebuild", function () {
+gulp.task("rebuild-assets", function () {
     var assetGroupTasks = getAssetGroups().map(function (assetGroup) {
         var doRebuild = true;
         return createAssetGroupTask(assetGroup, doRebuild);
@@ -79,8 +83,6 @@ gulp.task("watch", function () {
     });
 });
 
-gulp.task( 'default',  gulp.series([ 'build' ]) )
-
 gulp.task('help', function() {
     util.log(`
   Usage: gulp [TASK]
@@ -90,6 +92,58 @@ gulp.task('help', function() {
       watch     Continuous watch (each asset group is built whenever one of its inputs changes).
     `);
   });
+
+gulp.task("build-agencytheme", function(done){
+	return buildAgencyTheme(done);
+});
+
+gulp.task("build-blogtheme", function(done){
+	return buildBlogTheme(done);
+});
+
+gulp.task("build-comingsoontheme", function(done){
+	return buildComingSoonTheme(done);
+});
+
+gulp.task("build-themes", function(done){
+    buildAgencyTheme(() => buildBlogTheme (() => buildComingSoonTheme(done)) );
+});
+
+
+gulp.task( 'build',  gulp.series([ 'build-assets', 'build-themes' ]) );
+gulp.task( 'rebuild',  gulp.series([ 'rebuild-assets', 'build-themes' ]) );
+gulp.task( 'default',  gulp.series([ 'build' ]) );
+
+/*
+** Build Themes
+*/
+
+function buildAgencyTheme(done){
+    var cwd = process.cwd();      
+    process.chdir('./src/OrchardCore.Themes/TheAgencyTheme/wwwroot');       
+	agencytheme.build( ()=> {
+         process.chdir(cwd);
+         done();
+    });
+}
+
+function buildBlogTheme(done){
+    var cwd = process.cwd();      
+    process.chdir('./src/OrchardCore.Themes/TheBlogTheme/wwwroot');    
+	blogtheme.build( ()=> {
+        process.chdir(cwd);
+        done();
+    });
+}
+
+function buildComingSoonTheme(done){
+    var cwd = process.cwd();      
+    process.chdir('./src/OrchardCore.Themes/TheComingSoonTheme/wwwroot');    
+	comingsoontheme.build( ()=> {
+        process.chdir(cwd);
+        done();
+    });
+}
 
 /*
 ** ASSET GROUPS
@@ -186,17 +240,20 @@ function buildCssPipeline(assetGroup, doConcat, doRebuild) {
         })))
         .pipe(gulpif(doConcat, concat(assetGroup.outputFileName)))
         .pipe(gulpif(generateRTL, postcss([rtl()])))
-        .pipe(cssnano({
-            autoprefixer: { browsers: ["last 2 versions"] },
-            discardComments: { removeAll: true },
-            discardUnused: false,
-            mergeIdents: false,
-            reduceIdents: false,
-            zindex: false
-        }))
-        .pipe(rename({
-            suffix: ".min"
-        }))
+        .pipe(minify({
+			minify: true,
+			minifyHTML: {
+			  collapseWhitespace: true,
+			  conservativeCollapse: true,
+			},
+			minifyJS: {
+			  sourceMap: true
+			},
+			minifyCSS: true
+		}))
+		.pipe(rename({
+			suffix: ".min"
+		}))
         .pipe(eol())
         .pipe(gulp.dest(assetGroup.outputDir));
         // Uncomment to copy assets to wwwroot
@@ -251,7 +308,7 @@ function buildJsPipeline(assetGroup, doConcat, doRebuild) {
                     ext: ".js"
                 }))))
         .pipe(plumber())
-        .pipe(gulpif(generateSourceMaps, sourcemaps.init()))
+        .pipe(gulpif(generateSourceMaps, sourcemaps.init()))		
         .pipe(gulpif("*.ts", typescript({
             declaration: false,
             noImplicitAny: true,
@@ -263,7 +320,18 @@ function buildJsPipeline(assetGroup, doConcat, doRebuild) {
                 "es2015.iterable"
             ],
             target: "es5",
-        })))
+        })))	
+        .pipe(babel({
+		  "presets": [
+			[
+			  "@babel/preset-env",
+			  {
+				"modules": false
+			  },
+			  "@babel/preset-flow"
+			]
+		  ]
+		}))
         .pipe(gulpif(doConcat, concat(assetGroup.outputFileName)))
         .pipe(header(
             "/*\n" +

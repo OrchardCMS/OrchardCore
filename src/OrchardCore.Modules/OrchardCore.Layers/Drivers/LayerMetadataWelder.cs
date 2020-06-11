@@ -13,48 +13,52 @@ namespace OrchardCore.Layers.Drivers
 {
     public class LayerMetadataWelder : ContentDisplayDriver
     {
-		private readonly ILayerService _layerService;
-        private readonly IStringLocalizer<LayerMetadataWelder> S;
+        private readonly ILayerService _layerService;
+        private readonly IStringLocalizer S;
 
         public LayerMetadataWelder(ILayerService layerService, IStringLocalizer<LayerMetadataWelder> stringLocalizer)
-		{
-			_layerService = layerService;
+        {
+            _layerService = layerService;
             S = stringLocalizer;
         }
 
         protected override void BuildPrefix(ContentItem model, string htmlFieldPrefix)
         {
-            Prefix = "LayerMetadata";
+            base.BuildPrefix(model, htmlFieldPrefix);
+            if (string.IsNullOrWhiteSpace(htmlFieldPrefix))
+            {
+                Prefix = "LayerMetadata";
+            }
         }
 
         public override async Task<IDisplayResult> EditAsync(ContentItem model, BuildEditorContext context)
-		{
-			var layerMetadata = model.As<LayerMetadata>();
+        {
+            var layerMetadata = model.As<LayerMetadata>();
 
-			if (layerMetadata == null)
-			{
-				layerMetadata = new LayerMetadata();
+            if (layerMetadata == null)
+            {
+                layerMetadata = new LayerMetadata();
 
-				// Are we loading an editor that requires layer metadata?
-				if (await context.Updater.TryUpdateModelAsync(layerMetadata, Prefix, m => m.Zone, m => m.Position)
-					&& !String.IsNullOrEmpty(layerMetadata.Zone))
-				{
-					model.Weld(layerMetadata);
-				}
-				else
-				{
-					return null;
-				}
-			}
+                // Are we loading an editor that requires layer metadata?
+                if (await context.Updater.TryUpdateModelAsync(layerMetadata, Prefix, m => m.Zone, m => m.Position)
+                    && !String.IsNullOrEmpty(layerMetadata.Zone))
+                {
+                    model.Weld(layerMetadata);
+                }
+                else
+                {
+                    return null;
+                }
+            }
 
-			return Initialize<LayerMetadataEditViewModel>("LayerMetadata_Edit", async shape =>
-			{
+            return Initialize<LayerMetadataEditViewModel>("LayerMetadata_Edit", async shape =>
+            {
                 shape.Title = model.DisplayText;
-				shape.LayerMetadata = layerMetadata;
-				shape.Layers = (await _layerService.GetLayersAsync()).Layers;
-			})
-			.Location("Content:before");
-		}
+                shape.LayerMetadata = layerMetadata;
+                shape.Layers = (await _layerService.GetLayersAsync()).Layers;
+            })
+            .Location("Content:before");
+        }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentItem model, UpdateEditorContext context)
         {
@@ -79,7 +83,7 @@ namespace OrchardCore.Layers.Drivers
 
             model.DisplayText = viewModel.Title;
 
-			return await EditAsync(model, context);
+            return await EditAsync(model, context);
         }
     }
 }

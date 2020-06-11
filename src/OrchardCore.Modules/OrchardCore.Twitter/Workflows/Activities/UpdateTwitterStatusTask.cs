@@ -1,13 +1,6 @@
-using System;
 using System.Collections.Generic;
-using System.Net.Mail;
-using System.Text;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.Localization;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Twitter.Services;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
@@ -20,25 +13,26 @@ namespace OrchardCore.Twitter.Workflows.Activities
     {
         private readonly TwitterClient _twitterClient;
         private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
-        private readonly IStringLocalizer T;
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly IUpdateModelAccessor _updateModelAccessor;
+        private readonly IStringLocalizer S;
 
-        public UpdateTwitterStatusTask(TwitterClient twitterClient, IWorkflowExpressionEvaluator expressionEvaluator, IHttpContextAccessor httpContextAccessor, IUpdateModelAccessor updateModelAccessor, IStringLocalizer<UpdateTwitterStatusTask> t)
+        public UpdateTwitterStatusTask(
+            TwitterClient twitterClient,
+            IWorkflowExpressionEvaluator expressionEvaluator,
+            IStringLocalizer<UpdateTwitterStatusTask> localizer
+            )
         {
             _twitterClient = twitterClient;
             _expressionEvaluator = expressionEvaluator;
-            _httpContextAccessor = httpContextAccessor;
-            _updateModelAccessor = updateModelAccessor;
-            T = t;
+            S = localizer;
         }
 
         // The technical name of the activity. Activities on a workflow definition reference this name.
         public override string Name => nameof(UpdateTwitterStatusTask);
-        public override LocalizedString DisplayText => T["Update Twitter Status Task"];
+
+        public override LocalizedString DisplayText => S["Update Twitter Status Task"];
 
         // The category to which this activity belongs. The activity picker groups activities by this category.
-        public override LocalizedString Category => T["Social"];
+        public override LocalizedString Category => S["Social"];
 
         // The message to display.
         public WorkflowExpression<string> StatusTemplate
@@ -50,13 +44,14 @@ namespace OrchardCore.Twitter.Workflows.Activities
         // Returns the possible outcomes of this activity.
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            return Outcomes(T["Done"], T["Failed"]);
+            return Outcomes(S["Done"], S["Failed"]);
         }
 
         // This is the heart of the activity and actually performs the work to be done.
         public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            var status = await _expressionEvaluator.EvaluateAsync(StatusTemplate, workflowContext);
+            // The twitter client encodes the status using FormUrlEncodedContent
+            var status = await _expressionEvaluator.EvaluateAsync(StatusTemplate, workflowContext, null);
 
             var result = await _twitterClient.UpdateStatus(status);
             workflowContext.Properties.Add("TwitterResponse", await result.Content.ReadAsStringAsync());

@@ -1,35 +1,28 @@
 using System;
-using System.Linq;
-using System.Collections.Generic;
 using System.Net.Http;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authentication.Twitter;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Moq;
+using Newtonsoft.Json.Linq;
 using OrchardCore.Modules;
-using OrchardCore.Twitter;
-using OrchardCore.Twitter.Services;
-using Xunit;
 using OrchardCore.Settings;
+using OrchardCore.Twitter.Services;
 using OrchardCore.Twitter.Settings;
 using OrchardCore.Twitter.Signin.Settings;
-using Newtonsoft.Json.Linq;
-using Microsoft.AspNetCore.DataProtection;
+using Xunit;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.Twitter
 {
     public class TwitterClientTests
     {
-        string expectedOauthHeader = "OAuth oauth_consumer_key=\"xvz1evFS4wEEPTGEFPHBog\", oauth_nonce=\"kYjzVBB8Y0ZFabxSWbWovY3uYSQ2pTgmZeNu2VS4cg\", oauth_signature=\"hCtSmYh%2BiHYCEqBWrE7C7hYmtUk%3D\", oauth_signature_method=\"HMAC-SHA1\", oauth_timestamp=\"1318622958\", oauth_token=\"370773112-GmHxMAgYyLbNEtIKZeRNFsMKPR9EyMZeS9weJAEb\", oauth_version=\"1.0\"";
-        string updateStatusResponse = "{\r\n  \"created_at\": \"Fri Jan 25 22:04:26 +0000 2019\",\r\n  \"id\": 1088920554520961000,\r\n  \"id_str\": \"1088920554520961026\",\r\n  \"text\": \"okay\",\r\n  \"truncated\": false,\r\n  \"entities\": {\r\n    \"hashtags\": [],\r\n    \"symbols\": [],\r\n    \"user_mentions\": [],\r\n    \"urls\": []\r\n  },\r\n  \"source\": \"<a>Learning Twitter API - Jess Gars</a>\",\r\n  \"in_reply_to_status_id\": null,\r\n  \"in_reply_to_status_id_str\": null,\r\n  \"in_reply_to_user_id\": null,\r\n  \"in_reply_to_user_id_str\": null,\r\n  \"in_reply_to_screen_name\": null,\r\n  \"user\": {\r\n    \"id\": 15772978,\r\n    \"id_str\": \"15772978\",\r\n    \"name\": \"Jessica Garson\uD83E\uDD95\",\r\n    \"screen_name\": \"jessicagarson\",\r\n    \"location\": \"Brooklyn, NY\",\r\n    \"description\": \"Developer Advocate @Twitter. Python programmer. Noted thought leader on vegan snacks. Known sometimes as Messica Arson. She/They.\",\r\n    \"url\": \"https://t.co/ai7MDeRPa5\",\r\n    \"entities\": {\r\n      \"url\": {\r\n        \"urls\": [\r\n          {\r\n            \"url\": \"https://t.co/ai7MDeRPa5\",\r\n            \"expanded_url\": \"http://jessicagarson.com\",\r\n            \"display_url\": \"jessicagarson.com\",\r\n            \"indices\": [\r\n              0,\r\n              23\r\n            ]\r\n          }\r\n        ]\r\n      },\r\n      \"description\": {\r\n        \"urls\": []\r\n      }\r\n    },\r\n    \"protected\": false,\r\n    \"followers_count\": 2097,\r\n    \"friends_count\": 1986,\r\n    \"listed_count\": 88,\r\n    \"created_at\": \"Fri Aug 08 02:16:23 +0000 2008\",\r\n    \"favourites_count\": 9946,\r\n    \"utc_offset\": null,\r\n    \"time_zone\": null,\r\n    \"geo_enabled\": true,\r\n    \"verified\": false,\r\n    \"statuses_count\": 5514,\r\n    \"lang\": \"en\",\r\n    \"contributors_enabled\": false,\r\n    \"is_translator\": false,\r\n    \"is_translation_enabled\": false,\r\n    \"profile_background_color\": \"000000\",\r\n    \"profile_background_image_url\": \"http://abs.twimg.com/images/themes/theme6/bg.gif\",\r\n    \"profile_background_image_url_https\": \"https://abs.twimg.com/images/themes/theme6/bg.gif\",\r\n    \"profile_background_tile\": false,\r\n    \"profile_image_url\": \"http://pbs.twimg.com/profile_images/971062453453905920/DKzs-vf8_normal.jpg\",\r\n    \"profile_image_url_https\": \"https://pbs.twimg.com/profile_images/971062453453905920/DKzs-vf8_normal.jpg\",\r\n    \"profile_banner_url\": \"https://pbs.twimg.com/profile_banners/15772978/1520354408\",\r\n    \"profile_link_color\": \"FA743E\",\r\n    \"profile_sidebar_border_color\": \"000000\",\r\n    \"profile_sidebar_fill_color\": \"000000\",\r\n    \"profile_text_color\": \"000000\",\r\n    \"profile_use_background_image\": false,\r\n    \"has_extended_profile\": false,\r\n    \"default_profile\": false,\r\n    \"default_profile_image\": false,\r\n    \"following\": false,\r\n    \"follow_request_sent\": false,\r\n    \"notifications\": false,\r\n    \"translator_type\": \"none\"\r\n  },\r\n  \"geo\": null,\r\n  \"coordinates\": null,\r\n  \"place\": null,\r\n  \"contributors\": null,\r\n  \"is_quote_status\": false,\r\n  \"retweet_count\": 0,\r\n  \"favorite_count\": 0,\r\n  \"favorited\": false,\r\n  \"retweeted\": false,\r\n  \"lang\": \"en\"\r\n}";
+        private string expectedOauthHeader = "OAuth oauth_consumer_key=\"xvz1evFS4wEEPTGEFPHBog\", oauth_nonce=\"kYjzVBB8Y0ZFabxSWbWovY3uYSQ2pTgmZeNu2VS4cg\", oauth_signature=\"hCtSmYh%2BiHYCEqBWrE7C7hYmtUk%3D\", oauth_signature_method=\"HMAC-SHA1\", oauth_timestamp=\"1318622958\", oauth_token=\"370773112-GmHxMAgYyLbNEtIKZeRNFsMKPR9EyMZeS9weJAEb\", oauth_version=\"1.0\"";
+        private string updateStatusResponse = "{\r\n  \"created_at\": \"Fri Jan 25 22:04:26 +0000 2019\",\r\n  \"id\": 1088920554520961000,\r\n  \"id_str\": \"1088920554520961026\",\r\n  \"text\": \"okay\",\r\n  \"truncated\": false,\r\n  \"entities\": {\r\n    \"hashtags\": [],\r\n    \"symbols\": [],\r\n    \"user_mentions\": [],\r\n    \"urls\": []\r\n  },\r\n  \"source\": \"<a>Learning Twitter API - Jess Gars</a>\",\r\n  \"in_reply_to_status_id\": null,\r\n  \"in_reply_to_status_id_str\": null,\r\n  \"in_reply_to_user_id\": null,\r\n  \"in_reply_to_user_id_str\": null,\r\n  \"in_reply_to_screen_name\": null,\r\n  \"user\": {\r\n    \"id\": 15772978,\r\n    \"id_str\": \"15772978\",\r\n    \"name\": \"Jessica Garson\uD83E\uDD95\",\r\n    \"screen_name\": \"jessicagarson\",\r\n    \"location\": \"Brooklyn, NY\",\r\n    \"description\": \"Developer Advocate @Twitter. Python programmer. Noted thought leader on vegan snacks. Known sometimes as Messica Arson. She/They.\",\r\n    \"url\": \"https://t.co/ai7MDeRPa5\",\r\n    \"entities\": {\r\n      \"url\": {\r\n        \"urls\": [\r\n          {\r\n            \"url\": \"https://t.co/ai7MDeRPa5\",\r\n            \"expanded_url\": \"http://jessicagarson.com\",\r\n            \"display_url\": \"jessicagarson.com\",\r\n            \"indices\": [\r\n              0,\r\n              23\r\n            ]\r\n          }\r\n        ]\r\n      },\r\n      \"description\": {\r\n        \"urls\": []\r\n      }\r\n    },\r\n    \"protected\": false,\r\n    \"followers_count\": 2097,\r\n    \"friends_count\": 1986,\r\n    \"listed_count\": 88,\r\n    \"created_at\": \"Fri Aug 08 02:16:23 +0000 2008\",\r\n    \"favourites_count\": 9946,\r\n    \"utc_offset\": null,\r\n    \"time_zone\": null,\r\n    \"geo_enabled\": true,\r\n    \"verified\": false,\r\n    \"statuses_count\": 5514,\r\n    \"lang\": \"en\",\r\n    \"contributors_enabled\": false,\r\n    \"is_translator\": false,\r\n    \"is_translation_enabled\": false,\r\n    \"profile_background_color\": \"000000\",\r\n    \"profile_background_image_url\": \"http://abs.twimg.com/images/themes/theme6/bg.gif\",\r\n    \"profile_background_image_url_https\": \"https://abs.twimg.com/images/themes/theme6/bg.gif\",\r\n    \"profile_background_tile\": false,\r\n    \"profile_image_url\": \"http://pbs.twimg.com/profile_images/971062453453905920/DKzs-vf8_normal.jpg\",\r\n    \"profile_image_url_https\": \"https://pbs.twimg.com/profile_images/971062453453905920/DKzs-vf8_normal.jpg\",\r\n    \"profile_banner_url\": \"https://pbs.twimg.com/profile_banners/15772978/1520354408\",\r\n    \"profile_link_color\": \"FA743E\",\r\n    \"profile_sidebar_border_color\": \"000000\",\r\n    \"profile_sidebar_fill_color\": \"000000\",\r\n    \"profile_text_color\": \"000000\",\r\n    \"profile_use_background_image\": false,\r\n    \"has_extended_profile\": false,\r\n    \"default_profile\": false,\r\n    \"default_profile_image\": false,\r\n    \"following\": false,\r\n    \"follow_request_sent\": false,\r\n    \"notifications\": false,\r\n    \"translator_type\": \"none\"\r\n  },\r\n  \"geo\": null,\r\n  \"coordinates\": null,\r\n  \"place\": null,\r\n  \"contributors\": null,\r\n  \"is_quote_status\": false,\r\n  \"retweet_count\": 0,\r\n  \"favorite_count\": 0,\r\n  \"favorited\": false,\r\n  \"retweeted\": false,\r\n  \"lang\": \"en\"\r\n}";
 
-        Mock<TwitterClientMessageHandler> mockHttpMessageHandler;
-        Mock<FakeHttpMessageHandler> mockFakeHttpMessageHandler;
-        ISiteService mockSiteService;
-        IDataProtectionProvider mockDataProtectionProvider;
+        private Mock<TwitterClientMessageHandler> mockHttpMessageHandler;
+        private Mock<FakeHttpMessageHandler> mockFakeHttpMessageHandler;
+        private ISiteService mockSiteService;
+        private IDataProtectionProvider mockDataProtectionProvider;
         public TwitterClientTests()
         {
             mockFakeHttpMessageHandler = new Mock<FakeHttpMessageHandler>() { CallBase = true };
@@ -65,7 +58,6 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Twitter
             mockHttpMessageHandler = new Mock<TwitterClientMessageHandler>(
                 Mock.Of<IClock>(i => i.UtcNow == new DateTime(ticks)),
                 mockSiteService, mockDataProtectionProvider);
-
         }
 
         [Fact]
@@ -92,7 +84,6 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Twitter
                 new HttpClient(mockFakeHttpMessageHandler.Object), Mock.Of<ILogger<TwitterClient>>())
             { CallBase = true };
 
-
             mockHttpMessageHandler.Setup(c => c.GetNonce())
                 .Returns(() => "kYjzVBB8Y0ZFabxSWbWovY3uYSQ2pTgmZeNu2VS4cg");
 
@@ -103,7 +94,6 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Twitter
             Assert.NotNull(message.Headers.Authorization);
             Assert.Equal(expectedOauthHeader, message.Headers.Authorization.ToString());
         }
-
     }
 
     public class FakeHttpMessageHandler : HttpMessageHandler
@@ -135,7 +125,5 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Twitter
         {
             return protectedData;
         }
-
     }
-
 }

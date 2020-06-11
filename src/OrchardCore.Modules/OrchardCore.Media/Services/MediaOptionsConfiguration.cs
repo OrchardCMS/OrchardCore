@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell.Configuration;
@@ -50,7 +49,7 @@ namespace OrchardCore.Media.Services
         private const int DefaultMaxFileSize = 30_000_000;
 
         private const string DefaultAssetsPath = "Media";
-        private static readonly PathString DefaultAssetsRequestPath = new PathString("/media");
+        private static readonly string DefaultAssetsRequestPath = "/media";
 
         private readonly IShellConfiguration _shellConfiguration;
 
@@ -61,7 +60,7 @@ namespace OrchardCore.Media.Services
 
         public void Configure(MediaOptions options)
         {
-            var section = _shellConfiguration.GetSection("OrchardCore.Media");
+            var section = _shellConfiguration.GetSection("OrchardCore_Media");
 
             // Because IShellConfiguration treats arrays as key value pairs, we replace the array value,
             // rather than letting Configure merge the default array with the appsettings value.

@@ -1,36 +1,38 @@
 @model HtmlBodyPartViewModel
-@using OrchardCore.Html.ViewModels;
-@using OrchardCore.Html.Settings;
-@using OrchardCore.ContentLocalization
-@using OrchardCore.ContentManagement.Metadata.Models
-@using OrchardCore.Localization
 
 @{
     var settings = Model.TypePartDefinition.GetSettings<HtmlBodyPartSettings>();
-    var culture = await Orchard.GetContentCultureAsync(Model.ContentItem);
+    var culture = await Orchard.GetContentCultureAsync(Model.ContentItem) ?? CultureInfo.CurrentUICulture;
 }
 
-<script asp-name="trumbowyg" depends-on="admin" asp-src="~/OrchardCore.Resources/Scripts/trumbowyg.min.js" debug-src="~/OrchardCore.Resources/Scripts/trumbowyg.js" at="Foot"></script>
-<style asp-name="trumbowyg" asp-src="~/OrchardCore.Resources/Styles/trumbowyg.min.css" debug-src="~/OrchardCore.Resources/Styles/trumbowyg.css"></style>
+<script asp-name="trumbowyg" depends-on="admin" version="2" at="Foot"></script>
+<style asp-name="trumbowyg" version="2"></style>
+<script asp-src="~/OrchardCore.Html/Scripts/trumbowyg.media.tag.min.js" debug-src="~/OrchardCore.Html/Scripts/trumbowyg.media.tag.js" depends-on="trumbowyg" at="Foot"></script>
 
-<fieldset class="form-group">
-    <label asp-for="Source">@Model.TypePartDefinition.DisplayName()</label>
+<div class="form-group">
+    <label asp-for="Html">@Model.TypePartDefinition.DisplayName()</label>
     @if (culture.IsRightToLeft())
     {
         <div style="text-align:right">
-            <textarea asp-for="Source" rows="5" class="form-control"></textarea>
+            <textarea asp-for="Html" rows="5" class="form-control"></textarea>
         </div>
     }
     else
     {
-        <textarea asp-for="Source" rows="5" class="form-control"></textarea>
+        <textarea asp-for="Html" rows="5" class="form-control"></textarea>
     }
     <span class="hint">@T["The body of the content item."]</span>
-</fieldset>
+</div>
 
 <script at="Foot">
     $(function () {
-        $('#@Html.IdFor(m => m.Source)').trumbowyg().on('tbwchange', function () {
+        jQuery.trumbowyg.langs.@culture.TwoLetterISOLanguageName = {
+            _dir: '@culture.GetLanguageDirection()',
+        };
+
+        var settings = { lang: '@culture.TwoLetterISOLanguageName' };
+
+        $('#@Html.IdFor(m => m.Html)').trumbowyg(settings).on('tbwchange', function () {
             $(document).trigger('contentpreview:render');
         });
     });

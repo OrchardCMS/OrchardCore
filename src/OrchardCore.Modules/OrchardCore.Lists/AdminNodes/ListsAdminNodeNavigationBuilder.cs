@@ -20,7 +20,7 @@ namespace OrchardCore.Lists.AdminNodes
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly IContentManager _contentManager;
         private readonly ISession _session;
-        private readonly ILogger<ListsAdminNodeNavigationBuilder> _logger;
+        private readonly ILogger _logger;
         private ListsAdminNode _node;
         private ContentTypeDefinition _contentType;
 
@@ -44,7 +44,7 @@ namespace OrchardCore.Lists.AdminNodes
         {
             _node = menuItem as ListsAdminNode;
 
-            if ((_node == null) || (!_node.Enabled))
+            if (_node == null || !_node.Enabled || String.IsNullOrEmpty(_node.ContentType))
             {
                 return;
             }
@@ -55,7 +55,7 @@ namespace OrchardCore.Lists.AdminNodes
             {
                 if (_contentType == null)
                 {
-                    _logger.LogError("Can't find The content type {0} for list admin node.", _node.ContentType);
+                    _logger.LogError("Can't find The content type '{ContentType}' for list admin node.", _node.ContentType);
                 }
 
                 await builder.AddAsync(new LocalizedString(_contentType.DisplayName, _contentType.DisplayName), async listTypeMenu =>
@@ -84,7 +84,6 @@ namespace OrchardCore.Lists.AdminNodes
                     _logger.LogError(e, "An exception occurred while building the '{MenuItem}' child Menu Item.", childNode.GetType().Name);
                 }
             }
-
         }
 
         private async Task AddContentItemsAsync(NavigationBuilder listTypeMenu)

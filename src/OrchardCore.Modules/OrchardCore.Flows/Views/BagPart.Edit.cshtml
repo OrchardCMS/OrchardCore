@@ -1,5 +1,7 @@
 @using OrchardCore.ContentManagement.Metadata.Settings;
+@using OrchardCore.Flows.Models;
 @using OrchardCore.Flows.ViewModels;
+@using OrchardCore.Mvc.Utilities;
 
 @model BagPartEditViewModel
 
@@ -9,33 +11,43 @@
 
 @{
     var widgetTemplatePlaceholderId = Html.Id("widgetTemplatePlaceholder");
+    var parentContentType = Model.BagPart.ContentItem.ContentType;
+    string partName = ((dynamic)Model).Metadata.Name;
 }
 
 <script asp-name="jQuery-ui" at="Foot"></script>
 
-<fieldset class="form-group">
-    <div id="@widgetTemplatePlaceholderId" class="widget-template-placeholder">
+<div class="form-group">
+    <div id="@widgetTemplatePlaceholderId" class="widget-template-placeholder widget-template-placeholder-bagpart bagpart-@partName.HtmlClassify() row mx-0" data-buildeditorurl="@Url.Action("BuildEditor", "Admin", new { area = "OrchardCore.Flows" })">
         @{ var htmlFieldPrefix = this.ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix; }
         @foreach (var widget in Model.BagPart.ContentItems)
         {
-            var prefix = Guid.NewGuid().ToString("n");
-            <div class="widget-template">
-                @{
-                    dynamic widgetEditor = await ContentItemDisplayManager.BuildEditorAsync(widget, Model.Updater, false, "", prefix);
-
-                    widgetEditor.PrefixesName = Html.NameFor(x => x.Prefixes);
-                    widgetEditor.ContentTypesName = Html.NameFor(x => x.ContentTypes);
-                    widgetEditor.TargetId = widgetTemplatePlaceholderId;
-
-                    widgetEditor.Metadata.Alternates.Add("Widget_Edit__Bag");
-                }
-
-                @await DisplayAsync(widgetEditor)
-
-                @{ this.ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix = htmlFieldPrefix; }
-                <input type="hidden" asp-for="Prefixes" value="@prefix" />
-                <input type="hidden" asp-for="ContentTypes" value="@widget.ContentType" />
-            </div>
+            //Create a Card Shape
+            dynamic contentCard = await New.ContentCard(
+                // FOR Updater
+                CollectionShape: Model,
+                //Shape Specific
+                CollectionShapeType: nameof(BagPart),
+                ContentItem: widget,
+                BuildEditor: true,
+                ParentContentType: parentContentType,
+                CollectionPartName :partName,
+                //Card Specific Properties
+                TargetId: widgetTemplatePlaceholderId,
+                Inline: false,
+                CanMove: true,
+                CanDelete: true,
+                //Input hidden
+                //Prefixes
+                PrefixValue: widget.ContentItemId,
+                HtmlFieldPrefix: htmlFieldPrefix,
+                PrefixesId: Html.IdFor(x => x.Prefixes),
+                PrefixesName: Html.NameFor(x => x.Prefixes),
+                //Content Types
+                ContentTypesId: Html.IdFor(x => x.ContentTypes),
+                ContentTypesName: Html.NameFor(x => x.ContentTypes)
+            );
+            @await DisplayAsync(contentCard)
         }
     </div>
 
@@ -52,20 +64,23 @@
                    data-contenttypes-name="@Html.NameFor(x => x.ContentTypes)"
                    data-widget-type="@type.Name"
                    data-flowmetadata="false"
+                   data-parent-content-type="@parentContentType"
+                   data-part-name="@partName"
                    href="javascript:;">@type.DisplayName</a>
             }
         </div>
     </div>
 
-
     @* Rendered only once in case multiple BagPart (or FlowPart) are on the page *@
     @if (Context.Items["BagPart.Edit"] == null)
     {
         Context.Items["BagPart.Edit"] = new object();
-        <input type="hidden" id="buildEditorUrl" value="@Url.Action("BuildEditor", "Admin", new { area = "OrchardCore.Flows" })" />
-
-        <script asp-src="~/OrchardCore.Flows/Scripts/flows.edit.js" at="Foot" depends-on="admin"></script>
-        <style asp-src="~/OrchardCore.Flows/Styles/flows.edit.css"></style>
+        <script asp-src="~/OrchardCore.Flows/Scripts/flows.edit.min.js"
+            debug-src="~/OrchardCore.Flows/Scripts/flows.edit.js" at="Foot" depends-on="admin"></script>
+        <style asp-src="~/OrchardCore.Widgets/Styles/widgetslist.edit.min.css"
+            debug-src="~/OrchardCore.Widgets/Styles/widgetslist.edit.css"></style>
+        <style asp-src="~/OrchardCore.Flows/Styles/flows.edit.min.css"
+            debug-src="~/OrchardCore.Flows/Styles/flows.edit.css"></style>
     }
 
     @* Rendered only once per type to initialize the scripts its editor will need *@
@@ -82,12 +97,53 @@
     }
 
     <script at="Foot">
+    @*Only apply sortable if element is present in dom, do not call sortable on scripts for mock widgets *@
+    if ($('#@widgetTemplatePlaceholderId').length == 1) {
         $("#@widgetTemplatePlaceholderId").sortable({
-            handle: ".widget-editor-header",
+            handle: ".widget-editor-handle",
             cursor: "move",
+            opacity: 0.7,
+            tolerance: "pointer",
+            placeholder: {
+                element: function(currentItem) {
+                    return $('<div class="widget-dragdrop-placeholder"><div></div></div>')[0];
+                },
+                update: function (container, p) {
+                    return;
+                }
+            },
+            toleranceElement: '> div',
+            start: function (event, ui) {
+                widgetDragItem = ui.item;
+                lastContainer = ui.item.parent();
+                lastContainer.toggleClass('widget-dropzone-hint');
+                widgetDragItem.find('.card').first().toggleClass('border-primary');
+                var classList = widgetDragItem.attr('class').split(' ');
+                $.each(classList, function (id, item) {
+                    if (item.indexOf('col-md-') === 0) ui.placeholder.addClass(item);
+                });
+
+            },
             stop: function (event, ui) {
+                lastContainer.toggleClass('widget-dropzone-hint');
+                widgetDragItem.find('.card').first().toggleClass('border-primary');
+
+                //clear the global variables
+                widgetDragItem = null;
+                lastContainer = null;
+                widgetItemSourceId = null;
+                widgetItemDestId = null;
                 $(document).trigger('contentpreview:render');
+            },
+            over: function (event, ui) {
+                var $self = $(this);
+                if (lastContainer[0] != this) {
+                    lastContainer.toggleClass('widget-dropzone-hint');
+                    lastContainer = $self;
+                    $self.toggleClass('widget-dropzone-hint');
+                }
             }
         });
+    }
     </script>
-</fieldset>
+</div>

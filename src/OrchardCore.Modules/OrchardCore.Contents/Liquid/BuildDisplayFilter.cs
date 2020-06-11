@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
+using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Liquid;
 
@@ -13,8 +14,13 @@ namespace OrchardCore.Contents.Liquid
 {
     public class BuildDisplayFilter : ILiquidFilter
     {
-        public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
+        public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
         {
+            static async ValueTask<FluidValue> Awaited(Task<IShape> task)
+            {
+                return FluidValue.Create(await task);
+            }
+
             var obj = input.ToObjectValue();
 
             if (!(obj is ContentItem contentItem))
@@ -31,7 +37,7 @@ namespace OrchardCore.Contents.Liquid
             // a 'ContentItem' is still created but with some null properties.
             if (contentItem?.ContentItemId == null)
             {
-                return NilValue.Instance;
+                return new ValueTask<FluidValue>(NilValue.Instance);
             }
 
             if (!ctx.AmbientValues.TryGetValue("Services", out var services))
@@ -43,7 +49,13 @@ namespace OrchardCore.Contents.Liquid
             var displayManager = ((IServiceProvider)services).GetRequiredService<IContentItemDisplayManager>();
             var updateModelAccessor = ((IServiceProvider)services).GetRequiredService<IUpdateModelAccessor>();
 
-            return FluidValue.Create(await displayManager.BuildDisplayAsync(contentItem, updateModelAccessor.ModelUpdater, displayType));
+            var task = displayManager.BuildDisplayAsync(contentItem, updateModelAccessor.ModelUpdater, displayType);
+            if (task.IsCompletedSuccessfully)
+            {
+                return new ValueTask<FluidValue>(FluidValue.Create(task.Result));
+            }
+
+            return Awaited(task);
         }
     }
 }

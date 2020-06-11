@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Navigation;
-using YesSql;
 
 namespace OrchardCore.AdminMenu.Services
 {
@@ -45,7 +44,7 @@ namespace OrchardCore.AdminMenu.Services
                 return;
             }
 
-            var trees = (await _adminMenuService.GetAsync())
+            var trees = ((await _adminMenuService.GetAdminMenuListAsync()).AdminMenu)
                 .Where(m => m.Enabled && m.MenuItems.Count > 0);
 
             foreach (var tree in trees)
@@ -64,7 +63,7 @@ namespace OrchardCore.AdminMenu.Services
             foreach (MenuItem node in tree.MenuItems)
             {
                 var nodeBuilder = _nodeBuilders.Where(x => x.Name == node.GetType().Name).FirstOrDefault();
-                
+
                 if (nodeBuilder != null)
                 {
                     await nodeBuilder.BuildNavigationAsync(node, builder, _nodeBuilders);

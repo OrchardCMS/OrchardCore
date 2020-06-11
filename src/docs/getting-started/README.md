@@ -7,13 +7,12 @@ You can find the original blog post written by Chris Payne here:
 
 ## Create an Orchard Core CMS application
 
-In Visual Studio, create a new empty .NET Core web application. Ex: `Cms.Web`.
+In Visual Studio, create a new empty .NET Core web application. Ex: `Cms.Web`. Do not check "Place solution and project in the same directory", because later when you create modules and themes you will want them to live alongside the web application within the solution.
 
-If you want to use the `dev` packages, add this OrchardCore-preview MyGet url to your NuGet sources:  
-<https://www.myget.org/F/orchardcore-preview/api/v3/index.json>
+!!! note
+    If you want to use the `preview` packages, [configure the OrchardCore Preview url in your Package sources](preview-package-source.md)
 
-Right-click on the project and click on `Manage NuGet packages...`.
-In the `Browse` tab, search for `OrchardCore.Application.Cms.Targets` and `Install` the package.
+To add a reference to the package, right-click on the project and click on `Manage NuGet packages...`, check `Include prerelease` if required. If you added the preview source above, select this from the `Package Source` selection in the top right.  In the `Browse` tab, search for `OrchardCore.Application.Cms.Targets` and `Install` the package.
 
 Open `Startup.cs` and modify the `ConfigureServices` method by adding this line:
 
@@ -24,9 +23,12 @@ services.AddOrchardCms();
 In the `Configure` method, replace this block:
 
 ```csharp
-app.Run(async (context) =>
+app.UseEndpoints(endpoints =>
 {
-    await context.Response.WriteAsync("Hello World!");
+    endpoints.MapGet("/", async context =>
+    {
+        await context.Response.WriteAsync("Hello World!");
+    });
 });
 ```
 
@@ -35,8 +37,6 @@ with this line:
 ```csharp
 app.UseOrchardCore();
 ```
-
-Add a `wwwroot` folder to your project
 
 ## Setup your application
 

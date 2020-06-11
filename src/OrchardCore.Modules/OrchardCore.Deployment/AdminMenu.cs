@@ -1,18 +1,18 @@
-using Microsoft.Extensions.Localization;
-using OrchardCore.Navigation;
 using System;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Localization;
+using OrchardCore.Navigation;
 
 namespace OrchardCore.Deployment
 {
     public class AdminMenu : INavigationProvider
     {
+        private readonly IStringLocalizer S;
+
         public AdminMenu(IStringLocalizer<AdminMenu> localizer)
         {
-            T = localizer;
+            S = localizer;
         }
-
-        public IStringLocalizer T { get; set; }
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
@@ -22,14 +22,14 @@ namespace OrchardCore.Deployment
             }
 
             builder
-                .Add(T["Configuration"], content => content
-                    .Add(T["Import/Export"], "10", import => import
-                        .Add(T["Deployment Plans"], "5", deployment => deployment
+                .Add(S["Configuration"], configuration => configuration
+                    .Add(S["Import/Export"], S["Import/Export"].PrefixPosition(), import => import
+                        .Add(S["Deployment Plans"], S["Deployment Plans"].PrefixPosition(), deployment => deployment
                             .Action("Index", "DeploymentPlan", new { area = "OrchardCore.Deployment" })
                             .Permission(Permissions.Export)
                             .LocalNav()
                         )
-                        .Add(T["Package Import"], "5", deployment => deployment
+                        .Add(S["Package Import"], S["Package Import"].PrefixPosition(), deployment => deployment
                             .Action("Index", "Import", new { area = "OrchardCore.Deployment" })
                             .Permission(Permissions.Import)
                             .LocalNav()

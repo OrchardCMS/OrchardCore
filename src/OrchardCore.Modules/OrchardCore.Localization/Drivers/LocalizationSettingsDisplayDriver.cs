@@ -16,6 +16,9 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Localization.Drivers
 {
+    /// <summary>
+    /// Represents a <see cref="DisplayDriver"/> for the localization settings section in the admin site.
+    /// </summary>
     public class LocalizationSettingsDisplayDriver : SectionDisplayDriver<ISite, LocalizationSettings>
     {
         public const string GroupId = "localization";
@@ -23,7 +26,17 @@ namespace OrchardCore.Localization.Drivers
         private readonly INotifier _notifier;
         private readonly IShellHost _shellHost;
         private readonly ShellSettings _shellSettings;
+        private readonly IHtmlLocalizer H;
+        private readonly IStringLocalizer S;
 
+        /// <summary>
+        /// Creates a new instance of <see cref="LocalizationSettingsDisplayDriver"/>.
+        /// </summary>
+        /// <param name="notifier">The <see cref="INotifier"/>.</param>
+        /// <param name="shellHost">The <see cref="IShellHost"/>.</param>
+        /// <param name="shellSettings">The <see cref="ShellSettings"/>.</param>
+        /// <param name="h">The <see cref="IHtmlLocalizer"/>.</param>
+        /// <param name="s">The <see cref="IStringLocalizer"/>.</param>
         public LocalizationSettingsDisplayDriver(
             INotifier notifier,
             IShellHost shellHost,
@@ -39,9 +52,7 @@ namespace OrchardCore.Localization.Drivers
             S = s;
         }
 
-        IHtmlLocalizer H { get; }
-        IStringLocalizer S { get; }
-
+        /// <inheritdocs />
         public override IDisplayResult Edit(LocalizationSettings section, BuildEditorContext context)
         {
             return Initialize<LocalizationSettingsViewModel>("LocalizationSettings_Edit", model =>
@@ -61,10 +72,10 @@ namespace OrchardCore.Localization.Drivers
                     {
                         model.Cultures[0].IsDefault = true;
                     }
-
                 }).Location("Content:2").OnGroup(GroupId);
         }
 
+        /// <inheritdocs />
         public override async Task<IDisplayResult> UpdateAsync(LocalizationSettings section, BuildEditorContext context)
         {
             if (context.GroupId == GroupId)
@@ -91,8 +102,8 @@ namespace OrchardCore.Localization.Drivers
                         section.DefaultCulture = section.SupportedCultures[0];
                     }
 
-                    // We always reset the tenant for the default culture and also supported cultures to take effect
-                    await _shellHost.ReloadShellContextAsync(_shellSettings);
+                    // We always release the tenant for the default culture and also supported cultures to take effect
+                    await _shellHost.ReleaseShellContextAsync(_shellSettings);
 
                     _notifier.Warning(H["The site has been restarted for the settings to take effect"]);
                 }

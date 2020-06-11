@@ -1,9 +1,6 @@
 @model OrchardCore.Themes.Models.SelectThemesViewModel
 <style asp-src="~/OrchardCore.Themes/Styles/themes.admin.css"></style>
-<div class="alert alert-warning">
-    <h4>@T["Changing default themes"]</h4>
-    <p>@T["This page lets you change the site's default themes for both the front-end and the back-end."]</p>
-</div>
+<h1>@RenderTitleSegments(T["Themes"])</h1>
 
 @if (!Model.Themes.Any())
 {
@@ -28,6 +25,10 @@ else
                         {
                             <small><a href="@themeEntry.Extension.Manifest.Website" target="_blank">@themeEntry.Extension.Manifest.Website</a></small><br />
                         }
+                        @if(themeEntry.Extension.Manifest.Tags.Any())
+                        {
+                            <small>@T["Tags: {0}", string.Join(", ", themeEntry.Extension.Manifest.Tags.ToArray())]</small><br />
+                        }
                         <small>@T["Version: {0}", themeEntry.Extension.Manifest.Version]</small>
                     </div>
                     <div class="card-footer text-muted text-xs-right">
@@ -36,7 +37,7 @@ else
                             <div class="row">
                                 <div class="col-sm-6">
                                     <form asp-route-action="SetCurrentTheme" asp-route-id="@themeEntry.Extension.Id" method="post">
-                                        <button type="submit" class="btn btn-sm btn-primary">@T["Make Default"]</button>
+                                        <button type="submit" class="btn btn-sm btn-primary">@T["Make Current"]</button>
                                     </form>
                                 </div>
                                 <div class="col-sm-6">
@@ -59,7 +60,14 @@ else
                         }
                         else
                         {
-                            @T["This is the default {0} theme", themeEntry.IsAdmin ? "Admin" : "Site"]
+                            if (themeEntry.IsAdmin)
+                            {
+                                @T["This is the current Admin theme"]
+                            }
+                            else
+                            {
+                                @T["This is the current Site theme"]
+                            }
                         }
                     </div>
                 </div>
@@ -68,7 +76,7 @@ else
     </div>
 
     <div class="alert alert-danger">
-        <h4>@T["Reset default themes"]</h4>
+        <h4>@T["Reset current themes"]</h4>
         <p>@T["The following actions reset the themes. It is used for sites that can't use theming."]</p>
         <a asp-action="ResetSiteTheme" itemprop="UnsafeUrl RemoveUrl" data-title="@T["Reset Site Theme"]" data-message="@T["Are you sure you want to reset the Site theme?"]" class="btn btn-danger">@T["Reset Site Theme"]</a>
         <a asp-action="ResetAdminTheme" itemprop="UnsafeUrl RemoveUrl" data-title="@T["Reset Admin Theme"]" data-message="@T["Are you sure you want to reset the Admin theme?"]" class="btn btn-danger">@T["Reset Admin Theme"]</a>

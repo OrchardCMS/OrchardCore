@@ -7,12 +7,12 @@ namespace OrchardCore.Features
 {
     public class AdminMenu : INavigationProvider
     {
+        private readonly IStringLocalizer S;
+
         public AdminMenu(IStringLocalizer<AdminMenu> localizer)
         {
-            T = localizer;
+            S = localizer;
         }
-
-        public IStringLocalizer T { get; set; }
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
@@ -22,9 +22,9 @@ namespace OrchardCore.Features
             }
 
             builder
-                .Add(T["Configuration"], "10", configuration => configuration
+                .Add(S["Configuration"], NavigationConstants.AdminMenuConfigurationPosition, configuration => configuration
                     .AddClass("menu-configuration").Id("configuration")
-                    .Add(T["Features"], "6", deployment => deployment
+                    .Add(S["Features"], S["Features"].PrefixPosition(), deployment => deployment
                         .Action("Features", "Admin", new { area = "OrchardCore.Features" })
                         .Permission(Permissions.ManageFeatures)
                         .LocalNav()

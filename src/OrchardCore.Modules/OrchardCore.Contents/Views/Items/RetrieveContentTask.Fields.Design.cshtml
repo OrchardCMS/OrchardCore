@@ -1,0 +1,14 @@
+@model ContentTaskViewModel<RetrieveContentTask>
+
+<header>
+    <h4><i class="fa fa-search"></i>@Model.Activity.GetTitleOrDefault(() => T["Retrieve Content"])</h4>
+</header>
+
+@if (string.IsNullOrWhiteSpace(Model.Activity.Content?.Expression))
+{
+    <span>@T["Retrieve content provided via the <em>ContentItemId</em> input argument"]</span>
+}
+else
+{
+    <span>@T["Retrieve content using expression: <em>{0}</em>", Model.Activity.Content.Expression]</span>
+}

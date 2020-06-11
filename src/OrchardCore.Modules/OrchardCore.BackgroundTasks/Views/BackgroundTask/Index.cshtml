@@ -26,9 +26,8 @@
                         </div>
                         <span class="text-primary" title="@T["Settings"]"><i class="fa fa-cog" aria-hidden="true"></i></span>
                         <span class="text-primary"><a asp-action="Edit" asp-route-name="@settings.Name">@settings.Name</a></span>
-                        <span class="hint">@T["— {0}", settings.Description]</span>
+                        <span class="hint">— @settings.Description</span>
                     </div>
-
                 </li>
             }
         </ul>

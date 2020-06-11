@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Routing.Matching;
 
 namespace OrchardCore.Routing
 {
-    public class FormValueRequiredMatcherPolicy : MatcherPolicy, IEndpointSelectorPolicy
+    public class FormValueRequiredMatcherPolicy : MatcherPolicy, IEndpointSelectorPolicy, IEndpointComparerPolicy
     {
         public FormValueRequiredMatcherPolicy()
         {
@@ -63,6 +63,16 @@ namespace OrchardCore.Routing
             }
 
             return Task.CompletedTask;
+        }
+
+        public IComparer<Endpoint> Comparer => new FormValueRequiredEndpointComparer();
+
+        private class FormValueRequiredEndpointComparer : EndpointMetadataComparer<FormValueRequiredAttribute>
+        {
+            protected override int CompareMetadata(FormValueRequiredAttribute x, FormValueRequiredAttribute y)
+            {
+                return base.CompareMetadata(x, y);
+            }
         }
     }
 }

@@ -3,10 +3,8 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Features;
 using OrchardCore.Environment.Shell;
@@ -16,7 +14,6 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy
 {
     public class ShapeTemplateBindingStrategy : IShapeTableHarvester
     {
-        private readonly string _shellName;
         private readonly IEnumerable<IShapeTemplateHarvester> _harvesters;
         private readonly IEnumerable<IShapeTemplateViewEngine> _shapeTemplateViewEngines;
         private readonly IShapeTemplateFileProviderAccessor _fileProviderAccessor;
@@ -27,15 +24,12 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy
             new Dictionary<string, IShapeTemplateViewEngine>(StringComparer.OrdinalIgnoreCase);
 
         public ShapeTemplateBindingStrategy(
-            ShellSettings shellSettings,
             IEnumerable<IShapeTemplateHarvester> harvesters,
             IShellFeaturesManager shellFeaturesManager,
             IEnumerable<IShapeTemplateViewEngine> shapeTemplateViewEngines,
-            IOptions<MvcViewOptions> options,
             IShapeTemplateFileProviderAccessor fileProviderAccessor,
             ILogger<DefaultShapeTableManager> logger)
         {
-            _shellName = shellSettings.Name;
             _harvesters = harvesters;
             _shellFeaturesManager = shellFeaturesManager;
             _shapeTemplateViewEngines = shapeTemplateViewEngines;
@@ -62,10 +56,13 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy
                 .Select(harvester => new { harvester, subPaths = harvester.SubPaths() })
                 .ToList();
 
-            var enabledFeatures = _shellFeaturesManager.GetEnabledFeaturesAsync().GetAwaiter().GetResult()
-                .Where(Feature => !builder.ExcludedFeatureIds.Contains(Feature.Id)).ToList();
+            var enabledFeatures = _shellFeaturesManager.GetEnabledFeaturesAsync().GetAwaiter().GetResult();
+            var enabledFeatureIds = enabledFeatures.Select(f => f.Id).ToArray();
 
-            var activeExtensions = Once(enabledFeatures);
+            // Excludes the extensions whose templates are already associated to an excluded feature that is still enabled.
+            var activeExtensions = Once(enabledFeatures)
+                .Where(e => !e.Features.Any(f => builder.ExcludedFeatureIds.Contains(f.Id) && enabledFeatureIds.Contains(f.Id)))
+                .ToArray();
 
             if (!_viewEnginesByExtension.Any())
             {
@@ -131,35 +128,34 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy
                 return shapeContexts.Select(shapeContext => new { extensionDescriptor, shapeContext }).ToList();
             }).SelectMany(hits2 => hits2);
 
-
             foreach (var iter in hits)
             {
-                // templates are always associated with the namesake feature of module or theme
                 var hit = iter;
-                foreach (var feature in hit.extensionDescriptor.Features)
+
+                // The template files of an active module need to be associated to one of its enabled feature.
+                var feature = hit.extensionDescriptor.Features.First(f => enabledFeatureIds.Contains(f.Id));
+
+                if (_logger.IsEnabled(LogLevel.Debug))
                 {
-                    if (_logger.IsEnabled(LogLevel.Debug))
-                    {
-                        _logger.LogDebug("Binding '{TemplatePath}' as shape '{ShapeType}' for feature '{FeatureName}'",
-                            hit.shapeContext.harvestShapeInfo.RelativePath,
-                            iter.shapeContext.harvestShapeHit.ShapeType,
-                            feature.Id);
-                    }
-
-                    var viewEngineType = _viewEnginesByExtension[iter.shapeContext.harvestShapeInfo.Extension].GetType();
-
-                    builder.Describe(iter.shapeContext.harvestShapeHit.ShapeType)
-                        .From(feature)
-                        .BoundAs(
-                            hit.shapeContext.harvestShapeInfo.RelativePath, shapeDescriptor => displayContext =>
-                            {
-                                var viewEngine = displayContext.ServiceProvider
-                                    .GetServices<IShapeTemplateViewEngine>()
-                                    .FirstOrDefault(e => e.GetType() == viewEngineType);
-
-                                return viewEngine.RenderAsync(hit.shapeContext.harvestShapeInfo.RelativePath, displayContext);
-                            });
+                    _logger.LogDebug("Binding '{TemplatePath}' as shape '{ShapeType}' for feature '{FeatureName}'",
+                        hit.shapeContext.harvestShapeInfo.RelativePath,
+                        iter.shapeContext.harvestShapeHit.ShapeType,
+                        feature.Id);
                 }
+
+                var viewEngineType = _viewEnginesByExtension[iter.shapeContext.harvestShapeInfo.Extension].GetType();
+
+                builder.Describe(iter.shapeContext.harvestShapeHit.ShapeType)
+                    .From(feature)
+                    .BoundAs(
+                        hit.shapeContext.harvestShapeInfo.RelativePath, displayContext =>
+                        {
+                            var viewEngine = displayContext.ServiceProvider
+                                .GetServices<IShapeTemplateViewEngine>()
+                                .FirstOrDefault(e => e.GetType() == viewEngineType);
+
+                            return viewEngine.RenderAsync(hit.shapeContext.harvestShapeInfo.RelativePath, displayContext);
+                        });
             }
 
             if (_logger.IsEnabled(LogLevel.Information))

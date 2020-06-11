@@ -11,8 +11,8 @@
 @{
     var theme = await ThemeManager.GetThemeAsync();
     var shapeTable = ShapeTableManager.GetShapeTable(theme?.Id);
-    var editorShapes = shapeTable.ShapeBindings.Keys.Where(x => x.StartsWith(Model.PartFieldDefinition.FieldDefinition.Name + "_Option__", StringComparison.OrdinalIgnoreCase) || x.EndsWith(Model.PartFieldDefinition.FieldDefinition.Name + "_Option", StringComparison.OrdinalIgnoreCase));
-    var displayShapes = shapeTable.ShapeBindings.Keys.Where(x => x.StartsWith(Model.PartFieldDefinition.FieldDefinition.Name + "_DisplayOption__", StringComparison.OrdinalIgnoreCase) || x.EndsWith(Model.PartFieldDefinition.FieldDefinition.Name + "_Option", StringComparison.OrdinalIgnoreCase));
+    var editorShapes = shapeTable.Bindings.Keys.Where(x => x.StartsWith(Model.PartFieldDefinition.FieldDefinition.Name + "_Option__", StringComparison.OrdinalIgnoreCase) || x.Equals(Model.PartFieldDefinition.FieldDefinition.Name + "_Option", StringComparison.OrdinalIgnoreCase));
+    var displayShapes = shapeTable.Bindings.Keys.Where(x => x.StartsWith(Model.PartFieldDefinition.FieldDefinition.Name + "_DisplayOption__", StringComparison.OrdinalIgnoreCase) || x.Equals(Model.PartFieldDefinition.FieldDefinition.Name + "_DisplayOption", StringComparison.OrdinalIgnoreCase));
     var returnUrl = ViewData["returnUrl"]?.ToString();
 }
 
@@ -20,74 +20,74 @@
 
 <form asp-action="EditField" asp-route-returnUrl="@ViewData["returnUrl"]">
     @Html.ValidationSummary()
-    <fieldset class="form-group">
+    <div class="form-group">
         <div class="row col-md">
             <label asp-for="DisplayName">@T["Display Name"]</label>
             <input asp-for="DisplayName" autofocus class="form-control" />
             <span class="hint">@T["Name of the field as it will be displayed in screens."]</span>
         </div>
-    </fieldset>
+    </div>
 
-    <fieldset class="form-group">
+    <div class="form-group">
         <div class="row col-sm">
             <label asp-for="Name">@T["Technical Name"]</label>
             <input asp-for="Name" class="form-control" readonly />
             <span class="hint">@T["Technical name of the field."]</span>
         </div>
-    </fieldset>
+    </div>
 
-@if (Model.Shape.Content != null)
-{
-    <fieldset class="form-group">
-        @await DisplayAsync(Model.Shape.Content)
-    </fieldset>
-
-    @if (editorShapes.Any())
+    @if (Model.Shape.Content != null)
     {
-    <fieldset class="form-group">
-        <label asp-for="Editor">@T["What type of editor should be used?"]</label>
-        <select asp-for="Editor" class="form-control col-sm-6" id="field-editor-select">
-            @foreach (var editorShape in editorShapes)
-            {
-                dynamic shape = await Factory.CreateAsync(editorShape);
-                shape.Editor = Model.Editor;
-                @await DisplayAsync(shape)
-            }
-        </select>
-    </fieldset>
+        <div class="form-group">
+            @await DisplayAsync(Model.Shape.Content)
+        </div>
+
+        @if (editorShapes.Any())
+        {
+            <div class="form-group">
+                <label asp-for="Editor">@T["What type of editor should be used?"]</label>
+                <select asp-for="Editor" class="form-control col-sm-6" id="field-editor-select">
+                    @foreach (var editorShape in editorShapes)
+                    {
+                        dynamic shape = await Factory.CreateAsync(editorShape);
+                        shape.Editor = Model.Editor;
+                        @await DisplayAsync(shape)
+                    }
+                </select>
+            </div>
+        }
+
+        <div id="field-editor-container" class="form-group" style="display: none">
+            @await DisplayAsync(Model.Shape.Editor)
+        </div>
+
+        @if (displayShapes.Any())
+        {
+            <div class="form-group">
+                <label asp-for="DisplayMode">@T["What type of display mode should be used?"]</label>
+                <select asp-for="DisplayMode" class="form-control col-sm-6" id="field-display-select">
+                    @foreach (var displayShape in displayShapes)
+                    {
+                        dynamic shape = await Factory.CreateAsync(displayShape);
+                        shape.DisplayMode = Model.DisplayMode;
+                        @await DisplayAsync(shape)
+                    }
+                </select>
+            </div>
+        }
+
+        <div id="field-display-container" class="form-group" style="display: none">
+            @await DisplayAsync(Model.Shape.DisplayMode)
+        </div>
     }
 
-    <fieldset id="field-editor-container" class="form-group" style="display: none">
-        @await DisplayAsync(Model.Shape.Editor)
-    </fieldset>
-
-    @if (displayShapes.Any())
-    {
-    <fieldset class="form-group">
-        <label asp-for="DisplayMode">@T["What type of display mode should be used?"]</label>
-        <select asp-for="DisplayMode" class="form-control col-sm-6" id="field-display-select">
-            @foreach (var displayShape in displayShapes)
-            {
-                dynamic shape = await Factory.CreateAsync(displayShape);
-                shape.DisplayMode = Model.DisplayMode;
-                @await DisplayAsync(shape)
-            }
-        </select>
-    </fieldset>
-    }
-
-    <fieldset id="field-display-container" class="form-group" style="display: none">
-        @await DisplayAsync(Model.Shape.DisplayMode)
-    </fieldset>
-}
-       
-    <fieldset class="form-group">
+    <div class="form-group">
         <button class="btn btn-primary" type="submit" name="submit.Save" value="Save">@T["Save"]</button>
         @if (Url.IsLocalUrl(returnUrl))
         {
             <a class="btn btn-secondary" href="@returnUrl">@T["Cancel"]</a>
         }
-    </fieldset>
+    </div>
 </form>
 
 <script at="Foot" type="text/javascript">
@@ -96,23 +96,27 @@
         $('.field-editor').hide();
         $('#field-editor-container').show();
         var fieldEditorSelect = $('#field-editor-select');
-        $('.field-editor-' + fieldEditorSelect.val().toLowerCase()).show();         
-
-        fieldEditorSelect.change(function () {
-            $('.field-editor').hide();
+        if (fieldEditorSelect.length > 0) {
             $('.field-editor-' + fieldEditorSelect.val().toLowerCase()).show();
-        });
+
+            fieldEditorSelect.change(function () {
+                $('.field-editor').hide();
+                $('.field-editor-' + fieldEditorSelect.val().toLowerCase()).show();
+            });
+        }
 
         $('.field-display').hide();
         $('#field-display-container').show();
         var fieldDisplaySelect = $('#field-display-select');
-        $('.field-display-' + fieldDisplaySelect.val().toLowerCase()).show();         
-
-        fieldDisplaySelect.change(function () {
-            console.log('boom');
-            $('.field-display').hide();
+        if (fieldDisplaySelect.length > 0) {
             $('.field-display-' + fieldDisplaySelect.val().toLowerCase()).show();
-        });
-    });    
+
+            fieldDisplaySelect.change(function () {
+                console.log('boom');
+                $('.field-display').hide();
+                $('.field-display-' + fieldDisplaySelect.val().toLowerCase()).show();
+            });
+        }
+    });
     //]]>
 </script>

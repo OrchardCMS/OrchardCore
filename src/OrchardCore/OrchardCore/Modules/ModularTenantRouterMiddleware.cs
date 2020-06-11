@@ -22,7 +22,6 @@ namespace OrchardCore.Modules
     public class ModularTenantRouterMiddleware
     {
         private readonly IFeatureCollection _features;
-        private readonly RequestDelegate _next;
         private readonly ILogger _logger;
         private readonly ConcurrentDictionary<string, SemaphoreSlim> _semaphores = new ConcurrentDictionary<string, SemaphoreSlim>();
 
@@ -32,7 +31,6 @@ namespace OrchardCore.Modules
             ILogger<ModularTenantRouterMiddleware> logger)
         {
             _features = features;
-            _next = next;
             _logger = logger;
         }
 
@@ -59,27 +57,30 @@ namespace OrchardCore.Modules
             // Do we need to rebuild the pipeline ?
             if (shellContext.Pipeline == null)
             {
-                var semaphore = _semaphores.GetOrAdd(shellContext.Settings.Name, (name) => new SemaphoreSlim(1));
-
-                // Building a pipeline for a given shell can't be done by two requests.
-                await semaphore.WaitAsync();
-
-                try
-                {
-                    if (shellContext.Pipeline == null)
-                    {
-                        shellContext.Pipeline = BuildTenantPipeline();
-                    }
-                }
-
-                finally
-                {
-                    semaphore.Release();
-                    _semaphores.TryRemove(shellContext.Settings.Name, out semaphore);
-                }
+                await InitializePipelineAsync(shellContext);
             }
 
             await shellContext.Pipeline.Invoke(httpContext);
+        }
+
+        private async Task InitializePipelineAsync(ShellContext shellContext)
+        {
+            var semaphore = _semaphores.GetOrAdd(shellContext.Settings.Name, _ => new SemaphoreSlim(1));
+
+            // Building a pipeline for a given shell can't be done by two requests.
+            await semaphore.WaitAsync();
+
+            try
+            {
+                if (shellContext.Pipeline == null)
+                {
+                    shellContext.Pipeline = BuildTenantPipeline();
+                }
+            }
+            finally
+            {
+                semaphore.Release();
+            }
         }
 
         // Build the middleware pipeline for the current tenant

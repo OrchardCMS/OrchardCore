@@ -1,118 +1,146 @@
 @model AdminIndexViewModel
-@using System.Collections.Generic
-@using System.Net
+@using Microsoft.AspNetCore.Http
 @using OrchardCore.Environment.Shell
 @using OrchardCore.Environment.Shell.Models
 
 @{
-    var originalPathBase = Context.Features.Get<ShellContextFeature>().OriginalPathBase.ToString();
+    var originalPathBase = Context.Features.Get<ShellContextFeature>().OriginalPathBase;
+
+    int startIndex = (Model.Pager.Page - 1) * (Model.Pager.PageSize) + 1;
+    int endIndex = startIndex + Model.ShellSettingsEntries.Count - 1;
 }
 
 @functions
 {
-    public string GetTenantUrl(ShellSettingsEntry shellSettingsEntry, string originalPathBase)
+    public string GetEncodedUrl(ShellSettingsEntry shellSettingsEntry, PathString originalPathBase)
     {
-        ShellSettings tenantShellSettings = shellSettingsEntry.ShellSettings;
-        var requestHostInfo = Context.Request.Host;
+        var shellSettings = shellSettingsEntry.ShellSettings;
 
-        var tenantUrlHost = tenantShellSettings.RequestUrlHost?.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? requestHostInfo.Host;
-        if (requestHostInfo.Port.HasValue)
+        var requestHost = Context.Request.Host;
+        var host = shellSettings.RequestUrlHost?.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? requestHost.Host;
+
+        var port = requestHost.Port;
+
+        if (port.HasValue)
         {
-            tenantUrlHost += ":" + requestHostInfo.Port;
+            host += ":" + port;
         }
 
-        var result = $"{Context.Request.Scheme}://{tenantUrlHost}{originalPathBase}";
+        var hostString = new HostString(host);
 
-        if (!string.IsNullOrEmpty(tenantShellSettings.RequestUrlPrefix))
+        var pathString = originalPathBase;
+
+        if (!string.IsNullOrEmpty(shellSettings.RequestUrlPrefix))
         {
-            result += "/" + tenantShellSettings.RequestUrlPrefix;
+            pathString = pathString.Add('/' + shellSettings.RequestUrlPrefix);
         }
+
+        QueryString queryString;
 
         if (!string.IsNullOrEmpty(shellSettingsEntry.Token))
         {
-            result += "?token=" + WebUtility.UrlEncode(shellSettingsEntry.Token);
+            queryString = QueryString.Create("token", shellSettingsEntry.Token);
         }
 
-        return result;
+        return $"{Context.Request.Scheme}://{hostString + pathString + queryString}";
+    }
+
+    public string GetDisplayUrl(ShellSettingsEntry shellSettingsEntry, PathString originalPathBase)
+    {
+        var shellSettings = shellSettingsEntry.ShellSettings;
+
+        var requestHost = Context.Request.Host;
+        var host = shellSettings.RequestUrlHost?.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? requestHost.Host;
+
+        var port = requestHost.Port;
+
+        if (port.HasValue)
+        {
+            host += ":" + port;
+        }
+
+        var pathString = originalPathBase;
+
+        if (!string.IsNullOrEmpty(shellSettings.RequestUrlPrefix))
+        {
+            pathString = pathString.Add('/' + shellSettings.RequestUrlPrefix);
+        }
+
+        return $"{Context.Request.Scheme}://{host + pathString.Value}";
     }
 }
 
-<div class="row">
-    <div class="form-group col mb-n1">
-        <h1>@RenderTitleSegments(T["Tenants"])</h1>
-    </div>
-    <div class="form-group col mb-n1">
-        <div class="dropdown float-right order-md-1">
-            <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" id="bulk-action-menu-button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                @T["Bulk Actions"]
-            </button>
-            <div class="dropdown-menu" aria-labelledby="bulk-action-menu-button">
-                <a class="dropdown-item" href="#" data-action="disable">@T["Disable"]</a>
-                <a class="dropdown-item" href="#" data-action="enable">@T["Enable"]</a>
+<script asp-name="bootstrap-select" depends-on="admin" at="Foot"></script>
+<style asp-name="bootstrap-select"></style>
+
+<h1>@RenderTitleSegments(T["Tenants"])</h1>
+<form asp-action="Index" method="post">
+    <input type="submit" name="submit.Filter" id="submitFilter" class="d-none" />
+    <input type="submit" name="submit.BulkAction" class="d-none" />
+    <input name="BulkAction" type="hidden" />
+
+    <div class="row">
+        <div class="form-group col-xl-4 col-sm-6">
+            <div class="input-group input-group-sm filter-options">
+                <div class="input-group-prepend">
+                    <button class="btn btn-light btn-sm dropdown-toggle" style="border:1px solid lightgrey" type="button" data-toggle="dropdown" id="filter-dropdown" aria-haspopup="true" aria-expanded="false">
+                        @T["Filters"]
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="filter-dropdown">
+                        <a class="dropdown-item" href="?Options.Filter=Running">@T["Only running tenants"]</a>
+                        <a class="dropdown-item" href="?Options.Filter=Disabled">@T["Only disabled tenants"]</a>
+                        <a class="dropdown-item" href="?Options.Filter=Uninitialized">@T["Only uninitialized tenants"]</a>
+                    </div>
+                </div>
+                <input id="search-box" asp-for="Options.Search" class="form-control" placeholder="@T["Search"]" type="search" autofocus />
             </div>
-            <a asp-route-action="Create" class="btn btn-sm btn-primary float-rights" role="button">@T["Add Tenant"]</a>
+        </div>
+        <div class="form-group col-xl-8 col-sm-6">
+            <div class="btn-group float-right">
+                <a asp-route-action="Create" class="btn btn-sm btn-primary float-rights" role="button">@T["Add Tenant"]</a>
+            </div>
         </div>
     </div>
-</div>
-<form asp-action="Index" method="get">
-    <fieldset class="filter-options">
-        <div class="card mb-3">
-            <div class="card-body bg-light p-3">
-                <div class="row">
-                    <div class="form-group col-xl-3 mb-xl-n1">
-                        <div class="input-group input-group-sm">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text bg-secondary text-light">@T["Keyword"]</span>
-                            </div>
-                            <input id="search-box" asp-for="Options.Search" class="form-control" />
-                        </div>
+    <ul class="list-group with-checkbox">
+        <li class="list-group-item bg-light">
+            <div class="row">
+                <div class="form-group col mb-n1 text-nowrap">
+                    <div class="custom-control custom-checkbox mt-2 mr-n2">
+                        <input type="checkbox" class="custom-control-input" id="select-all">
+                        <label class="custom-control-label" for="select-all" id="select-all-label" title="@T["Select All"]"></label>
+                        <label id="items" for="select-all">@T.Plural(Model.ShellSettingsEntries.Count, "1 item", "{0} items")<span class="text-muted" title="@T["Items {0} to {1}", startIndex, endIndex]">@T.Plural((int)Model.Pager.TotalItemCount, " / {0} item in total", " / {0} items in total")</span></label>
+                        <label id="selected-items" class="text-muted" for="select-all"></label>
                     </div>
-                    <div class="form-group col-xl-3 mb-n1">
-                        <div class="input-group input-group-sm">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text bg-secondary text-light">@T["Filter"]</span>
-                            </div>
-                            <select id="filterResults" class="form-control" asp-for="Options.Filter">
-                                <option value="@TenantsFilter.All.ToString()">@T["All states"]</option>
-                                <option value="@TenantsFilter.Running.ToString()">@T["Running"]</option>
-                                <option value="@TenantsFilter.Disabled.ToString()">@T["Disabled"]</option>
-                                <option value="@TenantsFilter.Uninitialized.ToString()">@T["Uninitialized"]</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="form-group col-xl-3 mb-n1">
-                        <div class="input-group input-group-sm">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text bg-secondary text-light">@T["Sort by"]</span>
-                            </div>
-                            <select id="orderResults" class="form-control" asp-for="Options.OrderBy">
-                                <option value="@TenantsOrder.Name.ToString()">@T["Name"]</option>
-                                <option value="@TenantsOrder.State.ToString()">@T["State"]</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="form-group col-xl-3 mb-xl-n1">
-                        <div class="input-group input-group-sm">
-                            <button type="submit" class="btn btn-sm btn-secondary">@T["Search"]</button>
-                        </div>
+                </div>
+                <div class="form-group col-2 mb-n1" style="display:none" id="actions">
+                    <span class="dropdown float-right mt-1">
+                        <button class="btn btn-sm btn-light dropdown-toggle" type="button" id="bulk-action-menu-button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            @T["Actions"]
+                        </button>
+                        <span class="dropdown-menu dropdown-menu-right" aria-labelledby="bulk-action-menu-button">
+                            @foreach (var item in Model.Options.TenantsBulkAction)
+                            {
+                                <a class="dropdown-item" href="javascript:void(0)" data-action="@item.Value" data-title="@T["Bulk Action"]" data-message="@T["Are you sure you want to {0} these items?", @item.Text.ToLower()]">@item.Text</a>
+                            }
+                        </span>
+                    </span>
+                </div>
+                <div class="form-group col mb-n1 filter">
+                    <div class="btn-group float-right mt-1">
+                        <select asp-for="Options.Filter" asp-items="@Model.Options.TenantsStates" class="selectpicker show-tick mr-2" data-header="@T["Filter by state"]" data-width="fit" data-selected-text-format="static" data-dropdown-align-right="true" title="@T["State"]" data-style="btn-sm"></select>
+                        <select asp-for="Options.OrderBy" asp-items="@Model.Options.TenantsSorts" class="selectpicker show-tick" data-header="@T["Sort by"]" data-width="fit" data-selected-text-format="static" data-dropdown-align-right="true" title="@T["Sort"]" data-style="btn-sm"></select>
                     </div>
                 </div>
             </div>
-        </div>
-    </fieldset>
-</form>
-<form asp-action="Index" method="post">
-    <input name="BulkAction" type="hidden" />
-    <input type="submit" name="submit.BulkAction" class="d-none" />
-    @if (Model.ShellSettingsEntries.Count > 0)
-    {
-        <ul class="list-group">
+        </li>
+        @if (Model.ShellSettingsEntries.Count > 0)
+        {
             @foreach (var entry in Model.ShellSettingsEntries)
             {
                 <li class="list-group-item">
                     <div class="custom-control custom-checkbox float-left">
                         <input type="checkbox" class="custom-control-input" value="@entry.Name" name="tenantNames" id="tenantNames-@entry.Name">
-                        <label class="custom-control-label" for="tenantNames-@entry.Name">&nbsp;</label>
+                        <label class="custom-control-label" for="tenantNames-@entry.Name"></label>
                     </div>
                     <div class="properties">
                         <div class="related">
@@ -127,12 +155,16 @@
                             }
                             @if (entry.ShellSettings.State == TenantState.Uninitialized)
                             {
-                                <a class="btn btn-info btn-sm" id="btn-setup-@entry.Name" href="@GetTenantUrl(entry, originalPathBase)">@T["Setup"]</a>
+                                <a class="btn btn-info btn-sm" id="btn-setup-@entry.Name" href="@GetEncodedUrl(entry, originalPathBase)">@T["Setup"]</a>
                             }
                             <a asp-action="Reload" asp-route-id="@entry.Name" class="btn btn-secondary btn-sm" itemprop="UnsafeUrl">@T["Reload"]</a>
                         </div>
-                        <a href="@GetTenantUrl(entry, originalPathBase)">@entry.Name</a>
-                        <code class="hint">@entry.ShellSettings.RequestUrlHost@originalPathBase/@entry.ShellSettings.RequestUrlPrefix</code>
+                        <a href="@GetEncodedUrl(entry, originalPathBase)">@entry.Name</a>
+                        <code class="hint">@GetDisplayUrl(entry, originalPathBase)</code>
+                        @if (!string.IsNullOrEmpty(entry.Description))
+                        {
+                            <p class="mb-0"><small class="text-muted">@entry.Description</small></p>
+                        }
                         <div class="metadata">
                             @switch (entry.ShellSettings.State)
                             {
@@ -156,23 +188,83 @@
                     </div>
                 </li>
             }
-        </ul>
-    }
-    else
-    {
-        <div class="alert alert-info" role="alert">
-            @T["<strong>Nothing here!</strong> Your search returned no results."]
-        </div>
-    }
+        }
+        else
+        {
+            <li class="list-group-item">
+                <div class="alert alert-info">
+                    @T["<strong>Nothing here!</strong> Your search returned no results."]
+                </div>
+            </li>
+        }
+    </ul>
 </form>
 
 @await DisplayAsync(Model.Pager)
 
 <script at="Foot" type="text/javascript">
     $(function () {
-        $(".dropdown-menu a").on('click', function () {
-            $("[name='BulkAction']").val($(this).data('action'));
-            $("[name='submit.BulkAction']").click();
+        $('.selectpicker').selectpicker();
+
+        var actions = $("#actions");
+        var items = $("#items");
+        var filters = $(".filter");
+        var selectAllCtrl = $("#select-all");
+        var selectedItems = $("#selected-items");
+        var itemsCheckboxes = $(":checkbox[name='tenantNames']");
+
+        $(".filter-options select, .filter-options input").on("change", function () {
+            $("[name='submit.Filter']").click();
+        });
+
+        $('.selectpicker').on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
+            $("[name='submit.Filter']").click();
+        });
+
+        $(".dropdown-menu .dropdown-item").filter(function() {
+            return $(this).data("action");
+        }).on("click", function () {
+            if ($(":checkbox[name='tenantNames']:checked").length > 1) {
+                var $this = $(this);
+                confirmDialog({title: $this.data('title'), message: $this.data('message'), callback: function(r) {
+                    if (r) {
+                        $("[name='BulkAction']").val($this.data("action"));
+                        $("[name='submit.BulkAction']").click();
+                    }
+                }});
+            }
+        });
+
+        function displayActionsOrFilters() {
+            if ($(":checkbox[name='tenantNames']:checked").length > 1) {
+                actions.show();
+                filters.hide();
+                selectedItems.show();
+                items.hide();
+            }
+            else {
+                actions.hide();
+                filters.show();
+                selectedItems.hide();
+                items.show();
+            }
+        }
+
+        selectAllCtrl.click(function(){
+            itemsCheckboxes.not(this).prop("checked", this.checked);
+            selectedItems.text($(":checkbox[name='tenantNames']:checked").length + ' @T["selected"]');
+            displayActionsOrFilters();
+        });
+
+        itemsCheckboxes.on("click", function () {
+            var itemsCount = $(":checkbox[name='tenantNames']").length;
+            var selectedItemsCount = $(":checkbox[name='tenantNames']:checked").length;
+
+            selectAllCtrl.prop("checked", selectedItemsCount == itemsCount);
+            selectAllCtrl.prop("indeterminate", selectedItemsCount > 0 && selectedItemsCount < itemsCount);
+
+            selectedItems.text(selectedItemsCount + ' @T["selected"]');
+            displayActionsOrFilters();
         });
     });
 </script>

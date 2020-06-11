@@ -1,24 +1,42 @@
 @using OrchardCore.Forms.ViewModels;
 @model FormPartEditViewModel
 
-<fieldset class="form-group">
+<div class="form-group">
     <label asp-for="Action">@T["Action"]</label>
     <input type="text" asp-for="Action" class="form-control content-preview-text" />
     <span class="hint">@T["The URL to submit the form to."]</span>
-</fieldset>
+</div>
 
-<fieldset class="form-group">
+<div class="form-group">
     <label asp-for="Method">@T["Method"]</label>
     <select asp-for="Method" class="form-control content-preview-select">
         <option value="POST">POST</option>
         <option value="GET">GET</option>
     </select>
     <span class="hint">@T["The HTTP method to use when submitting the form."]</span>
-</fieldset>
+</div>
+
+<div class="form-group">
+    <label asp-for="EncType">@T["EncType"]</label>
+    <select asp-for="EncType" class="form-control content-preview-select">
+        <option value="application/x-www-form-urlencoded">application/x-www-form-urlencoded	</option>
+        <option value="multipart/form-data">multipart/form-data</option>
+        <option value="text/plain">text/plain</option>
+    </select>
+    <span class="hint">@T["The enctype to use when submitting the form using POST method."]</span>
+</div>
+
+<div class="form-group pb-1">
+    <div class="custom-control custom-checkbox">
+        <input asp-for="EnableAntiForgeryToken" class="custom-control-input" />
+        <label asp-for="EnableAntiForgeryToken" class="custom-control-label">@T["Anti Forgery Token"]</label>
+        <span class="hint">@T["Check to generate an Anti Forgery Token in the form."]</span>
+    </div>
+</div>
 
 @*Disabled for beta 2, as this is WIP.*@
-@*<fieldset class="form-group">
+@*<div class="form-group">
         <label asp-for="WorkflowTypeId">@T["Workflow Type"]</label>
         @await Component.InvokeAsync("SelectWorkflowType", new { selectedWorkflowTypeId = Model.WorkflowTypeId, htmlName = Html.NameFor(m => m.WorkflowTypeId) })
         <span class="hint">@T["Optionally select a workflow to invoke when the form is submitted."]</span>
-    </fieldset>*@
+    </div>*@

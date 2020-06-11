@@ -1,69 +1,85 @@
-@using OrchardCore.ContentManagement.Metadata.Settings;
+@using OrchardCore.ContentManagement;
+@using OrchardCore.Flows.Models;
 @using OrchardCore.Flows.ViewModels;
+@using OrchardCore.Mvc.Utilities;
 
 @model FlowPartEditViewModel
 
 @inject IContentManager ContentManager
-@inject OrchardCore.ContentManagement.Metadata.IContentDefinitionManager ContentDefinitionManager
 @inject OrchardCore.ContentManagement.Display.IContentItemDisplayManager ContentItemDisplayManager
 
 @{
-    var widgetContentTypes = ContentDefinitionManager.ListTypeDefinitions().Where(t => t.GetSettings<ContentTypeSettings>().Stereotype == "Widget");
+    var widgetContentTypes = Model.ContainedContentTypeDefinitions;
     var widgetTemplatePlaceholderId = Html.Id("widgetTemplatePlaceholder");
+    var parentContentType = Model.FlowPart.ContentItem.ContentType;
+    string partName = ((dynamic)Model).Metadata.Name;
 }
 
 <script asp-name="jQuery-ui" at="Foot"></script>
-
-<fieldset class="form-group">
-    <div id="@widgetTemplatePlaceholderId" class="widget-template-placeholder">
+<div class="form-group">
+    <div id="@widgetTemplatePlaceholderId" class="widget-template-placeholder widget-template-placeholder-flowpart flowpart-@partName.HtmlClassify() row mx-0" data-buildeditorurl="@Url.Action("BuildEditor", "Admin", new { area = "OrchardCore.Flows" })">
         @{ var htmlFieldPrefix = this.ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix; }
         @foreach (var widget in Model.FlowPart.Widgets)
         {
-            var prefix = Guid.NewGuid().ToString("n");
-            <div class="widget-template">
-                @{
-                    dynamic widgetEditor = await ContentItemDisplayManager.BuildEditorAsync(widget, Model.Updater, false, "", prefix);
+            var metadata = ((ContentItem)widget).As<OrchardCore.Flows.Models.FlowMetadata>();
+            var colSize = (int)Math.Round((double)metadata.Size / 100.0 * 12);
 
-                    widgetEditor.PrefixesName = Html.NameFor(x => x.Prefixes);
-                    widgetEditor.ContentTypesName = Html.NameFor(x => x.ContentTypes);
-                    widgetEditor.TargetId = widgetTemplatePlaceholderId;
-
-                    widgetEditor.Metadata.Alternates.Add("Widget_Edit__Flow");
-                }
-
-                @await DisplayAsync(widgetEditor)
-
-                @{ this.ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix = htmlFieldPrefix; }
-                <input type="hidden" asp-for="Prefixes" value="@prefix" />
-                <input type="hidden" asp-for="ContentTypes" value="@widget.ContentType" />
-            </div>
+            //Create a Card Shape
+            dynamic contentCard = await New.ContentCard(
+                //For Updater
+                CollectionShape: Model,
+                //Shape Specific
+                CollectionShapeType: nameof(FlowPart),
+                ContentItem: widget,
+                BuildEditor: true,
+                ParentContentType: parentContentType,
+                CollectionPartName: partName,
+                //FlowPart Card Specific - For Frame
+                ColumnSize: colSize,
+                //Card Specific Properties
+                TargetId: widgetTemplatePlaceholderId,
+                Inline: false,
+                CanMove: true,
+                CanDelete: true,
+                //Input hidden
+                //Prefixes
+                PrefixValue: widget.ContentItemId,
+                HtmlFieldPrefix: htmlFieldPrefix,
+                PrefixesId: Html.IdFor(x => x.Prefixes),
+                PrefixesName: Html.NameFor(x => x.Prefixes),
+                //Content Types
+                ContentTypesId: Html.IdFor(x => x.ContentTypes),
+                ContentTypesName: Html.NameFor(x => x.ContentTypes)
+            );
+            @await DisplayAsync(contentCard)
         }
     </div>
-
-    <div class="btn-group ">
-        <button type="button" class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            @T["Add Widget"]
-        </button>
-        <div class="dropdown-menu">
-            @foreach (var type in widgetContentTypes)
-            {
-                <a class="dropdown-item add-widget  btn-sm"
-                   data-target-id="@widgetTemplatePlaceholderId"
-                   data-prefixes-name="@Html.NameFor(x => x.Prefixes)"
-                   data-contenttypes-name="@Html.NameFor(x => x.ContentTypes)"
-                   data-widget-type="@type.Name"
-                   data-flowmetadata="true"
-                   href="javascript:;">@type.DisplayName</a>
-            }
+    <div class="btn-widget-add-below-wrapper w-100">
+        <div class="btn-widget-add-below w-100 border border-info">
+            <div class="btn-group">
+                <button type="button" title="@T["Add Widget"]" class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <i class="fa fa-plus" aria-hidden="true"></i>
+                </button>
+                <div class="dropdown-menu">
+                    @foreach (var type in widgetContentTypes.OrderBy(w => w.DisplayName))
+                    {
+                        <a class="dropdown-item add-widget  btn-sm"
+                        data-target-id="@widgetTemplatePlaceholderId"
+                        data-prefixes-name="@Html.NameFor(x => x.Prefixes)"
+                        data-contenttypes-name="@Html.NameFor(x => x.ContentTypes)"
+                        data-widget-type="@type.Name"
+                        data-flowmetadata="true"
+                        data-parent-content-type="@parentContentType"
+                        data-part-name="@partName"
+                        href="javascript:;">@type.DisplayName</a>
+                    }
+                </div>
+            </div>
         </div>
     </div>
-
-
     @if (Context.Items["FlowPart.Edit"] == null)
     {
         Context.Items["FlowPart.Edit"] = new object();
-        <input type="hidden" id="buildEditorUrl" value="@Url.Action("BuildEditor", "Admin", new { area = "OrchardCore.Flows" })" />
-
         @foreach (var type in widgetContentTypes)
         {
             // Render a mock widget so that its resources are included in the page
@@ -71,18 +87,120 @@
             await DisplayAsync(await ContentItemDisplayManager.BuildEditorAsync(contentItem, Model.Updater, true, "", Guid.NewGuid().ToString("n")));
         }
 
-        <script asp-src="~/OrchardCore.Flows/Scripts/flows.edit.js" at="Foot" depends-on="admin"></script>
-        <style asp-src="~/OrchardCore.Widgets/Styles/widgetslist.edit.css"></style>
-        <style asp-src="~/OrchardCore.Flows/Styles/flows.edit.css"></style>
+        <script asp-src="~/OrchardCore.Flows/Scripts/flows.edit.min.js"
+            debug-src="~/OrchardCore.Flows/Scripts/flows.edit.js" at="Foot" depends-on="admin"></script>
+        <style asp-src="~/OrchardCore.Widgets/Styles/widgetslist.edit.min.css"
+            debug-src="~/OrchardCore.Widgets/Styles/widgetslist.edit.css"></style>
+        <style asp-src="~/OrchardCore.Flows/Styles/flows.edit.css"
+            debug-src="~/OrchardCore.Flows/Styles/flows.edit.min.css"></style>
     }
 
-    <script at="Foot">
+<script at="Foot">
+    function toggleWidgets(){
+        $('.toggleAll > svg').toggleClass('fa-angle-double-up fa-angle-double-down');
+        $('.widget.widget-editor.card').toggleClass('collapsed');
+    }
+
+    @*Only apply sortable if element is present in dom, do not call sortable on scripts for mock widgets *@
+    if ($('#@widgetTemplatePlaceholderId').length == 1) {
         $("#@widgetTemplatePlaceholderId").sortable({
-            handle: ".widget-editor-header",
+            handle: ".widget-editor-handle",
             cursor: "move",
+            tolerance: "pointer",
+            opacity: 0.7,
+            placeholder: {
+                element: function(currentItem) {
+                    return $('<div class="widget-dragdrop-placeholder"><div></div></div>')[0];
+                },
+                update: function (container, p) {
+                    return;
+                }
+            },
+            toleranceElement: '> div',
+            connectWith: '.widget-template-placeholder.widget-template-placeholder-flowpart',
+            start: function (event, ui) {
+
+                widgetDragItem = ui.item;
+                lastContainer = ui.item.parent();
+                lastContainer.toggleClass('widget-dropzone-hint');
+
+                widgetDragItem.find('.card').first().toggleClass('border-primary')
+
+                widgetItemSourceId = widgetDragItem.parent().attr('id');
+
+                var classList = widgetDragItem.attr('class').split(' ');
+                $.each(classList, function (id, item) {
+                    if (item.indexOf('col-md-') === 0) ui.placeholder.addClass(item);
+                });
+
+            },
             stop: function (event, ui) {
+
+                lastContainer.toggleClass('widget-dropzone-hint');
+                widgetDragItem.find('.card').first().toggleClass('border-primary');
+
+                widgetItemDestId = widgetDragItem.parent().attr('id');
+
+                if (widgetItemDestId !== widgetItemSourceId) {
+
+                    var inputs = widgetDragItem.children("input[name*='FlowPart']");
+
+                    var destination = $('#' + widgetItemDestId).closest('.widget-template')
+                    var source = $('#' + widgetItemSourceId).closest('.widget-template');
+
+                    var sourceGuid = widgetItemSourceId.substring(0, widgetItemSourceId.indexOf('_') + 1);
+
+                    var sourceNameGuid = source.children("input[name*='Prefixes']").val() + '.';
+
+                    if (destination.length > 0) {
+
+                        var destGuid = widgetItemDestId.substring(0, widgetItemDestId.indexOf('_') + 1);
+
+                        var destNameGuid = destination.children("input[name*='Prefixes']").val() + '.';
+
+                        if (source.length) {
+
+                            inputs.each(function (index, item) {
+                                $(this).attr('id', $(this).attr('id').replace(sourceGuid, destGuid));
+                                $(this).attr('name', $(this).attr('name').replace(sourceNameGuid, destNameGuid));
+                            });
+
+                        } else {
+
+                            inputs.each(function (index, item) {
+                                $(this).attr('id', destGuid + $(this).attr('id'));
+                                $(this).attr('name', destNameGuid  + $(this).attr('name'));
+                            });
+                        }
+
+                    }
+                    else if (source.length > 0) {
+
+                        inputs.each(function (index, item) {
+                            $(this).attr('id', $(this).attr('id').replace(sourceGuid, '') );
+                            $(this).attr('name', $(this).attr('name').replace(sourceNameGuid, ''));
+                        });
+                    }
+
+                }
+
                 $(document).trigger('contentpreview:render');
+
+                //clear the global variables
+                widgetDragItem = null;
+                lastContainer = null;
+                widgetItemSourceId = null;
+                widgetItemDestId = null;
+            },
+            over: function (event, ui) {
+                var $self = $(this);
+                if (lastContainer[0] != this) {
+                    lastContainer.toggleClass('widget-dropzone-hint');
+                    lastContainer = $self;
+                    $self.toggleClass('widget-dropzone-hint');
+                }
             }
         });
+    }
     </script>
-</fieldset>
+</div>

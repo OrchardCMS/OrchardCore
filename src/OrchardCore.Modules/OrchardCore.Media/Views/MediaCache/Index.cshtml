@@ -1,20 +1,27 @@
+@model OrchardCore.Media.ViewModels.MediaCacheViewModel
 <h1>@RenderTitleSegments(T["Asset Cache"])</h1>
 
-<p class="alert alert-secondary">@T["Media is configured with appsettings.json."]</p>
+@if (Model.IsConfigured)
+{
+    <p class="alert alert-secondary">@T["Media is configured with appsettings.json."]</p>
 
-<form asp-action="Purge">
-    @* the form is necessary to generate and antiforgery token for the purge action *@
+    <form asp-action="Purge">
+        @* the form is necessary to generate and antiforgery token for the purge action *@
 
-    <ul class="list-group">
-        <li class="list-group-item">
-            <div class="properties">
-                <div class="related">
-                    <a asp-action="Purge" class="btn btn-sm btn-danger float-right" data-title="@T["Purge All"]" data-message="@T["Are you sure you want to purge the entire asset cache?"]" itemprop="RemoveUrl UnsafeUrl">@T["Purge All"]</a>
+        <ul class="list-group">
+            <li class="list-group-item">
+                <div class="properties">
+                    <div class="related">
+                        <a asp-action="Purge" class="btn btn-sm btn-danger float-right" data-title="@T["Purge All"]" data-message="@T["Are you sure you want to purge the entire asset cache?"]" itemprop="RemoveUrl UnsafeUrl">@T["Purge All"]</a>
+                    </div>
+                    @T["Purge All"]
+                    <span class="hint">— @T["Purge all the assets from the cache"]</span>
                 </div>
-                @T["Purge All"]
-                <span class="hint">— @T["Purge all the assets from the cache"]</span>
-            </div>
-        </li>
-    </ul>
-
-</form>
+            </li>
+        </ul>
+    </form>
+}
+else
+{
+    <p class="alert alert-danger">@T["The asset cache feature is enabled, but a remote media store feature is not enabled, or not configured with appsettings.json."]</p>
+}

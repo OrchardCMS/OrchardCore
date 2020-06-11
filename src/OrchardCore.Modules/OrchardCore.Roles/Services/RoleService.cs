@@ -35,6 +35,11 @@ namespace OrchardCore.Roles.Services
             return await _roleManager.GetClaimsAsync(entity);
         }
 
+        public Task<IEnumerable<IRole>> GetRolesAsync()
+        {
+            return Task.FromResult<IEnumerable<IRole>>(_roleManager.Roles);
+        }
+
         public Task<IEnumerable<string>> GetRoleNamesAsync()
         {
             return Task.FromResult<IEnumerable<string>>(_roleManager.Roles.Select(a => a.RoleName));

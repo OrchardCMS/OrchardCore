@@ -2,9 +2,9 @@
   "name": "Agency",
   "displayName": "Agency",
   "description": "Ready to use company website.",
-  "author": "The Orchard Team",
-  "website": "https://orchardproject.net",
-  "version": "2.0",
+  "author": "The Orchard Core Team",
+  "website": "https://orchardcore.net",
+  "version": "1.0.0-rc2",
   "issetuprecipe": true,
   "categories": [ "default" ],
   "tags": [ "agency" ],
@@ -113,7 +113,7 @@
               "Settings": {
                 "AutoroutePartSettings": {
                   "AllowCustomPath": true,
-                  "Pattern": "{{ ContentItem | display_text | slugify }}",
+                  "Pattern": "{{ Model.ContentItem | display_text | slugify }}",
                   "ShowHomepageOption": true
                 },
                 "ContentTypePartSettings": {
@@ -195,7 +195,7 @@
                 },
                 "AutoroutePartSettings": {
                   "AllowCustomPath": true,
-                  "Pattern": "{{ ContentItem | display_text | slugify }}",
+                  "Pattern": "{{ Model.ContentItem | display_text | slugify }}",
                   "ShowHomepageOption": true
                 }
               }
@@ -248,7 +248,7 @@
               "Settings": {
                 "AutoroutePartSettings": {
                   "AllowCustomPath": true,
-                  "Pattern": "{{ ContentItem | display_text | slugify }}",
+                  "Pattern": "{{ Model.ContentItem | display_text | slugify }}",
                   "ShowHomepageOption": true
                 },
                 "ContentTypePartSettings": {

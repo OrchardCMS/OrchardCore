@@ -20,14 +20,15 @@ namespace OrchardCore.DisplayManagement.Zones
     /// </summary>
     public class ZoneHolding : Shape
     {
-        private readonly Func<Task<IShape>> _zoneFactory;
+        private readonly Func<ValueTask<IShape>> _zoneFactory;
 
-        public ZoneHolding(Func<Task<IShape>> zoneFactory)
+        public ZoneHolding(Func<ValueTask<IShape>> zoneFactory)
         {
             _zoneFactory = zoneFactory;
         }
 
         private Zones _zones;
+
         public Zones Zones
         {
             get
@@ -63,10 +64,10 @@ namespace OrchardCore.DisplayManagement.Zones
     /// </remarks>
     public class Zones : Composite
     {
-        private readonly Func<Task<IShape>> _zoneFactory;
+        private readonly Func<ValueTask<IShape>> _zoneFactory;
         private readonly object _parent;
 
-        public Zones(Func<Task<IShape>> zoneFactory, object parent)
+        public Zones(Func<ValueTask<IShape>> zoneFactory, object parent)
         {
             _zoneFactory = zoneFactory;
             _parent = parent;
@@ -79,7 +80,6 @@ namespace OrchardCore.DisplayManagement.Zones
 
         protected override bool TryGetMemberImpl(string name, out object result)
         {
-
             var parentMember = ((dynamic)_parent)[name];
             if (parentMember == null)
             {
@@ -90,7 +90,6 @@ namespace OrchardCore.DisplayManagement.Zones
             result = parentMember;
             return true;
         }
-
 
         protected override bool TrySetMemberImpl(string name, object value)
         {
@@ -107,12 +106,11 @@ namespace OrchardCore.DisplayManagement.Zones
     /// </remarks>
     public class ZoneOnDemand : Shape
     {
-
-        private readonly Func<Task<IShape>> _zoneFactory;
+        private readonly Func<ValueTask<IShape>> _zoneFactory;
         private readonly object _parent;
         private readonly string _potentialZoneName;
 
-        public ZoneOnDemand(Func<Task<IShape>> zoneFactory, object parent, string potentialZoneName)
+        public ZoneOnDemand(Func<ValueTask<IShape>> zoneFactory, object parent, string potentialZoneName)
         {
             _zoneFactory = zoneFactory;
             _parent = parent;
@@ -252,4 +250,3 @@ namespace OrchardCore.DisplayManagement.Zones
         }
     }
 }
-

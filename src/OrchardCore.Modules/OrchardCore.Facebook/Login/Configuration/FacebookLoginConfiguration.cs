@@ -1,4 +1,3 @@
-using System;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Linq;
@@ -24,7 +23,7 @@ namespace OrchardCore.Facebook.Login.Configuration
         private readonly IFacebookService _coreService;
         private readonly IFacebookLoginService _loginService;
         private readonly IDataProtectionProvider _dataProtectionProvider;
-        private readonly ILogger<FacebookLoginConfiguration> _logger;
+        private readonly ILogger _logger;
 
         public FacebookLoginConfiguration(
             IFacebookService coreService,
@@ -63,7 +62,7 @@ namespace OrchardCore.Facebook.Login.Configuration
         public void Configure(string name, FacebookOptions options)
         {
             // Ignore OpenID Connect client handler instances that don't correspond to the instance managed by the OpenID module.
-            if (!string.Equals(name, FacebookDefaults.AuthenticationScheme, StringComparison.Ordinal))
+            if (!string.Equals(name, FacebookDefaults.AuthenticationScheme))
             {
                 return;
             }
@@ -87,7 +86,7 @@ namespace OrchardCore.Facebook.Login.Configuration
             }
             catch
             {
-                _logger.LogError("The Facebook secret keycould not be decrypted. It may have been encrypted using a different key.");
+                _logger.LogError("The Facebook secret key could not be decrypted. It may have been encrypted using a different key.");
             }
 
             if (loginSettings.CallbackPath.HasValue)
@@ -122,6 +121,5 @@ namespace OrchardCore.Facebook.Login.Configuration
 
             return settings;
         }
-
     }
 }

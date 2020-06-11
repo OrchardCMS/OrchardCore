@@ -11,7 +11,7 @@ namespace OrchardCore.Email.Services
     {
         private readonly ISiteService _site;
         private readonly IDataProtectionProvider _dataProtectionProvider;
-        private readonly ILogger<SmtpSettingsConfiguration> _logger;
+        private readonly ILogger _logger;
 
         public SmtpSettingsConfiguration(
             ISiteService site,

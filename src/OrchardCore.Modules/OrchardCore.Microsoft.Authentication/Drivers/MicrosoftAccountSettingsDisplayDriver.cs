@@ -56,7 +56,7 @@ namespace OrchardCore.Microsoft.Authentication.Drivers
                 }
                 if (settings.CallbackPath.HasValue)
                 {
-                    model.CallbackPath = settings.CallbackPath;
+                    model.CallbackPath = settings.CallbackPath.Value;
                 }
             }).Location("Content:5").OnGroup(MicrosoftAuthenticationConstants.Features.MicrosoftAccount);
         }
@@ -81,7 +81,7 @@ namespace OrchardCore.Microsoft.Authentication.Drivers
                     settings.AppId = model.AppId;
                     settings.AppSecret = protector.Protect(model.AppSecret);
                     settings.CallbackPath = model.CallbackPath;
-                    await _shellHost.ReloadShellContextAsync(_shellSettings);
+                    await _shellHost.ReleaseShellContextAsync(_shellSettings);
                 }
             }
             return await EditAsync(settings, context);

@@ -1,8 +1,8 @@
-﻿using OrchardCore.ContentManagement;
+using System.Threading.Tasks;
+using OrchardCore.ContentManagement;
 using OrchardCore.Contents.ViewModels;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Navigation;
-using System.Threading.Tasks;
 using YesSql;
 
 namespace OrchardCore.Contents.Services

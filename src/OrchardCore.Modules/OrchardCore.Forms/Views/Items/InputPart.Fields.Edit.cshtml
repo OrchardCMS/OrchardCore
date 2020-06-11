@@ -1,7 +1,7 @@
 @using OrchardCore.Forms.ViewModels;
 @model InputPartEditViewModel
 
-<fieldset class="form-group">
+<div class="form-group">
     <label asp-for="Type">@T["Type"]</label>
     <select asp-for="Type" class="form-control content-preview-select">
         <option value="text">@T["Text"]</option>
@@ -21,22 +21,23 @@
         <option value="color">@T["Color"]</option>
         <option value="range">@T["Range"]</option>
         <option value="file">@T["File"]</option>
+        <option value="url">@T["Url"]</option>
         <option value="image">@T["Image"]</option>
         <option value="reset">@T["Reset"]</option>
         <option value="search">@T["Search"]</option>
         <option value="submit">@T["Submit"]</option>
     </select>
     <span class="hint">@T["The button type."]</span>
-</fieldset>
+</div>
 
-<fieldset class="form-group">
+<div class="form-group">
     <label asp-for="Placeholder">@T["Placeholder Text"]</label>
     <input asp-for="Placeholder" type="text" class="form-control content-preview-text" />
     <span class="hint">@T["The text to display when the field has no value."]</span>
-</fieldset>
+</div>
 
-<fieldset class="form-group">
+<div class="form-group">
     <label asp-for="DefaultValue">@T["Default Value"]</label>
     <input asp-for="DefaultValue" type="text" class="form-control content-preview-text" />
     <span class="hint">@T["The default value for this field."]</span>
-</fieldset>
+</div>

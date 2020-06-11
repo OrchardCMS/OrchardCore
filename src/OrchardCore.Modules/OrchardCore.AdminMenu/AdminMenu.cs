@@ -9,6 +9,7 @@ namespace OrchardCore.AdminMenu
     public class AdminMenu : INavigationProvider
     {
         private readonly AdminMenuNavigationProvidersCoordinator _adminMenuNavigationProvider;
+        private readonly IStringLocalizer S;
 
         public AdminMenu(AdminMenuNavigationProvidersCoordinator adminMenuNavigationProvider,
             IStringLocalizer<AdminMenu> localizer)
@@ -16,8 +17,6 @@ namespace OrchardCore.AdminMenu
             _adminMenuNavigationProvider = adminMenuNavigationProvider;
             S = localizer;
         }
-
-        public IStringLocalizer S { get; set; }
 
         public async Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
@@ -27,15 +26,15 @@ namespace OrchardCore.AdminMenu
             }
 
             // Configuration and settings menus for the AdminMenu module
-            builder.Add(S["Configuration"], cfg => cfg
-                    .Add(S["Admin Menus"], "1.5", admt => admt
+            builder.Add(S["Configuration"], configuration => configuration
+                    .Add(S["Admin Menus"], S["Admin Menus"].PrefixPosition(), admt => admt
                         .Permission(Permissions.ManageAdminMenu)
                         .Action("List", "Menu", new { area = "OrchardCore.AdminMenu" })
                         .LocalNav()
                     ));
 
             // This is the entry point for the adminMenu: dynamically generated custom admin menus
-           await  _adminMenuNavigationProvider.BuildNavigationAsync("adminMenu", builder);            
+            await _adminMenuNavigationProvider.BuildNavigationAsync("adminMenu", builder);
         }
     }
 }

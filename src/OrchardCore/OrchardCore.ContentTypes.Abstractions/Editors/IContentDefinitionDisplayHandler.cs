@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.DisplayManagement.Handlers;
 
@@ -18,5 +18,4 @@ namespace OrchardCore.ContentTypes.Editors
         Task BuildPartFieldEditorAsync(ContentPartFieldDefinition definition, BuildEditorContext context);
         Task UpdatePartFieldEditorAsync(ContentPartFieldDefinition definition, UpdatePartFieldEditorContext context);
     }
-
 }

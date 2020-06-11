@@ -2,15 +2,17 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Fluid;
+using Microsoft.Extensions.Localization;
+using OrchardCore.Alias.Drivers;
 using OrchardCore.Alias.Indexes;
 using OrchardCore.Alias.Models;
 using OrchardCore.Alias.Settings;
+using OrchardCore.Alias.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Environment.Cache;
 using OrchardCore.Liquid;
-using OrchardCore.Settings;
 using YesSql;
 
 namespace OrchardCore.Alias.Handlers
@@ -18,28 +20,47 @@ namespace OrchardCore.Alias.Handlers
     public class AliasPartHandler : ContentPartHandler<AliasPart>
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
-        private readonly ISiteService _siteService;
         private readonly ITagCache _tagCache;
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly ISession _session;
+        private readonly IStringLocalizer S;
 
         public AliasPartHandler(
             IContentDefinitionManager contentDefinitionManager,
-            ISiteService siteService,
             ITagCache tagCache,
             ILiquidTemplateManager liquidTemplateManager,
-            ISession session)
+            ISession session,
+            IStringLocalizer<AliasPartHandler> stringLocalizer)
         {
             _contentDefinitionManager = contentDefinitionManager;
-            _siteService = siteService;
             _tagCache = tagCache;
             _liquidTemplateManager = liquidTemplateManager;
             _session = session;
+            S = stringLocalizer;
+        }
+
+        public override async Task ValidatingAsync(ValidateContentContext context, AliasPart part)
+        {
+            // Only validate the alias if it's not empty.
+            if (String.IsNullOrWhiteSpace(part.Alias))
+            {
+                return;
+            }
+
+            if (part.Alias.Length > AliasPartDisplayDriver.MaxAliasLength)
+            {
+                context.Fail(S["Your alias is too long. The alias can only be up to {0} characters.", AliasPartDisplayDriver.MaxAliasLength]);
+            }
+
+            if (!await IsAliasUniqueAsync(part.Alias, part))
+            {
+                context.Fail(S["Your alias is already in use."]);
+            }
         }
 
         public async override Task UpdatedAsync(UpdateContentContext context, AliasPart part)
         {
-            // Compute the Path only if it's empty
+            // Compute the Alias only if it's empty
             if (!String.IsNullOrEmpty(part.Alias))
             {
                 return;
@@ -49,24 +70,30 @@ namespace OrchardCore.Alias.Handlers
 
             if (!String.IsNullOrEmpty(pattern))
             {
-                var templateContext = new TemplateContext();
-                templateContext.SetValue("ContentItem", part.ContentItem);
+                var model = new AliasPartViewModel()
+                {
+                    Alias = part.Alias,
+                    AliasPart = part,
+                    ContentItem = part.ContentItem
+                };
 
-                part.Alias = await _liquidTemplateManager.RenderAsync(pattern, NullEncoder.Default, templateContext);
+                part.Alias = await _liquidTemplateManager.RenderAsync(pattern, NullEncoder.Default, model,
+                    scope => scope.SetValue("ContentItem", model.ContentItem));
+
+                part.Alias = part.Alias.Replace("\r", String.Empty).Replace("\n", String.Empty);
+
+                if (part.Alias?.Length > AliasPartDisplayDriver.MaxAliasLength)
+                {
+                    part.Alias = part.Alias.Substring(0, AliasPartDisplayDriver.MaxAliasLength);
+                }
+
+                if (!await IsAliasUniqueAsync(part.Alias, part))
+                {
+                    part.Alias = await GenerateUniqueAliasAsync(part.Alias, part);
+                }
+
                 part.Apply();
             }
-        }
-
-        /// <summary>
-        /// Get the pattern from the AutoroutePartSettings property for its type
-        /// </summary>
-        private string GetPattern(AliasPart part)
-        {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(part.ContentItem.ContentType);
-            var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => String.Equals(x.PartDefinition.Name, "AliasPart", StringComparison.Ordinal));
-            var pattern = contentTypePartDefinition.GetSettings<AliasPartSettings>().Pattern;
-
-            return pattern;
         }
 
         public override Task PublishedAsync(PublishContentContext context, AliasPart instance)
@@ -87,12 +114,23 @@ namespace OrchardCore.Alias.Handlers
         public override async Task CloningAsync(CloneContentContext context, AliasPart part)
         {
             var clonedPart = context.CloneContentItem.As<AliasPart>();
-            clonedPart.Alias = await GenerateUniqueAliasAsync(clonedPart.Alias, clonedPart);
+            clonedPart.Alias = await GenerateUniqueAliasAsync(part.Alias, clonedPart);
 
             clonedPart.Apply();
-
         }
-        
+
+        /// <summary>
+        /// Get the pattern from the AliasPartSettings property for its type
+        /// </summary>
+        private string GetPattern(AliasPart part)
+        {
+            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(part.ContentItem.ContentType);
+            var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => String.Equals(x.PartDefinition.Name, "AliasPart"));
+            var pattern = contentTypePartDefinition.GetSettings<AliasPartSettings>().Pattern;
+
+            return pattern;
+        }
+
         private async Task<string> GenerateUniqueAliasAsync(string alias, AliasPart context)
         {
             var version = 1;
@@ -107,12 +145,24 @@ namespace OrchardCore.Alias.Handlers
 
             while (true)
             {
+                // Unversioned length + separator char + version length.
+                var quantityCharactersToTrim = unversionedAlias.Length + 1 + version.ToString().Length - AliasPartDisplayDriver.MaxAliasLength;
+                if (quantityCharactersToTrim > 0)
+                {
+                    unversionedAlias = unversionedAlias.Substring(0, unversionedAlias.Length - quantityCharactersToTrim);
+                }
+
                 var versionedAlias = $"{unversionedAlias}-{version++}";
-                if ((await _session.QueryIndex<AliasPartIndex>(o => o.Alias == versionedAlias && o.ContentItemId != context.ContentItem.ContentItemId).CountAsync()) == 0)
+                if (await IsAliasUniqueAsync(versionedAlias, context))
                 {
                     return versionedAlias;
                 }
             }
+        }
+
+        private async Task<bool> IsAliasUniqueAsync(string alias, AliasPart context)
+        {
+            return (await _session.QueryIndex<AliasPartIndex>(o => o.Alias == alias && o.ContentItemId != context.ContentItem.ContentItemId).CountAsync()) == 0;
         }
     }
 }

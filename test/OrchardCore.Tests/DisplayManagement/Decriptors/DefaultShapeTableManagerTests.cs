@@ -24,11 +24,11 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
 {
     public class DefaultShapeTableManagerTests : IDisposable
     {
-        IServiceProvider _serviceProvider;
+        private IServiceProvider _serviceProvider;
 
         private class TestFeatureInfo : IFeatureInfo
         {
-            public string[] Dependencies { get; set; } = new string[0];
+            public string[] Dependencies { get; set; } = Array.Empty<string>();
             public IExtensionInfo Extension { get; set; }
             public string Id { get; set; }
             public string Name { get; set; }
@@ -36,6 +36,7 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
             public string Category { get; set; }
             public string Description { get; set; }
             public bool DefaultTenantOnly { get; set; }
+            public bool IsAlwaysEnabled { get; set; }
 
             public bool DependencyOn(IFeatureInfo feature)
             {
@@ -63,7 +64,7 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
                 var features =
                     new List<IFeatureInfo>()
                     {
-                        {new FeatureInfo(name, name, 0, "", "", this, new string[0], false)}
+                        { new FeatureInfo(name, name, 0, String.Empty, String.Empty, this, Array.Empty<string>(), false, false) }
                     };
 
                 Features = features;
@@ -97,7 +98,7 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
                 var features =
                     new List<IFeatureInfo>()
                     {
-                        {new FeatureInfo(name, name, 0, "", "", this, new string[0], false)}
+                        { new FeatureInfo(name, name, 0, String.Empty, String.Empty, this, Array.Empty<string>(), false, false) }
                     };
 
                 Features = features;
@@ -124,7 +125,7 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
                 Features =
                     new List<IFeatureInfo>()
                     {
-                        {new FeatureInfo(name, name, 0, "", "", this, new string[] { baseTheme.Id }, false)}
+                        { new FeatureInfo(name, name, 0, String.Empty, String.Empty, this, new string[] { baseTheme.Id }, false, false) }
                     };
 
                 Id = name;
@@ -179,12 +180,12 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
             typeFeatureProvider.TryAdd(typeof(TestShapeProvider), new InternalFeatureInfo("Core", new InternalExtensionInfo("Core")));
         }
 
-        static IFeatureInfo TestFeature()
+        private static IFeatureInfo TestFeature()
         {
             return new TestFeatureInfo
             {
                 Id = "Testing",
-                Dependencies = new string[0],
+                Dependencies = Array.Empty<string>(),
                 Extension = new TestModuleExtensionInfo("Testing")
             };
         }
@@ -370,14 +371,14 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
         [Fact]
         public void DescribedPlacementIsReturnedIfNotNull()
         {
-            var shapeDetail = new ShapePlacementContext("Foo", "Detail", "", null);
-            var shapeSummary = new ShapePlacementContext("Foo", "Summary", "", null);
-            var shapeTitle = new ShapePlacementContext("Foo", "Title", "", null);
+            var shapeDetail = new ShapePlacementContext("Foo", "Detail", String.Empty, null);
+            var shapeSummary = new ShapePlacementContext("Foo", "Summary", String.Empty, null);
+            var shapeTitle = new ShapePlacementContext("Foo", "Title", String.Empty, null);
 
             _serviceProvider.GetService<TestShapeProvider>().Discover =
                 builder => builder.Describe("Hello1").From(TestFeature())
                     .Placement(ctx => ctx.DisplayType == "Detail" ? new PlacementInfo { Location = "Main" } : null)
-                    .Placement(ctx => ctx.DisplayType == "Summary" ? new PlacementInfo { Location = "" } : null);
+                    .Placement(ctx => ctx.DisplayType == "Summary" ? new PlacementInfo { Location = String.Empty } : null);
 
             var manager = _serviceProvider.GetService<IShapeTableManager>();
             var hello = manager.GetShapeTable(null).Descriptors["Hello1"];
@@ -400,14 +401,14 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
         [Fact]
         public void TwoArgumentVariationDoesSameThing()
         {
-            var shapeDetail = new ShapePlacementContext("Foo", "Detail", "", null);
-            var shapeSummary = new ShapePlacementContext("Foo", "Summary", "", null);
-            var shapeTitle = new ShapePlacementContext("Foo", "Title", "", null);
+            var shapeDetail = new ShapePlacementContext("Foo", "Detail", String.Empty, null);
+            var shapeSummary = new ShapePlacementContext("Foo", "Summary", String.Empty, null);
+            var shapeTitle = new ShapePlacementContext("Foo", "Title", String.Empty, null);
 
             _serviceProvider.GetService<TestShapeProvider>().Discover =
                 builder => builder.Describe("Hello2").From(TestFeature())
                     .Placement(ctx => ctx.DisplayType == "Detail", new PlacementInfo { Location = "Main" })
-                    .Placement(ctx => ctx.DisplayType == "Summary", new PlacementInfo { Location = "" });
+                    .Placement(ctx => ctx.DisplayType == "Summary", new PlacementInfo { Location = String.Empty });
 
             var manager = _serviceProvider.GetService<IShapeTableManager>();
             var hello = manager.GetShapeTable(null).Descriptors["Hello2"];
@@ -499,7 +500,7 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
             _serviceProvider.GetService<TestShapeProvider>();
             var manager = _serviceProvider.GetService<IShapeTableManager>();
             var table = manager.GetShapeTable("DerivedTheme");
-            Assert.True(table.Bindings.ContainsKey("OverriddenShape"));
+            Assert.True(table.Bindings.TryGetValue("OverriddenShape", out var shapeBinding));
             Assert.Equal("DerivedTheme", table.Descriptors["OverriddenShape"].BindingSource);
         }
 

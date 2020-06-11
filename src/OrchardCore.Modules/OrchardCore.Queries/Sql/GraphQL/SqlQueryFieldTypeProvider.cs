@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using GraphQL.Resolvers;
 using GraphQL.Types;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,13 +9,14 @@ using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Apis.GraphQL;
+using OrchardCore.Apis.GraphQL.Resolvers;
 using OrchardCore.ContentManagement.GraphQL.Queries;
 
 namespace OrchardCore.Queries.Sql.GraphQL.Queries
 {
     /// <summary>
-    /// This implementation of <see cref="ISchemaBuilder"/> registers 
-    /// all SQL Qeries as GraphQL queries.
+    /// This implementation of <see cref="ISchemaBuilder"/> registers
+    /// all SQL Queries as GraphQL queries.
     /// </summary>
     public class SqlQueryFieldTypeProvider : ISchemaBuilder
     {
@@ -30,9 +30,9 @@ namespace OrchardCore.Queries.Sql.GraphQL.Queries
         public async Task<IChangeToken> BuildAsync(ISchema schema)
         {
             var queryManager = _httpContextAccessor.HttpContext.RequestServices.GetService<IQueryManager>();
-            var queries = await queryManager.ListQueriesAsync();
 
-            var fieldTypes = new List<FieldType>();
+            var changeToken = queryManager.ChangeToken;
+            var queries = await queryManager.ListQueriesAsync();
 
             foreach (var query in queries.OfType<SqlQuery>())
             {
@@ -57,7 +57,7 @@ namespace OrchardCore.Queries.Sql.GraphQL.Queries
                 }
             }
 
-            return queryManager.ChangeToken;
+            return changeToken;
         }
 
         private FieldType BuildSchemaBasedFieldType(ISchema schema, SqlQuery query, JToken querySchema)
@@ -109,9 +109,9 @@ namespace OrchardCore.Queries.Sql.GraphQL.Queries
 
                 Name = query.Name,
                 ResolvedType = new ListGraphType(typetype),
-                Resolver = new AsyncFieldResolver<object, object>(async context => 
+                Resolver = new LockedAsyncFieldResolver<object, object>(async context =>
                 {
-                    var queryManager = _httpContextAccessor.HttpContext.RequestServices.GetService<IQueryManager>();
+                    var queryManager = context.ResolveServiceProvider().GetService<IQueryManager>();
                     var iquery = await queryManager.GetQueryAsync(context.FieldName);
 
                     var parameters = context.GetArgument<string>("parameters");
@@ -120,7 +120,8 @@ namespace OrchardCore.Queries.Sql.GraphQL.Queries
                         JsonConvert.DeserializeObject<Dictionary<string, object>>(parameters)
                         : new Dictionary<string, object>();
 
-                    return await queryManager.ExecuteQueryAsync(iquery, queryParameters);
+                    var result = await queryManager.ExecuteQueryAsync(iquery, queryParameters);
+                    return result.Items;
                 }),
                 Type = typeof(ListGraphType<ObjectGraphType<JObject>>)
             };
@@ -140,9 +141,9 @@ namespace OrchardCore.Queries.Sql.GraphQL.Queries
 
                 Name = query.Name,
                 ResolvedType = typetype.ResolvedType,
-                Resolver = new AsyncFieldResolver<object, object>(async context => 
+                Resolver = new LockedAsyncFieldResolver<object, object>(async context =>
                 {
-                    var queryManager = _httpContextAccessor.HttpContext.RequestServices.GetService<IQueryManager>();
+                    var queryManager = context.ResolveServiceProvider().GetService<IQueryManager>();
                     var iquery = await queryManager.GetQueryAsync(context.FieldName);
 
                     var parameters = context.GetArgument<string>("parameters");
@@ -151,7 +152,8 @@ namespace OrchardCore.Queries.Sql.GraphQL.Queries
                         JsonConvert.DeserializeObject<Dictionary<string, object>>(parameters)
                         : new Dictionary<string, object>();
 
-                    return await queryManager.ExecuteQueryAsync(iquery, queryParameters);
+                    var result = await queryManager.ExecuteQueryAsync(iquery, queryParameters);
+                    return result.Items;
                 }),
                 Type = typetype.Type
             };

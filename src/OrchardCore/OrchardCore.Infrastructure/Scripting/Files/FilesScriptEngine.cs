@@ -6,7 +6,7 @@ using Microsoft.Extensions.FileProviders;
 namespace OrchardCore.Scripting.Files
 {
     /// <summary>
-    /// Provides 
+    /// Provides
     /// </summary>
     public class FilesScriptEngine : IScriptingEngine
     {
@@ -29,7 +29,7 @@ namespace OrchardCore.Scripting.Files
                 throw new ArgumentException($"Expected a scope of type {nameof(FilesScriptScope)}", nameof(scope));
             }
 
-            if (script.StartsWith("text('") && script.EndsWith("')"))
+            if (script.StartsWith("text('", StringComparison.Ordinal) && script.EndsWith("')", StringComparison.Ordinal))
             {
                 var filePath = script.Substring(6, script.Length - 8);
                 var fileInfo = fileScope.FileProvider.GetRelativeFileInfo(fileScope.BasePath, filePath);
@@ -46,7 +46,7 @@ namespace OrchardCore.Scripting.Files
                     }
                 }
             }
-            else if (script.StartsWith("base64('") && script.EndsWith("')"))
+            else if (script.StartsWith("base64('", StringComparison.Ordinal) && script.EndsWith("')", StringComparison.Ordinal))
             {
                 var filePath = script.Substring(8, script.Length - 10);
                 var fileInfo = fileScope.FileProvider.GetRelativeFileInfo(fileScope.BasePath, filePath);

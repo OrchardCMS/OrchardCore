@@ -1,0 +1,67 @@
+@model OrchardCore.Html.ViewModels.TrumbowygSettingsViewModel
+<div id="@Html.IdFor(m => m)" class="type-part-editor type-part-editor-trumbowyg">
+    <div class="form-group col-md-6">
+        <div class="custom-control custom-checkbox">
+            <input type="checkbox" class="custom-control-input" asp-for="InsertMediaWithUrl" checked="@Model.InsertMediaWithUrl" />
+            <label class="custom-control-label" asp-for="InsertMediaWithUrl">@T["Insert Media with url"]</label>
+            <span class="hint">— @T["Whether the url is used when selected from Insert Media (By default, the Short Code is inserted)."]</span>
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-lg">
+            <label asp-for="Options">@T["Enter the editor options"]</label>
+            <span class="hint"><a href="https://alex-d.github.io/Trumbowyg/documentation/#button-pane" target="_blank">@T["Documentation for options"]</a></span>
+            <textarea asp-for="Options" class="form-control" autofocus="autofocus"></textarea>
+        </div>
+    </div>
+</div>
+
+<script asp-name="codemirror" depends-on="admin" at="Foot"></script>
+<script asp-name="codemirror-addon-display-autorefresh" at="Foot"></script>
+<script asp-name="codemirror-mode-javascript" at="Foot"></script>
+<script at="Foot">
+    $(function () {
+        var optionsTextArea = document.getElementById('@Html.IdFor(x => x.Options)');
+        var editor = CodeMirror.fromTextArea(optionsTextArea, {
+            autoRefresh: true,
+            lineNumbers: false,
+            matchBrackets: true,
+            mode: { name: "javascript" }
+    });
+@{
+    if (string.IsNullOrEmpty(Model.Options))
+    {
+        string fullOptions = @"{
+    autogrow: true,
+    btns: [
+        [""viewHTML""],
+        [""undo"", ""redo""],
+        [""formatting""],
+        [""strong"", ""em"", ""del""],
+        [""foreColor"", ""backColor""],
+        [""superscript"", ""subscript""],
+        [""link""],
+        [""image""],
+        [""align""],
+        [""unorderedList"", ""orderedList""],
+        [""horizontalRule""],
+        [""removeformat""],
+        [""fullscreen""]
+    ],
+    btnsDef: {
+        align: {
+            dropdown: [""justifyLeft"", ""justifyCenter"", ""justifyRight"", ""justifyFull""],
+            ico: ""justifyLeft""
+        },
+        image: {
+            dropdown: [""insertImage"", ""base64"", ""noembed""],
+            ico: ""insertImage""
+        }
+    }
+}";
+<text>editor.setValue(`@Html.Raw(fullOptions)`);
+        </text>
+    }
+}
+});
+</script>

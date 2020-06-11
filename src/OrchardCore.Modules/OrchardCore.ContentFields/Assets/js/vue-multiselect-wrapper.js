@@ -17,17 +17,16 @@ function initVueMultiselect(element) {
     if (element) {
         var elementId = element.id;
         var selectedItems = JSON.parse(element.dataset.selectedItems || "[]");
-        var tenantPath = element.dataset.tenantPath;
-        var searchApiUrl = element.dataset.searchUrl;
+        var searchUrl = element.dataset.searchUrl;
         var multiple = JSON.parse(element.dataset.multiple);
 
         var debouncedSearch = debounce(function (vm, query) {
             vm.isLoading = true;
-            var searchUrl = tenantPath + '/' + searchApiUrl;
+            var searchFullUrl = searchUrl;
             if (query) {
-                searchUrl += '&query=' + query;
+                searchFullUrl += '&query=' + query;
             }
-            fetch(searchUrl).then(function (res) {
+            fetch(searchFullUrl).then(function (res) {
                 res.json().then(function (json) {
                     vm.options = json;
                     vm.isLoading = false;
@@ -91,4 +90,3 @@ function initVueMultiselect(element) {
         document.querySelector("body").dispatchEvent(event);
     }
 }
- 

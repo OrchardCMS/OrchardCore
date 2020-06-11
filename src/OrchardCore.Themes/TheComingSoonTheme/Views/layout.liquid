@@ -1,36 +1,29 @@
 <!DOCTYPE html>
 <html lang="{{ Culture.Name }}">
-
   <head>
-
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="">
-    <meta name="author" content="">
-
-    {% render_section "HeadMeta", required:false %}
-
-    <title>{% page_title Site.SiteName %}</title>
+    <title>{{ "PageTitle" | shape_new | shape_stringify }}</title> 
+    {% resources type: "Meta" %}
+    <link type="image/x-icon" rel="shortcut icon" href="/TheComingSoonTheme/favicon.ico">
 
     <!-- Bootstrap core CSS -->
-    <link href="{{ "~/TheComingSoonTheme/vendor/bootstrap/css/bootstrap.min.css" | href }}" rel="stylesheet">
+    {% style name:"thecomingsoontheme-vendor-bootstrap", version:"4" %}
+    {% style name:"thecomingsoontheme-bootstrap-oc", version:"1" %}
 
     <!-- Custom fonts for this template -->
     <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,200i,300,300i,400,400i,600,600i,700,700i,900,900i" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Merriweather:300,300i,400,400i,700,700i,900,900i" rel="stylesheet">
-    {% comment %}<link href="{{ "~/TheComingSoonTheme/vendor/fontawesome-free/css/all.min.css" | href }}" rel="stylesheet">{% endcomment %}
-    {% style name:"font-awesome", version:"5" %}
+    {% style name:"thecomingsoontheme-vendor-font-awesome", version:"5" %}
 
     <!-- Custom styles for this template -->
     <link href="{{ "~/TheComingSoonTheme/css/coming-soon.min.css" | href }}" rel="stylesheet">
-    {% resources type: "Meta" %}
     {% resources type: "HeadLink" %}
     {% resources type: "Stylesheet" %}
     {% resources type: "HeadScript" %}
+    {% render_section "HeadMeta", required:false %}
   </head>
-
   <body dir={{ Culture.Dir }}>
-
     <div class="overlay"></div>
     <video playsinline="playsinline" autoplay="autoplay" muted="muted" loop="loop">
       <source src="{{ "~/TheComingSoonTheme/mp4/bg.mp4" | href }}" type="video/mp4">
@@ -40,14 +33,13 @@
     {% render_section "Content" %}
     {% render_section "Footer", required: false %}
 
-    <!-- Bootstrap core JavaScript -->
-    <script src="{{ "~/TheComingSoonTheme/vendor/jquery/jquery.min.js" | href }}"></script>
-    <script src="{{ "~/TheComingSoonTheme/vendor/bootstrap/js/bootstrap.bundle.min.js" | href }}"></script>
+    <!-- Bootstrap core JavaScript -->    
+    {% script name:"thecomingsoontheme-vendor-jquery", at:"Foot" %}    
+    {% script name:"thecomingsoontheme-vendor-bootstrap-bundle", at:"Foot" %}
 
     <!-- Custom scripts for this template -->
-    <script src="{{ "~/TheComingSoonTheme/js/coming-soon.min.js" | href }}"></script>
+    {% script name:"coming-soon", at:"Foot" %}  
 
     {% resources type: "FootScript" %}
   </body>
-
 </html>

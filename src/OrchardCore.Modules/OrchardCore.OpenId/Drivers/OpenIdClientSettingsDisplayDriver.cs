@@ -64,6 +64,7 @@ namespace OrchardCore.OpenId.Drivers
                 model.SignedOutCallbackPath = settings.SignedOutCallbackPath;
                 model.SignedOutRedirectUri = settings.SignedOutRedirectUri;
                 model.ResponseMode = settings.ResponseMode;
+                model.StoreExternalTokens = settings.StoreExternalTokens;
 
                 if (settings.ResponseType == OpenIdConnectResponseType.Code)
                 {
@@ -89,8 +90,6 @@ namespace OrchardCore.OpenId.Drivers
                 {
                     model.UseIdTokenTokenFlow = true;
                 }
-
-
             }).Location("Content:2").OnGroup(SettingsGroupId);
         }
 
@@ -118,13 +117,13 @@ namespace OrchardCore.OpenId.Drivers
                 settings.SignedOutCallbackPath = model.SignedOutCallbackPath;
                 settings.SignedOutRedirectUri = model.SignedOutRedirectUri;
                 settings.ResponseMode = model.ResponseMode;
+                settings.StoreExternalTokens = model.StoreExternalTokens;
 
                 bool useClientSecret = true;
 
                 if (model.UseCodeFlow)
                 {
                     settings.ResponseType = OpenIdConnectResponseType.Code;
-
                 }
                 else if (model.UseCodeIdTokenFlow)
                 {
@@ -179,10 +178,10 @@ namespace OrchardCore.OpenId.Drivers
                     }
                 }
 
-                // If the settings are valid, reload the current tenant.
+                // If the settings are valid, release the current tenant.
                 if (context.Updater.ModelState.IsValid)
                 {
-                    await _shellHost.ReloadShellContextAsync(_shellSettings);
+                    await _shellHost.ReleaseShellContextAsync(_shellSettings);
                 }
             }
 

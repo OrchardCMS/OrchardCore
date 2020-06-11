@@ -82,7 +82,5 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                     return results;
                 });
         }
-
-
     }
 }

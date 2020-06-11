@@ -1,17 +1,34 @@
 @model HtmlBodyPartViewModel
-@using OrchardCore.Html.ViewModels;
-@using OrchardCore.Html.Settings;
-@using OrchardCore.ContentLocalization
-@using OrchardCore.ContentManagement.Metadata.Models
-@using OrchardCore.Localization
 
 @{
     var settings = Model.TypePartDefinition.GetSettings<HtmlBodyPartSettings>();
     var culture = await Orchard.GetContentCultureAsync(Model.ContentItem);
 }
 
-<fieldset class="form-group">
-    <label asp-for="Source">@Model.TypePartDefinition.DisplayName()</label>
-    <textarea asp-for="Source" rows="5" class="form-control content-preview-text" dir="@culture.GetLanguageDirection()"></textarea>
+<div class="form-group">
+    <label asp-for="Html">@Model.TypePartDefinition.DisplayName()</label>
+    <textarea asp-for="Html" rows="5" class="form-control content-preview-text" dir="@culture.GetLanguageDirection()"></textarea>
     <span class="hint">@T["The body of the content item."]</span>
-</fieldset>
+</div>
+
+<script asp-name="codemirror" depends-on="admin" at="Foot"></script>
+<script asp-name="codemirror-addon-display-autorefresh" at="Foot"></script>
+<script asp-name="codemirror-mode-css" at="Foot"></script>
+<script asp-name="codemirror-mode-htmlmixed" at="Foot"></script>
+<script asp-name="codemirror-mode-javascript" at="Foot"></script>
+<script asp-name="codemirror-mode-xml" at="Foot"></script>
+<script at="Foot">
+    $(function () {
+        var optionsTextArea = document.getElementById('@Html.IdFor(x => x.Html)');
+        // When part rendered by a flow part only the elements scripts are rendered, so the html element will not exist.
+        if (optionsTextArea) {
+            var editor = CodeMirror.fromTextArea(optionsTextArea, {
+                autoRefresh: true,
+                lineNumbers: false,
+                lineWrapping: true,
+                matchBrackets: true,
+                mode: { name: "htmlmixed" }
+            });
+        }
+    });
+</script>

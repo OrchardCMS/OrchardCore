@@ -4,16 +4,25 @@ using System.Threading.Tasks;
 
 namespace OrchardCore.Localization
 {
+    /// <summary>
+    /// Represents a default implementation to manage the calendars.
+    /// </summary>
     public class DefaultCalendarManager : ICalendarManager
     {
         private readonly IEnumerable<ICalendarSelector> _calendarSelectors;
+
         private CalendarName? _calendarName;
 
+        /// <summary>
+        /// Creates a new instance of <see cref="DefaultCalendarManager"/>.
+        /// </summary>
+        /// <param name="calendarSelectors">A list of <see cref="ICalendarSelector"/>.</param>
         public DefaultCalendarManager(IEnumerable<ICalendarSelector> calendarSelectors)
         {
             _calendarSelectors = calendarSelectors;
         }
 
+        /// <inheritdocs />
         public async Task<CalendarName> GetCurrentCalendar()
         {
             if (_calendarName.HasValue)

@@ -2,11 +2,11 @@
   "devDependencies": {
     "child_process": "^1.0.2",
     "fs": "^0.0.2",
-    "jest": "^24.0.0-alpha.8",
-    "jest-cli": "^24.0.0-alpha.8",
+    "jest": "^25.1.0",
+    "jest-cli": "^25.1.0",
     "merge": ">=1.2.1",
-    "puppeteer": "^1.11.0",
-    "rimraf": "^2.6.2"
+    "puppeteer": "^2.1.1",
+    "rimraf": "^3.0.2"
   },
   "dependencies": {},
   "scripts": {

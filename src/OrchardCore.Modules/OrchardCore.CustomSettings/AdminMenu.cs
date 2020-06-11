@@ -9,16 +9,15 @@ namespace OrchardCore.CustomSettings
     public class AdminMenu : INavigationProvider
     {
         private readonly CustomSettingsService _customSettingsService;
+        private readonly IStringLocalizer S;
 
         public AdminMenu(
             IStringLocalizer<AdminMenu> localizer,
             CustomSettingsService customSettingsService)
         {
-            T = localizer;
+            S = localizer;
             _customSettingsService = customSettingsService;
         }
-
-        public IStringLocalizer T { get; set; }
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
@@ -30,9 +29,9 @@ namespace OrchardCore.CustomSettings
             foreach (var type in _customSettingsService.GetAllSettingsTypes())
             {
                 builder
-                    .Add(T["Configuration"], configuration => configuration
-                        .Add(T["Settings"], settings => settings
-                            .Add(new LocalizedString(type.DisplayName, type.DisplayName), layers => layers
+                    .Add(S["Configuration"], configuration => configuration
+                        .Add(S["Settings"], settings => settings
+                            .Add(new LocalizedString(type.DisplayName, type.DisplayName), type.DisplayName.PrefixPosition(), layers => layers
                                 .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = type.Name })
                                 .Permission(Permissions.CreatePermissionForType(type))
                                 .Resource(type.Name)

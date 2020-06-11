@@ -1,5 +1,6 @@
 @using System.Globalization;
 @using OrchardCore.ContentManagement.Metadata.Settings;
+@using OrchardCore.Layers.Drivers
 @model OrchardCore.Layers.ViewModels.LayersIndexViewModel
 
 @inject IContentManager ContentManager
@@ -11,7 +12,7 @@
 }
 <script asp-name="jquery-ui" at="Foot"></script>
 
-<h1>@RenderTitleSegments(T["Edit Widget Layers"])</h1>
+<h1>@RenderTitleSegments(T["Edit Widgets and Layers"])</h1>
 
 <form id="undo-form" asp-action="UpdatePosition" method="post">
     <div id="layer-undo-message" class="alert alert-success alert-dismissible show d-none" role="alert">
@@ -29,58 +30,67 @@
     <div class="col-md-8">
         <h3>@T["Zones"]</h3>
         <form asp-action="Index">
-            @foreach (var zone in Model.Zones)
+            @if (Model.Zones == null || !Model.Zones.Any())
             {
-                double maxPosition = 0;
+            <p class="alert alert-warning">@T["Please <a href=\"{0}\">define the available zones</a> before adding Widgets", Url.Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = LayerSiteSettingsDisplayDriver.GroupId })]</p>
+            }
+            else
+            {
+                foreach (var zone in Model.Zones)
+                {
+                    double maxPosition = 0;
 
-                <div class="card form-group">
-                    <div class="card-header text-muted">
-                        @zone
-                    </div>
-                    <div class="layer-zone card-body" data-zone="@zone">
-                        <div class="form-group">
-                            <ul class="list-group">
-                                @if (Model.Widgets.ContainsKey(zone))
-                                {
-                                    foreach (var contentItemSummary in Model.Widgets[zone])
-                                    {
-                                        contentItemSummary.Meta.Add(Html.Raw("<span class=\"badge badge-info\"><i class=\"fa fa-bookmark-o\" aria-hidden=\"true\"></i> " + contentItemSummary.ContentItem.Content.LayerMetadata.Layer + "</span>"));
-
-                                        maxPosition = Math.Max(maxPosition, (double)contentItemSummary.ContentItem.Content.LayerMetadata.Position);
-                                        <li class="list-group-item">
-                                            @await DisplayAsync(contentItemSummary)
-                                            <input type="hidden"
-                                                   class="layer-metadata"
-                                                   data-zone="@zone"
-                                                   data-layer="@contentItemSummary.ContentItem.Content.LayerMetadata.Layer"
-                                                   data-position="@contentItemSummary.ContentItem.Content.LayerMetadata.Position.ToString(CultureInfo.InvariantCulture)"
-                                                   data-content-item-id="@contentItemSummary.ContentItem.ContentItemId" />
-                                        </li>
-                                    }
-                                }
-                            </ul>
+                    <div class="card form-group">
+                        <div class="card-header text-muted">
+                            @zone
                         </div>
-                        <div class="btn-group">
-                            <button type="button" class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                @T["Add Widget"]
-                            </button>
-                            <div class="dropdown-menu">
-                                @foreach (var type in widgetContentTypes)
-                                {
-                                    var contentItem = await ContentManager.NewAsync(type.Name);
-                                    var createRoute = (await ContentManager.PopulateAspectAsync<ContentItemMetadata>(contentItem)).CreateRouteValues;
-                                    createRoute["returnUrl"] = Context.Request.PathBase + Context.Request.Path;
-                                    createRoute["LayerMetadata.Zone"] = zone;
-                                    createRoute["LayerMetadata.Position"] = maxPosition + 1;
-                                    <a class="dropdown-item add-list-widget btn-sm"
-                                       data-widget-type="@type.Name"
-                                       data-zone="@zone"
-                                       href="@Url.Action((string)createRoute["Action"], (string)createRoute["controller"], createRoute)">@type.DisplayName</a>
-                                }
+                        <div class="layer-zone card-body" data-zone="@zone">
+                            <div class="form-group">
+                                <ul class="list-group zones">
+                                    @if (Model.Widgets.ContainsKey(zone))
+                                    {
+                                        foreach (var contentItemSummary in Model.Widgets[zone])
+                                        {
+                                            contentItemSummary.Meta.Add(Html.Raw("<span class=\"badge badge-info\"><i class=\"fa fa-bookmark-o\" aria-hidden=\"true\"></i> " + contentItemSummary.ContentItem.Content.LayerMetadata.Layer + "</span>"));
+
+                                            maxPosition = Math.Max(maxPosition, (double)contentItemSummary.ContentItem.Content.LayerMetadata.Position);
+                                            <li class="list-group-item">
+                                                <div class="properties cursor-move">
+                                                    @await DisplayAsync(contentItemSummary)
+                                                </div>
+                                                <input type="hidden"
+                                                       class="layer-metadata"
+                                                       data-zone="@zone"
+                                                       data-layer="@contentItemSummary.ContentItem.Content.LayerMetadata.Layer"
+                                                       data-position="@contentItemSummary.ContentItem.Content.LayerMetadata.Position.ToString(CultureInfo.InvariantCulture)"
+                                                       data-content-item-id="@contentItemSummary.ContentItem.ContentItemId" />
+                                            </li>
+                                        }
+                                    }
+                                </ul>
+                            </div>
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    @T["Add Widget"]
+                                </button>
+                                <div class="dropdown-menu">
+                                    @foreach (var type in widgetContentTypes)
+                                    {
+                                        var contentItem = await ContentManager.NewAsync(type.Name);
+                                        var createRoute = (await ContentManager.PopulateAspectAsync<ContentItemMetadata>(contentItem)).CreateRouteValues;
+                                        createRoute["returnUrl"] = Context.Request.PathBase + Context.Request.Path;
+                                        createRoute["LayerMetadata.Zone"] = zone;
+                                        createRoute["LayerMetadata.Position"] = maxPosition + 1;
+                                        <a class="dropdown-item add-list-widget btn-sm"
+                                           data-widget-type="@type.Name"
+                                           data-zone="@zone"
+                                           href="@Url.Action((string)createRoute["Action"], (string)createRoute["controller"], createRoute)">@type.DisplayName</a>
+                                    }
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
+                }
             }
         </form>
     </div>
@@ -123,7 +133,7 @@
 </div>
 
 <script at="Foot">
-    $(".list-group").sortable({
+    $(".list-group.zones").sortable({
         handle: ".properties",
         cursor: "move",
         connectWith: '.list-group',

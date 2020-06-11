@@ -3,16 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using OrchardCore.Modules;
-using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Data.Migration.Records;
 using OrchardCore.Environment.Extensions;
+using OrchardCore.Modules;
 using YesSql;
 using YesSql.Sql;
 
 namespace OrchardCore.Data.Migration
 {
+    /// <summary>
+    /// Represents a class that manages the database migrations.
+    /// </summary>
     public class DataMigrationManager : IDataMigrationManager
     {
         private readonly IEnumerable<IDataMigration> _dataMigrations;
@@ -21,18 +23,26 @@ namespace OrchardCore.Data.Migration
         private readonly IExtensionManager _extensionManager;
         private readonly ILogger _logger;
         private readonly ITypeFeatureProvider _typeFeatureProvider;
-
         private readonly List<string> _processedFeatures;
+
         private DataMigrationRecord _dataMigrationRecord;
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="DataMigrationManager"/>.
+        /// </summary>
+        /// <param name="typeFeatureProvider">The <see cref="ITypeFeatureProvider"/>.</param>
+        /// <param name="dataMigrations">A list of <see cref="IDataMigration"/>.</param>
+        /// <param name="session">The <see cref="ISession"/>.</param>
+        /// <param name="store">The <see cref="IStore"/>.</param>
+        /// <param name="extensionManager">The <see cref="IExtensionManager"/>.</param>
+        /// <param name="logger">The <see cref="ILogger"/>.</param>
         public DataMigrationManager(
             ITypeFeatureProvider typeFeatureProvider,
             IEnumerable<IDataMigration> dataMigrations,
             ISession session,
             IStore store,
             IExtensionManager extensionManager,
-            ILogger<DataMigrationManager> logger,
-            IStringLocalizer<DataMigrationManager> localizer)
+            ILogger<DataMigrationManager> logger)
         {
             _typeFeatureProvider = typeFeatureProvider;
             _dataMigrations = dataMigrations;
@@ -40,14 +50,10 @@ namespace OrchardCore.Data.Migration
             _store = store;
             _extensionManager = extensionManager;
             _logger = logger;
-
             _processedFeatures = new List<string>();
-
-            T = localizer;
         }
 
-        public IStringLocalizer T { get; set; }
-
+        /// <inheritdocs />
         public async Task<DataMigrationRecord> GetDataMigrationRecordAsync()
         {
             if (_dataMigrationRecord == null)
@@ -109,7 +115,7 @@ namespace OrchardCore.Data.Migration
                 var uninstallAsyncMethod = GetUninstallAsyncMethod(migration);
                 if (uninstallAsyncMethod != null)
                 {
-                    await (Task) uninstallAsyncMethod.Invoke(migration, new object[0]);
+                    await (Task)uninstallAsyncMethod.Invoke(migration, new object[0]);
                 }
 
                 if (dataMigrationRecord == null)
@@ -172,7 +178,8 @@ namespace OrchardCore.Data.Migration
                 var current = 0;
                 if (dataMigrationRecord != null)
                 {
-                    current = dataMigrationRecord.Version.Value;
+                    // This can be null if a failed create migration has occurred and the data migration record was saved.
+                    current = dataMigrationRecord.Version.HasValue ? dataMigrationRecord.Version.Value : current;
                 }
                 else
                 {
@@ -214,11 +221,11 @@ namespace OrchardCore.Data.Migration
                         var isAwaitable = methodInfo.ReturnType.GetMethod(nameof(Task.GetAwaiter)) != null;
                         if (isAwaitable)
                         {
-                            current = await (Task<int>) methodInfo.Invoke(migration, new object[0]);
+                            current = await (Task<int>)methodInfo.Invoke(migration, new object[0]);
                         }
                         else
                         {
-                            current = (int) methodInfo.Invoke(migration, new object[0]);
+                            current = (int)methodInfo.Invoke(migration, new object[0]);
                         }
                     }
 
@@ -282,9 +289,9 @@ namespace OrchardCore.Data.Migration
             const string updateFromPrefix = "UpdateFrom";
             const string asyncSuffix = "Async";
 
-            if (methodInfo.Name.StartsWith(updateFromPrefix) && (methodInfo.ReturnType == typeof (int) || methodInfo.ReturnType == typeof (Task<int>)))
+            if (methodInfo.Name.StartsWith(updateFromPrefix, StringComparison.Ordinal) && (methodInfo.ReturnType == typeof(int) || methodInfo.ReturnType == typeof(Task<int>)))
             {
-                var version = methodInfo.Name.EndsWith(asyncSuffix)
+                var version = methodInfo.Name.EndsWith(asyncSuffix, StringComparison.Ordinal)
                     ? methodInfo.Name.Substring(updateFromPrefix.Length, methodInfo.Name.Length - updateFromPrefix.Length - asyncSuffix.Length)
                     : methodInfo.Name.Substring(updateFromPrefix.Length);
 
@@ -363,13 +370,8 @@ namespace OrchardCore.Data.Migration
                 {
                     await UpdateAsync(featureId);
                 }
-                catch (Exception ex)
+                catch (Exception ex) when (!ex.IsFatal())
                 {
-                    if (ex.IsFatal())
-                    {
-                        throw;
-                    }
-
                     _logger.LogError(ex, "Could not run migrations automatically on '{FeatureName}'", featureId);
                 }
             }

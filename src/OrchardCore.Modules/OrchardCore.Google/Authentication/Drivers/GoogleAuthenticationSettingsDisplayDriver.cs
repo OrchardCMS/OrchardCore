@@ -56,7 +56,7 @@ namespace OrchardCore.Google.Authentication.Drivers
                 }
                 if (settings.CallbackPath.HasValue)
                 {
-                    model.CallbackPath = settings.CallbackPath;
+                    model.CallbackPath = settings.CallbackPath.Value;
                 }
             }).Location("Content:5").OnGroup(GoogleConstants.Features.GoogleAuthentication);
         }
@@ -81,7 +81,7 @@ namespace OrchardCore.Google.Authentication.Drivers
                     settings.ClientID = model.ClientID;
                     settings.ClientSecret = protector.Protect(model.ClientSecret);
                     settings.CallbackPath = model.CallbackPath;
-                    await _shellHost.ReloadShellContextAsync(_shellSettings);
+                    await _shellHost.ReleaseShellContextAsync(_shellSettings);
                 }
             }
             return await EditAsync(settings, context);

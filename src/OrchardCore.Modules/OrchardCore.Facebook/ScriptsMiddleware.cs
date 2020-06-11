@@ -1,3 +1,4 @@
+using System;
 using System.Globalization;
 using System.IO;
 using System.Text;
@@ -23,14 +24,14 @@ namespace OrchardCore.Facebook
 
         public async Task Invoke(HttpContext httpContext)
         {
-            if (httpContext.Request.Path.StartsWithSegments("/OrchardCore.Facebook/sdk"))
+            if (httpContext.Request.Path.StartsWithSegments("/OrchardCore.Facebook/sdk", StringComparison.OrdinalIgnoreCase))
             {
                 var script = default(string);
                 var site = (await _siteService.GetSiteSettingsAsync());
                 var settings = site.As<FacebookSettings>();
                 if (Path.GetFileName(httpContext.Request.Path.Value) == "fbsdk.js")
                 {
-                    var locale = CultureInfo.CurrentUICulture.Name.Replace("-", "_");
+                    var locale = CultureInfo.CurrentUICulture.Name.Replace('-', '_');
                     script = $@"(function(d){{
                         var js, id = 'facebook-jssdk'; if (d.getElementById(id)) {{ return; }}
                         js = d.createElement('script'); js.id = id; js.async = true;

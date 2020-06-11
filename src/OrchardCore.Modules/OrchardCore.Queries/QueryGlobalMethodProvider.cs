@@ -26,10 +26,10 @@ namespace OrchardCore.Queries
                     {
                         return null;
                     }
+
                     var result = queryManager.ExecuteQueryAsync(query, (IDictionary<string, object>)parameters).GetAwaiter().GetResult();
-                    return result;
-                }
-                  )
+                    return result.Items;
+                })
             };
         }
 

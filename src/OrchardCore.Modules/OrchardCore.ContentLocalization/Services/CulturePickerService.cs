@@ -14,7 +14,6 @@ namespace OrchardCore.ContentLocalization.Services
         private readonly ILocalizationEntries _localizationEntries;
         private readonly ISiteService _siteService;
 
-
         public ContentCulturePickerService(
             IAutorouteEntries autorouteEntries,
             ILocalizationEntries localizationEntries,
@@ -32,19 +31,22 @@ namespace OrchardCore.ContentLocalization.Services
                 url = "/";
             }
 
-            string contentItemId;
+            string contentItemId = null;
 
             if (url == "/")
             {
                 // get contentItemId from homeroute
                 var siteSettings = await _siteService.GetSiteSettingsAsync();
                 contentItemId = siteSettings.HomeRoute["contentItemId"]?.ToString();
-
             }
             else
             {
-                // try to get from autorouteEntries
-                _autorouteEntries.TryGetContentItemId(url, out contentItemId);
+                // Try to get from autorouteEntries.
+                // This should not consider contained items, so will redirect to the parent item.
+                if (_autorouteEntries.TryGetEntryByPath(url.Value, out var entry))
+                {
+                    contentItemId = entry.ContentItemId;
+                };
             }
 
             if (string.IsNullOrEmpty(contentItemId))

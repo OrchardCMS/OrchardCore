@@ -12,129 +12,126 @@
         pageTitle = T["Manage {0} Content", (string)contentTypeDisplayName];
         createLinkText = T["Create New {0}", (string)contentTypeDisplayName];
     }
-
-    var formActionWithoutTypeName = Context.Request.PathBase + "/Admin/Contents/ContentItems";
+    var formActionWithoutTypeName = Url.RouteUrl(new { area = "OrchardCore.Contents", controller = "Admin", action = "List" });
+    int startIndex = (Model.Pager.Page - 1) * (Model.Pager.PageSize) + 1;
+    int endIndex = startIndex + Model.ContentItems.Count - 1;
 }
 
+<script asp-name="bootstrap-select" depends-on="admin" at="Foot"></script>
+<style asp-name="bootstrap-select"></style>
+
 <h1>@RenderTitleSegments(pageTitle)</h1>
-@using (Html.BeginForm("List", "Admin", FormMethod.Post, new { id = "items-form", autocomplete = "off" }))
-{
+<form asp-action="List" asp-controller="Admin" method="post" id="items-form" autocomplete="off">
     <!-- Hidden submit button do not remove -->
     <input type="submit" name="submit.Filter" id="submitFilter" class="d-none" />
     <input type="submit" name="submit.BulkAction" class="d-none" />
     <input asp-for="Options.BulkAction" type="hidden" />
 
-    <fieldset class="filter-options">
-        <div class="card mb-3">
-            <div class="card-body bg-light p-3">
-                <div class="row">
-                    <div class="form-group col-xl-3 mb-xl-n1">
-                        <div class="input-group input-group-sm">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text bg-secondary text-light">@T["Title"]</span>
-                            </div>
-                            <input asp-for="Options.DisplayText" class="form-control" />
-                        </div>
-                    </div>
-                    <div class="form-group col-xl-3 mb-xl-n1">
-                        <div class="input-group input-group-sm">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text bg-secondary text-light">@T["Filter"]</span>
-                            </div>
-                            <select asp-for="Options.SelectedContentType" class="form-control" asp-items="Model.Options.ContentTypeOptions"></select>
-                        </div>
-                    </div>
-
-                    @*@if (cultures.Count() > 1) {
-                        <div class="col-md-2 col-xl-1 form-group">
-                            <label for="filterCultures" class="label col-form-label">@T["Culture"]</label>
-                        </div>
-                        <div class="col-md-4 col-xl-3 form-group">
-                            <select id="filterCultures" class="form-control" name="Options.SelectedCulture">
-                                <option value="">@T["All cultures"]</option>
-                                @foreach (string culture in cultures) {
-                                    string isSelected = culture == Model.Options.SelectedCulture ? "selected='selected'" : string.Empty;
-                                    <!option @isSelected value="culture">@System.Globalization.CultureInfo.GetCultureInfo(culture).DisplayName</!option>
-                                }
-                            </select>
-                        </div>
-                        }*@
-                    <div class="form-group col-xl-3 mb-xl-n1">
-                        <div class="input-group input-group-sm">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text bg-secondary text-light">@T["Show"]</span>
-                            </div>
-                            <select asp-for="Options.ContentsStatus" class="form-control" asp-items="@Model.Options.ContentStatuses"></select>
-                        </div>
-                    </div>
-                    <div class="form-group col-xl-3 mb-n1">
-                        <div class="input-group input-group-sm">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text bg-secondary text-light">@T["Sort by"]</span>
-                            </div>
-                            <select asp-for="Options.OrderBy" class="form-control" asp-items="@Model.Options.ContentSorts"></select>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-        </div>
-    </fieldset>
     <div class="row">
-        <div class="form-group col-6 float-left">
-            <div class="input-group">
-                <div class="input-group-text">
-                    <div class="custom-control custom-checkbox mr-n2">
-                        <input type="checkbox" class="custom-control-input" id="select-all">
-                        <label class="custom-control-label" for="select-all"></label>
+        <div class="form-group col-xl-4 col-sm-6">
+            <div class="input-group input-group-sm filter-options">
+                <div class="input-group-prepend">
+                    <button class="btn btn-light btn-sm dropdown-toggle" style="border:1px solid lightgrey" type="button" data-toggle="dropdown" id="filter-dropdown" aria-haspopup="true" aria-expanded="false">
+                        @T["Filters"]
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="filter-dropdown">
+                        <a class="dropdown-item" href="?Options.ContentsStatus=Draft">@T["Only draft items"]</a>
+                        <a class="dropdown-item" href="?Options.ContentsStatus=Published">@T["Only published items"]</a>
+                        <a class="dropdown-item" href="?Options.ContentsStatus=Owner">@T["Owned by me"]</a>
                     </div>
                 </div>
-                <div class="input-group-append">
-                    <span class="input-group-text bg-secondary text-light">@T["Select All"]</span>
-                </div>
+                <input asp-for="Options.DisplayText" class="form-control" placeholder="@T["Search all content items"]" type="search" />
             </div>
         </div>
-        <div class="form-group col-6 float-right">
-            <div class="dropdown float-right">
-                <button disabled class="btn btn-secondary dropdown-toggle" type="button" id="bulk-action-menu-button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    @T["Bulk Actions"]
-                </button>
-                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="bulk-action-menu-button">
-                    @foreach (var item in Model.Options.ContentsBulkAction)
+        <div class="form-group col-xl-8 col-sm-6">
+            <div class="btn-group float-right">
+                @if (Model.Options.CreatableTypes.Any())
+                {
+                    @if (Model.Options.CreatableTypes.Count == 1)
                     {
-                        <a class="dropdown-item" href="javascript:void(0)" data-action="@item.Value" data-title="@T["Bulk Action"]" data-message="@T["Are you sure you want to {0} this/these item(s)?", @item.Text.ToLower()]">@item.Text</a>
+                        <a class="btn btn-sm btn-success" href="@Url.RouteUrl(new { area = "OrchardCore.Contents", controller = "Admin", action = "Create", id = @Model.Options.CreatableTypes.First().Value })">@T["New {0}", Model.Options.CreatableTypes.First().Text]</a>
                     }
-                </div>
+                    else
+                    {
+                        <button class="btn btn-sm btn-success dropdown-toggle" data-toggle="dropdown" id="new-dropdown" type="button" aria-haspopup="true" aria-expanded="false">@T["New"]</button>
+                        <div class="dropdown-menu dropdown-menu-right scrollable" aria-labelledby="new-dropdown">
+                            @foreach (var item in Model.Options.CreatableTypes)
+                            {
+                                <a class="dropdown-item" href="@Url.RouteUrl(new { area = "OrchardCore.Contents", controller = "Admin", action = "Create", id = @item.Value })">@T[item.Text]</a>
+                            }
+                        </div>
+                    }
+                }
             </div>
         </div>
     </div>
-    @if (Model.ContentItems.Count > 0)
-    {
-        <ul class="list-group">
+    <ul class="list-group with-checkbox">
+        <li class="list-group-item bg-light">
+            <div class="row">
+                <div class="form-group col mb-n1 text-nowrap">
+                    <div class="custom-control custom-checkbox mt-2 mr-n2">
+                        <input type="checkbox" class="custom-control-input" id="select-all">
+                        <label class="custom-control-label" for="select-all" id="select-all-label" title="@T["Select All"]"></label>
+                        <label id="items" for="select-all">@T.Plural(Model.ContentItems.Count, "1 item", "{0} items")<span class="text-muted" title="@T["Items {0} to {1}", startIndex, endIndex]">@T.Plural((int)Model.Pager.TotalItemCount, " / {0} item in total", " / {0} items in total")</span></label>
+                        <label id="selected-items" class="text-muted" for="select-all"></label>
+                    </div>
+                </div>
+                <div class="form-group col-2 mb-n1" style="display:none" id="actions">
+                    <span class="dropdown float-right mt-1">
+                        <button class="btn btn-sm btn-light dropdown-toggle" type="button" id="bulk-action-menu-button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            @T["Actions"]
+                        </button>
+                        <span class="dropdown-menu dropdown-menu-right" aria-labelledby="bulk-action-menu-button">
+                            @foreach (var item in Model.Options.ContentsBulkAction)
+                            {
+                                <a class="dropdown-item" href="javascript:void(0)" data-action="@item.Value" data-title="@T["Bulk Action"]" data-message="@T["Are you sure you want to {0} these items?", @item.Text.ToLower()]">@item.Text</a>
+                            }
+                        </span>
+                    </span>
+                </div>
+                <div class="form-group col mb-n1 filter">
+                    <div class="btn-group float-right mt-1">
+                        <select asp-for="Options.SelectedContentType" asp-items="Model.Options.ContentTypeOptions" class="selectpicker show-tick mr-2" data-header="@T["Filter by content type"]" data-live-search="true" data-selected-text-format="static" data-width="fit" title="@T["Content Type"]" data-style="btn-sm">
+                        </select>
+                        <select asp-for="Options.ContentsStatus" asp-items="@Model.Options.ContentStatuses" class="selectpicker show-tick mr-2" data-header="@T["Filter by status"]" data-selected-text-format="static" data-width="fit" data-dropdown-align-right="true" title="@T["Show"]" data-style="btn-sm"></select>
+                        <select asp-for="Options.OrderBy" asp-items="@Model.Options.ContentSorts" class="selectpicker show-tick" data-header="@T["Sort by"]" data-width="fit" data-selected-text-format="static" data-dropdown-align-right="true" title="@T["Sort"]" data-style="btn-sm"></select>
+                    </div>
+                </div>
+            </div>
+        </li>
+        @if (Model.ContentItems.Count > 0)
+        {
             @foreach (var contentItemSummary in Model.ContentItems)
             {
                 <li class="list-group-item">
                     @await DisplayAsync(contentItemSummary)
                 </li>
             }
-        </ul>
-    }
-    else
-    {
-        <div class="alert alert-info">
-            @T["No result found."]
-        </div>
-    }
+        }
+        else
+        {
+            <li class="list-group-item">
+                <div class="alert alert-info">
+                    @T["No results found."]
+                </div>
+            </li>
+        }
+    </ul>
 
     @await DisplayAsync(Model.Pager)
-}
+</form>
 
 @* This is because ContentTypesAdminNode requires the ContenType to be available as part of the url *@
 <script at="Foot" type="text/javascript">
     $(function () {
-        var bulkActionButton = $("#bulk-action-menu-button");
+        $('.selectpicker').selectpicker();
+
+        var actions = $("#actions");
+        var items = $("#items");
+        var filters = $(".filter");
         var selectAllCtrl = $("#select-all");
-        var contentItemsCheckboxes = $(":checkbox[name='itemIds']");
+        var selectedItems = $("#selected-items");
+        var itemsCheckboxes = $(":checkbox[name='itemIds']");
 
         $("#Options_SelectedContentType").change(function (e) {
             var value = $("#Options_SelectedContentType option:selected").val();
@@ -143,14 +140,16 @@
             $("#items-form").attr("action", newAction);
         });
 
-        $(".filter-options select, .filter-options input").on("change", function () {
+        $('.selectpicker').on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
             $("[name='submit.Filter']").click();
         });
 
-        $(".dropdown-menu .dropdown-item").on("click", function () {
+        $(".dropdown-menu .dropdown-item").filter(function() {
+            return $(this).data("action");
+        }).on("click", function () {
             if ($(":checkbox[name='itemIds']:checked").length > 1) {
                 var $this = $(this);
-                confirmDialog({title: $this.data('title'), message: $this.data('message'), callback: function(r) {
+                confirmDialog({...$this.data(), callback: function(r) {
                     if (r) {
                         $("[name='Options.BulkAction']").val($this.data("action"));
                         $("[name='submit.BulkAction']").click();
@@ -159,13 +158,36 @@
             }
         });
 
+        function displayActionsOrFilters() {
+            if ($(":checkbox[name='itemIds']:checked").length > 1) {
+                actions.show();
+                filters.hide();
+                selectedItems.show();
+                items.hide();
+            }
+            else {
+                actions.hide();
+                filters.show();
+                selectedItems.hide();
+                items.show();
+            }
+        }
+
         selectAllCtrl.click(function(){
-            contentItemsCheckboxes.not(this).prop("checked", this.checked);
-            bulkActionButton.attr("disabled", !this.checked);
+            itemsCheckboxes.not(this).prop("checked", this.checked);
+            selectedItems.text($(":checkbox[name='itemIds']:checked").length + ' @T["selected"]');
+            displayActionsOrFilters();
         });
 
-        contentItemsCheckboxes.on("click", function () {
-            bulkActionButton.attr("disabled", !($(":checkbox[name='itemIds']:checked").length > 1));
+        itemsCheckboxes.on("click", function () {
+            var itemsCount = $(":checkbox[name='itemIds']").length;
+            var selectedItemsCount = $(":checkbox[name='itemIds']:checked").length;
+
+            selectAllCtrl.prop("checked", selectedItemsCount == itemsCount);
+            selectAllCtrl.prop("indeterminate", selectedItemsCount > 0 && selectedItemsCount < itemsCount);
+
+            selectedItems.text(selectedItemsCount + ' @T["selected"]');
+            displayActionsOrFilters();
         });
     })
 </script>

@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Localization;
+using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentFields.Settings;
 using OrchardCore.ContentFields.ViewModels;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
@@ -10,25 +11,27 @@ using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 
-namespace OrchardCore.ContentFields.Fields
+namespace OrchardCore.ContentFields.Drivers
 {
     public class YoutubeFieldDisplayDriver : ContentFieldDisplayDriver<YoutubeField>
     {
+        private readonly IStringLocalizer S;
+
         public YoutubeFieldDisplayDriver(IStringLocalizer<YoutubeFieldDisplayDriver> localizer)
         {
-            T = localizer;
+            S = localizer;
         }
-
-        public IStringLocalizer T { get; set; }
 
         public override IDisplayResult Display(YoutubeField field, BuildFieldDisplayContext context)
         {
             return Initialize<YoutubeFieldDisplayViewModel>(GetDisplayShapeType(context), model =>
-           {
-               model.Field = field;
-               model.Part = context.ContentPart;
-               model.PartFieldDefinition = context.PartFieldDefinition;
-           }).Location("Content").Location("SummaryAdmin", "");
+            {
+                model.Field = field;
+                model.Part = context.ContentPart;
+                model.PartFieldDefinition = context.PartFieldDefinition;
+            })
+            .Location("Detail", "Content")
+            .Location("Summary", "Content");
         }
 
         public override IDisplayResult Edit(YoutubeField field, BuildFieldEditorContext context)
@@ -52,7 +55,7 @@ namespace OrchardCore.ContentFields.Fields
                 var settings = context.PartFieldDefinition.GetSettings<YoutubeFieldSettings>();
                 if (settings.Required && String.IsNullOrWhiteSpace(model.RawAddress))
                 {
-                    updater.ModelState.AddModelError(Prefix, T["A value is required for '{0}'.", context.PartFieldDefinition.DisplayName()]);
+                    updater.ModelState.AddModelError(Prefix, S["A value is required for '{0}'.", context.PartFieldDefinition.DisplayName()]);
                 }
                 else
                 {
@@ -70,7 +73,7 @@ namespace OrchardCore.ContentFields.Fields
                             }
                             else
                             {
-                                updater.ModelState.AddModelError(Prefix + "." + nameof(model.RawAddress), T["The format of the url is invalid"]);
+                                updater.ModelState.AddModelError(Prefix + "." + nameof(model.RawAddress), S["The format of the url is invalid"]);
                             }
                         }
                         else
@@ -81,6 +84,11 @@ namespace OrchardCore.ContentFields.Fields
 
                         field.RawAddress = model.RawAddress;
                         field.EmbeddedAddress = model.EmbeddedAddress;
+                    }
+                    else
+                    {
+                        field.RawAddress = null;
+                        field.EmbeddedAddress = null;
                     }
                 }
             }

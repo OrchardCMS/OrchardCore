@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 
 namespace OrchardCore.ResourceManagement.TagHelpers
 {
-
     [HtmlTargetElement("script", Attributes = NameAttributeName)]
     [HtmlTargetElement("script", Attributes = SrcAttributeName)]
     [HtmlTargetElement("script", Attributes = AtAttributeName)]
@@ -24,6 +23,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
 
         [HtmlAttributeName(AppendVersionAttributeName)]
         public bool? AppendVersion { get; set; }
+
         public string CdnSrc { get; set; }
         public string DebugSrc { get; set; }
         public string DebugCdnSrc { get; set; }
@@ -115,7 +115,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                 {
                     setting.UseDebugMode(Debug.Value);
                 }
-                
+
                 if (!String.IsNullOrEmpty(Culture))
                 {
                     setting.UseCulture(Culture);
@@ -177,9 +177,25 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                     setting.UseVersion(Version);
                 }
 
+                // This allows additions to the pre registered scripts dependencies.
+                if (!String.IsNullOrEmpty(DependsOn))
+                {
+                    setting.SetDependencies(DependsOn.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries));
+                }
+
                 if (At == ResourceLocation.Unspecified)
                 {
                     _resourceManager.RenderLocalScript(setting, output.Content);
+                }
+                else
+                {
+                    var childContent = await output.GetChildContentAsync();
+                    if (!childContent.IsEmptyOrWhiteSpace)
+                    {
+                        // Inline content definition
+                        _resourceManager.InlineManifest.DefineScript(Name)
+                            .SetInnerContent(childContent.GetContent());
+                    }
                 }
             }
             else if (!String.IsNullOrEmpty(Name) && !String.IsNullOrEmpty(Src))
@@ -240,7 +256,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                     {
                         setting.UseDebugMode(Debug.Value);
                     }
-                    
+
                     if (!String.IsNullOrEmpty(Culture))
                     {
                         setting.UseCulture(Culture);

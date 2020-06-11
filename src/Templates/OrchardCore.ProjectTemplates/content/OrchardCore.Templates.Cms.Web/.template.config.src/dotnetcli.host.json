@@ -12,6 +12,6 @@
   },
   "usageExamples": [
     "--nlog false",
-    "--orchard-version 1.0.0-rc1"
+    "--orchard-version 1.0.0-rc2"
   ]
 }

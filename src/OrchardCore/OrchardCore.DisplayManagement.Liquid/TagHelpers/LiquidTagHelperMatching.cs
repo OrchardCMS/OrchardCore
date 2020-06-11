@@ -11,7 +11,9 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
         public readonly static LiquidTagHelperMatching None = new LiquidTagHelperMatching();
         public readonly IEnumerable<TagMatchingRuleDescriptor> _rules = Enumerable.Empty<TagMatchingRuleDescriptor>();
 
-        public LiquidTagHelperMatching() { }
+        public LiquidTagHelperMatching()
+        {
+        }
 
         public LiquidTagHelperMatching(string name, string assemblyName, IEnumerable<TagMatchingRuleDescriptor> tagMatchingRules)
         {
@@ -25,7 +27,6 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
 
         public bool Match(string helper, IEnumerable<string> arguments)
         {
-
             return _rules.Any(rule =>
             {
                 // Does it match the required tag name
@@ -52,7 +53,7 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
                     // Check by replacing all '_' with '-', e.g. asp_src will map to asp-src
                     name = name.Replace('_', '-');
 
-                    if (attr.Name.StartsWith(AspPrefix) && String.Equals(name, attr.Name.Substring(AspPrefix.Length), StringComparison.OrdinalIgnoreCase))
+                    if (attr.Name.StartsWith(AspPrefix, StringComparison.Ordinal) && String.Equals(name, attr.Name.Substring(AspPrefix.Length), StringComparison.OrdinalIgnoreCase))
                     {
                         return true;
                     }
@@ -69,7 +70,7 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
                 {
                     return true;
                 }
-    
+
                 return false;
             });
         }

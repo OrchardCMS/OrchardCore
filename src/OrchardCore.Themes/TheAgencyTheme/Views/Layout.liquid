@@ -3,15 +3,16 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    {% render_section "HeadMeta", required: false %}
-    <title>{% page_title Site.SiteName %}</title>
+    <title>{{ "PageTitle" | shape_new | shape_stringify }}</title>
     {% resources type: "Meta" %}
+    <link type="image/x-icon" rel="shortcut icon" href="/TheAgencyTheme/favicon.ico">
 
     <!-- Bootstrap core CSS -->
-    {% style src:"~/TheAgencyTheme/vendor/bootstrap/css/bootstrap.min.css", debug_src:"~/TheAgencyTheme/vendor/bootstrap/css/bootstrap.css" %}
+    {% style name:"theagencytheme-vendor-bootstrap", version:"4" %}
+    {% style name:"theagencytheme-bootstrap-oc", version:"1" %}
 
     <!-- Custom fonts for this template -->
-    {% style name:"font-awesome", version:"5" %}
+    {% style name:"theagencytheme-vendor-font-awesome", version:"5" %}
     <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" type="text/css">
     <link href='https://fonts.googleapis.com/css?family=Kaushan+Script' rel='stylesheet' type='text/css'>
     <link href='https://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
@@ -19,14 +20,13 @@
 
     <!-- Custom styles for this template -->
     {% style src:"~/TheAgencyTheme/css/agency.min.css", debug_src:"~/TheAgencyTheme/css/agency.css" %}
-    {% style src:"~/TheAgencyTheme/bootstrap-grid-ext.min.css", debug_src:"~/TheAgencyTheme/bootstrap-grid-ext.css" %}
 
     <!-- Bootstrap core JavaScript -->
-    {% script src:"~/TheAgencyTheme/vendor/jquery/jquery.min.js", debug_src:"~/TheAgencyTheme/vendor/jquery/jquery.js", at:"Foot" %}
-    {% script src:"~/TheAgencyTheme/vendor/bootstrap/js/bootstrap.bundle.min.js", debug_src:"~/TheAgencyTheme/vendor/bootstrap/js/bootstrap.bundle.js", at:"Foot" %}
+    {% script name:"theagencytheme-vendor-jquery", at:"Foot" %}    
+    {% script name:"theagencytheme-vendor-bootstrap-bundle", at:"Foot" %}
 
     <!-- Plugin JavaScript -->
-    {% script src:"~/TheAgencyTheme/vendor/jquery-easing/jquery.easing.min.js", debug_src:"~/TheAgencyTheme/vendor/jquery-easing/jquery.easing.js", at:"Foot" %}
+    {% script name:"theagencytheme-vendor-jquery.easing", at:"Foot" %}    
     
     <!-- Contact form JavaScript -->
 
@@ -36,7 +36,7 @@
     {% resources type: "HeadScript" %}
     {% resources type: "HeadLink" %}
     {% resources type: "Stylesheet" %}
-
+    {% render_section "HeadMeta", required: false %}
 </head>
 <body id="page-top" dir="{{ Culture.Dir }}">
     <nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="mainNav">
@@ -51,6 +51,7 @@
     </nav>
     {% render_section "Header", required: false %}
     <div class="container" id="main">
+		{% render_section "Messages", required: false %}
         {% render_section "Content" %}
     </div>
     {% render_section "Footer", required: false %}

@@ -1,5 +1,9 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
+using OrchardCore.Lucene.Model;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 
@@ -10,36 +14,44 @@ namespace OrchardCore.Lucene.Recipes
     /// </summary>
     public class LuceneIndexStep : IRecipeStepHandler
     {
+        private readonly LuceneIndexingService _luceneIndexingService;
         private readonly LuceneIndexManager _luceneIndexManager;
 
-        public LuceneIndexStep(LuceneIndexManager luceneIndexManager)
+        public LuceneIndexStep(
+            LuceneIndexingService luceneIndexingService,
+            LuceneIndexManager luceneIndexManager
+            )
         {
             _luceneIndexManager = luceneIndexManager;
+            _luceneIndexingService = luceneIndexingService;
         }
 
-        public Task ExecuteAsync(RecipeExecutionContext context)
+        public async Task ExecuteAsync(RecipeExecutionContext context)
         {
             if (!String.Equals(context.Name, "lucene-index", StringComparison.OrdinalIgnoreCase))
             {
-                return Task.CompletedTask;
+                return;
             }
 
-            var model = context.Step.ToObject<LuceneIndexModel>();
-
-            foreach(var index in model.Indices)
+            var indices = context.Step["Indices"];
+            if (indices != null)
             {
-                if (!_luceneIndexManager.Exists(index))
+                foreach (var index in indices)
                 {
-                    _luceneIndexManager.CreateIndex(index);
+                    var luceneIndexSettings = index.ToObject<Dictionary<string, LuceneIndexSettings>>().FirstOrDefault();
+
+                    if (!_luceneIndexManager.Exists(luceneIndexSettings.Key))
+                    {
+                        luceneIndexSettings.Value.IndexName = luceneIndexSettings.Key;
+                        await _luceneIndexingService.CreateIndexAsync(luceneIndexSettings.Value);
+                    }
                 }
             }
-
-            return Task.CompletedTask;
         }
+    }
 
-        private class LuceneIndexModel
-        {
-            public string[] Indices { get; set; }
-        }
+    public class ContentStepModel
+    {
+        public JObject Data { get; set; }
     }
 }

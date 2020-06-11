@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Environment.Shell.Descriptor.Models;
@@ -11,29 +10,25 @@ namespace OrchardCore.Microsoft.Authentication
     [Feature(MicrosoftAuthenticationConstants.Features.MicrosoftAccount)]
     public class AdminMenuMicrosoftAccount : INavigationProvider
     {
-        private readonly ShellDescriptor _shellDescriptor;
+        private readonly IStringLocalizer S;
 
-        public AdminMenuMicrosoftAccount(
-            IStringLocalizer<AdminMenuMicrosoftAccount> localizer,
-            ShellDescriptor shellDescriptor)
+        public AdminMenuMicrosoftAccount(IStringLocalizer<AdminMenuMicrosoftAccount> localizer)
         {
-            T = localizer;
-            _shellDescriptor = shellDescriptor;
+            S = localizer;
         }
-
-        public IStringLocalizer T { get; set; }
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
             if (String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
             {
-                builder.Add(T["Microsoft Authentication"], "15", settings => settings
+                builder.Add(S["Security"], security => security
+                        .Add(S["Authentication"], authentication => authentication
+                        .Add(S["Microsoft"], S["Microsoft"].PrefixPosition(), client => client
                         .AddClass("microsoft").Id("microsoft")
-                        .Add(T["Microsoft Account"], "10", client => client
                             .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = MicrosoftAuthenticationConstants.Features.MicrosoftAccount })
                             .Permission(Permissions.ManageMicrosoftAuthentication)
                             .LocalNav())
-                    );
+                    ));
             }
             return Task.CompletedTask;
         }
@@ -43,31 +38,29 @@ namespace OrchardCore.Microsoft.Authentication
     public class AdminMenuAAD : INavigationProvider
     {
         private readonly ShellDescriptor _shellDescriptor;
+        private readonly IStringLocalizer S;
 
         public AdminMenuAAD(
             IStringLocalizer<AdminMenuAAD> localizer,
             ShellDescriptor shellDescriptor)
         {
-            T = localizer;
+            S = localizer;
             _shellDescriptor = shellDescriptor;
         }
-
-        public IStringLocalizer T { get; set; }
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
             if (String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
             {
-                builder.Add(T["Microsoft Authentication"], "15", settings => settings
-                        .AddClass("microsoft").Id("microsoft")
-                        .Add(T["Azure Active Directory"], "20", client => client
+                builder.Add(S["Security"], security => security
+                        .Add(S["Authentication"], authentication => authentication
+                        .Add(S["Azure Active Directory"], S["Azure Active Directory"].PrefixPosition(), client => client
                             .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = MicrosoftAuthenticationConstants.Features.AAD })
                             .Permission(Permissions.ManageMicrosoftAuthentication)
                             .LocalNav())
-                    );
+                    ));
             }
             return Task.CompletedTask;
         }
     }
-
 }

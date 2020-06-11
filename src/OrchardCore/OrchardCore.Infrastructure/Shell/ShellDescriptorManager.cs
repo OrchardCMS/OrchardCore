@@ -15,21 +15,20 @@ using YesSql;
 namespace OrchardCore.Environment.Shell.Data.Descriptors
 {
     /// <summary>
-    /// Implements <see cref="IShellDescriptorManager"/> by providing the list of features store in the database. 
+    /// Implements <see cref="IShellDescriptorManager"/> by providing the list of features store in the database.
     /// </summary>
     public class ShellDescriptorManager : IShellDescriptorManager
     {
-        private readonly IServiceProvider _serviceProvider;
         private readonly ShellSettings _shellSettings;
         private readonly IShellConfiguration _shellConfiguration;
         private readonly IEnumerable<ShellFeature> _alwaysEnabledFeatures;
         private readonly IEnumerable<IShellDescriptorManagerEventHandler> _shellDescriptorManagerEventHandlers;
         private readonly ISession _session;
         private readonly ILogger _logger;
+
         private ShellDescriptor _shellDescriptor;
 
         public ShellDescriptorManager(
-            IServiceProvider serviceProvider,
             ShellSettings shellSettings,
             IShellConfiguration shellConfiguration,
             IEnumerable<ShellFeature> shellFeatures,
@@ -37,7 +36,6 @@ namespace OrchardCore.Environment.Shell.Data.Descriptors
             ISession session,
             ILogger<ShellDescriptorManager> logger)
         {
-            _serviceProvider = serviceProvider;
             _shellSettings = shellSettings;
             _shellConfiguration = shellConfiguration;
             _alwaysEnabledFeatures = shellFeatures.Where(f => f.AlwaysEnabled).ToArray();
@@ -52,11 +50,6 @@ namespace OrchardCore.Environment.Shell.Data.Descriptors
             if (_shellDescriptor == null)
             {
                 _shellDescriptor = await _session.Query<ShellDescriptor>().FirstOrDefaultAsync();
-
-                if (_shellDescriptor == null)
-                {
-                    _shellDescriptor = await _session.Query<ShellDescriptor>().FirstOrDefaultAsync();
-                }
 
                 if (_shellDescriptor != null)
                 {
@@ -112,10 +105,8 @@ namespace OrchardCore.Environment.Shell.Data.Descriptors
 
             _session.Save(shellDescriptorRecord);
 
-            // Update cached reference
-            _shellDescriptor = shellDescriptorRecord;
-
-            await _shellDescriptorManagerEventHandlers.InvokeAsync(e => e.Changed(shellDescriptorRecord, _shellSettings.Name), _logger);
+            await _shellDescriptorManagerEventHandlers.InvokeAsync((handler, shellDescriptorRecord, _shellSettings) =>
+                handler.ChangedAsync(shellDescriptorRecord, _shellSettings), shellDescriptorRecord, _shellSettings, _logger);
         }
 
         private class ConfiguredFeatures

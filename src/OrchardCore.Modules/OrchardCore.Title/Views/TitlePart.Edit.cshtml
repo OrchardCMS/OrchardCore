@@ -1,15 +1,25 @@
 @model TitlePartViewModel
 @using OrchardCore.ContentLocalization
 @using OrchardCore.Localization
+@using OrchardCore.Title.Models
 @using OrchardCore.Title.ViewModels;
 
 @{
     var culture = await Orchard.GetContentCultureAsync(Model.TitlePart.ContentItem);
 }
-
-<fieldset class="form-group" asp-validation-class-for="Title">
-    <label asp-for="Title">@T["Title"]</label>
-    <input asp-for="Title" class="form-control content-preview-text content-caption-text" autofocus="autofocus" dir="@culture.GetLanguageDirection()" />
-    <span asp-validation-for="Title"></span>
-    <span class="hint">@T["The title of the content item."]</span>
-</fieldset>
+@if (Model.Settings?.Options != TitlePartOptions.GeneratedHidden)
+{
+    <div class="form-group" asp-validation-class-for="Title">
+        <label asp-for="Title">@T["Title"]</label>
+        <input asp-for="Title" class="form-control content-preview-text content-caption-text" disabled="@(Model.Settings?.Options == TitlePartOptions.GeneratedDisabled)" autofocus="autofocus" dir="@culture.GetLanguageDirection()" />
+        <span asp-validation-for="Title"></span>
+        @if (String.IsNullOrWhiteSpace(Model.Settings?.Pattern) && Model.Settings?.Options == TitlePartOptions.Editable)
+        {
+            <span class="hint">@T["The title of the content item. Set empty to generate it using the pattern."]</span>
+        }
+        else
+        {
+            <span class="hint">@T["The title of the content item. It will be automatically generated."]</span>
+        }
+    </div>
+}

@@ -11,16 +11,15 @@ namespace OrchardCore.OpenId
     public class AdminMenu : INavigationProvider
     {
         private readonly ShellDescriptor _shellDescriptor;
+        private readonly IStringLocalizer S;
 
         public AdminMenu(
             IStringLocalizer<AdminMenu> localizer,
             ShellDescriptor shellDescriptor)
         {
-            T = localizer;
+            S = localizer;
             _shellDescriptor = shellDescriptor;
         }
-
-        public IStringLocalizer T { get; set; }
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
@@ -29,7 +28,8 @@ namespace OrchardCore.OpenId
                 return Task.CompletedTask;
             }
 
-            builder.Add(T["OpenID Connect"], "15", category =>
+            builder.Add(S["Security"], security => security
+            .Add(S["OpenID Connect"], S["OpenID Connect"].PrefixPosition(), category =>
             {
                 category.AddClass("openid").Id("openid");
 
@@ -38,11 +38,11 @@ namespace OrchardCore.OpenId
                     features.Contains(OpenIdConstants.Features.Server) ||
                     features.Contains(OpenIdConstants.Features.Validation))
                 {
-                    category.Add(T["Settings"], "1", settings =>
+                    category.Add(S["Settings"], "1", settings =>
                     {
                         if (features.Contains(OpenIdConstants.Features.Client))
                         {
-                            settings.Add(T["Authentication client"], "1", client => client
+                            settings.Add(S["Authentication client"], "1", client => client
                                     .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = "OrchardCore.OpenId.Client" })
                                     .Permission(Permissions.ManageClientSettings)
                                     .LocalNav());
@@ -50,7 +50,7 @@ namespace OrchardCore.OpenId
 
                         if (features.Contains(OpenIdConstants.Features.Server))
                         {
-                            settings.Add(T["Authorization server"], "2", server => server
+                            settings.Add(S["Authorization server"], "2", server => server
                                     .Action("Index", "ServerConfiguration", "OrchardCore.OpenId")
                                     .Permission(Permissions.ManageServerSettings)
                                     .LocalNav());
@@ -58,7 +58,7 @@ namespace OrchardCore.OpenId
 
                         if (features.Contains(OpenIdConstants.Features.Validation))
                         {
-                            settings.Add(T["Token validation"], "3", validation => validation
+                            settings.Add(S["Token validation"], "3", validation => validation
                                     .Action("Index", "ValidationConfiguration", "OrchardCore.OpenId")
                                     .Permission(Permissions.ManageValidationSettings)
                                     .LocalNav());
@@ -68,20 +68,20 @@ namespace OrchardCore.OpenId
 
                 if (features.Contains(OpenIdConstants.Features.Management))
                 {
-                    category.Add(T["Management"], "2", management =>
+                    category.Add(S["Management"], "2", management =>
                     {
-                        management.Add(T["Applications"], "1", applications => applications
+                        management.Add(S["Applications"], "1", applications => applications
                                   .Action("Index", "Application", "OrchardCore.OpenId")
                                   .Permission(Permissions.ManageApplications)
                                   .LocalNav());
 
-                        management.Add(T["Scopes"], "2", applications => applications
+                        management.Add(S["Scopes"], "2", applications => applications
                                   .Action("Index", "Scope", "OrchardCore.OpenId")
                                   .Permission(Permissions.ManageScopes)
                                   .LocalNav());
                     });
                 }
-            });
+            }));
 
             return Task.CompletedTask;
         }

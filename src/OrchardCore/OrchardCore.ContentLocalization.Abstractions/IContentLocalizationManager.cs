@@ -12,7 +12,7 @@ namespace OrchardCore.ContentLocalization
         /// <returns>List of all items matching a localizationSet</returns>
         Task<IEnumerable<ContentItem>> GetItemsForSetAsync(string localizationSet);
         /// <summary>
-        /// Get the content item that matches the localizationSet / culture combinaison
+        /// Get the content item that matches the localizationSet / culture combination
         /// </summary>
         /// <returns>ContentItem or null if not found</returns>
         Task<ContentItem> GetContentItemAsync(string localizationSet, string culture);

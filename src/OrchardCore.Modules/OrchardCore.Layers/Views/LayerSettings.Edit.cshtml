@@ -1,8 +1,8 @@
 @model OrchardCore.Layers.ViewModels.LayerSettingsViewModel
 
-<fieldset class="form-group" asp-validation-class-for="Zones">
+<div class="form-group" asp-validation-class-for="Zones">
     <label asp-for="Zones">@T["Available zones for Layers"]</label>
     <input asp-for="Zones" class="form-control" type="text" />
     <span asp-validation-for="Zones"></span>
     <span class="hint">@T["A comma separated list of values, representing the available zones for widgets."]</span>
-</fieldset>
+</div>

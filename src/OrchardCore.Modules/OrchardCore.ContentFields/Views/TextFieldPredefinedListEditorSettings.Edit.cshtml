@@ -1,11 +1,8 @@
 @using OrchardCore.ContentFields.Settings
 @model OrchardCore.ContentFields.ViewModels.PredefinedListSettingsViewModel
 
-<script asp-src="~/OrchardCore.ContentFields/Scripts/optionsEditor.min.js" debug-src="~/OrchardCore.ContentFields/Scripts/optionsEditor.js" asp-name="optionsEditor" at="Foot" depends-on="vuejs, vuemultiselect"></script>
+<script asp-src="~/OrchardCore.ContentFields/Scripts/optionsEditor.min.js" debug-src="~/OrchardCore.ContentFields/Scripts/optionsEditor.js" asp-name="optionsEditor" at="Foot" depends-on="vuejs, vuedraggable"></script>
 <style asp-src="~/OrchardCore.ContentFields/Styles/optionsEditor.min.css" debug-src="~/OrchardCore.ContentFields/Styles/optionsEditor.css"></style>
-<script asp-src="https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.min.js" debug-src="https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.js" asp-name="vuejs" at="Foot"></script>
-<script asp-src="https://cdn.jsdelivr.net/sortable/1.4.2/Sortable.min.js" debug-src="https://cdn.jsdelivr.net/sortable/1.4.2/Sortable.js" asp-name="sortable" at="Foot"></script>
-<script asp-src="https://cdn.jsdelivr.net/npm/vuedraggable@2.23.0/dist/vuedraggable.umd.min.js" debug-src="https://cdn.jsdelivr.net/npm/vuedraggable@2.23.0/dist/vuedraggable.umd.js" asp-name="vuedraggable" depends-on="vuejs, sortable" at="Foot"></script>
 
 <script at="Foot">
     initializeOptionsEditor(document.getElementById('@Html.IdFor(m => m)'), @Html.Raw(Model.Options), '@Model.DefaultValue', document.getElementsByClassName('@Html.IdFor(m => m)-ModalBody'));
@@ -64,16 +61,16 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <fieldset class="form-group">
+                    <div class="form-group">
                         <label for="options-textarea">@T["Options"]</label>
                         <textarea id="options-textarea" name="options-textarea" rows="8" class="form-control" v-bind:value="JSON.stringify(data.options)" v-on:input="data.options = JSON.parse($event.target.value)"></textarea>
                         <span class="hint">@T["A JSON representation of the allowed values, e.g. {0}", "[ { name: 'First option', value: 'option1' }, { name: 'Second option', value: 'option2' } ]"]</span>
-                    </fieldset>
-                    <fieldset class="form-group">
+                    </div>
+                    <div class="form-group">
                         <label for="options-defaultvalue">@T["Default value"]</label>
                         <input id="options-defaultvalue" name="options-defaultvalue" class="form-control" type="text" v-model="data.selected" />
                         <span class="hint">@T["(Optional) The default to assign to the text field."]</span>
-                    </fieldset>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-primary btn-submit" v-on:click="closeModal()">@T["OK"]</button>
@@ -86,22 +83,21 @@
 
 <div id="@Html.IdFor(m => m)" class="field-editor field-editor-predefinedlist">
     <div class="row">
-        <fieldset class="form-group col-sm-6">
+        <div class="form-group col-sm-6">
             <label asp-for="Editor">@T["What type of list editor should be used?"]</label>
             <select asp-for="Editor" class="form-control">
                 <option value="@nameof(EditorOption.Dropdown)">@T["Drop down list"]</option>
                 <option value="@nameof(EditorOption.Radio)">@T["Radio buttons"]</option>
             </select>
-        </fieldset>
+        </div>
     </div>
 
     <div class="row">
-        <fieldset class="col-sm-6">
+        <div class="col-sm-6">
             <label asp-for="Options">@T["Options"]</label>
             <a href="javascript:void(0)" v-on:click="showModal" class="float-right" title="@T["Edit Data"]"><i class="fas fa-edit"></i></a>
             <options-table :data="sharedState"></options-table>
             <options-modal :data="sharedState" v-on:reload-data="reloadData()"></options-modal>
-        </fieldset>
+        </div>
     </div>
 </div>
-

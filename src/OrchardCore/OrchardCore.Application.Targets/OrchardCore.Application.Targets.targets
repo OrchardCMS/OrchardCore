@@ -2,7 +2,7 @@
 
   <!-- 
     This file is packaged with "OrchardCore.Application.Targets.nupkg" in "./build" such that any
-    Application that references it will embedd in its assembly a list of the referenced modules.
+    Application that references it will embed in its assembly a list of the referenced modules.
   -->
 
   <Target Name="ResolveModuleProjectReferences" AfterTargets="AfterResolveReferences">
@@ -26,6 +26,12 @@
         <_Parameter1>%(ModuleNames.Identity)</_Parameter1>
       </AssemblyAttribute>
     </ItemGroup>
+  </Target>
+
+  <Target Name="NoWarnOnRazorViewImportedTypeConflicts" BeforeTargets="RazorCoreCompile">
+    <PropertyGroup>
+      <NoWarn>$(NoWarn);0436</NoWarn>
+    </PropertyGroup>
   </Target>
 
 </Project>

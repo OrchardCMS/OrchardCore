@@ -1,19 +1,19 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
-using OrchardCore.Navigation;
 using OrchardCore.Layers.Drivers;
+using OrchardCore.Navigation;
 
 namespace OrchardCore.Layers
 {
     public class AdminMenu : INavigationProvider
     {
+        private readonly IStringLocalizer S;
+
         public AdminMenu(IStringLocalizer<AdminMenu> localizer)
         {
-            T = localizer;
+            S = localizer;
         }
-
-        public IStringLocalizer T { get; set; }
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
@@ -23,14 +23,14 @@ namespace OrchardCore.Layers
             }
 
             builder
-                .Add(T["Configuration"], configuration => configuration
-                    .Add(T["Settings"], settings => settings
-                        .Add(T["Zones"], T["Zones"], zones => zones
+                .Add(S["Design"], design => design
+                    .Add(S["Settings"], settings => settings
+                        .Add(S["Zones"], S["Zones"].PrefixPosition(), zones => zones
                             .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = LayerSiteSettingsDisplayDriver.GroupId })
                             .Permission(Permissions.ManageLayers)
                             .LocalNav()
                         ))
-                .Add(T["Layers"], T["Layers"], layers => layers
+                    .Add(S["Widgets"], S["Widgets"].PrefixPosition(), widgets => widgets
                         .Permission(Permissions.ManageLayers)
                         .Action("Index", "Admin", new { area = "OrchardCore.Layers" })
                         .LocalNav()

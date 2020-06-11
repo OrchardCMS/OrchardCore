@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
@@ -9,24 +10,23 @@ namespace OrchardCore.Workflows.Http.Activities
 {
     public class HttpRequestEvent : EventActivity
     {
-        public static string EventName => nameof(HttpRequestEvent);        
+        public static string EventName => nameof(HttpRequestEvent);
 
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IStringLocalizer S;
 
         public HttpRequestEvent(
             IStringLocalizer<HttpRequestEvent> localizer,
             IHttpContextAccessor httpContextAccessor
         )
         {
-            T = localizer;
+            S = localizer;
             _httpContextAccessor = httpContextAccessor;
         }
 
-        private IStringLocalizer T { get; }
-
         public override string Name => EventName;
-        public override LocalizedString DisplayText => T["Http Request Event"];
-        public override LocalizedString Category => T["HTTP"];
+        public override LocalizedString DisplayText => S["Http Request Event"];
+        public override LocalizedString Category => S["HTTP"];
 
         public string HttpMethod
         {
@@ -56,14 +56,14 @@ namespace OrchardCore.Workflows.Http.Activities
         {
             var httpContext = _httpContextAccessor.HttpContext;
             var httpRequest = httpContext.Request;
-            var isMatch = string.Equals(HttpMethod, httpRequest.Method, System.StringComparison.OrdinalIgnoreCase);
+            var isMatch = String.Equals(HttpMethod, httpRequest.Method, StringComparison.OrdinalIgnoreCase);
 
             return isMatch;
         }
 
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            return Outcomes(T["Done"]);
+            return Outcomes(S["Done"]);
         }
 
         public override ActivityExecutionResult Resume(WorkflowExecutionContext workflowContext, ActivityContext activityContext)

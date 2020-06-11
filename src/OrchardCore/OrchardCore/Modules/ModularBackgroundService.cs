@@ -19,8 +19,8 @@ namespace OrchardCore.Modules
 {
     internal class ModularBackgroundService : BackgroundService
     {
-        private static TimeSpan PollingTime = TimeSpan.FromMinutes(1);
-        private static TimeSpan MinIdleTime = TimeSpan.FromSeconds(10);
+        private static readonly TimeSpan PollingTime = TimeSpan.FromMinutes(1);
+        private static readonly TimeSpan MinIdleTime = TimeSpan.FromSeconds(10);
 
         private readonly ConcurrentDictionary<string, BackgroundTaskScheduler> _schedulers =
             new ConcurrentDictionary<string, BackgroundTaskScheduler>();
@@ -30,6 +30,7 @@ namespace OrchardCore.Modules
 
         private readonly IShellHost _shellHost;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly ILogger _logger;
 
         public ModularBackgroundService(
             IShellHost shellHost,
@@ -38,16 +39,14 @@ namespace OrchardCore.Modules
         {
             _shellHost = shellHost;
             _httpContextAccessor = httpContextAccessor;
-            Logger = logger;
+            _logger = logger;
         }
-
-        public ILogger Logger { get; set; }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             stoppingToken.Register(() =>
             {
-                Logger.LogError("'{ServiceName}' is stopping.", nameof(ModularBackgroundService));
+                _logger.LogInformation("'{ServiceName}' is stopping.", nameof(ModularBackgroundService));
             });
 
             while (GetRunningShells().Count() < 1)
@@ -78,10 +77,9 @@ namespace OrchardCore.Modules
                     await WaitAsync(pollingDelay, stoppingToken);
                 }
             }
-
-            catch (Exception e)
+            catch (Exception ex) when (!ex.IsFatal())
             {
-                Logger.LogError(e, "Error while executing '{ServiceName}', the service is stopping.", nameof(ModularBackgroundService));
+                _logger.LogError(ex, "Error while executing '{ServiceName}', the service is stopping.", nameof(ModularBackgroundService));
             }
         }
 
@@ -122,17 +120,16 @@ namespace OrchardCore.Modules
 
                         try
                         {
-                            Logger.LogInformation("Start processing background task '{TaskName}' on tenant '{TenantName}'.", taskName, tenant);
+                            _logger.LogInformation("Start processing background task '{TaskName}' on tenant '{TenantName}'.", taskName, tenant);
 
                             scheduler.Run();
                             await task.DoWorkAsync(scope.ServiceProvider, stoppingToken);
 
-                            Logger.LogInformation("Finished processing background task '{TaskName}' on tenant '{TenantName}'.", taskName, tenant);
+                            _logger.LogInformation("Finished processing background task '{TaskName}' on tenant '{TenantName}'.", taskName, tenant);
                         }
-
-                        catch (Exception e)
+                        catch (Exception ex) when (!ex.IsFatal())
                         {
-                            Logger.LogError(e, "Error while processing background task '{TaskName}' on tenant '{TenantName}'.", taskName, tenant);
+                            _logger.LogError(ex, "Error while processing background task '{TaskName}' on tenant '{TenantName}'.", taskName, tenant);
                         }
                     });
                 }
@@ -199,13 +196,12 @@ namespace OrchardCore.Modules
                                 settings = await settingsProvider.GetSettingsAsync(task);
                             }
                         }
-
-                        catch (Exception e)
+                        catch (Exception ex) when (!ex.IsFatal())
                         {
-                            Logger.LogError(e, "Error while updating settings of background task '{TaskName}' on tenant '{TenantName}'.", taskName, tenant);
+                            _logger.LogError(ex, "Error while updating settings of background task '{TaskName}' on tenant '{TenantName}'.", taskName, tenant);
                         }
 
-                        settings = settings ?? task.GetDefaultSettings();
+                        settings ??= task.GetDefaultSettings();
 
                         if (scheduler.Released || !scheduler.Settings.Schedule.Equals(settings.Schedule))
                         {
@@ -319,7 +315,7 @@ namespace OrchardCore.Modules
         {
             var context = new DefaultHttpContext().UseShellScopeServices();
 
-            var urlHost = settings.RequestUrlHost?.Split(new[] { "," },
+            var urlHost = settings.RequestUrlHost?.Split('/',
                 StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
 
             context.Request.Host = new HostString(urlHost ?? "localhost");

@@ -1,17 +1,21 @@
 <Project>
+  <PropertyGroup>
+    <AspNetCoreVersion>3.1.5</AspNetCoreVersion>
+    <AspNetCoreTargetFramework>netcoreapp3.1</AspNetCoreTargetFramework>
+  </PropertyGroup>
   <ItemGroup>
-    <PackageManagement Include="Microsoft.AspNetCore.Authentication.AzureAD.UI" Version="3.0.0" />
-    <PackageManagement Include="Microsoft.AspNetCore.Authentication.Facebook" Version="3.0.0" />
-    <PackageManagement Include="Microsoft.AspNetCore.Authentication.Google" Version="3.0.0" />
-    <PackageManagement Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.0.0" />
-    <PackageManagement Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" Version="3.0.0" />
-    <PackageManagement Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="3.0.0" />
-    <PackageManagement Include="Microsoft.AspNetCore.Authentication.Twitter" Version="3.0.0" />
-    <PackageManagement Include="Microsoft.AspNetCore.DataProtection.AzureStorage" Version="3.0.0" />
-    <PackageManagement Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.0.0" />
-    <PackageManagement Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="3.0.0" />
-    <PackageManagement Include="Microsoft.AspNetCore.Mvc.Testing" Version="3.0.0" />
-    <PackageManagement Include="Microsoft.AspNetCore.Owin" Version="3.0.0" />
-    <PackageManagement Include="Microsoft.Extensions.Http.Polly" Version="3.0.0" />
+    <PackageManagement Include="Microsoft.AspNetCore.Authentication.AzureAD.UI" Version="$(AspNetCoreVersion)" />
+    <PackageManagement Include="Microsoft.AspNetCore.Authentication.Facebook" Version="$(AspNetCoreVersion)" />
+    <PackageManagement Include="Microsoft.AspNetCore.Authentication.Google" Version="$(AspNetCoreVersion)" />
+    <PackageManagement Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="$(AspNetCoreVersion)" />
+    <PackageManagement Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" Version="$(AspNetCoreVersion)" />
+    <PackageManagement Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="$(AspNetCoreVersion)" />
+    <PackageManagement Include="Microsoft.AspNetCore.Authentication.Twitter" Version="$(AspNetCoreVersion)" />
+    <PackageManagement Include="Microsoft.AspNetCore.DataProtection.AzureStorage" Version="$(AspNetCoreVersion)" />
+    <PackageManagement Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="$(AspNetCoreVersion)" />
+    <PackageManagement Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="$(AspNetCoreVersion)" />
+    <PackageManagement Include="Microsoft.AspNetCore.Mvc.Testing" Version="$(AspNetCoreVersion)" />
+    <PackageManagement Include="Microsoft.AspNetCore.Owin" Version="$(AspNetCoreVersion)" />
+    <PackageManagement Include="Microsoft.Extensions.Http.Polly" Version="$(AspNetCoreVersion)" />
   </ItemGroup>
 </Project>

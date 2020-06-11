@@ -1,48 +1,153 @@
 @model UsersIndexViewModel
+@{
+    int startIndex = (Model.Pager.Page - 1) * (Model.Pager.PageSize) + 1;
+    int endIndex = startIndex + Model.Users.Count - 1;
+}
+<script asp-name="bootstrap-select" depends-on="admin" at="Foot"></script>
+<style asp-name="bootstrap-select"></style>
 
-<div class="row">
-    <div class="form-group col mb-n1">
-        <h1>@RenderTitleSegments(T["Users"])</h1>
-    </div>
-    <div class="form-group col mb-n1">
-        <div class="dropdown float-right order-md-1">
-            <a asp-route-action="Create" class="btn btn-primary float-right" role="button">@T["Add User"]</a>
+<h1>@RenderTitleSegments(T["Users"])</h1>
+
+<form asp-action="Index" method="post">
+    <input type="submit" name="submit.Filter" id="submitFilter" class="d-none" />
+    <input type="submit" name="submit.BulkAction" class="d-none" />
+    <input asp-for="Options.BulkAction" type="hidden" />
+
+    <div class="row">
+        <div class="form-group col-xl-4 col-sm-6">
+            <div class="input-group input-group-sm filter-options">
+                <input asp-for="Options.Search" class="form-control" placeholder="@T["Search"]" type="search" autofocus />
+            </div>
         </div>
-    </div>
-</div>
-
-<form asp-action="Index" method="get">
-    <div class="card mb-3">
-        <div class="card-body bg-light p-3">
-            <div class="input-group input-group-sm w-lg-50">
-                <div class="input-group-prepend">
-                    <span class="input-group-text bg-secondary text-light">@T["Filter"]</span>
-                </div>
-                <input id="search-box" asp-for="Options.Search" class="form-control" placeholder="@T["Search"]" autofocus="autofocus" />
-                <div class="input-group-append">
-                    <button type="submit" class="btn btn-sm btn-secondary">@T["Search"]</button>
-                </div>
+        <div class="form-group col-xl-8 col-sm-6">
+            <div class="btn-group float-right">
+                <a asp-route-action="Create" class="btn btn-primary float-right" role="button">@T["Add User"]</a>
             </div>
         </div>
     </div>
-</form>
 
-@if (Model.Users.Count > 0)
-{
-    <ul class="list-group">
-        @foreach (var entry in Model.Users)
+    <ul class="list-group with-checkbox">
+        <li class="list-group-item bg-light">
+            <div class="row">
+                <div class="form-group col mb-n1 text-nowrap">
+                    <div class="custom-control custom-checkbox mt-2 mr-n2">
+                        <input type="checkbox" class="custom-control-input" id="select-all">
+                        <label class="custom-control-label" for="select-all" id="select-all-label" title="@T["Select All"]"></label>
+                        <label id="items" for="select-all">@T.Plural(Model.Users.Count, "1 item", "{0} items")<span class="text-muted" title="@T["Items {0} to {1}", startIndex, endIndex]">@T.Plural((int)Model.Pager.TotalItemCount, " / {0} item in total", " / {0} items in total")</span></label>
+                        <label id="selected-items" class="text-muted" for="select-all"></label>
+                    </div>
+                </div>
+                <div class="form-group col-2 mb-n1" style="display:none" id="actions">
+                    <span class="dropdown float-right mt-1">
+                        <button class="btn btn-sm btn-light dropdown-toggle" type="button" id="bulk-action-menu-button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            @T["Actions"]
+                        </button>
+                        <span class="dropdown-menu dropdown-menu-right" aria-labelledby="bulk-action-menu-button">
+                            @foreach (var item in Model.Options.UsersBulkAction)
+                            {
+                                <a class="dropdown-item" href="javascript:void(0)" data-action="@item.Value" data-title="@T["Bulk Action"]" data-message="@T["Are you sure you want to {0} these items?", @item.Text.ToLower()]">@item.Text</a>
+                            }
+                        </span>
+                    </span>
+                </div>
+                <div class="form-group col mb-n1 filter"></div>
+                @*<div class="form-group col-xl-1 mb-n1 filter">
+                    <div class="float-xl-right">
+                        <select asp-for="Options.Filter" asp-items="@Model.Options.UserFilters" class="selectpicker show-tick" data-header="@T["Filter by"]" data-width="fit" data-selected-text-format="static" data-dropdown-align-right="auto" title="@T["Filter"]"></select>
+                    </div>
+                </div>
+                <div class="form-group col-xl-1 mb-n1 filter">
+                    <div class="float-xl-right">
+                        <select asp-for="Options.Order" asp-items="@Model.Options.UserSorts" class="selectpicker show-tick" data-header="@T["Sort by"]" data-width="fit" data-selected-text-format="static" data-dropdown-align-right="auto" title="@T["Sort"]"></select>
+                    </div>
+                </div>*@
+            </div>
+        </li>
+        @if (Model.Users.Count > 0)
+        {
+            @foreach (var entry in Model.Users)
+            {
+                <li class="list-group-item">
+                    <div class="custom-control custom-checkbox float-left">
+                        <input type="checkbox" class="custom-control-input" value="@entry.Id" name="itemIds" id="itemIds-@entry.Id">
+                        <label class="custom-control-label" for="itemIds-@entry.Id"></label>
+                    </div>
+                    @await DisplayAsync(entry.Shape)
+                </li>
+            }
+        }
+        else
         {
             <li class="list-group-item">
-                @await DisplayAsync(entry.Shape)
+                <div class="alert alert-info" role="alert">
+                    @T["<strong>Nothing here!</strong> Your search returned no results."]
+                </div>
             </li>
         }
     </ul>
-}
-else
-{
-    <div class="alert alert-info" role="alert">
-        @T["<strong>Nothing here!</strong> Your search returned no results."]
-    </div>
-}
+</form>
 
 @await DisplayAsync(Model.Pager)
+
+<script at="Foot" type="text/javascript">
+    $(function () {
+        $('.selectpicker').selectpicker();
+
+        var actions = $("#actions");
+        var items = $("#items");
+        var filters = $(".filter");
+        var selectAllCtrl = $("#select-all");
+        var selectedItems = $("#selected-items");
+        var itemsCheckboxes = $(":checkbox[name='itemIds']");
+
+        $('.selectpicker').on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
+            $("[name='submit.Filter']").click();
+        });
+
+        $(".dropdown-menu .dropdown-item").filter(function() {
+            return $(this).data("action");
+        }).on("click", function () {
+            if ($(":checkbox[name='itemIds']:checked").length > 1) {
+                var $this = $(this);
+                confirmDialog({...$this.data(), callback: function(r) {
+                    if (r) {
+                        $("[name='Options.BulkAction']").val($this.data("action"));
+                        $("[name='submit.BulkAction']").click();
+                    }
+                }});
+            }
+        });
+
+        function displayActionsOrFilters() {
+            if ($(":checkbox[name='itemIds']:checked").length > 1) {
+                actions.show();
+                filters.hide();
+                selectedItems.show();
+                items.hide();
+            }
+            else {
+                actions.hide();
+                filters.show();
+                selectedItems.hide();
+                items.show();
+            }
+        }
+
+        selectAllCtrl.click(function(){
+            itemsCheckboxes.not(this).prop("checked", this.checked);
+            selectedItems.text($(":checkbox[name='itemIds']:checked").length + ' @T["selected"]');
+            displayActionsOrFilters();
+        });
+
+        itemsCheckboxes.on("click", function () {
+            var itemsCount = $(":checkbox[name='itemIds']").length;
+            var selectedItemsCount = $(":checkbox[name='itemIds']:checked").length;
+
+            selectAllCtrl.prop("checked", selectedItemsCount == itemsCount);
+            selectAllCtrl.prop("indeterminate", selectedItemsCount > 0 && selectedItemsCount < itemsCount);
+
+            selectedItems.text(selectedItemsCount + ' @T["selected"]');
+            displayActionsOrFilters();
+        });
+    })
+</script>

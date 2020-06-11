@@ -48,8 +48,7 @@ namespace OrchardCore.Queries.Controllers
                 : new Dictionary<string, object>();
 
             var result = await _queryManager.ExecuteQueryAsync(query, queryParameters);
-
-            return new ObjectResult(result);
+            return new ObjectResult(result.Items);
         }
     }
 }

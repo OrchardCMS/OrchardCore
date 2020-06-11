@@ -1,0 +1,61 @@
+@inject OrchardCore.ContentManagement.Display.IContentItemDisplayManager ContentItemDisplayManager
+
+@{
+    //Set Model (Current Shape) as Child content of Outer Frame, Later this Model is used to render other shapes
+    dynamic contentCardFrame = await New.ContentCard_Frame();
+
+    var contentItem = Model.ContentItem;
+    Model.ContentTypeValue = contentItem.ContentType;
+
+    //AJAX will not have CollectionShape.
+    var updater = Model.CollectionShape?.Updater ?? Model.Updater;
+
+    if (Model.BuildEditor == true)
+    {
+        //Assign prefix
+        if (String.IsNullOrEmpty(Model.PrefixValue))
+        {
+            Model.PrefixValue = Guid.NewGuid().ToString("n");
+        }
+
+        //Build Editor for Content Item
+        // AJAX request is new request and will not have CollectionShape.
+        var isNew = Model.CollectionShape == null ? true : false ;
+        dynamic contentItemEditor = await ContentItemDisplayManager.BuildEditorAsync(contentItem, updater, isNew, "", Model.PrefixValue);
+
+        //We don't show Actions and Side bar the parent editor has its own buttons.
+        contentItemEditor.Actions = null;
+        contentItemEditor.Sidebar = null;
+
+        //Move Content Footer to Card Footer, if any
+        Model.Footer = contentItemEditor.Footer;
+        contentItemEditor.Footer = null;
+
+        Model.ContentEditor = contentItemEditor;
+
+        //Change Shape type to Editor, this shape will be rendered from within Other Frame
+        Model.Metadata.Alternates.Clear();
+        Model.Metadata.Type = "ContentCard_Editor";
+
+        contentCardFrame.ChildContent = Model;
+
+        contentCardFrame.ColumnSize = Model.ColumnSize;
+    }
+    else
+    {
+        //Just Create Preview
+        dynamic contentDisplay = await ContentItemDisplayManager.BuildDisplayAsync(contentItem, updater, Model.DisplayType ?? "Detail");
+        Model.ChildContent = contentDisplay;
+
+        //Hide the Delete
+        Model.CanDelete = false;
+
+        //Change Shape type to Preview, this shape will be rendered from within Other Frame
+        Model.Metadata.Alternates.Clear();
+        Model.Metadata.Type = "ContentCard_Preview";
+
+        contentCardFrame.ContentPreview = Model;
+    }
+    //Display Outer Frame
+    @await DisplayAsync(contentCardFrame)
+}

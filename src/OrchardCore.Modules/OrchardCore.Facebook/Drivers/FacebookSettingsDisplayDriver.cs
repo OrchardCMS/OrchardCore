@@ -1,15 +1,11 @@
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Facebook.Services;
 using OrchardCore.Facebook.Settings;
 using OrchardCore.Facebook.ViewModels;
 using OrchardCore.Settings;
@@ -21,25 +17,19 @@ namespace OrchardCore.Facebook.Drivers
         private readonly IAuthorizationService _authorizationService;
         private readonly IDataProtectionProvider _dataProtectionProvider;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly INotifier _notifier;
-        private readonly IFacebookService _clientService;
         private readonly IShellHost _shellHost;
         private readonly ShellSettings _shellSettings;
 
         public FacebookSettingsDisplayDriver(
             IAuthorizationService authorizationService,
             IDataProtectionProvider dataProtectionProvider,
-            IFacebookService clientService,
             IHttpContextAccessor httpContextAccessor,
-            INotifier notifier,
             IShellHost shellHost,
             ShellSettings shellSettings)
         {
             _authorizationService = authorizationService;
             _dataProtectionProvider = dataProtectionProvider;
-            _clientService = clientService;
             _httpContextAccessor = httpContextAccessor;
-            _notifier = notifier;
             _shellHost = shellHost;
             _shellSettings = shellSettings;
         }
@@ -65,7 +55,6 @@ namespace OrchardCore.Facebook.Drivers
                 {
                     model.AppSecret = protector.Unprotect(settings.AppSecret);
                 }
-
             }).Location("Content:0").OnGroup(FacebookConstants.Features.Core);
         }
 
@@ -94,9 +83,10 @@ namespace OrchardCore.Facebook.Drivers
                         settings.FBInitParams = model.FBInitParams;
                     settings.Version = model.Version;
 
-                    await _shellHost.ReloadShellContextAsync(_shellSettings);
+                    await _shellHost.ReleaseShellContextAsync(_shellSettings);
                 }
             }
+
             return await EditAsync(settings, context);
         }
     }

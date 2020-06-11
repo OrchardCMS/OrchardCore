@@ -24,6 +24,8 @@ namespace OrchardCore.Indexing.Services
     {
         private readonly IClock _clock;
         private readonly IDbConnectionAccessor _dbConnectionAccessor;
+        private readonly ILogger _logger;
+
         private readonly string _tablePrefix;
         private readonly List<IndexingTask> _tasksQueue = new List<IndexingTask>();
 
@@ -35,7 +37,7 @@ namespace OrchardCore.Indexing.Services
         {
             _clock = clock;
             _dbConnectionAccessor = dbConnectionAccessor;
-            Logger = logger;
+            _logger = logger;
 
             _tablePrefix = shellSettings["TablePrefix"];
 
@@ -44,8 +46,6 @@ namespace OrchardCore.Indexing.Services
                 _tablePrefix += '_';
             }
         }
-
-        public ILogger Logger { get; set; }
 
         public Task CreateTaskAsync(ContentItem contentItem, IndexingTaskTypes type)
         {
@@ -68,15 +68,15 @@ namespace OrchardCore.Indexing.Services
                 Type = type
             };
 
-            lock (_tasksQueue)
+            if (_tasksQueue.Count == 0)
             {
-                if (_tasksQueue.Count == 0)
-                {
-                    ShellScope.AddDeferredTask(scope => FlushAsync(scope, _tasksQueue));
-                }
+                var tasksQueue = _tasksQueue;
 
-                _tasksQueue.Add(indexingTask);
+                // Using a local var prevents the lambda from holding a ref on this scoped service.
+                ShellScope.AddDeferredTask(scope => FlushAsync(scope, tasksQueue));
             }
+
+            _tasksQueue.Add(indexingTask);
 
             return Task.CompletedTask;
         }
@@ -87,6 +87,7 @@ namespace OrchardCore.Indexing.Services
 
             var serviceProvider = scope.ServiceProvider;
 
+            var session = serviceProvider.GetService<ISession>();
             var dbConnectionAccessor = serviceProvider.GetService<IDbConnectionAccessor>();
             var shellSettings = serviceProvider.GetService<ShellSettings>();
             var logger = serviceProvider.GetService<ILogger<IndexingTaskManager>>();
@@ -122,7 +123,7 @@ namespace OrchardCore.Indexing.Services
             {
                 await connection.OpenAsync();
 
-                using (var transaction = connection.BeginTransaction())
+                using (var transaction = connection.BeginTransaction(session.Store.Configuration.IsolationLevel))
                 {
                     var dialect = SqlDialectFactory.For(transaction.Connection);
 
@@ -130,7 +131,7 @@ namespace OrchardCore.Indexing.Services
                     {
                         if (logger.IsEnabled(LogLevel.Debug))
                         {
-                            logger.LogDebug($"Updating indexing tasks: {String.Join(", ", tasks.Select(x => x.ContentItemId))}");
+                            logger.LogDebug("Updating indexing tasks: {ContentItemIds}", String.Join(", ", tasks.Select(x => x.ContentItemId)));
                         }
 
                         // Page delete statements to prevent the limits from IN sql statements
@@ -147,7 +148,6 @@ namespace OrchardCore.Indexing.Services
                                 await transaction.Connection.ExecuteAsync(deleteCmd, new { Ids = pageOfIds }, transaction);
                                 ids = ids.Skip(pageSize).ToArray();
                             }
-
                         } while (ids.Any());
 
                         var insertCmd = $"insert into {dialect.QuoteForTableName(table)} ({dialect.QuoteForColumnName("CreatedUtc")}, {dialect.QuoteForColumnName("ContentItemId")}, {dialect.QuoteForColumnName("Type")}) values (@CreatedUtc, @ContentItemId, @Type);";
@@ -192,7 +192,7 @@ namespace OrchardCore.Indexing.Services
                 }
                 catch (Exception e)
                 {
-                    Logger.LogError(e, "An error occurred while reading indexing tasks");
+                    _logger.LogError(e, "An error occurred while reading indexing tasks");
                     throw;
                 }
             }

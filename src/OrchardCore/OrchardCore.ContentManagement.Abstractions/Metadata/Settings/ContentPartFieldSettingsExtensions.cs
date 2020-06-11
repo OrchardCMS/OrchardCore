@@ -23,5 +23,10 @@ namespace OrchardCore.ContentManagement.Metadata.Settings
         {
             return builder.MergeSettings<ContentPartFieldSettings>(x => x.DisplayMode = displayMode);
         }
+
+        public static ContentPartFieldDefinitionBuilder WithPosition(this ContentPartFieldDefinitionBuilder builder, string position)
+        {
+            return builder.MergeSettings<ContentPartFieldSettings>(x => x.Position = position);
+        }
     }
 }

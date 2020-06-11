@@ -6,8 +6,8 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
-using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.ContentManagement.Metadata;
+using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Menu.Models;
@@ -15,7 +15,7 @@ using YesSql;
 
 namespace OrchardCore.Menu.Controllers
 {
-    public class AdminController : Controller, IUpdateModel
+    public class AdminController : Controller
     {
         private readonly IContentManager _contentManager;
         private readonly IAuthorizationService _authorizationService;
@@ -23,6 +23,8 @@ namespace OrchardCore.Menu.Controllers
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly ISession _session;
         private readonly INotifier _notifier;
+        private readonly IHtmlLocalizer H;
+        private readonly IUpdateModelAccessor _updateModelAccessor;
 
         public AdminController(
             ISession session,
@@ -31,7 +33,8 @@ namespace OrchardCore.Menu.Controllers
             IContentItemDisplayManager contentItemDisplayManager,
             IContentDefinitionManager contentDefinitionManager,
             INotifier notifier,
-            IHtmlLocalizer<AdminController> h)
+            IHtmlLocalizer<AdminController> localizer,
+            IUpdateModelAccessor updateModelAccessor)
         {
             _contentManager = contentManager;
             _authorizationService = authorizationService;
@@ -39,10 +42,9 @@ namespace OrchardCore.Menu.Controllers
             _contentDefinitionManager = contentDefinitionManager;
             _session = session;
             _notifier = notifier;
-            H = h;
+            _updateModelAccessor = updateModelAccessor;
+            H = localizer;
         }
-
-        public IHtmlLocalizer H { get; set; }
 
         public async Task<IActionResult> Create(string id, string menuContentItemId, string menuItemId)
         {
@@ -53,12 +55,12 @@ namespace OrchardCore.Menu.Controllers
 
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMenu))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var contentItem = await _contentManager.NewAsync(id);
 
-            dynamic model = await _contentItemDisplayManager.BuildEditorAsync(contentItem, this, true);
+            dynamic model = await _contentItemDisplayManager.BuildEditorAsync(contentItem, _updateModelAccessor.ModelUpdater, true);
 
             model.MenuContentItemId = menuContentItemId;
             model.MenuItemId = menuItemId;
@@ -72,7 +74,7 @@ namespace OrchardCore.Menu.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMenu))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             ContentItem menu;
@@ -95,7 +97,7 @@ namespace OrchardCore.Menu.Controllers
 
             var contentItem = await _contentManager.NewAsync(id);
 
-            var model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, this, true);
+            var model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, _updateModelAccessor.ModelUpdater, true);
 
             if (!ModelState.IsValid)
             {
@@ -146,13 +148,13 @@ namespace OrchardCore.Menu.Controllers
 
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMenu, menu))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             // Look for the target menu item in the hierarchy
             JObject menuItem = FindMenuItem(menu.Content, menuItemId);
 
-            // Couldn't find targetted menu item
+            // Couldn't find targeted menu item
             if (menuItem == null)
             {
                 return NotFound();
@@ -160,7 +162,7 @@ namespace OrchardCore.Menu.Controllers
 
             var contentItem = menuItem.ToObject<ContentItem>();
 
-            dynamic model = await _contentItemDisplayManager.BuildEditorAsync(contentItem, this, false);
+            dynamic model = await _contentItemDisplayManager.BuildEditorAsync(contentItem, _updateModelAccessor.ModelUpdater, false);
 
             model.MenuContentItemId = menuContentItemId;
             model.MenuItemId = menuItemId;
@@ -174,7 +176,7 @@ namespace OrchardCore.Menu.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMenu))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             ContentItem menu;
@@ -198,7 +200,7 @@ namespace OrchardCore.Menu.Controllers
             // Look for the target menu item in the hierarchy
             JObject menuItem = FindMenuItem(menu.Content, menuItemId);
 
-            // Couldn't find targetted menu item
+            // Couldn't find targeted menu item
             if (menuItem == null)
             {
                 return NotFound();
@@ -206,7 +208,7 @@ namespace OrchardCore.Menu.Controllers
 
             var contentItem = menuItem.ToObject<ContentItem>();
 
-            var model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, this, false);
+            var model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, _updateModelAccessor.ModelUpdater, false);
 
             if (!ModelState.IsValid)
             {
@@ -229,7 +231,7 @@ namespace OrchardCore.Menu.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMenu))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             ContentItem menu;
@@ -253,7 +255,7 @@ namespace OrchardCore.Menu.Controllers
             // Look for the target menu item in the hierarchy
             var menuItem = FindMenuItem(menu.Content, menuItemId);
 
-            // Couldn't find targetted menu item
+            // Couldn't find targeted menu item
             if (menuItem == null)
             {
                 return NotFound();

@@ -41,7 +41,7 @@ namespace OrchardCore.Layers.Handlers
 
             if (layerMetadata != null)
             {
-                _signal.SignalToken(LayerChangeToken);
+                _signal.DeferredSignalToken(LayerChangeToken);
             }
         }
     }

@@ -1,18 +1,18 @@
-using Microsoft.Extensions.Localization;
-using OrchardCore.Navigation;
 using System;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Localization;
+using OrchardCore.Navigation;
 
 namespace OrchardCore.Deployment.Remote
 {
     public class AdminMenu : INavigationProvider
     {
+        private readonly IStringLocalizer S;
+
         public AdminMenu(IStringLocalizer<AdminMenu> localizer)
         {
-            T = localizer;
+            S = localizer;
         }
-
-        public IStringLocalizer T { get; set; }
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
@@ -22,14 +22,14 @@ namespace OrchardCore.Deployment.Remote
             }
 
             builder
-                .Add(T["Configuration"], content => content
-                    .Add(T["Import/Export"], import => import
-                        .Add(T["Remote Instances"], "5.1", remote => remote
+                .Add(S["Configuration"], configuration => configuration
+                    .Add(S["Import/Export"], import => import
+                        .Add(S["Remote Instances"], S["Remote Instances"].PrefixPosition(), remote => remote
                             .Action("Index", "RemoteInstance", new { area = "OrchardCore.Deployment.Remote" })
                             .Permission(Permissions.ManageRemoteInstances)
                             .LocalNav()
                         )
-                        .Add(T["Remote Clients"], remote => remote
+                        .Add(S["Remote Clients"], S["Remote Clients"].PrefixPosition(), remote => remote
                             .Action("Index", "RemoteClient", new { area = "OrchardCore.Deployment.Remote" })
                             .Permission(Permissions.ManageRemoteClients)
                             .LocalNav()

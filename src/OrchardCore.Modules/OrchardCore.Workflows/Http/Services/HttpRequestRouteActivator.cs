@@ -6,7 +6,6 @@ using OrchardCore.Workflows.Indexes;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
 using YesSql;
-using YesSql.Services;
 
 namespace OrchardCore.Workflows.Http.Services
 {
@@ -36,8 +35,8 @@ namespace OrchardCore.Workflows.Http.Services
         {
             // Registers all the routes that running workflow instances are paused on.
 
-            int skip = 0;
-            int pageSize = 50;
+            var skip = 0;
+            var pageSize = 50;
 
             var workflowTypeDictionary = (await _workflowTypeStore.ListAsync()).ToDictionary(x => x.WorkflowTypeId);
 
@@ -50,40 +49,37 @@ namespace OrchardCore.Workflows.Http.Services
 
             while (true)
             {
-                // TODO: Clear the session when the feature is available
-                // Right now the identity map is keep even after CommitAsync() is invoked
-                //using (var session = _store.CreateSession())
-                //{
-                    var query = await _session
-                        .QueryIndex<WorkflowBlockingActivitiesIndex>(index =>
+                var pendingWorkflows = await _session
+                    .Query<Workflow, WorkflowBlockingActivitiesIndex>(index =>
                         index.ActivityName == HttpRequestFilterEvent.EventName)
-                        .Skip(skip)
-                        .Take(pageSize)
-                        .ListAsync();
+                    .Skip(skip)
+                    .Take(pageSize)
+                    .ListAsync();
 
-                    if (!query.Any())
-                    {
-                        break;
-                    }
+                if (!pendingWorkflows.Any())
+                {
+                    break;
+                }
 
-                    skip += pageSize;
-                    var pendingWorkflowIndexes = query.ToList();
-                    var pendingWorkflowIds = pendingWorkflowIndexes.Select(x => x.WorkflowId).Distinct().ToArray();
-                    var pendingWorkflows = await _session.Query<Workflow, WorkflowIndex>(x => x.WorkflowId.IsIn(pendingWorkflowIds)).ListAsync();
+                var workflowRouteEntryQuery =
+                    from workflow in pendingWorkflows
+                    from entry in WorkflowRouteEntries.GetWorkflowRoutesEntries(workflowTypeDictionary[workflow.WorkflowTypeId], workflow, _activityLibrary)
+                    select entry;
 
-                    var workflowRouteEntryQuery =
-                        from workflow in pendingWorkflows
-                        from entry in WorkflowRouteEntries.GetWorkflowRoutesEntries(workflowTypeDictionary[workflow.WorkflowTypeId], workflow, _activityLibrary)
-                        select entry;
+                _workflowInstanceRouteEntries.AddEntries(workflowRouteEntryQuery);
 
-                    _workflowInstanceRouteEntries.AddEntries(workflowRouteEntryQuery);
-                //}
+                if (pendingWorkflows.Count() < pageSize)
+                {
+                    break;
+                }
+
+                skip += pageSize;
             }
         }
 
-        public override async Task ActivatingAsync()
+        public override Task ActivatingAsync()
         {
-            await RegisterRoutesAsync();
+            return RegisterRoutesAsync();
         }
     }
 }

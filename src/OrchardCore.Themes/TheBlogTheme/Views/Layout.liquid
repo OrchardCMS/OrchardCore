@@ -4,24 +4,24 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>{{ "PageTitle" | shape_new | shape_stringify }}</title>
-
     {% resources type: "Meta" %}
+    <link type="image/x-icon" rel="shortcut icon" href="/TheBlogTheme/favicon.ico">
 
     <!-- Bootstrap core CSS -->
-    {% style src:"~/TheBlogTheme/vendor/bootstrap/css/bootstrap.min.css", debug_src:"~/TheBlogTheme/vendor/bootstrap/css/bootstrap.css" %}
+    {% style name:"theblogtheme-vendor-bootstrap", version:"4" %}
+    {% style name:"theblogtheme-bootstrap-oc", version:"1" %}
 
     <!-- Custom fonts for this template -->
-    {% style name:"font-awesome", version:"5" %}
+    {% style name:"theblogtheme-vendor-font-awesome", version:"5" %}
     <link href='https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
     <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
 
     <!-- Custom styles for this template -->
     {% style src:"~/TheBlogTheme/css/clean-blog.min.css", debug_src:"~/TheBlogTheme/css/clean-blog.css" %}
-    {% style src:"~/TheBlogTheme/css/bootstrap-grid-ext.min.css", debug_src:"~/TheBlogTheme/css/bootstrap-grid-ext.css" %}
 
     <!-- Bootstrap core JavaScript -->
-    {% script src:"~/TheBlogTheme/vendor/jquery/jquery.min.js", debug_src:"~/TheBlogTheme/vendor/jquery/jquery.js", at:"Foot" %}
-    {% script src:"~/TheBlogTheme/vendor/bootstrap/js/bootstrap.bundle.min.js", debug_src:"~/TheBlogTheme/vendor/bootstrap/js/bootstrap.bundle.js", at:"Foot" %}
+    {% script name:"theblogtheme-vendor-jquery", at:"Foot" %}    
+    {% script name:"theblogtheme-vendor-bootstrap-bundle", at:"Foot" %}
 
     <!-- Custom scripts for this template -->
     {% script src:"~/TheBlogTheme/js/clean-blog.min.js", debug_src:"~/TheBlogTheme/js/clean-blog.js", at:"Foot" %}
@@ -32,7 +32,7 @@
     {% resources type: "HeadScript" %}
     {% resources type: "HeadLink" %}
     {% resources type: "Stylesheet" %}
-
+    {% render_section "HeadMeta", required: false %}
 </head>
 <body dir="{{ Culture.Dir }}">
     <nav class="navbar navbar-expand-lg navbar-light fixed-top" id="mainNav">
@@ -49,6 +49,7 @@
     <div class="container">
         <div class="row">
             <div class="col-lg-8 col-md-10 mx-auto">
+				{% render_section "Messages", required: false %}
                 {% render_body %}
             </div>
         </div>

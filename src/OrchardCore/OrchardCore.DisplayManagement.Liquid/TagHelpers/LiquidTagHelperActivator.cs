@@ -2,52 +2,82 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-
 using Fluid;
 using Fluid.Values;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
-
+using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Mvc.Utilities;
 
 namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
 {
     public class LiquidTagHelperActivator
     {
-        public readonly static LiquidTagHelperActivator None = new LiquidTagHelperActivator();
-        private readonly Func<ITagHelperFactory, ViewContext, ITagHelper> _activator;
-        private readonly Dictionary<string, Action<ITagHelper, FluidValue>> _setters = new Dictionary<string, Action<ITagHelper, FluidValue>>(StringComparer.OrdinalIgnoreCase);
+        private const string AspPrefix = "asp-";
 
-        public LiquidTagHelperActivator() { }
+        public static readonly LiquidTagHelperActivator None = new LiquidTagHelperActivator();
+
+        private readonly Func<ITagHelperFactory, ViewContext, ITagHelper> _activatorByFactory;
+        private readonly Dictionary<string, Action<ITagHelper, ModelExpressionProvider, ViewDataDictionary<object>, string, FluidValue>> _setters =
+            new Dictionary<string, Action<ITagHelper, ModelExpressionProvider, ViewDataDictionary<object>, string, FluidValue>>(StringComparer.OrdinalIgnoreCase);
+
+        private readonly Func<ViewContext, ITagHelper> _activatorByService;
+        private readonly Action<object, object> _viewContextSetter;
+
+        public LiquidTagHelperActivator()
+        {
+        }
 
         public LiquidTagHelperActivator(Type type)
         {
             var accessibleProperties = type.GetProperties().Where(p =>
-                p.GetCustomAttribute<HtmlAttributeNotBoundAttribute>() == null &&
+                (p.GetCustomAttribute<HtmlAttributeNotBoundAttribute>() == null ||
+                p.GetCustomAttribute<ViewContextAttribute>() != null) &&
                 p.GetSetMethod() != null);
 
             foreach (var property in accessibleProperties)
             {
-                var invokeType = typeof(Action<,>).MakeGenericType(type, property.PropertyType);
-                var setterDelegate = Delegate.CreateDelegate(invokeType, property.GetSetMethod());
+                var setter = MakeFastPropertySetter(type, property);
+                var viewContextAttribute = property.GetCustomAttribute<ViewContextAttribute>();
+
+                if (viewContextAttribute != null && property.PropertyType == typeof(ViewContext))
+                {
+                    _viewContextSetter = (helper, context) => setter(helper, context);
+                    continue;
+                }
 
                 var allNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { property.Name };
                 var htmlAttribute = property.GetCustomAttribute<HtmlAttributeNameAttribute>();
 
                 if (htmlAttribute != null && htmlAttribute.Name != null)
                 {
-                    allNames.Add(htmlAttribute.Name.Replace('-', '_'));
+                    allNames.Add(htmlAttribute.Name.ToPascalCaseDash());
 
-                    if (htmlAttribute.Name.StartsWith("asp-"))
+                    if (htmlAttribute.Name.StartsWith(AspPrefix, StringComparison.Ordinal))
                     {
-                        allNames.Add(htmlAttribute.Name.Substring(4).Replace('-', '_'));
+                        allNames.Add(htmlAttribute.Name.Substring(AspPrefix.Length).ToPascalCaseDash());
+                    }
+
+                    var dictionaryPrefix = htmlAttribute.DictionaryAttributePrefix;
+                    if (dictionaryPrefix != null)
+                    {
+                        allNames.Add(dictionaryPrefix.Replace('-', '_'));
+
+                        if (dictionaryPrefix.StartsWith(AspPrefix, StringComparison.Ordinal))
+                        {
+                            allNames.Add(dictionaryPrefix.Substring(AspPrefix.Length).Replace('-', '_'));
+                        }
                     }
                 }
 
+                var getter = MakeFastPropertyGetter(type, property);
+
                 foreach (var propertyName in allNames)
                 {
-                    _setters.Add(propertyName, (h, v) =>
+                    _setters.Add(propertyName, (h, mp, vd, k, v) =>
                     {
                         object value = null;
 
@@ -55,33 +85,61 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
                         {
                             value = Enum.Parse(property.PropertyType, v.ToStringValue());
                         }
-                        else if (property.PropertyType == typeof(String))
+                        else if (property.PropertyType == typeof(string))
                         {
                             value = v.ToStringValue();
                         }
-                        else if (property.PropertyType == typeof(Boolean))
+                        else if (property.PropertyType == typeof(bool))
                         {
                             value = Convert.ToBoolean(v.ToStringValue());
                         }
-                        else if (property.PropertyType == typeof(Nullable<Boolean>))
+                        else if (property.PropertyType == typeof(bool?))
                         {
                             value = v.IsNil() ? null : (bool?)Convert.ToBoolean(v.ToStringValue());
+                        }
+                        else if (property.PropertyType == typeof(IDictionary<string, string>))
+                        {
+                            var dictionary = (IDictionary<string, string>)getter(h);
+                            dictionary[k] = v.ToStringValue();
+                            value = dictionary;
+                        }
+                        else if (property.PropertyType == typeof(IDictionary<string, object>))
+                        {
+                            var dictionary = (IDictionary<string, object>)getter(h);
+                            dictionary[k] = v.ToObjectValue();
+                            value = dictionary;
+                        }
+                        else if (property.PropertyType == typeof(ModelExpression))
+                        {
+                            value = mp.CreateModelExpression(vd, v.ToStringValue());
                         }
                         else
                         {
                             value = v.ToObjectValue();
                         }
 
-                        setterDelegate.DynamicInvoke(new[] { h, value });
+                        setter(h, value);
                     });
                 }
             }
 
-            var genericFactory = typeof(ReusableTagHelperFactory<>).MakeGenericType(type);
-            var factoryMethod = genericFactory.GetMethod("CreateTagHelper");
+            if (ShellScope.Services.GetService(type) as ITagHelper != null)
+            {
+                _activatorByService = (context) =>
+                {
+                    var helper = ShellScope.Services.GetService(type) as ITagHelper;
+                    _viewContextSetter?.Invoke(helper, context);
+                    return helper;
+                };
+            }
+            else
+            {
+                var genericFactory = typeof(ReusableTagHelperFactory<>).MakeGenericType(type);
+                var factoryMethod = genericFactory.GetMethod("CreateTagHelper");
 
-            _activator = Delegate.CreateDelegate(typeof(Func<ITagHelperFactory, ViewContext, ITagHelper>),
-                factoryMethod) as Func<ITagHelperFactory, ViewContext, ITagHelper>;
+                _activatorByFactory = Delegate.CreateDelegate(typeof(Func<ITagHelperFactory, ViewContext, ITagHelper>),
+                    factoryMethod) as Func<ITagHelperFactory, ViewContext, ITagHelper>;
+            }
         }
 
         public ITagHelper Create(ITagHelperFactory factory, ViewContext context, FilterArguments arguments,
@@ -90,19 +148,54 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
             contextAttributes = new TagHelperAttributeList();
             outputAttributes = new TagHelperAttributeList();
 
-            var tagHelper = _activator(factory, context);
+            ITagHelper tagHelper;
+
+            if (_activatorByService != null)
+            {
+                tagHelper = _activatorByService(context);
+            }
+            else
+            {
+                tagHelper = _activatorByFactory(factory, context);
+            }
+
+            var expresionProvider = context.HttpContext.RequestServices.GetRequiredService<ModelExpressionProvider>();
+
+            var viewData = context.ViewData as ViewDataDictionary<object>;
+            if (viewData == null)
+            {
+                viewData = new ViewDataDictionary<object>(context.ViewData);
+            }
 
             foreach (var name in arguments.Names)
             {
                 var propertyName = name.ToPascalCaseUnderscore();
+                var dictionaryName = String.Empty;
+                var dictionaryKey = String.Empty;
+
+                if (!_setters.TryGetValue(propertyName, out var setter))
+                {
+                    var index = name.LastIndexOf('_');
+
+                    if (index > -1)
+                    {
+                        dictionaryName = name.Substring(0, index + 1);
+                        dictionaryKey = name.Substring(index + 1);
+
+                        if (dictionaryName.Length > 0 && dictionaryKey.Length > 0)
+                        {
+                            _setters.TryGetValue(dictionaryName, out setter);
+                        }
+                    }
+                }
 
                 var found = false;
 
-                if (_setters.TryGetValue(propertyName, out var setter))
+                if (setter != null)
                 {
                     try
                     {
-                        setter(tagHelper, arguments[name]);
+                        setter(tagHelper, expresionProvider, viewData, dictionaryKey, arguments[name]);
                         found = true;
                     }
                     catch (ArgumentException e)
@@ -111,13 +204,13 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
                     }
                 }
 
-                var attr = new TagHelperAttribute(name.Replace("_", "-"), arguments[name].ToObjectValue());
+                var attribute = new TagHelperAttribute(name.Replace('_', '-'), arguments[name].ToObjectValue());
 
-                contextAttributes.Add(attr);
+                contextAttributes.Add(attribute);
 
                 if (!found)
                 {
-                    outputAttributes.Add(attr);
+                    outputAttributes.Add(attribute);
                 }
             }
 
@@ -131,5 +224,37 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
                 return tagHelperFactory.CreateTagHelper<T>(viewContext);
             }
         }
+
+        private static Action<object, object> MakeFastPropertySetter(Type type, PropertyInfo prop)
+        {
+            // Create a delegate TDeclaringType -> { TDeclaringType.Property = TValue; }
+            var setterAsAction = prop.SetMethod.CreateDelegate(typeof(Action<,>).MakeGenericType(type, prop.PropertyType));
+            var setterClosedGenericMethod = CallPropertySetterOpenGenericMethod.MakeGenericMethod(type, prop.PropertyType);
+            var setterDelegate = setterClosedGenericMethod.CreateDelegate(typeof(Action<object, object>), setterAsAction);
+
+            return (Action<object, object>)setterDelegate;
+        }
+
+        private static readonly MethodInfo CallPropertySetterOpenGenericMethod =
+            typeof(LiquidTagHelperActivator).GetTypeInfo().GetDeclaredMethod(nameof(CallPropertySetter));
+
+        private static void CallPropertySetter<TDeclaringType, TValue>(Action<TDeclaringType, TValue> setter, object target, object value)
+            => setter((TDeclaringType)target, (TValue)value);
+
+        private static Func<object, object> MakeFastPropertyGetter(Type type, PropertyInfo prop)
+        {
+            // Create a delegate TDeclaringType -> { TDeclaringType.Property = TValue; }
+            var getterAsFunc = prop.GetMethod.CreateDelegate(typeof(Func<,>).MakeGenericType(type, prop.PropertyType));
+            var getterClosedGenericMethod = CallPropertyGetterOpenGenericMethod.MakeGenericMethod(type, prop.PropertyType);
+            var getterDelegate = getterClosedGenericMethod.CreateDelegate(typeof(Func<object, object>), getterAsFunc);
+
+            return (Func<object, object>)getterDelegate;
+        }
+
+        private static readonly MethodInfo CallPropertyGetterOpenGenericMethod =
+            typeof(LiquidTagHelperActivator).GetTypeInfo().GetDeclaredMethod(nameof(CallPropertyGetter));
+
+        private static object CallPropertyGetter<TDeclaringType, TValue>(Func<TDeclaringType, TValue> getter, object target)
+            => getter((TDeclaringType)target);
     }
 }

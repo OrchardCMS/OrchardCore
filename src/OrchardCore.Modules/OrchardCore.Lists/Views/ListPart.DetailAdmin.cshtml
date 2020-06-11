@@ -3,48 +3,62 @@
 @using OrchardCore.ContentManagement.Metadata.Models;
 
 @inject OrchardCore.ContentManagement.Display.IContentItemDisplayManager ContentItemDisplayManager
+@{
+    var enableOrdering = Model.EnableOrdering && Model.ContentItems.Count() > 1;
+    if (enableOrdering)
+    {
+        <script asp-src="~/OrchardCore.Lists/Scripts/ci-list-ordering.min.js" debug-src="~/OrchardCore.Lists/Scripts/ci-list-ordering.js" asp-name="ci-list-ordering" at="Foot" depends-on="sortable, jQuery"></script>
+    }
+}
 
 @if (!Model.ContainedContentTypeDefinitions.Any())
 {
-    <p class="alert alert-warning">
+    <div class="alert alert-warning">
         <a asp-action="EditTypePart" asp-controller="Admin" asp-route-area="OrchardCore.ContentTypes" asp-route-id="@Model.ListPart.ContentItem.ContentType" asp-route-name="ListPart">@T["Please specify at least one contained content type."]</a>
-    </p>
+    </div>
 }
 else
 {
     if (Model.ContainedContentTypeDefinitions.Count() == 1)
     {
         var contentTypeDefinition = Model.ContainedContentTypeDefinitions.FirstOrDefault();
-        <p>
-            <a class="btn btn-primary" asp-action="Create" asp-controller="Admin" asp-route-id="@contentTypeDefinition.Name" asp-route-area="OrchardCore.Contents" asp-route-ListPart.ContainerId="@Model.ListPart.ContentItem.ContentItemId">
-                @T["Create {0}", contentTypeDefinition.DisplayName]
-            </a>
-        </p>
+        <div class="row">
+            <div class="col form-group text-right">
+                <a class="btn btn-sm btn-success" asp-action="Create" asp-controller="Admin" asp-route-id="@contentTypeDefinition.Name" asp-route-area="OrchardCore.Contents" asp-route-ListPart.ContainerId="@Model.ListPart.ContentItem.ContentItemId" asp-route-ListPart.EnableOrdering="@Model.EnableOrdering">
+                    @T["Create {0}", contentTypeDefinition.DisplayName]
+                </a>
+            </div>
+        </div>
     }
     else
     {
-        <p>
-            <div class="dropdown">
-                <a class="btn btn-primary dropdown-toggle" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    @T["Create"]
-                </a>
+        <div class="row">
+            <div class="col form-group text-right">
+                <div class="dropdown">
+                    <a class="btn btn-sm btn-success dropdown-toggle" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        @T["Create"]
+                    </a>
 
-                <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                    @foreach (var containedContentTypeDefinition in Model.ContainedContentTypeDefinitions)
-                    {
-                        <a class="dropdown-item" asp-action="Create" asp-controller="Admin" asp-route-id="@containedContentTypeDefinition.Name" asp-route-area="OrchardCore.Contents" asp-route-ListPart.ContainerId="@Model.ListPart.ContentItem.ContentItemId">@containedContentTypeDefinition.DisplayName</a>
-                    }
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                        @foreach (var containedContentTypeDefinition in Model.ContainedContentTypeDefinitions)
+                        {
+                            <a class="dropdown-item" asp-action="Create" asp-controller="Admin" asp-route-id="@containedContentTypeDefinition.Name" asp-route-area="OrchardCore.Contents" asp-route-ListPart.ContainerId="@Model.ListPart.ContentItem.ContentItemId" asp-route-ListPart.EnableOrdering="@Model.EnableOrdering">@containedContentTypeDefinition.DisplayName</a>
+                        }
+                    </div>
                 </div>
             </div>
-        </p>
+        </div>
     }
     @if (Model.ContentItems.Any())
     {
-        <ul class="list-group">
+        <ul class="list-group" @if (enableOrdering) { <text> id="ci-sortable" </text> }>
             @foreach (var contentItem in Model.ContentItems)
             {
-                var contentItemSummary = await ContentItemDisplayManager.BuildDisplayAsync(contentItem, Model.Context.Updater, "SummaryAdmin", Model.Context.GroupId);
-
+                var contentItemSummary = (dynamic)await ContentItemDisplayManager.BuildDisplayAsync(contentItem, Model.Context.Updater, "SummaryAdmin", Model.Context.GroupId);
+                if (enableOrdering)
+                {
+                    contentItemSummary.Selectors.Add(await New.ListPart_Sortable());
+                }
                 <li class="list-group-item">
                     @await DisplayAsync(contentItemSummary)
                 </li>
@@ -52,6 +66,15 @@ else
         </ul>
 
         @await DisplayAsync(Model.Pager)
+        @if (enableOrdering)
+        {
+            <div id="ordering-url" class="d-none" data-url="@Url.Action("UpdateContentItemOrders", "Order", new { area = "OrchardCore.Lists" })" />
+            <div id="container-id" class="d-none" data-id="@Model.ListPart.ContentItem.ContentItemId" />
+            <div id="pager-before" class="d-none" data-before="@Model.Pager.Before" />
+            <div id="pager-after" class="d-none" data-after="@Model.Pager.After" />
+            <div id="pager-pagesize" class="d-none" data-pagesize="@Model.Pager.PageSize" />
+            <div id="update-order-error-message" class="d-none" data-message="@T["There was an error when updating the order of the items."]" />
+        }
     }
     else
     {

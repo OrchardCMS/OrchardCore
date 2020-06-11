@@ -10,7 +10,7 @@ namespace OrchardCore.Admin
     /// Intercepts any request to check whether it applies to the admin site.
     /// If so it marks the request as such and ensures the user as the right to access it.
     /// </summary>
-    public class AdminFilter : ActionFilterAttribute
+    public class AdminFilter : ActionFilterAttribute, IAsyncPageFilter
     {
         private readonly IAuthorizationService _authorizationService;
 
@@ -26,23 +26,45 @@ namespace OrchardCore.Admin
                 throw new ArgumentNullException(nameof(context));
             }
 
-            if (AdminAttribute.IsApplied(context.HttpContext) || IsNameAdmin(context))
+            if (!await AuthorizeAsync(context.HttpContext))
             {
-                var authorized = await _authorizationService.AuthorizeAsync(context.HttpContext.User, Permissions.AccessAdminPanel);
-
-                if (!authorized)
-                {
-                    context.Result = new ChallengeResult();
-                    return;
-                }
+                context.Result = context.HttpContext.User.Identity.IsAuthenticated ? (IActionResult)new ForbidResult() : (IActionResult)new ChallengeResult();
+                return;
             }
 
             await base.OnActionExecutionAsync(context, next);
         }
 
-        private bool IsNameAdmin(ActionExecutingContext context)
+        public async Task OnPageHandlerExecutionAsync(PageHandlerExecutingContext context, PageHandlerExecutionDelegate next)
         {
-            return string.Equals(context.Controller.GetType().Name, "Admin", StringComparison.OrdinalIgnoreCase);
+            if (context == null)
+            {
+                throw new ArgumentNullException(nameof(context));
+            }
+
+            if (!await AuthorizeAsync(context.HttpContext))
+            {
+                context.Result = new ChallengeResult();
+                return;
+            }
+
+            // Do post work.
+            await next.Invoke();
+        }
+
+        public Task OnPageHandlerSelectionAsync(PageHandlerSelectedContext context)
+        {
+            return Task.CompletedTask;
+        }
+
+        private Task<bool> AuthorizeAsync(Microsoft.AspNetCore.Http.HttpContext context)
+        {
+            if (AdminAttribute.IsApplied(context))
+            {
+                return _authorizationService.AuthorizeAsync(context.User, Permissions.AccessAdminPanel);
+            }
+
+            return Task.FromResult(true);
         }
     }
 }

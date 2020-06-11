@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Fluid;
 using Fluid.Ast;
 using Fluid.Tags;
+using Microsoft.AspNetCore.Html;
 
 namespace OrchardCore.DisplayManagement.Liquid.Tags
 {
@@ -22,8 +23,9 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
                 throw new ArgumentException("DisplayHelper missing while invoking 'render_body'");
             }
 
-            var htmlContent = await displayHelper.ShapeExecuteAsync(layout.Content);
-            htmlContent.WriteTo(writer, HtmlEncoder.Default);
+            IHtmlContent htmlContent = await displayHelper.ShapeExecuteAsync(layout.Content);
+
+            htmlContent.WriteTo(writer, (HtmlEncoder)encoder);
             return Completion.Normal;
         }
     }

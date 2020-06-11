@@ -1,9 +1,9 @@
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.Extensions.Options;
+using OrchardCore.Routing;
 using SixLabors.ImageSharp.Web;
 using SixLabors.ImageSharp.Web.Commands;
 using SixLabors.ImageSharp.Web.Middleware;
@@ -43,6 +43,8 @@ namespace OrchardCore.Media.Processing
             get => _match ?? IsMatch;
             set => _match = value;
         }
+
+        public ProcessingBehavior ProcessingBehavior => ProcessingBehavior.CommandOnly;
 
         /// <inheritdoc/>
         public bool IsValidRequest(HttpContext context)
@@ -96,7 +98,7 @@ namespace OrchardCore.Media.Processing
 
         private bool IsMatch(HttpContext context)
         {
-            if (!context.Request.Path.StartsWithSegments(_assetsRequestPath))
+            if (!context.Request.Path.StartsWithNormalizedSegments(_assetsRequestPath, StringComparison.OrdinalIgnoreCase))
             {
                 return false;
             }

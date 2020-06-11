@@ -1,14 +1,17 @@
 @model OrchardCore.ContentFields.ViewModels.EditHtmlFieldViewModel
+@using OrchardCore.ContentManagement.Metadata.Models
+@using OrchardCore.ContentFields.Settings;
 
 @{
     var settings = Model.PartFieldDefinition.GetSettings<HtmlFieldSettings>();
     var culture = await Orchard.GetContentCultureAsync(Model.Field.ContentItem);
 }
 
-<script name="trumbowyg" depends-on="admin" asp-src="~/OrchardCore.Resources/Scripts/trumbowyg.min.js" debug-src="~/OrchardCore.Resources/Scripts/trumbowyg.js" at="Foot"></script>
-<style name="trumbowyg" asp-src="~/OrchardCore.Resources/Styles/trumbowyg.min.css" debug-src="~/OrchardCore.Resources/Styles/trumbowyg.css"></style>
+<script asp-name="trumbowyg" depends-on="admin" version="2" at="Foot"></script>
+<style asp-name="trumbowyg" version="2"></style>
+<script asp-src="~/OrchardCore.ContentFields/Scripts/trumbowyg.media.tag.min.js" debug-src="~/OrchardCore.ContentFields/Scripts/trumbowyg.media.tag.js" depends-on="trumbowyg" at="Foot"></script>
 
-<fieldset class="form-group">
+<div class="form-group">
     <label asp-for="Html">@Model.PartFieldDefinition.DisplayName()</label>
     @if (culture.IsRightToLeft())
     {
@@ -25,7 +28,7 @@
     {
         <span class="hint">@settings.Hint</span>
     }
-</fieldset>
+</div>
 
 <script at="Foot">
     $(function () {

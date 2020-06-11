@@ -1,4 +1,6 @@
 @using OrchardCore.ContentManagement.Metadata.Settings;
+@using OrchardCore.Mvc.Utilities;
+@using OrchardCore.Widgets.Models;
 @using OrchardCore.Widgets.ViewModels;
 
 @model WidgetsListPartEditViewModel
@@ -9,68 +11,140 @@
 
 @{
     var widgetContentTypes = ContentDefinitionManager.ListTypeDefinitions().Where(t => t.GetSettings<ContentTypeSettings>().Stereotype == "Widget");
+    var parentContentType = Model.WidgetsListPart.ContentItem.ContentType;
+    string partName = ((dynamic)Model).Metadata.Name;
 }
 
 <script asp-name="jquery-ui" at="Foot"></script>
 
-<fieldset class="form-group">
+<div class="form-group">
     @foreach (var zone in Model.AvailableZones)
     {
         var widgetTemplatePlaceholderId = Guid.NewGuid().ToString("n");
 
-        <div class="widget-list-zone card">
+        <div class="widget-list-zone card my-2">
             <div class="card-header text-muted">
                 @zone
             </div>
-            <div class="widget-editor-body card-body" data-zone="@zone">
-                <div id="@widgetTemplatePlaceholderId" class="widget-template-placeholder">
-                    @{ var htmlFieldPrefix = this.ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix; }
+            <div class="widget-editor-body card-body px-2 py-1" data-zone="@zone">
+                <div class="w-100 mb-3">
+                    <div id="@widgetTemplatePlaceholderId" class="widget-template-placeholder widget-template-placeholder-widget-list @( ($"widgetlist-{partName}-{zone}").HtmlClassify() ) row mx-0" data-buildeditorurl="@Url.Action("BuildEditor", "Admin", new { area = "OrchardCore.Widgets" })">
+                        @{ var htmlFieldPrefix = this.ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix; }
 
-                    @if (Model.WidgetsListPart.Widgets.ContainsKey(zone))
-                    {
-                        foreach (var widget in Model.WidgetsListPart.Widgets[zone])
+                        @if (Model.WidgetsListPart.Widgets.ContainsKey(zone))
                         {
-                            var prefix = Guid.NewGuid().ToString("n");
-                            <div class="widget-template">
-                                @{
-                                    dynamic widgetEditor = await ContentItemDisplayManager.BuildEditorAsync(widget, Model.Updater, false, "", prefix);
+                            foreach (var widget in Model.WidgetsListPart.Widgets[zone])
+                            {
+                                //Create a Card Shape
+                                dynamic contentCard = await New.ContentCard(
+                                    //For Updater
+                                    CollectionShape: Model,
+                                    //Shape Specific
+                                    CollectionShapeType: nameof(WidgetsListPart),
+                                    ContentItem: widget,
+                                    BuildEditor: true,
+                                    ParentContentType: parentContentType,
+                                    CollectionPartName: partName,
+                                    //WidgetListPart Specific
+                                    ZoneValue: zone,
+                                    //Card Specific Properties
+                                    TargetId: widgetTemplatePlaceholderId,
+                                    Inline: false,
+                                    CanMove: true,
+                                    CanDelete: true,
+                                    //Input hidden
+                                    //Prefixes
+                                    PrefixValue: widget.ContentItemId,
+                                    HtmlFieldPrefix: htmlFieldPrefix,
+                                    PrefixesId: Html.IdFor(x => x.Prefixes),
+                                    PrefixesName: Html.NameFor(x => x.Prefixes),
+                                    //Content Types
+                                    ContentTypesId: Html.IdFor(x => x.ContentTypes),
+                                    ContentTypesName: Html.NameFor(x => x.ContentTypes),
+                                    //Zone
+                                    ZonesId: Html.IdFor(x => x.Zones),
+                                    ZonesName: Html.NameFor(x => x.Zones)
+                                );
+                                @await DisplayAsync(contentCard)
+                            }
+                        }
 
-                                    widgetEditor.ZonesName = Html.NameFor(x => x.Zones);
-                                    widgetEditor.PrefixesName = Html.NameFor(x => x.Prefixes);
-                                    widgetEditor.ContentTypesName = Html.NameFor(x => x.ContentTypes);
-                                    widgetEditor.TargetId = widgetTemplatePlaceholderId;
-                                    widgetEditor.Zone = zone;
+                        <script at="Foot">
+                            @*Only apply sortable if element is present in dom, do not call sortable on scripts for mock widgets *@
+                            if ($('#@widgetTemplatePlaceholderId').length == 1) {
+                                $("#@widgetTemplatePlaceholderId").sortable({
+                                    handle: ".widget-editor-handle",
+                                    cursor: "move",
+                                    opacity: 0.7,
+                                    tolerance: "pointer",
+                                    placeholder: {
+                                        element: function (currentItem) {
+                                            return $('<div class="widget-dragdrop-placeholder"><div></div></div>')[0];
+                                        },
+                                        update: function (container, p) {
+                                            return;
+                                        }
+                                    },
+                                    toleranceElement: '> div',
+                                    connectWith: '.widget-template-placeholder.widget-template-placeholder-widget-list',
+                                    receive: function (event, ui) {
+                                        var newZone = ui.item.closest('.widget-editor-body').data("zone");
+                                        var zoneInput = ui.item.find('.source-zone').val(newZone);
+                                    },
+                                    start: function (event, ui) {
+                                        widgetDragItem = ui.item;
+                                        lastContainer = ui.item.parent();
+                                        lastContainer.toggleClass('widget-dropzone-hint');
+                                        widgetDragItem.find('.card').first().toggleClass('border-primary');
+                                        var classList = widgetDragItem.attr('class').split(' ');
+                                        $.each(classList, function (id, item) {
+                                            if (item.indexOf('col-md-') === 0) ui.placeholder.addClass(item);
+                                        });
+                                    },
+                                    stop: function (event, ui) {
+                                        lastContainer.toggleClass('widget-dropzone-hint');
+                                        widgetDragItem.find('.card').first().toggleClass('border-primary');
+                                        //clear the global variables
+                                        widgetDragItem = null;
+                                        lastContainer = null;
+                                        widgetItemSourceId = null;
+                                        widgetItemDestId = null;
 
-                                    widgetEditor.Metadata.Alternates.Add("Widget_Edit__List");
-                                }
-
-                                @await DisplayAsync(widgetEditor)
-
-                                @{ this.ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix = htmlFieldPrefix; }
-                                <input type="hidden" asp-for="Zones" value="@zone" class="source-zone" />
-                                <input type="hidden" asp-for="Prefixes" value="@prefix" />
-                                <input type="hidden" asp-for="ContentTypes" value="@widget.ContentType" />
+                                        $(document).trigger('contentpreview:render');
+                                    },
+                                    over: function (event, ui) {
+                                        var $self = $(this);
+                                        if (lastContainer[0] != this) {
+                                            lastContainer.toggleClass('widget-dropzone-hint');
+                                            lastContainer = $self;
+                                            $self.toggleClass('widget-dropzone-hint');
+                                        }
+                                    }
+                                });
+                            }
+                        </script>
+                    </div>
+                    <div class="btn-widget-add-below-wrapper w-100">
+                        <div class="btn-widget-add-below w-100 border border-info">
+                            <div class="btn-group ">
+                                <button type="button" title="@T["Add Widget"]" class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="fa fa-plus" aria-hidden="true"></i>
+                                </button>
+                                <div class="dropdown-menu">
+                                    @foreach (var type in widgetContentTypes.OrderBy(w => w.DisplayName))
+                                    {
+                                        <a class="dropdown-item add-list-widget  btn-sm"
+                                        data-target-id="@widgetTemplatePlaceholderId"
+                                        data-zones-name="@Html.NameFor(x => x.Zones)"
+                                        data-prefixes-name="@Html.NameFor(x => x.Prefixes)"
+                                        data-contenttypes-name="@Html.NameFor(x => x.ContentTypes)"
+                                        data-widget-type="@type.Name"
+                                        data-zone="@zone"
+                                        href="javascript:;">@type.DisplayName</a>
+                                    }
+                                </div>
                             </div>
-                        }
-                    }
-                </div>
-
-                <div class="btn-group ">
-                    <button type="button" class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        @T["Add Widget"]
-                    </button>
-                    <div class="dropdown-menu">
-                        @foreach (var type in widgetContentTypes)
-                        {
-                            <a class="dropdown-item add-list-widget  btn-sm"
-                               data-target-id="@widgetTemplatePlaceholderId"
-                               data-zones-name="@Html.NameFor(x => x.Zones)"
-                               data-prefixes-name="@Html.NameFor(x => x.Prefixes)"
-                               data-contenttypes-name="@Html.NameFor(x => x.ContentTypes)"
-                               data-widget-type="@type.Name"
-                               data-zone="@zone"
-                               href="javascript:;">@type.DisplayName</a>
-                        }
+                        </div>
                     </div>
                 </div>
             </div>
@@ -80,8 +154,6 @@
     @if (Context.Items["WidgetsListPart.Edit"] == null)
     {
         Context.Items["WidgetsListPart.Edit"] = new object();
-        <input type="hidden" id="buildEditorUrl" value="@Url.Action("BuildEditor", "Admin", new { area = "OrchardCore.Widgets" })" />
-
         @foreach (var type in widgetContentTypes)
         {
             // Render a mock widget so that its resources are included in the page
@@ -89,22 +161,9 @@
             await DisplayAsync(await ContentItemDisplayManager.BuildEditorAsync(contentItem, Model.Updater, true, "", Guid.NewGuid().ToString("n")));
         }
 
-        <script asp-src="~/OrchardCore.Widgets/Scripts/widgetslist.edit.js" at="Foot" depends-on="admin"></script>
-        <style asp-src="~/OrchardCore.Widgets/Styles/widgetslist.edit.css"></style>
+        <script asp-src="~/OrchardCore.Widgets/Scripts/widgetslist.edit.min.js"
+                debug-src="~/OrchardCore.Widgets/Scripts/widgetslist.edit.js" at="Foot" depends-on="admin"></script>
+        <style asp-src="~/OrchardCore.Widgets/Styles/widgetslist.edit.min.css"
+                debug-src="~/OrchardCore.Widgets/Styles/widgetslist.edit.css"></style>
     }
-
-    <script at="Foot">
-        $(".widget-template-placeholder").sortable({
-            handle: ".widget-editor-header",
-            cursor: "move",
-            connectWith: '.widget-template-placeholder',
-            receive: function (event, ui) {
-                var newZone = ui.item.closest('.widget-editor-body').data("zone");
-                var zoneInput = ui.item.find('.source-zone').val(newZone);
-            },
-            stop: function (event, ui) {
-                $(document).trigger('contentpreview:render');
-            }
-        });
-    </script>
-</fieldset>
+</div>

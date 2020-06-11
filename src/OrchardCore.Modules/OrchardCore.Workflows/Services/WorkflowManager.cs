@@ -19,10 +19,8 @@ namespace OrchardCore.Workflows.Services
         private readonly IWorkflowTypeStore _workflowTypeStore;
         private readonly IWorkflowStore _workflowStore;
         private readonly IWorkflowIdGenerator _workflowIdGenerator;
-        private readonly Resolver<IEnumerable<IWorkflowExecutionContextHandler>> _workflowContextHandlers;
         private readonly Resolver<IEnumerable<IWorkflowValueSerializer>> _workflowValueSerializers;
-        private readonly ILogger<WorkflowManager> _logger;
-        private readonly ILogger<WorkflowExecutionContext> _workflowContextLogger;
+        private readonly ILogger _logger;
         private readonly ILogger<MissingActivity> _missingActivityLogger;
         private readonly IStringLocalizer<MissingActivity> _missingActivityLocalizer;
         private readonly IClock _clock;
@@ -33,10 +31,8 @@ namespace OrchardCore.Workflows.Services
             IWorkflowTypeStore workflowTypeRepository,
             IWorkflowStore workflowRepository,
             IWorkflowIdGenerator workflowIdGenerator,
-            Resolver<IEnumerable<IWorkflowExecutionContextHandler>> workflowContextHandlers,
             Resolver<IEnumerable<IWorkflowValueSerializer>> workflowValueSerializers,
             ILogger<WorkflowManager> logger,
-            ILogger<WorkflowExecutionContext> workflowContextLogger,
             ILogger<MissingActivity> missingActivityLogger,
             IStringLocalizer<MissingActivity> missingActivityLocalizer,
             IClock clock
@@ -46,10 +42,8 @@ namespace OrchardCore.Workflows.Services
             _workflowTypeStore = workflowTypeRepository;
             _workflowStore = workflowRepository;
             _workflowIdGenerator = workflowIdGenerator;
-            _workflowContextHandlers = workflowContextHandlers;
             _workflowValueSerializers = workflowValueSerializers;
             _logger = logger;
-            _workflowContextLogger = workflowContextLogger;
             _missingActivityLogger = missingActivityLogger;
             _missingActivityLocalizer = missingActivityLocalizer;
             _clock = clock;
@@ -86,7 +80,7 @@ namespace OrchardCore.Workflows.Services
             var output = await DeserializeAsync(state.Output);
             var lastResult = await DeserializeAsync(state.LastResult);
             var executedActivities = state.ExecutedActivities;
-            return new WorkflowExecutionContext(workflowType, workflow, mergedInput, output, properties, executedActivities, lastResult, activityQuery, _workflowContextHandlers.Resolve(), _workflowContextLogger);
+            return new WorkflowExecutionContext(workflowType, workflow, mergedInput, output, properties, executedActivities, lastResult, activityQuery);
         }
 
         public Task<ActivityContext> CreateActivityExecutionContextAsync(ActivityRecord activityRecord, JObject properties)
@@ -108,7 +102,7 @@ namespace OrchardCore.Workflows.Services
             return Task.FromResult(context);
         }
 
-        public async Task TriggerEventAsync(string name, IDictionary<string, object> input = null, string correlationId = null)
+        public async Task TriggerEventAsync(string name, IDictionary<string, object> input = null, string correlationId = null, bool isExclusive = false, bool isAlwaysCorrelated = false)
         {
             var activity = _activityLibrary.GetActivityByName(name);
 
@@ -122,7 +116,7 @@ namespace OrchardCore.Workflows.Services
             var workflowTypesToStart = await _workflowTypeStore.GetByStartActivityAsync(name);
 
             // And any workflow halted on this kind of activity for the specified target.
-            var haltedWorkflows = await _workflowStore.ListByActivityNameAsync(name, correlationId);
+            var haltedWorkflows = await _workflowStore.ListByActivityNameAsync(name, correlationId, isAlwaysCorrelated);
 
             // If no workflow matches the event, do nothing.
             if (!workflowTypesToStart.Any() && !haltedWorkflows.Any())
@@ -133,8 +127,14 @@ namespace OrchardCore.Workflows.Services
             // Start new workflows.
             foreach (var workflowType in workflowTypesToStart)
             {
-                // If this is a singleton workflow and there's already an instance, then skip.
-                if (workflowType.IsSingleton && haltedWorkflows.Any(x => x.WorkflowTypeId == workflowType.WorkflowTypeId))
+                // If this is a singleton workflow and there's already an halted instance, then skip.
+                if (workflowType.IsSingleton && await _workflowStore.HasHaltedInstanceAsync(workflowType.WorkflowTypeId))
+                {
+                    continue;
+                }
+
+                // If the event is exclusive and there's already an instance halted on this activity type, then skip.
+                if (isExclusive && haltedWorkflows.Any(x => x.WorkflowTypeId == workflowType.WorkflowTypeId))
                 {
                     continue;
                 }
@@ -300,7 +300,7 @@ namespace OrchardCore.Workflows.Services
                     break;
                 }
 
-                IList<string> outcomes = new List<string>(0);
+                var outcomes = Enumerable.Empty<string>();
 
                 try
                 {
@@ -364,7 +364,12 @@ namespace OrchardCore.Workflows.Services
                     if (transition != null)
                     {
                         var destinationActivity = workflowContext.WorkflowType.Activities.SingleOrDefault(x => x.ActivityId == transition.DestinationActivityId);
-                        scheduled.Push(destinationActivity);
+
+                        // Check that the activity doesn't point to itself.
+                        if (destinationActivity != activity)
+                        {
+                            scheduled.Push(destinationActivity);
+                        }
                     }
                 }
 
@@ -434,14 +439,14 @@ namespace OrchardCore.Workflows.Services
         private async Task<object> SerializeAsync(object value)
         {
             var context = new SerializeWorkflowValueContext(value);
-            await _workflowValueSerializers.Resolve().InvokeAsync(x => x.SerializeValueAsync(context), _logger);
+            await _workflowValueSerializers.Resolve().InvokeAsync((s, context) => s.SerializeValueAsync(context), context, _logger);
             return context.Output;
         }
 
         private async Task<object> DeserializeAsync(object value)
         {
             var context = new SerializeWorkflowValueContext(value);
-            await _workflowValueSerializers.Resolve().InvokeAsync(x => x.DeserializeValueAsync(context), _logger);
+            await _workflowValueSerializers.Resolve().InvokeAsync((s, context) => s.DeserializeValueAsync(context), context, _logger);
             return context.Output;
         }
     }

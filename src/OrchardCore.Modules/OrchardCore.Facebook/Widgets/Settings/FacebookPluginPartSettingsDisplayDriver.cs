@@ -1,28 +1,29 @@
 using System;
-using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Facebook.Widgets.Models;
+using OrchardCore.Liquid;
 
 namespace OrchardCore.Facebook.Widgets.Settings
 {
     public class FacebookPluginPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver
     {
-        private readonly IStringLocalizer<FacebookPluginPartSettingsDisplayDriver> T;
+        private readonly ILiquidTemplateManager _templateManager;
+        private readonly IStringLocalizer S;
 
-        public FacebookPluginPartSettingsDisplayDriver(IStringLocalizer<FacebookPluginPartSettingsDisplayDriver> localizer)
+        public FacebookPluginPartSettingsDisplayDriver(ILiquidTemplateManager templateManager, IStringLocalizer<FacebookPluginPartSettingsDisplayDriver> localizer)
         {
-            T = localizer;
+            _templateManager = templateManager;
+            S = localizer;
         }
 
         public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater)
         {
-            if (!String.Equals(nameof(FacebookPluginPart), contentTypePartDefinition.PartDefinition.Name, StringComparison.Ordinal))
+            if (!String.Equals(nameof(FacebookPluginPart), contentTypePartDefinition.PartDefinition.Name))
             {
                 return null;
             }
@@ -36,7 +37,7 @@ namespace OrchardCore.Facebook.Widgets.Settings
 
         public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)
         {
-            if (!String.Equals(nameof(FacebookPluginPart), contentTypePartDefinition.PartDefinition.Name, StringComparison.Ordinal))
+            if (!String.Equals(nameof(FacebookPluginPart), contentTypePartDefinition.PartDefinition.Name))
             {
                 return null;
             }
@@ -46,16 +47,16 @@ namespace OrchardCore.Facebook.Widgets.Settings
             await context.Updater.TryUpdateModelAsync(model, Prefix,
                 m => m.Liquid);
 
-            if (context.Updater.ModelState.ValidationState == ModelValidationState.Valid)
+            if (!string.IsNullOrEmpty(model.Liquid) && !_templateManager.Validate(model.Liquid, out var errors))
             {
-                model.FacebookPluginPartSettings = new FacebookPluginPartSettings()
-                {
-                    Liquid = model.Liquid
-                };
-                context.Builder.WithSettings(model.FacebookPluginPartSettings);
+                context.Updater.ModelState.AddModelError(nameof(model.Liquid), S["The Body doesn't contain a valid Liquid expression. Details: {0}", string.Join(" ", errors)]);
             }
+            else
+            {
+                context.Builder.WithSettings(new FacebookPluginPartSettings { Liquid = model.Liquid });
+            }
+
             return Edit(contentTypePartDefinition, context.Updater);
         }
-
     }
 }

@@ -1,16 +1,16 @@
 @using OrchardCore.Workflows.UserTasks.ViewModels;
 @model UserTaskEventViewModel
 
-<fieldset class="form-group" asp-validation-class-for="Actions">
+<div class="form-group" asp-validation-class-for="Actions">
     <label asp-for="Actions">@T["Actions"]</label>
     <input asp-for="Actions" class="form-control" />
     <span asp-validation-for="Actions"></span>
     <span class="hint">@T["Enter one or more comma-separated action names."]</span>
-</fieldset>
+</div>
 
-<fieldset class="form-group" asp-validation-class-for="Roles">
+<div class="form-group" asp-validation-class-for="Roles">
     <label asp-for="Roles">@T["Roles"]</label>
     @await Component.InvokeAsync("SelectRoles", new { selectedRoles = Model.Roles, htmlName = Html.NameFor(m => m.Roles) })
     <span asp-validation-for="Roles"></span>
     <span class="hint">@T["Select the roles that are allowed to perform the specified actions. If no roles are selected, then any role is allowed."]</span>
-</fieldset>
+</div>

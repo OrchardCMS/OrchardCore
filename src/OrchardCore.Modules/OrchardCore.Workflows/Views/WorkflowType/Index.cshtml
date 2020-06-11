@@ -1,36 +1,61 @@
 @model WorkflowTypeIndexViewModel
 @using OrchardCore.Workflows.ViewModels;
 
-<h1>@RenderTitleSegments(T["Manage Workflow Types"])</h1>
+@{
+    int startIndex = (Model.Pager.Page - 1) * (Model.Pager.PageSize) + 1;
+    int endIndex = startIndex + Model.WorkflowTypes.Count - 1;
+}
+<script asp-name="bootstrap-select" depends-on="admin" at="Foot"></script>
+<style asp-name="bootstrap-select"></style>
 
+<h1>@RenderTitleSegments(T["Manage Workflows"])</h1>
 
-<nav class="admin-toolbar">
-    <ul class="navbar-nav mr-auto">
-        <li class="nav-item">
-            <a asp-action="EditProperties" asp-route-returnUrl="@FullRequestPath" asp- class="btn btn-primary" role="button"> @T["Create Workflow Type"]</a>
-            <div class="btn-group" role="group">
-                <button id="bulk-actions-button" type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    @T["Bulk Actions"]
-                </button>
-                <div class="dropdown-menu" aria-labelledby="bulk-actions-button">
-                    <button type="submit" name="BulkAction" value="@WorkflowTypeBulkAction.Delete" form="workflow-types-form" class="dropdown-item">
-                        @T["Delete"]
-                    </button>
+<form asp-action="Index" id="workflows-types-form" method="post">
+    <input type="submit" name="submit.Filter" id="submitFilter" class="d-none" />
+    <input type="submit" name="submit.BulkAction" class="d-none" />
+    <input asp-for="Options.BulkAction" type="hidden" />
+
+    <div class="row">
+        <div class="form-group col-xl-4 col-sm-6">
+            <div class="input-group input-group-sm filter-options">
+                <input id="search-box" asp-for="Options.Search" class="form-control" placeholder="@T["Search"]" type="search" autofocus />
+            </div>
+        </div>
+        <div class="form-group col-xl-8 col-sm-6">
+            <div class="btn-group float-right">
+                <a asp-action="EditProperties" asp-route-returnUrl="@FullRequestPath" class="btn btn-sm btn-primary" role="button">@T["Create Workflow Type"]</a>
+            </div>
+        </div>
+    </div>
+
+    <ul class="list-group with-checkbox">
+        <li class="list-group-item bg-light">
+            <div class="row">
+                <div class="form-group col mb-n1 text-nowrap">
+                    <div class="custom-control custom-checkbox mt-2 mr-n2">
+                        <input type="checkbox" class="custom-control-input" id="select-all">
+                        <label class="custom-control-label" for="select-all" id="select-all-label" title="@T["Select All"]"></label>
+                        <label id="items" for="select-all">@T.Plural(Model.WorkflowTypes.Count, "1 item", "{0} items")<span class="text-muted" title="@T["Items {0} to {1}", startIndex, endIndex]">@T.Plural((int)Model.Pager.TotalItemCount, " / {0} item in total", " / {0} items in total")</span></label>
+                        <label id="selected-items" class="text-muted" for="select-all"></label>
+                    </div>
+                </div>
+                <div class="form-group col-2 mb-n1" style="display:none" id="actions">
+                    <span class="dropdown float-right mt-1">
+                        <button class="btn btn-sm btn-light dropdown-toggle" type="button" id="bulk-action-menu-button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            @T["Actions"]
+                        </button>
+                        <span class="dropdown-menu dropdown-menu-right" aria-labelledby="bulk-action-menu-button">
+                            @foreach (var item in Model.Options.WorkflowTypesBulkAction)
+                            {
+                                <a class="dropdown-item" href="javascript:void(0)" data-action="@item.Value" data-title="@T["Bulk Action"]" data-message="@T["Are you sure you want to {0} these items?", @item.Text.ToLower()]">@item.Text</a>
+                            }
+                        </span>
+                    </span>
                 </div>
             </div>
         </li>
-    </ul>
-    <form asp-action="Index" method="get" class="form-inline">
-        <input id="search-box" asp-for="Options.Search" class="form-control mr-sm-2" type="text" placeholder="@T["Search"]" autofocus="autofocus">
-        <button type="submit" class="btn btn-secondary my-2 my-sm-0">@T["Search"]</button>
-    </form>
-</nav>
-
-@if (Model.WorkflowTypes.Any())
-{
-    using (Html.BeginForm(FormMethod.Post, new { id = "workflow-types-form" }))
-    {
-        <ul class="list-group">
+        @if (Model.WorkflowTypes.Any())
+        {
             @for (var i = 0; i < Model.WorkflowTypes.Count; i++)
             {
                 var entry = Model.WorkflowTypes[i];
@@ -44,11 +69,9 @@
                         </div>
 
                         <div class="custom-control custom-checkbox float-left">
-                            <input type="checkbox" class="custom-control-input" asp-for="@Model.WorkflowTypes[i].IsChecked">
-                            <label class="custom-control-label" asp-for="@Model.WorkflowTypes[i].IsChecked">&nbsp;</label>
+                            <input type="checkbox" class="custom-control-input" value="@entry.Id" name="itemIds" id="itemIds-@entry.Id">
+                            <label class="custom-control-label" for="itemIds-@entry.Id"></label>
                         </div>
-                        <input type="hidden" asp-for="@Model.WorkflowTypes[i].Id" />
-                        <input type="hidden" asp-for="@Model.WorkflowTypes[i].Name" />
                         <a asp-action="Edit" asp-route-id="@entry.WorkflowType.Id" asp-route-returnUrl="@FullRequestPath">@entry.Name</a>
 
                         <div class="metadata">
@@ -64,14 +87,78 @@
                     </div>
                 </li>
             }
-        </ul>
-    }
+        }
+        else
+        {
+            <li class="list-group-item">
+                <div class="alert alert-info" role="alert">
+                    @T["<strong>Nothing here!</strong> Your search returned no results."]
+                </div>
+            </li>
+        }
+    </ul>
+</form>
+@await DisplayAsync(Model.Pager)
 
-    @await DisplayAsync(Model.Pager)
-}
-else
-{
-    <div class="alert alert-info" role="alert">
-        @T["<strong>Nothing here!</strong> There are no workflow types at the moment."]
-    </div>
-}
+<script at="Foot" type="text/javascript">
+    $(function () {
+        $('select').selectpicker();
+
+        var actions = $("#actions");
+        var items = $("#items");
+        var filters = $(".filter");
+        var selectAllCtrl = $("#select-all");
+        var selectedItems = $("#selected-items");
+        var itemsCheckboxes = $(":checkbox[name='itemIds']");
+
+        $(".filter-options input").on("change", function () {
+            $("[name='submit.Filter']").click();
+        });
+
+        $(".dropdown-menu .dropdown-item").filter(function() {
+            return $(this).data("action");
+        }).on("click", function () {
+            if ($(":checkbox[name='itemIds']:checked").length > 1) {
+                var $this = $(this);
+                confirmDialog({title: $this.data('title'), message: $this.data('message'), callback: function(r) {
+                    if (r) {
+                        $("[name='Options.BulkAction']").val($this.data("action"));
+                        $("[name='submit.BulkAction']").click();
+                    }
+                }});
+            }
+        });
+
+        function displayActionsOrFilters() {
+            if ($(":checkbox[name='itemIds']:checked").length > 1) {
+                actions.show();
+                filters.hide();
+                selectedItems.show();
+                items.hide();
+            }
+            else {
+                actions.hide();
+                filters.show();
+                selectedItems.hide();
+                items.show();
+            }
+        }
+
+        selectAllCtrl.click(function(){
+            itemsCheckboxes.not(this).prop("checked", this.checked);
+            selectedItems.text($(":checkbox[name='itemIds']:checked").length + ' @T["selected"]');
+            displayActionsOrFilters();
+        });
+
+        itemsCheckboxes.on("click", function () {
+            var itemsCount = $(":checkbox[name='itemIds']").length;
+            var selectedItemsCount = $(":checkbox[name='itemIds']:checked").length;
+
+            selectAllCtrl.prop("checked", selectedItemsCount == itemsCount);
+            selectAllCtrl.prop("indeterminate", selectedItemsCount > 0 && selectedItemsCount < itemsCount);
+            
+            selectedItems.text(selectedItemsCount + ' @T["selected"]');
+            displayActionsOrFilters();
+        });
+    });
+</script>

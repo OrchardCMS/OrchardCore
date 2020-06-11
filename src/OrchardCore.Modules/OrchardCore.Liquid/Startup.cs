@@ -4,7 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
-using OrchardCore.ContentManagement.Handlers;
+using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.Data.Migration;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Views;
@@ -26,6 +26,10 @@ namespace OrchardCore.Liquid
             TemplateContext.GlobalMemberAccessStrategy.Register<ContentItem>();
             TemplateContext.GlobalMemberAccessStrategy.Register<ContentElement>();
             TemplateContext.GlobalMemberAccessStrategy.Register<ShapeViewModel<ContentItem>>();
+            TemplateContext.GlobalMemberAccessStrategy.Register<ContentTypePartDefinition>();
+            TemplateContext.GlobalMemberAccessStrategy.Register<ContentPartFieldDefinition>();
+            TemplateContext.GlobalMemberAccessStrategy.Register<ContentFieldDefinition>();
+            TemplateContext.GlobalMemberAccessStrategy.Register<ContentPartDefinition>();
 
             // When accessing a property of a JObject instance
             TemplateContext.GlobalMemberAccessStrategy.Register<JObject, object>((obj, name) => obj[name]);
@@ -50,6 +54,8 @@ namespace OrchardCore.Liquid
             services.AddLiquidFilter<AbsoluteUrlFilter>("absolute_url");
             services.AddLiquidFilter<LiquidFilter>("liquid");
             services.AddLiquidFilter<JsonFilter>("json");
+            services.AddLiquidFilter<JsonParseFilter>("jsonparse");
+            services.AddLiquidFilter<ShortCodeFilter>("shortcode");
         }
     }
 
@@ -59,12 +65,13 @@ namespace OrchardCore.Liquid
         public override void ConfigureServices(IServiceCollection services)
         {
             // Liquid Part
-            services.AddScoped<IContentPartDisplayDriver, LiquidPartDisplay>();
             services.AddScoped<IShapeTableProvider, LiquidShapes>();
-            services.AddContentPart<LiquidPart>();
+            services.AddContentPart<LiquidPart>()
+                .UseDisplayDriver<LiquidPartDisplay>()
+                .AddHandler<LiquidPartHandler>();
+
             services.AddScoped<IDataMigration, Migrations>();
             services.AddScoped<IContentPartIndexHandler, LiquidPartIndexHandler>();
-            services.AddScoped<IContentPartHandler, LiquidPartHandler>();
         }
     }
 }

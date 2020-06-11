@@ -13,23 +13,23 @@ namespace OrchardCore.DisplayManagement.Views
     public class ShapeResult : IDisplayResult
     {
         private string _defaultLocation;
-        private IDictionary<string, string> _otherLocations;
+        private Dictionary<string, string> _otherLocations;
         private string _differentiator;
         private string _prefix;
         private string _cacheId;
         private readonly string _shapeType;
-        private readonly Func<IBuildShapeContext, Task<IShape>> _shapeBuilder;
+        private readonly Func<IBuildShapeContext, ValueTask<IShape>> _shapeBuilder;
         private readonly Func<IShape, Task> _processing;
         private Action<CacheContext> _cache;
         private string _groupId;
         private Action<ShapeDisplayContext> _displaying;
 
-        public ShapeResult(string shapeType, Func<IBuildShapeContext, Task<IShape>> shapeBuilder)
+        public ShapeResult(string shapeType, Func<IBuildShapeContext, ValueTask<IShape>> shapeBuilder)
             : this(shapeType, shapeBuilder, null)
         {
         }
 
-        public ShapeResult(string shapeType, Func<IBuildShapeContext, Task<IShape>> shapeBuilder, Func<IShape, Task> processing)
+        public ShapeResult(string shapeType, Func<IBuildShapeContext, ValueTask<IShape>> shapeBuilder, Func<IShape, Task> processing)
         {
             // The shape type is necessary before the shape is created as it will drive the placement
             // resolution which itself can prevent the shape from being created.
@@ -57,7 +57,7 @@ namespace OrchardCore.DisplayManagement.Views
                 _defaultLocation = context.DefaultZone;
             }
 
-            // Look into specific implementations of placements (like placement.info files)
+            // Look into specific implementations of placements (like placement.json files)
             var placement = context.FindPlacement(_shapeType, _differentiator, displayType, context);
 
             // Look for mapped display type locations
@@ -88,8 +88,7 @@ namespace OrchardCore.DisplayManagement.Views
                 placement.DefaultPosition = context.DefaultPosition;
             }
 
-
-            // If there are no placement or it's explicitely noop then stop rendering execution
+            // If there are no placement or it's explicitly noop then stop rendering execution
             if (String.IsNullOrEmpty(placement.Location) || placement.Location == "-")
             {
                 return;
@@ -195,9 +194,9 @@ namespace OrchardCore.DisplayManagement.Views
             {
                 await zoneOnDemand.AddAsync(newShape, position);
             }
-            else
+            else if (parentShape is Shape shape)
             {
-                parentShape.Add(newShape, position);
+                shape.Add(newShape, position);
             }
         }
 

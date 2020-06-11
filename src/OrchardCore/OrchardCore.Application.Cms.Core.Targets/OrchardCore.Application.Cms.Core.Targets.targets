@@ -8,7 +8,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ResolvedFileToPublish Include="App_Data\**" Exclude="App_Data\**\*.log">
+    <ResolvedFileToPublish Include="App_Data\**" Exclude="$(DefaultItemExcludes);App_Data\**\*.log">
       <RelativePath>App_Data\%(RecursiveDir)%(Filename)%(Extension)</RelativePath>
     </ResolvedFileToPublish>
   </ItemGroup>
@@ -26,10 +26,11 @@
     <Copy
       SourceFiles="%(PackageTranslationFiles.FullPath)"
       DestinationFolder="Localization\%(RecursiveDir)"
-      Condition="'@(PackageTranslationFiles)' != ''" />
+      Condition="'@(PackageTranslationFiles)' != ''"
+      SkipUnchangedFiles="true" />
 
     <ItemGroup>
-      <LocalizationFiles Include="Localization\**" />
+      <LocalizationFiles Include="Localization\**" Exclude="$(DefaultItemExcludes)" />
       <ResolvedFileToPublish Include="@(LocalizationFiles)">
         <RelativePath>Localization\%(RecursiveDir)%(Filename)%(Extension)</RelativePath>
       </ResolvedFileToPublish>

@@ -1,4 +1,3 @@
-using System;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Linq;
@@ -18,7 +17,7 @@ namespace OrchardCore.GitHub.Configuration
     {
         private readonly IGitHubAuthenticationService _githubAuthenticationService;
         private readonly IDataProtectionProvider _dataProtectionProvider;
-        private readonly ILogger<GitHubOptionsConfiguration> _logger;
+        private readonly ILogger _logger;
 
         public GitHubOptionsConfiguration(
             IGitHubAuthenticationService githubAuthenticationService,
@@ -39,7 +38,9 @@ namespace OrchardCore.GitHub.Configuration
             }
 
             if (_githubAuthenticationService.ValidateSettings(settings).Any())
+            {
                 return;
+            }
 
             // Register the OpenID Connect client handler in the authentication handlers collection.
             options.AddScheme(GitHubDefaults.AuthenticationScheme, builder =>
@@ -52,7 +53,7 @@ namespace OrchardCore.GitHub.Configuration
         public void Configure(string name, GitHubOptions options)
         {
             // Ignore OpenID Connect client handler instances that don't correspond to the instance managed by the OpenID module.
-            if (!string.Equals(name, GitHubDefaults.AuthenticationScheme, StringComparison.Ordinal))
+            if (!string.Equals(name, GitHubDefaults.AuthenticationScheme))
             {
                 return;
             }

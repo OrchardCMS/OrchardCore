@@ -1,20 +1,24 @@
 @using OrchardCore.ReCaptcha.Forms
 @model OrchardCore.ReCaptcha.Forms.ReCaptchaPartViewModel
+
 @{
     var settingsUrl = Url.Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = OrchardCore.ReCaptcha.Drivers.ReCaptchaSettingsDisplayDriver.GroupId });
-    var successMessageTemplate = "<a {0}>ReCaptcha settings</a> are configured.";
-    var warningMessageTemplate = "<a {0}>ReCaptcha settings</a> are not configured. The captcha will not be displayed.";
     var hyperLinkAttributes = $"class=alert-link target=_blank href={settingsUrl}";
-    var successMessage = T[successMessageTemplate, hyperLinkAttributes];
-    var warningMessage = T[warningMessageTemplate, hyperLinkAttributes];
+    var successMessage = T["<a {0}>ReCaptcha settings</a> are configured.", hyperLinkAttributes];
+    var warningMessage = T["<a {0}>ReCaptcha settings</a> are not configured. The captcha will not be displayed.", hyperLinkAttributes];
 }
+
 @{
     if (Model.SettingsAreConfigured)
     {
-        <div class="alert alert-success">@successMessage</div>
+        <div class="alert alert-success">
+            @successMessage
+        </div>
     }
     else
     {
-        <div class="alert alert-warning">@warningMessage</div>
+        <div class="alert alert-warning">
+            @warningMessage
+        </div>
     }
 }

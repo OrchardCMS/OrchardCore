@@ -37,20 +37,7 @@ namespace OrchardCore.CustomSettings.Recipes
                                       where property.Name != "name"
                                       select property).ToArray();
 
-            var customSettingsNames = (from customSettings in customSettingsList
-                                       select customSettings.Name).ToArray();
-
-            var customSettingsTypes = _customSettingsService.GetSettingsTypes(customSettingsNames).ToArray();
-
-            foreach (var customSettingsType in customSettingsTypes)
-            {
-                if (!await _customSettingsService.CanUserCreateSettingsAsync(customSettingsType))
-                {
-                    return;
-                }
-            }
-
-            var siteSettings = await _siteService.GetSiteSettingsAsync();
+            var siteSettings = await _siteService.LoadSiteSettingsAsync();
 
             foreach (var customSettings in customSettingsList)
             {

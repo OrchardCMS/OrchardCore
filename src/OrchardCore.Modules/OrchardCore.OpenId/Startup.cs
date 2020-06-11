@@ -7,49 +7,150 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using OpenIddict.Abstractions;
 using OpenIddict.Mvc;
 using OpenIddict.Server;
 using OpenIddict.Server.Internal;
 using OpenIddict.Validation;
 using OpenIddict.Validation.Internal;
+using OrchardCore.Admin;
 using OrchardCore.BackgroundTasks;
-using OrchardCore.Data.Migration;
+using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
+using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
-using OrchardCore.OpenId.Abstractions.Managers;
 using OrchardCore.OpenId.Configuration;
+using OrchardCore.OpenId.Controllers;
+using OrchardCore.OpenId.Deployment;
 using OrchardCore.OpenId.Drivers;
 using OrchardCore.OpenId.Handlers;
 using OrchardCore.OpenId.Recipes;
 using OrchardCore.OpenId.Services;
-using OrchardCore.OpenId.Services.Managers;
 using OrchardCore.OpenId.Settings;
 using OrchardCore.OpenId.Tasks;
-using OrchardCore.OpenId.YesSql.Indexes;
-using OrchardCore.OpenId.YesSql.Migrations;
-using OrchardCore.OpenId.YesSql.Models;
-using OrchardCore.OpenId.YesSql.Stores;
-using OrchardCore.Recipes;
+using OrchardCore.Recipes.Services;
 using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
-using YesSql.Indexes;
 
 namespace OrchardCore.OpenId
 {
     public class Startup : StartupBase
     {
+        private readonly AdminOptions _adminOptions;
+        private readonly ILogger _logger;
+
+        public Startup(IOptions<AdminOptions> adminOptions, ILogger<Startup> logger)
+        {
+            _adminOptions = adminOptions.Value;
+            _logger = logger;
+        }
+
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<IPermissionProvider, Permissions>();
-            services.AddScoped<INavigationProvider, AdminMenu>();
+            // Register the OpenIddict core services and the Orchard migrations, managers and default YesSql stores.
+            // The default YesSql stores can be replaced by another database by referencing the corresponding
+            // OpenIddict package (e.g OpenIddict.EntityFrameworkCore) and registering it in the options.
+            services.AddOpenIddict()
+                .AddCore(options =>
+                {
+                    options.AddOrchardMigrations()
+                           .UseOrchardManagers()
+                           .UseYesSql();
+                });
+
+            // Note: the following services are registered using TryAddEnumerable to prevent duplicate registrations.
+            services.TryAddEnumerable(new[]
+            {
+                ServiceDescriptor.Scoped<IPermissionProvider, Permissions>(),
+                ServiceDescriptor.Scoped<INavigationProvider, AdminMenu>(),
+            });
+        }
+
+        public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+        {
+            var httpContextAccessor = serviceProvider.GetRequiredService<IHttpContextAccessor>();
+            if (!httpContextAccessor.HttpContext.Request.IsHttps)
+            {
+                _logger.LogCritical("OpenId module requires a site that runs on https.");
+            }
+
+            // Application
+            var applicationControllerName = typeof(ApplicationController).ControllerName();
+
+            routes.MapAreaControllerRoute(
+                name: "OpenIdApplication",
+                areaName: "OrchardCore.OpenId",
+                pattern: _adminOptions.AdminUrlPrefix + "/OpenId/Application",
+                defaults: new { controller = applicationControllerName, action = nameof(ApplicationController.Index) }
+            );
+            routes.MapAreaControllerRoute(
+                name: "OpenIdApplicationCreate",
+                areaName: "OrchardCore.OpenId",
+                pattern: _adminOptions.AdminUrlPrefix + "/OpenId/Application/Create",
+                defaults: new { controller = applicationControllerName, action = nameof(ApplicationController.Create) }
+            );
+            routes.MapAreaControllerRoute(
+                name: "OpenIdApplicationDelete",
+                areaName: "OrchardCore.OpenId",
+                pattern: _adminOptions.AdminUrlPrefix + "/OpenId/Application/Delete/{id}",
+                defaults: new { controller = applicationControllerName, action = nameof(ApplicationController.Delete) }
+            );
+            routes.MapAreaControllerRoute(
+                name: "OpenIdApplicationEdit",
+                areaName: "OrchardCore.OpenId",
+                pattern: _adminOptions.AdminUrlPrefix + "/OpenId/Application/Edit/{id}",
+                defaults: new { controller = applicationControllerName, action = nameof(ApplicationController.Edit) }
+            );
+
+            // Scope
+            var scopeControllerName = typeof(ScopeController).ControllerName();
+
+            routes.MapAreaControllerRoute(
+                name: "OpenIdScope",
+                areaName: "OrchardCore.OpenId",
+                pattern: _adminOptions.AdminUrlPrefix + "/OpenId/Scope",
+                defaults: new { controller = scopeControllerName, action = nameof(ScopeController.Index) }
+            );
+            routes.MapAreaControllerRoute(
+                name: "OpenIdScopeCreate",
+                areaName: "OrchardCore.OpenId",
+                pattern: _adminOptions.AdminUrlPrefix + "/OpenId/Scope/Create",
+                defaults: new { controller = scopeControllerName, action = nameof(ScopeController.Create) }
+            );
+            routes.MapAreaControllerRoute(
+                name: "OpenIdScopeDelete",
+                areaName: "OrchardCore.OpenId",
+                pattern: _adminOptions.AdminUrlPrefix + "/OpenId/Scope/Delete/{id}",
+                defaults: new { controller = scopeControllerName, action = nameof(ScopeController.Delete) }
+            );
+            routes.MapAreaControllerRoute(
+                name: "OpenIdScopeEdit",
+                areaName: "OrchardCore.OpenId",
+                pattern: _adminOptions.AdminUrlPrefix + "/OpenId/Scope/Edit/{id}",
+                defaults: new { controller = scopeControllerName, action = nameof(ScopeController.Edit) }
+            );
+
+            routes.MapAreaControllerRoute(
+                name: "OpenIdServerConfiguration",
+                areaName: "OrchardCore.OpenId",
+                pattern: _adminOptions.AdminUrlPrefix + "/OpenId/ServerConfiguration",
+                defaults: new { controller = typeof(ServerConfigurationController).ControllerName(), action = nameof(ServerConfigurationController.Index) }
+            );
+
+            routes.MapAreaControllerRoute(
+                name: "OpenIdValidationConfiguration",
+                areaName: "OrchardCore.OpenId",
+                pattern: _adminOptions.AdminUrlPrefix + "/OpenId/ValidationConfiguration",
+                defaults: new { controller = typeof(ValidationConfigurationController).ControllerName(), action = nameof(ValidationConfigurationController.Index) }
+            );
         }
     }
 
@@ -58,8 +159,14 @@ namespace OrchardCore.OpenId
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton<IOpenIdClientService, OpenIdClientService>();
-            services.AddScoped<IDisplayDriver<ISite>, OpenIdClientSettingsDisplayDriver>();
+            services.TryAddSingleton<IOpenIdClientService, OpenIdClientService>();
+
+            // Note: the following services are registered using TryAddEnumerable to prevent duplicate registrations.
+            services.TryAddEnumerable(new[]
+            {
+                ServiceDescriptor.Scoped<IDisplayDriver<ISite>, OpenIdClientSettingsDisplayDriver>(),
+                ServiceDescriptor.Scoped<IRecipeStepHandler, OpenIdClientSettingsStep>()
+            });
 
             // Register the options initializers required by the OpenID Connect client handler.
             services.TryAddEnumerable(new[]
@@ -74,68 +181,37 @@ namespace OrchardCore.OpenId
         }
     }
 
-    [Feature(OpenIdConstants.Features.Management)]
-    public class ManagementStartup : StartupBase
-    {
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            // Note: only the core OpenIddict services (e.g managers and custom stores) are registered here.
-            // The OpenIddict/JWT/validation handlers are lazily registered as active authentication handlers
-            // depending on the OpenID settings by OpenIdServerConfiguration and OpenIdValidationConfiguration.
-            services.AddOpenIddict()
-                .AddCore(options =>
-                {
-                    options.ReplaceApplicationManager(typeof(OpenIdApplicationManager<>))
-                           .ReplaceAuthorizationManager(typeof(OpenIdAuthorizationManager<>))
-                           .ReplaceScopeManager(typeof(OpenIdScopeManager<>))
-                           .ReplaceTokenManager(typeof(OpenIdTokenManager<>));
-
-                    options.AddApplicationStore(typeof(OpenIdApplicationStore<>))
-                           .AddAuthorizationStore(typeof(OpenIdAuthorizationStore<>))
-                           .AddScopeStore(typeof(OpenIdScopeStore<>))
-                           .AddTokenStore(typeof(OpenIdTokenStore<>));
-
-                    options.SetDefaultApplicationEntity<OpenIdApplication>()
-                           .SetDefaultAuthorizationEntity<OpenIdAuthorization>()
-                           .SetDefaultScopeEntity<OpenIdScope>()
-                           .SetDefaultTokenEntity<OpenIdToken>();
-                });
-
-            services.TryAddScoped(provider => (IOpenIdApplicationManager) provider.GetRequiredService<IOpenIddictApplicationManager>());
-            services.TryAddScoped(provider => (IOpenIdAuthorizationManager) provider.GetRequiredService<IOpenIddictAuthorizationManager>());
-            services.TryAddScoped(provider => (IOpenIdScopeManager) provider.GetRequiredService<IOpenIddictScopeManager>());
-            services.TryAddScoped(provider => (IOpenIdTokenManager) provider.GetRequiredService<IOpenIddictTokenManager>());
-
-            services.AddSingleton<IIndexProvider, OpenIdApplicationIndexProvider>();
-            services.AddSingleton<IIndexProvider, OpenIdAuthorizationIndexProvider>();
-            services.AddSingleton<IIndexProvider, OpenIdScopeIndexProvider>();
-            services.AddSingleton<IIndexProvider, OpenIdTokenIndexProvider>();
-
-            services.AddScoped<IRoleRemovedEventHandler, OpenIdApplicationRoleRemovedEventHandler>();
-
-            services.AddScoped<IDataMigration, OpenIdMigrations>();
-        }
-    }
-
     [Feature(OpenIdConstants.Features.Server)]
     public class ServerStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.TryAddSingleton<IOpenIdServerService, OpenIdServerService>();
-            services.TryAddTransient<JwtBearerHandler>();
-            services.AddScoped<IDisplayDriver<OpenIdServerSettings>, OpenIdServerSettingsDisplayDriver>();
-            services.AddScoped<IDisplayManager<OpenIdServerSettings>, DisplayManager<OpenIdServerSettings>>();
-            services.AddSingleton<IBackgroundTask, OpenIdBackgroundTask>();
-
-            services.AddRecipeExecutionStep<OpenIdServerSettingsStep>();
-            services.AddRecipeExecutionStep<OpenIdApplicationStep>();
-
             // Note: both the OpenIddict server and validation services are registered for the
             // server feature as token validation may be required for the userinfo endpoint.
             services.AddOpenIddict()
                 .AddServer(options => options.UseMvc())
                 .AddValidation();
+
+            services.TryAddSingleton<IOpenIdServerService, OpenIdServerService>();
+            services.TryAddTransient<JwtBearerHandler>();
+
+            // Note: the following services are registered using TryAddEnumerable to prevent duplicate registrations.
+            services.TryAddEnumerable(new[]
+            {
+                ServiceDescriptor.Scoped<IRoleRemovedEventHandler, OpenIdApplicationRoleRemovedEventHandler>(),
+                ServiceDescriptor.Scoped<IDisplayDriver<OpenIdServerSettings>, OpenIdServerSettingsDisplayDriver>(),
+                ServiceDescriptor.Scoped<IDisplayManager<OpenIdServerSettings>, DisplayManager<OpenIdServerSettings>>(),
+                ServiceDescriptor.Scoped<IRecipeStepHandler, OpenIdServerSettingsStep>(),
+                ServiceDescriptor.Scoped<IRecipeStepHandler, OpenIdApplicationStep>(),
+                ServiceDescriptor.Scoped<IRecipeStepHandler, OpenIdScopeStep>(),
+
+                ServiceDescriptor.Singleton<IBackgroundTask, OpenIdBackgroundTask>(),
+
+                // Deployment
+                ServiceDescriptor.Scoped<IDisplayDriver<DeploymentStep>, OpenIdServerDeploymentStepDriver>(),
+                ServiceDescriptor.Transient<IDeploymentSource, OpenIdServerDeploymentSource>(),
+                ServiceDescriptor.Singleton<IDeploymentStepFactory, DeploymentStepFactory<OpenIdServerDeploymentStep>>(),
+            });
 
             // Note: the OpenIddict extensions add two authentication options initializers that take care of
             // registering the server and validation handlers. Yet, they MUST NOT be registered at this stage
@@ -230,13 +306,19 @@ namespace OrchardCore.OpenId
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.TryAddSingleton<IOpenIdValidationService, OpenIdValidationService>();
-            services.TryAddTransient<JwtBearerHandler>();
-            services.AddScoped<IDisplayDriver<OpenIdValidationSettings>, OpenIdValidationSettingsDisplayDriver>();
-            services.AddScoped<IDisplayManager<OpenIdValidationSettings>, DisplayManager<OpenIdValidationSettings>>();
-
             services.AddOpenIddict()
                 .AddValidation();
+
+            services.TryAddSingleton<IOpenIdValidationService, OpenIdValidationService>();
+            services.TryAddTransient<JwtBearerHandler>();
+
+            // Note: the following services are registered using TryAddEnumerable to prevent duplicate registrations.
+            services.TryAddEnumerable(new[]
+            {
+                ServiceDescriptor.Scoped<IDisplayDriver<OpenIdValidationSettings>, OpenIdValidationSettingsDisplayDriver>(),
+                ServiceDescriptor.Scoped<IDisplayManager<OpenIdValidationSettings>, DisplayManager<OpenIdValidationSettings>>(),
+                ServiceDescriptor.Scoped<IRecipeStepHandler, OpenIdValidationSettingsStep>()
+            });
 
             // Note: the OpenIddict extensions add an authentication options initializer that takes care of
             // registering the validation handler. Yet, it MUST NOT be registered at this stage as it is

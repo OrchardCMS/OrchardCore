@@ -46,7 +46,7 @@ namespace OrchardCore.Lucene.Settings
 
             context.Builder.WithSettings(model.ContentIndexSettings);
 
-            return Edit(contentPartFieldDefinition, context.Updater);
+            return await EditAsync(contentPartFieldDefinition, context.Updater);
         }
     }
 }

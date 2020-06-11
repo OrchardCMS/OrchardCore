@@ -11,10 +11,12 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
 {
     public abstract class ContentFieldDisplayDriver<TField> : DisplayDriverBase, IContentFieldDisplayDriver where TField : ContentField, new()
     {
+        private const string DisplayToken = "_Display";
+
         private ContentTypePartDefinition _typePartDefinition;
         private ContentPartFieldDefinition _partFieldDefinition;
 
-        public override ShapeResult Factory(string shapeType, Func<IBuildShapeContext, Task<IShape>> shapeBuilder, Func<IShape, Task> initializeAsync)
+        public override ShapeResult Factory(string shapeType, Func<IBuildShapeContext, ValueTask<IShape>> shapeBuilder, Func<IShape, Task> initializeAsync)
         {
             // e.g., HtmlBodyPart.Summary, HtmlBodyPart-BlogPost, BagPart-LandingPage-Services
             // context.Shape is the ContentItem shape, we need to alter the part shape
@@ -28,6 +30,7 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
                 var fieldType = _partFieldDefinition.FieldDefinition.Name;
                 var fieldName = _partFieldDefinition.Name;
                 var contentType = _typePartDefinition.ContentTypeDefinition.Name;
+                var displayMode = _partFieldDefinition.DisplayMode();
 
                 if (GetEditorShapeType(_partFieldDefinition) == shapeType)
                 {
@@ -51,10 +54,10 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
 
                 result.Displaying(ctx =>
                 {
-                    var displayTypes = new[] { "", "_" + ctx.ShapeMetadata.DisplayType };
+                    var displayTypes = new[] { "", "_" + ctx.Shape.Metadata.DisplayType };
 
                     // [ShapeType]_[DisplayType], e.g. TextField.Summary
-                    ctx.ShapeMetadata.Alternates.Add($"{shapeType}_{ctx.ShapeMetadata.DisplayType}");
+                    ctx.Shape.Metadata.Alternates.Add($"{shapeType}_{ctx.Shape.Metadata.DisplayType}");
 
                     // When the shape type is the same as the field, we can ignore one of them in the alternate name
                     // For instance TextField returns a unique TextField shape type.
@@ -63,30 +66,52 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
                         foreach (var displayType in displayTypes)
                         {
                             // [PartType]__[FieldName], e.g. HtmlBodyPart-Description
-                            ctx.ShapeMetadata.Alternates.Add($"{partType}{displayType}__{fieldName}");
+                            ctx.Shape.Metadata.Alternates.Add($"{partType}{displayType}__{fieldName}");
 
-                            // [ContentType]__[PartName]__[FieldName], , e.g. Blog-HtmlBodyPart-Description, LandingPage-Services-Description
-                            ctx.ShapeMetadata.Alternates.Add($"{contentType}{displayType}__{partType}__{fieldName}");
+                            // [ContentType]__[PartName]__[FieldName], e.g. Blog-HtmlBodyPart-Description, LandingPage-Services-Description
+                            ctx.Shape.Metadata.Alternates.Add($"{contentType}{displayType}__{partType}__{fieldName}");
 
-                            // [ContentType]__[FieldType], , e.g. Blog-TextField, LandingPage-TextField
-                            ctx.ShapeMetadata.Alternates.Add($"{contentType}{displayType}__{fieldType}");
+                            // [ContentType]__[FieldType], e.g. Blog-TextField, LandingPage-TextField
+                            ctx.Shape.Metadata.Alternates.Add($"{contentType}{displayType}__{fieldType}");
                         }
                     }
                     else
                     {
-                        foreach (var displayType in displayTypes)
+                        if (!String.IsNullOrEmpty(displayMode))
                         {
+                            // [ShapeType]_[DisplayType]__[DisplayMode]_Display, e.g. TextField-Header.Display.Summary
+                            ctx.Shape.Metadata.Alternates.Add($"{fieldType}_{ctx.Shape.Metadata.DisplayType}__{displayMode}{DisplayToken}");
+                        }
+
+                        for (int i = 0; i < displayTypes.Length; i++)
+                        {
+                            var displayType = displayTypes[i];
+
+                            if (!String.IsNullOrEmpty(displayMode))
+                            {
+                                shapeType = $"{fieldType}__{displayMode}";
+
+                                if (displayType == "")
+                                {
+                                    displayType = DisplayToken;
+                                }
+                                else
+                                {
+                                    shapeType += DisplayToken;
+                                }
+                            }
+
                             // [FieldType]__[ShapeType], e.g. TextField-TextFieldSummary
-                            ctx.ShapeMetadata.Alternates.Add($"{fieldType}{displayType}__{shapeType}");
+                            ctx.Shape.Metadata.Alternates.Add($"{fieldType}{displayType}__{shapeType}");
 
                             // [PartType]__[FieldName]__[ShapeType], e.g. HtmlBodyPart-Description-TextFieldSummary
-                            ctx.ShapeMetadata.Alternates.Add($"{partType}{displayType}__{fieldName}__{shapeType}");
+                            ctx.Shape.Metadata.Alternates.Add($"{partType}{displayType}__{fieldName}__{shapeType}");
 
                             // [ContentType]__[PartName]__[FieldName]__[ShapeType], e.g. Blog-HtmlBodyPart-Description-TextFieldSummary, LandingPage-Services-Description-TextFieldSummary
-                            ctx.ShapeMetadata.Alternates.Add($"{contentType}{displayType}__{partName}__{fieldName}__{shapeType}");
+                            ctx.Shape.Metadata.Alternates.Add($"{contentType}{displayType}__{partName}__{fieldName}__{shapeType}");
 
                             // [ContentType]__[FieldType]__[ShapeType], e.g. Blog-TextField-TextFieldSummary, LandingPage-TextField-TextFieldSummary
-                            ctx.ShapeMetadata.Alternates.Add($"{contentType}{displayType}__{fieldType}__{shapeType}");
+                            ctx.Shape.Metadata.Alternates.Add($"{contentType}{displayType}__{fieldType}__{shapeType}");
                         }
                     }
                 });
@@ -237,7 +262,7 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
         {
             var displayMode = context.PartFieldDefinition.DisplayMode();
             return !String.IsNullOrEmpty(displayMode)
-                ? shapeType + "_Display__" + displayMode
+                ? shapeType + DisplayToken + "__" + displayMode
                 : shapeType;
         }
 
@@ -245,7 +270,6 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
         {
             return GetDisplayShapeType(typeof(TField).Name, context);
         }
-
 
         private void BuildPrefix(ContentTypePartDefinition typePartDefinition, ContentPartFieldDefinition partFieldDefinition, string htmlFieldPrefix)
         {

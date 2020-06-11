@@ -9,7 +9,8 @@
     var typePart = Model.TypePartDefinition;
     var theme = await ThemeManager.GetThemeAsync();
     var shapeTable = ShapeTableManager.GetShapeTable(theme?.Id);
-    var editorShapes = shapeTable.ShapeBindings.Keys.Where(x => x.StartsWith(Model.TypePartDefinition.PartDefinition.Name + "_Option__", StringComparison.OrdinalIgnoreCase) || x.EndsWith(Model.TypePartDefinition.PartDefinition.Name + "_Option", StringComparison.OrdinalIgnoreCase));
+    var displayShapes = shapeTable.Bindings.Keys.Where(x => x.StartsWith(Model.TypePartDefinition.PartDefinition.Name + "_DisplayOption__", StringComparison.OrdinalIgnoreCase) || x.Equals(Model.TypePartDefinition.PartDefinition.Name + "_DisplayOption", StringComparison.OrdinalIgnoreCase));
+    var editorShapes = shapeTable.Bindings.Keys.Where(x => x.StartsWith(Model.TypePartDefinition.PartDefinition.Name + "_Option__", StringComparison.OrdinalIgnoreCase) || x.Equals(Model.TypePartDefinition.PartDefinition.Name + "_Option", StringComparison.OrdinalIgnoreCase));
 }
 
 <h1>@RenderTitleSegments(T["Edit Part - {0}", Model.DisplayName])</h1>
@@ -23,34 +24,33 @@
 
     @if (typePart.PartDefinition.IsReusable())
     {
-        <fieldset class="form-group">
+        <div class="form-group">
             <div class="row col-sm-6">
                 <label asp-for="DisplayName">@T["Display Name"]</label>
                 <input asp-for="DisplayName" class="form-control" />
                 <span class="hint">@T["Name of the part as it will be displayed in screens."]</span>
             </div>
-        </fieldset>
+        </div>
 
-        <fieldset class="form-group">
+        <div class="form-group">
             <div class="row col-sm-6">
                 <label asp-for="Description">@T["Description"]</label>
                 <input asp-for="Description" class="form-control" />
                 <span class="hint">@T["The description of the part as it will be displayed in screens."]</span>
             </div>
-        </fieldset>
+        </div>
     }
-
 
     @if (Model.Shape.Content != null)
     {
-        <fieldset class="form-group">
+        <div class="form-group">
             @await DisplayAsync(Model.Shape.Content)
-        </fieldset>
+        </div>
 
         @if (editorShapes.Any())
         {
             <div class="row">
-                <fieldset class="form-group col-sm-6">
+                <div class="form-group col-sm-6">
                     <label asp-for="Editor">@T["What type of editor should be used?"]</label>
                     <select asp-for="Editor" class="form-control" id="type-part-editor-select">
                         @foreach (var editorShape in editorShapes)
@@ -60,19 +60,38 @@
                             @await DisplayAsync(shape)
                         }
                     </select>
-                </fieldset>
+                </div>
             </div>
         }
 
-        <fieldset id="type-part-editor-container" class="form-group" style="display: none">
+        <div id="type-part-editor-container" class="form-group" style="display: none">
             @await DisplayAsync(Model.Shape.Editor)
-        </fieldset>
+        </div>
+
+        @if (displayShapes.Any())
+        {
+            <div class="form-group">
+                <label asp-for="DisplayMode">@T["What type of display mode should be used?"]</label>
+                <select asp-for="DisplayMode" class="form-control col-sm-6" id="type-part-display-select">
+                    @foreach (var displayShape in displayShapes)
+                    {
+                        dynamic shape = await Factory.CreateAsync(displayShape);
+                        shape.DisplayMode = Model.DisplayMode;
+                        @await DisplayAsync(shape)
+                    }
+                </select>
+            </div>
+        }
+
+        <div id="type-part-display-container" class="form-group" style="display: none">
+            @await DisplayAsync(Model.Shape.DisplayMode)
+        </div>
     }
 
-    <fieldset class="form-group">
+    <div class="form-group">
         <button class="btn btn-primary" type="submit" name="submit.Save" value="Save">@T["Save"]</button>
         <a asp-route-action="Edit" asp-route-id="@Model.TypePartDefinition.ContentTypeDefinition.Name" class="btn btn-secondary">@T["Cancel"]</a>
-    </fieldset>
+    </div>
 </form>
 
 <script at="Foot" type="text/javascript">
@@ -88,6 +107,19 @@
             typePartEditorSelect.change(function () {
                 $('.type-part-editor').hide();
                 $('.type-part-editor-' + typePartEditorSelect.val().toLowerCase()).show();
+            });
+        }
+
+        $('.type-part-display').hide();
+        $('#type-part-display-container').show();
+        var typePartDisplaySelect = $('#type-part-display-select');
+        if (typePartDisplaySelect.length > 0) {
+            $('.type-part-display-' + typePartDisplaySelect.val().toLowerCase()).show();
+
+            typePartDisplaySelect.change(function () {
+                console.log('boom');
+                $('.type-part-display').hide();
+                $('.type-part-display-' + typePartDisplaySelect.val().toLowerCase()).show();
             });
         }
     });

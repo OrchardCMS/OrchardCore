@@ -9,7 +9,6 @@
 
 <partial name="Shared/MediaFieldEditResources.cshtml" />
 
-
 <script at="Foot">
     initializeMediaApplication(false,  '@Url.Action("MediaApplication", "Admin", new { area = "OrchardCore.Media" })');
     initializeMediaField(
@@ -19,10 +18,9 @@
         @(settings.Multiple ? "true" : "false"));
 </script>
 
-
 <div class="mediafield-editor" id="@Html.IdFor(m => m)" data-for="@Html.IdFor(m => m.Paths)">
     <div class="media-field">
-        <fieldset class="form-group">
+        <div class="form-group">
             <label asp-for="Paths">@Model.PartFieldDefinition.DisplayName()</label>
             @if (!string.IsNullOrWhiteSpace(settings.Hint))
             {
@@ -44,14 +42,13 @@
                     <code class="text-right" v-if="selectedMedia">@T["{{{{ selectedMedia.name }}}} ({{{{ isNaN(fileSize)? 0 : fileSize }}}} KB)"]</code>
                 </div>
             </nav>
-
-        </fieldset>
-        <fieldset class="form-group">
+        </div>
+        <div class="form-group">
             <media-field-thumbs-container :media-items="mediaItems"
                                           :thumb-size="thumbSize"
                                           :selected-media="selectedMedia">
             </media-field-thumbs-container>
-        </fieldset>
+        </div>
     </div>
 </div>
 

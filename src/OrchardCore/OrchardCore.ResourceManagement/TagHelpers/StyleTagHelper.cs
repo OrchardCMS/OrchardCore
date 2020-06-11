@@ -1,15 +1,18 @@
 using System;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 
 namespace OrchardCore.ResourceManagement.TagHelpers
 {
-
     [HtmlTargetElement("style", Attributes = NameAttributeName)]
     [HtmlTargetElement("style", Attributes = SrcAttributeName)]
+    [HtmlTargetElement("style", Attributes = AtAttributeName)]
     public class StyleTagHelper : TagHelper
     {
         private const string NameAttributeName = "asp-name";
         private const string SrcAttributeName = "asp-src";
+        private const string AtAttributeName = "at";
         private const string AppendVersionAttributeName = "asp-append-version";
 
         [HtmlAttributeName(NameAttributeName)]
@@ -32,6 +35,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
         public string DependsOn { get; set; }
         public string Version { get; set; }
 
+        [HtmlAttributeName(AtAttributeName)]
         public ResourceLocation At { get; set; }
 
         private readonly IResourceManager _resourceManager;
@@ -41,8 +45,10 @@ namespace OrchardCore.ResourceManagement.TagHelpers
             _resourceManager = resourceManager;
         }
 
-        public override void Process(TagHelperContext context, TagHelperOutput output)
+        public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
         {
+            output.SuppressOutput();
+
             if (String.IsNullOrEmpty(Name) && !String.IsNullOrEmpty(Src))
             {
                 // Include custom script
@@ -121,6 +127,20 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                 {
                     setting.UseVersion(Version);
                 }
+
+                // This allows additions to the pre registered scripts dependencies.
+                if (!String.IsNullOrEmpty(DependsOn))
+                {
+                    setting.SetDependencies(DependsOn.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries));
+                }
+
+                var childContent = await output.GetChildContentAsync();
+                if (!childContent.IsEmptyOrWhiteSpace)
+                {
+                    // Inline content definition
+                    _resourceManager.InlineManifest.DefineStyle(Name)
+                        .SetInnerContent(childContent.GetContent());
+                }
             }
             else if (!String.IsNullOrEmpty(Name) && !String.IsNullOrEmpty(Src))
             {
@@ -141,12 +161,12 @@ namespace OrchardCore.ResourceManagement.TagHelpers
 
                 if (!String.IsNullOrEmpty(Culture))
                 {
-                    definition.SetCultures(Culture.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries));
+                    definition.SetCultures(Culture.Split(',', StringSplitOptions.RemoveEmptyEntries));
                 }
 
                 if (!String.IsNullOrEmpty(DependsOn))
                 {
-                    definition.SetDependencies(DependsOn.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries));
+                    definition.SetDependencies(DependsOn.Split(',', StringSplitOptions.RemoveEmptyEntries));
                 }
 
                 // Also include the style
@@ -182,8 +202,29 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                     setting.UseCulture(Culture);
                 }
             }
-            
-            output.TagName = null;
+            else if (String.IsNullOrEmpty(Name) && String.IsNullOrEmpty(Src))
+            {
+                // Custom style content
+
+                var childContent = await output.GetChildContentAsync();
+
+                var builder = new TagBuilder("style");
+                builder.InnerHtml.AppendHtml(childContent);
+                builder.TagRenderMode = TagRenderMode.Normal;
+
+                foreach (var attribute in output.Attributes)
+                {
+                    builder.Attributes.Add(attribute.Name, attribute.Value.ToString());
+                }
+
+                // If no type was specified, define a default one
+                if (!builder.Attributes.ContainsKey("type"))
+                {
+                    builder.Attributes.Add("type", "text/css");
+                }
+
+                _resourceManager.RegisterStyle(builder);
+            }
         }
     }
 }

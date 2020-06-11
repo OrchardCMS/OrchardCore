@@ -3,78 +3,98 @@
 @using System.Globalization
 
 <p class="alert alert-warning">@T["The current tenant will be reloaded when the settings are saved."]</p>
+<ul class="nav nav-tabs">
+    <li class="nav-item">
+        <a class="nav-link active" id="site-tab" data-toggle="tab" href="#site" role="tab" aria-controls="site" aria-selected="true">@T["Site"]</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" id="resources-tab" data-toggle="tab" href="#resources" role="tab" aria-controls="resources">@T["Resources"]</a>
+    </li>
+</ul>
+<div class="tab-content" id="tabs">
+    <div class="tab-pane fade show active" id="site" role="tabpanel" aria-labelledby="site-tab">
+        <div class="form-group" asp-validation-class-for="SiteName">
+            <label asp-for="SiteName">@T["Site name"]</label>
+            <input asp-for="SiteName" class="form-control" />
+            <span asp-validation-for="SiteName"></span>
+            <span class="hint">@T["The site name."]</span>
+        </div>
 
-<fieldset class="form-group" asp-validation-class-for="SiteName">
-    <label asp-for="SiteName">@T["Site name"]</label>
-    <input asp-for="SiteName" class="form-control" />
-    <span asp-validation-for="SiteName"></span>
-    <span class="hint">@T["The site name."]</span>
-</fieldset>
+        <div class="form-group" asp-validation-class-for="PageTitleFormat">
+            <label asp-for="PageTitleFormat">@T["Page title format"]</label>
+            <input asp-for="PageTitleFormat" class="form-control" />
+            <span asp-validation-for="PageTitleFormat"></span>
+            <span class="hint">@T["The default format of page titles."]</span>
+        </div>
 
-<div class="form-group" asp-validation-class-for="PageTitleFormat">
-    <label asp-for="PageTitleFormat">@T["Page title format"]</label>
-    <input asp-for="PageTitleFormat" class="form-control" />
-    <span asp-validation-for="PageTitleFormat"></span>
-    <span class="hint">@T["The default format of page titles."]</span>
-</div>
+        <div class="form-group" asp-validation-class-for="BaseUrl">
+            <label asp-for="BaseUrl">@T["Base url"]</label>
+            <input asp-for="BaseUrl" class="form-control" />
+            <span asp-validation-for="BaseUrl"></span>
+            <span class="hint">@T["Enter the fully qualified base URL of the web site."]</span>
+        </div>
 
-<fieldset class="form-group" asp-validation-class-for="BaseUrl">
-    <label asp-for="BaseUrl">@T["Base url"]</label>
-    <input asp-for="BaseUrl" class="form-control" />
-    <span asp-validation-for="BaseUrl"></span>
-    <span class="hint">@T["Enter the fully qualified base URL of the web site."]</span>
-</fieldset>
+        <div class="row">
+            <div class="form-group col-xl-8" asp-validation-class-for="TimeZone">
+                <label asp-for="TimeZone">@T["Default Time Zone"]</label>
+                <select asp-for="TimeZone" class="form-control">
+                    <option value="">@T["Local to server"]</option>
+                    @foreach (var timezone in Clock.GetTimeZones().OrderBy(t => t.ToString()))
+                    {
+                        <option value="@timezone.TimeZoneId" selected="@(Model.TimeZone == timezone.TimeZoneId)">
+                            @timezone
+                        </option>
+                    }
+                </select>
+                <span asp-validation-for="TimeZone"></span>
+                <span class="hint">@T["Determines the default time zone used when displaying and editing dates and times. DST (daylight saving time) will be applied automatically per time zone if available."]</span>
+            </div>
+        </div>
 
-<div class="row">
-    <fieldset class="form-group col-xl-6" asp-validation-class-for="TimeZone">
-        <label asp-for="TimeZone">@T["Default Time Zone"]</label>
-        <select asp-for="TimeZone" class="form-control">
-            <option value="">@T["Local to server"]</option>
-            @foreach (var timezone in Clock.GetTimeZones().OrderBy(t => t.ToString()))
-            {
-                <option value="@timezone.TimeZoneId" selected="@(Model.TimeZone == timezone.TimeZoneId)">
-                    @timezone
-                </option>
-            }
-        </select>
-        <span asp-validation-for="TimeZone"></span>
-        <span class="hint">@T["Determines the default time zone used when displaying and editing dates and times. DST (daylight saving time) will be applied automatically per time zone if available."]</span>
-    </fieldset>
-</div>
-
-<h5 class="form-group">@T["Resource Settings"]<span class="hint"> — @T["Settings for scripts and stylesheets"]</span></h5>
-<fieldset class="form-group" asp-validation-class-for="AppendVersion">
-    <div class="custom-control custom-checkbox">
-        <input type="checkbox" class="custom-control-input" asp-for="@Model.AppendVersion" />
-        <label class="custom-control-label" asp-for="@Model.AppendVersion">@T["Use resources cache busting"]</label>
-        <span class="hint">— @T["Whether cache busting (append a version) is used for scripts and stylesheets"]</span>
+        <div class="row">
+            <div class="col-xl-6 form-group" asp-validation-class-for="PageSize">
+                <label asp-for="PageSize">@T["Page size"]</label>
+                <input asp-for="PageSize" type="number" class="form-control" />
+                <span asp-validation-for="PageSize"></span>
+                <span class="hint">@T["The default page size."]</span>
+            </div>
+        </div>
     </div>
-</fieldset>
+    <div class="tab-pane fade" id="resources" role="tabpanel" aria-labelledby="resources-tab">
+        <h5 class="form-group">@T["Resource Settings"]<span class="hint"> — @T["Settings for scripts and stylesheets"]</span></h5>
+        <div class="form-group" asp-validation-class-for="AppendVersion">
+            <div class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input" asp-for="@Model.AppendVersion" />
+                <label class="custom-control-label" asp-for="@Model.AppendVersion">@T["Use resources cache busting"]</label>
+                <span class="hint">— @T["Whether cache busting (append a version) is used for scripts and stylesheets"]</span>
+            </div>
+        </div>
 
-<fieldset class="form-group" asp-validation-class-for="UseCdn">
-    <div class="custom-control custom-checkbox">
-        <input type="checkbox" class="custom-control-input" asp-for="@Model.UseCdn" />
-        <label class="custom-control-label" asp-for="@Model.UseCdn">@T["Use framework CDN (Content Delivery Network)"]</label>
-        <span class="hint">— @T["Whether a framework CDN is used for registered scripts and stylesheets, such as jQuery, or their local version"]</span>
+        <div class="form-group" asp-validation-class-for="UseCdn">
+            <div class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input" asp-for="@Model.UseCdn" />
+                <label class="custom-control-label" asp-for="@Model.UseCdn">@T["Use framework CDN (Content Delivery Network)"]</label>
+                <span class="hint">— @T["Whether a framework CDN is used for registered scripts and stylesheets, such as jQuery, or their local version"]</span>
+            </div>
+        </div>
+
+        <div class="form-group" asp-validation-class-for="CdnBaseUrl">
+            <label asp-for="CdnBaseUrl">@T["Site CDN (Content Delivery Network) base url"]</label>
+            <input asp-for="CdnBaseUrl" class="form-control" />
+            <span asp-validation-for="CdnBaseUrl"></span>
+            <span class="hint">@T["A base CDN URL prefixed to the local scripts and stylesheets. It is disabled if the value is empty or if the Resource Debug Mode is enabled, e.g. <em>https://cdn.mysite.com</em>"]</span>
+        </div>
+
+        <div class="row form-group">
+            <div class="col-xl-6" asp-validation-class-for="ResourceDebugMode">
+                <label asp-for="ResourceDebugMode">@T["Resource Debug Mode"]</label>
+                <select asp-for="ResourceDebugMode" class="form-control">
+                    <option value="@ResourceDebugMode.FromConfiguration.ToString()">@T["From environment — disabled in <em>Production</em>, enabled otherwise"]</option>
+                    <option value="@ResourceDebugMode.Enabled.ToString()">@T["Enabled — use debuggable version of resources"]</option>
+                    <option value="@ResourceDebugMode.Disabled.ToString()">@T["Disabled — use minified version of resources"]</option>
+                </select>
+                <span class="hint">@T["Determines whether scripts and stylesheets load in their debuggable or minified form."]</span>
+            </div>
+        </div>
     </div>
-</fieldset>
-
-<fieldset class="form-group" asp-validation-class-for="CdnBaseUrl">
-    <label asp-for="CdnBaseUrl">@T["Site CDN (Content Delivery Network) base url"]</label>
-    <input asp-for="CdnBaseUrl" class="form-control" />
-    <span asp-validation-for="CdnBaseUrl"></span>
-    <span class="hint">@T["A base CDN URL prefixed to the local scripts and stylesheets. It is disabled if the value is empty or if the Resource Debug Mode is enabled, e.g. <em>https://cdn.mysite.com</em>"]</span>
-</fieldset>
-
-<div class="row form-group">
-    <fieldset class="col-xl-6" asp-validation-class-for="ResourceDebugMode">
-        <label asp-for="ResourceDebugMode">@T["Resource Debug Mode"]</label>
-        <select asp-for="ResourceDebugMode" class="form-control">
-            <option value="@ResourceDebugMode.FromConfiguration.ToString()">@T["From environment — enabled in <em>Production</em>, disabled otherwise"]</option>
-            <option value="@ResourceDebugMode.Enabled.ToString()">@T["Enabled — use debuggable version of resources"]</option>
-            <option value="@ResourceDebugMode.Disabled.ToString()">@T["Disabled — use minified version of resources"]</option>
-        </select>
-        <span class="hint">@T["Determines whether scripts and stylesheets load in their debuggable or minified form."]</span>
-    </fieldset>
 </div>
-

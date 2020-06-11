@@ -75,7 +75,7 @@ namespace OrchardCore.ContentManagement.Records
         // This code can be removed in a later version.
         public int UpdateFrom3()
         {
-            var contentTypeDefinitions = _contentDefinitionManager.ListTypeDefinitions();
+            var contentTypeDefinitions = _contentDefinitionManager.LoadTypeDefinitions();
             foreach (var contentTypeDefinition in contentTypeDefinitions)
             {
                 var existingContentTypeSettings = contentTypeDefinition.Settings.ToObject<ContentTypeSettings>();
@@ -92,7 +92,7 @@ namespace OrchardCore.ContentManagement.Records
                 {
                     builder.WithSettings(existingContentTypeSettings);
 
-                    foreach(var contentTypePartDefinition in contentTypeDefinition.Parts)
+                    foreach (var contentTypePartDefinition in contentTypeDefinition.Parts)
                     {
                         var existingTypePartSettings = contentTypePartDefinition.Settings.ToObject<ContentTypePartSettings>();
 
@@ -106,7 +106,6 @@ namespace OrchardCore.ContentManagement.Records
                         builder.WithPart(contentTypePartDefinition.Name, contentTypePartDefinition.PartDefinition, partBuilder =>
                         {
                             partBuilder.WithSettings(existingTypePartSettings);
-
                         });
                     }
                 });
@@ -119,8 +118,8 @@ namespace OrchardCore.ContentManagement.Records
         // This code can be removed in a later version.
         public int UpdateFrom4()
         {
-            var partDefinitions = _contentDefinitionManager.ListPartDefinitions();
-            foreach(var partDefinition in partDefinitions)
+            var partDefinitions = _contentDefinitionManager.LoadPartDefinitions();
+            foreach (var partDefinition in partDefinitions)
             {
                 var existingPartSettings = partDefinition.Settings.ToObject<ContentPartSettings>();
 
@@ -135,7 +134,7 @@ namespace OrchardCore.ContentManagement.Records
                 _contentDefinitionManager.AlterPartDefinition(partDefinition.Name, partBuilder =>
                 {
                     partBuilder.WithSettings(existingPartSettings);
-                    foreach(var fieldDefinition in partDefinition.Fields)
+                    foreach (var fieldDefinition in partDefinition.Fields)
                     {
                         var existingFieldSettings = fieldDefinition.Settings.ToObject<ContentPartFieldSettings>();
 

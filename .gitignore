@@ -69,6 +69,9 @@ ipch/
 _ReSharper*/
 *.[Rr]e[Ss]harper
 
+# Rider is a IDE fm JetBrains
+.idea
+
 # TeamCity is a build add-in
 _TeamCity*
 
@@ -157,7 +160,7 @@ $RECYCLE.BIN/
 # Orchard specifics
 # =========================
 
-App_Data/
+App_Data*/
 glob:*.user
 *.patch
 *.hg
@@ -187,11 +190,11 @@ nuget.exe
 node_modules/
 
 wwwroot
-Localization
+**/Localization/**/*.po
 !src/OrchardCore.Modules/**/wwwroot
 !src/OrchardCore.Themes/**/wwwroot
-!src/OrchardCore.Modules/**/Localization
-!src/OrchardCore.Themes/**/Localization
+!src/OrchardCore.Modules/**/Localization/**/*.po
+!src/OrchardCore.Themes/**/Localization/**/*.po
 !src/Templates/**/content/**
 src/Templates/**/content/**/[Bb]in/
 src/Templates/**/content/**/[Oo]bj/

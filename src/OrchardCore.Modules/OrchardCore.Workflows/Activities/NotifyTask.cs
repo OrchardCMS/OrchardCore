@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
@@ -13,18 +14,26 @@ namespace OrchardCore.Workflows.Activities
     {
         private readonly INotifier _notifier;
         private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
+        private readonly IStringLocalizer S;
+        private readonly HtmlEncoder _htmlEncoder;
 
-        public NotifyTask(INotifier notifier, IWorkflowExpressionEvaluator expressionvaluator, IStringLocalizer<NotifyTask> t)
+        public NotifyTask(
+            INotifier notifier, 
+            IWorkflowExpressionEvaluator expressionvaluator, 
+            IStringLocalizer<NotifyTask> localizer,
+            HtmlEncoder htmlEncoder)
         {
             _notifier = notifier;
             _expressionEvaluator = expressionvaluator;
-            T = t;
+            S = localizer;
+            _htmlEncoder = htmlEncoder;
         }
-        
-        private IStringLocalizer T { get; set; }
+
         public override string Name => nameof(NotifyTask);
-        public override LocalizedString DisplayText => T["Notify Task"];
-        public override LocalizedString Category => T["UI"];
+
+        public override LocalizedString DisplayText => S["Notify Task"];
+
+        public override LocalizedString Category => S["UI"];
 
         public NotifyType NotificationType
         {
@@ -40,12 +49,12 @@ namespace OrchardCore.Workflows.Activities
 
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            return Outcomes(T["Done"]);
+            return Outcomes(S["Done"]);
         }
 
         public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            var message = await _expressionEvaluator.EvaluateAsync(Message, workflowContext);
+            var message = await _expressionEvaluator.EvaluateAsync(Message, workflowContext, _htmlEncoder);
             _notifier.Add(NotificationType, new LocalizedHtmlString(nameof(NotifyTask), message));
 
             return Outcomes("Done");

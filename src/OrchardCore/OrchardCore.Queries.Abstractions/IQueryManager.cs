@@ -25,7 +25,12 @@ namespace OrchardCore.Queries
         Task DeleteQueryAsync(string name);
 
         /// <summary>
-        /// Gets the <see cref="Query"/> instance with the specified name.
+        /// Returns the <see cref="Query"/> instance with the specified name for update.
+        /// </summary>
+        Task<Query> LoadQueryAsync(string name);
+
+        /// <summary>
+        /// Gets the <see cref="Query"/> instance with the specified name in read-only.
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
@@ -36,7 +41,7 @@ namespace OrchardCore.Queries
         /// </summary>
         /// <param name="query">The query to execute.</param>
         /// <returns>The result of the query.</returns>
-        Task<object> ExecuteQueryAsync(Query query, IDictionary<string, object> parameters);
+        Task<IQueryResults> ExecuteQueryAsync(Query query, IDictionary<string, object> parameters);
 
         /// <summary>
         /// Returns a change token that is set when queries have changed.
