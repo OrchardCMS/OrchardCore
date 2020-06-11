@@ -18,6 +18,9 @@ Orchard Core supports a hierarchy of Configuration Sources
 
 The Configuration Sources are loaded in the above order, and settings lower in the hierarchy will override values configured higher up, i.e. an Global Tenant value will always be overridden by an Environment Variable.
 
+!!! note 
+    The `IShellConfiguration` patterns in the `appsettings.json` examples below will only work for modules that specifically support such configuration. You can check out the given module's code or documentation to see if this is the case.
+
 ### `IShellConfiguration` in the `OrchardCore.Cms.Web.csproj` Startup Project
 
 Orchard Core stores all Configuration data under the `OrchardCore` section in `appsettings.json` files:
@@ -74,37 +77,62 @@ without having to provide a state value.
   "OrchardCore": {
     "Default": {
       "OrchardCore_Media": {
-        ... specific tenant configuration configuration ...
+        ... specific tenant configuration ...
       }
     }
   }
 }
 ```
 
-### IOptions Configuration
+### `IOptions` Configuration
 
 You can also configure `IOptions` from code in the web project's `Startup` class as explained in the [ASP.NET documentation](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/configuration/options). 
 
-A lot of Orchard Core features are configured through the admin UI with site settings stored in the database. If you wish to override the site settings, you can do this with your own configuration code.
+A lot of Orchard Core features are configured through the admin UI with site settings stored in the database and/or expose configuration via `IOptions`. If you wish to override the site settings or default settings, you can do this with your own configuration code.
 
 For example, the Email module allows SMTP configuration via the `SmtpSettings` class which by default is populated from the given tenant's site settings, as set on the admin. 
 However, you can override the site settings from the `Startup` class like this (note that we use `PostConfigure` to override the site settings values but if the module doesn't use site settings you can just use `Configure`):
 
 ```
-public void ConfigureServices(IServiceCollection services)
-{
-    services
-        .AddOrchardCms()
-        .ConfigureServices(tenantServices =>
-            tenantServices.PostConfigure<SmtpSettings>(settings =>
-            {
-                // You could e.g. fetch the configuration values from an injected IShellConfiguration instance here.
-                settings.Port = 255;
-            }));
-}
+services
+    .AddOrchardCms()
+    .ConfigureServices(tenantServices =>
+        tenantServices.PostConfigure<SmtpSettings>(settings =>
+        {
+            settings.Port = 255;
+        }));
+
+// Or if you want to make use of IShellConfiguration as seen above:
+services
+    .AddOrchardCms()
+    .ConfigureServices((tenantServices, serviceProvider) =>
+    {
+        // Instead of IShellConfiguration you could fetch the configuration 
+        // values from an injected IConfiguration instance here too. While that 
+        // would also allow you to access standard ASP.NET Core configuration 
+        // keys it won't have support for all the hierarchical sources 
+        // detailed above.
+        var shellConfiguration = serviceProvider.GetRequiredService<IShellConfiguration>();
+        var password = shellConfiguration.GetValue<string>("SmtpSettings:Password");
+
+        tenantServices.PostConfigure<SmtpSettings>(settings =>
+        {
+            settings.Password = password;
+        });
+    });
 ```
 
-This will thus make the SMTP port use this configuration despite any other value defined from site settings. 
+This will make the SMTP port use this configuration despite any other value defined in site settings. The second example's configuration value can come from e.g. an `appsettings.json` file like below:
+
+```
+{
+  "OrchardCore": {
+    "SmtpSettings": {
+      "Password":  "password"
+    }
+  }
+}
+```
 
 !!! note 
     On the admin there will be no indication that this override happened, and the value displayed there will still be 
@@ -128,7 +156,7 @@ Additionally these `appsettings.json` files do not need the `OrchardCore` sectio
 ```
 {
   "OrchardCore_Media": {
-    ... specific tenant configuration configuration ...
+    ... specific tenant configuration ...
   }
 }
 ```
@@ -146,8 +174,8 @@ OrchardCore__MyTenant__OrchardCore_Media__MaxFileSize
 ```
 
 !!! note
-    To support Linux the underscore `_` is used as a seperator, e.g. `OrchardCore_Media`
-    `OrchardCore.Media` is supported for backwards compatability, but users should migrate to the `_` pattern.
+    To support Linux the underscore `_` is used as a separator, e.g. `OrchardCore_Media`
+    `OrchardCore.Media` is supported for backwards compatibility, but users should migrate to the `_` pattern.
 
 ### Order of hierarchy
 
@@ -187,4 +215,3 @@ If building with the nightly dev builds from the preview package feed, the CI/CD
 The `IShellConfiguration` values stored in the `App_Data` folder, and individual tenants `appsettings.json` files, can also be stored in alternate locations.
 
 Refer to the [Shells Section](../Shells/README.md) for more details on this.
-
