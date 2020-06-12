@@ -52,16 +52,15 @@ Placement information consists of:
 {
   "TextField": [
     {
-    "displayType": "Detail",
-    "differentiator": "Article-MyTextField",
-        "contentType": ["Page", "BlogPost"],
-        "contentPart": ["HtmlBodyPart"],
-        "path": ["/mypage"],
-
-    "place": "Content",
-    "alternates": [ "TextField_Title" ],
-    "wrappers": [ "TextField_Title" ],
-    "shape": "AnotherShape"
+      "displayType": "Detail",
+      "differentiator": "Article-MyTextField",
+      "contentType": [ "Page", "BlogPost" ],
+      "contentPart": [ "HtmlBodyPart" ],
+      "path": [ "/mypage" ],
+      "place": "Content",
+      "alternates": [ "TextField_Title" ],
+      "wrappers": [ "TextField_Title" ],
+      "shape": "AnotherShape"
     }
   ],
 }
