@@ -11,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
+using Shortcodes;
 using OrchardCore.Admin;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
@@ -158,6 +159,7 @@ namespace OrchardCore.Media
             services.AddTagHelpers<ImageResizeTagHelper>();
 
             services.AddScoped<IShortCode, ImageShortCode>();
+            services.AddScoped<IShortcodeProvider, ImageShortCodeProvider>();
         }
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

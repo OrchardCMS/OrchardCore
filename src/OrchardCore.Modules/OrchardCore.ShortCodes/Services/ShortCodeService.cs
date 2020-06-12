@@ -1,25 +1,24 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Shortcodes;
 
 namespace OrchardCore.ShortCodes.Services
 {
     public class ShortCodeService : IShortCodeService
     {
-        private readonly IEnumerable<IShortCode> _shortCodes;
+        private readonly ShortcodesProcessor _shortCodesProcessor;
+        private readonly IEnumerable<IShortcodeProvider> _shortCodeProviders;
 
-        public ShortCodeService(IEnumerable<IShortCode> shortCodes)
+        public ShortCodeService(IEnumerable<IShortcodeProvider> shortCodeProviders)
         {
-            _shortCodes = shortCodes;
+            _shortCodeProviders = shortCodeProviders;
+            _shortCodesProcessor = new ShortcodesProcessor(shortCodeProviders);
+
         }
 
-        public async ValueTask<string> ProcessAsync(string input)
+        public ValueTask<string> ProcessAsync(string input)
         {
-            foreach (var shortCode in _shortCodes)
-            {
-                input = await shortCode.ProcessAsync(input);
-            }
-
-            return input;
+            return _shortCodesProcessor.EvaluateAsync(input);
         }
     }
 }
