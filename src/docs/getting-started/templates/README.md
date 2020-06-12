@@ -199,7 +199,7 @@ Last step is to add our new module to the `OrchardCore.Cms.Web` project as a ref
 #### Theme commands
 
 ```CMD
-`dotnet new octheme -n "ThemeName.OrchardCore"`
+dotnet new octheme -n "ThemeName.OrchardCore"
 ```
 
 ### New theme from Visual Studio (manual way)

@@ -1,4 +1,4 @@
-# Users (OrchardCore.Users)
+# Users (`OrchardCore.Users`)
 
 The Users module enables authentication UI and user management.
 

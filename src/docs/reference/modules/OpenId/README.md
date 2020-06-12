@@ -1,4 +1,4 @@
-# `OrchardCore.OpenId`
+# OpenID (`OrchardCore.OpenId`)
 
 ## OpenID Connect Module
 
