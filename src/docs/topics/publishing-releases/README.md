@@ -30,8 +30,7 @@ Update the source so everything looks like on the new version.
 ### Test the release
 Make sure everything works all right.
 
-- [ ] Test the [guides](https://docs.orchardcore.net/en/dev/docs/guides/).
-- [ ] Test NuGet packages from the Cloudsmith feed (branches under `release/` are automatically published too).
+- [ ] Test the [guides](https://docs.orchardcore.net/en/dev/docs/guides/) with the NuGet packages from the Cloudsmith feed (branches under `release/` are automatically published too).
 
 ### Prepare and publish Orchard Core Translations
 
@@ -55,15 +54,18 @@ Update the docs so they contain information about the new release so once the re
 Do the harder parts of making the release public. This should come after everything above is done.
 
 - [ ] Merge `release/<version name>` to `master`.
+    - Merges to `master` need two approvals so you'll need to create a pull request.
+    - Merge it as a merge commit, not squash merge.
 - [ ] Tag `master` with the full version name, including the prefix and suffix (e.g. "1.0.0-rc2").
-- [ ] Publish the new version on NuGet.
+- [ ] Test the [guides](https://docs.orchardcore.net/en/dev/docs/guides/) with the packages now automatically published to NuGet.
 - [ ] Update [Try Orchard Core](https://github.com/OrchardCMS/TryOrchardCore).
 
 ### Publicize the release
 Let the whole world know about our shiny new release. Savor this part! These steps will make the release public so only do them once everything else is ready.
 
 - [ ] Update the documentation to mention the version in all places where the latest version is referenced, for example, but not limited to: [Status in the root README](https://docs.orchardcore.net/en/dev/#status), CLI templates, and commands.
-- [ ] Update the [release](https://github.com/OrchardCMS/OrchardCore/releases) on GitHub: Change its title to something more descriptive (e.g. "Orchard Core 1.0.0 RC 2"), add a link to it to the release notes in the documentation. Add a link to this release under [Status in the root README](https://docs.orchardcore.net/en/dev/#status).
+- [ ] Update the tagged [release](https://github.com/OrchardCMS/OrchardCore/releases) on GitHub: Change its title to something more descriptive (e.g. "Orchard Core 1.0.0 RC 2"), add a link to it to the release notes in the documentation. Add a link to this release under [Status in the root README](https://docs.orchardcore.net/en/dev/#status).
 - [ ] Tweet
-- [ ] Update the website.
+- [ ] Blog on [DevBlogs](https://devblogs.microsoft.com/).
+- [ ] Blog on [.NET Foundation News](https://dotnetfoundation.org/news).
 ```
