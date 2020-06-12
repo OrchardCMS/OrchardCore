@@ -8,8 +8,8 @@
     var siteSettings = await SiteService.GetSiteSettingsAsync();
 
     var propertyNames =
-        typeof(ISite).GetProperties(BindingFlags.Public | BindingFlags.Instance).Select(property => property.Name)
-        .Union(((IDictionary<string, JToken>)siteSettings.Properties).Keys.Where(key => key != "name"));
+        typeof(ISite).GetProperties(BindingFlags.Public | BindingFlags.Instance).Select(property => property.Name).OrderBy(name => name)
+        .Union(((IDictionary<string, JToken>)siteSettings.Properties).Keys.Where(key => key != "name").OrderBy(key => key));
 }
 <h5>@T["Site Settings"]</h5>
 
