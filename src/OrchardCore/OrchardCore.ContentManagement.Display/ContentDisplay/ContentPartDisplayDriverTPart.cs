@@ -53,9 +53,10 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
                 var contentType = _typePartDefinition.ContentTypeDefinition.Name;
                 var editorPartType = GetEditorShapeType(_typePartDefinition);
                 var displayMode = _typePartDefinition.DisplayMode();
+                var hasDisplayMode = !String.IsNullOrEmpty(displayMode);
 
                 // If the shape type and the field type only differ by the display mode
-                if (!String.IsNullOrEmpty(displayMode) && shapeType == partType + DisplaySeparator + displayMode)
+                if (hasDisplayMode && shapeType == partType + DisplaySeparator + displayMode)
                 {
                     // Preserve the shape name regardless its differentiator
                     result.Name(partName);
@@ -119,7 +120,7 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
                     }
                     else
                     {
-                        if (!String.IsNullOrEmpty(displayMode))
+                        if (hasDisplayMode)
                         {
                             // [PartType]_[DisplayType]__[DisplayMode]_Display, e.g. HtmlBodyPart-MyDisplayMode.Display.Summary
                             ctx.Shape.Metadata.Alternates.Add($"{partType}_{ctx.Shape.Metadata.DisplayType}__{displayMode}{DisplayToken}");
@@ -131,7 +132,7 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
                         {
                             var displayType = displayTypes[i];
 
-                            if (!String.IsNullOrEmpty(displayMode))
+                            if (hasDisplayMode)
                             {
                                 shapeType = $"{partType}__{displayMode}";
 
