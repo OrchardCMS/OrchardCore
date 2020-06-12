@@ -1,22 +1,29 @@
 @model SiteSettingsDeploymentStepViewModel
 @using System.Reflection
+@using Newtonsoft.Json.Linq
+@inject ISiteService SiteService
+
 @{
     var settings = Model.Settings;
+    var siteSettings = await SiteService.GetSiteSettingsAsync();
+
+    var propertyNames =
+        typeof(ISite).GetProperties(BindingFlags.Public | BindingFlags.Instance).Select(property => property.Name)
+        .Union(((IDictionary<string, JToken>)siteSettings.Properties).Keys.Where(key => key != "name"));
 }
 <h5>@T["Site Settings"]</h5>
 
 <div class="form-group">
     <span class="hint">@T["The site settings to add as part of the plan."]</span>
     <ul class="list-group w-md-50">
-        @foreach (var setting in typeof(ISite).GetProperties(BindingFlags.Public | BindingFlags.Instance))
+        @foreach (var setting in propertyNames)
         {
-            var name = setting.Name;
-            var checkd = settings?.Contains(name);
+            var checkd = settings?.Contains(setting);
 
             <li class="list-group-item">
                 <div class="custom-control custom-checkbox">
-                    <input type="checkbox" class="custom-control-input" id="@(Html.IdFor(m => m.Settings) + "-" + @name)" name="@Html.NameFor(m => m.Settings)" value="@name" checked="@checkd">
-                    <label class="custom-control-label" for="@(Html.IdFor(m => m.Settings) + "-" + @name)">@name</label>
+                    <input type="checkbox" class="custom-control-input" id="@(Html.IdFor(m => m.Settings) + "-" + setting)" name="@Html.NameFor(m => m.Settings)" value="@setting" checked="@checkd">
+                    <label class="custom-control-label" for="@(Html.IdFor(m => m.Settings) + "-" + setting)">@setting</label>
                 </div>
             </li>
         }
