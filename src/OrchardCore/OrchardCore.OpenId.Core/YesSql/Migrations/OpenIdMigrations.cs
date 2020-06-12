@@ -86,8 +86,9 @@ namespace OrchardCore.OpenId.YesSql.Migrations
         {
             SchemaBuilder.AlterTable(nameof(OpenIdApplicationIndex), table =>
             {
+                table.AlterColumn(nameof(OpenIdApplicationIndex.ClientId), column => column.WithType(DbType.String, 100));
                 table.CreateIndex($"IX_{nameof(OpenIdApplicationIndex)}_{nameof(OpenIdApplicationIndex.ApplicationId)}", nameof(OpenIdApplicationIndex.ApplicationId));
-                    table.CreateIndex($"IX_{nameof(OpenIdApplicationIndex)}_{nameof(OpenIdApplicationIndex.ClientId)}", nameof(OpenIdApplicationIndex.ClientId));
+                table.CreateIndex($"IX_{nameof(OpenIdApplicationIndex)}_{nameof(OpenIdApplicationIndex.ClientId)}", nameof(OpenIdApplicationIndex.ClientId));
             });
             SchemaBuilder.AlterTable(nameof(OpenIdAppByLogoutUriIndex), table =>
             {
@@ -104,9 +105,9 @@ namespace OrchardCore.OpenId.YesSql.Migrations
 
             SchemaBuilder.AlterTable(nameof(OpenIdAuthorizationIndex), table =>
             {
-                table.AlterColumn(nameof(OpenIdAuthorizationIndex.Status), column => column.WithType(DbType.String, 128));
-                table.AlterColumn(nameof(OpenIdAuthorizationIndex.Subject), column => column.WithType(DbType.String, 128));
-                table.AlterColumn(nameof(OpenIdAuthorizationIndex.Type), column => column.WithType(DbType.String, 128));
+                table.AlterColumn(nameof(OpenIdAuthorizationIndex.Status), column => column.WithType(DbType.String, 25));
+                table.AlterColumn(nameof(OpenIdAuthorizationIndex.Subject), column => column.WithType(DbType.String, 330));
+                table.AlterColumn(nameof(OpenIdAuthorizationIndex.Type), column => column.WithType(DbType.String, 25));
 
                 table.CreateIndex($"IX_{nameof(OpenIdAuthorizationIndex)}_{nameof(OpenIdAuthorizationIndex.Subject)}", nameof(OpenIdAuthorizationIndex.Subject));
                 table.CreateIndex($"IX_{nameof(OpenIdAuthorizationIndex)}_{nameof(OpenIdAuthorizationIndex.AuthorizationId)}", nameof(OpenIdAuthorizationIndex.AuthorizationId));
@@ -123,6 +124,7 @@ namespace OrchardCore.OpenId.YesSql.Migrations
 
             SchemaBuilder.AlterTable(nameof(OpenIdScopeIndex), table =>
             {
+                table.AlterColumn(nameof(OpenIdScopeIndex.Name), column => column.WithType(DbType.String, 200));
                 table.CreateIndex($"IX_{nameof(OpenIdScopeIndex)}_{nameof(OpenIdScopeIndex.ScopeId)}", nameof(OpenIdScopeIndex.ScopeId));
                 table.CreateIndex($"IX_{nameof(OpenIdScopeIndex)}_{nameof(OpenIdScopeIndex.Name)}", nameof(OpenIdScopeIndex.Name));
             });
@@ -132,9 +134,9 @@ namespace OrchardCore.OpenId.YesSql.Migrations
             });
             SchemaBuilder.AlterTable(nameof(OpenIdTokenIndex), table =>
             {
-                table.AlterColumn(nameof(OpenIdTokenIndex.Status), column => column.WithType(DbType.String, 128));
-                table.AlterColumn(nameof(OpenIdTokenIndex.Subject), column => column.WithType(DbType.String, 128));
-                table.AlterColumn(nameof(OpenIdTokenIndex.Type), column => column.WithType(DbType.String, 128));
+                table.AlterColumn(nameof(OpenIdTokenIndex.Status), column => column.WithType(DbType.String, 25));
+                table.AlterColumn(nameof(OpenIdTokenIndex.Subject), column => column.WithType(DbType.String, 330));
+                table.AlterColumn(nameof(OpenIdTokenIndex.Type), column => column.WithType(DbType.String, 25));
 
                 table.CreateIndex($"IX_{nameof(OpenIdTokenIndex)}_{nameof(OpenIdTokenIndex.ApplicationId)}", nameof(OpenIdTokenIndex.ApplicationId));
                 table.CreateIndex($"IX_{nameof(OpenIdTokenIndex)}_{nameof(OpenIdTokenIndex.AuthorizationId)}", nameof(OpenIdTokenIndex.AuthorizationId));
