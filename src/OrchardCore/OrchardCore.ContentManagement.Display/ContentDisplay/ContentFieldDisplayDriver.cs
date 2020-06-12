@@ -12,6 +12,7 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
     public abstract class ContentFieldDisplayDriver<TField> : DisplayDriverBase, IContentFieldDisplayDriver where TField : ContentField, new()
     {
         private const string DisplayToken = "_Display";
+        private const string DisplaySeparator = "_Display__";
 
         private ContentTypePartDefinition _typePartDefinition;
         private ContentPartFieldDefinition _partFieldDefinition;
@@ -39,6 +40,13 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
 
                     // We do not need to add alternates on edit as they are handled with field editor types so return before adding alternates
                     return result;
+                }
+
+                // If the shape type and the field type only differ by the display mode
+                if (!String.IsNullOrEmpty(displayMode) && shapeType == fieldType + DisplaySeparator + displayMode)
+                {
+                    // Preserve the shape name regardless its differentiator
+                    result.Name($"{partName}-{fieldName}");
                 }
 
                 if (fieldType == shapeType)
@@ -79,11 +87,11 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
                     {
                         if (!String.IsNullOrEmpty(displayMode))
                         {
-                            // [ShapeType]_[DisplayType]__[DisplayMode]_Display, e.g. TextField-Header.Display.Summary
+                            // [FieldType]_[DisplayType]__[DisplayMode]_Display, e.g. TextField-Header.Display.Summary
                             ctx.Shape.Metadata.Alternates.Add($"{fieldType}_{ctx.Shape.Metadata.DisplayType}__{displayMode}{DisplayToken}");
                         }
 
-                        for (int i = 0; i < displayTypes.Length; i++)
+                        for (var i = 0; i < displayTypes.Length; i++)
                         {
                             var displayType = displayTypes[i];
 
@@ -262,7 +270,7 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
         {
             var displayMode = context.PartFieldDefinition.DisplayMode();
             return !String.IsNullOrEmpty(displayMode)
-                ? shapeType + DisplayToken + "__" + displayMode
+                ? shapeType + DisplaySeparator + displayMode
                 : shapeType;
         }
 

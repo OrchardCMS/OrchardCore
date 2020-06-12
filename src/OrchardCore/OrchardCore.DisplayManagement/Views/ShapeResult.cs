@@ -14,6 +14,7 @@ namespace OrchardCore.DisplayManagement.Views
     {
         private string _defaultLocation;
         private Dictionary<string, string> _otherLocations;
+        private string _name;
         private string _differentiator;
         private string _prefix;
         private string _cacheId;
@@ -113,7 +114,7 @@ namespace OrchardCore.DisplayManagement.Views
 
             ShapeMetadata newShapeMetadata = newShape.Metadata;
             newShapeMetadata.Prefix = _prefix;
-            newShapeMetadata.Name = _differentiator ?? _shapeType;
+            newShapeMetadata.Name = _name ?? _differentiator ?? _shapeType;
             newShapeMetadata.DisplayType = displayType;
             newShapeMetadata.PlacementSource = placement.Source;
             newShapeMetadata.Tab = placement.GetTab();
@@ -242,6 +243,15 @@ namespace OrchardCore.DisplayManagement.Views
         {
             _displaying = displaying;
 
+            return this;
+        }
+
+        /// <summary>
+        /// Sets the shape name regardless its 'Differentiator'.
+        /// </summary>
+        public ShapeResult Name(string name)
+        {
+            _name = name;
             return this;
         }
 
