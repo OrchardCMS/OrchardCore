@@ -55,6 +55,10 @@ markdown_extensions:
 plugins:
   - search
   - git-revision-date-localized
+  - exclude:
+      glob:
+        # Excluding the large node folder with all its MD files. We can't exclude everything apart from docs because there are links to e.g. C# files too.
+        - "*node_modules*"
   
 # Page tree
 nav:
@@ -90,6 +94,7 @@ nav:
 #        - Data: docs/topics/data/README.md
 #        - Configuration: docs/topics/configuration/README.md
         - Workflows: docs/topics/workflows/README.md
+        - Contributing to the docs: docs/topics/docs-contributions/README.md
         - Publishing a new release: docs/topics/publishing-releases/README.md
     - Reference: 
         - CMS Modules: 
@@ -103,7 +108,8 @@ nav:
                 - Markdown: docs/reference/modules/Markdown/README.md
                 - List: docs/reference/modules/List/README.md
                 - Flow: docs/reference/modules/Flow/README.md 
-                - Bag: docs/reference/modules/Flow/BagPart.md        
+                - Bag: docs/reference/modules/Flow/BagPart.md
+                - Publish Later: docs/reference/modules/PublishLater/README.md
             - Content Fields: docs/reference/modules/ContentFields/README.md
             - Content Preview: docs/reference/modules/ContentPreview/README.md
             - Content Localization: docs/reference/modules/ContentLocalization/README.md
@@ -121,7 +127,9 @@ nav:
             - Media Azure: docs/reference/modules/Media.Azure/README.md
             - ReCaptcha: docs/reference/modules/ReCaptcha/README.md
             - Resources: docs/reference/modules/Resources/README.md
+            - ShortCodes: docs/reference/modules/ShortCodes/README.md
             - Sitemaps: docs/reference/modules/Sitemaps/README.md
+            - XML-RPC: docs/reference/modules/XmlRpc/README.md
             - Menu: docs/reference/modules/Menu/README.md
             - Navigation: docs/reference/modules/Navigation/README.md
             - Admin: docs/reference/modules/Admin/README.md
@@ -147,6 +155,7 @@ nav:
             - GraphQL: docs/reference/modules/Apis.GraphQL/README.md
             - GraphQL queries: docs/reference/core/Apis.GraphQL.Abstractions/README.md
             - Health Check: docs/reference/modules/HealthChecks/README.md
+            - HTTPS: docs/reference/modules/Https/README.md
             - Localization: docs/reference/modules/Localize/README.md
             - Logging Serilog: docs/reference/core/Logging.Serilog/readme.md
             - Mini Profiler: docs/reference/modules/MiniProfiler/README.md
@@ -154,6 +163,7 @@ nav:
             - OpenId: docs/reference/modules/OpenId/README.md
             - Razor Helpers: docs/reference/core/Razor/README.md
             - Recipes: docs/reference/modules/Recipes/README.md
+            - Response Compression: docs/reference/modules/ResponseCompression/README.md
             - Roles: docs/reference/modules/Roles/README.md
             - Scripting: docs/reference/modules/Scripting/README.md
             - Setup: docs/reference/modules/Setup/README.md
