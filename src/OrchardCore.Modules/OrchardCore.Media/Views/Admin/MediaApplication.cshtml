@@ -37,6 +37,22 @@
                             @T["Delete"] <span class="badge badge-pill badge-light" v-show="selectedMedias.length > 0">{{ selectedMedias.length}}</span>
                         </a>
                     </div>
+                    <div class="btn-group visibility-buttons">
+                        <button type="button" id="toggle-grid-table-button" class="btn btn-light btn-sm" :class="{selected: gridView}" v-on:click="gridView = true">
+                            <span title="@T["Grid View"]"><i class="fa fa-th-large"></i></span>
+                        </button>
+                        <button type="button" id="toggle-grid-table-button" class="btn btn-light btn-sm" :class="{selected: !gridView}" v-on:click="gridView = false">
+                            <span title="@T["List View"]"><i class="fa fa-th-list"></i></span>
+                        </button>
+                    </div>
+                    <div class="btn-group visibility-buttons" v-show="gridView">
+                        <button type="button" id="toggle-thumbsize-button" class="btn btn-light btn-sm" :class="{selected: smallThumbs}" v-on:click="smallThumbs = true">
+                            <span title="@T["Small Thumbs"]"><i class="fa fa-compress"></i></span>
+                        </button>
+                        <button type="button" id="toggle-thumbsize-button" class="btn btn-light btn-sm mr-2" :class="{selected: !smallThumbs}" v-on:click="smallThumbs = false">
+                            <span title="@T["Large Thumbs"]"><i class="fa fa-expand"></i></span>
+                        </button>
+                    </div>
 
                     <div class="nav-item">
                         <div class="media-filter">
@@ -60,7 +76,7 @@
                     </div>
                 </nav>
 
-                <nav id="breadcrumb" class="d-flex justify-content-end align-items-end pl-3 pr-3 mb-4">
+                <nav id="breadcrumb" class="d-flex d-lg-none justify-content-end align-items-end pl-3 pr-3 mb-4">
                     <div class="breadcrumb-path">
                         <span class="breadcrumb-item" :class="{ active: isHome }"><a :href="isHome ? null : '#'" v-on:click="selectRoot">@T["Media Library"]</a></span>
                         <span v-for="(folder, i) in parents" v-cloak
@@ -68,22 +84,6 @@
                               :class="{active: parents.length - i == 1}">
                             <a :href="parents.length - i == 1 ? null : '#'" v-on:click="selectedFolder = folder;">{{ folder.name }}</a>
                         </span>
-                    </div>
-                    <div class="btn-group visibility-buttons" v-show="gridView">
-                        <button type="button" id="toggle-thumbsize-button" class="btn btn-light btn-sm" :class="{selected: smallThumbs}" v-on:click="smallThumbs = true">
-                            <span title="@T["Small Thumbs"]"><i class="fa fa-compress"></i></span>
-                        </button>
-                        <button type="button" id="toggle-thumbsize-button" class="btn btn-light btn-sm mr-2" :class="{selected: !smallThumbs}" v-on:click="smallThumbs = false">
-                            <span title="@T["Large Thumbs"]"><i class="fa fa-expand"></i></span>
-                        </button>
-                    </div>
-                    <div class="btn-group visibility-buttons">
-                        <button type="button" id="toggle-grid-table-button" class="btn btn-light btn-sm" :class="{selected: gridView}" v-on:click="gridView = true">
-                            <span title="@T["Grid View"]"><i class="fa fa-th-large"></i></span>
-                        </button>
-                        <button type="button" id="toggle-grid-table-button" class="btn btn-light btn-sm" :class="{selected: !gridView}" v-on:click="gridView = false">
-                            <span title="@T["List View"]"><i class="fa fa-th-list"></i></span>
-                        </button>
                     </div>
                 </nav>
             </div>
