@@ -36,6 +36,7 @@ namespace OrchardCore.Email.Recipes
             }
 
             var site = await _siteService.LoadSiteSettingsAsync();
+            // Retrieve the curent properties first and merge them with the step values so we don't replace an ignored value.
             var jSettings = site.Properties["SmtpSettings"] as JObject;
             if (jSettings != null)
             {
@@ -44,20 +45,17 @@ namespace OrchardCore.Email.Recipes
 
             var model = jSettings.ToObject<SmtpSettings>();
 
-            var userName = context.Properties.SelectToken("SmtpSettings.UserName")?.ToObject<Property>();
-
             var passwordProperty = context.Properties.SelectToken("SmtpSettings.Password")?.ToObject<Property>();
 
             if (passwordProperty != null)
             {
-                var value = passwordProperty.Value?.ToString();
                 switch (passwordProperty.Handler)
                 {
                     case PropertyHandler.UserSupplied:
-                        if (!String.IsNullOrEmpty(value))
+                        if (!String.IsNullOrEmpty(passwordProperty.Value))
                         {
-                            // encrypt the password
-                            model.Password = EncryptPassword(value);
+                            // Encrypt the password as it was supplied in plain text by the user.
+                            model.Password = EncryptPassword(passwordProperty.Value);
                         }
                         else
                         {
@@ -65,18 +63,19 @@ namespace OrchardCore.Email.Recipes
                         }
                         break;
                     case PropertyHandler.PlainText:
-                        // encrypt the password
-                        model.Password = EncryptPassword(value);
+                        // Encrypt the password as it was supplied in plain text.
+                        model.Password = EncryptPassword(passwordProperty.Value);
                         break;
                     case PropertyHandler.Encrypted:
-                        // Decrypt the password
-                        if (!String.IsNullOrEmpty(value))
+                        if (!String.IsNullOrEmpty(passwordProperty.Value))
                         {
                             try
                             {
                                 var protector = _dataProtectionProvider.CreateProtector(nameof(SmtpSettingsConfiguration));
-                                protector.Unprotect(value);
-                                model.Password = value;
+                                // Decrypt the password to test if the encryption keys are valid.
+                                protector.Unprotect(passwordProperty.Value);
+                                // On success we can store the supplied value.
+                                model.Password = passwordProperty.Value;
                             }
                             catch
                             {

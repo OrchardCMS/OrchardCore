@@ -17,6 +17,12 @@ namespace OrchardCore.Deployment
     {
         [JsonConverter(typeof(StringEnumConverter))]
         public PropertyHandler Handler { get; set; }
+
+        /// <summary>
+        /// This takes a string value to remain compatable with IConfiguration keys
+        /// Arrays should be comma seperated.
+        /// </summary>
+
         public string Value { get; set; }
 
     }

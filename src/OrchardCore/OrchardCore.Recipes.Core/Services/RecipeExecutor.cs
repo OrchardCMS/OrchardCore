@@ -21,11 +21,6 @@ namespace OrchardCore.Recipes.Services
 {
     public class RecipeExecutor : IRecipeExecutor
     {
-        private static JsonMergeSettings JsonMergeSettings = new JsonMergeSettings
-        {
-            MergeArrayHandling = MergeArrayHandling.Replace
-        };
-
         private readonly ShellSettings _shellSettings;
         private readonly IShellHost _shellHost;
         private readonly IEnumerable<IRecipeEventHandler> _recipeEventHandlers;
@@ -35,6 +30,7 @@ namespace OrchardCore.Recipes.Services
         private ConfigurationMethodProvider _configurationMethodProvider;
         private ParametersMethodProvider _environmentMethodProvider;
         private JObject _properties;
+        private JObject _evaluatedProperties;
 
         public RecipeExecutor(IEnumerable<IRecipeEventHandler> recipeEventHandlers,
                               ShellSettings shellSettings,
@@ -90,7 +86,7 @@ namespace OrchardCore.Recipes.Services
                                     if (_properties != null)
                                     {
                                         // Merge recipe properties with those from configuration.
-                                        _properties.Merge(recipeProperties, JsonMergeSettings);
+                                        _properties.Merge(recipeProperties);
                                     }
                                     else
                                     {
@@ -227,8 +223,17 @@ namespace OrchardCore.Recipes.Services
 
             if (_properties != null)
             {
-                context.Properties = _properties;
-                EvaluateJsonTree(scriptingManager, context, context.Properties);
+                // Property evaluation only needs to be performed once per execution.
+                if (_evaluatedProperties != null)
+                {
+                    context.Properties = _evaluatedProperties;
+                }
+                else
+                {
+                    context.Properties = _properties;
+                    EvaluateJsonTree(scriptingManager, context, context.Properties);
+                    _evaluatedProperties = context.Properties;
+                }
             }
 
             EvaluateJsonTree(scriptingManager, context, context.Step);
@@ -272,6 +277,8 @@ namespace OrchardCore.Recipes.Services
 
         /// <summary>
         /// Serializes an IConfigurationSection to a JToken.
+        /// This is limited to only restoring string values, not arrays.
+        /// Arrays should be handled as comma seperated strings.
         /// </summary>
         private static JToken Serialize(IConfigurationSection config)
         {
@@ -281,7 +288,6 @@ namespace OrchardCore.Recipes.Services
                 obj.Add(child.Key, Serialize(child));
             }
 
-            // TODO this will not handle arrays, and the results will always be strings.
             if (!obj.HasValues && config is IConfigurationSection section)
                 return new JValue(section.Value);
 

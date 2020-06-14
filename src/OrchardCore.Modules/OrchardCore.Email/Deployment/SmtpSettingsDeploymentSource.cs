@@ -46,7 +46,7 @@ namespace OrchardCore.Email.Deployment
                 var passwordProperty = new Property
                 {
                     Handler = PropertyHandler.UserSupplied,
-                    Value = JToken.FromObject(String.Empty)
+                    Value = String.Empty
                 };
 
                 switch (smtpSettingsStep.Password)
@@ -55,7 +55,7 @@ namespace OrchardCore.Email.Deployment
                         passwordProperty = new Property
                         {
                             Handler = PropertyHandler.Encrypted,
-                            Value = JToken.FromObject(smtpSettings.Password)
+                            Value = smtpSettings.Password
                         };
                         break;
                     case PropertyHandler.PlainText:
@@ -67,9 +67,7 @@ namespace OrchardCore.Email.Deployment
                                 passwordProperty = new Property
                                 {
                                     Handler = PropertyHandler.PlainText,
-                                    Value = JToken.FromObject(smtpSettings.Password)
-
-                                    // Value = new JObject(new JProperty("Password", protector.Unprotect(smtpSettings.Password)))
+                                    Value = protector.Unprotect(smtpSettings.Password)
                                 };
                             }
                             catch
@@ -85,13 +83,8 @@ namespace OrchardCore.Email.Deployment
 
 
                 result.Properties["SmtpSettings"] = new JObject(
-                    new JProperty("Password", JObject.FromObject(passwordProperty)),
-                    new JProperty("Test", JObject.FromObject(passwordProperty))
+                    new JProperty("Password", JObject.FromObject(passwordProperty))
                 );
-                result.Properties["OtherSettings"] = new JObject(
-                      new JProperty("Password", JObject.FromObject(passwordProperty)),
-                      new JProperty("Test", JObject.FromObject(passwordProperty))
-                  );
             }
 
             // Adding Smtp settings
