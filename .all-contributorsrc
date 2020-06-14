@@ -9,7 +9,7 @@
   "imageSize": 100,
   "commit": true,
   "commitConvention": "none",
-  "contributorsPerLine": 7,
+  "contributorsPerLine": 5,
   "contributors": [
     {
       "login": "sebastienros",
