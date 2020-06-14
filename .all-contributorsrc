@@ -9,7 +9,7 @@
   "imageSize": 100,
   "commit": true,
   "commitConvention": "none",
-  "contributorsPerLine": 5,
+  "contributorsPerLine": 7,
   "contributors": [
     {
       "login": "sebastienros",
@@ -1540,7 +1540,15 @@
       "contributions": [
         "translation"
       ]
+    },
+    {
+      "login": "vlatkost",
+      "name": "Vlatko Stojanovski",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/15385514?v=4",
+      "profile": "https://github.com/vlatkost",
+      "contributions": [
+        "translation"
+      ]
     }
-  ],
-  "contributorsPerLine": 7
+  ]
 }
