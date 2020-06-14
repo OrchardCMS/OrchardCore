@@ -1530,6 +1530,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "mrampazo",
+      "name": "mrampazo",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/66479240?v=4",
+      "profile": "https://github.com/mrampazo",
+      "contributions": [
+        "translation"
+      ]
     }
   ],
   "contributorsPerLine": 7
