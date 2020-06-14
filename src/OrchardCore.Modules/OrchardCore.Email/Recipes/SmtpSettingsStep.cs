@@ -85,7 +85,6 @@ namespace OrchardCore.Email.Recipes
                         break;
                     default:
                         break;
-
                 }
             }
 

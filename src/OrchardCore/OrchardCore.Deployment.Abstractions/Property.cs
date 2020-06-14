@@ -10,7 +10,6 @@ namespace OrchardCore.Deployment
         Encrypted,
         PlainText,
         Ignored
-
     }
 
     public class Property
@@ -20,7 +19,7 @@ namespace OrchardCore.Deployment
 
         /// <summary>
         /// This takes a string value to remain compatable with IConfiguration keys
-        /// Arrays should be comma seperated.
+        /// Array values should be comma seperated.
         /// </summary>
 
         public string Value { get; set; }

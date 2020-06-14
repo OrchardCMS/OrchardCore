@@ -11,6 +11,7 @@ namespace OrchardCore.Email.Deployment
         {
             Name = "SmtpSettings";
         }
+
         public PropertyHandler Password { get; set; }
     }
 }

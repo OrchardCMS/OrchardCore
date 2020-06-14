@@ -81,7 +81,6 @@ namespace OrchardCore.Email.Deployment
 
                 };
 
-
                 result.Properties["SmtpSettings"] = new JObject(
                     new JProperty("Password", JObject.FromObject(passwordProperty))
                 );

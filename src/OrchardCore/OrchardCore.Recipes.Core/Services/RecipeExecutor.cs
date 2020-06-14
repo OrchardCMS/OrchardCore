@@ -90,7 +90,7 @@ namespace OrchardCore.Recipes.Services
                                     }
                                     else
                                     {
-                                        // Configuration has not properties, use recipe properties.
+                                        // Configuration has no properties, use recipe properties.
                                         _properties = recipeProperties;
                                     }
                                 }
