@@ -1,0 +1,15 @@
+@model SmtpSettingsDeploymentStepViewModel
+
+<h5>@T["Smtp Settings"]</h5> 
+<div class="row form-group">
+    <div class="col-xl-6" asp-validation-class-for="Password">
+        <label asp-for="Password">@T["Password"]</label>
+        <select asp-for="Password" class="form-control">
+            <option value="@PropertyHandler.UserSupplied.ToString()">@T["Password must be supplied by the user"]</option>
+            <option value="@PropertyHandler.Encrypted.ToString()">@T["Password will be exported encrypted — Data protection keys on remote server must be in sync"]</option>
+            <option value="@PropertyHandler.PlainText.ToString()">@T["Password will be exported in plain text"]</option>
+            <option value="@PropertyHandler.Ignored.ToString()">@T["Password will be ignored"]</option>
+        </select>
+        <span class="hint">@T["Determines how the password will be exported."]</span>
+    </div>
+</div>

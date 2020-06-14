@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Runtime.ExceptionServices;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -19,6 +21,11 @@ namespace OrchardCore.Recipes.Services
 {
     public class RecipeExecutor : IRecipeExecutor
     {
+        private static JsonMergeSettings JsonMergeSettings = new JsonMergeSettings
+        {
+            MergeArrayHandling = MergeArrayHandling.Replace
+        };
+
         private readonly ShellSettings _shellSettings;
         private readonly IShellHost _shellHost;
         private readonly IEnumerable<IRecipeEventHandler> _recipeEventHandlers;
@@ -27,6 +34,7 @@ namespace OrchardCore.Recipes.Services
         private VariablesMethodProvider _variablesMethodProvider;
         private ConfigurationMethodProvider _configurationMethodProvider;
         private ParametersMethodProvider _environmentMethodProvider;
+        private JObject _properties;
 
         public RecipeExecutor(IEnumerable<IRecipeEventHandler> recipeEventHandlers,
                               ShellSettings shellSettings,
@@ -48,6 +56,14 @@ namespace OrchardCore.Recipes.Services
                 _environmentMethodProvider = new ParametersMethodProvider(environment);
                 _configurationMethodProvider = new ConfigurationMethodProvider(_shellSettings.ShellConfiguration);
 
+                // Read any properties from Configuration.
+                var propertiesSection = _shellSettings.ShellConfiguration.GetSection("OrchardCore_Recipes:Properties");
+
+                if (propertiesSection.Exists())
+                {
+                    _properties = (JObject)Serialize(propertiesSection);
+                }
+
                 var result = new RecipeResult { ExecutionId = executionId };
 
                 using (var stream = recipeDescriptor.RecipeFileInfo.CreateReadStream())
@@ -65,6 +81,22 @@ namespace OrchardCore.Recipes.Services
 
                                     var variables = await JObject.LoadAsync(reader);
                                     _variablesMethodProvider = new VariablesMethodProvider(variables);
+                                }
+
+                                if (reader.Path == "properties")
+                                {
+                                    await reader.ReadAsync();
+                                    var recipeProperties = await JObject.LoadAsync(reader);
+                                    if (_properties != null)
+                                    {
+                                        // Merge recipe properties with those from configuration.
+                                        _properties.Merge(recipeProperties, JsonMergeSettings);
+                                    }
+                                    else
+                                    {
+                                        // Configuration has not properties, use recipe properties.
+                                        _properties = recipeProperties;
+                                    }
                                 }
 
                                 if (reader.Path == "steps" && reader.TokenType == JsonToken.StartArray)
@@ -193,6 +225,12 @@ namespace OrchardCore.Recipes.Services
                 scriptingManager.GlobalMethodProviders.Add(_variablesMethodProvider);
             }
 
+            if (_properties != null)
+            {
+                context.Properties = _properties;
+                EvaluateJsonTree(scriptingManager, context, context.Properties);
+            }
+
             EvaluateJsonTree(scriptingManager, context, context.Step);
         }
 
@@ -230,6 +268,24 @@ namespace OrchardCore.Recipes.Services
                     }
                     break;
             }
+        }
+
+        /// <summary>
+        /// Serializes an IConfigurationSection to a JToken.
+        /// </summary>
+        private static JToken Serialize(IConfigurationSection config)
+        {
+            JObject obj = new JObject();
+            foreach (var child in config.GetChildren())
+            {
+                obj.Add(child.Key, Serialize(child));
+            }
+
+            // TODO this will not handle arrays, and the results will always be strings.
+            if (!obj.HasValues && config is IConfigurationSection section)
+                return new JValue(section.Value);
+
+            return obj;
         }
     }
 }

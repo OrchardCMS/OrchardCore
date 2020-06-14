@@ -20,7 +20,7 @@ namespace OrchardCore.Deployment
             Recipe["name"] = recipeDescriptor.Name ?? "";
             Recipe["displayName"] = recipeDescriptor.DisplayName ?? "";
             Recipe["description"] = recipeDescriptor.Description ?? "";
-            Recipe["author"] = recipeDescriptor.Author ??  "";
+            Recipe["author"] = recipeDescriptor.Author ?? "";
             Recipe["website"] = recipeDescriptor.WebSite ?? "";
             Recipe["version"] = recipeDescriptor.Version ?? "";
             Recipe["issetuprecipe"] = recipeDescriptor.IsSetupRecipe;
@@ -29,10 +29,12 @@ namespace OrchardCore.Deployment
         }
 
         public JObject Recipe { get; }
+        public JObject Properties { get; } = new JObject();
         public IList<JObject> Steps { get; } = new List<JObject>();
         public IFileBuilder FileBuilder { get; }
         public async Task FinalizeAsync()
         {
+            Recipe["properties"] = Properties;
             Recipe["steps"] = new JArray(Steps);
 
             // Add the recipe steps as its own file content
