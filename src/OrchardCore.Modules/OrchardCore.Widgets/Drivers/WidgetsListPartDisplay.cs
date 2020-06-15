@@ -51,7 +51,6 @@ namespace OrchardCore.Widgets.Drivers
 
             foreach (var zone in part.Widgets.Keys)
             {
-                var i = 0;
                 foreach (var widget in part.Widgets[zone])
                 {
                     var layerMetadata = widget.As<WidgetMetadata>();
@@ -64,7 +63,7 @@ namespace OrchardCore.Widgets.Drivers
                         widgetContent.Classes.Add("widget-" + widget.ContentItem.ContentType.HtmlClassify());
 
                         var contentZone = layoutZones[zone];
-                        contentZone.Add(widgetContent, (++i).ToString());
+                        contentZone.Add(widgetContent);
                     }
                 }
             }

@@ -88,7 +88,6 @@ namespace OrchardCore.Layers.Services
 
                 var layersCache = new Dictionary<string, bool>();
 
-                var i = 0;
                 foreach (var widget in widgets)
                 {
                     var layer = layers[widget.Layer];
@@ -136,11 +135,11 @@ namespace OrchardCore.Layers.Services
 
                     if (contentZone is ZoneOnDemand zoneOnDemand)
                     {
-                        await zoneOnDemand.AddAsync(wrapper, (++i).ToString());
+                        await zoneOnDemand.AddAsync(wrapper);
                     }
                     else if (contentZone is Shape shape)
                     {
-                        shape.Add(wrapper, (++i).ToString());
+                        shape.Add(wrapper);
                     }
                 }
             }
