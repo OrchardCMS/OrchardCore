@@ -170,7 +170,7 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                         return result;
                     },
                     thumbSize: function () {
-                        return this.smallThumbs ? 110 : 195;
+                        return this.smallThumbs ? 100 : 240;
                     },
                     currentPrefs: {
                         get: function () {
