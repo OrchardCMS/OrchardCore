@@ -28,13 +28,11 @@ namespace OrchardCore.Azure.KeyVault.Extensions
                     keyVaultEndpoint, 
                     clientId, 
                     clientSecret,  
-                    new CustomKeyVaultSecretManager()
+                    new AzureKeyVaultSecretManager()
                 );
             });
 
             return builder;
         }
-
-
     }
 }
