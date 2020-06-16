@@ -5,8 +5,6 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.DataProtection;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
@@ -22,6 +20,7 @@ using OrchardCore.Recipes.Models;
 using OrchardCore.Setup.Services;
 using OrchardCore.Tenants.Events;
 using OrchardCore.Tenants.Services;
+using OrchardCore.Tenants.Utilities;
 using OrchardCore.Tenants.ViewModels;
 
 namespace OrchardCore.Tenants.Controllers
@@ -35,12 +34,11 @@ namespace OrchardCore.Tenants.Controllers
         private readonly IShellSettingsManager _shellSettingsManager;
         private readonly IEnumerable<DatabaseProvider> _databaseProviders;
         private readonly IAuthorizationService _authorizationService;
-        private readonly IDataProtectionProvider _dataProtectorProvider;
         private readonly ISetupService _setupService;
         private readonly ShellSettings _currentShellSettings;
-        private readonly IClock _clock;
         private readonly IEmailAddressValidator _emailAddressValidator;
         private readonly IServiceProvider _serviceProvider;
+        private readonly ILogger _logger;
         private readonly IStringLocalizer S;
 
         public ApiController(
@@ -49,16 +47,14 @@ namespace OrchardCore.Tenants.Controllers
             IAuthorizationService authorizationService,
             IShellSettingsManager shellSettingsManager,
             IEnumerable<DatabaseProvider> databaseProviders,
-            IDataProtectionProvider dataProtectorProvider,
             ISetupService setupService,
-            IClock clock,
             IEmailAddressValidator emailAddressValidator,
+            ILogger<ApiController> logger,
             IServiceProvider serviceProvider,
-            IStringLocalizer<AdminController> stringLocalizer)
+            IStringLocalizer<AdminController> stringLocalizer
+        )
         {
-            _dataProtectorProvider = dataProtectorProvider;
             _setupService = setupService;
-            _clock = clock;
             _shellHost = shellHost;
             _authorizationService = authorizationService;
             _shellSettingsManager = shellSettingsManager;
@@ -67,6 +63,7 @@ namespace OrchardCore.Tenants.Controllers
             _emailAddressValidator = emailAddressValidator ?? throw new ArgumentNullException(nameof(emailAddressValidator));
             _serviceProvider = serviceProvider;
             S = stringLocalizer;
+            _logger = logger;
         }
 
         [HttpPost]
@@ -121,15 +118,15 @@ namespace OrchardCore.Tenants.Controllers
                 {
                     // Site already exists, return 201 for indempotency purpose
 
-                    var token = CreateSetupToken(settings);
+                    var token = _setupService.CreateSetupToken(settings);
 
-                    return StatusCode(201, GetEncodedUrl(settings, token));
+                    return StatusCode(201, TenantHelperExtensions.GetEncodedUrl(settings, Request, token));
                 }
                 else
                 {
                     await _shellHost.UpdateShellSettingsAsync(shellSettings);
-                    var token = CreateSetupToken(shellSettings);
-                    var encodedUrl = GetEncodedUrl(shellSettings, token);
+                    var token = _setupService.CreateSetupToken(shellSettings);
+                    var encodedUrl = TenantHelperExtensions.GetEncodedUrl(shellSettings, Request, token);
 
                     // Invoke modules to react to the tenant created event
                     var context = new TenantContext
@@ -137,9 +134,12 @@ namespace OrchardCore.Tenants.Controllers
                         ShellSettings = shellSettings,
                         EncodedUrl = encodedUrl
                     };
+
                     var tenantCreatedEventHandlers = _serviceProvider.GetRequiredService<IEnumerable<ITenantCreatedEventHandler>>();
-                    var logger = _serviceProvider.GetRequiredService<ILogger<AdminController>>();
-                    await tenantCreatedEventHandlers.InvokeAsync((handler, conext) => handler.TenantCreated(context), context, logger);
+                    if(tenantCreatedEventHandlers.Any())
+                    {
+                        await tenantCreatedEventHandlers.InvokeAsync((handler, conext) => handler.TenantCreated(context), context, _logger);
+                    }
 
                     return Ok(encodedUrl);
                 }
@@ -298,45 +298,6 @@ namespace OrchardCore.Tenants.Controllers
         private bool IsDefaultShell()
         {
             return string.Equals(_currentShellSettings.Name, ShellHelper.DefaultShellName, StringComparison.OrdinalIgnoreCase);
-        }
-
-        private string GetEncodedUrl(ShellSettings shellSettings, string token)
-        {
-            var requestHost = Request.Host;
-            var host = shellSettings.RequestUrlHost?.Split(',', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? requestHost.Host;
-
-            var port = requestHost.Port;
-
-            if (port.HasValue)
-            {
-                host += ":" + port;
-            }
-
-            var hostString = new HostString(host);
-
-            var pathString = HttpContext.Features.Get<ShellContextFeature>().OriginalPathBase;
-
-            if (!string.IsNullOrEmpty(shellSettings.RequestUrlPrefix))
-            {
-                pathString = pathString.Add('/' + shellSettings.RequestUrlPrefix);
-            }
-
-            QueryString queryString;
-
-            if (!string.IsNullOrEmpty(token))
-            {
-                queryString = QueryString.Create("token", token);
-            }
-
-            return $"{Request.Scheme}://{hostString + pathString + queryString}";
-        }
-
-        private string CreateSetupToken(ShellSettings shellSettings)
-        {
-            // Create a public url to setup the new tenant
-            var dataProtector = _dataProtectorProvider.CreateProtector("Tokens").ToTimeLimitedDataProtector();
-            var token = dataProtector.Protect(shellSettings["Secret"], _clock.UtcNow.Add(new TimeSpan(24, 0, 0)));
-            return token;
         }
     }
 }

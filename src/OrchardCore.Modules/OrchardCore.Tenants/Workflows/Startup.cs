@@ -1,7 +1,9 @@
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Modules;
+using OrchardCore.Tenants.Events;
 using OrchardCore.Tenants.Workflows.Activities;
 using OrchardCore.Tenants.Workflows.Drivers;
+using OrchardCore.Tenants.Workflows.Handlers;
 using OrchardCore.Workflows.Helpers;
 
 namespace OrchardCore.Tenants.Workflows
@@ -15,6 +17,8 @@ namespace OrchardCore.Tenants.Workflows
             services.AddActivity<EnableTenantTask, EnableTenantTaskDisplay>();
             services.AddActivity<CreateTenantTask, CreateTenantTaskDisplay>();
             services.AddActivity<SetupTenantTask, SetupTenantTaskDisplay>();
+            services.AddActivity<TenantCreatedEvent, TenantCreatedEventDisplay>();
+            services.AddScoped<ITenantCreatedEventHandler, TenantCreatedEventHandler>();
         }
     }
 }
