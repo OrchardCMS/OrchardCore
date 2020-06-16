@@ -8,8 +8,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 using OrchardCore.Data;
 using OrchardCore.Email;
 using OrchardCore.Environment.Shell;
@@ -18,6 +20,8 @@ using OrchardCore.Modules;
 using OrchardCore.Mvc.Utilities;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Setup.Services;
+using OrchardCore.Tenants.Events;
+using OrchardCore.Tenants.Services;
 using OrchardCore.Tenants.ViewModels;
 
 namespace OrchardCore.Tenants.Controllers
@@ -36,6 +40,7 @@ namespace OrchardCore.Tenants.Controllers
         private readonly ShellSettings _currentShellSettings;
         private readonly IClock _clock;
         private readonly IEmailAddressValidator _emailAddressValidator;
+        private readonly IServiceProvider _serviceProvider;
         private readonly IStringLocalizer S;
 
         public ApiController(
@@ -48,6 +53,7 @@ namespace OrchardCore.Tenants.Controllers
             ISetupService setupService,
             IClock clock,
             IEmailAddressValidator emailAddressValidator,
+            IServiceProvider serviceProvider,
             IStringLocalizer<AdminController> stringLocalizer)
         {
             _dataProtectorProvider = dataProtectorProvider;
@@ -59,6 +65,7 @@ namespace OrchardCore.Tenants.Controllers
             _databaseProviders = databaseProviders;
             _currentShellSettings = currentShellSettings;
             _emailAddressValidator = emailAddressValidator ?? throw new ArgumentNullException(nameof(emailAddressValidator));
+            _serviceProvider = serviceProvider;
             S = stringLocalizer;
         }
 
@@ -121,10 +128,20 @@ namespace OrchardCore.Tenants.Controllers
                 else
                 {
                     await _shellHost.UpdateShellSettingsAsync(shellSettings);
-
                     var token = CreateSetupToken(shellSettings);
+                    var encodedUrl = GetEncodedUrl(shellSettings, token);
 
-                    return Ok(GetEncodedUrl(shellSettings, token));
+                    // Invoke modules to react to the tenant created event
+                    var context = new TenantContext
+                    {
+                        ShellSettings = shellSettings,
+                        EncodedUrl = encodedUrl
+                    };
+                    var tenantCreatedEventHandlers = _serviceProvider.GetRequiredService<IEnumerable<ITenantCreatedEventHandler>>();
+                    var logger = _serviceProvider.GetRequiredService<ILogger<AdminController>>();
+                    await tenantCreatedEventHandlers.InvokeAsync((handler, conext) => handler.TenantCreated(context), context, logger);
+
+                    return Ok(encodedUrl);
                 }
             }
 

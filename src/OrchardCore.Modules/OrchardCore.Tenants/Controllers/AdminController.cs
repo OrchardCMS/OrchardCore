@@ -5,11 +5,14 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 using OrchardCore.Data;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
@@ -20,6 +23,8 @@ using OrchardCore.Navigation;
 using OrchardCore.Recipes.Services;
 using OrchardCore.Routing;
 using OrchardCore.Settings;
+using OrchardCore.Tenants.Events;
+using OrchardCore.Tenants.Services;
 using OrchardCore.Tenants.ViewModels;
 
 namespace OrchardCore.Tenants.Controllers
@@ -36,6 +41,7 @@ namespace OrchardCore.Tenants.Controllers
         private readonly IClock _clock;
         private readonly INotifier _notifier;
         private readonly ISiteService _siteService;
+        private readonly IServiceProvider _serviceProvider;
 
         private readonly dynamic New;
         private readonly IStringLocalizer S;
@@ -52,6 +58,7 @@ namespace OrchardCore.Tenants.Controllers
             IClock clock,
             INotifier notifier,
             ISiteService siteService,
+            IServiceProvider serviceProvider,
             IShapeFactory shapeFactory,
             IStringLocalizer<AdminController> stringLocalizer,
             IHtmlLocalizer<AdminController> htmlLocalizer)
@@ -66,6 +73,7 @@ namespace OrchardCore.Tenants.Controllers
             _clock = clock;
             _notifier = notifier;
             _siteService = siteService;
+            _serviceProvider = serviceProvider;
 
             New = shapeFactory;
             S = stringLocalizer;
@@ -338,6 +346,18 @@ namespace OrchardCore.Tenants.Controllers
                 shellSettings["RecipeName"] = model.RecipeName;
 
                 await _shellHost.UpdateShellSettingsAsync(shellSettings);
+
+                // Invoke modules to react to the tenant created event
+                var token = CreateSetupToken(shellSettings);
+                var encodedUrl = GetEncodedUrl(shellSettings, token);
+                var context = new TenantContext
+                {
+                    ShellSettings = shellSettings,
+                    EncodedUrl = encodedUrl
+                };
+                var tenantCreatedEventHandlers = _serviceProvider.GetRequiredService<IEnumerable<ITenantCreatedEventHandler>>();
+                var logger = _serviceProvider.GetRequiredService<ILogger<AdminController>>();
+                await tenantCreatedEventHandlers.InvokeAsync((handler, context) => handler.TenantCreated(context), context, logger);
 
                 return RedirectToAction(nameof(Index));
             }
@@ -616,6 +636,45 @@ namespace OrchardCore.Tenants.Controllers
                     ModelState.AddModelError(nameof(EditTenantViewModel.RequestUrlPrefix), S["The url prefix can not contain more than one segment."]);
                 }
             }
+        }
+
+        private string CreateSetupToken(ShellSettings shellSettings)
+        {
+            // Create a public url to setup the new tenant
+            var dataProtector = _dataProtectorProvider.CreateProtector("Tokens").ToTimeLimitedDataProtector();
+            var token = dataProtector.Protect(shellSettings["Secret"], _clock.UtcNow.Add(new TimeSpan(24, 0, 0)));
+            return token;
+        }
+
+        private string GetEncodedUrl(ShellSettings shellSettings, string token)
+        {
+            var requestHost = Request.Host;
+            var host = shellSettings.RequestUrlHost?.Split(',', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? requestHost.Host;
+
+            var port = requestHost.Port;
+
+            if (port.HasValue)
+            {
+                host += ":" + port;
+            }
+
+            var hostString = new HostString(host);
+
+            var pathString = HttpContext.Features.Get<ShellContextFeature>().OriginalPathBase;
+
+            if (!string.IsNullOrEmpty(shellSettings.RequestUrlPrefix))
+            {
+                pathString = pathString.Add('/' + shellSettings.RequestUrlPrefix);
+            }
+
+            QueryString queryString;
+
+            if (!string.IsNullOrEmpty(token))
+            {
+                queryString = QueryString.Create("token", token);
+            }
+
+            return $"{Request.Scheme}://{hostString + pathString + queryString}";
         }
 
         private bool IsDefaultShell()
