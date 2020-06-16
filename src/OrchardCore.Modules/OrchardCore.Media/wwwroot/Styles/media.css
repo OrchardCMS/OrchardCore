@@ -400,17 +400,19 @@ ol.media-items-grid {
       color: #495057; }
     [dir] #breadcrumb .breadcrumb-buttons a {
       border-radius: 0px !important; }
-  #breadcrumb .visibility-buttons {
-    justify-content: flex-end;
-    flex-grow: 0; }
-  [dir] #breadcrumb .visibility-buttons {
-    margin-top: -5px; }
-    #breadcrumb .visibility-buttons button {
-      color: #495057; }
-    [dir] #breadcrumb .visibility-buttons button {
-      border-radius: 0px !important; }
-    #breadcrumb .visibility-buttons .selected {
-      color: #007bff; }
+
+.visibility-buttons {
+  justify-content: flex-end;
+  flex-grow: 0; }
+
+[dir] .visibility-buttons {
+  margin-top: -5px; }
+  .visibility-buttons button {
+    color: #495057; }
+  [dir] .visibility-buttons button {
+    border-radius: 0px !important; }
+  .visibility-buttons .selected {
+    color: #007bff; }
 
 #folder-tree {
   list-style: none;
