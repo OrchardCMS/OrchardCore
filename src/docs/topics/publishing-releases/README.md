@@ -70,7 +70,8 @@ Let the whole world know about our shiny new release. Savor this part! These ste
 
 - [ ] Update the documentation to mention the version in all places where the latest version is referenced, for example, but not limited to (do a search for the package version string): [Status in the root README](https://docs.orchardcore.net/en/dev/#status), CLI templates, commands, the [Creating a new decoupled CMS Website](https://docs.orchardcore.net/en/dev/docs/guides/decoupled-cms/) guide.
 - [ ] Update the tagged [release](https://github.com/OrchardCMS/OrchardCore/releases) on GitHub: Change its title to something more descriptive (e.g. "Orchard Core 1.0.0 RC 2"), add a link to it to the release notes in the documentation. Add a link to this release under [Status in the root README](https://docs.orchardcore.net/en/dev/#status).
-- [ ] Tweet
+- [ ] Publish a blog post on the website.
 - [ ] Ask to publish a blog post on [DevBlogs](https://devblogs.microsoft.com/).
 - [ ] Ask to publish a blog post on [.NET Foundation News](https://dotnetfoundation.org/news).
+- [ ] Tweet
 ```
