@@ -16,7 +16,7 @@ namespace OrchardCore.Queries.Sql.GraphQL.Queries
 {
     /// <summary>
     /// This implementation of <see cref="ISchemaBuilder"/> registers
-    /// all SQL Qeries as GraphQL queries.
+    /// all SQL Queries as GraphQL queries.
     /// </summary>
     public class SqlQueryFieldTypeProvider : ISchemaBuilder
     {

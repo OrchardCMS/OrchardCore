@@ -34,16 +34,9 @@ namespace OrchardCore.Localization
         /// Gets the localized value.
         /// </summary>
         /// <param name="key">The resource key.</param>
-        /// <returns></returns>
-        public string this[string key] => this[key, null];
-
-        /// <summary>
-        /// Gets the localized value.
-        /// </summary>
-        /// <param name="key">The resource key.</param>
         /// <param name="count">The number to specify the pluralization form.</param>
         /// <returns></returns>
-        public string this[string key, int? count]
+        public string this[string key, int? count = null]
         {
             get
             {

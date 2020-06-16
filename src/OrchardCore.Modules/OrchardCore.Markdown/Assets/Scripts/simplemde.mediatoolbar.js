@@ -79,7 +79,7 @@ $(function () {
                 $('#mediaMarkdownSelectButton').on('click', function (v) {
                     var mediaMarkdownContent = "";
                     for (i = 0; i < mediaApp.selectedMedias.length; i++) {
-                        mediaMarkdownContent += ' {{ "' + mediaApp.selectedMedias[i].mediaPath + '" | asset_url | img_tag }}';
+                        mediaMarkdownContent += ' [image]' + mediaApp.selectedMedias[i].mediaPath + '[/image]';
                     }
                     var cm = editor.codemirror;
                     cm.replaceSelection(mediaMarkdownContent)

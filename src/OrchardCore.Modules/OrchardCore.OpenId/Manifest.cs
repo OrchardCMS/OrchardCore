@@ -3,9 +3,16 @@ using OrchardCore.OpenId;
 
 [assembly: Module(
     Name = "OpenID",
-    Author = "The Orchard Team",
-    Website = "https://orchardproject.net",
-    Version = "2.0.0"
+    Author = ManifestConstants.OrchardCoreTeam,
+    Website = ManifestConstants.OrchardCoreWebsite,
+    Version = ManifestConstants.OrchardCoreVersion
+)]
+
+[assembly: Feature(
+    Id = OpenIdConstants.Features.Core,
+    Name = "OpenID Core Components",
+    Category = "OpenID Connect",
+    Description = "Registers the core components used by the OpenID module."
 )]
 
 [assembly: Feature(
@@ -14,13 +21,6 @@ using OrchardCore.OpenId;
     Category = "OpenID Connect",
     Description = "Authenticates users from an external OpenID Connect identity provider.",
     Dependencies = new[] { OpenIdConstants.Features.Core }
-)]
-
-[assembly: Feature(
-    Id = OpenIdConstants.Features.Core,
-    Name = "OpenID Core Components",
-    Category = "OpenID Connect",
-    Description = "Registers the core components used by the OpenID module."
 )]
 
 [assembly: Feature(

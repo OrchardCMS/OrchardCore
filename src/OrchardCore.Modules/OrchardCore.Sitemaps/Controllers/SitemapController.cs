@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using OrchardCore.Environment.Shell;
 using OrchardCore.Settings;
 using OrchardCore.Sitemaps.Builders;
 using OrchardCore.Sitemaps.Cache;
@@ -15,7 +16,7 @@ namespace OrchardCore.Sitemaps.Controllers
 {
     public class SitemapController : Controller
     {
-        private static readonly ConcurrentDictionary<string, Lazy<Task<Stream>>> Workers = new ConcurrentDictionary<string, Lazy<Task<Stream>>>();
+        private static readonly ConcurrentDictionary<string, Lazy<Task<Stream>>> Workers = new ConcurrentDictionary<string, Lazy<Task<Stream>>>(StringComparer.OrdinalIgnoreCase);
         private const int _warningLength = 47_185_920;
         private const int _errorLength = 52_428_800;
 
@@ -23,6 +24,7 @@ namespace OrchardCore.Sitemaps.Controllers
         private readonly ISiteService _siteService;
         private readonly ISitemapBuilder _sitemapBuilder;
         private readonly ISitemapCacheProvider _sitemapCacheProvider;
+        private readonly string _tenantName;
         private readonly ILogger _logger;
 
         public SitemapController(
@@ -30,6 +32,7 @@ namespace OrchardCore.Sitemaps.Controllers
             ISiteService siteService,
             ISitemapBuilder sitemapBuilder,
             ISitemapCacheProvider sitemapCacheProvider,
+            ShellSettings shellSettings,
             ILogger<SitemapController> logger
             )
         {
@@ -37,6 +40,7 @@ namespace OrchardCore.Sitemaps.Controllers
             _siteService = siteService;
             _sitemapBuilder = sitemapBuilder;
             _sitemapCacheProvider = sitemapCacheProvider;
+            _tenantName = shellSettings.Name;
             _logger = logger;
         }
 
@@ -54,7 +58,7 @@ namespace OrchardCore.Sitemaps.Controllers
             {
                 // When multiple requests occur for the same sitemap it 
                 // may still be building, so we wait for it to complete.
-                if (Workers.TryGetValue(sitemap.Path, out var writeTask))
+                if (Workers.TryGetValue(_tenantName + sitemap.Path, out var writeTask))
                 {
                     await writeTask.Value;
                 }
@@ -65,7 +69,7 @@ namespace OrchardCore.Sitemaps.Controllers
             }
             else
             {
-                var work = await Workers.GetOrAdd(sitemap.Path, x => new Lazy<Task<Stream>>(async () =>
+                var work = await Workers.GetOrAdd(_tenantName + sitemap.Path, x => new Lazy<Task<Stream>>(async () =>
                 {
                     try
                     {
@@ -92,7 +96,8 @@ namespace OrchardCore.Sitemaps.Controllers
                         if (stream.Length >= _errorLength)
                         {
                             _logger.LogError("Sitemap 50MB maximum length limit exceeded");
-                        } else if( stream.Length >= _warningLength)
+                        }
+                        else if (stream.Length >= _warningLength)
                         {
                             _logger.LogWarning("Sitemap nearing 50MB length limit");
                         }
@@ -103,7 +108,7 @@ namespace OrchardCore.Sitemaps.Controllers
                     }
                     finally
                     {
-                        Workers.TryRemove(sitemap.Path, out var writeCacheTask);
+                        Workers.TryRemove(_tenantName + sitemap.Path, out var writeCacheTask);
                     }
                 }, LazyThreadSafetyMode.ExecutionAndPublication)).Value;
 
@@ -113,7 +118,7 @@ namespace OrchardCore.Sitemaps.Controllers
                 }
 
                 work.Position = 0;
-                
+
                 // File result will dispose of stream.
                 return File(work, "application/xml");
             }

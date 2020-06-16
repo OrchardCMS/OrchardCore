@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
+using OrchardCore.Environment.Extensions.Utility;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.FileStorage.AzureBlob;
@@ -27,7 +28,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddSingleton<IShellsFileStore>(sp =>
             {
                 var configuration = sp.GetRequiredService<IConfiguration>();
-                var blobOptions = configuration.GetSection("OrchardCore:OrchardCore.Shells.Azure").Get<BlobShellStorageOptions>();
+                var blobOptions = configuration.GetSectionCompat("OrchardCore:OrchardCore_Shells_Azure").Get<BlobShellStorageOptions>();
                 if (blobOptions == null)
                 {
                     throw new ArgumentNullException(nameof(BlobShellStorageOptions),
@@ -46,7 +47,7 @@ namespace Microsoft.Extensions.DependencyInjection
             {
                 var shellsFileStore = sp.GetRequiredService<IShellsFileStore>();
                 var configuration = sp.GetRequiredService<IConfiguration>();
-                var blobOptions = configuration.GetSection("OrchardCore:OrchardCore.Shells.Azure").Get<BlobShellStorageOptions>();
+                var blobOptions = configuration.GetSectionCompat("OrchardCore:OrchardCore_Shells_Azure").Get<BlobShellStorageOptions>();
                 var shellOptions = sp.GetRequiredService<IOptions<ShellOptions>>();
 
                 return new BlobShellsSettingsSources(shellsFileStore, blobOptions, shellOptions);
@@ -56,7 +57,7 @@ namespace Microsoft.Extensions.DependencyInjection
             {
                 var shellsFileStore = sp.GetRequiredService<IShellsFileStore>();
                 var configuration = sp.GetRequiredService<IConfiguration>();
-                var blobOptions = configuration.GetSection("OrchardCore:OrchardCore.Shells.Azure").Get<BlobShellStorageOptions>();
+                var blobOptions = configuration.GetSectionCompat("OrchardCore:OrchardCore_Shells_Azure").Get<BlobShellStorageOptions>();
                 var shellOptions = sp.GetRequiredService<IOptions<ShellOptions>>();
 
                 return new BlobShellConfigurationSources(shellsFileStore, blobOptions, shellOptions);
@@ -67,7 +68,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 var shellsFileStore = sp.GetRequiredService<IShellsFileStore>();
                 var environment = sp.GetRequiredService<IHostEnvironment>();
                 var configuration = sp.GetRequiredService<IConfiguration>();
-                var blobOptions = configuration.GetSection("OrchardCore:OrchardCore.Shells.Azure").Get<BlobShellStorageOptions>();
+                var blobOptions = configuration.GetSectionCompat("OrchardCore:OrchardCore_Shells_Azure").Get<BlobShellStorageOptions>();
                 var shellOptions = sp.GetRequiredService<IOptions<ShellOptions>>();
 
                 return new BlobShellsConfigurationSources(shellsFileStore, environment, blobOptions, shellOptions);

@@ -1,4 +1,4 @@
-# Microsoft Authentication (OrchardCore.Microsoft.Authentication)
+# Microsoft Authentication (`OrchardCore.Microsoft.Authentication`)
 
 This module configures Orchard to support Microsoft Account and/or Microsoft Azure Active Directory accounts.
 

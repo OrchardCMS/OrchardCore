@@ -66,7 +66,7 @@ namespace OrchardCore.Media.Services
             await _fileStore.TryCreateDirectoryAsync(MediaFieldsTempSubFolder);
         }
 
-        // Files just uploaded and then inmediately discarded.
+        // Files just uploaded and then immediately discarded.
         private async Task RemoveTemporaryAsync(List<EditMediaFieldItemInfo> items)
         {
             foreach (var item in items.Where(i => i.IsRemoved && i.IsNew))

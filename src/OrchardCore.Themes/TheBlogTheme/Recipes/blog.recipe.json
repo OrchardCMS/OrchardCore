@@ -2,9 +2,9 @@
   "name": "Blog",
   "displayName": "Blog",
   "description": "Provides a functional Blog with CMS features.",
-  "author": "The Orchard Team",
-  "website": "https://orchardproject.net",
-  "version": "2.0",
+  "author": "The Orchard Core Team",
+  "website": "https://orchardcore.net",
+  "version": "1.0.0-rc2",
   "issetuprecipe": true,
   "categories": [ "default" ],
   "tags": [ "blog" ],
@@ -84,7 +84,6 @@
     },
     {
       "name": "settings",
-      "Meta": "[file:text('Snippets/meta.html')]",
       "HomeRoute": {
         "Action": "Display",
         "Controller": "Item",
@@ -116,7 +115,7 @@
               "Name": "Article",
               "Settings": {
                 "ContentTypePartSettings": {
-                  "Position": "2"
+                  "Position": "3"
                 }
               }
             },
@@ -140,7 +139,7 @@
               "Settings": {
                 "ContentTypePartSettings": {
                   "Editor": "Wysiwyg",
-                  "Position": "3"
+                  "Position": "2"
                 }
               }
             },
@@ -250,7 +249,7 @@
               "Name": "BlogPost",
               "Settings": {
                 "ContentTypePartSettings": {
-                  "Position": "2"
+                  "Position": "3"
                 }
               }
             },
@@ -260,7 +259,7 @@
               "Settings": {
                 "ContentTypePartSettings": {
                   "Editor": "Wysiwyg",
-                  "Position": "3"
+                  "Position": "2"
                 }
               }
             }
@@ -316,7 +315,7 @@
               "Name": "Blog",
               "Settings": {
                 "ContentTypePartSettings": {
-                  "Position": "2"
+                  "Position": "3"
                 }
               }
             },
@@ -325,7 +324,7 @@
               "Name": "HtmlBodyPart",
               "Settings": {
                 "ContentTypePartSettings": {
-                  "Position": "3"
+                  "Position": "2"
                 }
               }
             },
@@ -686,7 +685,6 @@
                   "Template": null
                 },
                 "MediaFieldSettings": {
-                  "Required": true,
                   "Multiple": false
                 }
               }
@@ -724,7 +722,6 @@
                   "Template": null
                 },
                 "MediaFieldSettings": {
-                  "Required": true,
                   "Multiple": false
                 }
               }  
@@ -741,7 +738,6 @@
                 },
                 "ContentIndexSettings": {},
                 "TaxonomyFieldSettings": {
-                  "Required": true,
                   "TaxonomyContentItemId": "[js: variables('tagsContentItemId')]"
                 },
                 "TaxonomyFieldTagsEditorSettings": {}
@@ -757,7 +753,6 @@
                 },
                 "ContentIndexSettings": {},
                 "TaxonomyFieldSettings": {
-                  "Required": true,
                   "TaxonomyContentItemId": "[js: variables('categoriesContentItemId')]",
                   "Unique": true,
                   "LeavesOnly": true
@@ -789,7 +784,6 @@
                   "Position": "0"
                 },
                 "MediaFieldSettings": {
-                  "Required": false,
                   "Multiple": false
                 }
               }

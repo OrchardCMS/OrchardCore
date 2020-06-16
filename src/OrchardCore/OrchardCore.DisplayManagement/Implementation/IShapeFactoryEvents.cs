@@ -12,6 +12,7 @@ namespace OrchardCore.DisplayManagement.Implementation
 
     public class ShapeCreatingContext
     {
+        public IServiceProvider ServiceProvider { get; set; }
         public IShapeFactory ShapeFactory { get; set; }
         public dynamic New { get; set; }
         public string ShapeType { get; set; }
@@ -26,6 +27,7 @@ namespace OrchardCore.DisplayManagement.Implementation
 
     public class ShapeCreatedContext
     {
+        public IServiceProvider ServiceProvider { get; set; }
         public IShapeFactory ShapeFactory { get; set; }
         public dynamic New { get; set; }
         public string ShapeType { get; set; }

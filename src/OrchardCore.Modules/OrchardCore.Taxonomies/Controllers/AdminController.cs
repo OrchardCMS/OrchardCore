@@ -159,7 +159,7 @@ namespace OrchardCore.Taxonomies.Controllers
             // Look for the target taxonomy item in the hierarchy
             JObject taxonomyItem = FindTaxonomyItem(taxonomy.As<TaxonomyPart>().Content, taxonomyItemId);
 
-            // Couldn't find targetted taxonomy item
+            // Couldn't find targeted taxonomy item
             if (taxonomyItem == null)
             {
                 return NotFound();
@@ -207,7 +207,7 @@ namespace OrchardCore.Taxonomies.Controllers
             // Look for the target taxonomy item in the hierarchy
             JObject taxonomyItem = FindTaxonomyItem(taxonomy.As<TaxonomyPart>().Content, taxonomyItemId);
 
-            // Couldn't find targetted taxonomy item
+            // Couldn't find targeted taxonomy item
             if (taxonomyItem == null)
             {
                 return NotFound();
@@ -270,7 +270,7 @@ namespace OrchardCore.Taxonomies.Controllers
             // Look for the target taxonomy item in the hierarchy
             var taxonomyItem = FindTaxonomyItem(taxonomy.As<TaxonomyPart>().Content, taxonomyItemId);
 
-            // Couldn't find targetted taxonomy item
+            // Couldn't find targeted taxonomy item
             if (taxonomyItem == null)
             {
                 return NotFound();

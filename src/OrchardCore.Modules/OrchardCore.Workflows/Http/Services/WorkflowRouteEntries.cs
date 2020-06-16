@@ -21,7 +21,6 @@ namespace OrchardCore.Workflows.Http.Services
                     ActivityId = x.ActivityId,
                     HttpMethod = activity.HttpMethod,
                     RouteValues = activity.RouteValues,
-                    CorrelationId = workflow.CorrelationId
                 };
 
                 return entry;

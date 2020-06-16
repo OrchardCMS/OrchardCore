@@ -10,7 +10,7 @@ theme:
     primary: blue
     accent: light blue
   static_templates:
-    - 404.html
+    - docs/404.html
     
 extra:
   social:
@@ -55,12 +55,17 @@ markdown_extensions:
 plugins:
   - search
   - git-revision-date-localized
+  - exclude:
+      glob:
+        # Excluding the large node folder with all its MD files. We can't exclude everything apart from docs because there are links to e.g. C# files too.
+        - "*node_modules*"
   
 # Page tree
 nav:
     - About Orchard Core: README.md
     - Getting started: 
         - Create a CMS Web application: docs/getting-started/README.md
+        - Configure Preview package source: docs/getting-started/preview-package-source.md
         - Recipes and Starter Themes: docs/getting-started/starter-recipes.md
         - Code Generation Templates: docs/getting-started/templates/README.md
         - Create a Theme: docs/getting-started/theme.md
@@ -77,6 +82,7 @@ nav:
         - Integrate Facebook plugins: docs/guides/integrate-facebook-plugins/README.md
         - Run code on startup: docs/guides/run-code-on-startup/README.md
         - Create a custom admin theme: docs/guides/create-admin-theme/README.md
+        - Customize encoding settings: docs/guides/encoding-settings/README.md
     - Key Topics: 
         - Manage your Content: docs/topics/content-management/README.md
         - Customize the Display: docs/topics/display/README.md
@@ -88,6 +94,7 @@ nav:
 #        - Data: docs/topics/data/README.md
 #        - Configuration: docs/topics/configuration/README.md
         - Workflows: docs/topics/workflows/README.md
+        - Contributing to the docs: docs/topics/docs-contributions/README.md
     - Reference: 
         - CMS Modules: 
             - Content Types: docs/reference/modules/ContentTypes/README.md
@@ -100,7 +107,8 @@ nav:
                 - Markdown: docs/reference/modules/Markdown/README.md
                 - List: docs/reference/modules/List/README.md
                 - Flow: docs/reference/modules/Flow/README.md 
-                - Bag: docs/reference/modules/Flow/BagPart.md        
+                - Bag: docs/reference/modules/Flow/BagPart.md
+                - Publish Later: docs/reference/modules/PublishLater/README.md
             - Content Fields: docs/reference/modules/ContentFields/README.md
             - Content Preview: docs/reference/modules/ContentPreview/README.md
             - Content Localization: docs/reference/modules/ContentLocalization/README.md
@@ -118,7 +126,9 @@ nav:
             - Media Azure: docs/reference/modules/Media.Azure/README.md
             - ReCaptcha: docs/reference/modules/ReCaptcha/README.md
             - Resources: docs/reference/modules/Resources/README.md
+            - ShortCodes: docs/reference/modules/ShortCodes/README.md
             - Sitemaps: docs/reference/modules/Sitemaps/README.md
+            - XML-RPC: docs/reference/modules/XmlRpc/README.md
             - Menu: docs/reference/modules/Menu/README.md
             - Navigation: docs/reference/modules/Navigation/README.md
             - Admin: docs/reference/modules/Admin/README.md
@@ -130,6 +140,7 @@ nav:
                 - Twitter: docs/reference/modules/Twitter/README.md
                 - GitHub: docs/reference/modules/GitHub/README.md
                 - Google: docs/reference/modules/Google/README.md
+            - Users: docs/reference/modules/Users/README.md
         - Core Modules: 
     #        - How to use Core Modules: docs/reference/core/README.md
             - Features: docs/reference/modules/Features/README.md
@@ -143,12 +154,15 @@ nav:
             - GraphQL: docs/reference/modules/Apis.GraphQL/README.md
             - GraphQL queries: docs/reference/core/Apis.GraphQL.Abstractions/README.md
             - Health Check: docs/reference/modules/HealthChecks/README.md
+            - HTTPS: docs/reference/modules/Https/README.md
             - Localization: docs/reference/modules/Localize/README.md
             - Logging Serilog: docs/reference/core/Logging.Serilog/readme.md
+            - Mini Profiler: docs/reference/modules/MiniProfiler/README.md
             - Modules: docs/reference/core/Modules/README.md
             - OpenId: docs/reference/modules/OpenId/README.md
             - Razor Helpers: docs/reference/core/Razor/README.md
             - Recipes: docs/reference/modules/Recipes/README.md
+            - Response Compression: docs/reference/modules/ResponseCompression/README.md
             - Roles: docs/reference/modules/Roles/README.md
             - Scripting: docs/reference/modules/Scripting/README.md
             - Setup: docs/reference/modules/Setup/README.md
@@ -159,4 +173,11 @@ nav:
     - Resources: 
         - Learning: docs/resources/README.md
         - Workshops: docs/resources/workshops/README.md
+        - Branding: docs/resources/branding/README.md
+    - Releases: 
+        - 1.0.0-rc2: docs/releases/1.0.0-rc2.md
+        - 1.0.0-rc1: docs/releases/1.0.0-rc1.md
+        - 1.0.0-beta3: docs/releases/1.0.0-beta3.md
+        - 1.0.0-beta2: docs/releases/1.0.0-beta2.md
+        - 1.0.0-beta1: docs/releases/1.0.0-beta1.md
     
