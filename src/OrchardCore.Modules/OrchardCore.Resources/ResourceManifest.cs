@@ -110,6 +110,27 @@ namespace OrchardCore.Resources
                 .SetVersion("1.13.17");
 
             manifest
+                .DefineStyle("codemirror")
+                .SetUrl("~/OrchardCore.Resources/Styles/codemirror/codemirror.min.css", "~/OrchardCore.Resources/Styles/codemirror/codemirror.css")
+                .SetCdn("https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.54.0/codemirror.min.css", "https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.54.0/codemirror.css")
+                .SetCdnIntegrity("sha384-IOz5QFCDEKXQEiYKlSOUsHhcrCpRO2Vn9EcidoFf6olMAZVXnLgcoQclMBoksUOa", "sha384-mVNiRdLEUGBMLPITebcG8Bc5wJW9HT/x0TiXmad0ZMPF9g0CMX2IYLNHqGjCmUsU")
+                .SetVersion("5.54.0");
+
+            manifest
+                .DefineStyle("codemirror-addon-display-fullscreen")
+                .SetUrl("~/OrchardCore.Resources/Styles/codemirror/addon/display/fullscreen.css", "~/OrchardCore.Resources/Styles/codemirror/addon/display/fullscreen.css")
+                .SetCdn("https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.54.0/addon/display/fullscreen.min.css", "https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.54.0/addon/display/fullscreen.css")
+                .SetCdnIntegrity("sha384-uuIczW2AGKADJpvg6YiNBJQWE7duDkgQDkndYEsbUGaLm8SPJZzlly6hcEo0aTlW", "sha384-+glu1jsbG+T5ocmkeMvIYh5w07IXKxmJZaCdkNbVfpEr3xi+M0gopFSR/oLKXxio")
+                .SetVersion("5.54.0");
+
+            manifest
+                .DefineStyle("codemirror-addon-hint-show-hint")
+                .SetUrl("~/OrchardCore.Resources/Styles/codemirror/addon/hint/show-hint.min.css", "~/OrchardCore.Resources/Styles/codemirror/addon/hint/show-hint.css")
+                .SetCdn("https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.54.0/addon/hint/show-hint.min.css", "https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.54.0/addon/hint/show-hint.css")
+                .SetCdnIntegrity("sha384-qqTWkykzuDLx4yDYa7bVrwNwBHuqVvklDUMVaU4eezgNUEgGbP8Zv6i3u8OmtuWg", "sha384-ZZbLvEvLoXKrHo3Tkh7W8amMgoHFkDzWe8IAm1ZgxsG5y35H+fJCVMWwr0YBAEGA")
+                .SetVersion("5.54.0");
+
+            manifest
                 .DefineScript("codemirror")
                 .SetUrl("~/OrchardCore.Resources/Scripts/codemirror/codemirror.min.js", "~/OrchardCore.Resources/Scripts/codemirror/codemirror.js")
                 .SetCdn("https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.54.0/codemirror.min.js", "https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.54.0/codemirror.js")
@@ -117,10 +138,46 @@ namespace OrchardCore.Resources
                 .SetVersion("5.54.0");
 
             manifest
+                .DefineScript("codemirror-addon-selection-active-line")
+                .SetUrl("~/OrchardCore.Resources/Scripts/codemirror/addon/selection/active-line.min.js", "~/OrchardCore.Resources/Scripts/codemirror/addon/selection/active-line.js")
+                .SetCdn("https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.54.0/addon/selection/active-line.min.js", "https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.54.0/addon/selection/active-line.min.js")
+                .SetCdnIntegrity("sha384-a1C6GgT4/STEs5Df0Ko1uzqijvgtY7MvVv7Z4uuyk+N4llXey69UU0QxXy6L007K", "sha384-kKz13r+qZMgTNgXROGNHQ0/0/J1FtvIvRZ9yjOHo1YLUCd+KF8r9R+su/B+f6C0U")
+                .SetVersion("5.54.0");
+
+            manifest
                 .DefineScript("codemirror-addon-display-autorefresh")
                 .SetUrl("~/OrchardCore.Resources/Scripts/codemirror/addon/display/autorefresh.min.js", "~/OrchardCore.Resources/Scripts/codemirror/addon/display/autorefresh.js")
                 .SetCdn("https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.54.0/addon/display/autorefresh.min.js", "https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.54.0/addon/display/autorefresh.js")
                 .SetCdnIntegrity("sha384-pn83o6MtS8kicn/sV6AhRaBqXQ5tau8NzA2ovcobkcc1uRFP7D8CMhRx231QwKST", "sha384-5wrQkkCzj5dJInF+DDDYjE1itTGaIxO+TL6gMZ2eZBo9OyWLczkjolFX8kixX/9X")
+                .SetVersion("5.54.0");
+
+            manifest
+                .DefineScript("codemirror-addon-display-fullscreen")
+                .SetUrl("~/OrchardCore.Resources/Scripts/codemirror/addon/display/fullscreen.min.js", "~/OrchardCore.Resources/Scripts/codemirror/addon/display/fullscreen.js")
+                .SetCdn("https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.54.0/addon/display/fullscreen.min.js", "https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.54.0/addon/display/fullscreen.js")
+                .SetCdnIntegrity("sha384-QWNlxQIqNTw1WRsFEBoyGSFItEfal64eVEm0CU8KVFq6P5KnKOggFNp9aQgmDA9U", "sha384-kuwHYEheDAp0NlPye2VXyxJ6J54CeVky9tH+e0mn6/gP4PJ50MF4FGKkrGAxIyCW")
+                .SetVersion("5.54.0");
+
+            manifest
+                .DefineScript("codemirror-addon-edit-closetag")
+                .SetUrl("~/OrchardCore.Resources/Scripts/codemirror/addon/edit/closetag.min.js", "~/OrchardCore.Resources/Scripts/codemirror/addon/display/fullscreen.js")
+                .SetCdn("https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.54.0/addon/edit/closetag.min.js", "https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.54.0/addon/edit/closetag.js")
+                .SetCdnIntegrity("sha384-GqhJj/yM1sJub5RmYDaTi9fFHVaXbrIC50pkO8+QRE6WAsECM8xV3F6v6ISIEx/8", "sha384-X2Od/IAeotC0WCQ9E/wKSAk8Tlcx9/cAUAq1iDRuNDcMm9E10zS4+WkpDbm7s6S9")
+                .SetVersion("5.54.0");
+
+            manifest
+                .DefineScript("codemirror-addon-hint-show-hint")
+                .SetUrl("~/OrchardCore.Resources/Scripts/codemirror/addon/hint/show-hint.min.js", "~/OrchardCore.Resources/Scripts/codemirror/addon/hint/show-hint.js")
+                .SetCdn("https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.54.0/addon/hint/show-hint.min.js", "https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.54.0/addon/hint/show-hint.js")
+                .SetCdnIntegrity("sha384-3UITvU6gxHCYZ/Whow/mWEJG/DbpbDqRHcQqJ/miBe86ENtkm+z62llgRoAH+MQY", "sha384-USiVlKYPkFPEbrbUlT3DURUHeO3ogAjo+7SWnL+McPGgYdPV4KZvWewUJWLW38I3")
+                .SetVersion("5.54.0");
+
+            manifest
+                .DefineScript("codemirror-addon-hint-sql-hint")
+                .SetDependencies("codemirror-addon-hint-show-hint")
+                .SetUrl("~/OrchardCore.Resources/Scripts/codemirror/addon/hint/sql-hint.min.js", "~/OrchardCore.Resources/Scripts/codemirror/addon/hint/sql-hint.js")
+                .SetCdn("https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.54.0/addon/hint/sql-hint.min.js", "https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.54.0/addon/hint/sql-hint.js")
+                .SetCdnIntegrity("sha384-e1p9lXfNfqxonlgKvoo73A6hLlfyUdaK6wa6yyRiDjug9bLm0RodVGcZiBI2pKbu", "sha384-KeE8F40CgQJpD+vr6sUqZYPAaLZmt8mSU9Sbgz2olJubyflEcOpiiJ3ARmkyskSB")
                 .SetVersion("5.54.0");
 
             manifest
@@ -170,13 +227,6 @@ namespace OrchardCore.Resources
                 .SetUrl("~/OrchardCore.Resources/Scripts/codemirror/mode/xml/xml.min.js", "~/OrchardCore.Resources/Scripts/codemirror/mode/xml/xml.js")
                 .SetCdn("https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.54.0/mode/xml/xml.min.js", "https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.54.0/mode/xml/xml.js")
                 .SetCdnIntegrity("sha384-27kgmf2cIJ9bclpvyUN4SgnnYnW7Wu0MiGYpm+fmNQhcREFI7mq0C9ehuxYuwqgy", "sha384-z8O1dAcb8dxGYbhmbzbJ41xAUlle9jfZpok46e8s9+Tyu9bKxx742hiNqVJ0D6cL")
-                .SetVersion("5.54.0");
-
-            manifest
-                .DefineStyle("codemirror")
-                .SetUrl("~/OrchardCore.Resources/Scripts/codemirror/codemirror.min.css", "~/OrchardCore.Resources/Scripts/codemirror/codemirror.css")
-                .SetCdn("https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.54.0/codemirror.min.css", "https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.54.0/codemirror.css")
-                .SetCdnIntegrity("sha384-IOz5QFCDEKXQEiYKlSOUsHhcrCpRO2Vn9EcidoFf6olMAZVXnLgcoQclMBoksUOa", "sha384-mVNiRdLEUGBMLPITebcG8Bc5wJW9HT/x0TiXmad0ZMPF9g0CMX2IYLNHqGjCmUsU")
                 .SetVersion("5.54.0");
 
             manifest
