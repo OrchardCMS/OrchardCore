@@ -1,7 +1,7 @@
 # Contributors ✨
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-165-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-166-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
@@ -230,6 +230,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <td align="center"><a href="https://github.com/mrampazo"><img src="https://avatars0.githubusercontent.com/u/66479240?v=4" width="100px;" alt=""/><br /><sub><b>mrampazo</b></sub></a><br /><a href="#translation-mrampazo" title="Translation">🌍</a></td>
     <td align="center"><a href="https://github.com/vlatkost"><img src="https://avatars0.githubusercontent.com/u/15385514?v=4" width="100px;" alt=""/><br /><sub><b>Vlatko Stojanovski</b></sub></a><br /><a href="#translation-vlatkost" title="Translation">🌍</a></td>
     <td align="center"><a href="https://github.com/mariojsnunes"><img src="https://avatars1.githubusercontent.com/u/8073622?v=4" width="100px;" alt=""/><br /><sub><b>mariojsnunes</b></sub></a><br /><a href="#translation-mariojsnunes" title="Translation">🌍</a></td>
+    <td align="center"><a href="https://github.com/JoshLefebvre"><img src="https://avatars0.githubusercontent.com/u/22512098?v=4" width="100px;" alt=""/><br /><sub><b>Joshua Lefebvre</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=JoshLefebvre" title="Code">💻</a></td>
   </tr>
 </table>
 
