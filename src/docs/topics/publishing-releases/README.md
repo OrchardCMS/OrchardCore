@@ -49,7 +49,7 @@ Update the docs so they contain information about the new release so once the re
 - [ ] Create release notes in a specific documentation section. You can take the previous release notes as a template.
     - Overview of the release's highlights and goals. What do you want people to remember this release for?
     - Prerequisites. What framework version do you need, anything else to work with Orchard?
-    - Upgrade steps, any migration necessary from previous versions.
+    - Upgrade steps, any migration necessary from previous versions, breaking changes.
     - Full changelog. You can generate this with [github-changelog](https://github.com/cfpb/github-changelog) with the `changelog OrchardCMS OrchardCore <previous version> <current version>` command, e.g. `changelog OrchardCMS OrchardCore 1.0.0-rc1 1.0.0-rc2`. Alternatively, you can use [Antoine's app](https://github.com/agriffard/Changelog.OrchardCore) too.
 
 ### Publish the release
