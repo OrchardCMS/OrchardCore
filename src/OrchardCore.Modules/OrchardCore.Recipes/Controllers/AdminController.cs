@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
-using OrchardCore.Admin;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Shell;
@@ -27,7 +26,7 @@ namespace OrchardCore.Recipes.Controllers
         private readonly INotifier _notifier;
         private readonly IRecipeExecutor _recipeExecutor;
         private readonly ISiteService _siteService;
-        private readonly IHtmlLocalizer<AdminController> H;
+        private readonly IHtmlLocalizer H;
 
         public AdminController(
             ShellSettings shellSettings,
@@ -70,7 +69,7 @@ namespace OrchardCore.Recipes.Controllers
                 BasePath = recipe.BasePath,
                 Tags = recipe.Tags,
                 IsSetupRecipe = recipe.IsSetupRecipe,
-                Feature = features.FirstOrDefault(f=>recipe.BasePath.Contains(f.Extension.SubPath))?.Name ?? "Application",
+                Feature = features.FirstOrDefault(f => recipe.BasePath.Contains(f.Extension.SubPath))?.Name ?? "Application",
                 Description = recipe.Description
             }).ToArray();
 
@@ -112,7 +111,6 @@ namespace OrchardCore.Recipes.Controllers
                 },
                 CancellationToken.None);
             }
-
             finally
             {
                 // Don't lock the tenant if the recipe fails.

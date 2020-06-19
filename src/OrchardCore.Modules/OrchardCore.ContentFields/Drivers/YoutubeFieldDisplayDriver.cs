@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Localization;
+using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentFields.Settings;
 using OrchardCore.ContentFields.ViewModels;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
@@ -10,7 +11,7 @@ using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 
-namespace OrchardCore.ContentFields.Fields
+namespace OrchardCore.ContentFields.Drivers
 {
     public class YoutubeFieldDisplayDriver : ContentFieldDisplayDriver<YoutubeField>
     {
@@ -25,9 +26,9 @@ namespace OrchardCore.ContentFields.Fields
         {
             return Initialize<YoutubeFieldDisplayViewModel>(GetDisplayShapeType(context), model =>
             {
-               model.Field = field;
-               model.Part = context.ContentPart;
-               model.PartFieldDefinition = context.PartFieldDefinition;
+                model.Field = field;
+                model.Part = context.ContentPart;
+                model.PartFieldDefinition = context.PartFieldDefinition;
             })
             .Location("Detail", "Content")
             .Location("Summary", "Content");
@@ -83,6 +84,11 @@ namespace OrchardCore.ContentFields.Fields
 
                         field.RawAddress = model.RawAddress;
                         field.EmbeddedAddress = model.EmbeddedAddress;
+                    }
+                    else
+                    {
+                        field.RawAddress = null;
+                        field.EmbeddedAddress = null;
                     }
                 }
             }

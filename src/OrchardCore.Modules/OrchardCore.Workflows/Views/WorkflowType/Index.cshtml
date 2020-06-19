@@ -18,7 +18,7 @@
     <div class="row">
         <div class="form-group col-xl-4 col-sm-6">
             <div class="input-group input-group-sm filter-options">
-                <input id="search-box" asp-for="Options.Search" class="form-control" placeholder="@T["Search"]" type="search" />
+                <input id="search-box" asp-for="Options.Search" class="form-control" placeholder="@T["Search"]" type="search" autofocus />
             </div>
         </div>
         <div class="form-group col-xl-8 col-sm-6">
@@ -90,7 +90,7 @@
         }
         else
         {
-            <li>
+            <li class="list-group-item">
                 <div class="alert alert-info" role="alert">
                     @T["<strong>Nothing here!</strong> Your search returned no results."]
                 </div>
@@ -115,7 +115,9 @@
             $("[name='submit.Filter']").click();
         });
 
-        $(".dropdown-menu .dropdown-item").on("click", function () {
+        $(".dropdown-menu .dropdown-item").filter(function() {
+            return $(this).data("action");
+        }).on("click", function () {
             if ($(":checkbox[name='itemIds']:checked").length > 1) {
                 var $this = $(this);
                 confirmDialog({title: $this.data('title'), message: $this.data('message'), callback: function(r) {
@@ -149,7 +151,13 @@
         });
 
         itemsCheckboxes.on("click", function () {
-            selectedItems.text($(":checkbox[name='itemIds']:checked").length + ' @T["selected"]');
+            var itemsCount = $(":checkbox[name='itemIds']").length;
+            var selectedItemsCount = $(":checkbox[name='itemIds']:checked").length;
+
+            selectAllCtrl.prop("checked", selectedItemsCount == itemsCount);
+            selectAllCtrl.prop("indeterminate", selectedItemsCount > 0 && selectedItemsCount < itemsCount);
+            
+            selectedItems.text(selectedItemsCount + ' @T["selected"]');
             displayActionsOrFilters();
         });
     });

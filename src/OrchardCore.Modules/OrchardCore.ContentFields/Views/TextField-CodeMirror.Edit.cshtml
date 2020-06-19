@@ -1,0 +1,37 @@
+@model OrchardCore.ContentFields.ViewModels.EditTextFieldViewModel
+
+@{
+    var settings = Model.PartFieldDefinition.GetSettings<TextFieldSettings>();
+    var culture = await Orchard.GetContentCultureAsync(Model.Field.ContentItem);
+}
+
+<div class="form-group">
+    <label asp-for="Text">@Model.PartFieldDefinition.DisplayName()</label>
+    <textarea asp-for="Text" rows="5" class="form-control content-preview-text" dir="@culture.GetLanguageDirection()"></textarea>
+    @if (!String.IsNullOrEmpty(settings.Hint))
+    {
+        <span class="hint">@settings.Hint</span>
+    }
+</div>
+
+<script asp-name="codemirror" depends-on="admin" at="Foot"></script>
+<script asp-name="codemirror-addon-display-autorefresh" at="Foot"></script>
+<script asp-name="codemirror-mode-css" at="Foot"></script>
+<script asp-name="codemirror-mode-htmlmixed" at="Foot"></script>
+<script asp-name="codemirror-mode-javascript" at="Foot"></script>
+<script asp-name="codemirror-mode-xml" at="Foot"></script>
+<script at="Foot">
+    $(function () {
+        var optionsTextArea = document.getElementById('@Html.IdFor(x => x.Text)');
+        // When part rendered by a flow part only the elements scripts are rendered, so the html element will not exist.
+        if (optionsTextArea) {
+            var editor = CodeMirror.fromTextArea(optionsTextArea, {
+                autoRefresh: true,
+                lineNumbers: false,
+                lineWrapping: true,
+                matchBrackets: true,
+                mode: { name: "htmlmixed" }
+            });
+        }
+    });
+</script>

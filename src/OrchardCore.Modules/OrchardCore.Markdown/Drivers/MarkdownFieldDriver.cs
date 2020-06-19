@@ -6,8 +6,12 @@ using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.ShortCodes.Services;
+using OrchardCore.Infrastructure.Html;
 using OrchardCore.Liquid;
 using OrchardCore.Markdown.Fields;
+using OrchardCore.Markdown.Services;
+using OrchardCore.Markdown.Settings;
 using OrchardCore.Markdown.ViewModels;
 
 namespace OrchardCore.Markdown.Drivers
@@ -16,12 +20,23 @@ namespace OrchardCore.Markdown.Drivers
     {
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly HtmlEncoder _htmlEncoder;
-        private readonly IStringLocalizer<MarkdownFieldDisplayDriver> S;
+        private readonly IHtmlSanitizerService _htmlSanitizerService;
+        private readonly IShortCodeService _shortCodeService;
+        private readonly IMarkdownService _markdownService;
+        private readonly IStringLocalizer S;
 
-        public MarkdownFieldDisplayDriver(ILiquidTemplateManager liquidTemplateManager, IStringLocalizer<MarkdownFieldDisplayDriver> localizer, HtmlEncoder htmlEncoder)
+        public MarkdownFieldDisplayDriver(ILiquidTemplateManager liquidTemplateManager,
+            HtmlEncoder htmlEncoder,
+            IHtmlSanitizerService htmlSanitizerService,
+            IShortCodeService shortCodeService,
+            IMarkdownService markdownService,
+            IStringLocalizer<MarkdownFieldDisplayDriver> localizer)
         {
             _liquidTemplateManager = liquidTemplateManager;
             _htmlEncoder = htmlEncoder;
+            _htmlSanitizerService = htmlSanitizerService;
+            _shortCodeService = shortCodeService;
+            _markdownService = markdownService;
             S = localizer;
         }
 
@@ -29,15 +44,30 @@ namespace OrchardCore.Markdown.Drivers
         {
             return Initialize<MarkdownFieldViewModel>(GetDisplayShapeType(context), async model =>
             {
+
+                var settings = context.PartFieldDefinition.GetSettings<MarkdownFieldSettings>();
                 model.Markdown = field.Markdown;
                 model.Field = field;
                 model.Part = context.ContentPart;
                 model.PartFieldDefinition = context.PartFieldDefinition;
 
-                model.Markdown = await _liquidTemplateManager.RenderAsync(field.Markdown, _htmlEncoder, model,
-                    scope => scope.SetValue("ContentItem", field.ContentItem));
+                // The default Markdown option is to entity escape html
+                // so filters must be run after the markdown has been processed.
+                model.Html = _markdownService.ToHtml(model.Markdown ?? "");
 
-                model.Html = Markdig.Markdown.ToHtml(model.Markdown ?? "");
+                // The liquid rendering is for backwards compatability and can be removed in a future version.
+                if (!settings.SanitizeHtml)
+                {
+                    model.Markdown = await _liquidTemplateManager.RenderAsync(model.Html, _htmlEncoder, model,
+                        scope => scope.SetValue("ContentItem", field.ContentItem));
+                }
+
+                model.Html = await _shortCodeService.ProcessAsync(model.Html ?? "");
+
+                if (settings.SanitizeHtml)
+                {
+                    model.Html = _htmlSanitizerService.Sanitize(model.Html ?? "");
+                }
             })
             .Location("Detail", "Content")
             .Location("Summary", "Content");

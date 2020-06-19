@@ -29,7 +29,6 @@ namespace OrchardCore.Workflows.Display
     /// </summary>
     public abstract class ActivityDisplayDriver<TActivity, TEditViewModel> : ActivityDisplayDriver<TActivity> where TActivity : class, IActivity where TEditViewModel : class, new()
     {
-
         private static string EditShapeType = $"{typeof(TActivity).Name}_Fields_Edit";
 
         public override IDisplayResult Edit(TActivity model)

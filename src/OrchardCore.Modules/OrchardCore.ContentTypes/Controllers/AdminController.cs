@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Metadata.Settings;
@@ -15,7 +14,6 @@ using OrchardCore.ContentTypes.Services;
 using OrchardCore.ContentTypes.ViewModels;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
-using OrchardCore.Environment.Shell;
 using OrchardCore.Mvc.Utilities;
 using OrchardCore.Routing;
 using YesSql;
@@ -26,12 +24,11 @@ namespace OrchardCore.ContentTypes.Controllers
     {
         private readonly IContentDefinitionService _contentDefinitionService;
         private readonly IContentDefinitionManager _contentDefinitionManager;
-        private readonly ShellSettings _settings;
         private readonly IAuthorizationService _authorizationService;
         private readonly ISession _session;
         private readonly IContentDefinitionDisplayManager _contentDefinitionDisplayManager;
-        private readonly IHtmlLocalizer<AdminController> H;
-        private readonly IStringLocalizer<AdminController> S;
+        private readonly IHtmlLocalizer H;
+        private readonly IStringLocalizer S;
         private readonly INotifier _notifier;
         private readonly IUpdateModelAccessor _updateModelAccessor;
 
@@ -39,10 +36,8 @@ namespace OrchardCore.ContentTypes.Controllers
             IContentDefinitionDisplayManager contentDefinitionDisplayManager,
             IContentDefinitionService contentDefinitionService,
             IContentDefinitionManager contentDefinitionManager,
-            ShellSettings settings,
             IAuthorizationService authorizationService,
             ISession session,
-            ILogger<AdminController> logger,
             IHtmlLocalizer<AdminController> htmlLocalizer,
             IStringLocalizer<AdminController> stringLocalizer,
             INotifier notifier,
@@ -54,16 +49,16 @@ namespace OrchardCore.ContentTypes.Controllers
             _authorizationService = authorizationService;
             _contentDefinitionService = contentDefinitionService;
             _contentDefinitionManager = contentDefinitionManager;
-            _settings = settings;
             _updateModelAccessor = updateModelAccessor;
 
-            Logger = logger;
             H = htmlLocalizer;
             S = stringLocalizer;
         }
 
-        public ILogger Logger { get; }
-        public Task<ActionResult> Index() { return List(); }
+        public Task<ActionResult> Index()
+        {
+            return List();
+        }
 
         #region Types
 
@@ -140,7 +135,6 @@ namespace OrchardCore.ContentTypes.Controllers
             var contentTypeDefinition = _contentDefinitionService.AddType(viewModel.Name, viewModel.DisplayName);
 
             var typeViewModel = new EditTypeViewModel(contentTypeDefinition);
-
 
             _notifier.Success(H["The \"{0}\" content type has been created.", typeViewModel.DisplayName]);
 
@@ -417,7 +411,7 @@ namespace OrchardCore.ContentTypes.Controllers
             return RedirectToAction("Edit", new { id });
         }
 
-        #endregion
+        #endregion Types
 
         #region Parts
 
@@ -780,7 +774,6 @@ namespace OrchardCore.ContentTypes.Controllers
                 _notifier.Success(H["The \"{0}\" field settings have been saved.", field.DisplayName()]);
             }
 
-
             if (!String.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
             {
                 return Redirect(returnUrl);
@@ -832,9 +825,10 @@ namespace OrchardCore.ContentTypes.Controllers
             return RedirectToAction("EditPart", new { id });
         }
 
-        #endregion
+        #endregion Parts
 
         #region Type Parts
+
         public async Task<ActionResult> EditTypePart(string id, string name)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
@@ -923,7 +917,6 @@ namespace OrchardCore.ContentTypes.Controllers
                         _session.Cancel();
                         return View(viewModel);
                     }
-
                 }
             }
 
@@ -947,7 +940,6 @@ namespace OrchardCore.ContentTypes.Controllers
             return RedirectToAction("Edit", new { id });
         }
 
-        #endregion
+        #endregion Type Parts
     }
-
 }

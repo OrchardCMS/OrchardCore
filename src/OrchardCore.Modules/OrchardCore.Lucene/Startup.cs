@@ -16,6 +16,7 @@ using OrchardCore.Lucene.Controllers;
 using OrchardCore.Lucene.Deployment;
 using OrchardCore.Lucene.Drivers;
 using OrchardCore.Lucene.Handlers;
+using OrchardCore.Lucene.Model;
 using OrchardCore.Lucene.Recipes;
 using OrchardCore.Lucene.Services;
 using OrchardCore.Lucene.Settings;
@@ -26,7 +27,6 @@ using OrchardCore.Queries;
 using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
-using OrchardCore.Lucene.Model;
 
 namespace OrchardCore.Lucene
 {

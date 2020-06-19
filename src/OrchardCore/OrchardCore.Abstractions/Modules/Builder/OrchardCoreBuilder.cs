@@ -54,11 +54,11 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             return ConfigureServices((s, sp) => configure(s), order);
         }
-        
+
         /// <summary>
         /// This method gets called for each tenant. Use this method to configure the request's pipeline.
         /// </summary>
-        /// <param name="configure">The action to execute when configuring the request's pipeling for a tenant.</param>
+        /// <param name="configure">The action to execute when configuring the request's pipeline for a tenant.</param>
         /// <param name="order">The order of the action to execute. Lower values will be executed first.</param>
         public OrchardCoreBuilder Configure(Action<IApplicationBuilder, IEndpointRouteBuilder, IServiceProvider> configure, int order = 0)
         {
@@ -78,7 +78,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <summary>
         /// This method gets called for each tenant. Use this method to configure the request's pipeline.
         /// </summary>
-        /// <param name="configure">The action to execute when configuring the request's pipeling for a tenant.</param>
+        /// <param name="configure">The action to execute when configuring the request's pipeline for a tenant.</param>
         /// <param name="order">The order of the action to execute. Lower values will be executed first.</param>
         public OrchardCoreBuilder Configure(Action<IApplicationBuilder, IEndpointRouteBuilder> configure, int order = 0)
         {
@@ -88,7 +88,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <summary>
         /// This method gets called for each tenant. Use this method to configure the request's pipeline.
         /// </summary>
-        /// <param name="configure">The action to execute when configuring the request's pipeling for a tenant.</param>
+        /// <param name="configure">The action to execute when configuring the request's pipeline for a tenant.</param>
         /// <param name="order">The order of the action to execute. Lower values will be executed first.</param>
         public OrchardCoreBuilder Configure(Action<IApplicationBuilder> configure, int order = 0)
         {

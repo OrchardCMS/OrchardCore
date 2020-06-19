@@ -1,16 +1,15 @@
 using System;
 using Microsoft.AspNetCore.Builder;
-using OrchardCore.Modules;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.ContentManagement.Display.ContentDisplay;
-using OrchardCore.XmlRpc;
-using OrchardCore.Lists.Models;
 using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Display.ContentDisplay;
+using OrchardCore.Lists.Models;
+using OrchardCore.Modules;
+using OrchardCore.XmlRpc;
 
 namespace OrchardCore.Lists.RemotePublishing
 {
-
     [RequireFeatures("OrchardCore.RemotePublishing")]
     public class RemotePublishingStartup : StartupBase
     {

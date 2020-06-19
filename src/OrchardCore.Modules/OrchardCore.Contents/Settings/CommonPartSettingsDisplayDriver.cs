@@ -23,7 +23,6 @@ namespace OrchardCore.Lists.Settings
                 var settings = contentTypePartDefinition.GetSettings<CommonPartSettings>();
                 model.DisplayDateEditor = settings.DisplayDateEditor;
                 model.DisplayOwnerEditor = settings.DisplayOwnerEditor;
-
             }).Location("Content");
         }
 

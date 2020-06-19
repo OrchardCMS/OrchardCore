@@ -1,6 +1,6 @@
-using OrchardCore.Modules;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement.Descriptors;
+using OrchardCore.Modules;
 
 namespace OrchardCore.ContentFields.Media
 {

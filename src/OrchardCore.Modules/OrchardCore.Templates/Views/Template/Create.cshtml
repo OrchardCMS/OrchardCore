@@ -58,7 +58,6 @@
         {
             <a class="btn btn-info" href="@Url.Action("Index", "Preview", new { area = "OrchardCore.Templates" })" target="_blank">@T["Preview"]</a>
         }
-
     </div>
 </form>
 
@@ -69,5 +68,4 @@
             document.getElementById('@Html.IdFor(x => x.Name)'),
             document.getElementById('@Html.IdFor(x => x.Content)'));
     });
-
 </script>

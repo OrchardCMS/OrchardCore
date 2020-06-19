@@ -12,8 +12,12 @@ namespace OrchardCore.ContentManagement.Handlers
         Task CreatedAsync(CreateContentContext context);
         Task LoadingAsync(LoadContentContext context);
         Task LoadedAsync(LoadContentContext context);
+        Task ImportingAsync(ImportContentContext context);
+        Task ImportedAsync(ImportContentContext context);
         Task UpdatingAsync(UpdateContentContext context);
         Task UpdatedAsync(UpdateContentContext context);
+        Task ValidatingAsync(ValidateContentContext context);
+        Task ValidatedAsync(ValidateContentContext context);
         Task VersioningAsync(VersionContentContext context);
         Task VersionedAsync(VersionContentContext context);
         Task PublishingAsync(PublishContentContext context);

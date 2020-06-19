@@ -18,7 +18,7 @@
       "node_modules/bootstrap/dist/js/bootstrap.bundle.js"
     ],
     "output": "wwwroot/Scripts/bootstrap.bundle.js"
-  },  
+  },
   {
     "inputs": [
       "node_modules/popper.js/dist/umd/popper.js"
@@ -197,7 +197,7 @@
       "node_modules/vue-multiselect/dist/vue-multiselect.min.css*"
     ],
     "output": "wwwroot/Styles/@"
-  },  
+  },
   {
     "copy": true,
     "inputs": [
@@ -240,5 +240,4 @@
     ],
     "output": "wwwroot/Vendor/fontawesome-free/webfonts/@"
   }
-       
 ]

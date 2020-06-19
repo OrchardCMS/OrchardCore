@@ -85,7 +85,6 @@ namespace OrchardCore.Menu
                         // Don't use Items.Add() or the collection won't be sorted
                         menu.Add(shape);
                     }
-
                 });
 
             builder.Describe("MenuItem")

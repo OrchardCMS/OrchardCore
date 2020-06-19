@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using MimeKit;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Modules;
@@ -23,7 +22,7 @@ namespace OrchardCore.Users.Drivers
         private readonly IRoleService _roleService;
         private readonly IUserRoleStore<IUser> _userRoleStore;
         private readonly ILogger _logger;
-        private readonly IStringLocalizer<UserDisplayDriver> S;
+        private readonly IStringLocalizer S;
 
         public UserDisplayDriver(
             UserManager<IUser> userManager,

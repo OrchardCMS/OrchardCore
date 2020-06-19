@@ -47,7 +47,6 @@ namespace OrchardCore.AdminMenu
             services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AdminMenuDeploymentStep>());
             services.AddScoped<IDisplayDriver<DeploymentStep>, AdminMenuDeploymentStepDriver>();
 
-
             // placeholder treeNode
             services.AddSingleton<IAdminNodeProviderFactory>(new AdminNodeProviderFactory<PlaceholderAdminNode>());
             services.AddScoped<IAdminNodeNavigationBuilder, PlaceholderAdminNodeNavigationBuilder>();

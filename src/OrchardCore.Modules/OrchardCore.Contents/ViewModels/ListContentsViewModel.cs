@@ -20,7 +20,6 @@ namespace OrchardCore.Contents.ViewModels
 
         [BindNever]
         public dynamic Pager { get; set; }
-
     }
 
     public class ContentOptions
@@ -67,7 +66,7 @@ namespace OrchardCore.Contents.ViewModels
         [BindNever]
         public List<SelectListItem> Users { get; set; }
 
-        #endregion
+        #endregion Lists to populate
     }
 
     public enum ContentsOrder

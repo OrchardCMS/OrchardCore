@@ -1,8 +1,8 @@
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OrchardCore.ContentManagement;
 using OrchardCore.Mvc.Utilities;
-using System.Threading.Tasks;
 
 namespace OrchardCore.Demo.Controllers
 {

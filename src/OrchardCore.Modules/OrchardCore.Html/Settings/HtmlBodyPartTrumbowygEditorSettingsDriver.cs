@@ -1,19 +1,19 @@
 using System;
 using System.Threading.Tasks;
-using OrchardCore.Html.Models;
+using Microsoft.Extensions.Localization;
+using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Html.Models;
 using OrchardCore.Html.ViewModels;
-using Newtonsoft.Json.Linq;
-using Microsoft.Extensions.Localization;
 
 namespace OrchardCore.Html.Settings
 {
     public class HtmlBodyPartTrumbowygEditorSettingsDriver : ContentTypePartDefinitionDisplayDriver
     {
-        private readonly IStringLocalizer<HtmlBodyPartTrumbowygEditorSettingsDriver> S;
+        private readonly IStringLocalizer S;
 
         public HtmlBodyPartTrumbowygEditorSettingsDriver(IStringLocalizer<HtmlBodyPartTrumbowygEditorSettingsDriver> localizer)
         {

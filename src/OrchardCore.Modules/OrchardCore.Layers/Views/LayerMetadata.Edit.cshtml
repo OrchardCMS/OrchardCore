@@ -19,7 +19,8 @@
     <select asp-for="LayerMetadata.Layer" class="form-control">
         @foreach (var layer in Model.Layers)
         {
-            <option value="@layer.Name" selected="@(Model.LayerMetadata.Layer == layer.Name)">@layer.Name</option>}
+            <option value="@layer.Name" selected="@(Model.LayerMetadata.Layer == layer.Name)">@layer.Name</option>
+}
     </select>
 </div>
 

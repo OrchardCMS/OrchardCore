@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Routing.Patterns;
 using Microsoft.Extensions.Options;
 using OrchardCore.Routing;
-using OrchardCore.Sitemaps.Services;
 
 namespace OrchardCore.Sitemaps.Routing
 {
@@ -30,7 +29,7 @@ namespace OrchardCore.Sitemaps.Routing
 
             string sitemapId = address.ExplicitValues[_options.SitemapIdKey]?.ToString();
 
-            if (string.IsNullOrEmpty(sitemapId) || !_entries.TryGetPath(sitemapId, out var path))
+            if (string.IsNullOrEmpty(sitemapId) || !_entries.TryGetPathBySitemapId(sitemapId, out var path))
             {
                 return Enumerable.Empty<Endpoint>();
             }

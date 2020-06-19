@@ -24,6 +24,7 @@ namespace OrchardCore.Workflows.UserTasks.Drivers
         private readonly IWorkflowManager _workflowManager;
         private readonly INotifier _notifier;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IHtmlLocalizer H;
 
         public UserTaskEventContentDriver(
             IWorkflowStore workflowStore,
@@ -39,10 +40,8 @@ namespace OrchardCore.Workflows.UserTasks.Drivers
             _notifier = notifier;
             _httpContextAccessor = httpContextAccessor;
 
-            T = localizer;
+            H = localizer;
         }
-
-        private IHtmlLocalizer T { get; }
 
         public override IDisplayResult Edit(ContentItem contentItem)
         {
@@ -69,7 +68,7 @@ namespace OrchardCore.Workflows.UserTasks.Drivers
 
                 if (!availableActions.Contains(action))
                 {
-                    _notifier.Error(T["Not authorized to trigger '{0}'", action]);
+                    _notifier.Error(H["Not authorized to trigger '{0}'", action]);
                 }
                 else
                 {

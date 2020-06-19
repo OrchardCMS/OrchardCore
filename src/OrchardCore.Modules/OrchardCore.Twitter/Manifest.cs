@@ -3,9 +3,9 @@ using OrchardCore.Twitter;
 
 [assembly: Module(
     Name = "Twitter",
-    Author = "The Orchard Team",
-    Website = "https://orchardproject.net",
-    Version = "2.0.0",
+    Author = ManifestConstants.OrchardCoreTeam,
+    Website = ManifestConstants.OrchardCoreWebsite,
+    Version = ManifestConstants.OrchardCoreVersion,
     Category = "Twitter"
 )]
 
@@ -21,5 +21,5 @@ using OrchardCore.Twitter;
     Name = "Sign in with Twitter",
     Category = "Twitter",
     Description = "Authenticates users with their Twitter Account.",
-    Dependencies = new[] { "OrchardCore.Twitter" }
+    Dependencies = new[] { TwitterConstants.Features.Twitter }
 )]

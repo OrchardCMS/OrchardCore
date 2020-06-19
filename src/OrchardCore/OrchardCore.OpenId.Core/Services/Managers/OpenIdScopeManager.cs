@@ -67,6 +67,6 @@ namespace OrchardCore.OpenId.Services.Managers
             => await FindByPhysicalIdAsync(identifier, cancellationToken);
 
         ValueTask<string> IOpenIdScopeManager.GetPhysicalIdAsync(object scope, CancellationToken cancellationToken)
-            => GetPhysicalIdAsync((TScope) scope, cancellationToken);
+            => GetPhysicalIdAsync((TScope)scope, cancellationToken);
     }
 }

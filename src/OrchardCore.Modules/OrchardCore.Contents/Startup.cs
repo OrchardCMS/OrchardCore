@@ -108,6 +108,8 @@ namespace OrchardCore.Contents
                     };
 
                     options.ContentItemIdKey = "contentItemId";
+                    options.ContainedContentItemIdKey = "containedContentItemId";
+                    options.JsonPathKey = "jsonPath";
                 }
             });
         }
@@ -165,7 +167,7 @@ namespace OrchardCore.Contents
                 name: "ListContentItems",
                 areaName: "OrchardCore.Contents",
                 pattern: _adminOptions.AdminUrlPrefix + "/Contents/ContentItems/{contentTypeId?}",
-                defaults: new {controller = adminControllerName, action = nameof(AdminController.List) }
+                defaults: new { controller = adminControllerName, action = nameof(AdminController.List) }
             );
 
             routes.MapAreaControllerRoute(
@@ -231,7 +233,6 @@ namespace OrchardCore.Contents
             services.AddScoped<IDisplayDriver<DeploymentStep>, ContentDeploymentStepDriver>();
         }
     }
-
 
     [RequireFeatures("OrchardCore.AdminMenu")]
     public class AdminMenuStartup : StartupBase

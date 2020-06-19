@@ -1,11 +1,10 @@
-# `OrchardCore.OpenId`
+# OpenID (`OrchardCore.OpenId`)
 
 ## OpenID Connect Module
 
 `OrchardCore.OpenId` provides the following features:
 
 - Core Components
-- Entity Framework Core Stores
 - Authorization Server
 - Management Interface
 - Token Validation
@@ -14,10 +13,6 @@
 ## Core Components
 
 Registers the core components used by the OpenID module.
-
-## Entity Framework Core Stores
-
-Provides an Entity Framework Core 2.x adapter for the OpenID module.
 
 ## Management Interface
 

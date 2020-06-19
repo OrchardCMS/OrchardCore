@@ -1,6 +1,4 @@
-using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace OrchardCore.Users
 {
@@ -27,7 +25,7 @@ namespace OrchardCore.Users
         /// <summary>
         /// Gets or sets the claim properties.
         /// </summary>
-        public KeyValuePair<string,string>[] Properties { get; set; }
+        public KeyValuePair<string, string>[] Properties { get; set; }
 
         /// <summary>
         /// Gets or sets the claim type.

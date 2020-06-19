@@ -12,18 +12,18 @@ namespace OrchardCore.Layers.GraphQL
             Name = "LayerWidget";
 
             Field<StringGraphType>(
-                "zone", 
+                "zone",
                 "The name of the widget's zone.",
                 resolve: context => context.Source.As<LayerMetadata>()?.Zone);
 
             Field<DecimalGraphType>(
-                "position", 
-                "The position of the widget in the zone.", 
+                "position",
+                "The position of the widget in the zone.",
                 resolve: context => context.Source.As<LayerMetadata>()?.Position);
 
             Field<BooleanGraphType>(
-                "renderTitle", 
-                "Whether to render the widget's title.", 
+                "renderTitle",
+                "Whether to render the widget's title.",
                 resolve: context => context.Source.As<LayerMetadata>()?.RenderTitle);
 
             Field<ContentItemInterface>(

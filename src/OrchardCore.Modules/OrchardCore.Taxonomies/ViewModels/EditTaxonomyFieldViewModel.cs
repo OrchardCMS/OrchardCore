@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using OrchardCore.ContentManagement;
@@ -29,10 +28,13 @@ namespace OrchardCore.Taxonomies.ViewModels
     {
         [BindNever]
         public ContentItem Term { get; set; }
+
         public bool Selected { get; set; }
         public string ContentItemId { get; set; }
+
         [BindNever]
         public int Level { get; set; }
+
         public bool IsLeaf { get; set; }
     }
 }

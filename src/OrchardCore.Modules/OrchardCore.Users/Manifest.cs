@@ -2,9 +2,9 @@ using OrchardCore.Modules.Manifest;
 
 [assembly: Module(
     Name = "Users",
-    Author = "The Orchard Team",
-    Website = "https://orchardproject.net",
-    Version = "2.0.0"
+    Author = ManifestConstants.OrchardCoreTeam,
+    Website = ManifestConstants.OrchardCoreWebsite,
+    Version = ManifestConstants.OrchardCoreVersion
 )]
 
 [assembly: Feature(
@@ -42,5 +42,6 @@ using OrchardCore.Modules.Manifest;
     Id = "OrchardCore.Users.TimeZone",
     Name = "User Time Zone",
     Description = "Provides a way to set the time zone per user.",
+    Dependencies = new[] { "OrchardCore.Users" },
     Category = "Settings"
 )]

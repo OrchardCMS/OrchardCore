@@ -31,7 +31,8 @@ namespace OrchardCore.ContentManagement.Records
         public override void Describe(DescribeContext<ContentItem> context)
         {
             context.For<ContentItemIndex>()
-                .Map(contentItem => {
+                .Map(contentItem =>
+                {
                     var contentItemIndex = new ContentItemIndex
                     {
                         Latest = contentItem.Latest,

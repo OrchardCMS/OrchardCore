@@ -1,9 +1,9 @@
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.DisplayManagement.ModelBinding;
-using System.Threading.Tasks;
 using OrchardCore.Mvc.Utilities;
 
 namespace OrchardCore.Contents.Controllers
@@ -27,14 +27,14 @@ namespace OrchardCore.Contents.Controllers
             _updateModelAccessor = updateModelAccessor;
         }
 
-        public async Task<IActionResult> Display(string contentItemId)
+        public async Task<IActionResult> Display(string contentItemId, string jsonPath)
         {
             if (contentItemId == null)
             {
                 return NotFound();
             }
 
-            var contentItem = await _contentManager.GetAsync(contentItemId);
+            var contentItem = await _contentManager.GetAsync(contentItemId, jsonPath);
 
             if (contentItem == null)
             {

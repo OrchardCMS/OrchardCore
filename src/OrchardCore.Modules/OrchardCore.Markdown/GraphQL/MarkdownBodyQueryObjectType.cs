@@ -1,11 +1,17 @@
+using System.Linq;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using GraphQL.Types;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Apis.GraphQL;
+using OrchardCore.ContentManagement.Metadata;
+using OrchardCore.ShortCodes.Services;
+using OrchardCore.Infrastructure.Html;
 using OrchardCore.Liquid;
 using OrchardCore.Markdown.Models;
+using OrchardCore.Markdown.Services;
+using OrchardCore.Markdown.Settings;
 using OrchardCore.Markdown.ViewModels;
 
 namespace OrchardCore.Markdown.GraphQL
@@ -34,20 +40,45 @@ namespace OrchardCore.Markdown.GraphQL
             }
 
             var serviceProvider = ctx.ResolveServiceProvider();
-            var liquidTemplateManager = serviceProvider.GetService<ILiquidTemplateManager>();
-            var htmlEncoder = serviceProvider.GetService<HtmlEncoder>();
+            var markdownService = serviceProvider.GetRequiredService<IMarkdownService>();
+            var shortCodeService = serviceProvider.GetRequiredService<IShortCodeService>();
+            var contentDefinitionManager = serviceProvider.GetRequiredService<IContentDefinitionManager>();
 
-            var model = new MarkdownBodyPartViewModel()
+            var contentTypeDefinition = contentDefinitionManager.GetTypeDefinition(ctx.Source.ContentItem.ContentType);
+            var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => string.Equals(x.PartDefinition.Name, "MarkdownBodyPart"));
+            var settings = contentTypePartDefinition.GetSettings<MarkdownBodyPartSettings>();
+
+            // The default Markdown option is to entity escape html
+            // so filters must be run after the markdown has been processed.
+            var html = markdownService.ToHtml(ctx.Source.Markdown);
+
+            // The liquid rendering is for backwards compatability and can be removed in a future version.
+            if (!settings.SanitizeHtml)
             {
-                Markdown = ctx.Source.Markdown,
-                MarkdownBodyPart = ctx.Source,
-                ContentItem = ctx.Source.ContentItem
-            };
+                var liquidTemplateManager = serviceProvider.GetService<ILiquidTemplateManager>();
+                var htmlEncoder = serviceProvider.GetService<HtmlEncoder>();
 
-            var markdown = await liquidTemplateManager.RenderAsync(ctx.Source.Markdown, htmlEncoder, model,
-                scope => scope.SetValue("ContentItem", model.ContentItem));
+                var model = new MarkdownBodyPartViewModel()
+                {
+                    Markdown = ctx.Source.Markdown,
+                    Html = html,
+                    MarkdownBodyPart = ctx.Source,
+                    ContentItem = ctx.Source.ContentItem
+                };
 
-            return Markdig.Markdown.ToHtml(markdown);
+                html = await liquidTemplateManager.RenderAsync(html, htmlEncoder, model,
+                    scope => scope.SetValue("ContentItem", model.ContentItem));
+            }
+
+            html = await shortCodeService.ProcessAsync(html);
+
+            if (settings.SanitizeHtml)
+            {
+                var htmlSanitizerService = serviceProvider.GetRequiredService<IHtmlSanitizerService>();
+                html = htmlSanitizerService.Sanitize(html);
+            }
+
+            return html;
         }
     }
 }

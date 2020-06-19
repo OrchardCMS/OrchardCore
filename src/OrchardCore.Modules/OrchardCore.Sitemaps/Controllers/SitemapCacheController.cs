@@ -1,7 +1,4 @@
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -19,7 +16,7 @@ namespace OrchardCore.Sitemaps.Controllers
         private readonly IAuthorizationService _authorizationService;
         private readonly ISitemapCacheProvider _sitemapCacheProvider;
         private readonly INotifier _notifier;
-        private readonly IHtmlLocalizer<SitemapCacheController> H;
+        private readonly IHtmlLocalizer H;
 
         public SitemapCacheController(
             IAuthorizationService authorizationService,

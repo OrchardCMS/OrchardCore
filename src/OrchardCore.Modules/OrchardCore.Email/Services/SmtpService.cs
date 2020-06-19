@@ -15,23 +15,24 @@ namespace OrchardCore.Email.Services
 {
     public class SmtpService : ISmtpService
     {
-        private readonly SmtpSettings _options;
-        private readonly ILogger<SmtpService> _logger;
-        private static readonly char[] EmailsSeparator = new char[] { ',', ';', ' ' };
         private const string EmailExtension = ".eml";
+        
+        private static readonly char[] EmailsSeparator = new char[] { ',', ';', ' ' };
+        
+        private readonly SmtpSettings _options;
+        private readonly ILogger _logger;
+        private readonly IStringLocalizer S;
 
         public SmtpService(
             IOptions<SmtpSettings> options,
             ILogger<SmtpService> logger,
-            IStringLocalizer<SmtpService> S
+            IStringLocalizer<SmtpService> stringLocalizer
             )
         {
             _options = options.Value;
             _logger = logger;
-            this.S = S;
+            S = stringLocalizer;
         }
-
-        public IStringLocalizer S { get; }
 
         public async Task<SmtpResult> SendAsync(MailMessage message)
         {
@@ -42,6 +43,11 @@ namespace OrchardCore.Email.Services
 
             try
             {
+                // Set the MailMessage.From, to avoid the confusion between _options.DefaultSender (Author) and submitter (Sender)
+                message.From = String.IsNullOrWhiteSpace(message.From)
+                    ? _options.DefaultSender
+                    : message.From;
+
                 var mimeMessage = FromMailMessage(message);
 
                 switch (_options.DeliveryMethod)
@@ -54,7 +60,6 @@ namespace OrchardCore.Email.Services
                         break;
                     default:
                         throw new NotSupportedException($"The '{_options.DeliveryMethod}' delivery method is not supported.");
-
                 }
 
                 return SmtpResult.Success;
@@ -67,16 +72,16 @@ namespace OrchardCore.Email.Services
 
         private MimeMessage FromMailMessage(MailMessage message)
         {
-            var senderAddress = String.IsNullOrWhiteSpace(message.From)
+            var senderAddress = String.IsNullOrWhiteSpace(message.Sender)
                 ? _options.DefaultSender
-                : message.From;
+                : message.Sender;
 
             var mimeMessage = new MimeMessage
             {
                 Sender = MailboxAddress.Parse(senderAddress)
             };
 
-            mimeMessage.From.Add(mimeMessage.Sender);
+            mimeMessage.From.Add(MailboxAddress.Parse(message.From));
 
             if (!string.IsNullOrWhiteSpace(message.To))
             {

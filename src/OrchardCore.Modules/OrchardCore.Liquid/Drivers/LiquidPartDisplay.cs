@@ -1,7 +1,6 @@
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
-using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Liquid.Models;
@@ -12,7 +11,7 @@ namespace OrchardCore.Liquid.Drivers
     public class LiquidPartDisplay : ContentPartDisplayDriver<LiquidPart>
     {
         private readonly ILiquidTemplateManager _liquidTemplatemanager;
-        private readonly IStringLocalizer<LiquidPartDisplay> S;
+        private readonly IStringLocalizer S;
 
         public LiquidPartDisplay(ILiquidTemplateManager liquidTemplatemanager, IStringLocalizer<LiquidPartDisplay> localizer)
         {

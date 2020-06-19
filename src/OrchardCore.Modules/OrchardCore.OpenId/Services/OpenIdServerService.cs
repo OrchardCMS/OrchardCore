@@ -25,12 +25,12 @@ namespace OrchardCore.OpenId.Services
     public class OpenIdServerService : IOpenIdServerService
     {
         private readonly IDataProtector _dataProtector;
-        private readonly ILogger<OpenIdServerService> _logger;
+        private readonly ILogger _logger;
         private readonly IMemoryCache _memoryCache;
         private readonly IOptionsMonitor<ShellOptions> _shellOptions;
         private readonly ShellSettings _shellSettings;
         private readonly ISiteService _siteService;
-        private readonly IStringLocalizer<OpenIdServerService> S;
+        private readonly IStringLocalizer S;
 
         public OpenIdServerService(
             IDataProtectionProvider dataProtectionProvider,
@@ -116,6 +116,14 @@ namespace OrchardCore.OpenId.Services
                 }
             }
 
+            if (settings.UseReferenceTokens && settings.AccessTokenFormat != OpenIdServerSettings.TokenFormat.Encrypted)
+            {
+                results.Add(new ValidationResult(S["Reference tokens can only be enabled when using the Encrypted token format."], new[]
+                {
+                    nameof(settings.UseReferenceTokens)
+                }));
+            }
+
             if (settings.CertificateStoreLocation != null &&
                 settings.CertificateStoreName != null &&
                 !string.IsNullOrEmpty(settings.CertificateThumbprint))
@@ -131,7 +139,6 @@ namespace OrchardCore.OpenId.Services
                         nameof(settings.CertificateThumbprint)
                     }));
                 }
-
                 else if (!certificate.HasPrivateKey)
                 {
                     results.Add(new ValidationResult(S["The certificate doesn't contain the required private key."], new[]
@@ -139,7 +146,6 @@ namespace OrchardCore.OpenId.Services
                         nameof(settings.CertificateThumbprint)
                     }));
                 }
-
                 else if (certificate.Archived)
                 {
                     results.Add(new ValidationResult(S["The certificate is not valid because it is marked as archived."], new[]
@@ -147,7 +153,6 @@ namespace OrchardCore.OpenId.Services
                         nameof(settings.CertificateThumbprint)
                     }));
                 }
-
                 else if (certificate.NotBefore > DateTime.Now || certificate.NotAfter < DateTime.Now)
                 {
                     results.Add(new ValidationResult(S["The certificate is not valid for current date."], new[]
