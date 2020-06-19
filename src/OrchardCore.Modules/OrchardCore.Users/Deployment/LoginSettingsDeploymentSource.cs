@@ -1,19 +1,19 @@
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Deployment;
+using OrchardCore.Entities;
 using OrchardCore.Settings;
+using OrchardCore.Users.Models;
 using OrchardCore.Users.Services;
 
 namespace OrchardCore.Users.Deployment
 {
     public class LoginSettingsDeploymentSource : IDeploymentSource
     {
-        private readonly IMembershipService _membershipService;
         private readonly ISiteService _siteService;
 
-        public LoginSettingsDeploymentSource(IMembershipService membershipService, ISiteService siteService)
+        public LoginSettingsDeploymentSource(ISiteService siteService)
         {
-            _membershipService = membershipService;
             _siteService = siteService;
         }
 
@@ -26,7 +26,7 @@ namespace OrchardCore.Users.Deployment
                 return;
             }
 
-            var loginSettings = await _membershipService.GetLoginSettingsAsync();
+            var loginSettings = (await _siteService.GetSiteSettingsAsync()).As<LoginSettings>();
 
             // Adding Login settings
             result.Steps.Add(new JObject(
