@@ -46,19 +46,5 @@ namespace OrchardCore.Users.Services
         {
             return _claimsPrincipalFactory.CreateAsync(user as User);
         }
-
-        public async Task<LoginSettings> GetLoginSettingsAsync()
-        {
-            var siteSettings = await _siteService.GetSiteSettingsAsync();
-
-            if (siteSettings.Has<LoginSettings>())
-            {
-                return siteSettings.As<LoginSettings>();
-            }
-            else
-            {
-                return new LoginSettings();
-            }
-        }
     }
 }

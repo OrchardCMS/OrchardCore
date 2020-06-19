@@ -30,7 +30,5 @@ namespace OrchardCore.Users.Services
         /// <param name="user">The <see cref="IUser"/>.</param>
         /// <returns>A user <see cref="ClaimsPrincipal"/>s.</returns>
         Task<ClaimsPrincipal> CreateClaimsPrincipal(IUser user);
-
-        Task<LoginSettings> GetLoginSettingsAsync();
     }
 }
