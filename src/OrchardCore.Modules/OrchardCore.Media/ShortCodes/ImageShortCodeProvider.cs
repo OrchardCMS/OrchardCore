@@ -2,24 +2,21 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Shortcodes;
-using OrchardCore.DisplayManagement;
 using OrchardCore.Infrastructure.Html;
-using OrchardCore.ShortCodes;
 
 namespace OrchardCore.Media.ShortCodes
 {
-    public class ImageShortCodeProvider : NamedShortcodeProvider
+    public class ImageShortcodeProvider : NamedShortcodeProvider
     {
         private readonly IHtmlSanitizerService _htmlSanitizerService;
         private readonly IMediaFileStore _mediaFileStore;
 
-        public ImageShortCodeProvider(IMediaFileStore mediaFileStore, IHtmlSanitizerService htmlSanitizerService)
+        public ImageShortcodeProvider(IMediaFileStore mediaFileStore, IHtmlSanitizerService htmlSanitizerService)
             : base(
             new Dictionary<string, ShortcodeDelegate>
             {
-                ["image"] = EvaluateImageAsync(mediaFileStore, htmlSanitizerService)
-                // ["image"] = new ShortcodeDelegate(EvaluateImageAsync),
-                // ["media"] = new ShortcodeDelegate(EvaluateImageAsync)
+                ["image"] = EvaluateImageAsync(mediaFileStore, htmlSanitizerService),
+                ["media"] = EvaluateImageAsync(mediaFileStore, htmlSanitizerService)
             }
         )
         {
@@ -41,20 +38,9 @@ namespace OrchardCore.Media.ShortCodes
 
                 var tag = "<img src=\"" + publicUrl + "\">";
                 tag = htmlSanitizerService.Sanitize(tag);
-                // var t = mediaFileStore.MapPathToPublicUrl("about-bg.jpg");
 
                 return new ValueTask<string>(tag);
             };
         }
-
-        // private static ValueTask<string> EvaluateImageAsync(Shortcodes.Arguments arguments, string content)
-        // {
-        //     return new ValueTask<string>("Hello world!");
-        // }
     }
-
-    //     private static ValueTask<string> EvaluateImageAsync(Shortcodes.Arguments arguments, string content)
-    // {
-    //     return new ValueTask<string>("Hello world!");
-    // }
 }
