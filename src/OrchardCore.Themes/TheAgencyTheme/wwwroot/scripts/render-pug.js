@@ -27,7 +27,8 @@ module.exports = function renderPug(filePath) {
         singleQuote: true,
         proseWrap: 'preserve',
         endOfLine: 'lf',
-        parser: 'html'
+        parser: 'html',
+        htmlWhitespaceSensitivity: 'ignore'
     });
 
     fs.writeFileSync(destPath, prettified);
