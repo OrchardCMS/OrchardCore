@@ -45,13 +45,13 @@ The `OrchardCore.Resources` module provides some commonly used ones:
 
 | Name                  | Type   | Versions      | Dependencies   |
 | --------------------- | ------ | ------------- | -------------- |
-| jQuery                | Script | 3.4.1         | -              |
-| jQuery.slim           | Script | 3.4.1         | -              |
+| jQuery                | Script | 3.5.1         | -              |
+| jQuery.slim           | Script | 3.5.1         | -              |
 | jQuery-ui             | Script | 1.12.1        | jQuery         |
 | jQuery-ui-i18n        | Script | 1.7.2         | jQuery-ui      |
 | popper                | Script | 1.16.0        | -              |
-| bootstrap             | Script | 3.4.0, 4.4.1  | jQuery, Popper |
-| bootstrap             | Style  | 3.4.0, 4.4.1  | -              |
+| bootstrap             | Script | 3.4.0, 4.5.0  | jQuery, Popper |
+| bootstrap             | Style  | 3.4.0, 4.5.0  | -              |
 | bootstrap-select      | Script | 1.13.17       | -              |
 | bootstrap-select      | Style  | 1.13.17       | -              |
 | bootstrap-slider      | Script | 11.0.2        | -              |
@@ -132,10 +132,10 @@ settings.AtFoot();
 ##### Set the version to use
 
 ```csharp
-settings.UseVersion("3.3");
+settings.UseVersion("3.4");
 ```
 
-This will use the latest available version between `3.3` and `3.4`. If the version is not available an exception is thrown.
+This will use the latest available version between `3.4` and `3.5`. If the version is not available an exception is thrown.
 
 ##### Append a version
 
