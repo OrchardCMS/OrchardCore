@@ -1,4 +1,4 @@
-# Scripting `OrchardCore.Scripting`
+# Scripting (`OrchardCore.Scripting`)
 
 ## Purpose
 
