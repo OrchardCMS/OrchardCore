@@ -20,10 +20,11 @@ namespace OrchardCore.Facebook
     {
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.AddScoped<INavigationProvider, AdminMenuLogin>();
+
             services.AddSingleton<IFacebookLoginService, FacebookLoginService>();
             services.AddScoped<IDisplayDriver<ISite>, FacebookLoginSettingsDisplayDriver>();
             services.AddRecipeExecutionStep<FacebookLoginSettingsStep>();
-            services.AddScoped<INavigationProvider, AdminMenuLogin>();
 
             // Register the options initializers required by the Facebook handler.
             services.TryAddEnumerable(new[]
@@ -33,7 +34,7 @@ namespace OrchardCore.Facebook
                 ServiceDescriptor.Transient<IConfigureOptions<FacebookOptions>, FacebookLoginConfiguration>(),
 
                 // Built-in initializers:
-                ServiceDescriptor.Transient<IPostConfigureOptions<FacebookOptions>, OAuthPostConfigureOptions<FacebookOptions,FacebookHandler>>()
+                ServiceDescriptor.Transient<IPostConfigureOptions<FacebookOptions>, OAuthPostConfigureOptions<FacebookOptions, FacebookHandler>>()
             });
         }
     }
