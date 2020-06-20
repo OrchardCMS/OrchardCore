@@ -1,0 +1,22 @@
+@model dynamic
+@using OrchardCore.Mvc.Utilities
+@{
+    var cardName = String.IsNullOrWhiteSpace(Model.Card.Key) ? "Content" : Model.Card.Key;
+    var cardId = $"card-{Model.ContentItemId}-{cardName}".HtmlClassify();
+}
+<div class="card">
+    <div class="card-header" id="heading-@cardId">
+        <button class="btn btn-link @(Model.CardIndex == 0 ? "" : "collapsed")" type="button" data-toggle="collapse" data-target="#collapse-@cardId" aria-expanded="true" aria-controls="collapse-@cardId">
+          @cardName
+        </button>        
+        
+    </div>
+    <div class="collapse @(Model.CardIndex == 0 ? "show" : "")" id="collapse-@cardId" data-parent="#@Model.ContainerId" aria-labelledby="heading-@cardId">
+        <div class="card-body ">
+            @foreach(var item in Model.Card)
+            {
+                @await DisplayAsync(item)
+            }
+        </div>
+    </div>
+</div>

@@ -4,7 +4,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement.Descriptors;
+using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.Mvc.Utilities;
 
@@ -25,41 +27,45 @@ namespace OrchardCore.DisplayManagement.Zones
         }
 
         [Shape]
-        public async Task<IHtmlContent> ContentZone(dynamic DisplayAsync, dynamic Shape)
+        public async Task<IHtmlContent> ContentZone(dynamic DisplayAsync, dynamic Shape, dynamic New, DisplayContext DisplayContext)
         {
             var htmlContents = new List<IHtmlContent>();
 
             var shapes = ((IEnumerable<dynamic>)Shape);
 
-            var tabbed = shapes.GroupBy(x => (string)x.Metadata.Tab ?? "").ToList();
+            var tabs = shapes.GroupBy(x => (string)x.Metadata.Tab ?? "").ToList();
 
-            if (tabbed.Count > 1)
+            // Process tabs first, then Cards, then Columns.
+            if (tabs.Count > 1)
             {
-                var tabIndex = 0;
-                var tabId = Shape.ContentItem != null ? (string)Shape.ContentItem.ContentItemId : "";
-                var tabContentBuilder = new TagBuilder("div");
-                tabContentBuilder.AddCssClass("tab-content");
-                foreach (var tab in tabbed)
-                {
-                    var tabName = String.IsNullOrWhiteSpace(tab.Key) ? "Content" : tab.Key;
-                    var tabItemBuilder = new TagBuilder("div");
-                    tabItemBuilder.Attributes["id"] = $"tab-{tabId}-{tabName}".HtmlClassify();
-                    var tabItemClasses = tabIndex == 0 ? "tab-pane fade show active" : "tab-pane fade";
-                    tabItemBuilder.AddCssClass(tabItemClasses);
-                    foreach (var item in tab)
-                    {
-                        tabItemBuilder.InnerHtml.AppendHtml(await DisplayAsync(item));
-                    }
-                    tabContentBuilder.InnerHtml.AppendHtml(tabItemBuilder);
-                    tabIndex++;
-                }
-                htmlContents.Add(tabContentBuilder);
+                dynamic tabContainer = await New.TabContainer(ContentItem: Shape.ContentItem, Tabs: tabs);
+
+                htmlContents.Add(await DisplayAsync(tabContainer));
             }
-            else if (tabbed.Count > 0)
+            else// if (tabs.Count > 0)
             {
-                foreach (var item in tabbed[0])
+                var cards = tabs[0].GroupBy(x => (string)x.Metadata.Card ?? "").ToList();
+                if (cards.Count > 1)
                 {
-                    htmlContents.Add(await DisplayAsync(item));
+                    dynamic cardContainer = await New.CardContainer(ContentItem: Shape.ContentItem, Cards: cards);
+
+                    htmlContents.Add(await DisplayAsync(cardContainer));
+                }
+                else// if (cards.Count > 0)
+                {
+                    var columns = tabs[0].GroupBy(x => (string)x.Metadata.Column ?? "").ToList();
+                    if (columns.Count > 1)
+                    {
+                        dynamic columnContainer = await New.ColumnContainer(ContentItem: Shape.ContentItem, Columns: columns);
+                        htmlContents.Add(await DisplayAsync(columnContainer));
+                    }
+                    else
+                    {
+                        foreach (var item in tabs[0])
+                        {
+                            htmlContents.Add(await DisplayAsync(item));
+                        }
+                    }
                 }
             }
 
@@ -81,16 +87,21 @@ namespace OrchardCore.DisplayManagement.Zones
                 var tab = (string)shape.Metadata.Tab;
 
                 if (String.IsNullOrEmpty(tab))
+                {
                     continue;
+                }
 
                 if (!tabs.Contains(tab))
+                {
                     tabs.Add(tab);
+                }
             }
 
             // If we have any tabs, make sure we have at least the Content tab and that it is the first one,
             // since that's where we will put anything else not part of a tab.
             if (tabs.Any())
             {
+                // TODO change this so we don't get a Content tab if there is nothing to go in it.
                 tabs.Remove("Content");
                 tabs.Insert(0, "Content");
             }

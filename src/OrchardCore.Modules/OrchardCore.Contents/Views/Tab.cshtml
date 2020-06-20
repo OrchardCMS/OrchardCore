@@ -1,0 +1,28 @@
+@model dynamic
+@using System.Linq
+@using OrchardCore.Mvc.Utilities
+@{
+    var tabName = String.IsNullOrWhiteSpace(Model.Tab.Key) ? "Content" : Model.Tab.Key;
+    var tabId = $"tab-{Model.TabId}-{tabName}".HtmlClassify();
+    
+    var tabItemClasses = Model.TabIndex == 0 ? "tab-pane fade show active" : "tab-pane fade";
+}
+<div id="@tabId" class="@tabItemClasses">
+    @{
+        @* so we need to see if there are any cards in this tab*@
+        var grouping = (IGrouping<string, dynamic>)Model.Tab;
+        var cards = grouping.GroupBy(x => (string)x.Metadata.Card ?? "").ToList();
+        if (cards.Count > 1)
+        {
+            dynamic cardContainer = await New.CardContainer(ContentItem: Model.ContentItem, Cards: cards);
+            @await DisplayAsync(cardContainer)
+        }
+        else if (cards.Count > 0)
+        {
+            @foreach(var item in Model.Tab)
+            {
+                @await DisplayAsync(item)
+            }
+        }
+    }
+</div>

@@ -1,0 +1,12 @@
+@model dynamic
+@{
+    var tabIndex = 0;
+    var tabId = Model.ContentItem != null ? (string)Model.ContentItem.ContentItemId : "";
+}
+<div class="tab-content">
+    @foreach(var tab in Model.Tabs)
+    {              
+        @await DisplayAsync(await New.Tab(Tab: tab, TabIndex: tabIndex, TabId: tabId, ContentItem: Model.ContentItem))
+        tabIndex++;
+    }
+</div>

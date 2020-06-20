@@ -1,0 +1,29 @@
+@model dynamic
+@using OrchardCore.Mvc.Utilities
+@{
+
+}
+        <style at="Head">
+            .admin-wrapper .col-md-6 {
+                flex: 0 0 100% !important;
+                max-width: 100% !important;
+            }           
+        </style>
+
+<div class="row">
+    @foreach(var column in Model.Columns)
+    {
+        string columnClass = String.IsNullOrEmpty(column.Key) ? "col" : "col-md-" + column.Key;
+        
+         @* string columnClass = "col-6"; *@
+        <div class="@columnClass">
+            <div class="admin-wrapper">
+            @foreach(var item in column)
+            {
+                @Orchard.ConsoleLog(item as object)
+                @await DisplayAsync(item)
+            }
+            </div>
+        </div>
+    }
+</div>

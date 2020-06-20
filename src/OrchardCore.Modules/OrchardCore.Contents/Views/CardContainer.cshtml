@@ -1,0 +1,15 @@
+@model dynamic
+@using OrchardCore.Mvc.Utilities
+@{
+    var cardIndex = 0;
+    var contentItemId = Model.ContentItem != null ? (string)Model.ContentItem.ContentItemId : "";
+    @* TODO move away from content item id*@
+    var containerId = $"accordion-card-{Guid.NewGuid().ToString("n")}".HtmlClassify();
+}
+<div class="accordion mb-3" id="@containerId">
+    @foreach(var card in Model.Cards)
+    {
+        @await DisplayAsync(await New.Card(Card: card, CardIndex: cardIndex, ContentItemId: contentItemId, ContainerId: containerId))
+        cardIndex++;
+    }
+</div>
