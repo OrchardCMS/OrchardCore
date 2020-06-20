@@ -157,7 +157,7 @@ namespace OrchardCore.Media
             services.AddTagHelpers<ImageTagHelper>();
             services.AddTagHelpers<ImageResizeTagHelper>();
 
-            services.AddScoped<IShortCode, MediaShortCode>();
+            services.AddScoped<IShortCode, ImageShortCode>();
         }
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

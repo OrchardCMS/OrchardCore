@@ -85,7 +85,7 @@ The Database Shells Configuration is configured via the `appsettings.json` secti
 ``` json
 {
   "OrchardCore": {
-    "OrchardCore.Shells.Database": {
+    "OrchardCore_Shells_Database": {
       "DatabaseProvider": "SqlConnection", // Set to a supported database provider.
       "ConnectionString": "", // Set to the database connection string.
       "TablePrefix": "", // Optionally, configure a table prefix.

@@ -22,7 +22,9 @@ var fs = require("graceful-fs"),
     postcss = require('gulp-postcss'),
     rtl = require('postcss-rtl'),
     babel = require('gulp-babel'),
+    agencytheme = require('./src/OrchardCore.Themes/TheAgencyTheme/wwwroot/gulpfile'),
     blogtheme = require('./src/OrchardCore.Themes/TheBlogTheme/wwwroot/gulpfile');
+    comingsoontheme = require('./src/OrchardCore.Themes/TheComingSoonTheme/wwwroot/gulpfile');
 
 // For compat with older versions of Node.js.
 require("es6-promise").polyfill();
@@ -91,12 +93,20 @@ gulp.task('help', function() {
     `);
   });
 
+gulp.task("build-agencytheme", function(done){
+	return buildAgencyTheme(done);
+});
+
 gulp.task("build-blogtheme", function(done){
 	return buildBlogTheme(done);
 });
 
+gulp.task("build-comingsoontheme", function(done){
+	return buildComingSoonTheme(done);
+});
+
 gulp.task("build-themes", function(done){
-    buildBlogTheme (done);
+    buildAgencyTheme(() => buildBlogTheme (() => buildComingSoonTheme(done)) );
 });
 
 
@@ -108,13 +118,31 @@ gulp.task( 'default',  gulp.series([ 'build' ]) );
 ** Build Themes
 */
 
+function buildAgencyTheme(done){
+    var cwd = process.cwd();      
+    process.chdir('./src/OrchardCore.Themes/TheAgencyTheme/wwwroot');       
+	agencytheme.build( ()=> {
+         process.chdir(cwd);
+         done();
+    });
+}
+
 function buildBlogTheme(done){
     var cwd = process.cwd();      
     process.chdir('./src/OrchardCore.Themes/TheBlogTheme/wwwroot');    
 	blogtheme.build( ()=> {
         process.chdir(cwd);
         done();
-    });    
+    });
+}
+
+function buildComingSoonTheme(done){
+    var cwd = process.cwd();      
+    process.chdir('./src/OrchardCore.Themes/TheComingSoonTheme/wwwroot');    
+	comingsoontheme.build( ()=> {
+        process.chdir(cwd);
+        done();
+    });
 }
 
 /*

@@ -48,10 +48,8 @@ namespace OrchardCore.Markdown
 
             services.AddLiquidFilter<Markdownify>("markdownify");
 
-            services.Configure<MarkdownPipelineOptions>(o =>
-            {
-                o.Configure = (pipeline) => pipeline.DisableHtml();
-            });
+            services.AddOptions<MarkdownPipelineOptions>();
+            services.ConfigureMarkdownPipeline((pipeline) => pipeline.DisableHtml());
 
             services.AddScoped<IMarkdownService, DefaultMarkdownService>();
         }
