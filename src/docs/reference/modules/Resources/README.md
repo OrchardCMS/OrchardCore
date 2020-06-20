@@ -45,8 +45,8 @@ The `OrchardCore.Resources` module provides some commonly used ones:
 
 | Name                  | Type   | Versions      | Dependencies   |
 | --------------------- | ------ | ------------- | -------------- |
-| jQuery                | Script | 3.4.1         | -              |
-| jQuery.slim           | Script | 3.4.1         | -              |
+| jQuery                | Script | 3.5.1         | -              |
+| jQuery.slim           | Script | 3.5.1         | -              |
 | jQuery-ui             | Script | 1.12.1        | jQuery         |
 | jQuery-ui-i18n        | Script | 1.7.2         | jQuery-ui      |
 | popper                | Script | 1.16.0        | -              |
@@ -54,8 +54,8 @@ The `OrchardCore.Resources` module provides some commonly used ones:
 | bootstrap             | Style  | 3.4.0, 4.5.0  | -              |
 | bootstrap-select      | Script | 1.13.17       | -              |
 | bootstrap-select      | Style  | 1.13.17       | -              |
-| codemirror            | Script | 5.53.2        | -              |
-| codemirror            | Style  | 5.53.2        | -              |
+| codemirror            | Script | 5.54.0        | -              |
+| codemirror            | Style  | 5.54.0        | -              |
 | font-awesome          | Style  | 4.7.0, 5.13.0 | -              |
 | font-awesome          | Script | 5.13.0        | -              |
 | font-awesome-v4-shims | Script | 5.13.0        | -              |
@@ -130,10 +130,10 @@ settings.AtFoot();
 ##### Set the version to use
 
 ```csharp
-settings.UseVersion("3.3");
+settings.UseVersion("3.4");
 ```
 
-This will use the latest available version between `3.3` and `3.4`. If the version is not available an exception is thrown.
+This will use the latest available version between `3.4` and `3.5`. If the version is not available an exception is thrown.
 
 ##### Append a version
 

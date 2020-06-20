@@ -1,3 +1,4 @@
+using System.Linq;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentFields.Settings;
 using OrchardCore.ContentManagement.Metadata;
@@ -31,7 +32,6 @@ namespace OrchardCore.ContentFields
             _contentDefinitionManager.MigrateFieldSettings<DateTimeField, DateTimeFieldSettings>();
 
             // Html field
-
             _contentDefinitionManager.MigrateFieldSettings<HtmlField, HtmlFieldSettings>();
 
             // Link field
@@ -54,7 +54,33 @@ namespace OrchardCore.ContentFields
             // Youtube field
             _contentDefinitionManager.MigrateFieldSettings<YoutubeField, YoutubeFieldSettings>();
 
-            return 1;
+            // Return 2 to shortcut migration on new content definition schemas.
+            return 2;
+        }
+
+        // This code can be removed in a later version.
+        public int UpdateFrom1()
+        {
+            // For backwards compatability with liquid filters we disable html sanitization on existing field definitions.
+            var partDefinitions = _contentDefinitionManager.LoadPartDefinitions();
+            foreach (var partDefinition in partDefinitions)
+            {
+                if (partDefinition.Fields.Any(x => x.FieldDefinition.Name == "HtmlField"))
+                {
+                    _contentDefinitionManager.AlterPartDefinition(partDefinition.Name, partBuilder =>
+                    {
+                        foreach (var fieldDefinition in partDefinition.Fields.Where(x => x.FieldDefinition.Name == "HtmlField"))
+                        {
+                            partBuilder.WithField(fieldDefinition.Name, fieldBuilder =>
+                            {
+                                fieldBuilder.MergeSettings<HtmlFieldSettings>(x => x.SanitizeHtml = false);
+                            });
+                        }
+                    });
+                }
+            }
+
+            return 2;
         }
     }
 }

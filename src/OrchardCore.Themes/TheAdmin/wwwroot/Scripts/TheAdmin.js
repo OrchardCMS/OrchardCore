@@ -7108,7 +7108,7 @@ $(function () {
       return false;
     }
 
-    confirmDialog(_objectSpread({}, _this.data(), {
+    confirmDialog(_objectSpread(_objectSpread({}, _this.data()), {}, {
       callback: function callback(resp) {
         if (resp) {
           var url = _this.attr('href');
@@ -7159,7 +7159,7 @@ $(function () {
       var unsafeUrlPrompt = _this.data("unsafe-url");
 
       if (unsafeUrlPrompt && unsafeUrlPrompt.length > 0) {
-        confirmDialog(_objectSpread({}, _this.data(), {
+        confirmDialog(_objectSpread(_objectSpread({}, _this.data()), {}, {
           callback: function callback(resp) {
             if (resp) {
               form.submit();
@@ -7170,7 +7170,7 @@ $(function () {
       }
 
       if (_this.filter("[itemprop~='RemoveUrl']").length == 1) {
-        confirmDialog(_objectSpread({}, _this.data(), {
+        confirmDialog(_objectSpread(_objectSpread({}, _this.data()), {}, {
           callback: function callback(resp) {
             if (resp) {
               form.submit();
