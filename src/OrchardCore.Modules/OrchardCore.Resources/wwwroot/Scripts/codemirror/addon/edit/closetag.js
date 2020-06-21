@@ -45,10 +45,10 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     var map = {
       name: "autoCloseTags"
     };
-    if (_typeof(val) != "object" || val.whenClosing) map["'/'"] = function (cm) {
+    if (_typeof(val) != "object" || val.whenClosing !== false) map["'/'"] = function (cm) {
       return autoCloseSlash(cm);
     };
-    if (_typeof(val) != "object" || val.whenOpening) map["'>'"] = function (cm) {
+    if (_typeof(val) != "object" || val.whenOpening !== false) map["'>'"] = function (cm) {
       return autoCloseGT(cm);
     };
     cm.addKeyMap(map);

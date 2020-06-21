@@ -7,6 +7,10 @@
     max-height: 200px;
 }
 */
+.CodeMirror-fullscreen {
+    z-index: 1000;
+}
+
 .CodeMirror pre {
     padding-left: 7px;
     line-height: 1.25;

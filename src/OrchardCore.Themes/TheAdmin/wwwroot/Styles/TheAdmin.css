@@ -8762,10 +8762,20 @@ a.text-dark:hover, a.text-dark:focus {
 [dir] .CodeMirror {
   border: 1px solid #ddd; }
 
+/*
+.CodeMirror-scroll {
+    max-height: 200px;
+}
+*/
+.CodeMirror-fullscreen {
+  z-index: 1000; }
+
 .CodeMirror pre {
   line-height: 1.25; }
+
 [dir=ltr] .CodeMirror pre {
   padding-left: 7px; }
+
 [dir=rtl] .CodeMirror pre {
   padding-right: 7px; }
 
