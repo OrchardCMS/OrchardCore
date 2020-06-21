@@ -3,7 +3,7 @@
 
 <script at="Foot">
 
-    initializeMediaApplication(true, '@Url.Action("MediaApplication", "Admin", new { area = "OrchardCore.Media" })');
+    initializeMediaApplication(true, '@Url.Action("MediaApplication", "Admin", new { area = "OrchardCore.Media" })', '@Context.Request.PathBase.ToString()');
 
     @* mediaApp is absolutely positioned. When a warning is shown we need to move it down to avoid overlapping. *@
     $(function () {

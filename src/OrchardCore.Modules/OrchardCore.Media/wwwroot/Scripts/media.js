@@ -19,7 +19,7 @@ var _root = {
 };
 var bus = new Vue();
 
-function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl) {
+function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl, pathBase) {
   if (initialized) {
     return;
   }
@@ -53,7 +53,7 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
         },
         created: function created() {
           var self = this;
-          self.dragDropThumbnail.src = '/OrchardCore.Media/Images/drag-thumbnail.png';
+          self.dragDropThumbnail.src = (pathBase || '') + '/OrchardCore.Media/Images/drag-thumbnail.png';
           bus.$on('folderSelected', function (folder) {
             self.selectedFolder = folder;
           });
