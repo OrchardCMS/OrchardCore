@@ -946,7 +946,8 @@ function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaI
     data: {
       mediaItems: [],
       selectedMedia: null,
-      smallThumbs: false
+      smallThumbs: false,
+      initialized: false
     },
     created: function created() {
       var self = this;
@@ -956,6 +957,11 @@ function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaI
       paths: {
         get: function get() {
           var mediaPaths = [];
+
+          if (!this.initialized) {
+            return JSON.stringify(initialPaths);
+          }
+
           this.mediaItems.forEach(function (x) {
             if (x.mediaPath === 'not-found') {
               return;
@@ -973,8 +979,10 @@ function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaI
           var self = this;
           var mediaPaths = values || [];
           var signal = $.Deferred();
+          var items = [];
+          var length = 0;
           mediaPaths.forEach(function (x, i) {
-            self.mediaItems.push({
+            items.push({
               name: ' ' + x.Path,
               mime: '',
               mediaPath: ''
@@ -987,15 +995,29 @@ function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaI
                 success: function success(data) {
                   data.vuekey = data.name + i.toString(); // just because a unique key is required by Vue on v-for 
 
-                  self.mediaItems.splice(i, 1, data);
+                  items.splice(i, 1, data);
+
+                  if (items.length === ++length) {
+                    items.forEach(function (x) {
+                      self.mediaItems.push(x);
+                    });
+                    self.initialized = true;
+                  }
                 },
                 error: function error(_error) {
                   console.log(JSON.stringify(_error));
-                  self.mediaItems.splice(i, 1, {
+                  items.splice(i, 1, {
                     name: x.Path,
                     mime: '',
                     mediaPath: 'not-found'
                   });
+
+                  if (items.length === ++length) {
+                    items.forEach(function (x) {
+                      self.mediaItems.push(x);
+                    });
+                    self.initialized = true;
+                  }
                 }
               });
             });
@@ -1165,7 +1187,8 @@ function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple)
     data: {
       mediaItems: [],
       selectedMedia: null,
-      smallThumbs: false
+      smallThumbs: false,
+      initialized: false
     },
     created: function created() {
       var self = this;
@@ -1175,6 +1198,11 @@ function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple)
       paths: {
         get: function get() {
           var mediaPaths = [];
+
+          if (!this.initialized) {
+            return JSON.stringify(initialPaths);
+          }
+
           this.mediaItems.forEach(function (x) {
             if (x.mediaPath === 'not-found') {
               return;
@@ -1190,8 +1218,10 @@ function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple)
           var self = this;
           var mediaPaths = values || [];
           var signal = $.Deferred();
+          var items = [];
+          var length = 0;
           mediaPaths.forEach(function (x, i) {
-            self.mediaItems.push({
+            items.push({
               name: ' ' + x.Path,
               mime: '',
               mediaPath: ''
@@ -1203,15 +1233,29 @@ function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple)
                 method: 'GET',
                 success: function success(data) {
                   data.vuekey = data.name + i.toString();
-                  self.mediaItems.splice(i, 1, data);
+                  items.splice(i, 1, data);
+
+                  if (items.length === ++length) {
+                    items.forEach(function (x) {
+                      self.mediaItems.push(x);
+                    });
+                    self.initialized = true;
+                  }
                 },
                 error: function error(_error) {
                   console.log(_error);
-                  self.mediaItems.splice(i, 1, {
+                  items.splice(i, 1, {
                     name: x.Path,
                     mime: '',
                     mediaPath: 'not-found'
                   });
+
+                  if (items.length === ++length) {
+                    items.forEach(function (x) {
+                      self.mediaItems.push(x);
+                    });
+                    self.initialized = true;
+                  }
                 }
               });
             });
