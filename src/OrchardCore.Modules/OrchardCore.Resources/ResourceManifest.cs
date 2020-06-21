@@ -11,13 +11,27 @@ namespace OrchardCore.Resources
             manifest
                 .DefineScript("jQuery")
                 .SetUrl("~/OrchardCore.Resources/Scripts/jquery.min.js", "~/OrchardCore.Resources/Scripts/jquery.js")
+                .SetCdn("https://code.jquery.com/jquery-3.5.1.min.js", "https://code.jquery.com/jquery-3.5.1.js")
+                .SetCdnIntegrity("sha384-ZvpUoO/+PpLXR1lu4jmpXWu80pZlYUAfxl5NsBMWOEPSjUn/6Z/hRTt8+pR6L4N2", "sha384-/LjQZzcpTzaYn7qWqRIWYC5l8FWEZ2bIHIz0D73Uzba4pShEcdLdZyZkI4Kv676E")
+                .SetVersion("3.5.1");
+
+            manifest
+                .DefineScript("jQuery.slim")
+                .SetUrl("~/OrchardCore.Resources/Scripts/jquery.slim.min.js", "~/OrchardCore.Resources/Scripts/jquery.slim.js")
+                .SetCdn("https://code.jquery.com/jquery-3.5.1.slim.min.js", "https://code.jquery.com/jquery-3.5.1.slim.js")
+                .SetCdnIntegrity("sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj", "sha384-x6NENSfxadikq2gB4e6/qompriNc+y1J3eqWg3hAAMNBs4dFU303XMTcU3uExJgZ")
+                .SetVersion("3.5.1");
+
+            manifest
+                .DefineScript("jQuery")
+                .SetUrl("~/OrchardCore.Resources/Vendor/jquery-3.4.1/jquery.min.js", "~/OrchardCore.Resources/Vendor/jquery-3.4.1/jquery.js")
                 .SetCdn("https://code.jquery.com/jquery-3.4.1.min.js", "https://code.jquery.com/jquery-3.4.1.js")
                 .SetCdnIntegrity("sha384-vk5WoKIaW/vJyUAd9n/wmopsmNhiy+L2Z+SBxGYnUkunIxVxAv/UtMOhba/xskxh", "sha384-mlceH9HlqLp7GMKHrj5Ara1+LvdTZVMx4S1U43/NxCvAkzIo8WJ0FE7duLel3wVo")
                 .SetVersion("3.4.1");
 
             manifest
                 .DefineScript("jQuery.slim")
-                .SetUrl("~/OrchardCore.Resources/Scripts/jquery.slim.min.js", "~/OrchardCore.Resources/Scripts/jquery.slim.js")
+                .SetUrl("~/OrchardCore.Resources/Vendor/jquery-3.4.1/jquery.slim.min.js", "~/OrchardCore.Resources/Vendor/jquery-3.4.1/jquery.slim.js")
                 .SetCdn("https://code.jquery.com/jquery-3.4.1.slim.min.js", "https://code.jquery.com/jquery-3.4.1.slim.js")
                 .SetCdnIntegrity("sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n", "sha384-teRaFq/YbXOM/9FZ1qTavgUgTagWUPsk6xapwcjkrkBHoWvKdZZuAeV8hhaykl+G")
                 .SetVersion("3.4.1");
@@ -75,24 +89,24 @@ namespace OrchardCore.Resources
                 .DefineScript("bootstrap")
                 .SetDependencies("jQuery", "popper")
                 .SetUrl("~/OrchardCore.Resources/Scripts/bootstrap.min.js", "~/OrchardCore.Resources/Scripts/bootstrap.js")
-                .SetCdn("https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js", "https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.js")
-                .SetCdnIntegrity("sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6", "sha384-IGTd+U9dY/fgJBXURnLtTaaxga6WSJj46heDWHy/GPu8yyuP3HERqWszUMyWPeWR")
-                .SetVersion("4.4.1");
+                .SetCdn("https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js", "https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.js")
+                .SetCdnIntegrity("sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI", "sha384-7emZq+z4THDbp1s8SKlmK0zlENQgT+twJBBAcJCe8c+mastOWEfHflsBcz9t1ste")
+                .SetVersion("4.5.0");
 
             manifest
                 .DefineScript("bootstrap-bundle")
                 .SetDependencies("jQuery")
                 .SetUrl("~/OrchardCore.Resources/Scripts/bootstrap.bundle.min.js", "~/OrchardCore.Resources/Scripts/bootstrap.bundle.js")
-                .SetCdn("https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js", "https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.js")
-                .SetCdnIntegrity("sha384-6khuMg9gaYr5AxOqhkVIODVIvm9ynTT5J4V1cfthmT+emCG6yVmEZsRHdxlotUnm", "sha384-FhLadiSx562CHg1MeZgAwnrYbHS58gnpCpvPQn6Sv7SqLRCyEKRXE1if+Zx36XNm")
-                .SetVersion("4.4.1");
+                .SetCdn("https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.bundle.min.js", "https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.bundle.js")
+                .SetCdnIntegrity("sha384-1CmrxMRARb6aLqgBO7yyAxTOQE2AKb9GfXnEo760AUcUmFx3ibVJJAzGytlQcNXd", "sha384-cCFlyGmw6CL62KEUKL7PWDyTOf28usI04ep/5Re2w+M71E1K/sPaE0az/Zj17YG0")
+                .SetVersion("4.5.0");
 
             manifest
                 .DefineStyle("bootstrap")
                 .SetUrl("~/OrchardCore.Resources/Styles/bootstrap.min.css", "~/OrchardCore.Resources/Styles/bootstrap.css")
-                .SetCdn("https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css", "https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.css")
-                .SetCdnIntegrity("sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh", "sha384-vXOtxoYb1ilJXRLDg4YD1Kf7+ZDOiiAeUwiH9Ds8hM8Paget1UpGPc/KlaO33/nt")
-                .SetVersion("4.4.1");
+                .SetCdn("https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css", "https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.css")
+                .SetCdnIntegrity("sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk", "sha384-BHMmCeZEB8FFTwXRrSSWZJd7NXU/Hh4EawgpQO+3MDzE/GMYgbXgHb8ylJcUlBeK")
+                .SetVersion("4.5.0");
 
             manifest
                 .DefineStyle("bootstrap-select")
@@ -108,6 +122,21 @@ namespace OrchardCore.Resources
                 .SetCdn("https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.17/dist/js/bootstrap-select.min.js", "https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.17/dist/js/bootstrap-select.js")
                 .SetCdnIntegrity("sha384-vZHItSjiaeaa+fcNthtymKys5rxEOQ30i0gepK/bHdxByApBXUVkUvJwmaorQHW+", "sha384-N18QyApph3arAgOSkvDBbC4p2Nmrg5yqThKLK7l9n2FOpbodYX0vW0ediUB7Po6n")
                 .SetVersion("1.13.17");
+
+            manifest
+                .DefineStyle("bootstrap-slider")
+                .SetUrl("~/OrchardCore.Resources/Styles/bootstrap-slider.min.css", "~/OrchardCore.Resources/Styles/bootstrap-slider.css")
+                .SetCdn("https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/11.0.2/css/bootstrap-slider.min.css", "https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/11.0.2/css/bootstrap-slider.css")
+                .SetCdnIntegrity("sha384-Ot7O5p8Ws9qngwQOA1DP7acHuGIfK63cYbVJRYzrrMXhT3syEYhEsg+uqPsPpRhZ", "sha384-x1BbAB1QrM4/ZjT+vJzuI/NdvRo4tINKqg7lTN9jCq0bWrr/nelp9KfroZWd3UJu")
+                .SetVersion("11.0.2");
+
+            manifest
+                .DefineScript("bootstrap-slider")
+                .SetDependencies("jQuery")
+                .SetUrl("~/OrchardCore.Resources/Scripts/bootstrap-slider.min.js", "~/OrchardCore.Resources/Scripts/bootstrap-slider.js")
+                .SetCdn("https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/11.0.2/bootstrap-slider.min.js", "https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/11.0.2/bootstrap-slider.js")
+                .SetCdnIntegrity("sha384-lZLZ1uMNIkCnScGXQrJ+PzUR2utC/FgaxJLMMrQD3Fbra1AwGXvshEIedqCmqXTM", "sha384-3kfvdN8W/a8p/9S6Gy69uVsacwuNxyvFVJXxZa/Qe00tkNfZw63n/4snM1u646YU")
+                .SetVersion("11.0.2");
 
             manifest
                 .DefineScript("codemirror")
@@ -141,7 +170,7 @@ namespace OrchardCore.Resources
                 .DefineScript("codemirror-mode-css")
                 .SetUrl("~/OrchardCore.Resources/Scripts/codemirror/mode/css/css.min.js", "~/OrchardCore.Resources/Scripts/codemirror/mode/css/css.js")
                 .SetCdn("https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.54.0/mode/css/css.min.js", "https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.54.0/mode/css/css.js")
-                .SetCdnIntegrity("sha384-FskG9mTR6eIJAwdsC17edFoJsb6IZDu+Ev2iaD6BUKv3/8jM1V1hrh15XAk/XWAz", "sha384-EOd2XWza2wnlyji1uXvCHhzv8KidkG8oG2DUP104jMguvgGdf62zxdt6l/f8pVp8")
+                .SetCdnIntegrity("sha384-7jWEUNIiKACsg4CC/mH6GAi028ses/AR9YrcDgggjvCNbAMPGzAntlk7wZCcbFVK", "sha384-EOd2XWza2wnlyji1uXvCHhzv8KidkG8oG2DUP104jMguvgGdf62zxdt6l/f8pVp8")
                 .SetVersion("5.54.0");
 
             manifest
