@@ -1,29 +1,42 @@
 @model dynamic
 @using OrchardCore.Mvc.Utilities
-@{
-
-}
+@* TODO move this to a style sheet and use a mixin to override each col that has been wrapper*@
         <style at="Head">
-            .admin-wrapper .col-md-6 {
+            .ta-row-container .col-md-6 {
+                flex: 0 0 100% !important;
+                max-width: 100% !important;
+            }  
+            .ta-row-container .col-sm-3 {
                 flex: 0 0 100% !important;
                 max-width: 100% !important;
             }           
         </style>
 
-<div class="row">
+
+<div class="row ta-row-container">
     @foreach(var column in Model.Columns)
     {
-        string columnClass = String.IsNullOrEmpty(column.Key) ? "col" : "col-md-" + column.Key;
+        var columnShape = await New.Column(Column: column);
+        columnShape.Classes.Add("column-" + ((string)column.Key).HtmlClassify());
         
-         @* string columnClass = "col-6"; *@
-        <div class="@columnClass">
-            <div class="admin-wrapper">
-            @foreach(var item in column)
+        var columnClass = "col";
+        @* To provider a modifier to a column name all columns in the group with a '-' modifier, i.e. SeoColumn-6*@
+
+        foreach(var item in column)
+        {
+            if (item.Metadata.Column is string columnName && !String.IsNullOrEmpty(columnName))
             {
-                @Orchard.ConsoleLog(item as object)
-                @await DisplayAsync(item)
-            }
-            </div>
-        </div>
+                var modifierIndex = columnName.IndexOf('-');
+                if (modifierIndex != -1)
+                {
+                    columnClass = "col-" + columnName.Substring(modifierIndex + 1);
+                    break;
+                }                
+            }            
+        }
+
+        columnShape.Classes.Add(columnClass);
+
+        @await DisplayAsync(columnShape)
     }
 </div>

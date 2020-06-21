@@ -53,7 +53,21 @@ namespace OrchardCore.DisplayManagement.Zones
                 }
                 else// if (cards.Count > 0)
                 {
-                    var columns = tabs[0].GroupBy(x => (string)x.Metadata.Column ?? "").ToList();
+                    // any unspecified columns will be grouped into Content
+                    var columns = tabs[0].GroupBy(x =>
+                    {
+                        // By convention all placement delimiters default to the name 'Content' when not specified during placement.
+                        var key = (string)x.Metadata.Column ?? "Content";
+
+                        var modifierIndex = key.IndexOf('-');
+                        if (modifierIndex != -1)
+                        {
+                            key = key.Substring(0, modifierIndex);
+                        }
+
+                        return key;
+                    }).ToList();
+
                     if (columns.Count > 1)
                     {
                         dynamic columnContainer = await New.ColumnContainer(ContentItem: Shape.ContentItem, Columns: columns);
