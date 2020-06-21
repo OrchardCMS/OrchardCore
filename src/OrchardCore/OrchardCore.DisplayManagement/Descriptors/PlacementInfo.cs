@@ -4,7 +4,7 @@ namespace OrchardCore.DisplayManagement.Descriptors
 {
     public class PlacementInfo
     {
-        private static readonly char[] Delimiters = { ':', '#', '@', '%', '$' };
+        private static readonly char[] Delimiters = { ':', '#', '@', '%', '|' };
 
         public string Location { get; set; }
         public string Source { get; set; }
@@ -129,7 +129,7 @@ namespace OrchardCore.DisplayManagement.Descriptors
         /// </summary>
         public string GetColumn()
         {
-            var colDelimeter = Location.IndexOf('$');
+            var colDelimeter = Location.IndexOf('|');
             if (colDelimeter == -1)
             {
                 return null;

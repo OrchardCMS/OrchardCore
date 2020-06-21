@@ -3,6 +3,7 @@
 @{
     var cardName = String.IsNullOrWhiteSpace(Model.Card.Key) ? "Content" : Model.Card.Key;
     var cardId = $"card-{Model.ContentItemId}-{cardName}".HtmlClassify();
+    var columnGrouping = await New.ColumnGrouping(Grouping: Model.Card);
 }
 <div class="card">
     <div class="card-header" id="heading-@cardId">
@@ -13,10 +14,7 @@
     </div>
     <div class="collapse @(Model.CardIndex == 0 ? "show" : "")" id="collapse-@cardId" data-parent="#@Model.ContainerId" aria-labelledby="heading-@cardId">
         <div class="card-body ">
-            @foreach(var item in Model.Card)
-            {
-                @await DisplayAsync(item)
-            }
+            @await DisplayAsync(columnGrouping)
         </div>
     </div>
 </div>

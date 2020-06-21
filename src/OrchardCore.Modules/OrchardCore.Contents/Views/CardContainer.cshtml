@@ -3,9 +3,10 @@
 @{
     var cardIndex = 0;
     var contentItemId = Model.ContentItem != null ? (string)Model.ContentItem.ContentItemId : "";
-    @* TODO move away from content item id*@
+    @* TODO move away from content item id & probably use shape attributes here*@
     var containerId = $"accordion-card-{Guid.NewGuid().ToString("n")}".HtmlClassify();
 }
+@* TODO dump accordion. the accordion could be a custom override if I prefer it, but it should be here by default*@
 <div class="accordion mb-3" id="@containerId">
     @foreach(var card in Model.Cards)
     {
