@@ -1,4 +1,4 @@
-# Content Preview (OrchardCore.ContentPreview)
+# Content Preview (`OrchardCore.ContentPreview`)
 
 Content preview allows you to display the result that will be rendered on the frontend in a separate window, while you are editing a content item in the admin.
 

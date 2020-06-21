@@ -107,7 +107,8 @@ nav:
                 - Markdown: docs/reference/modules/Markdown/README.md
                 - List: docs/reference/modules/List/README.md
                 - Flow: docs/reference/modules/Flow/README.md 
-                - Bag: docs/reference/modules/Flow/BagPart.md        
+                - Bag: docs/reference/modules/Flow/BagPart.md
+                - Publish Later: docs/reference/modules/PublishLater/README.md
             - Content Fields: docs/reference/modules/ContentFields/README.md
             - Content Preview: docs/reference/modules/ContentPreview/README.md
             - Content Localization: docs/reference/modules/ContentLocalization/README.md
@@ -125,7 +126,9 @@ nav:
             - Media Azure: docs/reference/modules/Media.Azure/README.md
             - ReCaptcha: docs/reference/modules/ReCaptcha/README.md
             - Resources: docs/reference/modules/Resources/README.md
+            - ShortCodes: docs/reference/modules/ShortCodes/README.md
             - Sitemaps: docs/reference/modules/Sitemaps/README.md
+            - XML-RPC: docs/reference/modules/XmlRpc/README.md
             - Menu: docs/reference/modules/Menu/README.md
             - Navigation: docs/reference/modules/Navigation/README.md
             - Admin: docs/reference/modules/Admin/README.md
@@ -151,6 +154,7 @@ nav:
             - GraphQL: docs/reference/modules/Apis.GraphQL/README.md
             - GraphQL queries: docs/reference/core/Apis.GraphQL.Abstractions/README.md
             - Health Check: docs/reference/modules/HealthChecks/README.md
+            - HTTPS: docs/reference/modules/Https/README.md
             - Localization: docs/reference/modules/Localize/README.md
             - Logging Serilog: docs/reference/core/Logging.Serilog/readme.md
             - Mini Profiler: docs/reference/modules/MiniProfiler/README.md
@@ -158,6 +162,7 @@ nav:
             - OpenId: docs/reference/modules/OpenId/README.md
             - Razor Helpers: docs/reference/core/Razor/README.md
             - Recipes: docs/reference/modules/Recipes/README.md
+            - Response Compression: docs/reference/modules/ResponseCompression/README.md
             - Roles: docs/reference/modules/Roles/README.md
             - Scripting: docs/reference/modules/Scripting/README.md
             - Setup: docs/reference/modules/Setup/README.md
@@ -169,4 +174,10 @@ nav:
         - Learning: docs/resources/README.md
         - Workshops: docs/resources/workshops/README.md
         - Branding: docs/resources/branding/README.md
+    - Releases: 
+        - 1.0.0-rc2: docs/releases/1.0.0-rc2.md
+        - 1.0.0-rc1: docs/releases/1.0.0-rc1.md
+        - 1.0.0-beta3: docs/releases/1.0.0-beta3.md
+        - 1.0.0-beta2: docs/releases/1.0.0-beta2.md
+        - 1.0.0-beta1: docs/releases/1.0.0-beta1.md
     
