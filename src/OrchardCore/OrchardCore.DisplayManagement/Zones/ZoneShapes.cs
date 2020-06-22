@@ -33,7 +33,7 @@ namespace OrchardCore.DisplayManagement.Zones
 
             var shapes = ((IEnumerable<dynamic>)Shape);
 
-            var tabs = shapes.GroupBy(x =>
+            var groupings = shapes.GroupBy(x =>
             {
                 // By convention all placement delimiters default to the name 'Content' when not specified during placement.
                 var key = (string)x.Metadata.Tab;
@@ -53,36 +53,40 @@ namespace OrchardCore.DisplayManagement.Zones
             }).ToList();
 
             // Process tabs first, then Cards, then Columns.
-            if (tabs.Count > 1)
+            if (groupings.Count > 1)
             {
-                var orderedTabs = tabs.OrderBy(x => {
-                    var modifier = x.Select(t => {
-                        var key = (string)t.Metadata.Tab;
+                 var orderedGroupings = groupings.OrderBy(grouping => {
+                    var firstGroupWithModifier = grouping.FirstOrDefault(group => {
+                        var key = (string)group.Metadata.Tab;
                         if (!String.IsNullOrEmpty(key))
                         {
                             var modifierIndex = key.IndexOf(';');
                             if (modifierIndex != -1)
                             {
-                                return key.Substring(modifierIndex);
+                                return true;
                             }
                         }
-
-                        return null;
-
+                        return false;
                     });
-                    var first = modifier.FirstOrDefault(x => !String.IsNullOrEmpty(x));
 
-                    return new PositionalGrouping(first);
+                    if (firstGroupWithModifier != null)
+                    {
+                        var key = (string)firstGroupWithModifier.Metadata.Tab;
+                        var modifierIndex = key.IndexOf(';');
+                        return new PositionalGrouping(key.Substring(modifierIndex));
+                    }
+
+                    return new PositionalGrouping(null);
                 }, FlatPositionComparer.Instance).ToList();
 
-                dynamic tabContainer = await New.TabContainer(ContentItem: Shape.ContentItem, Tabs: orderedTabs);
+                dynamic tabContainer = await New.TabContainer(ContentItem: Shape.ContentItem, Tabs: orderedGroupings);
 
                 htmlContentBuilder.AppendHtml(await DisplayAsync(tabContainer));
             }
             else
             {
                 // This determins whether to show a card, or fall back to columns
-                var cardGrouping = await New.CardGrouping(Grouping: tabs[0]);
+                var cardGrouping = await New.CardGrouping(Grouping: groupings[0]);
 
                 htmlContentBuilder.AppendHtml(await DisplayAsync(cardGrouping));
             }
