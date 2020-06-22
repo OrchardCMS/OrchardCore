@@ -26,10 +26,20 @@
         {
             if (item.Metadata.Column is string columnName && !String.IsNullOrEmpty(columnName))
             {
-                var modifierIndex = columnName.IndexOf('-');
-                if (modifierIndex != -1)
+                var columnModifierIndex = columnName.IndexOf('-');
+                if (columnModifierIndex != -1)
                 {
-                    columnClass = "col-" + columnName.Substring(modifierIndex + 1);
+                    var positionModifierIndex = columnName.IndexOf(';');
+                    // Column-9;56
+                    if (positionModifierIndex > columnModifierIndex)
+                    {
+                        var length = positionModifierIndex - columnModifierIndex;
+                        columnClass = "col-" + columnName.Substring(columnModifierIndex + 1, length - 1);  
+                    }
+                    else // Column;56-9 
+                    {
+                        columnClass = "col-" + columnName.Substring(columnModifierIndex + 1);                               
+                    }
                     break;
                 }                
             }            

@@ -121,7 +121,31 @@ namespace OrchardCore.DisplayManagement.Zones
 
             if (groupings.Count > 1)
             {
-                dynamic container = await New.CardContainer(ContentItem: Shape.ContentItem, Cards: groupings);
+                 var orderedGroupings = groupings.OrderBy(grouping => {
+                    var firstGroupWithModifier = grouping.FirstOrDefault(group => {
+                        var key = (string)group.Metadata.Card;
+                        if (!String.IsNullOrEmpty(key))
+                        {
+                            var modifierIndex = key.IndexOf(';');
+                            if (modifierIndex != -1)
+                            {
+                                return true;
+                            }
+                        }
+                        return false;
+                    });
+
+                    if (firstGroupWithModifier != null)
+                    {
+                        var key = (string)firstGroupWithModifier.Metadata.Card;
+                        var modifierIndex = key.IndexOf(';');
+                        return new PositionalGrouping(key.Substring(modifierIndex));
+                    }
+
+                    return new PositionalGrouping(null);
+                }, FlatPositionComparer.Instance).ToList();
+
+                dynamic container = await New.CardContainer(ContentItem: Shape.ContentItem, Cards: orderedGroupings);
                 htmlContentBuilder.AppendHtml(await DisplayAsync(container));
             }
             else
@@ -168,7 +192,50 @@ namespace OrchardCore.DisplayManagement.Zones
 
             if (groupings.Count > 1)
             {
-                dynamic container = await New.ColumnContainer(ContentItem: Shape.ContentItem, Columns: groupings);
+                 var orderedGroupings = groupings.OrderBy(grouping => {
+                    var firstGroupWithModifier = grouping.FirstOrDefault(group => {
+                        var key = (string)group.Metadata.Column;
+                        if (!String.IsNullOrEmpty(key))
+                        {
+                            var modifierIndex = key.IndexOf(';');
+                            if (modifierIndex != -1)
+                            {
+                                return true;
+                            }
+                        }
+                        return false;
+                    });
+
+                    if (firstGroupWithModifier != null)
+                    {
+                        var key = (string)firstGroupWithModifier.Metadata.Column;
+                        // Here we have to remove the - section
+                        var columnModifierIndex = key.IndexOf('-');
+                        if (columnModifierIndex != -1)
+                        {
+                            var positionModifierIndex = key.IndexOf(';');
+                            // Column-9;56
+                            if (positionModifierIndex > columnModifierIndex)
+                            {
+                                return new PositionalGrouping(key.Substring(positionModifierIndex));
+                            }
+                            else // Column;56-9 // positionmodifierinex here = 6. columnmod = 9
+                            {
+                                var length = columnModifierIndex - positionModifierIndex;
+                                return new PositionalGrouping(key.Substring(positionModifierIndex, length));
+                            }
+                        }
+                        else
+                        {
+                            var positionModifierIndex = key.IndexOf(';');
+                            return new PositionalGrouping(key.Substring(positionModifierIndex));
+                        }
+                    }
+
+                    return new PositionalGrouping(null);
+                }, FlatPositionComparer.Instance).ToList();
+
+                dynamic container = await New.ColumnContainer(ContentItem: Shape.ContentItem, Columns: orderedGroupings);
                 htmlContentBuilder.AppendHtml(await DisplayAsync(container));
             }
             else
