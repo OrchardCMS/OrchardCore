@@ -23,6 +23,7 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Environment.Shell;
 using OrchardCore.FileStorage;
 using OrchardCore.FileStorage.FileSystem;
+using OrchardCore.ShortCodes;
 using OrchardCore.Liquid;
 using OrchardCore.Media.Controllers;
 using OrchardCore.Media.Core;
@@ -34,6 +35,7 @@ using OrchardCore.Media.Filters;
 using OrchardCore.Media.Handlers;
 using OrchardCore.Media.Processing;
 using OrchardCore.Media.Recipes;
+using OrchardCore.Media.ShortCodes;
 using OrchardCore.Media.Services;
 using OrchardCore.Media.Settings;
 using OrchardCore.Media.Shape;
@@ -156,6 +158,8 @@ namespace OrchardCore.Media
 
             services.AddTagHelpers<ImageTagHelper>();
             services.AddTagHelpers<ImageResizeTagHelper>();
+
+            services.AddScoped<IShortCode, ImageShortCode>();
         }
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

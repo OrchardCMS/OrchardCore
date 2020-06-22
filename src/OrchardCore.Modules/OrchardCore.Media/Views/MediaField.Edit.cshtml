@@ -7,12 +7,14 @@ var settings = Model.PartFieldDefinition.GetSettings<MediaFieldSettings>();
     var modalMediaId = "Modal" + Html.IdFor(m => m);
     }
 
-    <script at="Foot">
-        initializeMediaApplication(false, '@Url.Action("MediaApplication", "Admin", new { area = "OrchardCore.Media" })');
-        initializeMediaField(
-            document.getElementById('@Html.IdFor(m => m)'),
-            document.getElementById('@Html.IdFor(m => m)-ModalBody'),
-            '@Url.Action("GetMediaItem", "Admin", new { area = "OrchardCore.Media" })',
+<partial name="Shared/MediaFieldEditResources.cshtml" />
+
+<script at="Foot">
+    initializeMediaApplication(false,  '@Url.Action("MediaApplication", "Admin", new { area = "OrchardCore.Media" })', '@Context.Request.PathBase.ToString()');
+    initializeMediaField(
+        document.getElementById('@Html.IdFor(m => m)'),
+        document.getElementById('@Html.IdFor(m => m)-ModalBody'),
+        '@Url.Action("GetMediaItem", "Admin", new { area = "OrchardCore.Media" })',
         @(settings.Multiple ? "true" : "false"));
     </script>
 
