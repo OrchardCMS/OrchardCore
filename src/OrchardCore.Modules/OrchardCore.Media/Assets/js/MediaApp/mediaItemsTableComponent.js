@@ -9,6 +9,10 @@ Vue.component('media-items-table', {
                        {{ T.nameHeader }}
                          <sort-indicator colname="name" :selectedcolname="sortBy" :asc="sortAsc"></sort-indicator>
                     </th>
+                    <th scope="col" v-on:click="changeSort('lastModify')"> 
+                       {{ T.lastModifyHeader }} 
+                         <sort-indicator colname="lastModify" :selectedcolname="sortBy" :asc="sortAsc"></sort-indicator> 
+                    </th> 
                     <th scope="col" v-on:click="changeSort('size')">
                         <span class="optional-col">
                             {{ T.sizeHeader }}
@@ -45,6 +49,9 @@ Vue.component('media-items-table', {
                                         <a :href="media.url" class="btn btn-link btn-sm view-button"> {{ T.viewButton }} </a>
                                     </div>
                                 </div>
+                            </td>
+                            <td>
+                                <div class="text-col"> {{ printDateTime(media.lastModify) }} </div>
                             </td>
                             <td>
                                 <div class="text-col optional-col"> {{ isNaN(media.size)? 0 : Math.round(media.size / 1024) }} KB</div>
