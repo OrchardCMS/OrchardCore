@@ -79,9 +79,18 @@ namespace OrchardCore.DisplayManagement.Zones
                     return new PositionalGrouping(null);
                 }, FlatPositionComparer.Instance).ToList();
 
-                dynamic tabContainer = await New.TabContainer(ContentItem: Shape.ContentItem, Tabs: orderedGroupings);
+                dynamic container = await New.TabContainer(ContentItem: Shape.ContentItem, Grouping: orderedGroupings);
+                foreach(var orderedGrouping in orderedGroupings)
+                {
+                    var groupingShape = await New.Tab(Grouping: orderedGrouping, ContentItem: Shape.ContentItem);
+                    foreach(var item in orderedGrouping)
+                    {
+                        groupingShape.Add(item);
+                    }
+                    container.Add(groupingShape);
+                }
 
-                htmlContentBuilder.AppendHtml(await DisplayAsync(tabContainer));
+                htmlContentBuilder.AppendHtml(await DisplayAsync(container));
             }
             else
             {
@@ -145,7 +154,17 @@ namespace OrchardCore.DisplayManagement.Zones
                     return new PositionalGrouping(null);
                 }, FlatPositionComparer.Instance).ToList();
 
-                dynamic container = await New.CardContainer(ContentItem: Shape.ContentItem, Cards: orderedGroupings);
+                dynamic container = await New.CardContainer(ContentItem: Shape.ContentItem);
+                foreach(var orderedGrouping in orderedGroupings)
+                {
+                    var groupingShape = await New.Card(Grouping: orderedGrouping, ContentItem: Shape.ContentItem);
+                    foreach(var item in orderedGrouping)
+                    {
+                        groupingShape.Add(item);
+                    }
+                    container.Add(groupingShape);
+                }
+
                 htmlContentBuilder.AppendHtml(await DisplayAsync(container));
             }
             else
@@ -235,7 +254,20 @@ namespace OrchardCore.DisplayManagement.Zones
                     return new PositionalGrouping(null);
                 }, FlatPositionComparer.Instance).ToList();
 
-                dynamic container = await New.ColumnContainer(ContentItem: Shape.ContentItem, Columns: orderedGroupings);
+                dynamic container = await New.ColumnContainer(ContentItem: Shape.ContentItem);
+                foreach(var orderedGrouping in orderedGroupings)
+                {
+                    var groupingShape = await New.Column(Grouping: orderedGrouping, ContentItem: Shape.ContentItem);
+                    foreach(var item in orderedGrouping)
+                    {
+                        groupingShape.Add(item);
+                        // this means we could calculate those classes here, or create them as above, and add to another dictionary
+                        // for example.
+                        // so that simplifies that a bit potentially.
+                    }
+                    container.Add(groupingShape);
+                }
+
                 htmlContentBuilder.AppendHtml(await DisplayAsync(container));
             }
             else

@@ -1,19 +1,25 @@
 @model dynamic
 @using OrchardCore.Mvc.Utilities
 @{
-    var cardId = $"card-{Model.ContentItem.ContentItemId}-{Model.Card.Key}".HtmlClassify();
-    var columnGrouping = await New.ColumnGrouping(Grouping: Model.Card, ContentItem: Model.ContentItem);
+    TagBuilder tag = Tag(Model, "div");
+    tag.AddCssClass("card-body");
+
+    // Morphing this shape to a grouping shape to keep Model untouched
+    Model.Metadata.Alternates.Clear();
+    Model.Metadata.Type = "ColumnGrouping";
+
+    tag.InnerHtml.AppendHtml(await DisplayAsync(Model));
+
+    var cardIdPrefix = $"card-{Model.ContentItem.ContentItemId}-{Model.Grouping.Key}".HtmlClassify();
 }
 <div class="card">
-    <div class="card-header" id="heading-@cardId">
-        <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse-@cardId" aria-expanded="true" aria-controls="collapse-@cardId">
-          @Model.Card.Key
+    <div class="card-header" id="heading-@cardIdPrefix">
+        <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse-@cardIdPrefix" aria-expanded="true" aria-controls="collapse-@cardIdPrefix">
+          @Model.Grouping.Key
         </button>        
         
     </div>
-    <div class="collapse show" id="collapse-@cardId" aria-labelledby="heading-@cardId">
-        <div class="card-body ">
-            @await DisplayAsync(columnGrouping)
-        </div>
+    <div class="collapse show" id="collapse-@cardIdPrefix" aria-labelledby="heading-@cardIdPrefix">
+        @tag
     </div>
 </div>

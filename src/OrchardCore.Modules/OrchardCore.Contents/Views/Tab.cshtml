@@ -2,13 +2,18 @@
 @using System.Linq
 @using OrchardCore.Mvc.Utilities
 @{
-    var tabId = $"tab-{Model.Tab.Key}-{Model.ContentItem.ContentItemId}".HtmlClassify();
-    Model.Classes.Add("tab-pane fade");
+    TagBuilder tag = Tag(Model, "div");
+
+    // Morphing this shape to a grouping shape to keep Model untouched
+    Model.Metadata.Alternates.Clear();
+    Model.Metadata.Type = "CardGrouping";
+
+    tag.Attributes["id"] = $"tab-{Model.Grouping.Key}-{Model.ContentItem.ContentItemId}".HtmlClassify();
+    tag.AddCssClass("tab-pane fade");
     @if (Model.TabIndex == 0)
     {
-        Model.Classes.Add("show active");
-    }
+        tag.AddCssClass("show active");
+    }    
+    tag.InnerHtml.AppendHtml(await DisplayAsync(Model));
 }
-<div id="@tabId" class="@String.Join(" ", Model.Classes.ToArray())">
-    @await DisplayAsync(await New.CardGrouping(Grouping: Model.Tab, ContentItem: Model.ContentItem))
-</div>
+@tag

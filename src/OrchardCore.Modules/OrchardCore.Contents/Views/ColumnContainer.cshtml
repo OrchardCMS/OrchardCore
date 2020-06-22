@@ -14,16 +14,16 @@
 
 
 <div class="row ta-row-container">
-    @foreach(var column in Model.Columns)
+    @foreach(var columnShape in Model.Items)
     {
-        var columnShape = await New.Column(Column: column);
-        columnShape.Classes.Add("column-" + ((string)column.Key).HtmlClassify());
+        @* var columnShape = await New.Column(Column: column); *@
+        columnShape.Classes.Add("column-" + ((string)columnShape.Grouping.Key).HtmlClassify());
         
         var columnClass = "col";
         @* To provider a modifier to a column name all columns in the group with a '-' modifier, i.e. SeoColumn-6*@
 
-        foreach(var item in column)
-        {
+        foreach(var item in columnShape)
+        {@* all of this can move into ZoneShapes*@
             if (item.Metadata.Column is string columnName && !String.IsNullOrEmpty(columnName))
             {
                 var columnModifierIndex = columnName.IndexOf('-');

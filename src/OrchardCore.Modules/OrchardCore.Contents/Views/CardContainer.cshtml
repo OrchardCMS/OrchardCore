@@ -2,8 +2,8 @@
 @using OrchardCore.Mvc.Utilities
 
 <div class="mb-3">
-    @foreach(var card in Model.Cards)
+    @foreach(var card in Model.Items)
     {
-        @await DisplayAsync(await New.Card(Card: card, ContentItem: Model.ContentItem))
+        @await DisplayAsync(card)
     }
 </div>

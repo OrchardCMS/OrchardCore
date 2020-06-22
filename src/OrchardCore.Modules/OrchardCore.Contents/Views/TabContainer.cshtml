@@ -2,13 +2,13 @@
 @{
     var tabIndex = 0;
 }
-
-@await DisplayAsync(await New.LocalNavigation(ContentItem: Model.ContentItem, Tabs: Model.Tabs))
+@await DisplayAsync(await New.LocalNavigation(ContentItem: Model.ContentItem, Tabs: Model.Grouping))
 
 <div class="tab-content">
-    @foreach(var tab in Model.Tabs)
-    {              
-        @await DisplayAsync(await New.Tab(Tab: tab, TabIndex: tabIndex, ContentItem: Model.ContentItem))
+    @foreach(var tab in Model.Items)
+    {           
+        tab.TabIndex = tabIndex;   
+        @await DisplayAsync(tab)
         tabIndex++;
     }
 </div>
