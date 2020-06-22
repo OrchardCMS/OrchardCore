@@ -29,28 +29,25 @@ namespace OrchardCore.DisplayManagement.Zones
         [Shape]
         public async Task<IHtmlContent> ContentZone(dynamic DisplayAsync, dynamic Shape, dynamic New, DisplayContext DisplayContext)
         {
-            var htmlContents = new List<IHtmlContent>();
+            var htmlContentBuilder = new HtmlContentBuilder();
 
             var shapes = ((IEnumerable<dynamic>)Shape);
 
-            // Is this any use as a shape?
             var tabs = shapes.GroupBy(x =>
             {
                 // By convention all placement delimiters default to the name 'Content' when not specified during placement.
-                // so this is why it gets werid.
                 var key = (string)x.Metadata.Tab;
                 if (String.IsNullOrEmpty(key))
                 {
                     key = "Content";
                 }
-                // var key = (string)x.Metadata.Tab ?? "Content";
 
-                //TODO placement modifier
-                // var modifierIndex = key.IndexOf('-');
-                // if (modifierIndex != -1)
-                // {
-                //     key = key.Substring(0, modifierIndex);
-                // }
+                // Remove any positioning modifier.
+                var modifierIndex = key.IndexOf(';');
+                if (modifierIndex != -1)
+                {
+                    key = key.Substring(0, modifierIndex);
+                }
 
                 return key;
             }).ToList();
@@ -58,22 +55,36 @@ namespace OrchardCore.DisplayManagement.Zones
             // Process tabs first, then Cards, then Columns.
             if (tabs.Count > 1)
             {
-                dynamic tabContainer = await New.TabContainer(ContentItem: Shape.ContentItem, Tabs: tabs);
+                var orderedTabs = tabs.OrderBy(x => {
+                    var modifier = x.Select(t => {
+                        var key = (string)t.Metadata.Tab;
+                        if (!String.IsNullOrEmpty(key))
+                        {
+                            var modifierIndex = key.IndexOf(';');
+                            if (modifierIndex != -1)
+                            {
+                                return key.Substring(modifierIndex);
+                            }
+                        }
 
-                htmlContents.Add(await DisplayAsync(tabContainer));
+                        return null;
+
+                    });
+                    var first = modifier.FirstOrDefault(x => !String.IsNullOrEmpty(x));
+
+                    return new PositionalGrouping(first);
+                }, FlatPositionComparer.Instance).ToList();
+
+                dynamic tabContainer = await New.TabContainer(ContentItem: Shape.ContentItem, Tabs: orderedTabs);
+
+                htmlContentBuilder.AppendHtml(await DisplayAsync(tabContainer));
             }
             else
             {
                 // This determins whether to show a card, or fall back to columns
                 var cardGrouping = await New.CardGrouping(Grouping: tabs[0]);
 
-                htmlContents.Add(await DisplayAsync(cardGrouping));
-            }
-
-            var htmlContentBuilder = new HtmlContentBuilder();
-            foreach (var htmlContent in htmlContents)
-            {
-                htmlContentBuilder.AppendHtml(htmlContent);
+                htmlContentBuilder.AppendHtml(await DisplayAsync(cardGrouping));
             }
 
             return htmlContentBuilder;
@@ -88,14 +99,18 @@ namespace OrchardCore.DisplayManagement.Zones
             var groupings = grouping.GroupBy(x =>
             {
                 // By convention all placement delimiters default to the name 'Content' when not specified during placement.
-                var key = (string)x.Metadata.Card ?? "Content";
+                var key = (string)x.Metadata.Card;
+                if (String.IsNullOrEmpty(key))
+                {
+                    key = "Content";
+                }
 
-                //TODO placement modifier
-                // var modifierIndex = key.IndexOf('-');
-                // if (modifierIndex != -1)
-                // {
-                //     key = key.Substring(0, modifierIndex);
-                // }
+                // Remove positional modifier.
+                var modifierIndex = key.IndexOf(';');
+                if (modifierIndex != -1)
+                {
+                    key = key.Substring(0, modifierIndex);
+                }
 
                 return key;
             }).ToList();
@@ -124,9 +139,21 @@ namespace OrchardCore.DisplayManagement.Zones
             var groupings = grouping.GroupBy(x =>
             {
                 // By convention all placement delimiters default to the name 'Content' when not specified during placement.
-                var key = (string)x.Metadata.Column ?? "Content";
+                var key = (string)x.Metadata.Column;
+                if (String.IsNullOrEmpty(key))
+                {
+                    key = "Content";
+                }
 
+                // Remove column modifier.
                 var modifierIndex = key.IndexOf('-');
+                if (modifierIndex != -1)
+                {
+                    key = key.Substring(0, modifierIndex);
+                }
+
+                // Remove positional modifier.
+                modifierIndex = key.IndexOf(';');
                 if (modifierIndex != -1)
                 {
                     key = key.Substring(0, modifierIndex);
@@ -150,36 +177,21 @@ namespace OrchardCore.DisplayManagement.Zones
 
             return htmlContentBuilder;
         }
+    }
 
-        public static IEnumerable<string> HarvestAndSortTabs(IEnumerable<dynamic> shapes)
+    public class PositionalGrouping : IPositioned
+    {
+        public PositionalGrouping(string key)
         {
-            var tabs = new List<string>();
-
-            foreach (var shape in shapes)
+            if (!String.IsNullOrEmpty(key))
             {
-                var tab = (string)shape.Metadata.Tab;
-
-                if (String.IsNullOrEmpty(tab))
+                var modifierIndex = key.IndexOf(';');
+                if (modifierIndex != -1)
                 {
-                    continue;
-                }
-
-                if (!tabs.Contains(tab))
-                {
-                    tabs.Add(tab);
+                    Position = key.Substring(modifierIndex);
                 }
             }
-
-            // If we have any tabs, make sure we have at least the Content tab and that it is the first one,
-            // since that's where we will put anything else not part of a tab.
-            if (tabs.Any())
-            {
-                // TODO change this so we don't get a Content tab if there is nothing to go in it.
-                tabs.Remove("Content");
-                tabs.Insert(0, "Content");
-            }
-
-            return tabs;
         }
+        public string Position { get; set; }
     }
 }

@@ -2,7 +2,12 @@
 @{
     var tabIndex = 0;
     var tabId = Model.ContentItem != null ? (string)Model.ContentItem.ContentItemId : "";
+    var tabsGrouping = (IList<IGrouping<string, dynamic>>)Model.Tabs;
+    var tabs = tabsGrouping.Select(x => x.Key); 
 }
+
+@await DisplayAsync(await New.LocalNavigation(ContentItem: Model.ContentItem, Tabs: tabs))
+
 <div class="tab-content">
     @foreach(var tab in Model.Tabs)
     {              
