@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using GraphQL.Types;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -21,10 +22,12 @@ namespace OrchardCore.Queries.Sql.GraphQL.Queries
     public class SqlQueryFieldTypeProvider : ISchemaBuilder
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly ILogger<SqlQueryFieldTypeProvider> _logger;
 
-        public SqlQueryFieldTypeProvider(IHttpContextAccessor httpContextAccessor)
+        public SqlQueryFieldTypeProvider(IHttpContextAccessor httpContextAccessor, ILogger<SqlQueryFieldTypeProvider> logger)
         {
             _httpContextAccessor = httpContextAccessor;
+            _logger = logger;
         }
 
         public async Task<IChangeToken> BuildAsync(ISchema schema)
@@ -42,18 +45,23 @@ namespace OrchardCore.Queries.Sql.GraphQL.Queries
                 var name = query.Name;
                 var source = query.Source;
 
-                var querySchema = JObject.Parse(query.Schema);
-
-                var type = querySchema["type"].ToString();
-
-                if (type.StartsWith("ContentItem/", StringComparison.OrdinalIgnoreCase))
+                try
                 {
-                    var contentType = type.Remove(0, 12);
-                    schema.Query.AddField(BuildContentTypeFieldType(schema, contentType, query));
+                    var querySchema = JObject.Parse(query.Schema);
+                    var type = querySchema["type"].ToString();
+                    if (type.StartsWith("ContentItem/", StringComparison.OrdinalIgnoreCase))
+                    {
+                        var contentType = type.Remove(0, 12);
+                        schema.Query.AddField(BuildContentTypeFieldType(schema, contentType, query));
+                    }
+                    else
+                    {
+                        schema.Query.AddField(BuildSchemaBasedFieldType(schema, query, querySchema));
+                    }
                 }
-                else
+                catch (Exception e)
                 {
-                    schema.Query.AddField(BuildSchemaBasedFieldType(schema, query, querySchema));
+                    _logger.LogError($"The Query {name}'s Schema parse error, Please check the Schema is a correct json format , Schema:{query.Schema}, {System.Environment.NewLine} Error Details:'{e}");
                 }
             }
 
@@ -68,38 +76,41 @@ namespace OrchardCore.Queries.Sql.GraphQL.Queries
             };
 
             var properties = querySchema["Properties"];
-
-            foreach (var child in properties.Children())
+            if (properties != null)
             {
-                var name = ((JProperty)child).Name;
-                var nameLower = name.Replace('.', '_');
-                var type = child["type"].ToString();
+                foreach (var child in properties.Children())
+                {
+                    var name = ((JProperty)child).Name;
+                    var nameLower = name.Replace('.', '_');
+                    var type = child["type"].ToString();
 
-                if (type == "String")
-                {
-                    var field = typetype.Field(
-                        typeof(StringGraphType),
-                        nameLower,
-                        resolve: context =>
-                        {
-                            var source = context.Source;
-                            return source[context.FieldDefinition.Metadata["Name"].ToString()].ToObject<string>();
-                        });
-                    field.Metadata.Add("Name", name);
-                }
-                if (type == "Integer")
-                {
-                    var field = typetype.Field(
-                        typeof(IntGraphType),
-                        nameLower,
-                        resolve: context =>
-                        {
-                            var source = context.Source;
-                            return source[context.FieldDefinition.Metadata["Name"].ToString()].ToObject<int>();
-                        });
-                    field.Metadata.Add("Name", name);
+                    if (type == "String")
+                    {
+                        var field = typetype.Field(
+                            typeof(StringGraphType),
+                            nameLower,
+                            resolve: context =>
+                            {
+                                var source = context.Source;
+                                return source[context.FieldDefinition.Metadata["Name"].ToString()].ToObject<string>();
+                            });
+                        field.Metadata.Add("Name", name);
+                    }
+                    if (type == "Integer")
+                    {
+                        var field = typetype.Field(
+                            typeof(IntGraphType),
+                            nameLower,
+                            resolve: context =>
+                            {
+                                var source = context.Source;
+                                return source[context.FieldDefinition.Metadata["Name"].ToString()].ToObject<int>();
+                            });
+                        field.Metadata.Add("Name", name);
+                    }
                 }
             }
+
 
             var fieldType = new FieldType
             {

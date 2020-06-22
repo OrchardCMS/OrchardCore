@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Routing;
+using Newtonsoft.Json.Linq;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
@@ -155,13 +156,20 @@ namespace OrchardCore.Queries.Controllers
             {
                 return NotFound();
             }
-
+            if (!string.IsNullOrWhiteSpace(query.Schema))
+            {
+                if (!SchemaCheck(query.Schema))
+                {
+                    _notifier.Error(H["Schema is not a correct json format."]);
+                    model.Editor = await _displayManager.BuildEditorAsync(query, updater: _updateModelAccessor.ModelUpdater, isNew: true);
+                    return View(model);
+                }
+            }
             var editor = await _displayManager.UpdateEditorAsync(query, updater: _updateModelAccessor.ModelUpdater, isNew: true);
 
             if (ModelState.IsValid)
             {
                 await _queryManager.SaveQueryAsync(query.Name, query);
-
                 _notifier.Success(H["Query created successfully"]);
                 return RedirectToAction("Index");
             }
@@ -213,7 +221,15 @@ namespace OrchardCore.Queries.Controllers
             }
 
             var editor = await _displayManager.UpdateEditorAsync(query, updater: _updateModelAccessor.ModelUpdater, isNew: false);
-
+            if (!string.IsNullOrWhiteSpace(query.Schema))
+            {
+                if (!SchemaCheck(query.Schema))
+                {
+                    model.Editor = editor;
+                    _notifier.Error(H["Schema is not a correct json format."]);
+                    return View(model);
+                }
+            }
             if (ModelState.IsValid)
             {
                 await _queryManager.SaveQueryAsync(model.Name, query);
@@ -248,6 +264,20 @@ namespace OrchardCore.Queries.Controllers
             _notifier.Success(H["Query deleted successfully"]);
 
             return RedirectToAction("Index");
+        }
+
+        private bool SchemaCheck(string schema)
+        {
+
+            try
+            {
+                JToken.Parse(schema);
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
     }
 }
