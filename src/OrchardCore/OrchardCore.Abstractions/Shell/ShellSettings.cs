@@ -38,8 +38,8 @@ namespace OrchardCore.Environment.Shell
 
         public string Description
         {
-            get => _settings["Description"];
-            set => _settings["Description"] = value;
+            get => _configuration["Description"];
+            set => _configuration["Description"] = value;
         }
 
         public string Name { get; set; }

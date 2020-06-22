@@ -1,4 +1,4 @@
-# Recipes (OrchardCore.Recipes)
+# Recipes (`OrchardCore.Recipes`)
 
 ## Recipe file
 

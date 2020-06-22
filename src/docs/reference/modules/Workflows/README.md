@@ -1,4 +1,4 @@
-# Workflows (OrchardCore.Workflows)
+# Workflows (`OrchardCore.Workflows`)
 
 The Workflows module provides a way for users to visually implement business rules using flowchart diagrams.
 

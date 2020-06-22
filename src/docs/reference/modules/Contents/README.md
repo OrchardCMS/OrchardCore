@@ -1,4 +1,4 @@
-# Contents (OrchardCore.Contents)
+# Contents (`OrchardCore.Contents`)
 
 This module provides Content Management services.
 
