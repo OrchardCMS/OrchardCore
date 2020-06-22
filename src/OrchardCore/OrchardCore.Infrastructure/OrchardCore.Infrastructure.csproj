@@ -9,6 +9,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="HtmlSanitizer" />
+    <PackageReference Include="MimeKit" />
     <PackageReference Include="MessagePack" />
   </ItemGroup>
   

@@ -45,18 +45,22 @@ The `OrchardCore.Resources` module provides some commonly used ones:
 
 | Name                  | Type   | Versions      | Dependencies   |
 | --------------------- | ------ | ------------- | -------------- |
-| jQuery                | Script | 3.4.1         | -              |
-| jQuery.slim           | Script | 3.4.1         | -              |
+| jQuery                | Script | 3.5.1         | -              |
+| jQuery.slim           | Script | 3.5.1         | -              |
 | jQuery-ui             | Script | 1.12.1        | jQuery         |
 | jQuery-ui-i18n        | Script | 1.7.2         | jQuery-ui      |
 | popper                | Script | 1.16.0        | -              |
-| bootstrap             | Script | 3.4.0, 4.4.1  | jQuery, Popper |
-| bootstrap             | Style  | 3.4.0, 4.4.1  | -              |
-| codemirror            | Script | 5.48.4        | -              |
-| codemirror            | Style  | 5.48.4        | -              |
-| font-awesome          | Style  | 4.7.0, 5.12.0 | -              |
-| font-awesome          | Script | 5.12.0        | -              |
-| font-awesome-v4-shims | Script | 5.12.0        | -              |
+| bootstrap             | Script | 3.4.0, 4.5.0  | jQuery, Popper |
+| bootstrap             | Style  | 3.4.0, 4.5.0  | -              |
+| bootstrap-select      | Script | 1.13.17       | -              |
+| bootstrap-select      | Style  | 1.13.17       | -              |
+| bootstrap-slider      | Script | 11.0.2        | -              |
+| bootstrap-slider      | Style  | 11.0.2        | -              |
+| codemirror            | Script | 5.54.0        | -              |
+| codemirror            | Style  | 5.54.0        | -              |
+| font-awesome          | Style  | 4.7.0, 5.13.0 | -              |
+| font-awesome          | Script | 5.13.0        | -              |
+| font-awesome-v4-shims | Script | 5.13.0        | -              |
 
 ### Registering a Resource Manifest
 
@@ -128,10 +132,10 @@ settings.AtFoot();
 ##### Set the version to use
 
 ```csharp
-settings.UseVersion("3.3");
+settings.UseVersion("3.4");
 ```
 
-This will use the latest available version between `3.3` and `3.4`. If the version is not available an exception is thrown.
+This will use the latest available version between `3.4` and `3.5`. If the version is not available an exception is thrown.
 
 ##### Append a version
 
@@ -305,6 +309,61 @@ The following example demonstrates how to inject a custom script in the footer s
 <script at="Foot">
     document.write('<!-- some script -->');
 </script>
+```
+
+You can also inject a named custom script.
+``` liquid tab="Liquid"
+{% scriptblock name: "Carousel", at: "Foot", depends_on:"jQuery" %}
+    document.write('<!-- some script -->');
+{% endscriptblock %}
+```
+
+``` html tab="Razor"
+<script name="Carousel" at="Foot" depends-on="jQuery">
+    document.write('<!-- some script -->');
+</script>
+```
+
+Named script will only be injected once and can optionally specify dependencies.
+
+#### Custom style
+
+The following example demonstrates how to inject a custom style in the head section.
+The style block will be injected after all stylesheet resources.
+
+``` liquid tab="Liquid"
+{% styleblock at: "Head" %}
+    .my-class {
+        /* some style */
+    }
+{% endstyleblock %}
+```
+
+``` html tab="Razor"
+<style at="Head">
+    .my-class {
+        /* some style */
+    }
+</style>
+```
+
+You can also inject a named style block.
+The style block will only be injected once based on its name and can optionally specify dependencies.
+
+``` liquid tab="Liquid"
+{% styleblock name: "my-style", depends_on:"the-theme" %}
+    .my-class {
+        /* some style */
+    }
+{% endscriptblock %}
+```
+
+``` html tab="Razor"
+<style name="my-style" depends-on="the-theme">
+    .my-class {
+        /* some style */
+    }
+</style>
 ```
 
 #### Meta tags

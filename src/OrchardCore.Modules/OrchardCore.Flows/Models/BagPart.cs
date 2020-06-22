@@ -7,6 +7,6 @@ namespace OrchardCore.Flows.Models
     public class BagPart : ContentPart
     {
         [BindNever]
-        public List<ContentItem> ContentItems { get; } = new List<ContentItem>();
+        public List<ContentItem> ContentItems { get; set; } = new List<ContentItem>();
     }
 }

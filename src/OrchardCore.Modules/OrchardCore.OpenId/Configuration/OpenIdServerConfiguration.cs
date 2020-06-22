@@ -31,7 +31,7 @@ namespace OrchardCore.OpenId.Configuration
         IConfigureNamedOptions<OpenIddictValidationOptions>,
         IConfigureNamedOptions<JwtBearerOptions>
     {
-        private readonly ILogger<OpenIdServerConfiguration> _logger;
+        private readonly ILogger _logger;
         private readonly IRunningShellTable _runningShellTable;
         private readonly ShellSettings _shellSettings;
         private readonly IOpenIdServerService _serverService;
@@ -108,6 +108,7 @@ namespace OrchardCore.OpenId.Configuration
             options.IgnoreScopePermissions = true;
             options.Issuer = settings.Authority;
             options.UseRollingTokens = settings.UseRollingTokens;
+            options.UseReferenceTokens = settings.UseReferenceTokens;
 
             foreach (var key in _serverService.GetSigningKeysAsync().GetAwaiter().GetResult())
             {
@@ -189,6 +190,13 @@ namespace OrchardCore.OpenId.Configuration
             }
 
             options.Audiences.Add(OpenIdConstants.Prefixes.Tenant + _shellSettings.Name);
+
+            var serverSettings = GetServerSettingsAsync().GetAwaiter().GetResult();
+            if (serverSettings == null)
+            {
+                return;
+            }
+            options.UseReferenceTokens = serverSettings.UseReferenceTokens;
         }
 
         public void Configure(OpenIddictValidationOptions options) => Debug.Fail("This infrastructure method shouldn't be called.");

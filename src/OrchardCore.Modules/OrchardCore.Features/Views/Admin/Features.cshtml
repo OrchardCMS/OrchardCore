@@ -30,7 +30,7 @@
                     <div class="input-group-prepend">
                         <span class="input-group-text bg-secondary text-light">@T["Filter"]</span>
                     </div>
-                    <input id="search-box" class="form-control mr-sm-2" type="text" placeholder="@T["Search"]" autofocus="autofocus">
+                    <input id="search-box" class="form-control mr-sm-2" placeholder="@T["Search"]" type="search" autofocus>
                 </div>
             </div>
         </div>
@@ -190,7 +190,9 @@
             }
         });
 
-        $(".dropdown-menu a").on('click', function () {
+        $(".dropdown-menu a").filter(function() {
+            return $(this).data("action");
+        }).on('click', function () {
             $("[name='BulkAction']").val($(this).data('action'));
             $("[name='submit.BulkAction']").click();
         });

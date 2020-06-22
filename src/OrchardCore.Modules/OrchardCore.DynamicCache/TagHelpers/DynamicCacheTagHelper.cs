@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.TagHelpers.Cache;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Logging;
 using OrchardCore.DisplayManagement;
 using OrchardCore.Environment.Cache;
 
@@ -87,20 +86,17 @@ namespace OrchardCore.DynamicCache.TagHelpers
         private const string CachePriorityAttributeName = "priority";
         private readonly IDynamicCacheService _dynamicCacheService;
         private readonly ICacheScopeManager _cacheScopeManager;
-        private readonly ILogger<DynamicCacheTagHelper> _logger;
         private readonly DynamicCacheTagHelperService _dynamicCacheTagHelperService;
 
         public DynamicCacheTagHelper(
             IDynamicCacheService dynamicCacheService,
             ICacheScopeManager cacheScopeManager,
-            ILogger<DynamicCacheTagHelper> logger,
             HtmlEncoder htmlEncoder,
             DynamicCacheTagHelperService dynamicCacheTagHelperService)
 
         {
             _dynamicCacheService = dynamicCacheService;
             _cacheScopeManager = cacheScopeManager;
-            _logger = logger;
             HtmlEncoder = htmlEncoder;
             _dynamicCacheTagHelperService = dynamicCacheTagHelperService;
         }

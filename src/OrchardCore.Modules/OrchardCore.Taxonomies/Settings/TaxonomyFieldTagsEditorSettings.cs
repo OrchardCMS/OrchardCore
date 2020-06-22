@@ -9,7 +9,7 @@ namespace OrchardCore.Taxonomies.Settings
     public class TaxonomyFieldTagsEditorSettings
     {
         /// <summary>
-        /// Wether the field allows the user to add new tags to the taxonomy
+        /// Whether the field allows the user to add new tags to the taxonomy
         /// </summary>
         [DefaultValue(true)]
         public bool Open { get; set; } = true;

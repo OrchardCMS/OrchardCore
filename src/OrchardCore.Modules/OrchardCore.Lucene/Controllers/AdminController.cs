@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
+using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid;
 using Microsoft.AspNetCore.Authorization;
@@ -45,6 +46,10 @@ namespace OrchardCore.Lucene.Controllers
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly ISiteService _siteService;
         private readonly dynamic New;
+        private readonly JavaScriptEncoder _javaScriptEncoder;
+        private readonly IStringLocalizer S;
+        private readonly IHtmlLocalizer H;
+        private readonly ILogger _logger;
 
         public AdminController(
             ISession session,
@@ -60,8 +65,9 @@ namespace OrchardCore.Lucene.Controllers
             INotifier notifier,
             ISiteService siteService,
             IShapeFactory shapeFactory,
-            IStringLocalizer<AdminController> s,
-            IHtmlLocalizer<AdminController> h,
+            JavaScriptEncoder javaScriptEncoder,
+            IStringLocalizer<AdminController> stringLocalizer,
+            IHtmlLocalizer<AdminController> htmlLocalizer,
             ILogger<AdminController> logger)
         {
             _session = session;
@@ -78,14 +84,11 @@ namespace OrchardCore.Lucene.Controllers
             _siteService = siteService;
 
             New = shapeFactory;
-            S = s;
-            H = h;
-            Logger = logger;
+            _javaScriptEncoder = javaScriptEncoder;
+            S = stringLocalizer;
+            H = htmlLocalizer;
+            _logger = logger;
         }
-
-        public ILogger Logger { get; }
-        public IStringLocalizer S { get; }
-        public IHtmlLocalizer H { get; }
 
         public async Task<ActionResult> Index(AdminIndexViewModel model, PagerParameters pagerParameters)
         {
@@ -173,7 +176,7 @@ namespace OrchardCore.Lucene.Controllers
             {
                 if (!_luceneIndexManager.Exists(model.IndexName))
                 {
-                    ModelState.AddModelError(nameof(LuceneIndexSettingsViewModel.IndexName), S["An index named {0} doesn't exists.", model.IndexName]);
+                    ModelState.AddModelError(nameof(LuceneIndexSettingsViewModel.IndexName), S["An index named {0} doesn't exist.", model.IndexName]);
                 }
             }
 
@@ -199,7 +202,7 @@ namespace OrchardCore.Lucene.Controllers
                 catch (Exception e)
                 {
                     _notifier.Error(H["An error occurred while creating the index"]);
-                    Logger.LogError(e, "An error occurred while creating an index");
+                    _logger.LogError(e, "An error occurred while creating an index");
                     return View(model);
                 }
 
@@ -216,7 +219,7 @@ namespace OrchardCore.Lucene.Controllers
                 catch (Exception e)
                 {
                     _notifier.Error(H["An error occurred while editing the index"]);
-                    Logger.LogError(e, "An error occurred while editing an index");
+                    _logger.LogError(e, "An error occurred while editing an index");
                     return View(model);
                 }
 
@@ -290,7 +293,7 @@ namespace OrchardCore.Lucene.Controllers
             catch (Exception e)
             {
                 _notifier.Error(H["An error occurred while deleting the index."]);
-                Logger.LogError("An error occurred while deleting the index " + model.IndexName, e);
+                _logger.LogError("An error occurred while deleting the index " + model.IndexName, e);
             }
 
             return RedirectToAction("Index");
@@ -354,7 +357,7 @@ namespace OrchardCore.Lucene.Controllers
                     templateContext.SetValue(parameter.Key, parameter.Value);
                 }
 
-                var tokenizedContent = await _liquidTemplateManager.RenderAsync(model.DecodedQuery, System.Text.Encodings.Web.JavaScriptEncoder.Default);
+                var tokenizedContent = await _liquidTemplateManager.RenderAsync(model.DecodedQuery, _javaScriptEncoder);
 
                 try
                 {
@@ -365,7 +368,7 @@ namespace OrchardCore.Lucene.Controllers
                 }
                 catch (Exception e)
                 {
-                    Logger.LogError(e, "Error while executing query");
+                    _logger.LogError(e, "Error while executing query");
                     ModelState.AddModelError(nameof(model.DecodedQuery), S["Invalid query : {0}", e.Message]);
                 }
 

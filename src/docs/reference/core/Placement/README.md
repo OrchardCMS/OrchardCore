@@ -24,10 +24,8 @@ In the following example, we describe the placement for the `TextField` and `Par
 
 A placement rule contains two sets of data:
 
-- Filters
-  - Defines what specific shapes are targeted.
-- Placement information
-  - The placement information to apply when the filter is matched.
+- **Filters** - defines what specific shapes are targeted.
+- **Placement information** - the placement information to apply when the filter is matched.
 
 Currently you can filter shapes by:
 
@@ -45,7 +43,7 @@ For shapes that are built from a content item, you can filter by the following b
 
 Placement information consists of:
 
-- `place` (Optional): The actual location of the shape in the rendered zone.
+- `place` (Optional): The actual location of the shape in the rendered zone. A value of "-" will hide the shape.
 - `alternates` (Optional): An array of alternate shape types to add to the current shape's metadata.
 - `wrappers` (Optional): An array of shape types to use as wrappers for the current shape.
 - `shape` (Optional): A substitution shape type.
@@ -54,16 +52,15 @@ Placement information consists of:
 {
   "TextField": [
     {
-    "displayType": "Detail",
-    "differentiator": "Article-MyTextField",
-        "contentType": ["Page", "BlogPost"],
-        "contentPart": ["HtmlBodyPart"],
-        "path": ["/mypage"],
-
-    "place": "Content",
-    "alternates": [ "TextField_Title" ],
-    "wrappers": [ "TextField_Title" ],
-    "shape": "AnotherShape"
+      "displayType": "Detail",
+      "differentiator": "Article-MyTextField",
+      "contentType": [ "Page", "BlogPost" ],
+      "contentPart": [ "HtmlBodyPart" ],
+      "path": [ "/mypage" ],
+      "place": "Content",
+      "alternates": [ "TextField_Title" ],
+      "wrappers": [ "TextField_Title" ],
+      "shape": "AnotherShape"
     }
   ],
 }
@@ -73,8 +70,8 @@ Placement information consists of:
 
 Fields have a custom differentiator as their shape is used in many places.  
 It is built using the `Part` it's contained in, and the name of the field.  
-For instance, if a field named `MyField` would be added to an `Article` content type, its differentiator would be `Article.MyField`.  
-If a field named `City` was added to an `Address` part then its differentiator would be `Address.City`.
+For instance, if a field named `MyField` would be added to an `Article` content type, its differentiator would be `Article-MyField`.  
+If a field named `City` was added to an `Address` part then its differentiator would be `Address-City`.
 
 ## Shapes
 
@@ -185,4 +182,18 @@ Result:
 
 ## Shape differentiators
 
-You can find information about shape differentiators in the [Templates documentation](../../modules/Templates/#content-field-differentiator)
+You can find information about shape differentiators in the [Templates documentation](../../modules/Templates/README.md#content-field-differentiator)
+
+## Tabs
+
+If you want to place a part in a different tab, you use the `#` character in order to specify the tab in which it will be rendered.
+
+```json
+{
+  "TitlePart_Edit": [
+    {
+      "place": "Parts#MyTab:0"
+    }
+  ]
+}
+```

@@ -39,10 +39,11 @@ namespace OrchardCore.Contents.Controllers
         private readonly INotifier _notifier;
         private readonly IAuthorizationService _authorizationService;
         private readonly IEnumerable<IContentAdminFilter> _contentAdminFilters;
-        private readonly IHtmlLocalizer<AdminController> H;
-        private readonly IStringLocalizer<AdminController> S;
+        private readonly IHtmlLocalizer H;
+        private readonly IStringLocalizer S;
         private readonly IUpdateModelAccessor _updateModelAccessor;
         private readonly dynamic New;
+        private readonly ILogger _logger;
 
         public AdminController(
             IContentManager contentManager,
@@ -72,10 +73,8 @@ namespace OrchardCore.Contents.Controllers
             H = htmlLocalizer;
             S = stringLocalizer;
             New = shapeFactory;
-            Logger = logger;
+            _logger = logger;
         }
-
-        public ILogger Logger { get; set; }
 
         [HttpGet]
         public async Task<IActionResult> List(ListContentsViewModel model, PagerParameters pagerParameters, string contentTypeId = "")
@@ -120,8 +119,12 @@ namespace OrchardCore.Contents.Controllers
             if (!string.IsNullOrEmpty(model.Options.SelectedContentType))
             {
                 var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(model.Options.SelectedContentType);
+
                 if (contentTypeDefinition == null)
+                {
                     return NotFound();
+                }
+
                 contentTypeDefinitions = contentTypeDefinitions.Append(contentTypeDefinition);
 
                 // We display a specific type even if it's not listable so that admin pages
@@ -184,7 +187,7 @@ namespace OrchardCore.Contents.Controllers
             }
 
             // Invoke any service that could alter the query
-            await _contentAdminFilters.InvokeAsync((filter, query, model, pagerParameters, updateModel) => filter.FilterAsync(query, model, pagerParameters, updateModel), query, model, pagerParameters, _updateModelAccessor.ModelUpdater, Logger);
+            await _contentAdminFilters.InvokeAsync((filter, query, model, pagerParameters, updateModel) => filter.FilterAsync(query, model, pagerParameters, updateModel), query, model, pagerParameters, _updateModelAccessor.ModelUpdater, _logger);
 
             var maxPagedCount = siteSettings.MaxPagedCount;
             if (maxPagedCount > 0 && pager.PageSize > maxPagedCount)
@@ -450,7 +453,9 @@ namespace OrchardCore.Contents.Controllers
             var contentItem = await _contentManager.GetAsync(contentItemId, VersionOptions.Latest);
 
             if (contentItem == null)
+            {
                 return NotFound();
+            }
 
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContent, contentItem))
             {
@@ -522,27 +527,12 @@ namespace OrchardCore.Contents.Controllers
                 return Forbid();
             }
 
-            //string previousRoute = null;
-            //if (contentItem.Has<IAliasAspect>() &&
-            //    !string.IsNullOrWhiteSpace(returnUrl)
-            //    && Request.IsLocalUrl(returnUrl)
-            //    // only if the original returnUrl is the content itself
-            //    && String.Equals(returnUrl, Url.ItemDisplayUrl(contentItem), StringComparison.OrdinalIgnoreCase)
-            //    )
-            //{
-            //    previousRoute = contentItem.As<IAliasAspect>().Path;
-            //}
-
             var model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, _updateModelAccessor.ModelUpdater, false);
             if (!ModelState.IsValid)
             {
                 _session.Cancel();
                 return View("Edit", model);
             }
-
-            // The content item needs to be marked as saved in case the drivers or the handlers have
-            // executed some query which would flush the saved entities inside the above UpdateEditorAsync.
-            _session.Save(contentItem);
 
             await conditionallyPublish(contentItem);
 
@@ -566,7 +556,9 @@ namespace OrchardCore.Contents.Controllers
             var contentItem = await _contentManager.GetAsync(contentItemId, VersionOptions.Latest);
 
             if (contentItem == null)
+            {
                 return NotFound();
+            }
 
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.CloneContent, contentItem))
             {
@@ -734,12 +726,5 @@ namespace OrchardCore.Contents.Controllers
             }
             return listable;
         }
-
-        //ActionResult ListableTypeList(int? containerId)
-        //{
-        //    var viewModel = Shape.ViewModel(ContentTypes: GetListableTypes(containerId.HasValue), ContainerId: containerId);
-
-        //    return View("ListableTypeList", viewModel);
-        //}
     }
 }

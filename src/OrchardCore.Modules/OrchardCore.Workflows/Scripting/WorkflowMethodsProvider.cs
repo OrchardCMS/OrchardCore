@@ -33,7 +33,7 @@ namespace OrchardCore.Workflows.Scripting
             _inputMethod = new GlobalMethod
             {
                 Name = "input",
-                Method = serviceProvider => (Func<string, object>)(name => workflowContext.Input[name])
+                Method = serviceProvider => (Func<string, object>)((name) => workflowContext.Input.ContainsKey(name) ? workflowContext.Input[name] : null)
             };
 
             _outputMethod = new GlobalMethod
@@ -45,7 +45,7 @@ namespace OrchardCore.Workflows.Scripting
             _propertyMethod = new GlobalMethod
             {
                 Name = "property",
-                Method = serviceProvider => (Func<string, object>)((name) => workflowContext.Properties[name])
+                Method = serviceProvider => (Func<string, object>)((name) => workflowContext.Properties.ContainsKey(name) ? workflowContext.Properties[name] : null)
             };
 
             _setPropertyMethod = new GlobalMethod

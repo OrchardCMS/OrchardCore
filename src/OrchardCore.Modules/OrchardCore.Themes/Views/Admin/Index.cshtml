@@ -1,9 +1,6 @@
 @model OrchardCore.Themes.Models.SelectThemesViewModel
 <style asp-src="~/OrchardCore.Themes/Styles/themes.admin.css"></style>
-<div class="alert alert-warning">
-    <h4>@T["Changing current themes"]</h4>
-    <p>@T["This page lets you change the site's current themes for both the front-end and the back-end."]</p>
-</div>
+<h1>@RenderTitleSegments(T["Themes"])</h1>
 
 @if (!Model.Themes.Any())
 {
@@ -27,6 +24,10 @@ else
                         @if (!string.IsNullOrWhiteSpace(themeEntry.Extension.Manifest.Website))
                         {
                             <small><a href="@themeEntry.Extension.Manifest.Website" target="_blank">@themeEntry.Extension.Manifest.Website</a></small><br />
+                        }
+                        @if(themeEntry.Extension.Manifest.Tags.Any())
+                        {
+                            <small>@T["Tags: {0}", string.Join(", ", themeEntry.Extension.Manifest.Tags.ToArray())]</small><br />
                         }
                         <small>@T["Version: {0}", themeEntry.Extension.Manifest.Version]</small>
                     </div>

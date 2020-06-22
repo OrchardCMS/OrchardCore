@@ -24,7 +24,7 @@ namespace OrchardCore.DisplayManagement.Notify
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            JObject jo = JObject.Load(reader);
+            var jo = JObject.Load(reader);
 
             NotifyType type;
 

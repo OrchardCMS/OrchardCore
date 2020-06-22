@@ -27,7 +27,7 @@ namespace OrchardCore.DisplayManagement.Notify
         private bool _shouldDeleteCookie;
         private string _tenantPath;
         private readonly HtmlEncoder _htmlEncoder;
-        private readonly ILogger<NotifyFilter> _logger;
+        private readonly ILogger _logger;
 
         public NotifyFilter(
             INotifier notifier,

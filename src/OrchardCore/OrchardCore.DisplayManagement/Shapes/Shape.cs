@@ -25,7 +25,20 @@ namespace OrchardCore.DisplayManagement.Shapes
         public string TagName { get; set; }
         public IList<string> Classes => _classes ??= new List<string>();
         public IDictionary<string, string> Attributes => _attributes ??= new Dictionary<string, string>();
-        public IEnumerable<dynamic> Items => _items;
+        public IEnumerable<dynamic> Items
+        {
+            get
+            {
+                if (!_sorted)
+                {
+                    _items.Sort(FlatPositionComparer.Instance);
+                    _sorted = true;
+                }
+
+                return _items;
+            }
+        }
+
         public bool HasItems => _items.Count > 0;
 
         public string Position

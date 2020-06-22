@@ -57,19 +57,19 @@ namespace OrchardCore.Deployment.Controllers
                 archiveFileName = PathExtensions.Combine(Path.GetTempPath(), filename);
 
                 var recipeDescriptor = new RecipeDescriptor();
-                CustomFileDeploymentStep customFileDeploymentStep = deploymentPlan.DeploymentSteps.FirstOrDefault(ds => ds.Name == "CustomFileDeploymentStep") as CustomFileDeploymentStep;
+                var recipeFileDeploymentStep = deploymentPlan.DeploymentSteps.FirstOrDefault(ds => ds.Name == nameof(RecipeFileDeploymentStep)) as RecipeFileDeploymentStep;
 
-                if (customFileDeploymentStep != null)
+                if (recipeFileDeploymentStep != null)
                 {
-                    recipeDescriptor.Name = customFileDeploymentStep.RecipeName;
-                    recipeDescriptor.DisplayName = customFileDeploymentStep.DisplayName;
-                    recipeDescriptor.Description = customFileDeploymentStep.Description;
-                    recipeDescriptor.Author = customFileDeploymentStep.Author;
-                    recipeDescriptor.WebSite = customFileDeploymentStep.WebSite;
-                    recipeDescriptor.Version = customFileDeploymentStep.Version;
-                    recipeDescriptor.IsSetupRecipe = customFileDeploymentStep.IsSetupRecipe;
-                    recipeDescriptor.Categories = (customFileDeploymentStep.Categories ?? "").Split(',', StringSplitOptions.RemoveEmptyEntries);
-                    recipeDescriptor.Tags = (customFileDeploymentStep.Tags ?? "").Split(',', StringSplitOptions.RemoveEmptyEntries);
+                    recipeDescriptor.Name = recipeFileDeploymentStep.RecipeName;
+                    recipeDescriptor.DisplayName = recipeFileDeploymentStep.DisplayName;
+                    recipeDescriptor.Description = recipeFileDeploymentStep.Description;
+                    recipeDescriptor.Author = recipeFileDeploymentStep.Author;
+                    recipeDescriptor.WebSite = recipeFileDeploymentStep.WebSite;
+                    recipeDescriptor.Version = recipeFileDeploymentStep.Version;
+                    recipeDescriptor.IsSetupRecipe = recipeFileDeploymentStep.IsSetupRecipe;
+                    recipeDescriptor.Categories = (recipeFileDeploymentStep.Categories ?? "").Split(',', StringSplitOptions.RemoveEmptyEntries);
+                    recipeDescriptor.Tags = (recipeFileDeploymentStep.Tags ?? "").Split(',', StringSplitOptions.RemoveEmptyEntries);
                 }
 
                 var deploymentPlanResult = new DeploymentPlanResult(fileBuilder, recipeDescriptor);

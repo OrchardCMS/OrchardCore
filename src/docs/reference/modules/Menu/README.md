@@ -174,6 +174,56 @@ else
 }
 ```
 
+## Mark active item in a menu
+
+Some times you need to set a menu item as active if it is the currently displayed one.
+Because menus are cached, this must be done from javascript. OrchardCore.Menu module provides a script to help you with that.
+
+``` javascript
+function activateLinks(options,cb)
+```
+
+| Parameter | Description|
+| -------- | ----------- |
+| `options: {class:'active',selector:null,traverse:0}` | Use `class` to define what class you want to add to the parent of the anchor tag that has the current url as href. If you want to apply it to a child, set the `selector` property. Use the `traverse` to a positive number in order to seek a less specific url in the menu tree then the currently displayed on. ex. If you have a link to '/todo-items' in menu and you have navigated to '/todo-items/Create', it will try to find the item with traverse item less segments in the menu and activate it. |
+| `cb: function( items )` | If it finds an active item, the call back is hit for extra configuration. ex. Expand a menu item if the active one is nested.|
+
+### `activateLinks` usage in `Layout` file
+
+``` liquid tab="Liquid"
+...
+{% script at:"Foot", src:"~/OrchardCore.Menu/Scripts/activate-links.min.js", debug_src:"~/OrchardCore.Menu/Scripts/activate-links.js" %}
+...
+    <resources type="Footer" />
+...
+    <script type="text/javascript">
+        (function ($) {
+            $('#mainNav').activateLinks({ selector: 'a', traverse: 2 }, function (items) {
+                var parents = $(items).closest(".has-treeview")
+                parents.addClass('menu-open');
+            });
+        })(jQuery);
+    </script>
+...
+```
+
+``` html tab="Razor"
+...
+<script at="Foot" asp-src="~/OrchardCore.Menu/Scripts/activate-links.min.js" debug-src="~/OrchardCore.Menu/Scripts/activate-links.js"></script>
+...
+<resources type="Footer" />
+...
+<script type="text/javascript">
+    (function ($) {
+        $('#mainNav').activateLinks({ selector: 'a', traverse: 2 }, function (items) {
+            var parents = $(items).closest(".has-treeview")
+            parents.addClass('menu-open');
+        });
+    })(jQuery);
+</script>
+...
+```
+
 ## CREDITS
 
 ### nestedSortable jQuery plugin

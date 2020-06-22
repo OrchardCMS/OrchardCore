@@ -23,6 +23,7 @@ namespace OrchardCore.Menu.Controllers
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly ISession _session;
         private readonly INotifier _notifier;
+        private readonly IHtmlLocalizer H;
         private readonly IUpdateModelAccessor _updateModelAccessor;
 
         public AdminController(
@@ -32,7 +33,7 @@ namespace OrchardCore.Menu.Controllers
             IContentItemDisplayManager contentItemDisplayManager,
             IContentDefinitionManager contentDefinitionManager,
             INotifier notifier,
-            IHtmlLocalizer<AdminController> h,
+            IHtmlLocalizer<AdminController> localizer,
             IUpdateModelAccessor updateModelAccessor)
         {
             _contentManager = contentManager;
@@ -42,10 +43,8 @@ namespace OrchardCore.Menu.Controllers
             _session = session;
             _notifier = notifier;
             _updateModelAccessor = updateModelAccessor;
-            H = h;
+            H = localizer;
         }
-
-        public IHtmlLocalizer H { get; set; }
 
         public async Task<IActionResult> Create(string id, string menuContentItemId, string menuItemId)
         {
@@ -155,7 +154,7 @@ namespace OrchardCore.Menu.Controllers
             // Look for the target menu item in the hierarchy
             JObject menuItem = FindMenuItem(menu.Content, menuItemId);
 
-            // Couldn't find targetted menu item
+            // Couldn't find targeted menu item
             if (menuItem == null)
             {
                 return NotFound();
@@ -201,7 +200,7 @@ namespace OrchardCore.Menu.Controllers
             // Look for the target menu item in the hierarchy
             JObject menuItem = FindMenuItem(menu.Content, menuItemId);
 
-            // Couldn't find targetted menu item
+            // Couldn't find targeted menu item
             if (menuItem == null)
             {
                 return NotFound();
@@ -256,7 +255,7 @@ namespace OrchardCore.Menu.Controllers
             // Look for the target menu item in the hierarchy
             var menuItem = FindMenuItem(menu.Content, menuItemId);
 
-            // Couldn't find targetted menu item
+            // Couldn't find targeted menu item
             if (menuItem == null)
             {
                 return NotFound();
