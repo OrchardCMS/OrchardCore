@@ -18,10 +18,13 @@ namespace OrchardCore.PublishLater.Indexes
                 .Map(contentItem =>
                 {
                     var publishLaterPart = contentItem.As<PublishLaterPart>();
-                    if (publishLaterPart == null ||
-                        !publishLaterPart.ScheduledPublishUtc.HasValue ||
-                        contentItem.Published ||
-                        !contentItem.Latest)
+                    if (publishLaterPart == null || !publishLaterPart.ScheduledPublishUtc.HasValue)
+                    {
+                        return null;
+                    }
+
+                    // Remove index for items that are already published or not the latest version
+                    if (contentItem.Published || !contentItem.Latest)
                     {
                         return null;
                     }
