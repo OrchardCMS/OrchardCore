@@ -2,13 +2,13 @@
 @using System.Linq
 @using OrchardCore.Mvc.Utilities
 @{
-    var tabName = String.IsNullOrWhiteSpace(Model.Tab.Key) ? "Content" : Model.Tab.Key;
-    var tabId = $"tab-{Model.TabId}-{tabName}".HtmlClassify();
-    
-    var tabItemClasses = Model.TabIndex == 0 ? "tab-pane fade show active" : "tab-pane fade";
-    
-    var cardGrouping = await New.CardGrouping(Grouping: Model.Tab);
+    var tabId = $"tab-{Model.Tab.Key}-{Model.ContentItem.ContentItemId}".HtmlClassify();
+    Model.Classes.Add("tab-pane fade");
+    @if (Model.TabIndex == 0)
+    {
+        Model.Classes.Add("show active");
+    }
 }
-<div id="@tabId" class="@tabItemClasses">
-    @await DisplayAsync(cardGrouping)
+<div id="@tabId" class="@String.Join(" ", Model.Classes.ToArray())">
+    @await DisplayAsync(await New.CardGrouping(Grouping: Model.Tab, ContentItem: Model.ContentItem))
 </div>

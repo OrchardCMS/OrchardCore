@@ -86,7 +86,7 @@ namespace OrchardCore.DisplayManagement.Zones
             else
             {
                 // This determins whether to show a card, or fall back to columns
-                var cardGrouping = await New.CardGrouping(Grouping: groupings[0]);
+                var cardGrouping = await New.CardGrouping(Grouping: groupings[0], ContentItem: Shape.ContentItem);
 
                 htmlContentBuilder.AppendHtml(await DisplayAsync(cardGrouping));
             }
@@ -151,7 +151,7 @@ namespace OrchardCore.DisplayManagement.Zones
             else
             {
                 // See if there are columns.
-                var groupingShape = await New.ColumnGrouping(Grouping: grouping);
+                var groupingShape = await New.ColumnGrouping(Grouping: grouping, ContentItem: Shape.ContentItem);
                 htmlContentBuilder.AppendHtml(await DisplayAsync(groupingShape));
             }
 

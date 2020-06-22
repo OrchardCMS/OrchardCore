@@ -1,18 +1,17 @@
 @model dynamic
 @using OrchardCore.Mvc.Utilities
 @{
-    var cardName = String.IsNullOrWhiteSpace(Model.Card.Key) ? "Content" : Model.Card.Key;
-    var cardId = $"card-{Model.ContentItemId}-{cardName}".HtmlClassify();
-    var columnGrouping = await New.ColumnGrouping(Grouping: Model.Card);
+    var cardId = $"card-{Model.ContentItem.ContentItemId}-{Model.Card.Key}".HtmlClassify();
+    var columnGrouping = await New.ColumnGrouping(Grouping: Model.Card, ContentItem: Model.ContentItem);
 }
 <div class="card">
     <div class="card-header" id="heading-@cardId">
-        <button class="btn btn-link @(Model.CardIndex == 0 ? "" : "collapsed")" type="button" data-toggle="collapse" data-target="#collapse-@cardId" aria-expanded="true" aria-controls="collapse-@cardId">
-          @cardName
+        <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse-@cardId" aria-expanded="true" aria-controls="collapse-@cardId">
+          @Model.Card.Key
         </button>        
         
     </div>
-    <div class="collapse @(Model.CardIndex == 0 ? "show" : "")" id="collapse-@cardId" data-parent="#@Model.ContainerId" aria-labelledby="heading-@cardId">
+    <div class="collapse show" id="collapse-@cardId" aria-labelledby="heading-@cardId">
         <div class="card-body ">
             @await DisplayAsync(columnGrouping)
         </div>
