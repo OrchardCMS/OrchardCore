@@ -17,6 +17,8 @@
                             $("#mediaApp").show();
                             mediaApp.selectedMedias = [];
                             var modal = $('#mediaModalHtmlField').modal();
+                            //disable an reset on click event over the button to avoid issue if press button multiple times or have multiple editor
+                            $('#mediaHtmlFieldSelectButton').off('click');
                             $('#mediaHtmlFieldSelectButton').on('click', function (v) {
                                 //avoid multiple image insert
                                 trumbowyg.restoreRange();
@@ -31,7 +33,9 @@
                                     trumbowyg.range.insertNode(img);
                                 }
                                 
+                                trumbowyg.syncCode();
                                 trumbowyg.$c.trigger('tbwchange');
+                                //avoid image to be selected after add it
                                 trumbowyg.$c.focus();
 
                                 $('#mediaModalHtmlField').modal('hide');
