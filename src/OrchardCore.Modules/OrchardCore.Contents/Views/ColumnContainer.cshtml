@@ -14,39 +14,8 @@
 
 
 <div class="row ta-row-container">
-    @foreach(var columnShape in Model.Items)
+    @foreach(var item in Model.Items)
     {
-        @* var columnShape = await New.Column(Column: column); *@
-        columnShape.Classes.Add("column-" + ((string)columnShape.Grouping.Key).HtmlClassify());
-        
-        var columnClass = "col";
-        @* To provider a modifier to a column name all columns in the group with a '-' modifier, i.e. SeoColumn-6*@
-
-        foreach(var item in columnShape)
-        {@* all of this can move into ZoneShapes*@
-            if (item.Metadata.Column is string columnName && !String.IsNullOrEmpty(columnName))
-            {
-                var columnModifierIndex = columnName.IndexOf('-');
-                if (columnModifierIndex != -1)
-                {
-                    var positionModifierIndex = columnName.IndexOf(';');
-                    // Column-9;56
-                    if (positionModifierIndex > columnModifierIndex)
-                    {
-                        var length = positionModifierIndex - columnModifierIndex;
-                        columnClass = "col-" + columnName.Substring(columnModifierIndex + 1, length - 1);  
-                    }
-                    else // Column;56-9 
-                    {
-                        columnClass = "col-" + columnName.Substring(columnModifierIndex + 1);                               
-                    }
-                    break;
-                }                
-            }            
-        }
-
-        columnShape.Classes.Add(columnClass);
-
-        @await DisplayAsync(columnShape)
+        @await DisplayAsync(item)
     }
 </div>

@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.DisplayManagement.Shapes;
@@ -52,7 +50,7 @@ namespace OrchardCore.DisplayManagement.Zones
                 return key;
             }).ToList();
 
-            // Process tabs first, then Cards, then Columns.
+            // Process Tabs first, then Cards, then Columns.
             if (groupings.Count > 1)
             {
                  var orderedGroupings = groupings.OrderBy(grouping => {
@@ -94,7 +92,7 @@ namespace OrchardCore.DisplayManagement.Zones
             }
             else
             {
-                // This determins whether to show a card, or fall back to columns
+                // Evaluate for cards.
                 var cardGrouping = await New.CardGrouping(Grouping: groupings[0], ContentItem: Shape.ContentItem);
 
                 htmlContentBuilder.AppendHtml(await DisplayAsync(cardGrouping));
@@ -151,7 +149,7 @@ namespace OrchardCore.DisplayManagement.Zones
                         return new PositionalGrouping(key.Substring(modifierIndex));
                     }
 
-                    return new PositionalGrouping(null);
+                    return new PositionalGrouping();
                 }, FlatPositionComparer.Instance).ToList();
 
                 dynamic container = await New.CardContainer(ContentItem: Shape.ContentItem);
@@ -169,7 +167,7 @@ namespace OrchardCore.DisplayManagement.Zones
             }
             else
             {
-                // See if there are columns.
+                // Evaluate for columns.
                 var groupingShape = await New.ColumnGrouping(Grouping: grouping, ContentItem: Shape.ContentItem);
                 htmlContentBuilder.AppendHtml(await DisplayAsync(groupingShape));
             }
@@ -177,14 +175,14 @@ namespace OrchardCore.DisplayManagement.Zones
             return htmlContentBuilder;
         }
 
+
         [Shape]
         public async Task<IHtmlContent> ColumnGrouping(dynamic DisplayAsync, dynamic Shape, dynamic New)
         {
             var htmlContentBuilder = new HtmlContentBuilder();
             IGrouping<string, dynamic> grouping = Shape.Grouping;
 
-            var groupings = grouping.GroupBy(x =>
-            {
+            var groupings = grouping.GroupBy(x => {
                 // By convention all placement delimiters default to the name 'Content' when not specified during placement.
                 var key = (string)x.Metadata.Column;
                 if (String.IsNullOrEmpty(key))
@@ -211,59 +209,39 @@ namespace OrchardCore.DisplayManagement.Zones
 
             if (groupings.Count > 1)
             {
-                 var orderedGroupings = groupings.OrderBy(grouping => {
-                    var firstGroupWithModifier = grouping.FirstOrDefault(group => {
-                        var key = (string)group.Metadata.Column;
-                        if (!String.IsNullOrEmpty(key))
-                        {
-                            var modifierIndex = key.IndexOf(';');
-                            if (modifierIndex != -1)
-                            {
-                                return true;
-                            }
-                        }
-                        return false;
-                    });
+                var positionModifiers = GetColumnPositions(groupings);
 
-                    if (firstGroupWithModifier != null)
+                var orderedGroupings = groupings.OrderBy(grouping => {
+                    if (positionModifiers.TryGetValue(grouping.Key, out var position))
                     {
-                        var key = (string)firstGroupWithModifier.Metadata.Column;
-                        // Here we have to remove the - section
-                        var columnModifierIndex = key.IndexOf('-');
-                        if (columnModifierIndex != -1)
-                        {
-                            var positionModifierIndex = key.IndexOf(';');
-                            // Column-9;56
-                            if (positionModifierIndex > columnModifierIndex)
-                            {
-                                return new PositionalGrouping(key.Substring(positionModifierIndex));
-                            }
-                            else // Column;56-9 // positionmodifierinex here = 6. columnmod = 9
-                            {
-                                var length = columnModifierIndex - positionModifierIndex;
-                                return new PositionalGrouping(key.Substring(positionModifierIndex, length));
-                            }
-                        }
-                        else
-                        {
-                            var positionModifierIndex = key.IndexOf(';');
-                            return new PositionalGrouping(key.Substring(positionModifierIndex));
-                        }
+                        return new PositionalGrouping { Position = position };
                     }
-
-                    return new PositionalGrouping(null);
+                    else
+                    {
+                        return new PositionalGrouping();
+                    }
                 }, FlatPositionComparer.Instance).ToList();
+
+                var columnModifiers = GetColumnModifiers(orderedGroupings);
 
                 dynamic container = await New.ColumnContainer(ContentItem: Shape.ContentItem);
                 foreach(var orderedGrouping in orderedGroupings)
                 {
                     var groupingShape = await New.Column(Grouping: orderedGrouping, ContentItem: Shape.ContentItem);
+
+                    groupingShape.Classes.Add("column-" + orderedGrouping.Key.HtmlClassify());
+
+                    var columnClass = "col";
+                    if (columnModifiers.TryGetValue(orderedGrouping.Key, out var columnModifier))
+                    {
+                        columnClass = "col-" + columnModifier;
+                    }
+
+                    groupingShape.Classes.Add(columnClass);
+
                     foreach(var item in orderedGrouping)
                     {
                         groupingShape.Add(item);
-                        // this means we could calculate those classes here, or create them as above, and add to another dictionary
-                        // for example.
-                        // so that simplifies that a bit potentially.
                     }
                     container.Add(groupingShape);
                 }
@@ -280,10 +258,102 @@ namespace OrchardCore.DisplayManagement.Zones
 
             return htmlContentBuilder;
         }
+        private static Dictionary<string, string> GetColumnPositions(IList<IGrouping<string, dynamic>> groupings)
+        {
+            var positionModifiers = new Dictionary<string, string>();
+            foreach(var grouping in groupings)
+            {
+                var firstGroupWithModifier = FirstGroupingWithModifierOrDefault(grouping, ';');
+                if (firstGroupWithModifier != null)
+                {
+                    var key = (string)firstGroupWithModifier.Metadata.Column;
+                    var columnModifierIndex = key.IndexOf('-');
+                    if (columnModifierIndex != -1)
+                    {
+                        var positionModifierIndex = key.IndexOf(';');
+                        // Column-9;56
+                        if (positionModifierIndex > columnModifierIndex)
+                        {
+                            positionModifiers.Add(key.Substring(0, columnModifierIndex), key.Substring(positionModifierIndex + 1));
+                        }
+                        else // Column;56-9
+                        {
+                            var length = columnModifierIndex - positionModifierIndex;
+                            positionModifiers.Add(key.Substring(0, positionModifierIndex), key.Substring(positionModifierIndex + 1, length - 1));
+                        }
+                    }
+                    else
+                    {
+                        var positionModifierIndex = key.IndexOf(';');
+                        positionModifiers.Add(key.Substring(0, positionModifierIndex), key.Substring(positionModifierIndex + 1));
+                    }
+                }
+            }
+
+            return positionModifiers;
+        }
+
+        private static Dictionary<string, string> GetColumnModifiers(IList<IGrouping<string, dynamic>> groupings)
+        {
+            var columnModifiers = new Dictionary<string, string>();
+            foreach(var grouping in groupings)
+            {
+                var firstGroupWithModifier = FirstGroupingWithModifierOrDefault(grouping, '-');
+                if (firstGroupWithModifier != null)
+                {
+                    var key = (string)firstGroupWithModifier.Metadata.Column;
+                    var posModifierIndex = key.IndexOf(';');
+                    if (posModifierIndex != -1)
+                    {
+                        var colModifierIndex = key.IndexOf('-');
+                        // Column;5.1-9
+                        if (colModifierIndex > posModifierIndex)
+                        {
+                            columnModifiers.Add(key.Substring(0, posModifierIndex), key.Substring(colModifierIndex + 1));
+                        }
+                        else // Column-9;5.1
+                        {
+                            var length = posModifierIndex - colModifierIndex;
+                            columnModifiers.Add(key.Substring(0, colModifierIndex), key.Substring(colModifierIndex + 1, length - 1));
+                        }
+                    }
+                    else
+                    {
+                        var columnModifierIndex = key.IndexOf('-');
+                        columnModifiers.Add(key.Substring(0, columnModifierIndex), key.Substring(columnModifierIndex + 1));
+                    }
+                }
+            }
+
+            return columnModifiers;
+        }
+
+        private static dynamic FirstGroupingWithModifierOrDefault(IGrouping<string, dynamic> grouping, char modifier)
+        {
+            var firstGroupWithModifier = grouping.FirstOrDefault(group =>
+            {
+                var key = (string)group.Metadata.Column;
+                if (!String.IsNullOrEmpty(key))
+                {
+                    var modifierIndex = key.IndexOf(modifier);
+                    if (modifierIndex != -1)
+                    {
+                        return true;
+                    }
+                }
+                return false;
+            });
+
+            return firstGroupWithModifier;
+        }
     }
 
-    public class PositionalGrouping : IPositioned
+    internal class PositionalGrouping : IPositioned
     {
+        public PositionalGrouping()
+        {
+        }
+
         public PositionalGrouping(string key)
         {
             if (!String.IsNullOrEmpty(key))
@@ -291,7 +361,7 @@ namespace OrchardCore.DisplayManagement.Zones
                 var modifierIndex = key.IndexOf(';');
                 if (modifierIndex != -1)
                 {
-                    Position = key.Substring(modifierIndex);
+                    Position = key.Substring(modifierIndex + 1);
                 }
             }
         }
