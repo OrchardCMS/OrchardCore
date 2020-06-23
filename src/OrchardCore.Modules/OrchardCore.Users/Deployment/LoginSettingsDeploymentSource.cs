@@ -28,11 +28,14 @@ namespace OrchardCore.Users.Deployment
 
             var loginSettings = (await _siteService.GetSiteSettingsAsync()).As<LoginSettings>();
 
-            // Adding Login settings
-            result.Steps.Add(new JObject(
-                new JProperty("name", "Settings"),
-                new JProperty("LoginSettings", JObject.FromObject(loginSettings))
-            ));
+            if (loginSettings != null)
+            {
+                // Adding Login settings
+                result.Steps.Add(new JObject(
+                    new JProperty("name", "Settings"),
+                    new JProperty("LoginSettings", JObject.FromObject(loginSettings))
+                ));
+            }
         }
     }
 }
