@@ -1115,8 +1115,10 @@ function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaI
           if (newMediaItems.length > 1 && allowMultiple === false) {
             alert($('#onlyOneItemMessage').val());
             mediaFieldApp.mediaItems.push(newMediaItems[0]);
+            mediaFieldApp.initialized = true;
           } else {
             mediaFieldApp.mediaItems = mediaFieldApp.mediaItems.concat(newMediaItems);
+            mediaFieldApp.initialized = true;
           }
         },
         error: function error(jqXHR, textStatus, errorThrown) {
@@ -1334,8 +1336,10 @@ function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple)
         if (files.length > 1 && allowMultiple === false) {
           alert($('#onlyOneItemMessage').val());
           mediaFieldApp.mediaItems.push(files[0]);
+          mediaFieldApp.initialized = true;
         } else {
           mediaFieldApp.mediaItems = mediaFieldApp.mediaItems.concat(files);
+          mediaFieldApp.initialized = true;
         }
       },
       removeSelected: function removeSelected(event) {
