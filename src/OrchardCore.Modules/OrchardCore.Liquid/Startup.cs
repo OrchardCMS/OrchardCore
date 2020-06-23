@@ -2,6 +2,7 @@ using Fluid;
 using Fluid.Values;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
+using Shortcodes;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Metadata.Models;
@@ -30,6 +31,8 @@ namespace OrchardCore.Liquid
             TemplateContext.GlobalMemberAccessStrategy.Register<ContentPartFieldDefinition>();
             TemplateContext.GlobalMemberAccessStrategy.Register<ContentFieldDefinition>();
             TemplateContext.GlobalMemberAccessStrategy.Register<ContentPartDefinition>();
+            FluidValue.SetTypeMapping<Arguments>(o => new ObjectValue(o));
+            TemplateContext.GlobalMemberAccessStrategy.Register<Arguments>();
 
             // When accessing a property of a JObject instance
             TemplateContext.GlobalMemberAccessStrategy.Register<JObject, object>((obj, name) => obj[name]);
@@ -56,6 +59,7 @@ namespace OrchardCore.Liquid
             services.AddLiquidFilter<JsonFilter>("json");
             services.AddLiquidFilter<JsonParseFilter>("jsonparse");
             services.AddLiquidFilter<ShortCodeFilter>("shortcode");
+            services.AddLiquidFilter<ShortcodeArgumentNamedOrDefaultFilter>("shortcode_namedordefault");
         }
     }
 

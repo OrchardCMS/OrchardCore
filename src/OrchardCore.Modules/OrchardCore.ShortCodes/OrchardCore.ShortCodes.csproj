@@ -15,8 +15,4 @@
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.ShortCodes.Abstractions\OrchardCore.ShortCodes.Abstractions.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Shortcodes" />
-  </ItemGroup>
-
 </Project>
