@@ -1,8 +1,6 @@
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
-using OrchardCore.Entities;
-using OrchardCore.Settings;
 using OrchardCore.Users.Models;
 
 namespace OrchardCore.Users.Services
@@ -11,15 +9,12 @@ namespace OrchardCore.Users.Services
     {
         private readonly UserManager<IUser> _userManager;
         private readonly IUserClaimsPrincipalFactory<IUser> _claimsPrincipalFactory;
-        private readonly ISiteService _siteService;
 
         public MembershipService(
             IUserClaimsPrincipalFactory<IUser> claimsPrincipalFactory,
-            ISiteService siteService,
             UserManager<IUser> userManager)
         {
             _claimsPrincipalFactory = claimsPrincipalFactory;
-            _siteService = siteService;
             _userManager = userManager;
         }
 
