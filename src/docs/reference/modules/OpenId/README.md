@@ -137,7 +137,7 @@ OpenID Connect Scopes require the following configuration.
 |Display Name|Display name associated with the current scope.|
 |Description|Describe how this scope is used in the system.|
 |Tenants|Build the audience based on tenants names.|
-|Additional resources|Build the audience based on the space seperated strings provided.|
+|Additional resources|Build the audience based on the space separated strings provided.|
 
 A sample of OpenID Connect Scope recipe step:
 
