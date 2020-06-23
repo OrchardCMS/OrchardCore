@@ -1559,6 +1559,24 @@
       "contributions": [
         "translation"
       ]
+    },
+    {
+      "login": "mbarsott",
+      "name": "Marcelo Barsotti",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/16526496?v=4",
+      "profile": "http://marcelobarsotti.com",
+      "contributions": [
+        "translation"
+      ]
+    },
+    {
+      "login": "Craiqser",
+      "name": "Craiqser",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/1695820?v=4",
+      "profile": "https://github.com/Craiqser",
+      "contributions": [
+        "translation"
+      ]
     }
   ]
 }
