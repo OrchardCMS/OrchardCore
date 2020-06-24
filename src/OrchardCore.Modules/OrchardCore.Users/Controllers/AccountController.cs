@@ -699,7 +699,7 @@ namespace OrchardCore.Users.Controllers
             }
 
             // Remove External Authentication Tokens
-            foreach (var item in ((User)user).UserTokens.Where(c => c.LoginProvider == model.LoginProvider))
+            foreach (var item in ((User)user).UserTokens.Where(c => c.LoginProvider == model.LoginProvider).ToList())
             {
                 if (!(await (_userManager.RemoveAuthenticationTokenAsync(user, model.LoginProvider, item.Name))).Succeeded)
                 {
