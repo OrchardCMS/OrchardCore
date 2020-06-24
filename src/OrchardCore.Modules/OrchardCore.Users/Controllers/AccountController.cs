@@ -465,7 +465,7 @@ namespace OrchardCore.Users.Controllers
                                 var identityResult = await _signInManager.UserManager.AddLoginAsync(user, new UserLoginInfo(info.LoginProvider, info.ProviderKey, info.ProviderDisplayName));
                                 if (identityResult.Succeeded)
                                 {
-                                    _logger.LogInformation(3, "User account linked to {loginProvider} provider.", info.LoginProvider);
+                                    _logger.LogInformation(3, "User account linked to {LoginProvider} provider.", info.LoginProvider);
 
                                     // We have created/linked to the local user, so we must verify the login.
                                     // If it does not succeed, the user is not allowed to login
@@ -698,7 +698,16 @@ namespace OrchardCore.Users.Controllers
                 return RedirectToAction(nameof(Login));
             }
 
-            await _signInManager.SignInAsync(user, isPersistent: false);            
+            // Remove External Authentication Tokens
+            foreach (var item in ((User)user).UserTokens.Where(c => c.LoginProvider == model.LoginProvider))
+            {
+                if (!(await (_userManager.RemoveAuthenticationTokenAsync(user, model.LoginProvider, item.Name))).Succeeded)
+                {
+                    _logger.LogError("Could not remove '{TokenName}' token while unlinking '{LoginProvider}' provider from user '{UserName}'.", item.Name, model.LoginProvider, user.UserName);
+                }
+            }
+
+            await _signInManager.SignInAsync(user, isPersistent: false);
             //StatusMessage = "The external login was removed.";
             return RedirectToAction(nameof(ExternalLogins));
         }
