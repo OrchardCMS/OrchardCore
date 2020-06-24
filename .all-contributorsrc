@@ -9,6 +9,7 @@
   "imageSize": 100,
   "commit": true,
   "commitConvention": "none",
+  "contributorsPerLine": 6,
   "contributors": [
     {
       "login": "sebastienros",
@@ -1473,7 +1474,8 @@
       "avatar_url": "https://avatars1.githubusercontent.com/u/1769143?v=4",
       "profile": "https://github.com/mguma",
       "contributions": [
-        "code"
+        "code",
+        "translation"
       ]
     },
     {
@@ -1530,7 +1532,61 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "mrampazo",
+      "name": "mrampazo",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/66479240?v=4",
+      "profile": "https://github.com/mrampazo",
+      "contributions": [
+        "translation"
+      ]
+    },
+    {
+      "login": "vlatkost",
+      "name": "Vlatko Stojanovski",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/15385514?v=4",
+      "profile": "https://github.com/vlatkost",
+      "contributions": [
+        "translation"
+      ]
+    },
+    {
+      "login": "mariojsnunes",
+      "name": "mariojsnunes",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/8073622?v=4",
+      "profile": "https://github.com/mariojsnunes",
+      "contributions": [
+        "translation"
+      ]
+    },
+    {
+      "login": "mbarsott",
+      "name": "Marcelo Barsotti",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/16526496?v=4",
+      "profile": "http://marcelobarsotti.com",
+      "contributions": [
+        "translation"
+      ]
+    },
+    {
+      "login": "Craiqser",
+      "name": "Craiqser",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/1695820?v=4",
+      "profile": "https://github.com/Craiqser",
+      "contributions": [
+        "translation"
+      ]
+    },
+    {
+      "login": "pgrimaud",
+      "name": "Pierre Grimaud",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/1866496?v=4",
+      "profile": "https://github.com/pgrimaud",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
-  "contributorsPerLine": 7
+  "skipCi": true
 }
