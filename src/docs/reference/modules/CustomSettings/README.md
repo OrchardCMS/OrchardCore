@@ -1,4 +1,4 @@
-# Custom Settings (OrchardCore.CustomSettings)
+# Custom Settings (`OrchardCore.CustomSettings`)
 
 Custom Settings allow a site administrator to create a customized set of properties that are global to the web sites.  
 These settings are edited in the standard Settings section and can be protected with specific permissions.
