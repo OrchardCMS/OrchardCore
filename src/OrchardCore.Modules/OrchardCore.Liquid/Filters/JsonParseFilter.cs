@@ -10,8 +10,9 @@ namespace OrchardCore.Liquid.Filters
         public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext context)
         {
             var parsedValue = JToken.Parse(input.ToStringValue());
-            if(parsedValue.Type == JTokenType.Array){
-                 return new ValueTask<FluidValue>(FluidValue.Create(parsedValue));
+            if (parsedValue.Type == JTokenType.Array)
+            {
+                return new ValueTask<FluidValue>(FluidValue.Create(parsedValue));
             }
             return new ValueTask<FluidValue>(new ObjectValue(parsedValue));
         }
