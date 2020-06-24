@@ -6,10 +6,12 @@ using Microsoft.AspNetCore.Html;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.DisplayManagement.Shapes;
+using OrchardCore.Modules;
 using OrchardCore.Mvc.Utilities;
 
 namespace OrchardCore.DisplayManagement.Zones
 {
+    [Feature(Application.DefaultFeatureId)]
     public class ZoneShapes : IShapeAttributeProvider
     {
         [Shape]

@@ -1,30 +1,30 @@
 // <folder> component
 Vue.component('folder', {
-    template: '\
-        <li :class="{selected: isSelected}" \
-                v-on:dragleave.prevent = "handleDragLeave($event);" \
-                v-on:dragover.prevent.stop="handleDragOver($event);" \
-                v-on:drop.prevent.stop = "moveMediaToFolder(model, $event)" >\
-            <div :class="{folderhovered: isHovered , treeroot: level == 1}" >\
-                <a href="javascript:;" :style="{ padding' + (document.dir == "ltr" ? "Left" : "Right") + ':padding + \'px\' }" v-on:click="select"  draggable="false" class="folder-menu-item">\
-                  <span v-on:click.stop="toggle" class="expand" :class="{opened: open, closed: !open, empty: empty}"><i class="fas fa-chevron-right"></i></span>  \
-                  <div class="folder-name">{{model.name}}</div>\
-                    <div class="btn-group folder-actions" >\
-                            <a v-cloak href="javascript:;" class="btn btn-sm" v-on:click="createFolder" v-show="isSelected || isRoot"> <i class="fa fa-plus"></i></a>\
-                            <a v-cloak href="javascript:;" class="btn btn-sm" v-on:click="deleteFolder" v-show="isSelected && !isRoot"><i class="fa fa-trash"></i></a>\
-                    </div>\
-                </a>\
-            </div>\
-            <ol v-show="open">\
-                <folder v-for="folder in children"\
-                        :key="folder.path"\
-                        :model="folder" \
-                        :selected-in-media-app="selectedInMediaApp" \
-                        :level="level + 1">\
-                </folder>\
-            </ol>\
-        </li>\
-        ',
+    template: `
+        <li :class="{selected: isSelected}" 
+                v-on:dragleave.prevent = "handleDragLeave($event);" 
+                v-on:dragover.prevent.stop="handleDragOver($event);" 
+                v-on:drop.prevent.stop = "moveMediaToFolder(model, $event)" >
+            <div :class="{folderhovered: isHovered , treeroot: level == 1}" >
+                <a href="javascript:;" :style="{ padding${document.dir == "ltr" ? "Left" : "Right"}:padding + 'px' }" v-on:click="select"  draggable="false" class="folder-menu-item">
+                  <span v-on:click.stop="toggle" class="expand" :class="{opened: open, closed: !open, empty: empty}"><i class="fas fa-chevron-right"></i></span> 
+                  <div class="folder-name">{{model.name}}</div>
+                    <div class="btn-group folder-actions" >
+                            <a v-cloak href="javascript:;" class="btn btn-sm" v-on:click="createFolder" v-show="isSelected || isRoot"> <i class="fa fa-plus"></i></a>
+                            <a v-cloak href="javascript:;" class="btn btn-sm" v-on:click="deleteFolder" v-show="isSelected && !isRoot"><i class="fa fa-trash"></i></a>
+                    </div>
+                </a>
+            </div>
+            <ol v-show="open">
+                <folder v-for="folder in children"
+                        :key="folder.path"
+                        :model="folder"
+                        :selected-in-media-app="selectedInMediaApp"
+                        :level="level + 1">
+                </folder>
+            </ol>
+        </li>
+        `,
     props: {
         model: Object,
         selectedInMediaApp: Object,
