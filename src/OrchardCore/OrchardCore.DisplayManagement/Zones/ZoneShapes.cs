@@ -191,7 +191,7 @@ namespace OrchardCore.DisplayManagement.Zones
                 }
 
                 // Remove column modifier.
-                var modifierIndex = key.IndexOf('-');
+                var modifierIndex = key.IndexOf('_');
                 if (modifierIndex != -1)
                 {
                     key = key.Substring(0, modifierIndex);
@@ -231,13 +231,22 @@ namespace OrchardCore.DisplayManagement.Zones
 
                     groupingShape.Classes.Add("column-" + orderedGrouping.Key.HtmlClassify());
 
-                    var columnClass = "col";
+                    // To adjust this breakpoint apply a modifier of lg-3 to every column.
+                    var columnClasses = "col-12 col-lg";
                     if (columnModifiers.TryGetValue(orderedGrouping.Key, out var columnModifier))
                     {
-                        columnClass = "col-" + columnModifier;
+                        // When the modifier also has a - assume it is providing a breakpointed class.
+                        if (columnModifier.IndexOf('-') != -1)
+                        {
+                            columnClasses = "col-12 col-" + columnModifier;
+                        }
+                        else // Otherwise assume a default md breakpoint.
+                        {
+                            columnClasses = "col-12 col-lg-" + columnModifier;
+                        }
                     }
 
-                    groupingShape.Classes.Add(columnClass);
+                    groupingShape.Classes.Add(columnClasses);
 
                     foreach(var item in orderedGrouping)
                     {
@@ -267,7 +276,7 @@ namespace OrchardCore.DisplayManagement.Zones
                 if (firstGroupWithModifier != null)
                 {
                     var key = (string)firstGroupWithModifier.Metadata.Column;
-                    var columnModifierIndex = key.IndexOf('-');
+                    var columnModifierIndex = key.IndexOf('_');
                     if (columnModifierIndex != -1)
                     {
                         var positionModifierIndex = key.IndexOf(';');
@@ -298,20 +307,20 @@ namespace OrchardCore.DisplayManagement.Zones
             var columnModifiers = new Dictionary<string, string>();
             foreach(var grouping in groupings)
             {
-                var firstGroupWithModifier = FirstGroupingWithModifierOrDefault(grouping, '-');
+                var firstGroupWithModifier = FirstGroupingWithModifierOrDefault(grouping, '_');
                 if (firstGroupWithModifier != null)
                 {
                     var key = (string)firstGroupWithModifier.Metadata.Column;
                     var posModifierIndex = key.IndexOf(';');
                     if (posModifierIndex != -1)
                     {
-                        var colModifierIndex = key.IndexOf('-');
-                        // Column;5.1-9
+                        var colModifierIndex = key.IndexOf('_');
+                        // Column;5.1_9
                         if (colModifierIndex > posModifierIndex)
                         {
                             columnModifiers.Add(key.Substring(0, posModifierIndex), key.Substring(colModifierIndex + 1));
                         }
-                        else // Column-9;5.1
+                        else // Column_9;5.1
                         {
                             var length = posModifierIndex - colModifierIndex;
                             columnModifiers.Add(key.Substring(0, colModifierIndex), key.Substring(colModifierIndex + 1, length - 1));
@@ -319,7 +328,7 @@ namespace OrchardCore.DisplayManagement.Zones
                     }
                     else
                     {
-                        var columnModifierIndex = key.IndexOf('-');
+                        var columnModifierIndex = key.IndexOf('_');
                         columnModifiers.Add(key.Substring(0, columnModifierIndex), key.Substring(columnModifierIndex + 1));
                     }
                 }
