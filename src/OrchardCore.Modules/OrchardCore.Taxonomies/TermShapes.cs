@@ -111,7 +111,7 @@ namespace OrchardCore.Taxonomies
                         return;
                     }
 
-                    string differentiator = FormatName((string)termShape.TaxonomyName);
+                    var differentiator = FormatName((string)termShape.TaxonomyName);
 
                     if (!String.IsNullOrEmpty(differentiator))
                     {

@@ -112,7 +112,7 @@ namespace OrchardCore.DisplayManagement.Views
                 return;
             }
 
-            ShapeMetadata newShapeMetadata = newShape.Metadata;
+            var newShapeMetadata = newShape.Metadata;
             newShapeMetadata.Prefix = _prefix;
             newShapeMetadata.Name = _name ?? _differentiator ?? _shapeType;
             newShapeMetadata.Differentiator = _differentiator ?? _shapeType;
