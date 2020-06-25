@@ -32,6 +32,7 @@ namespace OrchardCore.DisplayManagement.Shapes
         public string PlacementSource { get; set; }
         public string Prefix { get; set; }
         public string Name { get; set; }
+        public string Differentiator { get; set; }
         public AlternatesCollection Wrappers { get; set; }
         public AlternatesCollection Alternates { get; set; }
         public bool IsCached => _cacheContext != null;
