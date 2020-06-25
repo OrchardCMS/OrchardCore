@@ -45,7 +45,7 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
 
                 if (!String.IsNullOrEmpty(stereotype) && !String.Equals("Content", stereotype, StringComparison.OrdinalIgnoreCase))
                 {
-                    stereotype = stereotype + "__";
+                    stereotype += "__";
                 }
 
                 var partName = _typePartDefinition.Name;
