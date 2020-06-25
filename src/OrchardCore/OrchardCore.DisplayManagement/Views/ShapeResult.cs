@@ -115,6 +115,7 @@ namespace OrchardCore.DisplayManagement.Views
             ShapeMetadata newShapeMetadata = newShape.Metadata;
             newShapeMetadata.Prefix = _prefix;
             newShapeMetadata.Name = _name ?? _differentiator ?? _shapeType;
+            newShapeMetadata.Differentiator = _differentiator ?? _shapeType;
             newShapeMetadata.DisplayType = displayType;
             newShapeMetadata.PlacementSource = placement.Source;
             newShapeMetadata.Tab = placement.GetTab();

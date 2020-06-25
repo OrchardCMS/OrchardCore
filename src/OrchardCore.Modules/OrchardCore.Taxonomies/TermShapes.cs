@@ -117,7 +117,7 @@ namespace OrchardCore.Taxonomies
                     {
                         // Term__[Differentiator] e.g. Term-Categories, Term-Tags
                         termShape.Metadata.Alternates.Add("Term__" + differentiator);
-                        termShape.Differentiator = differentiator;
+                        termShape.Metadata.Differentiator = differentiator;
                         termShape.Classes.Add(("term-" + differentiator).HtmlClassify());
                     }
 
@@ -161,7 +161,7 @@ namespace OrchardCore.Taxonomies
                     int level = termItem.Level;
                     ContentItem taxonomyContentItem = termItem.TaxonomyContentItem;
                     var taxonomyPart = taxonomyContentItem.As<TaxonomyPart>();
-                    string differentiator = termItem.Differentiator;
+                    string differentiator = termItem.Metadata.Differentiator;
 
                     var shapeFactory = context.ServiceProvider.GetRequiredService<IShapeFactory>();
 
@@ -218,7 +218,7 @@ namespace OrchardCore.Taxonomies
                 {
                     dynamic termItem = displaying.Shape;
                     int level = termItem.Level;
-                    string differentiator = termItem.Differentiator;
+                    string differentiator = termItem.Metadata.Differentiator;
 
                     ContentItem termContentItem = termItem.TermContentItem;
 

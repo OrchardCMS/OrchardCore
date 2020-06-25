@@ -66,7 +66,7 @@ namespace OrchardCore.Menu
                     {
                         // Menu__[MenuName] e.g. Menu-MainMenu
                         menu.Metadata.Alternates.Add("Menu__" + differentiator);
-                        menu.Differentiator = differentiator;
+                        menu.Metadata.Differentiator = differentiator;
                     }
 
                     // The first level of menu item shapes is created.
@@ -94,7 +94,7 @@ namespace OrchardCore.Menu
                     ContentItem menuContentItem = menuItem.ContentItem;
                     var menu = menuItem.Menu;
                     int level = menuItem.Level;
-                    string differentiator = menuItem.Differentiator;
+                    string differentiator = menuItem.Metadata.Differentiator;
 
                     var shapeFactory = context.ServiceProvider.GetRequiredService<IShapeFactory>();
 
@@ -146,7 +146,7 @@ namespace OrchardCore.Menu
                 {
                     dynamic menuItem = displaying.Shape;
                     int level = menuItem.Level;
-                    string differentiator = menuItem.Differentiator;
+                    string differentiator = menuItem.Metadata.Differentiator;
 
                     ContentItem menuContentItem = menuItem.ContentItem;
 
