@@ -246,7 +246,7 @@ namespace OrchardCore.Resources
 
             manifest
                 .DefineScript("resizable-resolveconflict")
-                .SetDependencies("jQuery")
+                .SetDependencies("jQuery-ui")
                 .SetUrl("~/OrchardCore.Resources/Scripts/resizable-resolveconflict.min.js", "~/OrchardCore.Resources/Scripts/resizable-resolveconflict.js")
                 .SetVersion("2.21.0");
 
