@@ -5,6 +5,7 @@ using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.Menu.Models;
+using OrchardCore.Mvc.Utilities;
 
 namespace OrchardCore.Menu
 {
@@ -67,6 +68,7 @@ namespace OrchardCore.Menu
                         // Menu__[MenuName] e.g. Menu-MainMenu
                         menu.Metadata.Alternates.Add("Menu__" + differentiator);
                         menu.Metadata.Differentiator = differentiator;
+                        menu.Classes.Add(("menu-" + differentiator).HtmlClassify());
                     }
 
                     // The first level of menu item shapes is created.
