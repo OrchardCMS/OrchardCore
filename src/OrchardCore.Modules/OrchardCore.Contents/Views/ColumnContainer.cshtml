@@ -1,19 +1,5 @@
 @model dynamic
-@using OrchardCore.Mvc.Utilities
-@* TODO move this to a style sheet and use a mixin to override each col that has been wrapper*@
-        <style at="Head">
-            .ta-row-container .col-md-6 {
-                flex: 0 0 100% !important;
-                max-width: 100% !important;
-            }  
-            .ta-row-container .col-sm-3 {
-                flex: 0 0 100% !important;
-                max-width: 100% !important;
-            }           
-        </style>
-
-
-<div class="row ta-row-container">
+<div class="row">
     @foreach(var item in Model.Items)
     {
         @await DisplayAsync(item)

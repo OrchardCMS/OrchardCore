@@ -230,11 +230,11 @@ namespace OrchardCore.DisplayManagement.Zones
                 foreach(var orderedGrouping in orderedGroupings)
                 {
                     var groupingShape = await New.Column(Grouping: orderedGrouping, ContentItem: Shape.ContentItem);
-
+                    groupingShape.Classes.Add("ta-col-grouping");
                     groupingShape.Classes.Add("column-" + orderedGrouping.Key.HtmlClassify());
 
                     // To adjust this breakpoint apply a modifier of lg-3 to every column.
-                    var columnClasses = "col-12 col-lg";
+                    var columnClasses = "col-12 col-md";
                     if (columnModifiers.TryGetValue(orderedGrouping.Key, out var columnModifier))
                     {
                         // When the modifier also has a - assume it is providing a breakpointed class.
@@ -244,7 +244,7 @@ namespace OrchardCore.DisplayManagement.Zones
                         }
                         else // Otherwise assume a default md breakpoint.
                         {
-                            columnClasses = "col-12 col-lg-" + columnModifier;
+                            columnClasses = "col-12 col-md-" + columnModifier;
                         }
                     }
 
