@@ -28,7 +28,7 @@ namespace OrchardCore.Flows
             _contentDefinitionManager.AlterPartDefinition("BagPart", builder => builder
                 .Attachable()
                 .Reusable()
-                .WithDescription("Provides a collection behavior for your content item, you'll be able to put other content items into this one."));
+                .WithDescription("Provides a collection behavior for your content item where you can place other content items"));
 
             // Return 3 to shortcut the third migration on new content definition schemas.
             return 3;
