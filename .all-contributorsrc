@@ -1586,6 +1586,15 @@
       "contributions": [
         "doc"
       ]
+    },
+    {
+      "login": "gianght",
+      "name": "gianght",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/30433966?v=4",
+      "profile": "https://github.com/gianght",
+      "contributions": [
+        "translation"
+      ]
     }
   ],
   "skipCi": true
