@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
+using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.DisplayManagement.Shapes;
@@ -27,8 +28,9 @@ namespace OrchardCore.DisplayManagement.Zones
         }
 
         [Shape]
-        public async Task<IHtmlContent> ContentZone(dynamic DisplayAsync, dynamic Shape, dynamic New, DisplayContext DisplayContext)
+        public async Task<IHtmlContent> ContentZone(dynamic DisplayAsync, dynamic Shape, DisplayContext DisplayContext)
         {
+            var shapeFactory = DisplayContext.ServiceProvider.GetRequiredService<IShapeFactory>();
             var htmlContentBuilder = new HtmlContentBuilder();
 
             var shapes = ((IEnumerable<dynamic>)Shape);
@@ -79,10 +81,20 @@ namespace OrchardCore.DisplayManagement.Zones
                     return new PositionalGrouping(null);
                 }, FlatPositionComparer.Instance).ToList();
 
-                dynamic container = await New.TabContainer(ContentItem: Shape.ContentItem, Grouping: orderedGroupings);
+                Shape container = (Shape)await shapeFactory.CreateAsync("TabContainer", Arguments.From(
+                    new
+                    {
+                        ContentItem = Shape.ContentItem,
+                        Grouping = orderedGroupings
+                    }));
                 foreach(var orderedGrouping in orderedGroupings)
                 {
-                    var groupingShape = await New.Tab(Grouping: orderedGrouping, ContentItem: Shape.ContentItem);
+                    Shape groupingShape = (Shape)await shapeFactory.CreateAsync("Tab", Arguments.From(
+                        new
+                        {
+                            Grouping = orderedGrouping,
+                            ContentItem = Shape.ContentItem
+                        }));
                     foreach(var item in orderedGrouping)
                     {
                         groupingShape.Add(item);
@@ -95,7 +107,12 @@ namespace OrchardCore.DisplayManagement.Zones
             else
             {
                 // Evaluate for cards.
-                var cardGrouping = await New.CardGrouping(Grouping: groupings[0], ContentItem: Shape.ContentItem);
+                var cardGrouping = await shapeFactory.CreateAsync("CardGrouping", Arguments.From(
+                    new
+                    {
+                        Grouping = groupings[0],
+                        ContentItem = Shape.ContentItem
+                    }));
 
                 htmlContentBuilder.AppendHtml(await DisplayAsync(cardGrouping));
             }
@@ -104,8 +121,9 @@ namespace OrchardCore.DisplayManagement.Zones
         }
 
         [Shape]
-        public async Task<IHtmlContent> CardGrouping(dynamic DisplayAsync, dynamic Shape, dynamic New)
+        public async Task<IHtmlContent> CardGrouping(dynamic DisplayAsync, dynamic Shape, DisplayContext DisplayContext)
         {
+            var shapeFactory = DisplayContext.ServiceProvider.GetRequiredService<IShapeFactory>();
             var htmlContentBuilder = new HtmlContentBuilder();
             IGrouping<string, dynamic> grouping = Shape.Grouping;
 
@@ -154,10 +172,19 @@ namespace OrchardCore.DisplayManagement.Zones
                     return new PositionalGrouping();
                 }, FlatPositionComparer.Instance).ToList();
 
-                dynamic container = await New.CardContainer(ContentItem: Shape.ContentItem);
+                Shape container = (Shape)await shapeFactory.CreateAsync("CardContainer", Arguments.From(
+                    new
+                    {
+                        ContentItem = Shape.ContentItem
+                    }));
                 foreach(var orderedGrouping in orderedGroupings)
                 {
-                    var groupingShape = await New.Card(Grouping: orderedGrouping, ContentItem: Shape.ContentItem);
+                    Shape groupingShape = (Shape)await shapeFactory.CreateAsync("Card", Arguments.From(
+                        new
+                        {
+                            Grouping = orderedGrouping,
+                            ContentItem = Shape.ContentItem
+                        }));
                     foreach(var item in orderedGrouping)
                     {
                         groupingShape.Add(item);
@@ -170,7 +197,12 @@ namespace OrchardCore.DisplayManagement.Zones
             else
             {
                 // Evaluate for columns.
-                var groupingShape = await New.ColumnGrouping(Grouping: grouping, ContentItem: Shape.ContentItem);
+                var groupingShape = await shapeFactory.CreateAsync("ColumnGrouping", Arguments.From(
+                    new
+                    {
+                        Grouping = grouping,
+                        ContentItem = Shape.ContentItem
+                    }));
                 htmlContentBuilder.AppendHtml(await DisplayAsync(groupingShape));
             }
 
@@ -179,8 +211,9 @@ namespace OrchardCore.DisplayManagement.Zones
 
 
         [Shape]
-        public async Task<IHtmlContent> ColumnGrouping(dynamic DisplayAsync, dynamic Shape, dynamic New)
+        public async Task<IHtmlContent> ColumnGrouping(dynamic DisplayAsync, dynamic Shape, DisplayContext DisplayContext)
         {
+            var shapeFactory = DisplayContext.ServiceProvider.GetRequiredService<IShapeFactory>();
             var htmlContentBuilder = new HtmlContentBuilder();
             IGrouping<string, dynamic> grouping = Shape.Grouping;
 
@@ -226,10 +259,19 @@ namespace OrchardCore.DisplayManagement.Zones
 
                 var columnModifiers = GetColumnModifiers(orderedGroupings);
 
-                dynamic container = await New.ColumnContainer(ContentItem: Shape.ContentItem);
+                Shape container = (Shape)await shapeFactory.CreateAsync("ColumnContainer", Arguments.From(
+                    new
+                    {
+                        ContentItem = Shape.ContentItem
+                    }));
                 foreach(var orderedGrouping in orderedGroupings)
                 {
-                    var groupingShape = await New.Column(Grouping: orderedGrouping, ContentItem: Shape.ContentItem);
+                    Shape groupingShape = (Shape)await shapeFactory.CreateAsync("Column", Arguments.From(
+                        new
+                        {
+                            Grouping = orderedGrouping,
+                            ContentItem = Shape.ContentItem
+                        }));
                     groupingShape.Classes.Add("ta-col-grouping");
                     groupingShape.Classes.Add("column-" + orderedGrouping.Key.HtmlClassify());
 
