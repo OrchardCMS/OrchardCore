@@ -2,11 +2,7 @@
     height: auto;
     border: 1px solid #ddd;
 }
-/*
-.CodeMirror-scroll {
-    max-height: 200px;
-}
-*/
+
 .CodeMirror-fullscreen {
     z-index: 1000;
 }
@@ -14,4 +10,12 @@
 .CodeMirror pre {
     padding-left: 7px;
     line-height: 1.25;
+}
+
+.CodeMirror-activeline-background {
+    background: transparent !important;
+}
+
+.CodeMirror-focused .CodeMirror-activeline-background {
+    background: rgba(100, 100, 100, 0.1) !important;
 }

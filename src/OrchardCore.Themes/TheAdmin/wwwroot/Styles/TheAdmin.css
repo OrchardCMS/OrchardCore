@@ -14165,11 +14165,6 @@ a.text-dark:hover, a.text-dark:focus {
 [dir] .CodeMirror {
   border: 1px solid #ddd; }
 
-/*
-.CodeMirror-scroll {
-    max-height: 200px;
-}
-*/
 .CodeMirror-fullscreen {
   z-index: 1000; }
 
@@ -14181,6 +14176,12 @@ a.text-dark:hover, a.text-dark:focus {
 
 [dir=rtl] .CodeMirror pre {
   padding-right: 7px; }
+
+[dir] .CodeMirror-activeline-background {
+  background: transparent !important; }
+
+[dir] .CodeMirror-focused .CodeMirror-activeline-background {
+  background: rgba(100, 100, 100, 0.1) !important; }
 
 #ui-datepicker-div {
   z-index: 100 !important; }
