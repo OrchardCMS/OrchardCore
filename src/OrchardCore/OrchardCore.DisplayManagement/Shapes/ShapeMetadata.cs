@@ -27,6 +27,8 @@ namespace OrchardCore.DisplayManagement.Shapes
         public string DisplayType { get; set; }
         public string Position { get; set; }
         public string Tab { get; set; }
+        public string Card { get; set; }
+        public string Column { get; set;}
         public string PlacementSource { get; set; }
         public string Prefix { get; set; }
         public string Name { get; set; }

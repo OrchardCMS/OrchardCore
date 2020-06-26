@@ -119,6 +119,8 @@ namespace OrchardCore.DisplayManagement.Views
             newShapeMetadata.DisplayType = displayType;
             newShapeMetadata.PlacementSource = placement.Source;
             newShapeMetadata.Tab = placement.GetTab();
+            newShapeMetadata.Card = placement.GetCard();
+            newShapeMetadata.Column = placement.GetColumn();
             newShapeMetadata.Type = _shapeType;
 
             if (_displaying != null)
