@@ -16,9 +16,9 @@ namespace OrchardCore.Templates.Deployment
 
         public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
         {
-            var allTemplatesState = step as AllAdminTemplatesDeploymentStep;
+            var allTemplatesStep = step as AllAdminTemplatesDeploymentStep;
 
-            if (allTemplatesState == null)
+            if (allTemplatesStep == null)
             {
                 return;
             }

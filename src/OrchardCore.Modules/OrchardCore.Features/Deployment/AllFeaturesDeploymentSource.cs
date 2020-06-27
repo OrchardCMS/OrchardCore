@@ -17,9 +17,9 @@ namespace OrchardCore.Features.Deployment
 
         public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
         {
-            var allFeaturesState = step as AllFeaturesDeploymentStep;
+            var allFeaturesStep = step as AllFeaturesDeploymentStep;
 
-            if (allFeaturesState == null)
+            if (allFeaturesStep == null)
             {
                 return;
             }
