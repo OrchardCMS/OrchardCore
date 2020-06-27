@@ -1,10 +1,8 @@
 // media variables
 @import "variables.scss";
 
-
 // main basic layout 
 @import "main-layout.scss";
-
 
 // vuejs components
 @import "upload-component.scss";
@@ -12,7 +10,6 @@
 @import "media-items-grid-component.scss";
 @import "media-items-table-component.scss";
 @import "pager-component.scss";  
-
 
 // others   
 @import "_navbar.scss";
