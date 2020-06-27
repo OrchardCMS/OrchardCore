@@ -42,6 +42,7 @@ namespace OrchardCore.Microsoft.Authentication.Drivers
                 model.DisplayName = settings.DisplayName;
                 model.AppId = settings.AppId;
                 model.TenantId = settings.TenantId;
+                model.SaveTokens = settings.SaveTokens;
                 if (settings.CallbackPath.HasValue)
                 {
                     model.CallbackPath = settings.CallbackPath.Value;
@@ -66,6 +67,7 @@ namespace OrchardCore.Microsoft.Authentication.Drivers
                     settings.AppId = model.AppId;
                     settings.TenantId = model.TenantId;
                     settings.CallbackPath = model.CallbackPath;
+                    settings.SaveTokens = model.SaveTokens;
                     await _shellHost.ReleaseShellContextAsync(_shellSettings);
                 }
             }

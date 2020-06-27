@@ -22,6 +22,7 @@ namespace OrchardCore.ContentPreview.Handlers
             _liquidTemplateManager = liquidTemplateManager;
             _contentDefinitionManager = contentDefinitionManager;
         }
+
         /// <summary>
         /// Get the pattern from the AutoroutePartSettings property for its type
         /// </summary>

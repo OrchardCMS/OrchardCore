@@ -11,7 +11,8 @@ If you want to specify custom paths to access the authentication related urls, y
     "OrchardCore_Users": {
       "LoginPath": "Login",
       "LogoffPath": "Users/LogOff",
-      "ChangePasswordUrl": "ChangePassword"
+      "ChangePasswordUrl": "ChangePassword",
+      "ExternalLoginsUrl": "ExternalLogins"
     }
   }
 ```
