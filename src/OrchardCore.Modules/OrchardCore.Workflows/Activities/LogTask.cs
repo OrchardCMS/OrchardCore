@@ -45,7 +45,7 @@ namespace OrchardCore.Workflows.Activities
 
         public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            var text = await _expressionEvaluator.EvaluateAsync(Text, workflowContext);
+            var text = await _expressionEvaluator.EvaluateAsync(Text, workflowContext, null);
             var logLevel = LogLevel;
 
             _logger.Log(logLevel, 0, text, null, (state, error) => state.ToString());
