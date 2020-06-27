@@ -1,11 +1,10 @@
-# `OrchardCore.OpenId`
+# OpenID (`OrchardCore.OpenId`)
 
 ## OpenID Connect Module
 
 `OrchardCore.OpenId` provides the following features:
 
 - Core Components
-- Entity Framework Core Stores
 - Authorization Server
 - Management Interface
 - Token Validation
@@ -14,10 +13,6 @@
 ## Core Components
 
 Registers the core components used by the OpenID module.
-
-## Entity Framework Core Stores
-
-Provides an Entity Framework Core 2.x adapter for the OpenID module.
 
 ## Management Interface
 
@@ -142,7 +137,7 @@ OpenID Connect Scopes require the following configuration.
 |Display Name|Display name associated with the current scope.|
 |Description|Describe how this scope is used in the system.|
 |Tenants|Build the audience based on tenants names.|
-|Additional resources|Build the audience based on the space seperated strings provided.|
+|Additional resources|Build the audience based on the space separated strings provided.|
 
 A sample of OpenID Connect Scope recipe step:
 

@@ -119,8 +119,12 @@ namespace OrchardCore.Contents.Controllers
             if (!string.IsNullOrEmpty(model.Options.SelectedContentType))
             {
                 var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(model.Options.SelectedContentType);
+
                 if (contentTypeDefinition == null)
+                {
                     return NotFound();
+                }
+
                 contentTypeDefinitions = contentTypeDefinitions.Append(contentTypeDefinition);
 
                 // We display a specific type even if it's not listable so that admin pages
@@ -449,7 +453,9 @@ namespace OrchardCore.Contents.Controllers
             var contentItem = await _contentManager.GetAsync(contentItemId, VersionOptions.Latest);
 
             if (contentItem == null)
+            {
                 return NotFound();
+            }
 
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContent, contentItem))
             {
@@ -521,27 +527,12 @@ namespace OrchardCore.Contents.Controllers
                 return Forbid();
             }
 
-            //string previousRoute = null;
-            //if (contentItem.Has<IAliasAspect>() &&
-            //    !string.IsNullOrWhiteSpace(returnUrl)
-            //    && Request.IsLocalUrl(returnUrl)
-            //    // only if the original returnUrl is the content itself
-            //    && String.Equals(returnUrl, Url.ItemDisplayUrl(contentItem), StringComparison.OrdinalIgnoreCase)
-            //    )
-            //{
-            //    previousRoute = contentItem.As<IAliasAspect>().Path;
-            //}
-
             var model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, _updateModelAccessor.ModelUpdater, false);
             if (!ModelState.IsValid)
             {
                 _session.Cancel();
                 return View("Edit", model);
             }
-
-            // The content item needs to be marked as saved in case the drivers or the handlers have
-            // executed some query which would flush the saved entities inside the above UpdateEditorAsync.
-            _session.Save(contentItem);
 
             await conditionallyPublish(contentItem);
 
@@ -565,7 +556,9 @@ namespace OrchardCore.Contents.Controllers
             var contentItem = await _contentManager.GetAsync(contentItemId, VersionOptions.Latest);
 
             if (contentItem == null)
+            {
                 return NotFound();
+            }
 
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.CloneContent, contentItem))
             {
@@ -733,12 +726,5 @@ namespace OrchardCore.Contents.Controllers
             }
             return listable;
         }
-
-        //ActionResult ListableTypeList(int? containerId)
-        //{
-        //    var viewModel = Shape.ViewModel(ContentTypes: GetListableTypes(containerId.HasValue), ContainerId: containerId);
-
-        //    return View("ListableTypeList", viewModel);
-        //}
     }
 }

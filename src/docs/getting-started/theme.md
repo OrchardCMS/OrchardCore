@@ -1,6 +1,6 @@
 # Getting started with an Orchard Core Theme
 
-In this article, we are going to create an Orchard Core Theme by adding it to an existing Orchard Core CMS application [created previously](../README.md).
+In this article, we are going to create an Orchard Core Theme by adding it to an existing Orchard Core CMS application [created previously](README.md).
 
 ## Create an Orchard Core Theme
 

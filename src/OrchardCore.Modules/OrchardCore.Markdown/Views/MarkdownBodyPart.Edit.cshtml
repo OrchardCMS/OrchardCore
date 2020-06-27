@@ -9,7 +9,7 @@
     var culture = await Orchard.GetContentCultureAsync(Model.MarkdownBodyPart.ContentItem);
 }
 
-<div class="form-group">
+<div class="form-group simplemde-editor">
     <label asp-for="Markdown">@Model.TypePartDefinition.DisplayName()</label>
     <textarea asp-for="Markdown" rows="5" class="form-control content-preview-text" dir="@culture.GetLanguageDirection()"></textarea>
     <span class="hint">@T["The body of the content item, in Markdown format."]</span>

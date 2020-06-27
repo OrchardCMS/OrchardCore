@@ -17,7 +17,7 @@ You can install the latest released templates using this command:
 ```dotnet new -i OrchardCore.ProjectTemplates::1.0.0-*```
 
 !!! note
-    To use the development branch of the template add `--nuget-source https://www.myget.org/F/orchardcore-preview/api/v3/index.json`
+    To use the development branch of the template add `--nuget-source https://nuget.cloudsmith.io/orchardcore/preview/v3/index.json`
 
 Create an empty folder that will contain your site. Open a terminal, navigate to that folder and run this:
 
@@ -34,7 +34,7 @@ Run the application by executing this command:
 `dotnet run --project .\MySite\MySite.csproj`
 
 !!! note
-    If you are using the development branch of the templates, run `dotnet restore .\MySite\MySite.csproj --source https://www.myget.org/F/orchardcore-preview/api/v3/index.json` before running the application
+    If you are using the development branch of the templates, run `dotnet restore .\MySite\MySite.csproj --source https://nuget.cloudsmith.io/orchardcore/preview/v3/index.json` before running the application
 
 Your application should now be running and contain the open ports:
 

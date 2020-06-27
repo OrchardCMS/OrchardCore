@@ -25,6 +25,7 @@ namespace OrchardCore.Title.Drivers
             {
                 model.Title = titlePart.ContentItem.DisplayText;
                 model.TitlePart = titlePart;
+                model.ContentItem = titlePart.ContentItem;
             })
             .Location("Detail", "Header:5")
             .Location("Summary", "Header:5");
@@ -36,6 +37,7 @@ namespace OrchardCore.Title.Drivers
             {
                 model.Title = titlePart.ContentItem.DisplayText;
                 model.TitlePart = titlePart;
+                model.ContentItem = titlePart.ContentItem;
                 model.Settings = context.TypePartDefinition.GetSettings<TitlePartSettings>();
             });
         }

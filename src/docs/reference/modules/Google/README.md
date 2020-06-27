@@ -1,4 +1,4 @@
-# Google (OrchardCore.Google)
+# Google (`OrchardCore.Google`)
 
 This module adds Google features to OrchardCore.
 
