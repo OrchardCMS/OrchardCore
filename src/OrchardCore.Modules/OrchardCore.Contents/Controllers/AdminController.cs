@@ -210,11 +210,11 @@ namespace OrchardCore.Contents.Controllers
 
             var search = await _shapeFactory.CreateAsync("ContentsAdminList__Search", BuildContentOptionsViewModel(model.Options));
             search.Metadata.Prefix = "Options";
-            await AddToZone("Search", header, search, ":10");
+            await AddToZone("Search", header, search, "10");
 
             var create = await _shapeFactory.CreateAsync("ContentsAdminList__Create", BuildContentOptionsViewModel(model.Options));
             create.Metadata.Prefix = "Options";
-            await AddToZone("Create", header, create, ":10");
+            await AddToZone("Create", header, create, "10");
 
             var startIndex = (pagerShape.Page - 1) * (pagerShape.PageSize) + 1;
             var summary = await _shapeFactory.CreateAsync("ContentsAdminList__Summary", Arguments.From(new
@@ -224,20 +224,20 @@ namespace OrchardCore.Contents.Controllers
                 ContentItemsCount = contentItemSummaries.Count,
                 TotalItemCount = pagerShape.TotalItemCount
             }));
-            await AddToZone("Summary", header, summary, ":10");
+            await AddToZone("Summary", header, summary, "10");
 
             var bulkActions = await CreateZoneShapeAsync("ContentsAdminListBulkActions");
 
             var bulksActionsShape = await _shapeFactory.CreateAsync("ContentsAdminList__BulkActions", BuildContentOptionsViewModel(model.Options));
             bulksActionsShape.Metadata.Prefix = "Options";
 
-            await AddToZone("BulkActions", bulkActions, bulksActionsShape, ":10");
+            await AddToZone("BulkActions", bulkActions, bulksActionsShape, "10");
 
-            await AddToZone("Actions", header, bulkActions, ":10");
+            await AddToZone("Actions", header, bulkActions, "10");
 
             var filters = await _shapeFactory.CreateAsync("ContentsAdminList__Filters", BuildContentOptionsViewModel(model.Options));
             filters.Metadata.Prefix = "Options";
-            await AddToZone("Actions", header, filters, ":10");
+            await AddToZone("Actions", header, filters, "10");
 
             var shapeViewModel = await _shapeFactory.CreateAsync<ListContentsViewModel>("ContentsAdminList", viewModel =>
             {

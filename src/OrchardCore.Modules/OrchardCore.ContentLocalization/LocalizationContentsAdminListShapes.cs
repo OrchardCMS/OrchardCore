@@ -41,11 +41,11 @@ namespace OrchardCore.ContentLocalization
                     var zone = shape.Zones["Actions"];
                     if (zone is ZoneOnDemand zoneOnDemand)
                     {
-                        await zoneOnDemand.AddAsync(localizationShape, ":20");
+                        await zoneOnDemand.AddAsync(localizationShape, "20");
                     }
                     else if (zone is Shape zoneShape)
                     {
-                        zoneShape.Add(localizationShape, ":20");
+                        zoneShape.Add(localizationShape, "20");
                     }
                 });
         }

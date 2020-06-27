@@ -70,11 +70,11 @@ namespace OrchardCore.Taxonomies
                         var zone = shape.Zones["Actions"];
                         if (zone is ZoneOnDemand zoneOnDemand)
                         {
-                            await zoneOnDemand.AddAsync(taxonomyShape, ":40." + position.ToString());
+                            await zoneOnDemand.AddAsync(taxonomyShape, "40." + position.ToString());
                         }
                         else if (zone is Shape zoneShape)
                         {
-                            zoneShape.Add(taxonomyShape, ":40." + position.ToString());
+                            zoneShape.Add(taxonomyShape, "40." + position.ToString());
                         }
 
                         position += 5;
