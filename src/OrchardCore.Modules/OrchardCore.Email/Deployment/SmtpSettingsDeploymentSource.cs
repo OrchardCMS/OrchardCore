@@ -40,33 +40,32 @@ namespace OrchardCore.Email.Deployment
 
             jObject.Remove("Password");
 
-            if (smtpSettingsStep.Password != PropertyHandler.Ignored)
+            if (smtpSettingsStep.Password != DeploymentSecretHandler.Ignored)
             {
-                // Default to user supplied to cover error handling if protector is unsuccessful.
-                var passwordProperty = new Property
-                {
-                    Handler = PropertyHandler.UserSupplied,
-                    Value = String.Empty
-                };
+                // Default to cover error handling if protector is unsuccessful.
+                var passwordRecipeSecret = new RecipeSecret();
+
+                // The deployment step secret is added to the deployment step itself.
+                var passwordDeploymentStepSecret = new DeploymentStepSecret("smtpPassword");
 
                 switch (smtpSettingsStep.Password)
                 {
-                    case PropertyHandler.Encrypted:
-                        passwordProperty = new Property
+                    case DeploymentSecretHandler.Encrypted:
+                        passwordRecipeSecret = new RecipeSecret
                         {
-                            Handler = PropertyHandler.Encrypted,
+                            Handler = RecipeSecretHandler.Encrypted,
                             Value = smtpSettings.Password
                         };
                         break;
-                    case PropertyHandler.PlainText:
+                    case DeploymentSecretHandler.PlainText:
                         if (!String.IsNullOrWhiteSpace(smtpSettings.Password))
                         {
                             try
                             {
                                 var protector = _dataProtectionProvider.CreateProtector(nameof(SmtpSettingsConfiguration));
-                                passwordProperty = new Property
+                                passwordRecipeSecret = new RecipeSecret
                                 {
-                                    Handler = PropertyHandler.PlainText,
+                                    Handler = RecipeSecretHandler.PlainText,
                                     Value = protector.Unprotect(smtpSettings.Password)
                                 };
                             }
@@ -81,9 +80,11 @@ namespace OrchardCore.Email.Deployment
 
                 };
 
-                result.Properties["SmtpSettings"] = new JObject(
-                    new JProperty("Password", JObject.FromObject(passwordProperty))
-                );
+                // Add the deployment secret to the `SmtpSettings` step section.
+                jObject.Add(new JProperty("PasswordSecret", JObject.FromObject(passwordDeploymentStepSecret)));
+
+                // Add the secrets value to the 'secrets' section in the recipe.
+                result.Secrets["smtpPassword"] = JObject.FromObject(passwordRecipeSecret);
             }
 
             // Adding Smtp settings

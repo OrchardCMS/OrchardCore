@@ -29,8 +29,7 @@ namespace OrchardCore.Recipes.Services
         private VariablesMethodProvider _variablesMethodProvider;
         private ConfigurationMethodProvider _configurationMethodProvider;
         private ParametersMethodProvider _environmentMethodProvider;
-        private JObject _properties;
-        private JObject _evaluatedProperties;
+        private SecretsMethodProvider _secretsMethodProvider;
 
         public RecipeExecutor(IEnumerable<IRecipeEventHandler> recipeEventHandlers,
                               ShellSettings shellSettings,
@@ -52,12 +51,15 @@ namespace OrchardCore.Recipes.Services
                 _environmentMethodProvider = new ParametersMethodProvider(environment);
                 _configurationMethodProvider = new ConfigurationMethodProvider(_shellSettings.ShellConfiguration);
 
-                // Read any properties from Configuration.
-                var propertiesSection = _shellSettings.ShellConfiguration.GetSection("OrchardCore_Recipes:Properties");
+                // Read any secrets from Configuration.
+                JObject configurationSecrets = null;
+                var secretsSection = _shellSettings.ShellConfiguration.GetSection("OrchardCore_Recipes:Secrets");
 
-                if (propertiesSection.Exists())
+                if (secretsSection.Exists())
                 {
-                    _properties = (JObject)Serialize(propertiesSection);
+                    configurationSecrets = (JObject)Serialize(secretsSection);
+                    // When secrets section has been moved from recipe to configuration create a secrets method provider with configuration values.
+                    _secretsMethodProvider = new SecretsMethodProvider(configurationSecrets);
                 }
 
                 var result = new RecipeResult { ExecutionId = executionId };
@@ -79,20 +81,17 @@ namespace OrchardCore.Recipes.Services
                                     _variablesMethodProvider = new VariablesMethodProvider(variables);
                                 }
 
-                                if (reader.Path == "properties")
+                                if (reader.Path == "secrets")
                                 {
                                     await reader.ReadAsync();
-                                    var recipeProperties = await JObject.LoadAsync(reader);
-                                    if (_properties != null)
+                                    var secrets = await JObject.LoadAsync(reader);
+                                    if (configurationSecrets != null)
                                     {
-                                        // Merge recipe properties with those from configuration.
-                                        _properties.Merge(recipeProperties);
+                                        // Merge recipe secrets with those from configuration.
+                                        secrets.Merge(configurationSecrets);
                                     }
-                                    else
-                                    {
-                                        // Configuration has no properties, use recipe properties.
-                                        _properties = recipeProperties;
-                                    }
+                                    // Secrets have also been supplied in recipe.
+                                    _secretsMethodProvider = new SecretsMethodProvider(secrets);
                                 }
 
                                 if (reader.Path == "steps" && reader.TokenType == JsonToken.StartArray)
@@ -221,19 +220,10 @@ namespace OrchardCore.Recipes.Services
                 scriptingManager.GlobalMethodProviders.Add(_variablesMethodProvider);
             }
 
-            if (_properties != null)
+            if (_secretsMethodProvider != null)
             {
-                // Property evaluation only needs to be performed once per execution.
-                if (_evaluatedProperties != null)
-                {
-                    context.Properties = _evaluatedProperties;
-                }
-                else
-                {
-                    context.Properties = _properties;
-                    EvaluateJsonTree(scriptingManager, context, context.Properties);
-                    _evaluatedProperties = context.Properties;
-                }
+                _secretsMethodProvider.ScriptingManager = scriptingManager;
+                scriptingManager.GlobalMethodProviders.Add(_secretsMethodProvider);
             }
 
             EvaluateJsonTree(scriptingManager, context, context.Step);

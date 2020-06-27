@@ -4,6 +4,6 @@ namespace OrchardCore.Email.ViewModels
 {
     public class SmtpSettingsDeploymentStepViewModel
     {
-        public PropertyHandler Password { get; set; }
+        public DeploymentSecretHandler Password { get; set; }
     }
 }

@@ -85,11 +85,11 @@ namespace OrchardCore.Deployment.Controllers
                 var deploymentPlanResult = new DeploymentPlanResult(fileBuilder, recipeDescriptor);
                 await _deploymentManager.ExecuteDeploymentPlanAsync(deploymentPlan, deploymentPlanResult);
                 bool hasPlainTextSecrets = false;
-                if (deploymentPlanResult.Properties != null && deploymentPlanResult.Properties.HasValues)
+                if (deploymentPlanResult.Secrets != null && deploymentPlanResult.Secrets.HasValues)
                 {
-                    hasPlainTextSecrets = deploymentPlanResult.Properties.SelectTokens($"$..{nameof(Property.Handler)}")
+                    hasPlainTextSecrets = deploymentPlanResult.Secrets.SelectTokens($"$..{nameof(RecipeSecret.Handler)}")
                         .Select(t => t.Value<string>())
-                        .Any(v => String.Equals(v, PropertyHandler.PlainText.ToString(), StringComparison.OrdinalIgnoreCase));
+                        .Any(v => String.Equals(v, RecipeSecretHandler.PlainText.ToString(), StringComparison.OrdinalIgnoreCase));
                 }
                 if (hasPlainTextSecrets)
                 {

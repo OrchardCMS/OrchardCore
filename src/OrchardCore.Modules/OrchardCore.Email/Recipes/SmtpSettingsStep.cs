@@ -35,47 +35,44 @@ namespace OrchardCore.Email.Recipes
                 return;
             }
 
-            var site = await _siteService.LoadSiteSettingsAsync();
-            // Retrieve the curent properties first and merge them with the step values so we don't replace an ignored value.
-            var jSettings = site.Properties["SmtpSettings"] as JObject;
-            if (jSettings != null)
+            var jStepSettings = context.Step["SmtpSettings"] as JObject;
+            if (jStepSettings == null)
             {
-                jSettings.Merge(context.Step["SmtpSettings"]);
+                return;
             }
 
-            var model = jSettings.ToObject<SmtpSettings>();
 
-            var passwordProperty = context.Properties.SelectToken("SmtpSettings.Password")?.ToObject<Property>();
+            var passwordSecret = jStepSettings["PasswordSecret"]?.ToObject<RecipeSecret>();
 
-            if (passwordProperty != null)
+            string password = String.Empty;
+            if (passwordSecret != null)
             {
-                switch (passwordProperty.Handler)
+                // Remove the secret from the step
+                jStepSettings.Remove("PasswordSecret");
+
+                switch (passwordSecret.Handler)
                 {
-                    case PropertyHandler.UserSupplied:
-                        if (!String.IsNullOrEmpty(passwordProperty.Value))
+                    case RecipeSecretHandler.PlainText:
+                        if (!String.IsNullOrEmpty(passwordSecret.Value))
                         {
                             // Encrypt the password as it was supplied in plain text by the user.
-                            model.Password = EncryptPassword(passwordProperty.Value);
+                            password = EncryptPassword(passwordSecret.Value);
                         }
                         else
                         {
-                            _logger.LogError("User supplied setting 'Password' not provided for 'SmtpSettings'");
+                            _logger.LogError("Password secret not provided for 'SmtpSettings'");
                         }
                         break;
-                    case PropertyHandler.PlainText:
-                        // Encrypt the password as it was supplied in plain text.
-                        model.Password = EncryptPassword(passwordProperty.Value);
-                        break;
-                    case PropertyHandler.Encrypted:
-                        if (!String.IsNullOrEmpty(passwordProperty.Value))
+                    case RecipeSecretHandler.Encrypted:
+                        if (!String.IsNullOrEmpty(passwordSecret.Value))
                         {
                             try
                             {
                                 var protector = _dataProtectionProvider.CreateProtector(nameof(SmtpSettingsConfiguration));
                                 // Decrypt the password to test if the encryption keys are valid.
-                                protector.Unprotect(passwordProperty.Value);
+                                protector.Unprotect(passwordSecret.Value);
                                 // On success we can store the supplied value.
-                                model.Password = passwordProperty.Value;
+                                password = passwordSecret.Value;
                             }
                             catch
                             {
@@ -86,6 +83,23 @@ namespace OrchardCore.Email.Recipes
                     default:
                         break;
                 }
+
+            }
+
+            var site = await _siteService.LoadSiteSettingsAsync();
+            // Retrieve the curent site settings first and merge them with the step values so we don't replace an ignored value.
+            var jSiteSettings = site.Properties["SmtpSettings"] as JObject;
+
+            if (jSiteSettings != null)
+            {
+                jStepSettings.Merge(jSiteSettings);
+            }
+
+            var model = jStepSettings.ToObject<SmtpSettings>();
+
+            if (!String.IsNullOrEmpty(password))
+            {
+                model.Password = password;
             }
 
             site.Put(model);
