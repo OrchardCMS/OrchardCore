@@ -1,5 +1,5 @@
 function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaItemUrl, allowMultiple, tempUploadFolder) {
-    
+
     var target = $(document.getElementById($(el).data('for')));
     var initialPaths = target.data("init");
 
@@ -11,7 +11,8 @@ function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaI
         data: {
             mediaItems: [],
             selectedMedia: null,
-            smallThumbs: false
+            smallThumbs: false,
+            initialized: false
         },
         created: function () {
             var self = this;
@@ -22,6 +23,9 @@ function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaI
             paths: {
                 get: function () {
                     var mediaPaths = [];
+                    if (!this.initialized) {
+                        return JSON.stringify(initialPaths);
+                    }
                     this.mediaItems.forEach(function (x) {
                         if (x.mediaPath === 'not-found') {
                             return;
@@ -34,20 +38,33 @@ function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaI
                     var self = this;
                     var mediaPaths = values || [];
                     var signal = $.Deferred();
+                    var items = [];
+                    var length = 0;
                     mediaPaths.forEach(function (x, i) {
-                        self.mediaItems.push({ name: ' ' + x.Path, mime: '', mediaPath: '' }); // don't remove the space. Something different is needed or it wont react when the real name arrives.
-
+                        items.push({ name: ' ' + x.Path, mime: '', mediaPath: '' }); // don't remove the space. Something different is needed or it wont react when the real name arrives.
                         promise = $.when(signal).done(function () {
                             $.ajax({
                                 url: mediaItemUrl + "?path=" + encodeURIComponent(x.Path),
                                 method: 'GET',
                                 success: function (data) {
                                     data.vuekey = data.name + i.toString(); // just because a unique key is required by Vue on v-for 
-                                    self.mediaItems.splice( i, 1, data);
+                                    items.splice(i, 1, data);
+                                    if (items.length === ++length) {
+                                        items.forEach(function (x) {
+                                            self.mediaItems.push(x);
+                                        });
+                                        self.initialized = true;
+                                    }
                                 },
                                 error: function (error) {
                                     console.log(JSON.stringify(error));
-                                    self.mediaItems.splice(i, 1, { name: x.Path, mime: '', mediaPath: 'not-found' });
+                                    items.splice(i, 1, { name: x.Path, mime: '', mediaPath: 'not-found' });
+                                    if (items.length === ++length) {
+                                        items.forEach(function (x) {
+                                            self.mediaItems.push(x);
+                                        });
+                                        self.initialized = true;
+                                    }
                                 }
                             });
                         });
@@ -98,14 +115,13 @@ function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaI
             self.$on('selectMediaRequested', function (media) {
                 self.selectMedia(media);
             });
-            
+
             var selector = '#' + idOfUploadButton;
 
             $(document).bind('drop dragover', function (e) {
                 e.preventDefault();
             });
 
-            
             var editorId = mediaFieldEditor.attr('id');
 
             $(selector).fileupload({
@@ -142,8 +158,10 @@ function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaI
                     if (newMediaItems.length > 1 && allowMultiple === false) {
                         alert($('#onlyOneItemMessage').val());
                         mediaFieldApp.mediaItems.push(newMediaItems[0]);
+                        mediaFieldApp.initialized = true;
                     } else {
                         mediaFieldApp.mediaItems = mediaFieldApp.mediaItems.concat(newMediaItems);
+                        mediaFieldApp.initialized = true;
                     }
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
@@ -160,8 +178,8 @@ function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaI
             },
             getUniqueId: function () {
                 return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-                        var r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
-                        return v.toString(16);
+                    var r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
+                    return v.toString(16);
                 });
             },
             removeSelected: function (event) {
@@ -180,7 +198,7 @@ function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaI
                     if (this.mediaItems.length === 1) {
                         removed = this.mediaItems[index];
                         removed.isRemoved = true;
-                        this.mediaItems.splice(0, 1, removed);                        
+                        this.mediaItems.splice(0, 1, removed);
                         //this.mediaItems.splice(0, 1);
                     }
                 }
@@ -191,8 +209,8 @@ function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaI
                 self.selectedMedia = media;
                 // setTimeout because sometimes 
                 // removeSelected was called even before the media was set.
-                setTimeout(function () {                    
-                    self.removeSelected();    
+                setTimeout(function () {
+                    self.removeSelected();
                 }, 100);
             }
         },

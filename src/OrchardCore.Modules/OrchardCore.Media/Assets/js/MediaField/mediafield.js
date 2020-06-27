@@ -11,7 +11,8 @@ function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple)
         data: {
             mediaItems: [],
             selectedMedia: null,
-            smallThumbs: false
+            smallThumbs: false,
+            initialized: false
         },
         created: function () {
             var self = this;
@@ -22,31 +23,48 @@ function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple)
             paths: {
                 get: function () {
                     var mediaPaths = [];
+                    if (!this.initialized) {
+                        return JSON.stringify(initialPaths);
+                    }
                     this.mediaItems.forEach(function (x) {
                         if (x.mediaPath === 'not-found') {
                             return;
                         }
                         mediaPaths.push({ Path: x.mediaPath });
                     });
-                    return JSON.stringify(mediaPaths);                    
+                    return JSON.stringify(mediaPaths);
                 },
                 set: function (values) {
                     var self = this;
                     var mediaPaths = values || [];
                     var signal = $.Deferred();
+                    var items = [];
+                    var length = 0;
                     mediaPaths.forEach(function (x, i) {
-                        self.mediaItems.push({ name: ' ' + x.Path, mime: '', mediaPath: '' }); // don't remove the space. Something different is needed or it wont react when the real name arrives.
+                        items.push({ name: ' ' + x.Path, mime: '', mediaPath: '' }); // don't remove the space. Something different is needed or it wont react when the real name arrives.
                         promise = $.when(signal).done(function () {
                             $.ajax({
                                 url: mediaItemUrl + "?path=" + encodeURIComponent(x.Path),
                                 method: 'GET',
                                 success: function (data) {
                                     data.vuekey = data.name + i.toString();
-                                    self.mediaItems.splice( i, 1, data);
+                                    items.splice(i, 1, data);
+                                    if (items.length === ++length) {
+                                        items.forEach(function (x) {
+                                            self.mediaItems.push(x);
+                                        });
+                                        self.initialized = true;
+                                    }
                                 },
                                 error: function (error) {
                                     console.log(error);
-                                    self.mediaItems.splice(i, 1, { name: x.Path, mime: '', mediaPath: 'not-found' });
+                                    items.splice(i, 1, { name: x.Path, mime: '', mediaPath: 'not-found' });
+                                    if (items.length === ++length) {
+                                        items.forEach(function (x) {
+                                            self.mediaItems.push(x);
+                                        });
+                                        self.initialized = true;
+                                    }
                                 }
                             });
                         });
@@ -92,8 +110,8 @@ function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple)
                 self.selectMedia(media);
             });
 
-            self.$on('filesUploaded', function (files) {                
-                self.addMediaFiles(files);                
+            self.$on('filesUploaded', function (files) {
+                self.addMediaFiles(files);
             });
         },
         methods: {
@@ -121,8 +139,10 @@ function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple)
                 if ((files.length > 1) && (allowMultiple === false)) {
                     alert($('#onlyOneItemMessage').val());
                     mediaFieldApp.mediaItems.push(files[0]);
+                    mediaFieldApp.initialized = true;
                 } else {
                     mediaFieldApp.mediaItems = mediaFieldApp.mediaItems.concat(files);
+                    mediaFieldApp.initialized = true;
                 }
             },
             removeSelected: function (event) {
@@ -145,8 +165,8 @@ function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple)
                 self.selectedMedia = media;
                 // setTimeout because sometimes 
                 // removeSelected was called even before the media was set.
-                setTimeout(function () {                    
-                    self.removeSelected();    
+                setTimeout(function () {
+                    self.removeSelected();
                 }, 100);
             }
         },
