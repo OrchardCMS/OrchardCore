@@ -49,9 +49,31 @@ Available settings are:
 - Enable Authorization Endpoint.
 - Enable Logout Endpoint.
 - Enable User Info Endpoint.
-- Allow Password Flow: It requires that the Token Endpoint is enabled. More info at <https://tools.ietf.org/html/rfc6749#section-1.3.3>
+- Allow Password Flow: It requires that the Token Endpoint is enabled. More info at <https://tools.ietf.org/html/rfc6749#section-1.3.3> \
+   Rquest sample:
+    ``` json 
+    //EndPoint="/connect/token" ,Method=POST,Content-Type=application/x-www-form-urlencoded 
+    {
+      "grant_type":"password",
+      "client_id": "client_id",
+      "client_secret": "client_secret",
+      "username":"username",
+      "password":"password",
+      "scope": "openid profile roles"
+    }
+    ```
 - Allow Client Credentials Flow: It requires that the Token Endpoint is enabled. More info at <https://tools.ietf.org/html/rfc6749#section-1.3.4>
-- Allow Authorization Code Flow: It requires that the Authorization and Token Endpoints are enabled. More info at <http://openid.net/specs/openid-connect-core-1_0.html#CodeFlowAuth>
+- Allow Authorization Code Flow: It requires that the Authorization and Token Endpoints are enabled. More info at <http://openid.net/specs/openid-connect-core-1_0.html#CodeFlowAuth> \
+ Rquest sample:
+     ``` JSON    
+    //EndPoint="/connect/token" ,Method=POST,Content-Type=application/x-www-form-urlencoded 
+    {
+      "grant_type": "code",
+      "client_id": "client_id",
+      "client_secret": "client_secret",
+      "scope": "openid profile roles"
+    }
+    ```
 - Allow Implicit Flow: It requires that the Authorization Endpoint is enabled. More info at <http://openid.net/specs/openid-connect-core-1_0.html#ImplicitFlowAuth>
 - Allow Refresh Token Flow: It allows to refresh access token using a refresh token. It can be used in combination with Password Flow, Authorization Code Flow and Hybrid Flow. More info at <http://openid.net/specs/openid-connect-core-1_0.html#RefreshTokens>
 
