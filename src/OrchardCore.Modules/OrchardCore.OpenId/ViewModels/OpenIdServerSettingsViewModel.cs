@@ -12,6 +12,7 @@ namespace OrchardCore.OpenId.ViewModels
 
         [Url]
         public string Authority { get; set; }
+        public bool DisableAccessTokenEncryption { get; set; }
         public StoreLocation? EncryptionCertificateStoreLocation { get; set; }
         public StoreName? EncryptionCertificateStoreName { get; set; }
         public string EncryptionCertificateThumbprint { get; set; }

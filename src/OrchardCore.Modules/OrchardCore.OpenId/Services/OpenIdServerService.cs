@@ -206,6 +206,14 @@ namespace OrchardCore.OpenId.Services
                 }));
             }
 
+            if (settings.DisableAccessTokenEncryption && settings.AccessTokenFormat != OpenIdServerSettings.TokenFormat.JsonWebToken)
+            {
+                results.Add(new ValidationResult(S["Access token encryption can only be disabled when using JWT tokens."], new[]
+                {
+                    nameof(settings.GrantTypes)
+                }));
+            }
+
             return Task.FromResult(results.ToImmutable());
         }
 

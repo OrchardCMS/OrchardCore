@@ -43,6 +43,7 @@ namespace OrchardCore.OpenId.Drivers
                 model.AllowRefreshTokenFlow = settings.GrantTypes.Contains(GrantTypes.RefreshToken);
                 model.AllowImplicitFlow = settings.GrantTypes.Contains(GrantTypes.Implicit);
 
+                model.DisableAccessTokenEncryption = settings.DisableAccessTokenEncryption;
                 model.UseRollingTokens = settings.UseRollingTokens;
                 model.UseReferenceTokens = settings.UseReferenceTokens;
 
@@ -134,6 +135,7 @@ namespace OrchardCore.OpenId.Drivers
                 settings.GrantTypes.Remove(GrantTypes.RefreshToken);
             }
 
+            settings.DisableAccessTokenEncryption = model.DisableAccessTokenEncryption;
             settings.UseRollingTokens = model.UseRollingTokens;
             settings.UseReferenceTokens = model.UseReferenceTokens;
 

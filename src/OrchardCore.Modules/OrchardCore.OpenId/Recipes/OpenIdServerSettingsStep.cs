@@ -85,6 +85,7 @@ namespace OrchardCore.OpenId.Recipes
                 settings.GrantTypes.Remove(GrantTypes.RefreshToken);
             }
 
+            settings.DisableAccessTokenEncryption = model.DisableAccessTokenEncryption;
             settings.UseRollingTokens = model.UseRollingTokens;
             settings.UseReferenceTokens = model.UseReferenceTokens;
 
