@@ -155,7 +155,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         return ret("meta", "meta");
       } else if (ch == "#" && stream.eatWhile(wordRE)) {
         return ret("variable", "property");
-      } else if (ch == "<" && stream.match("!--") || ch == "-" && stream.match("->")) {
+      } else if (ch == "<" && stream.match("!--") || ch == "-" && stream.match("->") && !/\S/.test(stream.string.slice(0, stream.start))) {
         stream.skipToEnd();
         return ret("comment", "comment");
       } else if (isOperatorChar.test(ch)) {
