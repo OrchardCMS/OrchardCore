@@ -131,6 +131,7 @@ A sample of OpenID Connect App recipe step:
 Scopes can be set through OpenID Connect Scopes menu in the admin dashboard (through the Management Interface feature) and also through a recipe step.
 
 OpenID Connect Scopes require the following configuration.
+
 | Property | Description |
 | -------- | ----------- |
 | Name | Unique name of the scope. |
@@ -235,6 +236,7 @@ To use the certificate on an Azure hosted site.
 - Validates token by a remote server supporting JWT and OpenID Connect discovery.
 
 Token Validation require the following configuration.
+
 | Property | Description |
 | -------- | ----------- |
 | Authorization server tenant | The tenant that runs OpenID Connect Server. If none is selected, then the following properties must be provided. |
