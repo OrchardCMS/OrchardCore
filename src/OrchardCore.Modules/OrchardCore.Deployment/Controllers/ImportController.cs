@@ -68,7 +68,6 @@ namespace OrchardCore.Deployment.Controllers
                     {
                         ZipFile.ExtractToDirectory(tempArchiveName, tempArchiveFolder);
                     }
-
                     else if (importedPackage.FileName.EndsWith(".json"))
                     {
                         Directory.CreateDirectory(tempArchiveFolder);
