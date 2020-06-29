@@ -68,11 +68,16 @@ namespace OrchardCore.Deployment.Controllers
                     {
                         ZipFile.ExtractToDirectory(tempArchiveName, tempArchiveFolder);
                     }
-
-                    if (importedPackage.FileName.EndsWith(".json"))
+                    else if (importedPackage.FileName.EndsWith(".json"))
                     {
                         Directory.CreateDirectory(tempArchiveFolder);
                         System.IO.File.Move(tempArchiveName, Path.Combine(tempArchiveFolder, "Recipe.json"));
+                    }
+                    else
+                    {
+                        _notifier.Error(H["Only zip or json files are supported"]);
+
+                        return RedirectToAction("Index");
                     }
 
                     await _deploymentManager.ImportDeploymentPackageAsync(new PhysicalFileProvider(tempArchiveFolder));
