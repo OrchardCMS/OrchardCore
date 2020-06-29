@@ -36,6 +36,9 @@ markdown_extensions:
   - markdown.extensions.def_list
   - markdown.extensions.footnotes
   - markdown.extensions.meta
+  - mdx_truly_sane_lists:
+      nested_indent: 2
+      truly_sane: True
   - pymdownx.b64
   - pymdownx.caret
   - pymdownx.details
