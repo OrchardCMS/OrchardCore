@@ -24,7 +24,7 @@ namespace OrchardCore.Lists.Services
 
         public async Task FilterAsync(IQuery<ContentItem> query, IUpdateModel updateModel)
         {
-            var viewModel = new ListPartContentAdminFilterViewModel();
+            var viewModel = new ListPartContentsAdminFilterViewModel();
             if (await updateModel.TryUpdateModelAsync(viewModel, nameof(ListPart)))
             {
                 // Show list content items

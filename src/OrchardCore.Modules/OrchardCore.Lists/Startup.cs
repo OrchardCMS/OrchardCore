@@ -12,6 +12,7 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.Contents.Services;
+using OrchardCore.Contents.ViewModels;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data.Migration;
 using OrchardCore.DisplayManagement.Handlers;
@@ -55,7 +56,7 @@ namespace OrchardCore.Lists
             services.AddScoped<IContentHandler, ContainedPartHandler>();
             services.AddContentPart<ContainedPart>();
             services.AddScoped<IContentsAdminListFilter, ListPartContentsAdminListFilter>();
-            services.AddScoped<IContentsAdminListRouteValueProvider, ListPartContentsAdminListRouteValueProvider>();
+            services.AddScoped<IDisplayDriver<ContentOptionsViewModel>, ListPartContentsAdminListDisplayDriver>();
 
             // List Part
             services.AddContentPart<ListPart>()

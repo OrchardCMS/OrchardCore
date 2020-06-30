@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace OrchardCore.ContentLocalization.ViewModels
 {
-    public class LocalizationContentAdminFilterViewModel
+    public class LocalizationContentsAdminFilterViewModel
     {
         public bool ShowLocalizedContentTypes { get; set; }
         public string SelectedCulture { get; set; }

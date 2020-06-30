@@ -39,7 +39,6 @@ namespace OrchardCore.Contents.Controllers
         private readonly IAuthorizationService _authorizationService;
         private readonly IDisplayManager<ContentOptionsViewModel> _contentOptionsDisplayManager;
         private readonly IContentsAdminListQueryProvider _contentsAdminListQueryProvider;
-        // private readonly IEnumerable<IContentsAdminListRouteValueProvider> _contentsAdminListRouteValueProviders;
         private readonly IHtmlLocalizer H;
         private readonly IStringLocalizer S;
         private readonly IUpdateModelAccessor _updateModelAccessor;
@@ -58,7 +57,6 @@ namespace OrchardCore.Contents.Controllers
             IShapeFactory shapeFactory,
             IDisplayManager<ContentOptionsViewModel> contentOptionsDisplayManager,
             IContentsAdminListQueryProvider contentsAdminListQueryProvider,
-            // IEnumerable<IContentsAdminListRouteValueProvider> contentsAdminListRouteValueProviders,
             ILogger<AdminController> logger,
             IHtmlLocalizer<AdminController> htmlLocalizer,
             IStringLocalizer<AdminController> stringLocalizer,
@@ -74,7 +72,6 @@ namespace OrchardCore.Contents.Controllers
             _updateModelAccessor = updateModelAccessor;
             _contentOptionsDisplayManager = contentOptionsDisplayManager;
             _contentsAdminListQueryProvider = contentsAdminListQueryProvider;
-            // _contentsAdminListRouteValueProviders = contentsAdminListRouteValueProviders;
 
             H = htmlLocalizer;
             S = stringLocalizer;
@@ -184,10 +181,7 @@ namespace OrchardCore.Contents.Controllers
                 model.Options.ContentTypeOptions.Add(new SelectListItem() { Text = option.Value, Value = option.Key });
             }
 
-            // TODO it seemed I removed the viewmodel. maybe it was necesary, it is commented, that filters can mutate the model.
-            // Also this might be necesary to resolve the issue with Contributor roles
-
-            // With the model populated we filter the query, allowing the filters to mutate the view model.
+            // With the model populated we filter the query.
             var query = await _contentsAdminListQueryProvider.ProvideQueryAsync(_updateModelAccessor.ModelUpdater);
 
             var maxPagedCount = siteSettings.MaxPagedCount;

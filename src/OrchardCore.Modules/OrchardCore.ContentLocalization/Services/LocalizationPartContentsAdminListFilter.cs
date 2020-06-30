@@ -25,7 +25,7 @@ namespace OrchardCore.ContentLocalization.Services
 
         public async Task FilterAsync(IQuery<ContentItem> query, IUpdateModel updateModel)
         {
-            var viewModel = new LocalizationContentAdminFilterViewModel();
+            var viewModel = new LocalizationContentsAdminFilterViewModel();
             if (await updateModel.TryUpdateModelAsync(viewModel, "Localization"))
             {
                 // Show localization content items
