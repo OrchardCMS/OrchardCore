@@ -165,7 +165,7 @@ namespace OrchardCore.OpenId.Configuration
                             throw new SecurityTokenInvalidIssuerException("The token issuer is not valid.");
                         }
 
-                        var tenant = _runningShellTable.Match(new HostString(uri.Authority), uri.AbsolutePath);
+                        var tenant = _runningShellTable.Match(HostString.FromUriComponent(uri), uri.AbsolutePath);
                         if (tenant == null || !string.Equals(tenant.Name, settings.Tenant))
                         {
                             throw new SecurityTokenInvalidIssuerException("The token issuer is not valid.");
