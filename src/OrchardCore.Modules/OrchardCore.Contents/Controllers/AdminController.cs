@@ -20,9 +20,6 @@ using OrchardCore.Contents.ViewModels;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
-using OrchardCore.DisplayManagement.Shapes;
-using OrchardCore.DisplayManagement.Zones;
-using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Routing;
 using OrchardCore.Settings;
@@ -42,7 +39,7 @@ namespace OrchardCore.Contents.Controllers
         private readonly IAuthorizationService _authorizationService;
         private readonly IDisplayManager<ContentOptionsViewModel> _contentOptionsDisplayManager;
         private readonly IContentsAdminListQueryProvider _contentsAdminListQueryProvider;
-        private readonly IEnumerable<IContentsAdminListRouteValueProvider> _contentsAdminListRouteValueProviders;
+        // private readonly IEnumerable<IContentsAdminListRouteValueProvider> _contentsAdminListRouteValueProviders;
         private readonly IHtmlLocalizer H;
         private readonly IStringLocalizer S;
         private readonly IUpdateModelAccessor _updateModelAccessor;
@@ -61,7 +58,7 @@ namespace OrchardCore.Contents.Controllers
             IShapeFactory shapeFactory,
             IDisplayManager<ContentOptionsViewModel> contentOptionsDisplayManager,
             IContentsAdminListQueryProvider contentsAdminListQueryProvider,
-            IEnumerable<IContentsAdminListRouteValueProvider> contentsAdminListRouteValueProviders,
+            // IEnumerable<IContentsAdminListRouteValueProvider> contentsAdminListRouteValueProviders,
             ILogger<AdminController> logger,
             IHtmlLocalizer<AdminController> htmlLocalizer,
             IStringLocalizer<AdminController> stringLocalizer,
@@ -77,7 +74,7 @@ namespace OrchardCore.Contents.Controllers
             _updateModelAccessor = updateModelAccessor;
             _contentOptionsDisplayManager = contentOptionsDisplayManager;
             _contentsAdminListQueryProvider = contentsAdminListQueryProvider;
-            _contentsAdminListRouteValueProviders = contentsAdminListRouteValueProviders;
+            // _contentsAdminListRouteValueProviders = contentsAdminListRouteValueProviders;
 
             H = htmlLocalizer;
             S = stringLocalizer;
@@ -136,7 +133,7 @@ namespace OrchardCore.Contents.Controllers
                 model.Options.CreatableTypes = creatableList;
             }
 
-            //We populate the remaining SelectLists
+            // We populate the remaining SelectLists.
             model.Options.ContentStatuses = new List<SelectListItem>()
             {
                 new SelectListItem() { Text = S["Latest"], Value = nameof(ContentsStatus.Latest) },
@@ -187,6 +184,9 @@ namespace OrchardCore.Contents.Controllers
                 model.Options.ContentTypeOptions.Add(new SelectListItem() { Text = option.Value, Value = option.Key });
             }
 
+            // TODO it seemed I removed the viewmodel. maybe it was necesary, it is commented, that filters can mutate the model.
+            // Also this might be necesary to resolve the issue with Contributor roles
+
             // With the model populated we filter the query, allowing the filters to mutate the view model.
             var query = await _contentsAdminListQueryProvider.ProvideQueryAsync(_updateModelAccessor.ModelUpdater);
 
@@ -194,14 +194,14 @@ namespace OrchardCore.Contents.Controllers
             if (maxPagedCount > 0 && pager.PageSize > maxPagedCount)
                 pager.PageSize = maxPagedCount;
 
-            //We prepare the pager
+            // We prepare the pager
             var routeData = new RouteData();
             routeData.Values.Add("DisplayText", model.Options.DisplayText);
 
             var pagerShape = (await New.Pager(pager)).TotalItemCount(maxPagedCount > 0 ? maxPagedCount : await query.CountAsync()).RouteData(routeData);
             var pageOfContentItems = await query.Skip(pager.GetStartIndex()).Take(pager.PageSize).ListAsync();
 
-            //We prepare the content items SummaryAdmin shape
+            // We prepare the content items SummaryAdmin shape
             var contentItemSummaries = new List<dynamic>();
             foreach (var contentItem in pageOfContentItems)
             {
@@ -215,48 +215,7 @@ namespace OrchardCore.Contents.Controllers
             model.Options.ContentItemsCount = contentItemSummaries.Count;
             model.Options.TotalItemCount = pagerShape.TotalItemCount;
 
-            var header = await _contentOptionsDisplayManager.BuildDisplayAsync(model.Options, _updateModelAccessor.ModelUpdater, "Header");
-
-
-            // The shape to listen for events here is ContentsAdminListHeader.
-            // var header = await CreateZoneShapeAsync("ContentsAdminListHeader");
-//DONE
-            // var search = await _shapeFactory.CreateAsync("ContentsAdminList__Search", BuildContentOptionsViewModel(model.Options));
-            // search.Metadata.Prefix = "Options";
-            // await AddToZone("Search", header, search, "10");
-
-            // var create = await _shapeFactory.CreateAsync("ContentsAdminList__Create", BuildContentOptionsViewModel(model.Options));
-            // create.Metadata.Prefix = "Options";
-            // await AddToZone("Create", header, create, "10");
-
-//DONE
-// add these values to the ContentOptionsViewModel and populate them,
-
-            // var summary = await _shapeFactory.CreateAsync("ContentsAdminList__Summary", Arguments.From(new
-            // {
-            //     StartIndex = startIndex,
-            //     EndIndex = startIndex + contentItemSummaries.Count - 1,
-            //     ContentItemsCount = contentItemSummaries.Count,
-            //     TotalItemCount = pagerShape.TotalItemCount
-            // }));
-            // await AddToZone("Summary", header, summary, "10");
-
-// this one? either a seperate driver for it (def required)
-// can the driver add it to a bulkactions zone inside the actions zone?
-// do it in the view, for a different shape type, i.e. bulk actions.
-// DONT
-            // var bulkActions = await CreateZoneShapeAsync("ContentsAdminListBulkActions");
-
-            // var bulksActionsShape = await _shapeFactory.CreateAsync("ContentsAdminList__BulkActions", BuildContentOptionsViewModel(model.Options));
-            // bulksActionsShape.Metadata.Prefix = "Options";
-
-            // await AddToZone("BulkActions", bulkActions, bulksActionsShape, "10");
-
-            // await AddToZone("Actions", header, bulkActions, "10");
-//DONE
-            // var filters = await _shapeFactory.CreateAsync("ContentsAdminList__Filters", BuildContentOptionsViewModel(model.Options));
-            // filters.Metadata.Prefix = "Options";
-            // await AddToZone("Actions", header, filters, "10");
+            var header = await _contentOptionsDisplayManager.BuildEditorAsync(model.Options, _updateModelAccessor.ModelUpdater, false);
 
             var shapeViewModel = await _shapeFactory.CreateAsync<ListContentsViewModel>("ContentsAdminList", viewModel =>
             {
@@ -273,11 +232,10 @@ namespace OrchardCore.Contents.Controllers
         [FormValueRequired("submit.Filter")]
         public async Task<ActionResult> ListFilterPOST(ListContentsViewModel model)
         {
-            var routeValueDictionary = new RouteValueDictionary();
 
-            await _contentsAdminListRouteValueProviders.InvokeAsync((routeValueProvider, updateModel, routeValueDictionary) => routeValueProvider.ProvideRouteValuesAsync(updateModel, routeValueDictionary), _updateModelAccessor.ModelUpdater, routeValueDictionary, _logger);
+            await _contentOptionsDisplayManager.UpdateEditorAsync(model.Options, _updateModelAccessor.ModelUpdater, false);
 
-            return RedirectToAction("List", routeValueDictionary);
+            return RedirectToAction("List", model.Options.RouteValues);
         }
 
         [HttpPost, ActionName("List")]

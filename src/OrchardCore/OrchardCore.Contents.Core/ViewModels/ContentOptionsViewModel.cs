@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace OrchardCore.Contents.ViewModels
@@ -31,6 +32,7 @@ namespace OrchardCore.Contents.ViewModels
         public int EndIndex { get; set; }
         public int ContentItemsCount { get; set; }
         public int TotalItemCount { get; set; }
+        public RouteValueDictionary RouteValues { get; set; } = new RouteValueDictionary();
 
         #endregion
 

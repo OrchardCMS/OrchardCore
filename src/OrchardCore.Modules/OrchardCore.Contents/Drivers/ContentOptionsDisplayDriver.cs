@@ -1,11 +1,5 @@
-using System;
-using System.Collections.Generic;
-using OrchardCore.ContentManagement;
-using OrchardCore.ContentManagement.Display.ContentDisplay;
-using OrchardCore.ContentManagement.Display.ViewModels;
+using System.Threading.Tasks;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.ContentManagement.Metadata;
-using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.Contents.ViewModels;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
@@ -20,16 +14,34 @@ namespace OrchardCore.Contents.Drivers
             Prefix = "Options";
         }
 
-        public override IDisplayResult Display(ContentOptionsViewModel model, IUpdateModel updater)
+        public override IDisplayResult Display(ContentOptionsViewModel model)
+        {
+            return Initialize<ContentOptionsViewModel>("ContentsAdminList__BulkActions", m => BuildContentOptionsViewModel(m, model)).Location("BulkActions", "Content:10");
+        }
+
+        public override IDisplayResult Edit(ContentOptionsViewModel model)
         {
             return Combine(
-                Initialize<ContentOptionsViewModel>("ContentsAdminList__Search", m => BuildContentOptionsViewModel(m, model)).Location("Header", "Search:10"),
-                Initialize<ContentOptionsViewModel>("ContentsAdminList__Create", m => BuildContentOptionsViewModel(m, model)).Location("Header", "Create:10"),
-                Initialize<ContentOptionsViewModel>("ContentsAdminList__Summary", m => BuildContentOptionsViewModel(m, model)).Location("Header", "Summary:10"),
-                Initialize<ContentOptionsViewModel>("ContentsAdminList__Filters", m => BuildContentOptionsViewModel(m, model)).Location("Header", "Actions:10.1"),
-                Initialize<ContentOptionsViewModel>("ContentsAdminList_Fields_BulkActions", m => BuildContentOptionsViewModel(m, model)).Location("Header", "Actions:10.1"),
-                Initialize<ContentOptionsViewModel>("ContentsAdminList__BulkActions", m => BuildContentOptionsViewModel(m, model)).Location("BulkActions", "Content:10")
+                Initialize<ContentOptionsViewModel>("ContentsAdminList__Search", m => BuildContentOptionsViewModel(m, model)).Location("Search:10"),
+                Initialize<ContentOptionsViewModel>("ContentsAdminList__Create", m => BuildContentOptionsViewModel(m, model)).Location("Create:10"),
+                Initialize<ContentOptionsViewModel>("ContentsAdminList__Summary", m => BuildContentOptionsViewModel(m, model)).Location("Summary:10"),
+                Initialize<ContentOptionsViewModel>("ContentsAdminList__Filters", m => BuildContentOptionsViewModel(m, model)).Location("Actions:10.1"),
+                Initialize<ContentOptionsViewModel>("ContentsAdminList_Fields_BulkActions", m => BuildContentOptionsViewModel(m, model)).Location("Actions:10.1")
             );
+        }
+
+        public override async Task<IDisplayResult> UpdateAsync(ContentOptionsViewModel model, IUpdateModel updater)
+        {
+            var viewModel = new ContentOptionsViewModel();
+            if (await updater.TryUpdateModelAsync(viewModel, Prefix))
+            {
+                model.RouteValues.TryAdd("Options.OrderBy", viewModel.OrderBy);
+                model.RouteValues.TryAdd("Options.ContentsStatus", viewModel.ContentsStatus);
+                model.RouteValues.TryAdd("Options.SelectedContentType", viewModel.SelectedContentType);
+                model.RouteValues.TryAdd("Options.DisplayText", viewModel.DisplayText);
+            }
+
+            return Edit(model);
         }
 
         private static void BuildContentOptionsViewModel(ContentOptionsViewModel m, ContentOptionsViewModel model)

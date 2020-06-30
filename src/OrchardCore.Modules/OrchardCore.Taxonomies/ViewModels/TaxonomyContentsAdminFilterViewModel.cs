@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace OrchardCore.Taxonomies.ViewModels
 {
-    public class TaxonomyContentAdminFilterViewModel
+    public class TaxonomyContentsAdminFilterViewModel
     {
         public string SelectedContentItemId { get; set; }
 

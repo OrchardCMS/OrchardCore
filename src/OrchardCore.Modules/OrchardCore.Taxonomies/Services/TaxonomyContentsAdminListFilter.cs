@@ -26,7 +26,7 @@ namespace OrchardCore.Taxonomies.Services
             var settings = (await _siteService.GetSiteSettingsAsync()).As<TaxonomyContentsAdminListSettings>();
             foreach (var contentItemId in settings.TaxonomyContentItemIds)
             {
-                var viewModel = new TaxonomyContentAdminFilterViewModel();
+                var viewModel = new TaxonomyContentsAdminFilterViewModel();
                 if (await updateModel.TryUpdateModelAsync(viewModel, "Taxonomy" + contentItemId))
                 {
                     // Show all items categorized by the taxonomy

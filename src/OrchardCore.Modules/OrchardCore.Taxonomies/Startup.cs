@@ -9,6 +9,7 @@ using OrchardCore.Apis;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Handlers;
+using OrchardCore.Contents.ViewModels;
 using OrchardCore.Contents.Services;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data;
@@ -81,7 +82,7 @@ namespace OrchardCore.Taxonomies
 
             services.AddScoped<IScopedIndexProvider, TaxonomyIndexProvider>();
 
-            // Terms
+            // Terms.
             services.AddContentPart<TermPart>();
             services.AddScoped<IContentHandler, TermPartContentHandler>();
             services.AddScoped<IContentDisplayDriver, TermPartContentDriver>();
@@ -120,8 +121,7 @@ namespace OrchardCore.Taxonomies
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<IContentsAdminListFilter, TaxonomyContentsAdminListFilter>();
-            services.AddScoped<IContentsAdminListRouteValueProvider, TaxonomyContentsAdminListRouteValueProvider>();
-            services.AddScoped<IShapeTableProvider, TaxonomyContentsAdminListShapes>();
+            services.AddScoped<IDisplayDriver<ContentOptionsViewModel>, TaxonomyContentsAdminListDisplayDriver>();
 
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddScoped<IDisplayDriver<ISite>, TaxonomyContentsAdminListSettingsDisplayDriver>();
