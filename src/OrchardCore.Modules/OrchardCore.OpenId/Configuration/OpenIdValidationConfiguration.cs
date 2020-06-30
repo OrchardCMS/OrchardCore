@@ -107,13 +107,15 @@ namespace OrchardCore.OpenId.Configuration
                 options.Issuer = settings.Authority;
                 options.Audiences.Add(settings.Audience);
 
-                // Note: OpenIddict 3.0 only accepts new access tokens issued with the "at+jwt" token type
-                // or with the generic "JWT" type and a special "token_type" claim containing "access_token"
+                // Note: OpenIddict 3.0 only accepts tokens issued with a non-empty token type (e.g "at+jwt")
+                // or with the generic "JWT" type and a special "token_type" claim containing the actual type
                 // for backward compatibility, which matches the recommended best practices and helps prevent
-                // token substitution attacks by ensuring other JWT tokens (like identity tokens) are rejected.
+                // token substitution attacks by ensuring JWT tokens of any other type are always rejected.
                 // Unfortunately, most of the OAuth 2.0/OpenID Connect servers haven't been updated to emit
                 // access tokens using the "at+jwt" token type header. To ensure the validation handler can still
                 // be used with these servers, an option is provided to disable the token validation logic.
+                // In this case, the received tokens are assumed to be access tokens (which is the only type
+                // currently used in the API validation feature), no matter what their actual "typ" header is.
                 if (settings.DisableTokenTypeValidation)
                 {
                     options.TokenValidationParameters.TypeValidator = (type, token, parameters)
