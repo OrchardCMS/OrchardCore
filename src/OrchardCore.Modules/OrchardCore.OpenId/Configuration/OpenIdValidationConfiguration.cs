@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
 using OpenIddict.Validation;
@@ -20,6 +21,7 @@ using OrchardCore.Modules;
 using OrchardCore.OpenId.Services;
 using OrchardCore.OpenId.Settings;
 using OrchardCore.Security;
+using static OpenIddict.Abstractions.OpenIddictConstants;
 
 namespace OrchardCore.OpenId.Configuration
 {
@@ -98,14 +100,25 @@ namespace OrchardCore.OpenId.Configuration
             // authority and the signing key and register them in the token validation parameters to prevent
             // the handler from using an HTTP call to retrieve the discovery document from the other tenant.
             // Otherwise, set the authority to allow the handler to retrieve the endpoint URLs/signing keys
-            // from the remote server's metadata by sending an OpenID Connect/OAuth2 discovery request.
+            // from the remote server's metadata by sending an OpenID Connect/OAuth 2.0 discovery request.
 
             if (settings.Authority != null)
             {
                 options.Issuer = settings.Authority;
                 options.Audiences.Add(settings.Audience);
 
-                return;
+                // Note: OpenIddict 3.0 only accepts new access tokens issued with the "at+jwt" token type
+                // or with the generic "JWT" type and a special "token_type" claim containing "access_token"
+                // for backward compatibility, which matches the recommended best practices and helps prevent
+                // token substitution attacks by ensuring other JWT tokens (like identity tokens) are rejected.
+                // Unfortunately, most of the OAuth 2.0/OpenID Connect servers haven't been updated to emit
+                // access tokens using the "at+jwt" token type header. To ensure the validation handler can still
+                // be used with these servers, an option is provided to disable the token validation logic.
+                if (settings.DisableTokenTypeValidation)
+                {
+                    options.TokenValidationParameters.TypeValidator = (type, token, parameters)
+                        => JsonWebTokenTypes.AccessToken;
+                }
             }
 
             // Note: the shell host guarantees that the OpenID server service resolved inside

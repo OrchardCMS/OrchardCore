@@ -122,6 +122,14 @@ namespace OrchardCore.OpenId.Services
                 }));
             }
 
+            if (settings.Authority == null && settings.DisableTokenTypeValidation)
+            {
+                results.Add(new ValidationResult(S["Token type validation can only be disabled for remote servers."], new[]
+                {
+                    nameof(settings.DisableTokenTypeValidation)
+                }));
+            }
+
             if (!string.IsNullOrEmpty(settings.Audience) &&
                 settings.Audience.StartsWith(OpenIdConstants.Prefixes.Tenant, StringComparison.OrdinalIgnoreCase))
             {
