@@ -28,6 +28,7 @@ namespace OrchardCore.Media.Shortcodes
         {
             return (args, content) =>
             {
+
                 // TODO add imagesharp args for width height resizemode
                 // apply ~/ virtual path
                 // skip public url when http https or //

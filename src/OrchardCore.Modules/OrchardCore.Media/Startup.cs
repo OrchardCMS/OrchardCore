@@ -158,7 +158,6 @@ namespace OrchardCore.Media
             services.AddTagHelpers<ImageTagHelper>();
             services.AddTagHelpers<ImageResizeTagHelper>();
 
-            services.AddScoped<IShortcode, ImageShortcode>();
             services.AddScoped<IShortcodeProvider, ImageShortcodeProvider>();
         }
 
