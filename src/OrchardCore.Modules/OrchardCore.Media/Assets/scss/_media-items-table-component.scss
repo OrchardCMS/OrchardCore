@@ -18,9 +18,11 @@
     }
 
     tr.media-item {
-        height: 80px;
+        height: 75px;
+
         td {
             border-top: $media-border-content;
+            padding: 0.25rem !important;
         }
 
         &.selected {
@@ -29,15 +31,15 @@
         }
     }
 
-
     .thumbnail-column {
         text-align: center;
-        width: 80px;
+        width: 75px;
         padding-left: 16px;
         padding-right: 16px;
+
         .image-wrapper {
-            width: 80px;
-            height: 80px;
+            width: 75px;
+            height: 75px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -45,8 +47,8 @@
         }
 
         img {
-            max-width: 80px;
-            max-height: 80px;
+            max-width: 75px;
+            max-height: 75px;
         }
     }
 

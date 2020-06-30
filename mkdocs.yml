@@ -36,6 +36,9 @@ markdown_extensions:
   - markdown.extensions.def_list
   - markdown.extensions.footnotes
   - markdown.extensions.meta
+  - mdx_truly_sane_lists:
+      nested_indent: 2
+      truly_sane: True
   - pymdownx.b64
   - pymdownx.caret
   - pymdownx.details
@@ -174,4 +177,10 @@ nav:
         - Learning: docs/resources/README.md
         - Workshops: docs/resources/workshops/README.md
         - Branding: docs/resources/branding/README.md
+    - Releases: 
+        - 1.0.0-rc2: docs/releases/1.0.0-rc2.md
+        - 1.0.0-rc1: docs/releases/1.0.0-rc1.md
+        - 1.0.0-beta3: docs/releases/1.0.0-beta3.md
+        - 1.0.0-beta2: docs/releases/1.0.0-beta2.md
+        - 1.0.0-beta1: docs/releases/1.0.0-beta1.md
     

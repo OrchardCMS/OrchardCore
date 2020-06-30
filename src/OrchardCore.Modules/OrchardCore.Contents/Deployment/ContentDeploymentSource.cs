@@ -21,16 +21,16 @@ namespace OrchardCore.Contents.Deployment
         {
             // TODO: Batch and create separate content files in the result.
 
-            var contentState = step as ContentDeploymentStep;
+            var contentStep = step as ContentDeploymentStep;
 
-            if (contentState == null)
+            if (contentStep == null)
             {
                 return;
             }
 
             var data = new JArray();
 
-            foreach (var contentItem in await _session.Query<ContentItem, ContentItemIndex>(x => x.Published && x.ContentType.IsIn(contentState.ContentTypes)).ListAsync())
+            foreach (var contentItem in await _session.Query<ContentItem, ContentItemIndex>(x => x.Published && x.ContentType.IsIn(contentStep.ContentTypes)).ListAsync())
             {
                 var objectData = JObject.FromObject(contentItem);
 
