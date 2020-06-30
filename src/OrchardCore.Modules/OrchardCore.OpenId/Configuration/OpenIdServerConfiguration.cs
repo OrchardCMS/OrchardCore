@@ -56,8 +56,9 @@ namespace OrchardCore.OpenId.Configuration
 
             options.IgnoreScopePermissions = true;
             options.Issuer = settings.Authority;
-            options.UseRollingTokens = settings.UseRollingTokens;
-            options.UseReferenceTokens = settings.UseReferenceTokens;
+            options.DisableAccessTokenEncryption = settings.DisableAccessTokenEncryption;
+            options.UseRollingRefreshTokens = settings.UseRollingRefreshTokens;
+            options.UseReferenceAccessTokens = settings.UseReferenceAccessTokens;
 
             foreach (var key in _serverService.GetEncryptionKeysAsync().GetAwaiter().GetResult())
             {
@@ -102,7 +103,7 @@ namespace OrchardCore.OpenId.Configuration
                 return;
             }
 
-            options.PreferDefaultTokenFormat = settings.AccessTokenFormat == OpenIdServerSettings.TokenFormat.JsonWebToken;
+            options.PreferDefaultAccessTokenFormat = settings.AccessTokenFormat == OpenIdServerSettings.TokenFormat.JsonWebToken;
         }
 
         public void Configure(string name, OpenIddictServerAspNetCoreOptions options)

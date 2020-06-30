@@ -28,9 +28,9 @@ namespace OrchardCore.OpenId.Settings
 
         public ISet<string> GrantTypes { get; } = new HashSet<string>(StringComparer.Ordinal);
 
-        public bool UseRollingTokens { get; set; }
+        public bool UseRollingRefreshTokens { get; set; }
 
-        public bool UseReferenceTokens { get; set; }
+        public bool UseReferenceAccessTokens { get; set; }
 
         public enum TokenFormat
         {

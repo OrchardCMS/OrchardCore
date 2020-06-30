@@ -86,8 +86,8 @@ namespace OrchardCore.OpenId.Recipes
             }
 
             settings.DisableAccessTokenEncryption = model.DisableAccessTokenEncryption;
-            settings.UseRollingTokens = model.UseRollingTokens;
-            settings.UseReferenceTokens = model.UseReferenceTokens;
+            settings.UseRollingRefreshTokens = model.UseRollingRefreshTokens;
+            settings.UseReferenceAccessTokens = model.UseReferenceAccessTokens;
 
             await _serverService.UpdateSettingsAsync(settings);
         }

@@ -44,8 +44,8 @@ namespace OrchardCore.OpenId.Drivers
                 model.AllowImplicitFlow = settings.GrantTypes.Contains(GrantTypes.Implicit);
 
                 model.DisableAccessTokenEncryption = settings.DisableAccessTokenEncryption;
-                model.UseRollingTokens = settings.UseRollingTokens;
-                model.UseReferenceTokens = settings.UseReferenceTokens;
+                model.UseRollingRefreshTokens = settings.UseRollingRefreshTokens;
+                model.UseReferenceAccessTokens = settings.UseReferenceAccessTokens;
 
                 foreach (var (certificate, location, name) in await _serverService.GetAvailableCertificatesAsync())
                 {
@@ -136,8 +136,8 @@ namespace OrchardCore.OpenId.Drivers
             }
 
             settings.DisableAccessTokenEncryption = model.DisableAccessTokenEncryption;
-            settings.UseRollingTokens = model.UseRollingTokens;
-            settings.UseReferenceTokens = model.UseReferenceTokens;
+            settings.UseRollingRefreshTokens = model.UseRollingRefreshTokens;
+            settings.UseReferenceAccessTokens = model.UseReferenceAccessTokens;
 
             return await EditAsync(settings, context);
         }

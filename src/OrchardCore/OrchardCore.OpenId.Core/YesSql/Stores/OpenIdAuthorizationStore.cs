@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Globalization;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Json;
@@ -219,12 +220,18 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// A <see cref="ValueTask"/> that can be used to monitor the asynchronous operation,
         /// whose result returns the authorizations corresponding to the criteria.
         /// </returns>
-        public virtual IAsyncEnumerable<TAuthorization> FindAsync(
+        public virtual async IAsyncEnumerable<TAuthorization> FindAsync(
             string subject, string client, string status, string type,
-            ImmutableArray<string> scopes, CancellationToken cancellationToken)
-            => FindAsync(subject, client, status, type, cancellationToken)
-                .WhereAwait(async authorization => new HashSet<string>(
-                    await GetScopesAsync(authorization, cancellationToken), StringComparer.Ordinal).IsSupersetOf(scopes));
+            ImmutableArray<string> scopes, [EnumeratorCancellation] CancellationToken cancellationToken)
+        {
+            await foreach (var authorization in FindAsync(subject, client, status, type, cancellationToken))
+            {
+                if (new HashSet<string>(await GetScopesAsync(authorization, cancellationToken), StringComparer.Ordinal).IsSupersetOf(scopes))
+                {
+                    yield return authorization;
+                }
+            }
+        }
 
         /// <summary>
         /// Retrieves the list of authorizations corresponding to the specified application identifier.

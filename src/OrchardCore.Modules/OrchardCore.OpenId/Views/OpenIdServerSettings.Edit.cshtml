@@ -219,14 +219,13 @@
     }
 </div>
 
-<div class="form-group" asp-validation-class-for="UseRollingTokens">
+<div class="form-group" asp-validation-class-for="UseRollingRefreshTokens">
     <div class="custom-control custom-checkbox">
-        <input type="checkbox" class="custom-control-input" asp-for="UseRollingTokens">
-        <label class="custom-control-label" asp-for="UseRollingTokens">@T["Use Rolling Tokens"]</label>
+        <input type="checkbox" class="custom-control-input" asp-for="UseRollingRefreshTokens">
+        <label class="custom-control-label" asp-for="UseRollingRefreshTokens">@T["Use Rolling Refresh Tokens"]</label>
         <span class="hint">— @T["When this option is enabled, a new refresh token is issued for each refresh token request (and the previous one is automatically revoked)."]</span>
     </div>
 </div>
-
 
 <div class="form-group" asp-validation-class-for="AccessTokenFormat">
     <label asp-for="AccessTokenFormat">@T["Token Format"]</label>
@@ -249,11 +248,11 @@
     </div>
 </div>
 
-<div class="form-group" asp-validation-class-for="UseReferenceTokens">
+<div class="form-group" asp-validation-class-for="UseReferenceAccessTokens">
     <div class="custom-control custom-checkbox">
-        <input type="checkbox" class="custom-control-input" asp-for="UseReferenceTokens">
-        <label class="custom-control-label" asp-for="UseReferenceTokens">@T["Use Reference Tokens"]</label>
-        <span class="hint">— @T["When this option is enabled, it allows to keep track of all the issued tokens, when storing a very large number of claims in the authorization codes, access tokens and refresh tokens or when immediate revocation of reference access tokens is desired."]</span>
+        <input type="checkbox" class="custom-control-input" asp-for="UseReferenceAccessTokens">
+        <label class="custom-control-label" asp-for="UseReferenceAccessTokens">@T["Use Reference Access Tokens"]</label>
+        <span class="hint">— @T["When this option is enabled, the access token are stored in the database and fixed size tokens are returned to the client, which can be useful when storing a very large number of claims."]</span>
     </div>
 </div>
 

@@ -148,7 +148,7 @@ namespace OrchardCore.OpenId.Configuration
                 options.Audiences.Add(OpenIdConstants.Prefixes.Tenant + _shellSettings.Name);
 
                 // Note: token entry validation must be enabled to be able to validate reference tokens.
-                options.EnableTokenEntryValidation = configuration.UseReferenceTokens;
+                options.EnableTokenEntryValidation = configuration.UseReferenceAccessTokens;
 
                 // If an authority was explicitly set in the OpenID server options,
                 // prefer it to the dynamic tenant comparison as it's more efficient.
