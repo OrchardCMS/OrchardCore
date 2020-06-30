@@ -8,7 +8,7 @@
     var culture = await Orchard.GetContentCultureAsync(Model.Field.ContentItem);
 }
 
-<div class="form-group simplemde-editor">
+<div class="form-group">
     <label asp-for="Markdown">@Model.PartFieldDefinition.DisplayName()</label>
     <input asp-for="Markdown" class="form-control content-preview-text" dir="@culture.GetLanguageDirection()" />
     @if (!String.IsNullOrEmpty(settings.Hint))
