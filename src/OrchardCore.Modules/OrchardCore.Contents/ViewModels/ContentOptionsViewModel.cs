@@ -25,6 +25,15 @@ namespace OrchardCore.Contents.ViewModels
 
         public ContentsBulkAction BulkAction { get; set; }
 
+        #region Values to populate
+
+        public int StartIndex { get; set; }
+        public int EndIndex { get; set; }
+        public int ContentItemsCount { get; set; }
+        public int TotalItemCount { get; set; }
+
+        #endregion
+
         #region Lists to populate
 
         [BindNever]

@@ -40,6 +40,7 @@ namespace OrchardCore.Contents.Controllers
         private readonly IContentItemDisplayManager _contentItemDisplayManager;
         private readonly INotifier _notifier;
         private readonly IAuthorizationService _authorizationService;
+        private readonly IDisplayManager<ContentOptionsViewModel> _contentOptionsDisplayManager;
         private readonly IContentsAdminListQueryProvider _contentsAdminListQueryProvider;
         private readonly IEnumerable<IContentsAdminListRouteValueProvider> _contentsAdminListRouteValueProviders;
         private readonly IHtmlLocalizer H;
@@ -58,6 +59,7 @@ namespace OrchardCore.Contents.Controllers
             INotifier notifier,
             ISession session,
             IShapeFactory shapeFactory,
+            IDisplayManager<ContentOptionsViewModel> contentOptionsDisplayManager,
             IContentsAdminListQueryProvider contentsAdminListQueryProvider,
             IEnumerable<IContentsAdminListRouteValueProvider> contentsAdminListRouteValueProviders,
             ILogger<AdminController> logger,
@@ -73,6 +75,7 @@ namespace OrchardCore.Contents.Controllers
             _contentManager = contentManager;
             _contentDefinitionManager = contentDefinitionManager;
             _updateModelAccessor = updateModelAccessor;
+            _contentOptionsDisplayManager = contentOptionsDisplayManager;
             _contentsAdminListQueryProvider = contentsAdminListQueryProvider;
             _contentsAdminListRouteValueProviders = contentsAdminListRouteValueProviders;
 
@@ -205,39 +208,55 @@ namespace OrchardCore.Contents.Controllers
                 contentItemSummaries.Add(await _contentItemDisplayManager.BuildDisplayAsync(contentItem, _updateModelAccessor.ModelUpdater, "SummaryAdmin"));
             }
 
-            // The shape to listen for events here is ContentsAdminListHeader.
-            var header = await CreateZoneShapeAsync("ContentsAdminListHeader");
-
-            var search = await _shapeFactory.CreateAsync("ContentsAdminList__Search", BuildContentOptionsViewModel(model.Options));
-            search.Metadata.Prefix = "Options";
-            await AddToZone("Search", header, search, "10");
-
-            var create = await _shapeFactory.CreateAsync("ContentsAdminList__Create", BuildContentOptionsViewModel(model.Options));
-            create.Metadata.Prefix = "Options";
-            await AddToZone("Create", header, create, "10");
-
+            // Populate options pager summary values.
             var startIndex = (pagerShape.Page - 1) * (pagerShape.PageSize) + 1;
-            var summary = await _shapeFactory.CreateAsync("ContentsAdminList__Summary", Arguments.From(new
-            {
-                StartIndex = startIndex,
-                EndIndex = startIndex + contentItemSummaries.Count - 1,
-                ContentItemsCount = contentItemSummaries.Count,
-                TotalItemCount = pagerShape.TotalItemCount
-            }));
-            await AddToZone("Summary", header, summary, "10");
+            model.Options.StartIndex = startIndex;
+            model.Options.EndIndex = startIndex + contentItemSummaries.Count - 1;
+            model.Options.ContentItemsCount = contentItemSummaries.Count;
+            model.Options.TotalItemCount = pagerShape.TotalItemCount;
 
-            var bulkActions = await CreateZoneShapeAsync("ContentsAdminListBulkActions");
+            var header = await _contentOptionsDisplayManager.BuildDisplayAsync(model.Options, _updateModelAccessor.ModelUpdater, "Header");
 
-            var bulksActionsShape = await _shapeFactory.CreateAsync("ContentsAdminList__BulkActions", BuildContentOptionsViewModel(model.Options));
-            bulksActionsShape.Metadata.Prefix = "Options";
 
-            await AddToZone("BulkActions", bulkActions, bulksActionsShape, "10");
+            // The shape to listen for events here is ContentsAdminListHeader.
+            // var header = await CreateZoneShapeAsync("ContentsAdminListHeader");
+//DONE
+            // var search = await _shapeFactory.CreateAsync("ContentsAdminList__Search", BuildContentOptionsViewModel(model.Options));
+            // search.Metadata.Prefix = "Options";
+            // await AddToZone("Search", header, search, "10");
 
-            await AddToZone("Actions", header, bulkActions, "10");
+            // var create = await _shapeFactory.CreateAsync("ContentsAdminList__Create", BuildContentOptionsViewModel(model.Options));
+            // create.Metadata.Prefix = "Options";
+            // await AddToZone("Create", header, create, "10");
 
-            var filters = await _shapeFactory.CreateAsync("ContentsAdminList__Filters", BuildContentOptionsViewModel(model.Options));
-            filters.Metadata.Prefix = "Options";
-            await AddToZone("Actions", header, filters, "10");
+//DONE
+// add these values to the ContentOptionsViewModel and populate them,
+
+            // var summary = await _shapeFactory.CreateAsync("ContentsAdminList__Summary", Arguments.From(new
+            // {
+            //     StartIndex = startIndex,
+            //     EndIndex = startIndex + contentItemSummaries.Count - 1,
+            //     ContentItemsCount = contentItemSummaries.Count,
+            //     TotalItemCount = pagerShape.TotalItemCount
+            // }));
+            // await AddToZone("Summary", header, summary, "10");
+
+// this one? either a seperate driver for it (def required)
+// can the driver add it to a bulkactions zone inside the actions zone?
+// do it in the view, for a different shape type, i.e. bulk actions.
+// DONT
+            // var bulkActions = await CreateZoneShapeAsync("ContentsAdminListBulkActions");
+
+            // var bulksActionsShape = await _shapeFactory.CreateAsync("ContentsAdminList__BulkActions", BuildContentOptionsViewModel(model.Options));
+            // bulksActionsShape.Metadata.Prefix = "Options";
+
+            // await AddToZone("BulkActions", bulkActions, bulksActionsShape, "10");
+
+            // await AddToZone("Actions", header, bulkActions, "10");
+//DONE
+            // var filters = await _shapeFactory.CreateAsync("ContentsAdminList__Filters", BuildContentOptionsViewModel(model.Options));
+            // filters.Metadata.Prefix = "Options";
+            // await AddToZone("Actions", header, filters, "10");
 
             var shapeViewModel = await _shapeFactory.CreateAsync<ListContentsViewModel>("ContentsAdminList", viewModel =>
             {
@@ -690,38 +709,6 @@ namespace OrchardCore.Contents.Controllers
             }
 
             return Url.IsLocalUrl(returnUrl) ? (IActionResult)LocalRedirect(returnUrl) : RedirectToAction("List");
-        }
-
-        private ValueTask<IShape> CreateZoneShapeAsync(string actualShapeType)
-        {
-            return _shapeFactory.CreateAsync(actualShapeType, () =>
-                new ValueTask<IShape>(new ZoneHolding(() => _shapeFactory.CreateAsync("Zone"))));
-        }
-
-        private static async Task AddToZone(string zoneName, dynamic zones, IShape shape, string position)
-        {
-            var zone = zones.Zones[zoneName];
-            if (zone is ZoneOnDemand zoneOnDemand)
-            {
-                await zoneOnDemand.AddAsync(shape, position);
-            }
-            else if (zone is Shape zoneShape)
-            {
-                zoneShape.Add(shape, position);
-            }
-        }
-
-        private static Action<ContentOptionsViewModel> BuildContentOptionsViewModel(ContentOptionsViewModel model)
-        {
-            return m =>
-            {
-                m.ContentTypeOptions = model.ContentTypeOptions;
-                m.ContentStatuses = model.ContentStatuses;
-                m.ContentSorts = model.ContentSorts;
-                m.ContentsBulkAction = model.ContentsBulkAction;
-                m.CreatableTypes = model.CreatableTypes;
-
-            };
         }
     }
 }

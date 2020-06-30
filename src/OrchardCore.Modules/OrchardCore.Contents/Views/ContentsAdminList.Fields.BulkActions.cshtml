@@ -1,4 +1,5 @@
-@model dynamic
+@model ContentOptionsViewModel
+@inject OrchardCore.DisplayManagement.IDisplayManager<ContentOptionsViewModel> ContentOptionsDisplayManager
 
 <div class="form-group mb-n1" style="display:none" id="actions">
     <span class="dropdown mt-1">
@@ -6,7 +7,10 @@
             @T["Actions"]
         </button>
         <span class="dropdown-menu dropdown-menu-right" aria-labelledby="bulk-action-menu-button">
-            @await DisplayAsync(Model.BulkActions)
+            @{
+                dynamic bulkActions = await ContentOptionsDisplayManager.BuildDisplayAsync(Model, null, "BulkActions");
+                @await DisplayAsync(bulkActions.Content)
+            }
         </span>
     </span>
 </div>
