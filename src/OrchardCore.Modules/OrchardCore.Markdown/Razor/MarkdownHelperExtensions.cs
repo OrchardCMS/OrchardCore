@@ -17,7 +17,7 @@ public static class ContentRazorHelperExtensions
     /// <param name="markdown">The markdown to convert.</param>
     public static async Task<IHtmlContent> MarkdownToHtmlAsync(this IOrchardHelper orchardHelper, string markdown, bool sanitize = true)
     {
-        var shortCodeService = orchardHelper.HttpContext.RequestServices.GetRequiredService<IShortcodeService>();
+        var shortcodeService = orchardHelper.HttpContext.RequestServices.GetRequiredService<IShortcodeService>();
         var markdownService = orchardHelper.HttpContext.RequestServices.GetRequiredService<IMarkdownService>();
 
         // The default Markdown option is to entity escape html
@@ -33,7 +33,7 @@ public static class ContentRazorHelperExtensions
             markdown = await liquidTemplateManager.RenderAsync(markdown, htmlEncoder);
         }
 
-        markdown = await shortCodeService.ProcessAsync(markdown);
+        markdown = await shortcodeService.ProcessAsync(markdown);
 
         if (sanitize)
         {

@@ -21,21 +21,21 @@ namespace OrchardCore.Markdown.Drivers
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly HtmlEncoder _htmlEncoder;
         private readonly IHtmlSanitizerService _htmlSanitizerService;
-        private readonly IShortcodeService _shortCodeService;
+        private readonly IShortcodeService _shortcodeService;
         private readonly IMarkdownService _markdownService;
         private readonly IStringLocalizer S;
 
         public MarkdownFieldDisplayDriver(ILiquidTemplateManager liquidTemplateManager,
             HtmlEncoder htmlEncoder,
             IHtmlSanitizerService htmlSanitizerService,
-            IShortcodeService shortCodeService,
+            IShortcodeService shortcodeService,
             IMarkdownService markdownService,
             IStringLocalizer<MarkdownFieldDisplayDriver> localizer)
         {
             _liquidTemplateManager = liquidTemplateManager;
             _htmlEncoder = htmlEncoder;
             _htmlSanitizerService = htmlSanitizerService;
-            _shortCodeService = shortCodeService;
+            _shortcodeService = shortcodeService;
             _markdownService = markdownService;
             S = localizer;
         }
@@ -62,7 +62,7 @@ namespace OrchardCore.Markdown.Drivers
                         scope => scope.SetValue("ContentItem", field.ContentItem));
                 }
 
-                model.Html = await _shortCodeService.ProcessAsync(model.Html ?? "");
+                model.Html = await _shortcodeService.ProcessAsync(model.Html ?? "");
 
                 if (settings.SanitizeHtml)
                 {

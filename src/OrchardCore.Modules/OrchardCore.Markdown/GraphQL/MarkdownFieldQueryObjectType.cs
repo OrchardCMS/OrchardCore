@@ -47,7 +47,7 @@ namespace OrchardCore.Markdown.GraphQL
 
             var serviceProvider = ctx.ResolveServiceProvider();
             var markdownService = serviceProvider.GetRequiredService<IMarkdownService>();
-            var shortCodeService = serviceProvider.GetRequiredService<IShortcodeService>();
+            var shortcodeService = serviceProvider.GetRequiredService<IShortcodeService>();
 
             var contentDefinitionManager = serviceProvider.GetRequiredService<IContentDefinitionManager>();
 
@@ -86,7 +86,7 @@ namespace OrchardCore.Markdown.GraphQL
                     scope => scope.SetValue("ContentItem", ctx.Source.ContentItem));
             }
 
-            html = await shortCodeService.ProcessAsync(html);
+            html = await shortcodeService.ProcessAsync(html);
 
             if (settings.SanitizeHtml)
             {

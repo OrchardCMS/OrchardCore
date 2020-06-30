@@ -16,19 +16,19 @@ namespace OrchardCore.Html.Handlers
     public class HtmlBodyPartHandler : ContentPartHandler<HtmlBodyPart>
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
-        private readonly IShortcodeService _shortCodeService;
+        private readonly IShortcodeService _shortcodeService;
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly HtmlEncoder _htmlEncoder;
         private HtmlString _bodyAspect;
         private int _contentItemId;
 
         public HtmlBodyPartHandler(IContentDefinitionManager contentDefinitionManager,
-            IShortcodeService shortCodeService,
+            IShortcodeService shortcodeService,
             ILiquidTemplateManager liquidTemplateManager,
             HtmlEncoder htmlEncoder)
         {
             _contentDefinitionManager = contentDefinitionManager;
-            _shortCodeService = shortCodeService;
+            _shortcodeService = shortcodeService;
             _liquidTemplateManager = liquidTemplateManager;
             _htmlEncoder = htmlEncoder;
         }
@@ -64,7 +64,7 @@ namespace OrchardCore.Html.Handlers
                             scope => scope.SetValue("ContentItem", model.ContentItem));
                     }
 
-                    html = await _shortCodeService.ProcessAsync(html);
+                    html = await _shortcodeService.ProcessAsync(html);
 
                     bodyAspect.Body = _bodyAspect = new HtmlString(html);
                     _contentItemId = part.ContentItem.Id;

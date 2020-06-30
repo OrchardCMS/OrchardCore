@@ -30,7 +30,7 @@ namespace OrchardCore.Html.GraphQL
         private static async Task<object> RenderHtml(ResolveFieldContext<HtmlBodyPart> ctx)
         {
             var serviceProvider = ctx.ResolveServiceProvider();
-            var shortCodeService = serviceProvider.GetRequiredService<IShortcodeService>();
+            var shortcodeService = serviceProvider.GetRequiredService<IShortcodeService>();
             var contentDefinitionManager = serviceProvider.GetRequiredService<IContentDefinitionManager>();
 
             var contentTypeDefinition = contentDefinitionManager.GetTypeDefinition(ctx.Source.ContentItem.ContentType);
@@ -54,7 +54,7 @@ namespace OrchardCore.Html.GraphQL
                     scope => scope.SetValue("ContentItem", model.ContentItem));
             }
 
-            return await shortCodeService.ProcessAsync(html);
+            return await shortcodeService.ProcessAsync(html);
         }
     }
 }

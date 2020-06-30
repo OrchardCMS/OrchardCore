@@ -16,9 +16,9 @@ namespace OrchardCore.Liquid.Filters
                 throw new ArgumentException("Services missing while invoking 'shortcode'");
             }
 
-            var shortCodeService = ((IServiceProvider)services).GetRequiredService<IShortcodeService>();
+            var shortcodeService = ((IServiceProvider)services).GetRequiredService<IShortcodeService>();
 
-            return new StringValue(await shortCodeService.ProcessAsync(input.ToStringValue()));
+            return new StringValue(await shortcodeService.ProcessAsync(input.ToStringValue()));
         }
     }
 }

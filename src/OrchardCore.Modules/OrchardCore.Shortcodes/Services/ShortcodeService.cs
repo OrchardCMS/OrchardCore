@@ -6,19 +6,19 @@ namespace OrchardCore.Shortcodes.Services
 {
     public class ShortcodeService : IShortcodeService
     {
-        private readonly ShortcodesProcessor _shortCodesProcessor;
-        private readonly IEnumerable<IShortcodeProvider> _shortCodeProviders;
+        private readonly ShortcodesProcessor _shortcodesProcessor;
+        private readonly IEnumerable<IShortcodeProvider> _shortcodeProviders;
 
-        public ShortcodeService(IEnumerable<IShortcodeProvider> shortCodeProviders)
+        public ShortcodeService(IEnumerable<IShortcodeProvider> shortcodeProviders)
         {
-            _shortCodeProviders = shortCodeProviders;
-            _shortCodesProcessor = new ShortcodesProcessor(shortCodeProviders);
+            _shortcodeProviders = shortcodeProviders;
+            _shortcodesProcessor = new ShortcodesProcessor(shortcodeProviders);
 
         }
 
         public ValueTask<string> ProcessAsync(string input)
         {
-            return _shortCodesProcessor.EvaluateAsync(input);
+            return _shortcodesProcessor.EvaluateAsync(input);
         }
     }
 }

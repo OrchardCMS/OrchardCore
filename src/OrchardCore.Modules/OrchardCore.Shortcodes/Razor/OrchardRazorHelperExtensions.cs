@@ -12,9 +12,9 @@ public static class OrchardRazorHelperExtensions
     /// <param name="html">The html to apply short codes.</param>
     public static async Task<IHtmlContent> HtmlToShortcodesAsync(this IOrchardHelper orchardHelper, string html)
     {
-        var shortCodeService = orchardHelper.HttpContext.RequestServices.GetRequiredService<IShortcodeService>();
+        var shortcodeService = orchardHelper.HttpContext.RequestServices.GetRequiredService<IShortcodeService>();
 
-        html = await shortCodeService.ProcessAsync(html);
+        html = await shortcodeService.ProcessAsync(html);
 
         return new HtmlString(html);
     }
