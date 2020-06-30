@@ -4,7 +4,7 @@ using Fluid;
 using Microsoft.AspNetCore.Html;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore;
-using OrchardCore.ShortCodes.Services;
+using OrchardCore.Shortcodes.Services;
 using OrchardCore.Infrastructure.Html;
 using OrchardCore.Liquid;
 using OrchardCore.Markdown.Services;
@@ -17,7 +17,7 @@ public static class ContentRazorHelperExtensions
     /// <param name="markdown">The markdown to convert.</param>
     public static async Task<IHtmlContent> MarkdownToHtmlAsync(this IOrchardHelper orchardHelper, string markdown, bool sanitize = true)
     {
-        var shortCodeService = orchardHelper.HttpContext.RequestServices.GetRequiredService<IShortCodeService>();
+        var shortCodeService = orchardHelper.HttpContext.RequestServices.GetRequiredService<IShortcodeService>();
         var markdownService = orchardHelper.HttpContext.RequestServices.GetRequiredService<IMarkdownService>();
 
         // The default Markdown option is to entity escape html

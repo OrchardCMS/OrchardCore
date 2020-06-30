@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Shortcodes;
 using OrchardCore.Infrastructure.Html;
 
-namespace OrchardCore.Media.ShortCodes
+namespace OrchardCore.Media.Shortcodes
 {
     public class ImageShortcodeProvider : NamedShortcodeProvider
     {

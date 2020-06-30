@@ -9,7 +9,7 @@ using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.ShortCodes.Services;
+using OrchardCore.Shortcodes.Services;
 using OrchardCore.Infrastructure.Html;
 using OrchardCore.Liquid;
 
@@ -20,13 +20,13 @@ namespace OrchardCore.ContentFields.Drivers
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly HtmlEncoder _htmlEncoder;
         private readonly IHtmlSanitizerService _htmlSanitizerService;
-        private readonly IShortCodeService _shortCodeService;
+        private readonly IShortcodeService _shortCodeService;
         private readonly IStringLocalizer S;
 
         public HtmlFieldDisplayDriver(ILiquidTemplateManager liquidTemplateManager,
             HtmlEncoder htmlEncoder,
             IHtmlSanitizerService htmlSanitizerService,
-            IShortCodeService shortCodeService,
+            IShortcodeService shortCodeService,
             IStringLocalizer<HtmlFieldDisplayDriver> localizer)
         {
             _liquidTemplateManager = liquidTemplateManager;

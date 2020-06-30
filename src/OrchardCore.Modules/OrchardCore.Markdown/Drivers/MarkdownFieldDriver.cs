@@ -6,7 +6,7 @@ using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.ShortCodes.Services;
+using OrchardCore.Shortcodes.Services;
 using OrchardCore.Infrastructure.Html;
 using OrchardCore.Liquid;
 using OrchardCore.Markdown.Fields;
@@ -21,14 +21,14 @@ namespace OrchardCore.Markdown.Drivers
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly HtmlEncoder _htmlEncoder;
         private readonly IHtmlSanitizerService _htmlSanitizerService;
-        private readonly IShortCodeService _shortCodeService;
+        private readonly IShortcodeService _shortCodeService;
         private readonly IMarkdownService _markdownService;
         private readonly IStringLocalizer S;
 
         public MarkdownFieldDisplayDriver(ILiquidTemplateManager liquidTemplateManager,
             HtmlEncoder htmlEncoder,
             IHtmlSanitizerService htmlSanitizerService,
-            IShortCodeService shortCodeService,
+            IShortcodeService shortCodeService,
             IMarkdownService markdownService,
             IStringLocalizer<MarkdownFieldDisplayDriver> localizer)
         {

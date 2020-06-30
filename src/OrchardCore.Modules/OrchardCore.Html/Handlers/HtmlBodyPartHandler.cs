@@ -8,7 +8,7 @@ using OrchardCore.ContentManagement.Models;
 using OrchardCore.Html.Models;
 using OrchardCore.Html.Settings;
 using OrchardCore.Html.ViewModels;
-using OrchardCore.ShortCodes.Services;
+using OrchardCore.Shortcodes.Services;
 using OrchardCore.Liquid;
 
 namespace OrchardCore.Html.Handlers
@@ -16,14 +16,14 @@ namespace OrchardCore.Html.Handlers
     public class HtmlBodyPartHandler : ContentPartHandler<HtmlBodyPart>
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
-        private readonly IShortCodeService _shortCodeService;
+        private readonly IShortcodeService _shortCodeService;
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly HtmlEncoder _htmlEncoder;
         private HtmlString _bodyAspect;
         private int _contentItemId;
 
         public HtmlBodyPartHandler(IContentDefinitionManager contentDefinitionManager,
-            IShortCodeService shortCodeService,
+            IShortcodeService shortCodeService,
             ILiquidTemplateManager liquidTemplateManager,
             HtmlEncoder htmlEncoder)
         {

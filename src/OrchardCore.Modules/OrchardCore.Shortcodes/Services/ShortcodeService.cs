@@ -2,14 +2,14 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Shortcodes;
 
-namespace OrchardCore.ShortCodes.Services
+namespace OrchardCore.Shortcodes.Services
 {
-    public class ShortCodeService : IShortCodeService
+    public class ShortcodeService : IShortcodeService
     {
         private readonly ShortcodesProcessor _shortCodesProcessor;
         private readonly IEnumerable<IShortcodeProvider> _shortCodeProviders;
 
-        public ShortCodeService(IEnumerable<IShortcodeProvider> shortCodeProviders)
+        public ShortcodeService(IEnumerable<IShortcodeProvider> shortCodeProviders)
         {
             _shortCodeProviders = shortCodeProviders;
             _shortCodesProcessor = new ShortcodesProcessor(shortCodeProviders);

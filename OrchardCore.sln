@@ -376,9 +376,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Docs", "src\doc
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Markdown.Abstractions", "src\OrchardCore\OrchardCore.Markdown.Abstractions\OrchardCore.Markdown.Abstractions.csproj", "{38EE0258-F010-425B-949F-9ECCE886584B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.ShortCodes", "src\OrchardCore.Modules\OrchardCore.ShortCodes\OrchardCore.ShortCodes.csproj", "{9EEEB83D-85C5-4025-8367-CD7D1ACBBB1A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Shortcodes", "src\OrchardCore.Modules\OrchardCore.Shortcodes\OrchardCore.Shortcodes.csproj", "{9EEEB83D-85C5-4025-8367-CD7D1ACBBB1A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.ShortCodes.Abstractions", "src\OrchardCore\OrchardCore.ShortCodes.Abstractions\OrchardCore.ShortCodes.Abstractions.csproj", "{901DA1A3-E5C7-4965-80EA-A1780BE1B820}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Shortcodes.Abstractions", "src\OrchardCore\OrchardCore.Shortcodes.Abstractions\OrchardCore.Shortcodes.Abstractions.csproj", "{901DA1A3-E5C7-4965-80EA-A1780BE1B820}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

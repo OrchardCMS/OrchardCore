@@ -9,7 +9,7 @@ using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Html.Models;
 using OrchardCore.Html.Settings;
 using OrchardCore.Html.ViewModels;
-using OrchardCore.ShortCodes.Services;
+using OrchardCore.Shortcodes.Services;
 using OrchardCore.Infrastructure.Html;
 using OrchardCore.Liquid;
 using OrchardCore.DisplayManagement;
@@ -21,14 +21,14 @@ namespace OrchardCore.Html.Drivers
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly IHtmlSanitizerService _htmlSanitizerService;
         private readonly HtmlEncoder _htmlEncoder;
-        private readonly IShortCodeService _shortCodeService;
+        private readonly IShortcodeService _shortCodeService;
         private readonly dynamic New;
         private readonly IStringLocalizer S;
 
         public HtmlBodyPartDisplayDriver(ILiquidTemplateManager liquidTemplateManager,
             IHtmlSanitizerService htmlSanitizerService,
             HtmlEncoder htmlEncoder,
-            IShortCodeService shortCodeService,
+            IShortcodeService shortCodeService,
             IShapeFactory shapeFactory,
             IStringLocalizer<HtmlBodyPartDisplayDriver> localizer)
         {

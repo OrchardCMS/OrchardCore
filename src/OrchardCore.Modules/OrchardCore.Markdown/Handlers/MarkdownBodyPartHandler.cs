@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Html;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Models;
-using OrchardCore.ShortCodes.Services;
+using OrchardCore.Shortcodes.Services;
 using OrchardCore.Infrastructure.Html;
 using OrchardCore.Liquid;
 using OrchardCore.Markdown.Models;
@@ -19,7 +19,7 @@ namespace OrchardCore.Markdown.Handlers
     public class MarkdownBodyPartHandler : ContentPartHandler<MarkdownBodyPart>
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
-        private readonly IShortCodeService _shortCodeService;
+        private readonly IShortcodeService _shortCodeService;
         private readonly IMarkdownService _markdownService;
         private readonly IHtmlSanitizerService _htmlSanitizerService;
         private readonly ILiquidTemplateManager _liquidTemplateManager;
@@ -28,7 +28,7 @@ namespace OrchardCore.Markdown.Handlers
         private int _contentItemId;
 
         public MarkdownBodyPartHandler(IContentDefinitionManager contentDefinitionManager,
-            IShortCodeService shortCodeService,
+            IShortcodeService shortCodeService,
             IMarkdownService markdownService,
             IHtmlSanitizerService htmlSanitizerService,
             ILiquidTemplateManager liquidTemplateManager,

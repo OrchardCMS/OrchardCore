@@ -23,7 +23,7 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Environment.Shell;
 using OrchardCore.FileStorage;
 using OrchardCore.FileStorage.FileSystem;
-using OrchardCore.ShortCodes;
+using OrchardCore.Shortcodes;
 using OrchardCore.Liquid;
 using OrchardCore.Media.Controllers;
 using OrchardCore.Media.Core;
@@ -35,7 +35,7 @@ using OrchardCore.Media.Filters;
 using OrchardCore.Media.Handlers;
 using OrchardCore.Media.Processing;
 using OrchardCore.Media.Recipes;
-using OrchardCore.Media.ShortCodes;
+using OrchardCore.Media.Shortcodes;
 using OrchardCore.Media.Services;
 using OrchardCore.Media.Settings;
 using OrchardCore.Media.TagHelpers;
@@ -158,7 +158,7 @@ namespace OrchardCore.Media
             services.AddTagHelpers<ImageTagHelper>();
             services.AddTagHelpers<ImageResizeTagHelper>();
 
-            services.AddScoped<IShortCode, ImageShortCode>();
+            services.AddScoped<IShortcode, ImageShortcode>();
             services.AddScoped<IShortcodeProvider, ImageShortcodeProvider>();
         }
 

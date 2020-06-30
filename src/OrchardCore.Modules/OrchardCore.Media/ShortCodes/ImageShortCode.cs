@@ -3,16 +3,16 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using OrchardCore.DisplayManagement;
 using OrchardCore.Infrastructure.Html;
-using OrchardCore.ShortCodes;
+using OrchardCore.Shortcodes;
 
-namespace OrchardCore.Media.ShortCodes
+namespace OrchardCore.Media.Shortcodes
 {
-    public class ImageShortCode : IShortCode
+    public class ImageShortcode : IShortcode
     {
         private readonly IHtmlSanitizerService _htmlSanitizerService;
         private readonly IMediaFileStore _mediaFileStore;
 
-        public ImageShortCode(IMediaFileStore mediaFileStore, IHtmlSanitizerService htmlSanitizerService)
+        public ImageShortcode(IMediaFileStore mediaFileStore, IHtmlSanitizerService htmlSanitizerService)
         {
             _mediaFileStore = mediaFileStore;
             _htmlSanitizerService = htmlSanitizerService;

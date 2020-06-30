@@ -11,7 +11,7 @@ using Newtonsoft.Json.Linq;
 using OrchardCore.Apis.GraphQL;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
-using OrchardCore.ShortCodes.Services;
+using OrchardCore.Shortcodes.Services;
 using OrchardCore.Infrastructure.Html;
 using OrchardCore.Liquid;
 using OrchardCore.Markdown.Fields;
@@ -27,7 +27,7 @@ namespace OrchardCore.Markdown.GraphQL
         {
             Name = nameof(MarkdownField);
             Description = S["Content stored as Markdown. You can also query the HTML interpreted version of Markdown."];
-            
+
             Field("markdown", x => x.Markdown, nullable: true)
                 .Description(S["the markdown value"]);
 
@@ -47,7 +47,7 @@ namespace OrchardCore.Markdown.GraphQL
 
             var serviceProvider = ctx.ResolveServiceProvider();
             var markdownService = serviceProvider.GetRequiredService<IMarkdownService>();
-            var shortCodeService = serviceProvider.GetRequiredService<IShortCodeService>();
+            var shortCodeService = serviceProvider.GetRequiredService<IShortcodeService>();
 
             var contentDefinitionManager = serviceProvider.GetRequiredService<IContentDefinitionManager>();
 

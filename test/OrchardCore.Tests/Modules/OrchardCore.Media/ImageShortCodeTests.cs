@@ -7,12 +7,12 @@ using OrchardCore.FileStorage;
 using OrchardCore.Infrastructure.Html;
 using OrchardCore.Media.Core;
 using OrchardCore.Media.Events;
-using OrchardCore.Media.ShortCodes;
+using OrchardCore.Media.Shortcodes;
 using Xunit;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.Media
 {
-    public class ImageShortCodeTests
+    public class ImageShortcodeTests
     {
         [Theory]
         [InlineData("foo bar baz", "foo bar baz")]
@@ -32,7 +32,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Media
 
         public async Task ShouldProcess(string text, string expected)
         {
-            var mediaShortCode = new ImageShortCode(
+            var mediaShortcode = new ImageShortcode(
             new DefaultMediaFileStore(Mock.Of<IFileStore>(),
                 "/media",
                 string.Empty,
@@ -42,7 +42,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Media
             new HtmlSanitizerService(Options.Create(new HtmlSanitizerOptions()))
         );
 
-        var processed = await mediaShortCode.ProcessAsync(text);
+        var processed = await mediaShortcode.ProcessAsync(text);
             Assert.Equal(expected, processed);
         }
     }
