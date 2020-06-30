@@ -90,7 +90,7 @@ namespace OrchardCore.Taxonomies
                     if (!String.IsNullOrEmpty(termContentItemId))
                     {
                         level = FindTerm(taxonomyContentItem.Content.TaxonomyPart.Terms as JArray, termContentItemId, level, out var termContentItem);
-                        
+
                         if (termContentItem == null)
                         {
                             return;
@@ -144,9 +144,10 @@ namespace OrchardCore.Taxonomies
                             Term = termShape,
                             TermContentItem = termContentItem,
                             Terms = childTerms ?? Array.Empty<ContentItem>(),
-                            TaxonomyContentItem = taxonomyContentItem,
-                            Differentiator = differentiator
+                            TaxonomyContentItem = taxonomyContentItem
                         }));
+
+                        shape.Metadata.Differentiator = differentiator;
 
                         // Don't use Items.Add() or the collection won't be sorted
                         termShape.Add(shape);
@@ -178,11 +179,12 @@ namespace OrchardCore.Taxonomies
                             {
                                 Level = level + 1,
                                 TaxonomyContentItem = taxonomyContentItem,
-                                Differentiator = differentiator,
                                 TermContentItem = termContentItem,
                                 Term = termShape,
                                 Terms = childTerms ?? Array.Empty<ContentItem>()
                             }));
+
+                            shape.Metadata.Differentiator = differentiator;
 
                             // Don't use Items.Add() or the collection won't be sorted
                             termItem.Add(shape);
