@@ -1577,6 +1577,34 @@
       "contributions": [
         "translation"
       ]
+    },
+    {
+      "login": "pgrimaud",
+      "name": "Pierre Grimaud",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/1866496?v=4",
+      "profile": "https://github.com/pgrimaud",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "gianght",
+      "name": "gianght",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/30433966?v=4",
+      "profile": "https://github.com/gianght",
+      "contributions": [
+        "translation"
+      ]
+    },
+    {
+      "login": "patfog",
+      "name": "Patrick Fogwall",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/757063?v=4",
+      "profile": "https://bold-n-brave.com",
+      "contributions": [
+        "translation"
+      ]
     }
-  ]
+  ],
+  "skipCi": true
 }
