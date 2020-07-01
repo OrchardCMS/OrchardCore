@@ -69,7 +69,7 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError("The Query {Name}'s Schema is Invalid, {NewLine} Error Details: {ex}",
+                    _logger.LogError("The Query {Name}'s Schema is Invalid, Error Details: {ex}",
                        name, ex);
                 }
             }
