@@ -50,7 +50,7 @@ Available settings are:
 - Enable Logout Endpoint.
 - Enable User Info Endpoint.
 - Allow Password Flow: It requires that the Token Endpoint is enabled. More info at <https://tools.ietf.org/html/rfc6749#section-1.3.3> \
-   Rquest sample:
+   Request sample:
     ``` json 
     //EndPoint="/connect/token" ,Method=POST,Content-Type=application/x-www-form-urlencoded 
     {
@@ -64,7 +64,7 @@ Available settings are:
     ```
 - Allow Client Credentials Flow: It requires that the Token Endpoint is enabled. More info at <https://tools.ietf.org/html/rfc6749#section-1.3.4>
 - Allow Authorization Code Flow: It requires that the Authorization and Token Endpoints are enabled. More info at <http://openid.net/specs/openid-connect-core-1_0.html#CodeFlowAuth> \
- Rquest sample:
+ Request sample:
      ``` JSON    
     //EndPoint="/connect/token" ,Method=POST,Content-Type=application/x-www-form-urlencoded 
     {
