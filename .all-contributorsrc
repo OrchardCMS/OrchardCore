@@ -1595,6 +1595,15 @@
       "contributions": [
         "translation"
       ]
+    },
+    {
+      "login": "patfog",
+      "name": "Patrick Fogwall",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/757063?v=4",
+      "profile": "https://bold-n-brave.com",
+      "contributions": [
+        "translation"
+      ]
     }
   ],
   "skipCi": true
