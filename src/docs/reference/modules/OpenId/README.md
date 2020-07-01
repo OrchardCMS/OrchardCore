@@ -55,29 +55,30 @@ Typescript request example using axios:
 
 ``` typescript 
     
-      const data: any =
-      {
-            username: username,
-            password: password,
-            // must read from config
-            client_id: 'client_id',
-            client_secret: 'client_secret',
-            grant_type: 'password',
-            scope: 'profile email phone roles'
-      }
+  const data: any =
+  {
+        username: username,
+        password: password,
+        // must read from config
+        client_id: 'client_id',
+        client_secret: 'client_secret',
+        grant_type: 'password',
+        scope: 'profile email phone roles'
+  }
 
-      let formData = ''
-      for (let it in data) {
-            if (data.hasOwnProperty(it)) {
-              formData += encodeURIComponent(it) + '=' + encodeURIComponent(data[it]) + '&'
-            }
-      }
-      var res = axios.request({
-            url: ApiUrl + '/connect/token',
-            method: 'post',
-            data: formData,
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-      })
+  let formDatas = []
+  for (let it in data) {
+    // eslint-disable-next-line no-prototype-builtins
+    if (data.hasOwnProperty(it)) {
+      formDatas.push(encodeURIComponent(it) + '=' + encodeURIComponent(data[it]))
+    }
+  } 
+  var res = axios.request({
+        url: ApiUrl + '/connect/token',
+        method: 'post',
+        data: formDatas.join('&'),
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+  })
   return res
 ```
 Complete example at <https://github.com/JiZhouSoft/Jizhousoft.OrchardCore.Sample/blob/cd1fd0c42893c6d0607f8642451d1a98649b9769/vue-ts-admin/src/api/users.ts#L10>
@@ -98,16 +99,17 @@ Typescript request example using axios :
       "scope": "openid profile roles"
     }
 
-  let formData = ''
+  let formDatas = []
   for (let it in data) {
-        if (data.hasOwnProperty(it)) {
-          formData += encodeURIComponent(it) + '=' + encodeURIComponent(data[it]) + '&'
-        }
-  }
+    // eslint-disable-next-line no-prototype-builtins
+    if (data.hasOwnProperty(it)) {
+      formDatas.push(encodeURIComponent(it) + '=' + encodeURIComponent(data[it]))
+    }
+  } 
   var res = axios.request({
         url: ApiUrl + '/connect/token',
         method: 'post',
-        data: formData,
+        data: formDatas.join('&'),
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
   })
    return res
