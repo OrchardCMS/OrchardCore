@@ -106,7 +106,8 @@ namespace OrchardCore.OpenId.Configuration
 
             if (errorResult.Any())
             {
-                _logger.LogError($"The OpenId Connect module is not correctly configure : { string.Join(", ", errorResult.Select(r => r.ErrorMessage))}" );
+                var errorMessages = string.Join(", ", errorResult.Select(r => r.ErrorMessage));
+                _logger.LogError("The OpenId Connect module is not correctly configure : {errorMessages}", errorMessages);
 
                 return null;
             }
