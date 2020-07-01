@@ -6,9 +6,11 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Modules;
 using OrchardCore.OpenId.Services;
 using OrchardCore.OpenId.Settings;
@@ -102,12 +104,10 @@ namespace OrchardCore.OpenId.Configuration
             var settings = await _clientService.GetSettingsAsync();
             var errorResult = (await _clientService.ValidateSettingsAsync(settings)).Where(r => r != ValidationResult.Success);
 
-            if (errorResult.Any())
+            if (errorResult.Any() && _logger.IsEnabled(LogLevel.Warning))
             {
-                foreach (var item in errorResult)
-                {
-                    _logger.LogWarning(item.ErrorMessage);
-                }
+                _logger.LogError("The OpenId Connect module is not correctly configure : '{Errors}'", string.Join(", ", errorResult.Select(r => r.ErrorMessage)));
+
                 return null;
             }
 
