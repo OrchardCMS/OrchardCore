@@ -66,7 +66,7 @@ Typescript request example using axios:
         scope: 'profile email phone roles'
   }
 
-  let formDatas = []
+  let formData = []
   for (let it in data) {
     // eslint-disable-next-line no-prototype-builtins
     if (data.hasOwnProperty(it)) {
@@ -76,7 +76,7 @@ Typescript request example using axios:
   var res = axios.request({
         url: ApiUrl + '/connect/token',
         method: 'post',
-        data: formDatas.join('&'),
+        data: formData.join('&'),
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
   })
   return res
@@ -99,17 +99,17 @@ Typescript request example using axios :
       "scope": "openid profile roles"
     }
 
-  let formDatas = []
+  let formData = []
   for (let it in data) {
     // eslint-disable-next-line no-prototype-builtins
     if (data.hasOwnProperty(it)) {
-      formDatas.push(encodeURIComponent(it) + '=' + encodeURIComponent(data[it]))
+      formData.push(encodeURIComponent(it) + '=' + encodeURIComponent(data[it]))
     }
   } 
   var res = axios.request({
         url: ApiUrl + '/connect/token',
         method: 'post',
-        data: formDatas.join('&'),
+        data: formData.join('&'),
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
   })
    return res
