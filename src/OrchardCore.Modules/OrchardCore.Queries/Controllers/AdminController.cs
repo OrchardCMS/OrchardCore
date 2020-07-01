@@ -221,7 +221,7 @@ namespace OrchardCore.Queries.Controllers
             if (!string.IsNullOrWhiteSpace(query.Schema) && !CheckSchema(query.Schema))
             {
                 model.Editor = editor;
-                _notifier.Error(H["Schema is not a correct json format."]);
+                _notifier.Error(H["Invalid schema JSON supplied."]);
                 return View(model);
             }
             if (ModelState.IsValid)

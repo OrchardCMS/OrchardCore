@@ -29,7 +29,6 @@ namespace OrchardCore.Queries.Sql.GraphQL.Queries
             _httpContextAccessor = httpContextAccessor;
             _logger = logger;
         }
-
         public async Task<IChangeToken> BuildAsync(ISchema schema)
         {
             var queryManager = _httpContextAccessor.HttpContext.RequestServices.GetService<IQueryManager>();
@@ -48,6 +47,11 @@ namespace OrchardCore.Queries.Sql.GraphQL.Queries
                 try
                 {
                     var querySchema = JObject.Parse(query.Schema);
+                    if (!querySchema.ContainsKey("type"))
+                    {
+                        _logger.LogError("The Query {Name}'s Schema is Invalid, the 'type' property is not found.", name);
+                        continue;
+                    }
                     var type = querySchema["type"].ToString();
                     if (type.StartsWith("ContentItem/", StringComparison.OrdinalIgnoreCase))
                     {
@@ -59,9 +63,10 @@ namespace OrchardCore.Queries.Sql.GraphQL.Queries
                         schema.Query.AddField(BuildSchemaBasedFieldType(schema, query, querySchema));
                     }
                 }
-                catch (Exception e)
+                catch (Exception ex)
                 {
-                    _logger.LogError($"The Query {name}'s Schema parse error, Please check the Schema is a correct json format , Schema:{query.Schema}, {System.Environment.NewLine} Error Details:'{e}");
+                    _logger.LogError(@"The Query {Name}'s Schema is Invalid, {NewLine} Error Details:'{e}",
+                       name, query.Schema, ex);
                 }
             }
 
@@ -110,7 +115,6 @@ namespace OrchardCore.Queries.Sql.GraphQL.Queries
                     }
                 }
             }
-
 
             var fieldType = new FieldType
             {
