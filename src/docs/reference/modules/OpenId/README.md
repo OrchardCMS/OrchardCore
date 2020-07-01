@@ -80,6 +80,8 @@ Typescript request example using axios:
       })
   return res
 ```
+Complete example at <https://github.com/JiZhouSoft/Jizhousoft.OrchardCore.Sample/blob/cd1fd0c42893c6d0607f8642451d1a98649b9769/vue-ts-admin/src/api/users.ts#L10>
+
 
 - Allow Client Credentials Flow: It requires that the Token Endpoint is enabled. More info at <https://tools.ietf.org/html/rfc6749#section-1.3.4>
 - Allow Authorization Code Flow: It requires that the Authorization and Token Endpoints are enabled. More info at <http://openid.net/specs/openid-connect-core-1_0.html#CodeFlowAuth> 
