@@ -7,13 +7,13 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using OpenIddict.Abstractions;
 using OpenIddict.Server;
 using OpenIddict.Server.AspNetCore;
 using OpenIddict.Server.DataProtection;
 using OrchardCore.Modules;
 using OrchardCore.OpenId.Services;
 using OrchardCore.OpenId.Settings;
+using static OpenIddict.Abstractions.OpenIddictConstants;
 
 namespace OrchardCore.OpenId.Configuration
 {
@@ -62,7 +62,8 @@ namespace OrchardCore.OpenId.Configuration
 
             foreach (var key in _serverService.GetEncryptionKeysAsync().GetAwaiter().GetResult())
             {
-                options.EncryptionCredentials.Add(new EncryptingCredentials(key, SecurityAlgorithms.RsaOAEP, SecurityAlgorithms.Aes256CbcHmacSha512));
+                options.EncryptionCredentials.Add(new EncryptingCredentials(key,
+                    SecurityAlgorithms.RsaOAEP, SecurityAlgorithms.Aes256CbcHmacSha512));
             }
 
             foreach (var key in _serverService.GetSigningKeysAsync().GetAwaiter().GetResult())
@@ -89,10 +90,10 @@ namespace OrchardCore.OpenId.Configuration
 
             options.GrantTypes.UnionWith(settings.GrantTypes);
 
-            options.Scopes.Add(OpenIddictConstants.Scopes.Email);
-            options.Scopes.Add(OpenIddictConstants.Scopes.Phone);
-            options.Scopes.Add(OpenIddictConstants.Scopes.Profile);
-            options.Scopes.Add(OpenIddictConstants.Scopes.Roles);
+            options.Scopes.Add(Scopes.Email);
+            options.Scopes.Add(Scopes.Phone);
+            options.Scopes.Add(Scopes.Profile);
+            options.Scopes.Add(Scopes.Roles);
         }
 
         public void Configure(OpenIddictServerDataProtectionOptions options)
@@ -103,6 +104,8 @@ namespace OrchardCore.OpenId.Configuration
                 return;
             }
 
+            // All the tokens produced by the server feature use ASP.NET Core Data Protection as the default
+            // token format, but an option is provided to allow switching to JWT for access tokens only.
             options.PreferDefaultAccessTokenFormat = settings.AccessTokenFormat == OpenIdServerSettings.TokenFormat.JsonWebToken;
         }
 
