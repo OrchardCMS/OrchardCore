@@ -6,7 +6,6 @@ namespace OrchardCore.Queries.Sql
     {
         public SqlParserException(string message) : base(message)
         {
-
         }
     }
 }

@@ -1,4 +1,347 @@
-# Recipes (OrchardCore.Recipes)
+# Recipes (`OrchardCore.Recipes`)
+
+## Recipe file
+
+A recipe is a json file used to execute different import and configuration steps.
+
+You can add it in a `Recipes` folder with a name like this `{RecipeName}.recipe.json` and it will be available in the Configuration > Recipes admin page.
+
+## Recipe format
+
+A recipe file should look like this:
+
+```json
+{
+  "name": "Name",
+  "displayName": "Display Name of the recipe",
+  "description": "Description of the recipe",
+  "author": "Author",
+  "website": "https://website.net",
+  "version": "2.0",
+  "issetuprecipe": true|false,
+  "categories": [ "default" ],
+  "tags": [ "tag" ],
+  "variables": {
+    "variable1": "[js:uuid()]",
+    ...
+  },
+  "steps": [
+      ...
+  ]
+}
+```
+
+!!! note
+    if `issetuprecipe` is equal to true, the recipe will be available in the Recipes list during the setup.
+
+## Recipe steps
+
+A recipe can execute multiple steps.
+
+In order to create a new Recipe step, you need to implement the `IRecipeStepHandler` interface and the `ExecuteAsync` method:
+`public async Task ExecuteAsync(RecipeExecutionContext context)`
+
+Here are the available recipe steps:
+
+### Feature Step
+
+The Feature step allows you to disable/enable some features.
+
+```json
+    {
+        "name": "feature",
+        "disable": [],
+        "enable": [
+            "OrchardCore.Admin",
+            "YourTheme",
+            "TheAdmin"
+        ]
+    }
+```
+
+!!! warning
+    If you want to use your own theme (Ex: `YourTheme`), do not forget to enable its feature or else, the theme layout will not be working after the execution of the recipe.
+
+### Themes Step
+
+The Themes step allows you to set the admin and the site themes.
+
+```json
+    {
+      "name": "themes",
+      "admin": "TheAdmin",
+      "site": "YourTheme"
+    }
+```
+
+### Settings Step
+
+The Settings step allows you to set multiple settings.
+
+```json
+    {
+      "name": "settings",
+      "HomeRoute": {
+        "Action": "Display",
+        "Controller": "Item",
+        "Area": "OrchardCore.Contents",
+        "ContentItemId": "[js: variables('blogContentItemId')]"
+      },
+      "LayerSettings": {
+        "Zones": [ "Content", "Footer" ]
+      }
+    }
+```
+
+### ContentDefinition Step
+
+The Content step allows you to import some content types.
+
+```json
+    {
+        "name": "ContentDefinition",
+        "ContentTypes": [
+        {
+            "Name": "YourContentType",
+            ...
+        }
+    }
+```
+
+### Lucene Step
+
+The Lucene index step allows you to run the Lucene indexation of content types.  
+You can also set the default Lucene Settings.
+
+```json
+    {
+      // Create the indices before the content items so they are indexed automatically.
+      "name": "lucene-index",
+      "Indices": [
+        {
+          "Search": {
+            "AnalyzerName": "standardanalyzer",
+            "IndexLatest": false,
+            "IndexedContentTypes": [
+              "Blog",
+              "BlogPost"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      // Create the search settings.
+      "name": "Settings",
+      "LuceneSettings": {
+        "SearchIndex": "Search",
+        "DefaultSearchFields": [
+          "Content.ContentItem.FullText"
+        ]
+      }
+    }
+```
+
+### Content Step
+
+The Content step allows you to create content items.
+
+```json
+     {
+      "name": "content",
+      "Data": [
+        {
+          "ContentType": "Menu",
+          ...
+        },
+        ...
+      ]
+    }
+```
+
+### Media Step
+
+The Media step allows you to import media files to the tenant Media folder.
+
+```json
+    {
+      "name": "media",
+      "Files": [
+        {
+          "TargetPath": "home-bg.jpg",
+          "SourcePath": "../wwwroot/img/home-bg.jpg"
+        },
+        {
+          "TargetPath": "post-bg.jpg",
+          "SourcePath": "../wwwroot/img/post-bg.jpg"
+        }
+      ]
+    }
+```
+
+### Layers Step
+
+The Layers step allows you to create multiple layers.
+
+```json
+    {
+      "name": "layers",
+      "Layers": [
+        {
+          "Name": "Always",
+          "Rule": "true",
+          "Description": "The widgets in this layer are displayed on any page of this site."
+        },
+        {
+          "Name": "Homepage",
+          "Rule": "isHomepage()",
+          "Description": "The widgets in this layer are only displayed on the homepage."
+        }
+      ]
+    }
+```
+
+### Queries Step
+
+The Queries step allows you to create multiple Lucene or SQL queries.
+
+```json
+    {
+      "name": "queries",
+      "Queries": [
+        {
+          "Source": "Lucene",
+          "Name": "RecentBlogPosts",
+          "Index": "Search",
+          "Template": "[file:text('Snippets/recentBlogPosts.json')]",
+          "Schema": "[js:base64('ew0KICAgICJ0eXBlIjogIkNvbnRlbnRJdGVtL0Jsb2dQb3N0Ig0KfQ==')]",
+          "ReturnContentItems": true
+        }
+      ]
+    }
+```
+
+### AdminMenu Step
+
+The AdminMenu step allows you to create multiple admin menus.
+
+```json
+    {
+      "name": "AdminMenu",
+      "data": [
+        {
+          "Id": "[js:uuid()]",
+          "Name": "Admin menu",
+          "Enabled": true,
+          "MenuItems": [
+              ...
+          ]
+        }
+      ]
+    }
+```
+
+### Roles Step
+
+The Roles step allows you to set permissions to specific roles.
+
+```json
+    {
+      "name": "Roles",
+      "Roles": [
+        {
+          "Name": "Anonymous",
+          "Description": "Anonymous role",
+          "Permissions": [
+            "ViewContent",
+            "QueryLuceneSearchIndex"
+          ]
+        }
+      ]
+    }
+```
+
+### Template and AdminTemplate Step
+
+The Template and AdminTemplate steps allow you to create Liquid Templates.
+
+```json
+    {
+      "name": "Templates",
+      "Templates": {
+        "Content__LandingPage": {
+          "Description": "A template for the Landing Page content type",
+          "Content": "[file:text('Snippets/landingpage.liquid')]"
+        }
+      }
+    }
+```
+
+### Workflow Step
+
+The WorkflowType step allows you to create a Workflow.
+
+```json
+    {
+      "name": "WorkflowType",
+      "data": [
+        {
+          "WorkflowTypeId": "[js: variables('workflowTypeId')]",
+          "Name": "User Registration",
+          ...
+        }
+      ]
+    }
+```
+
+### Deployment Step
+
+The Deployment step allows you to create a deployment plan with deployment steps.
+
+```json
+    {
+    "name": "deployment",
+    "Plans": [
+    {
+        "Name": "Export",
+        "Steps": [
+            {
+                "Type": "CustomFileDeploymentStep",
+                "Step": {
+                "FileName": "Export",
+                "FileContent": "Export",
+                "Id": "[js: uuid()]",
+                "Name": "CustomFileDeploymentStep"
+                }
+            },
+            {
+                "Type": "AllContentDeploymentStep",
+                "Step": {
+                "Id": "[js: uuid()]",
+                "Name": "AllContent"
+                }
+            }
+        ]
+    }
+```
+
+### Other settings Step
+
+Here are other available steps:
+
+- `Command`
+- `custom-settings`
+- `FacebookLoginSettings`
+- `FacebookSettings`
+- `GitHubAuthentication`
+- `GoogleAnalyticsSettings`
+- `GoogleAuthenticationSettings`
+- `AzureADSettings`
+- `MicrosoftAccountSettings`
+- `OpenIdApplication`
+- `OpenIdClientSettings`
+- `OpenIdServerSettings`
+- `Twitter`
 
 ## Recipe helpers
 

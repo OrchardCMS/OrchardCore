@@ -2,18 +2,19 @@ using OrchardCore.Modules.Manifest;
 
 [assembly: Module(
     Name = "Media",
-    Author = "The Orchard Team",
-    Website = "https://orchardproject.net",
-    Version = "2.0.0"
+    Author = ManifestConstants.OrchardCoreTeam,
+    Website = ManifestConstants.OrchardCoreWebsite,
+    Version = ManifestConstants.OrchardCoreVersion
 )]
 
 [assembly: Feature(
     Id = "OrchardCore.Media",
     Name = "Media",
     Description = "The media module adds media management support.",
-    Dependencies = new []
+    Dependencies = new[]
     {
-        "OrchardCore.ContentTypes"
+        "OrchardCore.ContentTypes",
+        "OrchardCore.ShortCodes"
     },
     Category = "Content Management"
 )]

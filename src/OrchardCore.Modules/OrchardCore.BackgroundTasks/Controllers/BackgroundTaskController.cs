@@ -4,13 +4,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Admin;
 using OrchardCore.BackgroundTasks.Services;
 using OrchardCore.BackgroundTasks.ViewModels;
 using OrchardCore.DisplayManagement;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Navigation;
@@ -19,7 +17,7 @@ using OrchardCore.Settings;
 namespace OrchardCore.BackgroundTasks.Controllers
 {
     [Admin]
-    public class BackgroundTaskController : Controller, IUpdateModel
+    public class BackgroundTaskController : Controller
     {
         private readonly string _tenant;
         private readonly IAuthorizationService _authorizationService;
@@ -29,7 +27,7 @@ namespace OrchardCore.BackgroundTasks.Controllers
         private readonly INotifier _notifier;
         private readonly IStringLocalizer S;
         private readonly dynamic New;
-        
+
         public BackgroundTaskController(
             ShellSettings shellSettings,
             IAuthorizationService authorizationService,
@@ -54,7 +52,7 @@ namespace OrchardCore.BackgroundTasks.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageBackgroundTasks))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var siteSettings = await _siteService.GetSiteSettingsAsync();
@@ -90,7 +88,7 @@ namespace OrchardCore.BackgroundTasks.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageBackgroundTasks))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var model = new BackgroundTaskViewModel() { Name = name };
@@ -115,7 +113,7 @@ namespace OrchardCore.BackgroundTasks.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageBackgroundTasks))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             if (ModelState.IsValid)
@@ -148,7 +146,7 @@ namespace OrchardCore.BackgroundTasks.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageBackgroundTasks))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var document = await _backgroundTaskManager.GetDocumentAsync();
@@ -179,7 +177,7 @@ namespace OrchardCore.BackgroundTasks.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageBackgroundTasks))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             if (ModelState.IsValid)
@@ -214,7 +212,7 @@ namespace OrchardCore.BackgroundTasks.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageBackgroundTasks))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var document = await _backgroundTaskManager.LoadDocumentAsync();
@@ -234,7 +232,7 @@ namespace OrchardCore.BackgroundTasks.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageBackgroundTasks))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var document = await _backgroundTaskManager.LoadDocumentAsync();
@@ -258,7 +256,7 @@ namespace OrchardCore.BackgroundTasks.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageBackgroundTasks))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var document = await _backgroundTaskManager.LoadDocumentAsync();

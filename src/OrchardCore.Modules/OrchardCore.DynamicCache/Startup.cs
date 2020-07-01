@@ -24,10 +24,11 @@ namespace OrchardCore.DynamicCache
             services.AddScoped<IShapeDisplayEvents, DynamicCacheShapeDisplayEvents>();
 
             services.AddShapeAttributes<CachedShapeWrapperShapes>();
-            
+
             services.AddSingleton<IDynamicCache, DefaultDynamicCache>();
             services.AddSingleton<DynamicCacheTagHelperService>();
             services.AddTagHelpers<DynamicCacheTagHelper>();
+            services.AddTagHelpers<CacheDependencyTagHelper>();
         }
     }
 }

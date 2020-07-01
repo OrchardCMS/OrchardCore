@@ -1,44 +1,70 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using OrchardCore.ContentManagement.Routing;
 
 namespace OrchardCore.Autoroute.Services
 {
     public class AutorouteEntries : IAutorouteEntries
     {
-        private readonly Dictionary<string, string> _paths;
-        private readonly Dictionary<string, string> _contentItemIds;
+        private readonly Dictionary<string, AutorouteEntry> _paths;
+        private readonly Dictionary<string, AutorouteEntry> _contentItemIds;
 
         public AutorouteEntries()
         {
-            _paths = new Dictionary<string, string>();
-            _contentItemIds = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            _paths = new Dictionary<string, AutorouteEntry>();
+            _contentItemIds = new Dictionary<string, AutorouteEntry>(StringComparer.OrdinalIgnoreCase);
         }
 
-        public bool TryGetContentItemId(string path, out string contentItemId)
+
+        public bool TryGetEntryByPath(string path, out AutorouteEntry entry)
         {
-            return _contentItemIds.TryGetValue(path, out contentItemId);
+            return _contentItemIds.TryGetValue(path, out entry);
         }
 
-        public bool TryGetPath(string contentItemId, out string path)
+        public bool TryGetEntryByContentItemId(string contentItemId, out AutorouteEntry entry)
         {
-            return _paths.TryGetValue(contentItemId, out path);
+            return _paths.TryGetValue(contentItemId, out entry);
         }
 
         public void AddEntries(IEnumerable<AutorouteEntry> entries)
         {
             lock (this)
             {
+                // Evict all entries related to a container item from autoroute entries.
+                // This is necessary to account for deletions, disabling of an item, or disabling routing of contained items.
+                foreach (var entry in entries.Where(x => String.IsNullOrEmpty(x.ContainedContentItemId)))
+                {
+                    var entriesToRemove = _paths.Values.Where(x => x.ContentItemId == entry.ContentItemId && !String.IsNullOrEmpty(x.ContainedContentItemId));
+                    foreach (var entryToRemove in entriesToRemove)
+                    {
+                        _paths.Remove(entryToRemove.ContainedContentItemId);
+                        _contentItemIds.Remove(entryToRemove.Path);
+                    }
+                }
+
                 foreach (var entry in entries)
                 {
-                    if (_paths.TryGetValue(entry.ContentItemId, out var previousPath))
+                    if (_paths.TryGetValue(entry.ContentItemId, out var previousContainerEntry) && String.IsNullOrEmpty(entry.ContainedContentItemId))
                     {
-                        _contentItemIds.Remove(previousPath);
+                        _contentItemIds.Remove(previousContainerEntry.Path);
                     }
 
-                    var requestPath = "/" + entry.Path.TrimStart('/');
-                    _paths[entry.ContentItemId] = requestPath;
-                    _contentItemIds[requestPath] = entry.ContentItemId;
+                    if (!String.IsNullOrEmpty(entry.ContainedContentItemId) && _paths.TryGetValue(entry.ContainedContentItemId, out var previousContainedEntry))
+                    {
+                        _contentItemIds.Remove(previousContainedEntry.Path);
+                    }
+
+                    _contentItemIds[entry.Path] = entry;
+
+                    if (!String.IsNullOrEmpty(entry.ContainedContentItemId))
+                    {
+                        _paths[entry.ContainedContentItemId] = entry;
+                    }
+                    else
+                    {
+                        _paths[entry.ContentItemId] = entry;
+                    }
                 }
             }
         }
@@ -49,6 +75,14 @@ namespace OrchardCore.Autoroute.Services
             {
                 foreach (var entry in entries)
                 {
+                    // Evict all entries related to a container item from autoroute entries.
+                    var entriesToRemove = _paths.Values.Where(x => x.ContentItemId == entry.ContentItemId && !String.IsNullOrEmpty(x.ContainedContentItemId));
+                    foreach (var entryToRemove in entriesToRemove)
+                    {
+                        _paths.Remove(entryToRemove.ContainedContentItemId);
+                        _contentItemIds.Remove(entryToRemove.Path);
+                    }
+
                     _paths.Remove(entry.ContentItemId);
                     _contentItemIds.Remove(entry.Path);
                 }

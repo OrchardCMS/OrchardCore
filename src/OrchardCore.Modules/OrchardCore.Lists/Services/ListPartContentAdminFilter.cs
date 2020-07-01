@@ -28,7 +28,7 @@ namespace OrchardCore.Lists.Services
             var viewModel = new ListPartContentAdminFilterModel();
             if (await updateModel.TryUpdateModelAsync(viewModel, ""))
             {
-                // Show list content items 
+                // Show list content items
                 if (viewModel.ShowListContentTypes)
                 {
                     var listableTypes = _contentDefinitionManager

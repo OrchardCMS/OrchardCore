@@ -42,6 +42,11 @@ namespace OrchardCore.Contents.Workflows.Handlers
             return TriggerWorkflowEventAsync(nameof(ContentDeletedEvent), context.ContentItem);
         }
 
+        public override Task VersionedAsync(VersionContentContext context)
+        {
+            return TriggerWorkflowEventAsync(nameof(ContentVersionedEvent), context.ContentItem);
+        }
+
         private Task TriggerWorkflowEventAsync(string name, ContentItem contentItem)
         {
             return _workflowManager.TriggerEventAsync(name,

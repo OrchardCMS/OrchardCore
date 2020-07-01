@@ -1,12 +1,9 @@
-using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
-using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Contents.Models;
 using OrchardCore.Contents.ViewModels;
 using OrchardCore.DisplayManagement.Views;
@@ -17,20 +14,16 @@ namespace OrchardCore.Contents.Drivers
 {
     public class OwnerEditorDriver : ContentPartDisplayDriver<CommonPart>
     {
-        private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly IAuthorizationService _authorizationService;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IUserService _userService;
-        private readonly IStringLocalizer<OwnerEditorDriver> S;
+        private readonly IStringLocalizer S;
 
-        public OwnerEditorDriver(
-            IContentDefinitionManager contentDefinitionManager,
-            IAuthorizationService authorizationService,
+        public OwnerEditorDriver(IAuthorizationService authorizationService,
             IHttpContextAccessor httpContextAccessor,
             IUserService userService,
             IStringLocalizer<OwnerEditorDriver> stringLocalizer)
         {
-            _contentDefinitionManager = contentDefinitionManager;
             _authorizationService = authorizationService;
             _httpContextAccessor = httpContextAccessor;
             _userService = userService;
@@ -46,7 +39,7 @@ namespace OrchardCore.Contents.Drivers
                 return null;
             }
 
-            var settings = GetSettings(part);
+            var settings = context.TypePartDefinition.GetSettings<CommonPartSettings>();
 
             if (settings.DisplayOwnerEditor)
             {
@@ -68,7 +61,7 @@ namespace OrchardCore.Contents.Drivers
                 return null;
             }
 
-            var settings = GetSettings(part);
+            var settings = context.TypePartDefinition.GetSettings<CommonPartSettings>();
 
             if (!settings.DisplayOwnerEditor)
             {
@@ -105,13 +98,6 @@ namespace OrchardCore.Contents.Drivers
             }
 
             return await EditAsync(part, context);
-        }
-
-        public CommonPartSettings GetSettings(CommonPart part)
-        {
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(part.ContentItem.ContentType);
-            var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => String.Equals(x.PartDefinition.Name, "CommonPart"));
-            return contentTypePartDefinition.GetSettings<CommonPartSettings>();
         }
     }
 }

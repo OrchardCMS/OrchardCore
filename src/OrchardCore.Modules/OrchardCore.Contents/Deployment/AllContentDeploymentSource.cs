@@ -9,20 +9,18 @@ namespace OrchardCore.Contents.Deployment
 {
     public class AllContentDeploymentSource : IDeploymentSource
     {
-        private readonly IContentManager _contentManager;
         private readonly ISession _session;
 
-        public AllContentDeploymentSource(IContentManager contentManager, ISession session)
+        public AllContentDeploymentSource(ISession session)
         {
-            _contentManager = contentManager;
             _session = session;
         }
 
         public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
         {
-            var allContentState = step as AllContentDeploymentStep;
+            var allContentStep = step as AllContentDeploymentStep;
 
-            if (allContentState == null)
+            if (allContentStep == null)
             {
                 return;
             }

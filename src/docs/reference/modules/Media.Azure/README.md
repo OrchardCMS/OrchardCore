@@ -18,10 +18,10 @@ The following configuration values are used by default and can be customized:
 ```json
 {
    "OrchardCore": {
-    "OrchardCore.Media.Azure": {
+    "OrchardCore_Media_Azure": {
       // Set to your Azure Storage account connection string.
       "ConnectionString": "", 
-      // Set to the Azure Blob container name.
+      // Set to the Azure Blob container name. A container name must be a valid DNS name and conform to Azure container naming rules eg. lowercase only.
       "ContainerName": "somecontainer",
       // Optionally, set to a path to store media in a subdirectory inside your container.
       "BasePath": "some/base/path",
@@ -48,15 +48,18 @@ or a single container with a base path per tenant.
 The `ShellSettings` property is made available to the liquid template.
 The `ContainerName` property and the `BasePath` property are the only templatable properties.
 
+!!! note
+    When templating the `ContainerName`  using  `{{ ShellSettings.Name }}`, the tenant's name will be automatically lowercased, however, you must also make sure the `ContainerName` conforms to other Azure Blob naming conventions as set out in Azure's documentation.
+
 ### Configuring a container per tenant.
  
 ```json
 {
   "OrchardCore": {
-    "OrchardCore.Media.Azure": {
+    "OrchardCore_Media_Azure": {
       // Set to your Azure Storage account connection string.
       "ConnectionString": "", 
-      // Optionally configure with liquid.
+      // Optionally configure with liquid. A container name must be a valid DNS name and conform to Azure container naming rules eg. lowercase only.
       "ContainerName": "{{ ShellSettings.Name }}-media",
       // Optionally configure with liquid.
       "BasePath": "Media",
@@ -71,10 +74,10 @@ The `ContainerName` property and the `BasePath` property are the only templatabl
 ```json
 {
   "OrchardCore": {
-    "OrchardCore.Media.Azure": {
+    "OrchardCore_Media_Azure": {
       // Set to your Azure Storage account connection string.
       "ConnectionString": "", 
-      // Optionally configure with liquid.
+      // Optionally configure with liquid. A container name must be a valid DNS name and conform to Azure container naming rules eg. lowercase only.
       "ContainerName": "somecontainer",
       // Optionally configure with liquid.
       "BasePath": "{{ ShellSettings.Name }}/Media",
@@ -85,8 +88,8 @@ The `ContainerName` property and the `BasePath` property are the only templatabl
 ```
 
 !!! note
-Only the default liquid filters and tags are available during parsing of the liquid template.
-Extra filters like `slugify` will not be available.
+    Only the default liquid filters and tags are available during parsing of the liquid template.
+    Extra filters like `slugify` will not be available.
 
 ## Media Cache
 
@@ -100,7 +103,6 @@ You might choose to use the Purging feature if you are fronting the media assets
 After allowing a long enough period of time for the CDN to have fetched a significant amount of
 Media assets, both resized, and full size, from the Media Cache you might consider purging the cache.
 
-!!! note
 However please bear in mind that your CDN provider will likely have multiple Points of Presence
 worldwide, and each of these will maintain their own cache, so while a local CDN PoP might have the asset
 another PoP may not, until it is requested. At this stage the Media Cache will, if necessary, refetch the
@@ -111,5 +113,5 @@ are a valuable caching and performance asset, it is important that they are alwa
 re-fetch the source file, as and when required, which the Media Cache Module will automatically handle.
 
 !!! note
-The Media Feature is designed to support one storage provider at a time, whether that is
-local File Storage, the default, or Azure Blob Storage.
+    The Media Feature is designed to support one storage provider at a time, whether that is
+    local File Storage, the default, or Azure Blob Storage.

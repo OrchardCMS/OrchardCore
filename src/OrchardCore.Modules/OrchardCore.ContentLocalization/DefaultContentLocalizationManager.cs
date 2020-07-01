@@ -22,7 +22,7 @@ namespace OrchardCore.ContentLocalization
         private readonly ISession _session;
         private readonly Microsoft.AspNetCore.Http.IHttpContextAccessor _httpContextAccessor;
         private readonly ILocalizationService _localizationService;
-        private readonly ILogger<DefaultContentLocalizationManager> _logger;
+        private readonly ILogger _logger;
         private readonly Entities.IIdGenerator _iidGenerator;
 
         public IEnumerable<IContentLocalizationHandler> Handlers { get; private set; }
@@ -105,7 +105,6 @@ namespace OrchardCore.ContentLocalization
             await Handlers.InvokeAsync((handler, context) => handler.LocalizingAsync(context), context, _logger);
             await ReversedHandlers.InvokeAsync((handler, context) => handler.LocalizedAsync(context), context, _logger);
 
-            _session.Save(cloned);
             return cloned;
         }
 
@@ -113,7 +112,6 @@ namespace OrchardCore.ContentLocalization
         {
             var contentItemIds = contentItems.Select(c => c.ContentItemId);
             var indexValues = await _session.QueryIndex<LocalizedContentItemIndex>(o => o.ContentItemId.IsIn(contentItemIds)).ListAsync();
-
 
             var currentCulture = _httpContextAccessor.HttpContext.Features.Get<IRequestCultureFeature>().RequestCulture.Culture.Name.ToLowerInvariant();
             var defaultCulture = (await _localizationService.GetDefaultCultureAsync()).ToLowerInvariant();
@@ -177,7 +175,6 @@ namespace OrchardCore.ContentLocalization
                 }
 
                 return null;
-
             }).OfType<LocalizedContentItemIndex>().ToList();
         }
     }

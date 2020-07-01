@@ -2,10 +2,10 @@ using OrchardCore.Modules.Manifest;
 
 [assembly: Module(
     Name = "Custom Settings",
-    Author = "The Orchard Team",
-    Website = "https://orchardproject.net",
-    Version = "2.0.0",
+    Author = ManifestConstants.OrchardCoreTeam,
+    Website = ManifestConstants.OrchardCoreWebsite,
+    Version = ManifestConstants.OrchardCoreVersion,
     Description = "The custom settings modules enables content types to become custom site settings.",
-    Dependencies = new [] { "OrchardCore.Contents" },
+    Dependencies = new[] { "OrchardCore.Contents" },
     Category = "Settings"
 )]

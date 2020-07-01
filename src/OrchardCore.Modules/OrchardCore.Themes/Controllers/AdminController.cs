@@ -10,6 +10,7 @@ using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Descriptor;
+using OrchardCore.Modules.Manifest;
 using OrchardCore.Security;
 using OrchardCore.Themes.Models;
 using OrchardCore.Themes.Services;
@@ -24,7 +25,7 @@ namespace OrchardCore.Themes.Controllers
         private readonly IShellFeaturesManager _shellFeaturesManager;
         private readonly IAuthorizationService _authorizationService;
         private readonly INotifier _notifier;
-        private readonly IHtmlLocalizer<AdminController> H;
+        private readonly IHtmlLocalizer H;
 
         public AdminController(
             ISiteThemeService siteThemeService,
@@ -66,7 +67,7 @@ namespace OrchardCore.Themes.Controllers
             {
                 var tags = extensionDescriptor.Manifest.Tags.ToArray();
                 var isHidden = tags.Any(x => string.Equals(x, "hidden", StringComparison.OrdinalIgnoreCase));
-                
+
                 /// is the theme allowed for this tenant ?
                 // allowed = _shellSettings.Themes.Length == 0 || _shellSettings.Themes.Contains(extensionDescriptor.Id);
 
@@ -115,17 +116,15 @@ namespace OrchardCore.Themes.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ApplyTheme))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             if (String.IsNullOrEmpty(id))
             {
-                // Don't use any theme on the front-end 
-
+                // Don't use any theme on the front-end
             }
             else
             {
-
                 var feature = _extensionManager.GetFeatures().FirstOrDefault(f => f.Extension.IsTheme() && f.Id == id);
 
                 if (feature == null)
@@ -167,7 +166,7 @@ namespace OrchardCore.Themes.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ApplyTheme))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             await _siteThemeService.SetSiteThemeAsync("");
@@ -182,7 +181,7 @@ namespace OrchardCore.Themes.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ApplyTheme))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             await _adminThemeService.SetAdminThemeAsync("");
@@ -197,7 +196,7 @@ namespace OrchardCore.Themes.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ApplyTheme))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var feature = _extensionManager.GetFeatures().FirstOrDefault(f => f.Extension.IsTheme() && f.Id == id);
@@ -219,7 +218,7 @@ namespace OrchardCore.Themes.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ApplyTheme)) // , H["Not allowed to apply theme."]
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var feature = _extensionManager.GetFeatures().FirstOrDefault(f => f.Extension.IsTheme() && f.Id == id);
@@ -238,7 +237,7 @@ namespace OrchardCore.Themes.Controllers
 
         private bool IsAdminTheme(IManifestInfo manifest)
         {
-            return manifest.Tags.Any(x => string.Equals(x, "admin", StringComparison.OrdinalIgnoreCase));
+            return manifest.Tags.Any(x => string.Equals(x, ManifestConstants.AdminTag, StringComparison.OrdinalIgnoreCase));
         }
     }
 }

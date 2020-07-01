@@ -50,7 +50,7 @@ namespace OrchardCore.Modules
                         if (asset != null)
                         {
                             // Resolve "{ModuleProjectDirectory}wwwroot/" from the project asset.
-                            var index = asset.ProjectAssetPath.IndexOf('/' + Module.WebRoot);
+                            var index = asset.ProjectAssetPath.IndexOf('/' + Module.WebRoot, StringComparison.Ordinal);
 
                             // Add the module project "wwwroot" folder.
                             roots[module.Name] = asset.ProjectAssetPath.Substring(0, index + Module.WebRoot.Length + 1);
@@ -91,7 +91,7 @@ namespace OrchardCore.Modules
 
                     if (File.Exists(filePath))
                     {
-                        //Serve the file from the physical file system.
+                        // Serve the file from the physical file system.
                         return new PhysicalFileInfo(new FileInfo(filePath));
                     }
                 }
@@ -102,6 +102,34 @@ namespace OrchardCore.Modules
 
         public IChangeToken Watch(string filter)
         {
+            if (filter == null)
+            {
+                return NullChangeToken.Singleton;
+            }
+
+            var path = NormalizePath(filter);
+            var index = path.IndexOf('/');
+
+            // "{ModuleId}/**/*.*".
+            if (index != -1)
+            {
+                // Resolve the module id.
+                var module = path.Substring(0, index);
+
+                // Get the module project "wwwroot" folder.
+                if (_roots.TryGetValue(module, out var root))
+                {
+                    // Resolve "{ModuleProjectDirectory}wwwroot/**/*.*"
+                    var filePath = root + path.Substring(module.Length + 1);
+
+                    if (File.Exists(filePath))
+                    {
+                        // Watch the file from the physical file system.
+                        return new PollingFileChangeToken(new FileInfo(filePath));
+                    }
+                }
+            }
+
             return NullChangeToken.Singleton;
         }
 

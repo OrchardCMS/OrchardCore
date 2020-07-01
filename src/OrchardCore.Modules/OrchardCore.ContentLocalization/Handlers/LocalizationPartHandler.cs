@@ -21,7 +21,7 @@ namespace OrchardCore.ContentLocalization.Handlers
         {
             return context.ForAsync<CultureAspect>(cultureAspect =>
             {
-                if(part.Culture != null)
+                if (part.Culture != null)
                 {
                     cultureAspect.Culture = CultureInfo.GetCultureInfo(part.Culture);
                 }

@@ -49,6 +49,11 @@ namespace OrchardCore.Modules
         public ITimeZone GetSystemTimeZone()
         {
             var timezone = DateTimeZoneProviders.Tzdb.GetSystemDefault();
+            if (TzdbDateTimeZoneSource.Default.CanonicalIdMap.ContainsKey(timezone.Id))
+            {
+                var canonicalTimeZoneId = TzdbDateTimeZoneSource.Default.CanonicalIdMap[timezone.Id];
+                timezone = GetDateTimeZone(canonicalTimeZoneId);
+            }
             return CreateTimeZone(timezone);
         }
 

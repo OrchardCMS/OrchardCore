@@ -73,7 +73,6 @@ namespace OrchardCore.Queries.Sql
             var optionalSemicolon = new NonTerminal("semiOpt");
             var statementList = new NonTerminal("stmtList");
             var functionArguments = new NonTerminal("funArgs");
-            var inStatement = new NonTerminal("inStmt");
             var boolean = new NonTerminal("boolean");
 
             //BNF Rules
@@ -121,8 +120,8 @@ namespace OrchardCore.Queries.Sql
 
             //Expression
             expressionList.Rule = MakePlusRule(expressionList, comma, expression);
-            expression.Rule = term | unExpr | binExpr | betweenExpr | parameter;
-            term.Rule = Id | boolean | string_literal | number | funCall | tuple | parSelectStatement | inStatement;
+            expression.Rule = term | unExpr | binExpr | betweenExpr | inExpr | parameter;
+            term.Rule = Id | boolean | string_literal | number | funCall | tuple | parSelectStatement ;
             boolean.Rule = TRUE | FALSE;
             tuple.Rule = "(" + expressionList + ")";
             parSelectStatement.Rule = "(" + selectStatement + ")";
@@ -132,13 +131,13 @@ namespace OrchardCore.Queries.Sql
             binOp.Rule = ToTerm("+") | "-" | "*" | "/" | "%" //arithmetic
                        | "&" | "|" | "^"                     //bit
                        | "=" | ">" | "<" | ">=" | "<=" | "<>" | "!=" | "!<" | "!>"
-                       | "AND" | "OR" | "LIKE" | NOT + "LIKE" | "IN" | NOT + "IN";
+                       | "AND" | "OR" | "LIKE" | "NOT LIKE" ;
             betweenExpr.Rule = expression + notOpt + "BETWEEN" + expression + "AND" + expression;
+            inExpr.Rule = expression + notOpt + "IN" + "(" + functionArguments + ")";
             notOpt.Rule = Empty | NOT;
-            //funCall covers some psedo-operators and special forms like ANY(...), SOME(...), ALL(...), EXISTS(...), IN(...)
+            //funCall covers some pseudo-operators and special forms like ANY(...), SOME(...), ALL(...), EXISTS(...), IN(...)
             funCall.Rule = Id + "(" + functionArguments + ")";
             functionArguments.Rule = selectStatement | expressionList | "*";
-            inStatement.Rule = expression + "IN" + "(" + expressionList + ")";
             parameter.Rule = "@" + Id | "@" + Id + ":" + term;
 
             //Operators
@@ -152,7 +151,7 @@ namespace OrchardCore.Queries.Sql
 
             MarkPunctuation(",", "(", ")");
             MarkPunctuation(asOpt, optionalSemicolon);
-            //Note: we cannot declare binOp as transient because it includes operators "NOT LIKE", "NOT IN" consisting of two tokens. 
+            //Note: we cannot declare binOp as transient because it includes operators "NOT LIKE", "NOT IN" consisting of two tokens.
             // Transient non-terminals cannot have more than one non-punctuation child nodes.
             // Instead, we set flag InheritPrecedence on binOp , so that it inherits precedence value from it's children, and this precedence is used
             // in conflict resolution when binOp node is sitting on the stack

@@ -14,6 +14,7 @@ namespace OrchardCore.DisplayManagement.Views
     {
         private string _defaultLocation;
         private Dictionary<string, string> _otherLocations;
+        private string _name;
         private string _differentiator;
         private string _prefix;
         private string _cacheId;
@@ -57,7 +58,7 @@ namespace OrchardCore.DisplayManagement.Views
                 _defaultLocation = context.DefaultZone;
             }
 
-            // Look into specific implementations of placements (like placement.info files)
+            // Look into specific implementations of placements (like placement.json files)
             var placement = context.FindPlacement(_shapeType, _differentiator, displayType, context);
 
             // Look for mapped display type locations
@@ -88,8 +89,7 @@ namespace OrchardCore.DisplayManagement.Views
                 placement.DefaultPosition = context.DefaultPosition;
             }
 
-
-            // If there are no placement or it's explicitely noop then stop rendering execution
+            // If there are no placement or it's explicitly noop then stop rendering execution
             if (String.IsNullOrEmpty(placement.Location) || placement.Location == "-")
             {
                 return;
@@ -112,12 +112,15 @@ namespace OrchardCore.DisplayManagement.Views
                 return;
             }
 
-            ShapeMetadata newShapeMetadata = newShape.Metadata;
+            var newShapeMetadata = newShape.Metadata;
             newShapeMetadata.Prefix = _prefix;
-            newShapeMetadata.Name = _differentiator ?? _shapeType;
+            newShapeMetadata.Name = _name ?? _differentiator ?? _shapeType;
+            newShapeMetadata.Differentiator = _differentiator ?? _shapeType;
             newShapeMetadata.DisplayType = displayType;
             newShapeMetadata.PlacementSource = placement.Source;
             newShapeMetadata.Tab = placement.GetTab();
+            newShapeMetadata.Card = placement.GetCard();
+            newShapeMetadata.Column = placement.GetColumn();
             newShapeMetadata.Type = _shapeType;
 
             if (_displaying != null)
@@ -195,9 +198,9 @@ namespace OrchardCore.DisplayManagement.Views
             {
                 await zoneOnDemand.AddAsync(newShape, position);
             }
-            else
+            else if (parentShape is Shape shape)
             {
-                parentShape.Add(newShape, position);
+                shape.Add(newShape, position);
             }
         }
 
@@ -243,6 +246,15 @@ namespace OrchardCore.DisplayManagement.Views
         {
             _displaying = displaying;
 
+            return this;
+        }
+
+        /// <summary>
+        /// Sets the shape name regardless its 'Differentiator'.
+        /// </summary>
+        public ShapeResult Name(string name)
+        {
+            _name = name;
             return this;
         }
 

@@ -179,7 +179,7 @@ Keep these things in mind when working with the deployment step editor:
 The following configuration values are used by default and can be customized:
 
 ```json
-    "OrchardCore.Media": {
+    "OrchardCore_Media": {
 
       // The accepted sizes for custom width and height
       "SupportedSizes": [ 16, 32, 50, 100, 160, 240, 480, 600, 1024, 2048 ],
@@ -251,6 +251,6 @@ The following configuration values are used by default and can be customized:
 
 ### ImageSharp
 
-<https://sixlabors.com/projects/imagesharp/>  
+<https://sixlabors.com/products/imagesharpweb/>  
 Copyright 2012 James South  
-Licensed under the Apache License, Version 2.0
+Licensed under the Apache License, Version 2.0, or with a commercial support license <https://sixlabors.com/pricing>

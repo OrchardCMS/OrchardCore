@@ -6,9 +6,15 @@
 
 <div class="row">
     <div class="col-xl-6 col-sm-12 title">
-        <div class="custom-control custom-checkbox float-left">
+        @if (Model.Selectors != null)
+        {
+            <div class="selectors d-inline cursor-pointer">
+                @await DisplayAsync(Model.Selectors)
+            </div>
+        }
+        <div class="custom-control custom-checkbox d-inline">
             <input type="checkbox" class="custom-control-input" value="@contentItem.Id" name="itemIds" id="itemIds-@contentItem.Id">
-            <label class="custom-control-label" for="itemIds-@contentItem.Id">&nbsp;</label>
+            <label class="custom-control-label" for="itemIds-@contentItem.Id"></label>
         </div>
         <a admin-for="@contentItem" asp-route-returnUrl="@FullRequestPath" /> - <small class="text-muted">@contentItem.ContentType</small>
         @if (Model.Tags != null)

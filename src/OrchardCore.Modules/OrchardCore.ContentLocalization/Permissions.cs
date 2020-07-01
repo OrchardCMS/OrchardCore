@@ -7,7 +7,6 @@ namespace OrchardCore.ContentLocalization
 {
     public class Permissions : IPermissionProvider
     {
-
         public static readonly Permission LocalizeContent = new Permission("LocalizeContent", "Localize content for others");
         public static readonly Permission LocalizeOwnContent = new Permission("LocalizeOwnContent", "Localize own content", new[] { LocalizeContent });
         public static readonly Permission ManageContentCulturePicker = new Permission("ManageContentCulturePicker", "Manage ContentCulturePicker settings");

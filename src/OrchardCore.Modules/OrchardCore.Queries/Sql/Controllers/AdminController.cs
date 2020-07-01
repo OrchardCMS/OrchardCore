@@ -21,7 +21,7 @@ namespace OrchardCore.Queries.Sql.Controllers
         private readonly IAuthorizationService _authorizationService;
         private readonly IStore _store;
         private readonly ILiquidTemplateManager _liquidTemplateManager;
-        private readonly IStringLocalizer<AdminController> _stringLocalizer;
+        private readonly IStringLocalizer S;
 
         public AdminController(
             IAuthorizationService authorizationService,
@@ -32,7 +32,7 @@ namespace OrchardCore.Queries.Sql.Controllers
             _authorizationService = authorizationService;
             _store = store;
             _liquidTemplateManager = liquidTemplateManager;
-            _stringLocalizer = stringLocalizer;
+            S = stringLocalizer;
         }
 
         public Task<IActionResult> Query(string query)
@@ -50,7 +50,7 @@ namespace OrchardCore.Queries.Sql.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSqlQueries))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             if (String.IsNullOrWhiteSpace(model.DecodedQuery))
@@ -97,7 +97,7 @@ namespace OrchardCore.Queries.Sql.Controllers
                 }
                 catch (Exception e)
                 {
-                    ModelState.AddModelError("", _stringLocalizer["An error occurred while executing the SQL query: {0}", e.Message]);
+                    ModelState.AddModelError("", S["An error occurred while executing the SQL query: {0}", e.Message]);
                 }
             }
             else

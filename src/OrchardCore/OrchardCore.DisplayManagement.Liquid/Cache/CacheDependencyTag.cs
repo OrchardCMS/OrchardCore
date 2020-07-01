@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 using Fluid;
 using Fluid.Ast;
 using Fluid.Tags;
-using OrchardCore.Environment.Cache;
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Environment.Cache;
 
 namespace OrchardCore.DynamicCache.Liquid
 {

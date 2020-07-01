@@ -9,7 +9,6 @@ namespace OrchardCore.Tenants.Workflows.ViewModels
 
         public TenantTaskViewModel()
         {
-
         }
 
         public TenantTaskViewModel(T activity)

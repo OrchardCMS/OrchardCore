@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-using MessagePack;
 using Microsoft.Extensions.Caching.Distributed;
 using Newtonsoft.Json;
 
@@ -25,7 +24,7 @@ namespace OrchardCore.Infrastructure.Cache
 
                 if (data == null)
                 {
-                    return default(T);
+                    return default;
                 }
 
                 value = Deserialize<T>(data);

@@ -1,5 +1,3 @@
-using System.ComponentModel.DataAnnotations;
-
 namespace OrchardCore.Lucene.ViewModels
 {
     public class LuceneQueryViewModel

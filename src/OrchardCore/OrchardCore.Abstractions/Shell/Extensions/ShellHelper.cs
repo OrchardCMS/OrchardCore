@@ -1,4 +1,4 @@
-﻿using OrchardCore.Environment.Shell.Models;
+using OrchardCore.Environment.Shell.Models;
 
 namespace OrchardCore.Environment.Shell
 {
@@ -6,7 +6,8 @@ namespace OrchardCore.Environment.Shell
     {
         public const string DefaultShellName = "Default";
 
-        public static ShellSettings BuildDefaultUninitializedShell = new ShellSettings {
+        public static ShellSettings BuildDefaultUninitializedShell = new ShellSettings
+        {
             Name = DefaultShellName,
             State = TenantState.Uninitialized
         };

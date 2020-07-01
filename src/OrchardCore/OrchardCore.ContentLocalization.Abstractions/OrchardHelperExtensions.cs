@@ -1,6 +1,6 @@
-using Microsoft.Extensions.DependencyInjection;
 using System.Globalization;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
 
 namespace OrchardCore.ContentLocalization
