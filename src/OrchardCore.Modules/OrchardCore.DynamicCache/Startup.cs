@@ -29,6 +29,7 @@ namespace OrchardCore.DynamicCache
             services.AddSingleton<IDynamicCache, DefaultDynamicCache>();
             services.AddSingleton<DynamicCacheTagHelperService>();
             services.AddTagHelpers<DynamicCacheTagHelper>();
+            services.AddTagHelpers<CacheDependencyTagHelper>();
             services.AddTransient<IConfigureOptions<CacheOptions>, CacheOptionsConfiguration>();
         }
     }

@@ -9,7 +9,7 @@
 
   <ItemGroup>
     <PackageManagement Include="AngleSharp" Version="0.14.0" />
-    <PackageManagement Include="Azure.Storage.Blobs" Version="12.4.2" />
+    <PackageManagement Include="Azure.Storage.Blobs" Version="12.4.4" />
     <PackageManagement Include="Castle.Core" Version="4.4.1" />
     <PackageManagement Include="Irony.Core" Version="1.0.7" />
     <PackageManagement Include="Fluid.Core" Version="1.0.0-beta-9651" />
@@ -29,12 +29,12 @@
     <PackageManagement Include="ncrontab" Version="3.3.1" />
     <PackageManagement Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageManagement Include="NLog.Web.AspNetCore" Version="4.9.2" />
-    <PackageManagement Include="NodaTime" Version="2.4.8" />
+    <PackageManagement Include="NodaTime" Version="3.0.0" />
     <PackageManagement Include="OpenIddict" Version="2.0.1" />
     <PackageManagement Include="OpenIddict.Core" Version="2.0.1" />
-    <PackageManagement Include="OrchardCore.Translations.All" Version="1.0.0-rc1-100729" />
+    <PackageManagement Include="OrchardCore.Translations.All" Version="1.0.0-rc2-108003" />
     <PackageManagement Include="Serilog.AspNetCore" Version="3.2.0" />
-    <PackageManagement Include="SixLabors.ImageSharp.Web" Version="1.0.0-rc0001" />
+    <PackageManagement Include="SixLabors.ImageSharp.Web" Version="1.0.0-rc0003" />
     <PackageManagement Include="xunit.analyzers" Version="0.10.0" />
     <PackageManagement Include="xunit" Version="2.4.1" />
     <PackageManagement Include="xunit.runner.visualstudio" Version="2.4.1" />

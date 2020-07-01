@@ -26,7 +26,7 @@ Nightly (dev):
 
 ## Status
 
-### RC 1
+### RC 2
 
 The software is almost ready for final release. No feature development or enhancement of the software is undertaken; tightly scoped bug fixes are the only code you're allowed to write in this phase, and even then only for the most heinous and debilitating of bugs.
 
