@@ -102,7 +102,7 @@ namespace OrchardCore.OpenId.Configuration
         private async Task<OpenIdClientSettings> GetClientSettingsAsync()
         {
             var settings = await _clientService.GetSettingsAsync();
-            var errorResult = (await _clientService.ValidateSettingsAsync(settings)).Where(r => r != ValidationResult.Success);
+            var errors = (await _clientService.ValidateSettingsAsync(settings)).Where(r => r != ValidationResult.Success);
 
             if (errorResult.Any())
             {
