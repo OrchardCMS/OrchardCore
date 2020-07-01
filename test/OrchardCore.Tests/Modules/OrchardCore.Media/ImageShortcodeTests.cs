@@ -19,13 +19,20 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Media
     {
         [Theory]
         [InlineData("foo bar baz", "foo bar baz")]
-        // [InlineData("foo [media]bar baz", "foo [media]bar baz")]
         [InlineData("foo [media]bar[/media] baz", @"foo <img src=""/media/bar""> baz")]
         [InlineData("foo [media]bar[/media] baz foo [media]bar[/media] baz", @"foo <img src=""/media/bar""> baz foo <img src=""/media/bar""> baz")]
         [InlineData("foo [media]bàr.jpeg?width=100[/media] baz", @"foo <img src=""/media/bàr.jpeg?width=100""> baz")]
         [InlineData("foo [media]bàr.jpeg?width=100 onload=\"javascript: alert('XSS')[/media] baz", @"foo <img src=""/media/bàr.jpeg?width=100 onload=""> baz")]
-        // [InlineData("foo [image]bar baz", "foo [image]bar baz")] // These fail now, because we support shortcodes with no end tag. I think that's ok.
+        [InlineData("foo [image]bar baz", "foo [image]bar baz")]
+        [InlineData(@"foo [image ""bar""] baz", @"foo <img src=""/media/bar""> baz")]
+        [InlineData(@"foo [image src=""bar""] baz", @"foo <img src=""/media/bar""> baz")]
+
+        // [InlineData("foo [image]~/bar[/image] baz", @"foo <img src=""/bar""> baz")]
+        [InlineData("foo [image]http://bar[/image] baz", @"foo <img src=""http://bar""> baz")]
+        [InlineData("foo [image]//bar[/image] baz", @"foo <img src=""//bar""> baz")]
         [InlineData("foo [image]bar[/image] baz", @"foo <img src=""/media/bar""> baz")]
+        [InlineData(@"foo [image width=""100""]bar[/image] baz", @"foo <img src=""/media/bar?width=100""> baz")]
+        [InlineData(@"foo [image width=""100"" height=""50"" mode=""stretch""]bar[/image] baz", @"foo <img src=""/media/bar?width=100&amp;height=50&amp;rmode=stretch""> baz")]
         [InlineData("foo [image]bar[/image] baz foo [image]bar[/image] baz", @"foo <img src=""/media/bar""> baz foo <img src=""/media/bar""> baz")]
         [InlineData("foo [image]bar[/image] baz foo [image]bar[/image] baz foo [image]bar[/image] baz", @"foo <img src=""/media/bar""> baz foo <img src=""/media/bar""> baz foo <img src=""/media/bar""> baz")]
         [InlineData("foo [image]bar.png[/image] baz foo-extended [image]bar-extended.png[/image] baz-extended", @"foo <img src=""/media/bar.png""> baz foo-extended <img src=""/media/bar-extended.png""> baz-extended")]
@@ -45,20 +52,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Media
                 new HtmlSanitizerService(Options.Create(new HtmlSanitizerOptions()))
             );
 
-
             var processor = new ShortcodeService(new IShortcodeProvider[] { imageProvider });
-
-
-
-        //     var mediaShortcode = new ImageShortcode(
-        //     new DefaultMediaFileStore(Mock.Of<IFileStore>(),
-        //         "/media",
-        //         string.Empty,
-        //         Enumerable.Empty<IMediaEventHandler>(),
-        //         Enumerable.Empty<IMediaCreatingEventHandler>(),
-        //         Mock.Of<ILogger<DefaultMediaFileStore>>()),
-        //     new HtmlSanitizerService(Options.Create(new HtmlSanitizerOptions()))
-        // );
 
             var processed = await processor.ProcessAsync(text);
             Assert.Equal(expected, processed);
