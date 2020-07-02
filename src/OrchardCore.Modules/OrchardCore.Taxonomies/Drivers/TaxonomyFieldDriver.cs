@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
+using OrchardCore.ContentLocalization.Services;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Localization;
 using OrchardCore.Taxonomies.Fields;
 using OrchardCore.Taxonomies.Models;
 using OrchardCore.Taxonomies.Settings;
@@ -18,13 +20,19 @@ namespace OrchardCore.Taxonomies.Drivers
     public class TaxonomyFieldDisplayDriver : ContentFieldDisplayDriver<TaxonomyField>
     {
         private readonly IContentManager _contentManager;
+        private readonly ILocalizationEntries _localizationEntries;
+        private readonly ILocalizationService _localizationService;
         private readonly IStringLocalizer S;
 
         public TaxonomyFieldDisplayDriver(
             IContentManager contentManager,
+            ILocalizationEntries localizationEntries,
+            ILocalizationService localizationService,
             IStringLocalizer<TaxonomyFieldDisplayDriver> localizer)
         {
             _contentManager = contentManager;
+            _localizationEntries = localizationEntries;
+            _localizationService = localizationService;
             S = localizer;
         }
 
@@ -45,7 +53,26 @@ namespace OrchardCore.Taxonomies.Drivers
             return Initialize<EditTaxonomyFieldViewModel>(GetEditorShapeType(context), async model =>
             {
                 var settings = context.PartFieldDefinition.GetSettings<TaxonomyFieldSettings>();
-                model.Taxonomy = await _contentManager.GetAsync(settings.TaxonomyContentItemId, VersionOptions.Latest);
+                string taxonomyContentItemId = settings.TaxonomyContentItemId;
+                if (settings.Localized)
+                {
+                    if (_localizationEntries.TryGetLocalization(settings.TaxonomyContentItemId, out var initialLocalization))
+                    {
+                        string localizedCulture = context.IsNew ? (await _localizationService.GetDefaultCultureAsync()).ToLowerInvariant() : context.ContentPart.ContentItem.Content.LocalizationPart.Culture;
+                        if(initialLocalization.Culture.ToLowerInvariant()!= localizedCulture.ToLowerInvariant())
+                        {
+                            var localizations = _localizationEntries.GetLocalizations(initialLocalization.LocalizationSet);
+                            foreach(var localization in localizations)
+                            {
+                                if(localization.Culture.ToLowerInvariant() == localizedCulture.ToLowerInvariant())
+                                {
+                                    taxonomyContentItemId = localization.ContentItemId;
+                                }
+                            }
+                        }
+                    }
+                }
+                model.Taxonomy = await _contentManager.GetAsync(taxonomyContentItemId, VersionOptions.Latest);
 
                 if (model.Taxonomy != null)
                 {

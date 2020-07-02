@@ -28,5 +28,10 @@ namespace OrchardCore.Taxonomies.Settings
         /// Whether the field allows the user to add new Terms to the taxonomy (similar to tags)
         /// </summary>
         public bool Open { get; set; }
+
+        /// <summary>
+        ///  Whether the user can only select terms of same culture
+        /// </summary>
+        public bool Localized { get; set; }        
     }
 }
