@@ -53,6 +53,9 @@ namespace OrchardCore.Settings
             services.AddTransient<IDeploymentSource, SiteSettingsDeploymentSource>();
             services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<SiteSettingsDeploymentStep>());
             services.AddScoped<IDisplayDriver<DeploymentStep>, SiteSettingsDeploymentStepDriver>();
+
+            services.AddTransient<IDeploymentSource, GenericSiteSettingsDeploymentSource>();
+            services.AddScoped<IDisplayDriver<DeploymentStep>, GenericSiteSettingsDeploymentStepDriver>();
         }
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

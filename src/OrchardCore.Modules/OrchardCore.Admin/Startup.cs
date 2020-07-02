@@ -5,9 +5,12 @@ using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin.Controllers;
 using OrchardCore.Admin.Drivers;
+using OrchardCore.Admin.Models;
+using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Theming;
 using OrchardCore.Environment.Shell.Configuration;
@@ -18,6 +21,7 @@ using OrchardCore.Mvc.Routing;
 using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
+using OrchardCore.Settings.Deployment;
 
 namespace OrchardCore.Admin
 {
@@ -79,6 +83,17 @@ namespace OrchardCore.Admin
                 var adminOptions = ShellScope.Services.GetRequiredService<IOptions<AdminOptions>>().Value;
                 options.Conventions.Add(new AdminPageRouteModelConvention(adminOptions.AdminUrlPrefix));
             });
+        }
+    }
+
+    [RequireFeatures("OrchardCore.Deployment")]
+    public class DeploymentStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            var serviceProvider = services.BuildServiceProvider();
+            var S = serviceProvider.GetService<IStringLocalizer<Startup>>();
+            services.AddSingleton<IDeploymentStepFactory>(s => new GenericSiteSettingsDeploymentStepFactory(nameof(AdminSettings), S["Admin settings"], S["Exports the admin site settings."]));
         }
     }
 }
