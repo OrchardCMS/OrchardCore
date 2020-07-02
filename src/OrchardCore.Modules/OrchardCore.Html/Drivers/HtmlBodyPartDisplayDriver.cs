@@ -88,7 +88,6 @@ namespace OrchardCore.Html.Drivers
                     scope => scope.SetValue("ContentItem", model.ContentItem));
             }
 
-
             model.Html = await _shortcodeService.ProcessAsync(model.Html);
         }
     }

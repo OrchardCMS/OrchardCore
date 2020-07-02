@@ -25,7 +25,6 @@ namespace OrchardCore.Markdown.GraphQL
 
             Field("markdown", x => x.Markdown, nullable: true)
                 .Description(S["the markdown value"]);
-
             Field<StringGraphType>()
                 .Name("html")
                 .Description(S["the HTML representation of the markdown content"])
