@@ -12,7 +12,6 @@ using OrchardCore.Html.ViewModels;
 using OrchardCore.Shortcodes.Services;
 using OrchardCore.Infrastructure.Html;
 using OrchardCore.Liquid;
-using OrchardCore.DisplayManagement;
 
 namespace OrchardCore.Html.Drivers
 {
@@ -22,21 +21,18 @@ namespace OrchardCore.Html.Drivers
         private readonly IHtmlSanitizerService _htmlSanitizerService;
         private readonly HtmlEncoder _htmlEncoder;
         private readonly IShortcodeService _shortcodeService;
-        private readonly dynamic New;
         private readonly IStringLocalizer S;
 
         public HtmlBodyPartDisplayDriver(ILiquidTemplateManager liquidTemplateManager,
             IHtmlSanitizerService htmlSanitizerService,
             HtmlEncoder htmlEncoder,
             IShortcodeService shortcodeService,
-            IShapeFactory shapeFactory,
             IStringLocalizer<HtmlBodyPartDisplayDriver> localizer)
         {
             _liquidTemplateManager = liquidTemplateManager;
             _htmlSanitizerService = htmlSanitizerService;
             _htmlEncoder = htmlEncoder;
             _shortcodeService = shortcodeService;
-            New = shapeFactory;
             S = localizer;
         }
 
@@ -94,10 +90,6 @@ namespace OrchardCore.Html.Drivers
 
 
             model.Html = await _shortcodeService.ProcessAsync(model.Html);
-            // TODO what would be potentially nice is to contextualize the short code here
-            // with a func, that would only be invoked if shortcodes are found.
-            // Then the shape would morph to the correct shortcode, i.e. Shortcode-Giphy.
-            // model.Html = await _shortcodeService.ProcessAsync(model.Html, async () => await New.Shortcode(ContentItem: htmlBodyPart.ContentItem));
         }
     }
 }
