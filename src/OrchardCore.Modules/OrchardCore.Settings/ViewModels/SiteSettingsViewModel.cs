@@ -1,3 +1,5 @@
+using OrchardCore.Environment.Cache;
+
 namespace OrchardCore.Settings.ViewModels
 {
     public class SiteSettingsViewModel
@@ -12,5 +14,6 @@ namespace OrchardCore.Settings.ViewModels
         public ResourceDebugMode ResourceDebugMode { get; set; }
         public bool AppendVersion { get; set; }
         public string Meta { get; set; }
+        public CacheMode CacheMode { get; set; }
     }
 }
