@@ -21,12 +21,10 @@ namespace OrchardCore.Alias.Services
             if (alias.StartsWith("alias:", System.StringComparison.OrdinalIgnoreCase))
             {
                 alias = alias.Substring(6);
-
-                var aliasPartIndex = await _session.Query<ContentItem, AliasPartIndex>(x => x.Alias == alias.ToLowerInvariant()).FirstOrDefaultAsync();
-                return aliasPartIndex?.ContentItemId;
             }
 
-            return null;
+            var aliasPartIndex = await _session.Query<ContentItem, AliasPartIndex>(x => x.Alias == alias.ToLowerInvariant()).FirstOrDefaultAsync();
+            return aliasPartIndex?.ContentItemId;
         }
     }
 }
