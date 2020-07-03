@@ -88,7 +88,6 @@ Complete example at <https://github.com/JiZhouSoft/Jizhousoft.OrchardCore.Sample
     For `client_secret` and `client_id` as confidential information, do not send it directly through the browser application. The sample code here is only used as a demonstration to send an authentication request through the client.
 Generally speaking, we should rewrite an `action` which only accept the username and password parameters, and then returns the verification result.
 
-
 - Allow Client Credentials Flow: It requires that the Token Endpoint is enabled. More info at <https://tools.ietf.org/html/rfc6749#section-1.3.4>
 - Allow Authorization Code Flow: It requires that the Authorization and Token Endpoints are enabled. More info at <http://openid.net/specs/openid-connect-core-1_0.html#CodeFlowAuth> 
 
