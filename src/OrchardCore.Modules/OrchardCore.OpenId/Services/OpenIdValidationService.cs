@@ -5,7 +5,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
+using OpenIddict.Server;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Descriptor.Models;
 using OrchardCore.OpenId.Abstractions.Managers;
@@ -154,6 +156,15 @@ namespace OrchardCore.OpenId.Services
 
                     await shellScope.UsingAsync(async scope =>
                     {
+                        var options = scope.ServiceProvider.GetRequiredService<IOptionsMonitor<OpenIddictServerOptions>>().CurrentValue;
+                        if (options.UseReferenceAccessTokens)
+                        {
+                            results.Add(new ValidationResult(S["Selecting a server tenant for which reference access tokens are enabled is currently not supported."], new[]
+                            {
+                                nameof(settings.Tenant)
+                            }));
+                        }
+
                         var manager = scope.ServiceProvider.GetService<IOpenIdScopeManager>();
                         if (manager == null)
                         {
