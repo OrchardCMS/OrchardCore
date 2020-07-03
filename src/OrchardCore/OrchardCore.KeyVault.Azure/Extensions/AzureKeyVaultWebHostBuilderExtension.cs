@@ -12,7 +12,7 @@ namespace OrchardCore.Azure.KeyVault.Extensions
         /// </summary>
         /// <param name="builder">The web host builder to configure.</param>
         /// <returns>The web host builder.</returns>
-        public static IHostBuilder UseOrchardCoreAzureKeyVault(this IHostBuilder builder)
+        public static IHostBuilder AddOrchardCoreAzureKeyVault(this IHostBuilder builder)
         {
             if (builder == null) throw new ArgumentNullException(nameof(builder));
 
