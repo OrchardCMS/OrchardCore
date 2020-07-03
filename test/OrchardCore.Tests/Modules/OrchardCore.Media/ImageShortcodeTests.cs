@@ -4,13 +4,13 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
-using Shortcodes;
 using OrchardCore.FileStorage;
 using OrchardCore.Infrastructure.Html;
 using OrchardCore.Media.Core;
 using OrchardCore.Media.Events;
 using OrchardCore.Media.Shortcodes;
 using OrchardCore.Shortcodes.Services;
+using Shortcodes;
 using Xunit;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.Media

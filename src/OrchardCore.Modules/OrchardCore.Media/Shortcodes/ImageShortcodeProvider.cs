@@ -2,15 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.WebUtilities;
-using Shortcodes;
 using OrchardCore.Infrastructure.Html;
+using Shortcodes;
 
 namespace OrchardCore.Media.Shortcodes
 {
     public class ImageShortcodeProvider : NamedShortcodeProvider
     {
-        private readonly IHtmlSanitizerService _htmlSanitizerService;
-        private readonly IMediaFileStore _mediaFileStore;
 
         public ImageShortcodeProvider(IMediaFileStore mediaFileStore, IHtmlSanitizerService htmlSanitizerService)
             : base(
@@ -20,20 +18,17 @@ namespace OrchardCore.Media.Shortcodes
                 ["media"] = EvaluateImageAsync(mediaFileStore, htmlSanitizerService)
             }
         )
-        {
-            _mediaFileStore = mediaFileStore;
-            _htmlSanitizerService = htmlSanitizerService;
-        }
+        {}
 
         private static ShortcodeDelegate EvaluateImageAsync(IMediaFileStore mediaFileStore, IHtmlSanitizerService htmlSanitizerService)
         {
             return (args, content) =>
             {
                 // Handle edge case of self closing shortcodes.
-                if (string.IsNullOrEmpty(content))
+                if (String.IsNullOrEmpty(content))
                 {
                     content = args.NamedOrDefault("src");
-                    if (string.IsNullOrEmpty(content))
+                    if (String.IsNullOrEmpty(content))
                     {
                         // Do not handle the deprecated media shortcode in this edge case.
                         return new ValueTask<string>("[image]");

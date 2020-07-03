@@ -1,7 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
-using Shortcodes;
 using OrchardCore.Modules;
 using OrchardCore.Shortcodes.Services;
+using Shortcodes;
 
 namespace OrchardCore.Shortcodes
 {
