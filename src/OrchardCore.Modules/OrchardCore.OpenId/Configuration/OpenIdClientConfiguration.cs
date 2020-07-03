@@ -102,10 +102,9 @@ namespace OrchardCore.OpenId.Configuration
             var settings = await _clientService.GetSettingsAsync();
             var errors = (await _clientService.ValidateSettingsAsync(settings)).Where(r => r != ValidationResult.Success);
 
-            if (errors.Any())
+            if (errors.Any() && _logger.IsEnabled(LogLevel.Error))
             {
-                var errorMessages = string.Join(", ", errors.Select(r => r.ErrorMessage));
-                _logger.LogError("The OpenId Connect module is not correctly configure : {errorMessages}", errorMessages);
+                _logger.LogError("The OpenID Connect module is not correctly configured : {Errors}", String.Join(", ", errors.Select(r => r.ErrorMessage)));
 
                 return null;
             }
