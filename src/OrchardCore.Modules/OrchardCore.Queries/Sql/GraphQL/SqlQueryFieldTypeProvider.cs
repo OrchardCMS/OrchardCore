@@ -49,7 +49,7 @@ namespace OrchardCore.Queries.Sql.GraphQL.Queries
                     var querySchema = JObject.Parse(query.Schema);
                     if (!querySchema.ContainsKey("type"))
                     {
-                        _logger.LogError("The Query {Name}'s Schema is Invalid, the 'type' property is not found.", name);
+                        _logger.LogError("The Query '{Name}' schema is invalid, the 'type' property was not found.", name);
                         continue;
                     }
                     var type = querySchema["type"].ToString();
@@ -63,10 +63,9 @@ namespace OrchardCore.Queries.Sql.GraphQL.Queries
                         schema.Query.AddField(BuildSchemaBasedFieldType(schema, query, querySchema));
                     }
                 }
-                catch (Exception ex)
+                catch (Exception e)
                 {
-                    _logger.LogError("The Query {Name}'s Schema is Invalid, Error Details: {ex}",
-                        name, ex);
+                    _logger.LogError(e, "The Query '{Name}' has an invalid schema.", name);
                 }
             }
 
