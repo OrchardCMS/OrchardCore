@@ -67,10 +67,9 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
                         schema.Query.AddField(BuildSchemaBasedFieldType(query, querySchema));
                     }
                 }
-                catch (Exception ex)
+                catch (Exception e)
                 {
-                    _logger.LogError("The Query {Name}'s Schema is Invalid, Error Details: {ex}",
-                       name, ex);
+                    _logger.LogError(e, "The Query '{Name}' has an invalid schema.", name);
                 }
             }
 
