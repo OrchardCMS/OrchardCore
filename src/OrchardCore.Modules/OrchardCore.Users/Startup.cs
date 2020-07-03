@@ -8,9 +8,11 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.Data.Migration;
+using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Theming;
@@ -25,6 +27,7 @@ using OrchardCore.Navigation;
 using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
+using OrchardCore.Settings.Deployment;
 using OrchardCore.Setup.Events;
 using OrchardCore.Users.Commands;
 using OrchardCore.Users.Controllers;
@@ -311,6 +314,45 @@ namespace OrchardCore.Users
         {
             services.AddScoped<INavigationProvider, ResetPasswordAdminMenu>();
             services.AddScoped<IDisplayDriver<ISite>, ResetPasswordSettingsDisplayDriver>();
+        }
+
+        [RequireFeatures("OrchardCore.Deployment")]
+        public class DeploymentStartup : StartupBase
+        {
+            public override void ConfigureServices(IServiceCollection services)
+            {
+                services.AddTransient<IDeploymentSource, SiteSettingsDeploymentSource<ChangeEmailSettings>>();
+                services.AddScoped<IDisplayDriver<DeploymentStep>>(sp =>
+                {
+                    var S = sp.GetService<IStringLocalizer<Startup>>();
+                    return new SiteSettingsDeploymentStepDriver<ChangeEmailSettings>(S["Change Email settings"], S["Exports the Change Email site settings."]);
+                });
+                services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<SiteSettingsDeploymentStep<ChangeEmailSettings>>());
+
+                services.AddTransient<IDeploymentSource, SiteSettingsDeploymentSource<LoginSettings>>();
+                services.AddScoped<IDisplayDriver<DeploymentStep>>(sp =>
+                {
+                    var S = sp.GetService<IStringLocalizer<Startup>>();
+                    return new SiteSettingsDeploymentStepDriver<LoginSettings>(S["Login settings"], S["Exports the Login site settings."]);
+                });
+                services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<SiteSettingsDeploymentStep<LoginSettings>>());
+
+                services.AddTransient<IDeploymentSource, SiteSettingsDeploymentSource<RegistrationSettings>>();
+                services.AddScoped<IDisplayDriver<DeploymentStep>>(sp =>
+                {
+                    var S = sp.GetService<IStringLocalizer<Startup>>();
+                    return new SiteSettingsDeploymentStepDriver<RegistrationSettings>(S["Registration settings"], S["Exports the Registration site settings."]);
+                });
+                services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<SiteSettingsDeploymentStep<RegistrationSettings>>());
+
+                services.AddTransient<IDeploymentSource, SiteSettingsDeploymentSource<ResetPasswordSettings>>();
+                services.AddScoped<IDisplayDriver<DeploymentStep>>(sp =>
+                {
+                    var S = sp.GetService<IStringLocalizer<Startup>>();
+                    return new SiteSettingsDeploymentStepDriver<ResetPasswordSettings>(S["Reset Password settings"], S["Exports the Reset Password site settings."]);
+                });
+                services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<SiteSettingsDeploymentStep<ResetPasswordSettings>>());
+            }
         }
     }
 }

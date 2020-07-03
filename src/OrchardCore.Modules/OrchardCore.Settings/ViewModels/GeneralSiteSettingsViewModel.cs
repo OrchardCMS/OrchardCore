@@ -1,8 +1,6 @@
-using OrchardCore.Environment.Cache;
-
 namespace OrchardCore.Settings.ViewModels
 {
-    public class SiteSettingsViewModel
+    public class GeneralSiteSettingsViewModel
     {
         public string SiteName { get; set; }
         public string PageTitleFormat { get; set; }

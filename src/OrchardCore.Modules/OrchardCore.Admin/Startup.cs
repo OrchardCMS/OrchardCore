@@ -91,9 +91,13 @@ namespace OrchardCore.Admin
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            var serviceProvider = services.BuildServiceProvider();
-            var S = serviceProvider.GetService<IStringLocalizer<Startup>>();
-            services.AddSingleton<IDeploymentStepFactory>(s => new GenericSiteSettingsDeploymentStepFactory(nameof(AdminSettings), S["Admin settings"], S["Exports the admin site settings."]));
+            services.AddTransient<IDeploymentSource, SiteSettingsDeploymentSource<AdminSettings>>();
+            services.AddScoped<IDisplayDriver<DeploymentStep>>(sp =>
+            {
+                var S = sp.GetService<IStringLocalizer<Startup>>();
+                return new SiteSettingsDeploymentStepDriver<AdminSettings>(S["Admin settings"], S["Exports the admin site settings."]);
+            });
+            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<SiteSettingsDeploymentStep<AdminSettings>>());
         }
     }
 }

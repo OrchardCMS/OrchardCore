@@ -1,4 +1,3 @@
-using Microsoft.Extensions.Localization;
 using OrchardCore.Deployment;
 
 namespace OrchardCore.Settings.Deployment
@@ -6,20 +5,20 @@ namespace OrchardCore.Settings.Deployment
     /// <summary>
     /// Adds a generic site settings to a <see cref="DeploymentPlanResult"/>.
     /// </summary>
-    public class GenericSiteSettingsDeploymentStep : DeploymentStep
+    public class SiteSettingsDeploymentStep<TModel> : DeploymentStep where TModel : class
     {
-        public GenericSiteSettingsDeploymentStep()
+        public SiteSettingsDeploymentStep()
         {
         }
 
-        public GenericSiteSettingsDeploymentStep(string name, string title, string description)
+        public SiteSettingsDeploymentStep(string title, string description)
         {
-            Name = name;
+            Name = typeof(TModel).Name;
             Title = title;
             Description = description;
         }
 
-        public string Title { get; set; } // LocalizedString
+        public string Title { get; set; }
         public string Description { get; set; }
     }
 }

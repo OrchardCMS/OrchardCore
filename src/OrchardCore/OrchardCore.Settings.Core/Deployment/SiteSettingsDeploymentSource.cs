@@ -4,18 +4,18 @@ using OrchardCore.Deployment;
 
 namespace OrchardCore.Settings.Deployment
 {
-    public class GenericSiteSettingsDeploymentSource : IDeploymentSource
+    public class SiteSettingsDeploymentSource<TModel> : IDeploymentSource where TModel : class
     {
         private readonly ISiteService _siteService;
 
-        public GenericSiteSettingsDeploymentSource(ISiteService siteService)
+        public SiteSettingsDeploymentSource(ISiteService siteService)
         {
             _siteService = siteService;
         }
 
         public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
         {
-            var settingsStep = step as GenericSiteSettingsDeploymentStep;
+            var settingsStep = step as SiteSettingsDeploymentStep<TModel>;
             if (settingsStep == null)
             {
                 return;
@@ -26,9 +26,10 @@ namespace OrchardCore.Settings.Deployment
             var data = new JObject(new JProperty("name", "Settings"));
             JToken value;
 
-            if (site.Properties.TryGetValue(step.Name, out value))
+            var name = typeof(TModel).Name;
+            if (site.Properties.TryGetValue(name, out value))
             {
-                data.Add(new JProperty(step.Name, value));
+                data.Add(new JProperty(name, value));
             }
 
             result.Steps.Add(data);

@@ -2,14 +2,18 @@ using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.BackgroundTasks.Controllers;
 using OrchardCore.BackgroundTasks.Services;
+using OrchardCore.Deployment;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
+using OrchardCore.Settings.Deployment;
 
 namespace OrchardCore.BackgroundTasks
 {
@@ -65,6 +69,20 @@ namespace OrchardCore.BackgroundTasks
                 pattern: _adminOptions.AdminUrlPrefix + "/BackgroundTasks/Disable/{name}",
                 defaults: new { controller = backgroundTaskControllerName, action = nameof(BackgroundTaskController.Disable) }
             );
+        }
+
+        [RequireFeatures("OrchardCore.Deployment")]
+        public class DeploymentStartup : StartupBase
+        {
+            public override void ConfigureServices(IServiceCollection services)
+            {
+                services.AddTransient<IDeploymentSource, SiteSettingsDeploymentSource<BackgroundTaskSettings>>();
+                services.AddScoped<IDisplayDriver<DeploymentStep>>((sp => {
+                    var S = sp.GetService<IStringLocalizer<Startup>>();
+                    return new SiteSettingsDeploymentStepDriver<BackgroundTaskSettings>(S["Background Tasks settings"], S["Exports the background tasks site settings."]);
+                }));
+                services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<SiteSettingsDeploymentStep<BackgroundTaskSettings>>());
+            }
         }
     }
 }

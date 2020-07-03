@@ -37,7 +37,7 @@ namespace OrchardCore.Settings
             services.AddScoped<ISetupEventHandler, SetupEventHandler>();
             services.AddScoped<IPermissionProvider, Permissions>();
 
-            services.AddRecipeExecutionStep<SettingsStep>();
+            services.AddRecipeExecutionStep<GeneralSettingsStep>();
             services.AddSingleton<ISiteService, SiteService>();
 
             // Site Settings editor
@@ -50,12 +50,9 @@ namespace OrchardCore.Settings
 
             services.AddScoped<ITimeZoneSelector, DefaultTimeZoneSelector>();
 
-            services.AddTransient<IDeploymentSource, SiteSettingsDeploymentSource>();
-            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<SiteSettingsDeploymentStep>());
-            services.AddScoped<IDisplayDriver<DeploymentStep>, SiteSettingsDeploymentStepDriver>();
-
-            services.AddTransient<IDeploymentSource, GenericSiteSettingsDeploymentSource>();
-            services.AddScoped<IDisplayDriver<DeploymentStep>, GenericSiteSettingsDeploymentStepDriver>();
+            services.AddTransient<IDeploymentSource, GeneralSiteSettingsDeploymentSource>();
+            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<GeneralSiteSettingsDeploymentStep>());
+            services.AddScoped<IDisplayDriver<DeploymentStep>, GeneralSiteSettingsDeploymentStepDriver>();
         }
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

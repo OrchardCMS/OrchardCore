@@ -11,11 +11,11 @@ namespace OrchardCore.Settings.Recipes
     /// <summary>
     /// This recipe step updates the site settings.
     /// </summary>
-    public class SettingsStep : IRecipeStepHandler
+    public class GeneralSettingsStep : IRecipeStepHandler
     {
         private readonly ISiteService _siteService;
 
-        public SettingsStep(ISiteService siteService)
+        public GeneralSettingsStep(ISiteService siteService)
         {
             _siteService = siteService;
         }

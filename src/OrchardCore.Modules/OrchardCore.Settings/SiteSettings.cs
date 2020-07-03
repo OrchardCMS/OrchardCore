@@ -4,7 +4,7 @@ using OrchardCore.Entities;
 
 namespace OrchardCore.Settings
 {
-    // When updating class also update SiteSettingsDeploymentSource and SettingsStep.
+    // When updating class also update GeneralSiteSettingsDeploymentSource and GeneralSettingsStep.
     public class SiteSettings : Entity, ISite
     {
         /// <summary>

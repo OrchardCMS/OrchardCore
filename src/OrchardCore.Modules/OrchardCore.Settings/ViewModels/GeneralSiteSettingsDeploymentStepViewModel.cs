@@ -1,6 +1,6 @@
 namespace OrchardCore.Settings.ViewModels
 {
-    public class SiteSettingsDeploymentStepViewModel
+    public class GeneralSiteSettingsDeploymentStepViewModel
     {
         public string[] Settings { get; set; }
     }
