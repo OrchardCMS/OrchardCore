@@ -5,27 +5,27 @@ using OrchardCore.Settings.ViewModels;
 
 namespace OrchardCore.Settings.Deployment
 {
-    public class SiteSettingsDeploymentStepDriver<TModel> : DisplayDriver<DeploymentStep, SiteSettingsDeploymentStep<TModel>> where TModel : class
+    public class SiteSettingsPropertyDeploymentStepDriver<TModel> : DisplayDriver<DeploymentStep, SiteSettingsPropertyDeploymentStep<TModel>> where TModel : class
     {
         private readonly string _title;
         private readonly string _description;
 
-        public SiteSettingsDeploymentStepDriver(string title, string description)
+        public SiteSettingsPropertyDeploymentStepDriver(string title, string description)
         {
             _title = title;
             _description = description;
         }
 
-        public override IDisplayResult Display(SiteSettingsDeploymentStep<TModel> step)
+        public override IDisplayResult Display(SiteSettingsPropertyDeploymentStep<TModel> step)
         {
             return
                 Combine(
-                    Initialize<SiteSettingsDeploymentStepViewModel>("SiteSettingsDeploymentStep_Fields_Summary", model =>
+                    Initialize<SiteSettingsPropertyDeploymentStepViewModel>("SiteSettingsDeploymentStep_Fields_Summary", model =>
                     {
                         model.Title = _title;
                         model.Description = _description;
                     }).Location("Summary", "Content"),
-                    Initialize<SiteSettingsDeploymentStepViewModel>("SiteSettingsDeploymentStep_Fields_Thumbnail", model =>
+                    Initialize<SiteSettingsPropertyDeploymentStepViewModel>("SiteSettingsDeploymentStep_Fields_Thumbnail", model =>
                     {
                         model.Title = _title;
                         model.Description = _description;
@@ -33,9 +33,9 @@ namespace OrchardCore.Settings.Deployment
                 );
         }
 
-        public override IDisplayResult Edit(SiteSettingsDeploymentStep<TModel> step)
+        public override IDisplayResult Edit(SiteSettingsPropertyDeploymentStep<TModel> step)
         {
-            return Initialize<SiteSettingsDeploymentStepViewModel>("SiteSettingsDeploymentStep_Fields_Edit", model =>
+            return Initialize<SiteSettingsPropertyDeploymentStepViewModel>("SiteSettingsDeploymentStep_Fields_Edit", model =>
             {
                 model.Title = _title;
                 model.Description = _description;

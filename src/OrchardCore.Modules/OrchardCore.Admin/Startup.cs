@@ -91,13 +91,13 @@ namespace OrchardCore.Admin
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddTransient<IDeploymentSource, SiteSettingsDeploymentSource<AdminSettings>>();
+            services.AddTransient<IDeploymentSource, SiteSettingsPropertyDeploymentSource<AdminSettings>>();
             services.AddScoped<IDisplayDriver<DeploymentStep>>(sp =>
             {
                 var S = sp.GetService<IStringLocalizer<Startup>>();
-                return new SiteSettingsDeploymentStepDriver<AdminSettings>(S["Admin settings"], S["Exports the admin site settings."]);
+                return new SiteSettingsPropertyDeploymentStepDriver<AdminSettings>(S["Admin settings"], S["Exports the admin site settings."]);
             });
-            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<SiteSettingsDeploymentStep<AdminSettings>>());
+            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<SiteSettingsPropertyDeploymentStep<AdminSettings>>());
         }
     }
 }

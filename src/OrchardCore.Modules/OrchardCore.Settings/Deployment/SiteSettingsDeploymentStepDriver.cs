@@ -8,26 +8,26 @@ using OrchardCore.Settings.ViewModels;
 
 namespace OrchardCore.Settings.Deployment
 {
-    public class GeneralSiteSettingsDeploymentStepDriver : DisplayDriver<DeploymentStep, GeneralSiteSettingsDeploymentStep>
+    public class SiteSettingsDeploymentStepDriver : DisplayDriver<DeploymentStep, SiteSettingsDeploymentStep>
     {
-        public override IDisplayResult Display(GeneralSiteSettingsDeploymentStep step)
+        public override IDisplayResult Display(SiteSettingsDeploymentStep step)
         {
             return
                 Combine(
-                    View("GeneralSiteSettingsDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
-                    View("GeneralSiteSettingsDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
+                    View("SiteSettingsDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
+                    View("SiteSettingsDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
                 );
         }
 
-        public override IDisplayResult Edit(GeneralSiteSettingsDeploymentStep step)
+        public override IDisplayResult Edit(SiteSettingsDeploymentStep step)
         {
-            return Initialize<GeneralSiteSettingsDeploymentStepViewModel>("GeneralSiteSettingsDeploymentStep_Fields_Edit", model =>
+            return Initialize<SiteSettingsDeploymentStepViewModel>("SiteSettingsDeploymentStep_Fields_Edit", model =>
             {
                 model.Settings = step.Settings;
             }).Location("Content");
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(GeneralSiteSettingsDeploymentStep step, IUpdateModel updater)
+        public override async Task<IDisplayResult> UpdateAsync(SiteSettingsDeploymentStep step, IUpdateModel updater)
         {
             // Initializes the value to empty otherwise the model is not updated if no type is selected.
             step.Settings = Array.Empty<string>();

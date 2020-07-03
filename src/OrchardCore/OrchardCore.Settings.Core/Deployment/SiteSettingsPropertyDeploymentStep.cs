@@ -5,13 +5,13 @@ namespace OrchardCore.Settings.Deployment
     /// <summary>
     /// Adds a generic site settings to a <see cref="DeploymentPlanResult"/>.
     /// </summary>
-    public class SiteSettingsDeploymentStep<TModel> : DeploymentStep where TModel : class
+    public class SiteSettingsPropertyDeploymentStep<TModel> : DeploymentStep where TModel : class
     {
-        public SiteSettingsDeploymentStep()
+        public SiteSettingsPropertyDeploymentStep()
         {
         }
 
-        public SiteSettingsDeploymentStep(string title, string description)
+        public SiteSettingsPropertyDeploymentStep(string title, string description)
         {
             Name = typeof(TModel).Name;
             Title = title;

@@ -4,18 +4,18 @@ using OrchardCore.Deployment;
 
 namespace OrchardCore.Settings.Deployment
 {
-    public class SiteSettingsDeploymentSource<TModel> : IDeploymentSource where TModel : class
+    public class SiteSettingsPropertyDeploymentSource<TModel> : IDeploymentSource where TModel : class
     {
         private readonly ISiteService _siteService;
 
-        public SiteSettingsDeploymentSource(ISiteService siteService)
+        public SiteSettingsPropertyDeploymentSource(ISiteService siteService)
         {
             _siteService = siteService;
         }
 
         public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
         {
-            var settingsStep = step as SiteSettingsDeploymentStep<TModel>;
+            var settingsStep = step as SiteSettingsPropertyDeploymentStep<TModel>;
             if (settingsStep == null)
             {
                 return;

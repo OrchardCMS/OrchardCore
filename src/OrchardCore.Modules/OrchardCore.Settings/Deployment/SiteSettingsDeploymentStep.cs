@@ -5,9 +5,9 @@ namespace OrchardCore.Settings.Deployment
     /// <summary>
     /// Adds the current site settings to a <see cref="DeploymentPlanResult"/>.
     /// </summary>
-    public class GeneralSiteSettingsDeploymentStep : DeploymentStep
+    public class SiteSettingsDeploymentStep : DeploymentStep
     {
-        public GeneralSiteSettingsDeploymentStep()
+        public SiteSettingsDeploymentStep()
         {
             Name = nameof(SiteSettings);
         }

@@ -2,7 +2,6 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Routing;
 using Newtonsoft.Json.Linq;
-using OrchardCore.Environment.Cache;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 
@@ -11,11 +10,11 @@ namespace OrchardCore.Settings.Recipes
     /// <summary>
     /// This recipe step updates the site settings.
     /// </summary>
-    public class GeneralSettingsStep : IRecipeStepHandler
+    public class SettingsStep : IRecipeStepHandler
     {
         private readonly ISiteService _siteService;
 
-        public GeneralSettingsStep(ISiteService siteService)
+        public SettingsStep(ISiteService siteService)
         {
             _siteService = siteService;
         }

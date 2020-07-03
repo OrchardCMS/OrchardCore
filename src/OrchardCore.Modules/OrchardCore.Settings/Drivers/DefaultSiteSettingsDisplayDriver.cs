@@ -30,7 +30,7 @@ namespace OrchardCore.Settings.Drivers
 
         public override IDisplayResult Edit(ISite site)
         {
-            return Initialize<GeneralSiteSettingsViewModel>("Settings_Edit", model =>
+            return Initialize<SiteSettingsViewModel>("Settings_Edit", model =>
             {
                 model.SiteName = site.SiteName;
                 model.PageTitleFormat = site.PageTitleFormat;
@@ -49,7 +49,7 @@ namespace OrchardCore.Settings.Drivers
         {
             if (context.GroupId == GroupId)
             {
-                var model = new GeneralSiteSettingsViewModel();
+                var model = new SiteSettingsViewModel();
 
                 if (await context.Updater.TryUpdateModelAsync(model, Prefix))
                 {

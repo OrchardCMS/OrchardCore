@@ -76,12 +76,12 @@ namespace OrchardCore.BackgroundTasks
         {
             public override void ConfigureServices(IServiceCollection services)
             {
-                services.AddTransient<IDeploymentSource, SiteSettingsDeploymentSource<BackgroundTaskSettings>>();
+                services.AddTransient<IDeploymentSource, SiteSettingsPropertyDeploymentSource<BackgroundTaskSettings>>();
                 services.AddScoped<IDisplayDriver<DeploymentStep>>((sp => {
                     var S = sp.GetService<IStringLocalizer<Startup>>();
-                    return new SiteSettingsDeploymentStepDriver<BackgroundTaskSettings>(S["Background Tasks settings"], S["Exports the background tasks site settings."]);
+                    return new SiteSettingsPropertyDeploymentStepDriver<BackgroundTaskSettings>(S["Background Tasks settings"], S["Exports the background tasks site settings."]);
                 }));
-                services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<SiteSettingsDeploymentStep<BackgroundTaskSettings>>());
+                services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<SiteSettingsPropertyDeploymentStep<BackgroundTaskSettings>>());
             }
         }
     }

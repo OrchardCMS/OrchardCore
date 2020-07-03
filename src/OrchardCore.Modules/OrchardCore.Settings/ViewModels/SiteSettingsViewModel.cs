@@ -1,6 +1,6 @@
 namespace OrchardCore.Settings.ViewModels
 {
-    public class GeneralSiteSettingsViewModel
+    public class SiteSettingsViewModel
     {
         public string SiteName { get; set; }
         public string PageTitleFormat { get; set; }
