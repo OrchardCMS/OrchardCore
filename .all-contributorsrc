@@ -1604,6 +1604,24 @@
       "contributions": [
         "translation"
       ]
+    },
+    {
+      "login": "LatinaAtanasova",
+      "name": "LatinaAtanasova",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/32022885?v=4",
+      "profile": "https://github.com/LatinaAtanasova",
+      "contributions": [
+        "translation"
+      ]
+    },
+    {
+      "login": "mruslan97",
+      "name": "Ruslan Murtazin",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/37779365?v=4",
+      "profile": "https://github.com/mruslan97",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true

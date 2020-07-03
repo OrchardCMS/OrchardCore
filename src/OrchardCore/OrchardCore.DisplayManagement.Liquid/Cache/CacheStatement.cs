@@ -5,6 +5,8 @@ using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Ast;
+using Microsoft.AspNetCore.Html;
+using Microsoft.Extensions.Options;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OrchardCore.DisplayManagement;
@@ -36,6 +38,7 @@ namespace OrchardCore.DynamicCache.Liquid
             var cacheScopeManager = services.GetService<ICacheScopeManager>();
             var loggerFactory = services.GetService<ILoggerFactory>();
             var logger = loggerFactory.CreateLogger<CacheStatement>();
+            var cacheOptions = services.GetRequiredService<IOptions<CacheOptions>>().Value;
 
             if (dynamicCache == null || cacheScopeManager == null)
             {
@@ -47,9 +50,6 @@ namespace OrchardCore.DynamicCache.Liquid
 
                 return Completion.Normal;
             }
-
-            // TODO: Create a configuration setting in the UI
-            var debugMode = false;
 
             var arguments = (FilterArguments)(await _arguments.EvaluateAsync(context)).ToObjectValue();
             var cacheKey = arguments.At(0).ToStringValue();
@@ -92,17 +92,20 @@ namespace OrchardCore.DynamicCache.Liquid
                 cacheScopeManager.ExitScope();
             }
 
-            if (debugMode)
+            if (cacheOptions.DebugMode)
             {
                 var debugContent = new StringWriter();
-                debugContent.WriteLine($"<!-- CACHE BLOCK: {cacheContext.CacheId} ({Guid.NewGuid()})");
-                debugContent.WriteLine($"         VARY BY: {String.Join(", ", cacheContext.Contexts)}");
-                debugContent.WriteLine($"    DEPENDENCIES: {String.Join(", ", cacheContext.Tags)}");
+                debugContent.WriteLine($"<!-- CACHE BLOCK: {cacheContext.CacheId} ({Guid.NewGuid()})\r\n");
+                debugContent.WriteLine($"         VARY BY: {String.Join(", ", cacheContext.Contexts)}\r\n");
+                debugContent.WriteLine($"    DEPENDENCIES: {String.Join(", ", cacheContext.Tags)}\r\n");
                 debugContent.WriteLine($"      EXPIRES ON: {cacheContext.ExpiresOn}");
                 debugContent.WriteLine($"   EXPIRES AFTER: {cacheContext.ExpiresAfter}");
                 debugContent.WriteLine($" EXPIRES SLIDING: {cacheContext.ExpiresSliding}");
                 debugContent.WriteLine("-->");
+
                 debugContent.WriteLine(content);
+
+                debugContent.WriteLine();
                 debugContent.WriteLine($"<!-- END CACHE BLOCK: {cacheContext.CacheId} -->");
 
                 content = debugContent.ToString();
