@@ -19,8 +19,6 @@
 
   <ItemGroup>
     <EmbeddedResource Remove="**\*.less;**\*.scss;" />
-    <EmbeddedResource Remove="wwwroot\gulpfile.js" />
-    <EmbeddedResource Remove="wwwroot\index.html" />
   </ItemGroup>
 
 </Project>
