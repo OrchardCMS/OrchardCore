@@ -263,7 +263,7 @@ In the following example we place the `MediaField_Edit` shape in a card called `
 ```
 
 In the following example we place the `MediaField_Edit` shape in a column called `Media`, and position the `Media` column first, and the `Content` column second.
-We also specifiy that the `Content` column will take 9 columns, of the default 12 column grid.
+We also specify that the `Content` column will take 9 columns, of the default 12 column grid.
 
 ``` json
 
