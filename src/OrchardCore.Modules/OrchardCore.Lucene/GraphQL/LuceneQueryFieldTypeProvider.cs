@@ -47,7 +47,7 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
                     var querySchema = JObject.Parse(query.Schema);
                     if (!querySchema.ContainsKey("type"))
                     {
-                        _logger.LogError("The Query {Name}'s Schema is Invalid, the 'type' property is not found.", name);
+                        _logger.LogError("The Query '{Name}' schema is invalid, the 'type' property was not found.", name);
                         continue;
                     }
                     var type = querySchema["type"].ToString();
