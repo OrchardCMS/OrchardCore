@@ -1,7 +1,7 @@
 # Contributors ✨
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-167-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-172-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
@@ -232,6 +232,13 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <td align="center"><a href="https://github.com/mariojsnunes"><img src="https://avatars1.githubusercontent.com/u/8073622?v=4" width="100px;" alt=""/><br /><sub><b>mariojsnunes</b></sub></a><br /><a href="#translation-mariojsnunes" title="Translation">🌍</a></td>
     <td align="center"><a href="http://marcelobarsotti.com"><img src="https://avatars2.githubusercontent.com/u/16526496?v=4" width="100px;" alt=""/><br /><sub><b>Marcelo Barsotti</b></sub></a><br /><a href="#translation-mbarsott" title="Translation">🌍</a></td>
     <td align="center"><a href="https://github.com/Craiqser"><img src="https://avatars3.githubusercontent.com/u/1695820?v=4" width="100px;" alt=""/><br /><sub><b>Craiqser</b></sub></a><br /><a href="#translation-Craiqser" title="Translation">🌍</a></td>
+    <td align="center"><a href="https://github.com/pgrimaud"><img src="https://avatars1.githubusercontent.com/u/1866496?v=4" width="100px;" alt=""/><br /><sub><b>Pierre Grimaud</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=pgrimaud" title="Documentation">📖</a></td>
+  </tr>
+  <tr>
+    <td align="center"><a href="https://github.com/gianght"><img src="https://avatars2.githubusercontent.com/u/30433966?v=4" width="100px;" alt=""/><br /><sub><b>gianght</b></sub></a><br /><a href="#translation-gianght" title="Translation">🌍</a></td>
+    <td align="center"><a href="https://bold-n-brave.com"><img src="https://avatars1.githubusercontent.com/u/757063?v=4" width="100px;" alt=""/><br /><sub><b>Patrick Fogwall</b></sub></a><br /><a href="#translation-patfog" title="Translation">🌍</a></td>
+    <td align="center"><a href="https://github.com/LatinaAtanasova"><img src="https://avatars0.githubusercontent.com/u/32022885?v=4" width="100px;" alt=""/><br /><sub><b>LatinaAtanasova</b></sub></a><br /><a href="#translation-LatinaAtanasova" title="Translation">🌍</a></td>
+    <td align="center"><a href="https://github.com/mruslan97"><img src="https://avatars0.githubusercontent.com/u/37779365?v=4" width="100px;" alt=""/><br /><sub><b>Ruslan Murtazin</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=mruslan97" title="Code">💻</a></td>
   </tr>
 </table>
 

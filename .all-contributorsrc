@@ -1577,6 +1577,52 @@
       "contributions": [
         "translation"
       ]
+    },
+    {
+      "login": "pgrimaud",
+      "name": "Pierre Grimaud",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/1866496?v=4",
+      "profile": "https://github.com/pgrimaud",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "gianght",
+      "name": "gianght",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/30433966?v=4",
+      "profile": "https://github.com/gianght",
+      "contributions": [
+        "translation"
+      ]
+    },
+    {
+      "login": "patfog",
+      "name": "Patrick Fogwall",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/757063?v=4",
+      "profile": "https://bold-n-brave.com",
+      "contributions": [
+        "translation"
+      ]
+    },
+    {
+      "login": "LatinaAtanasova",
+      "name": "LatinaAtanasova",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/32022885?v=4",
+      "profile": "https://github.com/LatinaAtanasova",
+      "contributions": [
+        "translation"
+      ]
+    },
+    {
+      "login": "mruslan97",
+      "name": "Ruslan Murtazin",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/37779365?v=4",
+      "profile": "https://github.com/mruslan97",
+      "contributions": [
+        "code"
+      ]
     }
-  ]
+  ],
+  "skipCi": true
 }

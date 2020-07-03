@@ -78,8 +78,8 @@ namespace OrchardCore.Workflows.Http.Scripting
                 Name = "absoluteUrl",
                 Method = serviceProvider => (Func<string, string>)(relativePath =>
                 {
-                    var urlHelperّFactory = serviceProvider.GetRequiredService<IUrlHelperFactory>();
-                    var urlHelper = urlHelperّFactory.GetUrlHelper(new ActionContext(httpContextAccessor.HttpContext, new RouteData(), new ActionDescriptor()));
+                    var urlHelperFactory = serviceProvider.GetRequiredService<IUrlHelperFactory>();
+                    var urlHelper = urlHelperFactory.GetUrlHelper(new ActionContext(httpContextAccessor.HttpContext, new RouteData(), new ActionDescriptor()));
                     return urlHelper.ToAbsoluteUrl(relativePath);
                 })
             };
