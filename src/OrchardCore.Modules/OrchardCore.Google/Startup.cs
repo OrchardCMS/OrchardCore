@@ -47,6 +47,7 @@ namespace OrchardCore.Google
         }
     }
 
+    [Feature(GoogleConstants.Features.GoogleAuthentication)]
     [RequireFeatures("OrchardCore.Deployment")]
     public class DeploymentStartup : StartupBase
     {
