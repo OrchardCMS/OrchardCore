@@ -162,7 +162,6 @@ namespace OrchardCore.Queries.Controllers
             }
             if (!string.IsNullOrWhiteSpace(query.Schema) && !CheckSchema(query.Schema))
             {
-                _notifier.Error(H["Invalid schema JSON supplied."]);
                 ModelState.AddModelError("Schema", S["Invalid schema JSON supplied."]);
             }
             var editor = await _displayManager.UpdateEditorAsync(query, updater: _updateModelAccessor.ModelUpdater, isNew: true);
@@ -224,7 +223,6 @@ namespace OrchardCore.Queries.Controllers
 
             if (!string.IsNullOrWhiteSpace(query.Schema) && !CheckSchema(query.Schema))
             { 
-                _notifier.Error(H["Invalid schema JSON supplied."]);
                 ModelState.AddModelError("Schema", S["Invalid schema JSON supplied."]);
             }
             if (ModelState.IsValid)
