@@ -70,19 +70,5 @@ namespace OrchardCore.BackgroundTasks
                 defaults: new { controller = backgroundTaskControllerName, action = nameof(BackgroundTaskController.Disable) }
             );
         }
-
-        [RequireFeatures("OrchardCore.Deployment")]
-        public class DeploymentStartup : StartupBase
-        {
-            public override void ConfigureServices(IServiceCollection services)
-            {
-                services.AddTransient<IDeploymentSource, SiteSettingsPropertyDeploymentSource<BackgroundTaskSettings>>();
-                services.AddScoped<IDisplayDriver<DeploymentStep>>((sp => {
-                    var S = sp.GetService<IStringLocalizer<Startup>>();
-                    return new SiteSettingsPropertyDeploymentStepDriver<BackgroundTaskSettings>(S["Background Tasks settings"], S["Exports the background tasks site settings."]);
-                }));
-                services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<SiteSettingsPropertyDeploymentStep<BackgroundTaskSettings>>());
-            }
-        }
     }
 }
