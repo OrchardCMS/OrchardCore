@@ -221,6 +221,7 @@ namespace OrchardCore.Queries.Controllers
             }
 
             var editor = await _displayManager.UpdateEditorAsync(query, updater: _updateModelAccessor.ModelUpdater, isNew: false);
+
             if (!string.IsNullOrWhiteSpace(query.Schema) && !CheckSchema(query.Schema))
             { 
                 _notifier.Error(H["Invalid schema JSON supplied."]);
