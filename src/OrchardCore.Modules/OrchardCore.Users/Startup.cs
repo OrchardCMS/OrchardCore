@@ -207,14 +207,14 @@ namespace OrchardCore.Users
     }
 
     [RequireFeatures("OrchardCore.Deployment")]
-    public class LoginStartup : StartupBase
+    public class LoginDeploymentStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddTransient<IDeploymentSource, SiteSettingsPropertyDeploymentSource<LoginSettings>>();
             services.AddScoped<IDisplayDriver<DeploymentStep>>(sp =>
             {
-                var S = sp.GetService<IStringLocalizer<Startup>>();
+                var S = sp.GetService<IStringLocalizer<LoginDeploymentStartup>>();
                 return new SiteSettingsPropertyDeploymentStepDriver<LoginSettings>(S["Login settings"], S["Exports the Login settings."]);
             });
             services.AddSingleton<IDeploymentStepFactory>(new SiteSettingsPropertyDeploymentStepFactory<LoginSettings>());
@@ -266,7 +266,7 @@ namespace OrchardCore.Users
             services.AddTransient<IDeploymentSource, SiteSettingsPropertyDeploymentSource<ChangeEmailSettings>>();
             services.AddScoped<IDisplayDriver<DeploymentStep>>(sp =>
             {
-                var S = sp.GetService<IStringLocalizer<Startup>>();
+                var S = sp.GetService<IStringLocalizer<ChangeEmailDeploymentStartup>>();
                 return new SiteSettingsPropertyDeploymentStepDriver<ChangeEmailSettings>(S["Change Email settings"], S["Exports the Change Email settings."]);
             });
             services.AddSingleton<IDeploymentStepFactory>(new SiteSettingsPropertyDeploymentStepFactory<ChangeEmailSettings>());
@@ -309,7 +309,7 @@ namespace OrchardCore.Users
             services.AddTransient<IDeploymentSource, SiteSettingsPropertyDeploymentSource<RegistrationSettings>>();
             services.AddScoped<IDisplayDriver<DeploymentStep>>(sp =>
             {
-                var S = sp.GetService<IStringLocalizer<Startup>>();
+                var S = sp.GetService<IStringLocalizer<RegistrationDeploymentStartup>>();
                 return new SiteSettingsPropertyDeploymentStepDriver<RegistrationSettings>(S["Registration settings"], S["Exports the Registration settings."]);
             });
             services.AddSingleton<IDeploymentStepFactory>(new SiteSettingsPropertyDeploymentStepFactory<RegistrationSettings>());
@@ -373,7 +373,7 @@ namespace OrchardCore.Users
             services.AddTransient<IDeploymentSource, SiteSettingsPropertyDeploymentSource<ResetPasswordSettings>>();
             services.AddScoped<IDisplayDriver<DeploymentStep>>(sp =>
             {
-                var S = sp.GetService<IStringLocalizer<Startup>>();
+                var S = sp.GetService<IStringLocalizer<ResetPasswordDeploymentStartup>>();
                 return new SiteSettingsPropertyDeploymentStepDriver<ResetPasswordSettings>(S["Reset Password settings"], S["Exports the Reset Password settings."]);
             });
             services.AddSingleton<IDeploymentStepFactory>(new SiteSettingsPropertyDeploymentStepFactory<ResetPasswordSettings>());

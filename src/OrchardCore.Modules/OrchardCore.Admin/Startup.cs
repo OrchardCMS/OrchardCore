@@ -94,7 +94,7 @@ namespace OrchardCore.Admin
             services.AddTransient<IDeploymentSource, SiteSettingsPropertyDeploymentSource<AdminSettings>>();
             services.AddScoped<IDisplayDriver<DeploymentStep>>(sp =>
             {
-                var S = sp.GetService<IStringLocalizer<Startup>>();
+                var S = sp.GetService<IStringLocalizer<DeploymentStartup>>();
                 return new SiteSettingsPropertyDeploymentStepDriver<AdminSettings>(S["Admin settings"], S["Exports the admin settings."]);
             });
             services.AddSingleton<IDeploymentStepFactory>(new SiteSettingsPropertyDeploymentStepFactory<AdminSettings>());

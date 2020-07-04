@@ -3,17 +3,21 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Localization;
+using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Facebook.Drivers;
 using OrchardCore.Facebook.Filters;
 using OrchardCore.Facebook.Recipes;
 using OrchardCore.Facebook.Services;
+using OrchardCore.Facebook.Settings;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
 using OrchardCore.ResourceManagement;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
+using OrchardCore.Settings.Deployment;
 
 namespace OrchardCore.Facebook
 {
@@ -39,6 +43,21 @@ namespace OrchardCore.Facebook
             {
                 options.Filters.Add(typeof(FBInitFilter));
             });
+        }
+    }
+
+    [RequireFeatures("OrchardCore.Deployment")]
+    public class DeploymentStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddTransient<IDeploymentSource, SiteSettingsPropertyDeploymentSource<FacebookSettings>>();
+            services.AddScoped<IDisplayDriver<DeploymentStep>>(sp =>
+            {
+                var S = sp.GetService<IStringLocalizer<DeploymentStartup>>();
+                return new SiteSettingsPropertyDeploymentStepDriver<FacebookSettings>(S["Facebook settings"], S["Exports the Facebook settings."]);
+            });
+            services.AddSingleton<IDeploymentStepFactory>(new SiteSettingsPropertyDeploymentStepFactory<FacebookSettings>());
         }
     }
 }
