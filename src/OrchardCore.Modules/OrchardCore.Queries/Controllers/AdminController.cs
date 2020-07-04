@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Localization;
 using Newtonsoft.Json.Linq;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
@@ -30,6 +31,7 @@ namespace OrchardCore.Queries.Controllers
         private readonly IUpdateModelAccessor _updateModelAccessor;
         private readonly IHtmlLocalizer H;
         private readonly dynamic New;
+        private readonly IStringLocalizer S;
 
         public AdminController(
             IDisplayManager<Query> displayManager,
@@ -41,7 +43,8 @@ namespace OrchardCore.Queries.Controllers
             IQueryManager queryManager,
             IEnumerable<IQuerySource> querySources,
             ISession session,
-            IUpdateModelAccessor updateModelAccessor)
+            IUpdateModelAccessor updateModelAccessor,
+            IStringLocalizer<AdminController> stringLocalizer)
         {
             _session = session;
             _displayManager = displayManager;
@@ -50,6 +53,7 @@ namespace OrchardCore.Queries.Controllers
             _queryManager = queryManager;
             _querySources = querySources;
             _updateModelAccessor = updateModelAccessor;
+            S = stringLocalizer;
             New = shapeFactory;
             _notifier = notifier;
             H = htmlLocalizer;
@@ -159,9 +163,7 @@ namespace OrchardCore.Queries.Controllers
             if (!string.IsNullOrWhiteSpace(query.Schema) && !CheckSchema(query.Schema))
             {
                 _notifier.Error(H["Invalid schema JSON supplied."]);
-                ModelState.AddModelError("Schema", "Invalid schema JSON supplied.");
-                model.Editor = await _displayManager.BuildEditorAsync(query, updater: _updateModelAccessor.ModelUpdater, isNew: true);
-                return View(model);
+                ModelState.AddModelError("Schema", S["Invalid schema JSON supplied."]);
             }
             var editor = await _displayManager.UpdateEditorAsync(query, updater: _updateModelAccessor.ModelUpdater, isNew: true);
            
