@@ -46,20 +46,21 @@ namespace OrchardCore.GitHub
                 ServiceDescriptor.Transient<IPostConfigureOptions<GitHubOptions>, OAuthPostConfigureOptions<GitHubOptions,GitHubHandler>>()
             });
         }
+    }
 
-        [RequireFeatures("OrchardCore.Deployment")]
-        public class DeploymentStartup : StartupBase
+    [Feature(GitHubConstants.Features.GitHubAuthentication)]
+    [RequireFeatures("OrchardCore.Deployment")]
+    public class DeploymentStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
         {
-            public override void ConfigureServices(IServiceCollection services)
+            services.AddTransient<IDeploymentSource, SiteSettingsPropertyDeploymentSource<GitHubAuthenticationSettings>>();
+            services.AddScoped<IDisplayDriver<DeploymentStep>>(sp =>
             {
-                services.AddTransient<IDeploymentSource, SiteSettingsPropertyDeploymentSource<GitHubAuthenticationSettings>>();
-                services.AddScoped<IDisplayDriver<DeploymentStep>>(sp =>
-                {
-                    var S = sp.GetService<IStringLocalizer<DeploymentStartup>>();
-                    return new SiteSettingsPropertyDeploymentStepDriver<GitHubAuthenticationSettings>(S["GitHub Authentication settings"], S["Exports the GitHub Authentication settings."]);
-                });
-                services.AddSingleton<IDeploymentStepFactory>(new SiteSettingsPropertyDeploymentStepFactory<GitHubAuthenticationSettings>());
-            }
+                var S = sp.GetService<IStringLocalizer<DeploymentStartup>>();
+                return new SiteSettingsPropertyDeploymentStepDriver<GitHubAuthenticationSettings>(S["GitHub Authentication settings"], S["Exports the GitHub Authentication settings."]);
+            });
+            services.AddSingleton<IDeploymentStepFactory>(new SiteSettingsPropertyDeploymentStepFactory<GitHubAuthenticationSettings>());
         }
     }
 }
