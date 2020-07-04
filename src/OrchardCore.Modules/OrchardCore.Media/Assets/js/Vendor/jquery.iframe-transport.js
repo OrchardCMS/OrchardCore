@@ -9,9 +9,9 @@
  * https://opensource.org/licenses/MIT
  */
 
-/* global define, require, window, document, JSON */
+/* global define, require */
 
-;(function (factory) {
+(function (factory) {
     'use strict';
     if (typeof define === 'function' && define.amd) {
         // Register as an anonymous AMD module:
@@ -23,7 +23,7 @@
         // Browser globals:
         factory(window.jQuery);
     }
-}(function ($) {
+})(function ($) {
     'use strict';
 
     // Helper variable to create unique names for the transport iframes:
@@ -32,8 +32,8 @@
         jsonParse = 'parseJSON';
 
     if ('JSON' in window && 'parse' in JSON) {
-      jsonAPI = JSON;
-      jsonParse = 'parse';
+        jsonAPI = JSON;
+        jsonParse = 'parse';
     }
 
     // The iframe transport accepts four additional options:
@@ -50,9 +50,8 @@
         if (options.async) {
             // javascript:false as initial iframe src
             // prevents warning popups on HTTPS in IE6:
-            /*jshint scripturl: true */
+            // eslint-disable-next-line no-script-url
             var initialIframeSrc = options.initialIframeSrc || 'javascript:false;',
-            /*jshint scripturl: false */
                 form,
                 iframe,
                 addParamChar;
@@ -77,47 +76,46 @@
                     // so we set the name along with the iframe HTML markup:
                     counter += 1;
                     iframe = $(
-                        '<iframe src="' + initialIframeSrc +
-                            '" name="iframe-transport-' + counter + '"></iframe>'
-                    ).bind('load', function () {
+                        '<iframe src="' +
+                        initialIframeSrc +
+                        '" name="iframe-transport-' +
+                        counter +
+                        '"></iframe>'
+                    ).on('load', function () {
                         var fileInputClones,
-                            paramNames = $.isArray(options.paramName) ?
-                                    options.paramName : [options.paramName];
-                        iframe
-                            .unbind('load')
-                            .bind('load', function () {
-                                var response;
-                                // Wrap in a try/catch block to catch exceptions thrown
-                                // when trying to access cross-domain iframe contents:
-                                try {
-                                    response = iframe.contents();
-                                    // Google Chrome and Firefox do not throw an
-                                    // exception when calling iframe.contents() on
-                                    // cross-domain requests, so we unify the response:
-                                    if (!response.length || !response[0].firstChild) {
-                                        throw new Error();
-                                    }
-                                } catch (e) {
-                                    response = undefined;
+                            paramNames = $.isArray(options.paramName)
+                                ? options.paramName
+                                : [options.paramName];
+                        iframe.off('load').on('load', function () {
+                            var response;
+                            // Wrap in a try/catch block to catch exceptions thrown
+                            // when trying to access cross-domain iframe contents:
+                            try {
+                                response = iframe.contents();
+                                // Google Chrome and Firefox do not throw an
+                                // exception when calling iframe.contents() on
+                                // cross-domain requests, so we unify the response:
+                                if (!response.length || !response[0].firstChild) {
+                                    throw new Error();
                                 }
-                                // The complete callback returns the
-                                // iframe content document as response object:
-                                completeCallback(
-                                    200,
-                                    'success',
-                                    {'iframe': response}
-                                );
-                                // Fix for IE endless progress bar activity bug
-                                // (happens on form submits to iframe targets):
-                                $('<iframe src="' + initialIframeSrc + '"></iframe>')
-                                    .appendTo(form);
-                                window.setTimeout(function () {
-                                    // Removing the form in a setTimeout call
-                                    // allows Chrome's developer tools to display
-                                    // the response result
-                                    form.remove();
-                                }, 0);
-                            });
+                            } catch (e) {
+                                response = undefined;
+                            }
+                            // The complete callback returns the
+                            // iframe content document as response object:
+                            completeCallback(200, 'success', { iframe: response });
+                            // Fix for IE endless progress bar activity bug
+                            // (happens on form submits to iframe targets):
+                            $('<iframe src="' + initialIframeSrc + '"></iframe>').appendTo(
+                                form
+                            );
+                            window.setTimeout(function () {
+                                // Removing the form in a setTimeout call
+                                // allows Chrome's developer tools to display
+                                // the response result
+                                form.remove();
+                            }, 0);
+                        });
                         form
                             .prop('target', iframe.prop('name'))
                             .prop('action', options.url)
@@ -130,8 +128,11 @@
                                     .appendTo(form);
                             });
                         }
-                        if (options.fileInput && options.fileInput.length &&
-                                options.type === 'POST') {
+                        if (
+                            options.fileInput &&
+                            options.fileInput.length &&
+                            options.type === 'POST'
+                        ) {
                             fileInputClones = options.fileInput.clone();
                             // Insert a clone for each file input field:
                             options.fileInput.after(function (index) {
@@ -139,10 +140,7 @@
                             });
                             if (options.paramName) {
                                 options.fileInput.each(function (index) {
-                                    $(this).prop(
-                                        'name',
-                                        paramNames[index] || options.paramName
-                                    );
+                                    $(this).prop('name', paramNames[index] || options.paramName);
                                 });
                             }
                             // Appending the file input fields to the hidden form
@@ -155,19 +153,25 @@
                             // Remove the HTML5 form attribute from the input(s):
                             options.fileInput.removeAttr('form');
                         }
-                        form.submit();
-                        // Insert the file input fields at their original location
-                        // by replacing the clones with the originals:
-                        if (fileInputClones && fileInputClones.length) {
-                            options.fileInput.each(function (index, input) {
-                                var clone = $(fileInputClones[index]);
-                                // Restore the original name and form properties:
-                                $(input)
-                                    .prop('name', clone.prop('name'))
-                                    .attr('form', clone.attr('form'));
-                                clone.replaceWith(input);
-                            });
-                        }
+                        window.setTimeout(function () {
+                            // Submitting the form in a setTimeout call fixes an issue with
+                            // Safari 13 not triggering the iframe load event after resetting
+                            // the load event handler, see also:
+                            // https://github.com/blueimp/jQuery-File-Upload/issues/3633
+                            form.submit();
+                            // Insert the file input fields at their original location
+                            // by replacing the clones with the originals:
+                            if (fileInputClones && fileInputClones.length) {
+                                options.fileInput.each(function (index, input) {
+                                    var clone = $(fileInputClones[index]);
+                                    // Restore the original name and form properties:
+                                    $(input)
+                                        .prop('name', clone.prop('name'))
+                                        .attr('form', clone.attr('form'));
+                                    clone.replaceWith(input);
+                                });
+                            }
+                        }, 0);
                     });
                     form.append(iframe).appendTo(document.body);
                 },
@@ -175,10 +179,7 @@
                     if (iframe) {
                         // javascript:false as iframe src aborts the request
                         // and prevents warning popups on HTTPS in IE6.
-                        // concat is used to avoid the "Script URL" JSLint error:
-                        iframe
-                            .unbind('load')
-                            .prop('src', initialIframeSrc);
+                        iframe.off('load').prop('src', initialIframeSrc);
                     }
                     if (form) {
                         form.remove();
@@ -211,14 +212,16 @@
             },
             'iframe xml': function (iframe) {
                 var xmlDoc = iframe && iframe[0];
-                return xmlDoc && $.isXMLDoc(xmlDoc) ? xmlDoc :
-                        $.parseXML((xmlDoc.XMLDocument && xmlDoc.XMLDocument.xml) ||
-                            $(xmlDoc.body).html());
+                return xmlDoc && $.isXMLDoc(xmlDoc)
+                    ? xmlDoc
+                    : $.parseXML(
+                        (xmlDoc.XMLDocument && xmlDoc.XMLDocument.xml) ||
+                        $(xmlDoc.body).html()
+                    );
             },
             'iframe script': function (iframe) {
                 return iframe && $.globalEval($(iframe[0].body).text());
             }
         }
     });
-
-}));
+});

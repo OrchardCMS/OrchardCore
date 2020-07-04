@@ -24,7 +24,7 @@ The root of the Azure Blob Container includes a `tenants.json` file, and optiona
 
 Each shell, or tenant has a directory under the `Sites` folder, named for the tenant, with an individual `appsettings.json` file.
 
-The hierarchy is seperated into single files, and is useful if you need to manage the tenants `appsettings.json` independently from Orchard Core.
+The hierarchy is separated into single files, and is useful if you need to manage the tenants `appsettings.json` independently from Orchard Core.
 For example, you may prefer to provide different Azure Blob Storage keys, for each tenant when using the Azure Media Storage feature.
 
 The Azure Shells Configuration supports a root `appsettings.json` and `appsettings.Environment.json` file.
@@ -34,7 +34,7 @@ The Azure Shells Configuration supports a root `appsettings.json` and `appsettin
 
 ### Enable Azure Shells Configuration
 
-The Azure Shells Configuration is provided by a seperate NuGet package: `OrchardCore.Shells.Azure`
+The Azure Shells Configuration is provided by a separate NuGet package: `OrchardCore.Shells.Azure`
 
 The Azure Shells Configuration is configured via the `appsettings.json` section in the web host project.
 
@@ -85,7 +85,7 @@ The Database Shells Configuration is configured via the `appsettings.json` secti
 ``` json
 {
   "OrchardCore": {
-    "OrchardCore.Shells.Database": {
+    "OrchardCore_Shells_Database": {
       "DatabaseProvider": "SqlConnection", // Set to a supported database provider.
       "ConnectionString": "", // Set to the database connection string.
       "TablePrefix": "", // Optionally, configure a table prefix.

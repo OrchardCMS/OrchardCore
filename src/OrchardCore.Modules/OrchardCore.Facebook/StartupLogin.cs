@@ -6,9 +6,11 @@ using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Facebook.Login.Configuration;
 using OrchardCore.Facebook.Login.Drivers;
+using OrchardCore.Facebook.Login.Recipes;
 using OrchardCore.Facebook.Login.Services;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
+using OrchardCore.Recipes;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Facebook
@@ -18,9 +20,11 @@ namespace OrchardCore.Facebook
     {
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.AddScoped<INavigationProvider, AdminMenuLogin>();
+
             services.AddSingleton<IFacebookLoginService, FacebookLoginService>();
             services.AddScoped<IDisplayDriver<ISite>, FacebookLoginSettingsDisplayDriver>();
-            services.AddScoped<INavigationProvider, AdminMenuLogin>();
+            services.AddRecipeExecutionStep<FacebookLoginSettingsStep>();
 
             // Register the options initializers required by the Facebook handler.
             services.TryAddEnumerable(new[]
@@ -30,7 +34,7 @@ namespace OrchardCore.Facebook
                 ServiceDescriptor.Transient<IConfigureOptions<FacebookOptions>, FacebookLoginConfiguration>(),
 
                 // Built-in initializers:
-                ServiceDescriptor.Transient<IPostConfigureOptions<FacebookOptions>, OAuthPostConfigureOptions<FacebookOptions,FacebookHandler>>()
+                ServiceDescriptor.Transient<IPostConfigureOptions<FacebookOptions>, OAuthPostConfigureOptions<FacebookOptions, FacebookHandler>>()
             });
         }
     }

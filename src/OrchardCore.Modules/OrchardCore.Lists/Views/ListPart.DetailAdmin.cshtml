@@ -24,7 +24,7 @@ else
         var contentTypeDefinition = Model.ContainedContentTypeDefinitions.FirstOrDefault();
         <div class="row">
             <div class="col form-group text-right">
-                <a class="btn btn-sm btn-success" asp-action="Create" asp-controller="Admin" asp-route-id="@contentTypeDefinition.Name" asp-route-area="OrchardCore.Contents" asp-route-ListPart.ContainerId="@Model.ListPart.ContentItem.ContentItemId" asp-route-ListPart.EnableOrdering="@Model.EnableOrdering">
+                <a class="btn btn-sm btn-success" asp-action="Create" asp-controller="Admin" asp-route-id="@contentTypeDefinition.Name" asp-route-area="OrchardCore.Contents" asp-route-ListPart.ContainerId="@Model.ListPart.ContentItem.ContentItemId" asp-route-ListPart.EnableOrdering="@Model.EnableOrdering" asp-route-returnUrl="@FullRequestPath">
                     @T["Create {0}", contentTypeDefinition.DisplayName]
                 </a>
             </div>
@@ -42,7 +42,9 @@ else
                     <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
                         @foreach (var containedContentTypeDefinition in Model.ContainedContentTypeDefinitions)
                         {
-                            <a class="dropdown-item" asp-action="Create" asp-controller="Admin" asp-route-id="@containedContentTypeDefinition.Name" asp-route-area="OrchardCore.Contents" asp-route-ListPart.ContainerId="@Model.ListPart.ContentItem.ContentItemId" asp-route-ListPart.EnableOrdering="@Model.EnableOrdering">@containedContentTypeDefinition.DisplayName</a>
+                            <a class="dropdown-item" asp-action="Create" asp-controller="Admin" asp-route-id="@containedContentTypeDefinition.Name" asp-route-area="OrchardCore.Contents" asp-route-ListPart.ContainerId="@Model.ListPart.ContentItem.ContentItemId" asp-route-ListPart.EnableOrdering="@Model.EnableOrdering" asp-route-returnUrl="@FullRequestPath">
+                                @containedContentTypeDefinition.DisplayName
+                            </a>
                         }
                     </div>
                 </div>

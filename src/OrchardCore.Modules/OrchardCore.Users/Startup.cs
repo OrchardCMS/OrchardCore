@@ -75,6 +75,13 @@ namespace OrchardCore.Users
                 defaults: new { controller = accountControllerName, action = nameof(AccountController.LogOff) }
             );
 
+            routes.MapAreaControllerRoute(
+                name: "ExternalLogins",
+                areaName: "OrchardCore.Users",
+                pattern: userOptions.ExternalLoginsUrl,
+                defaults: new { controller = accountControllerName, action = nameof(AccountController.ExternalLogins) }
+            );
+
             var adminControllerName = typeof(AdminController).ControllerName();
 
             routes.MapAreaControllerRoute(
