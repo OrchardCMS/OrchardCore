@@ -1,10 +1,11 @@
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Deployment;
+using OrchardCore.Entities;
 
 namespace OrchardCore.Settings.Deployment
 {
-    public class SiteSettingsPropertyDeploymentSource<TModel> : IDeploymentSource where TModel : class
+    public class SiteSettingsPropertyDeploymentSource<TModel> : IDeploymentSource where TModel : class, new()
     {
         private readonly ISiteService _siteService;
 
@@ -21,20 +22,12 @@ namespace OrchardCore.Settings.Deployment
                 return;
             }
 
-            var site = await _siteService.GetSiteSettingsAsync();
+            var siteSettings = await _siteService.GetSiteSettingsAsync();
 
-            var data = new JObject(new JProperty("name", "Settings"));
-            JToken value;
-
-            var name = typeof(TModel).Name;
-            if (site.Properties.TryGetValue(name, out value))
-            {
-                data.Add(new JProperty(name, value));
-            }
-
-            result.Steps.Add(data);
-
-            return;
+            result.Steps.Add(new JObject(
+                new JProperty("name", "Settings"),
+                new JProperty(typeof(TModel).Name, JObject.FromObject(siteSettings.As<TModel>()))
+            ));
         }
     }
 }

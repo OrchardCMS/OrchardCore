@@ -5,7 +5,7 @@ using OrchardCore.Settings.ViewModels;
 
 namespace OrchardCore.Settings.Deployment
 {
-    public class SiteSettingsPropertyDeploymentStepDriver<TModel> : DisplayDriver<DeploymentStep, SiteSettingsPropertyDeploymentStep<TModel>> where TModel : class
+    public class SiteSettingsPropertyDeploymentStepDriver<TModel> : DisplayDriver<DeploymentStep, SiteSettingsPropertyDeploymentStep<TModel>> where TModel : class, new()
     {
         private readonly string _title;
         private readonly string _description;

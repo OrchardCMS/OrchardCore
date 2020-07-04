@@ -5,7 +5,7 @@ namespace OrchardCore.Settings.Deployment
     /// <summary>
     /// Adds a site setting from the properties dictionary to a <see cref="DeploymentPlanResult"/>.
     /// </summary>
-    public class SiteSettingsPropertyDeploymentStep<TModel> : DeploymentStep where TModel : class // TODO add new()
+    public class SiteSettingsPropertyDeploymentStep<TModel> : DeploymentStep where TModel : class, new()
     {
         public SiteSettingsPropertyDeploymentStep()
         {
