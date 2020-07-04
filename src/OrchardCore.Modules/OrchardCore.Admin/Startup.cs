@@ -97,7 +97,7 @@ namespace OrchardCore.Admin
                 var S = sp.GetService<IStringLocalizer<Startup>>();
                 return new SiteSettingsPropertyDeploymentStepDriver<AdminSettings>(S["Admin settings"], S["Exports the admin site settings."]);
             });
-            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<SiteSettingsPropertyDeploymentStep<AdminSettings>>());
+            services.AddSingleton<IDeploymentStepFactory>(new SiteSettingsPropertyDeploymentStepFactory<AdminSettings>());
         }
     }
 }

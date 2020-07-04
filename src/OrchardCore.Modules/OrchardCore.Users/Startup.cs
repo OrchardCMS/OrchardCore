@@ -41,7 +41,7 @@ using YesSql.Indexes;
 
 namespace OrchardCore.Users
 {
-    [RequireFeatures("OrchardCore.Deployment")]
+    // [RequireFeatures("OrchardCore.Deployment")]
     public class Startup : StartupBase
     {
         private readonly AdminOptions _adminOptions;
@@ -200,7 +200,7 @@ namespace OrchardCore.Users
                 var S = sp.GetService<IStringLocalizer<Startup>>();
                 return new SiteSettingsPropertyDeploymentStepDriver<LoginSettings>(S["Login settings"], S["Exports the Login site settings."]);
             });
-            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<SiteSettingsPropertyDeploymentStep<LoginSettings>>());
+            services.AddSingleton<IDeploymentStepFactory>(new SiteSettingsPropertyDeploymentStepFactory<LoginSettings>());
         }
     }
 
@@ -249,14 +249,16 @@ namespace OrchardCore.Users
         {
             services.AddScoped<INavigationProvider, ChangeEmailAdminMenu>();
             services.AddScoped<IDisplayDriver<ISite>, ChangeEmailSettingsDisplayDriver>();
-
+            //TODO this needs to be a seperate startup, just for the deployment step
+            // [Feature("OrchardCore.Users.ChangeEmail")]
+            // [RequireFeatures("OrchardCore.Deployment")]
             services.AddTransient<IDeploymentSource, SiteSettingsPropertyDeploymentSource<ChangeEmailSettings>>();
             services.AddScoped<IDisplayDriver<DeploymentStep>>(sp =>
             {
                 var S = sp.GetService<IStringLocalizer<Startup>>();
                 return new SiteSettingsPropertyDeploymentStepDriver<ChangeEmailSettings>(S["Change Email settings"], S["Exports the Change Email site settings."]);
             });
-            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<SiteSettingsPropertyDeploymentStep<ChangeEmailSettings>>());
+            services.AddSingleton<IDeploymentStepFactory>(new SiteSettingsPropertyDeploymentStepFactory<ChangeEmailSettings>());
         }
     }
 
@@ -285,14 +287,14 @@ namespace OrchardCore.Users
         {
             services.AddScoped<INavigationProvider, RegistrationAdminMenu>();
             services.AddScoped<IDisplayDriver<ISite>, RegistrationSettingsDisplayDriver>();
-
+          //TODO this needs to be a seperate startup, just for the deployment step
             services.AddTransient<IDeploymentSource, SiteSettingsPropertyDeploymentSource<RegistrationSettings>>();
             services.AddScoped<IDisplayDriver<DeploymentStep>>(sp =>
             {
                 var S = sp.GetService<IStringLocalizer<Startup>>();
                 return new SiteSettingsPropertyDeploymentStepDriver<RegistrationSettings>(S["Registration settings"], S["Exports the Registration site settings."]);
             });
-            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<SiteSettingsPropertyDeploymentStep<RegistrationSettings>>());
+            services.AddSingleton<IDeploymentStepFactory>(new SiteSettingsPropertyDeploymentStepFactory<RegistrationSettings>());
         }
     }
 
@@ -342,14 +344,14 @@ namespace OrchardCore.Users
         {
             services.AddScoped<INavigationProvider, ResetPasswordAdminMenu>();
             services.AddScoped<IDisplayDriver<ISite>, ResetPasswordSettingsDisplayDriver>();
-
+          //TODO this needs to be a seperate startup, just for the deployment step
             services.AddTransient<IDeploymentSource, SiteSettingsPropertyDeploymentSource<ResetPasswordSettings>>();
             services.AddScoped<IDisplayDriver<DeploymentStep>>(sp =>
             {
                 var S = sp.GetService<IStringLocalizer<Startup>>();
                 return new SiteSettingsPropertyDeploymentStepDriver<ResetPasswordSettings>(S["Reset Password settings"], S["Exports the Reset Password site settings."]);
             });
-            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<SiteSettingsPropertyDeploymentStep<ResetPasswordSettings>>());
+            services.AddSingleton<IDeploymentStepFactory>(new SiteSettingsPropertyDeploymentStepFactory<ResetPasswordSettings>());
         }
     }
 }

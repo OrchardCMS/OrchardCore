@@ -3,22 +3,13 @@ using OrchardCore.Deployment;
 namespace OrchardCore.Settings.Deployment
 {
     /// <summary>
-    /// Adds a generic site settings to a <see cref="DeploymentPlanResult"/>.
+    /// Adds a site setting from the properties dictionary to a <see cref="DeploymentPlanResult"/>.
     /// </summary>
-    public class SiteSettingsPropertyDeploymentStep<TModel> : DeploymentStep where TModel : class
+    public class SiteSettingsPropertyDeploymentStep<TModel> : DeploymentStep where TModel : class // TODO add new()
     {
         public SiteSettingsPropertyDeploymentStep()
         {
+            Name = "SiteSettingsPropertyDeploymentStep_" + typeof(TModel).Name;
         }
-
-        public SiteSettingsPropertyDeploymentStep(string title, string description)
-        {
-            Name = typeof(TModel).Name;
-            Title = title;
-            Description = description;
-        }
-
-        public string Title { get; set; }
-        public string Description { get; set; }
     }
 }

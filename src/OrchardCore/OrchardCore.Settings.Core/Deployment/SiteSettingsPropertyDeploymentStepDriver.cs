@@ -18,14 +18,15 @@ namespace OrchardCore.Settings.Deployment
 
         public override IDisplayResult Display(SiteSettingsPropertyDeploymentStep<TModel> step)
         {
+            // TODO move this initialization to a BuildViewModel method.
             return
                 Combine(
-                    Initialize<SiteSettingsPropertyDeploymentStepViewModel>("SiteSettingsDeploymentStep_Fields_Summary", model =>
+                    Initialize<SiteSettingsPropertyDeploymentStepViewModel>("SiteSettingsPropertyDeploymentStep_Fields_Summary", model =>
                     {
                         model.Title = _title;
                         model.Description = _description;
                     }).Location("Summary", "Content"),
-                    Initialize<SiteSettingsPropertyDeploymentStepViewModel>("SiteSettingsDeploymentStep_Fields_Thumbnail", model =>
+                    Initialize<SiteSettingsPropertyDeploymentStepViewModel>("SiteSettingsPropertyDeploymentStep_Fields_Thumbnail", model =>
                     {
                         model.Title = _title;
                         model.Description = _description;
@@ -35,7 +36,7 @@ namespace OrchardCore.Settings.Deployment
 
         public override IDisplayResult Edit(SiteSettingsPropertyDeploymentStep<TModel> step)
         {
-            return Initialize<SiteSettingsPropertyDeploymentStepViewModel>("SiteSettingsDeploymentStep_Fields_Edit", model =>
+            return Initialize<SiteSettingsPropertyDeploymentStepViewModel>("SiteSettingsPropertyDeploymentStep_Fields_Edit", model =>
             {
                 model.Title = _title;
                 model.Description = _description;
