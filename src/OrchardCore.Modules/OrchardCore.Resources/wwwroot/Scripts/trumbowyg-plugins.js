@@ -4,61 +4,6 @@
 */
 
 /* ===========================================================
- * trumbowyg.allowTagsFromPaste.js v1.0.2
- * It cleans tags from pasted text, whilst allowing several specified tags
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Author	: Fathi Anshory (0x00000F5C)
- * Twitter	: @fscchannl
- * Notes:
- *  - removeformatPasted must be set to FALSE since it was applied prior to pasteHandlers, or else it will be useless
- *	- It is most advisable to use along with the cleanpaste plugin, or else you'd end up with dirty markup
- */
-(function ($) {
-  'use strict';
-
-  var defaultOptions = {
-    // When empty, all tags are allowed making this plugin useless
-    // If you want to remove all tags, use removeformatPasted core option instead
-    allowedTags: [],
-    // List of tags which can be allowed
-    removableTags: ['a', 'abbr', 'address', 'b', 'bdi', 'bdo', 'blockquote', 'br', 'cite', 'code', 'del', 'dfn', 'details', 'em', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'hr', 'i', 'ins', 'kbd', 'mark', 'meter', 'pre', 'progress', 'q', 'rp', 'rt', 'ruby', 's', 'samp', 'small', 'span', 'strong', 'sub', 'summary', 'sup', 'time', 'u', 'var', 'wbr', 'img', 'map', 'area', 'canvas', 'figcaption', 'figure', 'picture', 'audio', 'source', 'track', 'video', 'ul', 'ol', 'li', 'dl', 'dt', 'dd', 'table', 'caption', 'th', 'tr', 'td', 'thead', 'tbody', 'tfoot', 'col', 'colgroup', 'style', 'div', 'p', 'form', 'input', 'textarea', 'button', 'select', 'optgroup', 'option', 'label', 'fieldset', 'legend', 'datalist', 'keygen', 'output', 'iframe', 'link', 'nav', 'header', 'hgroup', 'footer', 'main', 'section', 'article', 'aside', 'dialog', 'script', 'noscript', 'embed', 'object', 'param']
-  };
-  $.extend(true, $.trumbowyg, {
-    plugins: {
-      allowTagsFromPaste: {
-        init: function init(trumbowyg) {
-          // Force disable remove format pasted
-          trumbowyg.o.removeformatPasted = false;
-
-          if (!trumbowyg.o.plugins.allowTagsFromPaste) {
-            return;
-          }
-
-          var allowedTags = trumbowyg.o.plugins.allowTagsFromPaste.allowedTags || defaultOptions.allowedTags;
-          var removableTags = trumbowyg.o.plugins.allowTagsFromPaste.removableTags || defaultOptions.removableTags;
-
-          if (allowedTags.length === 0) {
-            return;
-          } // Get list of tags to remove
-
-
-          var tagsToRemove = $(removableTags).not(allowedTags).get();
-          trumbowyg.pasteHandlers.push(function () {
-            setTimeout(function () {
-              var processNodes = trumbowyg.$ed.html();
-              $.each(tagsToRemove, function (iterator, tagName) {
-                processNodes = processNodes.replace(new RegExp('<\\/?' + tagName + '(\\s[^>]*)?>', 'gi'), '');
-              });
-              trumbowyg.$ed.html(processNodes);
-            }, 0);
-          });
-        }
-      }
-    }
-  });
-})(jQuery);
-/* ===========================================================
  * trumbowyg.base64.js v1.0
  * Base64 plugin for Trumbowyg
  * http://alex-d.github.com/Trumbowyg
@@ -192,6 +137,61 @@
             }
           };
           trumbowyg.addBtnDef('base64', btnDef);
+        }
+      }
+    }
+  });
+})(jQuery);
+/* ===========================================================
+ * trumbowyg.allowTagsFromPaste.js v1.0.2
+ * It cleans tags from pasted text, whilst allowing several specified tags
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author	: Fathi Anshory (0x00000F5C)
+ * Twitter	: @fscchannl
+ * Notes:
+ *  - removeformatPasted must be set to FALSE since it was applied prior to pasteHandlers, or else it will be useless
+ *	- It is most advisable to use along with the cleanpaste plugin, or else you'd end up with dirty markup
+ */
+(function ($) {
+  'use strict';
+
+  var defaultOptions = {
+    // When empty, all tags are allowed making this plugin useless
+    // If you want to remove all tags, use removeformatPasted core option instead
+    allowedTags: [],
+    // List of tags which can be allowed
+    removableTags: ['a', 'abbr', 'address', 'b', 'bdi', 'bdo', 'blockquote', 'br', 'cite', 'code', 'del', 'dfn', 'details', 'em', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'hr', 'i', 'ins', 'kbd', 'mark', 'meter', 'pre', 'progress', 'q', 'rp', 'rt', 'ruby', 's', 'samp', 'small', 'span', 'strong', 'sub', 'summary', 'sup', 'time', 'u', 'var', 'wbr', 'img', 'map', 'area', 'canvas', 'figcaption', 'figure', 'picture', 'audio', 'source', 'track', 'video', 'ul', 'ol', 'li', 'dl', 'dt', 'dd', 'table', 'caption', 'th', 'tr', 'td', 'thead', 'tbody', 'tfoot', 'col', 'colgroup', 'style', 'div', 'p', 'form', 'input', 'textarea', 'button', 'select', 'optgroup', 'option', 'label', 'fieldset', 'legend', 'datalist', 'keygen', 'output', 'iframe', 'link', 'nav', 'header', 'hgroup', 'footer', 'main', 'section', 'article', 'aside', 'dialog', 'script', 'noscript', 'embed', 'object', 'param']
+  };
+  $.extend(true, $.trumbowyg, {
+    plugins: {
+      allowTagsFromPaste: {
+        init: function init(trumbowyg) {
+          // Force disable remove format pasted
+          trumbowyg.o.removeformatPasted = false;
+
+          if (!trumbowyg.o.plugins.allowTagsFromPaste) {
+            return;
+          }
+
+          var allowedTags = trumbowyg.o.plugins.allowTagsFromPaste.allowedTags || defaultOptions.allowedTags;
+          var removableTags = trumbowyg.o.plugins.allowTagsFromPaste.removableTags || defaultOptions.removableTags;
+
+          if (allowedTags.length === 0) {
+            return;
+          } // Get list of tags to remove
+
+
+          var tagsToRemove = $(removableTags).not(allowedTags).get();
+          trumbowyg.pasteHandlers.push(function () {
+            setTimeout(function () {
+              var processNodes = trumbowyg.$ed.html();
+              $.each(tagsToRemove, function (iterator, tagName) {
+                processNodes = processNodes.replace(new RegExp('<\\/?' + tagName + '(\\s[^>]*)?>', 'gi'), '');
+              });
+              trumbowyg.$ed.html(processNodes);
+            }, 0);
+          });
         }
       }
     }
@@ -632,6 +632,115 @@
     langs: {
       // jshint camelcase:false
       en: {
+        fontFamily: 'Font'
+      },
+      da: {
+        fontFamily: 'Skrifttype'
+      },
+      fr: {
+        fontFamily: 'Police'
+      },
+      de: {
+        fontFamily: 'Schriftart'
+      },
+      nl: {
+        fontFamily: 'Lettertype'
+      },
+      tr: {
+        fontFamily: 'Yazı Tipi'
+      },
+      zh_tw: {
+        fontFamily: '字體'
+      },
+      pt_br: {
+        fontFamily: 'Fonte'
+      },
+      ko: {
+        fontFamily: '글꼴'
+      }
+    }
+  }); // jshint camelcase:true
+
+  var defaultOptions = {
+    fontList: [{
+      name: 'Arial',
+      family: 'Arial, Helvetica, sans-serif'
+    }, {
+      name: 'Arial Black',
+      family: 'Arial Black, Gadget, sans-serif'
+    }, {
+      name: 'Comic Sans',
+      family: 'Comic Sans MS, Textile, cursive, sans-serif'
+    }, {
+      name: 'Courier New',
+      family: 'Courier New, Courier, monospace'
+    }, {
+      name: 'Georgia',
+      family: 'Georgia, serif'
+    }, {
+      name: 'Impact',
+      family: 'Impact, Charcoal, sans-serif'
+    }, {
+      name: 'Lucida Console',
+      family: 'Lucida Console, Monaco, monospace'
+    }, {
+      name: 'Lucida Sans',
+      family: 'Lucida Sans Uncide, Lucida Grande, sans-serif'
+    }, {
+      name: 'Palatino',
+      family: 'Palatino Linotype, Book Antiqua, Palatino, serif'
+    }, {
+      name: 'Tahoma',
+      family: 'Tahoma, Geneva, sans-serif'
+    }, {
+      name: 'Times New Roman',
+      family: 'Times New Roman, Times, serif'
+    }, {
+      name: 'Trebuchet',
+      family: 'Trebuchet MS, Helvetica, sans-serif'
+    }, {
+      name: 'Verdana',
+      family: 'Verdana, Geneva, sans-serif'
+    }]
+  }; // Add dropdown with web safe fonts
+
+  $.extend(true, $.trumbowyg, {
+    plugins: {
+      fontfamily: {
+        init: function init(trumbowyg) {
+          trumbowyg.o.plugins.fontfamily = $.extend({}, defaultOptions, trumbowyg.o.plugins.fontfamily || {});
+          trumbowyg.addBtnDef('fontfamily', {
+            dropdown: buildDropdown(trumbowyg),
+            hasIcon: false,
+            text: trumbowyg.lang.fontFamily
+          });
+        }
+      }
+    }
+  });
+
+  function buildDropdown(trumbowyg) {
+    var dropdown = [];
+    $.each(trumbowyg.o.plugins.fontfamily.fontList, function (index, font) {
+      trumbowyg.addBtnDef('fontfamily_' + index, {
+        title: '<span style="font-family: ' + font.family + ';">' + font.name + '</span>',
+        hasIcon: false,
+        fn: function fn() {
+          trumbowyg.execCmd('fontName', font.family, true);
+        }
+      });
+      dropdown.push('fontfamily_' + index);
+    });
+    return dropdown;
+  }
+})(jQuery);
+(function ($) {
+  'use strict';
+
+  $.extend(true, $.trumbowyg, {
+    langs: {
+      // jshint camelcase:false
+      en: {
         fontsize: 'Font size',
         fontsizes: {
           'x-small': 'Extra small',
@@ -875,115 +984,6 @@
     langs: {
       // jshint camelcase:false
       en: {
-        fontFamily: 'Font'
-      },
-      da: {
-        fontFamily: 'Skrifttype'
-      },
-      fr: {
-        fontFamily: 'Police'
-      },
-      de: {
-        fontFamily: 'Schriftart'
-      },
-      nl: {
-        fontFamily: 'Lettertype'
-      },
-      tr: {
-        fontFamily: 'Yazı Tipi'
-      },
-      zh_tw: {
-        fontFamily: '字體'
-      },
-      pt_br: {
-        fontFamily: 'Fonte'
-      },
-      ko: {
-        fontFamily: '글꼴'
-      }
-    }
-  }); // jshint camelcase:true
-
-  var defaultOptions = {
-    fontList: [{
-      name: 'Arial',
-      family: 'Arial, Helvetica, sans-serif'
-    }, {
-      name: 'Arial Black',
-      family: 'Arial Black, Gadget, sans-serif'
-    }, {
-      name: 'Comic Sans',
-      family: 'Comic Sans MS, Textile, cursive, sans-serif'
-    }, {
-      name: 'Courier New',
-      family: 'Courier New, Courier, monospace'
-    }, {
-      name: 'Georgia',
-      family: 'Georgia, serif'
-    }, {
-      name: 'Impact',
-      family: 'Impact, Charcoal, sans-serif'
-    }, {
-      name: 'Lucida Console',
-      family: 'Lucida Console, Monaco, monospace'
-    }, {
-      name: 'Lucida Sans',
-      family: 'Lucida Sans Uncide, Lucida Grande, sans-serif'
-    }, {
-      name: 'Palatino',
-      family: 'Palatino Linotype, Book Antiqua, Palatino, serif'
-    }, {
-      name: 'Tahoma',
-      family: 'Tahoma, Geneva, sans-serif'
-    }, {
-      name: 'Times New Roman',
-      family: 'Times New Roman, Times, serif'
-    }, {
-      name: 'Trebuchet',
-      family: 'Trebuchet MS, Helvetica, sans-serif'
-    }, {
-      name: 'Verdana',
-      family: 'Verdana, Geneva, sans-serif'
-    }]
-  }; // Add dropdown with web safe fonts
-
-  $.extend(true, $.trumbowyg, {
-    plugins: {
-      fontfamily: {
-        init: function init(trumbowyg) {
-          trumbowyg.o.plugins.fontfamily = $.extend({}, defaultOptions, trumbowyg.o.plugins.fontfamily || {});
-          trumbowyg.addBtnDef('fontfamily', {
-            dropdown: buildDropdown(trumbowyg),
-            hasIcon: false,
-            text: trumbowyg.lang.fontFamily
-          });
-        }
-      }
-    }
-  });
-
-  function buildDropdown(trumbowyg) {
-    var dropdown = [];
-    $.each(trumbowyg.o.plugins.fontfamily.fontList, function (index, font) {
-      trumbowyg.addBtnDef('fontfamily_' + index, {
-        title: '<span style="font-family: ' + font.family + ';">' + font.name + '</span>',
-        hasIcon: false,
-        fn: function fn() {
-          trumbowyg.execCmd('fontName', font.family, true);
-        }
-      });
-      dropdown.push('fontfamily_' + index);
-    });
-    return dropdown;
-  }
-})(jQuery);
-(function ($) {
-  'use strict';
-
-  $.extend(true, $.trumbowyg, {
-    langs: {
-      // jshint camelcase:false
-      en: {
         giphy: 'Insert GIF'
       },
       fr: {
@@ -1134,6 +1134,212 @@
               });
             }
           });
+        }
+      }
+    }
+  });
+})(jQuery);
+/*/* ===========================================================
+ * trumbowyg.history.js v1.0
+ * history plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : Sven Dunemann [dunemann@forelabs.eu]
+ */
+(function ($) {
+  'use strict';
+
+  $.extend(true, $.trumbowyg, {
+    langs: {
+      // jshint camelcase:false
+      de: {
+        history: {
+          redo: 'Wiederholen',
+          undo: 'Rückgängig'
+        }
+      },
+      en: {
+        history: {
+          redo: 'Redo',
+          undo: 'Undo'
+        }
+      },
+      da: {
+        history: {
+          redo: 'Annuller fortryd',
+          undo: 'Fortryd'
+        }
+      },
+      fr: {
+        history: {
+          redo: 'Annuler',
+          undo: 'Rétablir'
+        }
+      },
+      zh_tw: {
+        history: {
+          redo: '重做',
+          undo: '復原'
+        }
+      },
+      pt_br: {
+        history: {
+          redo: 'Refazer',
+          undo: 'Desfazer'
+        }
+      },
+      ko: {
+        history: {
+          redo: '다시 실행',
+          undo: '되돌리기'
+        }
+      } // jshint camelcase:true
+
+    },
+    plugins: {
+      history: {
+        init: function init(t) {
+          t.o.plugins.history = $.extend(true, {
+            _stack: [],
+            _index: -1,
+            _focusEl: undefined
+          }, t.o.plugins.history || {});
+          var btnBuildDefRedo = {
+            title: t.lang.history.redo,
+            ico: 'redo',
+            key: 'Y',
+            fn: function fn() {
+              if (t.o.plugins.history._index < t.o.plugins.history._stack.length - 1) {
+                t.o.plugins.history._index += 1;
+                var index = t.o.plugins.history._index;
+                var newState = t.o.plugins.history._stack[index];
+                t.execCmd('html', newState); // because of some semantic optimisations we have to save the state back
+                // to history
+
+                t.o.plugins.history._stack[index] = t.$ed.html();
+                carretToEnd();
+                toggleButtonStates();
+              }
+            }
+          };
+          var btnBuildDefUndo = {
+            title: t.lang.history.undo,
+            ico: 'undo',
+            key: 'Z',
+            fn: function fn() {
+              if (t.o.plugins.history._index > 0) {
+                t.o.plugins.history._index -= 1;
+                var index = t.o.plugins.history._index,
+                    newState = t.o.plugins.history._stack[index];
+                t.execCmd('html', newState); // because of some semantic optimisations we have to save the state back
+                // to history
+
+                t.o.plugins.history._stack[index] = t.$ed.html();
+                carretToEnd();
+                toggleButtonStates();
+              }
+            }
+          };
+
+          var pushToHistory = function pushToHistory() {
+            var index = t.o.plugins.history._index,
+                stack = t.o.plugins.history._stack,
+                latestState = stack.slice(-1)[0] || '<p></p>',
+                prevState = stack[index],
+                newState = t.$ed.html(),
+                focusEl = t.doc.getSelection().focusNode,
+                focusElText = '',
+                latestStateTagsList,
+                newStateTagsList,
+                prevFocusEl = t.o.plugins.history._focusEl;
+            latestStateTagsList = $('<div>' + latestState + '</div>').find('*').map(function () {
+              return this.localName;
+            });
+            newStateTagsList = $('<div>' + newState + '</div>').find('*').map(function () {
+              return this.localName;
+            });
+
+            if (focusEl) {
+              t.o.plugins.history._focusEl = focusEl;
+              focusElText = focusEl.outerHTML || focusEl.textContent;
+            }
+
+            if (newState !== prevState) {
+              // a new stack entry is defined when current insert ends on a whitespace character
+              // or count of node elements has been changed
+              // or focused element differs from previous one
+              if (focusElText.slice(-1).match(/\s/) || !arraysAreIdentical(latestStateTagsList, newStateTagsList) || t.o.plugins.history._index <= 0 || focusEl !== prevFocusEl) {
+                t.o.plugins.history._index += 1; // remove newer entries in history when something new was added
+                // because timeline was changes with interaction
+
+                t.o.plugins.history._stack = stack.slice(0, t.o.plugins.history._index); // now add new state to modified history
+
+                t.o.plugins.history._stack.push(newState);
+              } else {
+                // modify last stack entry
+                t.o.plugins.history._stack[index] = newState;
+              }
+
+              toggleButtonStates();
+            }
+          };
+
+          var toggleButtonStates = function toggleButtonStates() {
+            var index = t.o.plugins.history._index,
+                stackSize = t.o.plugins.history._stack.length,
+                undoState = index > 0,
+                redoState = stackSize !== 0 && index !== stackSize - 1;
+            toggleButtonState('historyUndo', undoState);
+            toggleButtonState('historyRedo', redoState);
+          };
+
+          var toggleButtonState = function toggleButtonState(btn, enable) {
+            var button = t.$box.find('.trumbowyg-' + btn + '-button');
+
+            if (enable) {
+              button.removeClass('trumbowyg-disable');
+            } else if (!button.hasClass('trumbowyg-disable')) {
+              button.addClass('trumbowyg-disable');
+            }
+          };
+
+          var arraysAreIdentical = function arraysAreIdentical(a, b) {
+            if (a === b) {
+              return true;
+            }
+
+            if (a == null || b == null) {
+              return false;
+            }
+
+            if (a.length !== b.length) {
+              return false;
+            }
+
+            for (var i = 0; i < a.length; i += 1) {
+              if (a[i] !== b[i]) {
+                return false;
+              }
+            }
+
+            return true;
+          };
+
+          var carretToEnd = function carretToEnd() {
+            var node = t.doc.getSelection().focusNode,
+                range = t.doc.createRange();
+
+            if (node.childNodes.length > 0) {
+              range.setStartAfter(node.childNodes[node.childNodes.length - 1]);
+              range.setEndAfter(node.childNodes[node.childNodes.length - 1]);
+              t.doc.getSelection().removeAllRanges();
+              t.doc.getSelection().addRange(range);
+            }
+          };
+
+          t.$c.on('tbwinit tbwchange', pushToHistory);
+          t.addBtnDef('historyRedo', btnBuildDefRedo);
+          t.addBtnDef('historyUndo', btnBuildDefUndo);
         }
       }
     }
@@ -1391,212 +1597,6 @@
 
     return parentEl;
   }
-})(jQuery);
-/*/* ===========================================================
- * trumbowyg.history.js v1.0
- * history plugin for Trumbowyg
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Author : Sven Dunemann [dunemann@forelabs.eu]
- */
-(function ($) {
-  'use strict';
-
-  $.extend(true, $.trumbowyg, {
-    langs: {
-      // jshint camelcase:false
-      de: {
-        history: {
-          redo: 'Wiederholen',
-          undo: 'Rückgängig'
-        }
-      },
-      en: {
-        history: {
-          redo: 'Redo',
-          undo: 'Undo'
-        }
-      },
-      da: {
-        history: {
-          redo: 'Annuller fortryd',
-          undo: 'Fortryd'
-        }
-      },
-      fr: {
-        history: {
-          redo: 'Annuler',
-          undo: 'Rétablir'
-        }
-      },
-      zh_tw: {
-        history: {
-          redo: '重做',
-          undo: '復原'
-        }
-      },
-      pt_br: {
-        history: {
-          redo: 'Refazer',
-          undo: 'Desfazer'
-        }
-      },
-      ko: {
-        history: {
-          redo: '다시 실행',
-          undo: '되돌리기'
-        }
-      } // jshint camelcase:true
-
-    },
-    plugins: {
-      history: {
-        init: function init(t) {
-          t.o.plugins.history = $.extend(true, {
-            _stack: [],
-            _index: -1,
-            _focusEl: undefined
-          }, t.o.plugins.history || {});
-          var btnBuildDefRedo = {
-            title: t.lang.history.redo,
-            ico: 'redo',
-            key: 'Y',
-            fn: function fn() {
-              if (t.o.plugins.history._index < t.o.plugins.history._stack.length - 1) {
-                t.o.plugins.history._index += 1;
-                var index = t.o.plugins.history._index;
-                var newState = t.o.plugins.history._stack[index];
-                t.execCmd('html', newState); // because of some semantic optimisations we have to save the state back
-                // to history
-
-                t.o.plugins.history._stack[index] = t.$ed.html();
-                carretToEnd();
-                toggleButtonStates();
-              }
-            }
-          };
-          var btnBuildDefUndo = {
-            title: t.lang.history.undo,
-            ico: 'undo',
-            key: 'Z',
-            fn: function fn() {
-              if (t.o.plugins.history._index > 0) {
-                t.o.plugins.history._index -= 1;
-                var index = t.o.plugins.history._index,
-                    newState = t.o.plugins.history._stack[index];
-                t.execCmd('html', newState); // because of some semantic optimisations we have to save the state back
-                // to history
-
-                t.o.plugins.history._stack[index] = t.$ed.html();
-                carretToEnd();
-                toggleButtonStates();
-              }
-            }
-          };
-
-          var pushToHistory = function pushToHistory() {
-            var index = t.o.plugins.history._index,
-                stack = t.o.plugins.history._stack,
-                latestState = stack.slice(-1)[0] || '<p></p>',
-                prevState = stack[index],
-                newState = t.$ed.html(),
-                focusEl = t.doc.getSelection().focusNode,
-                focusElText = '',
-                latestStateTagsList,
-                newStateTagsList,
-                prevFocusEl = t.o.plugins.history._focusEl;
-            latestStateTagsList = $('<div>' + latestState + '</div>').find('*').map(function () {
-              return this.localName;
-            });
-            newStateTagsList = $('<div>' + newState + '</div>').find('*').map(function () {
-              return this.localName;
-            });
-
-            if (focusEl) {
-              t.o.plugins.history._focusEl = focusEl;
-              focusElText = focusEl.outerHTML || focusEl.textContent;
-            }
-
-            if (newState !== prevState) {
-              // a new stack entry is defined when current insert ends on a whitespace character
-              // or count of node elements has been changed
-              // or focused element differs from previous one
-              if (focusElText.slice(-1).match(/\s/) || !arraysAreIdentical(latestStateTagsList, newStateTagsList) || t.o.plugins.history._index <= 0 || focusEl !== prevFocusEl) {
-                t.o.plugins.history._index += 1; // remove newer entries in history when something new was added
-                // because timeline was changes with interaction
-
-                t.o.plugins.history._stack = stack.slice(0, t.o.plugins.history._index); // now add new state to modified history
-
-                t.o.plugins.history._stack.push(newState);
-              } else {
-                // modify last stack entry
-                t.o.plugins.history._stack[index] = newState;
-              }
-
-              toggleButtonStates();
-            }
-          };
-
-          var toggleButtonStates = function toggleButtonStates() {
-            var index = t.o.plugins.history._index,
-                stackSize = t.o.plugins.history._stack.length,
-                undoState = index > 0,
-                redoState = stackSize !== 0 && index !== stackSize - 1;
-            toggleButtonState('historyUndo', undoState);
-            toggleButtonState('historyRedo', redoState);
-          };
-
-          var toggleButtonState = function toggleButtonState(btn, enable) {
-            var button = t.$box.find('.trumbowyg-' + btn + '-button');
-
-            if (enable) {
-              button.removeClass('trumbowyg-disable');
-            } else if (!button.hasClass('trumbowyg-disable')) {
-              button.addClass('trumbowyg-disable');
-            }
-          };
-
-          var arraysAreIdentical = function arraysAreIdentical(a, b) {
-            if (a === b) {
-              return true;
-            }
-
-            if (a == null || b == null) {
-              return false;
-            }
-
-            if (a.length !== b.length) {
-              return false;
-            }
-
-            for (var i = 0; i < a.length; i += 1) {
-              if (a[i] !== b[i]) {
-                return false;
-              }
-            }
-
-            return true;
-          };
-
-          var carretToEnd = function carretToEnd() {
-            var node = t.doc.getSelection().focusNode,
-                range = t.doc.createRange();
-
-            if (node.childNodes.length > 0) {
-              range.setStartAfter(node.childNodes[node.childNodes.length - 1]);
-              range.setEndAfter(node.childNodes[node.childNodes.length - 1]);
-              t.doc.getSelection().removeAllRanges();
-              t.doc.getSelection().addRange(range);
-            }
-          };
-
-          t.$c.on('tbwinit tbwchange', pushToHistory);
-          t.addBtnDef('historyRedo', btnBuildDefRedo);
-          t.addBtnDef('historyUndo', btnBuildDefUndo);
-        }
-      }
-    }
-  });
 })(jQuery);
 /* ===========================================================
  * trumbowyg.mathMl.js v1.0
@@ -2019,6 +2019,55 @@
   });
 })(jQuery);
 /* ===========================================================
+ * trumbowyg.pasteimage.js v1.0
+ * Basic base64 paste plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : Alexandre Demode (Alex-D)
+ *          Twitter : @AlexandreDemode
+ *          Website : alex-d.fr
+ */
+(function ($) {
+  'use strict';
+
+  $.extend(true, $.trumbowyg, {
+    plugins: {
+      pasteImage: {
+        init: function init(trumbowyg) {
+          trumbowyg.pasteHandlers.push(function (pasteEvent) {
+            try {
+              var items = (pasteEvent.originalEvent || pasteEvent).clipboardData.items,
+                  mustPreventDefault = false,
+                  reader;
+
+              for (var i = items.length - 1; i >= 0; i -= 1) {
+                if (items[i].type.match(/^image\//)) {
+                  reader = new FileReader();
+                  /* jshint -W083 */
+
+                  reader.onloadend = function (event) {
+                    trumbowyg.execCmd('insertImage', event.target.result, false, true);
+                  };
+                  /* jshint +W083 */
+
+
+                  reader.readAsDataURL(items[i].getAsFile());
+                  mustPreventDefault = true;
+                }
+              }
+
+              if (mustPreventDefault) {
+                pasteEvent.stopPropagation();
+                pasteEvent.preventDefault();
+              }
+            } catch (c) {}
+          });
+        }
+      }
+    }
+  });
+})(jQuery);
+/* ===========================================================
  * trumbowyg.preformatted.js v1.0
  * Preformatted plugin for Trumbowyg
  * http://alex-d.github.com/Trumbowyg
@@ -2162,50 +2211,283 @@
     }
   }
 })(jQuery);
-/* ===========================================================
- * trumbowyg.pasteimage.js v1.0
- * Basic base64 paste plugin for Trumbowyg
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Author : Alexandre Demode (Alex-D)
- *          Twitter : @AlexandreDemode
- *          Website : alex-d.fr
- */
+;
+
 (function ($) {
   'use strict';
 
+  var defaultOptions = {
+    minSize: 32,
+    step: 4
+  };
+
+  function preventDefault(e) {
+    e.stopPropagation();
+    e.preventDefault();
+  }
+
+  var ResizeWithCanvas = function ResizeWithCanvas() {
+    // variable to create canvas and save img in resize mode
+    this.resizeCanvas = document.createElement('canvas'); // to allow canvas to get focus
+
+    this.resizeCanvas.setAttribute('tabindex', '0');
+    this.resizeCanvas.id = 'trumbowyg-resizimg-' + +new Date();
+    this.ctx = null;
+    this.resizeImg = null;
+
+    this.pressEscape = function (obj) {
+      obj.reset();
+    };
+
+    this.pressBackspaceOrDelete = function (obj) {
+      $(obj.resizeCanvas).replaceWith('');
+      obj.resizeImg = null;
+    }; // PRIVATE FUNCTION
+
+
+    var focusedNow = false;
+    var isCursorSeResize = false; // calculate offset to change mouse over square in the canvas
+
+    var offsetX, offsetY;
+
+    var reOffset = function reOffset(canvas) {
+      var BB = canvas.getBoundingClientRect();
+      offsetX = BB.left;
+      offsetY = BB.top;
+    };
+
+    var drawRect = function drawRect(shapeData, ctx) {
+      // Inner
+      ctx.beginPath();
+      ctx.fillStyle = 'rgb(255, 255, 255)';
+      ctx.rect(shapeData.points.x, shapeData.points.y, shapeData.points.width, shapeData.points.height);
+      ctx.fill();
+      ctx.stroke();
+    };
+
+    var updateCanvas = function updateCanvas(canvas, ctx, img, canvasWidth, canvasHeight) {
+      ctx.translate(0.5, 0.5);
+      ctx.lineWidth = 1; // image
+
+      ctx.drawImage(img, 5, 5, canvasWidth - 10, canvasHeight - 10); // border
+
+      ctx.beginPath();
+      ctx.rect(5, 5, canvasWidth - 10, canvasHeight - 10);
+      ctx.stroke(); // square in the angle
+
+      ctx.beginPath();
+      ctx.fillStyle = 'rgb(255, 255, 255)';
+      ctx.rect(canvasWidth - 10, canvasHeight - 10, 9, 9);
+      ctx.fill();
+      ctx.stroke(); // get the offset to change the mouse cursor
+
+      reOffset(canvas);
+      return ctx;
+    }; // PUBLIC FUNCTION
+    // necessary to correctly print cursor over square. Called once for instance. Useless with trumbowyg.
+
+
+    this.init = function () {
+      var _this = this;
+
+      $(window).on('scroll resize', function () {
+        _this.reCalcOffset();
+      });
+    };
+
+    this.reCalcOffset = function () {
+      reOffset(this.resizeCanvas);
+    };
+
+    this.canvasId = function () {
+      return this.resizeCanvas.id;
+    };
+
+    this.isActive = function () {
+      return this.resizeImg !== null;
+    };
+
+    this.isFocusedNow = function () {
+      return focusedNow;
+    };
+
+    this.blurNow = function () {
+      focusedNow = false;
+    }; // restore image in the HTML of the editor
+
+
+    this.reset = function () {
+      if (this.resizeImg === null) {
+        return;
+      }
+
+      this.resizeImg.width = this.resizeCanvas.clientWidth - 10;
+      this.resizeImg.height = this.resizeCanvas.clientHeight - 10; // clear style of image to avoid issue on resize because this attribute have priority over width and height attribute
+
+      this.resizeImg.removeAttribute('style');
+      $(this.resizeCanvas).replaceWith($(this.resizeImg)); // reset canvas style
+
+      this.resizeCanvas.removeAttribute('style');
+      this.resizeImg = null;
+    }; // setup canvas with points and border to allow the resizing operation
+
+
+    this.setup = function (img, resizableOptions) {
+      this.resizeImg = img;
+
+      if (!this.resizeCanvas.getContext) {
+        return false;
+      }
+
+      focusedNow = true; // draw canvas
+
+      this.resizeCanvas.width = $(this.resizeImg).width() + 10;
+      this.resizeCanvas.height = $(this.resizeImg).height() + 10;
+      this.resizeCanvas.style.margin = '-5px';
+      this.ctx = this.resizeCanvas.getContext('2d'); // replace image with canvas
+
+      $(this.resizeImg).replaceWith($(this.resizeCanvas));
+      updateCanvas(this.resizeCanvas, this.ctx, this.resizeImg, this.resizeCanvas.width, this.resizeCanvas.height); // enable resize
+
+      $(this.resizeCanvas).resizable(resizableOptions).on('mousedown', preventDefault);
+
+      var _this = this;
+
+      $(this.resizeCanvas).on('mousemove', function (e) {
+        var mouseX = Math.round(e.clientX - offsetX);
+        var mouseY = Math.round(e.clientY - offsetY);
+        var wasCursorSeResize = isCursorSeResize;
+
+        _this.ctx.rect(_this.resizeCanvas.width - 10, _this.resizeCanvas.height - 10, 9, 9);
+
+        isCursorSeResize = _this.ctx.isPointInPath(mouseX, mouseY);
+
+        if (wasCursorSeResize !== isCursorSeResize) {
+          this.style.cursor = isCursorSeResize ? 'se-resize' : 'default';
+        }
+      }).on('keydown', function (e) {
+        if (!_this.isActive()) {
+          return;
+        }
+
+        var x = e.keyCode;
+
+        if (x === 27) {
+          // ESC
+          _this.pressEscape(_this);
+        } else if (x === 8 || x === 46) {
+          // BACKSPACE or DELETE
+          _this.pressBackspaceOrDelete(_this);
+        }
+      }).on('focus', preventDefault);
+      this.resizeCanvas.focus();
+      return true;
+    }; // update the canvas after the resizing
+
+
+    this.refresh = function () {
+      if (!this.resizeCanvas.getContext) {
+        return;
+      }
+
+      this.resizeCanvas.width = this.resizeCanvas.clientWidth;
+      this.resizeCanvas.height = this.resizeCanvas.clientHeight;
+      updateCanvas(this.resizeCanvas, this.ctx, this.resizeImg, this.resizeCanvas.width, this.resizeCanvas.height);
+    };
+  }; // object to interact with canvas
+
+
+  var resizeWithCanvas = new ResizeWithCanvas();
+
+  function destroyResizable(trumbowyg) {
+    // clean html code
+    trumbowyg.$ed.find('canvas.resizable').resizable('destroy').off('mousedown', preventDefault).removeClass('resizable');
+    resizeWithCanvas.reset();
+    trumbowyg.syncCode();
+  }
+
   $.extend(true, $.trumbowyg, {
     plugins: {
-      pasteImage: {
+      resizimg: {
         init: function init(trumbowyg) {
-          trumbowyg.pasteHandlers.push(function (pasteEvent) {
-            try {
-              var items = (pasteEvent.originalEvent || pasteEvent).clipboardData.items,
-                  mustPreventDefault = false,
-                  reader;
+          trumbowyg.o.plugins.resizimg = $.extend(true, {}, defaultOptions, trumbowyg.o.plugins.resizimg || {}, {
+            resizable: {
+              resizeWidth: false,
+              onDragStart: function onDragStart(ev, $el) {
+                var opt = trumbowyg.o.plugins.resizimg;
+                var x = ev.pageX - $el.offset().left;
+                var y = ev.pageY - $el.offset().top;
 
-              for (var i = items.length - 1; i >= 0; i -= 1) {
-                if (items[i].type.match(/^image\//)) {
-                  reader = new FileReader();
-                  /* jshint -W083 */
-
-                  reader.onloadend = function (event) {
-                    trumbowyg.execCmd('insertImage', event.target.result, false, true);
-                  };
-                  /* jshint +W083 */
-
-
-                  reader.readAsDataURL(items[i].getAsFile());
-                  mustPreventDefault = true;
+                if (x < $el.width() - opt.minSize || y < $el.height() - opt.minSize) {
+                  return false;
                 }
+              },
+              onDrag: function onDrag(ev, $el, newWidth, newHeight) {
+                var opt = trumbowyg.o.plugins.resizimg;
+
+                if (newHeight < opt.minSize) {
+                  newHeight = opt.minSize;
+                }
+
+                newHeight -= newHeight % opt.step;
+                $el.height(newHeight);
+                return false;
+              },
+              onDragEnd: function onDragEnd() {
+                // resize update canvas information
+                resizeWithCanvas.refresh();
+                trumbowyg.syncCode();
+              }
+            }
+          });
+
+          function initResizable() {
+            trumbowyg.$ed.find('img').off('click').on('click', function (e) {
+              // if I'm already do a resize, reset it
+              if (resizeWithCanvas.isActive()) {
+                resizeWithCanvas.reset();
+              } // initialize resize of image
+
+
+              resizeWithCanvas.setup(this, trumbowyg.o.plugins.resizimg.resizable);
+              preventDefault(e);
+            });
+          }
+
+          trumbowyg.$c.on('tbwinit', function () {
+            initResizable(); // disable resize when click on other items
+
+            trumbowyg.$ed.on('click', function (e) {
+              // check if I've clicked out of canvas or image to reset it
+              if ($(e.target).is('img') || e.target.id === resizeWithCanvas.canvasId()) {
+                return;
               }
 
-              if (mustPreventDefault) {
-                pasteEvent.stopPropagation();
-                pasteEvent.preventDefault();
-              }
-            } catch (c) {}
+              preventDefault(e);
+              resizeWithCanvas.reset(); // save changes
+
+              trumbowyg.$c.trigger('tbwchange');
+            });
+            trumbowyg.$ed.on('scroll', function () {
+              resizeWithCanvas.reCalcOffset();
+            });
           });
+          trumbowyg.$c.on('tbwfocus tbwchange', initResizable);
+          trumbowyg.$c.on('tbwresize', function () {
+            resizeWithCanvas.reCalcOffset();
+          }); // Destroy
+
+          trumbowyg.$c.on('tbwblur', function () {
+            // if I have already focused the canvas avoid destroy
+            if (resizeWithCanvas.isFocusedNow()) {
+              resizeWithCanvas.blurNow();
+            } else {
+              destroyResizable(trumbowyg);
+            }
+          });
+        },
+        destroy: function destroy(trumbowyg) {
+          destroyResizable(trumbowyg);
         }
       }
     }
@@ -2664,288 +2946,6 @@
           t.addBtnDef('tableDeleteRow', deleteRow);
           t.addBtnDef('tableDeleteColumn', deleteColumn);
           t.addBtnDef('tableDestroy', destroy);
-        }
-      }
-    }
-  });
-})(jQuery);
-;
-
-(function ($) {
-  'use strict';
-
-  var defaultOptions = {
-    minSize: 32,
-    step: 4
-  };
-
-  function preventDefault(e) {
-    e.stopPropagation();
-    e.preventDefault();
-  }
-
-  var ResizeWithCanvas = function ResizeWithCanvas() {
-    // variable to create canvas and save img in resize mode
-    this.resizeCanvas = document.createElement('canvas'); // to allow canvas to get focus
-
-    this.resizeCanvas.setAttribute('tabindex', '0');
-    this.resizeCanvas.id = 'trumbowyg-resizimg-' + +new Date();
-    this.ctx = null;
-    this.resizeImg = null;
-
-    this.pressEscape = function (obj) {
-      obj.reset();
-    };
-
-    this.pressBackspaceOrDelete = function (obj) {
-      $(obj.resizeCanvas).replaceWith('');
-      obj.resizeImg = null;
-    }; // PRIVATE FUNCTION
-
-
-    var focusedNow = false;
-    var isCursorSeResize = false; // calculate offset to change mouse over square in the canvas
-
-    var offsetX, offsetY;
-
-    var reOffset = function reOffset(canvas) {
-      var BB = canvas.getBoundingClientRect();
-      offsetX = BB.left;
-      offsetY = BB.top;
-    };
-
-    var drawRect = function drawRect(shapeData, ctx) {
-      // Inner
-      ctx.beginPath();
-      ctx.fillStyle = 'rgb(255, 255, 255)';
-      ctx.rect(shapeData.points.x, shapeData.points.y, shapeData.points.width, shapeData.points.height);
-      ctx.fill();
-      ctx.stroke();
-    };
-
-    var updateCanvas = function updateCanvas(canvas, ctx, img, canvasWidth, canvasHeight) {
-      ctx.translate(0.5, 0.5);
-      ctx.lineWidth = 1; // image
-
-      ctx.drawImage(img, 5, 5, canvasWidth - 10, canvasHeight - 10); // border
-
-      ctx.beginPath();
-      ctx.rect(5, 5, canvasWidth - 10, canvasHeight - 10);
-      ctx.stroke(); // square in the angle
-
-      ctx.beginPath();
-      ctx.fillStyle = 'rgb(255, 255, 255)';
-      ctx.rect(canvasWidth - 10, canvasHeight - 10, 9, 9);
-      ctx.fill();
-      ctx.stroke(); // get the offset to change the mouse cursor
-
-      reOffset(canvas);
-      return ctx;
-    }; // PUBLIC FUNCTION
-    // necessary to correctly print cursor over square. Called once for instance. Useless with trumbowyg.
-
-
-    this.init = function () {
-      var _this = this;
-
-      $(window).on('scroll resize', function () {
-        _this.reCalcOffset();
-      });
-    };
-
-    this.reCalcOffset = function () {
-      reOffset(this.resizeCanvas);
-    };
-
-    this.canvasId = function () {
-      return this.resizeCanvas.id;
-    };
-
-    this.isActive = function () {
-      return this.resizeImg !== null;
-    };
-
-    this.isFocusedNow = function () {
-      return focusedNow;
-    };
-
-    this.blurNow = function () {
-      focusedNow = false;
-    }; // restore image in the HTML of the editor
-
-
-    this.reset = function () {
-      if (this.resizeImg === null) {
-        return;
-      }
-
-      this.resizeImg.width = this.resizeCanvas.clientWidth - 10;
-      this.resizeImg.height = this.resizeCanvas.clientHeight - 10; // clear style of image to avoid issue on resize because this attribute have priority over width and height attribute
-
-      this.resizeImg.removeAttribute('style');
-      $(this.resizeCanvas).replaceWith($(this.resizeImg)); // reset canvas style
-
-      this.resizeCanvas.removeAttribute('style');
-      this.resizeImg = null;
-    }; // setup canvas with points and border to allow the resizing operation
-
-
-    this.setup = function (img, resizableOptions) {
-      this.resizeImg = img;
-
-      if (!this.resizeCanvas.getContext) {
-        return false;
-      }
-
-      focusedNow = true; // draw canvas
-
-      this.resizeCanvas.width = $(this.resizeImg).width() + 10;
-      this.resizeCanvas.height = $(this.resizeImg).height() + 10;
-      this.resizeCanvas.style.margin = '-5px';
-      this.ctx = this.resizeCanvas.getContext('2d'); // replace image with canvas
-
-      $(this.resizeImg).replaceWith($(this.resizeCanvas));
-      updateCanvas(this.resizeCanvas, this.ctx, this.resizeImg, this.resizeCanvas.width, this.resizeCanvas.height); // enable resize
-
-      $(this.resizeCanvas).resizable(resizableOptions).on('mousedown', preventDefault);
-
-      var _this = this;
-
-      $(this.resizeCanvas).on('mousemove', function (e) {
-        var mouseX = Math.round(e.clientX - offsetX);
-        var mouseY = Math.round(e.clientY - offsetY);
-        var wasCursorSeResize = isCursorSeResize;
-
-        _this.ctx.rect(_this.resizeCanvas.width - 10, _this.resizeCanvas.height - 10, 9, 9);
-
-        isCursorSeResize = _this.ctx.isPointInPath(mouseX, mouseY);
-
-        if (wasCursorSeResize !== isCursorSeResize) {
-          this.style.cursor = isCursorSeResize ? 'se-resize' : 'default';
-        }
-      }).on('keydown', function (e) {
-        if (!_this.isActive()) {
-          return;
-        }
-
-        var x = e.keyCode;
-
-        if (x === 27) {
-          // ESC
-          _this.pressEscape(_this);
-        } else if (x === 8 || x === 46) {
-          // BACKSPACE or DELETE
-          _this.pressBackspaceOrDelete(_this);
-        }
-      }).on('focus', preventDefault);
-      this.resizeCanvas.focus();
-      return true;
-    }; // update the canvas after the resizing
-
-
-    this.refresh = function () {
-      if (!this.resizeCanvas.getContext) {
-        return;
-      }
-
-      this.resizeCanvas.width = this.resizeCanvas.clientWidth;
-      this.resizeCanvas.height = this.resizeCanvas.clientHeight;
-      updateCanvas(this.resizeCanvas, this.ctx, this.resizeImg, this.resizeCanvas.width, this.resizeCanvas.height);
-    };
-  }; // object to interact with canvas
-
-
-  var resizeWithCanvas = new ResizeWithCanvas();
-
-  function destroyResizable(trumbowyg) {
-    // clean html code
-    trumbowyg.$ed.find('canvas.resizable').resizable('destroy').off('mousedown', preventDefault).removeClass('resizable');
-    resizeWithCanvas.reset();
-    trumbowyg.syncCode();
-  }
-
-  $.extend(true, $.trumbowyg, {
-    plugins: {
-      resizimg: {
-        init: function init(trumbowyg) {
-          trumbowyg.o.plugins.resizimg = $.extend(true, {}, defaultOptions, trumbowyg.o.plugins.resizimg || {}, {
-            resizable: {
-              resizeWidth: false,
-              onDragStart: function onDragStart(ev, $el) {
-                var opt = trumbowyg.o.plugins.resizimg;
-                var x = ev.pageX - $el.offset().left;
-                var y = ev.pageY - $el.offset().top;
-
-                if (x < $el.width() - opt.minSize || y < $el.height() - opt.minSize) {
-                  return false;
-                }
-              },
-              onDrag: function onDrag(ev, $el, newWidth, newHeight) {
-                var opt = trumbowyg.o.plugins.resizimg;
-
-                if (newHeight < opt.minSize) {
-                  newHeight = opt.minSize;
-                }
-
-                newHeight -= newHeight % opt.step;
-                $el.height(newHeight);
-                return false;
-              },
-              onDragEnd: function onDragEnd() {
-                // resize update canvas information
-                resizeWithCanvas.refresh();
-                trumbowyg.syncCode();
-              }
-            }
-          });
-
-          function initResizable() {
-            trumbowyg.$ed.find('img').off('click').on('click', function (e) {
-              // if I'm already do a resize, reset it
-              if (resizeWithCanvas.isActive()) {
-                resizeWithCanvas.reset();
-              } // initialize resize of image
-
-
-              resizeWithCanvas.setup(this, trumbowyg.o.plugins.resizimg.resizable);
-              preventDefault(e);
-            });
-          }
-
-          trumbowyg.$c.on('tbwinit', function () {
-            initResizable(); // disable resize when click on other items
-
-            trumbowyg.$ed.on('click', function (e) {
-              // check if I've clicked out of canvas or image to reset it
-              if ($(e.target).is('img') || e.target.id === resizeWithCanvas.canvasId()) {
-                return;
-              }
-
-              preventDefault(e);
-              resizeWithCanvas.reset(); // save changes
-
-              trumbowyg.$c.trigger('tbwchange');
-            });
-            trumbowyg.$ed.on('scroll', function () {
-              resizeWithCanvas.reCalcOffset();
-            });
-          });
-          trumbowyg.$c.on('tbwfocus tbwchange', initResizable);
-          trumbowyg.$c.on('tbwresize', function () {
-            resizeWithCanvas.reCalcOffset();
-          }); // Destroy
-
-          trumbowyg.$c.on('tbwblur', function () {
-            // if I have already focused the canvas avoid destroy
-            if (resizeWithCanvas.isFocusedNow()) {
-              resizeWithCanvas.blurNow();
-            } else {
-              destroyResizable(trumbowyg);
-            }
-          });
-        },
-        destroy: function destroy(trumbowyg) {
-          destroyResizable(trumbowyg);
         }
       }
     }
