@@ -147,7 +147,6 @@ namespace OrchardCore.Taxonomies
         }
     }
 
-
     [RequireFeatures("OrchardCore.Liquid")]
     public class LiquidStartup : StartupBase
     {
