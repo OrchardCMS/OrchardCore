@@ -1,26 +1,36 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Extensions.Options;
 using OrchardCore.Infrastructure.Html;
+using OrchardCore.ResourceManagement;
 using Shortcodes;
 
 namespace OrchardCore.Media.Shortcodes
 {
     public class ImageShortcodeProvider : NamedShortcodeProvider
     {
-
-        public ImageShortcodeProvider(IMediaFileStore mediaFileStore, IHtmlSanitizerService htmlSanitizerService)
+        public ImageShortcodeProvider(
+            IMediaFileStore mediaFileStore,
+            IHtmlSanitizerService htmlSanitizerService,
+            IHttpContextAccessor httpContextAccessor,
+            IOptions<ResourceManagementOptions> options)
             : base(
-            new Dictionary<string, ShortcodeDelegate>
-            {
-                ["image"] = EvaluateImageAsync(mediaFileStore, htmlSanitizerService),
-                ["media"] = EvaluateImageAsync(mediaFileStore, htmlSanitizerService)
-            }
+                new Dictionary<string, ShortcodeDelegate>
+                {
+                    ["image"] = EvaluateImageAsync(mediaFileStore, htmlSanitizerService, httpContextAccessor, options.Value),
+                    ["media"] = EvaluateImageAsync(mediaFileStore, htmlSanitizerService, httpContextAccessor, options.Value)
+                }
         )
         {}
 
-        private static ShortcodeDelegate EvaluateImageAsync(IMediaFileStore mediaFileStore, IHtmlSanitizerService htmlSanitizerService)
+        private static ShortcodeDelegate EvaluateImageAsync(
+            IMediaFileStore mediaFileStore,
+            IHtmlSanitizerService htmlSanitizerService,
+            IHttpContextAccessor httpContextAccessor,
+            ResourceManagementOptions options)
         {
             return (args, content) =>
             {
@@ -35,10 +45,21 @@ namespace OrchardCore.Media.Shortcodes
                     }
                 }
 
-                // TODO handle virtual path, i.e. ~/
                 if (!content.StartsWith("//", StringComparison.Ordinal) && !content.StartsWith("http", StringComparison.OrdinalIgnoreCase))
                 {
-                    content = mediaFileStore.MapPathToPublicUrl(content);
+                    // Serve static files from virtual path.
+                    if (content.StartsWith("~/", StringComparison.Ordinal))
+                    {
+                        content = httpContextAccessor.HttpContext.Request.PathBase.Add(content.Substring(1)).Value;
+                        if (!String.IsNullOrEmpty(options.CdnBaseUrl))
+                        {
+                            content = options.CdnBaseUrl + content;
+                        }
+                    }
+                    else
+                    {
+                        content = mediaFileStore.MapPathToPublicUrl(content);
+                    }
                 }
 
                 if (args.Any())
