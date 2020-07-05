@@ -10,89 +10,98 @@ using Shortcodes;
 
 namespace OrchardCore.Media.Shortcodes
 {
-    public class ImageShortcodeProvider : NamedShortcodeProvider
+    public class ImageShortcodeProvider : IShortcodeProvider
     {
+        private static readonly ValueTask<string> Null = new ValueTask<string>((string)null);
+        private static readonly ValueTask<string> ImageShortcode = new ValueTask<string>("[image]");
+        private static HashSet<string> Shortcodes = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+            {
+                "image",
+                "media" // [media] is a deprecated shortcode, and can be removed in a future release.
+            };
+
+        private readonly IMediaFileStore _mediaFileStore;
+        private readonly IHtmlSanitizerService _htmlSanitizerService;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly ResourceManagementOptions _options;
+
         public ImageShortcodeProvider(
             IMediaFileStore mediaFileStore,
             IHtmlSanitizerService htmlSanitizerService,
             IHttpContextAccessor httpContextAccessor,
             IOptions<ResourceManagementOptions> options)
-            : base(
-                new Dictionary<string, ShortcodeDelegate>
-                {
-                    ["image"] = EvaluateImageAsync(mediaFileStore, htmlSanitizerService, httpContextAccessor, options.Value),
-                    ["media"] = EvaluateImageAsync(mediaFileStore, htmlSanitizerService, httpContextAccessor, options.Value)
-                }
-        )
-        {}
-
-        private static ShortcodeDelegate EvaluateImageAsync(
-            IMediaFileStore mediaFileStore,
-            IHtmlSanitizerService htmlSanitizerService,
-            IHttpContextAccessor httpContextAccessor,
-            ResourceManagementOptions options)
         {
-            return (args, content) =>
+            _mediaFileStore = mediaFileStore;
+            _htmlSanitizerService = htmlSanitizerService;
+            _httpContextAccessor = httpContextAccessor;
+            _options = options.Value;
+        }
+
+        public ValueTask<string> EvaluateAsync(string identifier, Arguments arguments, string content)
+        {
+            if (!Shortcodes.Contains(identifier))
             {
-                // Handle edge case of self closing shortcodes.
+                return Null;
+            }
+
+            // Handle self closing shortcodes.
+            if (String.IsNullOrEmpty(content))
+            {
+                content = arguments.NamedOrDefault("src");
                 if (String.IsNullOrEmpty(content))
                 {
-                    content = args.NamedOrDefault("src");
-                    if (String.IsNullOrEmpty(content))
-                    {
-                        // Do not handle the deprecated media shortcode in this edge case.
-                        return new ValueTask<string>("[image]");
-                    }
+                    // Do not handle the deprecated media shortcode in this edge case.
+                    return ImageShortcode;
                 }
+            }
 
-                if (!content.StartsWith("//", StringComparison.Ordinal) && !content.StartsWith("http", StringComparison.OrdinalIgnoreCase))
+            if (!content.StartsWith("//", StringComparison.Ordinal) && !content.StartsWith("http", StringComparison.OrdinalIgnoreCase))
+            {
+                // Serve static files from virtual path.
+                if (content.StartsWith("~/", StringComparison.Ordinal))
                 {
-                    // Serve static files from virtual path.
-                    if (content.StartsWith("~/", StringComparison.Ordinal))
+                    content = _httpContextAccessor.HttpContext.Request.PathBase.Add(content.Substring(1)).Value;
+                    if (!String.IsNullOrEmpty(_options.CdnBaseUrl))
                     {
-                        content = httpContextAccessor.HttpContext.Request.PathBase.Add(content.Substring(1)).Value;
-                        if (!String.IsNullOrEmpty(options.CdnBaseUrl))
-                        {
-                            content = options.CdnBaseUrl + content;
-                        }
-                    }
-                    else
-                    {
-                        content = mediaFileStore.MapPathToPublicUrl(content);
+                        content = _options.CdnBaseUrl + content;
                     }
                 }
-
-                if (args.Any())
+                else
                 {
-                    var queryStringParams = new Dictionary<string, string>();
+                    content = _mediaFileStore.MapPathToPublicUrl(content);
+                }
+            }
 
-                    var width = args.Named("width");
-                    var height = args.Named("height");
-                    var mode = args.Named("mode");
+            if (arguments.Any())
+            {
+                var queryStringParams = new Dictionary<string, string>();
 
-                    if (width != null)
-                    {
-                        queryStringParams.Add("width", width);
-                    }
+                var width = arguments.Named("width");
+                var height = arguments.Named("height");
+                var mode = arguments.Named("mode");
 
-                    if (height != null)
-                    {
-                        queryStringParams.Add("height", height);
-                    }
-
-                    if (mode != null)
-                    {
-                        queryStringParams.Add("rmode", mode);
-                    }
-
-                    content = QueryHelpers.AddQueryString(content, queryStringParams);
+                if (width != null)
+                {
+                    queryStringParams.Add("width", width);
                 }
 
-                var tag = "<img src=\"" + content + "\">";
-                tag = htmlSanitizerService.Sanitize(tag);
+                if (height != null)
+                {
+                    queryStringParams.Add("height", height);
+                }
 
-                return new ValueTask<string>(tag);
-            };
+                if (mode != null)
+                {
+                    queryStringParams.Add("rmode", mode);
+                }
+
+                content = QueryHelpers.AddQueryString(content, queryStringParams);
+            }
+
+            content = "<img src=\"" + content + "\">";
+            content = _htmlSanitizerService.Sanitize(content);
+
+            return new ValueTask<string>(content);
         }
     }
 }
