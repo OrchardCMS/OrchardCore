@@ -18,29 +18,25 @@ namespace OrchardCore.Settings.Deployment
 
         public override IDisplayResult Display(SiteSettingsPropertyDeploymentStep<TModel> step)
         {
-            // TODO move this initialization to a BuildViewModel method.
             return
                 Combine(
-                    Initialize<SiteSettingsPropertyDeploymentStepViewModel>("SiteSettingsPropertyDeploymentStep_Fields_Summary", model =>
-                    {
-                        model.Title = _title;
-                        model.Description = _description;
-                    }).Location("Summary", "Content"),
-                    Initialize<SiteSettingsPropertyDeploymentStepViewModel>("SiteSettingsPropertyDeploymentStep_Fields_Thumbnail", model =>
-                    {
-                        model.Title = _title;
-                        model.Description = _description;
-                    }).Location("Thumbnail", "Content")
+                    Initialize<SiteSettingsPropertyDeploymentStepViewModel>("SiteSettingsPropertyDeploymentStep_Fields_Summary", m => BuildViewModel(m))
+                        .Location("Summary", "Content"),
+                    Initialize<SiteSettingsPropertyDeploymentStepViewModel>("SiteSettingsPropertyDeploymentStep_Fields_Thumbnail", m => BuildViewModel(m))
+                        .Location("Thumbnail", "Content")
                 );
         }
 
         public override IDisplayResult Edit(SiteSettingsPropertyDeploymentStep<TModel> step)
         {
-            return Initialize<SiteSettingsPropertyDeploymentStepViewModel>("SiteSettingsPropertyDeploymentStep_Fields_Edit", model =>
-            {
-                model.Title = _title;
-                model.Description = _description;
-            }).Location("Content");
+            return Initialize<SiteSettingsPropertyDeploymentStepViewModel>("SiteSettingsPropertyDeploymentStep_Fields_Edit", m => BuildViewModel(m))
+                .Location("Content");
+        }
+
+        private void BuildViewModel(SiteSettingsPropertyDeploymentStepViewModel model)
+        {
+            model.Title = _title;
+            model.Description = _description;
         }
     }
 }
