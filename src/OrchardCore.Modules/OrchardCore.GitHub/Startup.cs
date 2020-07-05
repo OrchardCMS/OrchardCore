@@ -1,21 +1,17 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
-using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.GitHub.Configuration;
 using OrchardCore.GitHub.Drivers;
 using OrchardCore.GitHub.Recipes;
 using OrchardCore.GitHub.Services;
-using OrchardCore.GitHub.Settings;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
-using OrchardCore.Settings.Deployment;
 
 namespace OrchardCore.GitHub
 {
@@ -45,22 +41,6 @@ namespace OrchardCore.GitHub
                 // Built-in initializers:
                 ServiceDescriptor.Transient<IPostConfigureOptions<GitHubOptions>, OAuthPostConfigureOptions<GitHubOptions,GitHubHandler>>()
             });
-        }
-    }
-
-    [Feature(GitHubConstants.Features.GitHubAuthentication)]
-    [RequireFeatures("OrchardCore.Deployment")]
-    public class DeploymentStartup : StartupBase
-    {
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddTransient<IDeploymentSource, SiteSettingsPropertyDeploymentSource<GitHubAuthenticationSettings>>();
-            services.AddScoped<IDisplayDriver<DeploymentStep>>(sp =>
-            {
-                var S = sp.GetService<IStringLocalizer<DeploymentStartup>>();
-                return new SiteSettingsPropertyDeploymentStepDriver<GitHubAuthenticationSettings>(S["GitHub Authentication settings"], S["Exports the GitHub Authentication settings."]);
-            });
-            services.AddSingleton<IDeploymentStepFactory>(new SiteSettingsPropertyDeploymentStepFactory<GitHubAuthenticationSettings>());
         }
     }
 }

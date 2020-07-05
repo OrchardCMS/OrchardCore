@@ -4,21 +4,17 @@ using Microsoft.AspNetCore.Authentication.MicrosoftAccount;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
-using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Microsoft.Authentication.Configuration;
 using OrchardCore.Microsoft.Authentication.Drivers;
 using OrchardCore.Microsoft.Authentication.Recipes;
 using OrchardCore.Microsoft.Authentication.Services;
-using OrchardCore.Microsoft.Authentication.Settings;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
-using OrchardCore.Settings.Deployment;
 
 namespace OrchardCore.Microsoft.Authentication
 {
@@ -45,22 +41,6 @@ namespace OrchardCore.Microsoft.Authentication
         }
     }
 
-    [Feature(MicrosoftAuthenticationConstants.Features.MicrosoftAccount)]
-    [RequireFeatures("OrchardCore.Deployment")]
-    public class MicrosoftAccountDeploymentStartup : StartupBase
-    {
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddTransient<IDeploymentSource, SiteSettingsPropertyDeploymentSource<MicrosoftAccountSettings>>();
-            services.AddScoped<IDisplayDriver<DeploymentStep>>(sp =>
-            {
-                var S = sp.GetService<IStringLocalizer<MicrosoftAccountDeploymentStartup>>();
-                return new SiteSettingsPropertyDeploymentStepDriver<MicrosoftAccountSettings>(S["Microsoft Authentication settings"], S["Exports the Microsoft Authentication settings."]);
-            });
-            services.AddSingleton<IDeploymentStepFactory>(new SiteSettingsPropertyDeploymentStepFactory<MicrosoftAccountSettings>());
-        }
-    }
-
     [Feature(MicrosoftAuthenticationConstants.Features.AAD)]
     public class AzureADStartup : StartupBase
     {
@@ -83,22 +63,6 @@ namespace OrchardCore.Microsoft.Authentication
                 // Built-in initializers:
                 ServiceDescriptor.Singleton<IPostConfigureOptions<OpenIdConnectOptions>, OpenIdConnectPostConfigureOptions>(),
             });
-        }
-    }
-
-    [Feature(MicrosoftAuthenticationConstants.Features.AAD)]
-    [RequireFeatures("OrchardCore.Deployment")]
-    public class AzureADDeploymentStartup : StartupBase
-    {
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddTransient<IDeploymentSource, SiteSettingsPropertyDeploymentSource<AzureADSettings>>();
-            services.AddScoped<IDisplayDriver<DeploymentStep>>(sp =>
-            {
-                var S = sp.GetService<IStringLocalizer<AzureADDeploymentStartup>>();
-                return new SiteSettingsPropertyDeploymentStepDriver<AzureADSettings>(S["Azure AD settings"], S["Exports the Azure AD settings."]);
-            });
-            services.AddSingleton<IDeploymentStepFactory>(new SiteSettingsPropertyDeploymentStepFactory<AzureADSettings>());
         }
     }
 }

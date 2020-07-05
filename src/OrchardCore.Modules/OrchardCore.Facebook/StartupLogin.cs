@@ -2,20 +2,16 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Facebook;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
-using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Facebook.Login.Configuration;
 using OrchardCore.Facebook.Login.Drivers;
 using OrchardCore.Facebook.Login.Recipes;
 using OrchardCore.Facebook.Login.Services;
-using OrchardCore.Facebook.Login.Settings;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
 using OrchardCore.Settings;
-using OrchardCore.Settings.Deployment;
 
 namespace OrchardCore.Facebook
 {
@@ -40,22 +36,6 @@ namespace OrchardCore.Facebook
                 // Built-in initializers:
                 ServiceDescriptor.Transient<IPostConfigureOptions<FacebookOptions>, OAuthPostConfigureOptions<FacebookOptions, FacebookHandler>>()
             });
-        }
-    }
-
-    [Feature(FacebookConstants.Features.Login)]
-    [RequireFeatures("OrchardCore.Deployment")]
-    public class FacebookLoginDeploymentStartup : StartupBase
-    {
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddTransient<IDeploymentSource, SiteSettingsPropertyDeploymentSource<FacebookLoginSettings>>();
-            services.AddScoped<IDisplayDriver<DeploymentStep>>(sp =>
-            {
-                var S = sp.GetService<IStringLocalizer<FacebookLoginDeploymentStartup>>();
-                return new SiteSettingsPropertyDeploymentStepDriver<FacebookLoginSettings>(S["Facebook Login settings"], S["Exports the Facebook Login settings."]);
-            });
-            services.AddSingleton<IDeploymentStepFactory>(new SiteSettingsPropertyDeploymentStepFactory<FacebookLoginSettings>());
         }
     }
 }
