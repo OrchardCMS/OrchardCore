@@ -222,7 +222,6 @@ namespace OrchardCore.Users
     }
 
     [Feature("OrchardCore.Users.ChangeEmail")]
-    [RequireFeatures("OrchardCore.Deployment")]
     public class ChangeEmailStartup : StartupBase
     {
         private const string ChangeEmailPath = "ChangeEmail";
