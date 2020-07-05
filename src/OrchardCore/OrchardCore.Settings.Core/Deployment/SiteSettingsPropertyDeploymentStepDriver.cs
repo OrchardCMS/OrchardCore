@@ -18,8 +18,7 @@ namespace OrchardCore.Settings.Deployment
 
         public override IDisplayResult Display(SiteSettingsPropertyDeploymentStep<TModel> step)
         {
-            return
-                Combine(
+            return Combine(
                     Initialize<SiteSettingsPropertyDeploymentStepViewModel>("SiteSettingsPropertyDeploymentStep_Fields_Summary", m => BuildViewModel(m))
                         .Location("Summary", "Content"),
                     Initialize<SiteSettingsPropertyDeploymentStepViewModel>("SiteSettingsPropertyDeploymentStep_Fields_Thumbnail", m => BuildViewModel(m))
