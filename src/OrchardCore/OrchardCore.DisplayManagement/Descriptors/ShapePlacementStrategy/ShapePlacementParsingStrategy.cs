@@ -1,12 +1,8 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Extensions.Features;
 using OrchardCore.Environment.Shell;
@@ -14,23 +10,22 @@ using OrchardCore.Environment.Shell;
 namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
 {
     /// <summary>
-    /// This component discovers and announces the shape alterations implied by the contents of the Placement.info files
+    /// This component discovers and announces the shape alterations implied by the contents of the Placement.json files
     /// </summary>
     public class ShapePlacementParsingStrategy : IShapeTableHarvester
     {
         private readonly IHostEnvironment _hostingEnvironment;
         private readonly IShellFeaturesManager _shellFeaturesManager;
-        private readonly IEnumerable<IPlacementNodeFilterProvider> _placementParseMatchProviders;
+        private readonly IPlacementNodeProcessor _placementNodeProcessor;
 
         public ShapePlacementParsingStrategy(
             IHostEnvironment hostingEnvironment,
             IShellFeaturesManager shellFeaturesManager,
-            ILogger<ShapePlacementParsingStrategy> logger,
-            IEnumerable<IPlacementNodeFilterProvider> placementParseMatchProviders)
+            IPlacementNodeProcessor placementNodeProcessor)
         {
             _hostingEnvironment = hostingEnvironment;
             _shellFeaturesManager = shellFeaturesManager;
-            _placementParseMatchProviders = placementParseMatchProviders;
+            _placementNodeProcessor = placementNodeProcessor;
         }
 
         public void Discover(ShapeTableBuilder builder)
@@ -74,73 +69,11 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
             {
                 var shapeType = entry.Key;
 
-                foreach (var filter in entry.Value)
+                foreach (var node in entry.Value)
                 {
-                    var matches = filter.Filters.ToList();
-
-                    Func<ShapePlacementContext, bool> predicate = ctx => CheckFilter(ctx, filter);
-
-                    if (matches.Any())
-                    {
-                        predicate = matches.Aggregate(predicate, BuildPredicate);
-                    }
-
-                    var placement = new PlacementInfo();
-
-                    placement.Location = filter.Location;
-                    if (filter.Alternates?.Length > 0)
-                    {
-                        placement.Alternates = new AlternatesCollection(filter.Alternates);
-                    }
-
-                    if (filter.Wrappers?.Length > 0)
-                    {
-                        placement.Wrappers = new AlternatesCollection(filter.Wrappers);
-                    }
-
-                    placement.ShapeType = filter.ShapeType;
-
-                    builder.Describe(shapeType)
-                        .From(featureDescriptor)
-                        .Placement(ctx => predicate(ctx), placement);
+                    _placementNodeProcessor.ProcessPlacementNode(builder, featureDescriptor, shapeType, node);
                 }
             }
-        }
-
-        public static bool CheckFilter(ShapePlacementContext ctx, PlacementNode filter)
-        {
-            if (!String.IsNullOrEmpty(filter.DisplayType) && filter.DisplayType != ctx.DisplayType)
-            {
-                return false;
-            }
-
-            if (!String.IsNullOrEmpty(filter.Differentiator) && filter.Differentiator != ctx.Differentiator)
-            {
-                return false;
-            }
-
-            return true;
-        }
-
-        private Func<ShapePlacementContext, bool> BuildPredicate(Func<ShapePlacementContext, bool> predicate,
-              KeyValuePair<string, JToken> term)
-        {
-            return BuildPredicate(predicate, term, _placementParseMatchProviders);
-        }
-
-        public static Func<ShapePlacementContext, bool> BuildPredicate(Func<ShapePlacementContext, bool> predicate,
-                KeyValuePair<string, JToken> term, IEnumerable<IPlacementNodeFilterProvider> placementMatchProviders)
-        {
-            if (placementMatchProviders != null)
-            {
-                var providersForTerm = placementMatchProviders.Where(x => x.Key.Equals(term.Key));
-                if (providersForTerm.Any())
-                {
-                    var expression = term.Value;
-                    return ctx => providersForTerm.Any(x => x.IsMatch(ctx, expression)) && predicate(ctx);
-                }
-            }
-            return predicate;
         }
     }
 }
