@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Primitives;
 
 namespace OrchardCore.DisplayManagement.Descriptors
 {
@@ -14,6 +15,11 @@ namespace OrchardCore.DisplayManagement.Descriptors
 
     public interface IShapeTableHarvester : IShapeTableProvider
     {
+    }
+
+    public interface ITenantShapeTableProvider : IShapeTableProvider
+    {
+        public IChangeToken ChangeToken { get; }
     }
 
     /// <summary>

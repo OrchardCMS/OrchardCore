@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -22,7 +21,6 @@ namespace OrchardCore.DisplayManagement.Descriptors
 
     public class ShapeDescriptorIndex : ShapeDescriptor
     {
-        private readonly ConcurrentDictionary<string, FeatureShapeDescriptor> _descriptors;
         private readonly List<FeatureShapeDescriptor> _alternationDescriptors;
         private readonly List<string> _wrappers;
         private readonly List<string> _bindingSources;
@@ -36,14 +34,13 @@ namespace OrchardCore.DisplayManagement.Descriptors
         public ShapeDescriptorIndex(
             string shapeType,
             IEnumerable<string> alterationKeys,
-            ConcurrentDictionary<string, FeatureShapeDescriptor> descriptors)
+            IDictionary<string, FeatureShapeDescriptor> descriptors)
         {
             ShapeType = shapeType;
-            _descriptors = descriptors;
 
             // pre-calculate as much as we can
             _alternationDescriptors = alterationKeys
-                .Select(key => _descriptors[key])
+                .Select(key => descriptors[key])
                 .ToList();
 
             _wrappers = _alternationDescriptors

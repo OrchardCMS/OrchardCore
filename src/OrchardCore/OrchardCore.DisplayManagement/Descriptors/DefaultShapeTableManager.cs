@@ -60,31 +60,32 @@ namespace OrchardCore.DisplayManagement.Descriptors
 
                 HashSet<string> excludedFeatures;
 
+                var tenantShapeDescriptors = new Dictionary<string, FeatureShapeDescriptor>();
+
+                var cacheOptions = new MemoryCacheEntryOptions
+                {
+                    Priority = CacheItemPriority.NeverRemove
+                };
+
                 // Here we don't use a lock for thread safety but for atomicity.
                 lock (_syncLock)
                 {
                     excludedFeatures = new HashSet<string>(_shapeDescriptors.Select(kv => kv.Value.Feature.Id));
-                }
 
-                var shapeDescriptors = new Dictionary<string, FeatureShapeDescriptor>();
-
-                foreach (var bindingStrategy in _bindingStrategies)
-                {
-                    var strategyFeature = _typeFeatureProvider.GetFeatureForDependency(bindingStrategy.GetType());
-
-                    var builder = new ShapeTableBuilder(strategyFeature, excludedFeatures);
-                    bindingStrategy.Discover(builder);
-                    var builtAlterations = builder.BuildAlterations();
-
-                    BuildDescriptors(bindingStrategy, builtAlterations, shapeDescriptors);
-                }
-
-                // Here we don't use a lock for thread safety but for atomicity.
-                lock (_syncLock)
-                {
-                    foreach (var kv in shapeDescriptors)
+                    foreach (var bindingStrategy in _bindingStrategies)
                     {
-                        _shapeDescriptors[kv.Key] = kv.Value;
+                        var strategyFeature = _typeFeatureProvider.GetFeatureForDependency(bindingStrategy.GetType());
+
+                        var builder = new ShapeTableBuilder(strategyFeature, excludedFeatures);
+                        bindingStrategy.Discover(builder);
+                        var builtAlterations = builder.BuildAlterations();
+
+                        BuildDescriptors(bindingStrategy, builtAlterations, tenantShapeDescriptors);
+
+                        if (bindingStrategy is ITenantShapeTableProvider tenantShapeTableProvider && tenantShapeTableProvider.ChangeToken != null)
+                        {
+                            cacheOptions.ExpirationTokens.Add(tenantShapeTableProvider.ChangeToken);
+                        }
                     }
                 }
 
@@ -101,16 +102,19 @@ namespace OrchardCore.DisplayManagement.Descriptors
                     enabledAndOrderedFeatureIds.Add(_hostingEnvironment.ApplicationName);
                 }
 
-                var descriptors = _shapeDescriptors
+                var activeFeatureDescriptors = new Dictionary<string, FeatureShapeDescriptor>(_shapeDescriptors
+                    .Concat(tenantShapeDescriptors)
                     .Where(sd => enabledAndOrderedFeatureIds.Contains(sd.Value.Feature.Id))
                     .Where(sd => IsModuleOrRequestedTheme(sd.Value.Feature, themeId))
-                    .OrderBy(sd => enabledAndOrderedFeatureIds.IndexOf(sd.Value.Feature.Id))
+                    .OrderBy(sd => enabledAndOrderedFeatureIds.IndexOf(sd.Value.Feature.Id)));
+
+                var descriptors = activeFeatureDescriptors
                     .GroupBy(sd => sd.Value.ShapeType, StringComparer.OrdinalIgnoreCase)
                     .Select(group => new ShapeDescriptorIndex
                     (
                         shapeType: group.Key,
                         alterationKeys: group.Select(kv => kv.Key),
-                        descriptors: _shapeDescriptors
+                        descriptors: activeFeatureDescriptors
                     ))
                     .ToList();
 
@@ -125,13 +129,13 @@ namespace OrchardCore.DisplayManagement.Descriptors
                     _logger.LogInformation("Done building shape table");
                 }
 
-                _memoryCache.Set(cacheKey, shapeTable, new MemoryCacheEntryOptions { Priority = CacheItemPriority.NeverRemove });
+                _memoryCache.Set(cacheKey, shapeTable, cacheOptions);
             }
 
             return shapeTable;
         }
 
-        private void BuildDescriptors(IShapeTableProvider bindingStrategy, IEnumerable<ShapeAlteration> builtAlterations, Dictionary<string, FeatureShapeDescriptor> shapeDescriptors)
+        private void BuildDescriptors(IShapeTableProvider bindingStrategy, IEnumerable<ShapeAlteration> builtAlterations, Dictionary<string, FeatureShapeDescriptor> tenantShapeDescriptors)
         {
             var alterationSets = builtAlterations.GroupBy(a => a.Feature.Id + a.ShapeType);
 
@@ -156,7 +160,15 @@ namespace OrchardCore.DisplayManagement.Descriptors
                         alteration.Alter(descriptor);
                     }
 
-                    shapeDescriptors[key] = descriptor;
+                    if (bindingStrategy is ITenantShapeTableProvider)
+                    {
+                        tenantShapeDescriptors[key] = descriptor;
+                    }
+                    else
+                    {
+                        // Add descriptor to the global descriptors cache
+                        _shapeDescriptors[key] = descriptor;
+                    }
                 }
             }
         }
