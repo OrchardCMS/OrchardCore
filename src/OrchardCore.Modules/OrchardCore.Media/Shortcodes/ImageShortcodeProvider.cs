@@ -14,7 +14,11 @@ namespace OrchardCore.Media.Shortcodes
     {
         private static readonly ValueTask<string> Null = new ValueTask<string>((string)null);
         private static readonly ValueTask<string> ImageShortcode = new ValueTask<string>("[image]");
-        private static HashSet<string> Shortcodes = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        private static readonly HashSet<string> Shortcodes = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
+            "image",
+            "media" // [media] is a deprecated shortcode, and can be removed in a future release.
+        };
             {
                 "image",
                 "media" // [media] is a deprecated shortcode, and can be removed in a future release.
