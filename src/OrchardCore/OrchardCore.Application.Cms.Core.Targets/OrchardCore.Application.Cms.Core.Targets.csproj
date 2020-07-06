@@ -24,6 +24,7 @@
   -->
 
   <ItemGroup>
+    <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Placements\OrchardCore.Placements.csproj" />
     <ProjectReference Include="..\OrchardCore.Application.Targets\OrchardCore.Application.Targets.csproj" PrivateAssets="none" />
 
     <!-- 
