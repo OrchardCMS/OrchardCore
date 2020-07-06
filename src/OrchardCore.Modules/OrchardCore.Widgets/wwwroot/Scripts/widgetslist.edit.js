@@ -5,56 +5,56 @@
 
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 $(function () {
-    //function scoped variables
-    function guid() {
-        function s4() {
-            return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
-        }
-
-        return s4() + s4() + s4() + s4() + s4() + s4() + s4() + s4();
+  //function scoped variables
+  function guid() {
+    function s4() {
+      return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
     }
 
-    $(document).on('click', '.tool-insert-widget', function (event) {
-        var $this = $(this);
-        var appendWidget = $this.data("append");
-        var target = $this.closest('.widget-template');
-        var targetId = $this.data("target-id");
-        var createEditorUrl = $this.data("buildeditorurl");
-        var prefix = guid();
-        $.ajax({
-            url: createEditorUrl + "&prefix=" + prefix
-        }).done(function (data) {
-            var result = JSON.parse(data);
+    return s4() + s4() + s4() + s4() + s4() + s4() + s4() + s4();
+  }
 
-            if (appendWidget === "True") {
-                $(document.getElementById(targetId)).append(result.Content);
-            } else {
-                $(result.Content).insertBefore(target);
-            }
+  $(document).on('click', '.tool-insert-widget', function (event) {
+    var $this = $(this);
+    var appendWidget = $this.data("append");
+    var target = $this.closest('.widget-template');
+    var targetId = $this.data("target-id");
+    var createEditorUrl = $this.data("buildeditorurl");
+    var prefix = guid();
+    $.ajax({
+      url: createEditorUrl + "&prefix=" + prefix
+    }).done(function (data) {
+      var result = JSON.parse(data);
 
-            var dom = $(result.Scripts);
-            dom.filter('script').each(function () {
-                $.globalEval(this.text || this.textContent || this.innerHTML || '');
-            });
-        });
+      if (appendWidget === "True") {
+        $(document.getElementById(targetId)).append(result.Content);
+      } else {
+        $(result.Content).insertBefore(target);
+      }
+
+      var dom = $(result.Scripts);
+      dom.filter('script').each(function () {
+        $.globalEval(this.text || this.textContent || this.innerHTML || '');
+      });
     });
-    $(document).on('click', '.widget-delete', function () {
-        var $this = $(this);
-        confirmDialog(_objectSpread({}, $this.data(), {
-            callback: function callback(r) {
-                if (r) {
-                    $this.closest('.widget-template').remove();
-                    $(document).trigger('contentpreview:render');
-                }
-            }
-        }));
-    });
-    $(document).on('click', '.widget-editor-btn-toggle', function () {
-        $(this).closest('.widget-editor').toggleClass('collapsed');
-    });
+  });
+  $(document).on('click', '.widget-delete', function () {
+    var $this = $(this);
+    confirmDialog(_objectSpread(_objectSpread({}, $this.data()), {}, {
+      callback: function callback(r) {
+        if (r) {
+          $this.closest('.widget-template').remove();
+          $(document).trigger('contentpreview:render');
+        }
+      }
+    }));
+  });
+  $(document).on('click', '.widget-editor-btn-toggle', function () {
+    $(this).closest('.widget-editor').toggleClass('collapsed');
+  });
 });
