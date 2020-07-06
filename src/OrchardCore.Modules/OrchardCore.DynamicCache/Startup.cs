@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.DynamicCache.EventHandlers;
@@ -28,6 +29,8 @@ namespace OrchardCore.DynamicCache
             services.AddSingleton<IDynamicCache, DefaultDynamicCache>();
             services.AddSingleton<DynamicCacheTagHelperService>();
             services.AddTagHelpers<DynamicCacheTagHelper>();
+            services.AddTagHelpers<CacheDependencyTagHelper>();
+            services.AddTransient<IConfigureOptions<CacheOptions>, CacheOptionsConfiguration>();
         }
     }
 }

@@ -8,7 +8,7 @@ Vue.component('mediaFieldThumbsContainer', {
                 <span class="hint">{{T.noImages}}</span>\
              </div>\
          </div>\
-         <draggable :list="mediaItems" element="ol" class="row media-items-grid" >\
+         <draggable :list="mediaItems" tag="ol" class="row media-items-grid" >\
             <li v-for="media in mediaItems"\
                 :key="media.vuekey" \
                 class="media-container-main-list-item card"\

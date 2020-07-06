@@ -53,66 +53,6 @@
   height: 22px;
   display: inline-block; }
 
-.trumbowyg-dropdown-foreColor:not(.trumbowyg-dropdown--color-list),
-.trumbowyg-dropdown-backColor:not(.trumbowyg-dropdown--color-list) {
-  max-width: 276px;
-  overflow: initial; }
-
-[dir] .trumbowyg-dropdown-foreColor:not(.trumbowyg-dropdown--color-list), [dir] .trumbowyg-dropdown-backColor:not(.trumbowyg-dropdown--color-list) {
-  padding: 7px 5px; }
-  .trumbowyg-dropdown-foreColor:not(.trumbowyg-dropdown--color-list) button,
-  .trumbowyg-dropdown-backColor:not(.trumbowyg-dropdown--color-list) button {
-    display: block;
-    position: relative;
-    text-indent: -9999px;
-    height: 20px;
-    width: 20px; }
-  [dir] .trumbowyg-dropdown-foreColor:not(.trumbowyg-dropdown--color-list) button, [dir] .trumbowyg-dropdown-backColor:not(.trumbowyg-dropdown--color-list) button {
-    border: 1px solid #333;
-    padding: 0;
-    margin: 2px; }
-  [dir=ltr] .trumbowyg-dropdown-foreColor:not(.trumbowyg-dropdown--color-list) button, [dir=ltr] .trumbowyg-dropdown-backColor:not(.trumbowyg-dropdown--color-list) button {
-  float: left; }
-  [dir=rtl] .trumbowyg-dropdown-foreColor:not(.trumbowyg-dropdown--color-list) button, [dir=rtl] .trumbowyg-dropdown-backColor:not(.trumbowyg-dropdown--color-list) button {
-    float: right; }
-    .trumbowyg-dropdown-foreColor:not(.trumbowyg-dropdown--color-list) button:hover::after, .trumbowyg-dropdown-foreColor:not(.trumbowyg-dropdown--color-list) button:focus::after,
-    .trumbowyg-dropdown-backColor:not(.trumbowyg-dropdown--color-list) button:hover::after,
-    .trumbowyg-dropdown-backColor:not(.trumbowyg-dropdown--color-list) button:focus::after {
-      content: " ";
-      display: block;
-      position: absolute;
-      top: -5px;
-      width: 27px;
-      height: 27px;
-      z-index: 10; }
-    [dir] .trumbowyg-dropdown-foreColor:not(.trumbowyg-dropdown--color-list) button:hover::after, [dir] .trumbowyg-dropdown-foreColor:not(.trumbowyg-dropdown--color-list) button:focus::after, [dir] .trumbowyg-dropdown-backColor:not(.trumbowyg-dropdown--color-list) button:hover::after, [dir] .trumbowyg-dropdown-backColor:not(.trumbowyg-dropdown--color-list) button:focus::after {
-      background: inherit;
-      border: 1px solid #fff;
-      box-shadow: #000 0 0 2px; }
-    [dir=ltr] .trumbowyg-dropdown-foreColor:not(.trumbowyg-dropdown--color-list) button:hover::after, [dir=ltr] .trumbowyg-dropdown-foreColor:not(.trumbowyg-dropdown--color-list) button:focus::after, [dir=ltr] .trumbowyg-dropdown-backColor:not(.trumbowyg-dropdown--color-list) button:hover::after, [dir=ltr] .trumbowyg-dropdown-backColor:not(.trumbowyg-dropdown--color-list) button:focus::after {
-  left: -5px; }
-    [dir=rtl] .trumbowyg-dropdown-foreColor:not(.trumbowyg-dropdown--color-list) button:hover::after, [dir=rtl] .trumbowyg-dropdown-foreColor:not(.trumbowyg-dropdown--color-list) button:focus::after, [dir=rtl] .trumbowyg-dropdown-backColor:not(.trumbowyg-dropdown--color-list) button:hover::after, [dir=rtl] .trumbowyg-dropdown-backColor:not(.trumbowyg-dropdown--color-list) button:focus::after {
-      right: -5px; }
-
-.trumbowyg-dropdown-backColor.trumbowyg-dropdown--color-list button:not(.trumbowyg-backColorRemove-dropdown-button) {
-  position: relative;
-  color: #fff !important; }
-  .trumbowyg-dropdown-backColor.trumbowyg-dropdown--color-list button:not(.trumbowyg-backColorRemove-dropdown-button):hover::after, .trumbowyg-dropdown-backColor.trumbowyg-dropdown--color-list button:not(.trumbowyg-backColorRemove-dropdown-button):focus::after {
-    content: " ";
-    display: block;
-    position: absolute;
-    top: 13px;
-    width: 0;
-    height: 0; }
-  [dir] .trumbowyg-dropdown-backColor.trumbowyg-dropdown--color-list button:not(.trumbowyg-backColorRemove-dropdown-button):hover::after, [dir] .trumbowyg-dropdown-backColor.trumbowyg-dropdown--color-list button:not(.trumbowyg-backColorRemove-dropdown-button):focus::after {
-    border: 5px solid transparent; }
-  [dir=ltr] .trumbowyg-dropdown-backColor.trumbowyg-dropdown--color-list button:not(.trumbowyg-backColorRemove-dropdown-button):hover::after, [dir=ltr] .trumbowyg-dropdown-backColor.trumbowyg-dropdown--color-list button:not(.trumbowyg-backColorRemove-dropdown-button):focus::after {
-  left: 0;
-  border-left-color: #fff; }
-  [dir=rtl] .trumbowyg-dropdown-backColor.trumbowyg-dropdown--color-list button:not(.trumbowyg-backColorRemove-dropdown-button):hover::after, [dir=rtl] .trumbowyg-dropdown-backColor.trumbowyg-dropdown--color-list button:not(.trumbowyg-backColorRemove-dropdown-button):focus::after {
-    right: 0;
-    border-right-color: #fff; }
-
 [dir] .trumbowyg-giphy-button svg {
   transform: scale(1.22); }
 
@@ -220,6 +160,66 @@
       border: #2ecc71 solid 3px; }
   .trumbowyg-giphy-modal .img-container img.tbw-loaded {
     opacity: 1; }
+
+.trumbowyg-dropdown-foreColor:not(.trumbowyg-dropdown--color-list),
+.trumbowyg-dropdown-backColor:not(.trumbowyg-dropdown--color-list) {
+  max-width: 276px;
+  overflow: initial; }
+
+[dir] .trumbowyg-dropdown-foreColor:not(.trumbowyg-dropdown--color-list), [dir] .trumbowyg-dropdown-backColor:not(.trumbowyg-dropdown--color-list) {
+  padding: 7px 5px; }
+  .trumbowyg-dropdown-foreColor:not(.trumbowyg-dropdown--color-list) button,
+  .trumbowyg-dropdown-backColor:not(.trumbowyg-dropdown--color-list) button {
+    display: block;
+    position: relative;
+    text-indent: -9999px;
+    height: 20px;
+    width: 20px; }
+  [dir] .trumbowyg-dropdown-foreColor:not(.trumbowyg-dropdown--color-list) button, [dir] .trumbowyg-dropdown-backColor:not(.trumbowyg-dropdown--color-list) button {
+    border: 1px solid #333;
+    padding: 0;
+    margin: 2px; }
+  [dir=ltr] .trumbowyg-dropdown-foreColor:not(.trumbowyg-dropdown--color-list) button, [dir=ltr] .trumbowyg-dropdown-backColor:not(.trumbowyg-dropdown--color-list) button {
+  float: left; }
+  [dir=rtl] .trumbowyg-dropdown-foreColor:not(.trumbowyg-dropdown--color-list) button, [dir=rtl] .trumbowyg-dropdown-backColor:not(.trumbowyg-dropdown--color-list) button {
+    float: right; }
+    .trumbowyg-dropdown-foreColor:not(.trumbowyg-dropdown--color-list) button:hover::after, .trumbowyg-dropdown-foreColor:not(.trumbowyg-dropdown--color-list) button:focus::after,
+    .trumbowyg-dropdown-backColor:not(.trumbowyg-dropdown--color-list) button:hover::after,
+    .trumbowyg-dropdown-backColor:not(.trumbowyg-dropdown--color-list) button:focus::after {
+      content: " ";
+      display: block;
+      position: absolute;
+      top: -5px;
+      width: 27px;
+      height: 27px;
+      z-index: 10; }
+    [dir] .trumbowyg-dropdown-foreColor:not(.trumbowyg-dropdown--color-list) button:hover::after, [dir] .trumbowyg-dropdown-foreColor:not(.trumbowyg-dropdown--color-list) button:focus::after, [dir] .trumbowyg-dropdown-backColor:not(.trumbowyg-dropdown--color-list) button:hover::after, [dir] .trumbowyg-dropdown-backColor:not(.trumbowyg-dropdown--color-list) button:focus::after {
+      background: inherit;
+      border: 1px solid #fff;
+      box-shadow: #000 0 0 2px; }
+    [dir=ltr] .trumbowyg-dropdown-foreColor:not(.trumbowyg-dropdown--color-list) button:hover::after, [dir=ltr] .trumbowyg-dropdown-foreColor:not(.trumbowyg-dropdown--color-list) button:focus::after, [dir=ltr] .trumbowyg-dropdown-backColor:not(.trumbowyg-dropdown--color-list) button:hover::after, [dir=ltr] .trumbowyg-dropdown-backColor:not(.trumbowyg-dropdown--color-list) button:focus::after {
+  left: -5px; }
+    [dir=rtl] .trumbowyg-dropdown-foreColor:not(.trumbowyg-dropdown--color-list) button:hover::after, [dir=rtl] .trumbowyg-dropdown-foreColor:not(.trumbowyg-dropdown--color-list) button:focus::after, [dir=rtl] .trumbowyg-dropdown-backColor:not(.trumbowyg-dropdown--color-list) button:hover::after, [dir=rtl] .trumbowyg-dropdown-backColor:not(.trumbowyg-dropdown--color-list) button:focus::after {
+      right: -5px; }
+
+.trumbowyg-dropdown-backColor.trumbowyg-dropdown--color-list button:not(.trumbowyg-backColorRemove-dropdown-button) {
+  position: relative;
+  color: #fff !important; }
+  .trumbowyg-dropdown-backColor.trumbowyg-dropdown--color-list button:not(.trumbowyg-backColorRemove-dropdown-button):hover::after, .trumbowyg-dropdown-backColor.trumbowyg-dropdown--color-list button:not(.trumbowyg-backColorRemove-dropdown-button):focus::after {
+    content: " ";
+    display: block;
+    position: absolute;
+    top: 13px;
+    width: 0;
+    height: 0; }
+  [dir] .trumbowyg-dropdown-backColor.trumbowyg-dropdown--color-list button:not(.trumbowyg-backColorRemove-dropdown-button):hover::after, [dir] .trumbowyg-dropdown-backColor.trumbowyg-dropdown--color-list button:not(.trumbowyg-backColorRemove-dropdown-button):focus::after {
+    border: 5px solid transparent; }
+  [dir=ltr] .trumbowyg-dropdown-backColor.trumbowyg-dropdown--color-list button:not(.trumbowyg-backColorRemove-dropdown-button):hover::after, [dir=ltr] .trumbowyg-dropdown-backColor.trumbowyg-dropdown--color-list button:not(.trumbowyg-backColorRemove-dropdown-button):focus::after {
+  left: 0;
+  border-left-color: #fff; }
+  [dir=rtl] .trumbowyg-dropdown-backColor.trumbowyg-dropdown--color-list button:not(.trumbowyg-backColorRemove-dropdown-button):hover::after, [dir=rtl] .trumbowyg-dropdown-backColor.trumbowyg-dropdown--color-list button:not(.trumbowyg-backColorRemove-dropdown-button):focus::after {
+    right: 0;
+    border-right-color: #fff; }
 
 .mathMlContainer {
   position: relative; }

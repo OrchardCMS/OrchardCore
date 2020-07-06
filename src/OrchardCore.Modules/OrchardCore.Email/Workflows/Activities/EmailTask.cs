@@ -46,6 +46,12 @@ namespace OrchardCore.Email.Workflows.Activities
             set => SetProperty(value);
         }
 
+        public WorkflowExpression<string> ReplyTo
+        {
+            get => GetProperty(() => new WorkflowExpression<string>());
+            set => SetProperty(value);
+        }
+
         // TODO: Add support for the following format: Jack Bauer<jack@ctu.com>, ...
         public WorkflowExpression<string> Recipients
         {
@@ -80,6 +86,7 @@ namespace OrchardCore.Email.Workflows.Activities
         {
             var author = await _expressionEvaluator.EvaluateAsync(Author, workflowContext, null);
             var sender = await _expressionEvaluator.EvaluateAsync(Sender, workflowContext, null);
+            var replyTo = await _expressionEvaluator.EvaluateAsync(ReplyTo, workflowContext, null);
             var recipients = await _expressionEvaluator.EvaluateAsync(Recipients, workflowContext, null);
             var subject = await _expressionEvaluator.EvaluateAsync(Subject, workflowContext, null);
             // Don't html-encode liquid tags if the email is not html
@@ -90,6 +97,8 @@ namespace OrchardCore.Email.Workflows.Activities
                 // Author and Sender are both not required fields.
                 From = author?.Trim() ?? sender?.Trim(),
                 To = recipients.Trim(),
+                // Email reply-to header https://tools.ietf.org/html/rfc4021#section-2.1.4
+                ReplyTo = replyTo?.Trim(),
                 Subject = subject.Trim(),
                 Body = body?.Trim(),
                 IsBodyHtml = IsBodyHtml
