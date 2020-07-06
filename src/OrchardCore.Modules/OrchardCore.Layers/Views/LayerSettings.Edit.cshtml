@@ -4,5 +4,8 @@
     <label asp-for="Zones">@T["Available zones for Layers"]</label>
     <input asp-for="Zones" class="form-control" type="text" />
     <span asp-validation-for="Zones"></span>
-    <span class="hint">@T["A comma separated list of values, representing the available zones for widgets."]</span>
+    <span class="hint">
+        @T["A comma separated list of values, representing the available zones for <a href=\"{0}\">widgets</a>. Note that you'll need to render these zones in the layout template, as they do not automatically render.",
+            Url.Action("Index", "Admin", new { area = "OrchardCore.Layers" })]
+    </span>
 </div>

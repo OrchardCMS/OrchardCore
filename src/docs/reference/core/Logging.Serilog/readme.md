@@ -1,12 +1,12 @@
 # OrchardCore.Logging.Serilog
 
-`OrchardCore.Logging.Serilog` integrates [Serilog](https://serilog.net/) structured logging with OrchardCore
+`OrchardCore.Logging.Serilog` integrates [Serilog](https://serilog.net/) structured logging with OrchardCore.
 
 ## How to use
 
-add a reference to `OrchardCore.Logging.Serilog`
+Add a reference to `OrchardCore.Logging.Serilog`.
 
-### add serilog configuration in appsettings.json
+### Add serilog configuration in appsettings.json
 
 ``` json
   "Serilog": {

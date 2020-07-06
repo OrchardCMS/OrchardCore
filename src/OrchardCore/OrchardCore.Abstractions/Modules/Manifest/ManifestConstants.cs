@@ -8,5 +8,7 @@ namespace OrchardCore.Modules.Manifest
         public const string OrchardCoreVersion = "1.0.0-rc2";
 
         public const string OrchardCoreWebsite = "https://orchardcore.net";
+
+        public const string AdminTag = "Admin";
     }
 }
