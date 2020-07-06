@@ -162,7 +162,7 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
             return result;
           },
           thumbSize: function thumbSize() {
-            return this.smallThumbs ? 160 : 240;
+            return this.smallThumbs ? 100 : 240;
           },
           currentPrefs: {
             get: function get() {
@@ -827,8 +827,8 @@ Vue.component('pager', {
   },
   data: function data() {
     return {
-      pageSize: 5,
-      pageSizeOptions: [5, 10, 30, 50, 100],
+      pageSize: 10,
+      pageSizeOptions: [10, 30, 50, 100],
       current: 0,
       T: {}
     };
@@ -1383,7 +1383,7 @@ Vue.component('mediaFieldThumbsContainer', {
                 <span class="hint">{{T.noImages}}</span>\
              </div>\
          </div>\
-         <draggable :list="mediaItems" element="ol" class="row media-items-grid" >\
+         <draggable :list="mediaItems" tag="ol" class="row media-items-grid" >\
             <li v-for="media in mediaItems"\
                 :key="media.vuekey" \
                 class="media-container-main-list-item card"\

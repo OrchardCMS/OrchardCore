@@ -44,5 +44,7 @@ namespace OrchardCore.Settings
             HomeRouteValues = HomeRoute.ToDictionary(kv => kv.Key, kv => kv.Value);
             base.OnBeforeSerialize();
         }
+
+        public CacheMode CacheMode { get; set; }
     }
 }

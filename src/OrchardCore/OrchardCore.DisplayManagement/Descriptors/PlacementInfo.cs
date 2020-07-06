@@ -4,7 +4,7 @@ namespace OrchardCore.DisplayManagement.Descriptors
 {
     public class PlacementInfo
     {
-        private static readonly char[] Delimiters = { ':', '#', '@' };
+        private static readonly char[] Delimiters = { ':', '#', '@', '%', '|' };
 
         public string Location { get; set; }
         public string Source { get; set; }
@@ -100,6 +100,48 @@ namespace OrchardCore.DisplayManagement.Descriptors
             }
 
             return Location.Substring(groupDelimiter + 1, nextDelimiter - groupDelimiter - 1);
+        }
+
+        /// <summary>
+        /// Extracts the card information from a location string, or <c>null</c> if it is not present.
+        /// e.g., Content:12%search
+        /// </summary>
+        public string GetCard()
+        {
+            var cardDelimiter = Location.IndexOf('%');
+            if (cardDelimiter == -1)
+            {
+                return null;
+            }
+
+            var nextDelimiter = Location.IndexOfAny(Delimiters, cardDelimiter + 1);
+            if (nextDelimiter == -1)
+            {
+                return Location.Substring(cardDelimiter + 1);
+            }
+
+            return Location.Substring(cardDelimiter + 1, nextDelimiter - cardDelimiter - 1);
+        }
+
+        /// <summary>
+        /// Extracts the column information from a location string, or <c>null</c> if it is not present.
+        /// e.g., Content:12!search
+        /// </summary>
+        public string GetColumn()
+        {
+            var colDelimeter = Location.IndexOf('|');
+            if (colDelimeter == -1)
+            {
+                return null;
+            }
+
+            var nextDelimiter = Location.IndexOfAny(Delimiters, colDelimeter + 1);
+            if (nextDelimiter == -1)
+            {
+                return Location.Substring(colDelimeter + 1);
+            }
+
+            return Location.Substring(colDelimeter + 1, nextDelimiter - colDelimeter - 1);
         }
     }
 }

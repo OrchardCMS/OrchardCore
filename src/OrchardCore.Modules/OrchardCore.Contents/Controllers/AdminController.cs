@@ -20,7 +20,6 @@ using OrchardCore.Contents.ViewModels;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
-using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Routing;
 using OrchardCore.Settings;
@@ -38,14 +37,17 @@ namespace OrchardCore.Contents.Controllers
         private readonly IContentItemDisplayManager _contentItemDisplayManager;
         private readonly INotifier _notifier;
         private readonly IAuthorizationService _authorizationService;
-        private readonly IEnumerable<IContentAdminFilter> _contentAdminFilters;
+        private readonly IDisplayManager<ContentOptionsViewModel> _contentOptionsDisplayManager;
+        private readonly IContentsAdminListQueryProvider _contentsAdminListQueryProvider;
         private readonly IHtmlLocalizer H;
         private readonly IStringLocalizer S;
         private readonly IUpdateModelAccessor _updateModelAccessor;
+        private readonly IShapeFactory _shapeFactory;
         private readonly dynamic New;
         private readonly ILogger _logger;
 
         public AdminController(
+            IAuthorizationService authorizationService,
             IContentManager contentManager,
             IContentItemDisplayManager contentItemDisplayManager,
             IContentDefinitionManager contentDefinitionManager,
@@ -53,14 +55,13 @@ namespace OrchardCore.Contents.Controllers
             INotifier notifier,
             ISession session,
             IShapeFactory shapeFactory,
+            IDisplayManager<ContentOptionsViewModel> contentOptionsDisplayManager,
+            IContentsAdminListQueryProvider contentsAdminListQueryProvider,
             ILogger<AdminController> logger,
             IHtmlLocalizer<AdminController> htmlLocalizer,
             IStringLocalizer<AdminController> stringLocalizer,
-            IAuthorizationService authorizationService,
-            IEnumerable<IContentAdminFilter> contentAdminFilters,
             IUpdateModelAccessor updateModelAccessor)
         {
-            _contentAdminFilters = contentAdminFilters;
             _authorizationService = authorizationService;
             _notifier = notifier;
             _contentItemDisplayManager = contentItemDisplayManager;
@@ -69,9 +70,12 @@ namespace OrchardCore.Contents.Controllers
             _contentManager = contentManager;
             _contentDefinitionManager = contentDefinitionManager;
             _updateModelAccessor = updateModelAccessor;
+            _contentOptionsDisplayManager = contentOptionsDisplayManager;
+            _contentsAdminListQueryProvider = contentsAdminListQueryProvider;
 
             H = htmlLocalizer;
             S = stringLocalizer;
+            _shapeFactory = shapeFactory;
             New = shapeFactory;
             _logger = logger;
         }
@@ -82,54 +86,20 @@ namespace OrchardCore.Contents.Controllers
             var siteSettings = await _siteService.GetSiteSettingsAsync();
             var pager = new Pager(pagerParameters, siteSettings.PageSize);
 
-            var query = _session.Query<ContentItem, ContentItemIndex>();
-
-            if (!string.IsNullOrEmpty(model.Options.DisplayText))
-            {
-                query = query.With<ContentItemIndex>(x => x.DisplayText.Contains(model.Options.DisplayText));
-            }
-
-            switch (model.Options.ContentsStatus)
-            {
-                case ContentsStatus.Published:
-                    query = query.With<ContentItemIndex>(x => x.Published);
-                    break;
-                case ContentsStatus.Draft:
-                    query = query.With<ContentItemIndex>(x => x.Latest && !x.Published);
-                    break;
-                case ContentsStatus.AllVersions:
-                    query = query.With<ContentItemIndex>(x => x.Latest);
-                    break;
-                default:
-                    query = query.With<ContentItemIndex>(x => x.Latest);
-                    break;
-            }
-
-            if (model.Options.ContentsStatus == ContentsStatus.Owner)
-            {
-                query = query.With<ContentItemIndex>(x => x.Owner == HttpContext.User.Identity.Name);
-            }
-
+            // This is used by the AdminMenus so needs to be passed into the options.
             if (!string.IsNullOrEmpty(contentTypeId))
             {
                 model.Options.SelectedContentType = contentTypeId;
             }
 
-            IEnumerable<ContentTypeDefinition> contentTypeDefinitions = new List<ContentTypeDefinition>();
+            // Populate the creatable types.
             if (!string.IsNullOrEmpty(model.Options.SelectedContentType))
             {
                 var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(model.Options.SelectedContentType);
-
                 if (contentTypeDefinition == null)
                 {
                     return NotFound();
                 }
-
-                contentTypeDefinitions = contentTypeDefinitions.Append(contentTypeDefinition);
-
-                // We display a specific type even if it's not listable so that admin pages
-                // can reuse the Content list page for specific types.
-                query = query.With<ContentItemIndex>(x => x.ContentType == model.Options.SelectedContentType);
 
                 // Allows non creatable types to be created by another admin page.
                 if (model.Options.CanCreateSelectedContentType)
@@ -140,40 +110,14 @@ namespace OrchardCore.Contents.Controllers
                     };
                 }
             }
-            else
-            {
-                contentTypeDefinitions = _contentDefinitionManager.ListTypeDefinitions();
 
-                var listableTypes = (await GetListableTypesAsync()).Select(t => t.Name).ToArray();
-                if (listableTypes.Any())
-                {
-                    query = query.With<ContentItemIndex>(x => x.ContentType.IsIn(listableTypes));
-                }
-            }
-
-            switch (model.Options.OrderBy)
-            {
-                case ContentsOrder.Modified:
-                    query = query.OrderByDescending(x => x.ModifiedUtc);
-                    break;
-                case ContentsOrder.Published:
-                    query = query.OrderByDescending(cr => cr.PublishedUtc);
-                    break;
-                case ContentsOrder.Created:
-                    query = query.OrderByDescending(cr => cr.CreatedUtc);
-                    break;
-                case ContentsOrder.Title:
-                    query = query.OrderBy(cr => cr.DisplayText);
-                    break;
-                default:
-                    query = query.OrderByDescending(cr => cr.ModifiedUtc);
-                    break;
-            }
-
-            // Allow parameters to define creatable types.
             if (model.Options.CreatableTypes == null)
             {
-                var contentTypes = contentTypeDefinitions.Where(ctd => ctd.GetSettings<ContentTypeSettings>().Creatable).OrderBy(ctd => ctd.DisplayName);
+                var contentTypes = _contentDefinitionManager
+                    .ListTypeDefinitions()
+                    .Where(ctd => ctd.GetSettings<ContentTypeSettings>().Creatable)
+                    .OrderBy(ctd => ctd.DisplayName);
+
                 var creatableList = new List<SelectListItem>();
                 if (contentTypes.Any())
                 {
@@ -186,29 +130,9 @@ namespace OrchardCore.Contents.Controllers
                 model.Options.CreatableTypes = creatableList;
             }
 
-            // Invoke any service that could alter the query
-            await _contentAdminFilters.InvokeAsync((filter, query, model, pagerParameters, updateModel) => filter.FilterAsync(query, model, pagerParameters, updateModel), query, model, pagerParameters, _updateModelAccessor.ModelUpdater, _logger);
-
-            var maxPagedCount = siteSettings.MaxPagedCount;
-            if (maxPagedCount > 0 && pager.PageSize > maxPagedCount)
-                pager.PageSize = maxPagedCount;
-
-            //We prepare the pager
-            var routeData = new RouteData();
-            routeData.Values.Add("DisplayText", model.Options.DisplayText);
-
-            var pagerShape = (await New.Pager(pager)).TotalItemCount(maxPagedCount > 0 ? maxPagedCount : await query.CountAsync()).RouteData(routeData);
-            var pageOfContentItems = await query.Skip(pager.GetStartIndex()).Take(pager.PageSize).ListAsync();
-
-            //We prepare the content items SummaryAdmin shape
-            var contentItemSummaries = new List<dynamic>();
-            foreach (var contentItem in pageOfContentItems)
+            // We populate the remaining SelectLists.
+            model.Options.ContentStatuses = new List<SelectListItem>()
             {
-                contentItemSummaries.Add(await _contentItemDisplayManager.BuildDisplayAsync(contentItem, _updateModelAccessor.ModelUpdater, "SummaryAdmin"));
-            }
-
-            //We populate the SelectLists
-            model.Options.ContentStatuses = new List<SelectListItem>() {
                 new SelectListItem() { Text = S["Latest"], Value = nameof(ContentsStatus.Latest) },
                 new SelectListItem() { Text = S["Owned by me"], Value = nameof(ContentsStatus.Owner) },
                 new SelectListItem() { Text = S["Published"], Value = nameof(ContentsStatus.Published) },
@@ -216,55 +140,101 @@ namespace OrchardCore.Contents.Controllers
                 new SelectListItem() { Text = S["All versions"], Value = nameof(ContentsStatus.AllVersions) }
             };
 
-            model.Options.ContentSorts = new List<SelectListItem>() {
+            model.Options.ContentSorts = new List<SelectListItem>()
+            {
                 new SelectListItem() { Text = S["Recently created"], Value = nameof(ContentsOrder.Created) },
                 new SelectListItem() { Text = S["Recently modified"], Value = nameof(ContentsOrder.Modified) },
                 new SelectListItem() { Text = S["Recently published"], Value = nameof(ContentsOrder.Published) },
                 new SelectListItem() { Text = S["Title"], Value = nameof(ContentsOrder.Title) }
             };
 
-            model.Options.ContentsBulkAction = new List<SelectListItem>() {
+            model.Options.ContentsBulkAction = new List<SelectListItem>()
+            {
                 new SelectListItem() { Text = S["Publish Now"], Value = nameof(ContentsBulkAction.PublishNow) },
                 new SelectListItem() { Text = S["Unpublish"], Value = nameof(ContentsBulkAction.Unpublish) },
                 new SelectListItem() { Text = S["Delete"], Value = nameof(ContentsBulkAction.Remove) }
             };
 
-            var ContentTypeOptions = (await GetListableTypesAsync())
+            var listableTypes = new List<ContentTypeDefinition>();
+            foreach (var ctd in _contentDefinitionManager.ListTypeDefinitions())
+            {
+                if (ctd.GetSettings<ContentTypeSettings>().Listable)
+                {
+                    var authorized = await _authorizationService.AuthorizeAsync(User, Permissions.EditContent, await _contentManager.NewAsync(ctd.Name));
+                    if (authorized)
+                    {
+                        listableTypes.Add(ctd);
+                    }
+                }
+            }
+
+            var contentTypeOptions = listableTypes
                 .Select(ctd => new KeyValuePair<string, string>(ctd.Name, ctd.DisplayName))
                 .ToList().OrderBy(kvp => kvp.Value);
 
-            model.Options.ContentTypeOptions = new List<SelectListItem>();
-            model.Options.ContentTypeOptions.Add(new SelectListItem() { Text = S["All content types"], Value = "" });
-            foreach (var option in ContentTypeOptions)
+            model.Options.ContentTypeOptions = new List<SelectListItem>
+            {
+                new SelectListItem() { Text = S["All content types"], Value = "" }
+            };
+            foreach (var option in contentTypeOptions)
             {
                 model.Options.ContentTypeOptions.Add(new SelectListItem() { Text = option.Value, Value = option.Key });
             }
 
-            var viewModel = new ListContentsViewModel
-            {
-                ContentItems = contentItemSummaries,
-                Pager = pagerShape,
-                Options = model.Options
-            };
+            // With the model populated we filter the query.
+            var query = await _contentsAdminListQueryProvider.ProvideQueryAsync(_updateModelAccessor.ModelUpdater);
 
-            return View(viewModel);
+            var maxPagedCount = siteSettings.MaxPagedCount;
+            if (maxPagedCount > 0 && pager.PageSize > maxPagedCount)
+                pager.PageSize = maxPagedCount;
+
+            // We prepare the pager
+            var routeData = new RouteData();
+            routeData.Values.Add("DisplayText", model.Options.DisplayText);
+
+            var pagerShape = (await New.Pager(pager)).TotalItemCount(maxPagedCount > 0 ? maxPagedCount : await query.CountAsync()).RouteData(routeData);
+            var pageOfContentItems = await query.Skip(pager.GetStartIndex()).Take(pager.PageSize).ListAsync();
+
+            // We prepare the content items SummaryAdmin shape
+            var contentItemSummaries = new List<dynamic>();
+            foreach (var contentItem in pageOfContentItems)
+            {
+                contentItemSummaries.Add(await _contentItemDisplayManager.BuildDisplayAsync(contentItem, _updateModelAccessor.ModelUpdater, "SummaryAdmin"));
+            }
+
+            // Populate options pager summary values.
+            var startIndex = (pagerShape.Page - 1) * (pagerShape.PageSize) + 1;
+            model.Options.StartIndex = startIndex;
+            model.Options.EndIndex = startIndex + contentItemSummaries.Count - 1;
+            model.Options.ContentItemsCount = contentItemSummaries.Count;
+            model.Options.TotalItemCount = pagerShape.TotalItemCount;
+
+            var header = await _contentOptionsDisplayManager.BuildEditorAsync(model.Options, _updateModelAccessor.ModelUpdater, false);
+
+            var shapeViewModel = await _shapeFactory.CreateAsync<ListContentsViewModel>("ContentsAdminList", viewModel =>
+            {
+                viewModel.ContentItems = contentItemSummaries;
+                viewModel.Pager = pagerShape;
+                viewModel.Options = model.Options;
+                viewModel.Header = header;
+            });
+
+            return View(shapeViewModel);
         }
 
         [HttpPost, ActionName("List")]
         [FormValueRequired("submit.Filter")]
-        public ActionResult ListFilterPOST(ListContentsViewModel model)
+        public async Task<ActionResult> ListFilterPOST(ListContentsViewModel model)
         {
-            return RedirectToAction("List", new RouteValueDictionary {
-                { "Options.OrderBy", model.Options.OrderBy },
-                { "Options.ContentsStatus", model.Options.ContentsStatus },
-                { "Options.SelectedContentType", model.Options.SelectedContentType },
-                { "Options.DisplayText", model.Options.DisplayText }
-            });
+
+            await _contentOptionsDisplayManager.UpdateEditorAsync(model.Options, _updateModelAccessor.ModelUpdater, false);
+
+            return RedirectToAction("List", model.Options.RouteValues);
         }
 
         [HttpPost, ActionName("List")]
         [FormValueRequired("submit.BulkAction")]
-        public async Task<ActionResult> ListPOST(ViewModels.ContentOptions options, IEnumerable<int> itemIds)
+        public async Task<ActionResult> ListPOST(ContentOptionsViewModel options, IEnumerable<int> itemIds)
         {
             if (itemIds?.Count() > 0)
             {
@@ -691,40 +661,6 @@ namespace OrchardCore.Contents.Controllers
             }
 
             return Url.IsLocalUrl(returnUrl) ? (IActionResult)LocalRedirect(returnUrl) : RedirectToAction("List");
-        }
-
-        private async Task<IEnumerable<ContentTypeDefinition>> GetCreatableTypesAsync()
-        {
-            var creatable = new List<ContentTypeDefinition>();
-            foreach (var ctd in _contentDefinitionManager.ListTypeDefinitions())
-            {
-                if (ctd.GetSettings<ContentTypeSettings>().Creatable)
-                {
-                    var authorized = await _authorizationService.AuthorizeAsync(User, Permissions.EditContent, await _contentManager.NewAsync(ctd.Name));
-                    if (authorized)
-                    {
-                        creatable.Add(ctd);
-                    }
-                }
-            }
-            return creatable;
-        }
-
-        private async Task<IEnumerable<ContentTypeDefinition>> GetListableTypesAsync()
-        {
-            var listable = new List<ContentTypeDefinition>();
-            foreach (var ctd in _contentDefinitionManager.ListTypeDefinitions())
-            {
-                if (ctd.GetSettings<ContentTypeSettings>().Listable)
-                {
-                    var authorized = await _authorizationService.AuthorizeAsync(User, Permissions.EditContent, await _contentManager.NewAsync(ctd.Name));
-                    if (authorized)
-                    {
-                        listable.Add(ctd);
-                    }
-                }
-            }
-            return listable;
         }
     }
 }
