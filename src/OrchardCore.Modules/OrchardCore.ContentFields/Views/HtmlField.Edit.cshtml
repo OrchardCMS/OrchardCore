@@ -14,8 +14,11 @@
     }
 </div>
 
+<style asp-name="codemirror"></style>
 <script asp-name="codemirror" depends-on="admin" at="Foot"></script>
 <script asp-name="codemirror-addon-display-autorefresh" at="Foot"></script>
+<script asp-name="codemirror-addon-edit-closetag" at="Foot"></script>
+<script asp-name="codemirror-addon-selection-active-line" at="Foot"></script>
 <script asp-name="codemirror-mode-css" at="Foot"></script>
 <script asp-name="codemirror-mode-htmlmixed" at="Foot"></script>
 <script asp-name="codemirror-mode-javascript" at="Foot"></script>
@@ -26,10 +29,12 @@
         // When part rendered by a flow part only the elements scripts are rendered, so the html element will not exist.
         if (optionsTextArea) {
             var editor = CodeMirror.fromTextArea(optionsTextArea, {
+                autoCloseTags: true,
                 autoRefresh: true,
-                lineNumbers: false,
+                lineNumbers: true,
                 lineWrapping: true,
                 matchBrackets: true,
+                styleActiveLine: true,
                 mode: { name: "htmlmixed" }
             });
         }

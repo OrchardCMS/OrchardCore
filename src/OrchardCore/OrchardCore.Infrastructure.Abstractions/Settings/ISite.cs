@@ -21,5 +21,6 @@ namespace OrchardCore.Settings
         string BaseUrl { get; set; }
         RouteValueDictionary HomeRoute { get; set; }
         bool AppendVersion { get; set; }
+        CacheMode CacheMode { get; set; }
     }
 }

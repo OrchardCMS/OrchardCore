@@ -1,0 +1,42 @@
+.widget-container {
+    @include make-container;
+}
+
+.widget-image-widget img {
+    width: 100%;
+}
+
+.widget-align-left {
+    text-align: left;
+}
+
+.widget-align-center {
+    text-align: center;
+}
+
+.widget-align-right {
+    text-align: right;
+}
+
+.widget-align-justify {
+    text-align: justify;
+}
+.widget-size-100{
+    @include make-col-ready;
+    @include make-col(12);
+}
+@each $wsize in (25, 33, 50, 66, 75) {
+    .widget-size-#{$wsize} {
+        @extend .widget-size-100;
+        @include media-breakpoint-up(sm) {
+            @include make-col($wsize*12/100);
+        }
+    }
+
+    .widget .widget-size-#{$wsize} {
+        @extend .widget-size-#{$wsize};
+        @include media-breakpoint-up(md) {
+            @include make-col($wsize*12/100);
+        }
+    }
+}

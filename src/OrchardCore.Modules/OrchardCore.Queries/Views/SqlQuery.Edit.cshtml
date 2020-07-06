@@ -1,8 +1,12 @@
 @model OrchardCore.Queries.Sql.ViewModels.SqlQueryViewModel
 
+<style asp-name="codemirror"></style>
+<style asp-name="codemirror-addon-hint-show-hint"></style>
 <script asp-name="codemirror" depends-on="admin" at="Foot"></script>
+<script asp-name="codemirror-addon-selection-active-line" at="Foot"></script>
 <script asp-name="codemirror-mode-javascript" at="Foot"></script>
 <script asp-name="codemirror-mode-sql" at="Foot"></script>
+<script asp-name="codemirror-addon-hint-sql-hint" at="Foot"></script>
 
 <div class="form-group">
     <div class="custom-control custom-checkbox">
@@ -21,6 +25,11 @@
 
 <script at="Foot">
     $(function () {
-        CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.Query)'), { mode: "text/x-pgsql", lineNumbers: true, viewportMargin: Infinity });
+        CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.Query)'), { mode: "text/x-pgsql",
+            indentWithTabs: true, smartIndent: true, matchBrackets : true, lineNumbers: true, styleActiveLine: true, viewportMargin: Infinity,
+            extraKeys: {"Ctrl-Space": "autocomplete"},
+            hintOptions: {tables: {
+              ContentItemIndex: ["DocumentId"]
+            }} });
     });
 </script>
