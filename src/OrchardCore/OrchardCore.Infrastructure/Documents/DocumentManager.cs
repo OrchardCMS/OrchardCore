@@ -23,6 +23,7 @@ namespace OrchardCore.Documents
 
         private TDocument _scopedCache;
         private TDocument _volatileCache;
+        private readonly bool _isDistributed;
         protected bool _isVolatile;
 
         public DocumentManager(
@@ -35,6 +36,11 @@ namespace OrchardCore.Documents
             _distributedCache = distributedCache;
             _memoryCache = memoryCache;
             _options = options.Value;
+
+            if (!(_distributedCache is MemoryDistributedCache))
+            {
+                _isDistributed = true;
+            }
         }
 
         public async Task<TDocument> GetMutableAsync(Func<Task<TDocument>> factoryAsync = null)
@@ -154,6 +160,11 @@ namespace OrchardCore.Documents
                 }
             }
 
+            if (!_isDistributed)
+            {
+                return null;
+            }
+
             document = await GetFromDistributedCacheAsync();
 
             if (document == null)
@@ -199,14 +210,25 @@ namespace OrchardCore.Documents
 
         private async Task<TDocument> GetFromDistributedCacheAsync()
         {
-            TDocument document = null;
+            byte[] data = null;
 
-            var data = await _distributedCache.GetAsync(_options.CacheKey);
+            if (_isDistributed)
+            {
+                data = await _distributedCache.GetAsync(_options.CacheKey);
+            }
+            else if (_memoryCache.TryGetValue<TDocument>(_options.CacheKey, out var cached))
+            {
+                using var stream = new MemoryStream();
+                await SerializeAsync(stream, cached);
+                data = stream.ToArray();
+            }
 
             if (data == null)
             {
-                return document;
+                return null;
             }
+
+            TDocument document;
 
             using (var stream = new MemoryStream(data))
             {
@@ -218,17 +240,21 @@ namespace OrchardCore.Documents
 
         private async Task UpdateDistributedCacheAsync(TDocument document)
         {
-            byte[] data;
-
-            using (var stream = new MemoryStream())
-            {
-                await SerializeAsync(stream, document);
-                data = stream.ToArray();
-            }
-
             var idData = Encoding.UTF8.GetBytes(document.Identifier ?? "NULL");
 
-            await _distributedCache.SetAsync(_options.CacheKey, data, _options);
+            if (_isDistributed)
+            {
+                byte[] data;
+
+                using (var stream = new MemoryStream())
+                {
+                    await SerializeAsync(stream, document);
+                    data = stream.ToArray();
+                }
+
+                await _distributedCache.SetAsync(_options.CacheKey, data, _options);
+            }
+
             await _distributedCache.SetAsync(_options.CacheIdKey, idData, _options);
         }
 
