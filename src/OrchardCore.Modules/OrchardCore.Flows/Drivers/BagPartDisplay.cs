@@ -27,7 +27,7 @@ namespace OrchardCore.Flows.Drivers
             IContentManager contentManager,
             IContentDefinitionManager contentDefinitionManager,
             IServiceProvider serviceProvider,
-            IStringLocalizer<FlowPartDisplay> localizer)
+            IStringLocalizer<BagPartDisplay> localizer)
         {
             _contentDefinitionManager = contentDefinitionManager;
             _contentManager = contentManager;

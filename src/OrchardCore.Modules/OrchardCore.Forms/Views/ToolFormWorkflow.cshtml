@@ -18,7 +18,7 @@
                     <span data-card-bind="Title">@Model.ContentItemDisplayText</span>
                     <span class="badge badge-primary">@Model.ContentType</span>
                 </h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <button type="button" class="close" data-dismiss="modal" aria-label="@T["Close"]">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
@@ -34,7 +34,7 @@
                 {
                     @await DisplayAsync(Model.Actions)
                 }
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">T["Close"]</button>
             </div>
         </div>
     </div>
