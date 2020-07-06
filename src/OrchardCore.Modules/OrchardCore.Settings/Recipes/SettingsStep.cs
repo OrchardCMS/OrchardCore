@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Routing;
 using Newtonsoft.Json.Linq;
+using OrchardCore.Environment.Cache;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 
@@ -91,6 +92,10 @@ namespace OrchardCore.Settings.Recipes
 
                     case "HomeRoute":
                         site.HomeRoute = property.Value.ToObject<RouteValueDictionary>();
+                        break;
+
+                    case "CacheMode":
+                        site.CacheMode = (CacheMode)property.Value.Value<int>();
                         break;
 
                     default:
