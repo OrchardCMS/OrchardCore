@@ -19,10 +19,6 @@ namespace OrchardCore.Media.Shortcodes
             "image",
             "media" // [media] is a deprecated shortcode, and can be removed in a future release.
         };
-            {
-                "image",
-                "media" // [media] is a deprecated shortcode, and can be removed in a future release.
-            };
 
         private readonly IMediaFileStore _mediaFileStore;
         private readonly IHtmlSanitizerService _htmlSanitizerService;
