@@ -31,6 +31,7 @@ namespace OrchardCore.Settings
         public Dictionary<string, object> HomeRouteValues { get; set; }
 
         public bool AppendVersion { get; set; } = true;
+        public CacheMode CacheMode { get; set; }
 
         // 'MessagePack' can't serialize a 'RouteValueDictionary'.
         public override void OnAfterDeserialize()
@@ -44,7 +45,5 @@ namespace OrchardCore.Settings
             HomeRouteValues = HomeRoute.ToDictionary(kv => kv.Key, kv => kv.Value);
             base.OnBeforeSerialize();
         }
-
-        public CacheMode CacheMode { get; set; }
     }
 }
