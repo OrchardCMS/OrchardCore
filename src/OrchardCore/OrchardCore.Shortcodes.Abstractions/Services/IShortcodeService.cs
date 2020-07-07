@@ -1,8 +1,8 @@
 using System.Threading.Tasks;
 
-namespace OrchardCore.ShortCodes
+namespace OrchardCore.Shortcodes.Services
 {
-    public interface IShortCode
+    public interface IShortcodeService
     {
         ValueTask<string> ProcessAsync(string input);
     }
