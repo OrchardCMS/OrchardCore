@@ -9,8 +9,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.DisplayManagement\OrchardCore.DisplayManagement.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Module.Targets\OrchardCore.Module.Targets.csproj" />
-    <ProjectReference Include="..\..\OrchardCore\OrchardCore.ShortCodes.Abstractions\OrchardCore.ShortCodes.Abstractions.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.Shortcodes.Abstractions\OrchardCore.Shortcodes.Abstractions.csproj" />
   </ItemGroup>
 
 </Project>

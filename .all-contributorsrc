@@ -1622,6 +1622,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "dalenewman",
+      "name": "BSH",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/933086?v=4",
+      "profile": "https://github.com/dalenewman",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "skipCi": true

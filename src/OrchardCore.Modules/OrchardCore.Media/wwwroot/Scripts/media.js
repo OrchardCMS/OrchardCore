@@ -210,8 +210,17 @@ function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaI
       removeSelected: function removeSelected(event) {
         var removed = {};
 
-        if (this.selectedMedia) {
-          var index = this.mediaItems && this.mediaItems.indexOf(this.selectedMedia);
+              case 'lastModify':
+                filtered.sort(function (a, b) {
+                  return self.sortAsc ? a.lastModify - b.lastModify : b.lastModify - a.lastModify;
+                });
+                break;
+
+              default:
+                filtered.sort(function (a, b) {
+                  return self.sortAsc ? a.name.toLowerCase().localeCompare(b.name.toLowerCase()) : b.name.toLowerCase().localeCompare(a.name.toLowerCase());
+                });
+            }
 
           if (index > -1) {
             removed = this.mediaItems[index];
@@ -702,56 +711,174 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                 return;
               }
 
-              this.smallThumbs = newPrefs.smallThumbs;
-              this.selectedFolder = newPrefs.selectedFolder;
-              this.gridView = newPrefs.gridView;
-            }
-          }
-        },
-        watch: {
-          currentPrefs: function currentPrefs(newPrefs) {
-            localStorage.setItem('mediaApplicationPrefs', JSON.stringify(newPrefs));
-          },
-          selectedFolder: function selectedFolder(newFolder) {
-            this.mediaFilter = '';
-            this.selectedFolder = newFolder;
-            this.loadFolder(newFolder);
-          }
-        },
-        mounted: function mounted() {
-          this.$refs.rootFolder.toggle();
-        },
-        methods: {
-          uploadUrl: function uploadUrl() {
-            return this.selectedFolder ? $('#uploadFiles').val() + "?path=" + encodeURIComponent(this.selectedFolder.path) : null;
-          },
-          selectRoot: function selectRoot() {
-            this.selectedFolder = this.root;
-          },
-          loadFolder: function loadFolder(folder) {
-            this.errors = [];
-            this.selectedMedias = [];
-            var self = this;
-            $.ajax({
-              url: $('#getMediaItemsUrl').val() + "?path=" + encodeURIComponent(folder.path),
-              method: 'GET',
-              success: function success(data) {
-                data.forEach(function (item) {
-                  item.open = false;
-                });
-                self.mediaItems = data;
-                self.selectedMedias = [];
-                self.sortBy = '';
-                self.sortAsc = true;
-              },
-              error: function error(_error) {
-                console.log('error loading folder:' + folder.path);
-                self.selectRoot();
-              }
-            });
-          },
-          selectAll: function selectAll() {
-            this.selectedMedias = [];
+    self.T.editButton = $('#t-edit-button').val();
+    self.T.deleteButton = $('#t-delete-button').val();
+  },
+  methods: {
+    isMediaSelected: function isMediaSelected(media) {
+      var result = this.selectedMedias.some(function (element, index, array) {
+        return element.url.toLowerCase() === media.url.toLowerCase();
+      });
+      return result;
+    },
+    buildMediaUrl: function buildMediaUrl(url, thumbSize) {
+      return url + (url.indexOf('?') == -1 ? '?' : '&') + 'width=' + thumbSize + '&height=' + thumbSize;
+    },
+    toggleSelectionOfMedia: function toggleSelectionOfMedia(media) {
+      bus.$emit('mediaToggleRequested', media);
+    },
+    renameMedia: function renameMedia(media) {
+      bus.$emit('renameMediaRequested', media);
+    },
+    deleteMedia: function deleteMedia(media) {
+      bus.$emit('deleteMediaRequested', media);
+    },
+    dragStart: function dragStart(media, e) {
+      bus.$emit('mediaDragStartRequested', media, e);
+    }
+  }
+});
+// <media-items-table> component
+Vue.component('media-items-table', {
+  template: "\n        <table class=\"table media-items-table\">\n            <thead>\n                <tr class=\"header-row\">\n                    <th scope=\"col\" class=\"thumbnail-column\">{{ T.imageHeader }}</th>\n                    <th scope=\"col\" v-on:click=\"changeSort('name')\">\n                       {{ T.nameHeader }}\n                         <sort-indicator colname=\"name\" :selectedcolname=\"sortBy\" :asc=\"sortAsc\"></sort-indicator>\n                    </th>\n                    <th scope=\"col\" v-on:click=\"changeSort('lastModify')\"> \n                       {{ T.lastModifyHeader }} \n                         <sort-indicator colname=\"lastModify\" :selectedcolname=\"sortBy\" :asc=\"sortAsc\"></sort-indicator> \n                    </th> \n                    <th scope=\"col\" v-on:click=\"changeSort('size')\">\n                        <span class=\"optional-col\">\n                            {{ T.sizeHeader }}\n                         <sort-indicator colname=\"size\" :selectedcolname=\"sortBy\" :asc=\"sortAsc\"></sort-indicator>\n                        </span>\n                    </th>\n                    <th scope=\"col\" v-on:click=\"changeSort('mime')\">\n                        <span class=\"optional-col\">\n                           {{ T.typeHeader }}\n                         <sort-indicator colname=\"mime\" :selectedcolname=\"sortBy\" :asc=\"sortAsc\"></sort-indicator>\n                        </span>\n                    </th>\n                </tr>\n            </thead>\n            <tbody>\n                    <tr v-for=\"media in filteredMediaItems\"\n                          class=\"media-item\"\n                          :class=\"{selected: isMediaSelected(media)}\"\n                          v-on:click.stop=\"toggleSelectionOfMedia(media)\"\n                          draggable=\"true\" v-on:dragstart=\"dragStart(media, $event)\"\n                          :key=\"media.name\">\n                             <td class=\"thumbnail-column\">\n                                <div class=\"img-wrapper\">\n                                    <img v-if=\"media.mime.startsWith('image')\" draggable=\"false\" :src=\"buildMediaUrl(media.url, thumbSize)\" />\n                                    <i v-else class=\"fa fa-file-o fa-lg\" :data-mime=\"media.mime\"></i>\n                                </div>\n                            </td>\n                            <td>\n                                <div class=\"media-name-cell\">\n                                   <span class=\"break-word\"> {{ media.name }} </span>\n                                    <div class=\"buttons-container\">\n                                        <a href=\"javascript:;\" class=\"btn btn-link btn-sm mr-1 edit-button\" v-on:click.stop=\"renameMedia(media)\"> {{ T.editButton }} </a >\n                                        <a href=\"javascript:;\" class=\"btn btn-link btn-sm delete-button\" v-on:click.stop=\"deleteMedia(media)\"> {{ T.deleteButton }} </a>\n                                        <a :href=\"media.url\" class=\"btn btn-link btn-sm view-button\"> {{ T.viewButton }} </a>\n                                    </div>\n                                </div>\n                            </td>\n                            <td>\n                                <div class=\"text-col\"> {{ printDateTime(media.lastModify) }} </div>\n                            </td>\n                            <td>\n                                <div class=\"text-col optional-col\"> {{ isNaN(media.size)? 0 : Math.round(media.size / 1024) }} KB</div>\n                            </td>\n                            <td>\n                                <div class=\"text-col optional-col\">{{ media.mime }}</div>\n                            </td>\n                   </tr>\n            </tbody>\n        </table>\n        ",
+  data: function data() {
+    return {
+      T: {}
+    };
+  },
+  props: {
+    sortBy: String,
+    sortAsc: Boolean,
+    filteredMediaItems: Array,
+    selectedMedias: Array,
+    thumbSize: Number
+  },
+  created: function created() {
+    var self = this;
+    self.T.imageHeader = $('#t-image-header').val();
+    self.T.nameHeader = $('#t-name-header').val();
+    self.T.lastModifyHeader = $('#t-lastModify-header').val();
+    self.T.sizeHeader = $('#t-size-header').val();
+    self.T.typeHeader = $('#t-type-header').val();
+    self.T.editButton = $('#t-edit-button').val();
+    self.T.deleteButton = $('#t-delete-button').val();
+    self.T.viewButton = $('#t-view-button').val();
+  },
+  methods: {
+    isMediaSelected: function isMediaSelected(media) {
+      var result = this.selectedMedias.some(function (element, index, array) {
+        return element.url.toLowerCase() === media.url.toLowerCase();
+      });
+      return result;
+    },
+    buildMediaUrl: function buildMediaUrl(url, thumbSize) {
+      return url + (url.indexOf('?') == -1 ? '?' : '&') + 'width=' + thumbSize + '&height=' + thumbSize;
+    },
+    changeSort: function changeSort(newSort) {
+      bus.$emit('sortChangeRequested', newSort);
+    },
+    toggleSelectionOfMedia: function toggleSelectionOfMedia(media) {
+      bus.$emit('mediaToggleRequested', media);
+    },
+    renameMedia: function renameMedia(media) {
+      bus.$emit('renameMediaRequested', media);
+    },
+    deleteMedia: function deleteMedia(media) {
+      bus.$emit('deleteMediaRequested', media);
+    },
+    dragStart: function dragStart(media, e) {
+      bus.$emit('mediaDragStartRequested', media, e);
+    },
+    printDateTime: function printDateTime(datemillis) {
+      var d = new Date(datemillis);
+      return d.toLocaleString();
+    }
+  }
+});
+// This component receives a list of all the items, unpaged.
+// As the user interacts with the pager, it raises events with the items in the current page.
+// It's the parent's responsibility to listen for these events and display the received items
+// <pager> component
+Vue.component('pager', {
+  template: "\n        <nav id=\"media-pager\" aria-label=\"Pagination Navigation\" role=\"navigation\" :data-computed-trigger=\"itemsInCurrentPage.length\">\n            <ul class= \"pagination  pagination-sm\">\n                <li class=\"page-item media-first-button\" :class=\"{disabled : !canDoFirst}\">\n                    <a class=\"page-link\" href=\"#\" :tabindex=\"canDoFirst ? 0 : -1\" v-on:click=\"goFirst\">{{ T.pagerFirstButton }}</a>\n                </li>\n                <li class=\"page-item\" :class=\"{disabled : !canDoPrev}\">\n                    <a class=\"page-link\" href=\"#\" :tabindex=\"canDoPrev ? 0 : -1\" v-on:click=\"previous\">{{ T.pagerPreviousButton }}</a>\n                </li>\n                <li  v-if=\"link !== -1\" class=\"page-item page-number\"  :class=\"{active : current == link - 1}\" v-for=\"link in pageLinks\">\n                    <a class=\"page-link\" href=\"#\" v-on:click=\"goTo(link - 1)\" :aria-label=\"'Goto Page' + link\">\n                        {{link}}\n                        <span v-if=\"current == link -1\" class=\"sr-only\">(current)</span>\n                    </a>\n                </li>\n                <li class=\"page-item\" :class=\"{disabled : !canDoNext}\">\n                    <a class=\"page-link\" href=\"#\" :tabindex=\"canDoNext ? 0 : -1\" v-on:click=\"next\">{{ T.pagerNextButton }}</a>\n                </li>\n                <li class=\"page-item media-last-button\" :class=\"{disabled : !canDoLast}\">\n                    <a class=\"page-link\" href=\"#\" :tabindex=\"canDoLast ? 0 : -1\" v-on:click=\"goLast\">{{ T.pagerLastButton }}</a>\n                </li>\n                <li class=\"page-item ml-4 page-size-info\">\n                    <div style=\"display: flex;\">\n                        <span class=\"page-link disabled text-muted page-size-label\">{{ T.pagerPageSizeLabel }}</span>\n                        <select id=\"pageSizeSelect\" class=\"page-link\" v-model=\"pageSize\">\n                            <option v-for=\"option in pageSizeOptions\" v-bind:value=\"option\">\n                                {{option}}\n                            </option>\n                        </select>\n                    </div>\n                </li>\n                <li class=\"page-item ml-4 page-info\">\n                    <span class=\"page-link disabled text-muted \">{{ T.pagerPageLabel }} {{current + 1}}/{{totalPages}}</span>\n                </li>\n                <li class=\"page-item ml-4 total-info\">\n                     <span class=\"page-link disabled text-muted \"> {{ T.pagerTotalLabel }} {{total}}</span>\n                </li>\n            </ul>\n        </nav>\n        ",
+  props: {
+    sourceItems: Array
+  },
+  data: function data() {
+    return {
+      pageSize: 10,
+      pageSizeOptions: [10, 30, 50, 100],
+      current: 0,
+      T: {}
+    };
+  },
+  created: function created() {
+    var self = this; // retrieving localized strings from view
+
+    self.T.pagerFirstButton = $('#t-pager-first-button').val();
+    self.T.pagerPreviousButton = $('#t-pager-previous-button').val();
+    self.T.pagerNextButton = $('#t-pager-next-button').val();
+    self.T.pagerLastButton = $('#t-pager-last-button').val();
+    self.T.pagerPageSizeLabel = $('#t-pager-page-size-label').val();
+    self.T.pagerPageLabel = $('#t-pager-page-label').val();
+    self.T.pagerTotalLabel = $('#t-pager-total-label').val();
+  },
+  methods: {
+    next: function next() {
+      this.current = this.current + 1;
+    },
+    previous: function previous() {
+      this.current = this.current - 1;
+    },
+    goFirst: function goFirst() {
+      this.current = 0;
+    },
+    goLast: function goLast() {
+      this.current = this.totalPages - 1;
+    },
+    goTo: function goTo(targetPage) {
+      this.current = targetPage;
+    }
+  },
+  computed: {
+    total: function total() {
+      return this.sourceItems ? this.sourceItems.length : 0;
+    },
+    totalPages: function totalPages() {
+      var pages = Math.ceil(this.total / this.pageSize);
+      return pages > 0 ? pages : 1;
+    },
+    isLastPage: function isLastPage() {
+      return this.current + 1 >= this.totalPages;
+    },
+    isFirstPage: function isFirstPage() {
+      return this.current === 0;
+    },
+    canDoNext: function canDoNext() {
+      return !this.isLastPage;
+    },
+    canDoPrev: function canDoPrev() {
+      return !this.isFirstPage;
+    },
+    canDoFirst: function canDoFirst() {
+      return !this.isFirstPage;
+    },
+    canDoLast: function canDoLast() {
+      return !this.isLastPage;
+    },
+    // this computed is only to have a central place where we detect changes and leverage Vue JS reactivity to raise our event.
+    // That event will be handled by the parent media app to display the items in the page.
+    // this logic will not run if the computed property is not used in the template. We use a dummy "data-computed-trigger" attribute for that.
+    itemsInCurrentPage: function itemsInCurrentPage() {
+      var start = this.pageSize * this.current;
+      var end = start + this.pageSize;
+      var result = this.sourceItems.slice(start, end);
+      bus.$emit('pagerEvent', result);
+      return result;
+    },
+    pageLinks: function pageLinks() {
+      var links = [];
+      links.push(this.current + 1); // Add 2 items before current
 
             for (var i = 0; i < this.filteredMediaItems.length; i++) {
               this.selectedMedias.push(this.filteredMediaItems[i]);

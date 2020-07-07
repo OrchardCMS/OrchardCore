@@ -1,14 +1,15 @@
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Modules;
-using OrchardCore.ShortCodes.Services;
+using OrchardCore.Shortcodes.Services;
+using Shortcodes;
 
-namespace OrchardCore.ShortCodes
+namespace OrchardCore.Shortcodes
 {
     public class Startup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<IShortCodeService, ShortCodeService>();
+            services.AddScoped<IShortcodeService, ShortcodeService>();
         }
     }
 }
