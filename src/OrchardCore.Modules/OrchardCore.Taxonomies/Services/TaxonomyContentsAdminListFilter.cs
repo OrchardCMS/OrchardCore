@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.Contents.Services;
+using OrchardCore.Contents.ViewModels;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Entities;
 using OrchardCore.Settings;
@@ -21,13 +22,13 @@ namespace OrchardCore.Taxonomies.Services
             _siteService = siteService;
         }
 
-        public async Task FilterAsync(IQuery<ContentItem> query, IUpdateModel updateModel)
+        public async Task FilterAsync(ContentOptionsViewModel model, IQuery<ContentItem> query, IUpdateModel updater)
         {
             var settings = (await _siteService.GetSiteSettingsAsync()).As<TaxonomyContentsAdminListSettings>();
             foreach (var contentItemId in settings.TaxonomyContentItemIds)
             {
                 var viewModel = new TaxonomyContentsAdminFilterViewModel();
-                if (await updateModel.TryUpdateModelAsync(viewModel, "Taxonomy" + contentItemId))
+                if (await updater.TryUpdateModelAsync(viewModel, "Taxonomy" + contentItemId))
                 {
                     // Show all items categorized by the taxonomy
                     if (!String.IsNullOrEmpty(viewModel.SelectedContentItemId))

@@ -6,8 +6,8 @@ using YesSql;
 
 namespace OrchardCore.Contents.Services
 {
-    public interface IContentsAdminListFilter
+    public interface IContentsAdminListQueryService
     {
-        Task FilterAsync(ContentOptionsViewModel model, IQuery<ContentItem> query, IUpdateModel updater);
+        Task<IQuery<ContentItem>> QueryAsync(ContentOptionsViewModel model, IUpdateModel updater);
     }
 }
