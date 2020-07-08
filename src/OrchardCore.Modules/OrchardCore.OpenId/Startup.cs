@@ -5,10 +5,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -44,14 +42,6 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.OpenId
 {
-    [Feature(OpenIdConstants.Features.Validation)]
-    public class MyController : Controller
-    {
-        [Authorize(AuthenticationSchemes = "Api")]
-        [HttpGet("~/test")]
-        public IActionResult Test() => Content(User.GetUserIdentifier());
-    }
-
     public class Startup : StartupBase
     {
         private readonly AdminOptions _adminOptions;
