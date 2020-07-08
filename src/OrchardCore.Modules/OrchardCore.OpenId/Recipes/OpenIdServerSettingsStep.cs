@@ -49,6 +49,15 @@ namespace OrchardCore.OpenId.Recipes
             settings.UserinfoEndpointPath = model.EnableUserInfoEndpoint ?
                 new PathString("/connect/userinfo") : PathString.Empty;
 
+            if (model.AllowAuthorizationCodeFlow)
+            {
+                settings.GrantTypes.Add(GrantTypes.AuthorizationCode);
+            }
+            else
+            {
+                settings.GrantTypes.Remove(GrantTypes.AuthorizationCode);
+            }
+
             if (model.AllowImplicitFlow)
             {
                 settings.GrantTypes.Add(GrantTypes.Implicit);
