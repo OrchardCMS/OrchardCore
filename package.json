@@ -11,7 +11,6 @@
     "install:orchardcore.themes": "cd src/OrchardCore.Modules/OrchardCore.Themes && npm install",
     "install:orchardcore.workflows": "cd src/OrchardCore.Modules/OrchardCore.Workflows && npm install",
     "install:orchardcore.theadmin": "cd src/OrchardCore.Themes/TheAdmin && npm install",
-    "install:startbootstrap-agency": "cd src/OrchardCore.Themes/TheAgencyTheme/wwwroot && npm install",
     "install:startbootstrap-clean-blog": "cd src/OrchardCore.Themes/TheBlogTheme/wwwroot && npm install",
     "install:startbootstrap-coming-soon": "cd src/OrchardCore.Themes/TheComingSoonTheme/wwwroot && npm install",
     "install:orchardcore.thetheme": "cd src/OrchardCore.Themes/TheTheme && npm install",
