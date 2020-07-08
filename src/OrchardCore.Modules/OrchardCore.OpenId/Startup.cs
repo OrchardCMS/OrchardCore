@@ -6,11 +6,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OpenIddict.Server;
 using OpenIddict.Server.AspNetCore;
@@ -44,15 +42,6 @@ namespace OrchardCore.OpenId
 {
     public class Startup : StartupBase
     {
-        private readonly AdminOptions _adminOptions;
-        private readonly ILogger _logger;
-
-        public Startup(IOptions<AdminOptions> adminOptions, ILogger<Startup> logger)
-        {
-            _adminOptions = adminOptions.Value;
-            _logger = logger;
-        }
-
         public override void ConfigureServices(IServiceCollection services)
         {
             // Register the OpenIddict core services and the Orchard migrations, managers and default YesSql stores.
@@ -72,85 +61,6 @@ namespace OrchardCore.OpenId
                 ServiceDescriptor.Scoped<IPermissionProvider, Permissions>(),
                 ServiceDescriptor.Scoped<INavigationProvider, AdminMenu>(),
             });
-        }
-
-        public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
-        {
-            var httpContextAccessor = serviceProvider.GetRequiredService<IHttpContextAccessor>();
-            if (!httpContextAccessor.HttpContext.Request.IsHttps)
-            {
-                _logger.LogCritical("OpenId module requires a site that runs on https.");
-            }
-
-            // Application
-            var applicationControllerName = typeof(ApplicationController).ControllerName();
-
-            routes.MapAreaControllerRoute(
-                name: "OpenIdApplication",
-                areaName: "OrchardCore.OpenId",
-                pattern: _adminOptions.AdminUrlPrefix + "/OpenId/Application",
-                defaults: new { controller = applicationControllerName, action = nameof(ApplicationController.Index) }
-            );
-            routes.MapAreaControllerRoute(
-                name: "OpenIdApplicationCreate",
-                areaName: "OrchardCore.OpenId",
-                pattern: _adminOptions.AdminUrlPrefix + "/OpenId/Application/Create",
-                defaults: new { controller = applicationControllerName, action = nameof(ApplicationController.Create) }
-            );
-            routes.MapAreaControllerRoute(
-                name: "OpenIdApplicationDelete",
-                areaName: "OrchardCore.OpenId",
-                pattern: _adminOptions.AdminUrlPrefix + "/OpenId/Application/Delete/{id}",
-                defaults: new { controller = applicationControllerName, action = nameof(ApplicationController.Delete) }
-            );
-            routes.MapAreaControllerRoute(
-                name: "OpenIdApplicationEdit",
-                areaName: "OrchardCore.OpenId",
-                pattern: _adminOptions.AdminUrlPrefix + "/OpenId/Application/Edit/{id}",
-                defaults: new { controller = applicationControllerName, action = nameof(ApplicationController.Edit) }
-            );
-
-            // Scope
-            var scopeControllerName = typeof(ScopeController).ControllerName();
-
-            routes.MapAreaControllerRoute(
-                name: "OpenIdScope",
-                areaName: "OrchardCore.OpenId",
-                pattern: _adminOptions.AdminUrlPrefix + "/OpenId/Scope",
-                defaults: new { controller = scopeControllerName, action = nameof(ScopeController.Index) }
-            );
-            routes.MapAreaControllerRoute(
-                name: "OpenIdScopeCreate",
-                areaName: "OrchardCore.OpenId",
-                pattern: _adminOptions.AdminUrlPrefix + "/OpenId/Scope/Create",
-                defaults: new { controller = scopeControllerName, action = nameof(ScopeController.Create) }
-            );
-            routes.MapAreaControllerRoute(
-                name: "OpenIdScopeDelete",
-                areaName: "OrchardCore.OpenId",
-                pattern: _adminOptions.AdminUrlPrefix + "/OpenId/Scope/Delete/{id}",
-                defaults: new { controller = scopeControllerName, action = nameof(ScopeController.Delete) }
-            );
-            routes.MapAreaControllerRoute(
-                name: "OpenIdScopeEdit",
-                areaName: "OrchardCore.OpenId",
-                pattern: _adminOptions.AdminUrlPrefix + "/OpenId/Scope/Edit/{id}",
-                defaults: new { controller = scopeControllerName, action = nameof(ScopeController.Edit) }
-            );
-
-            routes.MapAreaControllerRoute(
-                name: "OpenIdServerConfiguration",
-                areaName: "OrchardCore.OpenId",
-                pattern: _adminOptions.AdminUrlPrefix + "/OpenId/ServerConfiguration",
-                defaults: new { controller = typeof(ServerConfigurationController).ControllerName(), action = nameof(ServerConfigurationController.Index) }
-            );
-
-            routes.MapAreaControllerRoute(
-                name: "OpenIdValidationConfiguration",
-                areaName: "OrchardCore.OpenId",
-                pattern: _adminOptions.AdminUrlPrefix + "/OpenId/ValidationConfiguration",
-                defaults: new { controller = typeof(ValidationConfigurationController).ControllerName(), action = nameof(ValidationConfigurationController.Index) }
-            );
         }
     }
 
@@ -178,6 +88,71 @@ namespace OrchardCore.OpenId
                 // Built-in initializers:
                 ServiceDescriptor.Singleton<IPostConfigureOptions<OpenIdConnectOptions>, OpenIdConnectPostConfigureOptions>()
             });
+        }
+    }
+
+    [Feature(OpenIdConstants.Features.Management)]
+    public class ManagementStartup : StartupBase
+    {
+        public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+        {
+            var options = serviceProvider.GetRequiredService<IOptions<AdminOptions>>().Value;
+
+            // Application
+            var applicationControllerName = typeof(ApplicationController).ControllerName();
+
+            routes.MapAreaControllerRoute(
+                name: "OpenIdApplication",
+                areaName: "OrchardCore.OpenId",
+                pattern: options.AdminUrlPrefix + "/OpenId/Application",
+                defaults: new { controller = applicationControllerName, action = nameof(ApplicationController.Index) }
+            );
+            routes.MapAreaControllerRoute(
+                name: "OpenIdApplicationCreate",
+                areaName: "OrchardCore.OpenId",
+                pattern: options.AdminUrlPrefix + "/OpenId/Application/Create",
+                defaults: new { controller = applicationControllerName, action = nameof(ApplicationController.Create) }
+            );
+            routes.MapAreaControllerRoute(
+                name: "OpenIdApplicationDelete",
+                areaName: "OrchardCore.OpenId",
+                pattern: options.AdminUrlPrefix + "/OpenId/Application/Delete/{id}",
+                defaults: new { controller = applicationControllerName, action = nameof(ApplicationController.Delete) }
+            );
+            routes.MapAreaControllerRoute(
+                name: "OpenIdApplicationEdit",
+                areaName: "OrchardCore.OpenId",
+                pattern: options.AdminUrlPrefix + "/OpenId/Application/Edit/{id}",
+                defaults: new { controller = applicationControllerName, action = nameof(ApplicationController.Edit) }
+            );
+
+            // Scope
+            var scopeControllerName = typeof(ScopeController).ControllerName();
+
+            routes.MapAreaControllerRoute(
+                name: "OpenIdScope",
+                areaName: "OrchardCore.OpenId",
+                pattern: options.AdminUrlPrefix + "/OpenId/Scope",
+                defaults: new { controller = scopeControllerName, action = nameof(ScopeController.Index) }
+            );
+            routes.MapAreaControllerRoute(
+                name: "OpenIdScopeCreate",
+                areaName: "OrchardCore.OpenId",
+                pattern: options.AdminUrlPrefix + "/OpenId/Scope/Create",
+                defaults: new { controller = scopeControllerName, action = nameof(ScopeController.Create) }
+            );
+            routes.MapAreaControllerRoute(
+                name: "OpenIdScopeDelete",
+                areaName: "OrchardCore.OpenId",
+                pattern: options.AdminUrlPrefix + "/OpenId/Scope/Delete/{id}",
+                defaults: new { controller = scopeControllerName, action = nameof(ScopeController.Delete) }
+            );
+            routes.MapAreaControllerRoute(
+                name: "OpenIdScopeEdit",
+                areaName: "OrchardCore.OpenId",
+                pattern: options.AdminUrlPrefix + "/OpenId/Scope/Edit/{id}",
+                defaults: new { controller = scopeControllerName, action = nameof(ScopeController.Edit) }
+            );
         }
     }
 
@@ -231,20 +206,14 @@ namespace OrchardCore.OpenId
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            async Task<OpenIdServerSettings> GetServerSettingsAsync()
-            {
-                // Note: the OpenID server service is registered as a singleton service and thus can be
-                // safely used with the non-scoped/root service provider available at this stage.
-                var service = serviceProvider.GetRequiredService<IOpenIdServerService>();
+            var options = serviceProvider.GetRequiredService<IOptions<AdminOptions>>().Value;
 
-                var configuration = await service.GetSettingsAsync();
-                if ((await service.ValidateSettingsAsync(configuration)).Any(result => result != ValidationResult.Success))
-                {
-                    return null;
-                }
-
-                return configuration;
-            }
+            routes.MapAreaControllerRoute(
+                name: "OpenIdServerConfiguration",
+                areaName: "OrchardCore.OpenId",
+                pattern: options.AdminUrlPrefix + "/OpenId/ServerConfiguration",
+                defaults: new { controller = typeof(ServerConfigurationController).ControllerName(), action = nameof(ServerConfigurationController.Index) }
+            );
 
             var settings = GetServerSettingsAsync().GetAwaiter().GetResult();
             if (settings == null)
@@ -291,6 +260,21 @@ namespace OrchardCore.OpenId
                     defaults: new { controller = "UserInfo", action = "Me" }
                 );
             }
+
+            async Task<OpenIdServerSettings> GetServerSettingsAsync()
+            {
+                // Note: the OpenID server service is registered as a singleton service and thus can be
+                // safely used with the non-scoped/root service provider available at this stage.
+                var service = serviceProvider.GetRequiredService<IOpenIdServerService>();
+
+                var configuration = await service.GetSettingsAsync();
+                if ((await service.ValidateSettingsAsync(configuration)).Any(result => result != ValidationResult.Success))
+                {
+                    return null;
+                }
+
+                return configuration;
+            }
         }
     }
 
@@ -331,6 +315,18 @@ namespace OrchardCore.OpenId
                 ServiceDescriptor.Singleton<IConfigureOptions<OpenIddictValidationOptions>, OpenIdValidationConfiguration>(),
                 ServiceDescriptor.Singleton<IConfigureOptions<OpenIddictValidationDataProtectionOptions>, OpenIdValidationConfiguration>()
             });
+        }
+
+        public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+        {
+            var options = serviceProvider.GetRequiredService<IOptions<AdminOptions>>().Value;
+
+            routes.MapAreaControllerRoute(
+                name: "OpenIdValidationConfiguration",
+                areaName: "OrchardCore.OpenId",
+                pattern: options.AdminUrlPrefix + "/OpenId/ValidationConfiguration",
+                defaults: new { controller = typeof(ValidationConfigurationController).ControllerName(), action = nameof(ValidationConfigurationController.Index) }
+            );
         }
     }
 
