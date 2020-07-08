@@ -5,7 +5,7 @@ namespace OrchardCore.Settings.Deployment
     public class SiteSettingsPropertyDeploymentStepFactory<TModel> : IDeploymentStepFactory
         where TModel : class, new()
     {
-        private static readonly string GenericTypeKey = "SiteSettingsPropertyDeploymentStep_" + typeof(TModel).Name;
+        private static readonly string GenericTypeKey = typeof(TModel).Name + "_SiteSettingsPropertyDeploymentStep";
 
         public string Name => GenericTypeKey;
 
