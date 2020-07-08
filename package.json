@@ -18,16 +18,16 @@
     "postinstall": "run-s install:*"
   },
   "devDependencies": {
-    "@babel/core": "^7.9.6",
-    "@babel/preset-env": "^7.9.6",
-    "@babel/preset-flow": "7.9.0",
-    "all-contributors-cli": "^6.14.2",
+    "@babel/core": "^7.10.4",
+    "@babel/preset-env": "^7.10.4",
+    "@babel/preset-flow": "7.10.4",
+    "all-contributors-cli": "^6.16.1",
     "es6-promise": "4.2.8",
     "glob": "^7.1.6",
     "graceful-fs": "4.2.4",
     "gulp": "4.0.2",
     "gulp-babel": "8.0.0",
-    "gulp-cli": "2.2.1",
+    "gulp-cli": "2.3.0",
     "gulp-concat": "2.6.1",
     "gulp-debug": "4.0.0",
     "gulp-eol": "0.2.0",
@@ -50,6 +50,6 @@
     "path-posix": "1.0.0",
     "postcss": "7.0.32",
     "postcss-rtl": "^1.7.3",
-    "typescript": "^3.9.5"
+    "typescript": "^3.9.6"
   }
 }
