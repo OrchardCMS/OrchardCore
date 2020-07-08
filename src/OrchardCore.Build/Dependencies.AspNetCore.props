@@ -7,7 +7,6 @@
     <PackageManagement Include="Microsoft.AspNetCore.Authentication.AzureAD.UI" Version="$(AspNetCoreVersion)" />
     <PackageManagement Include="Microsoft.AspNetCore.Authentication.Facebook" Version="$(AspNetCoreVersion)" />
     <PackageManagement Include="Microsoft.AspNetCore.Authentication.Google" Version="$(AspNetCoreVersion)" />
-    <PackageManagement Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="$(AspNetCoreVersion)" />
     <PackageManagement Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" Version="$(AspNetCoreVersion)" />
     <PackageManagement Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="$(AspNetCoreVersion)" />
     <PackageManagement Include="Microsoft.AspNetCore.Authentication.Twitter" Version="$(AspNetCoreVersion)" />
