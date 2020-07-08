@@ -50,8 +50,5 @@
     "postcss": "7.0.32",
     "postcss-rtl": "^1.7.3",
     "typescript": "^3.9.6"
-  },
-  "dependencies": {
-    "npm-check-updates": "^7.0.1"
   }
 }
