@@ -6,7 +6,7 @@ using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.ShortCodes.Services;
+using OrchardCore.Shortcodes.Services;
 using OrchardCore.Infrastructure.Html;
 using OrchardCore.Liquid;
 using OrchardCore.Markdown.Models;
@@ -21,21 +21,21 @@ namespace OrchardCore.Markdown.Drivers
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly HtmlEncoder _htmlEncoder;
         private readonly IHtmlSanitizerService _htmlSanitizerService;
-        private readonly IShortCodeService _shortCodeService;
+        private readonly IShortcodeService _shortcodeService;
         private readonly IMarkdownService _markdownService;
         private readonly IStringLocalizer S;
 
         public MarkdownBodyPartDisplay(ILiquidTemplateManager liquidTemplateManager,
             HtmlEncoder htmlEncoder,
             IHtmlSanitizerService htmlSanitizerService,
-            IShortCodeService shortCodeService,
+            IShortcodeService shortcodeService,
             IMarkdownService markdownService,
             IStringLocalizer<MarkdownBodyPartDisplay> localizer)
         {
             _liquidTemplateManager = liquidTemplateManager;
             _htmlEncoder = htmlEncoder;
             _htmlSanitizerService = htmlSanitizerService;
-            _shortCodeService = shortCodeService;
+            _shortcodeService = shortcodeService;
             _markdownService = markdownService;
             S = localizer;
         }
@@ -95,7 +95,7 @@ namespace OrchardCore.Markdown.Drivers
                     scope => scope.SetValue("ContentItem", model.ContentItem));
             }
 
-            model.Html = await _shortCodeService.ProcessAsync(model.Html ?? "");
+            model.Html = await _shortcodeService.ProcessAsync(model.Html ?? "");
 
             if (settings.SanitizeHtml)
             {

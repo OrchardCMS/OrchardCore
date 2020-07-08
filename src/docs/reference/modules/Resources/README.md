@@ -58,9 +58,9 @@ The `OrchardCore.Resources` module provides some commonly used ones:
 | bootstrap-slider      | Style  | 11.0.2        | -              |
 | codemirror            | Script | 5.55.0        | -              |
 | codemirror            | Style  | 5.55.0        | -              |
-| font-awesome          | Style  | 4.7.0, 5.13.0 | -              |
-| font-awesome          | Script | 5.13.0        | -              |
-| font-awesome-v4-shims | Script | 5.13.0        | -              |
+| font-awesome          | Style  | 4.7.0, 5.13.1 | -              |
+| font-awesome          | Script | 5.13.1        | -              |
+| font-awesome-v4-shims | Script | 5.13.1        | -              |
 
 ### Registering a Resource Manifest
 
