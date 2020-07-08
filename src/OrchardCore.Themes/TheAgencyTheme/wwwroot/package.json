@@ -1,9 +1,16 @@
 {
     "title": "Agency",
     "name": "startbootstrap-agency",
-    "version": "5.2.2",
+    "version": "6.0.2",
     "scripts": {
-        "start": "node_modules/.bin/gulp watch"
+        "build": "npm run clean && npm run build:pug && npm run build:scss && npm run build:scripts && npm run build:assets",
+        "build:assets": "node scripts/build-assets.js",
+        "build:pug": "node scripts/build-pug.js",
+        "build:scripts": "node scripts/build-scripts.js",
+        "build:scss": "node scripts/build-scss.js",
+        "clean": "node scripts/clean.js",
+        "start": "npm run build && node scripts/start.js",
+        "start:debug": "npm run build && node scripts/start-debug.js"
     },
     "description": "Agency is a one page HTML theme for Bootstrap.",
     "keywords": [
@@ -16,7 +23,7 @@
     ],
     "homepage": "https://startbootstrap.com/template-overviews/agency",
     "bugs": {
-        "url": "https://github.com/BlackrockDigital/startbootstrap-agency/issues",
+        "url": "https://github.com/StartBootstrap/startbootstrap-agency/issues",
         "email": "feedback@startbootstrap.com"
     },
     "license": "MIT",
@@ -26,25 +33,20 @@
     ],
     "repository": {
         "type": "git",
-        "url": "https://github.com/BlackrockDigital/startbootstrap-agency.git"
+        "url": "https://github.com/StartBootstrap/startbootstrap-agency.git"
     },
     "dependencies": {
-        "@fortawesome/fontawesome-free": "5.10.2",
-        "bootstrap": "4.3.1",
-        "jquery": "3.4.1",
-        "jquery.easing": "^1.4.1"
+        "bootstrap": "4.5.0"
     },
     "devDependencies": {
+        "autoprefixer": "9.8.0",
         "browser-sync": "2.26.7",
-        "del": "5.1.0",
-        "gulp": "4.0.2",
-        "gulp-autoprefixer": "7.0.0",
-        "gulp-clean-css": "4.2.0",
-        "gulp-header": "2.0.9",
-        "gulp-plumber": "^1.2.1",
-        "gulp-rename": "1.4.0",
-        "gulp-sass": "4.0.2",
-        "gulp-uglify": "3.0.2",
-        "merge-stream": "2.0.0"
+        "chokidar": "3.4.0",
+        "concurrently": "5.2.0",
+        "postcss": "7.0.32",
+        "prettier": "2.0.5",
+        "pug": "3.0.0",
+        "sass": "1.26.8",
+        "shelljs": "0.8.4"
     }
 }
