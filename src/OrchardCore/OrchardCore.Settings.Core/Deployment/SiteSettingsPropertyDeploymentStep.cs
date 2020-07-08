@@ -9,7 +9,7 @@ namespace OrchardCore.Settings.Deployment
     {
         public SiteSettingsPropertyDeploymentStep()
         {
-            Name = "SiteSettingsPropertyDeploymentStep_" + typeof(TModel).Name;
+            Name = typeof(TModel).Name + "_SiteSettingsPropertyDeploymentStep";
         }
     }
 }
