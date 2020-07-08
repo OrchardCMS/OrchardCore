@@ -2,7 +2,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore;
-using OrchardCore.ShortCodes.Services;
+using OrchardCore.Shortcodes.Services;
 
 public static class OrchardRazorHelperExtensions
 {
@@ -10,11 +10,11 @@ public static class OrchardRazorHelperExtensions
     /// Applies short codes to html.
     /// </summary>
     /// <param name="html">The html to apply short codes.</param>
-    public static async Task<IHtmlContent> HtmlToShortCodesAsync(this IOrchardHelper orchardHelper, string html)
+    public static async Task<IHtmlContent> HtmlToShortcodesAsync(this IOrchardHelper orchardHelper, string html)
     {
-        var shortCodeService = orchardHelper.HttpContext.RequestServices.GetRequiredService<IShortCodeService>();
+        var shortcodeService = orchardHelper.HttpContext.RequestServices.GetRequiredService<IShortcodeService>();
 
-        html = await shortCodeService.ProcessAsync(html);
+        html = await shortcodeService.ProcessAsync(html);
 
         return new HtmlString(html);
     }
