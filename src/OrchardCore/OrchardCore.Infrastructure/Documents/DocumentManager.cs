@@ -151,7 +151,7 @@ namespace OrchardCore.Documents
             {
                 if (document.Identifier == id)
                 {
-                    if (_options?.SlidingExpiration.HasValue ?? false)
+                    if (_isDistributed && (_options?.SlidingExpiration.HasValue ?? false))
                     {
                         await _distributedCache.RefreshAsync(_options.CacheKey);
                     }
