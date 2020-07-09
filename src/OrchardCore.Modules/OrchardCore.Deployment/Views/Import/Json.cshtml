@@ -1,0 +1,27 @@
+<h1>@RenderTitleSegments(T["Import JSON"])</h1>
+
+<style asp-name="codemirror"></style>
+<script asp-name="codemirror" depends-on="admin" at="Foot"></script>
+<script asp-name="codemirror-addon-display-autorefresh" at="Foot"></script>
+<script asp-name="codemirror-mode-javascript" at="Foot"></script>
+
+<form asp-action="Json">
+    <div class="form-group">
+        <textarea class="form-control mb-2" rows="20" id="json" name="json"></textarea>
+    </div>
+    <button class="btn btn-primary" type="submit">@T["Import"]</button>
+</form>
+
+<script at="Foot">
+$(function () {
+    var textArea = document.getElementById('json');
+
+    var editor = CodeMirror.fromTextArea(textArea, {
+        autoRefresh: true,
+        lineNumbers: true,
+        styleActiveLine: true,
+        matchBrackets: true,
+        mode: { name: "javascript" },
+    });
+});
+</script>

@@ -82,7 +82,7 @@ namespace OrchardCore.Deployment.Controllers
 
                     await _deploymentManager.ImportDeploymentPackageAsync(new PhysicalFileProvider(tempArchiveFolder));
 
-                    _notifier.Success(H["Deployment package imported"]);
+                    _notifier.Success(H["Deployment package imported."]);
                 }
                 finally
                 {
@@ -102,11 +102,21 @@ namespace OrchardCore.Deployment.Controllers
                 _notifier.Error(H["Please add a file to import."]);
             }
 
-            return RedirectToAction("Index");
+            return RedirectToAction(nameof(Index));
+        }
+
+        public async Task<IActionResult> Json()
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.Import))
+            {
+                return Forbid();
+            }
+
+            return View();
         }
 
         [HttpPost]
-        public async Task<IActionResult> ImportJson(string json)
+        public async Task<IActionResult> Json(string json)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.Import))
             {
@@ -124,7 +134,7 @@ namespace OrchardCore.Deployment.Controllers
 
                     await _deploymentManager.ImportDeploymentPackageAsync(new PhysicalFileProvider(tempArchiveFolder));
 
-                    _notifier.Success(H["Deployment package imported"]);
+                    _notifier.Success(H["Recipe imported."]);
                 }
                 finally
                 {
@@ -139,7 +149,7 @@ namespace OrchardCore.Deployment.Controllers
                 _notifier.Error(H["Please provide a recipe in json."]);
             }
 
-            return RedirectToAction("Index");
+            return RedirectToAction(nameof(Json));
         }
     }
 }
