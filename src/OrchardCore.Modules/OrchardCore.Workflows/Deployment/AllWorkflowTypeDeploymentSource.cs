@@ -16,9 +16,9 @@ namespace OrchardCore.Workflows.Deployment
 
         public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
         {
-            var allWorkflowsStep = step as AllWorkflowTypeDeploymentStep;
+            var allContentStep = step as AllWorkflowTypeDeploymentStep;
 
-            if (allWorkflowsStep == null)
+            if (allContentStep == null)
             {
                 return;
             }

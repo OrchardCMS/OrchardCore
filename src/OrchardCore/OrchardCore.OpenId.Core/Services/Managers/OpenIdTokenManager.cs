@@ -37,9 +37,9 @@ namespace OrchardCore.OpenId.Services.Managers
                 throw new ArgumentException("The identifier cannot be null or empty.", nameof(identifier));
             }
 
-            return new ValueTask<TToken>(Store is IOpenIdTokenStore<TToken> store ?
+            return Store is IOpenIdTokenStore<TToken> store ?
                 store.FindByPhysicalIdAsync(identifier, cancellationToken) :
-                Store.FindByIdAsync(identifier, cancellationToken));
+                Store.FindByIdAsync(identifier, cancellationToken);
         }
 
         /// <summary>

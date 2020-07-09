@@ -16,9 +16,9 @@ namespace OrchardCore.AdminMenu.Deployment
 
         public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
         {
-            var AdminMenuStep = step as AdminMenuDeploymentStep;
+            var adminMenuStep = step as AdminMenuDeploymentStep;
 
-            if (AdminMenuStep == null)
+            if (adminMenuStep == null)
             {
                 return;
             }
