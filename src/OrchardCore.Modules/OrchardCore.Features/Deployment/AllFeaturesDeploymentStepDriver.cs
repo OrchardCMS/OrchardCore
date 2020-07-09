@@ -22,13 +22,13 @@ namespace OrchardCore.Features.Deployment
         {
             return Initialize<AllFeaturesDeploymentStepViewModel>("AllFeaturesDeploymentStep_Fields_Edit", model =>
             {
-                model.ExportDisableFeatures = step.ExportDisableFeatures;
+                model.IgnoreDisabledFeature = step.IgnoreDisabledFeature;
             }).Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(AllFeaturesDeploymentStep step, IUpdateModel updater)
         {
-            await updater.TryUpdateModelAsync(step, Prefix, x => x.ExportDisableFeatures);
+            await updater.TryUpdateModelAsync(step, Prefix, x => x.IgnoreDisabledFeature);
 
             return Edit(step);
         }
