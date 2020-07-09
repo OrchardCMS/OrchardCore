@@ -1,4 +1,4 @@
-# Orchard Core Theming explained
+# Orchard Core Theming explained (`OrchardCore.Themes`)
 
 This article explains how a Content Item is rendered, and the many ways in which the HTML that is rendered can be customized.  
 It also explains the fundamental theming concepts, namely __Shapes__, __Alternates__, __Templates__, __Differentiators__, __Content Zones__ and __Display Types__.

@@ -286,7 +286,8 @@ If the shape type is different than the content field name, it will be `[PartNam
 Access a specific shape by name:
 
 ```csharp
-Model.Content.HtmlBodyPart
+Model.Content.HtmlBodyPart;
+Model.Content.Named("ListPart-ListPartFeed");
 ```
 
 Removing a specific shape by name:

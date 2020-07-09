@@ -44,7 +44,7 @@ namespace OrchardCore.PublishLater.Drivers
             .Location("Actions:10");
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(PublishLaterPart part, IUpdateModel updater)
+        public override async Task<IDisplayResult> UpdateAsync(PublishLaterPart part, IUpdateModel updater, UpdatePartEditorContext context)
         {
             var httpContext = _httpContextAccessor.HttpContext;
 
@@ -64,7 +64,7 @@ namespace OrchardCore.PublishLater.Drivers
                 }
             }
 
-            return Edit(part);
+            return Edit(part, context);
         }
 
         private async ValueTask PopulateViewModel(PublishLaterPart part, PublishLaterPartViewModel viewModel)
