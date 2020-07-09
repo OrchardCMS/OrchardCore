@@ -50,7 +50,7 @@ namespace OrchardCore.Environment.Shell.Builders
         {
             // We can't create a scope with a null 'ServiceProvider' meaning that the shell has been disposed. Normally, the
             // 'ShellHost' removes the shell from its collection as soon as it is released so that a new one will be created.
-            // But this may happen when a shell releases itself its dependent shells and disposes those that are not in use.
+            // But this may happen when a shell releases its dependent shells and disposes those that are not in use.
             if (_placeHolder || ServiceProvider == null)
             {
                 return null;
