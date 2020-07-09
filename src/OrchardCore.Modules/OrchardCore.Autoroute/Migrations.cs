@@ -22,13 +22,14 @@ namespace OrchardCore.Autoroute
                 .Attachable()
                 .WithDescription("Provides a custom url for your content item."));
 
-            SchemaBuilder.CreateMapIndexTable(nameof(AutoroutePartIndex), table => table
+            SchemaBuilder.CreateMapIndexTable(typeof(AutoroutePartIndex), table => table
                 .Column<string>("ContentItemId", c => c.WithLength(26))
                 .Column<string>("ContainedContentItemId", c => c.WithLength(26))
                 .Column<string>("JsonPath", c => c.Unlimited())
                 .Column<string>("Path", col => col.WithLength(AutoroutePartDisplay.MaxPathLength))
                 .Column<bool>("Published")
-                .Column<bool>("Latest")
+                .Column<bool>("Latest"),
+                null
             );
 
             SchemaBuilder.AlterTable(nameof(AutoroutePartIndex), table => table

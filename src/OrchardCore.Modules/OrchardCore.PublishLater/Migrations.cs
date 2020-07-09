@@ -21,8 +21,9 @@ namespace OrchardCore.PublishLater
                 .Attachable()
                 .WithDescription("Adds the ability to schedule content items to be published at a given future date and time."));
 
-            SchemaBuilder.CreateMapIndexTable(nameof(PublishLaterPartIndex), table => table
-                .Column<string>(nameof(PublishLaterPartIndex.ScheduledPublishUtc))
+            SchemaBuilder.CreateMapIndexTable(typeof(PublishLaterPartIndex), table => table
+                .Column<string>(nameof(PublishLaterPartIndex.ScheduledPublishUtc)),
+                null
             );
 
             SchemaBuilder.AlterTable(nameof(PublishLaterPartIndex), table => table

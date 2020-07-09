@@ -7,14 +7,16 @@ namespace OrchardCore.Users
     {
         public int Create()
         {
-            SchemaBuilder.CreateMapIndexTable(nameof(UserIndex), table => table
+            SchemaBuilder.CreateMapIndexTable(typeof(UserIndex), table => table
                 .Column<string>("NormalizedUserName")
-                .Column<string>("NormalizedEmail")
+                .Column<string>("NormalizedEmail"),
+                null
             );
 
-            SchemaBuilder.CreateReduceIndexTable(nameof(UserByRoleNameIndex), table => table
+            SchemaBuilder.CreateReduceIndexTable(typeof(UserByRoleNameIndex), table => table
                 .Column<string>("RoleName")
-                .Column<int>("Count")
+                .Column<int>("Count"),
+                null
             );
 
             return UpdateFrom1();
@@ -22,17 +24,19 @@ namespace OrchardCore.Users
 
         public int UpdateFrom1()
         {
-            SchemaBuilder.CreateMapIndexTable(nameof(UserByLoginInfoIndex), table => table
+            SchemaBuilder.CreateMapIndexTable(typeof(UserByLoginInfoIndex), table => table
                 .Column<string>("LoginProvider")
-                .Column<string>("ProviderKey"));
+                .Column<string>("ProviderKey"),
+                null);
             return 2;
         }
 
         public int UpdateFrom2()
         {
-            SchemaBuilder.CreateMapIndexTable(nameof(UserByClaimIndex), table => table
+            SchemaBuilder.CreateMapIndexTable(typeof(UserByClaimIndex), table => table
                 .Column<string>(nameof(UserByClaimIndex.ClaimType))
-                .Column<string>(nameof(UserByClaimIndex.ClaimValue)));
+                .Column<string>(nameof(UserByClaimIndex.ClaimValue)),
+                null);
             return 3;
         }
 

@@ -41,13 +41,14 @@ namespace OrchardCore.Taxonomies
                 .WithPart("TaxonomyPart", part => part.WithPosition("4"))
             );
 
-            SchemaBuilder.CreateMapIndexTable(nameof(TaxonomyIndex), table => table
+            SchemaBuilder.CreateMapIndexTable(typeof(TaxonomyIndex), table => table
                 .Column<string>("TaxonomyContentItemId", c => c.WithLength(26))
                 .Column<string>("ContentItemId", c => c.WithLength(26))
                 .Column<string>("ContentType", column => column.WithLength(ContentItemIndex.MaxContentTypeSize))
                 .Column<string>("ContentPart", column => column.WithLength(ContentItemIndex.MaxContentPartSize))
                 .Column<string>("ContentField", column => column.WithLength(ContentItemIndex.MaxContentFieldSize))
-                .Column<string>("TermContentItemId", column => column.WithLength(26))
+                .Column<string>("TermContentItemId", column => column.WithLength(26)),
+                null
             );
 
             SchemaBuilder.AlterTable(nameof(TaxonomyIndex), table => table

@@ -8,38 +8,45 @@ namespace OrchardCore.OpenId.YesSql.Migrations
     {
         public int Create()
         {
-            SchemaBuilder.CreateMapIndexTable(nameof(OpenIdApplicationIndex), table => table
+            SchemaBuilder.CreateMapIndexTable(typeof(OpenIdApplicationIndex), table => table
                 .Column<string>(nameof(OpenIdApplicationIndex.ApplicationId), column => column.WithLength(48))
-                .Column<string>(nameof(OpenIdApplicationIndex.ClientId), column => column.Unique()));
+                .Column<string>(nameof(OpenIdApplicationIndex.ClientId), column => column.Unique()),
+                null);
 
-            SchemaBuilder.CreateReduceIndexTable(nameof(OpenIdAppByLogoutUriIndex), table => table
+            SchemaBuilder.CreateReduceIndexTable(typeof(OpenIdAppByLogoutUriIndex), table => table
                 .Column<string>(nameof(OpenIdAppByLogoutUriIndex.LogoutRedirectUri))
-                .Column<int>(nameof(OpenIdAppByLogoutUriIndex.Count)));
+                .Column<int>(nameof(OpenIdAppByLogoutUriIndex.Count)),
+                null);
 
-            SchemaBuilder.CreateReduceIndexTable(nameof(OpenIdAppByRedirectUriIndex), table => table
+            SchemaBuilder.CreateReduceIndexTable(typeof(OpenIdAppByRedirectUriIndex), table => table
                 .Column<string>(nameof(OpenIdAppByRedirectUriIndex.RedirectUri))
-                .Column<int>(nameof(OpenIdAppByRedirectUriIndex.Count)));
+                .Column<int>(nameof(OpenIdAppByRedirectUriIndex.Count)),
+                null);
 
-            SchemaBuilder.CreateReduceIndexTable(nameof(OpenIdAppByRoleNameIndex), table => table
+            SchemaBuilder.CreateReduceIndexTable(typeof(OpenIdAppByRoleNameIndex), table => table
                 .Column<string>(nameof(OpenIdAppByRoleNameIndex.RoleName))
-                .Column<int>(nameof(OpenIdAppByRoleNameIndex.Count)));
+                .Column<int>(nameof(OpenIdAppByRoleNameIndex.Count)),
+                null);
 
-            SchemaBuilder.CreateMapIndexTable(nameof(OpenIdAuthorizationIndex), table => table
+            SchemaBuilder.CreateMapIndexTable(typeof(OpenIdAuthorizationIndex), table => table
                 .Column<string>(nameof(OpenIdAuthorizationIndex.AuthorizationId), column => column.WithLength(48))
                 .Column<string>(nameof(OpenIdAuthorizationIndex.ApplicationId), column => column.WithLength(48))
                 .Column<string>(nameof(OpenIdAuthorizationIndex.Status))
                 .Column<string>(nameof(OpenIdAuthorizationIndex.Subject))
-                .Column<string>(nameof(OpenIdAuthorizationIndex.Type)));
+                .Column<string>(nameof(OpenIdAuthorizationIndex.Type)),
+                null);
 
-            SchemaBuilder.CreateMapIndexTable(nameof(OpenIdScopeIndex), table => table
+            SchemaBuilder.CreateMapIndexTable(typeof(OpenIdScopeIndex), table => table
                 .Column<string>(nameof(OpenIdScopeIndex.Name), column => column.Unique())
-                .Column<string>(nameof(OpenIdScopeIndex.ScopeId), column => column.WithLength(48)));
+                .Column<string>(nameof(OpenIdScopeIndex.ScopeId), column => column.WithLength(48)),
+                null);
 
-            SchemaBuilder.CreateReduceIndexTable(nameof(OpenIdScopeByResourceIndex), table => table
+            SchemaBuilder.CreateReduceIndexTable(typeof(OpenIdScopeByResourceIndex), table => table
                 .Column<string>(nameof(OpenIdScopeByResourceIndex.Resource))
-                .Column<int>(nameof(OpenIdScopeByResourceIndex.Count)));
+                .Column<int>(nameof(OpenIdScopeByResourceIndex.Count)),
+                null);
 
-            SchemaBuilder.CreateMapIndexTable(nameof(OpenIdTokenIndex), table => table
+            SchemaBuilder.CreateMapIndexTable(typeof(OpenIdTokenIndex), table => table
                 .Column<string>(nameof(OpenIdTokenIndex.TokenId), column => column.WithLength(48))
                 .Column<string>(nameof(OpenIdTokenIndex.ApplicationId), column => column.WithLength(48))
                 .Column<string>(nameof(OpenIdTokenIndex.AuthorizationId), column => column.WithLength(48))
@@ -47,7 +54,8 @@ namespace OrchardCore.OpenId.YesSql.Migrations
                 .Column<string>(nameof(OpenIdTokenIndex.ReferenceId))
                 .Column<string>(nameof(OpenIdTokenIndex.Status))
                 .Column<string>(nameof(OpenIdTokenIndex.Subject))
-                .Column<string>(nameof(OpenIdTokenIndex.Type)));
+                .Column<string>(nameof(OpenIdTokenIndex.Type)),
+                null);
 
             return 3;
         }
@@ -62,21 +70,24 @@ namespace OrchardCore.OpenId.YesSql.Migrations
 
         public int UpdateFrom2()
         {
-            SchemaBuilder.DropReduceIndexTable("OpenIdApplicationByPostLogoutRedirectUriIndex");
-            SchemaBuilder.DropReduceIndexTable("OpenIdApplicationByRedirectUriIndex");
-            SchemaBuilder.DropReduceIndexTable("OpenIdApplicationByRoleNameIndex");
+            SchemaBuilder.DropReduceIndexTable("OpenIdApplicationByPostLogoutRedirectUriIndex", null);
+            SchemaBuilder.DropReduceIndexTable("OpenIdApplicationByRedirectUriIndex", null);
+            SchemaBuilder.DropReduceIndexTable("OpenIdApplicationByRoleNameIndex", null);
 
-            SchemaBuilder.CreateReduceIndexTable(nameof(OpenIdAppByLogoutUriIndex), table => table
+            SchemaBuilder.CreateReduceIndexTable(typeof(OpenIdAppByLogoutUriIndex), table => table
                 .Column<string>(nameof(OpenIdAppByLogoutUriIndex.LogoutRedirectUri))
-                .Column<int>(nameof(OpenIdAppByLogoutUriIndex.Count)));
+                .Column<int>(nameof(OpenIdAppByLogoutUriIndex.Count)),
+                null);
 
-            SchemaBuilder.CreateReduceIndexTable(nameof(OpenIdAppByRedirectUriIndex), table => table
+            SchemaBuilder.CreateReduceIndexTable(typeof(OpenIdAppByRedirectUriIndex), table => table
                 .Column<string>(nameof(OpenIdAppByRedirectUriIndex.RedirectUri))
-                .Column<int>(nameof(OpenIdAppByRedirectUriIndex.Count)));
+                .Column<int>(nameof(OpenIdAppByRedirectUriIndex.Count)),
+                null);
 
-            SchemaBuilder.CreateReduceIndexTable(nameof(OpenIdAppByRoleNameIndex), table => table
+            SchemaBuilder.CreateReduceIndexTable(typeof(OpenIdAppByRoleNameIndex), table => table
                 .Column<string>(nameof(OpenIdAppByRoleNameIndex.RoleName))
-                .Column<int>(nameof(OpenIdAppByRoleNameIndex.Count)));
+                .Column<int>(nameof(OpenIdAppByRoleNameIndex.Count)),
+                null);
 
             return 3;
         }

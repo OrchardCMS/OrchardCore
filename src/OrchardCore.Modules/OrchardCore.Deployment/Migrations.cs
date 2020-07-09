@@ -7,8 +7,9 @@ namespace OrchardCore.Deployment
     {
         public int Create()
         {
-            SchemaBuilder.CreateMapIndexTable(nameof(DeploymentPlanIndex), table => table
-                .Column<string>("Name")
+            SchemaBuilder.CreateMapIndexTable(typeof(DeploymentPlanIndex), table => table
+                .Column<string>("Name"),
+                null
             );
 
             return 1;

@@ -10,7 +10,7 @@ namespace OrchardCore.ContentFields.Indexing.SQL
         {
             // NOTE: The Text Length has been decreased from 4000 characters to 768.
             // For existing SQL databases update the TextFieldIndex tables Text column length manually.
-            SchemaBuilder.CreateMapIndexTable(nameof(TextFieldIndex), table => table
+            SchemaBuilder.CreateMapIndexTable(typeof(TextFieldIndex), table => table
                 .Column<string>("ContentItemId", column => column.WithLength(26))
                 .Column<string>("ContentItemVersionId", column => column.WithLength(26))
                 .Column<string>("ContentType", column => column.WithLength(ContentItemIndex.MaxContentTypeSize))
@@ -19,7 +19,8 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                 .Column<bool>("Published", column => column.Nullable())
                 .Column<bool>("Latest", column => column.Nullable())
                 .Column<string>("Text", column => column.Nullable().WithLength(TextFieldIndex.MaxTextSize))
-                .Column<string>("BigText", column => column.Nullable().Unlimited())
+                .Column<string>("BigText", column => column.Nullable().Unlimited()),
+                null
             );
 
             SchemaBuilder.AlterTable(nameof(TextFieldIndex), table => table
@@ -54,7 +55,7 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                 .CreateIndex("IDX_TextFieldIndex_Text", "Text")
             );
 
-            SchemaBuilder.CreateMapIndexTable(nameof(BooleanFieldIndex), table => table
+            SchemaBuilder.CreateMapIndexTable(typeof(BooleanFieldIndex), table => table
                 .Column<string>("ContentItemId", column => column.WithLength(26))
                 .Column<string>("ContentItemVersionId", column => column.WithLength(26))
                 .Column<string>("ContentType", column => column.WithLength(ContentItemIndex.MaxContentTypeSize))
@@ -62,7 +63,8 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                 .Column<string>("ContentField", column => column.WithLength(ContentItemIndex.MaxContentFieldSize))
                 .Column<bool>("Published", column => column.Nullable())
                 .Column<bool>("Latest", column => column.Nullable())
-                .Column<bool>("Boolean", column => column.Nullable())
+                .Column<bool>("Boolean", column => column.Nullable()),
+                null
             );
 
             SchemaBuilder.AlterTable(nameof(BooleanFieldIndex), table => table
@@ -97,7 +99,7 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                 .CreateIndex("IDX_BooleanFieldIndex_Boolean", "Boolean")
             );
 
-            SchemaBuilder.CreateMapIndexTable(nameof(NumericFieldIndex), table => table
+            SchemaBuilder.CreateMapIndexTable(typeof(NumericFieldIndex), table => table
                 .Column<string>("ContentItemId", column => column.WithLength(26))
                 .Column<string>("ContentItemVersionId", column => column.WithLength(26))
                 .Column<string>("ContentType", column => column.WithLength(ContentItemIndex.MaxContentTypeSize))
@@ -105,7 +107,8 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                 .Column<string>("ContentField", column => column.WithLength(ContentItemIndex.MaxContentFieldSize))
                 .Column<bool>("Published", column => column.Nullable())
                 .Column<bool>("Latest", column => column.Nullable())
-                .Column<decimal>("Numeric", column => column.Nullable())
+                .Column<decimal>("Numeric", column => column.Nullable()),
+                null
             );
 
             SchemaBuilder.AlterTable(nameof(NumericFieldIndex), table => table
@@ -140,7 +143,7 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                 .CreateIndex("IDX_NumericFieldIndex_Numeric", "Numeric")
             );
 
-            SchemaBuilder.CreateMapIndexTable(nameof(DateTimeFieldIndex), table => table
+            SchemaBuilder.CreateMapIndexTable(typeof(DateTimeFieldIndex), table => table
                 .Column<string>("ContentItemId", column => column.WithLength(26))
                 .Column<string>("ContentItemVersionId", column => column.WithLength(26))
                 .Column<string>("ContentType", column => column.WithLength(ContentItemIndex.MaxContentTypeSize))
@@ -148,7 +151,8 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                 .Column<string>("ContentField", column => column.WithLength(ContentItemIndex.MaxContentFieldSize))
                 .Column<bool>("Published", column => column.Nullable())
                 .Column<bool>("Latest", column => column.Nullable())
-                .Column<DateTime>("DateTime", column => column.Nullable())
+                .Column<DateTime>("DateTime", column => column.Nullable()),
+                null
             );
 
             SchemaBuilder.AlterTable(nameof(DateTimeFieldIndex), table => table
@@ -183,7 +187,7 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                 .CreateIndex("IDX_DateTimeFieldIndex_DateTime", "DateTime")
             );
 
-            SchemaBuilder.CreateMapIndexTable(nameof(DateFieldIndex), table => table
+            SchemaBuilder.CreateMapIndexTable(typeof(DateFieldIndex), table => table
                 .Column<string>("ContentItemId", column => column.WithLength(26))
                 .Column<string>("ContentItemVersionId", column => column.WithLength(26))
                 .Column<string>("ContentType", column => column.WithLength(ContentItemIndex.MaxContentTypeSize))
@@ -191,7 +195,8 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                 .Column<string>("ContentField", column => column.WithLength(ContentItemIndex.MaxContentFieldSize))
                 .Column<bool>("Published", column => column.Nullable())
                 .Column<bool>("Latest", column => column.Nullable())
-                .Column<DateTime>("Date", column => column.Nullable())
+                .Column<DateTime>("Date", column => column.Nullable()),
+                null
             );
 
             SchemaBuilder.AlterTable(nameof(DateFieldIndex), table => table
@@ -226,7 +231,7 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                 .CreateIndex("IDX_DateFieldIndex_Date", "Date")
             );
 
-            SchemaBuilder.CreateMapIndexTable(nameof(ContentPickerFieldIndex), table => table
+            SchemaBuilder.CreateMapIndexTable(typeof(ContentPickerFieldIndex), table => table
                 .Column<string>("ContentItemId", column => column.WithLength(26))
                 .Column<string>("ContentItemVersionId", column => column.WithLength(26))
                 .Column<string>("ContentType", column => column.WithLength(ContentItemIndex.MaxContentTypeSize))
@@ -234,7 +239,8 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                 .Column<string>("ContentField", column => column.WithLength(ContentItemIndex.MaxContentFieldSize))
                 .Column<bool>("Published", column => column.Nullable())
                 .Column<bool>("Latest", column => column.Nullable())
-                .Column<string>("SelectedContentItemId", column => column.WithLength(26))
+                .Column<string>("SelectedContentItemId", column => column.WithLength(26)),
+                null
             );
 
             SchemaBuilder.AlterTable(nameof(ContentPickerFieldIndex), table => table
@@ -269,7 +275,7 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                 .CreateIndex("IDX_ContentPickerFieldIndex_SelectedContentItemId", "SelectedContentItemId")
             );
 
-            SchemaBuilder.CreateMapIndexTable(nameof(TimeFieldIndex), table => table
+            SchemaBuilder.CreateMapIndexTable(typeof(TimeFieldIndex), table => table
                 .Column<string>("ContentItemId", column => column.WithLength(26))
                 .Column<string>("ContentItemVersionId", column => column.WithLength(26))
                 .Column<string>("ContentType", column => column.WithLength(ContentItemIndex.MaxContentTypeSize))
@@ -277,7 +283,8 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                 .Column<string>("ContentField", column => column.WithLength(ContentItemIndex.MaxContentFieldSize))
                 .Column<bool>("Published", column => column.Nullable())
                 .Column<bool>("Latest", column => column.Nullable())
-                .Column<DateTime>("Time", column => column.Nullable())
+                .Column<DateTime>("Time", column => column.Nullable()),
+                null
             );
 
             SchemaBuilder.AlterTable(nameof(TimeFieldIndex), table => table
@@ -315,7 +322,7 @@ namespace OrchardCore.ContentFields.Indexing.SQL
             // NOTE: The Url and Text Length has been decreased from 4000 characters to 768.
             // For existing SQL databases update the LinkFieldIndex tables Url and Text column length manually.
             // The BigText and BigUrl columns are new additions so will not be populated until the content item is republished.
-            SchemaBuilder.CreateMapIndexTable(nameof(LinkFieldIndex), table => table
+            SchemaBuilder.CreateMapIndexTable(typeof(LinkFieldIndex), table => table
                 .Column<string>("ContentItemId", column => column.WithLength(26))
                 .Column<string>("ContentItemVersionId", column => column.WithLength(26))
                 .Column<string>("ContentType", column => column.WithLength(ContentItemIndex.MaxContentTypeSize))
@@ -326,7 +333,8 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                 .Column<string>("Url", column => column.Nullable().WithLength(LinkFieldIndex.MaxUrlSize))
                 .Column<string>("BigUrl", column => column.Nullable().Unlimited())
                 .Column<string>("Text", column => column.Nullable().WithLength(LinkFieldIndex.MaxTextSize))
-                .Column<string>("BigText", column => column.Nullable().Unlimited())
+                .Column<string>("BigText", column => column.Nullable().Unlimited()),
+                null
             );
 
             SchemaBuilder.AlterTable(nameof(LinkFieldIndex), table => table
@@ -365,7 +373,7 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                 .CreateIndex("IDX_LinkFieldIndex_Text", "Text")
             );
 
-            SchemaBuilder.CreateMapIndexTable(nameof(HtmlFieldIndex), table => table
+            SchemaBuilder.CreateMapIndexTable(typeof(HtmlFieldIndex), table => table
                 .Column<string>("ContentItemId", column => column.WithLength(26))
                 .Column<string>("ContentItemVersionId", column => column.WithLength(26))
                 .Column<string>("ContentType", column => column.WithLength(ContentItemIndex.MaxContentTypeSize))
@@ -373,7 +381,8 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                 .Column<string>("ContentField", column => column.WithLength(ContentItemIndex.MaxContentFieldSize))
                 .Column<bool>("Published", column => column.Nullable())
                 .Column<bool>("Latest", column => column.Nullable())
-                .Column<string>("Html", column => column.Nullable().Unlimited())
+                .Column<string>("Html", column => column.Nullable().Unlimited()),
+                null
             );
 
             SchemaBuilder.AlterTable(nameof(HtmlFieldIndex), table => table

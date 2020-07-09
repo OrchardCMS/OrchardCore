@@ -7,8 +7,9 @@ namespace OrchardCore.Layers
     {
         public int Create()
         {
-            SchemaBuilder.CreateMapIndexTable(nameof(LayerMetadataIndex), table => table
-                .Column<string>("Zone", c => c.WithLength(64))
+            SchemaBuilder.CreateMapIndexTable(typeof(LayerMetadataIndex), table => table
+                .Column<string>("Zone", c => c.WithLength(64)),
+                null
             );
 
             return 1;
