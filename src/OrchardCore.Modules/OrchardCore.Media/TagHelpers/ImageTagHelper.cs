@@ -55,7 +55,7 @@ namespace OrchardCore.Media.TagHelpers
             string attributeName;
             if ("img".Equals(context.TagName, StringComparison.InvariantCultureIgnoreCase))
             {
-                if (string.IsNullOrEmpty(AssetSrc))
+                if (String.IsNullOrEmpty(AssetSrc))
                 {
                     return;
                 }
@@ -64,7 +64,7 @@ namespace OrchardCore.Media.TagHelpers
             }
             else if ("a".Equals(context.TagName, StringComparison.InvariantCultureIgnoreCase))
             {
-                if (string.IsNullOrEmpty(AssetHref))
+                if (String.IsNullOrEmpty(AssetHref))
                 {
                     return;
                 }
