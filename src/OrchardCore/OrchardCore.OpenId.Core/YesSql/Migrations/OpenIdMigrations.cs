@@ -61,9 +61,9 @@ namespace OrchardCore.OpenId.YesSql.Migrations
             return 2;
         }
 
-        internal class OpenIdApplicationByPostLogoutRedirectUriIndex { }
-        internal class OpenIdApplicationByRedirectUriIndex { }
-        internal class OpenIdApplicationByRoleNameIndex { }
+        private class OpenIdApplicationByPostLogoutRedirectUriIndex { }
+        private class OpenIdApplicationByRedirectUriIndex { }
+        private class OpenIdApplicationByRoleNameIndex { }
 
         public int UpdateFrom2()
         {
