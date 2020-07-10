@@ -3,6 +3,7 @@ using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.Data.Migration;
 using OrchardCore.PublishLater.Indexes;
 using OrchardCore.PublishLater.Models;
+using YesSql.Sql;
 
 namespace OrchardCore.PublishLater
 {
@@ -21,9 +22,8 @@ namespace OrchardCore.PublishLater
                 .Attachable()
                 .WithDescription("Adds the ability to schedule content items to be published at a given future date and time."));
 
-            SchemaBuilder.CreateMapIndexTable(typeof(PublishLaterPartIndex), table => table
-                .Column<string>(nameof(PublishLaterPartIndex.ScheduledPublishUtc)),
-                null
+            SchemaBuilder.CreateMapIndexTable<PublishLaterPartIndex>(table => table
+                .Column<string>(nameof(PublishLaterPartIndex.ScheduledPublishUtc))
             );
 
             SchemaBuilder.AlterTable(nameof(PublishLaterPartIndex), table => table

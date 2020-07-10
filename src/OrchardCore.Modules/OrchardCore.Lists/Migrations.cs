@@ -3,6 +3,7 @@ using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.Data.Migration;
 using OrchardCore.Lists.Indexes;
 using OrchardCore.Lists.Models;
+using YesSql.Sql;
 
 namespace OrchardCore.Lists
 {
@@ -21,10 +22,9 @@ namespace OrchardCore.Lists
                 .Attachable()
                 .WithDescription("Add a list behavior."));
 
-            SchemaBuilder.CreateMapIndexTable(typeof(ContainedPartIndex), table => table
+            SchemaBuilder.CreateMapIndexTable<ContainedPartIndex>(table => table
                 .Column<string>("ListContentItemId", c => c.WithLength(26))
-                .Column<int>("Order"),
-                null
+                .Column<int>("Order")
             );
 
             SchemaBuilder.AlterTable(nameof(ContainedPartIndex), table => table

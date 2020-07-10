@@ -2,6 +2,7 @@ using System;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.Data.Migration;
+using YesSql.Sql;
 
 namespace OrchardCore.ContentManagement.Records
 {
@@ -15,7 +16,7 @@ namespace OrchardCore.ContentManagement.Records
 
         public int Create()
         {
-            SchemaBuilder.CreateMapIndexTable(typeof(ContentItemIndex), table => table
+            SchemaBuilder.CreateMapIndexTable<ContentItemIndex>(table => table
                 .Column<string>("ContentItemId", c => c.WithLength(26))
                 .Column<string>("ContentItemVersionId", c => c.WithLength(26))
                 .Column<bool>("Latest")
@@ -26,8 +27,7 @@ namespace OrchardCore.ContentManagement.Records
                 .Column<DateTime>("CreatedUtc", column => column.Nullable())
                 .Column<string>("Owner", column => column.Nullable().WithLength(ContentItemIndex.MaxOwnerSize))
                 .Column<string>("Author", column => column.Nullable().WithLength(ContentItemIndex.MaxAuthorSize))
-                .Column<string>("DisplayText", column => column.Nullable().WithLength(ContentItemIndex.MaxDisplayTextSize)),
-                null
+                .Column<string>("DisplayText", column => column.Nullable().WithLength(ContentItemIndex.MaxDisplayTextSize))
             );
 
             SchemaBuilder.AlterTable(nameof(ContentItemIndex), table => table

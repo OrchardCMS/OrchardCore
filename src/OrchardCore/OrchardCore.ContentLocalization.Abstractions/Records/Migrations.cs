@@ -2,6 +2,7 @@ using OrchardCore.ContentLocalization.Models;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.Data.Migration;
+using YesSql.Sql;
 
 namespace OrchardCore.ContentLocalization.Records
 {
@@ -20,11 +21,10 @@ namespace OrchardCore.ContentLocalization.Records
                 .Attachable()
                 .WithDescription("Provides a way to create localized version of content."));
 
-            SchemaBuilder.CreateMapIndexTable(typeof(LocalizedContentItemIndex), table => table
+            SchemaBuilder.CreateMapIndexTable<LocalizedContentItemIndex>(table => table
                 .Column<string>("LocalizationSet", col => col.WithLength(26))
                 .Column<string>("Culture", col => col.WithLength(16))
-                .Column<string>("ContentItemId", c => c.WithLength(26)),
-                null
+                .Column<string>("ContentItemId", c => c.WithLength(26))
             );
 
             SchemaBuilder.AlterTable(nameof(LocalizedContentItemIndex), table => table

@@ -1,5 +1,6 @@
 using OrchardCore.Data.Migration;
 using OrchardCore.Deployment.Indexes;
+using YesSql.Sql;
 
 namespace OrchardCore.Deployment
 {
@@ -7,9 +8,8 @@ namespace OrchardCore.Deployment
     {
         public int Create()
         {
-            SchemaBuilder.CreateMapIndexTable(typeof(DeploymentPlanIndex), table => table
-                .Column<string>("Name"),
-                null
+            SchemaBuilder.CreateMapIndexTable<DeploymentPlanIndex>(table => table
+                .Column<string>("Name")
             );
 
             return 1;
