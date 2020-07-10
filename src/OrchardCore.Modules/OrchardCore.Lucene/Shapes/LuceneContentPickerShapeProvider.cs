@@ -3,17 +3,19 @@ using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Shapes;
+using OrchardCore.Modules;
 
 namespace OrchardCore.Lucene
 {
+    [Feature("OrchardCore.Lucene.ContentPicker")]
     public class LuceneContentPickerShapeProvider : IShapeAttributeProvider
     {
+        private readonly IStringLocalizer S;
+
         public LuceneContentPickerShapeProvider(IStringLocalizer<LuceneContentPickerShapeProvider> stringLocalizer)
         {
-            T = stringLocalizer;
+            S = stringLocalizer;
         }
-
-        private IStringLocalizer T { get; }
 
         [Shape]
         public IHtmlContent ContentPickerField_Option__Lucene(dynamic shape)
@@ -21,9 +23,9 @@ namespace OrchardCore.Lucene
             var selected = shape.Editor == "Lucene";
             if (selected)
             {
-                return new HtmlString($"<option value=\"Lucene\" selected=\"selected\">{T["Lucene"]}</option>");
+                return new HtmlString($"<option value=\"Lucene\" selected=\"selected\">{S["Lucene"]}</option>");
             }
-            return new HtmlString($"<option value=\"Lucene\">{T["Lucene"]}</option>");
+            return new HtmlString($"<option value=\"Lucene\">{S["Lucene"]}</option>");
         }
     }
 }

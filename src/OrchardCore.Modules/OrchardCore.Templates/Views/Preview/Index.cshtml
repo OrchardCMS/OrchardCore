@@ -62,7 +62,7 @@
             }
         });
 
-        // override default behaviour of Bootstrap's. We only hide, not remove the alert.
+        // override default behavior of Bootstrap's. We only hide, not remove the alert.
         $('#close-warning').on('click', function () {
             $('#notConnectedWarning').hide();
         });
@@ -154,7 +154,7 @@
                         var ul = $('#serverErrorWarning ul').empty();
                         var error = 'Status code ' + data.status;
                         console.error(error);
-                        $('<li/>').text(error).appendTo(ul);
+                        $('<li />').text(error).appendTo(ul);
                         $(serverErrorWarning).show();
                     }
                     previewRendering = false;
@@ -165,5 +165,4 @@
             console.log('Error while previewing: ' + e);
         }
     }
-
 </script>

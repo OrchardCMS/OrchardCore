@@ -14,14 +14,13 @@ namespace OrchardCore.Title.Settings
     public class TitlePartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver
     {
         private readonly ILiquidTemplateManager _templateManager;
+        private readonly IStringLocalizer S;
 
         public TitlePartSettingsDisplayDriver(ILiquidTemplateManager templateManager, IStringLocalizer<TitlePartSettingsDisplayDriver> localizer)
         {
             _templateManager = templateManager;
-            T = localizer;
+            S = localizer;
         }
-
-        public IStringLocalizer T { get; }
 
         public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater)
         {
@@ -36,6 +35,7 @@ namespace OrchardCore.Title.Settings
 
                 model.Options = settings.Options;
                 model.Pattern = settings.Pattern;
+                model.RenderTitle = settings.RenderTitle;
                 model.TitlePartSettings = settings;
             }).Location("Content");
         }
@@ -51,15 +51,16 @@ namespace OrchardCore.Title.Settings
 
             await context.Updater.TryUpdateModelAsync(model, Prefix,
                 m => m.Pattern,
-                m => m.Options);
+                m => m.Options,
+                m => m.RenderTitle);
 
             if (!string.IsNullOrEmpty(model.Pattern) && !_templateManager.Validate(model.Pattern, out var errors))
             {
-                context.Updater.ModelState.AddModelError(nameof(model.Pattern), T["Pattern doesn't contain a valid Liquid expression. Details: {0}", string.Join(" ", errors)]);
+                context.Updater.ModelState.AddModelError(nameof(model.Pattern), S["Pattern doesn't contain a valid Liquid expression. Details: {0}", string.Join(" ", errors)]);
             }
             else
             {
-                context.Builder.WithSettings(new TitlePartSettings { Pattern = model.Pattern, Options = model.Options });
+                context.Builder.WithSettings(new TitlePartSettings { Pattern = model.Pattern, Options = model.Options, RenderTitle = model.RenderTitle });
             }
 
             return Edit(contentTypePartDefinition, context.Updater);

@@ -1,7 +1,6 @@
-﻿using OrchardCore.Modules;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement.Descriptors;
-using OrchardCore.Navigation;
+using OrchardCore.Modules;
 
 namespace OrchardCore.Navigation
 {

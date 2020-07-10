@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -6,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.Email;
 using OrchardCore.Entities;
 using OrchardCore.Modules;
 using OrchardCore.Settings;
@@ -20,14 +22,18 @@ namespace OrchardCore.Users.Controllers
         private readonly UserManager<IUser> _userManager;
         private readonly IAuthorizationService _authorizationService;
         private readonly ISiteService _siteService;
-
         private readonly INotifier _notifier;
+        private readonly IEmailAddressValidator _emailAddressValidator;
+        private readonly ILogger _logger;
+        private readonly IStringLocalizer S;
+        private readonly IHtmlLocalizer H;
 
         public RegistrationController(
             UserManager<IUser> userManager,
             IAuthorizationService authorizationService,
             ISiteService siteService,
             INotifier notifier,
+            IEmailAddressValidator emailAddressValidator,
             ILogger<RegistrationController> logger,
             IHtmlLocalizer<RegistrationController> htmlLocalizer,
             IStringLocalizer<RegistrationController> stringLocalizer)
@@ -36,15 +42,11 @@ namespace OrchardCore.Users.Controllers
             _authorizationService = authorizationService;
             _siteService = siteService;
             _notifier = notifier;
-
+            _emailAddressValidator = emailAddressValidator ?? throw new ArgumentNullException(nameof(emailAddressValidator));
             _logger = logger;
-            TH = htmlLocalizer;
-            T = stringLocalizer;
+            H = htmlLocalizer;
+            S = stringLocalizer;
         }
-
-        ILogger _logger;
-        IHtmlLocalizer TH { get; set; }
-        IStringLocalizer T { get; set; }
 
         [HttpGet]
         [AllowAnonymous]
@@ -72,12 +74,28 @@ namespace OrchardCore.Users.Controllers
                 return NotFound();
             }
 
+            if (!string.IsNullOrEmpty(model.Email) && !_emailAddressValidator.Validate(model.Email))
+            {
+                ModelState.AddModelError("Email", S["Invalid email."]);
+
+                // Check if user with same email already exists
+                var userWithEmail = await _userManager.FindByEmailAsync(model.Email);
+
+                if (userWithEmail != null)
+                {
+                    ModelState.AddModelError("Email", S["A user with the same email already exists."]);
+                }
+            }
+            
             ViewData["ReturnUrl"] = returnUrl;
 
-            // If we get a user, redirect to returnUrl
-            if (await this.RegisterUser(model, T["Confirm your account"], _logger) != null)
+            if (TryValidateModel(model) && ModelState.IsValid)
             {
-                return RedirectToLocal(returnUrl);
+                // If we get a user, redirect to returnUrl
+                if (await this.RegisterUser(model, S["Confirm your account"], _logger) != null)
+                {
+                    return RedirectToLocal(returnUrl);
+                }
             }
 
             // If we got this far, something failed, redisplay form
@@ -117,15 +135,15 @@ namespace OrchardCore.Users.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var user = await _userManager.FindByIdAsync(id) as User;
             if (user != null)
             {
-                await this.SendEmailConfirmationTokenAsync(user, T["Confirm your account"]);
+                await this.SendEmailConfirmationTokenAsync(user, S["Confirm your account"]);
 
-                _notifier.Success(TH["Verification email sent."]);
+                _notifier.Success(H["Verification email sent."]);
             }
 
             return RedirectToAction(nameof(AdminController.Index), "Admin");
@@ -142,6 +160,5 @@ namespace OrchardCore.Users.Controllers
                 return Redirect("~/");
             }
         }
-
     }
 }

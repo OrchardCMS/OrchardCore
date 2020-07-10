@@ -1,11 +1,7 @@
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
-using Microsoft.AspNetCore.Mvc.Localization;
-using Microsoft.Extensions.Caching.Memory;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Environment.Shell;
 using OrchardCore.ReverseProxy.Settings;
@@ -22,15 +18,11 @@ namespace OrchardCore.ReverseProxy.Drivers
 
         public ReverseProxySettingsDisplayDriver(
             IShellHost shellHost,
-            ShellSettings shellSettings,
-            IHtmlLocalizer<ReverseProxySettingsDisplayDriver> stringLocalizer)
+            ShellSettings shellSettings)
         {
             _shellHost = shellHost;
             _shellSettings = shellSettings;
-            T = stringLocalizer;
         }
-
-        IHtmlLocalizer T { get; }
 
         public override IDisplayResult Edit(ReverseProxySettings section, BuildEditorContext context)
         {
@@ -61,10 +53,10 @@ namespace OrchardCore.ReverseProxy.Drivers
                 if (model.EnableXForwardedProto)
                     section.ForwardedHeaders |= ForwardedHeaders.XForwardedProto;
 
-                // If the settings are valid, reload the current tenant.
+                // If the settings are valid, release the current tenant.
                 if (context.Updater.ModelState.IsValid)
                 {
-                    await _shellHost.ReloadShellContextAsync(_shellSettings);
+                    await _shellHost.ReleaseShellContextAsync(_shellSettings);
                 }
             }
 

@@ -29,10 +29,9 @@ namespace OrchardCore.Autoroute.Liquid
                         alias = "/" + alias;
                     }
 
-                    string contentItemId;
-                    if (_autorouteEntries.TryGetContentItemId(alias, out contentItemId))
+                    if (_autorouteEntries.TryGetEntryByPath(alias, out var entry))
                     {
-                        return FluidValue.Create(await _contentManager.GetAsync(contentItemId));
+                        return FluidValue.Create(await _contentManager.GetAsync(entry.ContentItemId, entry.JsonPath));
                     }
 
                     return NilValue.Instance;

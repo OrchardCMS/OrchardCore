@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
@@ -16,23 +17,27 @@ namespace OrchardCore.Workflows.Http.Activities
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
+        private readonly IStringLocalizer S;
+        private readonly UrlEncoder _urlEncoder;
 
         public HttpResponseTask(
             IStringLocalizer<HttpResponseTask> localizer,
             IHttpContextAccessor httpContextAccessor,
-            IWorkflowExpressionEvaluator expressionEvaluator
+            IWorkflowExpressionEvaluator expressionEvaluator,
+            UrlEncoder urlEncoder
         )
         {
-            T = localizer;
+            S = localizer;
             _httpContextAccessor = httpContextAccessor;
             _expressionEvaluator = expressionEvaluator;
+            _urlEncoder = urlEncoder;
         }
 
-        private IStringLocalizer T { get; }
-
         public override string Name => nameof(HttpResponseTask);
-        public override LocalizedString DisplayText => T["Http Response Task"];
-        public override LocalizedString Category => T["HTTP"];
+
+        public override LocalizedString DisplayText => S["Http Response Task"];
+
+        public override LocalizedString Category => S["HTTP"];
 
         public WorkflowExpression<string> Content
         {
@@ -60,14 +65,14 @@ namespace OrchardCore.Workflows.Http.Activities
 
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            return Outcomes(T["Done"]);
+            return Outcomes(S["Done"]);
         }
 
         public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            var headersString = await _expressionEvaluator.EvaluateAsync(Headers, workflowContext);
-            var content = await _expressionEvaluator.EvaluateAsync(Content, workflowContext);
-            var contentType = await _expressionEvaluator.EvaluateAsync(ContentType, workflowContext);
+            var headersString = await _expressionEvaluator.EvaluateAsync(Headers, workflowContext, _urlEncoder);
+            var content = await _expressionEvaluator.EvaluateAsync(Content, workflowContext, null);
+            var contentType = await _expressionEvaluator.EvaluateAsync(ContentType, workflowContext, _urlEncoder);
             var headers = ParseHeaders(headersString);
             var response = _httpContextAccessor.HttpContext.Response;
 

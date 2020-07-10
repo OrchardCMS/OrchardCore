@@ -22,7 +22,7 @@ namespace OrchardCore.DisplayManagement.Events
                 {
                     context.FeatureDependencyIds = context
                         .FeatureDependencyIds
-                        .Concat(new [] { extensionInfo.BaseTheme })
+                        .Concat(new[] { extensionInfo.BaseTheme })
                         .ToArray();
                 }
 

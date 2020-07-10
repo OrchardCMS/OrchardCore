@@ -15,7 +15,7 @@ using OrchardCore.Settings;
 namespace OrchardCore.Lucene
 {
     /// <summary>
-    /// This class provides services to update all the Lucene indices. It is non-rentrant so that calls 
+    /// This class provides services to update all the Lucene indices. It is non-rentrant so that calls
     /// from different components can be done simultaneously, e.g. from a background task, an event or a UI interaction.
     /// It also indexes one content item at a time and provides the result to all indices.
     /// </summary>
@@ -29,6 +29,7 @@ namespace OrchardCore.Lucene
         private readonly LuceneIndexManager _indexManager;
         private readonly IIndexingTaskManager _indexingTaskManager;
         private readonly ISiteService _siteService;
+        private readonly ILogger _logger;
 
         public LuceneIndexingService(
             IShellHost shellHost,
@@ -47,11 +48,8 @@ namespace OrchardCore.Lucene
             _indexManager = indexManager;
             _indexingTaskManager = indexingTaskManager;
             _siteService = siteService;
-
-            Logger = logger;
+            _logger = logger;
         }
-
-        public ILogger Logger { get; }
 
         public async Task ProcessContentItemsAsync(string indexName = default)
         {
@@ -157,7 +155,7 @@ namespace OrchardCore.Lucene
                                 if (contentItem != null)
                                 {
                                     publishedIndexContext = new BuildIndexContext(new DocumentIndex(task.ContentItemId), contentItem, new string[] { contentItem.ContentType });
-                                    await indexHandlers.InvokeAsync(x => x.BuildIndexAsync(publishedIndexContext), Logger);
+                                    await indexHandlers.InvokeAsync(x => x.BuildIndexAsync(publishedIndexContext), _logger);
                                 }
                             }
 
@@ -167,11 +165,11 @@ namespace OrchardCore.Lucene
                                 if (contentItem != null)
                                 {
                                     latestIndexContext = new BuildIndexContext(new DocumentIndex(task.ContentItemId), contentItem, new string[] { contentItem.ContentType });
-                                    await indexHandlers.InvokeAsync(x => x.BuildIndexAsync(latestIndexContext), Logger);
+                                    await indexHandlers.InvokeAsync(x => x.BuildIndexAsync(latestIndexContext), _logger);
                                 }
                             }
 
-                            // Update the document from the index if its lastIndexId is smaller than the current task id. 
+                            // Update the document from the index if its lastIndexId is smaller than the current task id.
                             foreach (var index in allIndices)
                             {
                                 if (index.Value >= task.Id || !settingsByIndex.TryGetValue(index.Key, out var settings))
@@ -180,10 +178,18 @@ namespace OrchardCore.Lucene
                                 }
 
                                 var context = !settings.IndexLatest ? publishedIndexContext : latestIndexContext;
+
+                                //We index only if we actually found a content item in the database
+                                if (context == null)
+                                {
+                                    //TODO purge these content items from IndexingTask table
+                                    continue;
+                                }
+
                                 bool ignoreIndexedCulture = settings.Culture == "any" ? false : context.ContentItem.Content?.LocalizationPart?.Culture != settings.Culture;
 
                                 // Ignore if the content item content type or culture is not indexed in this index
-                                if (context.ContentItem == null || !settings.IndexedContentTypes.Contains(context.ContentItem.ContentType) || ignoreIndexedCulture)
+                                if (!settings.IndexedContentTypes.Contains(context.ContentItem.ContentType) || ignoreIndexedCulture)
                                 {
                                     continue;
                                 }
@@ -207,7 +213,6 @@ namespace OrchardCore.Lucene
                         await _indexManager.StoreDocumentsAsync(index.Key, updatedDocumentsByIndex[index.Key]);
                     }
 
-
                     // Update task ids
                     lastTaskId = batch.Last().Id;
 
@@ -220,7 +225,6 @@ namespace OrchardCore.Lucene
                     }
 
                     _indexingState.Update();
-
                 });
             } while (batch.Length == BatchSize);
         }
@@ -283,8 +287,10 @@ namespace OrchardCore.Lucene
             {
                 return siteSettings.As<LuceneSettings>();
             }
-
-            return null;
+            else
+            {
+                return new LuceneSettings();
+            }
         }
     }
 }

@@ -3,6 +3,7 @@
     var returnUrl = ViewData["returnUrl"]?.ToString();
 }
 
+<style asp-name="codemirror"></style>
 <script asp-name="codemirror" depends-on="admin" at="Foot"></script>
 <script asp-name="codemirror-mode-javascript" at="Foot"></script>
 <script asp-name="codemirror-addon-display-autorefresh" at="Foot"></script>
@@ -58,7 +59,6 @@
         {
             <a class="btn btn-info" href="@Url.Action("Index", "Preview", new { area = "OrchardCore.Templates" })" target="_blank">@T["Preview"]</a>
         }
-
     </div>
 </form>
 
@@ -69,5 +69,4 @@
             document.getElementById('@Html.IdFor(x => x.Name)'),
             document.getElementById('@Html.IdFor(x => x.Content)'));
     });
-
 </script>

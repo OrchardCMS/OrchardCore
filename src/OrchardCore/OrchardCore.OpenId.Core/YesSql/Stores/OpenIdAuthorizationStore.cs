@@ -3,6 +3,10 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Globalization;
 using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Text;
+using System.Text.Encodings.Web;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
@@ -30,10 +34,10 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// </summary>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
         /// <returns>
-        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
+        /// A <see cref="ValueTask"/> that can be used to monitor the asynchronous operation,
         /// whose result returns the number of authorizations in the database.
         /// </returns>
-        public virtual async Task<long> CountAsync(CancellationToken cancellationToken)
+        public virtual async ValueTask<long> CountAsync(CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
@@ -47,10 +51,10 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <param name="query">The query to execute.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
         /// <returns>
-        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
+        /// A <see cref="ValueTask"/> that can be used to monitor the asynchronous operation,
         /// whose result returns the number of authorizations that match the specified query.
         /// </returns>
-        public virtual Task<long> CountAsync<TResult>(Func<IQueryable<TAuthorization>, IQueryable<TResult>> query, CancellationToken cancellationToken)
+        public virtual ValueTask<long> CountAsync<TResult>(Func<IQueryable<TAuthorization>, IQueryable<TResult>> query, CancellationToken cancellationToken)
             => throw new NotSupportedException();
 
         /// <summary>
@@ -59,9 +63,9 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <param name="authorization">The authorization to create.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
         /// <returns>
-        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation.
+        /// A <see cref="ValueTask"/> that can be used to monitor the asynchronous operation.
         /// </returns>
-        public virtual Task CreateAsync(TAuthorization authorization, CancellationToken cancellationToken)
+        public virtual async ValueTask CreateAsync(TAuthorization authorization, CancellationToken cancellationToken)
         {
             if (authorization == null)
             {
@@ -71,7 +75,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
             cancellationToken.ThrowIfCancellationRequested();
 
             _session.Save(authorization);
-            return _session.CommitAsync();
+            await _session.CommitAsync();
         }
 
         /// <summary>
@@ -80,9 +84,9 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <param name="authorization">The authorization to delete.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
         /// <returns>
-        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation.
+        /// A <see cref="ValueTask"/> that can be used to monitor the asynchronous operation.
         /// </returns>
-        public virtual Task DeleteAsync(TAuthorization authorization, CancellationToken cancellationToken)
+        public virtual async ValueTask DeleteAsync(TAuthorization authorization, CancellationToken cancellationToken)
         {
             if (authorization == null)
             {
@@ -92,8 +96,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
             cancellationToken.ThrowIfCancellationRequested();
 
             _session.Delete(authorization);
-
-            return _session.CommitAsync();
+            await _session.CommitAsync();
         }
 
         /// <summary>
@@ -104,10 +107,10 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <param name="client">The client associated with the authorization.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
         /// <returns>
-        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
+        /// A <see cref="ValueTask"/> that can be used to monitor the asynchronous operation,
         /// whose result returns the authorizations corresponding to the subject/client.
         /// </returns>
-        public virtual async Task<ImmutableArray<TAuthorization>> FindAsync(
+        public virtual IAsyncEnumerable<TAuthorization> FindAsync(
             string subject, string client, CancellationToken cancellationToken)
         {
             if (string.IsNullOrEmpty(subject))
@@ -122,10 +125,8 @@ namespace OrchardCore.OpenId.YesSql.Stores
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            return ImmutableArray.CreateRange(
-                await _session.Query<TAuthorization, OpenIdAuthorizationIndex>(
-                    index => index.ApplicationId == client &&
-                             index.Subject == subject).ListAsync());
+            return _session.Query<TAuthorization, OpenIdAuthorizationIndex>(
+                index => index.ApplicationId == client && index.Subject == subject).ToAsyncEnumerable();
         }
 
         /// <summary>
@@ -136,10 +137,10 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <param name="status">The status associated with the authorization.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
         /// <returns>
-        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
+        /// A <see cref="ValueTask"/> that can be used to monitor the asynchronous operation,
         /// whose result returns the authorizations corresponding to the subject/client.
         /// </returns>
-        public virtual async Task<ImmutableArray<TAuthorization>> FindAsync(
+        public virtual IAsyncEnumerable<TAuthorization> FindAsync(
             string subject, string client, string status, CancellationToken cancellationToken)
         {
             if (string.IsNullOrEmpty(subject))
@@ -159,9 +160,8 @@ namespace OrchardCore.OpenId.YesSql.Stores
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            return ImmutableArray.CreateRange(
-                await _session.Query<TAuthorization, OpenIdAuthorizationIndex>(
-                    index => index.ApplicationId == client && index.Subject == subject && index.Status == status).ListAsync());
+            return _session.Query<TAuthorization, OpenIdAuthorizationIndex>(
+                index => index.ApplicationId == client && index.Subject == subject && index.Status == status).ToAsyncEnumerable();
         }
 
         /// <summary>
@@ -173,10 +173,10 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <param name="type">The type associated with the authorization.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
         /// <returns>
-        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
+        /// A <see cref="ValueTask"/> that can be used to monitor the asynchronous operation,
         /// whose result returns the authorizations corresponding to the subject/client.
         /// </returns>
-        public virtual async Task<ImmutableArray<TAuthorization>> FindAsync(
+        public virtual IAsyncEnumerable<TAuthorization> FindAsync(
             string subject, string client,
             string status, string type, CancellationToken cancellationToken)
         {
@@ -202,10 +202,9 @@ namespace OrchardCore.OpenId.YesSql.Stores
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            return ImmutableArray.CreateRange(
-                await _session.Query<TAuthorization, OpenIdAuthorizationIndex>(
-                    index => index.ApplicationId == client && index.Subject == subject &&
-                             index.Status == status && index.Type == type).ListAsync());
+            return _session.Query<TAuthorization, OpenIdAuthorizationIndex>(
+                index => index.ApplicationId == client && index.Subject == subject &&
+                         index.Status == status && index.Type == type).ToAsyncEnumerable();
         }
 
         /// <summary>
@@ -218,37 +217,20 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <param name="scopes">The minimal scopes associated with the authorization.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
         /// <returns>
-        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
+        /// A <see cref="ValueTask"/> that can be used to monitor the asynchronous operation,
         /// whose result returns the authorizations corresponding to the criteria.
         /// </returns>
-        public virtual async Task<ImmutableArray<TAuthorization>> FindAsync(
+        public virtual async IAsyncEnumerable<TAuthorization> FindAsync(
             string subject, string client, string status, string type,
-            ImmutableArray<string> scopes, CancellationToken cancellationToken)
+            ImmutableArray<string> scopes, [EnumeratorCancellation] CancellationToken cancellationToken)
         {
-            var authorizations = await FindAsync(subject, client, status, type, cancellationToken);
-            if (authorizations.IsEmpty)
+            await foreach (var authorization in FindAsync(subject, client, status, type, cancellationToken))
             {
-                return ImmutableArray.Create<TAuthorization>();
-            }
-
-            var builder = ImmutableArray.CreateBuilder<TAuthorization>(authorizations.Length);
-
-            foreach (var authorization in authorizations)
-            {
-                async Task<bool> HasScopesAsync()
-                    => (await GetScopesAsync(authorization, cancellationToken))
-                        .ToImmutableHashSet(StringComparer.Ordinal)
-                        .IsSupersetOf(scopes);
-
-                if (await HasScopesAsync())
+                if (new HashSet<string>(await GetScopesAsync(authorization, cancellationToken), StringComparer.Ordinal).IsSupersetOf(scopes))
                 {
-                    builder.Add(authorization);
+                    yield return authorization;
                 }
             }
-
-            return builder.Count == builder.Capacity ?
-                builder.MoveToImmutable() :
-                builder.ToImmutable();
         }
 
         /// <summary>
@@ -257,10 +239,10 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <param name="identifier">The application identifier associated with the authorizations.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
         /// <returns>
-        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
+        /// A <see cref="ValueTask"/> that can be used to monitor the asynchronous operation,
         /// whose result returns the authorizations corresponding to the specified application.
         /// </returns>
-        public virtual async Task<ImmutableArray<TAuthorization>> FindByApplicationIdAsync(
+        public virtual IAsyncEnumerable<TAuthorization> FindByApplicationIdAsync(
             string identifier, CancellationToken cancellationToken)
         {
             if (string.IsNullOrEmpty(identifier))
@@ -270,9 +252,8 @@ namespace OrchardCore.OpenId.YesSql.Stores
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            return ImmutableArray.CreateRange(
-                await _session.Query<TAuthorization, OpenIdAuthorizationIndex>(
-                    index => index.ApplicationId == identifier).ListAsync());
+            return _session.Query<TAuthorization, OpenIdAuthorizationIndex>(
+                index => index.ApplicationId == identifier).ToAsyncEnumerable();
         }
 
         /// <summary>
@@ -281,10 +262,10 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <param name="identifier">The unique identifier associated with the authorization.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
         /// <returns>
-        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
+        /// A <see cref="ValueTask"/> that can be used to monitor the asynchronous operation,
         /// whose result returns the authorization corresponding to the identifier.
         /// </returns>
-        public virtual Task<TAuthorization> FindByIdAsync(string identifier, CancellationToken cancellationToken)
+        public virtual async ValueTask<TAuthorization> FindByIdAsync(string identifier, CancellationToken cancellationToken)
         {
             if (string.IsNullOrEmpty(identifier))
             {
@@ -293,7 +274,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            return _session.Query<TAuthorization, OpenIdAuthorizationIndex>(
+            return await _session.Query<TAuthorization, OpenIdAuthorizationIndex>(
                 index => index.AuthorizationId == identifier).FirstOrDefaultAsync();
         }
 
@@ -303,10 +284,10 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <param name="identifier">The physical identifier associated with the authorization.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
         /// <returns>
-        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
+        /// A <see cref="ValueTask"/> that can be used to monitor the asynchronous operation,
         /// whose result returns the authorization corresponding to the identifier.
         /// </returns>
-        public virtual Task<TAuthorization> FindByPhysicalIdAsync(string identifier, CancellationToken cancellationToken)
+        public virtual async ValueTask<TAuthorization> FindByPhysicalIdAsync(string identifier, CancellationToken cancellationToken)
         {
             if (string.IsNullOrEmpty(identifier))
             {
@@ -315,7 +296,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            return _session.GetAsync<TAuthorization>(int.Parse(identifier, CultureInfo.InvariantCulture));
+            return await _session.GetAsync<TAuthorization>(int.Parse(identifier, CultureInfo.InvariantCulture));
         }
 
         /// <summary>
@@ -324,10 +305,10 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <param name="subject">The subject associated with the authorization.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
         /// <returns>
-        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
+        /// A <see cref="ValueTask"/> that can be used to monitor the asynchronous operation,
         /// whose result returns the authorizations corresponding to the specified subject.
         /// </returns>
-        public virtual async Task<ImmutableArray<TAuthorization>> FindBySubjectAsync(
+        public virtual IAsyncEnumerable<TAuthorization> FindBySubjectAsync(
             string subject, CancellationToken cancellationToken)
         {
             if (string.IsNullOrEmpty(subject))
@@ -337,8 +318,8 @@ namespace OrchardCore.OpenId.YesSql.Stores
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            return (await _session.Query<TAuthorization, OpenIdAuthorizationIndex>(
-                index => index.Subject == subject).ListAsync()).ToImmutableArray();
+            return _session.Query<TAuthorization, OpenIdAuthorizationIndex>(
+                index => index.Subject == subject).ToAsyncEnumerable();
         }
 
         /// <summary>
@@ -369,10 +350,10 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <param name="state">The optional state.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
         /// <returns>
-        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
+        /// A <see cref="ValueTask"/> that can be used to monitor the asynchronous operation,
         /// whose result returns the first element returned when executing the query.
         /// </returns>
-        public virtual Task<TResult> GetAsync<TState, TResult>(
+        public virtual ValueTask<TResult> GetAsync<TState, TResult>(
             Func<IQueryable<TAuthorization>, TState, IQueryable<TResult>> query,
             TState state, CancellationToken cancellationToken)
             => throw new NotSupportedException();
@@ -424,14 +405,20 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// A <see cref="ValueTask{TResult}"/> that can be used to monitor the asynchronous operation,
         /// whose result returns all the additional properties associated with the authorization.
         /// </returns>
-        public virtual ValueTask<JObject> GetPropertiesAsync(TAuthorization authorization, CancellationToken cancellationToken)
+        public virtual ValueTask<ImmutableDictionary<string, JsonElement>> GetPropertiesAsync(TAuthorization authorization, CancellationToken cancellationToken)
         {
             if (authorization == null)
             {
                 throw new ArgumentNullException(nameof(authorization));
             }
 
-            return new ValueTask<JObject>(authorization.Properties ?? new JObject());
+            if (authorization.Properties == null)
+            {
+                return new ValueTask<ImmutableDictionary<string, JsonElement>>(ImmutableDictionary.Create<string, JsonElement>());
+            }
+
+            return new ValueTask<ImmutableDictionary<string, JsonElement>>(
+                JsonSerializer.Deserialize<ImmutableDictionary<string, JsonElement>>(authorization.Properties.ToString()));
         }
 
         /// <summary>
@@ -528,10 +515,10 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <param name="offset">The number of results to skip.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
         /// <returns>
-        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
+        /// A <see cref="ValueTask"/> that can be used to monitor the asynchronous operation,
         /// whose result returns all the elements returned when executing the specified query.
         /// </returns>
-        public virtual async Task<ImmutableArray<TAuthorization>> ListAsync(int? count, int? offset, CancellationToken cancellationToken)
+        public virtual IAsyncEnumerable<TAuthorization> ListAsync(int? count, int? offset, CancellationToken cancellationToken)
         {
             var query = _session.Query<TAuthorization>();
 
@@ -545,7 +532,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
                 query = query.Take(count.Value);
             }
 
-            return ImmutableArray.CreateRange(await query.ListAsync());
+            return query.ToAsyncEnumerable();
         }
 
         /// <summary>
@@ -557,10 +544,10 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <param name="state">The optional state.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
         /// <returns>
-        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
+        /// A <see cref="ValueTask"/> that can be used to monitor the asynchronous operation,
         /// whose result returns all the elements returned when executing the specified query.
         /// </returns>
-        public virtual Task<ImmutableArray<TResult>> ListAsync<TState, TResult>(
+        public virtual IAsyncEnumerable<TResult> ListAsync<TState, TResult>(
             Func<IQueryable<TAuthorization>, TState, IQueryable<TResult>> query,
             TState state, CancellationToken cancellationToken)
             => throw new NotSupportedException();
@@ -570,9 +557,9 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// </summary>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
         /// <returns>
-        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation.
+        /// A <see cref="ValueTask"/> that can be used to monitor the asynchronous operation.
         /// </returns>
-        public virtual async Task PruneAsync(CancellationToken cancellationToken)
+        public virtual async ValueTask PruneAsync(CancellationToken cancellationToken)
         {
             // Note: YesSql doesn't support set-based deletes, which prevents removing entities
             // in a single command without having to retrieve and materialize them first.
@@ -601,7 +588,6 @@ namespace OrchardCore.OpenId.YesSql.Stores
                 {
                     await _session.CommitAsync();
                 }
-
                 catch (Exception exception)
                 {
                     if (exceptions == null)
@@ -626,9 +612,9 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <param name="identifier">The unique identifier associated with the client application.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
         /// <returns>
-        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation.
+        /// A <see cref="ValueTask"/> that can be used to monitor the asynchronous operation.
         /// </returns>
-        public virtual Task SetApplicationIdAsync(TAuthorization authorization,
+        public virtual ValueTask SetApplicationIdAsync(TAuthorization authorization,
             string identifier, CancellationToken cancellationToken)
         {
             if (authorization == null)
@@ -645,7 +631,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
                 authorization.ApplicationId = identifier;
             }
 
-            return Task.CompletedTask;
+            return default;
         }
 
         /// <summary>
@@ -655,18 +641,29 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <param name="properties">The additional properties associated with the authorization </param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
         /// <returns>
-        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation.
+        /// A <see cref="ValueTask"/> that can be used to monitor the asynchronous operation.
         /// </returns>
-        public virtual Task SetPropertiesAsync(TAuthorization authorization, JObject properties, CancellationToken cancellationToken)
+        public virtual ValueTask SetPropertiesAsync(TAuthorization authorization, ImmutableDictionary<string, JsonElement> properties, CancellationToken cancellationToken)
         {
             if (authorization == null)
             {
                 throw new ArgumentNullException(nameof(authorization));
             }
 
-            authorization.Properties = properties;
+            if (properties == null || properties.IsEmpty)
+            {
+                authorization.Properties = null;
 
-            return Task.CompletedTask;
+                return default;
+            }
+
+            authorization.Properties = JObject.Parse(JsonSerializer.Serialize(properties, new JsonSerializerOptions
+            {
+                Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+                WriteIndented = false
+            }));
+
+            return default;
         }
 
         /// <summary>
@@ -676,9 +673,9 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <param name="scopes">The scopes associated with the authorization.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
         /// <returns>
-        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation.
+        /// A <see cref="ValueTask"/> that can be used to monitor the asynchronous operation.
         /// </returns>
-        public virtual Task SetScopesAsync(TAuthorization authorization,
+        public virtual ValueTask SetScopesAsync(TAuthorization authorization,
             ImmutableArray<string> scopes, CancellationToken cancellationToken)
         {
             if (authorization == null)
@@ -688,7 +685,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
 
             authorization.Scopes = scopes;
 
-            return Task.CompletedTask;
+            return default;
         }
 
         /// <summary>
@@ -698,9 +695,9 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <param name="status">The status associated with the authorization.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
         /// <returns>
-        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation.
+        /// A <see cref="ValueTask"/> that can be used to monitor the asynchronous operation.
         /// </returns>
-        public virtual Task SetStatusAsync(TAuthorization authorization,
+        public virtual ValueTask SetStatusAsync(TAuthorization authorization,
             string status, CancellationToken cancellationToken)
         {
             if (authorization == null)
@@ -710,7 +707,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
 
             authorization.Status = status;
 
-            return Task.CompletedTask;
+            return default;
         }
 
         /// <summary>
@@ -720,9 +717,9 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <param name="subject">The subject associated with the authorization.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
         /// <returns>
-        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation.
+        /// A <see cref="ValueTask"/> that can be used to monitor the asynchronous operation.
         /// </returns>
-        public virtual Task SetSubjectAsync(TAuthorization authorization,
+        public virtual ValueTask SetSubjectAsync(TAuthorization authorization,
             string subject, CancellationToken cancellationToken)
         {
             if (authorization == null)
@@ -732,7 +729,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
 
             authorization.Subject = subject;
 
-            return Task.CompletedTask;
+            return default;
         }
 
         /// <summary>
@@ -742,9 +739,9 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <param name="type">The type associated with the authorization.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
         /// <returns>
-        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation.
+        /// A <see cref="ValueTask"/> that can be used to monitor the asynchronous operation.
         /// </returns>
-        public virtual Task SetTypeAsync(TAuthorization authorization,
+        public virtual ValueTask SetTypeAsync(TAuthorization authorization,
             string type, CancellationToken cancellationToken)
         {
             if (authorization == null)
@@ -754,7 +751,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
 
             authorization.Type = type;
 
-            return Task.CompletedTask;
+            return default;
         }
 
         /// <summary>
@@ -763,9 +760,9 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <param name="authorization">The authorization to update.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
         /// <returns>
-        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation.
+        /// A <see cref="ValueTask"/> that can be used to monitor the asynchronous operation.
         /// </returns>
-        public virtual Task UpdateAsync(TAuthorization authorization, CancellationToken cancellationToken)
+        public virtual async ValueTask UpdateAsync(TAuthorization authorization, CancellationToken cancellationToken)
         {
             if (authorization == null)
             {
@@ -774,9 +771,19 @@ namespace OrchardCore.OpenId.YesSql.Stores
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            _session.Save(authorization);
+            _session.Save(authorization, checkConcurrency: true);
 
-            return _session.CommitAsync();
+            try
+            {
+                await _session.CommitAsync();
+            }
+            catch (ConcurrencyException exception)
+            {
+                throw new OpenIddictExceptions.ConcurrencyException(new StringBuilder()
+                    .AppendLine("The authorization was concurrently updated and cannot be persisted in its current state.")
+                    .Append("Reload the authorization from the database and retry the operation.")
+                    .ToString(), exception);
+            }
         }
     }
 }

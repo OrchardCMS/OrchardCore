@@ -24,9 +24,9 @@ namespace OrchardCore.Roles.Deployment
 
         public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
         {
-            var allRolesState = step as AllRolesDeploymentStep;
+            var allRolesStep = step as AllRolesDeploymentStep;
 
-            if (allRolesState == null)
+            if (allRolesStep == null)
             {
                 return;
             }
@@ -45,7 +45,7 @@ namespace OrchardCore.Roles.Deployment
                     permissions.Add(JObject.FromObject(
                         new RolesStepRoleModel
                         {
-                            Name = currentRole.NormalizedRoleName,
+                            Name = currentRole.RoleName,
                             Description = currentRole.RoleDescription,
                             Permissions = currentRole.RoleClaims.Where(x => x.ClaimType == Permission.ClaimType).Select(x => x.ClaimValue).ToArray()
                         }));

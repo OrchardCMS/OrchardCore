@@ -84,7 +84,7 @@ Sample content:
 #### HTML Editor
 
 To define what HTML to render when the editor is selected from the settings, a shape named 
-`Markdown_Editor__{Name}` corresponding to a file `Markdown-{Name}.Editor.cshtml` can be created.
+`Markdown_Edit__{Name}` corresponding to a file `Markdown-{Name}.Edit.cshtml` can be created.
 
 Sample content:
 
@@ -102,8 +102,8 @@ Sample content:
 ### Overriding the predefined editors
 
 You can override the HTML editor for the `Default` editor by creating a shape file named 
-`Markdown.Editor.cshtml`. The WYSIWYG editor is defined by using the file named 
-`Markdown-Wysiwyg.Editor.cshtml`.
+`Markdown.Edit.cshtml`. The WYSIWYG editor is defined by using the file named 
+`Markdown-Wysiwyg.Edit.cshtml`.
 
 ## Razor Helper
 

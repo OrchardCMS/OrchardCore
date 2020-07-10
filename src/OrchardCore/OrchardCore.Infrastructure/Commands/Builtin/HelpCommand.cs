@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
-using System.Threading.Tasks;
 
 namespace OrchardCore.Environment.Commands.Builtin
 {
@@ -13,7 +13,7 @@ namespace OrchardCore.Environment.Commands.Builtin
         private readonly CommandHandlerDescriptorBuilder _builder = new CommandHandlerDescriptorBuilder();
 
         public HelpCommand(IServiceProvider serviceProvider,
-            IStringLocalizer<HelpCommand> localizer) : base (localizer)
+            IStringLocalizer<HelpCommand> localizer) : base(localizer)
         {
             _serviceProvider = serviceProvider;
         }
@@ -34,7 +34,6 @@ namespace OrchardCore.Environment.Commands.Builtin
                 await Context.Output.WriteLineAsync();
             }
         }
-
 
         [CommandName("help")]
         [CommandHelp("help <command>", "\tDisplay help text for <command>")]

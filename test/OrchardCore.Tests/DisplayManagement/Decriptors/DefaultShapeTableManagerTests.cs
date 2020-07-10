@@ -24,7 +24,7 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
 {
     public class DefaultShapeTableManagerTests : IDisposable
     {
-        IServiceProvider _serviceProvider;
+        private IServiceProvider _serviceProvider;
 
         private class TestFeatureInfo : IFeatureInfo
         {
@@ -180,7 +180,7 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
             typeFeatureProvider.TryAdd(typeof(TestShapeProvider), new InternalFeatureInfo("Core", new InternalExtensionInfo("Core")));
         }
 
-        static IFeatureInfo TestFeature()
+        private static IFeatureInfo TestFeature()
         {
             return new TestFeatureInfo
             {
@@ -500,7 +500,7 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
             _serviceProvider.GetService<TestShapeProvider>();
             var manager = _serviceProvider.GetService<IShapeTableManager>();
             var table = manager.GetShapeTable("DerivedTheme");
-            Assert.True(table.Bindings.ContainsKey("OverriddenShape"));
+            Assert.True(table.Bindings.TryGetValue("OverriddenShape", out var shapeBinding));
             Assert.Equal("DerivedTheme", table.Descriptors["OverriddenShape"].BindingSource);
         }
 

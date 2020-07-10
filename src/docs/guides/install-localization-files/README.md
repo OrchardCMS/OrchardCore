@@ -6,7 +6,7 @@ In this guide you will download and install community managed localization files
 
 - The current version of the .NET Core SDK. You can download it from here [https://www.microsoft.com/net/download/core](https://www.microsoft.com/net/download/core).
 - A text editor and a terminal where you can type dotnet commands.
-- An already running Orchard Core CMS website. You can follow the guide [Creating an Orchard Core CMS website](../create-cms-application) if you haven't done it yet.
+- An already running Orchard Core CMS website. You can follow the guide [Creating an Orchard Core CMS website](../create-cms-application/README.md) if you haven't done it yet.
 
 ## Downloading the localization files
 
@@ -38,9 +38,7 @@ The result should look like this:
 By default a new Orchard Core CMS website will only accept the default system culture. This step will configure it to accept French as an alternate language.
 
 - Open the Admin section of Orchard Core CMS by opening the browser on <https://localhost:5001/admin>.
-- In the __Configuration__, __Settings__, __General__ section click on __Add or remove supported cultures for the site__.
-- Select `fr | French` then click __Add__.
-- Click on the __Manage Settings__ menu item link which redirects to the __General__ settings page.
+- In the __Configuration__ > __Settings__ > __Cultures__ section, select `fr | French` then click __Add culture__.
 - Click on __Save__, the site is reloaded.
 
 ## Enabling localization and testing the site

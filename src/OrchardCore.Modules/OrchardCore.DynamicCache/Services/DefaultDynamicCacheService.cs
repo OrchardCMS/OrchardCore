@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
@@ -16,18 +17,29 @@ namespace OrchardCore.DynamicCache.Services
         private readonly ICacheContextManager _cacheContextManager;
         private readonly IDynamicCache _dynamicCache;
         private readonly IServiceProvider _serviceProvider;
-        
+        private readonly CacheOptions _cacheOptions;
+
         private readonly Dictionary<string, string> _localCache = new Dictionary<string, string>();
 
-        public DefaultDynamicCacheService(ICacheContextManager cacheContextManager, IDynamicCache dynamicCache, IServiceProvider serviceProvider)
+        public DefaultDynamicCacheService(
+            ICacheContextManager cacheContextManager,
+            IDynamicCache dynamicCache,
+            IServiceProvider serviceProvider,
+            IOptions<CacheOptions> options)
         {
             _cacheContextManager = cacheContextManager;
             _dynamicCache = dynamicCache;
             _serviceProvider = serviceProvider;
+            _cacheOptions = options.Value;
         }
 
         public async Task<string> GetCachedValueAsync(CacheContext context)
         {
+            if (!_cacheOptions.Enabled)
+            {
+                return null;
+            }
+
             var cacheKey = await GetCacheKey(context);
 
             context = await GetCachedContextAsync(cacheKey);
@@ -41,20 +53,25 @@ namespace OrchardCore.DynamicCache.Services
 
             return content;
         }
-        
+
         public async Task SetCachedValueAsync(CacheContext context, string value)
         {
+            if (!_cacheOptions.Enabled)
+            {
+                return;
+            }
+
             var cacheKey = await GetCacheKey(context);
-            
+
             _localCache[cacheKey] = value;
             var esi = JsonConvert.SerializeObject(CacheContextModel.FromCacheContext(context));
-            
+
             await Task.WhenAll(
                 SetCachedValueAsync(cacheKey, value, context),
                 SetCachedValueAsync(GetCacheContextCacheKey(cacheKey), esi, context)
             );
         }
-        
+
         public Task TagRemovedAsync(string tag, IEnumerable<string> keys)
         {
             return Task.WhenAll(keys.Select(key => _dynamicCache.RemoveAsync(key)));
@@ -83,7 +100,7 @@ namespace OrchardCore.DynamicCache.Services
             var tagCache = _serviceProvider.GetRequiredService<ITagCache>();
             tagCache.Tag(cacheKey, context.Tags.ToArray());
         }
-        
+
         private async Task<string> GetCacheKey(CacheContext context)
         {
             var cacheEntries = context.Contexts.Count > 0

@@ -11,7 +11,9 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
         public readonly static LiquidTagHelperMatching None = new LiquidTagHelperMatching();
         public readonly IEnumerable<TagMatchingRuleDescriptor> _rules = Enumerable.Empty<TagMatchingRuleDescriptor>();
 
-        public LiquidTagHelperMatching() { }
+        public LiquidTagHelperMatching()
+        {
+        }
 
         public LiquidTagHelperMatching(string name, string assemblyName, IEnumerable<TagMatchingRuleDescriptor> tagMatchingRules)
         {
@@ -25,7 +27,6 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
 
         public bool Match(string helper, IEnumerable<string> arguments)
         {
-
             return _rules.Any(rule =>
             {
                 // Does it match the required tag name
@@ -69,7 +70,7 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
                 {
                     return true;
                 }
-    
+
                 return false;
             });
         }

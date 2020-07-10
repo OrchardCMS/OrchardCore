@@ -16,21 +16,21 @@ namespace OrchardCore.Email.Drivers
     {
         public const string GroupId = "smtp";
         private readonly IDataProtectionProvider _dataProtectionProvider;
-        private readonly IShellHost _orchardHost;
-        private readonly ShellSettings _currentShellSettings;
+        private readonly IShellHost _shellHost;
+        private readonly ShellSettings _shellSettings;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthorizationService _authorizationService;
 
         public SmtpSettingsDisplayDriver(
-            IDataProtectionProvider dataProtectionProvider, 
-            IShellHost orchardHost, 
-            ShellSettings currentShellSettings,
+            IDataProtectionProvider dataProtectionProvider,
+            IShellHost shellHost,
+            ShellSettings shellSettings,
             IHttpContextAccessor httpContextAccessor,
             IAuthorizationService authorizationService)
         {
             _dataProtectionProvider = dataProtectionProvider;
-            _orchardHost = orchardHost;
-            _currentShellSettings = currentShellSettings;
+            _shellHost = shellHost;
+            _shellSettings = shellSettings;
             _httpContextAccessor = httpContextAccessor;
             _authorizationService = authorizationService;
         }
@@ -96,8 +96,8 @@ namespace OrchardCore.Email.Drivers
                     section.Password = protector.Protect(section.Password);
                 }
 
-                // Reload the tenant to apply the settings
-                await _orchardHost.ReloadShellContextAsync(_currentShellSettings);
+                // Release the tenant to apply the settings
+                await _shellHost.ReleaseShellContextAsync(_shellSettings);
             }
 
             return await EditAsync(section, context);

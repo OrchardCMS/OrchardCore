@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Http;
 namespace OrchardCore.Apis.GraphQL
 {
     /// <summary>
-    /// Provides an implementation of <see cref="IDependencyResolver"/> by 
+    /// Provides an implementation of <see cref="IDependencyResolver"/> by
     /// resolving the HttpContext request services when a type is resolved.
     /// This should be registered as Singleton.
     /// </summary>

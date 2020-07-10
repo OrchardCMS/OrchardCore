@@ -10,7 +10,7 @@ namespace OrchardCore.Taxonomies
 {
     public class Migrations : DataMigration
     {
-        IContentDefinitionManager _contentDefinitionManager;
+        private IContentDefinitionManager _contentDefinitionManager;
 
         public Migrations(IContentDefinitionManager contentDefinitionManager)
         {
@@ -19,14 +19,26 @@ namespace OrchardCore.Taxonomies
 
         public int Create()
         {
-            _contentDefinitionManager.AlterTypeDefinition("Taxonomy", menu => menu
+            _contentDefinitionManager.AlterTypeDefinition("Taxonomy", taxonomy => taxonomy
                 .Draftable()
                 .Versionable()
                 .Creatable()
                 .Listable()
                 .WithPart("TitlePart", part => part.WithPosition("1"))
-                .WithPart("AliasPart", part => part.WithPosition("2").WithSettings(new AliasPartSettings { Pattern = "{{ ContentItem | display_text | slugify }}" }))
-                .WithPart("TaxonomyPart", part => part.WithPosition("3"))
+                .WithPart("AliasPart", part => part
+                    .WithPosition("2")
+                    .WithSettings(new AliasPartSettings
+                    {
+                        Pattern = "{{ Model.ContentItem | display_text | slugify }}"
+                    }))
+                .WithPart("AutoroutePart", part => part
+                    .WithPosition("3")
+                    .WithSettings(new AutoroutePartSettings
+                    {
+                        Pattern = "{{ Model.ContentItem | display_text | slugify }}",
+                        AllowRouteContainedItems = true
+                    }))
+                .WithPart("TaxonomyPart", part => part.WithPosition("4"))
             );
 
             SchemaBuilder.CreateMapIndexTable(nameof(TaxonomyIndex), table => table
@@ -46,8 +58,8 @@ namespace OrchardCore.Taxonomies
                 .CreateIndex("IDX_TaxonomyIndex_Search", "TermContentItemId")
             );
 
-            // Return 2 to shortcut the second migration on new content definition schemas.
-            return 1;
+            // Return 3 to shortcut the migrations on new content definition schemas.
+            return 3;
         }
 
         // Migrate FieldSettings. This only needs to run on old content definition schemas.
@@ -57,10 +69,32 @@ namespace OrchardCore.Taxonomies
             _contentDefinitionManager.MigrateFieldSettings<TaxonomyField, TaxonomyFieldSettings>();
             return 2;
         }
+
+        public int UpdateFrom2()
+        {
+            _contentDefinitionManager.AlterTypeDefinition("Taxonomy", taxonomy => taxonomy
+                .WithPart("AutoroutePart", part => part
+                    .WithPosition("3")
+                    .WithSettings(new AutoroutePartSettings
+                    {
+                        Pattern = "{{ Model.ContentItem | display_text | slugify }}",
+                        AllowRouteContainedItems = true
+                    }))
+                .WithPart("TaxonomyPart", part => part.WithPosition("4"))
+            );
+
+            return 3;
+        }
     }
 
-    class AliasPartSettings
+    internal class AliasPartSettings
     {
         public string Pattern { get; set; }
+    }
+
+    internal class AutoroutePartSettings
+    {
+        public string Pattern { get; set; }
+        public bool AllowRouteContainedItems { get; set; }
     }
 }

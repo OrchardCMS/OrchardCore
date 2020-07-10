@@ -1,22 +1,23 @@
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
-using Newtonsoft.Json.Linq;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentFields.ViewModels;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Mvc.Utilities;
 
 namespace OrchardCore.ContentFields.Settings
 {
     public class HtmlFieldTrumbowygEditorSettingsDriver : ContentPartFieldDefinitionDisplayDriver<HtmlField>
     {
+        private readonly IStringLocalizer S;
+
         public HtmlFieldTrumbowygEditorSettingsDriver(IStringLocalizer<HtmlFieldTrumbowygEditorSettingsDriver> localizer)
         {
-            T = localizer;
+            S = localizer;
         }
-
-        public IStringLocalizer T { get; set; }
 
         public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition)
         {
@@ -38,20 +39,18 @@ namespace OrchardCore.ContentFields.Settings
                 var settings = new HtmlFieldTrumbowygEditorSettings();
 
                 await context.Updater.TryUpdateModelAsync(model, Prefix);
-                
-                try
+
+                if (!model.Options.IsJson())
                 {
-                    settings.Options = model.Options;
-                    JObject.Parse(settings.Options);
+                    context.Updater.ModelState.AddModelError(Prefix + '.' + nameof(TrumbowygSettingsViewModel.Options), S["The options are written in an incorrect format."]);
+                }
+                else
+                {
                     settings.InsertMediaWithUrl = model.InsertMediaWithUrl;
-                }
-                catch
-                {
-                    context.Updater.ModelState.AddModelError(Prefix, T["The options are written in an incorrect format."]);
-                    return Edit(partFieldDefinition);
-                }
+                    settings.Options = model.Options;
 
                     context.Builder.WithSettings(settings);
+                }
             }
 
             return Edit(partFieldDefinition);

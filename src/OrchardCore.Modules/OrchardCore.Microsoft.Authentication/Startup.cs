@@ -18,23 +18,17 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Microsoft.Authentication
 {
-    public class Startup : StartupBase
-    {
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddScoped<IPermissionProvider, Permissions>();
-        }
-    }
-
     [Feature(MicrosoftAuthenticationConstants.Features.MicrosoftAccount)]
     public class MicrosoftAccountStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.TryAddEnumerable(new ServiceDescriptor(typeof(IPermissionProvider), typeof(Permissions), ServiceLifetime.Scoped));
+
             services.AddSingleton<IMicrosoftAccountService, MicrosoftAccountService>();
             services.AddScoped<IDisplayDriver<ISite>, MicrosoftAccountSettingsDisplayDriver>();
             services.AddScoped<INavigationProvider, AdminMenuMicrosoftAccount>();
-            services.AddRecipeExecutionStep<MicrosoftAccountSettingsStep>(); 
+            services.AddRecipeExecutionStep<MicrosoftAccountSettingsStep>();
             // Register the options initializers required by the Microsoft Account Handler.
             services.TryAddEnumerable(new[]
             {
@@ -52,6 +46,8 @@ namespace OrchardCore.Microsoft.Authentication
     {
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.TryAddEnumerable(new ServiceDescriptor(typeof(IPermissionProvider), typeof(Permissions), ServiceLifetime.Scoped));
+
             services.AddSingleton<IAzureADService, AzureADService>();
             services.AddRecipeExecutionStep<AzureADSettingsStep>();
             services.AddScoped<IDisplayDriver<ISite>, AzureADSettingsDisplayDriver>();

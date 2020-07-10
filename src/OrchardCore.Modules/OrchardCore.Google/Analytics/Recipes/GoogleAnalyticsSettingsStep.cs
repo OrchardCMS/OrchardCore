@@ -7,7 +7,6 @@ using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 using OrchardCore.Settings;
 
-
 namespace OrchardCore.Google.Analytics.Recipes
 {
     /// <summary>
@@ -15,7 +14,7 @@ namespace OrchardCore.Google.Analytics.Recipes
     /// </summary>
     public class GoogleAnalyticsSettingsStep : IRecipeStepHandler
     {
-        readonly ISiteService _siteService;
+        private readonly ISiteService _siteService;
         public GoogleAnalyticsSettingsStep(ISiteService siteService)
         {
             _siteService = siteService;

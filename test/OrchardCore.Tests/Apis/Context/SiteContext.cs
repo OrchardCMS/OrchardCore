@@ -1,19 +1,18 @@
 using System;
-using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 using OrchardCore.Apis.GraphQL.Client;
 using OrchardCore.ContentManagement;
-using Newtonsoft.Json;
 
 namespace OrchardCore.Tests.Apis.Context
 {
-    public class SiteContext : IDisposable 
+    public class SiteContext : IDisposable
     {
         public static OrchardTestFixture<SiteStartup> Site { get; }
         public static HttpClient DefaultTenantClient { get; }
 
         public HttpClient Client { get; private set; }
+        public string TenantName { get; private set; }
         public OrchardGraphQLClient GraphQLClient { get; private set; }
 
         static SiteContext()
@@ -59,6 +58,7 @@ namespace OrchardCore.Tests.Apis.Context
             lock (Site)
             {
                 Client = Site.CreateDefaultClient(url);
+                TenantName = tenantName;
             }
 
             if (permissionsContext != null)
@@ -67,15 +67,17 @@ namespace OrchardCore.Tests.Apis.Context
                 SiteStartup.PermissionsContexts.TryAdd(permissionContextKey, permissionsContext);
                 Client.DefaultRequestHeaders.Add("PermissionsContext", permissionContextKey);
             }
-            
+
             GraphQLClient = new OrchardGraphQLClient(Client);
         }
 
         public async Task<string> CreateContentItem(string contentType, Action<ContentItem> func, bool draft = false)
         {
+            // Never generate a fake ContentItemId here as it should be created by the ContentManager.NewAsync() method.
+            // Controllers should use the proper sequence so that they call their event handlers.
+            // In that case it would skip calling ActivatingAsync, ActivatedAsync, InitializingAsync, InitializedAsync events
             var contentItem = new ContentItem
             {
-                ContentItemId = Guid.NewGuid().ToString(),
                 ContentType = contentType
             };
 

@@ -28,13 +28,13 @@ namespace OrchardCore.Lucene.Indexing
         public bool? IncludeInAll { get; set; }
 
         /// <summary>
-        /// Gets or sets the scaling factor of the field. Values will be multiplied by this factor at index time 
+        /// Gets or sets the scaling factor of the field. Values will be multiplied by this factor at index time
         /// and rounded to the closest value.
         /// </summary>
         public int? ScalingFactor { get; set; }
 
         /// <summary>
-        /// Gets or sets the analyzer to be used at both index-time and search-time unless overridden by the 
+        /// Gets or sets the analyzer to be used at both index-time and search-time unless overridden by the
         /// <see cref="SearchAnalyzer"/>.
         /// </summary>
         public string Analyzer { get; set; }

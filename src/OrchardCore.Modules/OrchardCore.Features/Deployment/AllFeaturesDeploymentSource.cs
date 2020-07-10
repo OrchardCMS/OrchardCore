@@ -17,15 +17,15 @@ namespace OrchardCore.Features.Deployment
 
         public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
         {
-            var allFeaturesState = step as AllFeaturesDeploymentStep;
+            var allFeaturesStep = step as AllFeaturesDeploymentStep;
 
-            if (allFeaturesState == null)
+            if (allFeaturesStep == null)
             {
                 return;
             }
 
             var features = await _moduleService.GetAvailableFeaturesAsync();
-            
+
             result.Steps.Add(new JObject(
                 new JProperty("name", "Feature"),
                 new JProperty("enable", features.Where(f => f.IsEnabled).Select(f => f.Descriptor.Id).ToArray()),

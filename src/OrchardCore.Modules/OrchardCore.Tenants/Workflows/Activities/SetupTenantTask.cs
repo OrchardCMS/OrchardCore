@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -6,6 +5,7 @@ using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Models;
+using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Modules;
 using OrchardCore.Setup.Services;
 using OrchardCore.Workflows.Abstractions.Models;
@@ -22,7 +22,7 @@ namespace OrchardCore.Tenants.Workflows.Activities
         private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
 
         public SetupTenantTask(IShellSettingsManager shellSettingsManager, IShellHost shellHost, ISetupService setupService, IClock clock, IWorkflowExpressionEvaluator expressionEvaluator, IWorkflowScriptEvaluator scriptEvaluator, IUpdateModelAccessor updateModelAccessor, IStringLocalizer<SetupTenantTask> localizer)
-            : base(shellSettingsManager, shellHost, scriptEvaluator, localizer)
+            : base(shellSettingsManager, shellHost, expressionEvaluator, scriptEvaluator, localizer)
         {
             SetupService = setupService;
             _clock = clock;
@@ -33,8 +33,10 @@ namespace OrchardCore.Tenants.Workflows.Activities
         protected ISetupService SetupService { get; }
 
         public override string Name => nameof(SetupTenantTask);
-        public override LocalizedString Category => T["Tenant"];
-        public override LocalizedString DisplayText => T["Setup Tenant Task"];
+
+        public override LocalizedString Category => S["Tenant"];
+
+        public override LocalizedString DisplayText => S["Setup Tenant Task"];
 
         public WorkflowExpression<string> SiteName
         {
@@ -86,60 +88,85 @@ namespace OrchardCore.Tenants.Workflows.Activities
 
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            return Outcomes(T["Done"], T["Failed"]);
+            return Outcomes(S["Done"], S["Failed"]);
         }
 
         public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            var tenantNameTask = _expressionEvaluator.EvaluateAsync(TenantName, workflowContext);
-            var siteNameTask = _expressionEvaluator.EvaluateAsync(SiteName, workflowContext);
-            var adminUsernameTask = _expressionEvaluator.EvaluateAsync(AdminUsername, workflowContext);
-            var adminEmailTask = _expressionEvaluator.EvaluateAsync(AdminEmail, workflowContext);
-            var adminPasswordTask = _expressionEvaluator.EvaluateAsync(AdminPassword, workflowContext);
-            var databaseProviderTask = _expressionEvaluator.EvaluateAsync(DatabaseProvider, workflowContext);
-            var databaseConnectionStringTask = _expressionEvaluator.EvaluateAsync(DatabaseConnectionString, workflowContext);
-            var databaseTablePrefixTask = _expressionEvaluator.EvaluateAsync(DatabaseTablePrefix, workflowContext);
-            var recipeNameTask = _expressionEvaluator.EvaluateAsync(RecipeName, workflowContext);
-
-            await Task.WhenAll(tenantNameTask, siteNameTask, adminUsernameTask, adminEmailTask, adminPasswordTask, databaseProviderTask, databaseConnectionStringTask, databaseTablePrefixTask, recipeNameTask);
-
-            if (!ShellHost.TryGetSettings(tenantNameTask.Result?.Trim(), out var shellSettings))
+            if (ShellScope.Context.Settings.Name != ShellHelper.DefaultShellName)
             {
-                if (!string.IsNullOrWhiteSpace(tenantNameTask.Result))
-                {
-                    shellSettings = new ShellSettings
-                    {
-                        Name = tenantNameTask.Result?.Trim(),
-                        State = TenantState.Uninitialized
-                    };
-                    shellSettings["ConnectionString"] = databaseConnectionStringTask.Result?.Trim();
-                    shellSettings["TablePrefix"] = databaseTablePrefixTask.Result?.Trim();
-                    shellSettings["DatabaseProvider"] = databaseProviderTask.Result?.Trim();
-                    shellSettings["Secret"] = Guid.NewGuid().ToString();
-                    shellSettings["RecipeName"] = recipeNameTask.Result.Trim();
-                }
+                return Outcomes("Failed");
+            }
 
-                await ShellSettingsManager.SaveSettingsAsync(shellSettings);
-                var shellContext = await ShellHost.GetOrCreateShellContextAsync(shellSettings);
+            var tenantName = (await ExpressionEvaluator.EvaluateAsync(TenantName, workflowContext, null))?.Trim();
+
+            if (string.IsNullOrWhiteSpace(tenantName))
+            {
+                return Outcomes("Failed");
+            }
+
+            if (!ShellHost.TryGetSettings(tenantName, out var shellSettings))
+            {
+                return Outcomes("Failed");
+            }
+
+            if (shellSettings.State == TenantState.Running)
+            {
+                return Outcomes("Failed");
+            }
+
+            if (shellSettings.State != TenantState.Uninitialized)
+            {
+                return Outcomes("Failed");
+            }
+
+            var siteName = (await _expressionEvaluator.EvaluateAsync(SiteName, workflowContext, null))?.Trim();
+            var adminUsername = (await _expressionEvaluator.EvaluateAsync(AdminUsername, workflowContext, null))?.Trim();
+            var adminEmail = (await _expressionEvaluator.EvaluateAsync(AdminEmail, workflowContext, null))?.Trim();
+            var adminPassword = (await _expressionEvaluator.EvaluateAsync(AdminPassword, workflowContext, null))?.Trim();
+
+            var databaseProvider = (await _expressionEvaluator.EvaluateAsync(DatabaseProvider, workflowContext, null))?.Trim();
+            var databaseConnectionString = (await _expressionEvaluator.EvaluateAsync(DatabaseConnectionString, workflowContext, null))?.Trim();
+            var databaseTablePrefix = (await _expressionEvaluator.EvaluateAsync(DatabaseTablePrefix, workflowContext, null))?.Trim();
+            var recipeName = (await _expressionEvaluator.EvaluateAsync(RecipeName, workflowContext, null))?.Trim();
+
+            if (string.IsNullOrEmpty(databaseProvider))
+            {
+                databaseProvider = shellSettings["DatabaseProvider"];
+            }
+
+            if (string.IsNullOrEmpty(databaseConnectionString))
+            {
+                databaseConnectionString = shellSettings["ConnectionString"];
+            }
+
+            if (string.IsNullOrEmpty(databaseTablePrefix))
+            {
+                databaseTablePrefix = shellSettings["TablePrefix"];
+            }
+
+            if (string.IsNullOrEmpty(recipeName))
+            {
+                recipeName = shellSettings["RecipeName"];
             }
 
             var recipes = await SetupService.GetSetupRecipesAsync();
-            var recipe = recipes.FirstOrDefault(x => x.Name == shellSettings["RecipeName"]);
+            var recipe = recipes.FirstOrDefault(r => r.Name == recipeName);
 
             var setupContext = new SetupContext
             {
                 ShellSettings = shellSettings,
-                SiteName = siteNameTask.Result?.Trim(),
+                SiteName = siteName,
                 EnabledFeatures = null,
-                AdminUsername = adminUsernameTask.Result?.Trim(),
-                AdminEmail = adminEmailTask.Result?.Trim(),
-                AdminPassword = adminPasswordTask.Result?.Trim(),
+                AdminUsername = adminUsername,
+                AdminEmail = adminEmail,
+                AdminPassword = adminPassword,
                 Errors = new Dictionary<string, string>(),
                 Recipe = recipe,
                 SiteTimeZone = _clock.GetSystemTimeZone().TimeZoneId,
-                DatabaseProvider = databaseProviderTask.Result?.Trim(),
-                DatabaseConnectionString = databaseConnectionStringTask.Result?.Trim(),
-                DatabaseTablePrefix = databaseTablePrefixTask.Result?.Trim(),
+                DatabaseProvider = databaseProvider,
+                DatabaseConnectionString = databaseConnectionString,
+                DatabaseTablePrefix = databaseTablePrefix
             };
 
             var executionId = await SetupService.SetupAsync(setupContext);
