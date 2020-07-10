@@ -6,9 +6,12 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Localization;
 using OrchardCore.Admin;
 using OrchardCore.Deployment.Services;
+using OrchardCore.Deployment.ViewModels;
 using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.Mvc.Utilities;
 
 namespace OrchardCore.Deployment.Controllers
 {
@@ -19,19 +22,23 @@ namespace OrchardCore.Deployment.Controllers
         private readonly IAuthorizationService _authorizationService;
         private readonly INotifier _notifier;
         private readonly IHtmlLocalizer H;
+        private readonly IStringLocalizer S;
+
 
         public ImportController(
             IDeploymentManager deploymentManager,
             IAuthorizationService authorizationService,
             INotifier notifier,
-            IHtmlLocalizer<ImportController> localizer
+            IHtmlLocalizer<ImportController> htmlLocalizer,
+            IStringLocalizer<ImportController> stringLocalizer
         )
         {
             _deploymentManager = deploymentManager;
             _authorizationService = authorizationService;
             _notifier = notifier;
 
-            H = localizer;
+            H = htmlLocalizer;
+            S = stringLocalizer;
         }
 
         public async Task<IActionResult> Index()
@@ -116,21 +123,26 @@ namespace OrchardCore.Deployment.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Json(string json)
+        public async Task<IActionResult> Json(ImportJsonViewModel model)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.Import))
             {
                 return Forbid();
             }
 
-            if (!string.IsNullOrWhiteSpace(json))
+            if (!model.Json.IsJson())
+            {
+                ModelState.AddModelError(nameof(model.Json), S["The recipe is written in an incorrect json format."]);
+            }
+
+            if (ModelState.IsValid)
             {
                 var tempArchiveFolder = PathExtensions.Combine(Path.GetTempPath(), Path.GetRandomFileName());
 
                 try
                 {
                     Directory.CreateDirectory(tempArchiveFolder);
-                    System.IO.File.WriteAllText(Path.Combine(tempArchiveFolder, "Recipe.json"), json);
+                    System.IO.File.WriteAllText(Path.Combine(tempArchiveFolder, "Recipe.json"), model.Json);
 
                     await _deploymentManager.ImportDeploymentPackageAsync(new PhysicalFileProvider(tempArchiveFolder));
 
@@ -144,12 +156,8 @@ namespace OrchardCore.Deployment.Controllers
                     }
                 }
             }
-            else
-            {
-                _notifier.Error(H["Please provide a recipe in json."]);
-            }
 
-            return RedirectToAction(nameof(Json));
+            return View(model);
         }
     }
 }
