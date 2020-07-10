@@ -94,6 +94,7 @@ namespace OrchardCore.DynamicCache.Liquid
 
             if (cacheOptions.DebugMode)
             {
+                // No need to optimize this code as it will be used for debugging purpose.
                 var debugContent = new StringWriter();
                 debugContent.WriteLine();
                 debugContent.WriteLine($"<!-- CACHE BLOCK: {cacheContext.CacheId} ({Guid.NewGuid()})");

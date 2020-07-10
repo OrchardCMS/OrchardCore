@@ -226,6 +226,7 @@ namespace OrchardCore.DynamicCache.TagHelpers
                                     // Write the start of a cache debug block.
                                     if (_cacheOptions.DebugMode)
                                     {
+                                        // No need to optimize this code as it will be used for debugging purpose.
                                         writer.WriteLine();
                                         writer.WriteLine($"<!-- CACHE BLOCK: {cacheContext.CacheId} ({Guid.NewGuid()})");
                                         writer.WriteLine($"         VARY BY: {String.Join(", ", cacheContext.Contexts)}");
