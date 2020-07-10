@@ -48,6 +48,7 @@ namespace OrchardCore.Liquid
             services.AddLiquidFilter<TimeZoneFilter>("local");
             services.AddLiquidFilter<SlugifyFilter>("slugify");
             services.AddLiquidFilter<ContainerFilter>("container");
+            services.AddLiquidFilter<ContainersFilter>("containers");
             services.AddLiquidFilter<DisplayTextFilter>("display_text");
             services.AddLiquidFilter<DisplayUrlFilter>("display_url");
             services.AddLiquidFilter<ContentUrlFilter>("href");

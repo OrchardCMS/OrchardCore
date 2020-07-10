@@ -66,6 +66,29 @@ Output
 ```text
 Blog
 ```
+
+### `containers`
+
+Returns list of all container content item ancestors of another content item.
+
+Input
+
+```liquid
+{% assign ancestors = Model.ContentItem | containers %}
+
+{% for ancestor in ancestors %}
+  {{ ancestor | display_text }}
+{% endfor %}
+```
+
+In this example we assume `ContentItem` represents a blog post that is child of `Blog` that is child of `BlogsCollection`
+
+Output
+
+```text
+Blog BlogsCollection
+```
+
 ## String Filters
 
 ### `slugify`
