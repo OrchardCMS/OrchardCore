@@ -4,39 +4,33 @@ namespace OrchardCore.FileStorage.AzureBlob
 {
     public class BlobFile : IFileStoreEntry
     {
-        private readonly string _path;
-        private readonly string _name;
-        private readonly string _directoryPath;
-        private readonly long? _length;
-        private readonly DateTimeOffset? _lastModified;
-
         public BlobFile(string path, long? length, DateTimeOffset? lastModified)
         {
-            _path = path;
-            _name = System.IO.Path.GetFileName(_path);
+            Path = path;
+            Name = System.IO.Path.GetFileName(Path);
 
-            if (_name == _path) // file is in root Directory
+            if (Name == Path) // file is in root Directory
             {
-                _directoryPath = "";
+                DirectoryPath = "";
             }
             else
             {
-                _directoryPath = _path.Substring(0, _path.Length - _name.Length - 1);
+                DirectoryPath = Path.Substring(0, Path.Length - Name.Length - 1);
             }
 
-            _length = length;
-            _lastModified = lastModified;
+            Length = length.GetValueOrDefault();
+            LastModifiedUtc = lastModified.GetValueOrDefault().UtcDateTime;
         }
 
-        public string Path => _path;
+        public string Path { get; }
 
-        public string Name => _name;
+        public string Name { get; }
 
-        public string DirectoryPath => _directoryPath;
+        public string DirectoryPath { get; }
 
-        public long Length => _length.GetValueOrDefault();
+        public long Length { get; }
 
-        public DateTime LastModifiedUtc => _lastModified.GetValueOrDefault().UtcDateTime;
+        public DateTime LastModifiedUtc { get; }
 
         public bool IsDirectory => false;
     }
