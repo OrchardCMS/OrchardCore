@@ -69,6 +69,13 @@ namespace OrchardCore.Users.Services
                 return null;
             }
 
+            if (!(user as User).IsEnabled)
+            {
+                reportError(string.Empty, S["The specified account is disabled, please contact an administrator."]);
+                
+                return null;
+            }
+
             return user;
         }
 
