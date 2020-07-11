@@ -170,6 +170,8 @@ namespace OrchardCore.ContentManagement.Display
                         }
 
                         context = new BuildDisplayContext(shapeResult.Shape, context.DisplayType, context.GroupId, context.ShapeFactory, context.Layout, context.Updater);
+                        // With a new display context we have the default FindPlacementDelegate that returns null, so we reuse the delegate from the temp context.
+                        context.FindPlacement = tempContext.FindPlacement;
                     }
 
                     foreach (var contentPartFieldDefinition in contentTypePartDefinition.PartDefinition.Fields)
