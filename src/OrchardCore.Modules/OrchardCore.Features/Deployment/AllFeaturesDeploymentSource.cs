@@ -30,7 +30,7 @@ namespace OrchardCore.Features.Deployment
                 new JProperty("enable", features.Where(f => f.IsEnabled).Select(f => f.Descriptor.Id).ToArray())
             );
 
-            if (!allFeaturesStep.IgnoreDisabledFeature)
+            if (!allFeaturesStep.IgnoreDisabledFeatures)
             {
                 featureStep.Property("enable").AddAfterSelf(new JProperty("disable", features.Where(f => !f.IsEnabled).Select(f => f.Descriptor.Id).ToArray()));
             }
