@@ -87,6 +87,8 @@ namespace OrchardCore.Apis.GraphQL
             );
 
             app.UseMiddleware<GraphQLMiddleware>(serviceProvider.GetService<IOptions<GraphQLSettings>>().Value);
+
+            app.Map("/api/schema.graphql", configuration => configuration.UseMiddleware<SchemaMiddleware>());
         }
     }
 }
