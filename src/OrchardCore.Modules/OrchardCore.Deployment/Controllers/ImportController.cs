@@ -24,7 +24,6 @@ namespace OrchardCore.Deployment.Controllers
         private readonly IHtmlLocalizer H;
         private readonly IStringLocalizer S;
 
-
         public ImportController(
             IDeploymentManager deploymentManager,
             IAuthorizationService authorizationService,
