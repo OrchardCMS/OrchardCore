@@ -9,7 +9,6 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Modules;
 using OrchardCore.Recipes.Events;
 using OrchardCore.Recipes.Models;
@@ -147,9 +146,7 @@ namespace OrchardCore.Recipes.Services
 
         private async Task ExecuteStepAsync(RecipeExecutionContext recipeStep)
         {
-            var shellScope = recipeStep.RecipeDescriptor.RequireNewScope
-                ? await _shellHost.GetScopeAsync(_shellSettings)
-                : ShellScope.Current;
+            var shellScope = await _shellHost.GetScopeAsync(_shellSettings);
 
             await shellScope.UsingAsync(async scope =>
             {
@@ -179,7 +176,8 @@ namespace OrchardCore.Recipes.Services
                         _logger.LogInformation("Finished executing recipe step '{RecipeName}'.", recipeStep.Name);
                     }
                 }
-            });
+            },
+            activateShell: recipeStep.RecipeDescriptor.ActivateShell);
         }
 
         /// <summary>
