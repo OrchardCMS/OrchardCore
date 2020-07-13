@@ -80,9 +80,10 @@ namespace OrchardCore.Menu
                         {
                             ContentItem = contentItem,
                             Level = 0,
-                            Menu = menu,
-                            Differentiator = differentiator
+                            Menu = menu
                         }));
+
+                        shape.Metadata.Differentiator = differentiator;
 
                         // Don't use Items.Add() or the collection won't be sorted
                         menu.Add(shape);
@@ -110,9 +111,10 @@ namespace OrchardCore.Menu
                             {
                                 ContentItem = contentItem,
                                 Level = level + 1,
-                                Menu = menu,
-                                Differentiator = differentiator
+                                Menu = menu
                             }));
+
+                            shape.Metadata.Differentiator = differentiator;
 
                             // Don't use Items.Add() or the collection won't be sorted
                             menuItem.Add(shape);
