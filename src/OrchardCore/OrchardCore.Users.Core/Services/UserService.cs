@@ -51,7 +51,11 @@ namespace OrchardCore.Users.Services
                 reportError(string.Empty, S["The specified username/password couple is invalid."]);
                 return null;
             }
-
+            if (user is User userModel && !userModel.IsEnabled)
+            {
+                reportError(string.Empty, S["Your account is disabled. Please contact an administrator."]);
+                return null;
+            }
             var result = await _signInManager.CheckPasswordSignInAsync(user, password, lockoutOnFailure: true);
             if (result.IsNotAllowed)
             {
