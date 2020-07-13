@@ -6,8 +6,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.Localization;
-using Newtonsoft.Json.Linq;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
@@ -31,7 +29,6 @@ namespace OrchardCore.Queries.Controllers
         private readonly IUpdateModelAccessor _updateModelAccessor;
         private readonly IHtmlLocalizer H;
         private readonly dynamic New;
-        private readonly IStringLocalizer S;
 
         public AdminController(
             IDisplayManager<Query> displayManager,
@@ -43,8 +40,7 @@ namespace OrchardCore.Queries.Controllers
             IQueryManager queryManager,
             IEnumerable<IQuerySource> querySources,
             ISession session,
-            IUpdateModelAccessor updateModelAccessor,
-            IStringLocalizer<AdminController> stringLocalizer)
+            IUpdateModelAccessor updateModelAccessor)
         {
             _session = session;
             _displayManager = displayManager;
@@ -53,7 +49,6 @@ namespace OrchardCore.Queries.Controllers
             _queryManager = queryManager;
             _querySources = querySources;
             _updateModelAccessor = updateModelAccessor;
-            S = stringLocalizer;
             New = shapeFactory;
             _notifier = notifier;
             H = htmlLocalizer;
@@ -160,15 +155,13 @@ namespace OrchardCore.Queries.Controllers
             {
                 return NotFound();
             }
-            if (!string.IsNullOrWhiteSpace(query.Schema) && !CheckSchema(query.Schema))
-            {
-                ModelState.AddModelError("Schema", S["Invalid schema JSON supplied."]);
-            }
+
             var editor = await _displayManager.UpdateEditorAsync(query, updater: _updateModelAccessor.ModelUpdater, isNew: true);
-           
+
             if (ModelState.IsValid)
             {
                 await _queryManager.SaveQueryAsync(query.Name, query);
+
                 _notifier.Success(H["Query created successfully"]);
                 return RedirectToAction("Index");
             }
@@ -221,10 +214,6 @@ namespace OrchardCore.Queries.Controllers
 
             var editor = await _displayManager.UpdateEditorAsync(query, updater: _updateModelAccessor.ModelUpdater, isNew: false);
 
-            if (!string.IsNullOrWhiteSpace(query.Schema) && !CheckSchema(query.Schema))
-            { 
-                ModelState.AddModelError("Schema", S["Invalid schema JSON supplied."]);
-            }
             if (ModelState.IsValid)
             {
                 await _queryManager.SaveQueryAsync(model.Name, query);
@@ -259,19 +248,6 @@ namespace OrchardCore.Queries.Controllers
             _notifier.Success(H["Query deleted successfully"]);
 
             return RedirectToAction("Index");
-        }
-
-        private bool CheckSchema(string schema)
-        { 
-            try
-            {
-                JToken.Parse(schema);
-                return true;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
         }
     }
 }
