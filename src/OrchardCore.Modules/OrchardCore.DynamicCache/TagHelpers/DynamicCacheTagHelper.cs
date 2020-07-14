@@ -94,7 +94,6 @@ namespace OrchardCore.DynamicCache.TagHelpers
             HtmlEncoder htmlEncoder,
             DynamicCacheTagHelperService dynamicCacheTagHelperService,
             IOptions<CacheOptions> cacheOptions)
-
         {
             _dynamicCacheService = dynamicCacheService;
             _cacheScopeManager = cacheScopeManager;
