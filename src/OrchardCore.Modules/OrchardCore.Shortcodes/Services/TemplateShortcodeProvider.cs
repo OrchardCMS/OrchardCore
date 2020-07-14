@@ -1,7 +1,6 @@
-using System;
-using System.Collections.Generic;
+
+using System.Text.Encodings.Web;
 using System.Threading.Tasks;
-using Fluid;
 using OrchardCore.Liquid;
 using OrchardCore.Shortcodes.Models;
 using OrchardCore.Shortcodes.ViewModels;
@@ -13,15 +12,20 @@ namespace OrchardCore.Shortcodes.Services
     {
         private readonly ShortcodeTemplatesManager _shortcodeTemplatesManager;
         private readonly ILiquidTemplateManager _liquidTemplateManager;
+        private readonly HtmlEncoder _htmlEncoder;
 
         private ShortcodeTemplatesDocument _shortcodeTemplatesDocument;
 
         public TemplateShortcodeProvider(
             ShortcodeTemplatesManager shortcodeTemplatesManager,
-            ILiquidTemplateManager liquidTemplateManager)
+            ILiquidTemplateManager liquidTemplateManager,
+            HtmlEncoder htmlEncoder)
         {
             _shortcodeTemplatesManager = shortcodeTemplatesManager;
             _liquidTemplateManager = liquidTemplateManager;
+            // TODO verify this is correct encoding technique for here.
+            _htmlEncoder = htmlEncoder;
+
         }
 
         public async ValueTask<string> EvaluateAsync(string identifier, Arguments arguments, string content)
@@ -38,7 +42,7 @@ namespace OrchardCore.Shortcodes.Services
                 Content = content
             };
 
-            return await _liquidTemplateManager.RenderAsync(template.Content, NullEncoder.Default, model,
+            return await _liquidTemplateManager.RenderAsync(template.Content, _htmlEncoder, model,
                 scope =>
                 {
                     scope.SetValue("Content", model.Content);

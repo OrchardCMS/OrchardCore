@@ -22,7 +22,6 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Environment.Shell;
 using OrchardCore.FileStorage;
 using OrchardCore.FileStorage.FileSystem;
-using OrchardCore.Shortcodes;
 using OrchardCore.Liquid;
 using OrchardCore.Media.Controllers;
 using OrchardCore.Media.Core;
@@ -45,6 +44,7 @@ using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
+using OrchardCore.Shortcodes;
 using Shortcodes;
 using SixLabors.ImageSharp.Memory;
 using SixLabors.ImageSharp.Web.Caching;
@@ -158,7 +158,12 @@ namespace OrchardCore.Media
             services.AddTagHelpers<ImageTagHelper>();
             services.AddTagHelpers<ImageResizeTagHelper>();
 
-            services.AddScoped<IShortcodeProvider, ImageShortcodeProvider>();
+            // Only add image as a descriptor as media is deprecated.
+            services.AddShortcode<ImageShortcodeProvider>("image", d => {
+                d.DefaultShortcode = "[image] [/image]";
+                d.Hint = "Add a image from the media library.<br>Usage: [image width='140']foo.jpg[/image]'";
+                d.Categories = new string[] { "HTML Content" };
+            });
         }
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

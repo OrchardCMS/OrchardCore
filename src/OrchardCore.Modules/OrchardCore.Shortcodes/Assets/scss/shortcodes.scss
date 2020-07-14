@@ -1,0 +1,16 @@
+
+.shortcode-popover-holder, .shortcode-popover-btn {
+    position: absolute; 
+    top: 0; 
+    right:0;
+}
+
+.shortcode-popover-wrapper{
+    position: relative;
+}
+
+.shortcode-popover-btn{
+    svg {
+        width: 24px;
+    }
+}

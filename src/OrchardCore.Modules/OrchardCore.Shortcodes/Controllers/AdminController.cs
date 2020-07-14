@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Settings;
 using OrchardCore.Shortcodes.Models;
@@ -15,6 +16,8 @@ using OrchardCore.Shortcodes.ViewModels;
 
 namespace OrchardCore.Shortcodes.Controllers
 {
+
+    [Feature("OrchardCore.Shortcodes.Templates")]
     public class AdminController : Controller
     {
         private readonly IAuthorizationService _authorizationService;

@@ -1,0 +1,16 @@
+[
+  {
+    "generateSourceMaps": true,
+    "generateRTL": true,
+    "inputs": [
+      "Assets/scss/shortcodes.scss"
+    ],
+    "output": "wwwroot/Styles/shortcodes.css"
+  },
+  {
+    "inputs": [
+      "Assets/js/**/*.js"
+    ],
+    "output": "wwwroot/Scripts/shortcodes.js"
+  }
+]

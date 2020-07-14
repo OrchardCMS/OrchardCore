@@ -10,5 +10,11 @@
       "Assets/trumbowyg.media.url.js"
     ],
     "output": "wwwroot/Scripts/trumbowyg.media.url.js"
+  },
+  {
+    "inputs": [
+      "Assets/trumbowyg.shortcodes.js"
+    ],
+    "output": "wwwroot/Scripts/trumbowyg.shortcodes.js"
   }
 ]
