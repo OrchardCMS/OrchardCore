@@ -1,8 +1,11 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using System.Text.Encodings.Web;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
@@ -29,10 +32,10 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// </summary>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
         /// <returns>
-        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
+        /// A <see cref="ValueTask"/> that can be used to monitor the asynchronous operation,
         /// whose result returns the number of applications in the database.
         /// </returns>
-        public virtual async Task<long> CountAsync(CancellationToken cancellationToken)
+        public virtual async ValueTask<long> CountAsync(CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
@@ -46,10 +49,10 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <param name="query">The query to execute.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
         /// <returns>
-        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
+        /// A <see cref="ValueTask"/> that can be used to monitor the asynchronous operation,
         /// whose result returns the number of applications that match the specified query.
         /// </returns>
-        public virtual Task<long> CountAsync<TResult>(Func<IQueryable<TApplication>, IQueryable<TResult>> query, CancellationToken cancellationToken)
+        public virtual ValueTask<long> CountAsync<TResult>(Func<IQueryable<TApplication>, IQueryable<TResult>> query, CancellationToken cancellationToken)
             => throw new NotSupportedException();
 
         /// <summary>
@@ -58,9 +61,9 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <param name="application">The application to create.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
         /// <returns>
-        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation.
+        /// A <see cref="ValueTask"/> that can be used to monitor the asynchronous operation.
         /// </returns>
-        public virtual Task CreateAsync(TApplication application, CancellationToken cancellationToken)
+        public virtual async ValueTask CreateAsync(TApplication application, CancellationToken cancellationToken)
         {
             if (application == null)
             {
@@ -70,7 +73,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
             cancellationToken.ThrowIfCancellationRequested();
 
             _session.Save(application);
-            return _session.CommitAsync();
+            await _session.CommitAsync();
         }
 
         /// <summary>
@@ -79,9 +82,9 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <param name="application">The application to delete.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
         /// <returns>
-        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation.
+        /// A <see cref="ValueTask"/> that can be used to monitor the asynchronous operation.
         /// </returns>
-        public virtual Task DeleteAsync(TApplication application, CancellationToken cancellationToken)
+        public virtual async ValueTask DeleteAsync(TApplication application, CancellationToken cancellationToken)
         {
             if (application == null)
             {
@@ -91,8 +94,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
             cancellationToken.ThrowIfCancellationRequested();
 
             _session.Delete(application);
-
-            return _session.CommitAsync();
+            await _session.CommitAsync();
         }
 
         /// <summary>
@@ -101,10 +103,10 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <param name="identifier">The unique identifier associated with the application.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
         /// <returns>
-        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
+        /// A <see cref="ValueTask"/> that can be used to monitor the asynchronous operation,
         /// whose result returns the client application corresponding to the identifier.
         /// </returns>
-        public virtual Task<TApplication> FindByIdAsync(string identifier, CancellationToken cancellationToken)
+        public virtual async ValueTask<TApplication> FindByIdAsync(string identifier, CancellationToken cancellationToken)
         {
             if (string.IsNullOrEmpty(identifier))
             {
@@ -113,7 +115,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            return _session.Query<TApplication, OpenIdApplicationIndex>(index => index.ApplicationId == identifier).FirstOrDefaultAsync();
+            return await _session.Query<TApplication, OpenIdApplicationIndex>(index => index.ApplicationId == identifier).FirstOrDefaultAsync();
         }
 
         /// <summary>
@@ -122,10 +124,10 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <param name="identifier">The client identifier associated with the application.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
         /// <returns>
-        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
+        /// A <see cref="ValueTask"/> that can be used to monitor the asynchronous operation,
         /// whose result returns the client application corresponding to the identifier.
         /// </returns>
-        public virtual Task<TApplication> FindByClientIdAsync(string identifier, CancellationToken cancellationToken)
+        public virtual async ValueTask<TApplication> FindByClientIdAsync(string identifier, CancellationToken cancellationToken)
         {
             if (string.IsNullOrEmpty(identifier))
             {
@@ -134,7 +136,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            return _session.Query<TApplication, OpenIdApplicationIndex>(index => index.ClientId == identifier).FirstOrDefaultAsync();
+            return await _session.Query<TApplication, OpenIdApplicationIndex>(index => index.ClientId == identifier).FirstOrDefaultAsync();
         }
 
         /// <summary>
@@ -143,10 +145,10 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <param name="identifier">The unique identifier associated with the application.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
         /// <returns>
-        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
+        /// A <see cref="ValueTask"/> that can be used to monitor the asynchronous operation,
         /// whose result returns the client application corresponding to the identifier.
         /// </returns>
-        public virtual Task<TApplication> FindByPhysicalIdAsync(string identifier, CancellationToken cancellationToken)
+        public virtual async ValueTask<TApplication> FindByPhysicalIdAsync(string identifier, CancellationToken cancellationToken)
         {
             if (string.IsNullOrEmpty(identifier))
             {
@@ -155,7 +157,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            return _session.GetAsync<TApplication>(int.Parse(identifier, CultureInfo.InvariantCulture));
+            return await _session.GetAsync<TApplication>(int.Parse(identifier, CultureInfo.InvariantCulture));
         }
 
         /// <summary>
@@ -164,10 +166,10 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <param name="address">The post_logout_redirect_uri associated with the applications.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
         /// <returns>
-        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation, whose result
+        /// A <see cref="ValueTask"/> that can be used to monitor the asynchronous operation, whose result
         /// returns the client applications corresponding to the specified post_logout_redirect_uri.
         /// </returns>
-        public virtual async Task<ImmutableArray<TApplication>> FindByPostLogoutRedirectUriAsync(string address, CancellationToken cancellationToken)
+        public virtual IAsyncEnumerable<TApplication> FindByPostLogoutRedirectUriAsync(string address, CancellationToken cancellationToken)
         {
             if (string.IsNullOrEmpty(address))
             {
@@ -176,9 +178,8 @@ namespace OrchardCore.OpenId.YesSql.Stores
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            return ImmutableArray.CreateRange(
-                await _session.Query<TApplication, OpenIdAppByLogoutUriIndex>(
-                    index => index.LogoutRedirectUri == address).ListAsync());
+            return _session.Query<TApplication, OpenIdAppByLogoutUriIndex>(
+                index => index.LogoutRedirectUri == address).ToAsyncEnumerable();
         }
 
         /// <summary>
@@ -187,10 +188,10 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <param name="address">The redirect_uri associated with the applications.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
         /// <returns>
-        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation, whose result
+        /// A <see cref="ValueTask"/> that can be used to monitor the asynchronous operation, whose result
         /// returns the client applications corresponding to the specified redirect_uri.
         /// </returns>
-        public virtual async Task<ImmutableArray<TApplication>> FindByRedirectUriAsync(string address, CancellationToken cancellationToken)
+        public virtual IAsyncEnumerable<TApplication> FindByRedirectUriAsync(string address, CancellationToken cancellationToken)
         {
             if (string.IsNullOrEmpty(address))
             {
@@ -199,9 +200,8 @@ namespace OrchardCore.OpenId.YesSql.Stores
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            return ImmutableArray.CreateRange(
-                await _session.Query<TApplication, OpenIdAppByRedirectUriIndex>(
-                    index => index.RedirectUri == address).ListAsync());
+            return _session.Query<TApplication, OpenIdAppByRedirectUriIndex>(
+                index => index.RedirectUri == address).ToAsyncEnumerable();
         }
 
         /// <summary>
@@ -213,10 +213,10 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <param name="state">The optional state.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
         /// <returns>
-        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
+        /// A <see cref="ValueTask"/> that can be used to monitor the asynchronous operation,
         /// whose result returns the first element returned when executing the query.
         /// </returns>
-        public virtual Task<TResult> GetAsync<TState, TResult>(
+        public virtual ValueTask<TResult> GetAsync<TState, TResult>(
             Func<IQueryable<TApplication>, TState, IQueryable<TResult>> query,
             TState state, CancellationToken cancellationToken)
             => throw new NotSupportedException();
@@ -403,14 +403,20 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// A <see cref="ValueTask{TResult}"/> that can be used to monitor the asynchronous operation,
         /// whose result returns all the additional properties associated with the application.
         /// </returns>
-        public virtual ValueTask<JObject> GetPropertiesAsync(TApplication application, CancellationToken cancellationToken)
+        public virtual ValueTask<ImmutableDictionary<string, JsonElement>> GetPropertiesAsync(TApplication application, CancellationToken cancellationToken)
         {
             if (application == null)
             {
                 throw new ArgumentNullException(nameof(application));
             }
 
-            return new ValueTask<JObject>(application.Properties ?? new JObject());
+            if (application.Properties == null)
+            {
+                return new ValueTask<ImmutableDictionary<string, JsonElement>>(ImmutableDictionary.Create<string, JsonElement>());
+            }
+
+            return new ValueTask<ImmutableDictionary<string, JsonElement>>(
+                JsonSerializer.Deserialize<ImmutableDictionary<string, JsonElement>>(application.Properties.ToString()));
         }
 
         /// <summary>
@@ -433,6 +439,25 @@ namespace OrchardCore.OpenId.YesSql.Stores
         }
 
         /// <summary>
+        /// Retrieves the requirements associated with an application.
+        /// </summary>
+        /// <param name="application">The application.</param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
+        /// <returns>
+        /// A <see cref="ValueTask{TResult}"/> that can be used to monitor the asynchronous operation,
+        /// whose result returns all the requirements associated with the application.
+        /// </returns>
+        public virtual ValueTask<ImmutableArray<string>> GetRequirementsAsync(TApplication application, CancellationToken cancellationToken)
+        {
+            if (application == null)
+            {
+                throw new ArgumentNullException(nameof(application));
+            }
+
+            return new ValueTask<ImmutableArray<string>>(application.Requirements);
+        }
+
+        /// <summary>
         /// Instantiates a new application.
         /// </summary>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
@@ -450,10 +475,10 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <param name="offset">The number of results to skip.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
         /// <returns>
-        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
+        /// A <see cref="ValueTask"/> that can be used to monitor the asynchronous operation,
         /// whose result returns all the elements returned when executing the specified query.
         /// </returns>
-        public virtual async Task<ImmutableArray<TApplication>> ListAsync(int? count, int? offset, CancellationToken cancellationToken)
+        public virtual IAsyncEnumerable<TApplication> ListAsync(int? count, int? offset, CancellationToken cancellationToken)
         {
             var query = _session.Query<TApplication>();
 
@@ -467,7 +492,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
                 query = query.Take(count.Value);
             }
 
-            return ImmutableArray.CreateRange(await query.ListAsync());
+            return query.ToAsyncEnumerable();
         }
 
         /// <summary>
@@ -479,10 +504,10 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <param name="state">The optional state.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
         /// <returns>
-        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation,
+        /// A <see cref="ValueTask"/> that can be used to monitor the asynchronous operation,
         /// whose result returns all the elements returned when executing the specified query.
         /// </returns>
-        public virtual Task<ImmutableArray<TResult>> ListAsync<TState, TResult>(
+        public virtual IAsyncEnumerable<TResult> ListAsync<TState, TResult>(
             Func<IQueryable<TApplication>, TState, IQueryable<TResult>> query,
             TState state, CancellationToken cancellationToken)
             => throw new NotSupportedException();
@@ -494,9 +519,9 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <param name="identifier">The client identifier associated with the application.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
         /// <returns>
-        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation.
+        /// A <see cref="ValueTask"/> that can be used to monitor the asynchronous operation.
         /// </returns>
-        public virtual Task SetClientIdAsync(TApplication application,
+        public virtual ValueTask SetClientIdAsync(TApplication application,
             string identifier, CancellationToken cancellationToken)
         {
             if (application == null)
@@ -506,7 +531,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
 
             application.ClientId = identifier;
 
-            return Task.CompletedTask;
+            return default;
         }
 
         /// <summary>
@@ -518,9 +543,9 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <param name="secret">The client secret associated with the application.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
         /// <returns>
-        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation.
+        /// A <see cref="ValueTask"/> that can be used to monitor the asynchronous operation.
         /// </returns>
-        public virtual Task SetClientSecretAsync(TApplication application, string secret, CancellationToken cancellationToken)
+        public virtual ValueTask SetClientSecretAsync(TApplication application, string secret, CancellationToken cancellationToken)
         {
             if (application == null)
             {
@@ -529,7 +554,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
 
             application.ClientSecret = secret;
 
-            return Task.CompletedTask;
+            return default;
         }
 
         /// <summary>
@@ -539,9 +564,9 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <param name="type">The client type associated with the application.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
         /// <returns>
-        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation.
+        /// A <see cref="ValueTask"/> that can be used to monitor the asynchronous operation.
         /// </returns>
-        public virtual Task SetClientTypeAsync(TApplication application, string type, CancellationToken cancellationToken)
+        public virtual ValueTask SetClientTypeAsync(TApplication application, string type, CancellationToken cancellationToken)
         {
             if (application == null)
             {
@@ -550,7 +575,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
 
             application.Type = type;
 
-            return Task.CompletedTask;
+            return default;
         }
 
         /// <summary>
@@ -560,9 +585,9 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <param name="type">The consent type associated with the application.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
         /// <returns>
-        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation.
+        /// A <see cref="ValueTask"/> that can be used to monitor the asynchronous operation.
         /// </returns>
-        public virtual Task SetConsentTypeAsync(TApplication application, string type, CancellationToken cancellationToken)
+        public virtual ValueTask SetConsentTypeAsync(TApplication application, string type, CancellationToken cancellationToken)
         {
             if (application == null)
             {
@@ -571,7 +596,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
 
             application.ConsentType = type;
 
-            return Task.CompletedTask;
+            return default;
         }
 
         /// <summary>
@@ -581,9 +606,9 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <param name="name">The display name associated with the application.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
         /// <returns>
-        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation.
+        /// A <see cref="ValueTask"/> that can be used to monitor the asynchronous operation.
         /// </returns>
-        public virtual Task SetDisplayNameAsync(TApplication application, string name, CancellationToken cancellationToken)
+        public virtual ValueTask SetDisplayNameAsync(TApplication application, string name, CancellationToken cancellationToken)
         {
             if (application == null)
             {
@@ -592,7 +617,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
 
             application.DisplayName = name;
 
-            return Task.CompletedTask;
+            return default;
         }
 
         /// <summary>
@@ -602,9 +627,9 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <param name="permissions">The permissions associated with the application </param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
         /// <returns>
-        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation.
+        /// A <see cref="ValueTask"/> that can be used to monitor the asynchronous operation.
         /// </returns>
-        public virtual Task SetPermissionsAsync(TApplication application, ImmutableArray<string> permissions, CancellationToken cancellationToken)
+        public virtual ValueTask SetPermissionsAsync(TApplication application, ImmutableArray<string> permissions, CancellationToken cancellationToken)
         {
             if (application == null)
             {
@@ -613,7 +638,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
 
             application.Permissions = permissions;
 
-            return Task.CompletedTask;
+            return default;
         }
 
         /// <summary>
@@ -623,9 +648,9 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <param name="addresses">The logout callback addresses associated with the application </param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
         /// <returns>
-        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation.
+        /// A <see cref="ValueTask"/> that can be used to monitor the asynchronous operation.
         /// </returns>
-        public virtual Task SetPostLogoutRedirectUrisAsync(TApplication application,
+        public virtual ValueTask SetPostLogoutRedirectUrisAsync(TApplication application,
             ImmutableArray<string> addresses, CancellationToken cancellationToken)
         {
             if (application == null)
@@ -635,7 +660,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
 
             application.PostLogoutRedirectUris = addresses;
 
-            return Task.CompletedTask;
+            return default;
         }
 
         /// <summary>
@@ -645,18 +670,29 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <param name="properties">The additional properties associated with the application </param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
         /// <returns>
-        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation.
+        /// A <see cref="ValueTask"/> that can be used to monitor the asynchronous operation.
         /// </returns>
-        public virtual Task SetPropertiesAsync(TApplication application, JObject properties, CancellationToken cancellationToken)
+        public virtual ValueTask SetPropertiesAsync(TApplication application, ImmutableDictionary<string, JsonElement> properties, CancellationToken cancellationToken)
         {
             if (application == null)
             {
                 throw new ArgumentNullException(nameof(application));
             }
 
-            application.Properties = properties;
+            if (properties == null || properties.IsEmpty)
+            {
+                application.Properties = null;
 
-            return Task.CompletedTask;
+                return default;
+            }
+
+            application.Properties = JObject.Parse(JsonSerializer.Serialize(properties, new JsonSerializerOptions
+            {
+                Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+                WriteIndented = false
+            }));
+
+            return default;
         }
 
         /// <summary>
@@ -666,9 +702,9 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <param name="addresses">The callback addresses associated with the application </param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
         /// <returns>
-        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation.
+        /// A <see cref="ValueTask"/> that can be used to monitor the asynchronous operation.
         /// </returns>
-        public virtual Task SetRedirectUrisAsync(TApplication application,
+        public virtual ValueTask SetRedirectUrisAsync(TApplication application,
             ImmutableArray<string> addresses, CancellationToken cancellationToken)
         {
             if (application == null)
@@ -678,7 +714,27 @@ namespace OrchardCore.OpenId.YesSql.Stores
 
             application.RedirectUris = addresses;
 
-            return Task.CompletedTask;
+            return default;
+        }
+
+        /// <summary>
+        /// Sets the requirements associated with an application.
+        /// </summary>
+        /// <param name="application">The application.</param>
+        /// <param name="requirements">The requirements associated with the application </param>
+        /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
+        /// <returns>A <see cref="ValueTask"/> that can be used to monitor the asynchronous operation.</returns>
+        public virtual ValueTask SetRequirementsAsync(TApplication application,
+            ImmutableArray<string> requirements, CancellationToken cancellationToken)
+        {
+            if (application == null)
+            {
+                throw new ArgumentNullException(nameof(application));
+            }
+
+            application.Requirements = requirements;
+
+            return default;
         }
 
         /// <summary>
@@ -687,9 +743,9 @@ namespace OrchardCore.OpenId.YesSql.Stores
         /// <param name="application">The application to update.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
         /// <returns>
-        /// A <see cref="Task"/> that can be used to monitor the asynchronous operation.
+        /// A <see cref="ValueTask"/> that can be used to monitor the asynchronous operation.
         /// </returns>
-        public virtual async Task UpdateAsync(TApplication application, CancellationToken cancellationToken)
+        public virtual async ValueTask UpdateAsync(TApplication application, CancellationToken cancellationToken)
         {
             if (application == null)
             {
@@ -723,17 +779,17 @@ namespace OrchardCore.OpenId.YesSql.Stores
             return new ValueTask<ImmutableArray<string>>(application.Roles);
         }
 
-        public virtual async Task<ImmutableArray<TApplication>> ListInRoleAsync(string role, CancellationToken cancellationToken)
+        public virtual IAsyncEnumerable<TApplication> ListInRoleAsync(string role, CancellationToken cancellationToken)
         {
             if (string.IsNullOrEmpty(role))
             {
                 throw new ArgumentException("The role name cannot be null or empty.", nameof(role));
             }
 
-            return ImmutableArray.CreateRange(await _session.Query<TApplication, OpenIdAppByRoleNameIndex>(index => index.RoleName == role).ListAsync());
+            return _session.Query<TApplication, OpenIdAppByRoleNameIndex>(index => index.RoleName == role).ToAsyncEnumerable();
         }
 
-        public virtual Task SetRolesAsync(TApplication application, ImmutableArray<string> roles, CancellationToken cancellationToken)
+        public virtual ValueTask SetRolesAsync(TApplication application, ImmutableArray<string> roles, CancellationToken cancellationToken)
         {
             if (application == null)
             {
@@ -742,7 +798,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
 
             application.Roles = roles;
 
-            return Task.CompletedTask;
+            return default;
         }
     }
 }

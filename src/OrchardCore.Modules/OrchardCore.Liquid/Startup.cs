@@ -55,7 +55,7 @@ namespace OrchardCore.Liquid
             services.AddLiquidFilter<LiquidFilter>("liquid");
             services.AddLiquidFilter<JsonFilter>("json");
             services.AddLiquidFilter<JsonParseFilter>("jsonparse");
-            services.AddLiquidFilter<ShortCodeFilter>("shortcode");
+            services.AddLiquidFilter<ShortcodeFilter>("shortcode");
         }
     }
 

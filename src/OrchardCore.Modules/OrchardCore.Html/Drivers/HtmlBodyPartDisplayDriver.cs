@@ -9,7 +9,7 @@ using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Html.Models;
 using OrchardCore.Html.Settings;
 using OrchardCore.Html.ViewModels;
-using OrchardCore.ShortCodes.Services;
+using OrchardCore.Shortcodes.Services;
 using OrchardCore.Infrastructure.Html;
 using OrchardCore.Liquid;
 
@@ -20,19 +20,19 @@ namespace OrchardCore.Html.Drivers
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly IHtmlSanitizerService _htmlSanitizerService;
         private readonly HtmlEncoder _htmlEncoder;
-        private readonly IShortCodeService _shortCodeService;
+        private readonly IShortcodeService _shortcodeService;
         private readonly IStringLocalizer S;
 
         public HtmlBodyPartDisplayDriver(ILiquidTemplateManager liquidTemplateManager,
             IHtmlSanitizerService htmlSanitizerService,
             HtmlEncoder htmlEncoder,
-            IShortCodeService shortCodeService,
+            IShortcodeService shortcodeService,
             IStringLocalizer<HtmlBodyPartDisplayDriver> localizer)
         {
             _liquidTemplateManager = liquidTemplateManager;
             _htmlSanitizerService = htmlSanitizerService;
             _htmlEncoder = htmlEncoder;
-            _shortCodeService = shortCodeService;
+            _shortcodeService = shortcodeService;
             S = localizer;
         }
 
@@ -88,7 +88,7 @@ namespace OrchardCore.Html.Drivers
                     scope => scope.SetValue("ContentItem", model.ContentItem));
             }
 
-            model.Html = await _shortCodeService.ProcessAsync(model.Html);
+            model.Html = await _shortcodeService.ProcessAsync(model.Html);
         }
     }
 }
