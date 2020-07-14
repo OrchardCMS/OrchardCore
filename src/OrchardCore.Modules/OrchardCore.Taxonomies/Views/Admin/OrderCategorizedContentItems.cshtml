@@ -1,0 +1,50 @@
+@using OrchardCore.ContentManagement
+@using OrchardCore.ContentManagement.Metadata
+@using OrchardCore.Mvc.Utilities
+
+@inject OrchardCore.ContentManagement.Display.IContentItemDisplayManager ContentItemDisplayManager
+@inject IContentDefinitionManager ContentDefinitionManager
+
+@{
+    ContentItem taxonomyItem = Model.ContentItem;
+    var contentTypeDefinition = ContentDefinitionManager.GetTypeDefinition(taxonomyItem.ContentType);
+    var typeDisplayName = contentTypeDefinition?.DisplayName ?? taxonomyItem.ContentType.CamelFriendly();
+
+    var enableOrdering = Model.EnableOrdering && Model.CategorizedContentItems.Count > 1;
+    if (enableOrdering)
+    {
+        <script asp-src="~/OrchardCore.Taxonomies/Scripts/ci-term-ordering.min.js" debug-src="~/OrchardCore.Taxonomies/Scripts/ci-term-ordering.js" asp-name="ci-term-ordering" at="Foot" depends-on="sortable, jQuery"></script>
+    }
+}
+
+<h1>@RenderTitleSegments(T["Order contained items for {0}", taxonomyItem.DisplayText])</h1>
+
+<form asp-action="Edit" asp-route-returnUrl="@Context.Request.Query["ReturnUrl"]" method="post" enctype="multipart/form-data">
+    @Html.ValidationSummary()
+
+    <ul class="list-group" @if (enableOrdering) { <text> id="ci-sortable" </text> }>
+        @foreach (var contentItem in Model.CategorizedContentItems)
+        {
+            var contentItemSummary = (dynamic)await ContentItemDisplayManager.BuildDisplayAsync(contentItem, Model.Updater, "SummaryAdmin");
+            if (enableOrdering)
+            {
+                contentItemSummary.Selectors.Add(await New.TaxonomyPart_Sortable());
+            }
+            <li class="list-group-item">
+                @await DisplayAsync(contentItemSummary)
+            </li>
+        }
+    </ul>
+
+    @if (enableOrdering)
+    {
+        <div id="ordering-url" class="d-none" data-url="@Url.Action("UpdateCategorizedContentItemOrders", "Admin", new { area = "OrchardCore.Taxonomies" })" />
+        <div id="term-id" class="d-none" data-id="@Model.TaxonomyItemId" />
+        <div id="update-order-error-message" class="d-none" data-message="@T["There was an error when updating the order of the items."]" />
+    }
+
+    <input type="hidden" name="TaxonomyContentItemId" value="@Model.TaxonomyContentItemId" />
+    <input type="hidden" name="TaxonomyItemId" value="@Model.TaxonomyItemId" />
+</form>
+
+

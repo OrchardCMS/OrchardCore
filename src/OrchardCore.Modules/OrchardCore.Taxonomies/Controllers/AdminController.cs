@@ -1,5 +1,7 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
+using AngleSharp.Html.Dom;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
@@ -10,7 +12,9 @@ using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.Taxonomies.Indexing;
 using OrchardCore.Taxonomies.Models;
+using OrchardCore.Taxonomies.Services;
 using YesSql;
 
 namespace OrchardCore.Taxonomies.Controllers
@@ -25,6 +29,7 @@ namespace OrchardCore.Taxonomies.Controllers
         private readonly IHtmlLocalizer H;
         private readonly INotifier _notifier;
         private readonly IUpdateModelAccessor _updateModelAccessor;
+        private readonly ITaxonomyFieldService _taxonomyFieldService;
 
         public AdminController(
             ISession session,
@@ -34,7 +39,8 @@ namespace OrchardCore.Taxonomies.Controllers
             IContentDefinitionManager contentDefinitionManager,
             INotifier notifier,
             IHtmlLocalizer<AdminController> localizer,
-            IUpdateModelAccessor updateModelAccessor)
+            IUpdateModelAccessor updateModelAccessor,
+            ITaxonomyFieldService taxonomyFieldService)
         {
             _contentManager = contentManager;
             _authorizationService = authorizationService;
@@ -43,6 +49,7 @@ namespace OrchardCore.Taxonomies.Controllers
             _session = session;
             _notifier = notifier;
             _updateModelAccessor = updateModelAccessor;
+            _taxonomyFieldService = taxonomyFieldService;
             H = localizer;
         }
 
@@ -282,6 +289,64 @@ namespace OrchardCore.Taxonomies.Controllers
             _notifier.Success(H["Taxonomy item deleted successfully"]);
 
             return RedirectToAction("Edit", "Admin", new { area = "OrchardCore.Contents", contentItemId = taxonomyContentItemId });
+        }
+
+        public async Task<IActionResult> OrderCategorizedContentItems(string taxonomyContentItemId, string taxonomyItemId)
+        {
+            var taxonomy = await _contentManager.GetAsync(taxonomyContentItemId, VersionOptions.Latest);
+
+            if (taxonomy == null)
+            {
+                return NotFound();
+            }
+
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTaxonomies, taxonomy))
+            {
+                return Forbid();
+            }
+
+            if (!taxonomy.As<TaxonomyPart>().EnableOrdering)
+            {
+                return NotFound();
+            }
+
+            JObject taxonomyItem = FindTaxonomyItem(taxonomy.As<TaxonomyPart>().Content, taxonomyItemId);
+
+            if (taxonomyItem == null)
+            {
+                return NotFound();
+            }
+
+            var contentItem = taxonomyItem.ToObject<ContentItem>();
+            contentItem.Weld<TermPart>();
+            contentItem.Alter<TermPart>(t => t.TaxonomyContentItemId = taxonomyContentItemId);
+
+            dynamic model = await _contentItemDisplayManager.BuildDisplayAsync(contentItem, _updateModelAccessor.ModelUpdater);
+
+            model.Updater = _updateModelAccessor.ModelUpdater;
+
+            model.CategorizedContentItems = await _taxonomyFieldService.QueryUnpagedOrderedCategorizedItemsAsync(taxonomyItemId);
+
+            model.TaxonomyContentItemId = taxonomyContentItemId;
+            model.TaxonomyItemId = taxonomyItemId;
+            model.EnableOrdering = taxonomy.As<TaxonomyPart>().EnableOrdering;
+
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateCategorizedContentItemOrders(string taxonomyItemId, int oldIndex, int newIndex)
+        {
+            var categorizedContentItems = (await _taxonomyFieldService.QueryUnpagedOrderedCategorizedItemsAsync(taxonomyItemId)).ToList();
+
+            var categorizedContentItem = categorizedContentItems[oldIndex];
+
+            categorizedContentItems.Remove(categorizedContentItem);
+            categorizedContentItems.Insert(newIndex, categorizedContentItem);
+
+            await _taxonomyFieldService.RegisterCategorizedItemsOrder(categorizedContentItems, taxonomyItemId);
+
+            return Ok();
         }
 
         private JObject FindTaxonomyItem(JObject contentItem, string taxonomyItemId)

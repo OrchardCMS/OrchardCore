@@ -10,6 +10,7 @@ using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Taxonomies.Fields;
 using OrchardCore.Taxonomies.Models;
+using OrchardCore.Taxonomies.Services;
 using OrchardCore.Taxonomies.Settings;
 using OrchardCore.Taxonomies.ViewModels;
 
@@ -18,13 +19,16 @@ namespace OrchardCore.Taxonomies.Drivers
     public class TaxonomyFieldTagsDisplayDriver : ContentFieldDisplayDriver<TaxonomyField>
     {
         private readonly IContentManager _contentManager;
+        private readonly ITaxonomyFieldService _taxonomyFieldService;
         private readonly IStringLocalizer S;
 
         public TaxonomyFieldTagsDisplayDriver(
             IContentManager contentManager,
+            ITaxonomyFieldService taxonomyFieldService,
             IStringLocalizer<TaxonomyFieldDisplayDriver> s)
         {
             _contentManager = contentManager;
+            _taxonomyFieldService = taxonomyFieldService;
             S = s;
         }
 
@@ -95,6 +99,11 @@ namespace OrchardCore.Taxonomies.Drivers
                 }
 
                 field.SetTagNames(terms.Select(t => t.DisplayText).ToArray());
+
+                if (taxonomy.As<TaxonomyPart>().EnableOrdering)
+                {
+                    await _taxonomyFieldService.UpdateTaxonomyFieldOrderAsync(field);
+                }
             }
 
             return Edit(field, context);

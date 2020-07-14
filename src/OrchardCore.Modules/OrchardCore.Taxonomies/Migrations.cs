@@ -48,6 +48,7 @@ namespace OrchardCore.Taxonomies
                 .Column<string>("ContentPart", column => column.WithLength(ContentItemIndex.MaxContentPartSize))
                 .Column<string>("ContentField", column => column.WithLength(ContentItemIndex.MaxContentFieldSize))
                 .Column<string>("TermContentItemId", column => column.WithLength(26))
+                .Column<int>("Order", column => column.WithDefault(0))
             );
 
             SchemaBuilder.AlterTable(nameof(TaxonomyIndex), table => table
@@ -58,8 +59,12 @@ namespace OrchardCore.Taxonomies
                 .CreateIndex("IDX_TaxonomyIndex_Search", "TermContentItemId")
             );
 
-            // Return 3 to shortcut the migrations on new content definition schemas.
-            return 3;
+            SchemaBuilder.AlterTable(nameof(TaxonomyIndex), table => table
+                .CreateIndex("IDX_TaxonomyIndex_Order", "Order")
+            );
+
+            // Return 4 to shortcut the migrations on new content definition schemas.
+            return 4;
         }
 
         // Migrate FieldSettings. This only needs to run on old content definition schemas.
@@ -84,6 +89,19 @@ namespace OrchardCore.Taxonomies
             );
 
             return 3;
+        }
+
+        public int UpdateFrom3()
+        {
+            SchemaBuilder.AlterTable(nameof(TaxonomyIndex), table => table
+                .AddColumn<int>("Order", column => column.WithDefault(0))
+            );
+
+            SchemaBuilder.AlterTable(nameof(TaxonomyIndex), table => table
+                .CreateIndex("IDX_TaxonomyIndex_Order", "Order")
+            );
+
+            return 4;
         }
     }
 

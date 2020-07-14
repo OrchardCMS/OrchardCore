@@ -14,6 +14,8 @@ The display for the `Taxonomy` is then rendered by the `TaxonomyPart` shape.
 
 This uses the `TermShape` to display a heirachy of the `Terms`
 
+It has a flag to enable drag and drop ordering of the list of content items that have been categorized by the `TaxonomyField` as part of each `Term` of the `Taxonomy`. The ordering is then done on a term by term basis. When a content item is categorized with a `Term`, it goes to the first position on that `Term`. The drag and drop list of categorized content items will show the latest version of each item and, if it is a draft, will also affect the order of the published version.
+
 ### TermPart
 
 The `TermPart` is rendered when a `Term` is displayed with the `Container routing` feature of the `AutoroutePart`.
@@ -209,6 +211,7 @@ The following properties are available on the `TaxonomyField` class.
 | --------- | ---- |------------ |
 | `TaxonomyContentItemId` | `string` | The Content Item id of the taxonomy associated with the field. |
 | `TermContentItemIds` | `string[]` | The list of Content Item ids of the terms selected for this field. |
+| `TermContentItemOrder` | `Dictionary<string, int>` | Used when ordering is enabled. For each selected term, contains the order of the categorized Content Item. |
 
 ### DisplayTaxonomyFieldViewModel
 
@@ -332,6 +335,7 @@ Each record corresponds to a selected term for a field.
 | ContentPart | `string` | The content part containing the field |
 | ContentField | `string` | The name of the field in the content part |
 | TermContentItemId | `string` | The content item id of the categorized Term |
+| Order | `int` | The order of the categorized content |
 
 For instance if a field has two selected terms, there will be two records with all identical column values except for the `TermContentItemId`.
 

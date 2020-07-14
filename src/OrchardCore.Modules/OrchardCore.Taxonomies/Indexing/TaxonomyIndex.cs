@@ -19,6 +19,7 @@ namespace OrchardCore.Taxonomies.Indexing
         public string ContentPart { get; set; }
         public string ContentField { get; set; }
         public string TermContentItemId { get; set; }
+        public int Order { get; set; }
     }
 
     public class TaxonomyIndexProvider : IndexProvider<ContentItem>, IScopedIndexProvider
@@ -37,7 +38,7 @@ namespace OrchardCore.Taxonomies.Indexing
             context.For<TaxonomyIndex>()
                 .Map(contentItem =>
                 {
-                    if (!contentItem.IsPublished())
+                    if (!(contentItem.IsPublished() || contentItem.Latest))
                     {
                         return null;
                     }
@@ -95,6 +96,7 @@ namespace OrchardCore.Taxonomies.Indexing
                                 ContentPart = fieldDefinition.PartDefinition.Name,
                                 ContentField = fieldDefinition.Name,
                                 TermContentItemId = termContentItemId,
+                                Order = field.TermContentItemOrder.GetValueOrDefault(termContentItemId, 0)
                             });
                         }
                     }

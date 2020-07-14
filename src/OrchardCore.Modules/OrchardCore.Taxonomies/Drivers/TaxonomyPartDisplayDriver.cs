@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AngleSharp.Html.Dom;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
@@ -10,12 +11,20 @@ using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Taxonomies.Models;
+using OrchardCore.Taxonomies.Services;
 using OrchardCore.Taxonomies.ViewModels;
 
 namespace OrchardCore.Taxonomies.Drivers
 {
     public class TaxonomyPartDisplayDriver : ContentPartDisplayDriver<TaxonomyPart>
     {
+        private readonly ITaxonomyFieldService _taxonomyFieldService;
+
+        public TaxonomyPartDisplayDriver(ITaxonomyFieldService taxonomyFieldService)
+        {
+            _taxonomyFieldService = taxonomyFieldService;
+        }
+
         public override IDisplayResult Display(TaxonomyPart part, BuildPartDisplayContext context)
         {
             var hasItems = part.Terms.Any();
@@ -32,6 +41,7 @@ namespace OrchardCore.Taxonomies.Drivers
             return Initialize<TaxonomyPartEditViewModel>("TaxonomyPart_Edit", model =>
             {
                 model.TermContentType = part.TermContentType;
+                model.EnableOrdering = part.EnableOrdering;
                 model.TaxonomyPart = part;
             });
         }
@@ -40,7 +50,7 @@ namespace OrchardCore.Taxonomies.Drivers
         {
             var model = new TaxonomyPartEditViewModel();
 
-            if (await updater.TryUpdateModelAsync(model, Prefix, t => t.Hierarchy, t => t.TermContentType))
+            if (await updater.TryUpdateModelAsync(model, Prefix, t => t.Hierarchy, t => t.TermContentType, t => t.EnableOrdering))
             {
                 if (!String.IsNullOrWhiteSpace(model.Hierarchy))
                 {
@@ -58,7 +68,14 @@ namespace OrchardCore.Taxonomies.Drivers
                     part.Terms = taxonomyItems.ToObject<List<ContentItem>>();
                 }
 
+                // Update order of existing content if enable ordering has been turned on
+                if (part.EnableOrdering != model.EnableOrdering && model.EnableOrdering == true)
+                {
+                    await _taxonomyFieldService.InitializeCategorizedItemsOrderAsync(part.ContentItem.ContentItemId);
+                }
+
                 part.TermContentType = model.TermContentType;
+                part.EnableOrdering = model.EnableOrdering;
             }
 
             return Edit(part);
