@@ -43,7 +43,7 @@ namespace OrchardCore.Data
         {
             if (_loaded.TryGetValue(typeof(T), out var loaded))
             {
-                throw new ArgumentException("Can't get for caching an object being mutated in the same scope");
+                throw new InvalidOperationException("Can't get for caching an object being mutated in the same scope");
             }
 
             var document = await _session.Query<T>().FirstOrDefaultAsync();

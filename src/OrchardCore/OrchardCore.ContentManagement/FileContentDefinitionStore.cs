@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
@@ -40,6 +41,13 @@ namespace OrchardCore.ContentManagement
         /// </summary>
         public Task<ContentDefinitionRecord> GetContentDefinitionAsync()
         {
+            var scopedCache = ShellScope.Services.GetRequiredService<FileContentDefinitionScopedCache>();
+
+            if (scopedCache.ContentDefinitionRecord != null)
+            {
+                throw new InvalidOperationException("Can't get for caching an object being mutated in the same scope");
+            }
+
             ContentDefinitionRecord result;
 
             if (!File.Exists(Filename))
