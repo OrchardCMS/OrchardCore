@@ -50,6 +50,11 @@ namespace OrchardCore.Data.Documents
         /// <inheritdoc />
         public async Task<T> GetImmutableAsync<T>(Func<Task<T>> factoryAsync = null) where T : class, new()
         {
+            if (ShellScope.Get<T>(typeof(T)) != null)
+            {
+                throw new InvalidOperationException("Can't get for caching an object being mutated in the same scope");
+            }
+
             return await GetDocumentAsync<T>() ?? await (factoryAsync?.Invoke() ?? Task.FromResult((T)null)) ?? new T();
         }
 
@@ -61,6 +66,7 @@ namespace OrchardCore.Data.Documents
             documentStore.AfterCommitSuccess<T>(async () =>
             {
                 await SaveDocumentAsync(document);
+                ShellScope.Set(typeof(T), null);
                 await updateCache(document);
             });
 

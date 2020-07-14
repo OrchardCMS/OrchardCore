@@ -49,7 +49,7 @@ namespace OrchardCore.Data.Documents
         {
             if (_loaded.TryGetValue(typeof(T), out var loaded))
             {
-                _session.Detach(loaded);
+                throw new InvalidOperationException("Can't get for caching an object being mutated in the same scope");
             }
 
             var document = await _session.Query<T>().FirstOrDefaultAsync();
@@ -121,6 +121,8 @@ namespace OrchardCore.Data.Documents
             try
             {
                 await _session.CommitAsync();
+
+                _loaded.Clear();
 
                 if (!_canceled && _afterCommitSuccess != null)
                 {

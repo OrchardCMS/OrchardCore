@@ -53,7 +53,7 @@ namespace OrchardCore.Documents
 
                 if (_memoryCache.TryGetValue<TDocument>(_options.CacheKey, out var cached) && document == cached)
                 {
-                    throw new ArgumentException("Can't load for update a cached object");
+                    throw new InvalidOperationException("Can't load for update a cached object");
                 }
             }
             else
@@ -100,7 +100,7 @@ namespace OrchardCore.Documents
         {
             if (_memoryCache.TryGetValue<TDocument>(_options.CacheKey, out var cached) && document == cached)
             {
-                throw new ArgumentException("Can't update a cached object");
+                throw new InvalidOperationException("Can't update a cached object");
             }
 
             document.Identifier ??= IdGenerator.GenerateId();
