@@ -1,0 +1,7 @@
+{
+  "name": "orchardcore.audittrail",
+  "version": "1.0.0",
+  "dependencies": {
+    "diff": "4.0.2"
+  }
+}

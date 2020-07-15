@@ -1,0 +1,8 @@
+﻿@{ 
+    var toDate = Model.Date;
+}
+
+<div class="form-group">
+    <label asp-for="@toDate">@T["To:"]</label>
+    <input asp-for="@toDate" type="date" class="form-control" />
+</div>

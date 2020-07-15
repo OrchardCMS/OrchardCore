@@ -1,0 +1,16 @@
+@using OrchardCore.ContentManagement
+
+@{
+    var contentItem = (ContentItem)Model.ContentItem;
+    var versionNumber = (int)Model.VersionNumber;
+}
+
+<style asp-src="~/OrchardCore.AuditTrail/Styles/audittrail-disabledcontent.min.css" debug-src="~/OrchardCore.AuditTrail/Styles/audittrail-disabledcontent.css"></style>
+<script asp-src="~/OrchardCore.AuditTrail/Scripts/audittrail-disabledcontent.min.js" debug-src="~/OrchardCore.AuditTrail/Scripts/audittrail-disabledcontent.js" at="Foot" depends-on="admin"></script>
+
+<h1>@RenderTitleSegments(T["{0} - {1} (version {2})", contentItem.ContentType, contentItem.DisplayText, versionNumber])</h1>
+
+<div class="disabledContent__wrapper">
+    @await DisplayAsync(Model)
+    <div class="disabledContent__overlay"></div>
+</div>

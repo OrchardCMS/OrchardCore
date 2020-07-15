@@ -1,0 +1,28 @@
+@model AuditTrailDetailsViewModel
+
+@{
+    var auditTrailEvent = Model.AuditTrailEvent;
+    var eventDescriptor = Model.Descriptor;
+    var category = eventDescriptor.CategoryDescriptor.LocalizedName;
+    var eventName = eventDescriptor.LocalizedName;
+}
+
+<h1>@RenderTitleSegments(T["{0} {1} Audit Trail Event", category, eventName])</h1>
+
+<div>
+    @T["Event: <strong>{0}</strong>", eventName]
+</div>
+<div>
+    @T["Category: <strong>{0}</strong>", category]
+</div>
+<div>
+    @T["Timestamp: <strong>{0}</strong>", await DisplayAsync(await New.DateTime(Utc: auditTrailEvent.CreatedUtc))]
+</div>
+<div>
+    @T["User name: <strong>{0}</strong>", auditTrailEvent.UserName]
+</div>
+<div>
+    @T["Client IP address: <strong>{0}</strong>", auditTrailEvent.ClientIpAddress]
+</div>
+
+@await DisplayAsync(Model.DetailsShape)

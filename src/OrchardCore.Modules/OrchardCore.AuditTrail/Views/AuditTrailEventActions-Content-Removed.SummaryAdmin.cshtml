@@ -1,0 +1,24 @@
+﻿@using OrchardCore.ContentManagement
+
+@{
+    var auditTrailEvent = (AuditTrailEvent)Model.AuditTrailEvent;
+    var versionNumber = (int)Model.VersionNumber;
+    var contentItem = (ContentItem)Model.ContentItem;
+    var availableVersionsCount = (int)Model.AvailableVersionsCount;
+}
+
+<a asp-action="Detail" asp-controller="Admin" asp-route-auditTrailEventId="@auditTrailEvent.Id">@T["Details"]</a>
+@if (contentItem != null) 
+{
+    @T["|"]
+    <a asp-action="Restore" 
+        asp-controller="Content" 
+        asp-route-auditTrailEventId="@auditTrailEvent.Id"
+        data-title="@T["Restore content item"]" 
+        data-message="@T["Are you sure you want to restore this content item?"]" 
+        data-ok-text="@T["Yes"]" 
+        data-cancel-text="@T["No"]"
+        itemprop="UnsafeUrl RemoveUrl">
+        @T["Restore"]
+    </a>
+}

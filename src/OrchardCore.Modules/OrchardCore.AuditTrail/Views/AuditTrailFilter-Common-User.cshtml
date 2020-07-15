@@ -1,0 +1,8 @@
+﻿@{ 
+    var username = Model.UserName;
+}
+
+<div class="form-group">
+    <label asp-for="@username">@T["User:"]</label>
+    <input asp-for="@username" type="text" class="form-control" />
+</div>
