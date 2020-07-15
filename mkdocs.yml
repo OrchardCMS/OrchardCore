@@ -129,7 +129,7 @@ nav:
             - Media Azure: docs/reference/modules/Media.Azure/README.md
             - ReCaptcha: docs/reference/modules/ReCaptcha/README.md
             - Resources: docs/reference/modules/Resources/README.md
-            - ShortCodes: docs/reference/modules/ShortCodes/README.md
+            - Shortcodes: docs/reference/modules/Shortcodes/README.md
             - Sitemaps: docs/reference/modules/Sitemaps/README.md
             - XML-RPC: docs/reference/modules/XmlRpc/README.md
             - Menu: docs/reference/modules/Menu/README.md
