@@ -1,0 +1,12 @@
+@if (!Context.Items.ContainsKey("MediaFieldEditLocalization"))
+{
+    @* Insert only once per request *@
+    Context.Items["MediaFieldEditLocalization"] = new object();
+    @*Localizable Strings *@
+    <input type="hidden" id="onlyOneItemMessage" value="@T["Only one item is allowed on this field."]" />
+
+    @*Localizable Strings for mediaFieldThumbsContainerComponent*@
+    <input type="hidden" id="t-media-not-found" value="@T["Not Found"]" />
+    <input type="hidden" id="t-discard-warning" value="@T["It will be discarded on saving"]" />
+    <input type="hidden" id="t-no-images" value="@T["No Images"]" />
+}
