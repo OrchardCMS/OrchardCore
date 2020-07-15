@@ -5,13 +5,21 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 
 namespace OrchardCore.Media.TagHelpers
 {
-    [HtmlTargetElement("img", Attributes = AssetSrcAttributeName)]
-    [HtmlTargetElement("a", Attributes = AssetHrefAttributeName)]
+    [HtmlTargetElement(ImageTagName, Attributes = AssetSrcAttributeName)]
+    [HtmlTargetElement(AnchorTagName, Attributes = AssetHrefAttributeName)]
     public class ImageTagHelper : TagHelper
     {
         private const string AssetSrcAttributeName = "asset-src";
 
         private const string AssetHrefAttributeName = "asset-href";
+
+        private const string ImageTagName = "img";
+
+        private const string AnchorTagName = "a";
+
+        private const string SourceAttributeName = "src";
+
+        private const string HrefAttributeName = "href";
 
         private const string AppendVersionAttributeName = "asp-append-version";
 
@@ -53,23 +61,23 @@ namespace OrchardCore.Media.TagHelpers
         {
             string assetPath;
             string attributeName;
-            if ("img".Equals(context.TagName, StringComparison.InvariantCultureIgnoreCase))
+            if (ImageTagName.Equals(context.TagName, StringComparison.InvariantCultureIgnoreCase))
             {
                 if (String.IsNullOrEmpty(AssetSrc))
                 {
                     return;
                 }
                 assetPath = AssetSrc;
-                attributeName = "src";
+                attributeName = SourceAttributeName;
             }
-            else if ("a".Equals(context.TagName, StringComparison.InvariantCultureIgnoreCase))
+            else if (AnchorTagName.Equals(context.TagName, StringComparison.InvariantCultureIgnoreCase))
             {
                 if (String.IsNullOrEmpty(AssetHref))
                 {
                     return;
                 }
                 assetPath = AssetHref;
-                attributeName = "href";
+                attributeName = HrefAttributeName;
             }
             else
             {
