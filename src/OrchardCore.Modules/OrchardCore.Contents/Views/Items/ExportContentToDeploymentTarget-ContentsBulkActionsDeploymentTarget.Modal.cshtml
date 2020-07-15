@@ -1,6 +1,7 @@
-@model dynamic
+@inject IDeploymentManager DeploymentManager
+
 <zone name="Footer">
-    <div class="modal fade" id="modalExportContentToDeploymentTargetContentBulkActionTarget" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal fade" id="modalExportContentToDeploymentTargetContentBulkActionsTarget" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -11,10 +12,10 @@
                 </div>
                 <div class="modal-body">
                     <div class="row">
-                        @foreach (var target in Model.Targets)
+                        @foreach (var target in await DeploymentManager.GetDeploymentTargetsAsync())
                         {
                             var routeWithId = new RouteValueDictionary(target.Route);
-                            routeWithId["id"] = Model.ExportContentToDeploymentTargetPlanId;
+                            routeWithId["id"] = Site.As<ExportContentToDeploymentTargetSettings>().ExportContentToDeploymentTargetPlanId;
                             var returnUrl = Context.Request.Query["returnUrl"];
                             routeWithId["returnUrl"] = FullRequestPath;
                             <div class="col-sm-12 col-md-6 col-lg-4 d-flex align-items-stretch card-item">
@@ -24,7 +25,7 @@
                                         <p>@target.Description</p>
                                     </div>
                                     <div class="card-footer text-muted text-xs-right">
-                                        <button type="button" class="export-to-deployment-target-bulk-action text-white btn btn-primary btn-sm" data-dismiss="modal" data-target-url="@Url.RouteUrl(routeWithId)">@T["Select"]</button>
+                                        <button type="button" class="export-to-deployment-target-bulk-actions text-white btn btn-primary btn-sm" data-dismiss="modal" data-target-url="@Url.RouteUrl(routeWithId)">@T["Select"]</button>
                                     </div>
                                 </div>
                             </div>
@@ -41,10 +42,10 @@
 
 <script at="Foot" depends-on="jQuery">
     $(function () {
-        $('#modalExportContentToDeploymentTargetContentBulkActionTarget').on('show.bs.modal', function () {
+        $('#modalExportContentToDeploymentTargetContentBulkActionsTarget').on('show.bs.modal', function () {
             var itemIds = $(":checkbox[name='itemIds']:checked");
             if (itemIds.length > 1) {
-                $('.export-to-deployment-target-bulk-action').one('click', function () {
+                $('.export-to-deployment-target-bulk-actions').one('click', function () {
                     var targetButton = this;
                     var magicToken = $("input[name=__RequestVerificationToken]").first();
                     if (magicToken) {
