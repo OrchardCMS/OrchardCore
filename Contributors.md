@@ -1,7 +1,7 @@
 # Contributors ✨
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-169-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-173-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
@@ -236,6 +236,10 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
   </tr>
   <tr>
     <td align="center"><a href="https://github.com/gianght"><img src="https://avatars2.githubusercontent.com/u/30433966?v=4" width="100px;" alt=""/><br /><sub><b>gianght</b></sub></a><br /><a href="#translation-gianght" title="Translation">🌍</a></td>
+    <td align="center"><a href="https://bold-n-brave.com"><img src="https://avatars1.githubusercontent.com/u/757063?v=4" width="100px;" alt=""/><br /><sub><b>Patrick Fogwall</b></sub></a><br /><a href="#translation-patfog" title="Translation">🌍</a></td>
+    <td align="center"><a href="https://github.com/LatinaAtanasova"><img src="https://avatars0.githubusercontent.com/u/32022885?v=4" width="100px;" alt=""/><br /><sub><b>LatinaAtanasova</b></sub></a><br /><a href="#translation-LatinaAtanasova" title="Translation">🌍</a></td>
+    <td align="center"><a href="https://github.com/mruslan97"><img src="https://avatars0.githubusercontent.com/u/37779365?v=4" width="100px;" alt=""/><br /><sub><b>Ruslan Murtazin</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=mruslan97" title="Code">💻</a></td>
+    <td align="center"><a href="https://github.com/dalenewman"><img src="https://avatars2.githubusercontent.com/u/933086?v=4" width="100px;" alt=""/><br /><sub><b>BSH</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=dalenewman" title="Documentation">📖</a></td>
   </tr>
 </table>
 

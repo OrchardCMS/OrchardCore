@@ -1,15 +1,33 @@
+using System.Threading.Tasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.ViewModels;
+using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Views;
 
-namespace OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget
+namespace OrchardCore.Contents.Deployment.AddToDeploymentPlan
 {
     public class AddToDeploymentPlanContentDriver : ContentDisplayDriver
     {
-        public override IDisplayResult Display(ContentItem model)
+        private readonly IDeploymentPlanService _deploymentPlanService;
+
+        public AddToDeploymentPlanContentDriver(IDeploymentPlanService deploymentPlanService)
         {
-            return Shape("AddToDeploymentPlan_SummaryAdmin__Button__Actions", new ContentItemViewModel(model)).Location("SummaryAdmin", "ActionsMenu:30");
+            _deploymentPlanService = deploymentPlanService;
+        }
+
+        public override async Task<IDisplayResult> DisplayAsync(ContentItem model, BuildDisplayContext context)
+        {
+            if (await _deploymentPlanService.DoesUserHavePermissionsAsync())
+            {
+                return Combine(
+                    Dynamic("AddToDeploymentPlan_Modal__ActionDeploymentPlan").Location("SummaryAdmin", "ActionsMenu:30"),
+                    Shape("AddToDeploymentPlan_SummaryAdmin__Button__Actions", new ContentItemViewModel(model)).Location("SummaryAdmin", "ActionsMenu:30")
+                );
+            }
+
+            return null;
         }
     }
 }

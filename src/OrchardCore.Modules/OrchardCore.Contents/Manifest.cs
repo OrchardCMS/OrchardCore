@@ -30,7 +30,7 @@ using OrchardCore.Modules.Manifest;
 [assembly: Feature(
     Id = "OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget",
     Name = "Export Content To Deployment Target",
-    Description = "Adds a export to deployment target action to the content item list.",
+    Description = "Adds an export to deployment target action to the content items list.",
     Dependencies = new[] { "OrchardCore.Contents", "OrchardCore.Deployment" },
     Category = "Content Management"
 )]
@@ -38,7 +38,7 @@ using OrchardCore.Modules.Manifest;
 [assembly: Feature(
     Id = "OrchardCore.Contents.Deployment.AddToDeploymentPlan",
     Name = "Add Content To Deployment Plan",
-    Description = "Adds a add to deployment plan action for the content item list.",
+    Description = "Adds an add to deployment plan action to the content items list.",
     Dependencies = new[] { "OrchardCore.Contents", "OrchardCore.Deployment" },
     Category = "Content Management"
 )]
@@ -46,7 +46,7 @@ using OrchardCore.Modules.Manifest;
 [assembly: Feature(
     Id = "OrchardCore.Contents.Deployment.Download",
     Name = "View Or Download Content As JSON",
-    Description = "View or download content as JSON from the content item list.",
+    Description = "View or download content as JSON from the content items list.",
     Dependencies = new[] { "OrchardCore.Contents", "OrchardCore.Deployment" },
     Category = "Content Management"
 )]

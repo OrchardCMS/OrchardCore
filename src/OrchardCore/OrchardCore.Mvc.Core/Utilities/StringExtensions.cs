@@ -6,6 +6,7 @@ using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 using Microsoft.Extensions.Localization;
+using Newtonsoft.Json.Linq;
 
 namespace OrchardCore.Mvc.Utilities
 {
@@ -472,6 +473,22 @@ namespace OrchardCore.Mvc.Utilities
             }
 
             return result.ToString();
+        }
+
+        /// <summary>
+        /// Tests if a string is valid json.
+        /// </summary>
+        public static bool IsJson(this string json)
+        {
+            try
+            {
+                JToken.Parse(json);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
     }
 }

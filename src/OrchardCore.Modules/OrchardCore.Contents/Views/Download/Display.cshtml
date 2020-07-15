@@ -8,12 +8,10 @@
     var returnUrl = Context.Request.Query["returnUrl"];
 }
 
+<style asp-name="codemirror"></style>
 <script asp-name="codemirror" depends-on="admin" at="Foot"></script>
-<script asp-name="codemirror-mode-javascript" at="Foot"></script>
 <script asp-name="codemirror-addon-display-autorefresh" at="Foot"></script>
-<script asp-name="codemirror-addon-mode-simple" at="Foot"></script>
-<script asp-name="codemirror-addon-mode-multiplex" at="Foot"></script>
-<script asp-name="codemirror-mode-xml" at="Foot"></script>
+<script asp-name="codemirror-mode-javascript" at="Foot"></script>
 
 <h1>@RenderTitleSegments(T["View As JSON {0}", Html.Raw(typeDisplayName)])</h1>
 
@@ -44,7 +42,6 @@
             styleActiveLine: true,
             matchBrackets: true,
             mode: { name: "javascript" },
-            readOnly: true
         });
 
         $('#json-copy-to-clipboard').on('click', function () {

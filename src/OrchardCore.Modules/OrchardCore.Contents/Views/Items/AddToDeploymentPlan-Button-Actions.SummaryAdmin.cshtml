@@ -3,9 +3,6 @@
 @{
     ContentItem contentItem = Model.ContentItem;
 
-    if (await AuthorizationService.AuthorizeAsync(User, OrchardCore.Deployment.CommonPermissions.Export))
-    {
-        <div class="dropdown-divider"></div>
-        <button class="dropdown-item btn-sm" type="button" data-toggle="modal" data-target="#modalAddToDeploymentPlanActionDeploymentPlan" data-content-item-id="@contentItem.ContentItemId">@T["Add to Deployment Plan"]</button>
-    }
+    <div class="dropdown-divider"></div>
+    <button class="dropdown-item btn-sm" type="button" data-toggle="modal" data-target="#modalAddToDeploymentPlanActionDeploymentPlan" data-content-item-id="@contentItem.ContentItemId">@T["Add to Deployment Plan"]</button>
 }
