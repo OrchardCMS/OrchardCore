@@ -6,7 +6,6 @@ using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Entities;
 using OrchardCore.Settings;
 
-
 namespace OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget
 {
     public class ExportContentToDeploymentTargetContentsAdminListDisplayDriver : DisplayDriver<ContentOptionsViewModel>

@@ -86,7 +86,6 @@ namespace OrchardCore.Contents.Deployment.AddToDeploymentPlan
             return LocalRedirect(returnUrl);
         }
 
-
         [HttpPost]
         public async Task<IActionResult> AddContentItems(int deploymentPlanId, string returnUrl, IEnumerable<int> itemIds)
         {

@@ -75,6 +75,5 @@ namespace OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget
             public string ContentItemId { get; set; }
             public bool Latest { get; set; }
         }
-
     }
 }
