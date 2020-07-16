@@ -144,20 +144,27 @@ namespace OrchardCore.Templates.Controllers
 
             if (ModelState.IsValid)
             {
-                var template = new Template { Content = model.Content, Description = model.Description };
-
-                await (model.AdminTemplates
-                    ? _adminTemplatesManager.UpdateTemplateAsync(model.Name, template)
-                    : _templatesManager.UpdateTemplateAsync(model.Name, template)
-                    );
-
-                if (submit == "SaveAndContinue")
+                if (String.IsNullOrWhiteSpace(model.Content))
                 {
-                    return RedirectToAction(nameof(Edit), new { name = model.Name, adminTemplates = model.AdminTemplates, returnUrl });
+                    ModelState.AddModelError(nameof(TemplateViewModel.Content), S["The content is mandatory."]);
                 }
                 else
                 {
-                    return RedirectToReturnUrlOrIndex(returnUrl);
+                    var template = new Template { Content = model.Content, Description = model.Description };
+
+                    await (model.AdminTemplates
+                        ? _adminTemplatesManager.UpdateTemplateAsync(model.Name, template)
+                        : _templatesManager.UpdateTemplateAsync(model.Name, template)
+                        );
+
+                    if (submit == "SaveAndContinue")
+                    {
+                        return RedirectToAction(nameof(Edit), new { name = model.Name, adminTemplates = model.AdminTemplates, returnUrl });
+                    }
+                    else
+                    {
+                        return RedirectToReturnUrlOrIndex(returnUrl);
+                    }
                 }
             }
 
