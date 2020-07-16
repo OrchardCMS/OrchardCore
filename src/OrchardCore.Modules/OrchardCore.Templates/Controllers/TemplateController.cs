@@ -128,6 +128,10 @@ namespace OrchardCore.Templates.Controllers
                 {
                     ModelState.AddModelError(nameof(TemplateViewModel.Name), S["The name is mandatory."]);
                 }
+                else if (String.IsNullOrWhiteSpace(model.Content))
+                {
+                    ModelState.AddModelError(nameof(TemplateViewModel.Content), S["The content is mandatory."]);
+                }
                 else
                 {
                     var templatesDocument = model.AdminTemplates
@@ -144,27 +148,20 @@ namespace OrchardCore.Templates.Controllers
 
             if (ModelState.IsValid)
             {
-                if (String.IsNullOrWhiteSpace(model.Content))
+                var template = new Template { Content = model.Content, Description = model.Description };
+
+                await (model.AdminTemplates
+                    ? _adminTemplatesManager.UpdateTemplateAsync(model.Name, template)
+                    : _templatesManager.UpdateTemplateAsync(model.Name, template)
+                    );
+
+                if (submit == "SaveAndContinue")
                 {
-                    ModelState.AddModelError(nameof(TemplateViewModel.Content), S["The content is mandatory."]);
+                    return RedirectToAction(nameof(Edit), new { name = model.Name, adminTemplates = model.AdminTemplates, returnUrl });
                 }
                 else
                 {
-                    var template = new Template { Content = model.Content, Description = model.Description };
-
-                    await (model.AdminTemplates
-                        ? _adminTemplatesManager.UpdateTemplateAsync(model.Name, template)
-                        : _templatesManager.UpdateTemplateAsync(model.Name, template)
-                        );
-
-                    if (submit == "SaveAndContinue")
-                    {
-                        return RedirectToAction(nameof(Edit), new { name = model.Name, adminTemplates = model.AdminTemplates, returnUrl });
-                    }
-                    else
-                    {
-                        return RedirectToReturnUrlOrIndex(returnUrl);
-                    }
+                    return RedirectToReturnUrlOrIndex(returnUrl);
                 }
             }
 
