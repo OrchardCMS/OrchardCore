@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
-using OrchardCore.ContentPreview;
 using OrchardCore.ContentPreview.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Modules;
@@ -47,13 +46,15 @@ namespace OrchardCore.ContentPreview.Controllers
         }
 
         [HttpPost]
-        [ContentPreview]
         public async Task<IActionResult> Render()
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ContentPreview))
             {
                 return this.ChallengeOrForbid();
             }
+
+            // Mark request as a `Preview` request so that drivers may be aware of an active preview mode.
+            Request.HttpContext.Items["Preview"] = new object();
 
             var contentItemType = Request.Form["ContentItemType"];
             var contentItem = await _contentManager.NewAsync(contentItemType);
@@ -65,10 +66,6 @@ namespace OrchardCore.ContentPreview.Controllers
             var contentItemId = Request.Form["PreviewContentItemId"];
             var contentItemVersionId = Request.Form["PreviewContentItemVersionId"];
 
-            // Unique contentItem.Id that only Preview is using such that another
-            // stored document can't have the same one in the IContentManagerSession index
-
-            contentItem.Id = -1;
             contentItem.ContentItemId = contentItemId;
             contentItem.ContentItemVersionId = contentItemVersionId;
             contentItem.CreatedUtc = _clock.UtcNow;

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement;
@@ -24,6 +25,7 @@ namespace OrchardCore.Indexing.Services
     {
         private readonly IClock _clock;
         private readonly IDbConnectionAccessor _dbConnectionAccessor;
+        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ILogger _logger;
 
         private readonly string _tablePrefix;
@@ -33,10 +35,12 @@ namespace OrchardCore.Indexing.Services
             IClock clock,
             ShellSettings shellSettings,
             IDbConnectionAccessor dbConnectionAccessor,
+            IHttpContextAccessor httpContextAccessor,
             ILogger<IndexingTaskManager> logger)
         {
             _clock = clock;
             _dbConnectionAccessor = dbConnectionAccessor;
+            _httpContextAccessor = httpContextAccessor;
             _logger = logger;
 
             _tablePrefix = shellSettings["TablePrefix"];
@@ -52,6 +56,12 @@ namespace OrchardCore.Indexing.Services
             if (contentItem == null)
             {
                 throw new ArgumentNullException("contentItem");
+            }
+
+            // Do not index a preview content item.
+            if (_httpContextAccessor.HttpContext?.Items.ContainsKey("Preview") == true)
+            {
+                return Task.CompletedTask;
             }
 
             if (contentItem.Id == 0)
@@ -87,7 +97,7 @@ namespace OrchardCore.Indexing.Services
 
             var serviceProvider = scope.ServiceProvider;
 
-            var session = serviceProvider.GetService<ISession>();
+            var session = serviceProvider.GetService<YesSql.ISession>();
             var dbConnectionAccessor = serviceProvider.GetService<IDbConnectionAccessor>();
             var shellSettings = serviceProvider.GetService<ShellSettings>();
             var logger = serviceProvider.GetService<ILogger<IndexingTaskManager>>();

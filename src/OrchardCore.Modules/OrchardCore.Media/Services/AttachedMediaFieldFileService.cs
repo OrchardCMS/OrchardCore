@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement;
-using OrchardCore.ContentPreview;
 using OrchardCore.FileStorage;
 using OrchardCore.Media.ViewModels;
 
@@ -59,7 +58,7 @@ namespace OrchardCore.Media.Services
                 throw new ArgumentNullException(nameof(items));
             }
 
-            if (ContentPreviewAttribute.IsApplied(_httpContextAccessor.HttpContext))
+            if (_httpContextAccessor.HttpContext?.Items.ContainsKey("Preview") == true)
             {
                 return;
             }
