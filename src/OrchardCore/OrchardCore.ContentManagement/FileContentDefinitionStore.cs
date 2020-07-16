@@ -66,7 +66,7 @@ namespace OrchardCore.ContentManagement
             lock (this)
             {
                 var directoryPath = Path.GetDirectoryName(Filename);
-                if (!Directory.Exists(directoryPath))
+                if (!String.IsNullOrEmpty(directoryPath) && !Directory.Exists(directoryPath))
                 {
                     Directory.CreateDirectory(directoryPath);
                 }
