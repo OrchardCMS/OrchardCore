@@ -24,21 +24,26 @@ namespace OrchardCore.Infrastructure.Cache
             return scopedDistributedCache.SetAsync<T>(typeof(T).FullName, value);
         }
 
-        public static async Task<T> GetOrSetAsync<T>(this IScopedDistributedCache scopedDistributedCache, string key, Func<Task<T>> factory)
+        public static async Task<T> GetOrSetAsync<T>(this IScopedDistributedCache scopedDistributedCache, string key, Func<Task<(bool, T)>> factory)
         {
             var value = await scopedDistributedCache.GetAsync<T>(key);
 
             if (value == null)
             {
-                value = await factory();
+                bool cacheable;
 
-                await scopedDistributedCache.SetAsync(key, value);
+                (cacheable, value) = await factory();
+
+                if (cacheable)
+                {
+                    await scopedDistributedCache.SetAsync(key, value);
+                }
             }
 
             return value;
         }
 
-        public static Task<T> GetOrSetAsync<T>(this IScopedDistributedCache scopedDistributedCache, Func<Task<T>> factory)
+        public static Task<T> GetOrSetAsync<T>(this IScopedDistributedCache scopedDistributedCache, Func<Task<(bool, T)>> factory)
         {
             return scopedDistributedCache.GetOrSetAsync(typeof(T).FullName, factory);
         }

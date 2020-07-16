@@ -1,4 +1,3 @@
-using System;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
@@ -33,19 +32,22 @@ namespace OrchardCore.ContentManagement
                 return scopedCache.ContentDefinitionRecord;
             }
 
-            return scopedCache.ContentDefinitionRecord = await GetContentDefinitionAsync();
+            (_, var result) = await GetContentDefinitionAsync();
+
+            return scopedCache.ContentDefinitionRecord = result;
         }
 
         /// <summary>
         /// Gets a single document (or create a new one) for caching and that should not be updated.
         /// </summary>
-        public Task<ContentDefinitionRecord> GetContentDefinitionAsync()
+        public Task<(bool, ContentDefinitionRecord)> GetContentDefinitionAsync()
         {
             var scopedCache = ShellScope.Services.GetRequiredService<FileContentDefinitionScopedCache>();
 
             if (scopedCache.ContentDefinitionRecord != null)
             {
-                throw new InvalidOperationException("Can't get for caching an object being mutated in the same scope");
+                // Return the already loaded document but indicating that it should not be cached.
+                return Task.FromResult((false, scopedCache.ContentDefinitionRecord));
             }
 
             ContentDefinitionRecord result;
@@ -66,7 +68,7 @@ namespace OrchardCore.ContentManagement
                 }
             }
 
-            return Task.FromResult(result);
+            return Task.FromResult((true, result));
         }
 
         public Task SaveContentDefinitionAsync(ContentDefinitionRecord contentDefinitionRecord)

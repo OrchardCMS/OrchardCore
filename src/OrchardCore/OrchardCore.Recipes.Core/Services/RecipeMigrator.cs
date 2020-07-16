@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
 using OrchardCore.Data.Migration;
 using OrchardCore.Environment.Extensions;
-using OrchardCore.Environment.Shell.Scope;
 
 namespace OrchardCore.Recipes.Services
 {
@@ -36,16 +35,10 @@ namespace OrchardCore.Recipes.Services
             var recipeFilePath = Path.Combine(recipeBasePath, recipeFileName).Replace('\\', '/');
             var recipeFileInfo = _hostingEnvironment.ContentRootFileProvider.GetFileInfo(recipeFilePath);
             var recipeDescriptor = await _recipeReader.GetRecipeDescriptor(recipeBasePath, recipeFileInfo, _hostingEnvironment.ContentRootFileProvider);
-            recipeDescriptor.ActivateShell = false;
+            recipeDescriptor.RequireNewScope = false;
 
             var executionId = Guid.NewGuid().ToString("n");
-
-            ShellScope.AddDeferredTask(scope =>
-            {
-                return _recipeExecutor.ExecuteAsync(executionId, recipeDescriptor, new object(), CancellationToken.None);
-            });
-
-            return executionId;
+            return await _recipeExecutor.ExecuteAsync(executionId, recipeDescriptor, new object(), CancellationToken.None);
         }
     }
 }

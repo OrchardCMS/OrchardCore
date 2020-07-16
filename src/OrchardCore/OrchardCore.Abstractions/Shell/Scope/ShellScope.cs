@@ -187,7 +187,7 @@ namespace OrchardCore.Environment.Shell.Scope
         /// <summary>
         /// Execute a delegate using this shell scope.
         /// </summary>
-        public async Task UsingAsync(Func<ShellScope, Task> execute, bool activateShell = true)
+        public async Task UsingAsync(Func<ShellScope, Task> execute)
         {
             if (Current == this)
             {
@@ -199,10 +199,7 @@ namespace OrchardCore.Environment.Shell.Scope
             {
                 StartAsyncFlow();
 
-                if (activateShell)
-                {
-                    await ActivateShellAsync();
-                }
+                await ActivateShellAsync();
 
                 await execute(this);
 

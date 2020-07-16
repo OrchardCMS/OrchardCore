@@ -11,9 +11,10 @@ namespace OrchardCore.ContentManagement
         Task<ContentDefinitionRecord> LoadContentDefinitionAsync();
 
         /// <summary>
-        /// Gets a single document (or create a new one) for caching and that should not be updated.
+        /// Gets a single document (or create a new one) for caching and that should not be updated,
+        /// and specifies if the returned document can be cached or not if it has been already loaded.
         /// </summary>
-        Task<ContentDefinitionRecord> GetContentDefinitionAsync();
+        Task<(bool, ContentDefinitionRecord)> GetContentDefinitionAsync();
 
         Task SaveContentDefinitionAsync(ContentDefinitionRecord contentDefinitionRecord);
     }
