@@ -14,9 +14,6 @@ using OrchardCore.ContentManagement.Routing;
 using OrchardCore.Contents.AdminNodes;
 using OrchardCore.Contents.Controllers;
 using OrchardCore.Contents.Deployment;
-using OrchardCore.Contents.Deployment.AddToDeploymentPlan;
-using OrchardCore.Contents.Deployment.Download;
-using OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget;
 using OrchardCore.Contents.Drivers;
 using OrchardCore.Contents.Feeds.Builders;
 using OrchardCore.Contents.Handlers;
@@ -46,7 +43,6 @@ using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
-using OrchardCore.Settings;
 using OrchardCore.Sitemaps.Builders;
 using OrchardCore.Sitemaps.Cache;
 using OrchardCore.Sitemaps.Models;
@@ -124,7 +120,6 @@ namespace OrchardCore.Contents
 
             services.AddScoped<IDisplayManager<ContentOptionsViewModel>, DisplayManager<ContentOptionsViewModel>>();
             services.AddScoped<IDisplayDriver<ContentOptionsViewModel>, ContentOptionsDisplayDriver>();
-
         }
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
@@ -244,98 +239,6 @@ namespace OrchardCore.Contents
             services.AddTransient<IDeploymentSource, ContentDeploymentSource>();
             services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<ContentDeploymentStep>());
             services.AddScoped<IDisplayDriver<DeploymentStep>, ContentDeploymentStepDriver>();
-        }
-    }
-
-    [Feature("OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget")]
-    public class ExportContentToDeploymentTargetStartup : StartupBase
-    {
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddScoped<INavigationProvider, ExportContentToDeploymentTargetAdminMenu>();
-            services.AddScoped<IDisplayDriver<ISite>, ExportContentToDeploymentTargetSettingsDisplayDriver>();
-
-            services.AddTransient<IDeploymentSource, ExportContentToDeploymentTargetDeploymentSource>();
-            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<ExportContentToDeploymentTargetDeploymentStep>());
-            services.AddScoped<IDisplayDriver<DeploymentStep>, ExportContentToDeploymentTargetDeploymentStepDriver>();
-
-            services.AddScoped<IDataMigration, ExportContentToDeploymentTargetMigrations>();
-            services.AddScoped<IContentDisplayDriver, ExportContentToDeploymentTargetContentDriver>();
-            services.AddScoped<IDisplayDriver<ContentOptionsViewModel>, ExportContentToDeploymentTargetContentsAdminListDisplayDriver>();
-        }
-    }
-
-    [Feature("OrchardCore.Contents.Deployment.AddToDeploymentPlan")]
-    public class AddToDeploymentPlanStartup : StartupBase
-    {
-        private readonly AdminOptions _adminOptions;
-
-        public AddToDeploymentPlanStartup(IOptions<AdminOptions> adminOptions)
-        {
-            _adminOptions = adminOptions.Value;
-        }
-
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddTransient<IDeploymentSource, ContentItemDeploymentSource>();
-            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<ContentItemDeploymentStep>());
-            services.AddScoped<IDisplayDriver<DeploymentStep>, ContentItemDeploymentStepDriver>();
-            services.AddScoped<IContentDisplayDriver, AddToDeploymentPlanContentDriver>();
-            services.AddScoped<IDisplayDriver<ContentOptionsViewModel>, AddToDeploymentPlanContentsAdminListDisplayDriver>();
-        }
-
-        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
-        {
-            var addToDeploymentPlanControllerName = typeof(AddToDeploymentPlanController).ControllerName();
-
-            routes.MapAreaControllerRoute(
-               name: "AddToDeploymentPlan",
-               areaName: "OrchardCore.Contents",
-               pattern: _adminOptions.AdminUrlPrefix + "/AddToDeploymentPlan/AddContentItem/{deploymentPlanId}",
-               defaults: new { controller = addToDeploymentPlanControllerName, action = nameof(AddToDeploymentPlanController.AddContentItem) }
-           );
-
-            routes.MapAreaControllerRoute(
-               name: "AddToDeploymentPlan",
-               areaName: "OrchardCore.Contents",
-               pattern: _adminOptions.AdminUrlPrefix + "/AddToDeploymentPlan/AddContentItems/{deploymentPlanId}",
-               defaults: new { controller = addToDeploymentPlanControllerName, action = nameof(AddToDeploymentPlanController.AddContentItems) }
-           );
-        }
-    }
-
-    [Feature("OrchardCore.Contents.Deployment.Download")]
-    public class DownloadStartup : StartupBase
-    {
-        private readonly AdminOptions _adminOptions;
-
-        public DownloadStartup(IOptions<AdminOptions> adminOptions)
-        {
-            _adminOptions = adminOptions.Value;
-        }
-
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddScoped<IContentDisplayDriver, DownloadContentDriver>();
-        }
-
-        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
-        {
-            var downloadControllerName = typeof(DownloadController).ControllerName();
-
-            routes.MapAreaControllerRoute(
-               name: "DownloadDisplay",
-               areaName: "OrchardCore.Contents",
-               pattern: _adminOptions.AdminUrlPrefix + "/Download/Display/{contentItemId}",
-               defaults: new { controller = downloadControllerName, action = nameof(DownloadController.Display) }
-           );
-
-            routes.MapAreaControllerRoute(
-               name: "DownloadDownload",
-               areaName: "OrchardCore.Contents",
-               pattern: _adminOptions.AdminUrlPrefix + "/Download/Download/{contentItemId}",
-               defaults: new { controller = downloadControllerName, action = nameof(DownloadController.Download) }
-           );
         }
     }
 

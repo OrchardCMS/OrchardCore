@@ -10,14 +10,14 @@ namespace OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget
         {
             return
                 Combine(
-                    View("ExportContentToDeploymentTargetContentDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
-                    View("ExportContentToDeploymentTargetContentDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
+                    View("ExportContentToDeploymentTargetDeploymentStep_Fields_Summary", step).Location("Summary", "Content"),
+                    View("ExportContentToDeploymentTargetDeploymentStep_Fields_Thumbnail", step).Location("Thumbnail", "Content")
                 );
         }
 
         public override IDisplayResult Edit(ExportContentToDeploymentTargetDeploymentStep step)
         {
-            return View("ExportContentToDeploymentTargetContentDeploymentStep_Fields_Edit", step).Location("Content");
+            return View("ExportContentToDeploymentTargetDeploymentStep_Fields_Edit", step).Location("Content");
         }
     }
 }
