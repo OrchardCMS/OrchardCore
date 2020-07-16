@@ -155,6 +155,8 @@ namespace OrchardCore.Templates.Controllers
                     : _templatesManager.UpdateTemplateAsync(model.Name, template)
                     );
 
+                _notifier.Success(H["The \"{0}\" template has been created.", model.Name]);
+
                 if (submit == "SaveAndContinue")
                 {
                     return RedirectToAction(nameof(Edit), new { name = model.Name, adminTemplates = model.AdminTemplates, returnUrl });
