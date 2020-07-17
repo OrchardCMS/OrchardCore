@@ -1,7 +1,7 @@
 # Contributors ✨
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-173-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-189-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
@@ -240,6 +240,28 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <td align="center"><a href="https://github.com/LatinaAtanasova"><img src="https://avatars0.githubusercontent.com/u/32022885?v=4" width="100px;" alt=""/><br /><sub><b>LatinaAtanasova</b></sub></a><br /><a href="#translation-LatinaAtanasova" title="Translation">🌍</a></td>
     <td align="center"><a href="https://github.com/mruslan97"><img src="https://avatars0.githubusercontent.com/u/37779365?v=4" width="100px;" alt=""/><br /><sub><b>Ruslan Murtazin</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=mruslan97" title="Code">💻</a></td>
     <td align="center"><a href="https://github.com/dalenewman"><img src="https://avatars2.githubusercontent.com/u/933086?v=4" width="100px;" alt=""/><br /><sub><b>BSH</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=dalenewman" title="Documentation">📖</a></td>
+    <td align="center"><a href="https://github.com/abdullahsalem"><img src="https://avatars2.githubusercontent.com/u/177020?v=4" width="100px;" alt=""/><br /><sub><b>Abdul Sal</b></sub></a><br /><a href="#translation-abdullahsalem" title="Translation">🌍</a></td>
+  </tr>
+  <tr>
+    <td align="center"><a href="https://www.mscoder.cn/members-daziyuan/"><img src="https://avatars3.githubusercontent.com/u/80653?v=4" width="100px;" alt=""/><br /><sub><b>代码抄写狮</b></sub></a><br /><a href="#translation-DaZiYuan" title="Translation">🌍</a></td>
+    <td align="center"><a href="https://github.com/chinasqzl"><img src="https://avatars1.githubusercontent.com/u/16968103?v=4" width="100px;" alt=""/><br /><sub><b>chinasqzl</b></sub></a><br /><a href="#translation-chinasqzl" title="Translation">🌍</a></td>
+    <td align="center"><a href="https://github.com/fuxiaojun0203"><img src="https://avatars0.githubusercontent.com/u/25946521?v=4" width="100px;" alt=""/><br /><sub><b>哼本哞</b></sub></a><br /><a href="#translation-fuxiaojun0203" title="Translation">🌍</a></td>
+    <td align="center"><a href="http://www.overstartup.com"><img src="https://avatars1.githubusercontent.com/u/24512878?v=4" width="100px;" alt=""/><br /><sub><b>Ahmad Aghilizadeh</b></sub></a><br /><a href="#translation-aghili371" title="Translation">🌍</a></td>
+    <td align="center"><a href="https://github.com/vikriu"><img src="https://avatars3.githubusercontent.com/u/17539722?v=4" width="100px;" alt=""/><br /><sub><b>vikriu</b></sub></a><br /><a href="#translation-vikriu" title="Translation">🌍</a></td>
+    <td align="center"><a href="https://github.com/khoshroomahdi"><img src="https://avatars2.githubusercontent.com/u/20259070?v=4" width="100px;" alt=""/><br /><sub><b>khoshroomahdi</b></sub></a><br /><a href="#translation-khoshroomahdi" title="Translation">🌍</a></td>
+  </tr>
+  <tr>
+    <td align="center"><a href="http://sotait.net/"><img src="https://avatars1.githubusercontent.com/u/7149644?v=4" width="100px;" alt=""/><br /><sub><b>Aram Aramyan</b></sub></a><br /><a href="#translation-aram-aramyan" title="Translation">🌍</a></td>
+    <td align="center"><a href="https://github.com/SergeyBeliy"><img src="https://avatars0.githubusercontent.com/u/4004243?v=4" width="100px;" alt=""/><br /><sub><b>SergeyBeliy</b></sub></a><br /><a href="#translation-SergeyBeliy" title="Translation">🌍</a></td>
+    <td align="center"><a href="https://github.com/onyazuka"><img src="https://avatars1.githubusercontent.com/u/39951247?v=4" width="100px;" alt=""/><br /><sub><b>onyazuka</b></sub></a><br /><a href="#translation-onyazuka" title="Translation">🌍</a></td>
+    <td align="center"><a href="https://github.com/v4rch4r"><img src="https://avatars1.githubusercontent.com/u/47355085?v=4" width="100px;" alt=""/><br /><sub><b>Marat Agarzaev</b></sub></a><br /><a href="#translation-v4rch4r" title="Translation">🌍</a></td>
+    <td align="center"><a href="https://github.com/rojovivo"><img src="https://avatars2.githubusercontent.com/u/563005?v=4" width="100px;" alt=""/><br /><sub><b>José Francisco Ibarra</b></sub></a><br /><a href="#translation-rojovivo" title="Translation">🌍</a></td>
+    <td align="center"><a href="http://muratcabuk.com"><img src="https://avatars1.githubusercontent.com/u/10380206?v=4" width="100px;" alt=""/><br /><sub><b>murat cabuk</b></sub></a><br /><a href="#translation-muratcabuk" title="Translation">🌍</a></td>
+  </tr>
+  <tr>
+    <td align="center"><a href="https://github.com/akanmuratcimen"><img src="https://avatars1.githubusercontent.com/u/1022626?v=4" width="100px;" alt=""/><br /><sub><b>Akan Murat Cimen</b></sub></a><br /><a href="#translation-akanmuratcimen" title="Translation">🌍</a></td>
+    <td align="center"><a href="https://vorote.ch/"><img src="https://avatars0.githubusercontent.com/u/2937451?v=4" width="100px;" alt=""/><br /><sub><b>Dmytro Vorotyntsev</b></sub></a><br /><a href="#translation-vorotech" title="Translation">🌍</a></td>
+    <td align="center"><a href="https://github.com/lthoa"><img src="https://avatars1.githubusercontent.com/u/6874322?v=4" width="100px;" alt=""/><br /><sub><b>lthoa</b></sub></a><br /><a href="#translation-lthoa" title="Translation">🌍</a></td>
   </tr>
 </table>
 

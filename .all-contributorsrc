@@ -1631,6 +1631,150 @@
       "contributions": [
         "doc"
       ]
+    },
+    {
+      "login": "abdullahsalem",
+      "name": "Abdul Sal",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/177020?v=4",
+      "profile": "https://github.com/abdullahsalem",
+      "contributions": [
+        "translation"
+      ]
+    },
+    {
+      "login": "DaZiYuan",
+      "name": "代码抄写狮",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/80653?v=4",
+      "profile": "https://www.mscoder.cn/members-daziyuan/",
+      "contributions": [
+        "translation"
+      ]
+    },
+    {
+      "login": "chinasqzl",
+      "name": "chinasqzl",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/16968103?v=4",
+      "profile": "https://github.com/chinasqzl",
+      "contributions": [
+        "translation"
+      ]
+    },
+    {
+      "login": "fuxiaojun0203",
+      "name": "哼本哞",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/25946521?v=4",
+      "profile": "https://github.com/fuxiaojun0203",
+      "contributions": [
+        "translation"
+      ]
+    },
+    {
+      "login": "aghili371",
+      "name": "Ahmad Aghilizadeh",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/24512878?v=4",
+      "profile": "http://www.overstartup.com",
+      "contributions": [
+        "translation"
+      ]
+    },
+    {
+      "login": "vikriu",
+      "name": "vikriu",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/17539722?v=4",
+      "profile": "https://github.com/vikriu",
+      "contributions": [
+        "translation"
+      ]
+    },
+    {
+      "login": "khoshroomahdi",
+      "name": "khoshroomahdi",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/20259070?v=4",
+      "profile": "https://github.com/khoshroomahdi",
+      "contributions": [
+        "translation"
+      ]
+    },
+    {
+      "login": "aram-aramyan",
+      "name": "Aram Aramyan",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/7149644?v=4",
+      "profile": "http://sotait.net/",
+      "contributions": [
+        "translation"
+      ]
+    },
+    {
+      "login": "SergeyBeliy",
+      "name": "SergeyBeliy",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/4004243?v=4",
+      "profile": "https://github.com/SergeyBeliy",
+      "contributions": [
+        "translation"
+      ]
+    },
+    {
+      "login": "onyazuka",
+      "name": "onyazuka",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/39951247?v=4",
+      "profile": "https://github.com/onyazuka",
+      "contributions": [
+        "translation"
+      ]
+    },
+    {
+      "login": "v4rch4r",
+      "name": "Marat Agarzaev",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/47355085?v=4",
+      "profile": "https://github.com/v4rch4r",
+      "contributions": [
+        "translation"
+      ]
+    },
+    {
+      "login": "rojovivo",
+      "name": "José Francisco Ibarra",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/563005?v=4",
+      "profile": "https://github.com/rojovivo",
+      "contributions": [
+        "translation"
+      ]
+    },
+    {
+      "login": "muratcabuk",
+      "name": "murat cabuk",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/10380206?v=4",
+      "profile": "http://muratcabuk.com",
+      "contributions": [
+        "translation"
+      ]
+    },
+    {
+      "login": "akanmuratcimen",
+      "name": "Akan Murat Cimen",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/1022626?v=4",
+      "profile": "https://github.com/akanmuratcimen",
+      "contributions": [
+        "translation"
+      ]
+    },
+    {
+      "login": "vorotech",
+      "name": "Dmytro Vorotyntsev",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/2937451?v=4",
+      "profile": "https://vorote.ch/",
+      "contributions": [
+        "translation"
+      ]
+    },
+    {
+      "login": "lthoa",
+      "name": "lthoa",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/6874322?v=4",
+      "profile": "https://github.com/lthoa",
+      "contributions": [
+        "translation"
+      ]
     }
   ],
   "skipCi": true
