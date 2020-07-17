@@ -64,13 +64,6 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
             return this;
         }
 
-        [Obsolete("Use WithSettings<T>. This will be removed in a future version.")]
-        public ContentTypeDefinitionBuilder WithSetting(string name, object value)
-        {
-            _settings[name] = JToken.FromObject(value);
-            return this;
-        }
-
         public ContentTypeDefinitionBuilder MergeSettings(JObject settings)
         {
             _settings.Merge(settings, ContentBuilderSettings.JsonMergeSettings);

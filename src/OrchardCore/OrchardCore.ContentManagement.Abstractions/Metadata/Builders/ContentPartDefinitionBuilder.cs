@@ -69,13 +69,6 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
             return this;
         }
 
-        [Obsolete("Use WithSettings<T>. This will be removed in a future version.")]
-        public ContentPartDefinitionBuilder WithSetting(string name, string value)
-        {
-            _settings[name] = value;
-            return this;
-        }
-
         public ContentPartDefinitionBuilder MergeSettings(JObject settings)
         {
             _settings.Merge(settings, ContentBuilderSettings.JsonMergeSettings);
