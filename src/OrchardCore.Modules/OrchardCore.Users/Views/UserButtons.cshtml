@@ -5,7 +5,14 @@
     var user = Model.User as User;
 }
 <a asp-action="Edit" asp-route-id="@user.Id" class="btn btn-primary btn-sm">@T["Edit"]</a>
-<a asp-action="Delete" asp-route-id="@user.Id" class="btn btn-danger btn-sm" itemprop="RemoveUrl UnsafeUrl">@T["Delete"]</a>
+@if (user.UserName == User.Identity.Name)
+{
+    <a class="btn btn-danger btn-sm disabled" itemprop="RemoveUrl UnsafeUrl">@T["Delete"]</a>
+}
+else
+{
+    <a asp-action="Delete" asp-route-id="@user.Id" class="btn btn-danger btn-sm" itemprop="RemoveUrl UnsafeUrl">@T["Delete"]</a>
+}
 <a asp-action="EditPassword" asp-route-id="@user.Id" class="btn btn-secondary btn-sm">@T["Edit Password"]</a>
 @if (!user.EmailConfirmed && Site.As<RegistrationSettings>().UsersMustValidateEmail)
 {
