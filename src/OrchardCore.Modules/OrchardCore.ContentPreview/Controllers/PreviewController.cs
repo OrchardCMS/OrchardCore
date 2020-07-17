@@ -66,6 +66,10 @@ namespace OrchardCore.ContentPreview.Controllers
             var contentItemId = Request.Form["PreviewContentItemId"];
             var contentItemVersionId = Request.Form["PreviewContentItemVersionId"];
 
+            // Unique contentItem.Id that only Preview is using such that another
+            // stored document can't have the same one in the IContentManagerSession index
+
+            contentItem.Id = -1;
             contentItem.ContentItemId = contentItemId;
             contentItem.ContentItemVersionId = contentItemVersionId;
             contentItem.CreatedUtc = _clock.UtcNow;

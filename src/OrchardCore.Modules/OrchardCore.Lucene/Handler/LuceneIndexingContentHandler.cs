@@ -37,6 +37,12 @@ namespace OrchardCore.Lucene.Handlers
                 return Task.CompletedTask;
             }
 
+            if (context.ContentItem.Id == 0)
+            {
+                // Ignore that case, when Update is called on a content item which has not be "created" yet.
+                return Task.CompletedTask;
+            }
+
             if (_contexts.Count == 0)
             {
                 var contexts = _contexts;
