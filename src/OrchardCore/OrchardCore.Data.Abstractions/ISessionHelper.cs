@@ -16,7 +16,7 @@ namespace OrchardCore.Data
 
         /// <summary>
         /// Gets a single document (or create a new one) for caching and that should not be updated,
-        /// and specifies if the returned document can be cached or not if it has been already loaded.
+        /// and a bool indicating if it can be cached, not if it has been already loaded for update.
         /// For a full isolation, it needs to be used in pair with <see cref="LoadForUpdateAsync"/>.
         /// </summary>
         Task<(bool, T)> GetForCachingAsync<T>(Func<T> factory = null) where T : class, new();
