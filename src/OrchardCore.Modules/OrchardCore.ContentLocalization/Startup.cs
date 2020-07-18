@@ -21,6 +21,7 @@ using OrchardCore.ContentLocalization.Services;
 using OrchardCore.ContentLocalization.Sitemaps;
 using OrchardCore.ContentLocalization.ViewModels;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Indexing;
 using OrchardCore.Liquid;
 using OrchardCore.Modules;
@@ -36,23 +37,22 @@ namespace OrchardCore.ContentLocalization
     public class Startup : StartupBase
     {
         private readonly AdminOptions _adminOptions;
+        private readonly IShellConfiguration _shellConfiguration;
 
         static Startup()
         {
             TemplateContext.GlobalMemberAccessStrategy.Register<LocalizationPartViewModel>();
         }
 
-        public Startup(IConfiguration configuration, IOptions<AdminOptions> adminOptions)
+        public Startup(IShellConfiguration shellConfiguration, IOptions<AdminOptions> adminOptions)
         {
-            Configuration = configuration;
+            _shellConfiguration = shellConfiguration;
             _adminOptions = adminOptions.Value;
         }
 
-        public IConfiguration Configuration { get; set; }
-
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.Configure<CulturePickerOptions>(Configuration.GetSection("OrchardCore_ContentLocalization_CulturePickerOptions"));
+            services.Configure<CulturePickerOptions>(_shellConfiguration.GetSection("OrchardCore_ContentLocalization_CulturePickerOptions"));
 
             services.AddScoped<IContentPartIndexHandler, LocalizationPartIndexHandler>();
             services.AddSingleton<ILocalizationEntries, LocalizationEntries>();
