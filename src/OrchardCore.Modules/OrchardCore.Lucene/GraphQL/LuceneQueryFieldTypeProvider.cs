@@ -6,7 +6,6 @@ using GraphQL.Types;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Apis.GraphQL;
@@ -45,7 +44,6 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
                     continue;
 
                 var name = query.Name;
-                var source = query.Source;
 
                 try
                 {

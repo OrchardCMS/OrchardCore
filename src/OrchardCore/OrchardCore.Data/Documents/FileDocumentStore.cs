@@ -26,6 +26,8 @@ namespace OrchardCore.Data.Documents
                 shellOptions.Value.ShellsApplicationDataPath,
                 shellOptions.Value.ShellsContainerName,
                 shellSettings.Name) + "/";
+
+            Directory.CreateDirectory(_tenantPath);
         }
 
         /// <inheritdoc />
