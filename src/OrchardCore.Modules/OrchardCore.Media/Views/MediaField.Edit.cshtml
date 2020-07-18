@@ -7,68 +7,63 @@
     var modalMediaId = "Modal" + Html.IdFor(m => m);
 }
 
-<partial name="Shared/MediaFieldEditResources.cshtml" />
-
-<script at="Foot">
-    initializeMediaApplication(false,  '@Url.Action("MediaApplication", "Admin", new { area = "OrchardCore.Media" })', '@Context.Request.PathBase.ToString()');
-    initializeMediaField(
-        document.getElementById('@Html.IdFor(m => m)'),
-        document.getElementById('@Html.IdFor(m => m)-ModalBody'),
-        '@Url.Action("GetMediaItem", "Admin", new { area = "OrchardCore.Media" })',
+    <script at="Foot">
+        initializeMediaApplication(false, '@Url.Action("MediaApplication", "Admin", new { area = "OrchardCore.Media" })', '@Context.Request.PathBase.ToString()');
+        initializeMediaField(
+            document.getElementById('@Html.IdFor(m => m)'),
+            document.getElementById('@Html.IdFor(m => m)-ModalBody'),
+            '@Url.Action("GetMediaItem", "Admin", new { area = "OrchardCore.Media" })',
         @(settings.Multiple ? "true" : "false"));
-</script>
+    </script>
 
-<div class="mediafield-editor" id="@Html.IdFor(m => m)" data-for="@Html.IdFor(m => m.Paths)">
-    <div class="media-field">
-        <div class="form-group">
-            <label asp-for="Paths">@Model.PartFieldDefinition.DisplayName()</label>
-            @if (!string.IsNullOrWhiteSpace(settings.Hint))
-            {
-                <span class="hint">@settings.Hint</span>
-            }
+    <div class="form-group" id="@Html.IdFor(m => m)" data-for="@Html.IdFor(m => m.Paths)">
+        <label asp-for="Paths">@Model.PartFieldDefinition.DisplayName()</label>
+        @if (!string.IsNullOrWhiteSpace(settings.Hint))
+        {
+        <span class="hint">@settings.Hint</span>
+        }
 
-            <input asp-for="Paths" type="hidden" class="paths" :value="paths" data-init="@Model.Paths" />
+        <input asp-for="Paths" type="hidden" class="paths" :value="paths" data-init="@Model.Paths" />
 
-            <nav class="media-field-toolbar" v-cloak>
-                <div class="btn-group">
-                    <button type="button" class="btn btn-secondary btn-sm" :disabled="mediaItems.length < 1" v-on:click="smallThumbs = !smallThumbs">
-                        <span v-show="!smallThumbs" title="@T["Small Thumbs"]"><i class="fa fa-compress"></i></span>
-                        <span v-show="smallThumbs" title="@T["Large Thumbs"]"><i class="fa fa-expand"></i></span>
-                    </button>
-                    <a href="javascript:;" v-show="canAddMedia" v-on:click="showModal" class="btn btn-secondary btn-sm"><i class="fa fa-plus"></i></a>
-                    <a href="javascript:;" v-on:click="removeSelected" class="btn btn-secondary btn-sm" v-bind:class="{ disabled : !selectedMedia }"><i class="fa fa-trash"></i></a>
-                </div>
-                <div  class="selected-media-name">
-                    <code class="text-right" v-if="selectedMedia">@T["{{{{ selectedMedia.name }}}} ({{{{ isNaN(fileSize)? 0 : fileSize }}}} KB)"]</code>
-                </div>
-            </nav>
-        </div>
-        <div class="form-group">
-            <media-field-thumbs-container :media-items="mediaItems"
-                                          :thumb-size="thumbSize"
-                                          :selected-media="selectedMedia">
-            </media-field-thumbs-container>
-        </div>
-    </div>
-</div>
-
-<div class="modal" id="@Html.IdFor(m => m)-ModalBody">
-    <div class="modal-dialog modal-lg media-modal" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">@T["Select Media"]</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
+        <div class="form-control-plaintext media-field-toolbar" v-cloak>
+            <div class="btn-group">
+                <button type="button" class="btn btn-secondary btn-sm" :disabled="mediaItems.length < 1"
+                    v-on:click="smallThumbs = !smallThumbs">
+                    <span v-show="!smallThumbs" title="@T[" Small Thumbs"]"><i class="fa fa-compress"></i></span>
+                    <span v-show="smallThumbs" title="@T[" Large Thumbs"]"><i class="fa fa-expand"></i></span>
                 </button>
+                <a href="javascript:;" v-show="canAddMedia" v-on:click="showModal" class="btn btn-secondary btn-sm"><i
+                        class="fa fa-plus"></i></a>
+                <a href="javascript:;" v-on:click="removeSelected" class="btn btn-secondary btn-sm"
+                    v-bind:class="{ disabled : !selectedMedia }"><i class="fa fa-trash"></i></a>
             </div>
-            <div class="modal-body">
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-primary mediaFieldSelectButton">@T["OK"]</button>
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">@T["Cancel"]</button>
+            <label class="selected-media-name">
+                <code class="text-right"
+                    v-if="selectedMedia">@T["{{{{ selectedMedia.name }}}} ({{{{ isNaN(fileSize)? 0 : fileSize }}}} KB)"]</code>
+            </label>
+        </div>
+
+        <media-field-thumbs-container :media-items="mediaItems" :thumb-size="thumbSize" :selected-media="selectedMedia"
+            :id-prefix="idPrefix">
+        </media-field-thumbs-container>
+    </div>
+
+
+    <div class="modal" id="@Html.IdFor(m => m)-ModalBody">
+        <div class="modal-dialog modal-lg media-modal" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">@T["Select Media"]</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary mediaFieldSelectButton">@T["OK"]</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">@T["Cancel"]</button>
+                </div>
             </div>
         </div>
     </div>
-</div>
-
-<partial name="Shared/MediaFieldEditLocalization.cshtml" />
