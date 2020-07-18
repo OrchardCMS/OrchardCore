@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -23,7 +24,7 @@ namespace OrchardCore.Lucene.Controllers
             _luceneQuerySource = luceneQuerySource;
         }
 
-        [HttpPost, HttpGet]
+        [HttpGet]
         [Route("content")]
         public async Task<IActionResult> Content(
             string indexName,
@@ -35,23 +36,29 @@ namespace OrchardCore.Lucene.Controllers
                 return this.ChallengeOrForbid();
             }
 
-            var luceneQuery = new LuceneQuery
+            var result = await LuceneQueryApi(indexName, query, parameters, returnContentItems: true);
+
+            return new ObjectResult(result);
+        }
+        [HttpPost]
+        [Route("content")]
+        public async Task<IActionResult> ContentPost(
+            [FromForm] string indexName,
+            [FromForm] string query,
+            [FromForm] string parameters)
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.QueryLuceneApi))
             {
-                Index = indexName,
-                Template = query,
-                ReturnContentItems = true
-            };
+                return this.ChallengeOrForbid();
+            }
 
-            var queryParameters = parameters != null ?
-                JsonConvert.DeserializeObject<Dictionary<string, object>>(parameters)
-                : new Dictionary<string, object>();
-
-            var result = await _luceneQuerySource.ExecuteQueryAsync(luceneQuery, queryParameters);
+            var result = await LuceneQueryApi(indexName, query, parameters, returnContentItems: true);
 
             return new ObjectResult(result);
         }
 
-        [HttpPost, HttpGet]
+
+        [HttpGet]
         [Route("documents")]
         public async Task<IActionResult> Documents(
             string indexName,
@@ -63,10 +70,35 @@ namespace OrchardCore.Lucene.Controllers
                 return this.ChallengeOrForbid();
             }
 
+            var result = await LuceneQueryApi(indexName, query, parameters);
+
+            return new ObjectResult(result);
+        }
+
+        [HttpPost]
+        [Route("documents")]
+        public async Task<IActionResult> DocumentsPost(
+            [FromForm] string indexName,
+            [FromForm] string query,
+            [FromForm] string parameters)
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.QueryLuceneApi))
+            {
+                return this.ChallengeOrForbid();
+            }
+
+            var result = await LuceneQueryApi(indexName, query, parameters);
+
+            return new ObjectResult(result);
+        }
+
+        private async Task<Queries.IQueryResults> LuceneQueryApi(string indexName, string query, string parameters, bool returnContentItems = false)
+        {
             var luceneQuery = new LuceneQuery
             {
                 Index = indexName,
-                Template = query
+                Template = query,
+                ReturnContentItems = returnContentItems
             };
 
             var queryParameters = parameters != null ?
@@ -74,8 +106,7 @@ namespace OrchardCore.Lucene.Controllers
                 : new Dictionary<string, object>();
 
             var result = await _luceneQuerySource.ExecuteQueryAsync(luceneQuery, queryParameters);
-
-            return new ObjectResult(result.Items);
+            return result;
         }
     }
 }
