@@ -45,11 +45,12 @@ namespace OrchardCore.Data.Documents
         }
 
         /// <inheritdoc />
-        public async Task<T> GetImmutableAsync<T>(Func<Task<T>> factoryAsync = null) where T : class, new()
+        public async Task<(bool, T)> GetImmutableAsync<T>(Func<Task<T>> factoryAsync = null) where T : class, new()
         {
             if (_loaded.TryGetValue(typeof(T), out var loaded))
             {
-                throw new InvalidOperationException("Can't get for caching an object being mutated in the same scope");
+                // Return the already loaded document but indicating that it should not be cached.
+                return (false, loaded as T);
             }
 
             var document = await _session.Query<T>().FirstOrDefaultAsync();
@@ -57,10 +58,10 @@ namespace OrchardCore.Data.Documents
             if (document != null)
             {
                 _session.Detach(document);
-                return document;
+                return (true, document);
             }
 
-            return await (factoryAsync?.Invoke() ?? Task.FromResult((T)null)) ?? new T();
+            return (true, await (factoryAsync?.Invoke() ?? Task.FromResult((T)null)) ?? new T());
         }
 
         /// <inheritdoc />

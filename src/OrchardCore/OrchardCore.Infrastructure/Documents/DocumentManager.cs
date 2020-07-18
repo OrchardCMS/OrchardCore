@@ -79,9 +79,11 @@ namespace OrchardCore.Documents
 
             if (document == null)
             {
+                var cacheable = true;
+
                 if (!_isVolatile)
                 {
-                    document = await _documentStore.GetImmutableAsync(factoryAsync);
+                    (cacheable, document) = await _documentStore.GetImmutableAsync(factoryAsync);
                 }
                 else
                 {
@@ -90,7 +92,10 @@ namespace OrchardCore.Documents
                         ?? new TDocument();
                 }
 
-                await SetInternalAsync(document);
+                if (cacheable)
+                {
+                    await SetInternalAsync(document);
+                }
             }
 
             return document;
@@ -198,10 +203,12 @@ namespace OrchardCore.Documents
                 SlidingExpiration = _options.SlidingExpiration
             });
 
-            if (!_isVolatile)
+            // Consistency: We may have been the last to update the cache but not with the last stored document.
+            if (!_isVolatile && _options.CheckConsistency.Value)
             {
-                // Consistency: We may have been the last to update the cache but not with the last stored document.
-                if (_options.CheckConsistency.Value && (await _documentStore.GetImmutableAsync<TDocument>()).Identifier != document.Identifier)
+                (_, var stored) = await _documentStore.GetImmutableAsync<TDocument>();
+
+                if (stored.Identifier != document.Identifier)
                 {
                     await _distributedCache.RemoveAsync(_options.CacheIdKey);
                 }
