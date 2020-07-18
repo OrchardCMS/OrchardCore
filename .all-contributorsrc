@@ -1775,6 +1775,15 @@
       "contributions": [
         "translation"
       ]
+    },
+    {
+      "login": "tysongibby",
+      "name": "Tyson Gibby",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/12217620?v=4",
+      "profile": "https://github.com/tysongibby",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "skipCi": true

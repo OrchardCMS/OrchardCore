@@ -1,7 +1,7 @@
 # Contributors ✨
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-189-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-190-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
@@ -262,6 +262,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <td align="center"><a href="https://github.com/akanmuratcimen"><img src="https://avatars1.githubusercontent.com/u/1022626?v=4" width="100px;" alt=""/><br /><sub><b>Akan Murat Cimen</b></sub></a><br /><a href="#translation-akanmuratcimen" title="Translation">🌍</a></td>
     <td align="center"><a href="https://vorote.ch/"><img src="https://avatars0.githubusercontent.com/u/2937451?v=4" width="100px;" alt=""/><br /><sub><b>Dmytro Vorotyntsev</b></sub></a><br /><a href="#translation-vorotech" title="Translation">🌍</a></td>
     <td align="center"><a href="https://github.com/lthoa"><img src="https://avatars1.githubusercontent.com/u/6874322?v=4" width="100px;" alt=""/><br /><sub><b>lthoa</b></sub></a><br /><a href="#translation-lthoa" title="Translation">🌍</a></td>
+    <td align="center"><a href="https://github.com/tysongibby"><img src="https://avatars0.githubusercontent.com/u/12217620?v=4" width="100px;" alt=""/><br /><sub><b>Tyson Gibby</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=tysongibby" title="Documentation">📖</a></td>
   </tr>
 </table>
 
