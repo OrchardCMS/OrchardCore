@@ -1,4 +1,4 @@
-# Users (OrchardCore.Users)
+# Users (`OrchardCore.Users`)
 
 The Users module enables authentication UI and user management.
 
@@ -11,7 +11,8 @@ If you want to specify custom paths to access the authentication related urls, y
     "OrchardCore_Users": {
       "LoginPath": "Login",
       "LogoffPath": "Users/LogOff",
-      "ChangePasswordUrl": "ChangePassword"
+      "ChangePasswordUrl": "ChangePassword",
+      "ExternalLoginsUrl": "ExternalLogins"
     }
   }
 ```

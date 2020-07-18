@@ -62,7 +62,7 @@
                     <input class="form-control" id="search-box" type="search" placeholder="@T["Filter"]" aria-label="@T["Filter"]" autofocus>
                 </div>
                 <div id="cards" class="row">
-                    @foreach (var thumbnail in Model.Thumbnails)
+                    @foreach (var thumbnail in Model.Thumbnails.OrderBy(t => t.Key))
                     {
                         thumbnail.Value.DeploymentPlan = Model.DeploymentPlan;
                         thumbnail.Value.Type = thumbnail.Key;
@@ -116,6 +116,12 @@
     </div>
 </div>
 <script at="Foot" type="text/javascript">
+    $(document).ready(function() {
+      $('#modalSteps').on('shown.bs.modal', function() {
+        $('#search-box').trigger('focus');
+      });
+    });
+
     function replaceDiacritics(str) {
         return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
     }

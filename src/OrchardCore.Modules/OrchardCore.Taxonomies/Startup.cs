@@ -3,21 +3,29 @@ using Fluid;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.Apis;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Handlers;
+using OrchardCore.Contents.ViewModels;
+using OrchardCore.Contents.Services;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data;
 using OrchardCore.Data.Migration;
+using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Descriptors;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Indexing;
 using OrchardCore.Liquid;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
+using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
+using OrchardCore.Settings;
+using OrchardCore.Settings.Deployment;
 using OrchardCore.Taxonomies.Controllers;
 using OrchardCore.Taxonomies.Drivers;
 using OrchardCore.Taxonomies.Fields;
@@ -26,6 +34,7 @@ using OrchardCore.Taxonomies.Handlers;
 using OrchardCore.Taxonomies.Indexing;
 using OrchardCore.Taxonomies.Liquid;
 using OrchardCore.Taxonomies.Models;
+using OrchardCore.Taxonomies.Services;
 using OrchardCore.Taxonomies.Settings;
 using OrchardCore.Taxonomies.ViewModels;
 
@@ -76,7 +85,7 @@ namespace OrchardCore.Taxonomies
 
             services.AddScoped<IScopedIndexProvider, TaxonomyIndexProvider>();
 
-            // Terms
+            // Terms.
             services.AddContentPart<TermPart>();
             services.AddScoped<IContentHandler, TermPartContentHandler>();
             services.AddScoped<IContentDisplayDriver, TermPartContentDriver>();
@@ -106,6 +115,35 @@ namespace OrchardCore.Taxonomies
                 pattern: _adminOptions.AdminUrlPrefix + "/Taxonomies/Delete/{taxonomyContentItemId}/{taxonomyItemId}",
                 defaults: new { controller = taxonomyControllerName, action = nameof(AdminController.Delete) }
             );
+        }
+    }
+
+    [Feature("OrchardCore.Taxonomies.ContentsAdminList")]
+    public class ContentsAdminListStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddScoped<IContentsAdminListFilter, TaxonomyContentsAdminListFilter>();
+            services.AddScoped<IDisplayDriver<ContentOptionsViewModel>, TaxonomyContentsAdminListDisplayDriver>();
+
+            services.AddScoped<INavigationProvider, AdminMenu>();
+            services.AddScoped<IDisplayDriver<ISite>, TaxonomyContentsAdminListSettingsDisplayDriver>();
+        }
+    }
+
+    [Feature("OrchardCore.Taxonomies.ContentsAdminList")]
+    [RequireFeatures("OrchardCore.Deployment")]
+    public class ContentsAdminListDeploymentStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddTransient<IDeploymentSource, SiteSettingsPropertyDeploymentSource<TaxonomyContentsAdminListSettings>>();
+            services.AddScoped<IDisplayDriver<DeploymentStep>>(sp =>
+            {
+                var S = sp.GetService<IStringLocalizer<ContentsAdminListDeploymentStartup>>();
+                return new SiteSettingsPropertyDeploymentStepDriver<TaxonomyContentsAdminListSettings>(S["Taxonomy Filters settings"], S["Exports the Taxonomy filters settings."]);
+            });
+            services.AddSingleton<IDeploymentStepFactory>(new SiteSettingsPropertyDeploymentStepFactory<TaxonomyContentsAdminListSettings>());
         }
     }
 

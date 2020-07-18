@@ -3,6 +3,531 @@
 ** Any changes made directly to this file will be overwritten next time its asset group is processed by Gulp.
 */
 
+function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaItemUrl, allowMultiple, tempUploadFolder) {
+  var target = $(document.getElementById($(el).data('for')));
+  var initialPaths = target.data("init");
+  var mediaFieldEditor = $(el);
+  var idprefix = mediaFieldEditor.attr("id");
+  var mediaFieldApp;
+  mediaFieldApps.push(mediaFieldApp = new Vue({
+    el: mediaFieldEditor.get(0),
+    data: {
+      mediaItems: [],
+      selectedMedia: null,
+      smallThumbs: false,
+      idPrefix: idprefix,
+      initialized: false
+    },
+    created: function created() {
+      var self = this;
+      self.currentPrefs = JSON.parse(localStorage.getItem('mediaFieldPrefs'));
+    },
+    computed: {
+      paths: {
+        get: function get() {
+          var mediaPaths = [];
+
+          if (!this.initialized) {
+            return JSON.stringify(initialPaths);
+          }
+
+          this.mediaItems.forEach(function (x) {
+            if (x.mediaPath === 'not-found') {
+              return;
+            }
+
+            mediaPaths.push({
+              Path: x.mediaPath,
+              IsRemoved: x.isRemoved,
+              IsNew: x.isNew
+            });
+          });
+          return JSON.stringify(mediaPaths);
+        },
+        set: function set(values) {
+          var self = this;
+          var mediaPaths = values || [];
+          var signal = $.Deferred();
+          var items = [];
+          var length = 0;
+          mediaPaths.forEach(function (x, i) {
+            items.push({
+              name: ' ' + x.Path,
+              mime: '',
+              mediaPath: ''
+            }); // don't remove the space. Something different is needed or it wont react when the real name arrives.
+
+            promise = $.when(signal).done(function () {
+              $.ajax({
+                url: mediaItemUrl + "?path=" + encodeURIComponent(x.Path),
+                method: 'GET',
+                success: function success(data) {
+                  data.vuekey = data.name + i.toString(); // just because a unique key is required by Vue on v-for 
+
+                  items.splice(i, 1, data);
+
+                  if (items.length === ++length) {
+                    items.forEach(function (x) {
+                      self.mediaItems.push(x);
+                    });
+                    self.initialized = true;
+                  }
+                },
+                error: function error(_error) {
+                  console.log(JSON.stringify(_error));
+                  items.splice(i, 1, {
+                    name: x.Path,
+                    mime: '',
+                    mediaPath: 'not-found'
+                  });
+
+                  if (items.length === ++length) {
+                    items.forEach(function (x) {
+                      self.mediaItems.push(x);
+                    });
+                    self.initialized = true;
+                  }
+                }
+              });
+            });
+          });
+          signal.resolve();
+        }
+      },
+      fileSize: function fileSize() {
+        return Math.round(this.selectedMedia.size / 1024);
+      },
+      canAddMedia: function canAddMedia() {
+        var nonRemovedMediaItems = [];
+
+        for (var i = 0; i < this.mediaItems.length; i++) {
+          if (!this.mediaItems[i].isRemoved) {
+            nonRemovedMediaItems.push(this.mediaItems[i]);
+          }
+        }
+
+        return nonRemovedMediaItems.length === 0 || nonRemovedMediaItems.length > 0 && allowMultiple;
+      },
+      thumbSize: function thumbSize() {
+        return this.smallThumbs ? 120 : 240;
+      },
+      currentPrefs: {
+        get: function get() {
+          return {
+            smallThumbs: this.smallThumbs
+          };
+        },
+        set: function set(newPrefs) {
+          if (!newPrefs) {
+            return;
+          }
+
+          this.smallThumbs = newPrefs.smallThumbs;
+        }
+      }
+    },
+    mounted: function mounted() {
+      var self = this;
+      self.paths = initialPaths;
+      self.$on('selectAndDeleteMediaRequested', function (media) {
+        self.selectAndDeleteMedia(media);
+      });
+      self.$on('selectMediaRequested', function (media) {
+        self.selectMedia(media);
+      });
+      var selector = '#' + idOfUploadButton;
+      var editorId = mediaFieldEditor.attr('id');
+      $(selector).fileupload({
+        limitConcurrentUploads: 20,
+        dropZone: $('#' + editorId),
+        dataType: 'json',
+        url: uploadAction,
+        add: function add(e, data) {
+          var count = data.files.length;
+          var i;
+
+          for (i = 0; i < count; i++) {
+            data.files[i].uploadName = self.getUniqueId() + data.files[i].name;
+          }
+
+          data.submit();
+        },
+        formData: function formData() {
+          var antiForgeryToken = $("input[name=__RequestVerificationToken]").val();
+          return [{
+            name: 'path',
+            value: tempUploadFolder
+          }, {
+            name: '__RequestVerificationToken',
+            value: antiForgeryToken
+          }];
+        },
+        done: function done(e, data) {
+          var newMediaItems = [];
+          var errormsg = "";
+
+          if (data.result.files.length > 0) {
+            for (var i = 0; i < data.result.files.length; i++) {
+              data.result.files[i].isNew = true; //if error is defined probably the file type is not allowed
+
+              if (data.result.files[i].error === undefined || data.result.files[i].error === null) newMediaItems.push(data.result.files[i]);else errormsg += data.result.files[i].error + "\n";
+            }
+          }
+
+          if (errormsg !== "") {
+            alert(errormsg);
+            return;
+          }
+
+          if (newMediaItems.length > 1 && allowMultiple === false) {
+            alert($('#onlyOneItemMessage').val());
+            mediaFieldApp.mediaItems.push(newMediaItems[0]);
+            mediaFieldApp.initialized = true;
+          } else {
+            mediaFieldApp.mediaItems = mediaFieldApp.mediaItems.concat(newMediaItems);
+            mediaFieldApp.initialized = true;
+          }
+        },
+        error: function error(jqXHR, textStatus, errorThrown) {
+          console.log('error on upload!!');
+          console.log(jqXHR);
+          console.log(textStatus);
+          console.log(errorThrown);
+        }
+      });
+    },
+    methods: {
+      selectMedia: function selectMedia(media) {
+        this.selectedMedia = media;
+      },
+      getUniqueId: function getUniqueId() {
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+          var r = Math.random() * 16 | 0,
+              v = c === 'x' ? r : r & 0x3 | 0x8;
+          return v.toString(16);
+        });
+      },
+      removeSelected: function removeSelected(event) {
+        var removed = {};
+
+        if (this.selectedMedia) {
+          var index = this.mediaItems && this.mediaItems.indexOf(this.selectedMedia);
+
+          if (index > -1) {
+            removed = this.mediaItems[index];
+            removed.isRemoved = true; //this.mediaItems.splice([index], 1, removed);
+
+            this.mediaItems.splice(index, 1);
+          }
+        } else {
+          // The remove button can also remove a unique media item
+          if (this.mediaItems.length === 1) {
+            removed = this.mediaItems[index];
+            removed.isRemoved = true; //this.mediaItems.splice(0, 1, removed);                        
+
+            this.mediaItems.splice(0, 1);
+          }
+        }
+
+        this.selectedMedia = null;
+      },
+      selectAndDeleteMedia: function selectAndDeleteMedia(media) {
+        var self = this;
+        self.selectedMedia = media; // setTimeout because sometimes 
+        // removeSelected was called even before the media was set.
+
+        setTimeout(function () {
+          self.removeSelected();
+        }, 100);
+      }
+    },
+    watch: {
+      mediaItems: function mediaItems() {
+        // Trigger preview rendering
+        setTimeout(function () {
+          $(document).trigger('contentpreview:render');
+        }, 100);
+      },
+      currentPrefs: function currentPrefs(newPrefs) {
+        localStorage.setItem('mediaFieldPrefs', JSON.stringify(newPrefs));
+      }
+    }
+  }));
+}
+function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple) {
+  var target = $(document.getElementById($(el).data('for')));
+  var initialPaths = target.data("init");
+  var mediaFieldEditor = $(el);
+  var idprefix = mediaFieldEditor.attr("id");
+  var mediaFieldApp;
+  mediaFieldApps.push(mediaFieldApp = new Vue({
+    el: mediaFieldEditor.get(0),
+    data: {
+      mediaItems: [],
+      selectedMedia: null,
+      smallThumbs: false,
+      idPrefix: idprefix,
+      initialized: false
+    },
+    created: function created() {
+      var self = this;
+      self.currentPrefs = JSON.parse(localStorage.getItem('mediaFieldPrefs'));
+    },
+    computed: {
+      paths: {
+        get: function get() {
+          var mediaPaths = [];
+
+          if (!this.initialized) {
+            return JSON.stringify(initialPaths);
+          }
+
+          this.mediaItems.forEach(function (x) {
+            if (x.mediaPath === 'not-found') {
+              return;
+            }
+
+            mediaPaths.push({
+              Path: x.mediaPath
+            });
+          });
+          return JSON.stringify(mediaPaths);
+        },
+        set: function set(values) {
+          var self = this;
+          var mediaPaths = values || [];
+          var signal = $.Deferred();
+          var items = [];
+          var length = 0;
+          mediaPaths.forEach(function (x, i) {
+            items.push({
+              name: ' ' + x.Path,
+              mime: '',
+              mediaPath: ''
+            }); // don't remove the space. Something different is needed or it wont react when the real name arrives.
+
+            promise = $.when(signal).done(function () {
+              $.ajax({
+                url: mediaItemUrl + "?path=" + encodeURIComponent(x.Path),
+                method: 'GET',
+                success: function success(data) {
+                  data.vuekey = data.name + i.toString();
+                  items.splice(i, 1, data);
+
+                  if (items.length === ++length) {
+                    items.forEach(function (x) {
+                      self.mediaItems.push(x);
+                    });
+                    self.initialized = true;
+                  }
+                },
+                error: function error(_error) {
+                  console.log(_error);
+                  items.splice(i, 1, {
+                    name: x.Path,
+                    mime: '',
+                    mediaPath: 'not-found'
+                  });
+
+                  if (items.length === ++length) {
+                    items.forEach(function (x) {
+                      self.mediaItems.push(x);
+                    });
+                    self.initialized = true;
+                  }
+                }
+              });
+            });
+          });
+          signal.resolve();
+        }
+      },
+      fileSize: function fileSize() {
+        return Math.round(this.selectedMedia.size / 1024);
+      },
+      canAddMedia: function canAddMedia() {
+        return this.mediaItems.length === 0 || this.mediaItems.length > 0 && allowMultiple;
+      },
+      thumbSize: function thumbSize() {
+        return this.smallThumbs ? 120 : 240;
+      },
+      currentPrefs: {
+        get: function get() {
+          return {
+            smallThumbs: this.smallThumbs
+          };
+        },
+        set: function set(newPrefs) {
+          if (!newPrefs) {
+            return;
+          }
+
+          this.smallThumbs = newPrefs.smallThumbs;
+        }
+      }
+    },
+    mounted: function mounted() {
+      var self = this;
+      self.paths = initialPaths;
+      self.$on('selectAndDeleteMediaRequested', function (media) {
+        self.selectAndDeleteMedia(media);
+      });
+      self.$on('selectMediaRequested', function (media) {
+        self.selectMedia(media);
+      });
+      self.$on('filesUploaded', function (files) {
+        self.addMediaFiles(files);
+      });
+    },
+    methods: {
+      selectMedia: function selectMedia(media) {
+        this.selectedMedia = media;
+      },
+      showModal: function showModal(event) {
+        var self = this;
+
+        if (self.canAddMedia) {
+          $("#mediaApp").detach().appendTo($(modalBodyElement).find('.modal-body'));
+          $("#mediaApp").show();
+          var modal = $(modalBodyElement).modal();
+          $(modalBodyElement).find('.mediaFieldSelectButton').off('click').on('click', function (v) {
+            self.addMediaFiles(mediaApp.selectedMedias); // we don't want the included medias to be still selected the next time we open the modal.
+
+            mediaApp.selectedMedias = [];
+            modal.modal('hide');
+            return true;
+          });
+        }
+      },
+      addMediaFiles: function addMediaFiles(files) {
+        if (files.length > 1 && allowMultiple === false) {
+          alert($('#onlyOneItemMessage').val());
+          mediaFieldApp.mediaItems.push(files[0]);
+          mediaFieldApp.initialized = true;
+        } else {
+          mediaFieldApp.mediaItems = mediaFieldApp.mediaItems.concat(files);
+          mediaFieldApp.initialized = true;
+        }
+      },
+      removeSelected: function removeSelected(event) {
+        if (this.selectedMedia) {
+          var index = this.mediaItems && this.mediaItems.indexOf(this.selectedMedia);
+
+          if (index > -1) {
+            this.mediaItems.splice(index, 1);
+          }
+        } else {
+          // The remove button can also remove a unique media item
+          if (this.mediaItems.length === 1) {
+            this.mediaItems.splice(0, 1);
+          }
+        }
+
+        this.selectedMedia = null;
+      },
+      selectAndDeleteMedia: function selectAndDeleteMedia(media) {
+        var self = this;
+        self.selectedMedia = media; // setTimeout because sometimes 
+        // removeSelected was called even before the media was set.
+
+        setTimeout(function () {
+          self.removeSelected();
+        }, 100);
+      }
+    },
+    watch: {
+      mediaItems: function mediaItems() {
+        // Trigger preview rendering
+        setTimeout(function () {
+          $(document).trigger('contentpreview:render');
+        }, 100);
+      },
+      currentPrefs: function currentPrefs(newPrefs) {
+        localStorage.setItem('mediaFieldPrefs', JSON.stringify(newPrefs));
+      }
+    }
+  }));
+}
+// different media field editors will add themselves to this array
+var mediaFieldApps = [];
+// <media-field-thumbs-container> component 
+// different media field editors share this component to present the thumbs.
+Vue.component('mediaFieldThumbsContainer', {
+  template: '\
+       <div :id="idPrefix + \'_mediaContainerMain\'" v-cloak>\
+         <div v-if="mediaItems.length < 1" class="card text-center">\
+             <div class= "card-body" >\
+                <span class="hint">{{T.noImages}}</span>\
+             </div>\
+         </div>\
+         <draggable :list="mediaItems" tag="ol" class="row media-items-grid" >\
+            <li v-for="media in mediaItems"\
+                :key="media.vuekey" \
+                class="media-container-main-list-item card"\
+                :style="{width: thumbSize + 2 + \'px\'}"\
+                :class="{selected: selectedMedia == media}"\
+                v-on:click="selectMedia(media)" v-if="!media.isRemoved">\
+                    <div v-if="media.mediaPath!== \'not-found\'">\
+                        <div class="thumb-container" :style="{height: thumbSize + \'px\'}" >\
+                            <img v-if="media.mime.startsWith(\'image\')" \
+                            :src="buildMediaUrl(media.url, thumbSize)" \
+                            :data-mime="media.mime"\
+                            :style="{maxHeight: thumbSize + \'px\' , maxWidth: thumbSize + \'px\'}"/>\
+                            <i v-else class="fa fa-file-o fa-lg" :data-mime="media.mime"></i>\
+                         </div>\
+                         <div class="media-container-main-item-title card-body">\
+                                <a href="javascript:;" class="btn btn-light btn-sm float-right inline-media-button delete-button"\
+                                    v-on:click.stop="selectAndDeleteMedia(media)"><i class="fa fa-trash"></i></a>\
+                                <a :href="media.url" target="_blank" class="btn btn-light btn-sm float-right inline-media-button view-button""><i class="fa fa-download"></i></a> \
+                                <span class="media-filename card-text small" :title="media.mediaPath">{{ media.isNew ? media.name.substr(36) : media.name }}</span>\
+                         </div>\
+                    </div>\
+                    <div v-else>\
+                        <div class="thumb-container flex-column" :style="{height: thumbSize + \'px\'}">\
+                            <i class="fa fa-ban text-danger d-block"></i>\
+                            <span class="text-danger small d-block">{{ T.mediaNotFound }}</span>\
+                            <span class="text-danger small d-block text-center">{{ T.discardWarning }}</span>\
+                        </div>\
+                        <div class="media-container-main-item-title card-body">\
+                            <a href="javascript:;" class="btn btn-light btn-sm float-right inline-media-button delete-button"\
+                                v-on:click.stop="selectAndDeleteMedia(media)"><i class="fa fa-trash"></i></a>\
+                            <span class="media-filename card-text small text-danger" :title="media.name">{{ media.name }}</span>\
+                        </div>\
+                   </div>\
+            </li>\
+         </draggable>\
+       </div>\
+    ',
+  data: function data() {
+    return {
+      T: {}
+    };
+  },
+  props: {
+    mediaItems: Array,
+    selectedMedia: Object,
+    thumbSize: Number,
+    idPrefix: String
+  },
+  created: function created() {
+    var self = this; // retrieving localized strings from view
+
+    self.T.mediaNotFound = $('#t-media-not-found').val();
+    self.T.discardWarning = $('#t-discard-warning').val();
+    self.T.noImages = $('#t-no-images').val();
+  },
+  methods: {
+    selectAndDeleteMedia: function selectAndDeleteMedia(media) {
+      this.$parent.$emit('selectAndDeleteMediaRequested', media);
+    },
+    selectMedia: function selectMedia(media) {
+      this.$parent.$emit('selectMediaRequested', media);
+    },
+    buildMediaUrl: function buildMediaUrl(url, thumbSize) {
+      return url + (url.indexOf('?') == -1 ? '?' : '&') + 'width=' + thumbSize + '&height=' + thumbSize;
+    }
+  }
+});
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
 
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
@@ -19,7 +544,7 @@ var _root = {
 };
 var bus = new Vue();
 
-function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl) {
+function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl, pathBase) {
   if (initialized) {
     return;
   }
@@ -53,7 +578,7 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
         },
         created: function created() {
           var self = this;
-          self.dragDropThumbnail.src = '/OrchardCore.Media/Images/drag-thumbnail.png';
+          self.dragDropThumbnail.src = (pathBase || '') + '/OrchardCore.Media/Images/drag-thumbnail.png';
           bus.$on('folderSelected', function (folder) {
             self.selectedFolder = folder;
           });
@@ -148,6 +673,12 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                 });
                 break;
 
+              case 'lastModify':
+                filtered.sort(function (a, b) {
+                  return self.sortAsc ? a.lastModify - b.lastModify : b.lastModify - a.lastModify;
+                });
+                break;
+
               default:
                 filtered.sort(function (a, b) {
                   return self.sortAsc ? a.name.toLowerCase().localeCompare(b.name.toLowerCase()) : b.name.toLowerCase().localeCompare(a.name.toLowerCase());
@@ -162,7 +693,7 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
             return result;
           },
           thumbSize: function thumbSize() {
-            return this.smallThumbs ? 160 : 240;
+            return this.smallThumbs ? 100 : 240;
           },
           currentPrefs: {
             get: function get() {
@@ -267,7 +798,7 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
               return;
             }
 
-            confirmDialog(_objectSpread({}, $("#deleteFolder").data(), {
+            confirmDialog(_objectSpread(_objectSpread({}, $("#deleteFolder").data()), {}, {
               callback: function callback(resp) {
                 if (resp) {
                   $.ajax({
@@ -309,7 +840,7 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
               return;
             }
 
-            confirmDialog(_objectSpread({}, $("#deleteMedia").data(), {
+            confirmDialog(_objectSpread(_objectSpread({}, $("#deleteMedia").data()), {}, {
               callback: function callback(resp) {
                 if (resp) {
                   var paths = [];
@@ -352,7 +883,7 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
               return;
             }
 
-            confirmDialog(_objectSpread({}, $("#deleteMedia").data(), {
+            confirmDialog(_objectSpread(_objectSpread({}, $("#deleteMedia").data()), {}, {
               callback: function callback(resp) {
                 if (resp) {
                   $.ajax({
@@ -552,31 +1083,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 // <folder> component
 Vue.component('folder', {
-  template: '\
-        <li :class="{selected: isSelected}" \
-                v-on:dragleave.prevent = "handleDragLeave($event);" \
-                v-on:dragover.prevent.stop="handleDragOver($event);" \
-                v-on:drop.prevent.stop = "moveMediaToFolder(model, $event)" >\
-            <div :class="{folderhovered: isHovered , treeroot: level == 1}" >\
-                <a href="javascript:;" :style="{ padding' + (document.dir == "ltr" ? "Left" : "Right") + ':padding + \'px\' }" v-on:click="select"  draggable="false" class="folder-menu-item">\
-                  <span v-on:click.stop="toggle" class="expand" :class="{opened: open, closed: !open, empty: empty}"><i class="fas fa-chevron-right"></i></span>  \
-                  <div class="folder-name">{{model.name}}</div>\
-                    <div class="btn-group folder-actions" >\
-                            <a v-cloak href="javascript:;" class="btn btn-sm" v-on:click="createFolder" v-show="isSelected || isRoot"> <i class="fa fa-plus"></i></a>\
-                            <a v-cloak href="javascript:;" class="btn btn-sm" v-on:click="deleteFolder" v-show="isSelected && !isRoot"><i class="fa fa-trash"></i></a>\
-                    </div>\
-                </a>\
-            </div>\
-            <ol v-show="open">\
-                <folder v-for="folder in children"\
-                        :key="folder.path"\
-                        :model="folder" \
-                        :selected-in-media-app="selectedInMediaApp" \
-                        :level="level + 1">\
-                </folder>\
-            </ol>\
-        </li>\
-        ',
+  template: "\n        <li :class=\"{selected: isSelected}\" \n                v-on:dragleave.prevent = \"handleDragLeave($event);\" \n                v-on:dragover.prevent.stop=\"handleDragOver($event);\" \n                v-on:drop.prevent.stop = \"moveMediaToFolder(model, $event)\" >\n            <div :class=\"{folderhovered: isHovered , treeroot: level == 1}\" >\n                <a href=\"javascript:;\" :style=\"{ padding".concat(document.dir == "ltr" ? "Left" : "Right", ":padding + 'px' }\" v-on:click=\"select\"  draggable=\"false\" class=\"folder-menu-item\">\n                  <span v-on:click.stop=\"toggle\" class=\"expand\" :class=\"{opened: open, closed: !open, empty: empty}\"><i class=\"fas fa-chevron-right\"></i></span> \n                  <div class=\"folder-name\">{{model.name}}</div>\n                    <div class=\"btn-group folder-actions\" >\n                            <a v-cloak href=\"javascript:;\" class=\"btn btn-sm\" v-on:click=\"createFolder\" v-show=\"isSelected || isRoot\"> <i class=\"fa fa-plus\"></i></a>\n                            <a v-cloak href=\"javascript:;\" class=\"btn btn-sm\" v-on:click=\"deleteFolder\" v-show=\"isSelected && !isRoot\"><i class=\"fa fa-trash\"></i></a>\n                    </div>\n                </a>\n            </div>\n            <ol v-show=\"open\">\n                <folder v-for=\"folder in children\"\n                        :key=\"folder.path\"\n                        :model=\"folder\"\n                        :selected-in-media-app=\"selectedInMediaApp\"\n                        :level=\"level + 1\">\n                </folder>\n            </ol>\n        </li>\n        "),
   props: {
     model: Object,
     selectedInMediaApp: Object,
@@ -719,7 +1226,7 @@ Vue.component('folder', {
         return;
       }
 
-      confirmDialog(_objectSpread({}, $("#moveMedia").data(), {
+      confirmDialog(_objectSpread(_objectSpread({}, $("#moveMedia").data()), {}, {
         callback: function callback(resp) {
           if (resp) {
             $.ajax({
@@ -746,33 +1253,8 @@ Vue.component('folder', {
   }
 });
 // <media-items-grid> component
-Vue.component('mediaItemsGrid', {
-  template: '\
-        <ol class="row media-items-grid">\
-                <li v-for="media in filteredMediaItems" \
-                    :key="media.name" \
-                    class="media-item media-container-main-list-item card" \
-                    :style="{width: thumbSize + 2 + \'px\'}" \
-                    :class="{selected: isMediaSelected(media)}" \
-                    v-on:click.stop="toggleSelectionOfMedia(media)" \
-                    draggable="true" v-on:dragstart="dragStart(media, $event)"> \
-                    <div class="thumb-container" :style="{height: thumbSize + \'px\'}"> \
-                        <img v-if="media.mime.startsWith(\'image\')" \
-                                :src="buildMediaUrl(media.url, thumbSize)" \
-                                :data-mime="media.mime" \
-                                :style="{maxHeight: thumbSize + \'px\', maxWidth: thumbSize + \'px\'}" /> \
-                        <i v-else class="fa fa-file-o fa-lg" :data-mime="media.mime"></i> \
-                    </div> \
-                <div class="media-container-main-item-title card-body"> \
-                        <a href="javascript:;" class="btn btn-light btn-sm float-right inline-media-button edit-button" v-on:click.stop="renameMedia(media)"><i class="fa fa-edit"></i></a> \
-                        <a href="javascript:;" class="btn btn-light btn-sm float-right inline-media-button delete-button" v-on:click.stop="deleteMedia(media)"><i class="fa fa-trash"></i></a> \
-                        <a :href="media.url" class="btn btn-light btn-sm float-right inline-media-button view-button""><i class="fa fa-download"></i></a> \
-                        <span class="media-filename card-text small" :title="media.name">{{ media.name }}</span> \
-                    </div> \
-                 </li> \
-        </ol>\
-        \
-        ',
+Vue.component('media-items-grid', {
+  template: "\n        <ol class=\"row media-items-grid\">\n                <li v-for=\"media in filteredMediaItems\"\n                    :key=\"media.name\" \n                    class=\"media-item media-container-main-list-item card\"\n                    :style=\"{width: thumbSize + 2 + 'px'}\"\n                    :class=\"{selected: isMediaSelected(media)}\"\n                    v-on:click.stop=\"toggleSelectionOfMedia(media)\"\n                    draggable=\"true\" v-on:dragstart=\"dragStart(media, $event)\">\n                    <div class=\"thumb-container\" :style=\"{height: thumbSize +'px'}\">\n                        <img v-if=\"media.mime.startsWith('image')\"\n                                :src=\"buildMediaUrl(media.url, thumbSize)\"\n                                :data-mime=\"media.mime\"\n                                :style=\"{maxHeight: thumbSize +'px', maxWidth: thumbSize +'px'}\" />\n                        <i v-else class=\"fa fa-file-o fa-lg\" :data-mime=\"media.mime\"></i>\n                    </div>\n                <div class=\"media-container-main-item-title card-body\">\n                        <a href=\"javascript:;\" class=\"btn btn-light btn-sm float-right inline-media-button edit-button\" v-on:click.stop=\"renameMedia(media)\"><i class=\"fa fa-edit\"></i></a>\n                        <a href=\"javascript:;\" class=\"btn btn-light btn-sm float-right inline-media-button delete-button\" v-on:click.stop=\"deleteMedia(media)\"><i class=\"fa fa-trash\"></i></a>\n                        <a :href=\"media.url\" class=\"btn btn-light btn-sm float-right inline-media-button view-button\"\"><i class=\"fa fa-download\"></i></a>\n                        <span class=\"media-filename card-text small\" :title=\"media.name\">{{ media.name }}</span>\n                    </div>\n                 </li>\n        </ol>\n        ",
   data: function data() {
     return {
       T: {}
@@ -814,63 +1296,8 @@ Vue.component('mediaItemsGrid', {
   }
 });
 // <media-items-table> component
-Vue.component('mediaItemsTable', {
-  template: '\
-        <table class="table media-items-table"> \
-            <thead> \
-                <tr class="header-row"> \
-                    <th scope="col" class="thumbnail-column">{{ T.imageHeader }}</th> \
-                    <th scope="col" v-on:click="changeSort(\'name\')"> \
-                       {{ T.nameHeader }} \
-                         <sort-indicator colname="name" :selectedcolname="sortBy" :asc="sortAsc"></sort-indicator> \
-                    </th> \
-                    <th scope="col" v-on:click="changeSort(\'size\')"> \
-                        <span class="optional-col"> \
-                            {{ T.sizeHeader }} \
-                         <sort-indicator colname="size" :selectedcolname="sortBy" :asc="sortAsc"></sort-indicator> \
-                        </span> \
-                    </th> \
-                    <th scope="col" v-on:click="changeSort(\'mime\')"> \
-                        <span class="optional-col"> \
-                           {{ T.typeHeader }} \
-                         <sort-indicator colname="mime" :selectedcolname="sortBy" :asc="sortAsc"></sort-indicator> \
-                        </span> \
-                    </th> \
-                </tr>\
-            </thead>\
-            <tbody> \
-                    <tr v-for="media in filteredMediaItems" \
-                          class="media-item" \
-                          :class="{selected: isMediaSelected(media)}" \
-                          v-on:click.stop="toggleSelectionOfMedia(media)" \
-                          draggable="true" v-on:dragstart="dragStart(media, $event)" \
-                          :key="media.name"> \
-                             <td class="thumbnail-column"> \
-                                <div class="img-wrapper"> \
-                                    <img v-if="media.mime.startsWith(\'image\')" draggable="false" :src="buildMediaUrl(media.url, thumbSize)" /> \
-                                    <i v-else class="fa fa-file-o fa-lg" :data-mime="media.mime"></i> \
-                                </div> \
-                            </td> \
-                            <td> \
-                                <div class="media-name-cell"> \
-                                   <span class="break-word"> {{ media.name }} </span>\
-                                    <div class="buttons-container"> \
-                                        <a href="javascript:;" class="btn btn-link btn-sm mr-1 edit-button" v-on:click.stop="renameMedia(media)"> {{ T.editButton }} </a > \
-                                        <a href="javascript:;" class="btn btn-link btn-sm delete-button" v-on:click.stop="deleteMedia(media)"> {{ T.deleteButton }} </a> \
-                                        <a :href="media.url" class="btn btn-link btn-sm view-button"> {{ T.viewButton }} </a> \
-                                    </div> \
-                                </div> \
-                            </td> \
-                            <td> \
-                                <div class="text-col optional-col"> {{ isNaN(media.size)? 0 : Math.round(media.size / 1024) }} KB</div> \
-                            </td> \
-                            <td> \
-                                <div class="text-col optional-col">{{ media.mime }}</div> \
-                            </td> \
-                   </tr>\
-            </tbody>\
-        </table> \
-        ',
+Vue.component('media-items-table', {
+  template: "\n        <table class=\"table media-items-table\">\n            <thead>\n                <tr class=\"header-row\">\n                    <th scope=\"col\" class=\"thumbnail-column\">{{ T.imageHeader }}</th>\n                    <th scope=\"col\" v-on:click=\"changeSort('name')\">\n                       {{ T.nameHeader }}\n                         <sort-indicator colname=\"name\" :selectedcolname=\"sortBy\" :asc=\"sortAsc\"></sort-indicator>\n                    </th>\n                    <th scope=\"col\" v-on:click=\"changeSort('lastModify')\"> \n                       {{ T.lastModifyHeader }} \n                         <sort-indicator colname=\"lastModify\" :selectedcolname=\"sortBy\" :asc=\"sortAsc\"></sort-indicator> \n                    </th> \n                    <th scope=\"col\" v-on:click=\"changeSort('size')\">\n                        <span class=\"optional-col\">\n                            {{ T.sizeHeader }}\n                         <sort-indicator colname=\"size\" :selectedcolname=\"sortBy\" :asc=\"sortAsc\"></sort-indicator>\n                        </span>\n                    </th>\n                    <th scope=\"col\" v-on:click=\"changeSort('mime')\">\n                        <span class=\"optional-col\">\n                           {{ T.typeHeader }}\n                         <sort-indicator colname=\"mime\" :selectedcolname=\"sortBy\" :asc=\"sortAsc\"></sort-indicator>\n                        </span>\n                    </th>\n                </tr>\n            </thead>\n            <tbody>\n                    <tr v-for=\"media in filteredMediaItems\"\n                          class=\"media-item\"\n                          :class=\"{selected: isMediaSelected(media)}\"\n                          v-on:click.stop=\"toggleSelectionOfMedia(media)\"\n                          draggable=\"true\" v-on:dragstart=\"dragStart(media, $event)\"\n                          :key=\"media.name\">\n                             <td class=\"thumbnail-column\">\n                                <div class=\"img-wrapper\">\n                                    <img v-if=\"media.mime.startsWith('image')\" draggable=\"false\" :src=\"buildMediaUrl(media.url, thumbSize)\" />\n                                    <i v-else class=\"fa fa-file-o fa-lg\" :data-mime=\"media.mime\"></i>\n                                </div>\n                            </td>\n                            <td>\n                                <div class=\"media-name-cell\">\n                                   <span class=\"break-word\"> {{ media.name }} </span>\n                                    <div class=\"buttons-container\">\n                                        <a href=\"javascript:;\" class=\"btn btn-link btn-sm mr-1 edit-button\" v-on:click.stop=\"renameMedia(media)\"> {{ T.editButton }} </a >\n                                        <a href=\"javascript:;\" class=\"btn btn-link btn-sm delete-button\" v-on:click.stop=\"deleteMedia(media)\"> {{ T.deleteButton }} </a>\n                                        <a :href=\"media.url\" class=\"btn btn-link btn-sm view-button\"> {{ T.viewButton }} </a>\n                                    </div>\n                                </div>\n                            </td>\n                            <td>\n                                <div class=\"text-col\"> {{ printDateTime(media.lastModify) }} </div>\n                            </td>\n                            <td>\n                                <div class=\"text-col optional-col\"> {{ isNaN(media.size)? 0 : Math.round(media.size / 1024) }} KB</div>\n                            </td>\n                            <td>\n                                <div class=\"text-col optional-col\">{{ media.mime }}</div>\n                            </td>\n                   </tr>\n            </tbody>\n        </table>\n        ",
   data: function data() {
     return {
       T: {}
@@ -887,6 +1314,7 @@ Vue.component('mediaItemsTable', {
     var self = this;
     self.T.imageHeader = $('#t-image-header').val();
     self.T.nameHeader = $('#t-name-header').val();
+    self.T.lastModifyHeader = $('#t-lastModify-header').val();
     self.T.sizeHeader = $('#t-size-header').val();
     self.T.typeHeader = $('#t-type-header').val();
     self.T.editButton = $('#t-edit-button').val();
@@ -917,6 +1345,10 @@ Vue.component('mediaItemsTable', {
     },
     dragStart: function dragStart(media, e) {
       bus.$emit('mediaDragStartRequested', media, e);
+    },
+    printDateTime: function printDateTime(datemillis) {
+      var d = new Date(datemillis);
+      return d.toLocaleString();
     }
   }
 });
@@ -925,53 +1357,14 @@ Vue.component('mediaItemsTable', {
 // It's the parent's responsibility to listen for these events and display the received items
 // <pager> component
 Vue.component('pager', {
-  template: '\
-        <nav id="media-pager" aria-label="Pagination Navigation" role="navigation" :data-computed-trigger="itemsInCurrentPage.length">\
-            <ul class= "pagination  pagination-sm"> \
-                <li class="page-item media-first-button" :class="{disabled : !canDoFirst}"> \
-                    <a class="page-link" href="#" :tabindex="canDoFirst ? 0 : -1" v-on:click="goFirst">{{ T.pagerFirstButton }}</a> \
-                </li> \
-                <li class="page-item" :class="{disabled : !canDoPrev}"> \
-                    <a class="page-link" href="#" :tabindex="canDoPrev ? 0 : -1" v-on:click="previous">{{ T.pagerPreviousButton }}</a> \
-                </li> \
-                <li  v-if="link !== -1" class="page-item page-number"  :class="{active : current == link - 1}" v-for="link in pageLinks"> \
-                    <a class="page-link" href="#" v-on:click="goTo(link - 1)" :aria-label="\'Goto Page \' + link">\
-                        {{link}} \
-                        <span v-if="current == link -1" class="sr-only">(current)</span>\
-                    </a> \
-                </li> \
-                <li class="page-item" :class="{disabled : !canDoNext}"> \
-                    <a class="page-link" href="#" :tabindex="canDoNext ? 0 : -1" v-on:click="next">{{ T.pagerNextButton }}</a> \
-                </li> \
-                <li class="page-item media-last-button" :class="{disabled : !canDoLast}"> \
-                    <a class="page-link" href="#" :tabindex="canDoLast ? 0 : -1" v-on:click="goLast">{{ T.pagerLastButton }}</a> \
-                </li> \
-                <li class="page-item ml-4 page-size-info">\
-                    <div style="display: flex;">\
-                        <span class="page-link disabled text-muted page-size-label">{{ T.pagerPageSizeLabel }}</span>\
-                        <select id="pageSizeSelect" class="page-link" v-model="pageSize"> \
-                            <option v-for="option in pageSizeOptions" v-bind:value="option"> \
-                                {{option}} \
-                            </option> \
-                        </select> \
-                    </div>\
-                </li> \
-                <li class="page-item ml-4 page-info"> \
-                    <span class="page-link disabled text-muted ">{{ T.pagerPageLabel }} {{current + 1}}/{{totalPages}}</span> \
-                </li> \
-                <li class="page-item ml-4 total-info"> \
-                     <span class="page-link disabled text-muted "> {{ T.pagerTotalLabel }} {{total}}</span> \
-                </li> \
-            </ul> \
-        </nav>\
-        ',
+  template: "\n        <nav id=\"media-pager\" aria-label=\"Pagination Navigation\" role=\"navigation\" :data-computed-trigger=\"itemsInCurrentPage.length\">\n            <ul class= \"pagination  pagination-sm\">\n                <li class=\"page-item media-first-button\" :class=\"{disabled : !canDoFirst}\">\n                    <a class=\"page-link\" href=\"#\" :tabindex=\"canDoFirst ? 0 : -1\" v-on:click=\"goFirst\">{{ T.pagerFirstButton }}</a>\n                </li>\n                <li class=\"page-item\" :class=\"{disabled : !canDoPrev}\">\n                    <a class=\"page-link\" href=\"#\" :tabindex=\"canDoPrev ? 0 : -1\" v-on:click=\"previous\">{{ T.pagerPreviousButton }}</a>\n                </li>\n                <li  v-if=\"link !== -1\" class=\"page-item page-number\"  :class=\"{active : current == link - 1}\" v-for=\"link in pageLinks\">\n                    <a class=\"page-link\" href=\"#\" v-on:click=\"goTo(link - 1)\" :aria-label=\"'Goto Page' + link\">\n                        {{link}}\n                        <span v-if=\"current == link -1\" class=\"sr-only\">(current)</span>\n                    </a>\n                </li>\n                <li class=\"page-item\" :class=\"{disabled : !canDoNext}\">\n                    <a class=\"page-link\" href=\"#\" :tabindex=\"canDoNext ? 0 : -1\" v-on:click=\"next\">{{ T.pagerNextButton }}</a>\n                </li>\n                <li class=\"page-item media-last-button\" :class=\"{disabled : !canDoLast}\">\n                    <a class=\"page-link\" href=\"#\" :tabindex=\"canDoLast ? 0 : -1\" v-on:click=\"goLast\">{{ T.pagerLastButton }}</a>\n                </li>\n                <li class=\"page-item ml-4 page-size-info\">\n                    <div style=\"display: flex;\">\n                        <span class=\"page-link disabled text-muted page-size-label\">{{ T.pagerPageSizeLabel }}</span>\n                        <select id=\"pageSizeSelect\" class=\"page-link\" v-model=\"pageSize\">\n                            <option v-for=\"option in pageSizeOptions\" v-bind:value=\"option\">\n                                {{option}}\n                            </option>\n                        </select>\n                    </div>\n                </li>\n                <li class=\"page-item ml-4 page-info\">\n                    <span class=\"page-link disabled text-muted \">{{ T.pagerPageLabel }} {{current + 1}}/{{totalPages}}</span>\n                </li>\n                <li class=\"page-item ml-4 total-info\">\n                     <span class=\"page-link disabled text-muted \"> {{ T.pagerTotalLabel }} {{total}}</span>\n                </li>\n            </ul>\n        </nav>\n        ",
   props: {
     sourceItems: Array
   },
   data: function data() {
     return {
-      pageSize: 5,
-      pageSizeOptions: [5, 10, 30, 50, 100],
+      pageSize: 10,
+      pageSizeOptions: [10, 30, 50, 100],
       current: 0,
       T: {}
     };
@@ -1067,12 +1460,7 @@ Vue.component('pager', {
 });
 // <sort-indicator> component
 Vue.component('sortIndicator', {
-  template: '\
-        <div v-show="isActive" class="sort-indicator"> \
-            <span v-show="asc"><i class="small fa fa-chevron-up"></i></span> \
-            <span v-show="!asc"><i class="small fa fa-chevron-down"></i></span> \
-        </div> \
-        ',
+  template: "\n        <div v-show=\"isActive\" class=\"sort-indicator\">\n            <span v-show=\"asc\"><i class=\"small fa fa-chevron-up\"></i></span>\n            <span v-show=\"!asc\"><i class=\"small fa fa-chevron-down\"></i></span>\n        </div>\n        ",
   props: {
     colname: String,
     selectedcolname: String,
@@ -1081,472 +1469,6 @@ Vue.component('sortIndicator', {
   computed: {
     isActive: function isActive() {
       return this.colname.toLowerCase() == this.selectedcolname.toLowerCase();
-    }
-  }
-});
-function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaItemUrl, allowMultiple, tempUploadFolder) {
-  var target = $(document.getElementById($(el).data('for')));
-  var initialPaths = target.data("init");
-  var mediaFieldEditor = $(el);
-  var mediaFieldApp;
-  mediaFieldApps.push(mediaFieldApp = new Vue({
-    el: mediaFieldEditor.get(0),
-    data: {
-      mediaItems: [],
-      selectedMedia: null,
-      smallThumbs: false
-    },
-    created: function created() {
-      var self = this;
-      self.currentPrefs = JSON.parse(localStorage.getItem('mediaFieldPrefs'));
-    },
-    computed: {
-      paths: {
-        get: function get() {
-          var mediaPaths = [];
-          this.mediaItems.forEach(function (x) {
-            if (x.mediaPath === 'not-found') {
-              return;
-            }
-
-            mediaPaths.push({
-              Path: x.mediaPath,
-              IsRemoved: x.isRemoved,
-              IsNew: x.isNew
-            });
-          });
-          return JSON.stringify(mediaPaths);
-        },
-        set: function set(values) {
-          var self = this;
-          var mediaPaths = values || [];
-          var signal = $.Deferred();
-          mediaPaths.forEach(function (x, i) {
-            self.mediaItems.push({
-              name: ' ' + x.Path,
-              mime: '',
-              mediaPath: ''
-            }); // don't remove the space. Something different is needed or it wont react when the real name arrives.
-
-            promise = $.when(signal).done(function () {
-              $.ajax({
-                url: mediaItemUrl + "?path=" + encodeURIComponent(x.Path),
-                method: 'GET',
-                success: function success(data) {
-                  data.vuekey = data.name + i.toString(); // just because a unique key is required by Vue on v-for 
-
-                  self.mediaItems.splice(i, 1, data);
-                },
-                error: function error(_error) {
-                  console.log(JSON.stringify(_error));
-                  self.mediaItems.splice(i, 1, {
-                    name: x.Path,
-                    mime: '',
-                    mediaPath: 'not-found'
-                  });
-                }
-              });
-            });
-          });
-          signal.resolve();
-        }
-      },
-      fileSize: function fileSize() {
-        return Math.round(this.selectedMedia.size / 1024);
-      },
-      canAddMedia: function canAddMedia() {
-        var nonRemovedMediaItems = [];
-
-        for (var i = 0; i < this.mediaItems.length; i++) {
-          if (!this.mediaItems[i].isRemoved) {
-            nonRemovedMediaItems.push(this.mediaItems[i]);
-          }
-        }
-
-        return nonRemovedMediaItems.length === 0 || nonRemovedMediaItems.length > 0 && allowMultiple;
-      },
-      thumbSize: function thumbSize() {
-        return this.smallThumbs ? 120 : 240;
-      },
-      currentPrefs: {
-        get: function get() {
-          return {
-            smallThumbs: this.smallThumbs
-          };
-        },
-        set: function set(newPrefs) {
-          if (!newPrefs) {
-            return;
-          }
-
-          this.smallThumbs = newPrefs.smallThumbs;
-        }
-      }
-    },
-    mounted: function mounted() {
-      var self = this;
-      self.paths = initialPaths;
-      self.$on('selectAndDeleteMediaRequested', function (media) {
-        self.selectAndDeleteMedia(media);
-      });
-      self.$on('selectMediaRequested', function (media) {
-        self.selectMedia(media);
-      });
-      var selector = '#' + idOfUploadButton;
-      $(document).bind('drop dragover', function (e) {
-        e.preventDefault();
-      });
-      var editorId = mediaFieldEditor.attr('id');
-      $(selector).fileupload({
-        limitConcurrentUploads: 20,
-        dropZone: $('#' + editorId),
-        dataType: 'json',
-        url: uploadAction,
-        add: function add(e, data) {
-          var count = data.files.length;
-          var i;
-
-          for (i = 0; i < count; i++) {
-            data.files[i].uploadName = self.getUniqueId() + data.files[i].name;
-          }
-
-          data.submit();
-        },
-        formData: function formData() {
-          var antiForgeryToken = $("input[name=__RequestVerificationToken]").val();
-          return [{
-            name: 'path',
-            value: tempUploadFolder
-          }, {
-            name: '__RequestVerificationToken',
-            value: antiForgeryToken
-          }];
-        },
-        done: function done(e, data) {
-          var newMediaItems = [];
-
-          if (data.result.files.length > 0) {
-            for (var i = 0; i < data.result.files.length; i++) {
-              data.result.files[i].isNew = true;
-              newMediaItems.push(data.result.files[i]);
-            }
-          }
-
-          if (newMediaItems.length > 1 && allowMultiple === false) {
-            alert($('#onlyOneItemMessage').val());
-            mediaFieldApp.mediaItems.push(newMediaItems[0]);
-          } else {
-            mediaFieldApp.mediaItems = mediaFieldApp.mediaItems.concat(newMediaItems);
-          }
-        },
-        error: function error(jqXHR, textStatus, errorThrown) {
-          console.log('error on upload!!');
-          console.log(jqXHR);
-          console.log(textStatus);
-          console.log(errorThrown);
-        }
-      });
-    },
-    methods: {
-      selectMedia: function selectMedia(media) {
-        this.selectedMedia = media;
-      },
-      getUniqueId: function getUniqueId() {
-        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-          var r = Math.random() * 16 | 0,
-              v = c === 'x' ? r : r & 0x3 | 0x8;
-          return v.toString(16);
-        });
-      },
-      removeSelected: function removeSelected(event) {
-        var removed = {};
-
-        if (this.selectedMedia) {
-          var index = this.mediaItems && this.mediaItems.indexOf(this.selectedMedia);
-
-          if (index > -1) {
-            removed = this.mediaItems[index];
-            removed.isRemoved = true;
-            this.mediaItems.splice([index], 1, removed); //this.mediaItems.splice(index, 1);
-          }
-        } else {
-          // The remove button can also remove a unique media item
-          if (this.mediaItems.length === 1) {
-            removed = this.mediaItems[index];
-            removed.isRemoved = true;
-            this.mediaItems.splice(0, 1, removed); //this.mediaItems.splice(0, 1);
-          }
-        }
-
-        this.selectedMedia = null;
-      },
-      selectAndDeleteMedia: function selectAndDeleteMedia(media) {
-        var self = this;
-        self.selectedMedia = media; // setTimeout because sometimes 
-        // removeSelected was called even before the media was set.
-
-        setTimeout(function () {
-          self.removeSelected();
-        }, 100);
-      }
-    },
-    watch: {
-      mediaItems: function mediaItems() {
-        // Trigger preview rendering
-        setTimeout(function () {
-          $(document).trigger('contentpreview:render');
-        }, 100);
-      },
-      currentPrefs: function currentPrefs(newPrefs) {
-        localStorage.setItem('mediaFieldPrefs', JSON.stringify(newPrefs));
-      }
-    }
-  }));
-}
-function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple) {
-  var target = $(document.getElementById($(el).data('for')));
-  var initialPaths = target.data("init");
-  var mediaFieldEditor = $(el);
-  var mediaFieldApp;
-  mediaFieldApps.push(mediaFieldApp = new Vue({
-    el: mediaFieldEditor.get(0),
-    data: {
-      mediaItems: [],
-      selectedMedia: null,
-      smallThumbs: false
-    },
-    created: function created() {
-      var self = this;
-      self.currentPrefs = JSON.parse(localStorage.getItem('mediaFieldPrefs'));
-    },
-    computed: {
-      paths: {
-        get: function get() {
-          var mediaPaths = [];
-          this.mediaItems.forEach(function (x) {
-            if (x.mediaPath === 'not-found') {
-              return;
-            }
-
-            mediaPaths.push({
-              Path: x.mediaPath
-            });
-          });
-          return JSON.stringify(mediaPaths);
-        },
-        set: function set(values) {
-          var self = this;
-          var mediaPaths = values || [];
-          var signal = $.Deferred();
-          mediaPaths.forEach(function (x, i) {
-            self.mediaItems.push({
-              name: ' ' + x.Path,
-              mime: '',
-              mediaPath: ''
-            }); // don't remove the space. Something different is needed or it wont react when the real name arrives.
-
-            promise = $.when(signal).done(function () {
-              $.ajax({
-                url: mediaItemUrl + "?path=" + encodeURIComponent(x.Path),
-                method: 'GET',
-                success: function success(data) {
-                  data.vuekey = data.name + i.toString();
-                  self.mediaItems.splice(i, 1, data);
-                },
-                error: function error(_error) {
-                  console.log(_error);
-                  self.mediaItems.splice(i, 1, {
-                    name: x.Path,
-                    mime: '',
-                    mediaPath: 'not-found'
-                  });
-                }
-              });
-            });
-          });
-          signal.resolve();
-        }
-      },
-      fileSize: function fileSize() {
-        return Math.round(this.selectedMedia.size / 1024);
-      },
-      canAddMedia: function canAddMedia() {
-        return this.mediaItems.length === 0 || this.mediaItems.length > 0 && allowMultiple;
-      },
-      thumbSize: function thumbSize() {
-        return this.smallThumbs ? 120 : 240;
-      },
-      currentPrefs: {
-        get: function get() {
-          return {
-            smallThumbs: this.smallThumbs
-          };
-        },
-        set: function set(newPrefs) {
-          if (!newPrefs) {
-            return;
-          }
-
-          this.smallThumbs = newPrefs.smallThumbs;
-        }
-      }
-    },
-    mounted: function mounted() {
-      var self = this;
-      self.paths = initialPaths;
-      self.$on('selectAndDeleteMediaRequested', function (media) {
-        self.selectAndDeleteMedia(media);
-      });
-      self.$on('selectMediaRequested', function (media) {
-        self.selectMedia(media);
-      });
-      self.$on('filesUploaded', function (files) {
-        self.addMediaFiles(files);
-      });
-    },
-    methods: {
-      selectMedia: function selectMedia(media) {
-        this.selectedMedia = media;
-      },
-      showModal: function showModal(event) {
-        var self = this;
-
-        if (self.canAddMedia) {
-          $("#mediaApp").detach().appendTo($(modalBodyElement).find('.modal-body'));
-          $("#mediaApp").show();
-          var modal = $(modalBodyElement).modal();
-          $(modalBodyElement).find('.mediaFieldSelectButton').off('click').on('click', function (v) {
-            self.addMediaFiles(mediaApp.selectedMedias); // we don't want the included medias to be still selected the next time we open the modal.
-
-            mediaApp.selectedMedias = [];
-            modal.modal('hide');
-            return true;
-          });
-        }
-      },
-      addMediaFiles: function addMediaFiles(files) {
-        if (files.length > 1 && allowMultiple === false) {
-          alert($('#onlyOneItemMessage').val());
-          mediaFieldApp.mediaItems.push(files[0]);
-        } else {
-          mediaFieldApp.mediaItems = mediaFieldApp.mediaItems.concat(files);
-        }
-      },
-      removeSelected: function removeSelected(event) {
-        if (this.selectedMedia) {
-          var index = this.mediaItems && this.mediaItems.indexOf(this.selectedMedia);
-
-          if (index > -1) {
-            this.mediaItems.splice(index, 1);
-          }
-        } else {
-          // The remove button can also remove a unique media item
-          if (this.mediaItems.length === 1) {
-            this.mediaItems.splice(0, 1);
-          }
-        }
-
-        this.selectedMedia = null;
-      },
-      selectAndDeleteMedia: function selectAndDeleteMedia(media) {
-        var self = this;
-        self.selectedMedia = media; // setTimeout because sometimes 
-        // removeSelected was called even before the media was set.
-
-        setTimeout(function () {
-          self.removeSelected();
-        }, 100);
-      }
-    },
-    watch: {
-      mediaItems: function mediaItems() {
-        // Trigger preview rendering
-        setTimeout(function () {
-          $(document).trigger('contentpreview:render');
-        }, 100);
-      },
-      currentPrefs: function currentPrefs(newPrefs) {
-        localStorage.setItem('mediaFieldPrefs', JSON.stringify(newPrefs));
-      }
-    }
-  }));
-}
-// different media field editors will add themselves to this array
-var mediaFieldApps = [];
-// <media-field-thumbs-container> component 
-// different media field editors share this component to present the thumbs.
-Vue.component('mediaFieldThumbsContainer', {
-  template: '\
-       <div id="mediaContainerMain" v-cloak>\
-         <div v-if="mediaItems.length < 1" class="card text-center">\
-             <div class= "card-body" >\
-                <span class="hint">{{T.noImages}}</span>\
-             </div>\
-         </div>\
-         <draggable :list="mediaItems" element="ol" class="row media-items-grid" >\
-            <li v-for="media in mediaItems"\
-                :key="media.vuekey" \
-                class="media-container-main-list-item card"\
-                :style="{width: thumbSize + 2 + \'px\'}"\
-                :class="{selected: selectedMedia == media}"\
-                v-on:click="selectMedia(media)" v-if="!media.isRemoved">\
-                    <div v-if="media.mediaPath!== \'not-found\'">\
-                        <div class="thumb-container" :style="{height: thumbSize + \'px\'}" >\
-                            <img v-if="media.mime.startsWith(\'image\')" \
-                            :src="buildMediaUrl(media.url, thumbSize)" \
-                            :data-mime="media.mime"\
-                            :style="{maxHeight: thumbSize + \'px\' , maxWidth: thumbSize + \'px\'}"/>\
-                            <i v-else class="fa fa-file-o fa-lg" :data-mime="media.mime"></i>\
-                         </div>\
-                         <div class="media-container-main-item-title card-body">\
-                                <a href="javascript:;" class="btn btn-light btn-sm float-right inline-media-button delete-button"\
-                                    v-on:click.stop="selectAndDeleteMedia(media)"><i class="fa fa-trash"></i></a>\
-                                <a :href="media.url" target="_blank" class="btn btn-light btn-sm float-right inline-media-button view-button""><i class="fa fa-download"></i></a> \
-                                <span class="media-filename card-text small" :title="media.mediaPath">{{ media.isNew ? media.name.substr(36) : media.name }}</span>\
-                         </div>\
-                    </div>\
-                    <div v-else>\
-                        <div class="thumb-container flex-column" :style="{height: thumbSize + \'px\'}">\
-                            <i class="fa fa-ban text-danger d-block"></i>\
-                            <span class="text-danger small d-block">{{ T.mediaNotFound }}</span>\
-                            <span class="text-danger small d-block text-center">{{ T.discardWarning }}</span>\
-                        </div>\
-                        <div class="media-container-main-item-title card-body">\
-                            <a href="javascript:;" class="btn btn-light btn-sm float-right inline-media-button delete-button"\
-                                v-on:click.stop="selectAndDeleteMedia(media)"><i class="fa fa-trash"></i></a>\
-                            <span class="media-filename card-text small text-danger" :title="media.name">{{ media.name }}</span>\
-                        </div>\
-                   </div>\
-            </li>\
-         </draggable>\
-       </div>\
-    ',
-  data: function data() {
-    return {
-      T: {}
-    };
-  },
-  props: {
-    mediaItems: Array,
-    selectedMedia: Object,
-    thumbSize: Number
-  },
-  created: function created() {
-    var self = this; // retrieving localized strings from view
-
-    self.T.mediaNotFound = $('#t-media-not-found').val();
-    self.T.discardWarning = $('#t-discard-warning').val();
-    self.T.noImages = $('#t-no-images').val();
-  },
-  methods: {
-    selectAndDeleteMedia: function selectAndDeleteMedia(media) {
-      this.$parent.$emit('selectAndDeleteMediaRequested', media);
-    },
-    selectMedia: function selectMedia(media) {
-      this.$parent.$emit('selectMediaRequested', media);
-    },
-    buildMediaUrl: function buildMediaUrl(url, thumbSize) {
-      return url + (url.indexOf('?') == -1 ? '?' : '&') + 'width=' + thumbSize + '&height=' + thumbSize;
     }
   }
 });
@@ -1722,11 +1644,9 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
  * https://opensource.org/licenses/MIT
  */
 
-/* jshint nomen:false */
+/* global define, require */
 
-/* global define, require, window, document, location, Blob, FormData */
-;
-
+/* eslint-disable new-cap */
 (function (factory) {
   'use strict';
 
@@ -1742,11 +1662,11 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
   }
 })(function ($) {
   'use strict'; // Detect file input support, based on
-  // http://viljamis.com/blog/2012/file-upload-support-on-mobile/
+  // https://viljamis.com/2012/file-upload-support-on-mobile/
 
   $.support.fileInput = !(new RegExp( // Handle devices which give false positives for the feature detection:
   '(Android (1\\.[0156]|2\\.[01]))' + '|(Windows Phone (OS 7|8\\.0))|(XBLWP)|(ZuneWP)|(WPDesktop)' + '|(w(eb)?OSBrowser)|(webOS)' + '|(Kindle/(1\\.0|2\\.[05]|3\\.0))').test(window.navigator.userAgent) || // Feature detection for all other devices:
-  $('<input type="file">').prop('disabled')); // The FileReader API is not actually used, but works as feature detection,
+  $('<input type="file"/>').prop('disabled')); // The FileReader API is not actually used, but works as feature detection,
   // as some Safari versions (5?) support XHR file uploads via the FormData API,
   // but not non-multipart XHR file uploads.
   // window.XMLHttpRequestUpload is not available on IE10, so we check for
@@ -1755,7 +1675,13 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
   $.support.xhrFileUpload = !!(window.ProgressEvent && window.FileReader);
   $.support.xhrFormDataFileUpload = !!window.FormData; // Detect support for Blob slicing (required for chunked uploads):
 
-  $.support.blobSlice = window.Blob && (Blob.prototype.slice || Blob.prototype.webkitSlice || Blob.prototype.mozSlice); // Helper function to create drag handlers for dragover/dragenter/dragleave:
+  $.support.blobSlice = window.Blob && (Blob.prototype.slice || Blob.prototype.webkitSlice || Blob.prototype.mozSlice);
+  /**
+   * Helper function to create drag handlers for dragover/dragenter/dragleave
+   *
+   * @param {string} type Event type
+   * @returns {Function} Drag handler
+   */
 
   function getDragHandler(type) {
     var isDragOver = type === 'dragover';
@@ -1863,6 +1789,15 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       bitrateInterval: 500,
       // By default, uploads are started automatically when adding files:
       autoUpload: true,
+      // By default, duplicate file names are expected to be handled on
+      // the server-side. If this is not possible (e.g. when uploading
+      // files directly to Amazon S3), the following option can be set to
+      // an empty object or an object mapping existing filenames, e.g.:
+      // { "image.jpg": true, "image (1).jpg": true }
+      // If it is set, all files will be uploaded with unique filenames,
+      // adding increasing number suffixes if necessary, e.g.:
+      // "image (2).jpg"
+      uniqueFilenames: undefined,
       // Error and info messages:
       messages: {
         uploadedBytes: 'Uploaded bytes exceed file size'
@@ -1870,10 +1805,12 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       // Translation function, gets the message key to be translated
       // and an object with context specific data as arguments:
       i18n: function i18n(message, context) {
+        // eslint-disable-next-line no-param-reassign
         message = this.messages[message] || message.toString();
 
         if (context) {
           $.each(context, function (key, value) {
+            // eslint-disable-next-line no-param-reassign
             message = message.replace('{' + key + '}', value);
           });
         }
@@ -1899,7 +1836,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       // and allows you to override plugin options as well as define ajax settings.
       //
       // Listeners for this callback can also be bound the following way:
-      // .bind('fileuploadadd', func);
+      // .on('fileuploadadd', func);
       //
       // data.submit() returns a Promise object and allows to attach additional
       // handlers using jQuery's Deferred callbacks:
@@ -1917,39 +1854,41 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       },
       // Other callbacks:
       // Callback for the submit event of each file upload:
-      // submit: function (e, data) {}, // .bind('fileuploadsubmit', func);
+      // submit: function (e, data) {}, // .on('fileuploadsubmit', func);
       // Callback for the start of each file upload request:
-      // send: function (e, data) {}, // .bind('fileuploadsend', func);
+      // send: function (e, data) {}, // .on('fileuploadsend', func);
       // Callback for successful uploads:
-      // done: function (e, data) {}, // .bind('fileuploaddone', func);
+      // done: function (e, data) {}, // .on('fileuploaddone', func);
       // Callback for failed (abort or error) uploads:
-      // fail: function (e, data) {}, // .bind('fileuploadfail', func);
+      // fail: function (e, data) {}, // .on('fileuploadfail', func);
       // Callback for completed (success, abort or error) requests:
-      // always: function (e, data) {}, // .bind('fileuploadalways', func);
+      // always: function (e, data) {}, // .on('fileuploadalways', func);
       // Callback for upload progress events:
-      // progress: function (e, data) {}, // .bind('fileuploadprogress', func);
+      // progress: function (e, data) {}, // .on('fileuploadprogress', func);
       // Callback for global upload progress events:
-      // progressall: function (e, data) {}, // .bind('fileuploadprogressall', func);
+      // progressall: function (e, data) {}, // .on('fileuploadprogressall', func);
       // Callback for uploads start, equivalent to the global ajaxStart event:
-      // start: function (e) {}, // .bind('fileuploadstart', func);
+      // start: function (e) {}, // .on('fileuploadstart', func);
       // Callback for uploads stop, equivalent to the global ajaxStop event:
-      // stop: function (e) {}, // .bind('fileuploadstop', func);
+      // stop: function (e) {}, // .on('fileuploadstop', func);
       // Callback for change events of the fileInput(s):
-      // change: function (e, data) {}, // .bind('fileuploadchange', func);
+      // change: function (e, data) {}, // .on('fileuploadchange', func);
       // Callback for paste events to the pasteZone(s):
-      // paste: function (e, data) {}, // .bind('fileuploadpaste', func);
+      // paste: function (e, data) {}, // .on('fileuploadpaste', func);
       // Callback for drop events of the dropZone(s):
-      // drop: function (e, data) {}, // .bind('fileuploaddrop', func);
+      // drop: function (e, data) {}, // .on('fileuploaddrop', func);
       // Callback for dragover events of the dropZone(s):
-      // dragover: function (e) {}, // .bind('fileuploaddragover', func);
+      // dragover: function (e) {}, // .on('fileuploaddragover', func);
+      // Callback before the start of each chunk upload request (before form data initialization):
+      // chunkbeforesend: function (e, data) {}, // .on('fileuploadchunkbeforesend', func);
       // Callback for the start of each chunk upload request:
-      // chunksend: function (e, data) {}, // .bind('fileuploadchunksend', func);
+      // chunksend: function (e, data) {}, // .on('fileuploadchunksend', func);
       // Callback for successful chunk uploads:
-      // chunkdone: function (e, data) {}, // .bind('fileuploadchunkdone', func);
+      // chunkdone: function (e, data) {}, // .on('fileuploadchunkdone', func);
       // Callback for failed (abort or error) chunk uploads:
-      // chunkfail: function (e, data) {}, // .bind('fileuploadchunkfail', func);
+      // chunkfail: function (e, data) {}, // .on('fileuploadchunkfail', func);
       // Callback for completed (success, abort or error) chunk upload requests:
-      // chunkalways: function (e, data) {}, // .bind('fileuploadchunkalways', func);
+      // chunkalways: function (e, data) {}, // .on('fileuploadchunkalways', func);
       // The plugin options are used as settings object for the ajax calls.
       // The following are jQuery ajax settings required for the file uploads:
       processData: false,
@@ -1957,6 +1896,15 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       cache: false,
       timeout: 0
     },
+    // jQuery versions before 1.8 require promise.pipe if the return value is
+    // used, as promise.then in older versions has a different behavior, see:
+    // https://blog.jquery.com/2012/08/09/jquery-1-8-released/
+    // https://bugs.jquery.com/ticket/11010
+    // https://github.com/blueimp/jQuery-File-Upload/pull/3435
+    _promisePipe: function () {
+      var parts = $.fn.jquery.split('.');
+      return Number(parts[0]) > 1 || Number(parts[1]) > 7 ? 'then' : 'pipe';
+    }(),
     // A list of options that require reinitializing event listeners and/or
     // special initialization code:
     _specialOptions: ['fileInput', 'dropZone', 'pasteZone', 'multipart', 'forceIframeTransport'],
@@ -2033,7 +1981,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
       if (obj._response) {
         for (prop in obj._response) {
-          if (obj._response.hasOwnProperty(prop)) {
+          if (Object.prototype.hasOwnProperty.call(obj._response, prop)) {
             delete obj._response[prop];
           }
         }
@@ -2078,7 +2026,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       // for the upload progress event:
 
       if (xhr.upload) {
-        $(xhr.upload).bind('progress', function (e) {
+        $(xhr.upload).on('progress', function (e) {
           var oe = e.originalEvent; // Make sure the progress event properties get copied over:
 
           e.lengthComputable = oe.lengthComputable;
@@ -2093,9 +2041,33 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         };
       }
     },
+    _deinitProgressListener: function _deinitProgressListener(options) {
+      var xhr = options.xhr ? options.xhr() : $.ajaxSettings.xhr();
+
+      if (xhr.upload) {
+        $(xhr.upload).off('progress');
+      }
+    },
     _isInstanceOf: function _isInstanceOf(type, obj) {
       // Cross-frame instanceof check
       return Object.prototype.toString.call(obj) === '[object ' + type + ']';
+    },
+    _getUniqueFilename: function _getUniqueFilename(name, map) {
+      // eslint-disable-next-line no-param-reassign
+      name = String(name);
+
+      if (map[name]) {
+        // eslint-disable-next-line no-param-reassign
+        name = name.replace(/(?: \(([\d]+)\))?(\.[^.]+)?$/, function (_, p1, p2) {
+          var index = p1 ? Number(p1) + 1 : 1;
+          var ext = p2 || '';
+          return ' (' + index + ')' + ext;
+        });
+        return this._getUniqueFilename(name, map);
+      }
+
+      map[name] = true;
+      return name;
     },
     _initXHRData: function _initXHRData(options) {
       var that = this,
@@ -2111,7 +2083,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       }
 
       if (!multipart || options.blob || !this._isInstanceOf('File', file)) {
-        options.headers['Content-Disposition'] = 'attachment; filename="' + encodeURI(file.name) + '"';
+        options.headers['Content-Disposition'] = 'attachment; filename="' + encodeURI(file.uploadName || file.name) + '"';
       }
 
       if (!multipart) {
@@ -2149,13 +2121,19 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
           }
 
           if (options.blob) {
-            formData.append(paramName, options.blob, file.name);
+            formData.append(paramName, options.blob, file.uploadName || file.name);
           } else {
             $.each(options.files, function (index, file) {
               // This check allows the tests to run with
               // dummy objects:
               if (that._isInstanceOf('File', file) || that._isInstanceOf('Blob', file)) {
-                formData.append($.type(options.paramName) === 'array' && options.paramName[index] || paramName, file, file.uploadName || file.name);
+                var fileName = file.uploadName || file.name;
+
+                if (options.uniqueFilenames) {
+                  fileName = that._getUniqueFilename(fileName, options.uniqueFilenames);
+                }
+
+                formData.append($.type(options.paramName) === 'array' && options.paramName[index] || paramName, file, fileName);
               }
             });
           }
@@ -2293,7 +2271,8 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     // the jqXHR methods abort, success, error and complete:
     _getXHRPromise: function _getXHRPromise(resolveOrReject, context, args) {
       var dfd = $.Deferred(),
-          promise = dfd.promise();
+          promise = dfd.promise(); // eslint-disable-next-line no-param-reassign
+
       context = context || this.options.context || promise;
 
       if (resolveOrReject === true) {
@@ -2314,13 +2293,13 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
       data.process = function (resolveFunc, rejectFunc) {
         if (resolveFunc || rejectFunc) {
-          data._processQueue = this._processQueue = (this._processQueue || getPromise([this])).then(function () {
+          data._processQueue = this._processQueue = (this._processQueue || getPromise([this]))[that._promisePipe](function () {
             if (data.errorThrown) {
               return $.Deferred().rejectWith(that, [data]).promise();
             }
 
             return getPromise(arguments);
-          }).then(resolveFunc, rejectFunc);
+          })[that._promisePipe](resolveFunc, rejectFunc);
         }
 
         return this._processQueue || getPromise([this]);
@@ -2397,7 +2376,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
           jqXHR,
           _upload;
 
-      if (!(this._isXHRUpload(options) && slice && (ub || mcs < fs)) || options.data) {
+      if (!(this._isXHRUpload(options) && slice && (ub || ($.type(mcs) === 'function' ? mcs(options) : mcs) < fs)) || options.data) {
         return false;
       }
 
@@ -2415,12 +2394,15 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         // Clone the options object for each chunk upload:
         var o = $.extend({}, options),
             currentLoaded = o._progress.loaded;
-        o.blob = slice.call(file, ub, ub + mcs, file.type); // Store the current chunk size, as the blob itself
+        o.blob = slice.call(file, ub, ub + ($.type(mcs) === 'function' ? mcs(o) : mcs), file.type); // Store the current chunk size, as the blob itself
         // will be dereferenced after data processing:
 
         o.chunkSize = o.blob.size; // Expose the chunk bytes position range:
 
-        o.contentRange = 'bytes ' + ub + '-' + (ub + o.chunkSize - 1) + '/' + fs; // Process the upload data (the blob and potential form data):
+        o.contentRange = 'bytes ' + ub + '-' + (ub + o.chunkSize - 1) + '/' + fs; // Trigger chunkbeforesend to allow form data to be updated for this chunk
+
+        that._trigger('chunkbeforesend', null, o); // Process the upload data (the blob and potential form data):
+
 
         that._initXHRData(o); // Add progress listeners for this chunk upload:
 
@@ -2466,6 +2448,8 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
           that._trigger('chunkalways', null, o);
 
           dfd.rejectWith(o.context, [jqXHR, textStatus, errorThrown]);
+        }).always(function () {
+          that._deinitProgressListener(o);
         });
       };
 
@@ -2571,6 +2555,8 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         }).fail(function (jqXHR, textStatus, errorThrown) {
           that._onFail(jqXHR, textStatus, errorThrown, options);
         }).always(function (jqXHRorResult, textStatus, jqXHRorError) {
+          that._deinitProgressListener(options);
+
           that._onAlways(jqXHRorResult, textStatus, jqXHRorError, options);
 
           that._sending -= 1;
@@ -2608,9 +2594,9 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
           this._slots.push(slot);
 
-          pipe = slot.then(send);
+          pipe = slot[that._promisePipe](send);
         } else {
-          this._sequence = this._sequence.then(send, send);
+          this._sequence = this._sequence[that._promisePipe](send, send);
           pipe = this._sequence;
         } // Return the piped Promise object, enhanced with an abort method,
         // which is delegated to the jqXHR object of the current upload,
@@ -2734,11 +2720,11 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       // restore focus to the inputClone.
 
       if (restoreFocus) {
-        inputClone.focus();
+        inputClone.trigger('focus');
       } // Avoid memory leaks with the detached file input:
 
 
-      $.cleanData(input.unbind('remove')); // Replace the original file input element in the fileInput
+      $.cleanData(input.off('remove')); // Replace the original file input element in the fileInput
       // elements set with the clone, which has been copied including
       // event handlers:
 
@@ -2785,7 +2771,8 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
             readEntries();
           }
         }, errorHandler);
-      };
+      }; // eslint-disable-next-line no-param-reassign
+
 
       path = path || '';
 
@@ -2804,7 +2791,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         dirReader = entry.createReader();
         readEntries();
       } else {
-        // Return an empy list for file system items
+        // Return an empty list for file system items
         // other than files or directories:
         dfd.resolve([]);
       }
@@ -2815,11 +2802,12 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       var that = this;
       return $.when.apply($, $.map(entries, function (entry) {
         return that._handleFileTreeEntry(entry, path);
-      })).then(function () {
+      }))[this._promisePipe](function () {
         return Array.prototype.concat.apply([], arguments);
       });
     },
     _getDroppedFiles: function _getDroppedFiles(dataTransfer) {
+      // eslint-disable-next-line no-param-reassign
       dataTransfer = dataTransfer || {};
       var items = dataTransfer.items;
 
@@ -2845,6 +2833,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       return $.Deferred().resolve($.makeArray(dataTransfer.files)).promise();
     },
     _getSingleFileInputFiles: function _getSingleFileInputFiles(fileInput) {
+      // eslint-disable-next-line no-param-reassign
       fileInput = $(fileInput);
       var entries = fileInput.prop('webkitEntries') || fileInput.prop('entries'),
           files,
@@ -2884,7 +2873,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         return this._getSingleFileInputFiles(fileInput);
       }
 
-      return $.when.apply($, $.map(fileInput, this._getSingleFileInputFiles)).then(function () {
+      return $.when.apply($, $.map(fileInput, this._getSingleFileInputFiles))[this._promisePipe](function () {
         return Array.prototype.concat.apply([], arguments);
       });
     },
@@ -3170,9 +3159,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
  * https://opensource.org/licenses/MIT
  */
 
-/* global define, require, window, document, JSON */
-;
-
+/* global define, require */
 (function (factory) {
   'use strict';
 
@@ -3212,12 +3199,9 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     if (options.async) {
       // javascript:false as initial iframe src
       // prevents warning popups on HTTPS in IE6:
-
-      /*jshint scripturl: true */
+      // eslint-disable-next-line no-script-url
       var initialIframeSrc = options.initialIframeSrc || 'javascript:false;',
-
-      /*jshint scripturl: false */
-      form,
+          form,
           iframe,
           addParamChar;
       return {
@@ -3241,10 +3225,10 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
 
           counter += 1;
-          iframe = $('<iframe src="' + initialIframeSrc + '" name="iframe-transport-' + counter + '"></iframe>').bind('load', function () {
+          iframe = $('<iframe src="' + initialIframeSrc + '" name="iframe-transport-' + counter + '"></iframe>').on('load', function () {
             var fileInputClones,
                 paramNames = $.isArray(options.paramName) ? options.paramName : [options.paramName];
-            iframe.unbind('load').bind('load', function () {
+            iframe.off('load').on('load', function () {
               var response; // Wrap in a try/catch block to catch exceptions thrown
               // when trying to access cross-domain iframe contents:
 
@@ -3263,7 +3247,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
 
               completeCallback(200, 'success', {
-                'iframe': response
+                iframe: response
               }); // Fix for IE endless progress bar activity bug
               // (happens on form submits to iframe targets):
 
@@ -3304,17 +3288,23 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
               options.fileInput.removeAttr('form');
             }
 
-            form.submit(); // Insert the file input fields at their original location
-            // by replacing the clones with the originals:
+            window.setTimeout(function () {
+              // Submitting the form in a setTimeout call fixes an issue with
+              // Safari 13 not triggering the iframe load event after resetting
+              // the load event handler, see also:
+              // https://github.com/blueimp/jQuery-File-Upload/issues/3633
+              form.submit(); // Insert the file input fields at their original location
+              // by replacing the clones with the originals:
 
-            if (fileInputClones && fileInputClones.length) {
-              options.fileInput.each(function (index, input) {
-                var clone = $(fileInputClones[index]); // Restore the original name and form properties:
+              if (fileInputClones && fileInputClones.length) {
+                options.fileInput.each(function (index, input) {
+                  var clone = $(fileInputClones[index]); // Restore the original name and form properties:
 
-                $(input).prop('name', clone.prop('name')).attr('form', clone.attr('form'));
-                clone.replaceWith(input);
-              });
-            }
+                  $(input).prop('name', clone.prop('name')).attr('form', clone.attr('form'));
+                  clone.replaceWith(input);
+                });
+              }
+            }, 0);
           });
           form.append(iframe).appendTo(document.body);
         },
@@ -3322,8 +3312,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
           if (iframe) {
             // javascript:false as iframe src aborts the request
             // and prevents warning popups on HTTPS in IE6.
-            // concat is used to avoid the "Script URL" JSLint error:
-            iframe.unbind('load').prop('src', initialIframeSrc);
+            iframe.off('load').prop('src', initialIframeSrc);
           }
 
           if (form) {

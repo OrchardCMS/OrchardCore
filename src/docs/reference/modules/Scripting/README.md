@@ -1,4 +1,4 @@
-# Scripting `OrchardCore.Scripting`
+# Scripting (`OrchardCore.Scripting`)
 
 ## Purpose
 
@@ -25,7 +25,7 @@ To return the current date and time as a string we could do something like this:
 
 ```csharp
 var scriptingManager = serviceProvider.GetService<IScriptingManager>();
-var date = scriptingManager.Evaluate("js: Date().toISOString()");
+var date = scriptingManager.Evaluate("js: new Date().toISOString()");
 ```
 
 The `js:` prefix is used to describe in which language the code is written. Any module can provide
