@@ -260,7 +260,7 @@ namespace OrchardCore.Tests.Routing
         private class StubDocumentstore : IDocumentStore
         {
             public Task<T> GetMutableAsync<T>(Func<Task<T>> factoryAsync = null) where T : class, new() => throw new NotImplementedException();
-            public Task<T> GetImmutableAsync<T>(Func<Task<T>> factoryAsync = null) where T : class, new() => throw new NotImplementedException();
+            public Task<(bool, T)> GetImmutableAsync<T>(Func<Task<T>> factoryAsync = null) where T : class, new() => throw new NotImplementedException();
             public Task UpdateAsync<T>(T document, Func<T, Task> updateCache, bool checkConcurrency = false) => throw new NotImplementedException();
 
             public void Cancel() => throw new NotImplementedException();
