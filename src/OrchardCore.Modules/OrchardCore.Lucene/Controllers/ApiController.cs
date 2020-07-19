@@ -40,6 +40,7 @@ namespace OrchardCore.Lucene.Controllers
 
             return new ObjectResult(result);
         }
+        
         [HttpPost]
         [Route("content")]
         public async Task<IActionResult> ContentPost(
@@ -57,7 +58,6 @@ namespace OrchardCore.Lucene.Controllers
             return new ObjectResult(result);
         }
 
-
         [HttpGet]
         [Route("documents")]
         public async Task<IActionResult> Documents(
@@ -70,7 +70,7 @@ namespace OrchardCore.Lucene.Controllers
                 return this.ChallengeOrForbid();
             }
 
-            var result = await LuceneQueryApi(indexName, query, parameters);
+            var result = await LuceneQueryApiAsync(indexName, query, parameters);
 
             return new ObjectResult(result);
         }
@@ -87,12 +87,12 @@ namespace OrchardCore.Lucene.Controllers
                 return this.ChallengeOrForbid();
             }
 
-            var result = await LuceneQueryApi(indexName, query, parameters);
+            var result = await LuceneQueryApiAsync(indexName, query, parameters);
 
             return new ObjectResult(result);
         }
 
-        private async Task<Queries.IQueryResults> LuceneQueryApi(string indexName, string query, string parameters, bool returnContentItems = false)
+        private async Task<Queries.IQueryResults> LuceneQueryApiAsync(string indexName, string query, string parameters, bool returnContentItems = false)
         {
             var luceneQuery = new LuceneQuery
             {
