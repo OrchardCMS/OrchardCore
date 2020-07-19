@@ -1784,6 +1784,15 @@
       "contributions": [
         "doc"
       ]
+    },
+    {
+      "login": "paragpkulkarni",
+      "name": "parag",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/6860233?v=4",
+      "profile": "https://github.com/paragpkulkarni",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true
