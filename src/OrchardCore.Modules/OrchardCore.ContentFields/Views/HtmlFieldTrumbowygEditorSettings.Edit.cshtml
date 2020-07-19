@@ -7,10 +7,12 @@
             <span class="hint">— @T["Whether the url is used when selected from Insert Media (By default, the Short Code is inserted)."]</span>
         </div>
     </div>
-    <div class="form-group w-lg-100">
-        <label asp-for="Options">@T["Enter the editor options"]</label>
-        <span class="hint"><a href="https://alex-d.github.io/Trumbowyg/documentation/#button-pane" target="_blank">@T["Documentation for options"]</a></span>
-        <textarea asp-for="Options" class="form-control" autofocus="autofocus"></textarea>
+     <div class="form-group row">
+        <div class="col-large">
+            <label asp-for="Options">@T["Enter the editor options"]</label>
+            <span class="hint"><a href="https://alex-d.github.io/Trumbowyg/documentation/#button-pane" target="_blank">@T["Documentation for options"]</a></span>
+            <textarea asp-for="Options" class="form-control" autofocus="autofocus"></textarea>
+        </div>
     </div>
 </div>
 

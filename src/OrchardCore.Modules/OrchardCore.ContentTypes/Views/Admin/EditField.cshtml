@@ -21,7 +21,7 @@
 <form asp-action="EditField" asp-route-returnUrl="@ViewData["returnUrl"]">
     @Html.ValidationSummary()
     <div class="form-group">
-        <div class="w-md-50">
+        <div class="row col-medium">
             <label asp-for="DisplayName">@T["Display Name"]</label>
             <input asp-for="DisplayName" autofocus class="form-control" />
             <span class="hint">@T["Name of the field as it will be displayed in screens."]</span>
