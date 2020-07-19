@@ -53,7 +53,7 @@ namespace OrchardCore.Templates.Controllers
                 return this.ChallengeOrForbid();
             }
 
-            // Mark request as a `Preview` request so that drivers may be aware of an active preview mode.
+            // Mark request as a `Preview` request so that drivers / handlers or underlying services can be aware of an active preview mode.
             Request.HttpContext.Items["Preview"] = new object();
 
             var name = Request.Form["Name"];
