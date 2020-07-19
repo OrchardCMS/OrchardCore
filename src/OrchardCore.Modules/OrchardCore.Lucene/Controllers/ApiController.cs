@@ -36,7 +36,7 @@ namespace OrchardCore.Lucene.Controllers
                 return this.ChallengeOrForbid();
             }
 
-            var result = await LuceneQueryApi(indexName, query, parameters, returnContentItems: true);
+            var result = await LuceneQueryApiAsync(indexName, query, parameters, returnContentItems: true);
 
             return new ObjectResult(result);
         }
@@ -53,7 +53,7 @@ namespace OrchardCore.Lucene.Controllers
                 return this.ChallengeOrForbid();
             }
 
-            var result = await LuceneQueryApi(indexName, query, parameters, returnContentItems: true);
+            var result = await LuceneQueryApiAsync(indexName, query, parameters, returnContentItems: true);
 
             return new ObjectResult(result);
         }
