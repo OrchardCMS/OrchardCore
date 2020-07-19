@@ -92,7 +92,7 @@ namespace OrchardCore.Lucene.Controllers
             return new ObjectResult(result);
         }
 
-        private async Task<Queries.IQueryResults> LuceneQueryApiAsync(string indexName, string query, string parameters, bool returnContentItems = false)
+        private Task<Queries.IQueryResults> LuceneQueryApiAsync(string indexName, string query, string parameters, bool returnContentItems = false)
         {
             var luceneQuery = new LuceneQuery
             {
@@ -105,7 +105,7 @@ namespace OrchardCore.Lucene.Controllers
                 JsonConvert.DeserializeObject<Dictionary<string, object>>(parameters)
                 : new Dictionary<string, object>();
 
-            var result = await _luceneQuerySource.ExecuteQueryAsync(luceneQuery, queryParameters);
+            var result = _luceneQuerySource.ExecuteQueryAsync(luceneQuery, queryParameters);
             return result;
         }
     }
