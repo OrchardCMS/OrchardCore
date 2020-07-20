@@ -1,4 +1,4 @@
-﻿@model AuditTrailSettingsViewModel
+@model AuditTrailSettingsViewModel
 
 @{
     var contentTypesIndex = 0;
@@ -31,7 +31,6 @@
                 @{ var eventsIndex = 0; }
                 @foreach (var e in category.Events)
                 {
-                    var checkboxId = String.Format("Event{0}{1}", categoriesIndex, eventsIndex);
                     <tr>
                         <td>
                             <input type="hidden" asp-for="Categories[categoriesIndex].Events[eventsIndex].Event">

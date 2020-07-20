@@ -1,3 +1,5 @@
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -12,8 +14,6 @@ using OrchardCore.ContentManagement.Records;
 using OrchardCore.Contents;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
-using System.Linq;
-using System.Threading.Tasks;
 using YesSql;
 using IYesSqlSession = YesSql.ISession;
 
@@ -83,6 +83,7 @@ namespace OrchardCore.AuditTrail.Controllers
             return View(contentItemEditor);
         }
 
+        [HttpPost]
         public async Task<ActionResult> Restore(string auditTrailEventId)
         {
             var auditTrailEventToRestore = await _session.Query<AuditTrailEvent, AuditTrailEventIndex>()

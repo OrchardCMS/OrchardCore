@@ -1,4 +1,7 @@
+@using Microsoft.Extensions.Localization
 @model AuditTrailViewModel
+
+@inject IStringLocalizer<ViewContext> S;
 
 @{
     var auditTrailEvents = Model.AuditTrailEvents;
@@ -7,19 +10,19 @@
     {
         new SelectListItem 
         {
-            Text = T["Date (newest first)"].Value, 
+            Text = S["Date (newest first)"], 
             Value = AuditTrailOrderBy.DateDescending.ToString(), 
             Selected = Model.OrderBy == AuditTrailOrderBy.DateDescending
         },
         new SelectListItem 
         {
-            Text = T["Category (alphabetical)"].Value, 
+            Text = S["Category (alphabetical)"], 
             Value = AuditTrailOrderBy.CategoryAscending.ToString(), 
             Selected = Model.OrderBy == AuditTrailOrderBy.CategoryAscending
         },
         new SelectListItem 
         {
-            Text = T["Event name (alphabetical)"].Value, 
+            Text = S["Event name (alphabetical)"], 
             Value = AuditTrailOrderBy.EventAscending.ToString(), 
             Selected = Model.OrderBy == AuditTrailOrderBy.EventAscending},
     };

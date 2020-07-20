@@ -1,4 +1,4 @@
-﻿@using OrchardCore.ContentManagement
+@using OrchardCore.ContentManagement
 @using OrchardCore.AuditTrail.Providers
 @using OrchardCore.AuditTrail.Extensions
 
@@ -7,7 +7,7 @@
     var auditTrailEvent = (AuditTrailEvent)Model.AuditTrailEvent;
     var eventDescriptor = (AuditTrailEventDescriptor)Model.Descriptor;
     var versionNumber = (int)Model.VersionNumber;
-    var versionText = T[$"Version {versionNumber}"];
+    var versionText = T[string.Format("Version {0}", versionNumber)];
     var eventName = eventDescriptor.LocalizedName.Value.ToLowerInvariant();
 }
 
@@ -54,6 +54,6 @@
 else
 {
     @T["<strong>{0}</strong> of content item <strong>[untitled]</strong> was {1}.",
-    versionText.Value,
+    versionText,
     eventName]
 }

@@ -1,4 +1,4 @@
-﻿@using OrchardCore.ContentManagement
+@using OrchardCore.ContentManagement
 
 @{
     var auditTrailEvent = (AuditTrailEvent)Model.AuditTrailEvent;
@@ -13,15 +13,17 @@
     if (availableVersionsCount != versionNumber) 
     {
         @T["|"]
-        <a asp-action="Restore" 
-           asp-controller="Content" 
-           asp-route-auditTrailEventId="@auditTrailEvent.Id"
-           data-title="@T["Restore to Version"]" 
-           data-message="@T["Are you sure you want to restore to version {0}?", versionNumber]" 
-           data-ok-text="@T["Yes"]" 
-           data-cancel-text="@T["No"]"
-           itemprop="UnsafeUrl RemoveUrl">
-            @T["Restore"]
-        </a>
+        <form method="post">
+            <a asp-controller="Content"
+               asp-action="Restore"
+               asp-route-auditTrailEventId="@auditTrailEvent.Id"
+               data-title="@T["Restore to Version"]"
+               data-message="@T["Are you sure you want to restore to version {0}?", versionNumber]"
+               data-ok-text="@T["Yes"]"
+               data-cancel-text="@T["No"]"
+               itemprop="UnsafeUrl RemoveUrl">
+                @T["Restore"]
+            </a>
+        </form>
     }
 }

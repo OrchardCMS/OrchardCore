@@ -1,3 +1,6 @@
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OrchardCore.AuditTrail.Settings;
@@ -5,13 +8,10 @@ using OrchardCore.BackgroundTasks;
 using OrchardCore.Entities;
 using OrchardCore.Modules;
 using OrchardCore.Settings;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace OrchardCore.AuditTrail.Services
 {
-    [BackgroundTask(Schedule = "*/10 * * * *", Description = "A background task that regularly deletes old Audit Trail Events.")]
+    [BackgroundTask(Schedule = "0 0 * * *", Description = "A background task that regularly deletes old Audit Trail Events.")]
     public class AuditTrailTrimmingBackgroundTask : IBackgroundTask
     {
         public async Task DoWorkAsync(IServiceProvider serviceProvider, CancellationToken cancellationToken)
