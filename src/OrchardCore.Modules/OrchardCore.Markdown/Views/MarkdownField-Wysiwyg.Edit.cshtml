@@ -12,9 +12,11 @@
 <style asp-name="codemirror"></style>
 <style asp-name="simplemdecss" asp-src="~/OrchardCore.Markdown/Styles/simplemde.min.css" debug-src="~/OrchardCore.Markdown/Styles/simplemde.css"></style>
 
+@await DisplayAsync(await New.ShortcodePopover())
+
 <div class="form-group simplemde-editor">
     <label asp-for="Markdown">@Model.PartFieldDefinition.DisplayName()</label>
-    <textarea asp-for="Markdown" rows="5" class="form-control content-preview-text"></textarea>
+    <textarea asp-for="Markdown" rows="5" class="form-control content-preview-text" data-shortcodecategories='[ "HTML Content"] '></textarea>
     @if (!String.IsNullOrEmpty(settings.Hint))
     {
         <span class="hint">@settings.Hint</span>
@@ -24,7 +26,7 @@
 <script at="Foot">
     $(function () {
         var markdownElement = document.getElementById("@Html.IdFor(m => m.Markdown)");
-        // When part rendered by a flow part only the elements scripts are rendered, so the html element will not exist. 
+        @* When field is rendered by a flow part only the elements scripts are rendered, so the html element will not exist. *@
         if (markdownElement) {
             var simplemde = new SimpleMDE({
                 element: markdownElement,
@@ -32,6 +34,8 @@
                 toolbar: simplemdeToolbar,
                 autoDownloadFontAwesome: false
             });
+
+            initializeSimpleMdeShortcodeWrapper(simplemde);
 
             simplemde.codemirror.on('change', function () {
                 $(document).trigger('contentpreview:render');

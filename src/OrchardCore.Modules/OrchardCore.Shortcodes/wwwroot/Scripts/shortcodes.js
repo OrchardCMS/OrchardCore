@@ -29,29 +29,29 @@ jQuery.fn.extend({
       }
     });
   }
-}); // Wraps each .shortcode-popover class with a wrapper, and attaches detaches the shortcode app as required.
+});
+var shortcodeWrapperTemplate = "\n<div class=\"shortcode-popover-wrapper\"></div>\n";
+var shortcodeHolderTemplate = "\n<button type=\"button\" class=\"shortcode-popover-btn btn btn-sm\">\n<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\">\n    <path d=\"M16 4.2v1.5h2.5v12.5H16v1.5h4V4.2h-4zM4.2 19.8h4v-1.5H5.8V5.8h2.5V4.2h-4l-.1 15.6zm5.1-3.1l1.4.6 4-10-1.4-.6-4 10z\"></path>\n</svg>\n</button>\n<div class=\"shortcode-popover-holder mt-n3 mr-n3 py-3 px-2 w-50 bg-white border shadow rounded\" style=\"display:none\"></div>  \n"; // Wraps each .shortcode-popover class with a wrapper, and attaches detaches the shortcode app as required.
 
 $(function () {
-  var wrapperTemplate = "\n        <div class=\"shortcode-popover-wrapper\"></div>\n    ";
-  var holderTemplate = "\n    <button type=\"button\" class=\"shortcode-popover-btn btn btn-sm\">\n        <svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\">\n            <path d=\"M16 4.2v1.5h2.5v12.5H16v1.5h4V4.2h-4zM4.2 19.8h4v-1.5H5.8V5.8h2.5V4.2h-4l-.1 15.6zm5.1-3.1l1.4.6 4-10-1.4-.6-4 10z\"></path>\n        </svg>\n    </button>\n    <div class=\"shortcode-popover-holder mt-n3 mr-n3 py-3 px-2 w-50 bg-white border shadow rounded\" style=\"display:none\"></div>  \n    ";
   $('.shortcode-popover').each(function () {
-    $(this).wrap(wrapperTemplate);
-    $(this).parent().append(holderTemplate);
+    $(this).wrap(shortcodeWrapperTemplate);
+    $(this).parent().append(shortcodeHolderTemplate);
   });
   $('.shortcode-popover-btn').on('click', function () {
     var holder = $(this).siblings('.shortcode-popover-holder');
     shortcodeApp.init(holder, $(this).siblings('.shortcode-popover'), true);
     holder.fadeToggle();
 
+    var modalCloser = function modalCloser(e) {
+      if (!holder.is(e.target) && holder.has(e.target).length === 0) {
+        cancel();
+      }
+    };
+
     var cancel = function cancel() {
       holder.fadeToggle();
       $(document).off('mouseup', modalCloser);
-    };
-
-    var modalCloser = function modalCloser(e) {
-      if (!holder.is(e.target) && holder.has(e.target).length === 0) {
-        doCancel();
-      }
     };
 
     $(document).on('mouseup', modalCloser);
@@ -81,8 +81,7 @@ function initializeShortcodes(element) {
         'vue-multiselect': vueMultiselect
       },
       data: function data() {
-        var shortcodes = JSON.parse(element.dataset.shortcodes || "[]"); // so potentially we can filter on categories.
-
+        var shortcodes = JSON.parse(element.dataset.shortcodes || "[]");
         return {
           value: '',
           selector: '',
@@ -98,6 +97,7 @@ function initializeShortcodes(element) {
           self.value = '';
           self.categories = '';
           self.shortcodes = [];
+          self.showControls = false;
 
           if (showControls) {
             self.showControls = showControls;
@@ -110,11 +110,14 @@ function initializeShortcodes(element) {
 
             if (categoriesSelector) {
               var categories = $(categoriesSelector).data('shortcodecategories');
-              self.shortcodes = self.allShortcodes.filter(function (shortcode) {
-                return shortcode.categories.some(function (category) {
-                  return categories.indexOf(category) > -1;
+
+              if (categories) {
+                self.shortcodes = self.allShortcodes.filter(function (shortcode) {
+                  return shortcode.categories.some(function (category) {
+                    return categories.indexOf(category) > -1;
+                  });
                 });
-              });
+              }
             }
           } else {
             alert($('#shortcode-selector-error').data('localized'));
@@ -137,4 +140,40 @@ function initializeShortcodes(element) {
     });
     return shortcodeApp;
   }
+} // initializes a code mirror editor with a shortcode popover.
+// categories should be placed on the parent with class .shortcode-popover-categories.
+
+
+function initializeCodeMirrorShortcodeWrapper(editor) {
+  var codemirrorWrapper = editor.display.wrapper;
+  $(codemirrorWrapper).wrap(shortcodeWrapperTemplate);
+  $(codemirrorWrapper).parent().append(shortcodeHolderTemplate);
+  $(codemirrorWrapper).siblings('.shortcode-popover-btn').on('click', function () {
+    var holder = $(this).siblings('.shortcode-popover-holder');
+    shortcodeApp.init(holder, $(this).closest('.shortcode-popover-categories'), true);
+    holder.fadeToggle();
+
+    var modalCloser = function modalCloser(e) {
+      if (!holder.is(e.target) && holder.has(e.target).length === 0) {
+        cancel();
+      }
+    };
+
+    var cancel = function cancel() {
+      holder.fadeToggle();
+      $(document).off('mouseup', modalCloser);
+    };
+
+    $(document).on('mouseup', modalCloser); // By design these leave the popover in place where another editor can move it.
+
+    $('#shortcode-popover-app-content').on('success', function () {
+      if (shortcodeApp.value && shortcodeApp.value.defaultShortcode) {
+        editor.replaceSelection(shortcodeApp.value.defaultShortcode);
+      }
+
+      holder.fadeToggle();
+      $(document).off('mouseup', modalCloser);
+    });
+    $('#shortcode-popover-app-content').on('cancel', cancel);
+  });
 }

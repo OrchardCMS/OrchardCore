@@ -56,3 +56,20 @@
     </div>
 </form>
 
+<script type="text/javascript" at="Foot">
+    $(function () {
+        var optionsTextArea = document.getElementById('@Html.IdFor(x => x.Content)');
+        if (optionsTextArea) {
+            var editor = CodeMirror.fromTextArea(optionsTextArea, {
+                autoCloseTags: true,
+                autoRefresh: true,
+                lineNumbers: true,
+                lineWrapping: true,
+                matchBrackets: true,
+                styleActiveLine: true,
+                mode: { name: "liquid" }
+            });
+        }
+    });
+</script>
+

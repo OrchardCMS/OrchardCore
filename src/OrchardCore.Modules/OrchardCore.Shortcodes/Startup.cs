@@ -87,6 +87,7 @@ namespace OrchardCore.Shortcodes
 
         // Register this first so the templates provide overrides for any code driven shortcodes.
         public override int Order => -10;
+
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<ShortcodeTemplatesManager>();

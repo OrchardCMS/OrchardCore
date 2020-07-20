@@ -17,10 +17,6 @@
         init: function init(trumbowyg) {
           var btnDef = {
             fn: function fn() {
-              // Clear shortcodeApp value before opening.
-              shortcodeApp.value = '';
-              shortcodeApp.showControls = false; // TODO localize
-
               var m = trumbowyg.openModal($('#shortcode-title').data('localized'), '<div id="shortcode-popover-trumbowyg"></div>').on('tbwconfirm', function () {
                 $(this).off('tbwconfirm');
                 shortcodeApp.close();

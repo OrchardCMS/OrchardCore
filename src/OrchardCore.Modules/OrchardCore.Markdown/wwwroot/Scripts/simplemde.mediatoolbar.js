@@ -56,9 +56,40 @@ $(function () {
     className: "fas fa-link fa-sm",
     title: "Create Link"
   }, "|", {
+    name: "shortcode",
+    className: "icon-mde-shortcode",
+    title: "Insert Shortcode",
+    "default": true,
+    action: function action(editor) {
+      var toolbar = editor.gui.toolbar;
+      var holder = $(toolbar).siblings('.shortcode-popover-holder');
+      shortcodeApp.init(holder, editor.element, true);
+      holder.fadeToggle();
+
+      var modalCloser = function modalCloser(e) {
+        if (!holder.is(e.target) && holder.has(e.target).length === 0) {
+          doCancel();
+        }
+      };
+
+      var cancel = function cancel() {
+        holder.fadeToggle();
+        $(document).off('mouseup', modalCloser);
+      };
+
+      $('#shortcode-popover-app-content').on('success', function () {
+        if (shortcodeApp.value && shortcodeApp.value.defaultShortcode) {
+          editor.codemirror.replaceSelection(shortcodeApp.value.defaultShortcode);
+        }
+
+        holder.fadeToggle();
+        $(document).off('mouseup', modalCloser);
+      });
+      $('#shortcode-popover-app-content').on('cancel', cancel);
+    }
+  }, "|", {
     name: "image",
     action: function action(editor) {
-      // editor = e;
       $("#mediaApp").detach().appendTo('#mediaModalMarkdown .modal-body');
       $("#mediaApp").show();
       mediaApp.selectedMedias = [];
@@ -116,3 +147,11 @@ $(function () {
     title: "Toggle Fullscreen"
   }];
 });
+
+function initializeSimpleMdeShortcodeWrapper(simpleMde) {
+  var wrapperTemplate = "\n    <div class=\"shortcode-popover-wrapper\"></div>\n    ";
+  var holderTemplate = "\n    <div class=\"shortcode-popover-holder mt-n3 mr-n3 py-3 px-2 w-50 bg-white border shadow rounded\" style=\"display:none\"></div>  \n    ";
+  var toolbar = simpleMde.gui.toolbar;
+  $(toolbar).wrap(wrapperTemplate);
+  $(toolbar).parent().append(holderTemplate);
+}
