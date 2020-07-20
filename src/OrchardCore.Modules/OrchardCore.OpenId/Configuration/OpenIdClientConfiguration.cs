@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using OrchardCore.Modules;
 using OrchardCore.OpenId.Services;
 using OrchardCore.OpenId.Settings;
@@ -80,7 +79,7 @@ namespace OrchardCore.OpenId.Configuration
                 }
             }
 
-            if (settings.ResponseType.Contains(OpenIdConnectResponseType.Code) && !string.IsNullOrEmpty(settings.ClientSecret))
+            if (!string.IsNullOrEmpty(settings.ClientSecret))
             {
                 var protector = _dataProtectionProvider.CreateProtector(nameof(OpenIdClientConfiguration));
 
@@ -100,11 +99,9 @@ namespace OrchardCore.OpenId.Configuration
         private async Task<OpenIdClientSettings> GetClientSettingsAsync()
         {
             var settings = await _clientService.GetSettingsAsync();
-            var errors = (await _clientService.ValidateSettingsAsync(settings)).Where(r => r != ValidationResult.Success);
-
-            if (errors.Any() && _logger.IsEnabled(LogLevel.Error))
+            if ((await _clientService.ValidateSettingsAsync(settings)).Any(result => result != ValidationResult.Success))
             {
-                _logger.LogError("The OpenID Connect module is not correctly configured : {Errors}", String.Join(", ", errors.Select(r => r.ErrorMessage)));
+                _logger.LogWarning("The OpenID Connect module is not correctly configured.");
 
                 return null;
             }
