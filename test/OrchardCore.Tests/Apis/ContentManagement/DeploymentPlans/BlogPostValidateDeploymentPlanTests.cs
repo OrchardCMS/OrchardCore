@@ -46,17 +46,15 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
                 Assert.Throws<HttpRequestException>(() => response.EnsureSuccessStatusCode());
 
                 // Confirm creation of both content items was cancelled.
-                using (var shellScope = await BlogPostDeploymentContext.ShellHost.GetScopeAsync(context.TenantName))
+                var shellScope = await BlogPostDeploymentContext.ShellHost.GetScopeAsync(context.TenantName);
+                await shellScope.UsingAsync(async scope =>
                 {
-                    await shellScope.UsingAsync(async scope =>
-                    {
-                        var session = scope.ServiceProvider.GetRequiredService<ISession>();
-                        var blogPosts = await session.Query<ContentItem, ContentItemIndex>(x =>
-                            x.ContentType == "BlogPost").ListAsync();
+                    var session = scope.ServiceProvider.GetRequiredService<ISession>();
+                    var blogPosts = await session.Query<ContentItem, ContentItemIndex>(x =>
+                        x.ContentType == "BlogPost").ListAsync();
 
-                        Assert.Single(blogPosts);
-                    });
-                }
+                    Assert.Single(blogPosts);
+                });
             }
         }
     }

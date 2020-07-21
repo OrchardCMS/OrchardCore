@@ -25,7 +25,6 @@ namespace OrchardCore.Recipes.Services
         private readonly ILogger _logger;
 
         private readonly Dictionary<string, List<IGlobalMethodProvider>> _methodProviders = new Dictionary<string, List<IGlobalMethodProvider>>();
-        private ConfigurationMethodProvider _configurationMethodProvider;
 
         public RecipeExecutor(
             IShellHost shellHost,
@@ -37,8 +36,6 @@ namespace OrchardCore.Recipes.Services
             _shellSettings = shellSettings;
             _recipeEventHandlers = recipeEventHandlers;
             _logger = logger;
-
-            _configurationMethodProvider = new ConfigurationMethodProvider(_shellSettings.ShellConfiguration);
         }
 
         public async Task<string> ExecuteAsync(string executionId, RecipeDescriptor recipeDescriptor, object environment, CancellationToken cancellationToken)
@@ -51,7 +48,7 @@ namespace OrchardCore.Recipes.Services
                 _methodProviders.Add(executionId, methodProviders);
 
                 methodProviders.Add(new ParametersMethodProvider(environment));
-                methodProviders.Add(_configurationMethodProvider);
+                methodProviders.Add(new ConfigurationMethodProvider(_shellSettings.ShellConfiguration));
 
                 var result = new RecipeResult { ExecutionId = executionId };
 
@@ -173,7 +170,10 @@ namespace OrchardCore.Recipes.Services
 
                 await _recipeEventHandlers.InvokeAsync((handler, recipeStep) => handler.RecipeStepExecutingAsync(recipeStep), recipeStep, _logger);
 
-                await recipeStepHandlers.InvokeAsync((handler, recipeStep) => handler.ExecuteAsync(recipeStep), recipeStep, _logger);
+                foreach (var recipeStepHandler in recipeStepHandlers)
+                {
+                    await recipeStepHandler.ExecuteAsync(recipeStep);
+                }
 
                 await _recipeEventHandlers.InvokeAsync((handler, recipeStep) => handler.RecipeStepExecutedAsync(recipeStep), recipeStep, _logger);
 
