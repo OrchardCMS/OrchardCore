@@ -11,7 +11,6 @@ using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
-using OrchardCore.Shortcodes;
 using OrchardCore.Shortcodes.Controllers;
 using OrchardCore.Shortcodes.Services;
 using OrchardCore.Shortcodes.ViewModels;
@@ -25,9 +24,14 @@ namespace OrchardCore.Shortcodes
         {
             TemplateContext.GlobalMemberAccessStrategy.Register<ShortcodeViewModel>();
 
+            TemplateContext.GlobalMemberAccessStrategy.Register<Context, object>((obj, name) => obj[name]);
+
+            // Prevent Context from being converted to an ArrayValue as it implements IEnumerable
+            FluidValue.SetTypeMapping<Context>(o => new ObjectValue(o));
+
             TemplateContext.GlobalMemberAccessStrategy.Register<Arguments, object>((obj, name) => obj.NamedOrDefault(name));
 
-            // Prevent Arguments from being converted to an ArrayValue as they implement IEnumerable
+            // Prevent Arguments from being converted to an ArrayValue as it implements IEnumerable
             FluidValue.SetTypeMapping<Arguments>(o => new ObjectValue(o));
         }
 
@@ -36,12 +40,13 @@ namespace OrchardCore.Shortcodes
             services.AddScoped<IShortcodeService, ShortcodeService>();
             services.AddScoped<IShortcodeTableManager, ShortcodeTableManager>();
             services.AddScoped<IShortcodeTableProvider, ShortcodeOptionsTableProvider>();
+            services.AddScoped<IShortcodeContextProvider, DefaultShortcodeContextProvider>();
 
             services.AddOptions<ShortcodeOptions>();
             services.AddScoped<IShortcodeProvider, OptionsShortcodeProvider>();
 
             //TODo testing code remove.
-            services.AddShortcode("bold", (args, content) => {
+            services.AddShortcode("bold", (args, content, ctx) => {
                 var text = args.Named("text");
                 if (!String.IsNullOrEmpty(text))
                 {
@@ -51,7 +56,7 @@ namespace OrchardCore.Shortcodes
                 return new ValueTask<string>($"<em>{content}</em>");
             });
 
-            services.AddShortcode("bold", (args, content) => {
+            services.AddShortcode("bold", (args, content, ctx) => {
                 var text = args.NamedOrDefault("text");
                 if (!String.IsNullOrEmpty(text))
                 {

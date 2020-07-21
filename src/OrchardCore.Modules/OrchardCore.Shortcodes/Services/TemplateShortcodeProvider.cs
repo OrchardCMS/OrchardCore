@@ -28,7 +28,7 @@ namespace OrchardCore.Shortcodes.Services
 
         }
 
-        public async ValueTask<string> EvaluateAsync(string identifier, Arguments arguments, string content)
+        public async ValueTask<string> EvaluateAsync(string identifier, Arguments arguments, string content, Context context)
         {
             _shortcodeTemplatesDocument ??= await _shortcodeTemplatesManager.GetShortcodeTemplatesDocumentAsync();
             if (!_shortcodeTemplatesDocument.ShortcodeTemplates.TryGetValue(identifier, out var template))
@@ -39,7 +39,8 @@ namespace OrchardCore.Shortcodes.Services
             var model = new ShortcodeViewModel
             {
                 Args = arguments,
-                Content = content
+                Content = content,
+                Context = context
             };
 
             return await _liquidTemplateManager.RenderAsync(template.Content, _htmlEncoder, model,
@@ -47,6 +48,7 @@ namespace OrchardCore.Shortcodes.Services
                 {
                     scope.SetValue("Content", model.Content);
                     scope.SetValue("Args", model.Args);
+                    scope.SetValue("Context", model.Context);
                 });
         }
     }

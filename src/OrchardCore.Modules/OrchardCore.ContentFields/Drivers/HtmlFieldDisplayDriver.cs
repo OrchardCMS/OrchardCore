@@ -12,6 +12,7 @@ using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Shortcodes.Services;
 using OrchardCore.Infrastructure.Html;
 using OrchardCore.Liquid;
+using Shortcodes;
 
 namespace OrchardCore.ContentFields.Drivers
 {
@@ -52,7 +53,7 @@ namespace OrchardCore.ContentFields.Drivers
                         scope => scope.SetValue("ContentItem", field.ContentItem));
                 }
 
-                model.Html = await _shortcodeService.ProcessAsync(model.Html);
+                model.Html = await _shortcodeService.ProcessAsync(model.Html, new Context { ["ContentItem"] = field.ContentItem });
 
             })
             .Location("Detail", "Content")

@@ -16,7 +16,7 @@ namespace OrchardCore.Shortcodes.Services
             _options = options.Value;
         }
 
-        public ValueTask<string> EvaluateAsync(string identifier, Arguments arguments, string content)
+        public ValueTask<string> EvaluateAsync(string identifier, Arguments arguments, string content, Context context)
         {
             if (_options.ShortcodeDelegates.TryGetValue(identifier, out var shortcode))
             {
@@ -25,7 +25,7 @@ namespace OrchardCore.Shortcodes.Services
                     return Null;
                 }
 
-                return shortcode.Invoke(arguments, content);
+                return shortcode.Invoke(arguments, content, context);
             }
 
             return Null;

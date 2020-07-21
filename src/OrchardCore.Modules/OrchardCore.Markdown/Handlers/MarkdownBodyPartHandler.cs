@@ -13,6 +13,7 @@ using OrchardCore.Markdown.Models;
 using OrchardCore.Markdown.Services;
 using OrchardCore.Markdown.Settings;
 using OrchardCore.Markdown.ViewModels;
+using Shortcodes;
 
 namespace OrchardCore.Markdown.Handlers
 {
@@ -63,6 +64,7 @@ namespace OrchardCore.Markdown.Handlers
                     // so filters must be run after the markdown has been processed.
                     var html = _markdownService.ToHtml(part.Markdown);
 
+
                     // The liquid rendering is for backwards compatability and can be removed in a future version.
                     if (!settings.SanitizeHtml)
                     {
@@ -78,7 +80,7 @@ namespace OrchardCore.Markdown.Handlers
                             scope => scope.SetValue("ContentItem", model.ContentItem));
                     }
 
-                    html = await _shortcodeService.ProcessAsync(html);
+                    html = await _shortcodeService.ProcessAsync(html, new Context { ["ContentItem"] = part.ContentItem });
 
                     if (settings.SanitizeHtml)
                     {
