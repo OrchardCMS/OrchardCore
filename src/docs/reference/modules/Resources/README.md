@@ -175,7 +175,7 @@ resourceManager.AppendMeta(new MetaEntry { Name = "keywords", Content = "orchard
 
 From your module, in the `_ViewImports.cshtml` or your view, add `@addTagHelper *, OrchardCore.ResourceManagement`.
 
-#### Register a named script
+#### Register a named script or stylesheet
 
 This example registers the script named `bootstrap` and all its dependencies (jquery).
 
@@ -368,6 +368,23 @@ The style block will only be injected once based on its name and can optionally 
         /* some style */
     }
 </style>
+```
+#### Link tag helper
+
+A link tag is used to define the relationship between the current document and an external resource such as a a favicon or stylesheet. For a stylesheet, however, use the [style helper](#register-a-named-script). 
+
+``` liquid tab="Liquid"
+{% link rel:"icon", type:"image/png", sizes:"16x16", src:"~/media/favicon/favicon-16x16.png" %}
+```
+
+``` html tab="Razor"
+<link asp-src="~/media/favicon/favicon-16x16.png" rel="icon" type="image/png" sizes="16x16" >
+```
+
+Output
+
+```text
+<link href="/media/favicon/favicon-16x16.png" rel="icon" sizes="16x16" type="image/png" />
 ```
 
 #### Meta tags
