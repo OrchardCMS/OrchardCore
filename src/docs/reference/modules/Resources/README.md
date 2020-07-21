@@ -236,14 +236,14 @@ You can append a version hash that will be calculated, and calculation cached, a
 
 ##### Specify location
 
-By default all scripts are rendered in the footer. You can override it like this:
+By default all scripts are rendered whereever the `FootScript` helper is located [See Foot Resources](#foot-resources). You can override it like this:
 
 ``` liquid tab="Liquid"
-{% script name:"bootstrap", at:"Foot" %}
+{% script name:"bootstrap", at:"Head" %}
 ```
 
 ``` html tab="Razor"
-<script asp-name="bootstrap" at="Foot"></script>
+<script asp-name="bootstrap" at="Head"></script>
 ```
 
 Styles, however, are always injected in the header section of the HTML document.
