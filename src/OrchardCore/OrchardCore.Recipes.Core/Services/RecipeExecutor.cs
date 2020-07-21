@@ -173,10 +173,7 @@ namespace OrchardCore.Recipes.Services
 
                 await _recipeEventHandlers.InvokeAsync((handler, recipeStep) => handler.RecipeStepExecutingAsync(recipeStep), recipeStep, _logger);
 
-                foreach (var recipeStepHandler in recipeStepHandlers)
-                {
-                    await recipeStepHandler.ExecuteAsync(recipeStep);
-                }
+                await recipeStepHandlers.InvokeAsync((handler, recipeStep) => handler.ExecuteAsync(recipeStep), recipeStep, _logger);
 
                 await _recipeEventHandlers.InvokeAsync((handler, recipeStep) => handler.RecipeStepExecutedAsync(recipeStep), recipeStep, _logger);
 
