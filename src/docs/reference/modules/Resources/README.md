@@ -189,6 +189,10 @@ This example registers the script named `bootstrap` and all its dependencies (jq
 
 And for a stylesheet:
 
+``` liquid tab="Liquid"
+{% style name:"bootstrap" %}
+```
+
 ``` html tab="Razor"
 <style asp-name="bootstrap"></style>
 ```
