@@ -26,10 +26,6 @@ namespace OrchardCore.Recipes.Services
 
         private readonly Dictionary<string, List<IGlobalMethodProvider>> _methodProviders = new Dictionary<string, List<IGlobalMethodProvider>>();
 
-        // Note: A new scope is created on each step that may be based on a new shell if the features have been updated, so
-        // the 'IRecipeEventHandler', that are also used in step scopes, can't be tenant level services, otherwise they may
-        // be used in a shell container they don't belong, they should be application level transient / singleton services.
-
         public RecipeExecutor(
             IShellHost shellHost,
             ShellSettings shellSettings,
