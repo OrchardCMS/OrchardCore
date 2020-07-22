@@ -4,29 +4,29 @@ using OrchardCore.ContentManagement.Routing;
 
 namespace OrchardCore.Autoroute.Services
 {
-    public class AutorouteAliasProvider : IContentAliasProvider
+    public class AutorouteHandleProvider : IContentHandleProvider
     {
         private readonly IAutorouteEntries _autorouteEntries;
 
-        public AutorouteAliasProvider(IAutorouteEntries autorouteEntries)
+        public AutorouteHandleProvider(IAutorouteEntries autorouteEntries)
         {
             _autorouteEntries = autorouteEntries;
         }
 
         public int Order => 10;
 
-        public Task<string> GetContentItemIdAsync(string alias)
+        public Task<string> GetContentItemIdAsync(string handle)
         {
-            if (alias.StartsWith("slug:", System.StringComparison.OrdinalIgnoreCase))
+            if (handle.StartsWith("slug:", System.StringComparison.OrdinalIgnoreCase))
             {
-                alias = alias.Substring(5);
+                handle = handle.Substring(5);
 
-                if (!alias.StartsWith('/'))
+                if (!handle.StartsWith('/'))
                 {
-                    alias = "/" + alias;
+                    handle = "/" + handle;
                 }
 
-                if (_autorouteEntries.TryGetEntryByPath(alias, out var entry))
+                if (_autorouteEntries.TryGetEntryByPath(handle, out var entry))
                 {
                     // TODO this requires more work, and interface changes to support contained content items.
                     // as it will require returning the id and jsonPath.

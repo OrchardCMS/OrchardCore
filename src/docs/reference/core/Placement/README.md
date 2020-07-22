@@ -114,11 +114,11 @@ For rendering content items, you could also use the following tag helper.
 Note: you need to add `@addTagHelper *, OrchardCore.Contents` to your `_ViewImports.cshtml` file to load this tag helper.
 
 ``` html tab="Razor"
-<contentitem alias="alias:main-menu" display-type="Detail" />
+<contentitem handle="alias:main-menu" display-type="Detail" />
 ```
 
 ``` liquid tab="Liquid"
-{% contentitem alias:"alias:main-menu" display_type="Detail" %}
+{% contentitem handle:"alias:main-menu" display_type="Detail" %}
 ```
 
 #### Manipulating shape metadata

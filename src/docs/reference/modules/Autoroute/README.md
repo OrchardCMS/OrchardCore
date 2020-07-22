@@ -34,9 +34,9 @@ it is compatible with a URL.
 {{ ContentItem.Content.Product.Color.Text | slugify }}
 ```
 
-## Autoroute Alias
+## Autoroute Slug Handle
 
-Content items with an `Autoroute` can be retrieved by URL anywhere you can retrieve content by alias (see example below). The syntax for this is `slug:<URL>`, e.g. `slug:my-blog/my-blog-post`.
+Content items with an `Autoroute` can be retrieved by URL anywhere you can retrieve content by its slug handle (see example below). The syntax for this is `slug:<URL>`, e.g. `slug:my-blog/my-blog-post`.
 
 ## Liquid
 
