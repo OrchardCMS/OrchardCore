@@ -105,6 +105,13 @@ namespace OrchardCore.Deployment
             );
 
             routes.MapAreaControllerRoute(
+                name: "DeploymentPlanImportJson",
+                areaName: "OrchardCore.Deployment",
+                pattern: _adminOptions.AdminUrlPrefix + "/DeploymentPlan/Import/Json",
+                defaults: new { controller = typeof(ImportController).ControllerName(), action = nameof(ImportController.Json) }
+            );
+
+            routes.MapAreaControllerRoute(
                 name: "DeploymentPlanExportFileExecute",
                 areaName: "OrchardCore.Deployment",
                 pattern: _adminOptions.AdminUrlPrefix + "/DeploymentPlan/ExportFile/Execute",

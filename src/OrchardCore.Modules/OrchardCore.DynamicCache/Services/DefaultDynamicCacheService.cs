@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
@@ -16,18 +17,29 @@ namespace OrchardCore.DynamicCache.Services
         private readonly ICacheContextManager _cacheContextManager;
         private readonly IDynamicCache _dynamicCache;
         private readonly IServiceProvider _serviceProvider;
+        private readonly CacheOptions _cacheOptions;
 
         private readonly Dictionary<string, string> _localCache = new Dictionary<string, string>();
 
-        public DefaultDynamicCacheService(ICacheContextManager cacheContextManager, IDynamicCache dynamicCache, IServiceProvider serviceProvider)
+        public DefaultDynamicCacheService(
+            ICacheContextManager cacheContextManager,
+            IDynamicCache dynamicCache,
+            IServiceProvider serviceProvider,
+            IOptions<CacheOptions> options)
         {
             _cacheContextManager = cacheContextManager;
             _dynamicCache = dynamicCache;
             _serviceProvider = serviceProvider;
+            _cacheOptions = options.Value;
         }
 
         public async Task<string> GetCachedValueAsync(CacheContext context)
         {
+            if (!_cacheOptions.Enabled)
+            {
+                return null;
+            }
+
             var cacheKey = await GetCacheKey(context);
 
             context = await GetCachedContextAsync(cacheKey);
@@ -44,6 +56,11 @@ namespace OrchardCore.DynamicCache.Services
 
         public async Task SetCachedValueAsync(CacheContext context, string value)
         {
+            if (!_cacheOptions.Enabled)
+            {
+                return;
+            }
+
             var cacheKey = await GetCacheKey(context);
 
             _localCache[cacheKey] = value;

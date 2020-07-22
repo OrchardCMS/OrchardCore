@@ -48,8 +48,8 @@ Vue.component('pager', {
     },
     data: function () {
         return {
-            pageSize: 5,
-            pageSizeOptions: [5, 10, 30, 50, 100],
+            pageSize: 10,
+            pageSizeOptions: [10, 30, 50, 100],
             current: 0,
             T: {}
         };

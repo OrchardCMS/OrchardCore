@@ -69,6 +69,13 @@ namespace OrchardCore.Users.Services
                 return null;
             }
 
+            if (!(user as User).IsEnabled)
+            {
+                reportError(string.Empty, S["The specified user is not allowed to sign in."]);
+                
+                return null;
+            }
+
             return user;
         }
 
