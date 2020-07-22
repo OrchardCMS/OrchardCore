@@ -374,17 +374,17 @@ The style block will only be injected once based on its name and can optionally 
 A link tag is used to define the relationship between the current document and an external resource such as a a favicon or stylesheet. For a stylesheet, however, use the [style helper](#register-a-named-script). 
 
 ``` liquid tab="Liquid"
-{% link rel:"icon", type:"image/png", sizes:"16x16", src:"~/media/favicon/favicon-16x16.png" %}
+{% link rel:"icon", type:"image/png", sizes:"16x16", src:"~/MyTheme/favicon/favicon-16x16.png" %}
 ```
 
 ``` html tab="Razor"
-<link asp-src="~/media/favicon/favicon-16x16.png" rel="icon" type="image/png" sizes="16x16" >
+<link asp-src="~/MyTheme/media/favicon/favicon-16x16.png" rel="icon" type="image/png" sizes="16x16" >
 ```
 
 Output
 
 ```text
-<link href="/media/favicon/favicon-16x16.png" rel="icon" sizes="16x16" type="image/png" />
+<link href="/MyTheme/favicon/favicon-16x16.png" rel="icon" sizes="16x16" type="image/png" />
 ```
 
 #### Meta tags
