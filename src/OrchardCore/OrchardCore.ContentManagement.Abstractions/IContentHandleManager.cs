@@ -8,6 +8,9 @@ namespace OrchardCore.ContentManagement
         Task<string> GetContentItemIdAsync(string alias);
     }
 
-    [Obsolete("Use IContentHandleManager instead.")]
+    /// <summary>
+    /// This interface has been renamed to IContentHandleManager
+    /// and will be removed in a future release.
+    /// </summary>
     public interface IContentAliasManager : IContentHandleManager {}
 }
