@@ -384,7 +384,7 @@ A link tag is used to define the relationship between the current document and a
 Output
 
 ```text
-<link href="/MyTheme/media/favicon/favicon-16x16.png" rel="icon" sizes="16x16" type="image/png" />
+<link href="/MyTheme/favicon/favicon-16x16.png" rel="icon" sizes="16x16" type="image/png" />
 ```
 
 #### Meta tags
