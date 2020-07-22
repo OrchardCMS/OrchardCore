@@ -24,8 +24,8 @@
             await DisplayAsync(await ContentItemDisplayManager.BuildEditorAsync(contentItem, updater, true, "", Guid.NewGuid().ToString("n")));
         }
     }
-
     if (Model.CanInsert != false)
+    {
 
         IEnumerable<ContentTypeDefinition> containedContentTypes = Model.ContainedContentTypes as IEnumerable<ContentTypeDefinition>;
 
@@ -84,4 +84,5 @@
                 }
             </div>
         </div>
+    }
 }
