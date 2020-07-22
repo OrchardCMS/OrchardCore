@@ -11,6 +11,7 @@ using OrchardCore.Data.Migration;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
+using OrchardCore.ResourceManagement;
 using OrchardCore.Widgets.Controllers;
 using OrchardCore.Widgets.Drivers;
 using OrchardCore.Widgets.Models;
@@ -31,6 +32,10 @@ namespace OrchardCore.Widgets
         {
             //Add Widget Card Shapes
             services.AddScoped<IShapeTableProvider, ContentCardShapes>();
+
+            //Resources
+            services.AddScoped<IResourceManifestProvider, ResourceManifest>();
+
             // Widgets List Part
             services.AddContentPart<WidgetsListPart>()
                 .UseDisplayDriver<WidgetsListPartDisplay>();

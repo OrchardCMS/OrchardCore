@@ -1,0 +1,87 @@
+@using System.Web;
+@using Microsoft.AspNetCore.Routing;
+@using OrchardCore.ContentManagement;
+@using OrchardCore.ContentManagement.Metadata.Settings;
+@using OrchardCore.ContentManagement.Metadata.Models;
+@using OrchardCore.DisplayManagement.ModelBinding;
+
+@inject OrchardCore.ContentManagement.Metadata.IContentDefinitionManager ContentDefinitionManager
+@inject OrchardCore.ContentManagement.Display.IContentItemDisplayManager ContentItemDisplayManager
+@inject IContentManager ContentManager
+
+
+@{
+    async Task RegisterResourceAsync(ContentTypeDefinition type)
+    {
+        // Register resources for the content type once.
+        if (Context.Items["ToolInsertWidget.ContentType.Edit:" + type.Name] == null)
+        {
+            Context.Items["ToolInsertWidget.ContentType.Edit:" + type.Name] = new object();
+
+            // Render a mock widget so that its resources are included in the page
+            var contentItem = await ContentManager.NewAsync(type.Name);
+            var updater = new NullModelUpdater();
+            await DisplayAsync(await ContentItemDisplayManager.BuildEditorAsync(contentItem, updater, true, "", Guid.NewGuid().ToString("n")));
+        }
+    }
+
+    if (Model.CanInsert != false)
+
+        IEnumerable<ContentTypeDefinition> containedContentTypes = Model.ContainedContentTypes as IEnumerable<ContentTypeDefinition>;
+
+        // If containedContentTypes is null fall back to all Widgets
+        if (containedContentTypes == null)
+        {
+            // Load all widgets from definition once.
+            if (Context.Items["ToolInsertWidget.AllWidget.Edit"] == null)
+            {
+                // Get All widget definitions
+                containedContentTypes = ContentDefinitionManager.ListTypeDefinitions().Where(t => t.GetSettings<ContentTypeSettings>().Stereotype == "Widget");
+
+                // Register resources for all widgets once
+                foreach (var type in containedContentTypes)
+                {
+                    await RegisterResourceAsync(type);
+                }
+
+                // Save in context for current request
+                Context.Items["InsertToolWidget.AllWidget.Edit"] = containedContentTypes;
+
+            }
+            else
+            {
+                // Get from context for current request
+                containedContentTypes = (IEnumerable<ContentTypeDefinition>)Context.Items["InsertToolWidget.AllWidget.Edit"];
+            }
+        }
+
+
+        var insertLable = Model.AppendWidget == true ? T["Add Item"] : T["Insert Item"];
+        RouteValueDictionary routes = Model.BuildEditorRouteValues ?? new RouteValueDictionary();
+
+        <div class="btn-group">
+
+            <button type="button" title="@insertLable" class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="fa fa-plus" aria-hidden="true"></i>
+                @if (Model.ShowInsertLabel == true)
+                {
+                    <span>@insertLable</span>
+                }
+            </button>
+            <div class="dropdown-menu dropdown-menu-right">
+                @foreach (var type in containedContentTypes.OrderBy(w => w.DisplayName))
+                {
+                    await RegisterResourceAsync(type);
+                    routes["id"] = type.Name;
+                    var buildEditorUrl = @Url.Action("BuildEditor", "Admin", routes);
+
+                    <a class="dropdown-item btn-sm tool-insert-widget"
+                    data-append="@Model.AppendWidget"
+                    data-widget-type="@type.Name"
+                    data-target-id="@Model.TargetId"
+                    data-buildeditorurl="@buildEditorUrl"
+                    href="javascript:;">@type.DisplayName</a>
+                }
+            </div>
+        </div>
+}

@@ -19,6 +19,7 @@ using OrchardCore.Flows.ViewModels;
 using OrchardCore.Indexing;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
+using OrchardCore.ResourceManagement;
 
 namespace OrchardCore.Flows
 {
@@ -41,6 +42,9 @@ namespace OrchardCore.Flows
 
         public override void ConfigureServices(IServiceCollection services)
         {
+            //Resources
+            services.AddScoped<IResourceManifestProvider, ResourceManifest>();
+
             // Flow Part
             services.AddContentPart<FlowPart>()
                 .UseDisplayDriver<FlowPartDisplay>();

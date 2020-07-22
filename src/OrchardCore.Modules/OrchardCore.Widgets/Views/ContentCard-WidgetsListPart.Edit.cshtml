@@ -1,3 +1,4 @@
+@using Microsoft.AspNetCore.Routing;
 @using OrchardCore.ContentManagement.Metadata.Settings;
 @inject OrchardCore.ContentManagement.Metadata.IContentDefinitionManager ContentDefinitionManager
 
@@ -12,38 +13,37 @@
         {
             <div class="widget-editor-handle"><i class="fas fa-arrows-alt"></i></div>
         }
-        <button type="button" class="btn btn-outline-secondary btn-sm widget-list-editor-btn-toggle widget-editor-btn-collapse"><i class="fa fa-angle-down" aria-hidden="true"></i></button>
-        <button type="button" class="btn btn-outline-secondary btn-sm widget-list-editor-btn-toggle widget-editor-btn-expand"><i class="fa fa-angle-up" aria-hidden="true"></i></button>
+        @if (Model.IsCollapsible != false)
+        {
+            <button type="button" class="btn btn-outline-secondary btn-sm widget-editor-btn-toggle widget-editor-btn-collapse mr-2"><i class="fa fa-angle-down" aria-hidden="true"></i></button>
+            <button type="button" class="btn btn-outline-secondary btn-sm widget-editor-btn-toggle widget-editor-btn-expand mr-2"><i class="fa fa-angle-right" aria-hidden="true"></i></button>
+        }
         @contentType
-        <div class="btn-widget-metadata border border-info w-100">
-            <div class="btn-group">
-                    @if (Model.CanInsert != false)
-                    {
-                        <button type="button" title="@T["Insert Widget"]" class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <i class="fa fa-plus" aria-hidden="true"></i>
-                        </button>
-                        <div class="dropdown-menu dropdown-menu-right">
-                            @foreach (var type in widgetContentTypes.OrderBy(w => w.DisplayName))
-                            {
-                                <a
-                                class="dropdown-item insert-list-widget btn-sm"
-                                data-target-id="@Model.TargetId"
-                                data-prefixes-name="@Model.PrefixesName"
-                                data-zones-name="@Model.ZonesName"
-                                data-contenttypes-name="@Model.ContentTypesName"
-                                data-widget-type="@type.Name"
-                                data-zone="@Model.ZoneValue"
-                                href="javascript:;">@type.DisplayName</a>
-                            }
-                        </div>
-                    }
-                </div>
-        </div>
+        <div class="btn-group btn-group-sm float-right" role="group">
+            @if (Model.CanInsert != false)
+            {
+                @* Todo: Inject to Footer via ContentCard Driver  *@
+                @await DisplayAsync(await New.ToolInsertWidget(
+                CanInsert: Model.CanInsert,
+                AppendWidget: false,
+                ShowInsertLabel : false,
+                TargetId: Model.TargetId,
+                BuildEditorRouteValues: new RouteValueDictionary(new
+                {
+                    area = "OrchardCore.Widgets",
+                    prefixesName = Model.PrefixesName,
+                    contentTypesName = Model.ContentTypesName,
+                    zonesName = Model.ZonesName,
+                    zone = Model.ZoneValue,
+                    targetId = Model.TargetId,
+                    parentContentType =Model.ParentContentType,
+                    partName = Model.CollectionPartName
+                })))
+            }
 
-        <div class="btn-group btn-group-sm float-sm-right" role="group">
             @if (Model.CanDelete != false)
             {
-                <button type="button" class="btn btn-danger widget-list-delete" data-title="@T["Delete"]" data-message="@T["Are you sure you want to remove this item?"]"><i class="fa fa-trash" aria-hidden="true"></i></button>
+                <button type="button" class="btn btn-danger widget-delete" data-title="@T["Delete"]" data-message="@T["Are you sure you want to remove this item?"]"><i class="fa fa-trash" aria-hidden="true"></i></button>
             }
         </div>
     </div>

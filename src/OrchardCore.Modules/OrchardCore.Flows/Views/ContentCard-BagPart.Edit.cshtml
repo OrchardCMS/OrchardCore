@@ -11,13 +11,15 @@
         {
             <div class="widget-editor-handle"><i class="fas fa-arrows-alt"></i></div>
         }
-        <button type="button" class="btn btn-outline-secondary btn-sm widget-editor-btn-toggle widget-editor-btn-collapse"><i class="fa fa-angle-down" aria-hidden="true"></i></button>
-        <button type="button" class="btn btn-outline-secondary btn-sm widget-editor-btn-toggle widget-editor-btn-expand"><i class="fa fa-angle-up" aria-hidden="true"></i></button>
+        @if (Model.IsCollapsible != false)
+        {
+            <button type="button" class="btn btn-outline-secondary btn-sm widget-editor-btn-toggle widget-editor-btn-collapse mr-2"><i class="fa fa-angle-down" aria-hidden="true"></i></button>
+            <button type="button" class="btn btn-outline-secondary btn-sm widget-editor-btn-toggle widget-editor-btn-expand mr-2"><i class="fa fa-angle-right" aria-hidden="true"></i></button>
+        }
         @T["{0} — <span class=\"hint\">{1}</span>", contentItem.DisplayText, contentType]
         @if (Model.CanDelete != false)
         {
             <div class="btn-group btn-group-sm float-right" role="group">
-                @* We don't render an Insert button as the container type is not known here *@
                 <button type="button" class="btn btn-danger widget-delete" data-title="@T["Delete"]" data-message="@T["Are you sure you want to remove this item?"]"><i class="fa fa-trash" aria-hidden="true"></i></button>
             </div>
         }

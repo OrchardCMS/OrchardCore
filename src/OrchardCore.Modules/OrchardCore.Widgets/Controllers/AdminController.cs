@@ -17,6 +17,8 @@ namespace OrchardCore.Widgets.Controllers
         private readonly IShapeFactory _shapeFactory;
         private readonly IUpdateModelAccessor _updateModelAccessor;
 
+        private const string ModuleArea = "OrchardCore.Widgets";
+
         public AdminController(
             IContentManager contentManager,
             IContentItemDisplayManager contentItemDisplayManager,
@@ -59,6 +61,8 @@ namespace OrchardCore.Widgets.Controllers
                 Inline: true,
                 CanMove: true,
                 CanDelete: true,
+                CanInsert: false,
+                InsertArea: ModuleArea,
                 //Input hidden
                 //Prefixes
                 HtmlFieldPrefix: prefix,
