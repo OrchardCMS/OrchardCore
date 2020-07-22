@@ -378,13 +378,13 @@ A link tag is used to define the relationship between the current document and a
 ```
 
 ``` html tab="Razor"
-<link asp-src="~/MyTheme/media/favicon/favicon-16x16.png" rel="icon" type="image/png" sizes="16x16" >
+<link asp-src="~/MyTheme/favicon/favicon-16x16.png" rel="icon" type="image/png" sizes="16x16" />
 ```
 
 Output
 
 ```text
-<link href="/MyTheme/favicon/favicon-16x16.png" rel="icon" sizes="16x16" type="image/png" />
+<link href="/MyTheme/media/favicon/favicon-16x16.png" rel="icon" sizes="16x16" type="image/png" />
 ```
 
 #### Meta tags
