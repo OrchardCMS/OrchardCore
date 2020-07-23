@@ -96,6 +96,9 @@ namespace OrchardCore.Users.Services
             try
             {
                 await _session.CommitAsync();
+
+                var context = new UserContext(user);
+                await Handlers.InvokeAsync((handler, context) => handler.DeletedAsync(context), context, _logger);
             }
             catch
             {

@@ -1793,6 +1793,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "DAud-IcI",
+      "name": "El-Saig Dávid",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/4007293?v=4",
+      "profile": "https://github.com/DAud-IcI",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true
