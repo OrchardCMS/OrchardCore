@@ -38,7 +38,7 @@ namespace OrchardCore.Contents.Controllers
         private readonly INotifier _notifier;
         private readonly IAuthorizationService _authorizationService;
         private readonly IDisplayManager<ContentOptionsViewModel> _contentOptionsDisplayManager;
-        private readonly IContentsAdminListQueryProvider _contentsAdminListQueryProvider;
+        private readonly IContentsAdminListQueryService _contentsAdminListQueryService;
         private readonly IHtmlLocalizer H;
         private readonly IStringLocalizer S;
         private readonly IUpdateModelAccessor _updateModelAccessor;
@@ -56,7 +56,7 @@ namespace OrchardCore.Contents.Controllers
             ISession session,
             IShapeFactory shapeFactory,
             IDisplayManager<ContentOptionsViewModel> contentOptionsDisplayManager,
-            IContentsAdminListQueryProvider contentsAdminListQueryProvider,
+            IContentsAdminListQueryService contentsAdminListQueryService,
             ILogger<AdminController> logger,
             IHtmlLocalizer<AdminController> htmlLocalizer,
             IStringLocalizer<AdminController> stringLocalizer,
@@ -71,7 +71,7 @@ namespace OrchardCore.Contents.Controllers
             _contentDefinitionManager = contentDefinitionManager;
             _updateModelAccessor = updateModelAccessor;
             _contentOptionsDisplayManager = contentOptionsDisplayManager;
-            _contentsAdminListQueryProvider = contentsAdminListQueryProvider;
+            _contentsAdminListQueryService = contentsAdminListQueryService;
 
             H = htmlLocalizer;
             S = stringLocalizer;
@@ -181,8 +181,8 @@ namespace OrchardCore.Contents.Controllers
                 model.Options.ContentTypeOptions.Add(new SelectListItem() { Text = option.Value, Value = option.Key });
             }
 
-            // With the model populated we filter the query.
-            var query = await _contentsAdminListQueryProvider.ProvideQueryAsync(_updateModelAccessor.ModelUpdater);
+            // With the model populated we filter the query, allowing the filters to alter the model.
+            var query = await _contentsAdminListQueryService.QueryAsync(model.Options, _updateModelAccessor.ModelUpdater);
 
             var maxPagedCount = siteSettings.MaxPagedCount;
             if (maxPagedCount > 0 && pager.PageSize > maxPagedCount)

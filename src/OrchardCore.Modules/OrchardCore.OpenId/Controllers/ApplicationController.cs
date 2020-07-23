@@ -72,7 +72,7 @@ namespace OrchardCore.OpenId.Controllers
                 Pager = (await New.Pager(pager)).TotalItemCount(count)
             };
 
-            foreach (var application in await _applicationManager.ListAsync(pager.PageSize, pager.GetStartIndex()))
+            await foreach (var application in _applicationManager.ListAsync(pager.PageSize, pager.GetStartIndex()))
             {
                 model.Applications.Add(new OpenIdApplicationEntry
                 {
@@ -159,11 +159,6 @@ namespace OrchardCore.OpenId.Controllers
             {
                 descriptor.Permissions.Add(OpenIddictConstants.Permissions.Endpoints.Logout);
             }
-            else
-            {
-                descriptor.Permissions.Remove(OpenIddictConstants.Permissions.Endpoints.Logout);
-            }
-
             if (model.AllowAuthorizationCodeFlow)
             {
                 descriptor.Permissions.Add(OpenIddictConstants.Permissions.GrantTypes.AuthorizationCode);
@@ -229,7 +224,7 @@ namespace OrchardCore.OpenId.Controllers
                 return NotFound();
             }
 
-            Task<bool> HasPermissionAsync(string permission) => _applicationManager.HasPermissionAsync(application, permission);
+            ValueTask<bool> HasPermissionAsync(string permission) => _applicationManager.HasPermissionAsync(application, permission);
 
             var model = new EditOpenIdApplicationViewModel
             {
@@ -289,7 +284,7 @@ namespace OrchardCore.OpenId.Controllers
             // If the application was a public client and is now a confidential client, ensure a client secret was provided.
             if (string.IsNullOrEmpty(model.ClientSecret) &&
                !string.Equals(model.Type, OpenIddictConstants.ClientTypes.Public, StringComparison.OrdinalIgnoreCase) &&
-                await _applicationManager.IsPublicAsync(application))
+                await _applicationManager.HasClientTypeAsync(application, OpenIddictConstants.ClientTypes.Public))
             {
                 ModelState.AddModelError(nameof(model.ClientSecret), S["Setting a new client secret is required."]);
             }

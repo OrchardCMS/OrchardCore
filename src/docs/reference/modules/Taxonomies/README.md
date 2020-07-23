@@ -12,7 +12,7 @@ Display for a taxonomy is routable by enabling `Container routing` feature on th
 
 The display for the `Taxonomy` is then rendered by the `TaxonomyPart` shape.
 
-This uses the `TermShape` to display a heirachy of the `Terms`
+This uses the `TermShape` to display a hierarchy of the `Terms`
 
 ### TermPart
 

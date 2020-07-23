@@ -116,6 +116,7 @@ namespace OrchardCore.ContentManagement.Display
 
             dynamic itemShape = await CreateContentShapeAsync(actualShapeType);
             itemShape.ContentItem = contentItem;
+            itemShape.Stereotype = stereotype;
 
             // adding an alternate for [Stereotype]_Edit__[ContentType] e.g. Content-Menu.Edit
             ((IShape)itemShape).Metadata.Alternates.Add(actualShapeType + "__" + contentItem.ContentType);
@@ -150,6 +151,7 @@ namespace OrchardCore.ContentManagement.Display
 
             dynamic itemShape = await CreateContentShapeAsync(actualShapeType);
             itemShape.ContentItem = contentItem;
+            itemShape.Stereotype = stereotype;
 
             // adding an alternate for [Stereotype]_Edit__[ContentType] e.g. Content-Menu.Edit
             ((IShape)itemShape).Metadata.Alternates.Add(actualShapeType + "__" + contentItem.ContentType);

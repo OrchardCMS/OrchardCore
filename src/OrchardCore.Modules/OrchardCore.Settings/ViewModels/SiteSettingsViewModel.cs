@@ -1,5 +1,3 @@
-using OrchardCore.Environment.Cache;
-
 namespace OrchardCore.Settings.ViewModels
 {
     public class SiteSettingsViewModel
