@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.TagHelpers.Cache;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement;
 using OrchardCore.Environment.Cache;
 
@@ -87,18 +88,21 @@ namespace OrchardCore.DynamicCache.TagHelpers
         private readonly IDynamicCacheService _dynamicCacheService;
         private readonly ICacheScopeManager _cacheScopeManager;
         private readonly DynamicCacheTagHelperService _dynamicCacheTagHelperService;
+        private readonly CacheOptions _cacheOptions;
 
         public DynamicCacheTagHelper(
             IDynamicCacheService dynamicCacheService,
             ICacheScopeManager cacheScopeManager,
             HtmlEncoder htmlEncoder,
-            DynamicCacheTagHelperService dynamicCacheTagHelperService)
+            DynamicCacheTagHelperService dynamicCacheTagHelperService,
+            IOptions<CacheOptions> cacheOptions)
 
         {
             _dynamicCacheService = dynamicCacheService;
             _cacheScopeManager = cacheScopeManager;
             HtmlEncoder = htmlEncoder;
             _dynamicCacheTagHelperService = dynamicCacheTagHelperService;
+            _cacheOptions = cacheOptions.Value;
         }
 
         /// <summary>
@@ -219,7 +223,30 @@ namespace OrchardCore.DynamicCache.TagHelpers
                             {
                                 using (var writer = new StringWriter(sb.Builder))
                                 {
+                                    // Write the start of a cache debug block.
+                                    if (_cacheOptions.DebugMode)
+                                    {
+                                        // No need to optimize this code as it will be used for debugging purpose.
+                                        writer.WriteLine();
+                                        writer.WriteLine($"<!-- CACHE BLOCK: {cacheContext.CacheId} ({Guid.NewGuid()})");
+                                        writer.WriteLine($"         VARY BY: {String.Join(", ", cacheContext.Contexts)}");
+                                        writer.WriteLine($"    DEPENDENCIES: {String.Join(", ", cacheContext.Tags)}");
+                                        writer.WriteLine($"      EXPIRES ON: {cacheContext.ExpiresOn}");
+                                        writer.WriteLine($"   EXPIRES AFTER: {cacheContext.ExpiresAfter}");
+                                        writer.WriteLine($" EXPIRES SLIDING: {cacheContext.ExpiresSliding}");
+                                        writer.WriteLine("-->");
+                                    }
+
+                                    // Always write the content regardless of debug mode.
                                     processedContent.WriteTo(writer, HtmlEncoder);
+
+                                    // Write the end of a cache debug block.
+                                    if (_cacheOptions.DebugMode)
+                                    {
+                                        writer.WriteLine();
+                                        writer.WriteLine($"<!-- END CACHE BLOCK: {cacheContext.CacheId} -->");
+                                    }
+
                                     await writer.FlushAsync();
                                 }
 

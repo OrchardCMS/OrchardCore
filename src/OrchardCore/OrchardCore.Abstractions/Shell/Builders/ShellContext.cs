@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using OrchardCore.Environment.Shell.Builders.Models;
+using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Environment.Shell.Scope;
 
 namespace OrchardCore.Environment.Shell.Builders
@@ -48,7 +49,10 @@ namespace OrchardCore.Environment.Shell.Builders
 
         public ShellScope CreateScope()
         {
-            if (_placeHolder)
+            // We can't create a scope with a null 'ServiceProvider' meaning that the shell has been disposed. Normally, the
+            // 'ShellHost' removes the shell from its collection as soon as it is released so that a new one will be created.
+            // But this may happen when a shell releases its dependent shells and disposes those that are not in use.
+            if (_placeHolder || (ServiceProvider == null && Settings.State != TenantState.Disabled))
             {
                 return null;
             }

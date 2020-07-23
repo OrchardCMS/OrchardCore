@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using OrchardCore.Modules;
 using OrchardCore.OpenId.Services;
 using OrchardCore.OpenId.Settings;
@@ -80,7 +79,7 @@ namespace OrchardCore.OpenId.Configuration
                 }
             }
 
-            if (settings.ResponseType.Contains(OpenIdConnectResponseType.Code) && !string.IsNullOrEmpty(settings.ClientSecret))
+            if (!string.IsNullOrEmpty(settings.ClientSecret))
             {
                 var protector = _dataProtectionProvider.CreateProtector(nameof(OpenIdClientConfiguration));
 

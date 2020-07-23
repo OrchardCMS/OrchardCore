@@ -17,6 +17,7 @@ namespace OrchardCore.DynamicCache
             var metadata = Shape.Metadata;
             var cache = metadata.Cache();
 
+            contentBuilder.AppendLine();
             contentBuilder.AppendHtmlLine($"<!-- CACHED SHAPE: {cache.CacheId} ({Guid.NewGuid()})");
             contentBuilder.AppendHtmlLine($"          VARY BY: {String.Join(", ", cache.Contexts)}");
             contentBuilder.AppendHtmlLine($"     DEPENDENCIES: {String.Join(", ", cache.Tags)}");
