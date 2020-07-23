@@ -5,6 +5,5 @@ namespace OrchardCore.ResourceManagement
         Unspecified,
         Foot,
         Head,
-        Inline
     }
 }
