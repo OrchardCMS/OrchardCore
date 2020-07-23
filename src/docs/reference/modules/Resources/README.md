@@ -387,6 +387,18 @@ Output
 <link href="/MyTheme/favicon/favicon-16x16.png" rel="icon" sizes="16x16" type="image/png" />
 ```
 
+##### Using a file in the media library
+If you wish to use files contained in the media library when using the link tag helper, you can use the `AssetUrl` helper directly in razor but in liquid you will need to first assign the filter result to a variable like so to generate the correct URL:
+
+``` liquid tab="Liquid"
+{% assign image_url = 'favicon/favicon-16x16.png' | asset_url %}
+{% link rel:"icon", type:"image/png", sizes:"16x16", src:image_url %}
+```
+
+``` html tab="Razor"
+<link asp-src=@Orchard.AssetUrl("favicon/favicon-16x16.png") rel="icon" type="image/png" sizes="16x16" />
+```
+
 #### Meta tags
 
 ``` liquid tab="Liquid"
