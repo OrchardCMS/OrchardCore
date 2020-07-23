@@ -9,5 +9,6 @@ namespace OrchardCore.Users
         /// Gets the user name.
         /// </summary>
         string UserName { get; }
+        string UserId { get; }
     }
 }

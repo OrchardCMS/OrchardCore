@@ -30,12 +30,14 @@ namespace OrchardCore.Users.Services
         private readonly ISession _session;
         private readonly IRoleService _roleService;
         private readonly ILookupNormalizer _keyNormalizer;
+        private readonly IUserIdGenerator _userIdGenerator;
         private readonly ILogger _logger;
         private readonly IDataProtectionProvider _dataProtectionProvider;
 
         public UserStore(ISession session,
             IRoleService roleService,
             ILookupNormalizer keyNormalizer,
+            IUserIdGenerator userIdGenerator,
             ILogger<UserStore> logger,
             IEnumerable<IUserEventHandler> handlers,
             IDataProtectionProvider dataProtectionProvider)
@@ -43,6 +45,7 @@ namespace OrchardCore.Users.Services
             _session = session;
             _roleService = roleService;
             _keyNormalizer = keyNormalizer;
+            _userIdGenerator = userIdGenerator;
             _logger = logger;
             _dataProtectionProvider = dataProtectionProvider;
             Handlers = handlers;
@@ -66,6 +69,13 @@ namespace OrchardCore.Users.Services
             {
                 throw new ArgumentNullException(nameof(user));
             }
+
+            if (!(user is User newUser))
+            {
+                throw new ArgumentException("Expected a User instance.", nameof(user));
+            }
+
+            newUser.UserId = _userIdGenerator.GenerateUniqueId(user);
 
             _session.Save(user);
 
@@ -110,13 +120,8 @@ namespace OrchardCore.Users.Services
 
         public async Task<IUser> FindByIdAsync(string userId, CancellationToken cancellationToken = default(CancellationToken))
         {
-            int id;
-            if (!int.TryParse(userId, out id))
-            {
-                return null;
-            }
-
-            return await _session.GetAsync<User>(id);
+            // For backwards compatability we check also check the UserId against the NormalizedUserName.
+            return await _session.Query<User, UserIndex>(u => u.UserId == userId || u.NormalizedUserName == userId).FirstOrDefaultAsync();
         }
 
         public async Task<IUser> FindByNameAsync(string normalizedUserName, CancellationToken cancellationToken = default(CancellationToken))
@@ -141,7 +146,7 @@ namespace OrchardCore.Users.Services
                 throw new ArgumentNullException(nameof(user));
             }
 
-            return Task.FromResult(((User)user).Id.ToString(System.Globalization.CultureInfo.InvariantCulture));
+            return Task.FromResult(((User)user).UserId);
         }
 
         public Task<string> GetUserNameAsync(IUser user, CancellationToken cancellationToken = default(CancellationToken))

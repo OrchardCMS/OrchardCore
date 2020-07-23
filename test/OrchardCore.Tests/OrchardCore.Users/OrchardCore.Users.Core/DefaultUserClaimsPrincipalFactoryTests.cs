@@ -22,8 +22,8 @@ namespace OrchardCore.Tests.OrchardCore.Users.Core
         {
             //Arrange
             var userManager = UsersMockHelper.MockUserManager<IUser>();
-            var user = new User { Id = new Random().Next(), UserName = "Foo", Email = "foo@foo.com" };
-            userManager.Setup(m => m.GetUserIdAsync(user)).ReturnsAsync(user.Id.ToString());
+            var user = new User { UserId = Guid.NewGuid().ToString("n"), UserName = "Foo", Email = "foo@foo.com" };
+            userManager.Setup(m => m.GetUserIdAsync(user)).ReturnsAsync(user.UserId);
             userManager.Setup(m => m.GetUserNameAsync(user)).ReturnsAsync(user.UserName);
             userManager.Setup(m => m.GetEmailAsync(user)).ReturnsAsync(user.Email);
             if (emailVerified)
@@ -35,7 +35,7 @@ namespace OrchardCore.Tests.OrchardCore.Users.Core
 
             var options = new Mock<IOptions<IdentityOptions>>();
             options.Setup(a => a.Value).Returns(new IdentityOptions());
-            
+
             var factory = new DefaultUserClaimsPrincipalFactory(userManager.Object, roleManager, options.Object);
 
             //Act
@@ -55,7 +55,7 @@ namespace OrchardCore.Tests.OrchardCore.Users.Core
             var emailVerifiedClaim = claims.FirstOrDefault(c => c.Type == "email_verified");
             Assert.NotNull(emailVerifiedClaim);
             Assert.Equal(ClaimValueTypes.Boolean, emailVerifiedClaim.ValueType);
-            Assert.Equal(emailVerified.ToString(), emailVerifiedClaim.Value); 
+            Assert.Equal(emailVerified.ToString(), emailVerifiedClaim.Value);
         }
     }
 
