@@ -105,6 +105,10 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                 {
                     setting.AtLocation(At);
                 }
+                else
+                {
+                    setting.AtLocation(ResourceLocation.Foot);
+                }
 
                 if (!String.IsNullOrEmpty(Condition))
                 {
@@ -145,6 +149,10 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                 if (At != ResourceLocation.Unspecified)
                 {
                     setting.AtLocation(At);
+                }
+                else
+                {
+                    setting.AtLocation(ResourceLocation.Foot);
                 }
 
                 if (UseCdn != null)
