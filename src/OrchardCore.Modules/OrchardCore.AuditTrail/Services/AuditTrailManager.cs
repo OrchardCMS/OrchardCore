@@ -105,7 +105,7 @@ namespace OrchardCore.AuditTrail.Services
         {
             var session = _session.Store.CreateSession(System.Data.IsolationLevel.ReadUncommitted);
             var query = session.Query<AuditTrailEvent>();
-            
+
             if (filters != null)
             {
                 var filterContext = new QueryFilterContext(query, filters);
@@ -135,16 +135,16 @@ namespace OrchardCore.AuditTrail.Services
                     break;
             }
 
-            var auditTrailEvents = await query.ListAsync();
-            var auditTrailEventsTotalCount = auditTrailEvents.Count();
+            var auditTrailEventsTotalCount = await query.CountAsync();
 
             var startIndex = (page - 1) * pageSize;
-            auditTrailEvents = auditTrailEvents.Skip(startIndex);
-
+            query = query.Skip(startIndex);
             if (pageSize > 0)
             {
-                auditTrailEvents = auditTrailEvents.Take(pageSize);
+                query = query.Take(pageSize);
             }
+
+            var auditTrailEvents = await query.ListAsync();
 
             return new AuditTrailEventSearchResults
             {
