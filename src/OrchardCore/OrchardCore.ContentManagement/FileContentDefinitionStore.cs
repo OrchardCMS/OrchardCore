@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
@@ -65,6 +66,12 @@ namespace OrchardCore.ContentManagement
         {
             lock (this)
             {
+                var directoryPath = Path.GetDirectoryName(Filename);
+                if (!String.IsNullOrEmpty(directoryPath) && !Directory.Exists(directoryPath))
+                {
+                    Directory.CreateDirectory(directoryPath);
+                }
+
                 using (var file = File.CreateText(Filename))
                 {
                     var serializer = new JsonSerializer();

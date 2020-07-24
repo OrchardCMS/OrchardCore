@@ -26,12 +26,12 @@
     <div class="custom-control custom-checkbox">
         <input asp-for="RenderTitle" class="custom-control-input" />
         <label asp-for="RenderTitle" class="custom-control-label">@T["Render Title"]</label>
-        <span class="hint">@T["Check to render the title in display views."]</span>
+        <span class="hint">— @T["Check to render the title in display views."]</span>
     </div>
 </div>
 
 <div class="row mb-3">
-    <div class="col-lg">
+    <div class="col-large">
         <label asp-for="Pattern">@T["Pattern"]</label>
         <textarea asp-for="Pattern" rows="5" class="form-control"></textarea>
         <span class="hint">@T["The pattern used to render the title of this content type. With Liquid support."]</span>

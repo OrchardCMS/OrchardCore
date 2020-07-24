@@ -41,7 +41,6 @@ Available settings are:
   - Json Web Token: this format uses signed JWT standard tokens. The tokens are encrypted by default but access token encryption can be turned off
 to allow third-party resource servers to use the JWT tokens produced by the Orchard OpenID server.
 - Authority: Orchard URL used by Orchard to act as an identity server.
-- Audiences: URLs of the resource servers for which the identity server issues valid JWT tokens.
 - Signing Certificate Store Location: CurrentUser/LocalMachine <https://msdn.microsoft.com/en-us/library/system.security.cryptography.x509certificates.storelocation(v=vs.110).aspx>
 - Signing Certificate Store Name: AddressBook/AuthRootCertificateAuthority/Disallowed/My/Root/TrustedPeople/TrustedPublisher <https://msdn.microsoft.com/en-us/library/system.security.cryptography.x509certificates.storename(v=vs.110).aspx>
 - Encryption Certificate Thumbprint: the thumbprint of the signing certificate (it is recommended to not use same certificate that is being used for SSL).
@@ -66,7 +65,6 @@ A sample of OpenID Connect Settings recipe step:
       "TestingModeEnabled": false,
       "AccessTokenFormat": "JsonWebToken", // JsonWebToken or DataProtection
       "Authority": "https://www.orchardproject.net",
-      "Audiences": ["https://www.orchardproject.net","https://orchardharvest.org/"],
       "SigningCertificateStoreLocation": "LocalMachine", //More info: https://msdn.microsoft.com/en-us/library/system.security.cryptography.x509certificates.storelocation(v=vs.110).aspx
       "SigningCertificateStoreName": "My", //More info: https://msdn.microsoft.com/en-us/library/system.security.cryptography.x509certificates.storename(v=vs.110).aspx
       "SigningCertificateThumbprint": "27CCA66EF38EF46CD9022431FB1FF0F2DF5CA1D7",

@@ -1,4 +1,6 @@
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
@@ -15,17 +17,30 @@ namespace OrchardCore.ReverseProxy.Drivers
         private const string SettingsGroupId = "ReverseProxy";
         private readonly IShellHost _shellHost;
         private readonly ShellSettings _shellSettings;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IAuthorizationService _authorizationService;
 
         public ReverseProxySettingsDisplayDriver(
             IShellHost shellHost,
-            ShellSettings shellSettings)
+            ShellSettings shellSettings,
+            IHttpContextAccessor httpContextAccessor,
+            IAuthorizationService authorizationService)
         {
             _shellHost = shellHost;
             _shellSettings = shellSettings;
+            _httpContextAccessor = httpContextAccessor;
+            _authorizationService = authorizationService;
         }
 
-        public override IDisplayResult Edit(ReverseProxySettings section, BuildEditorContext context)
+        public override async Task<IDisplayResult> EditAsync(ReverseProxySettings section, BuildEditorContext context)
         {
+            var user = _httpContextAccessor.HttpContext?.User;
+
+            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ReverseProxySettings))
+            {
+                return null;
+            }
+
             return Initialize<ReverseProxySettingsViewModel>("ReverseProxySettings_Edit", model =>
             {
                 model.EnableXForwardedFor = section.ForwardedHeaders.HasFlag(ForwardedHeaders.XForwardedFor);
@@ -36,6 +51,13 @@ namespace OrchardCore.ReverseProxy.Drivers
 
         public override async Task<IDisplayResult> UpdateAsync(ReverseProxySettings section, BuildEditorContext context)
         {
+            var user = _httpContextAccessor.HttpContext?.User;
+
+            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ReverseProxySettings))
+            {
+                return null;
+            }
+
             if (context.GroupId == SettingsGroupId)
             {
                 var model = new ReverseProxySettingsViewModel();

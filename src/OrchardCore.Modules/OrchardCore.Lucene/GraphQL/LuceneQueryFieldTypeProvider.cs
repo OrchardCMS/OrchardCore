@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using GraphQL.Types;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -18,10 +19,12 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
     public class LuceneQueryFieldTypeProvider : ISchemaBuilder
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly ILogger<LuceneQueryFieldTypeProvider> _logger;
 
-        public LuceneQueryFieldTypeProvider(IHttpContextAccessor httpContextAccessor)
+        public LuceneQueryFieldTypeProvider(IHttpContextAccessor httpContextAccessor, ILogger<LuceneQueryFieldTypeProvider> logger)
         {
             _httpContextAccessor = httpContextAccessor;
+            _logger = logger;
         }
 
         public async Task<IChangeToken> BuildAsync(ISchema schema)
@@ -39,23 +42,34 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
                 var name = query.Name;
                 var source = query.Source;
 
-                var querySchema = JObject.Parse(query.Schema);
-
-                var type = querySchema["type"].ToString();
-
-                if (query.ReturnContentItems &&
-                    type.StartsWith("ContentItem/", StringComparison.OrdinalIgnoreCase))
+                try
                 {
-                    var contentType = type.Remove(0, 12);
-                    var queryField = BuildContentTypeFieldType(schema, contentType, query);
-                    if (queryField != null)
+                    var querySchema = JObject.Parse(query.Schema);
+                    if (!querySchema.ContainsKey("type"))
                     {
-                        schema.Query.AddField(queryField);
+                        _logger.LogError("The Query '{Name}' schema is invalid, the 'type' property was not found.", name);
+                        continue;
+                    }
+                    var type = querySchema["type"].ToString();
+
+                    if (query.ReturnContentItems &&
+                        type.StartsWith("ContentItem/", StringComparison.OrdinalIgnoreCase))
+                    {
+                        var contentType = type.Remove(0, 12);
+                        var queryField = BuildContentTypeFieldType(schema, contentType, query);
+                        if (queryField != null)
+                        {
+                            schema.Query.AddField(queryField);
+                        }
+                    }
+                    else
+                    {
+                        schema.Query.AddField(BuildSchemaBasedFieldType(query, querySchema));
                     }
                 }
-                else
+                catch (Exception e)
                 {
-                    schema.Query.AddField(BuildSchemaBasedFieldType(query, querySchema));
+                    _logger.LogError(e, "The Query '{Name}' has an invalid schema.", name);
                 }
             }
 

@@ -20,6 +20,11 @@ namespace OrchardCore.Users.Workflows.Handlers
             return TriggerWorkflowEventAsync(nameof(UserCreatedEvent), (User)context.User);
         }
 
+        public Task DeletedAsync(UserContext context)
+        {
+            return TriggerWorkflowEventAsync(nameof(UserDeletedEvent), (User)context.User);
+        }
+
         public Task DisabledAsync(UserContext context)
         {
             return TriggerWorkflowEventAsync(nameof(UserDisabledEvent), (User)context.User);
