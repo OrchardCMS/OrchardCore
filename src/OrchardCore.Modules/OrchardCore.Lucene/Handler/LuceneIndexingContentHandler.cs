@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
+using OrchardCore.ContentPreview;
 using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Indexing;
 using OrchardCore.Modules;
@@ -32,7 +33,7 @@ namespace OrchardCore.Lucene.Handlers
         private Task AddContextAsync(ContentContextBase context)
         {
             // Do not index a preview content item.
-            if (_httpContextAccessor.HttpContext?.Items.ContainsKey("Preview") == true)
+            if (_httpContextAccessor.HttpContext?.Features.Get<ContentPreviewFeature>()?.Previewing == true)
             {
                 return Task.CompletedTask;
             }

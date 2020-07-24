@@ -6,6 +6,7 @@ using Dapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using OrchardCore.ContentPreview;
 using OrchardCore.ContentManagement;
 using OrchardCore.Data;
 using OrchardCore.Environment.Shell;
@@ -59,7 +60,7 @@ namespace OrchardCore.Indexing.Services
             }
 
             // Do not index a preview content item.
-            if (_httpContextAccessor.HttpContext?.Items.ContainsKey("Preview") == true)
+            if (_httpContextAccessor.HttpContext?.Features.Get<ContentPreviewFeature>()?.Previewing == true)
             {
                 return Task.CompletedTask;
             }

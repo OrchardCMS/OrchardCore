@@ -54,8 +54,7 @@ namespace OrchardCore.ContentPreview.Controllers
             }
 
             // Mark request as a `Preview` request so that drivers / handlers or underlying services can be aware of an active preview mode.
-            Request.HttpContext.Items["Preview"] = new object();
-            // HttpContext.Features.Set
+            HttpContext.Features.Set(new ContentPreviewFeature());
 
             var contentItemType = Request.Form["ContentItemType"];
             var contentItem = await _contentManager.NewAsync(contentItemType);
