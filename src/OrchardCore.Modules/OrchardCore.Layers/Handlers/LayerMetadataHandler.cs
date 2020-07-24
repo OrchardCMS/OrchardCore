@@ -1,48 +1,40 @@
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
-using OrchardCore.Environment.Cache;
+using OrchardCore.Data.Documents;
+using OrchardCore.Documents.States;
 using OrchardCore.Layers.Models;
 
 namespace OrchardCore.Layers.Handlers
 {
     public class LayerMetadataHandler : ContentHandlerBase
     {
-        public const string LayerChangeToken = "OrchardCore.Layers:LayerMetadata";
+        public const string StateKey = "OrchardCore.Layers:LayerMetadata";
 
-        private readonly ISignal _signal;
+        private readonly IVolatileStates _states;
 
-        public LayerMetadataHandler(ISignal signal)
+        public LayerMetadataHandler(IVolatileStates states)
         {
-            _signal = signal;
+            _states = states;
         }
 
-        public override Task PublishedAsync(PublishContentContext context)
-        {
-            SignalLayerChanged(context.ContentItem);
-            return Task.CompletedTask;
-        }
+        public override Task PublishedAsync(PublishContentContext context) => UpdateLayerIdentifierAsync(context.ContentItem);
 
-        public override Task RemovedAsync(RemoveContentContext context)
-        {
-            SignalLayerChanged(context.ContentItem);
-            return Task.CompletedTask;
-        }
+        public override Task RemovedAsync(RemoveContentContext context) => UpdateLayerIdentifierAsync(context.ContentItem);
 
-        public override Task UnpublishedAsync(PublishContentContext context)
-        {
-            SignalLayerChanged(context.ContentItem);
-            return Task.CompletedTask;
-        }
+        public override Task UnpublishedAsync(PublishContentContext context) => UpdateLayerIdentifierAsync(context.ContentItem);
 
-        private void SignalLayerChanged(ContentItem contentItem)
+        private Task UpdateLayerIdentifierAsync(ContentItem contentItem)
         {
             var layerMetadata = contentItem.As<LayerMetadata>();
 
-            if (layerMetadata != null)
+            if (layerMetadata == null)
             {
-                _signal.DeferredSignalToken(LayerChangeToken);
+                return Task.CompletedTask;
             }
+
+            // Checked by the 'LayerFilter'.
+            return _states.SetAsync(StateKey, new Document() { Identifier = IdGenerator.GenerateId() });
         }
     }
 }

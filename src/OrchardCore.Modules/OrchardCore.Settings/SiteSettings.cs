@@ -1,18 +1,15 @@
+using System.Collections.Generic;
+using System.Linq;
+using MessagePack;
 using Microsoft.AspNetCore.Routing;
 using Newtonsoft.Json;
-using OrchardCore.Entities;
+using OrchardCore.Documents;
 
 namespace OrchardCore.Settings
 {
     // When updating class also update SiteSettingsDeploymentSource and SettingsStep.
-    public class SiteSettings : Entity, ISite
+    public class SiteSettings : DocumentEntity, ISite
     {
-        /// <summary>
-        /// True if the object can't be used to update the database.
-        /// </summary>
-        [JsonIgnore]
-        public bool IsReadonly { get; set; }
-
         public string BaseUrl { get; set; }
         public string Calendar { get; set; }
         public int MaxPagedCount { get; set; }
@@ -26,8 +23,27 @@ namespace OrchardCore.Settings
         public string SuperUser { get; set; }
         public bool UseCdn { get; set; } = true;
         public string CdnBaseUrl { get; set; }
+
+        [IgnoreMember]
         public RouteValueDictionary HomeRoute { get; set; } = new RouteValueDictionary();
+
+        [JsonIgnore]
+        public Dictionary<string, object> HomeRouteValues { get; set; }
+
         public bool AppendVersion { get; set; } = true;
         public CacheMode CacheMode { get; set; }
+
+        // 'MessagePack' can't serialize a 'RouteValueDictionary'.
+        public override void OnAfterDeserialize()
+        {
+            HomeRoute = new RouteValueDictionary(HomeRouteValues);
+            base.OnAfterDeserialize();
+        }
+
+        public override void OnBeforeSerialize()
+        {
+            HomeRouteValues = HomeRoute.ToDictionary(kv => kv.Key, kv => kv.Value);
+            base.OnBeforeSerialize();
+        }
     }
 }

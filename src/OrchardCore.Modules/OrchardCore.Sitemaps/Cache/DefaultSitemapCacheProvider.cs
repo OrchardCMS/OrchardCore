@@ -78,7 +78,6 @@ namespace OrchardCore.Sitemaps.Cache
             return Task.CompletedTask;
         }
 
-
         public Task<bool> PurgeAllAsync()
         {
             var hasErrors = false;

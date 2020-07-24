@@ -1,12 +1,13 @@
 using System.Collections.Generic;
-using Newtonsoft.Json;
+using OrchardCore.Data.Documents;
 
 namespace OrchardCore.Sitemaps.Models
 {
     /// <summary>
     /// Abstract to provide a type of sitemap.
     /// </summary>
-    public abstract class SitemapType
+    // 'MessagePack' can't serialize an abstract class.
+    public /*abstract*/ class SitemapType : Document
     {
         /// <summary>
         /// Sitemap id.
@@ -17,12 +18,6 @@ namespace OrchardCore.Sitemaps.Models
         /// Name of sitemap.
         /// </summary>
         public string Name { get; set; }
-
-        /// <summary>
-        /// When readonly this sitemap cannot be updated.
-        /// </summary>
-        [JsonIgnore]
-        public bool IsReadonly { get; set; }
 
         /// <summary>
         /// When false sitemap will not be included in routing.

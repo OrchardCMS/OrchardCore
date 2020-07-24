@@ -2,7 +2,7 @@ using System;
 
 namespace OrchardCore
 {
-    public class IdGenerator
+    public static class IdGenerator
     {
         // Some confusing chars are ignored: http://www.crockford.com/wrmg/base32.html
         private static readonly char[] _encode32Chars = "0123456789abcdefghjkmnpqrstvwxyz".ToCharArray();
