@@ -14,8 +14,7 @@ namespace OrchardCore.CustomSettings.Recipes
     {
         private readonly ISiteService _siteService;        
 
-        public CustomSettingsStep(
-            ISiteService siteService)
+        public CustomSettingsStep(ISiteService siteService)
         {
             _siteService = siteService;            
         }

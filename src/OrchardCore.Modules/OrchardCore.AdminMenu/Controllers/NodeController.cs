@@ -30,8 +30,7 @@ namespace OrchardCore.AdminMenu.Controllers
             IAuthorizationService authorizationService,
             IDisplayManager<MenuItem> displayManager,
             IEnumerable<IAdminNodeProviderFactory> factories,
-            IAdminMenuService adminMenuService,
-            IShapeFactory shapeFactory,
+            IAdminMenuService adminMenuService,            
             IHtmlLocalizer<NodeController> htmlLocalizer,
             INotifier notifier,
             IUpdateModelAccessor updateModelAccessor)
