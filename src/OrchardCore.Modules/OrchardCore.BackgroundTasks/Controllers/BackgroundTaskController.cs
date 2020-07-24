@@ -9,7 +9,6 @@ using OrchardCore.Admin;
 using OrchardCore.BackgroundTasks.Services;
 using OrchardCore.BackgroundTasks.ViewModels;
 using OrchardCore.DisplayManagement;
-using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Navigation;
 using OrchardCore.Settings;
@@ -34,8 +33,7 @@ namespace OrchardCore.BackgroundTasks.Controllers
             BackgroundTaskManager backgroundTaskManager,
             IShapeFactory shapeFactory,
             ISiteService siteService,
-            IStringLocalizer<BackgroundTaskController> stringLocalizer,
-            INotifier notifier)
+            IStringLocalizer<BackgroundTaskController> stringLocalizer)
         {
             _tenant = shellSettings.Name;
             _authorizationService = authorizationService;
