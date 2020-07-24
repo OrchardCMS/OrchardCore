@@ -66,7 +66,7 @@ namespace OrchardCore.Html.Drivers
                 if (!string.IsNullOrEmpty(viewModel.Html) && !_liquidTemplateManager.Validate(viewModel.Html, out var errors))
                 {
                     var partName = context.TypePartDefinition.DisplayName();
-                    updater.ModelState.AddModelError(viewModel, Prefix, vm => vm.Html, S["{0} doesn't contain a valid Liquid expression. Details: {1}", partName, string.Join(" ", errors)]);
+                    updater.ModelState.AddModelError(Prefix, nameof(viewModel.Html), S["{0} doesn't contain a valid Liquid expression. Details: {1}", partName, string.Join(" ", errors)]);
                 }
                 else
                 {

@@ -22,7 +22,7 @@ namespace OrchardCore.Title.Drivers
         public override IDisplayResult Display(TitlePart titlePart, BuildPartDisplayContext context)
         {
             var settings = context.TypePartDefinition.GetSettings<TitlePartSettings>();
-            
+
             if (!settings.RenderTitle)
             {
                 return null;
@@ -57,7 +57,7 @@ namespace OrchardCore.Title.Drivers
                 var settings = context.TypePartDefinition.GetSettings<TitlePartSettings>();
                 if (settings.Options == TitlePartOptions.EditableRequired && string.IsNullOrWhiteSpace(model.Title))
                 {
-                    updater.ModelState.AddModelError(model, Prefix, t => t.Title, S["A value is required for Title."]);
+                    updater.ModelState.AddModelError(Prefix, nameof(model.Title), S["A value is required for Title."]);
                 }
                 else
                 {

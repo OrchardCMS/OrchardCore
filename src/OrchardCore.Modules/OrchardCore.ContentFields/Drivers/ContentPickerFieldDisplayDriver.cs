@@ -89,12 +89,12 @@ namespace OrchardCore.ContentFields.Drivers
 
             if (settings.Required && field.ContentItemIds.Length == 0)
             {
-                updater.ModelState.AddModelError(field, Prefix, f => f.ContentItemIds, S["The {0} field is required.", context.PartFieldDefinition.DisplayName()]);
+                updater.ModelState.AddModelError(Prefix, nameof(field.ContentItemIds), S["The {0} field is required.", context.PartFieldDefinition.DisplayName()]);
             }
 
             if (!settings.Multiple && field.ContentItemIds.Length > 1)
             {
-                updater.ModelState.AddModelError(field, Prefix, f => f.ContentItemIds, S["The {0} field cannot contain multiple items.", context.PartFieldDefinition.DisplayName()]);
+                updater.ModelState.AddModelError(Prefix, nameof(field.ContentItemIds), S["The {0} field cannot contain multiple items.", context.PartFieldDefinition.DisplayName()]);
             }
 
             return Edit(field, context);

@@ -60,7 +60,7 @@ namespace OrchardCore.ContentFields.Drivers
                 var settings = context.PartFieldDefinition.GetSettings<DateTimeFieldSettings>();
                 if (settings.Required && model.LocalDateTime == null)
                 {
-                    updater.ModelState.AddModelError(model, Prefix, f => f.LocalDateTime, S["A value is required for {0}.", context.PartFieldDefinition.DisplayName()]);
+                    updater.ModelState.AddModelError(Prefix, nameof(model.LocalDateTime), S["A value is required for {0}.", context.PartFieldDefinition.DisplayName()]);
                 }
                 else
                 {

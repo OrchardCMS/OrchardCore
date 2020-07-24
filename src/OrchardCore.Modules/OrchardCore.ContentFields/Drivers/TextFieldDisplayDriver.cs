@@ -52,7 +52,7 @@ namespace OrchardCore.ContentFields.Drivers
                 var settings = context.PartFieldDefinition.GetSettings<TextFieldSettings>();
                 if (settings.Required && String.IsNullOrWhiteSpace(field.Text))
                 {
-                    updater.ModelState.AddModelError(field, Prefix, f => f.Text, S["A value is required for {0}.", context.PartFieldDefinition.DisplayName()]);
+                    updater.ModelState.AddModelError(Prefix, nameof(field.Text), S["A value is required for {0}.", context.PartFieldDefinition.DisplayName()]);
                 }
             }
 

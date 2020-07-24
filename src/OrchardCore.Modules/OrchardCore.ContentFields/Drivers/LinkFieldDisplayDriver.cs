@@ -68,21 +68,21 @@ namespace OrchardCore.ContentFields.Drivers
                 // Validate Url
                 if (settings.Required && String.IsNullOrWhiteSpace(field.Url))
                 {
-                    updater.ModelState.AddModelError(field, Prefix, f => f.Url, S["The url is required for {0}.", context.PartFieldDefinition.DisplayName()]);
+                    updater.ModelState.AddModelError(Prefix, nameof(field.Url), S["The url is required for {0}.", context.PartFieldDefinition.DisplayName()]);
                 }
                 else if (!string.IsNullOrWhiteSpace(field.Url) && !Uri.IsWellFormedUriString(urlToValidate, UriKind.RelativeOrAbsolute))
                 {
-                    updater.ModelState.AddModelError(field, Prefix, f => f.Url, S["{0} is an invalid url.", field.Url]);
+                    updater.ModelState.AddModelError(Prefix, nameof(field.Url), S["{0} is an invalid url.", field.Url]);
                 }
 
                 // Validate Text
                 if (settings.LinkTextMode == LinkTextMode.Required && string.IsNullOrWhiteSpace(field.Text))
                 {
-                    updater.ModelState.AddModelError(field, Prefix, f => f.Text, S["The link text is required for {0}.", context.PartFieldDefinition.DisplayName()]);
+                    updater.ModelState.AddModelError(Prefix, nameof(field.Text), S["The link text is required for {0}.", context.PartFieldDefinition.DisplayName()]);
                 }
                 else if (settings.LinkTextMode == LinkTextMode.Static && string.IsNullOrWhiteSpace(settings.DefaultText))
                 {
-                    updater.ModelState.AddModelError(field, Prefix, f => f.Text, S["The text default value is required for {0}.", context.PartFieldDefinition.DisplayName()]);
+                    updater.ModelState.AddModelError(Prefix, nameof(field.Text), S["The text default value is required for {0}.", context.PartFieldDefinition.DisplayName()]);
                 }
 
                 // Run this through a sanitizer in case someone puts html in it.
