@@ -58,7 +58,7 @@ When rendering content directly you can disable sanitization by passing a boolea
 
 ## Markdown Pipeline
 
-The markdown pipline is configurable using `IOptions<MarkdownPipelineOptions>` during service registration with a configuration 
+The markdown pipeline is configurable using `IOptions<MarkdownPipelineOptions>` during service registration with a configuration 
 extension method `ConfigureMarkdownPipeline`.
 
 By default the pipeline disables HTML by converting any HTML found in the Markdown content to escaped HTML entities.
