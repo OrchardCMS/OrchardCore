@@ -167,6 +167,7 @@ nav:
             - Recipes: docs/reference/modules/Recipes/README.md
             - Response Compression: docs/reference/modules/ResponseCompression/README.md
             - Roles: docs/reference/modules/Roles/README.md
+            - Sanitizer: docs/reference/core/Sanitizer/README.md
             - Scripting: docs/reference/modules/Scripting/README.md
             - Setup: docs/reference/modules/Setup/README.md
             - Shells: docs/reference/core/Shells/README.md
