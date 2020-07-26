@@ -1,11 +1,9 @@
 using System;
-using System.IO;
 using System.Text;
 using System.Threading.Tasks;
-using MessagePack;
-using MessagePack.Resolvers;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
+using Newtonsoft.Json;
 using OrchardCore.Data.Documents;
 using OrchardCore.Documents.Options;
 
@@ -16,6 +14,13 @@ namespace OrchardCore.Documents
     /// </summary>
     public class DocumentManager<TDocument> : IDocumentManager<TDocument> where TDocument : class, IDocument, new()
     {
+        private static readonly JsonSerializerSettings _jsonSettings = new JsonSerializerSettings
+        {
+            TypeNameHandling = TypeNameHandling.Auto,
+            DateTimeZoneHandling = DateTimeZoneHandling.Utc,
+            Formatting = Formatting.None
+        };
+
         private readonly IDocumentStore _documentStore;
         private readonly IDistributedCache _distributedCache;
         private readonly IMemoryCache _memoryCache;
@@ -225,9 +230,7 @@ namespace OrchardCore.Documents
             }
             else if (_memoryCache.TryGetValue<TDocument>(_options.CacheKey, out var cached))
             {
-                using var stream = new MemoryStream();
-                await SerializeAsync(stream, cached);
-                data = stream.ToArray();
+                data = Serialize(cached);
             }
 
             if (data == null)
@@ -235,14 +238,7 @@ namespace OrchardCore.Documents
                 return null;
             }
 
-            TDocument document;
-
-            using (var stream = new MemoryStream(data))
-            {
-                document = await DeserializeAsync(stream);
-            }
-
-            return document;
+            return Deserialize(data);
         }
 
         private async Task UpdateDistributedCacheAsync(TDocument document)
@@ -251,13 +247,7 @@ namespace OrchardCore.Documents
 
             if (_isDistributed)
             {
-                byte[] data;
-
-                using (var stream = new MemoryStream())
-                {
-                    await SerializeAsync(stream, document);
-                    data = stream.ToArray();
-                }
+                var data = Serialize(document);
 
                 await _distributedCache.SetAsync(_options.CacheKey, data, _options);
             }
@@ -265,10 +255,10 @@ namespace OrchardCore.Documents
             await _distributedCache.SetAsync(_options.CacheIdKey, idData, _options);
         }
 
-        internal static Task SerializeAsync(Stream stream, TDocument document) =>
-            MessagePackSerializer.SerializeAsync(stream, document, ContractlessStandardResolver.Options);
+        internal static byte[] Serialize(TDocument document) =>
+            Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(document, _jsonSettings));
 
-        internal static ValueTask<TDocument> DeserializeAsync(Stream stream) =>
-            MessagePackSerializer.DeserializeAsync<TDocument>(stream, ContractlessStandardResolver.Options);
+        internal static TDocument Deserialize(byte[] data) =>
+            JsonConvert.DeserializeObject<TDocument>(Encoding.UTF8.GetString(data), _jsonSettings);
     }
 }
