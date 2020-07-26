@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using OrchardCore.Alias.Indexes;
 using OrchardCore.ContentManagement;
@@ -18,15 +19,21 @@ namespace OrchardCore.Alias.Services
 
         public async Task<string> GetContentItemIdAsync(string handle)
         {
-            if (handle.StartsWith("alias:", System.StringComparison.OrdinalIgnoreCase))
+            if (handle.StartsWith("alias:", StringComparison.OrdinalIgnoreCase))
             {
                 handle = handle.Substring(6);
 
-                var aliasPartIndex = await _session.Query<ContentItem, AliasPartIndex>(x => x.Alias == handle.ToLowerInvariant()).FirstOrDefaultAsync();
+                var aliasPartIndex = await AliasPartContentHandleHelper.QueryAliasIndex(_session, handle);
                 return aliasPartIndex?.ContentItemId;
             }
 
             return null;
         }
+    }
+
+    internal class AliasPartContentHandleHelper
+    {
+        internal static async Task<ContentItem> QueryAliasIndex(ISession session, string alias) =>
+            await session.Query<ContentItem, AliasPartIndex>(x => x.Alias == alias.ToLowerInvariant()).FirstOrDefaultAsync();
     }
 }

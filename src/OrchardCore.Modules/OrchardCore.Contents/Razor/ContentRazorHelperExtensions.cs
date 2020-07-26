@@ -10,39 +10,6 @@ using YesSql;
 public static class ContentRazorHelperExtensions
 {
     /// <summary>
-    /// Returns a content item id by its alias.
-    /// </summary>
-    /// <param name="alias">The alias.</param>
-    /// <example>GetContentItemIdByAliasAsync("carousel")</example>
-    /// <returns>A content item id or <c>null</c> if it was not found.</returns>
-    public static Task<string> GetContentItemIdByAliasAsync(this IOrchardHelper orchardHelper, string alias)
-    {
-        // Prepend the 'alias:' handle if it has not been provided.
-        if (!alias.StartsWith("alias:", StringComparison.OrdinalIgnoreCase))
-        {
-            alias = "alias:" + alias;
-        }
-        return orchardHelper.GetContentItemIdByHandleAsync(alias);
-    }
-
-    /// <summary>
-    /// Returns a content item id by its slug.
-    /// </summary>
-    /// <param name="slug">The slug.</param>
-    /// <example>GetContentItemIdBySlugAsync("myblog/my-blog-post")</example>
-    /// <returns>A content item id or <c>null</c> if it was not found.</returns>
-    public static Task<string> GetContentItemIdBySlugAsync(this IOrchardHelper orchardHelper, string slug)
-    {
-        // Prepend the 'slug:' handle if it has not been provided.
-        if (!slug.StartsWith("slug:", StringComparison.OrdinalIgnoreCase))
-        {
-            slug = "slug:" + slug;
-        }
-
-        return orchardHelper.GetContentItemIdByHandleAsync(slug);
-    }
-
-    /// <summary>
     /// Returns a content item id by its handle.
     /// </summary>
     /// <param name="handle">The handle.</param>
@@ -53,42 +20,6 @@ public static class ContentRazorHelperExtensions
     {
         var contentHandleManager = orchardHelper.HttpContext.RequestServices.GetService<IContentHandleManager>();
         return contentHandleManager.GetContentItemIdAsync(handle);
-    }
-
-    /// <summary>
-    /// Loads a content item by its alias.
-    /// </summary>
-    /// <param name="alias">The alias to load.</param>
-    /// <param name="latest">Whether a draft should be loaded if available. <c>false</c> by default.</param>
-    /// <example>GetContentItemIdByAliasAsync("carousel")</example>
-    /// <returns>A content item with the specific name, or <c>null</c> if it doesn't exist.</returns>
-    public static async Task<ContentItem> GetContentItemByAliasAsync(this IOrchardHelper orchardHelper, string alias, bool latest = false)
-    {
-        // Prepend the 'alias:' handle if it has not been provided.
-        if (!alias.StartsWith("alias:", StringComparison.OrdinalIgnoreCase))
-        {
-            alias = "alias:" + alias;
-        }
-
-        return await orchardHelper.GetContentItemByHandleAsync(alias, latest);
-    }
-
-    /// <summary>
-    /// Loads a content item by its slug.
-    /// </summary>
-    /// <param name="slug">The slug to load.</param>
-    /// <param name="latest">Whether a draft should be loaded if available. <c>false</c> by default.</param>
-    /// <example>GetContentItemBySlugAsync("myblog/my-blog-post")</example>
-    /// <returns>A content item with the specific name, or <c>null</c> if it doesn't exist.</returns>
-    public static async Task<ContentItem> GetContentItemBySlugAsync(this IOrchardHelper orchardHelper, string slug, bool latest = false)
-    {
-        // Prepend the 'slug:' handle if it has not been provided.
-        if (!slug.StartsWith("slug:", StringComparison.OrdinalIgnoreCase))
-        {
-            slug = "slug:" + slug;
-        }
-
-        return await orchardHelper.GetContentItemByHandleAsync(slug, latest);
     }
 
     /// <summary>
