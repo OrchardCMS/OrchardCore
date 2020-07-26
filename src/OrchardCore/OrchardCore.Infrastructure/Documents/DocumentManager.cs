@@ -17,8 +17,7 @@ namespace OrchardCore.Documents
         private static readonly JsonSerializerSettings _jsonSettings = new JsonSerializerSettings
         {
             TypeNameHandling = TypeNameHandling.Auto,
-            DateTimeZoneHandling = DateTimeZoneHandling.Utc,
-            Formatting = Formatting.None
+            DateTimeZoneHandling = DateTimeZoneHandling.Utc
         };
 
         private readonly IDocumentStore _documentStore;
