@@ -2,8 +2,7 @@ namespace OrchardCore.Queries
 {
     public class Query
     {
-        // Need to be public for the 'MessagePack' serializer.
-        public Query(string source)
+        protected Query(string source)
         {
             Source = source;
         }

@@ -10,10 +10,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="MessagePack" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\OrchardCore.Abstractions\OrchardCore.Abstractions.csproj" />
     <ProjectReference Include="..\OrchardCore.Data.Abstractions\OrchardCore.Data.Abstractions.csproj" />
   </ItemGroup>
