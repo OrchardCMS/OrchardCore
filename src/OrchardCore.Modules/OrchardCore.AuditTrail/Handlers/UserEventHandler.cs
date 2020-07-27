@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
@@ -8,9 +11,6 @@ using OrchardCore.AuditTrail.Services.Models;
 using OrchardCore.Users;
 using OrchardCore.Users.Events;
 using OrchardCore.Users.Handlers;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace OrchardCore.AuditTrail.Handlers
 {
@@ -58,6 +58,8 @@ namespace OrchardCore.AuditTrail.Handlers
         public Task CreatedAsync(UserContext context) =>
             RecordAuditTrailEventAsync(UserAuditTrailEventProvider.Created, context.User);
 
+        public Task DeletedAsync(UserContext context) =>
+            RecordAuditTrailEventAsync(UserAuditTrailEventProvider.Deleted, context.User);
 
         #region Unused events
 
@@ -119,7 +121,7 @@ namespace OrchardCore.AuditTrail.Handlers
 
             await _auditTrailManager.AddAuditTrailEventAsync<UserAuditTrailEventProvider>(
                 new AuditTrailContext(eventName,
-                    eventName == UserAuditTrailEventProvider.Created ? userName : _hca.GetCurrentUserName(),
+                    _hca.GetCurrentUserName(),
                     eventData, "user", userName));
         }
 

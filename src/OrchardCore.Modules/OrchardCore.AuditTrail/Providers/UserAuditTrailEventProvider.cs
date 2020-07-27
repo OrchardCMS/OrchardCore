@@ -1,8 +1,8 @@
+using System.Collections.Generic;
 using Microsoft.Extensions.Localization;
 using OrchardCore.AuditTrail.Models;
 using OrchardCore.AuditTrail.Services.Models;
 using OrchardCore.Entities;
-using System.Collections.Generic;
 
 namespace OrchardCore.AuditTrail.Providers
 {
@@ -16,6 +16,7 @@ namespace OrchardCore.AuditTrail.Providers
         public const string Enabled = nameof(Enabled);
         public const string Disabled = nameof(Disabled);
         public const string Created = nameof(Created);
+        public const string Deleted = nameof(Deleted);
 
 
         public UserAuditTrailEventProvider(IStringLocalizer<UserAuditTrailEventProvider> stringLocalizer)
@@ -33,7 +34,8 @@ namespace OrchardCore.AuditTrail.Providers
                 .Event(PasswordRecovered, T["Password recovered"], T["A user was successfully recovered the password."], BuildAuditTrailEvent, true)
                 .Event(Enabled, T["Enabled"], T["A user was enabled."], BuildAuditTrailEvent, true)
                 .Event(Disabled, T["Disabled"], T["A user was disabled."], BuildAuditTrailEvent, true)
-                .Event(Created, T["Created"], T["A user was created."], BuildAuditTrailEvent, true);
+                .Event(Created, T["Created"], T["A user was created."], BuildAuditTrailEvent, true)
+                .Event(Deleted, T["Deleted"], T["A user was deleted."], BuildAuditTrailEvent, true);
 
 
         private void BuildAuditTrailEvent(AuditTrailEvent auditTrailEvent, Dictionary<string, object> eventData) =>
