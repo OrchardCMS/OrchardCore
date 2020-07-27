@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using OrchardCore.AuditTrail.Extensions;
@@ -8,8 +10,6 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Modules;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using YesSql;
 using IYesSqlSession = YesSql.ISession;
 
@@ -77,14 +77,17 @@ namespace OrchardCore.AuditTrail.Handlers
 
         private async Task RecordAuditTrailEventAsync(string eventName, IContent content)
         {
+            // -1 is a unique contentItem.Id that only Preview is using such that another stored document can't have
+            // the same one in the IContentManagerSession index.
+            // ToDo: use the ContentPreviewFeature from this PR. https://github.com/OrchardCMS/OrchardCore/pull/6626
+            if (content.ContentItem.Id == -1) return;
+
             var buildingAuditTrailEventContext = new BuildingAuditTrailEventContext(content.ContentItem, eventName);
 
             await _auditTrailEvents.InvokeAsync((provider, context) =>
                 provider.BuildingAuditTrailEventAsync(context), buildingAuditTrailEventContext, Logger);
 
-            // -1 is a unique contentItem.Id that only Preview is using such that another stored document can't have
-            // the same one in the IContentManagerSession index.
-            if (buildingAuditTrailEventContext.IsCanceled || content.ContentItem.Id == -1) return;
+            if (buildingAuditTrailEventContext.IsCanceled) return;
 
             var versionNumber = await _session.Query<ContentItem, ContentItemIndex>()
                 .Where(contentItemIndex => contentItemIndex.ContentItemId == content.ContentItem.ContentItemId)
