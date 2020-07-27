@@ -236,17 +236,17 @@ You can append a version hash that will be calculated, and calculation cached, a
 
 ##### Specify location
 
-By default all scripts are rendered whereever the `FootScript` helper is located [See Foot Resources](#foot-resources). You can override it like this:
+Specify a location the script should load using `at`, for example `Foot` to rendered wherever the `FootScript` helper is located or `Head` to render with the `HeadScript` [See Foot Resources](#foot-resources). If the location is not specified, the script will be inserted wherever it is placed (inline).
 
 ``` liquid tab="Liquid"
-{% script name:"bootstrap", at:"Head" %}
+{% script name:"bootstrap", at:"Foot" %}
 ```
 
 ``` html tab="Razor"
-<script asp-name="bootstrap" at="Head"></script>
+<script asp-name="bootstrap" at="Foot"></script>
 ```
 
-Styles, however, are always injected in the header section of the HTML document.
+Link and styles tag helpers always inject into the header section of the HTML document regardless of the `at` value.
 
 #### Inline definition
 
