@@ -61,6 +61,7 @@ namespace Microsoft.Extensions.DependencyInjection
                     services.AddScoped<IShapeTableProvider, ShapePlacementParsingStrategy>();
                     services.AddScoped<IShapeTableProvider, ShapeTemplateBindingStrategy>();
 
+                    services.AddScoped<IShapePlacementProvider, ShapeTablePlacementProvider>();
                     services.AddScoped<IPlacementNodeFilterProvider, PathPlacementNodeFilterProvider>();
 
                     services.TryAddEnumerable(

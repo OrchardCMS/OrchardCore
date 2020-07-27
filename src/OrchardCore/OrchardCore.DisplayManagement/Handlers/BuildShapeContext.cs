@@ -27,7 +27,7 @@ namespace OrchardCore.DisplayManagement.Handlers
         public string DefaultZone { get; set; }
         public string DefaultPosition { get; set; }
 
-        private static PlacementInfo FindDefaultPlacement(string shapeType, string differentiator, string displayType, IBuildShapeContext context)
+        private static PlacementInfo FindDefaultPlacement(string shapeType, string differentiator, string displayType)
         {
             return null;
         }
