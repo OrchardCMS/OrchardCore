@@ -8,7 +8,7 @@ using YesSql;
 
 namespace OrchardCore.Deployment
 {
-    public class DeploymentPlanService
+    public class DeploymentPlanService : IDeploymentPlanService
     {
         private readonly YesSql.ISession _session;
         private readonly IHttpContextAccessor _httpContextAccessor;
@@ -43,6 +43,15 @@ namespace OrchardCore.Deployment
 
             var result = await _authorizationService.AuthorizeAsync(user, Permissions.ManageDeploymentPlan) &&
                          await _authorizationService.AuthorizeAsync(user, Permissions.Export);
+
+            return result;
+        }
+
+        public async Task<bool> DoesUserHaveExportPermissionAsync()
+        {
+            var user = _httpContextAccessor.HttpContext.User;
+
+            var result = await _authorizationService.AuthorizeAsync(user, Permissions.Export);
 
             return result;
         }
