@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.Title;
+using OrchardCore.DisplayManagement.Zones;
 using OrchardCore.Settings;
 
 namespace OrchardCore.DisplayManagement.Razor
@@ -268,7 +269,7 @@ namespace OrchardCore.DisplayManagement.Razor
 
             var zone = ThemeLayout[name];
 
-            return zone != null;
+            return !(zone is ZoneOnDemand) && zone != null;
         }
 
         /// <summary>
@@ -335,8 +336,9 @@ namespace OrchardCore.DisplayManagement.Razor
             }
 
             var zone = ThemeLayout[name];
-
-            if (required && zone != null && zone is Shape && zone.Items.Count == 0)
+            
+            // We don't throw on a 'ZoneOnDemand' shape that has no items.
+            if (required && !(zone is ZoneOnDemand) && zone is Shape && zone.Items.Count == 0)
             {
                 throw new InvalidOperationException("Zone not found: " + name);
             }
