@@ -2,7 +2,7 @@ using System;
 
 namespace OrchardCore.Shortcodes
 {
-    public class ShortcodeDescriptor
+    public class ShortcodeOption
     {
         public string Name { get; set; }
         private string _defaultShortcode;
@@ -25,8 +25,8 @@ namespace OrchardCore.Shortcodes
             }
         }
 
-        public string Hint { get; set; }
+        public Func<IServiceProvider, string> Hint { get; set; }
         public string Usage { get; set; }
-        public string[] Categories { get; set; } = Array.Empty<string>();
+        public Func<IServiceProvider, string[]> Categories { get; set; }
     }
 }

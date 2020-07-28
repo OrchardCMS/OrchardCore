@@ -1,24 +1,19 @@
 @inject IShortcodeTableManager ShortcodeTableManager
-@inject JavaScriptEncoder JavaScriptEncoder
-@using System.Text.Encodings.Web
-@using System.Text.Json
 
-@* To use a shortcode popup on an input field use .shortcode-popover
-and call @await DisplayAsync(await New.ShortcodePopover()) from the fields view
+
+@* To use a shortcode modal on an input field use .shortcode-popover
+and call @await DisplayAsync(await New.ShortcodeModal()) from the fields view
 *@
 
 @* Inject the popover only once per page *@
 @if (!Context.Items.ContainsKey("ShortcodeModal"))
 {
     Context.Items["ShortcodeModal"] = new object();
-    var shortcodeTable = await ShortcodeTableManager.BuildAsync();
-
-    var shortcodeDescriptors = JsonSerializer.Serialize(shortcodeTable, new JsonSerializerOptions
-        {
-            Encoder = JavaScriptEncoder,
-            WriteIndented = false,
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-        });
+    var shortcodeTable = await ShortcodeTableManager.GetShortcodeTable();
+    var categories = shortcodeTable
+        .SelectMany(s => s.Categories)
+        .GroupBy(c => c, StringComparer.OrdinalIgnoreCase)
+        .Select(g => g.Key);
 
     <script asp-src="~/OrchardCore.Shortcodes/Scripts/shortcodes.min.js" debug-src="~/OrchardCore.Shortcodes/Scripts/shortcodes.js" asp-name="shortcodes" at="Foot" depends-on="jQuery"></script>
     <style asp-src="~/OrchardCore.Shortcodes/Styles/shortcodes.min.css" debug-src="~/OrchardCore.Shortcodes/Styles/shortcodes.css" asp-name="shortcodes"></style>
@@ -54,28 +49,36 @@ and call @await DisplayAsync(await New.ShortcodePopover()) from the fields view
                                 <ul class="nav nav-pills flex-column shortcodePickerCategories">
                                     <li class="nav-item">
                                         <a class="nav-link active" href="#all" data-toggle="pill">All</a>
-                                    </li>
-                                        <li class="nav-item" data-category="test-category">
-                                            <a class="nav-link" href="#test-category" data-toggle="pill">Test</a>
-                                        </li>                                    
-                                    @* @foreach (var category in Model.ActivityCategories)
+                                    </li>                                   
+                                    @foreach (var category in categories)
                                     {
-                                        <li class="nav-item" data-category="@category.Name.HtmlClassify()">
-                                            <a class="nav-link" href="#@category.Name.HtmlClassify()" data-toggle="pill">@category</a>
+                                        <li class="nav-item" data-category="@category.HtmlClassify()">
+                                            <a class="nav-link" href="#@category.HtmlClassify()" data-toggle="pill">@category</a>
                                         </li>
-                                    } *@
+                                    }
                                 </ul>
                             </div>
                             <div class="col-sm-9 col-md-9 col-lg-10">
                                 <div class="card-columns tab-content">
                                     @foreach(var descriptor in shortcodeTable)
                                     {
-                                        @descriptor.Name
+                                        <div class="card">
+                                            <div class="card-body">
+                                                <h4 class="card-title">@descriptor.Name</h4>
+                                                @if (!String.IsNullOrEmpty(descriptor.Hint))
+                                                {
+                                                    <p>@descriptor.Hint</p>
+                                                }
+                                                @if (!String.IsNullOrEmpty(descriptor.Usage))
+                                                {
+                                                    <pre>@Html.Raw(@descriptor.Usage)</pre>
+                                                }
+                                            </div>
+                                            <div class="card-footer text-muted text-xs-right">
+                                                <button class="btn btn-primary btn-sm" v-on:click="insertShortcode('@descriptor.DefaultShortcode')">@T["Add"]</button>
+                                            </div>
+                                        </div>
                                     }
-                                    @* @foreach (var activityShape in Model.ActivityThumbnailShapes)
-                                    {
-                                        @await DisplayAsync(activityShape)
-                                    } *@
                                 </div>
                             </div>
                         </div>
@@ -90,11 +93,10 @@ and call @await DisplayAsync(await New.ShortcodePopover()) from the fields view
 
 
 
-
         <div class="d-none" id="shortcode-selector-error" data-localized="@T["Shortcode app opened without a selector"]"></div>
         <div class="d-none" id="shortcode-title" data-localized="@T["Select a shortcode"]"></div>
     </zone>
-    <script depends-on="shortcodes" at="Foot">
-        initializeShortcodes(document.getElementById("shortcode-popover-app-content"));
+   <script depends-on="shortcodes" at="Foot">
+        initializeShortcodesModal(document.getElementById("shortcodePicker"));
     </script>
 }

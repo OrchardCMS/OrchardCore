@@ -15,7 +15,7 @@ namespace OrchardCore.Shortcodes.Services
             _shortcodeTemplatesManager = shortcodeTemplatesManager;
         }
 
-        public async Task<IEnumerable<ShortcodeDescriptor>> DescribeAsync()
+        public async Task<IEnumerable<ShortcodeDescriptor>> DiscoverAsync()
         {
             var document = await _shortcodeTemplatesManager.GetShortcodeTemplatesDocumentAsync();
 
@@ -23,8 +23,10 @@ namespace OrchardCore.Shortcodes.Services
                 new ShortcodeDescriptor
                 {
                     Name = kvp.Key,
-                    Hint = kvp.Value.Description, // TODO if we keep the hint concept, rename in templates, and provide more meta there
-                    Categories = new string[] { "HTML Content" } // including categories. Content by default? probably not actually.
+                    Hint = kvp.Value.Hint,
+                    DefaultShortcode = kvp.Value.DefaultShortcode,
+                    Usage = kvp.Value.Usage,
+                    Categories = kvp.Value.Categories
                 });
             }
     }

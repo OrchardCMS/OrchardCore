@@ -69,6 +69,32 @@ $(function () {
 }); // vuejs shortcodeApp
 // Appended once to the body and moved around as required.
 
+var shortcodeModal;
+
+function initializeShortcodesModal(element) {
+  if (element) {
+    var elementId = element.id;
+    shortcodeModal = new Vue({
+      el: '#' + elementId,
+      data: {
+        selectedValue: ''
+      },
+      methods: {
+        init: function init() {
+          this.selectedValue = '';
+        },
+        insertShortcode: function insertShortcode(defaultShortcode) {
+          this.selectedValue = defaultShortcode;
+          $(this.$el).modal('hide');
+        }
+      }
+    });
+    return shortcodeApp;
+  }
+} // vuejs shortcodeApp
+// Appended once to the body and moved around as required.
+
+
 var shortcodeApp;
 
 function initializeShortcodes(element) {

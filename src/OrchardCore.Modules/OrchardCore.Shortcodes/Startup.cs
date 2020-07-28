@@ -4,6 +4,7 @@ using Fluid.Values;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using System.Threading.Tasks;
 using OrchardCore.Admin;
@@ -68,12 +69,17 @@ namespace OrchardCore.Shortcodes
                 return new ValueTask<string>($"<b>{content}</b>");
 
             }, d => {
-                d.DefaultShortcode = "[bold]";
+                d.DefaultShortcode = "[bold ]";
 
-                //d.DefaultContent = // none in this case
-                // TODO this is going to give no end of escaping problems
-                d.Hint = "Add bold formatting with a shortcode.<br>Usage: [bold 'your bold content here]'";
-                d.Categories = new string[] { "HTML Content" };
+                d.Hint = (sp) => {
+                    var S = sp.GetRequiredService<IStringLocalizer<Startup>>();
+                    return S["Add bold formatting with a shortcode."];
+                };
+                d.Usage = "[bold 'your bold content here]'";
+                d.Categories = (sp) => {
+                    var S = sp.GetRequiredService<IStringLocalizer<Startup>>();
+                    return new string[] { S["HTML Content"], S["Content Item"] };
+                };
 
             });
         }

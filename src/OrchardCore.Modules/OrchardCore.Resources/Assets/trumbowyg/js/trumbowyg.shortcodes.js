@@ -13,10 +13,16 @@
                     var btnDef = {
                         fn: function () {
                             
+                            shortcodeModal.init();
+                            trumbowyg.saveRange();
                             $('#shortcodePicker').modal('show');
                             $('#shortcodePicker').on('hide.bs.modal', function (e) {
-                                console.log('modal closed');
-                                // do something...
+                                trumbowyg.restoreRange();
+                                trumbowyg.range.deleteContents();
+                                trumbowyg.range.insertNode(document.createTextNode(shortcodeModal.selectedValue));
+                                trumbowyg.syncCode();
+                                trumbowyg.$c.trigger('tbwchange');
+                                trumbowyg.$c.focus();   
                             });
                             // var m = trumbowyg.openModal($('#shortcode-title').data('localized'), '<div id="shortcode-popover-trumbowyg"></div>')
                             // .on('tbwconfirm', function() {

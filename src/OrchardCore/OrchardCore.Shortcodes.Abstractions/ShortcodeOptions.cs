@@ -9,28 +9,28 @@ namespace OrchardCore.Shortcodes
     /// </summary>
     public class ShortcodeOptions
     {
-        private readonly Dictionary<string, ShortcodeDescriptor> _shortcodes = new Dictionary<string, ShortcodeDescriptor>();
+        private readonly Dictionary<string, ShortcodeOption> _shortcodes = new Dictionary<string, ShortcodeOption>();
 
-        public IReadOnlyDictionary<string, ShortcodeDescriptor> Shortcodes => _shortcodes;
+        public IReadOnlyDictionary<string, ShortcodeOption> Shortcodes => _shortcodes;
 
         private readonly Dictionary<string, ShortcodeDelegate> _shortcodeDelegates = new Dictionary<string, ShortcodeDelegate>();
 
         public IReadOnlyDictionary<string, ShortcodeDelegate> ShortcodeDelegates => _shortcodeDelegates;
 
-        internal ShortcodeOptions AddShortcode(string name, Action<ShortcodeDescriptor> describe)
+        internal ShortcodeOptions AddShortcode(string name, Action<ShortcodeOption> describe)
         {
-            var descriptor = new ShortcodeDescriptor { Name = name };
-            describe?.Invoke(descriptor);
-            _shortcodes[name] = descriptor;
+            var option = new ShortcodeOption { Name = name };
+            describe?.Invoke(option);
+            _shortcodes[name] = option;
 
             return this;
         }
 
-        internal ShortcodeOptions AddShortcodeDelegate(string name, ShortcodeDelegate shortcode, Action<ShortcodeDescriptor> describe)
+        internal ShortcodeOptions AddShortcodeDelegate(string name, ShortcodeDelegate shortcode, Action<ShortcodeOption> describe)
         {
-            var descriptor = new ShortcodeDescriptor { Name = name };
-            describe?.Invoke(descriptor);
-            _shortcodes[name] = descriptor;
+            var option = new ShortcodeOption { Name = name };
+            describe?.Invoke(option);
+            _shortcodes[name] = option;
             _shortcodeDelegates[name] = shortcode;
 
             return this;

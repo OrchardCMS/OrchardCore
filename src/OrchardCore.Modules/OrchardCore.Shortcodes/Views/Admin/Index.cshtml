@@ -37,11 +37,9 @@
                             <a asp-action="Delete" asp-route-name="@entry.Name" class="btn btn-danger btn-sm" itemprop="RemoveUrl UnsafeUrl">@T["Delete"]</a>
                         </div>
                         <a asp-action="Edit" asp-route-name="@entry.Name" asp-route-returnUrl="@FullRequestPath">@entry.Name</a>
-                        @if (!String.IsNullOrWhiteSpace(entry.ShortcodeTemplate.Description))
+                        @if (!String.IsNullOrWhiteSpace(entry.ShortcodeTemplate.Hint))
                         {
-                            <span class="hint">
-                                — @entry.ShortcodeTemplate.Description
-                            </span>
+                            <span class="hint">— @entry.ShortcodeTemplate.Hint</span>
                         }
                     </div>
                 </li>

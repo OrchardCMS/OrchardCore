@@ -16,7 +16,7 @@ namespace OrchardCore.Shortcodes.Services
             _shortcodeTableProviders = shortcodeTableProviders;
         }
 
-        public async Task<IEnumerable<ShortcodeDescriptor>> BuildAsync()
+        public async Task<IEnumerable<ShortcodeDescriptor>> GetShortcodeTable()
         {
             var result = new Dictionary<string, ShortcodeDescriptor>(StringComparer.OrdinalIgnoreCase);
 
@@ -26,7 +26,7 @@ namespace OrchardCore.Shortcodes.Services
 
             foreach(var provider in reversedShortcodeTableProviders)
             {
-                var descriptors = await provider.DescribeAsync();
+                var descriptors = await provider.DiscoverAsync();
                 foreach(var descriptor in descriptors)
                 {
                     // Overwrite existing descriptors if they have been replaced.

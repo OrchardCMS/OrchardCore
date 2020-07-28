@@ -18,6 +18,9 @@ namespace OrchardCore.Shortcodes.Models
         public bool IsReadonly { get; set; }
 
         public string Content { get; set; }
-        public string Description { get; set; }
+        public string Hint { get; set; }
+        public string Usage { get; set; }
+        public string DefaultShortcode { get; set; }
+        public string[] Categories { get; set; } = Array.Empty<string>();
     }
 }

@@ -18,7 +18,7 @@
 
 <h1>@RenderTitleSegments(T["Edit Shortcode Template"])</h1>
 
-<div asp-validation-summary="ModelOnly"></div>
+<div asp-validation-summary="All"></div>
 <form asp-action="Edit" asp-route-returnUrl="@ViewData["returnUrl"]" method="post">
 
     <input type="hidden" value="@Model.Name" name="sourceName" />
@@ -27,14 +27,26 @@
         <label asp-for="Name">@T["Name"]</label>
         <input asp-for="Name" class="form-control" autofocus />
         <span asp-validation-for="Name"></span>
-        <span class="hint">@T["The name of the template."]</span>
+        <span class="hint">@T["The name of the shortcode."]</span>
     </div>
 
-    <div class="form-group" asp-validation-class-for="Description">
-        <label asp-for="Description">@T["Description"]</label>
-        <input asp-for="Description" class="form-control" autofocus />
-        <span class="hint">@T["The description of the template."]</span>
+    <div class="form-group" asp-validation-class-for="Hint">
+        <label asp-for="Hint">@T["Hint"]</label>
+        <input asp-for="Hint" class="form-control" autofocus />
+        <span class="hint">@T["The hint for the shortcode."]</span>
     </div>
+
+    <div class="form-group" asp-validation-class-for="Usage">
+        <label asp-for="Usage">@T["Usage"]</label>
+        <input asp-for="Usage" class="form-control" autofocus />
+        <span class="hint">@T["Example usage of the shortcode."]</span>
+    </div>   
+
+    <div class="form-group" asp-validation-class-for="Categories">
+        <label asp-for="Categories">@T["Categories"]</label>
+        <input asp-for="Categories" class="form-control" autofocus />
+        <span class="hint">@T["A comma separated list of shortcode categories."]</span>
+    </div>      
 
     <div class="form-group" asp-validation-class-for="Content">
         <label asp-for="Content">@T["Content"]</label>

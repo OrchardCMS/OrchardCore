@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
@@ -161,8 +162,15 @@ namespace OrchardCore.Media
             // Only add image as a descriptor as media is deprecated.
             services.AddShortcode<ImageShortcodeProvider>("image", d => {
                 d.DefaultShortcode = "[image] [/image]";
-                d.Hint = "Add a image from the media library.<br>Usage: [image width='140']foo.jpg[/image]'";
-                d.Categories = new string[] { "HTML Content" };
+                d.Hint = (sp) => {
+                    var S = sp.GetRequiredService<IStringLocalizer<Startup>>();
+                    return S["Add a image from the media library."];
+                };
+                d.Usage = "[image width='140']<br>foo.jpg[/image]";
+                d.Categories = (sp) => {
+                    var S = sp.GetRequiredService<IStringLocalizer<Startup>>();
+                    return new string[] { S["HTML Content"] };
+                };
             });
         }
 

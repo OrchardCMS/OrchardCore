@@ -6,6 +6,6 @@ namespace OrchardCore.Shortcodes.Services
 {
     public interface IShortcodeTableManager
     {
-        Task<IEnumerable<ShortcodeDescriptor>> BuildAsync();
+        Task<IEnumerable<ShortcodeDescriptor>> GetShortcodeTable();
     }
 }

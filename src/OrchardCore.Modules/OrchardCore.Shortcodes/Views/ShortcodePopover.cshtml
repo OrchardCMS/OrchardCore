@@ -11,7 +11,7 @@ and call @await DisplayAsync(await New.ShortcodePopover()) from the fields view
 @if (!Context.Items.ContainsKey("ShortcodePopover"))
 {
     Context.Items["ShortcodePopover"] = new object();
-    var shortcodeTable = await ShortcodeTableManager.BuildAsync();
+    var shortcodeTable = await ShortcodeTableManager.GetShortcodeTable();
 
     var shortcodeDescriptors = JsonSerializer.Serialize(shortcodeTable, new JsonSerializerOptions
         {

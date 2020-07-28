@@ -76,7 +76,7 @@ namespace OrchardCore.Shortcodes.Services
             }
 
             var document = await LoadShortcodeTemplatesDocumentAsync();
-            document.ShortcodeTemplates[name] = template;
+            document.ShortcodeTemplates[name.ToLower()] = template;
 
             _session.Save(document);
             _signal.DeferredSignalToken(CacheKey);

@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.Liquid;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Settings;
@@ -22,6 +23,7 @@ namespace OrchardCore.Shortcodes.Controllers
     {
         private readonly IAuthorizationService _authorizationService;
         private readonly ShortcodeTemplatesManager _shortcodeTemplatesManager;
+        private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly ISiteService _siteService;
         private readonly INotifier _notifier;
         private readonly IStringLocalizer S;
@@ -31,17 +33,20 @@ namespace OrchardCore.Shortcodes.Controllers
         public AdminController(
             IAuthorizationService authorizationService,
             ShortcodeTemplatesManager shortcodeTemplatesManager,
-            IShapeFactory shapeFactory,
+            ILiquidTemplateManager liquidTemplateManager,
             ISiteService siteService,
+            INotifier notifier,
+            IShapeFactory shapeFactory,
             IStringLocalizer<AdminController> stringLocalizer,
-            IHtmlLocalizer<AdminController> htmlLocalizer,
-            INotifier notifier)
+            IHtmlLocalizer<AdminController> htmlLocalizer
+            )
         {
             _authorizationService = authorizationService;
             _shortcodeTemplatesManager = shortcodeTemplatesManager;
-            New = shapeFactory;
+            _liquidTemplateManager = liquidTemplateManager;
             _siteService = siteService;
             _notifier = notifier;
+            New = shapeFactory;
             S = stringLocalizer;
             H = htmlLocalizer;
         }
@@ -101,6 +106,14 @@ namespace OrchardCore.Shortcodes.Controllers
                 {
                     ModelState.AddModelError(nameof(ShortcodeTemplateViewModel.Name), S["The name is mandatory."]);
                 }
+                else if (String.IsNullOrEmpty(model.Content))
+                {
+                    ModelState.AddModelError(nameof(ShortcodeTemplateViewModel.Content), S["The template content is mandatory."]);
+                }
+                else if (!_liquidTemplateManager.Validate(model.Content, out var errors))
+                {
+                    ModelState.AddModelError(nameof(ShortcodeTemplateViewModel.Content), S["The template doesn't contain a valid Liquid expression. Details: {0}", string.Join(" ", errors)]);
+                }
                 else
                 {
                     var shortcodeTemplatesDocument = await _shortcodeTemplatesManager.GetShortcodeTemplatesDocumentAsync();
@@ -114,7 +127,14 @@ namespace OrchardCore.Shortcodes.Controllers
 
             if (ModelState.IsValid)
             {
-                var template = new ShortcodeTemplate { Content = model.Content, Description = model.Description };
+                var template = new ShortcodeTemplate
+                {
+                    Content = model.Content,
+                    Hint = model.Hint,
+                    Usage = model.Usage,
+                    DefaultShortcode = model.DefaultShortcode,
+                    Categories = !String.IsNullOrEmpty(model.Categories) ? model.Categories.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim()).ToArray() : Array.Empty<string>()
+                };
 
                 await _shortcodeTemplatesManager.UpdateShortcodeTemplateAsync(model.Name, template);
 
@@ -152,7 +172,10 @@ namespace OrchardCore.Shortcodes.Controllers
             {
                 Name = name,
                 Content = template.Content,
-                Description = template.Description
+                Hint = template.Hint,
+                Usage = template.Usage,
+                DefaultShortcode = template.DefaultShortcode,
+                Categories = template.Categories != null ? String.Join(", ", template.Categories) : String.Empty
             };
 
             ViewData["ReturnUrl"] = returnUrl;
@@ -169,18 +192,6 @@ namespace OrchardCore.Shortcodes.Controllers
 
             var shortcodeTemplatesDocument = await _shortcodeTemplatesManager.LoadShortcodeTemplatesDocumentAsync();
 
-            if (ModelState.IsValid)
-            {
-                if (String.IsNullOrWhiteSpace(model.Name))
-                {
-                    ModelState.AddModelError(nameof(ShortcodeTemplateViewModel.Name), S["The name is mandatory."]);
-                }
-                else if (!model.Name.Equals(sourceName, StringComparison.OrdinalIgnoreCase) && shortcodeTemplatesDocument.ShortcodeTemplates.ContainsKey(model.Name))
-                {
-                    ModelState.AddModelError(nameof(ShortcodeTemplateViewModel.Name), S["A template with the same name already exists."]);
-                }
-            }
-
             if (!shortcodeTemplatesDocument.ShortcodeTemplates.ContainsKey(sourceName))
             {
                 return NotFound();
@@ -188,7 +199,30 @@ namespace OrchardCore.Shortcodes.Controllers
 
             if (ModelState.IsValid)
             {
-                var template = new ShortcodeTemplate { Content = model.Content, Description = model.Description };
+                if (String.IsNullOrWhiteSpace(model.Name))
+                {
+                    ModelState.AddModelError(nameof(ShortcodeTemplateViewModel.Name), S["The name is mandatory."]);
+                }
+                else if (String.IsNullOrEmpty(model.Content))
+                {
+                    ModelState.AddModelError(nameof(ShortcodeTemplateViewModel.Content), S["The template content is mandatory."]);
+                }
+                else if (!_liquidTemplateManager.Validate(model.Content, out var errors))
+                {
+                    ModelState.AddModelError(nameof(ShortcodeTemplateViewModel.Content), S["The template doesn't contain a valid Liquid expression. Details: {0}", string.Join(" ", errors)]);
+                }
+            }
+
+            if (ModelState.IsValid)
+            {
+                var template = new ShortcodeTemplate
+                {
+                    Content = model.Content,
+                    Hint = model.Hint,
+                    Usage = model.Usage,
+                    DefaultShortcode = model.DefaultShortcode,
+                    Categories = !String.IsNullOrEmpty(model.Categories) ? model.Categories.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim()).ToArray() : Array.Empty<string>()
+                };
 
                 await _shortcodeTemplatesManager.RemoveShortcodeTemplateAsync(sourceName);
 
@@ -202,6 +236,7 @@ namespace OrchardCore.Shortcodes.Controllers
 
             // If we got this far, something failed, redisplay form
             ViewData["ReturnUrl"] = returnUrl;
+
             return View(model);
         }
 
