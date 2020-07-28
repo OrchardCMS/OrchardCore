@@ -1,11 +1,11 @@
-﻿using OrchardCore.AuditTrail.Models;
+using System.Threading.Tasks;
+using OrchardCore.AuditTrail.Models;
 using OrchardCore.AuditTrail.Settings;
 using OrchardCore.AuditTrail.ViewModels;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
-using System.Threading.Tasks;
 
 namespace OrchardCore.AuditTrail.Drivers
 {
@@ -16,7 +16,7 @@ namespace OrchardCore.AuditTrail.Drivers
             var settings = context.TypePartDefinition.GetSettings<AuditTrailPartSettings>();
             if (settings.ShowAuditTrailCommentInput)
             {
-                return Initialize<AuditTrailCommentViewModel>($"{nameof(AuditTrailPart)}_Comment", model =>
+                return Initialize<AuditTrailCommentViewModel>(GetEditorShapeType(context), model =>
                 {
                     if (part.ShowComment)
                     {

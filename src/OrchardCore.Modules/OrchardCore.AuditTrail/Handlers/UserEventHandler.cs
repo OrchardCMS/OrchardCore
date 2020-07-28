@@ -121,7 +121,7 @@ namespace OrchardCore.AuditTrail.Handlers
 
             await _auditTrailManager.AddAuditTrailEventAsync<UserAuditTrailEventProvider>(
                 new AuditTrailContext(eventName,
-                    _hca.GetCurrentUserName(),
+                    _hca.GetCurrentUserName() ?? userName,
                     eventData, "user", userName));
         }
 
