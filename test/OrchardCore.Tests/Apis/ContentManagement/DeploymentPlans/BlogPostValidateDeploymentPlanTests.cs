@@ -1,4 +1,4 @@
-using System.Net.Http;
+using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
@@ -40,10 +40,12 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
                 secondContentItem[nameof(AutoroutePart)][nameof(AutoroutePart.Path)] = "blog/post-1";
                 data.Add(secondContentItem);
 
-                var response = await context.PostRecipeAsync(recipe, false);
-
                 // Test
-                Assert.Throws<HttpRequestException>(() => response.EnsureSuccessStatusCode());
+                await Assert.ThrowsAnyAsync<Exception>(async () =>
+                {
+                    var response = await context.PostRecipeAsync(recipe, false);
+                    response.EnsureSuccessStatusCode();
+                });
 
                 // Confirm creation of both content items was cancelled.
                 var shellScope = await BlogPostDeploymentContext.ShellHost.GetScopeAsync(context.TenantName);
