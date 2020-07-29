@@ -13,7 +13,7 @@ namespace OrchardCore.Environment.Extensions
             Id = Path.GetFileName(subPath);
             SubPath = subPath;
 
-            Manifest = new NotFoundManifestInfo(subPath);
+            Manifest = new NotFoundManifestInfo();
             Features = Enumerable.Empty<IFeatureInfo>();
         }
 
