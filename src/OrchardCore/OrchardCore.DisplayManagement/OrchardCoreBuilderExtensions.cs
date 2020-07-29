@@ -61,7 +61,6 @@ namespace Microsoft.Extensions.DependencyInjection
                     services.AddScoped<IShapeTableProvider, ShapePlacementParsingStrategy>();
                     services.AddScoped<IShapeTableProvider, ShapeTemplateBindingStrategy>();
 
-                    services.AddScoped<IShapePlacementProvider, ShapeTablePlacementProvider>();
                     services.AddScoped<IPlacementNodeFilterProvider, PathPlacementNodeFilterProvider>();
 
                     services.TryAddEnumerable(
@@ -99,7 +98,11 @@ namespace Microsoft.Extensions.DependencyInjection
                     services.AddTagHelpers<ShapeTagHelper>();
                     services.AddTagHelpers<ValidationMessageTagHelper>();
                     services.AddTagHelpers<ZoneTagHelper>();
-                });
+                })
+                .ConfigureServices(services => {
+                    // Configure default services
+                    services.AddScoped<IShapePlacementProvider, ShapeTablePlacementProvider>();
+                }, order: -10);
 
             return builder;
         }
