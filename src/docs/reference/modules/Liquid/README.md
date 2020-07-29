@@ -772,7 +772,7 @@ Using `helper` invokes the `validation_for` tag helper of ASP.NET Core with `spa
 
 ### `link`
 
-Invokes the `link` tag helper from the `Orchard.ResourceManagement` package.
+Invokes the `link` tag helper from the `Orchard.ResourceManagement` package. [see this section](../Resources/README.md#link-tag)
 
 ### `meta`
 
