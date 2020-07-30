@@ -20,32 +20,13 @@ namespace OrchardCore.Shortcodes.Services
             _serviceProvider = serviceProvider;
         }
 
-        // public Task<IEnumerable<ShortcodeDescriptor>> DiscoverAsync()
-        // {
-            // var result = new List<ShortcodeDescriptor>();
-            // foreach(var option in _options.Shortcodes.Values)
-            // {
-            //     var descriptor = new ShortcodeDescriptor
-            //     {
-            //         Name = option.Name,
-            //         DefaultShortcode = option.DefaultShortcode,
-            //         Usage = option.Usage
-            //     };
-
-            //     descriptor.Hint  = option.Hint.Invoke(_serviceProvider);
-            //     descriptor.Categories = option.Categories.Invoke(_serviceProvider);
-            //     result.Add(descriptor);
-            // }
-
-            // return Task.FromResult<IEnumerable<ShortcodeDescriptor>>(result);
-        // }
 
         public Task<IEnumerable<ShortcodeDescriptor>> DiscoverAsync() =>
             Task.FromResult(_options.Shortcodes.Values.Select(option =>
                 new ShortcodeDescriptor
                 {
                     Name = option.Name,
-                    DefaultShortcode = option.DefaultShortcode,
+                    ReturnShortcode = option.ReturnShortcode,
                     Usage = option.Usage,
                     Hint = option.Hint.Invoke(_serviceProvider),
                     Categories = option.Categories.Invoke(_serviceProvider)

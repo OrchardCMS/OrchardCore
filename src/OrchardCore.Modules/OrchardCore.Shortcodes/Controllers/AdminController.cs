@@ -132,7 +132,7 @@ namespace OrchardCore.Shortcodes.Controllers
                     Content = model.Content,
                     Hint = model.Hint,
                     Usage = model.Usage,
-                    DefaultShortcode = model.DefaultShortcode,
+                    ReturnShortcode = model.ReturnShortcode,
                     Categories = !String.IsNullOrEmpty(model.Categories) ? model.Categories.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim()).ToArray() : Array.Empty<string>()
                 };
 
@@ -174,7 +174,7 @@ namespace OrchardCore.Shortcodes.Controllers
                 Content = template.Content,
                 Hint = template.Hint,
                 Usage = template.Usage,
-                DefaultShortcode = template.DefaultShortcode,
+                ReturnShortcode = template.ReturnShortcode,
                 Categories = template.Categories != null ? String.Join(", ", template.Categories) : String.Empty
             };
 
@@ -220,7 +220,7 @@ namespace OrchardCore.Shortcodes.Controllers
                     Content = model.Content,
                     Hint = model.Hint,
                     Usage = model.Usage,
-                    DefaultShortcode = model.DefaultShortcode,
+                    ReturnShortcode = model.ReturnShortcode,
                     Categories = !String.IsNullOrEmpty(model.Categories) ? model.Categories.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim()).ToArray() : Array.Empty<string>()
                 };
 

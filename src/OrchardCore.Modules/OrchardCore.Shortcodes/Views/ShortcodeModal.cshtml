@@ -1,5 +1,5 @@
 @inject IShortcodeTableManager ShortcodeTableManager
-
+@inject IDisplayManager<ShortcodeDescriptor> ShortcodeDescriptorDisplayManager
 
 @* To use a shortcode modal on an input field use .shortcode-popover
 and call @await DisplayAsync(await New.ShortcodeModal()) from the fields view
@@ -62,22 +62,8 @@ and call @await DisplayAsync(await New.ShortcodeModal()) from the fields view
                                 <div class="card-columns tab-content">
                                     @foreach(var descriptor in shortcodeTable)
                                     {
-                                        <div class="card">
-                                            <div class="card-body">
-                                                <h4 class="card-title">@descriptor.Name</h4>
-                                                @if (!String.IsNullOrEmpty(descriptor.Hint))
-                                                {
-                                                    <p>@descriptor.Hint</p>
-                                                }
-                                                @if (!String.IsNullOrEmpty(descriptor.Usage))
-                                                {
-                                                    <pre>@Html.Raw(@descriptor.Usage)</pre>
-                                                }
-                                            </div>
-                                            <div class="card-footer text-muted text-xs-right">
-                                                <button class="btn btn-primary btn-sm" v-on:click="insertShortcode('@descriptor.DefaultShortcode')">@T["Add"]</button>
-                                            </div>
-                                        </div>
+                                        var summary = await ShortcodeDescriptorDisplayManager.BuildDisplayAsync(descriptor, null, "SummaryAdmin");
+                                        @await DisplayAsync(summary)
                                     }
                                 </div>
                             </div>
@@ -89,14 +75,8 @@ and call @await DisplayAsync(await New.ShortcodeModal()) from the fields view
                 </div>
             </div>
         </div>
-
-
-
-
-        <div class="d-none" id="shortcode-selector-error" data-localized="@T["Shortcode app opened without a selector"]"></div>
-        <div class="d-none" id="shortcode-title" data-localized="@T["Select a shortcode"]"></div>
     </zone>
    <script depends-on="shortcodes" at="Foot">
-        initializeShortcodesModal(document.getElementById("shortcodePicker"));
+        initializeShortcodesApp(document.getElementById("shortcodePicker"));
     </script>
 }

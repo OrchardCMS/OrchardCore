@@ -13,39 +13,17 @@
                     var btnDef = {
                         fn: function () {
                             
-                            shortcodeModal.init();
+                            shortcodesApp.init();
                             trumbowyg.saveRange();
                             $('#shortcodePicker').modal('show');
                             $('#shortcodePicker').on('hide.bs.modal', function (e) {
                                 trumbowyg.restoreRange();
                                 trumbowyg.range.deleteContents();
-                                trumbowyg.range.insertNode(document.createTextNode(shortcodeModal.selectedValue));
+                                trumbowyg.range.insertNode(document.createTextNode(shortcodesApp.returnShortcode));
                                 trumbowyg.syncCode();
                                 trumbowyg.$c.trigger('tbwchange');
                                 trumbowyg.$c.focus();   
                             });
-                            // var m = trumbowyg.openModal($('#shortcode-title').data('localized'), '<div id="shortcode-popover-trumbowyg"></div>')
-                            // .on('tbwconfirm', function() {
-                            //     $(this).off('tbwconfirm');  
-                            //     shortcodeApp.close();                               
-                            //     trumbowyg.closeModal();
-
-                            //     trumbowyg.restoreRange();
-                            //     trumbowyg.range.deleteContents();
-                            //     trumbowyg.range.insertNode(document.createTextNode(shortcodeApp.value.defaultShortcode));
-                            //     trumbowyg.syncCode();
-                            //     trumbowyg.$c.trigger('tbwchange');
-                            //     trumbowyg.$c.focus();
-                            // })
-                            // .on('tbwcancel', function(){
-                            //     $(this).off('tbwcancel');
-                            //     shortcodeApp.close();
-                            //     trumbowyg.closeModal();
-                            // });
-                            // // TODO this will need to size better to allow for larger hints.
-                            // m.height('350px');
-                            // // Category data placed on the parent to avoid repeats because of localization adaptions to textarea.
-                            // shortcodeApp.init('#shortcode-popover-trumbowyg', $(trumbowyg.$c[0]).parents('.shortcode-popover-categories')[0], false);
                         },    
                         hasIcon: true
                     };

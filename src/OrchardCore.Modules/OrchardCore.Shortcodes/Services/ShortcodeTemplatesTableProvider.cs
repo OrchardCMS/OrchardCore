@@ -24,7 +24,7 @@ namespace OrchardCore.Shortcodes.Services
                 {
                     Name = kvp.Key,
                     Hint = kvp.Value.Hint,
-                    DefaultShortcode = kvp.Value.DefaultShortcode,
+                    ReturnShortcode = kvp.Value.ReturnShortcode,
                     Usage = kvp.Value.Usage,
                     Categories = kvp.Value.Categories
                 });

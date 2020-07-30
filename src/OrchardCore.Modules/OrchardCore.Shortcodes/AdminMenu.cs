@@ -23,7 +23,7 @@ namespace OrchardCore.Shortcodes
 
             builder
                 .Add(S["Design"], design => design
-                    .Add(S["Shortcode Templates"], "Shortcode Templates", import => import
+                    .Add(S["Shortcodes"], "Shortcodes", import => import
                         .Action("Index", "Admin", new { area = "OrchardCore.Shortcodes" })
                         .Permission(Permissions.ManageShortcodeTemplates)
                         .LocalNav()

@@ -161,15 +161,15 @@ namespace OrchardCore.Media
 
             // Only add image as a descriptor as media is deprecated.
             services.AddShortcode<ImageShortcodeProvider>("image", d => {
-                d.DefaultShortcode = "[image] [/image]";
+                d.ReturnShortcode = "[image] [/image]";
                 d.Hint = (sp) => {
                     var S = sp.GetRequiredService<IStringLocalizer<Startup>>();
                     return S["Add a image from the media library."];
                 };
-                d.Usage = "[image width='140']<br>foo.jpg[/image]";
+                d.Usage = "[image width='140']<br>foo.jpg[/image]"; // TODO do we need the line break.
                 d.Categories = (sp) => {
                     var S = sp.GetRequiredService<IStringLocalizer<Startup>>();
-                    return new string[] { S["HTML Content"] };
+                    return new string[] { S["HTML"], S["Media"] };
                 };
             });
         }

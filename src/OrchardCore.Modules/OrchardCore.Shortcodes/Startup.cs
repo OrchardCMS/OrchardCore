@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
 using Microsoft.AspNetCore.Builder;
@@ -6,16 +7,19 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
-using System.Threading.Tasks;
 using OrchardCore.Admin;
+using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Shortcodes.Controllers;
+using OrchardCore.Shortcodes.Drivers;
 using OrchardCore.Shortcodes.Services;
 using OrchardCore.Shortcodes.ViewModels;
 using Shortcodes;
+using Sc = Shortcodes;
 
 namespace OrchardCore.Shortcodes
 {
@@ -30,10 +34,10 @@ namespace OrchardCore.Shortcodes
             // Prevent Context from being converted to an ArrayValue as it implements IEnumerable
             FluidValue.SetTypeMapping<Context>(o => new ObjectValue(o));
 
-            TemplateContext.GlobalMemberAccessStrategy.Register<Arguments, object>((obj, name) => obj.NamedOrDefault(name));
+            TemplateContext.GlobalMemberAccessStrategy.Register<Sc.Arguments, object>((obj, name) => obj.NamedOrDefault(name));
 
             // Prevent Arguments from being converted to an ArrayValue as it implements IEnumerable
-            FluidValue.SetTypeMapping<Arguments>(o => new ObjectValue(o));
+            FluidValue.SetTypeMapping<Sc.Arguments>(o => new ObjectValue(o));
         }
 
         public override void ConfigureServices(IServiceCollection services)
@@ -45,6 +49,8 @@ namespace OrchardCore.Shortcodes
 
             services.AddOptions<ShortcodeOptions>();
             services.AddScoped<IShortcodeProvider, OptionsShortcodeProvider>();
+            services.AddScoped<IDisplayManager<ShortcodeDescriptor>, DisplayManager<ShortcodeDescriptor>>();
+            services.AddScoped<IDisplayDriver<ShortcodeDescriptor>, ShortcodeDescriptorDisplayDriver>();
 
             //TODo testing code remove.
             services.AddShortcode("bold", (args, content, ctx) => {
@@ -64,12 +70,10 @@ namespace OrchardCore.Shortcodes
                     content = text;
                 }
 
-                //TODO when we have the sanitizer we will put it in the context by default (IDefaultShortcodeContextProvider)
-                // so that a delegate such as this can easily sanitize it's input.
                 return new ValueTask<string>($"<b>{content}</b>");
 
             }, d => {
-                d.DefaultShortcode = "[bold ]";
+                d.ReturnShortcode = "[bold ]";
 
                 d.Hint = (sp) => {
                     var S = sp.GetRequiredService<IStringLocalizer<Startup>>();

@@ -66,101 +66,24 @@ $(function () {
     });
     $('#shortcode-popover-app-content').on('cancel', cancel);
   });
-}); // vuejs shortcodeApp
-// Appended once to the body and moved around as required.
+});
+var shortcodesApp;
 
-var shortcodeModal;
-
-function initializeShortcodesModal(element) {
+function initializeShortcodesApp(element) {
   if (element) {
     var elementId = element.id;
-    shortcodeModal = new Vue({
+    shortcodesApp = new Vue({
       el: '#' + elementId,
       data: {
-        selectedValue: ''
+        returnShortcode: ''
       },
       methods: {
         init: function init() {
           this.selectedValue = '';
         },
-        insertShortcode: function insertShortcode(defaultShortcode) {
-          this.selectedValue = defaultShortcode;
+        insertShortcode: function insertShortcode(returnShortcode) {
+          this.returnShortcode = returnShortcode;
           $(this.$el).modal('hide');
-        }
-      }
-    });
-    return shortcodeApp;
-  }
-} // vuejs shortcodeApp
-// Appended once to the body and moved around as required.
-
-
-var shortcodeApp;
-
-function initializeShortcodes(element) {
-  if (element) {
-    var elementId = element.id;
-    var vueMultiselect = Vue.component('vue-multiselect', window.VueMultiselect["default"]);
-    shortcodeApp = new Vue({
-      el: '#' + elementId,
-      components: {
-        'vue-multiselect': vueMultiselect
-      },
-      data: function data() {
-        var shortcodes = JSON.parse(element.dataset.shortcodes || "[]");
-        return {
-          value: '',
-          selector: '',
-          showControls: true,
-          shortcodes: shortcodes,
-          allShortcodes: shortcodes,
-          categories: []
-        };
-      },
-      methods: {
-        init: function init(selector, categoriesSelector, showControls) {
-          var self = this;
-          self.value = '';
-          self.categories = '';
-          self.shortcodes = [];
-          self.showControls = false;
-
-          if (showControls) {
-            self.showControls = showControls;
-          }
-
-          if (selector) {
-            $('#shortcode-popover-app-content').detach().appendTo(selector);
-            $(selector).addClass('active');
-            self.selector = selector;
-
-            if (categoriesSelector) {
-              var categories = $(categoriesSelector).data('shortcodecategories');
-
-              if (categories) {
-                self.shortcodes = self.allShortcodes.filter(function (shortcode) {
-                  return shortcode.categories.some(function (category) {
-                    return categories.indexOf(category) > -1;
-                  });
-                });
-              }
-            }
-          } else {
-            alert($('#shortcode-selector-error').data('localized'));
-          }
-        },
-        success: function success() {
-          $(this.$el).trigger('success');
-          this.close();
-        },
-        cancel: function cancel() {
-          $(this.$el).trigger('cancel');
-          this.close();
-        },
-        close: function close() {
-          // Don't reset the values here as apps may still need to read this values.
-          $('#shortcode-popover-app-content').detach().appendTo('#shortcode-popover-app-container');
-          $('#shortcode-popover-app-content').off();
         }
       }
     });
