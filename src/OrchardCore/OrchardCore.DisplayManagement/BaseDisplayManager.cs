@@ -37,7 +37,7 @@ namespace OrchardCore.DisplayManagement
                 }
             }
 
-            context.FindPlacement = (shapeType, differentiator, displayType) => FindPlacementImpl(resolvers, shapeType, differentiator, displayType, context);
+            context.FindPlacement = (shapeType, differentiator, displayType, displayContext) => FindPlacementImpl(resolvers, shapeType, differentiator, displayType, context);
         }
 
         private static PlacementInfo FindPlacementImpl(IList<IPlacementInfoResolver> placementResolvers, string shapeType, string differentiator, string displayType, IBuildShapeContext context)
