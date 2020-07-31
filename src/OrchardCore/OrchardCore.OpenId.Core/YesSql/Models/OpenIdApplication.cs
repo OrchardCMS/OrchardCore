@@ -67,6 +67,12 @@ namespace OrchardCore.OpenId.YesSql.Models
             = ImmutableArray.Create<string>();
 
         /// <summary>
+        /// Gets or sets the requirements associated with the current application.
+        /// </summary>
+        public ImmutableArray<string> Requirements { get; set; }
+            = ImmutableArray.Create<string>();
+
+        /// <summary>
         /// Gets or sets the roles associated with the application.
         /// </summary>
         public ImmutableArray<string> Roles { get; set; }

@@ -36,6 +36,9 @@ markdown_extensions:
   - markdown.extensions.def_list
   - markdown.extensions.footnotes
   - markdown.extensions.meta
+  - mdx_truly_sane_lists:
+      nested_indent: 2
+      truly_sane: True
   - pymdownx.b64
   - pymdownx.caret
   - pymdownx.details
@@ -83,6 +86,7 @@ nav:
         - Run code on startup: docs/guides/run-code-on-startup/README.md
         - Create a custom admin theme: docs/guides/create-admin-theme/README.md
         - Customize encoding settings: docs/guides/encoding-settings/README.md
+        - Understanding Content Definitions Stores: docs/guides/content-definitions/README.md 
     - Key Topics: 
         - Manage your Content: docs/topics/content-management/README.md
         - Customize the Display: docs/topics/display/README.md
@@ -126,7 +130,7 @@ nav:
             - Media Azure: docs/reference/modules/Media.Azure/README.md
             - ReCaptcha: docs/reference/modules/ReCaptcha/README.md
             - Resources: docs/reference/modules/Resources/README.md
-            - ShortCodes: docs/reference/modules/ShortCodes/README.md
+            - Shortcodes: docs/reference/modules/Shortcodes/README.md
             - Sitemaps: docs/reference/modules/Sitemaps/README.md
             - XML-RPC: docs/reference/modules/XmlRpc/README.md
             - Menu: docs/reference/modules/Menu/README.md
@@ -165,6 +169,7 @@ nav:
             - Recipes: docs/reference/modules/Recipes/README.md
             - Response Compression: docs/reference/modules/ResponseCompression/README.md
             - Roles: docs/reference/modules/Roles/README.md
+            - Sanitizer: docs/reference/core/Sanitizer/README.md
             - Scripting: docs/reference/modules/Scripting/README.md
             - Setup: docs/reference/modules/Setup/README.md
             - Shells: docs/reference/core/Shells/README.md

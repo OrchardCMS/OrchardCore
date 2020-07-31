@@ -34,6 +34,11 @@ namespace OrchardCore.Deployment
                             .Permission(Permissions.Import)
                             .LocalNav()
                         )
+                        .Add(S["JSON Import"], S["JSON Import"].PrefixPosition(), deployment => deployment
+                            .Action("Json", "Import", new { area = "OrchardCore.Deployment" })
+                            .Permission(Permissions.Import)
+                            .LocalNav()
+                        )
                     )
                 );
 

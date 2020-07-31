@@ -42,8 +42,6 @@ function initializeTagsEditor(element) {
           termEntriesKey: element.dataset.termEntriesKey,
           contentItemIdKey: element.dataset.contentItemIdKey,
           selectedKey: element.dataset.selectedKey,
-          partName: element.dataset.partName,
-          fieldName: element.dataset.fieldName,
           selectedTagTerms: selectedTagTerms,
           selectableTagTerms: selectableTagTerms,
           allTagTerms: allTagTerms
@@ -101,11 +99,11 @@ function initializeTagsEditor(element) {
         },
         termEntriesContentItemName: function termEntriesContentItemName(tagTerm) {
           var indexOf = this.allTagTerms.indexOf(tagTerm);
-          return "".concat(this.partName, ".").concat(this.fieldName, ".").concat(this.termEntriesKey, "[").concat(indexOf, "].").concat(this.contentItemIdKey);
+          return "".concat(this.termEntriesKey, "[").concat(indexOf, "].").concat(this.contentItemIdKey);
         },
         termEntriesSelectedName: function termEntriesSelectedName(tagTerm) {
           var indexOf = this.allTagTerms.indexOf(tagTerm);
-          return "".concat(this.partName, ".").concat(this.fieldName, ".").concat(this.termEntriesKey, "[").concat(indexOf, "].").concat(this.selectedKey);
+          return "".concat(this.termEntriesKey, "[").concat(indexOf, "].").concat(this.selectedKey);
         }
       }
     });

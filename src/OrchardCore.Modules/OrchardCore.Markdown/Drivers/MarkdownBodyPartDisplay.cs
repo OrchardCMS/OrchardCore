@@ -6,13 +6,14 @@ using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.ShortCodes.Services;
+using OrchardCore.Shortcodes.Services;
 using OrchardCore.Infrastructure.Html;
 using OrchardCore.Liquid;
 using OrchardCore.Markdown.Models;
 using OrchardCore.Markdown.Services;
 using OrchardCore.Markdown.Settings;
 using OrchardCore.Markdown.ViewModels;
+using OrchardCore.Mvc.ModelBinding;
 
 namespace OrchardCore.Markdown.Drivers
 {
@@ -21,21 +22,21 @@ namespace OrchardCore.Markdown.Drivers
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly HtmlEncoder _htmlEncoder;
         private readonly IHtmlSanitizerService _htmlSanitizerService;
-        private readonly IShortCodeService _shortCodeService;
+        private readonly IShortcodeService _shortcodeService;
         private readonly IMarkdownService _markdownService;
         private readonly IStringLocalizer S;
 
         public MarkdownBodyPartDisplay(ILiquidTemplateManager liquidTemplateManager,
             HtmlEncoder htmlEncoder,
             IHtmlSanitizerService htmlSanitizerService,
-            IShortCodeService shortCodeService,
+            IShortcodeService shortcodeService,
             IMarkdownService markdownService,
             IStringLocalizer<MarkdownBodyPartDisplay> localizer)
         {
             _liquidTemplateManager = liquidTemplateManager;
             _htmlEncoder = htmlEncoder;
             _htmlSanitizerService = htmlSanitizerService;
-            _shortCodeService = shortCodeService;
+            _shortcodeService = shortcodeService;
             _markdownService = markdownService;
             S = localizer;
         }
@@ -62,12 +63,12 @@ namespace OrchardCore.Markdown.Drivers
         {
             var viewModel = new MarkdownBodyPartViewModel();
 
-            if (await context.Updater.TryUpdateModelAsync(viewModel, Prefix, t => t.Markdown))
+            if (await context.Updater.TryUpdateModelAsync(viewModel, Prefix, vm => vm.Markdown))
             {
                 if (!string.IsNullOrEmpty(viewModel.Markdown) && !_liquidTemplateManager.Validate(viewModel.Markdown, out var errors))
                 {
                     var partName = context.TypePartDefinition.DisplayName();
-                    context.Updater.ModelState.AddModelError(nameof(model.Markdown), S["{0} doesn't contain a valid Liquid expression. Details: {1}", partName, string.Join(" ", errors)]);
+                    updater.ModelState.AddModelError(Prefix, nameof(viewModel.Markdown), S["{0} doesn't contain a valid Liquid expression. Details: {1}", partName, string.Join(" ", errors)]);
                 }
                 else
                 {
@@ -95,7 +96,7 @@ namespace OrchardCore.Markdown.Drivers
                     scope => scope.SetValue("ContentItem", model.ContentItem));
             }
 
-            model.Html = await _shortCodeService.ProcessAsync(model.Html ?? "");
+            model.Html = await _shortcodeService.ProcessAsync(model.Html ?? "");
 
             if (settings.SanitizeHtml)
             {

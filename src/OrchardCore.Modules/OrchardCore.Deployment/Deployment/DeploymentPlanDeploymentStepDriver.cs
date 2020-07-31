@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using OrchardCore.Deployment.Services;
 using OrchardCore.Deployment.ViewModels;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
@@ -10,9 +11,9 @@ namespace OrchardCore.Deployment.Deployment
 {
     public class DeploymentPlanDeploymentStepDriver : DisplayDriver<DeploymentStep, DeploymentPlanDeploymentStep>
     {
-        private readonly DeploymentPlanService _deploymentPlanService;
+        private readonly IDeploymentPlanService _deploymentPlanService;
 
-        public DeploymentPlanDeploymentStepDriver(DeploymentPlanService deploymentPlanService)
+        public DeploymentPlanDeploymentStepDriver(IDeploymentPlanService deploymentPlanService)
         {
             _deploymentPlanService = deploymentPlanService;
         }

@@ -1,4 +1,6 @@
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
@@ -10,9 +12,25 @@ namespace OrchardCore.Users.Drivers
     public class LoginSettingsDisplayDriver : SectionDisplayDriver<ISite, LoginSettings>
     {
         public const string GroupId = "LoginSettings";
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IAuthorizationService _authorizationService;
 
-        public override IDisplayResult Edit(LoginSettings section)
+        public LoginSettingsDisplayDriver(
+            IHttpContextAccessor httpContextAccessor,
+            IAuthorizationService authorizationService)
         {
+            _httpContextAccessor = httpContextAccessor;
+            _authorizationService = authorizationService;
+        }
+        public override async Task<IDisplayResult> EditAsync(LoginSettings section, BuildEditorContext context)
+        {
+            var user = _httpContextAccessor.HttpContext?.User;
+
+            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageUsers))
+            {
+                return null;
+            }
+
             return Initialize<LoginSettings>("LoginSettings_Edit", model =>
             {
                 model.UseSiteTheme = section.UseSiteTheme;
@@ -25,11 +43,19 @@ namespace OrchardCore.Users.Drivers
 
         public override async Task<IDisplayResult> UpdateAsync(LoginSettings section, BuildEditorContext context)
         {
+           var user = _httpContextAccessor.HttpContext?.User;
+
+            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageUsers))
+            {
+                return null;
+            }
+
             if (context.GroupId == GroupId)
             {
                 await context.Updater.TryUpdateModelAsync(section, Prefix);
             }
-            return Edit(section);
+
+            return await EditAsync(section, context);
         }
     }
 }

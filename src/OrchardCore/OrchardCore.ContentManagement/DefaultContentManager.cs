@@ -88,11 +88,6 @@ namespace OrchardCore.ContentManagement
 
         public Task<ContentItem> GetAsync(string contentItemId)
         {
-            if (contentItemId == null)
-            {
-                throw new ArgumentNullException(nameof(contentItemId));
-            }
-
             return GetAsync(contentItemId, VersionOptions.Published);
         }
 
@@ -131,6 +126,11 @@ namespace OrchardCore.ContentManagement
 
         public async Task<ContentItem> GetAsync(string contentItemId, VersionOptions options)
         {
+            if (String.IsNullOrEmpty(contentItemId))
+            {
+                return null;
+            }
+
             ContentItem contentItem = null;
 
             if (options.IsLatest)
