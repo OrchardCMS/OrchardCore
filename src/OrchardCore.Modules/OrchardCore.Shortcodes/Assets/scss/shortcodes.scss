@@ -3,20 +3,20 @@
 @import "../../node_modules/bootstrap/scss/variables";
 @import "../../node_modules/bootstrap/scss/mixins/breakpoints";
 
-.shortcode-popover-holder {
+.shortcode-modal-holder {
     z-index: 3000;
 }
-.shortcode-popover-holder, .shortcode-popover-btn {
+.shortcode-modal-holder, .shortcode-modal-btn {
     position: absolute; 
     top: 0; 
     right:0;
 }
 
-.shortcode-popover-wrapper {
+.shortcode-modal-wrapper {
     position: relative;
 }
 
-.shortcode-popover-btn {
+.shortcode-modal-btn {
     svg {
         width: 24px;
     }

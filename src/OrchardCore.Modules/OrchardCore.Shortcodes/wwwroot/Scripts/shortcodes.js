@@ -30,41 +30,19 @@ jQuery.fn.extend({
     });
   }
 });
-var shortcodeWrapperTemplate = "\n<div class=\"shortcode-popover-wrapper\"></div>\n";
-var shortcodeHolderTemplate = "\n<button type=\"button\" class=\"shortcode-popover-btn btn btn-sm\">\n<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\">\n    <path d=\"M16 4.2v1.5h2.5v12.5H16v1.5h4V4.2h-4zM4.2 19.8h4v-1.5H5.8V5.8h2.5V4.2h-4l-.1 15.6zm5.1-3.1l1.4.6 4-10-1.4-.6-4 10z\"></path>\n</svg>\n</button>\n<div class=\"shortcode-popover-holder mt-n3 mr-n3 py-3 px-2 w-50 bg-white border shadow rounded\" style=\"display:none\"></div>  \n"; // Wraps each .shortcode-popover class with a wrapper, and attaches detaches the shortcode app as required.
+var shortcodeWrapperTemplate = "\n<div class=\"shortcode-modal-wrapper\"></div>\n";
+var shortcodeBtnTemplate = "\n<button type=\"button\" class=\"shortcode-modal-btn btn btn-sm\">\n<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\">\n    <path d=\"M16 4.2v1.5h2.5v12.5H16v1.5h4V4.2h-4zM4.2 19.8h4v-1.5H5.8V5.8h2.5V4.2h-4l-.1 15.6zm5.1-3.1l1.4.6 4-10-1.4-.6-4 10z\"></path>\n</svg>\n</button>\n"; // Wraps each .shortcode-modal-input class with a wrapper, and attaches detaches the shortcode app as required.
 
 $(function () {
-  $('.shortcode-popover').each(function () {
+  $('.shortcode-modal-input').each(function () {
     $(this).wrap(shortcodeWrapperTemplate);
-    $(this).parent().append(shortcodeHolderTemplate);
+    $(this).parent().append(shortcodeBtnTemplate);
   });
-  $('.shortcode-popover-btn').on('click', function () {
-    var holder = $(this).siblings('.shortcode-popover-holder');
-    shortcodeApp.init(holder, $(this).siblings('.shortcode-popover'), true);
-    holder.fadeToggle();
-
-    var modalCloser = function modalCloser(e) {
-      if (!holder.is(e.target) && holder.has(e.target).length === 0) {
-        cancel();
-      }
-    };
-
-    var cancel = function cancel() {
-      holder.fadeToggle();
-      $(document).off('mouseup', modalCloser);
-    };
-
-    $(document).on('mouseup', modalCloser);
-    $('#shortcode-popover-app-content').on('success', function () {
-      if (shortcodeApp.value && shortcodeApp.value.defaultShortcode) {
-        var input = $(holder).siblings('.shortcode-popover');
-        input.insertAtCaret(shortcodeApp.value.defaultShortcode);
-      }
-
-      holder.fadeToggle();
-      $(document).off('mouseup', modalCloser);
+  $('.shortcode-modal-btn').on('click', function () {
+    var input = $(this).siblings('.shortcode-modal-input');
+    shortcodesApp.init(function (returnShortcode) {
+      input.insertAtCaret(returnShortcode);
     });
-    $('#shortcode-popover-app-content').on('cancel', cancel);
   });
 });
 var shortcodesApp;
@@ -99,13 +77,20 @@ function initializeShortcodesApp(element) {
         }
       },
       methods: {
-        init: function init() {
+        init: function init(onClose) {
+          if (onClose) {
+            this.onClose = onClose;
+          }
+
           this.selectedValue = '';
           $(this.$el).modal('show');
           var self = this;
           $(this.$el).on('shown.bs.modal', function (e) {
             self.$refs.filter.focus();
           });
+        },
+        onClose: function onClose(returnShortcode) {
+          return;
         },
         setCategory: function setCategory(category) {
           if (category) {
@@ -128,45 +113,22 @@ function initializeShortcodesApp(element) {
         insertShortcode: function insertShortcode(returnShortcode) {
           this.returnShortcode = returnShortcode;
           $(this.$el).modal('hide');
+          this.onClose(this.returnShortcode);
         }
       }
     });
-    return shortcodeApp;
+    return shortcodesApp;
   }
-} // initializes a code mirror editor with a shortcode popover.
-// categories should be placed on the parent with class .shortcode-popover-categories.
+} // initializes a code mirror editor with a shortcode modal.
 
 
 function initializeCodeMirrorShortcodeWrapper(editor) {
   var codemirrorWrapper = editor.display.wrapper;
   $(codemirrorWrapper).wrap(shortcodeWrapperTemplate);
-  $(codemirrorWrapper).parent().append(shortcodeHolderTemplate);
-  $(codemirrorWrapper).siblings('.shortcode-popover-btn').on('click', function () {
-    var holder = $(this).siblings('.shortcode-popover-holder');
-    shortcodeApp.init(holder, $(this).closest('.shortcode-popover-categories'), true);
-    holder.fadeToggle();
-
-    var modalCloser = function modalCloser(e) {
-      if (!holder.is(e.target) && holder.has(e.target).length === 0) {
-        cancel();
-      }
-    };
-
-    var cancel = function cancel() {
-      holder.fadeToggle();
-      $(document).off('mouseup', modalCloser);
-    };
-
-    $(document).on('mouseup', modalCloser); // By design these leave the popover in place where another editor can move it.
-
-    $('#shortcode-popover-app-content').on('success', function () {
-      if (shortcodeApp.value && shortcodeApp.value.defaultShortcode) {
-        editor.replaceSelection(shortcodeApp.value.defaultShortcode);
-      }
-
-      holder.fadeToggle();
-      $(document).off('mouseup', modalCloser);
+  $(codemirrorWrapper).parent().append(shortcodeBtnTemplate);
+  $(codemirrorWrapper).siblings('.shortcode-modal-btn').on('click', function () {
+    shortcodesApp.init(function (returnShortcode) {
+      editor.replaceSelection(returnShortcode);
     });
-    $('#shortcode-popover-app-content').on('cancel', cancel);
   });
 }

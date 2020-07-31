@@ -12,17 +12,16 @@
                 init: function (trumbowyg) {
                     var btnDef = {
                         fn: function () {
+                            trumbowyg.saveRange();         
                             
-                            shortcodesApp.init();
-                            trumbowyg.saveRange();
-                            $(shortcodesApp.$el).on('hide.bs.modal', function (e) {
+                            shortcodesApp.init(function (returnShortcode) {
                                 trumbowyg.restoreRange();
                                 trumbowyg.range.deleteContents();
-                                trumbowyg.range.insertNode(document.createTextNode(shortcodesApp.returnShortcode));
+                                trumbowyg.range.insertNode(document.createTextNode(returnShortcode));
                                 trumbowyg.syncCode();
                                 trumbowyg.$c.trigger('tbwchange');
                                 trumbowyg.$c.focus();   
-                            });                            
+                            });
                         },    
                         hasIcon: true
                     };
