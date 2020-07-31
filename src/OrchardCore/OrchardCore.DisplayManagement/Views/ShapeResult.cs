@@ -58,8 +58,8 @@ namespace OrchardCore.DisplayManagement.Views
                 _defaultLocation = context.DefaultZone;
             }
 
-            // Look into specific implementations of placements (like placement.json files)
-            var placement = context.FindPlacement(_shapeType, _differentiator, displayType);
+            // Look into specific implementations of placements (like placement.json files and IShapePlacementProviders)
+            var placement = context.FindPlacement(_shapeType, _differentiator, displayType, context);
 
             // Look for mapped display type locations
             if (_otherLocations != null)

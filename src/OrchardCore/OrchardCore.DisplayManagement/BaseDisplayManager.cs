@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.Zones;
 
 namespace OrchardCore.DisplayManagement
@@ -25,7 +27,7 @@ namespace OrchardCore.DisplayManagement
         {
             var resolvers = new List<IPlacementInfoResolver>();
 
-            foreach(var provider in _placementProviders)
+            foreach (var provider in _placementProviders)
             {
                 var resolver = await provider.BuildPlacementInfoResolverAsync(context);
 
@@ -54,17 +56,49 @@ namespace OrchardCore.DisplayManagement
                 context.Shape
             );
 
-            for(int i = placementResolvers.Count - 1; i >= 0; i--)
+            return placementResolvers.Aggregate<IPlacementInfoResolver, PlacementInfo>(null, (prev, resolver) =>
+                CombinePlacements(prev, resolver.ResolvePlacement(placementContext))
+            );
+        }
+
+        private static PlacementInfo CombinePlacements(PlacementInfo first, PlacementInfo second)
+        {
+            if (first != null && second != null)
             {
-                var info = placementResolvers[i].ResolvePlacement(placementContext);
-
-                if (info != null)
+                CombineAlternates(first.Alternates, second.Alternates);
+                CombineAlternates(first.Wrappers, second.Wrappers);
+                if (!String.IsNullOrEmpty(second.ShapeType))
                 {
-                    return info;
+                    first.ShapeType = second.ShapeType;
                 }
+                if (!String.IsNullOrEmpty(second.Location))
+                {
+                    first.Location = second.Location;
+                }
+                if (!String.IsNullOrEmpty(second.DefaultPosition))
+                {
+                    first.DefaultPosition = second.DefaultPosition;
+                }
+                first.Source = second.Source + "," + second.Source;
             }
+            else if (second != null)
+            {
+                return second;
+            }
+            return first;
+        }
 
-            return null;
+        private static AlternatesCollection CombineAlternates(AlternatesCollection first, AlternatesCollection second)
+        {
+            if (first != null && second != null)
+            {
+                first.AddRange(second);
+            }
+            else if (second != null)
+            {
+                return second;
+            }
+            return first;
         }
 
         protected ValueTask<IShape> CreateContentShapeAsync(string actualShapeType)
