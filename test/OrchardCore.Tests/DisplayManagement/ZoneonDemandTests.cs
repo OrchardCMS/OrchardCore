@@ -108,6 +108,14 @@ namespace OrchardCore.Tests.DisplayManagement
             Assert.True(Object.ReferenceEquals(zoneHolding.SomeZone, someZone));
             Assert.True(Object.ReferenceEquals(zoneHolding["SomeZone"], someZone));
             Assert.True(Object.ReferenceEquals((zoneHolding as ZoneHolding).Properties["SomeZone"], someZone));
+
+            var dynamicZone = zoneHolding["SomeZone"];
+            Assert.True(dynamicZone is ZoneOnDemand);
+            Assert.True(dynamicZone == null);
+
+            var zoneObject = (zoneHolding as ZoneHolding).Properties["SomeZone"];
+            Assert.True(zoneObject is ZoneOnDemand);
+            Assert.False(zoneObject == null);
         }
 
         [Fact]
