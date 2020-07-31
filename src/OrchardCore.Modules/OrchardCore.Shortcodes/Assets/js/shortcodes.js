@@ -89,18 +89,57 @@ function initializeShortcodesApp(element) {
 
         shortcodesApp = new Vue({
             el: '#' + elementId,
-            data : {
-                returnShortcode: ''
+            data : function () {
+                
+                var shortcodes = JSON.parse(element.dataset.shortcodes || "[]");
+                var categories = JSON.parse(element.dataset.categories || "[]");
+
+                return {
+                    filter: '',
+                    allShortcodes: shortcodes,
+                    filteredShortcodes: shortcodes,
+                    categories: categories,
+                    returnShortcode: ''
+                }
             },
+            watch:
+            {
+                filter(filter) {
+                    if (filter) {
+                        var lower = filter.toLowerCase();
+                        this.filteredShortcodes = this.allShortcodes
+                            .filter(s => s.name.startsWith(lower));
+                    } else {
+                        this.filteredShortcodes = this.allShortcodes;
+                    }
+                }
+            },            
             methods: {
                 init()
                 {
                     this.selectedValue = '';
+                    $(this.$el).modal('show');
+                    var self = this;
+                    $(this.$el).on('shown.bs.modal', function (e) {
+                        self.$refs.filter.focus();
+                    });
+                },
+                setCategory(category)
+                {
+                    if (category) {
+                        this.filteredShortcodes = this.allShortcodes
+                            .filter(s => s.categories.some(c => c.toLowerCase() === category.toLowerCase()));
+                    } else {
+                        this.filteredShortcodes = this.allShortcodes;
+                    }
+                    this.filter = '';
+                },            
+                isVisible(name) {
+                    return this.filteredShortcodes.some(s => s.name === name);
                 },
                 insertShortcode(returnShortcode) {
                     this.returnShortcode = returnShortcode;
-                    $(this.$el).modal('hide')
-
+                    $(this.$el).modal('hide');
                 }
             }
         });
@@ -151,3 +190,9 @@ function initializeCodeMirrorShortcodeWrapper(editor) {
         $('#shortcode-popover-app-content').on('cancel', cancel);        
     });  
 }
+
+
+
+
+
+

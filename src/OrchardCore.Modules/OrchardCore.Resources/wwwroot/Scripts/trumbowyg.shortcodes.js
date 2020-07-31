@@ -19,8 +19,7 @@
             fn: function fn() {
               shortcodesApp.init();
               trumbowyg.saveRange();
-              $('#shortcodePicker').modal('show');
-              $('#shortcodePicker').on('hide.bs.modal', function (e) {
+              $(shortcodesApp.$el).on('hide.bs.modal', function (e) {
                 trumbowyg.restoreRange();
                 trumbowyg.range.deleteContents();
                 trumbowyg.range.insertNode(document.createTextNode(shortcodesApp.returnShortcode));

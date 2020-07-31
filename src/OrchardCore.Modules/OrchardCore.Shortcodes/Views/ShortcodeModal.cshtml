@@ -1,11 +1,12 @@
 @inject IShortcodeTableManager ShortcodeTableManager
 @inject IDisplayManager<ShortcodeDescriptor> ShortcodeDescriptorDisplayManager
+@using Newtonsoft.Json.Linq
 
-@* To use a shortcode modal on an input field use .shortcode-popover
+@* To use a shortcode modal on an input field use .shortcode-modal
 and call @await DisplayAsync(await New.ShortcodeModal()) from the fields view
 *@
 
-@* Inject the popover only once per page *@
+@* Inject the modal only once per page *@
 @if (!Context.Items.ContainsKey("ShortcodeModal"))
 {
     Context.Items["ShortcodeModal"] = new object();
@@ -15,9 +16,12 @@ and call @await DisplayAsync(await New.ShortcodeModal()) from the fields view
         .GroupBy(c => c, StringComparer.OrdinalIgnoreCase)
         .Select(g => g.Key);
 
-    <script asp-src="~/OrchardCore.Shortcodes/Scripts/shortcodes.min.js" debug-src="~/OrchardCore.Shortcodes/Scripts/shortcodes.js" asp-name="shortcodes" at="Foot" depends-on="jQuery"></script>
-    <style asp-src="~/OrchardCore.Shortcodes/Styles/shortcodes.min.css" debug-src="~/OrchardCore.Shortcodes/Styles/shortcodes.css" asp-name="shortcodes"></style>
+    var jShortcodes = JArray.FromObject(shortcodeTable.Select(d => new { name = d.Name, categories = d.Categories }));
+    var jCategories = JArray.FromObject(categories);
 
+    <style asp-src="~/OrchardCore.Shortcodes/Styles/shortcodes.min.css" debug-src="~/OrchardCore.Shortcodes/Styles/shortcodes.css" asp-name="shortcodes"></style>
+    <script asp-src="~/OrchardCore.Shortcodes/Scripts/shortcodes.min.js" debug-src="~/OrchardCore.Shortcodes/Scripts/shortcodes.js" asp-name="shortcodes" at="Foot" depends-on="jQuery, vuejs"></script>
+  
     @*  This svg is only used by the trumbowyg editors, but is placed here, once, to reduce complexity
         The icon for using a .shortcode-popover helper is included via javascript when wrapping the .shortcode-popover.
     *@
@@ -31,11 +35,11 @@ and call @await DisplayAsync(await New.ShortcodeModal()) from the fields view
 
     @* Place at footer in case it is affected by being inline with an element. *@
     <zone name="Footer">
-        <div class="modal fade modal-shortcodes" id="shortcodePicker" tabindex="-1" role="dialog" aria-labelledby="shortcode-picker-label" aria-hidden="true">
+        <div class="modal fade modal-shortcodes" id="shortcodeModal" tabindex="-1" role="dialog" aria-labelledby="shortcodeModalLabel" aria-hidden="true" data-shortcodes="@jShortcodes" data-categories="@jCategories">
             <div class="modal-dialog modal-lg" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="shortcodePickerLabel">@T["Available Shortcodes"]</h5>
+                        <h5 class="modal-title" id="shortcodeModalLabel">@T["Available Shortcodes"]</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
@@ -44,26 +48,28 @@ and call @await DisplayAsync(await New.ShortcodeModal()) from the fields view
                         <div class="row">
                             <div class="col-sm-3 col-md-3 col-lg-2">
                                 <div class="form-group">
-                                    <input class="form-control" type="search" placeholder="@T["Filter"]" aria-label="@T["Filter"]" autofocus>
+                                    <input class="form-control" type="search" placeholder="@T["Filter"]" aria-label="@T["Filter"]" v-model="filter" ref="filter" >
                                 </div>
-                                <ul class="nav nav-pills flex-column shortcodePickerCategories">
+                                <ul class="nav nav-pills flex-column">
                                     <li class="nav-item">
-                                        <a class="nav-link active" href="#all" data-toggle="pill">All</a>
+                                        <a class="nav-link active" href="#all" data-toggle="pill" v-on:click="setCategory('')" ref="all">All</a>
                                     </li>                                   
                                     @foreach (var category in categories)
                                     {
-                                        <li class="nav-item" data-category="@category.HtmlClassify()">
-                                            <a class="nav-link" href="#@category.HtmlClassify()" data-toggle="pill">@category</a>
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="#@category.HtmlClassify()" data-toggle="pill" v-on:click="setCategory('@category')">@category</a>
                                         </li>
                                     }
                                 </ul>
                             </div>
                             <div class="col-sm-9 col-md-9 col-lg-10">
                                 <div class="card-columns tab-content">
-                                    @foreach(var descriptor in shortcodeTable)
+                                    @foreach (var descriptor in shortcodeTable)
                                     {
                                         var summary = await ShortcodeDescriptorDisplayManager.BuildDisplayAsync(descriptor, null, "SummaryAdmin");
-                                        @await DisplayAsync(summary)
+                                        <div v-show="isVisible('@descriptor.Name')">
+                                            @await DisplayAsync(summary)
+                                        </div>
                                     }
                                 </div>
                             </div>
@@ -77,6 +83,6 @@ and call @await DisplayAsync(await New.ShortcodeModal()) from the fields view
         </div>
     </zone>
    <script depends-on="shortcodes" at="Foot">
-        initializeShortcodesApp(document.getElementById("shortcodePicker"));
+        initializeShortcodesApp(document.getElementById("shortcodeModal"));
     </script>
 }

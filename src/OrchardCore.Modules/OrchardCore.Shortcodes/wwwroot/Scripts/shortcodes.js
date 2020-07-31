@@ -74,12 +74,56 @@ function initializeShortcodesApp(element) {
     var elementId = element.id;
     shortcodesApp = new Vue({
       el: '#' + elementId,
-      data: {
-        returnShortcode: ''
+      data: function data() {
+        var shortcodes = JSON.parse(element.dataset.shortcodes || "[]");
+        var categories = JSON.parse(element.dataset.categories || "[]");
+        return {
+          filter: '',
+          allShortcodes: shortcodes,
+          filteredShortcodes: shortcodes,
+          categories: categories,
+          returnShortcode: ''
+        };
+      },
+      watch: {
+        filter: function filter(_filter) {
+          if (_filter) {
+            var lower = _filter.toLowerCase();
+
+            this.filteredShortcodes = this.allShortcodes.filter(function (s) {
+              return s.name.startsWith(lower);
+            });
+          } else {
+            this.filteredShortcodes = this.allShortcodes;
+          }
+        }
       },
       methods: {
         init: function init() {
           this.selectedValue = '';
+          $(this.$el).modal('show');
+          var self = this;
+          $(this.$el).on('shown.bs.modal', function (e) {
+            self.$refs.filter.focus();
+          });
+        },
+        setCategory: function setCategory(category) {
+          if (category) {
+            this.filteredShortcodes = this.allShortcodes.filter(function (s) {
+              return s.categories.some(function (c) {
+                return c.toLowerCase() === category.toLowerCase();
+              });
+            });
+          } else {
+            this.filteredShortcodes = this.allShortcodes;
+          }
+
+          this.filter = '';
+        },
+        isVisible: function isVisible(name) {
+          return this.filteredShortcodes.some(function (s) {
+            return s.name === name;
+          });
         },
         insertShortcode: function insertShortcode(returnShortcode) {
           this.returnShortcode = returnShortcode;

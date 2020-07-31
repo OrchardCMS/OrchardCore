@@ -15,15 +15,14 @@
                             
                             shortcodesApp.init();
                             trumbowyg.saveRange();
-                            $('#shortcodePicker').modal('show');
-                            $('#shortcodePicker').on('hide.bs.modal', function (e) {
+                            $(shortcodesApp.$el).on('hide.bs.modal', function (e) {
                                 trumbowyg.restoreRange();
                                 trumbowyg.range.deleteContents();
                                 trumbowyg.range.insertNode(document.createTextNode(shortcodesApp.returnShortcode));
                                 trumbowyg.syncCode();
                                 trumbowyg.$c.trigger('tbwchange');
                                 trumbowyg.$c.focus();   
-                            });
+                            });                            
                         },    
                         hasIcon: true
                     };
