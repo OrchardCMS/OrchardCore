@@ -137,7 +137,10 @@ namespace OrchardCore.Lucene.Controllers
                 end = Convert.ToInt32(pagerParameters.After) + pager.PageSize + 1;
             }
 
-            var contentItemIds = await _searchQueryService.ExecuteQueryAsync(query, searchSettings.SearchIndex, start, end);
+            // Take the next (pager.PageSize + 1) results.
+            var contentItemIds = (await _searchQueryService.ExecuteQueryAsync(query, searchSettings.SearchIndex, start, end))
+                .Take(pager.PageSize + 1)
+                .ToList();
 
             // We Query database to retrieve content items.
             IQuery<ContentItem> queryDb;
@@ -155,7 +158,8 @@ namespace OrchardCore.Lucene.Controllers
                     .Take(pager.PageSize + 1);
             }
 
-            var containedItems = await queryDb.ListAsync();
+            // Sort the content items by their rank in the search results returned by Lucene.
+            var containedItems = (await queryDb.ListAsync()).OrderBy(x => contentItemIds.IndexOf(x.ContentItemId));
 
             // We set the PagerSlim before and after links
             if (pagerParameters.After != null || pagerParameters.Before != null)
