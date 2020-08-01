@@ -11,8 +11,6 @@ namespace OrchardCore.Forms.Drivers
     {
         public override IDisplayResult Display(ValidationPart part)
         {
-            // Empty Prefix on Display shapes
-            Prefix = "";
             return View("ValidationPart", part).Location("Detail", "Content");
         }
 

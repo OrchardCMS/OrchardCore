@@ -1,4 +1,11 @@
 @using OrchardCore.Forms.Models
 @model ShapeViewModel<ValidationPart>
+@{
+    var htmlFieldPrefix = this.ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix;
+    this.ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix = "";
+}
 
 @Html.ValidationMessage(Model.Value.For)
+@{
+    this.ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix = htmlFieldPrefix;
+}
