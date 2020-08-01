@@ -18,7 +18,6 @@ using OrchardCore.Markdown.Fields;
 using OrchardCore.Markdown.Services;
 using OrchardCore.Markdown.Settings;
 using OrchardCore.Markdown.ViewModels;
-using Shortcodes;
 
 namespace OrchardCore.Markdown.GraphQL
 {
@@ -85,7 +84,7 @@ namespace OrchardCore.Markdown.GraphQL
                     scope => scope.SetValue("ContentItem", ctx.Source.ContentItem));
             }
 
-            html = await shortcodeService.ProcessAsync(html, new Context { ["ContentItem"] = ctx.Source.ContentItem });
+            html = await shortcodeService.ProcessAsync(html);
 
             if (settings.SanitizeHtml)
             {

@@ -33,8 +33,6 @@ public static class ContentRazorHelperExtensions
             markdown = await liquidTemplateManager.RenderAsync(markdown, htmlEncoder);
         }
 
-        // TODO provide context argument (optional on this helper as with the liquid helper?)
-
         markdown = await shortcodeService.ProcessAsync(markdown);
 
         if (sanitize)

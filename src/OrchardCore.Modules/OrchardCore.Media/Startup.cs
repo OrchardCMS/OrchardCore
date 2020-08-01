@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
@@ -23,6 +22,7 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Environment.Shell;
 using OrchardCore.FileStorage;
 using OrchardCore.FileStorage.FileSystem;
+using OrchardCore.Shortcodes;
 using OrchardCore.Liquid;
 using OrchardCore.Media.Controllers;
 using OrchardCore.Media.Core;
@@ -45,7 +45,6 @@ using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
-using OrchardCore.Shortcodes;
 using Shortcodes;
 using SixLabors.ImageSharp.Memory;
 using SixLabors.ImageSharp.Web.Caching;
@@ -159,19 +158,7 @@ namespace OrchardCore.Media
             services.AddTagHelpers<ImageTagHelper>();
             services.AddTagHelpers<ImageResizeTagHelper>();
 
-            // Only add image as a descriptor as media is deprecated.
-            services.AddShortcode<ImageShortcodeProvider>("image", d => {
-                d.ReturnShortcode = "[image] [/image]";
-                d.Hint = (sp) => {
-                    var S = sp.GetRequiredService<IStringLocalizer<Startup>>();
-                    return S["Add a image from the media library."];
-                };
-                d.Usage = "[image width='140']<br>foo.jpg[/image]"; // TODO do we need the line break.
-                d.Categories = (sp) => {
-                    var S = sp.GetRequiredService<IStringLocalizer<Startup>>();
-                    return new string[] { S["HTML"], S["Media"] };
-                };
-            });
+            services.AddScoped<IShortcodeProvider, ImageShortcodeProvider>();
         }
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

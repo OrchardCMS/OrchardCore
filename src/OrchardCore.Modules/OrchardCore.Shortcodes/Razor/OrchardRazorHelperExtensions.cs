@@ -14,8 +14,6 @@ public static class OrchardRazorHelperExtensions
     {
         var shortcodeService = orchardHelper.HttpContext.RequestServices.GetRequiredService<IShortcodeService>();
 
-        // TODO provide optional context argument.
-
         html = await shortcodeService.ProcessAsync(html);
 
         return new HtmlString(html);

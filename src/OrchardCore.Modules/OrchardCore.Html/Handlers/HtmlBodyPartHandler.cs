@@ -10,7 +10,6 @@ using OrchardCore.Html.Settings;
 using OrchardCore.Html.ViewModels;
 using OrchardCore.Shortcodes.Services;
 using OrchardCore.Liquid;
-using Shortcodes;
 
 namespace OrchardCore.Html.Handlers
 {
@@ -52,7 +51,6 @@ namespace OrchardCore.Html.Handlers
                     var settings = contentTypePartDefinition.GetSettings<HtmlBodyPartSettings>();
 
                     var html = part.Html;
-
                     if (!settings.SanitizeHtml)
                     {
                         var model = new HtmlBodyPartViewModel()
@@ -66,7 +64,7 @@ namespace OrchardCore.Html.Handlers
                             scope => scope.SetValue("ContentItem", model.ContentItem));
                     }
 
-                    html = await _shortcodeService.ProcessAsync(html, new Context { ["ContentItem"] = part.ContentItem });
+                    html = await _shortcodeService.ProcessAsync(html);
 
                     bodyAspect.Body = _bodyAspect = new HtmlString(html);
                     _contentItemId = part.ContentItem.Id;

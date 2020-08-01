@@ -208,12 +208,6 @@
   },
   {
     "inputs": [
-      "Assets/trumbowyg/js/trumbowyg.shortcodes.js"
-    ],
-    "output": "wwwroot/Scripts/trumbowyg.shortcodes.js"
-  },
-  {
-    "inputs": [
       "Assets/trumbowyg/plugins/*/*.js"
     ],
     "output": "wwwroot/Scripts/trumbowyg-plugins.js"

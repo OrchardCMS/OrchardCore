@@ -13,7 +13,6 @@ using OrchardCore.Shortcodes.Services;
 using OrchardCore.Infrastructure.Html;
 using OrchardCore.Liquid;
 using OrchardCore.Mvc.ModelBinding;
-using Shortcodes;
 
 namespace OrchardCore.Html.Drivers
 {
@@ -90,7 +89,7 @@ namespace OrchardCore.Html.Drivers
                     scope => scope.SetValue("ContentItem", model.ContentItem));
             }
 
-            model.Html = await _shortcodeService.ProcessAsync(model.Html, new Context { ["ContentItem"] = htmlBodyPart.ContentItem });
+            model.Html = await _shortcodeService.ProcessAsync(model.Html);
         }
     }
 }

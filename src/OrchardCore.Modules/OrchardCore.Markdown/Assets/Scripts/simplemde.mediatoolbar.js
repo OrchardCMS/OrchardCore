@@ -69,46 +69,9 @@ $(function () {
         },
         "|",
         {
-            name: "shortcode",
-            className: "icon-mde-shortcode",
-            title: "Insert Shortcode",
-            default: true,
-            action: function(editor)
-            {
-                // const toolbar = editor.gui.toolbar;
-                // const holder = $(toolbar).siblings('.shortcode-popover-holder');
-                shortcodesApp.init(function (returnShortcode) {
-                    editor.codemirror.replaceSelection(returnShortcode);    
-                }); 
-        
-                // holder.fadeToggle();
-                
-                // const modalCloser = function (e) {
-                //     if (!holder.is(e.target) && holder.has(e.target).length === 0) {
-                //         doCancel();
-                //     }
-                // }
-
-                // const cancel = function() {
-                //     holder.fadeToggle();
-                //     $(document).off('mouseup', modalCloser);            
-                // }
-
-                // $('#shortcode-popover-app-content').on('success', function () {
-                //     if (shortcodeApp.value && shortcodeApp.value.defaultShortcode) {
-                //         editor.codemirror.replaceSelection(shortcodeApp.value.defaultShortcode);      
-                //     }
-                //     holder.fadeToggle();
-                  
-                //     $(document).off('mouseup', modalCloser);
-                // })
-                // $('#shortcode-popover-app-content').on('cancel', cancel);      
-            }
-        },
-        "|",
-        {
             name: "image",
             action: function (editor) {
+                // editor = e;
                 $("#mediaApp").detach().appendTo('#mediaModalMarkdown .modal-body');
                 $("#mediaApp").show();
                 mediaApp.selectedMedias = [];
@@ -175,12 +138,3 @@ $(function () {
         }
     ];
 });
-const wrapperTemplate = `
-<div class="shortcode-modal-wrapper"></div>
-`; 
-
-function initializeSimpleMdeShortcodeWrapper(simpleMde) {
-    const toolbar = simpleMde.gui.toolbar;
-
-    $(toolbar).wrap(wrapperTemplate);
-}
