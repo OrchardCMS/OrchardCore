@@ -96,6 +96,9 @@ namespace OrchardCore.Users.Services
             try
             {
                 await _session.CommitAsync();
+
+                var context = new UserContext(user);
+                await Handlers.InvokeAsync((handler, context) => handler.DeletedAsync(context), context, _logger);
             }
             catch
             {
@@ -175,7 +178,7 @@ namespace OrchardCore.Users.Services
             return Task.CompletedTask;
         }
 
-        public Task<IdentityResult> UpdateAsync(IUser user, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<IdentityResult> UpdateAsync(IUser user, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (user == null)
             {
@@ -184,7 +187,10 @@ namespace OrchardCore.Users.Services
 
             _session.Save(user);
 
-            return Task.FromResult(IdentityResult.Success);
+            var context = new UserContext(user);
+            await Handlers.InvokeAsync((handler, context) => handler.UpdatedAsync(context), context, _logger);
+
+            return IdentityResult.Success;
         }
 
         #endregion IUserStore<IUser>

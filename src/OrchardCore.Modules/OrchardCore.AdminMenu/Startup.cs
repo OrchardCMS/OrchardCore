@@ -34,7 +34,6 @@ namespace OrchardCore.AdminMenu
         {
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<INavigationProvider, AdminMenu>();
-            services.AddTransient<IDataMigration, Migrations>();
 
             services.AddScoped<IAdminMenuService, AdminMenuService>();
             services.AddScoped<AdminMenuNavigationProvidersCoordinator, AdminMenuNavigationProvidersCoordinator>();
