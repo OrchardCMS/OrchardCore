@@ -1802,6 +1802,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "rjpowers10",
+      "name": "rjpowers10",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/68876423?v=4",
+      "profile": "https://github.com/rjpowers10",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true
