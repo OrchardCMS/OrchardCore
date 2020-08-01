@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -95,7 +96,7 @@ namespace OrchardCore.Deployment
 
             var existingDeploymentPlans = (await _session.Query<DeploymentPlan, DeploymentPlanIndex>(x => x.Name.IsIn(names))
                 .ListAsync())
-                .ToDictionary(x => x.Name);
+                .ToDictionary(x => x.Name, StringComparer.OrdinalIgnoreCase);
 
             foreach (var deploymentPlan in deploymentPlans)
             {
