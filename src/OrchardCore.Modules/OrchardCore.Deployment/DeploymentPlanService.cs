@@ -106,7 +106,6 @@ namespace OrchardCore.Deployment
                     existingDeploymentPlan.DeploymentSteps.AddRange(deploymentPlan.DeploymentSteps);
 
                     _session.Save(existingDeploymentPlan);
-
                 }
                 else
                 {
