@@ -24,18 +24,20 @@ namespace OrchardCore.Scripting.Providers
                          if (param == null)
                          {
                              logger.Log(logLevel, text);
-                             return;
-                         }
-                         object[] args;
-                         if (!(param is Array))
-                         {
-                             args = new[] { param };
                          }
                          else
                          {
-                             args = (object[])param;
+                             object[] args;
+                             if (!(param is Array))
+                             {
+                                 args = new[] { param };
+                             }
+                             else
+                             {
+                                 args = (object[])param;
+                             }
+                             logger.Log(logLevel, text, args);
                          }
-                         logger.Log(logLevel, text, args);
                      }
                      catch (Exception ex)
                      {
