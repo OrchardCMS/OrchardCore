@@ -56,9 +56,37 @@ $(function () {
     className: "fas fa-link fa-sm",
     title: "Create Link"
   }, "|", {
+    name: "shortcode",
+    className: "icon-mde-shortcode",
+    title: "Insert Shortcode",
+    "default": true,
+    action: function action(editor) {
+      // const toolbar = editor.gui.toolbar;
+      // const holder = $(toolbar).siblings('.shortcode-popover-holder');
+      shortcodesApp.init(function (returnShortcode) {
+        editor.codemirror.replaceSelection(returnShortcode);
+      }); // holder.fadeToggle();
+      // const modalCloser = function (e) {
+      //     if (!holder.is(e.target) && holder.has(e.target).length === 0) {
+      //         doCancel();
+      //     }
+      // }
+      // const cancel = function() {
+      //     holder.fadeToggle();
+      //     $(document).off('mouseup', modalCloser);            
+      // }
+      // $('#shortcode-popover-app-content').on('success', function () {
+      //     if (shortcodeApp.value && shortcodeApp.value.defaultShortcode) {
+      //         editor.codemirror.replaceSelection(shortcodeApp.value.defaultShortcode);      
+      //     }
+      //     holder.fadeToggle();
+      //     $(document).off('mouseup', modalCloser);
+      // })
+      // $('#shortcode-popover-app-content').on('cancel', cancel);      
+    }
+  }, "|", {
     name: "image",
     action: function action(editor) {
-      // editor = e;
       $("#mediaApp").detach().appendTo('#mediaModalMarkdown .modal-body');
       $("#mediaApp").show();
       mediaApp.selectedMedias = [];
@@ -116,3 +144,9 @@ $(function () {
     title: "Toggle Fullscreen"
   }];
 });
+var wrapperTemplate = "\n<div class=\"shortcode-modal-wrapper\"></div>\n";
+
+function initializeSimpleMdeShortcodeWrapper(simpleMde) {
+  var toolbar = simpleMde.gui.toolbar;
+  $(toolbar).wrap(wrapperTemplate);
+}

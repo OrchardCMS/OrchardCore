@@ -37,7 +37,7 @@ namespace OrchardCore.Media.Shortcodes
             _options = options.Value;
         }
 
-        public ValueTask<string> EvaluateAsync(string identifier, Arguments arguments, string content)
+        public ValueTask<string> EvaluateAsync(string identifier, Arguments arguments, string content, Context context)
         {
             if (!Shortcodes.Contains(identifier))
             {

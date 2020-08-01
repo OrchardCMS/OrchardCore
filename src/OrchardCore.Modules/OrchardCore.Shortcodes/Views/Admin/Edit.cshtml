@@ -1,0 +1,144 @@
+@model ShortcodeTemplateViewModel
+@inject IDisplayManager<ShortcodeDescriptor> ShortcodeDescriptorDisplayManager
+
+@{
+    var returnUrl = ViewData["returnUrl"]?.ToString();
+}
+
+<style asp-name="codemirror"></style>
+<style asp-name="codemirror-addon-display-fullscreen"></style>
+<script asp-name="codemirror" depends-on="admin" at="Foot"></script>
+<script asp-name="codemirror-addon-edit-closetag" at="Foot"></script>
+<script asp-name="codemirror-mode-javascript" at="Foot"></script>
+<script asp-name="codemirror-addon-display-autorefresh" at="Foot"></script>
+<script asp-name="codemirror-addon-display-fullscreen" at="Foot"></script>
+<script asp-name="codemirror-addon-mode-simple" at="Foot"></script>
+<script asp-name="codemirror-addon-mode-multiplex" at="Foot"></script>
+<script asp-name="codemirror-addon-selection-active-line" at="Foot"></script>
+<script asp-name="codemirror-mode-css" at="Foot"></script>
+<script asp-name="codemirror-mode-htmlmixed" at="Foot"></script>
+<script asp-name="codemirror-mode-javascript" at="Foot"></script>
+<script asp-name="codemirror-mode-xml" at="Foot"></script>
+
+<script asp-src="~/OrchardCore.Liquid/codemirror/liquid.js" at="Foot"></script>
+
+<h1>@RenderTitleSegments(T["Edit Shortcode"])</h1>
+
+<div asp-validation-summary="All"></div>
+<form asp-action="Edit" asp-route-returnUrl="@ViewData["returnUrl"]" method="post">
+
+    <input type="hidden" value="@Model.Name" name="sourceName" />
+
+    <div class="row" >
+        <div class="col-12 col-md-6">
+            <div class="form-group" asp-validation-class-for="Name">
+                <label asp-for="Name">@T["Name"]</label>
+                <input asp-for="Name" class="form-control" autofocus />
+                <span asp-validation-for="Name"></span>
+                <span class="hint">@T["The name of the shortcode."]</span>
+            </div>
+            <div class="form-group" asp-validation-class-for="Hint">
+                <label asp-for="Hint">@T["Hint"]</label>
+                <input asp-for="Hint" class="form-control" />
+                <span class="hint">@T["The hint for the shortcode."]</span>
+            </div>
+
+            <div class="form-group" asp-validation-class-for="Usage">
+                <label asp-for="Usage">@T["Usage"]</label>
+                <textarea asp-for="Usage" rows="10" class="form-control"></textarea>
+                <span class="hint">@T["Example usage of the shortcode."]</span>
+            </div>   
+
+            <div class="form-group" asp-validation-class-for="Categories">
+                <label asp-for="Categories">@T["Categories"]</label>
+                <input asp-for="Categories" class="form-control" />
+                <span class="hint">@T["A comma separated list of shortcode categories."]</span>
+            </div>     
+
+            <div class="form-group" asp-validation-class-for="ReturnShortcode">
+                <label asp-for="ReturnShortcode">@T["Return Shortcode"]</label>
+                <input asp-for="ReturnShortcode" class="form-control" />
+                <span class="hint">@T["The return value of the short code when selected. Defaults to [name]."]</span>
+            </div>  
+        </div>
+        <div class="col-12 col-md-6 d-flex align-items-center justify-content-center">
+            <div id="shortcodePreview">
+            @{
+                var descriptor = new ShortcodeDescriptor
+                {
+                    Name = Model.Name,
+                    Hint = Model.Hint,
+                    ReturnShortcode = Model.ReturnShortcode,
+                    Usage = Model.Usage           
+                };
+                dynamic shape = await ShortcodeDescriptorDisplayManager.BuildDisplayAsync(descriptor, null, "SummaryAdmin");
+                shape.Actions = null;
+                @await DisplayAsync(shape)
+            }
+            </div>
+        </div>
+        <div class="col-12">
+            <div class="form-group" asp-validation-class-for="Content">
+                <label asp-for="Content">@T["Content"]</label>
+                <textarea asp-for="Content" rows="10" class="form-control"></textarea>
+                <span class="hint">@T["The Liquid template."]</span>
+            </div>
+        </div>    
+    </div>
+    <div class="form-group">
+        <div class="btn-group">
+            <button type="submit" name="submit" class="btn btn-success">@T["Save"]</button>
+            <button type="button" class="btn btn-success dropdown-toggle dropdown-toggle-split" data-reference="parent" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <span class="sr-only">@T["Toggle Dropdown"]</span>
+            </button>
+            <div class="dropdown-menu">
+                <button class="dropdown-item" name="submit" type="submit" value="SaveAndContinue">@T["and continue"]</button>
+            </div>
+        </div>
+
+        @if (Url.IsLocalUrl(returnUrl))
+        {
+            <a class="btn btn-secondary" href="@returnUrl">@T["Cancel"]</a>
+        }
+    </div>
+</form>
+
+<script type="text/javascript" at="Foot">
+    $(function () {
+        var contentTextArea = document.getElementById('@Html.IdFor(x => x.Content)');
+        if (contentTextArea) {
+            CodeMirror.fromTextArea(contentTextArea, {
+                autoCloseTags: true,
+                autoRefresh: true,
+                lineNumbers: true,
+                lineWrapping: true,
+                matchBrackets: true,
+                styleActiveLine: true,
+                mode: { name: "liquid" }
+            });
+        }
+        var usageInput = document.getElementById('@Html.IdFor(x => x.Usage)');
+        if (usageInput) {
+            var editor = CodeMirror.fromTextArea(usageInput, {
+                autoCloseTags: true,
+                autoRefresh: true,
+                lineNumbers: true,
+                lineWrapping: true,
+                matchBrackets: true,
+                styleActiveLine: true,
+                mode: { name: "htmlmixed" }
+            });
+            editor.on('change', function(e){
+                $('#shortcodePreview pre').html(e.doc.getValue());
+            });             
+        }
+
+        $('#@Html.IdFor(x => x.Name)').on('keyup paste', function () {
+            $('#shortcodePreview h4').html($(this).val())
+        });
+        $('#@Html.IdFor(x => x.Hint)').on('keyup paste', function () {
+            $('#shortcodePreview p').html($(this).val())
+        }); 
+             
+    });
+</script>

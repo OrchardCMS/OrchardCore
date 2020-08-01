@@ -14,6 +14,7 @@ using OrchardCore.Markdown.Services;
 using OrchardCore.Markdown.Settings;
 using OrchardCore.Markdown.ViewModels;
 using OrchardCore.Mvc.ModelBinding;
+using Shortcodes;
 
 namespace OrchardCore.Markdown.Drivers
 {
@@ -96,7 +97,7 @@ namespace OrchardCore.Markdown.Drivers
                     scope => scope.SetValue("ContentItem", model.ContentItem));
             }
 
-            model.Html = await _shortcodeService.ProcessAsync(model.Html ?? "");
+            model.Html = await _shortcodeService.ProcessAsync(model.Html, new Context { ["ContentItem"] = markdownBodyPart.ContentItem });
 
             if (settings.SanitizeHtml)
             {
