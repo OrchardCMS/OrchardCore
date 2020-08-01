@@ -87,6 +87,7 @@ nav:
         - Create a custom admin theme: docs/guides/create-admin-theme/README.md
         - Customize encoding settings: docs/guides/encoding-settings/README.md
         - Understanding Content Definitions Stores: docs/guides/content-definitions/README.md 
+        - Change password configuration: docs/guides/password-configuration/README.md 
     - Key Topics: 
         - Manage your Content: docs/topics/content-management/README.md
         - Customize the Display: docs/topics/display/README.md
