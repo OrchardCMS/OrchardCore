@@ -18,7 +18,7 @@ namespace OrchardCore.Forms.Drivers
         {
             return Initialize<ValidationPartEditViewModel>("ValidationPart_Fields_Edit", m =>
             {
-                m.For = part.For;                
+                m.For = part.For;
             });
         }
 
@@ -28,7 +28,7 @@ namespace OrchardCore.Forms.Drivers
 
             if (await updater.TryUpdateModelAsync(viewModel, Prefix))
             {
-                part.For = viewModel.For?.Trim();                
+                part.For = viewModel.For?.Trim();
             }
 
             return Edit(part);

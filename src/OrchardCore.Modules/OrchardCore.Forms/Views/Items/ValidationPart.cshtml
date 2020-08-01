@@ -1,10 +1,10 @@
 @using OrchardCore.Forms.Models
 @model ShapeViewModel<ValidationPart>
 @{
-    // HtmlFieldPrefix is the PartName i.e. ValidationPart, which is not needed in Display. 
+    // HtmlFieldPrefix is the PartName i.e. ValidationPart, which is not needed in Display.
     var htmlFieldPrefix = this.ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix;
     ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix = "";
-    
+
     @Html.ValidationMessage(Model.Value.For)
 
     ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix = htmlFieldPrefix;
