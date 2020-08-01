@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
+using Newtonsoft.Json;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Liquid;
@@ -133,7 +134,7 @@ namespace OrchardCore.Shortcodes.Controllers
                     Hint = model.Hint,
                     Usage = model.Usage,
                     ReturnShortcode = model.ReturnShortcode,
-                    Categories = !String.IsNullOrEmpty(model.Categories) ? model.Categories.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim()).ToArray() : Array.Empty<string>()
+                    Categories = JsonConvert.DeserializeObject<string[]>(model.SelectedCategories)
                 };
 
                 await _shortcodeTemplatesManager.UpdateShortcodeTemplateAsync(model.Name, template);
@@ -175,7 +176,7 @@ namespace OrchardCore.Shortcodes.Controllers
                 Hint = template.Hint,
                 Usage = template.Usage,
                 ReturnShortcode = template.ReturnShortcode,
-                Categories = template.Categories != null ? String.Join(", ", template.Categories) : String.Empty
+                Categories = template.Categories
             };
 
             ViewData["ReturnUrl"] = returnUrl;
@@ -221,7 +222,7 @@ namespace OrchardCore.Shortcodes.Controllers
                     Hint = model.Hint,
                     Usage = model.Usage,
                     ReturnShortcode = model.ReturnShortcode,
-                    Categories = !String.IsNullOrEmpty(model.Categories) ? model.Categories.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim()).ToArray() : Array.Empty<string>()
+                    Categories = JsonConvert.DeserializeObject<string[]>(model.SelectedCategories)
                 };
 
                 await _shortcodeTemplatesManager.RemoveShortcodeTemplateAsync(sourceName);

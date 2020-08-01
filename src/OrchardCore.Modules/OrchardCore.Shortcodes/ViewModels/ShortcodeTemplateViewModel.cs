@@ -1,3 +1,5 @@
+using System;
+
 namespace OrchardCore.Shortcodes.ViewModels
 {
     public class ShortcodeTemplateViewModel
@@ -7,6 +9,7 @@ namespace OrchardCore.Shortcodes.ViewModels
         public string Hint { get; set; }
         public string Usage { get; set; }
         public string ReturnShortcode { get; set; }
-        public string Categories { get; set; }
+        public string[] Categories { get; set; } = Array.Empty<string>();
+        public string SelectedCategories { get; set; }
     }
 }

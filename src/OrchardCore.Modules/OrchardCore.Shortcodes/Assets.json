@@ -9,8 +9,14 @@
   },
   {
     "inputs": [
-      "Assets/js/**/*.js"
+      "Assets/js/shortcodes.js"
     ],
     "output": "wwwroot/Scripts/shortcodes.js"
+  },
+  {
+    "inputs": [
+      "Assets/js/shortcode-templates.js"
+    ],
+    "output": "wwwroot/Scripts/shortcode-templates.js"
   }
 ]

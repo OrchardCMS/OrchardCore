@@ -1,7 +1,16 @@
 @model ShortcodeTemplateViewModel
 @inject IDisplayManager<ShortcodeDescriptor> ShortcodeDescriptorDisplayManager
+@inject IShortcodeTableManager ShortcodeTableManager
 @{
-    var returnUrl = ViewData["returnUrl"]?.ToString();
+    var returnUrl = ViewData["returnUrl"]?.ToString();    
+    var shortcodeTable = await ShortcodeTableManager.GetShortcodeTable();
+    var categories = shortcodeTable
+        .SelectMany(s => s.Categories)
+        .GroupBy(c => c, StringComparer.OrdinalIgnoreCase)
+        .Select(g => g.Key);
+
+    var jCategories = JsonConvert.SerializeObject(categories);  
+    var jSelectedCategories = JsonConvert.SerializeObject(Model.Categories);
 }
 
 <style asp-name="codemirror"></style>
@@ -20,6 +29,9 @@
 <script asp-name="codemirror-mode-xml" at="Foot"></script>
 
 <script asp-src="~/OrchardCore.Liquid/codemirror/liquid.js" at="Foot"></script>
+
+<style asp-name="vue-multiselect"></style>
+<script asp-src="~/OrchardCore.Shortcodes/Scripts/shortcode-templates.min.js" debug-src="~/OrchardCore.Shortcodes/Scripts/shortcode-templates.js" at="Foot" depends-on="vuejs, vue-multiselect"></script>
 
 <h1>@RenderTitleSegments(T["Create Shortcode"])</h1>
 
@@ -46,11 +58,32 @@
                 <span class="hint">@T["Example usage of the shortcode."]</span>
             </div>   
 
-            <div class="form-group" asp-validation-class-for="Categories">
-                <label asp-for="Categories">@T["Categories"]</label>
-                <input asp-for="Categories" class="form-control" />
-                <span class="hint">@T["A comma separated list of shortcode categories."]</span>
-            </div>    
+            @* Do not move app from here, it is specific to categories, and causes conflicts with codemirror due to dom rewrites. *@
+            <div class="form-group" asp-validation-class-for="SelectedCategories" id="shortcodeCategories" data-categories="@jCategories" data-selected-categories="@jSelectedCategories">
+                <label asp-for="SelectedCategories">@T["Categories"]</label>
+                <input class="form-control" asp-for="SelectedCategories" type="hidden" v-bind:value="getSelectedCategories()"/>
+                    <vue-multiselect v-model="value"
+                                     placeholder="@T["Type to search"]"
+                                     select-label="@T["Select"]"
+                                     deselect-label="@T["Remove"]"
+                                     :options="options"
+                                     :multiple="true"
+                                     :show-labels="false"
+                                     :close-on-select="false"
+                                     :clear-on-select="false"
+                                     :taggable="true"
+                                     tag-position="bottom"
+                                     tag-placeholder="@T["Press enter to add a category"]"
+                                     @@tag="addCategory">
+                        <template slot="noResult">
+                            @T["No categories found"]
+                        </template>
+                        <template slot="noOptions">
+                            @T["No categories found"]
+                        </template>
+                    </vue-multiselect>
+                <span class="hint">@T["The categories for this shortcode."]</span>
+            </div>      
 
             <div class="form-group" asp-validation-class-for="ReturnShortcode">
                 <label asp-for="ReturnShortcode">@T["Return Shortcode"]</label>
@@ -96,45 +129,14 @@
     </div>
 </form>
 
-<script type="text/javascript" at="Foot">
-    $(function () {
-        var contentTextArea = document.getElementById('@Html.IdFor(x => x.Content)');
-        if (contentTextArea) {
-            CodeMirror.fromTextArea(contentTextArea, {
-                autoCloseTags: true,
-                autoRefresh: true,
-                lineNumbers: true,
-                lineWrapping: true,
-                matchBrackets: true,
-                styleActiveLine: true,
-                mode: { name: "liquid" }
-            });
-        }
-        var usageInput = document.getElementById('@Html.IdFor(x => x.Usage)');
-        if (usageInput) {
-            var editor = CodeMirror.fromTextArea(usageInput, {
-                autoCloseTags: true,
-                autoRefresh: true,
-                lineNumbers: true,
-                lineWrapping: true,
-                matchBrackets: true,
-                styleActiveLine: true,
-                mode: { name: "htmlmixed" }
-            });
-            editor.on('change', function(e){
-                $('#shortcodePreview').show();
-                $('#shortcodePreview pre').html(e.doc.getValue());
-            });           
-        }
-
-        $('#@Html.IdFor(x => x.Name)').on('keyup paste', function () {
-            $('#shortcodePreview').show();
-            $('#shortcodePreview h4').html($(this).val())
-        });
-        $('#@Html.IdFor(x => x.Hint)').on('keyup paste', function () {
-            $('#shortcodePreview').show();
-            $('#shortcodePreview p').html($(this).val())
-        });         
-    });
+<script at="Foot">
+    initializeShortcodesTemplateEditor(
+        document.getElementById('shortcodeCategories'), 
+        document.getElementById('@Html.IdFor(x => x.Content)'),
+        document.getElementById('@Html.IdFor(x => x.Usage)'),
+        document.getElementById('shortcodePreview'),
+        document.getElementById('@Html.IdFor(x => x.Name)'),
+        document.getElementById('@Html.IdFor(x => x.Hint)')
+    );
 </script>
 

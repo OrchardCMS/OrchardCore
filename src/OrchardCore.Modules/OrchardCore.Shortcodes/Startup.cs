@@ -1,11 +1,9 @@
 using System;
-using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
@@ -51,41 +49,6 @@ namespace OrchardCore.Shortcodes
             services.AddScoped<IShortcodeProvider, OptionsShortcodeProvider>();
             services.AddScoped<IDisplayManager<ShortcodeDescriptor>, DisplayManager<ShortcodeDescriptor>>();
             services.AddScoped<IDisplayDriver<ShortcodeDescriptor>, ShortcodeDescriptorDisplayDriver>();
-
-            //TODo testing code remove.
-            services.AddShortcode("bold", (args, content, ctx) => {
-                var text = args.Named("text");
-                if (!String.IsNullOrEmpty(text))
-                {
-                    content = text;
-                }
-
-                return new ValueTask<string>($"<em>{content}</em>");
-            });
-
-            services.AddShortcode("bold", (args, content, ctx) => {
-                var text = args.NamedOrDefault("text");
-                if (!String.IsNullOrEmpty(text))
-                {
-                    content = text;
-                }
-
-                return new ValueTask<string>($"<b>{content}</b>");
-
-            }, d => {
-                d.ReturnShortcode = "[bold ]";
-
-                d.Hint = (sp) => {
-                    var S = sp.GetRequiredService<IStringLocalizer<Startup>>();
-                    return S["Add bold formatting with a shortcode."];
-                };
-                d.Usage = "[bold 'your bold content here]'";
-                d.Categories = (sp) => {
-                    var S = sp.GetRequiredService<IStringLocalizer<Startup>>();
-                    return new string[] { S["HTML Content"], S["Content Item"] };
-                };
-
-            });
         }
 
     }

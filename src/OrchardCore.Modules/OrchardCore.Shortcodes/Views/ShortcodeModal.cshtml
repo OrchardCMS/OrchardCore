@@ -1,6 +1,5 @@
 @inject IShortcodeTableManager ShortcodeTableManager
 @inject IDisplayManager<ShortcodeDescriptor> ShortcodeDescriptorDisplayManager
-@using Newtonsoft.Json.Linq
 
 @* To use a shortcode modal on an input field use .shortcode-modal
 and call @await DisplayAsync(await New.ShortcodeModal()) from the fields view
@@ -16,8 +15,8 @@ and call @await DisplayAsync(await New.ShortcodeModal()) from the fields view
         .GroupBy(c => c, StringComparer.OrdinalIgnoreCase)
         .Select(g => g.Key);
 
-    var jShortcodes = JArray.FromObject(shortcodeTable.Select(d => new { name = d.Name, categories = d.Categories }));
-    var jCategories = JArray.FromObject(categories);
+    var jShortcodes = JsonConvert.SerializeObject(shortcodeTable.Select(d => new { name = d.Name, categories = d.Categories }));
+    var jCategories = JsonConvert.SerializeObject(categories);
 
     <style asp-src="~/OrchardCore.Shortcodes/Styles/shortcodes.min.css" debug-src="~/OrchardCore.Shortcodes/Styles/shortcodes.css" asp-name="shortcodes"></style>
     <script asp-src="~/OrchardCore.Shortcodes/Scripts/shortcodes.min.js" debug-src="~/OrchardCore.Shortcodes/Scripts/shortcodes.js" asp-name="shortcodes" at="Foot" depends-on="jQuery, vuejs"></script>
