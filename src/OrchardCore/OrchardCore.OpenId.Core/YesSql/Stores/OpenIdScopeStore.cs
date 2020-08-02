@@ -241,6 +241,23 @@ namespace OrchardCore.OpenId.YesSql.Stores
             return new ValueTask<string>(scope.Description);
         }
 
+        /// <inheritdoc/>
+        public virtual ValueTask<ImmutableDictionary<CultureInfo, string>> GetDescriptionsAsync(
+            TScope scope, CancellationToken cancellationToken)
+        {
+            if (scope == null)
+            {
+                throw new ArgumentNullException(nameof(scope));
+            }
+
+            if (scope.Descriptions == null)
+            {
+                return new ValueTask<ImmutableDictionary<CultureInfo, string>>(ImmutableDictionary.Create<CultureInfo, string>());
+            }
+
+            return new ValueTask<ImmutableDictionary<CultureInfo, string>>(scope.Descriptions);
+        }
+
         /// <summary>
         /// Retrieves the display name associated with a scope.
         /// </summary>
@@ -258,6 +275,23 @@ namespace OrchardCore.OpenId.YesSql.Stores
             }
 
             return new ValueTask<string>(scope.DisplayName);
+        }
+
+        /// <inheritdoc/>
+        public virtual ValueTask<ImmutableDictionary<CultureInfo, string>> GetDisplayNamesAsync(
+            TScope scope, CancellationToken cancellationToken)
+        {
+            if (scope == null)
+            {
+                throw new ArgumentNullException(nameof(scope));
+            }
+
+            if (scope.DisplayNames == null)
+            {
+                return new ValueTask<ImmutableDictionary<CultureInfo, string>>(ImmutableDictionary.Create<CultureInfo, string>());
+            }
+
+            return new ValueTask<ImmutableDictionary<CultureInfo, string>>(scope.DisplayNames);
         }
 
         /// <summary>
@@ -437,6 +471,20 @@ namespace OrchardCore.OpenId.YesSql.Stores
             return default;
         }
 
+        /// <inheritdoc/>
+        public virtual ValueTask SetDescriptionsAsync(TScope scope,
+            ImmutableDictionary<CultureInfo, string> descriptions, CancellationToken cancellationToken)
+        {
+            if (scope == null)
+            {
+                throw new ArgumentNullException(nameof(scope));
+            }
+
+            scope.Descriptions = descriptions;
+
+            return default;
+        }
+
         /// <summary>
         /// Sets the display name associated with a scope.
         /// </summary>
@@ -454,6 +502,19 @@ namespace OrchardCore.OpenId.YesSql.Stores
             }
 
             scope.DisplayName = name;
+
+            return default;
+        }
+
+        public virtual ValueTask SetDisplayNamesAsync(TScope scope,
+            ImmutableDictionary<CultureInfo, string> names, CancellationToken cancellationToken)
+        {
+            if (scope == null)
+            {
+                throw new ArgumentNullException(nameof(scope));
+            }
+
+            scope.DisplayNames = names;
 
             return default;
         }

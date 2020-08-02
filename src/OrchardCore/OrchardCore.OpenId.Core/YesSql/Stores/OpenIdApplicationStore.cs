@@ -318,6 +318,23 @@ namespace OrchardCore.OpenId.YesSql.Stores
             return new ValueTask<string>(application.DisplayName);
         }
 
+        /// <inheritdoc/>
+        public virtual ValueTask<ImmutableDictionary<CultureInfo, string>> GetDisplayNamesAsync(
+            TApplication application, CancellationToken cancellationToken)
+        {
+            if (application == null)
+            {
+                throw new ArgumentNullException(nameof(application));
+            }
+
+            if (application.DisplayNames == null)
+            {
+                return new ValueTask<ImmutableDictionary<CultureInfo, string>>(ImmutableDictionary.Create<CultureInfo, string>());
+            }
+
+            return new ValueTask<ImmutableDictionary<CultureInfo, string>>(application.DisplayNames);
+        }
+
         /// <summary>
         /// Retrieves the unique identifier associated with an application.
         /// </summary>
@@ -616,6 +633,19 @@ namespace OrchardCore.OpenId.YesSql.Stores
             }
 
             application.DisplayName = name;
+
+            return default;
+        }
+
+        /// <inheritdoc/>
+        public virtual ValueTask SetDisplayNamesAsync(TApplication application, ImmutableDictionary<CultureInfo, string> names, CancellationToken cancellationToken)
+        {
+            if (application == null)
+            {
+                throw new ArgumentNullException(nameof(application));
+            }
+
+            application.DisplayNames = names;
 
             return default;
         }
