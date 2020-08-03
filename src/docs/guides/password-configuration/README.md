@@ -2,7 +2,7 @@
 
 The password restrictions are set with the settings configured in ASP.NET Identity.  
 Those options are used to define the required password strength when a user password is set.    
-You can configure these requirements in order to specify properties like the minimal password length or if the process is expecting digits, uppercase or non alphanumeric caracters.
+You can configure these requirements in order to specify properties like the minimal password length or if the process is expecting digits, uppercase or non alphanumeric characters.
 
 ## Configure password settings in ConfigureServices
 
