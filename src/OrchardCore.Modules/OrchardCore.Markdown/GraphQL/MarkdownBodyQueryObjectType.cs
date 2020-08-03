@@ -55,6 +55,8 @@ namespace OrchardCore.Markdown.GraphQL
             // The liquid rendering is for backwards compatability and can be removed in a future version.
             if (!settings.SanitizeHtml)
             {
+                var liquidTemplateManager = serviceProvider.GetService<ILiquidTemplateManager>();
+                var htmlEncoder = serviceProvider.GetService<HtmlEncoder>();
                 var model = new MarkdownBodyPartViewModel()
                 {
                     Markdown = ctx.Source.Markdown,
@@ -62,14 +64,17 @@ namespace OrchardCore.Markdown.GraphQL
                     MarkdownBodyPart = ctx.Source,
                     ContentItem = ctx.Source.ContentItem
                 };
-                var liquidTemplateManager = serviceProvider.GetService<ILiquidTemplateManager>();
-                var htmlEncoder = serviceProvider.GetService<HtmlEncoder>();
 
                 html = await liquidTemplateManager.RenderAsync(html, htmlEncoder, model,
                     scope => scope.SetValue("ContentItem", model.ContentItem));
             }
 
-            html = await shortcodeService.ProcessAsync(html, new Context { ["ContentItem"] = ctx.Source.ContentItem });
+            html = await shortcodeService.ProcessAsync(html,
+                new Context
+                {
+                    ["ContentItem"] = ctx.Source.ContentItem,
+                    ["PartFieldDefinition"] = contentTypePartDefinition
+                });
 
             if (settings.SanitizeHtml)
             {

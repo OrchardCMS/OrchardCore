@@ -55,7 +55,12 @@ namespace OrchardCore.Html.GraphQL
                     scope => scope.SetValue("ContentItem", model.ContentItem));
             }
 
-            return await shortcodeService.ProcessAsync(html, new Context { ["ContentItem"] = ctx.Source.ContentItem });
+            return await shortcodeService.ProcessAsync(html,
+                new Context
+                {
+                    ["ContentItem"] = ctx.Source.ContentItem ,
+                    ["TypePartDefinition"] = contentTypePartDefinition
+                });
         }
     }
 }

@@ -9,8 +9,7 @@ namespace OrchardCore.Shortcodes.Services
     {
         private readonly ShortcodeTemplatesManager _shortcodeTemplatesManager;
 
-        public ShortcodeTemplatesTableProvider(
-            ShortcodeTemplatesManager shortcodeTemplatesManager)
+        public ShortcodeTemplatesTableProvider(ShortcodeTemplatesManager shortcodeTemplatesManager)
         {
             _shortcodeTemplatesManager = shortcodeTemplatesManager;
         }

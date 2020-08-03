@@ -64,7 +64,12 @@ namespace OrchardCore.Markdown.Drivers
                         scope => scope.SetValue("ContentItem", field.ContentItem));
                 }
 
-                model.Html = await _shortcodeService.ProcessAsync(model.Html, new Context { ["ContentItem"] = field.ContentItem });
+                model.Html = await _shortcodeService.ProcessAsync(model.Html,
+                    new Context
+                    {
+                        ["ContentItem"] = field.ContentItem,
+                        ["PartFieldDefinition"] = context.PartFieldDefinition
+                    });
 
                 if (settings.SanitizeHtml)
                 {

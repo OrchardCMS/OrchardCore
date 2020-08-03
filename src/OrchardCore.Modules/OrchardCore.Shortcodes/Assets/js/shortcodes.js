@@ -129,7 +129,6 @@ function initializeShortcodesApp(element) {
     }
 }
 
-
 // initializes a code mirror editor with a shortcode modal.
 function initializeCodeMirrorShortcodeWrapper(editor) {
     const codemirrorWrapper = editor.display.wrapper;
@@ -142,9 +141,3 @@ function initializeCodeMirrorShortcodeWrapper(editor) {
         });   
     });  
 }
-
-
-
-
-
-

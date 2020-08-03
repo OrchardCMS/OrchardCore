@@ -66,7 +66,12 @@ namespace OrchardCore.Html.Handlers
                             scope => scope.SetValue("ContentItem", model.ContentItem));
                     }
 
-                    html = await _shortcodeService.ProcessAsync(html, new Context { ["ContentItem"] = part.ContentItem });
+                    html = await _shortcodeService.ProcessAsync(html,
+                        new Context
+                        {
+                            ["ContentItem"] = part.ContentItem,
+                            ["TypePartDefinition"] = contentTypePartDefinition
+                        });
 
                     bodyAspect.Body = _bodyAspect = new HtmlString(html);
                     _contentItemId = part.ContentItem.Id;

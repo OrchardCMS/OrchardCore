@@ -85,7 +85,12 @@ namespace OrchardCore.Markdown.GraphQL
                     scope => scope.SetValue("ContentItem", ctx.Source.ContentItem));
             }
 
-            html = await shortcodeService.ProcessAsync(html, new Context { ["ContentItem"] = ctx.Source.ContentItem });
+            html = await shortcodeService.ProcessAsync(html,
+                new Context
+                {
+                    ["ContentItem"] = ctx.Source.ContentItem,
+                    ["PartFieldDefinition"] = contentPartFieldDefintion
+                });
 
             if (settings.SanitizeHtml)
             {

@@ -18,7 +18,6 @@ using OrchardCore.Shortcodes.ViewModels;
 
 namespace OrchardCore.Shortcodes.Controllers
 {
-
     [Feature("OrchardCore.Shortcodes.Templates")]
     public class AdminController : Controller
     {

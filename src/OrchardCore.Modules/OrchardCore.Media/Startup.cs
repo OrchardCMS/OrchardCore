@@ -159,7 +159,7 @@ namespace OrchardCore.Media
             services.AddTagHelpers<ImageTagHelper>();
             services.AddTagHelpers<ImageResizeTagHelper>();
 
-            // Only add image as a descriptor as media is deprecated.
+            // Only add image as a descriptor as [media] is deprecated.
             services.AddShortcode<ImageShortcodeProvider>("image", d => {
                 d.ReturnShortcode = "[image] [/image]";
                 d.Hint = (sp) => {

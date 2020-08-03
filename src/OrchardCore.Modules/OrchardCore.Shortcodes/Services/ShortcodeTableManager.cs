@@ -9,9 +9,7 @@ namespace OrchardCore.Shortcodes.Services
     {
         private readonly IEnumerable<IShortcodeTableProvider> _shortcodeTableProviders;
 
-        public ShortcodeTableManager(
-            IEnumerable<IShortcodeTableProvider> shortcodeTableProviders
-            )
+        public ShortcodeTableManager(IEnumerable<IShortcodeTableProvider> shortcodeTableProviders)
         {
             _shortcodeTableProviders = shortcodeTableProviders;
         }
