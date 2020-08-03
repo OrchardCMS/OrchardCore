@@ -137,9 +137,7 @@ namespace OrchardCore.Lucene.Controllers
                 end = Convert.ToInt32(pagerParameters.After) + pager.PageSize + 1;
             }
 
-            // Take the next (pager.PageSize + 1) results.
             var contentItemIds = (await _searchQueryService.ExecuteQueryAsync(query, searchSettings.SearchIndex, start, end))
-                .Take(pager.PageSize + 1)
                 .ToList();
 
             // We Query database to retrieve content items.
