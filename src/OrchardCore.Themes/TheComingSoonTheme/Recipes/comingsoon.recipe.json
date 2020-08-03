@@ -60,6 +60,7 @@
 
         "OrchardCore.Scripting",
         "OrchardCore.Settings",
+        "OrchardCore.Shortcodes.Templates",
 
         "OrchardCore.Templates",
         "OrchardCore.Tenants",
