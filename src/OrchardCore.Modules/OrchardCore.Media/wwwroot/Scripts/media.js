@@ -605,6 +605,7 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
             })[0];
             media.mediaPath = newPath;
             media.name = newName;
+            media.url = media.url.substr(0, media.url.lastIndexOf(oldPath)).concat(newPath);
           });
           bus.$on('createFolderRequested', function (media) {
             self.createFolder();
