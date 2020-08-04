@@ -80,6 +80,7 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                         
                         media.mediaPath = newPath;
                         media.name = newName;
+                        media.url = media.url.substr(0, media.url.lastIndexOf(oldPath)).concat(newPath);
                     });
 
                     bus.$on('createFolderRequested', function (media) {
