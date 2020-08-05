@@ -1811,6 +1811,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "thomasebsmith",
+      "name": "Thomas Smith",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/42979377?v=4",
+      "profile": "https://thomasebsmith.github.io/",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true
