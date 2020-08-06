@@ -50,8 +50,8 @@ The `OrchardCore.Resources` module provides some commonly used ones:
 | jQuery-ui             | Script | 1.12.1        | jQuery         |
 | jQuery-ui-i18n        | Script | 1.7.2         | jQuery-ui      |
 | popper                | Script | 1.16.1        | -              |
-| bootstrap             | Script | 3.4.0, 4.5.1  | jQuery, Popper |
-| bootstrap             | Style  | 3.4.0, 4.5.1  | -              |
+| bootstrap             | Script | 3.4.0, 4.5.2  | jQuery, Popper |
+| bootstrap             | Style  | 3.4.0, 4.5.2  | -              |
 | bootstrap-select      | Script | 1.13.18       | -              |
 | bootstrap-select      | Style  | 1.13.18       | -              |
 | bootstrap-slider      | Script | 11.0.2        | -              |
