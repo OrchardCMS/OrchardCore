@@ -23,6 +23,9 @@ The easiest way is to change these settings is to add this code in the `Configur
 !!! note
     This is just an example. You need to choose values that are compliant with your security requirements.
 
+The documentation about the PasswordOptions in ASP.NET Core Identity is available here:  
+https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.identity.passwordoptions?view=aspnetcore-3.1
+
 ## Reading configuration from an external config file
 
 A better way to achieve this is to read configuration from an external file.  
