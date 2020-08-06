@@ -47,14 +47,19 @@ namespace OrchardCore.BackgroundTasks.Services
             {
                 var changeToken = ChangeToken;
 
-                document = await _sessionHelper.GetForCachingAsync<BackgroundTaskDocument>();
+                bool cacheable;
 
-                foreach (var settings in document.Settings.Values)
+                (cacheable, document) = await _sessionHelper.GetForCachingAsync<BackgroundTaskDocument>();
+
+                if (cacheable)
                 {
-                    settings.IsReadonly = true;
-                }
+                    foreach (var settings in document.Settings.Values)
+                    {
+                        settings.IsReadonly = true;
+                    }
 
-                _memoryCache.Set(CacheKey, document, changeToken);
+                    _memoryCache.Set(CacheKey, document, changeToken);
+                }
             }
 
             return document;

@@ -55,13 +55,18 @@ namespace OrchardCore.Settings.Services
                 // First get a new token.
                 var changeToken = ChangeToken;
 
+                bool cacheable;
+
                 // The cache is always updated with the actual persisted data.
-                site = await sessionHelper.GetForCachingAsync(GetDefaultSettings);
+                (cacheable, site) = await sessionHelper.GetForCachingAsync(GetDefaultSettings);
 
-                // Prevent data from being updated.
-                site.IsReadonly = true;
+                if (cacheable)
+                {
+                    // Prevent data from being updated.
+                    site.IsReadonly = true;
 
-                _memoryCache.Set(SiteCacheKey, site, changeToken);
+                    _memoryCache.Set(SiteCacheKey, site, changeToken);
+                }
             }
 
             return site;
