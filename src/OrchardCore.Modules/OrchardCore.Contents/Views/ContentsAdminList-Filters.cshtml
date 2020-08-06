@@ -24,5 +24,32 @@
             var newAction = "@formActionWithoutTypeName" + "/" + value;
             $("#items-form").attr("action", newAction);
         });
+
+        $('button.close').click(function(){
+            var url = window.location.href;
+            var newUrl = removeUrlParameter(url, 'Options.SelectedContentType');
+            
+            window.location.href = newUrl;
+        });
     })
+
+    // https://stackoverflow.com/questions/26257568/remove-a-particular-query-string-from-url/26257722
+    function removeUrlParameter(url, parameter) {
+        var urlParts = url.split('?');   
+        if (urlParts.length >= 2) {
+            var prefix = encodeURIComponent(parameter) + '=';
+            var params = urlParts[1].split(/[&;]/g);
+            for (var i = params.length; i-- > 0;) {    
+                if (params[i].lastIndexOf(prefix, 0) !== -1) {  
+                    params.splice(i, 1);
+                }
+            }
+
+            url= urlParts[0] + '?' + params.join('&');
+
+            return url;
+        } else {
+            return url;
+        }
+    }
 </script>
