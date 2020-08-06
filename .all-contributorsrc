@@ -1829,6 +1829,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "khurram4u2",
+      "name": "khurram4u2",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/56805276?v=4",
+      "profile": "https://github.com/khurram4u2",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true
