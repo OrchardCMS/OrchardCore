@@ -45,15 +45,19 @@ namespace OrchardCore.Secrets.Services
             if (!_memoryCache.TryGetValue<SecretsDocument>(CacheKey, out var document))
             {
                 var changeToken = ChangeToken;
+                bool cacheable;
 
-                document = await _sessionHelper.GetForCachingAsync<SecretsDocument>();
+                (cacheable, document) = await _sessionHelper.GetForCachingAsync<SecretsDocument>();
 
-                foreach (var secret in document.Secrets.Values)
+                if (cacheable)
                 {
-                    secret.IsReadonly = true;
-                }
+                    foreach (var secret in document.Secrets.Values)
+                    {
+                        secret.IsReadonly = true;
+                    }
 
-                _memoryCache.Set(CacheKey, document, changeToken);
+                    _memoryCache.Set(CacheKey, document, changeToken);
+                }
             }
 
             return document;

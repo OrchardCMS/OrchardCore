@@ -45,15 +45,19 @@ namespace OrchardCore.Secrets.Services
             if (!_memoryCache.TryGetValue<SecretBindingsDocument>(CacheKey, out var document))
             {
                 var changeToken = ChangeToken;
+                bool cacheable;
 
-                document = await _sessionHelper.GetForCachingAsync<SecretBindingsDocument>();
+                (cacheable, document) = await _sessionHelper.GetForCachingAsync<SecretBindingsDocument>();
 
-                foreach (var secretBinding in document.SecretBindings.Values)
+                if (cacheable)
                 {
-                    secretBinding.IsReadonly = true;
-                }
+                    foreach (var secretBinding in document.SecretBindings.Values)
+                    {
+                        secretBinding.IsReadonly = true;
+                    }
 
-                _memoryCache.Set(CacheKey, document, changeToken);
+                    _memoryCache.Set(CacheKey, document, changeToken);
+                }
             }
 
             return document;
