@@ -46,14 +46,19 @@ namespace OrchardCore.Templates.Services
             {
                 var changeToken = ChangeToken;
 
-                document = await _sessionHelper.GetForCachingAsync<AdminTemplatesDocument>();
+                bool cacheable;
 
-                foreach (var template in document.Templates.Values)
+                (cacheable, document) = await _sessionHelper.GetForCachingAsync<AdminTemplatesDocument>();
+
+                if (cacheable)
                 {
-                    template.IsReadonly = true;
-                }
+                    foreach (var template in document.Templates.Values)
+                    {
+                        template.IsReadonly = true;
+                    }
 
-                _memoryCache.Set(CacheKey, document, changeToken);
+                    _memoryCache.Set(CacheKey, document, changeToken);
+                }
             }
 
             return document;
