@@ -1,0 +1,97 @@
+@model SecretBindingIndexViewModel
+
+@{
+    int startIndex = (Model.Pager.Page - 1) * (Model.Pager.PageSize) + 1;
+    int endIndex = startIndex + Model.SecretBindings.Count - 1;
+}
+
+<form asp-action="Index">
+    @* the form is necessary to generate and antiforgery token for the delete action *@
+    <div class="row">
+        <div class="form-group col-xl-4 col-sm-6">
+            <h1>@RenderTitleSegments(T["Secret Bindings"])</h1>
+        </div>
+        <div class="form-group col-xl-8 col-sm-6">
+            <div class="btn-group float-right">
+                <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modelSecrets">
+                    @T["Add Secret"]
+                </button>                   
+            </div>
+           
+        </div>      
+    </div>
+    <ul class="list-group">
+        <li class="list-group-item bg-light">
+            <div class="row">
+                <div class="form-group col-xl-4 mb-xl-n1">
+                    <label id="items" for="select-all">@T.Plural(Model.SecretBindings.Count, "1 item", "{0} items")<span class="text-muted" title="@T["Items {0} to {1}", startIndex, endIndex]">@T.Plural((int)Model.Pager.TotalItemCount, " / {0} item in total", " / {0} items in total")</span></label>
+                    <label id="selected-items" class="text-muted" for="select-all"></label>
+                </div>
+            </div>
+        </li>
+        @if (Model.SecretBindings.Any())
+        {
+            @foreach (var entry in Model.SecretBindings)
+            {
+                <li class="list-group-item">
+                    <div class="properties">
+                        <div class="related">
+                            <a asp-action="Edit" asp-route-name="@entry.Name" class="btn btn-primary btn-sm">@T["Edit"]</a>
+                            <a asp-action="Delete" asp-route-name="@entry.Name" class="btn btn-danger btn-sm" itemprop="RemoveUrl UnsafeUrl">@T["Delete"]</a>
+                        </div>
+                        <a asp-action="Edit" asp-route-name="@entry.Name">@entry.Name</a>
+                        @if (!String.IsNullOrWhiteSpace(entry.SecretBinding.Description))
+                        {
+                            <span class="hint">
+                                — @entry.SecretBinding.Description
+                            </span>
+                        }
+                    </div>
+                </li>
+            }
+        }
+        else
+        {
+            <li class="list-group-item">
+                <div class="alert alert-info" role="alert">
+                    @T["<strong>Nothing here!</strong> There are no secrets for the moment."]
+                </div>
+            </li>
+        }
+    </ul>
+</form>
+
+@await DisplayAsync(Model.Pager)
+
+
+<!-- Modal -->
+<div class="modal fade" id="modelSecrets" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">@T["Available Secrets"]</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <input class="form-control" id="search-box" type="search" placeholder="@T["Filter"]" aria-label="@T["Filter"]" autofocus>
+                </div>
+                <div id="cards" class="row">
+                    @foreach (var thumbnail in Model.Thumbnails.OrderBy(t => t.Key))
+                    {
+                        thumbnail.Value.Type = thumbnail.Key;
+
+                        <div class="col-sm-12 col-md-6 col-lg-4 d-flex align-items-stretch card-item">
+                            @await DisplayAsync(thumbnail.Value)
+                        </div>
+                    }
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">@T["Cancel"]</button>
+            </div>
+        </div>
+    </div>
+</div>
