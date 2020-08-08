@@ -28,6 +28,43 @@ body {
     cursor: default;
 }
 
+/* Scroll To Top */
+#top-link {
+    transition: all .25s ease-in-out;
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    display: inline-flex;
+    z-index: 1000;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    margin: 0 3em 3em 0;
+    border-radius: 5px;
+    padding: .25em;
+    width: 50px;
+    height: 50px;
+    background-color: #EAEAEA !important;
+    transition: background-color .3s, opacity .5s, visibility .5s;
+    opacity: 0;
+    visibility: hidden;  
+}
+  
+#top-link.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+#top-link:hover {
+    background-color: #DFE0E1 !important;
+}
+ 
+svg {
+    fill: #495057;
+    width: 24px;
+    height: 12px;
+}
+
 @include cursor-class(move);
 @include cursor-class(pointer);
 

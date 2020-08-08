@@ -21,6 +21,9 @@
     @await RenderSectionAsync("HeadMeta", required: false)
 </head>
 <body class="preload">
+    <a id="top-link">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6"><path d="M12 6H0l6-6z"/></svg>
+    </a>
     <div class="ta-wrapper">
         <div class="ta-navbar-top navbar-expand-lg navbar-light bg-light">
             <a class="ta-navbar-brand" href="@Url.Content("~/")">@Site.SiteName</a>
