@@ -23,7 +23,6 @@ namespace OrchardCore.Secrets.Controllers
     public class AdminController : Controller
     {
         private readonly IAuthorizationService _authorizationService;
-        private readonly SecretBindingsManager _secretsManager;
         private readonly ISecretCoordinator _secretCoordinator;
         private readonly IDisplayManager<Secret> _displayManager;
         private readonly IUpdateModelAccessor _updateModelAccessor;
@@ -36,7 +35,6 @@ namespace OrchardCore.Secrets.Controllers
 
         public AdminController(
             IAuthorizationService authorizationService,
-            SecretBindingsManager secretsManager,
             ISecretCoordinator secretCoordinator,
             IDisplayManager<Secret> displayManager,
             IUpdateModelAccessor updateModelAccessor,
@@ -48,7 +46,6 @@ namespace OrchardCore.Secrets.Controllers
             INotifier notifier)
         {
             _authorizationService = authorizationService;
-            _secretsManager = secretsManager;
             _secretCoordinator = secretCoordinator;
             _displayManager = displayManager;
             _updateModelAccessor = updateModelAccessor;
@@ -69,15 +66,13 @@ namespace OrchardCore.Secrets.Controllers
 
             var siteSettings = await _siteService.GetSiteSettingsAsync();
             var pager = new Pager(pagerParameters, siteSettings.PageSize);
-            var secretsDocument = await _secretsManager.GetSecretBindingsDocumentAsync();
+            var secretBindings = await _secretCoordinator.GetSecretBindingsAsync();
 
-            var count = secretsDocument.SecretBindings.Count;
-
-            var secrets = secretsDocument.SecretBindings.OrderBy(x => x.Key)
+            var bindings = secretBindings.OrderBy(x => x.Key)
                 .Skip(pager.GetStartIndex())
                 .Take(pager.PageSize);
 
-            var pagerShape = (await New.Pager(pager)).TotalItemCount(count);
+            var pagerShape = (await New.Pager(pager)).TotalItemCount(secretBindings.Count());
 
             var thumbnails = new Dictionary<string, dynamic>();
             foreach (var factory in _factories)
@@ -90,7 +85,7 @@ namespace OrchardCore.Secrets.Controllers
 
             var model = new SecretBindingIndexViewModel
             {
-                SecretBindings = secrets.Select(x => new SecretBindingEntry { Name = x.Key, SecretBinding = x.Value }).ToList(),
+                SecretBindings = bindings.Select(x => new SecretBindingEntry { Name = x.Key, SecretBinding = x.Value }).ToList(),
                 Thumbnails = thumbnails,
                 Pager = pagerShape
             };
@@ -148,10 +143,10 @@ namespace OrchardCore.Secrets.Controllers
                 }
                 else
                 {
-                    var secretsDocument = await _secretsManager.GetSecretBindingsDocumentAsync();
+                    var secretBindings = await _secretCoordinator.LoadSecretBindingsAsync();
 
                     // Do not check the stores as a readonly store would already have the key value.
-                    if (secretsDocument.SecretBindings.ContainsKey(model.Name))
+                    if (secretBindings.ContainsKey(model.Name))
                     {
                         ModelState.AddModelError(nameof(SecretBindingViewModel.Name), S["A secret with the same name already exists."]);
                     }
@@ -165,10 +160,7 @@ namespace OrchardCore.Secrets.Controllers
             {
                 var secretBinding = new SecretBinding { Store = model.SelectedStore, Description = model.Description, Type = model.Type };
 
-                await _secretsManager.UpdateSecretBindingAsync(model.Name, secretBinding);
-
-                // So we have to do two things here. save the binding, and save the Secret
-                await _secretCoordinator.UpdateSecretAsync(model.Name, model.SelectedStore, secret);
+                await _secretCoordinator.UpdateSecretAsync(model.Name, secretBinding, secret);
 
                 _notifier.Success(H["Secret added successfully"]);
 
@@ -188,18 +180,21 @@ namespace OrchardCore.Secrets.Controllers
                 return Forbid();
             }
 
-            var secretsDocument = await _secretsManager.GetSecretBindingsDocumentAsync();
+            // This logic could be wrapped into the coordinator, i.e. get secret binding.
 
-            if (!secretsDocument.SecretBindings.ContainsKey(name))
+            var secretBindings = await _secretCoordinator.GetSecretBindingsAsync();
+
+            if (!secretBindings.ContainsKey(name))
             {
                 return RedirectToAction(nameof(Create), new { name });
             }
 
-            var secretBinding = secretsDocument.SecretBindings[name];
+            var secretBinding = secretBindings[name];
 
-            // When editing we create a new secret rather than return a secret value to the front end.
             var secret = _factories.FirstOrDefault(x => x.Name == secretBinding.Type)?.Create();
+            secret = await _secretCoordinator.GetSecretAsync(name, secret.GetType());
 
+            // The secret driver is responsible for how it displays secrets.
             var model = new SecretBindingViewModel
             {
                 Name = name,
@@ -224,7 +219,7 @@ namespace OrchardCore.Secrets.Controllers
                 return Forbid();
             }
 
-            var secretsDocument = await _secretsManager.LoadSecretBindingsDocumentAsync();
+            var secretBindings = await _secretCoordinator.LoadSecretBindingsAsync();
 
             if (ModelState.IsValid)
             {
@@ -232,20 +227,22 @@ namespace OrchardCore.Secrets.Controllers
                 {
                     ModelState.AddModelError(nameof(SecretBindingViewModel.Name), S["The name is mandatory."]);
                 }
-                else if (!model.Name.Equals(sourceName, StringComparison.OrdinalIgnoreCase) && secretsDocument.SecretBindings.ContainsKey(model.Name))
+                else if (!model.Name.Equals(sourceName, StringComparison.OrdinalIgnoreCase) && secretBindings.ContainsKey(model.Name))
                 {
                     ModelState.AddModelError(nameof(SecretBindingViewModel.Name), S["A secret with the same name already exists."]);
                 }
             }
 
-            if (!secretsDocument.SecretBindings.ContainsKey(sourceName))
+            if (!secretBindings.ContainsKey(sourceName))
             {
                 return NotFound();
             }
 
-            var secretBinding = secretsDocument.SecretBindings[sourceName];
+            var secretBinding = secretBindings[sourceName];
 
+            // This one has to get by type, surely or the value will end up null.
             var secret = _factories.FirstOrDefault(x => x.Name == secretBinding.Type)?.Create();
+            secret = await _secretCoordinator.GetSecretAsync(sourceName, secret.GetType());
 
             var editor = await _displayManager.UpdateEditorAsync(secret, updater: _updateModelAccessor.ModelUpdater, isNew: false);
             model.Editor = editor;
@@ -254,15 +251,9 @@ namespace OrchardCore.Secrets.Controllers
             {
                 // Remove this before updating the binding value.
                 await _secretCoordinator.RemoveSecretAsync(sourceName, secretBinding.Store);
-                await _secretCoordinator.UpdateSecretAsync(model.Name, model.SelectedStore, secret);
-
                 secretBinding.Store = model.SelectedStore;
                 secretBinding.Description = model.Description;
-
-                await _secretsManager.RemoveSecretBindingAsync(sourceName);
-
-                await _secretsManager.UpdateSecretBindingAsync(model.Name, secretBinding);
-
+                await _secretCoordinator.UpdateSecretAsync(model.Name, secretBinding, secret);
 
                 return RedirectToAction(nameof(Index));
             }
@@ -279,14 +270,17 @@ namespace OrchardCore.Secrets.Controllers
                 return Forbid();
             }
 
-            var secretsDocument = await _secretsManager.LoadSecretBindingsDocumentAsync();
 
-            if (!secretsDocument.SecretBindings.ContainsKey(name))
+            var secretBindings = await _secretCoordinator.GetSecretBindingsAsync();
+
+            if (!secretBindings.ContainsKey(name))
             {
                 return NotFound();
             }
 
-            await _secretsManager.RemoveSecretBindingAsync(name);
+            var secretBinding = secretBindings[name];
+
+            await _secretCoordinator.RemoveSecretAsync(name, secretBinding.Store);
 
             _notifier.Success(H["Secret deleted successfully"]);
 

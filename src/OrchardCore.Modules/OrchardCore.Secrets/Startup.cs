@@ -36,7 +36,7 @@ namespace OrchardCore.Secrets
 
             services.AddScoped<IDisplayManager<Secret>, DisplayManager<Secret>>();
 
-            services.AddScoped<IDisplayDriver<Secret>, AuthorizationSecretDriver>();
+            services.AddScoped<IDisplayDriver<Secret>, AuthorizationSecretDisplayDriver>();
             services.AddSingleton<ISecretFactory>(new SecretFactory<AuthorizationSecret>());
             services.AddScoped<ISecretService<AuthorizationSecret>, AuthorizationSecretService>();
 

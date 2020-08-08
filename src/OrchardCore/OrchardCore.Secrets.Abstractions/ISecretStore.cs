@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 
 namespace OrchardCore.Secrets
@@ -7,6 +8,7 @@ namespace OrchardCore.Secrets
         string Name { get; }
         string DisplayName { get; }
         bool IsReadOnly { get; }
+        Task<Secret> GetSecretAsync(string key, Type type);
         Task<TSecret> GetSecretAsync<TSecret>(string key) where TSecret : Secret, new();
         Task UpdateSecretAsync(string key, Secret secret);
         Task RemoveSecretAsync(string key);

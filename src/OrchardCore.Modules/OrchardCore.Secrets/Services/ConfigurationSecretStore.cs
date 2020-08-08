@@ -23,8 +23,16 @@ namespace OrchardCore.Secrets.Services
         public string Name => nameof(ConfigurationSecretStore);
         public string DisplayName => S["Configuration Secret Store"];
         public bool IsReadOnly => true;
+
+        public Task<Secret> GetSecretAsync(string key, Type type)
+        {
+            return Task.FromResult(_shellConfiguration.GetSection($"OrchardCore_Secrets:{key}").Get(type) as Secret);
+        }
+
         public Task<TSecret> GetSecretAsync<TSecret>(string key) where TSecret : Secret, new()
         {
+            //TODO we should be able to use GetChildren() here on the parent section.
+            // https://docs.microsoft.com/en-us/aspnet/core/fundamentals/configuration/?view=aspnetcore-3.1#getsection-getchildren-and-exists
             return Task.FromResult(_shellConfiguration.GetSection($"OrchardCore_Secrets:{key}").Get<TSecret>());
         }
 
