@@ -11,6 +11,7 @@ using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Secrets.Controllers;
 using OrchardCore.Secrets.Drivers;
+using OrchardCore.Secrets.Filters;
 using OrchardCore.Secrets.Services;
 using OrchardCore.Security.Permissions;
 
@@ -33,12 +34,14 @@ namespace OrchardCore.Secrets
             services.AddScoped<SecretBindingsManager>();
 
             services.AddScoped<ISecretCoordinator, DefaultSecretCoordinator>();
+            services.AddScoped<ISecretExpressionEvaluator, SecretExpressionEvaluator>();
 
             services.AddScoped<IDisplayManager<Secret>, DisplayManager<Secret>>();
 
             services.AddScoped<IDisplayDriver<Secret>, AuthorizationSecretDisplayDriver>();
             services.AddSingleton<ISecretFactory>(new SecretFactory<AuthorizationSecret>());
             services.AddScoped<ISecretService<AuthorizationSecret>, AuthorizationSecretService>();
+            services.AddSecretLiquidFilter<AuthorizationSecretFilter>("auth_secret");
 
         }
 

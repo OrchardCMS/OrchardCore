@@ -1,8 +1,11 @@
 using System;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Entities;
+using OrchardCore.Environment.Shell.Scope;
+using OrchardCore.Secrets;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Email.Services
@@ -43,14 +46,23 @@ namespace OrchardCore.Email.Services
             // Decrypt the password
             if (!String.IsNullOrWhiteSpace(settings.Password))
             {
-                try
+                var secretExpressionEvaluator = ShellScope.Services.GetRequiredService<ISecretExpressionEvaluator>();
+                if (secretExpressionEvaluator.IsSecretExpression(settings.Password))
                 {
-                    var protector = _dataProtectionProvider.CreateProtector(nameof(SmtpSettingsConfiguration));
-                    options.Password = protector.Unprotect(settings.Password);
+                    options.Password = secretExpressionEvaluator.EvaluateAsync(settings.Password).GetAwaiter().GetResult();
+
                 }
-                catch
+                else
                 {
-                    _logger.LogError("The Smtp password could not be decrypted. It may have been encrypted using a different key.");
+                    try
+                    {
+                        var protector = _dataProtectionProvider.CreateProtector(nameof(SmtpSettingsConfiguration));
+                        options.Password = protector.Unprotect(settings.Password);
+                    }
+                    catch
+                    {
+                        _logger.LogError("The Smtp password could not be decrypted. It may have been encrypted using a different key.");
+                    }
                 }
             }
         }
