@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 
@@ -14,24 +15,24 @@ namespace OrchardCore.Sitemaps.Routing
             _sitemapIds = ImmutableDictionary<string, string>.Empty;
         }
 
-        public bool TryGetPath(string sitemapId, out string path)
+        public bool TryGetSitemapIdByPath(string path, out string sitemapId)
         {
-            return _sitemapIds.TryGetValue(sitemapId, out path);
+            return _sitemapIds.TryGetValue(path, out sitemapId);
         }
 
-        public bool TryGetSitemapId(string path, out string sitemapId)
+        public bool TryGetPathBySitemapId(string sitemapId, out string path)
         {
-            return _sitemapPaths.TryGetValue(path, out sitemapId);
+            return _sitemapPaths.TryGetValue(sitemapId, out path);
         }
 
         public void BuildEntries(IEnumerable<SitemapEntry> entries)
         {
             var pathBuilder = ImmutableDictionary.CreateBuilder<string, string>();
-            var idBuilder = ImmutableDictionary.CreateBuilder<string, string>();
+            var idBuilder = ImmutableDictionary.CreateBuilder<string, string>(StringComparer.OrdinalIgnoreCase);
             foreach (var entry in entries)
             {
-                pathBuilder.Add(entry.Path, entry.SitemapId);
-                idBuilder.Add(entry.SitemapId, entry.Path);
+                pathBuilder.Add(entry.SitemapId, entry.Path);
+                idBuilder.Add(entry.Path, entry.SitemapId);
             }
             _sitemapPaths = pathBuilder.ToImmutable();
             _sitemapIds = idBuilder.ToImmutable();

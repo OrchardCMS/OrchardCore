@@ -304,6 +304,10 @@ namespace OrchardCore.Lists.RemotePublishing
             {
                 await _contentManager.PublishAsync(contentItem);
             }
+            else
+            {
+                await _contentManager.SaveDraftAsync(contentItem);
+            }
 
             if (publishedUtc != null)
             {
@@ -390,6 +394,10 @@ namespace OrchardCore.Lists.RemotePublishing
             if (publish && (publishedUtc == null || publishedUtc <= DateTime.UtcNow))
             {
                 await _contentManager.PublishAsync(contentItem);
+            }
+            else
+            {
+                await _contentManager.SaveDraftAsync(contentItem);
             }
 
             if (publishedUtc != null)

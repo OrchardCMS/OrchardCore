@@ -21,7 +21,7 @@
 <form asp-action="EditField" asp-route-returnUrl="@ViewData["returnUrl"]">
     @Html.ValidationSummary()
     <div class="form-group">
-        <div class="row col-md">
+        <div class="row col-medium">
             <label asp-for="DisplayName">@T["Display Name"]</label>
             <input asp-for="DisplayName" autofocus class="form-control" />
             <span class="hint">@T["Name of the field as it will be displayed in screens."]</span>
@@ -29,7 +29,7 @@
     </div>
 
     <div class="form-group">
-        <div class="row col-sm">
+        <div class="row col-small">
             <label asp-for="Name">@T["Technical Name"]</label>
             <input asp-for="Name" class="form-control" readonly />
             <span class="hint">@T["Technical name of the field."]</span>
