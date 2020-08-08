@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Metadata.Settings;
@@ -15,7 +14,6 @@ using OrchardCore.ContentTypes.Services;
 using OrchardCore.ContentTypes.ViewModels;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
-using OrchardCore.Environment.Shell;
 using OrchardCore.Mvc.Utilities;
 using OrchardCore.Routing;
 using YesSql;
@@ -26,12 +24,11 @@ namespace OrchardCore.ContentTypes.Controllers
     {
         private readonly IContentDefinitionService _contentDefinitionService;
         private readonly IContentDefinitionManager _contentDefinitionManager;
-        private readonly ShellSettings _settings;
         private readonly IAuthorizationService _authorizationService;
         private readonly ISession _session;
         private readonly IContentDefinitionDisplayManager _contentDefinitionDisplayManager;
-        private readonly IHtmlLocalizer<AdminController> H;
-        private readonly IStringLocalizer<AdminController> S;
+        private readonly IHtmlLocalizer H;
+        private readonly IStringLocalizer S;
         private readonly INotifier _notifier;
         private readonly IUpdateModelAccessor _updateModelAccessor;
 
@@ -39,10 +36,8 @@ namespace OrchardCore.ContentTypes.Controllers
             IContentDefinitionDisplayManager contentDefinitionDisplayManager,
             IContentDefinitionService contentDefinitionService,
             IContentDefinitionManager contentDefinitionManager,
-            ShellSettings settings,
             IAuthorizationService authorizationService,
             ISession session,
-            ILogger<AdminController> logger,
             IHtmlLocalizer<AdminController> htmlLocalizer,
             IStringLocalizer<AdminController> stringLocalizer,
             INotifier notifier,
@@ -54,15 +49,12 @@ namespace OrchardCore.ContentTypes.Controllers
             _authorizationService = authorizationService;
             _contentDefinitionService = contentDefinitionService;
             _contentDefinitionManager = contentDefinitionManager;
-            _settings = settings;
             _updateModelAccessor = updateModelAccessor;
 
-            Logger = logger;
             H = htmlLocalizer;
             S = stringLocalizer;
         }
 
-        public ILogger Logger { get; }
         public Task<ActionResult> Index()
         {
             return List();

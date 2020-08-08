@@ -24,7 +24,7 @@ namespace OrchardCore.Setup.Controllers
         private readonly IShellHost _shellHost;
         private readonly IEnumerable<DatabaseProvider> _databaseProviders;
         private readonly IClock _clock;
-        private readonly ILogger<SetupController> _logger;
+        private readonly ILogger _logger;
         private readonly IStringLocalizer S;
         private readonly IEmailAddressValidator _emailAddressValidator;
 
@@ -205,6 +205,11 @@ namespace OrchardCore.Setup.Controllers
             else
             {
                 model.DatabaseProvider = model.DatabaseProviders.FirstOrDefault(p => p.IsDefault)?.Value;
+            }
+
+            if (!String.IsNullOrEmpty(_shellSettings["Description"]))
+            {
+                model.Description = _shellSettings["Description"];
             }
         }
 

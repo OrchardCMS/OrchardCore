@@ -107,14 +107,19 @@ namespace OrchardCore.Queries.Services
             {
                 var changeToken = ChangeToken;
 
-                queries = await _sessionHelper.GetForCachingAsync<QueriesDocument>();
+                bool cacheable;
 
-                foreach (var query in queries.Queries.Values)
+                (cacheable, queries) = await _sessionHelper.GetForCachingAsync<QueriesDocument>();
+
+                if (cacheable)
                 {
-                    query.IsReadonly = true;
-                }
+                    foreach (var query in queries.Queries.Values)
+                    {
+                        query.IsReadonly = true;
+                    }
 
-                _memoryCache.Set(QueriesDocumentCacheKey, queries, changeToken);
+                    _memoryCache.Set(QueriesDocumentCacheKey, queries, changeToken);
+                }
             }
 
             return queries;

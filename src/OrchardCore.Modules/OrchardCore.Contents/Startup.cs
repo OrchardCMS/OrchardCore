@@ -26,9 +26,11 @@ using OrchardCore.Contents.Services;
 using OrchardCore.Contents.Settings;
 using OrchardCore.Contents.Sitemaps;
 using OrchardCore.Contents.TagHelpers;
+using OrchardCore.Contents.ViewModels;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data.Migration;
 using OrchardCore.Deployment;
+using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Entities;
@@ -108,8 +110,16 @@ namespace OrchardCore.Contents
                     };
 
                     options.ContentItemIdKey = "contentItemId";
+                    options.ContainedContentItemIdKey = "containedContentItemId";
+                    options.JsonPathKey = "jsonPath";
                 }
             });
+
+            services.AddScoped<IContentsAdminListFilter, DefaultContentsAdminListFilter>();
+            services.AddScoped<IContentsAdminListQueryService, DefaultContentsAdminListQueryService>();
+
+            services.AddScoped<IDisplayManager<ContentOptionsViewModel>, DisplayManager<ContentOptionsViewModel>>();
+            services.AddScoped<IDisplayDriver<ContentOptionsViewModel>, ContentOptionsDisplayDriver>();
         }
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

@@ -1,11 +1,4 @@
 @model HtmlBodyPartViewModel
-@using OrchardCore.Html.ViewModels;
-@using OrchardCore.Html.Settings;
-@using OrchardCore.ContentLocalization
-@using OrchardCore.ContentManagement.Metadata.Models
-@using OrchardCore.Localization
-@using System.Globalization
-
 @{
     var settings = Model.TypePartDefinition.GetSettings<HtmlBodyPartSettings>();
     var trumbowygSettings = Model.TypePartDefinition.GetSettings<HtmlBodyPartTrumbowygEditorSettings>();
@@ -40,7 +33,7 @@ else
 
 <script at="Foot">
     $(function () {
-@{ 
+@{
     if (culture.GetLanguageDirection() == LanguageDirection.RTL)
     {
         <text>
@@ -57,5 +50,5 @@ else
             $(document).trigger('contentpreview:render');
         });
     });
-    $.trumbowyg.svgPath = '/OrchardCore.Resources/Styles/ui/icons.svg';
+    $.trumbowyg.svgPath = '@Url.Content("~/OrchardCore.Resources/Styles/ui/icons.svg")';
 </script>

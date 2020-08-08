@@ -4,13 +4,10 @@
         <div class="row h-100">
             <div class="col-12 my-auto">
                 <div class="masthead-content text-white py-5 py-md-0">
-                    <form class="flow flow-form" action="{{ Model.ContentItem.Content.FormPart.Action }}" method="{{ Model.ContentItem.Content.FormPart.Method }}">
-                        {% antiforgerytoken %}
-                        <h1 class="mb-3">{{ Model.ContentItem }}</h1>
-                        {% for item in Model.ContentItem.Content.FlowPart.Widgets %}
-                        {{ item | shape_build_display | shape_render }}
-                        {% endfor %}
-                    </form>
+                    <h1 class="mb-3">{{ Model.ContentItem }}</h1>
+                    {% for item in Model.ContentItem.Content.FlowPart.Widgets %}
+                    {{ item | shape_build_display | shape_render }}
+                    {% endfor %}
                 </div>
             </div>
         </div>

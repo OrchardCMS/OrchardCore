@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -62,7 +63,7 @@ namespace OrchardCore.Templates.Controllers
 
             var alias = Request.Form["Alias"].ToString();
 
-            string contentItemId = string.Empty;
+            string contentItemId;
 
             if (string.IsNullOrEmpty(alias) || alias == _homeUrl)
             {
@@ -71,7 +72,7 @@ namespace OrchardCore.Templates.Controllers
             }
             else
             {
-                var index = alias.IndexOf(_homeUrl);
+                var index = alias.IndexOf(_homeUrl, StringComparison.Ordinal);
                 alias = (index < 0) ? alias : alias.Substring(_homeUrl.Length);
                 contentItemId = await _contentAliasManager.GetContentItemIdAsync("slug:" + alias);
             }

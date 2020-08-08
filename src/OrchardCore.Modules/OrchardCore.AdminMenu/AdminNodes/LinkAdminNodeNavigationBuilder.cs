@@ -11,7 +11,7 @@ namespace OrchardCore.AdminMenu.AdminNodes
 {
     public class LinkAdminNodeNavigationBuilder : IAdminNodeNavigationBuilder
     {
-        private readonly ILogger<LinkAdminNodeNavigationBuilder> _logger;
+        private readonly ILogger _logger;
 
         public LinkAdminNodeNavigationBuilder(ILogger<LinkAdminNodeNavigationBuilder> logger)
         {

@@ -27,14 +27,9 @@ namespace OrchardCore.Contents.Controllers
             _updateModelAccessor = updateModelAccessor;
         }
 
-        public async Task<IActionResult> Display(string contentItemId)
+        public async Task<IActionResult> Display(string contentItemId, string jsonPath)
         {
-            if (contentItemId == null)
-            {
-                return NotFound();
-            }
-
-            var contentItem = await _contentManager.GetAsync(contentItemId);
+            var contentItem = await _contentManager.GetAsync(contentItemId, jsonPath);
 
             if (contentItem == null)
             {

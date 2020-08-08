@@ -20,7 +20,7 @@ namespace OrchardCore.Lucene
         private LuceneIndexSettingsDocument _document;
         private IChangeToken _changeToken;
 
-        public LuceneIndexSettingsService(IStore store, ISignal signal)
+        public LuceneIndexSettingsService(ISignal signal)
         {
             _signal = signal;
         }
@@ -44,7 +44,12 @@ namespace OrchardCore.Lucene
             {
                 _changeToken = ChangeToken;
 
-                var document = await SessionHelper.GetForCachingAsync<LuceneIndexSettingsDocument>();
+                (var cacheable, var document) = await SessionHelper.GetForCachingAsync<LuceneIndexSettingsDocument>();
+
+                if (!cacheable)
+                {
+                    return document;
+                }
 
                 foreach (var name in document.LuceneIndexSettings.Keys)
                 {

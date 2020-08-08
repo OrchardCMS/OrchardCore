@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
@@ -37,11 +38,17 @@ namespace OrchardCore.Environment.Shell
 
         public string Description
         {
-            get => _settings["Description"];
-            set => _settings["Description"] = value;
+            get => _configuration["Description"];
+            set => _configuration["Description"] = value;
         }
 
         public string Name { get; set; }
+
+        public string Identifier
+        {
+            get => _settings["Identifier"];
+            set => _settings["Identifier"] = value;
+        }
 
         public string RequestUrlHost
         {
@@ -71,5 +78,7 @@ namespace OrchardCore.Environment.Shell
             get => _configuration[key];
             set => _configuration[key] = value;
         }
+
+        public Task EnsureConfigurationAsync() => _configuration.EnsureConfigurationAsync();
     }
 }

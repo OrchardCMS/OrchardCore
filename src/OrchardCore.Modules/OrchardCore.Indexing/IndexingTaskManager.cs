@@ -24,6 +24,8 @@ namespace OrchardCore.Indexing.Services
     {
         private readonly IClock _clock;
         private readonly IDbConnectionAccessor _dbConnectionAccessor;
+        private readonly ILogger _logger;
+
         private readonly string _tablePrefix;
         private readonly List<IndexingTask> _tasksQueue = new List<IndexingTask>();
 
@@ -35,7 +37,7 @@ namespace OrchardCore.Indexing.Services
         {
             _clock = clock;
             _dbConnectionAccessor = dbConnectionAccessor;
-            Logger = logger;
+            _logger = logger;
 
             _tablePrefix = shellSettings["TablePrefix"];
 
@@ -44,8 +46,6 @@ namespace OrchardCore.Indexing.Services
                 _tablePrefix += '_';
             }
         }
-
-        public ILogger Logger { get; set; }
 
         public Task CreateTaskAsync(ContentItem contentItem, IndexingTaskTypes type)
         {
@@ -87,6 +87,7 @@ namespace OrchardCore.Indexing.Services
 
             var serviceProvider = scope.ServiceProvider;
 
+            var session = serviceProvider.GetService<ISession>();
             var dbConnectionAccessor = serviceProvider.GetService<IDbConnectionAccessor>();
             var shellSettings = serviceProvider.GetService<ShellSettings>();
             var logger = serviceProvider.GetService<ILogger<IndexingTaskManager>>();
@@ -122,7 +123,7 @@ namespace OrchardCore.Indexing.Services
             {
                 await connection.OpenAsync();
 
-                using (var transaction = connection.BeginTransaction())
+                using (var transaction = connection.BeginTransaction(session.Store.Configuration.IsolationLevel))
                 {
                     var dialect = SqlDialectFactory.For(transaction.Connection);
 
@@ -191,7 +192,7 @@ namespace OrchardCore.Indexing.Services
                 }
                 catch (Exception e)
                 {
-                    Logger.LogError(e, "An error occurred while reading indexing tasks");
+                    _logger.LogError(e, "An error occurred while reading indexing tasks");
                     throw;
                 }
             }

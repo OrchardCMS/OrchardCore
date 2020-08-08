@@ -33,6 +33,7 @@ namespace OrchardCore.ContentManagement.Display
         private readonly IShapeFactory _shapeFactory;
         private readonly IThemeManager _themeManager;
         private readonly ILayoutAccessor _layoutAccessor;
+        private readonly ILogger _logger;
 
         public ContentItemDisplayManager(
             IEnumerable<IContentDisplayHandler> handlers,
@@ -52,11 +53,8 @@ namespace OrchardCore.ContentManagement.Display
             _shapeFactory = shapeFactory;
             _themeManager = themeManager;
             _layoutAccessor = layoutAccessor;
-
-            Logger = logger;
+            _logger = logger;
         }
-
-        private ILogger Logger { get; set; }
 
         public async Task<IShape> BuildDisplayAsync(ContentItem contentItem, IUpdateModel updater, string displayType, string groupId)
         {
@@ -98,7 +96,7 @@ namespace OrchardCore.ContentManagement.Display
 
             await BindPlacementAsync(context);
 
-            await _handlers.InvokeAsync((handler, contentItem, context) => handler.BuildDisplayAsync(contentItem, context), contentItem, context, Logger);
+            await _handlers.InvokeAsync((handler, contentItem, context) => handler.BuildDisplayAsync(contentItem, context), contentItem, context, _logger);
 
             return context.Shape;
         }
@@ -118,6 +116,7 @@ namespace OrchardCore.ContentManagement.Display
 
             dynamic itemShape = await CreateContentShapeAsync(actualShapeType);
             itemShape.ContentItem = contentItem;
+            itemShape.Stereotype = stereotype;
 
             // adding an alternate for [Stereotype]_Edit__[ContentType] e.g. Content-Menu.Edit
             ((IShape)itemShape).Metadata.Alternates.Add(actualShapeType + "__" + contentItem.ContentType);
@@ -134,7 +133,7 @@ namespace OrchardCore.ContentManagement.Display
 
             await BindPlacementAsync(context);
 
-            await _handlers.InvokeAsync((handler, contentItem, context) => handler.BuildEditorAsync(contentItem, context), contentItem, context, Logger);
+            await _handlers.InvokeAsync((handler, contentItem, context) => handler.BuildEditorAsync(contentItem, context), contentItem, context, _logger);
 
             return context.Shape;
         }
@@ -152,6 +151,7 @@ namespace OrchardCore.ContentManagement.Display
 
             dynamic itemShape = await CreateContentShapeAsync(actualShapeType);
             itemShape.ContentItem = contentItem;
+            itemShape.Stereotype = stereotype;
 
             // adding an alternate for [Stereotype]_Edit__[ContentType] e.g. Content-Menu.Edit
             ((IShape)itemShape).Metadata.Alternates.Add(actualShapeType + "__" + contentItem.ContentType);
@@ -170,9 +170,9 @@ namespace OrchardCore.ContentManagement.Display
 
             var updateContentContext = new UpdateContentContext(contentItem);
 
-            await _contentHandlers.InvokeAsync((handler, updateContentContext) => handler.UpdatingAsync(updateContentContext), updateContentContext, Logger);
-            await _handlers.InvokeAsync((handler, contentItem, context) => handler.UpdateEditorAsync(contentItem, context), contentItem, context, Logger);
-            await _contentHandlers.Reverse().InvokeAsync((handler, updateContentContext) => handler.UpdatedAsync(updateContentContext), updateContentContext, Logger);
+            await _contentHandlers.InvokeAsync((handler, updateContentContext) => handler.UpdatingAsync(updateContentContext), updateContentContext, _logger);
+            await _handlers.InvokeAsync((handler, contentItem, context) => handler.UpdateEditorAsync(contentItem, context), contentItem, context, _logger);
+            await _contentHandlers.Reverse().InvokeAsync((handler, updateContentContext) => handler.UpdatedAsync(updateContentContext), updateContentContext, _logger);
 
             return context.Shape;
         }

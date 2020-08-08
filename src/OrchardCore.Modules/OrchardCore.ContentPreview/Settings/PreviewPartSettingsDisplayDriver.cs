@@ -14,7 +14,7 @@ namespace OrchardCore.ContentPreview.Settings
     public class PreviewPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver
     {
         private readonly ILiquidTemplateManager _templateManager;
-        private readonly IStringLocalizer<PreviewPartSettingsDisplayDriver> S;
+        private readonly IStringLocalizer S;
 
         public PreviewPartSettingsDisplayDriver(ILiquidTemplateManager templateManager, IStringLocalizer<PreviewPartSettingsDisplayDriver> localizer)
         {

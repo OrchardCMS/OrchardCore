@@ -45,18 +45,22 @@ The `OrchardCore.Resources` module provides some commonly used ones:
 
 | Name                  | Type   | Versions      | Dependencies   |
 | --------------------- | ------ | ------------- | -------------- |
-| jQuery                | Script | 3.4.1         | -              |
-| jQuery.slim           | Script | 3.4.1         | -              |
+| jQuery                | Script | 3.5.1         | -              |
+| jQuery.slim           | Script | 3.5.1         | -              |
 | jQuery-ui             | Script | 1.12.1        | jQuery         |
 | jQuery-ui-i18n        | Script | 1.7.2         | jQuery-ui      |
 | popper                | Script | 1.16.0        | -              |
-| bootstrap             | Script | 3.4.0, 4.4.1  | jQuery, Popper |
-| bootstrap             | Style  | 3.4.0, 4.4.1  | -              |
-| codemirror            | Script | 5.48.4        | -              |
-| codemirror            | Style  | 5.48.4        | -              |
-| font-awesome          | Style  | 4.7.0, 5.12.0 | -              |
-| font-awesome          | Script | 5.12.0        | -              |
-| font-awesome-v4-shims | Script | 5.12.0        | -              |
+| bootstrap             | Script | 3.4.0, 4.5.0  | jQuery, Popper |
+| bootstrap             | Style  | 3.4.0, 4.5.0  | -              |
+| bootstrap-select      | Script | 1.13.18       | -              |
+| bootstrap-select      | Style  | 1.13.18       | -              |
+| bootstrap-slider      | Script | 11.0.2        | -              |
+| bootstrap-slider      | Style  | 11.0.2        | -              |
+| codemirror            | Script | 5.56.0        | -              |
+| codemirror            | Style  | 5.56.0        | -              |
+| font-awesome          | Style  | 4.7.0, 5.14.0 | -              |
+| font-awesome          | Script | 5.14.0        | -              |
+| font-awesome-v4-shims | Script | 5.14.0        | -              |
 
 ### Registering a Resource Manifest
 
@@ -128,10 +132,10 @@ settings.AtFoot();
 ##### Set the version to use
 
 ```csharp
-settings.UseVersion("3.3");
+settings.UseVersion("3.4");
 ```
 
-This will use the latest available version between `3.3` and `3.4`. If the version is not available an exception is thrown.
+This will use the latest available version between `3.4` and `3.5`. If the version is not available an exception is thrown.
 
 ##### Append a version
 
@@ -171,7 +175,7 @@ resourceManager.AppendMeta(new MetaEntry { Name = "keywords", Content = "orchard
 
 From your module, in the `_ViewImports.cshtml` or your view, add `@addTagHelper *, OrchardCore.ResourceManagement`.
 
-#### Register a named script
+#### Register a named script or stylesheet
 
 This example registers the script named `bootstrap` and all its dependencies (jquery).
 
@@ -184,6 +188,10 @@ This example registers the script named `bootstrap` and all its dependencies (jq
 ```
 
 And for a stylesheet:
+
+``` liquid tab="Liquid"
+{% style name:"bootstrap" %}
+```
 
 ``` html tab="Razor"
 <style asp-name="bootstrap"></style>
@@ -228,7 +236,7 @@ You can append a version hash that will be calculated, and calculation cached, a
 
 ##### Specify location
 
-By default all scripts are rendered in the footer. You can override it like this:
+Specify a location the script should load using `at`, for example `Foot` to rendered wherever the `FootScript` helper is located or `Head` to render with the `HeadScript` [See Foot Resources](#foot-resources). If the location is not specified, the script will be inserted wherever it is placed (inline).
 
 ``` liquid tab="Liquid"
 {% script name:"bootstrap", at:"Foot" %}
@@ -238,7 +246,7 @@ By default all scripts are rendered in the footer. You can override it like this
 <script asp-name="bootstrap" at="Foot"></script>
 ```
 
-Styles, however, are always injected in the header section of the HTML document.
+Link and styles tag helpers always inject into the header section of the HTML document regardless of the `at` value.
 
 #### Inline definition
 
@@ -305,6 +313,90 @@ The following example demonstrates how to inject a custom script in the footer s
 <script at="Foot">
     document.write('<!-- some script -->');
 </script>
+```
+
+You can also inject a named custom script.
+``` liquid tab="Liquid"
+{% scriptblock name: "Carousel", at: "Foot", depends_on:"jQuery" %}
+    document.write('<!-- some script -->');
+{% endscriptblock %}
+```
+
+``` html tab="Razor"
+<script name="Carousel" at="Foot" depends-on="jQuery">
+    document.write('<!-- some script -->');
+</script>
+```
+
+Named script will only be injected once and can optionally specify dependencies.
+
+#### Custom style
+
+The following example demonstrates how to inject a custom style in the head section.
+The style block will be injected after all stylesheet resources.
+
+``` liquid tab="Liquid"
+{% styleblock at: "Head" %}
+    .my-class {
+        /* some style */
+    }
+{% endstyleblock %}
+```
+
+``` html tab="Razor"
+<style at="Head">
+    .my-class {
+        /* some style */
+    }
+</style>
+```
+
+You can also inject a named style block.
+The style block will only be injected once based on its name and can optionally specify dependencies.
+
+``` liquid tab="Liquid"
+{% styleblock name: "my-style", depends_on:"the-theme" %}
+    .my-class {
+        /* some style */
+    }
+{% endscriptblock %}
+```
+
+``` html tab="Razor"
+<style name="my-style" depends-on="the-theme">
+    .my-class {
+        /* some style */
+    }
+</style>
+```
+#### Link tag
+
+A link tag is used to define the relationship between the current document and an external resource such as a favicon or stylesheet. For a stylesheet, however, use the [style helper](#register-a-named-script). 
+
+``` liquid tab="Liquid"
+{% link rel:"icon", type:"image/png", sizes:"16x16", src:"~/MyTheme/favicon/favicon-16x16.png" %}
+```
+
+``` html tab="Razor"
+<link asp-src="~/MyTheme/favicon/favicon-16x16.png" rel="icon" type="image/png" sizes="16x16" />
+```
+
+Output
+
+```text
+<link href="/MyTheme/favicon/favicon-16x16.png" rel="icon" sizes="16x16" type="image/png" />
+```
+
+##### Using a file in the media library
+If you wish to use files contained in the media library when using the link tag helper, you can use the `AssetUrl` helper directly in razor but in liquid you will need to first assign the filter result to a variable like so to generate the correct URL:
+
+``` liquid tab="Liquid"
+{% assign image_url = 'favicon/favicon-16x16.png' | asset_url %}
+{% link rel:"icon", type:"image/png", sizes:"16x16", src:image_url %}
+```
+
+``` html tab="Razor"
+<link asp-src=@Orchard.AssetUrl("favicon/favicon-16x16.png") rel="icon" type="image/png" sizes="16x16" />
 ```
 
 #### Meta tags

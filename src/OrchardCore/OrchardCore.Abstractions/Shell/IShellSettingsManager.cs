@@ -14,7 +14,7 @@ namespace OrchardCore.Environment.Shell
         /// Retrieves all shell settings stored.
         /// </summary>
         /// <returns>All shell settings.</returns>
-        IEnumerable<ShellSettings> LoadSettings();
+        Task<IEnumerable<ShellSettings>> LoadSettingsAsync();
 
         /// <summary>
         /// Retrieves the settings of a given tenant

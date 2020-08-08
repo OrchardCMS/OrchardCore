@@ -16,8 +16,7 @@ namespace OrchardCore.Users.Workflows.Activities
         private readonly UserManager<IUser> _userManager;
         private readonly IUserService _userService;
         private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
-
-        private readonly IStringLocalizer<AssignUserRoleTask> S;
+        private readonly IStringLocalizer S;
 
         public AssignUserRoleTask(UserManager<IUser> userManager, IUserService userService, IWorkflowExpressionEvaluator expressionvaluator, IStringLocalizer<AssignUserRoleTask> localizer)
         {
@@ -52,8 +51,8 @@ namespace OrchardCore.Users.Workflows.Activities
 
         public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            var userName = await _expressionEvaluator.EvaluateAsync(UserName, workflowContext);
-            var roleName = await _expressionEvaluator.EvaluateAsync(RoleName, workflowContext);
+            var userName = await _expressionEvaluator.EvaluateAsync(UserName, workflowContext, null);
+            var roleName = await _expressionEvaluator.EvaluateAsync(RoleName, workflowContext, null);
 
             User user = (User)await _userService.GetUserAsync(userName);
 

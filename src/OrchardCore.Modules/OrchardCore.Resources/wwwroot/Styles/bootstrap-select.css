@@ -4,9 +4,9 @@
 */
 
 /*!
- * Bootstrap-select v1.13.12 (https://developer.snapappointments.com/bootstrap-select)
+ * Bootstrap-select v1.13.18 (https://developer.snapappointments.com/bootstrap-select)
  *
- * Copyright 2012-2019 SnapAppointments, LLC
+ * Copyright 2012-2020 SnapAppointments, LLC
  * Licensed under MIT (https://github.com/snapappointments/bootstrap-select/blob/master/LICENSE)
  */
 
@@ -468,6 +468,8 @@ select.selectpicker {
   display: block;
   width: 0.5em;
   height: 1em;
+  -webkit-transform-style: preserve-3d;
+          transform-style: preserve-3d;
 }
 [dir] .bootstrap-select .bs-ok-default:after {
   border-style: solid;

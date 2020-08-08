@@ -52,11 +52,11 @@ namespace OrchardCore.Lucene.FrenchAnalyzer
 ```
 
 
-The third option is the culture. By default *Any culture* will be selected. Here, the option is made for being able to define that this index wether should be only indexing content items of a specific culture or any of them.
+The third option is the culture. By default *Any culture* will be selected. Here, the option is made for being able to define that this index whether should be only indexing content items of a specific culture or any of them.
 
 *Content Types* : you can pick any content types that you would like to see this index parse.
 
-*Index latest version* : this option will allow you to index only published items or also index drafts which could be usefull if you want to search for content items in a custom frontend dashboard or even in an admin backend custom module. By default if we don't check this option it will only index published content items.
+*Index latest version* : this option will allow you to index only published items or also index drafts which could be useful if you want to search for content items in a custom frontend dashboard or even in an admin backend custom module. By default if we don't check this option it will only index published content items.
 
 ## Third step : configure search settings
 
@@ -87,8 +87,8 @@ Here we can see the Blog Post content type definition. We have now a section for
 Also, you can customize these templates for your specific needs in your theme by overriding these : 
 
 `/Views/Shared/Search.liquid or .cshtml` (general layout)  
-`/Views/SearchForm.liquid or .cshtml` (form layout)  
-`/Views/SearchResults.liquid or .cshtml` (results layout)   
+`/Views/Search-Form.liquid or .cshtml` (form layout)  
+`/Views/Search-Results.liquid or .cshtml` (results layout)   
 
 For example an idea here could be to simply customize the search result template to suit your needs by changing "Summary" to "SearchSummary" and create the corresponding shape templates.
 

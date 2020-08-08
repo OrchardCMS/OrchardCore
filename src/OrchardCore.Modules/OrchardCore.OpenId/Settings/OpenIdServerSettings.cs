@@ -11,12 +11,13 @@ namespace OrchardCore.OpenId.Settings
 
         public Uri Authority { get; set; }
 
-        public StoreLocation? CertificateStoreLocation { get; set; }
-
-        public StoreName? CertificateStoreName { get; set; }
-
-        public string CertificateThumbprint { get; set; }
-
+        public bool DisableAccessTokenEncryption { get; set; }
+        public StoreLocation? EncryptionCertificateStoreLocation { get; set; }
+        public StoreName? EncryptionCertificateStoreName { get; set; }
+        public string EncryptionCertificateThumbprint { get; set; }
+        public StoreLocation? SigningCertificateStoreLocation { get; set; }
+        public StoreName? SigningCertificateStoreName { get; set; }
+        public string SigningCertificateThumbprint { get; set; }
         public PathString AuthorizationEndpointPath { get; set; }
 
         public PathString LogoutEndpointPath { get; set; }
@@ -27,12 +28,14 @@ namespace OrchardCore.OpenId.Settings
 
         public ISet<string> GrantTypes { get; } = new HashSet<string>(StringComparer.Ordinal);
 
-        public bool UseRollingTokens { get; set; }
+        public bool UseRollingRefreshTokens { get; set; }
+
+        public bool UseReferenceAccessTokens { get; set; }
 
         public enum TokenFormat
         {
-            Encrypted = 0,
-            JWT = 1
+            DataProtection = 0,
+            JsonWebToken = 1
         }
     }
 }

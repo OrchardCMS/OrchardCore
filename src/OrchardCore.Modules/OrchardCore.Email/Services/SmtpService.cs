@@ -20,7 +20,7 @@ namespace OrchardCore.Email.Services
         private static readonly char[] EmailsSeparator = new char[] { ',', ';', ' ' };
         
         private readonly SmtpSettings _options;
-        private readonly ILogger<SmtpService> _logger;
+        private readonly ILogger _logger;
         private readonly IStringLocalizer S;
 
         public SmtpService(
@@ -43,7 +43,7 @@ namespace OrchardCore.Email.Services
 
             try
             {
-                // Set the MailMessage.From, to avoid the confusion between _options.DefaultSender (Author) and submittor (Sender)
+                // Set the MailMessage.From, to avoid the confusion between _options.DefaultSender (Author) and submitter (Sender)
                 message.From = String.IsNullOrWhiteSpace(message.From)
                     ? _options.DefaultSender
                     : message.From;

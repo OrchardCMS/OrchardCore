@@ -25,7 +25,7 @@ namespace OrchardCore.Queries
         Task DeleteQueryAsync(string name);
 
         /// <summary>
-        /// Returns the <see cref="Query"/> instance with the specified name for udpate.
+        /// Returns the <see cref="Query"/> instance with the specified name for update.
         /// </summary>
         Task<Query> LoadQueryAsync(string name);
 

@@ -3,7 +3,7 @@
 ** Any changes made directly to this file will be overwritten next time its asset group is processed by Gulp.
 */
 
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: https://codemirror.net/LICENSE
@@ -299,7 +299,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
   } // Number of pixels added to scroller and sizer to hide scrollbar
 
 
-  var scrollerGap = 30; // Returned or thrown by various protocols to signal 'I'm not
+  var scrollerGap = 50; // Returned or thrown by various protocols to signal 'I'm not
   // handling this'.
 
   var Pass = {
@@ -1857,7 +1857,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
 
         if (output[prop] == null) {
           output[prop] = lineClass[2];
-        } else if (!new RegExp("(?:^|\s)" + lineClass[2] + "(?:$|\s)").test(output[prop])) {
+        } else if (!new RegExp("(?:^|\\s)" + lineClass[2] + "(?:$|\\s)").test(output[prop])) {
           output[prop] += " " + lineClass[2];
         }
       }
@@ -4536,7 +4536,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
     try {
       x = e.clientX - space.left;
       y = e.clientY - space.top;
-    } catch (e) {
+    } catch (e$1) {
       return null;
     }
 
@@ -6141,7 +6141,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
 
     snapshot.activeElt.focus();
 
-    if (snapshot.anchorNode && contains(document.body, snapshot.anchorNode) && contains(document.body, snapshot.focusNode)) {
+    if (!/^(INPUT|TEXTAREA)$/.test(snapshot.activeElt.nodeName) && snapshot.anchorNode && contains(document.body, snapshot.anchorNode) && contains(document.body, snapshot.focusNode)) {
       var sel = window.getSelection(),
           range = document.createRange();
       range.setEnd(snapshot.anchorNode, snapshot.anchorOffset);
@@ -6256,6 +6256,8 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
         if (update.visible.from >= cm.display.viewFrom && update.visible.to <= cm.display.viewTo) {
           break;
         }
+      } else if (first) {
+        update.visible = visibleLines(cm.display, cm.doc, viewport);
       }
 
       if (!updateDisplayIfNeeded(cm, update)) {
@@ -9698,7 +9700,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
           cm.replaceSelection(text$1, "around", "paste");
           cm.display.input.focus();
         }
-      } catch (e) {}
+      } catch (e$1) {}
     }
   }
 
@@ -10839,6 +10841,11 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
 
   function onKeyDown(e) {
     var cm = this;
+
+    if (e.target && e.target != cm.display.input.getField()) {
+      return;
+    }
+
     cm.curOp.focus = activeElt();
 
     if (signalDOMEvent(cm, e)) {
@@ -10898,6 +10905,10 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
 
   function onKeyPress(e) {
     var cm = this;
+
+    if (e.target && e.target != cm.display.input.getField()) {
+      return;
+    }
 
     if (eventInWidget(cm.display, e) || signalDOMEvent(cm, e) || e.ctrlKey && !e.altKey || mac && e.metaKey) {
       return;
@@ -11130,9 +11141,11 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
         } // Work around unexplainable focus problem in IE9 (#2127) and Chrome (#3081)
 
 
-        if (webkit || ie && ie_version == 9) {
+        if (webkit && !safari || ie && ie_version == 9) {
           setTimeout(function () {
-            display.wrapper.ownerDocument.body.focus();
+            display.wrapper.ownerDocument.body.focus({
+              preventScroll: true
+            });
             display.input.focus();
           }, 20);
         } else {
@@ -11443,7 +11456,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       try {
         mX = e.clientX;
         mY = e.clientY;
-      } catch (e) {
+      } catch (e$1) {
         return false;
       }
     }
@@ -11584,7 +11597,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
         _replaceRange(cm.doc, val, newBreaks[i], Pos(newBreaks[i].line, newBreaks[i].ch + val.length));
       }
     });
-    option("specialChars", /[\u0000-\u001f\u007f-\u009f\u00ad\u061c\u200b-\u200f\u2028\u2029\ufeff\ufff9-\ufffc]/g, function (cm, val, old) {
+    option("specialChars", /[\u0000-\u001f\u007f-\u009f\u00ad\u061c\u200b-\u200c\u200e\u200f\u2028\u2029\ufeff\ufff9-\ufffc]/g, function (cm, val, old) {
       cm.state.specialChars = new RegExp(val.source + (val.test("\t") ? "" : "|\t"), "g");
 
       if (old != Init) {
@@ -11665,6 +11678,10 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       }
 
       cm.display.input.readOnlyChanged(val);
+    });
+    option("screenReaderLabel", null, function (cm, val) {
+      val = val === '' ? null : val;
+      cm.display.input.screenReaderLabelChanged(val);
     });
     option("disableInput", false, function (cm, val) {
       if (!val) {
@@ -12180,7 +12197,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
           } else if (cm.state.overwrite && !paste) // Handle overwrite
           {
             to = Pos(to.line, Math.min(getLine(doc, to.line).text.length, to.ch + lst(textLines).length));
-          } else if (paste && lastCopied && lastCopied.lineWise && lastCopied.text.join("\n") == inserted) {
+          } else if (paste && lastCopied && lastCopied.lineWise && lastCopied.text.join("\n") == textLines.join("\n")) {
           from = to = Pos(from.line, 0);
         }
       }
@@ -12923,7 +12940,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
         scrollToCoords(this, this.doc.scrollLeft, this.doc.scrollTop);
         updateGutterSpace(this.display);
 
-        if (oldHeight == null || Math.abs(oldHeight - textHeight(this.display)) > .5) {
+        if (oldHeight == null || Math.abs(oldHeight - textHeight(this.display)) > .5 || this.options.lineWrapping) {
           estimateLineHeights(this);
         }
 
@@ -13134,8 +13151,23 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
         cm = input.cm;
     var div = input.div = display.lineDiv;
     disableBrowserMagic(div, cm.options.spellcheck, cm.options.autocorrect, cm.options.autocapitalize);
+
+    function belongsToInput(e) {
+      for (var t = e.target; t; t = t.parentNode) {
+        if (t == div) {
+          return true;
+        }
+
+        if (/\bCodeMirror-(?:line)?widget\b/.test(t.className)) {
+          break;
+        }
+      }
+
+      return false;
+    }
+
     on(div, "paste", function (e) {
-      if (signalDOMEvent(cm, e) || handlePaste(e, cm)) {
+      if (!belongsToInput(e) || signalDOMEvent(cm, e) || handlePaste(e, cm)) {
         return;
       } // IE doesn't fire input events, so we schedule a read for the pasted content in this way
 
@@ -13179,7 +13211,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
     });
 
     function onCopyCut(e) {
-      if (signalDOMEvent(cm, e)) {
+      if (!belongsToInput(e) || signalDOMEvent(cm, e)) {
         return;
       }
 
@@ -13242,9 +13274,18 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
     on(div, "cut", onCopyCut);
   };
 
+  ContentEditableInput.prototype.screenReaderLabelChanged = function (label) {
+    // Label for screenreaders, accessibility
+    if (label) {
+      this.div.setAttribute('aria-label', label);
+    } else {
+      this.div.removeAttribute('aria-label');
+    }
+  };
+
   ContentEditableInput.prototype.prepareSelection = function () {
     var result = prepareSelection(this.cm, false);
-    result.focus = this.cm.state.focused;
+    result.focus = document.activeElement == this.div;
     return result;
   };
 
@@ -13375,7 +13416,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
 
   ContentEditableInput.prototype.focus = function () {
     if (this.cm.options.readOnly != "nocursor") {
-      if (!this.selectionInEditor()) {
+      if (!this.selectionInEditor() || document.activeElement != this.div) {
         this.showSelection(this.prepareSelection(), true);
       }
 
@@ -14034,6 +14075,15 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
     this.textarea = this.wrapper.firstChild;
   };
 
+  TextareaInput.prototype.screenReaderLabelChanged = function (label) {
+    // Label for screenreaders, accessibility
+    if (label) {
+      this.textarea.setAttribute('aria-label', label);
+    } else {
+      this.textarea.removeAttribute('aria-label');
+    }
+  };
+
   TextareaInput.prototype.prepareSelection = function () {
     // Redraw the selection and/or cursor
     var cm = this.cm,
@@ -14562,6 +14612,6 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
 
   CodeMirror.fromTextArea = fromTextArea;
   addLegacyProps(CodeMirror);
-  CodeMirror.version = "5.52.0";
+  CodeMirror.version = "5.56.0";
   return CodeMirror;
 });
