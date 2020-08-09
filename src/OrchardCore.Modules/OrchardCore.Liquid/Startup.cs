@@ -4,10 +4,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
-using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.Data.Migration;
 using OrchardCore.DisplayManagement.Descriptors;
-using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Indexing;
 using OrchardCore.Liquid.Drivers;
 using OrchardCore.Liquid.Filters;
@@ -50,17 +48,6 @@ namespace OrchardCore.Liquid
     [RequireFeatures("OrchardCore.Contents")]
     public class ContentsStartup : StartupBase
     {
-        static ContentsStartup()
-        {
-            TemplateContext.GlobalMemberAccessStrategy.Register<ContentItem>();
-            TemplateContext.GlobalMemberAccessStrategy.Register<ContentElement>();
-            TemplateContext.GlobalMemberAccessStrategy.Register<ShapeViewModel<ContentItem>>();
-            TemplateContext.GlobalMemberAccessStrategy.Register<ContentTypePartDefinition>();
-            TemplateContext.GlobalMemberAccessStrategy.Register<ContentPartFieldDefinition>();
-            TemplateContext.GlobalMemberAccessStrategy.Register<ContentFieldDefinition>();
-            TemplateContext.GlobalMemberAccessStrategy.Register<ContentPartDefinition>();
-        }
-
         public override void ConfigureServices(IServiceCollection services)
         {
             // Liquid Part

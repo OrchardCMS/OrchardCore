@@ -74,6 +74,11 @@ namespace OrchardCore.Lists
             services.AddContentPart<ListPart>()
                 .UseDisplayDriver<ListPartFeedDisplayDriver>()
                 .AddHandler<ListPartFeedHandler>();
+
+            // Liquid
+            services.AddLiquidFilter<ListCountFilter>("list_count");
+            services.AddLiquidFilter<ListItemsFilter>("list_items");
+            services.AddLiquidFilter<ContainerFilter>("container");
         }
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
@@ -114,17 +119,6 @@ namespace OrchardCore.Lists
             services.AddScoped<IContentLocalizationPartHandler, ListPartLocalizationHandler>();
             services.AddContentPart<LocalizationPart>()
                 .AddHandler<LocalizationContainedPartHandler>();
-        }
-    }
-
-    [RequireFeatures("OrchardCore.Liquid")]
-    public class LiquidStartup : StartupBase
-    {
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddLiquidFilter<ListCountFilter>("list_count");
-            services.AddLiquidFilter<ListItemsFilter>("list_items");
-            services.AddLiquidFilter<ContainerFilter>("container");
         }
     }
 }
