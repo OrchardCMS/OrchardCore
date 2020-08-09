@@ -23,14 +23,6 @@ namespace OrchardCore.Liquid
     {
         static Startup()
         {
-            TemplateContext.GlobalMemberAccessStrategy.Register<ContentItem>();
-            TemplateContext.GlobalMemberAccessStrategy.Register<ContentElement>();
-            TemplateContext.GlobalMemberAccessStrategy.Register<ShapeViewModel<ContentItem>>();
-            TemplateContext.GlobalMemberAccessStrategy.Register<ContentTypePartDefinition>();
-            TemplateContext.GlobalMemberAccessStrategy.Register<ContentPartFieldDefinition>();
-            TemplateContext.GlobalMemberAccessStrategy.Register<ContentFieldDefinition>();
-            TemplateContext.GlobalMemberAccessStrategy.Register<ContentPartDefinition>();
-
             // When accessing a property of a JObject instance
             TemplateContext.GlobalMemberAccessStrategy.Register<JObject, object>((obj, name) => obj[name]);
 
@@ -47,21 +39,28 @@ namespace OrchardCore.Liquid
 
             services.AddLiquidFilter<TimeZoneFilter>("local");
             services.AddLiquidFilter<SlugifyFilter>("slugify");
-            services.AddLiquidFilter<ContainerFilter>("container");
-            services.AddLiquidFilter<DisplayTextFilter>("display_text");
-            services.AddLiquidFilter<DisplayUrlFilter>("display_url");
             services.AddLiquidFilter<ContentUrlFilter>("href");
             services.AddLiquidFilter<AbsoluteUrlFilter>("absolute_url");
             services.AddLiquidFilter<LiquidFilter>("liquid");
             services.AddLiquidFilter<JsonFilter>("json");
             services.AddLiquidFilter<JsonParseFilter>("jsonparse");
-            services.AddLiquidFilter<ShortcodeFilter>("shortcode");
         }
     }
 
     [RequireFeatures("OrchardCore.Contents")]
-    public class LiquidPartStartup : StartupBase
+    public class ContentsStartup : StartupBase
     {
+        static ContentsStartup()
+        {
+            TemplateContext.GlobalMemberAccessStrategy.Register<ContentItem>();
+            TemplateContext.GlobalMemberAccessStrategy.Register<ContentElement>();
+            TemplateContext.GlobalMemberAccessStrategy.Register<ShapeViewModel<ContentItem>>();
+            TemplateContext.GlobalMemberAccessStrategy.Register<ContentTypePartDefinition>();
+            TemplateContext.GlobalMemberAccessStrategy.Register<ContentPartFieldDefinition>();
+            TemplateContext.GlobalMemberAccessStrategy.Register<ContentFieldDefinition>();
+            TemplateContext.GlobalMemberAccessStrategy.Register<ContentPartDefinition>();
+        }
+
         public override void ConfigureServices(IServiceCollection services)
         {
             // Liquid Part
@@ -72,6 +71,15 @@ namespace OrchardCore.Liquid
 
             services.AddScoped<IDataMigration, Migrations>();
             services.AddScoped<IContentPartIndexHandler, LiquidPartIndexHandler>();
+        }
+    }
+
+    [RequireFeatures("OrchardCore.Shortcodes")]
+    public class ShortcodesStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddLiquidFilter<ShortcodeFilter>("shortcode");
         }
     }
 }

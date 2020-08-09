@@ -224,6 +224,8 @@ namespace OrchardCore.Contents
 
             services.AddLiquidFilter<BuildDisplayFilter>("shape_build_display");
             services.AddLiquidFilter<ContentItemFilter>("content_item_id");
+            services.AddLiquidFilter<DisplayTextFilter>("display_text");
+            services.AddLiquidFilter<DisplayUrlFilter>("display_url");
         }
     }
 
