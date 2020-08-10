@@ -168,6 +168,7 @@ namespace OrchardCore.Secrets.Controllers
             }
 
             model.Editor = editor;
+            model.StoreEntries = _secretCoordinator.ToArray();
 
             // If we got this far, something failed, redisplay form
             return View(model);

@@ -63,7 +63,7 @@ namespace OrchardCore.Secrets.Services
         {
             var documentSecret = new DocumentSecret();
             // TODO Disabled for dev purposes.
-            // documentSecret.Value = _databaseSecretDataProtector.Protect(JsonConvert.SerializeObject(secret));
+            documentSecret.Value = _databaseSecretDataProtector.Protect(JsonConvert.SerializeObject(secret));
             documentSecret.Value = JsonConvert.SerializeObject(secret);
 
             return _manager.UpdateSecretAsync(key, documentSecret);

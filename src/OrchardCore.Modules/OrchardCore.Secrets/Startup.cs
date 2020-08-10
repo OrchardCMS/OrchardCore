@@ -4,15 +4,18 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
+using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Secrets.Controllers;
+using OrchardCore.Secrets.Deployment;
 using OrchardCore.Secrets.Drivers;
 using OrchardCore.Secrets.Filters;
 using OrchardCore.Secrets.Services;
+using OrchardCore.Secrets.ViewModels;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Secrets
@@ -40,8 +43,21 @@ namespace OrchardCore.Secrets
 
             services.AddScoped<IDisplayDriver<Secret>, AuthorizationSecretDisplayDriver>();
             services.AddSingleton<ISecretFactory>(new SecretFactory<AuthorizationSecret>());
-            services.AddScoped<ISecretService<AuthorizationSecret>, AuthorizationSecretService>();
+            services.AddScoped<ISecretService<AuthorizationSecret>, SecretService<AuthorizationSecret>>();
             services.AddSecretLiquidFilter<AuthorizationSecretFilter>("auth_secret");
+
+
+            services.AddScoped<IDisplayDriver<Secret>, RsaSecretDisplayDriver>();
+            services.AddSingleton<ISecretFactory>(new SecretFactory<RsaSecret>());
+            services.AddScoped<ISecretService<RsaSecret>, SecretService<RsaSecret>>();
+
+            services.AddScoped<IEncryptionService, DefaultEncryptionService>();
+            services.AddScoped<IDecryptionService, DefaultDecryptionService>();
+
+
+            services.AddTransient<IDeploymentSource, AllSecretsRsaDeploymentSource>();
+            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AllSecretsRsaDeploymentStep>());
+            services.AddScoped<IDisplayDriver<DeploymentStep>, AllSecretsRsaDeploymentStepDriver>();
 
         }
 

@@ -1,9 +1,11 @@
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Recipes.Models;
+using OrchardCore.Secrets;
 
 namespace OrchardCore.Deployment
 {
@@ -12,9 +14,11 @@ namespace OrchardCore.Deployment
     /// </summary>
     public class DeploymentPlanResult
     {
-        public DeploymentPlanResult(IFileBuilder fileBuilder, RecipeDescriptor recipeDescriptor)
+        public DeploymentPlanResult(IFileBuilder fileBuilder, RecipeDescriptor recipeDescriptor, IEncryptionService encryptionService = null, string secretName = null)
         {
             FileBuilder = fileBuilder;
+            EncryptionService = encryptionService;
+            SecretName = secretName;
 
             Recipe = new JObject();
             Recipe["name"] = recipeDescriptor.Name ?? "";
@@ -31,9 +35,16 @@ namespace OrchardCore.Deployment
         public JObject Recipe { get; }
         public IList<JObject> Steps { get; } = new List<JObject>();
         public IFileBuilder FileBuilder { get; }
+        public string SecretName { get; }
+        public IEncryptionService EncryptionService { get; }
         public async Task FinalizeAsync()
         {
             Recipe["steps"] = new JArray(Steps);
+
+            if (!String.IsNullOrEmpty(SecretName))
+            {
+                Recipe["encryptionKey"] = EncryptionService.GetKey(SecretName);
+            }
 
             // Add the recipe steps as its own file content
             await FileBuilder.SetFileAsync("Recipe.json", Encoding.UTF8.GetBytes(Recipe.ToString(Formatting.Indented)));

@@ -8,7 +8,7 @@
 
     <div class="form-group" asp-validation-class-for="Name">
         <label asp-for="Name">@T["Name"]</label>
-        <input asp-for="Name" class="form-control" autofocus />
+        <input asp-for="Name" class="form-control" autofocus required/>
         <span asp-validation-for="Name"></span>
         <span class="hint">@T["The name of the secret."]</span>
     </div>
