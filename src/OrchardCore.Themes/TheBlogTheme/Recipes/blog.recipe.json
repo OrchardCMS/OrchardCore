@@ -65,6 +65,7 @@
         "OrchardCore.Media",
         "OrchardCore.Menu",
         "OrchardCore.Queries",
+        "OrchardCore.Shortcodes.Templates",
         "OrchardCore.Taxonomies",
         "OrchardCore.Title",
         "OrchardCore.Templates",
