@@ -7088,6 +7088,20 @@ function confirmDialog(_ref) {
 
 $(function () {
   $("body").removeClass("preload");
+  var scrollToTopButton = $('#top-link');
+  $(window).scroll(function () {
+    if (window.scrollY > 0) {
+      scrollToTopButton.addClass('show');
+    } else {
+      scrollToTopButton.removeClass('show');
+    }
+  });
+  scrollToTopButton.on('click', function (e) {
+    e.preventDefault();
+    $('html, body').animate({
+      scrollTop: 0
+    }, '300');
+  });
 });
 $(function () {
   $("body").on("click", "[itemprop~='RemoveUrl']", function () {
