@@ -45,25 +45,25 @@ namespace OrchardCore.Secrets.Services
             }
             else
             {
-                throw new InvalidOperationException("The specified store was not found");
+                throw new InvalidOperationException("The specified store was not found " + secretBinding.Store);
             }
         }
 
         public async Task RemoveSecretAsync(string key, string store)
         {
             var secretStore = _secretStores.FirstOrDefault(x => String.Equals(x.Name, store, StringComparison.OrdinalIgnoreCase));
-            if (secretStore != null && !secretStore.IsReadOnly)
+            if (secretStore != null)
             {
                 await _secretBindingsManager.RemoveSecretBindingAsync(key);
+                // This is a noop rather than an exception as updating a readonly store is considered a noop.
                 if (!secretStore.IsReadOnly)
                 {
-                    // This is a noop rather than an exception as updating a readonly store is considered a noop.
                     await secretStore.RemoveSecretAsync(key);
                 }
             }
             else
             {
-                throw new InvalidOperationException("The specified store was not found");
+                throw new InvalidOperationException("The specified store was not found " + store);
             }
         }
 

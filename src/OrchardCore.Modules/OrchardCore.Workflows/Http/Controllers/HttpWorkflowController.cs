@@ -64,6 +64,15 @@ namespace OrchardCore.Workflows.Http.Controllers
 
             var token = _securityTokenService.CreateToken(new WorkflowPayload(workflowType.WorkflowTypeId, activityId), TimeSpan.FromDays(tokenLifeSpan == 0 ? NoExpiryTokenLifespan : tokenLifeSpan));
             var url = Url.Action("Invoke", "HttpWorkflow", new { token = token });
+            // Here we could also (optionally)
+            // create a workflowsecret
+            // needs key provided by modal popup
+            // return both the key and the url
+            // show the liquid expression to use
+            // and the liquid expression would use Url.Action to generate a url.
+            // the liquid expression would generate the urls token at time of processing (possibly, to avoid storing an encrypted value that would flake during move to another server.)
+            // yes that's ok, because securitytokenservice is a singleton, and the expense is creating the dataprotector, not encrypt/decrypt.
+            // so its ok to create an encrypt on the fly.
 
             return Ok(url);
         }

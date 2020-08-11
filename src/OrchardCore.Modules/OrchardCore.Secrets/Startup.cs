@@ -10,12 +10,13 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
+using OrchardCore.Recipes;
 using OrchardCore.Secrets.Controllers;
 using OrchardCore.Secrets.Deployment;
 using OrchardCore.Secrets.Drivers;
 using OrchardCore.Secrets.Filters;
+using OrchardCore.Secrets.Recipes;
 using OrchardCore.Secrets.Services;
-using OrchardCore.Secrets.ViewModels;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Secrets
@@ -54,6 +55,7 @@ namespace OrchardCore.Secrets
             services.AddScoped<IEncryptionService, DefaultEncryptionService>();
             services.AddScoped<IDecryptionService, DefaultDecryptionService>();
 
+            services.AddRecipeExecutionStep<SecretsRecipeStep>();
 
             services.AddTransient<IDeploymentSource, AllSecretsRsaDeploymentSource>();
             services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AllSecretsRsaDeploymentStep>());

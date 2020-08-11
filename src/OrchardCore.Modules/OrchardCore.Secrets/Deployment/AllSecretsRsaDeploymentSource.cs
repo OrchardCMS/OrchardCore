@@ -36,28 +36,28 @@ namespace OrchardCore.Secrets.Deployment
             }
 
             var secretBindings = await _secretCoordinator.GetSecretBindingsAsync();
-            var secrets = new Dictionary<string, string>();
+            var secrets = new Dictionary<string, JObject>();
             foreach(var secretBinding in secretBindings)
             {
-                // Do not export secrets from readonly stores as they will not be writable on the other end.
-                // TODO do export bindings though.
                 var secretDescriptor = _secretCoordinator.FirstOrDefault(x => String.Equals(x.Name,secretBinding.Value.Store, StringComparison.OrdinalIgnoreCase));
+                // When descriptor is readonly we ship a binding without the secret value.
+                var jObject = new JObject(new JProperty("SecretBinding", JObject.FromObject(secretBinding.Value)));
+
                 if (!secretDescriptor.IsReadOnly)
                 {
                     var secret = _factories.FirstOrDefault(x => x.Name == secretBinding.Value.Type)?.Create();
                     secret = await _secretCoordinator.GetSecretAsync(secretBinding.Key, secret.GetType());
                     if (secret != null)
                     {
-                        // Export both the binding and the secret.
-                        var model = new SecretBindingModel { SecretBinding = secretBinding.Value, Secret = secret };
-                        var plaintext = JsonConvert.SerializeObject(model);
+                        var plaintext = JsonConvert.SerializeObject(secret);
 
                         var encrypted = await result.EncryptionService.EncryptAsync(result.SecretName, plaintext);
 
                         //[js: decrypt('jiouroe48fidsdsr0543r')]
-                        secrets.Add(secretBinding.Key, $"[js: decrypt('{encrypted}')]");
+                        jObject.Add("Secret", $"[js: decrypt('{encrypted}')]");
                     }
                 }
+                secrets.Add(secretBinding.Key, jObject);
             }
 
             result.Steps.Add(new JObject(
@@ -65,11 +65,5 @@ namespace OrchardCore.Secrets.Deployment
                 new JProperty("Secrets", JObject.FromObject(secrets))
             ));
         }
-    }
-
-    public class SecretBindingModel
-    {
-        public SecretBinding SecretBinding { get; set; }
-        public Secret Secret { get; set; }
     }
 }

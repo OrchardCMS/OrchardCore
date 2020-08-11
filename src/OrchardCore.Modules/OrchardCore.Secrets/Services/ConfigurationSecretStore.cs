@@ -33,7 +33,8 @@ namespace OrchardCore.Secrets.Services
         {
             //TODO we should be able to use GetChildren() here on the parent section.
             // https://docs.microsoft.com/en-us/aspnet/core/fundamentals/configuration/?view=aspnetcore-3.1#getsection-getchildren-and-exists
-            return Task.FromResult(_shellConfiguration.GetSection($"OrchardCore_Secrets:{key}").Get<TSecret>());
+            var t = _shellConfiguration.GetSection($"OrchardCore_Secrets:{key}").Get<TSecret>();
+            return Task.FromResult<TSecret>(t);
         }
 
         public Task UpdateSecretAsync(string key, Secret secret)

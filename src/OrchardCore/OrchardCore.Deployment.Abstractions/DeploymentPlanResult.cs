@@ -39,12 +39,14 @@ namespace OrchardCore.Deployment
         public IEncryptionService EncryptionService { get; }
         public async Task FinalizeAsync()
         {
-            Recipe["steps"] = new JArray(Steps);
-
+            // Add the encryption key before steps.
+            // TODO add check that encryption key has been used.
             if (!String.IsNullOrEmpty(SecretName))
             {
                 Recipe["encryptionKey"] = EncryptionService.GetKey(SecretName);
             }
+
+            Recipe["steps"] = new JArray(Steps);
 
             // Add the recipe steps as its own file content
             await FileBuilder.SetFileAsync("Recipe.json", Encoding.UTF8.GetBytes(Recipe.ToString(Formatting.Indented)));

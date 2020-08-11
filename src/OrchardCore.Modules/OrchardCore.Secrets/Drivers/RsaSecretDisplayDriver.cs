@@ -59,6 +59,9 @@ namespace OrchardCore.Secrets.Drivers
                 {
                     // The private key is never returned to the view when editing.
                     model.PublicKey = secret.PublicKey;
+
+                    // TODO remove here for testing
+                    model.PrivateKey = secret.PrivateKey;
                     using (var rsa = RSA.Create())
                     {
                         model.NewPublicKey = WebEncoders.Base64UrlEncode(rsa.ExportSubjectPublicKeyInfo());
