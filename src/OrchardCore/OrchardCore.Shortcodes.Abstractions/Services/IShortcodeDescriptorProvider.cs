@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace OrchardCore.Shortcodes.Services
 {
-    public interface IShortcodeTableProvider
+    public interface IShortcodeDescriptorProvider
     {
         Task<IEnumerable<ShortcodeDescriptor>> DiscoverAsync();
     }

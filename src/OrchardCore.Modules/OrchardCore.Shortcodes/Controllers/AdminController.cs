@@ -132,7 +132,7 @@ namespace OrchardCore.Shortcodes.Controllers
                     Content = model.Content,
                     Hint = model.Hint,
                     Usage = model.Usage,
-                    ReturnShortcode = model.ReturnShortcode,
+                    DefaultValue = model.DefaultValue,
                     Categories = JsonConvert.DeserializeObject<string[]>(model.SelectedCategories)
                 };
 
@@ -174,7 +174,7 @@ namespace OrchardCore.Shortcodes.Controllers
                 Content = template.Content,
                 Hint = template.Hint,
                 Usage = template.Usage,
-                ReturnShortcode = template.ReturnShortcode,
+                DefaultValue = template.DefaultValue,
                 Categories = template.Categories
             };
 
@@ -220,7 +220,7 @@ namespace OrchardCore.Shortcodes.Controllers
                     Content = model.Content,
                     Hint = model.Hint,
                     Usage = model.Usage,
-                    ReturnShortcode = model.ReturnShortcode,
+                    DefaultValue = model.DefaultValue,
                     Categories = JsonConvert.DeserializeObject<string[]>(model.SelectedCategories)
                 };
 

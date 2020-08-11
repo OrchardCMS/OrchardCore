@@ -8,41 +8,42 @@ namespace OrchardCore.Shortcodes
         /// The shortcode name.
         /// </summary>
         public string Name { get; set; }
-        private string _returnShortcode;
+        private string _defaultValue;
 
         /// <summary>
-        /// The return value of the shortcode when selected.
+        /// The default value of the shortcode when selected.
         /// </summary>
-        public string ReturnShortcode
+        public string DefaultValue
         {
             get
             {
-                if (String.IsNullOrEmpty(_returnShortcode))
+                if (String.IsNullOrEmpty(_defaultValue))
                 {
                     return '[' + Name + ']';
                 }
                 else
                 {
-                    return _returnShortcode;
+                    return _defaultValue;
                 }
             }
             set
             {
-                _returnShortcode = value;
+                _defaultValue = value;
             }
         }
 
         /// <summary>
-        /// The localizable hint text for the shortcode.
+        /// The hint text for the shortcode.
         /// </summary>
-        public Func<IServiceProvider, string> Hint { get; set; }
+        public string Hint { get; set; }
         /// <summary>
-        /// The non localized HTML usage description for the shortcode.
+        /// The HTML usage description for the shortcode.
         /// </summary>
         public string Usage { get; set; }
+
         /// <summary>
-        /// The localizable categories for the shortcode.
+        /// The categories for the shortcode.
         /// </summary>
-        public Func<IServiceProvider, string[]> Categories { get; set; }
+        public string[] Categories { get; set; }
     }
 }

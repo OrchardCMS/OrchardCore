@@ -85,15 +85,10 @@ services.AddShortcode("bold", (args, content, ctx) => {
 
     return new ValueTask<string>($"<b>{content}</b>");
 }, describe => {
-    describe.ReturnShortcode = "[bold text-here]";
-    describe.Hint = (serviceProvider) => {
-        var S = serviceProvider.GetRequiredService<IStringLocalizer<Startup>>();
-        return S["Add bold formatting with a shortcode."];
-    };
+    describe.DefaultValue = "[bold text-here]";
+    describe.Hint = "Add bold formatting with a shortcode.";
     describe.Usage = "[bold 'your bold content here']";
-    describe.Categories = (serviceProvider) => {
-        var S = serviceProvider.GetRequiredService<IStringLocalizer<Startup>>();
-        return new string[] { S["HTML Content"] };
+    describe.Categories = new string[] { "HTML Content" };
     };
 });
 ```
@@ -106,15 +101,21 @@ In this example we register an `ImageShortcodeProvider` as `[image]` and describ
 
 ``` csharp
 services.AddShortcode<ImageShortcodeProvider>("image", describe => {
-    describe.ReturnShortcode = "[image] [/image]";
-    describe.Hint = (serviceProvider) => {
-        var S = serviceProvider.GetRequiredService<IStringLocalizer<Startup>>();
-        return S["Add a image from the media library."];
-    };
-    describe.Usage = "[image]foo.jpg[/image]<br>Args : width, height, mode"; 
-    describe.Categories = (serviceProvider) => {
-        var S = serviceProvider.GetRequiredService<IStringLocalizer<Startup>>();
-        return new string[] { S["HTML Content"], S["Media"] };
+    describe.DefaultValue = "[image] [/image]";
+    describe.Hint = "Add a image from the media library.";
+    describe.Usage = 
+@"[image]foo.jpg[/image]<br>
+<table>
+  <tr>
+    <td>Args:</td>
+    <td>width, height, mode</td>
+  </tr>
+  <tr>
+    <td></td>
+    <td>class, alt</td>
+  </tr>
+</table>"; 
+    describe.Categories = new string[] { "HTML Content", "Media" };
     };
 });
 ```

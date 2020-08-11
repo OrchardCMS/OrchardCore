@@ -325,7 +325,24 @@ namespace OrchardCore.Media
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<IShortcodeProvider, ImageShortcodeProvider>();
+            // Only add image as a descriptor as [media] is deprecated.
+            services.AddShortcode<ImageShortcodeProvider>("image", d => {
+                d.DefaultValue = "[image] [/image]";
+                d.Hint = "Add a image from the media library.";
+                d.Usage =
+@"[image]foo.jpg[/image]<br>
+<table>
+  <tr>
+    <td>Args:</td>
+    <td>width, height, mode</td>
+  </tr>
+  <tr>
+    <td></td>
+    <td>class, alt</td>
+  </tr>
+</table>";
+                d.Categories = new string[] { "HTML Content", "Media" };
+            });
         }
     }
 }

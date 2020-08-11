@@ -45,15 +45,19 @@ namespace OrchardCore.Shortcodes.Services
             if (!_memoryCache.TryGetValue<ShortcodeTemplatesDocument>(CacheKey, out var document))
             {
                 var changeToken = ChangeToken;
+                bool cacheable;
 
-                document = await _sessionHelper.GetForCachingAsync<ShortcodeTemplatesDocument>();
+                (cacheable, document) = await _sessionHelper.GetForCachingAsync<ShortcodeTemplatesDocument>();
 
-                foreach (var template in document.ShortcodeTemplates.Values)
+                if (cacheable)
                 {
-                    template.IsReadonly = true;
-                }
+                    foreach (var template in document.ShortcodeTemplates.Values)
+                    {
+                        template.IsReadonly = true;
+                    }
 
-                _memoryCache.Set(CacheKey, document, changeToken);
+                    _memoryCache.Set(CacheKey, document, changeToken);
+                }
             }
 
             return document;

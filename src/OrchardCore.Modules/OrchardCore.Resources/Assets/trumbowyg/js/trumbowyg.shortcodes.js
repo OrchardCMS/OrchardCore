@@ -14,10 +14,10 @@
                         fn: function () {
                             trumbowyg.saveRange();         
                             
-                            shortcodesApp.init(function (returnShortcode) {
+                            shortcodesApp.init(function (defaultValue) {
                                 trumbowyg.restoreRange();
                                 trumbowyg.range.deleteContents();
-                                trumbowyg.range.insertNode(document.createTextNode(returnShortcode));
+                                trumbowyg.range.insertNode(document.createTextNode(defaultValue));
                                 trumbowyg.syncCode();
                                 trumbowyg.$c.trigger('tbwchange');
                                 trumbowyg.$c.focus();   

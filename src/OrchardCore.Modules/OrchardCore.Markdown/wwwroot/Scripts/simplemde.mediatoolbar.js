@@ -61,8 +61,8 @@ $(function () {
     title: "Insert Shortcode",
     "default": true,
     action: function action(editor) {
-      shortcodesApp.init(function (returnShortcode) {
-        editor.codemirror.replaceSelection(returnShortcode);
+      shortcodesApp.init(function (defaultValue) {
+        editor.codemirror.replaceSelection(defaultValue);
       });
     }
   }, "|", {

@@ -8,7 +8,7 @@ using OrchardCore.Infrastructure.Html;
 
 namespace OrchardCore.DisplayManagement.Liquid.Filters
 {
-    public class SanitizeFilter : ILiquidFilter
+    public class SanitizeHtmlFilter : ILiquidFilter
     {
         public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
         {

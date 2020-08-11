@@ -1,11 +1,11 @@
 @model ShortcodeTemplateViewModel
 @inject IDisplayManager<ShortcodeDescriptor> ShortcodeDescriptorDisplayManager
-@inject IShortcodeTableManager ShortcodeTableManager
+@inject IShortcodeDescriptorManager ShortcodeDescriptorManager
 
 @{
     var returnUrl = ViewData["returnUrl"]?.ToString();
-    var shortcodeTable = await ShortcodeTableManager.GetShortcodeTable();
-    var categories = shortcodeTable
+    var shortcodeDescriptors = await ShortcodeDescriptorManager.GetShortcodeDescriptors();
+    var categories = shortcodeDescriptors
         .SelectMany(s => s.Categories)
         .GroupBy(c => c, StringComparer.OrdinalIgnoreCase)
         .Select(g => g.Key);
@@ -32,6 +32,7 @@
 <script asp-src="~/OrchardCore.Liquid/codemirror/liquid.js" at="Foot"></script>
 
 <style asp-name="vue-multiselect"></style>
+<style asp-src="~/OrchardCore.Shortcodes/Styles/shortcodes.min.css" debug-src="~/OrchardCore.Shortcodes/Styles/shortcodes.css" asp-name="shortcodes"></style>
 <script asp-src="~/OrchardCore.Shortcodes/Scripts/shortcode-templates.min.js" debug-src="~/OrchardCore.Shortcodes/Scripts/shortcode-templates.js" at="Foot" depends-on="vuejs, vue-multiselect"></script>
 
 <h1>@RenderTitleSegments(T["Edit Shortcode"])</h1>
@@ -88,10 +89,10 @@
                 <span class="hint">@T["The categories for this shortcode."]</span>
             </div>     
 
-            <div class="form-group" asp-validation-class-for="ReturnShortcode">
-                <label asp-for="ReturnShortcode">@T["Return Shortcode"]</label>
-                <input asp-for="ReturnShortcode" class="form-control" />
-                <span class="hint">@T["The return value of the short code when selected. Defaults to [name]."]</span>
+            <div class="form-group" asp-validation-class-for="DefaultValue">
+                <label asp-for="DefaultValue">@T["Default Shortcode Value"]</label>
+                <input asp-for="DefaultValue" class="form-control" />
+                <span class="hint">@T["The default value of the short code when selected. Defaults to [name]."]</span>
             </div>  
         </div>
         <div class="col-12 col-md-6 d-flex align-items-center justify-content-center">
@@ -101,7 +102,7 @@
                 {
                     Name = Model.Name,
                     Hint = Model.Hint,
-                    ReturnShortcode = Model.ReturnShortcode,
+                    DefaultValue = Model.DefaultValue,
                     Usage = Model.Usage           
                 };
                 dynamic shape = await ShortcodeDescriptorDisplayManager.BuildDisplayAsync(descriptor, null, "SummaryAdmin");

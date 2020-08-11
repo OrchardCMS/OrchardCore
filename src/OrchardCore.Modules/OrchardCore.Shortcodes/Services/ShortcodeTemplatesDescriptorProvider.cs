@@ -5,11 +5,11 @@ using System.Threading.Tasks;
 
 namespace OrchardCore.Shortcodes.Services
 {
-    public class ShortcodeTemplatesTableProvider : IShortcodeTableProvider
+    public class ShortcodeTemplatesDescriptorProvider : IShortcodeDescriptorProvider
     {
         private readonly ShortcodeTemplatesManager _shortcodeTemplatesManager;
 
-        public ShortcodeTemplatesTableProvider(ShortcodeTemplatesManager shortcodeTemplatesManager)
+        public ShortcodeTemplatesDescriptorProvider(ShortcodeTemplatesManager shortcodeTemplatesManager)
         {
             _shortcodeTemplatesManager = shortcodeTemplatesManager;
         }
@@ -23,7 +23,7 @@ namespace OrchardCore.Shortcodes.Services
                 {
                     Name = kvp.Key,
                     Hint = kvp.Value.Hint,
-                    ReturnShortcode = kvp.Value.ReturnShortcode,
+                    DefaultValue = kvp.Value.DefaultValue,
                     Usage = kvp.Value.Usage,
                     Categories = kvp.Value.Categories
                 });

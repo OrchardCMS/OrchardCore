@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace OrchardCore.Shortcodes.Services
 {
-    public class ShortcodeOptionsTableProvider : IShortcodeTableProvider
+    public class ShortcodeOptionsDescriptorProvider : IShortcodeDescriptorProvider
     {
         private readonly ShortcodeOptions _options;
         private readonly IServiceProvider _serviceProvider;
 
-        public ShortcodeOptionsTableProvider(
+        public ShortcodeOptionsDescriptorProvider(
             IOptions<ShortcodeOptions> options,
             IServiceProvider serviceProvider
             )
@@ -20,16 +20,15 @@ namespace OrchardCore.Shortcodes.Services
             _serviceProvider = serviceProvider;
         }
 
-
         public Task<IEnumerable<ShortcodeDescriptor>> DiscoverAsync() =>
             Task.FromResult(_options.Shortcodes.Values.Select(option =>
                 new ShortcodeDescriptor
                 {
                     Name = option.Name,
-                    ReturnShortcode = option.ReturnShortcode,
+                    DefaultValue = option.DefaultValue,
                     Usage = option.Usage,
-                    Hint = option.Hint.Invoke(_serviceProvider),
-                    Categories = option.Categories.Invoke(_serviceProvider)
+                    Hint = option.Hint,
+                    Categories = option.Categories
                 }));
     }
 }

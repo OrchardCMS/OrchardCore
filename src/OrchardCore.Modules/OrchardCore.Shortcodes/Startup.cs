@@ -41,8 +41,8 @@ namespace OrchardCore.Shortcodes
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<IShortcodeService, ShortcodeService>();
-            services.AddScoped<IShortcodeTableManager, ShortcodeTableManager>();
-            services.AddScoped<IShortcodeTableProvider, ShortcodeOptionsTableProvider>();
+            services.AddScoped<IShortcodeDescriptorManager, ShortcodeDescriptorManager>();
+            services.AddScoped<IShortcodeDescriptorProvider, ShortcodeOptionsDescriptorProvider>();
             services.AddScoped<IShortcodeContextProvider, DefaultShortcodeContextProvider>();
 
             services.AddOptions<ShortcodeOptions>();
@@ -73,7 +73,7 @@ namespace OrchardCore.Shortcodes
             services.AddScoped<INavigationProvider, AdminMenu>();
 
             services.AddScoped<IShortcodeProvider, TemplateShortcodeProvider>();
-            services.AddScoped<IShortcodeTableProvider, ShortcodeTemplatesTableProvider>();
+            services.AddScoped<IShortcodeDescriptorProvider, ShortcodeTemplatesDescriptorProvider>();
         }
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

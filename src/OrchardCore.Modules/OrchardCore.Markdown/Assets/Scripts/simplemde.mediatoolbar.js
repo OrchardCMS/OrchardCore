@@ -75,8 +75,8 @@ $(function () {
             default: true,
             action: function(editor)
             {
-                shortcodesApp.init(function (returnShortcode) {
-                    editor.codemirror.replaceSelection(returnShortcode);    
+                shortcodesApp.init(function (defaultValue) {
+                    editor.codemirror.replaceSelection(defaultValue);    
                 });    
             }
         },

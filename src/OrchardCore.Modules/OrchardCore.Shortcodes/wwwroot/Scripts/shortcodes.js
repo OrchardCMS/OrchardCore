@@ -40,8 +40,8 @@ $(function () {
   });
   $('.shortcode-modal-btn').on('click', function () {
     var input = $(this).siblings('.shortcode-modal-input');
-    shortcodesApp.init(function (returnShortcode) {
-      input.insertAtCaret(returnShortcode);
+    shortcodesApp.init(function (defaultValue) {
+      input.insertAtCaret(defaultValue);
     });
   });
 });
@@ -60,7 +60,7 @@ function initializeShortcodesApp(element) {
           allShortcodes: shortcodes,
           filteredShortcodes: shortcodes,
           categories: categories,
-          returnShortcode: ''
+          defaultValue: ''
         };
       },
       watch: {
@@ -89,7 +89,7 @@ function initializeShortcodesApp(element) {
             self.$refs.filter.focus();
           });
         },
-        onClose: function onClose(returnShortcode) {
+        onClose: function onClose(defaultValue) {
           return;
         },
         setCategory: function setCategory(category) {
@@ -110,10 +110,10 @@ function initializeShortcodesApp(element) {
             return s.name === name;
           });
         },
-        insertShortcode: function insertShortcode(returnShortcode) {
-          this.returnShortcode = returnShortcode;
+        insertShortcode: function insertShortcode(defaultValue) {
+          this.defaultValue = defaultValue;
           $(this.$el).modal('hide');
-          this.onClose(this.returnShortcode);
+          this.onClose(this.defaultValue);
         }
       }
     });
@@ -127,8 +127,8 @@ function initializeCodeMirrorShortcodeWrapper(editor) {
   $(codemirrorWrapper).wrap(shortcodeWrapperTemplate);
   $(codemirrorWrapper).parent().append(shortcodeBtnTemplate);
   $(codemirrorWrapper).siblings('.shortcode-modal-btn').on('click', function () {
-    shortcodesApp.init(function (returnShortcode) {
-      editor.replaceSelection(returnShortcode);
+    shortcodesApp.init(function (defaultValue) {
+      editor.replaceSelection(defaultValue);
     });
   });
 }
