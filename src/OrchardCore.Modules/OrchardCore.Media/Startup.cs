@@ -34,9 +34,9 @@ using OrchardCore.Media.Filters;
 using OrchardCore.Media.Handlers;
 using OrchardCore.Media.Processing;
 using OrchardCore.Media.Recipes;
-using OrchardCore.Media.Shortcodes;
 using OrchardCore.Media.Services;
 using OrchardCore.Media.Settings;
+using OrchardCore.Media.Shortcodes;
 using OrchardCore.Media.TagHelpers;
 using OrchardCore.Media.ViewModels;
 using OrchardCore.Modules;
@@ -158,20 +158,6 @@ namespace OrchardCore.Media
 
             services.AddTagHelpers<ImageTagHelper>();
             services.AddTagHelpers<ImageResizeTagHelper>();
-
-            // Only add image as a descriptor as [media] is deprecated.
-            services.AddShortcode<ImageShortcodeProvider>("image", d => {
-                d.ReturnShortcode = "[image] [/image]";
-                d.Hint = (sp) => {
-                    var S = sp.GetRequiredService<IStringLocalizer<Startup>>();
-                    return S["Add a image from the media library."];
-                };
-                d.Usage = "[image]foo.jpg[/image]<br>Args : width, height, mode"; // TODO do we need the line break.
-                d.Categories = (sp) => {
-                    var S = sp.GetRequiredService<IStringLocalizer<Startup>>();
-                    return new string[] { S["HTML Content"], S["Media"] };
-                };
-            });
         }
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
@@ -331,6 +317,15 @@ namespace OrchardCore.Media
             services.AddTransient<IDeploymentSource, MediaDeploymentSource>();
             services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<MediaDeploymentStep>());
             services.AddScoped<IDisplayDriver<DeploymentStep>, MediaDeploymentStepDriver>();
+        }
+    }
+
+    [RequireFeatures("OrchardCore.Shortcodes")]
+    public class ShortcodesStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddScoped<IShortcodeProvider, ImageShortcodeProvider>();
         }
     }
 }

@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -104,18 +105,26 @@ namespace OrchardCore.Content.Controllers
                 var newContentItem = await _contentManager.NewAsync(model.ContentType);
                 newContentItem.Merge(model);
 
-                var result = await _contentManager.UpdateValidateAndCreateAsync(newContentItem, draft ? VersionOptions.DraftRequired : VersionOptions.Published);
-                if (result.Succeeded)
-                {
-                    contentItem = newContentItem;
-                }
-                else
+                var result = await _contentManager.UpdateValidateAndCreateAsync(newContentItem, VersionOptions.Draft);
+
+                if (!result.Succeeded)
                 {
                     return Problem(
                         title: S["One or more validation errors occurred."],
                         detail: string.Join(',', result.Errors),
                         statusCode: (int)HttpStatusCode.BadRequest);
                 }
+                // We check the model state after calling all handlers because they trigger WF content events so, even they are not
+                // intended to add model errors (only drivers), a WF content task may be executed inline and add some model errors.
+                else if (!ModelState.IsValid)
+                {
+                    return Problem(
+                        title: S["One or more validation errors occurred."],
+                        detail: String.Join(", ", ModelState.Values.SelectMany(x => x.Errors.Select(x => x.ErrorMessage))),
+                        statusCode: (int)HttpStatusCode.BadRequest);
+                }
+
+                contentItem = newContentItem;
             }
             else
             {
@@ -129,20 +138,31 @@ namespace OrchardCore.Content.Controllers
                 await _contentManager.UpdateAsync(contentItem);
                 var result = await _contentManager.ValidateAsync(contentItem);
 
-                if (result.Succeeded)
-                {
-                    if (!draft)
-                    {
-                        await _contentManager.PublishAsync(contentItem);
-                    }
-                }
-                else
+                if (!result.Succeeded)
                 {
                     return Problem(
                         title: S["One or more validation errors occurred."],
                         detail: string.Join(',', result.Errors),
                         statusCode: (int)HttpStatusCode.BadRequest);
                 }
+                // We check the model state after calling all handlers because they trigger WF content events so, even they are not
+                // intended to add model errors (only drivers), a WF content task may be executed inline and add some model errors.
+                else if (!ModelState.IsValid)
+                {
+                    return Problem(
+                        title: S["One or more validation errors occurred."],
+                        detail: String.Join(", ", ModelState.Values.SelectMany(x => x.Errors.Select(x => x.ErrorMessage))),
+                        statusCode: (int)HttpStatusCode.BadRequest);
+                }
+            }
+
+            if (!draft)
+            {
+                await _contentManager.PublishAsync(contentItem);
+            }
+            else
+            {
+                await _contentManager.SaveDraftAsync(contentItem);
             }
 
             return Ok(contentItem);

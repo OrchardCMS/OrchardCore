@@ -35,6 +35,11 @@ namespace OrchardCore.Users.Workflows.Handlers
             return TriggerWorkflowEventAsync(nameof(UserEnabledEvent), (User)context.User);
         }
 
+        public Task UpdatedAsync(UserContext context)
+        {
+            return TriggerWorkflowEventAsync(nameof(UserUpdatedEvent), (User)context.User);
+        }
+
         private Task TriggerWorkflowEventAsync(string name, User user)
         {
             return _workflowManager.TriggerEventAsync(name,
