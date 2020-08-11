@@ -23,9 +23,7 @@ namespace OrchardCore.Shortcodes.Services
         {
             _shortcodeTemplatesManager = shortcodeTemplatesManager;
             _liquidTemplateManager = liquidTemplateManager;
-            // TODO verify this is correct encoding technique for here.
             _htmlEncoder = htmlEncoder;
-
         }
 
         public async ValueTask<string> EvaluateAsync(string identifier, Arguments arguments, string content, Context context)

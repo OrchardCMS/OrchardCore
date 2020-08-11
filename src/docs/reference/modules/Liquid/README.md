@@ -175,7 +175,7 @@ Output
 <h3>Services</h3>
 ```
 
-### `sanitize`
+### `sanitize_html`
 
 Sanitizes some HTML content.
 
@@ -183,7 +183,7 @@ Sanitizes some HTML content.
 {% capture output %}
   <span class="text-primary">{{ Content }}</span>
 {% endcapture %}
-{{ output | sanitize | raw }}
+{{ output | sanitize_html | raw }}
 ```
 
 ## Json Filters

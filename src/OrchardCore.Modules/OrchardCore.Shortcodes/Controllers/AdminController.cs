@@ -79,26 +79,23 @@ namespace OrchardCore.Shortcodes.Controllers
             return View("Index", model);
         }
 
-        public async Task<IActionResult> Create(ShortcodeTemplateViewModel model, string returnUrl = null)
+        public async Task<IActionResult> Create(ShortcodeTemplateViewModel model)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageShortcodeTemplates))
             {
                 return Forbid();
             }
 
-            ViewData["ReturnUrl"] = returnUrl;
             return View(new ShortcodeTemplateViewModel());
         }
 
         [HttpPost, ActionName("Create")]
-        public async Task<IActionResult> CreatePost(ShortcodeTemplateViewModel model, string submit, string returnUrl = null)
+        public async Task<IActionResult> CreatePost(ShortcodeTemplateViewModel model, string submit)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageShortcodeTemplates))
             {
                 return Forbid();
             }
-
-            ViewData["ReturnUrl"] = returnUrl;
 
             if (ModelState.IsValid)
             {
@@ -140,11 +137,11 @@ namespace OrchardCore.Shortcodes.Controllers
 
                 if (submit == "SaveAndContinue")
                 {
-                    return RedirectToAction(nameof(Edit), new { name = model.Name, returnUrl });
+                    return RedirectToAction(nameof(Edit), new { name = model.Name });
                 }
                 else
                 {
-                    return RedirectToReturnUrlOrIndex(returnUrl);
+                    return RedirectToAction(nameof(Index));
                 }
             }
 
@@ -152,7 +149,7 @@ namespace OrchardCore.Shortcodes.Controllers
             return View(model);
         }
 
-        public async Task<IActionResult> Edit(string name, string returnUrl = null)
+        public async Task<IActionResult> Edit(string name)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageShortcodeTemplates))
             {
@@ -163,7 +160,7 @@ namespace OrchardCore.Shortcodes.Controllers
 
             if (!shortcodeTemplatesDocument.ShortcodeTemplates.ContainsKey(name))
             {
-                return RedirectToAction("Create", new { name, returnUrl });
+                return RedirectToAction("Create", new { name });
             }
 
             var template = shortcodeTemplatesDocument.ShortcodeTemplates[name];
@@ -178,12 +175,11 @@ namespace OrchardCore.Shortcodes.Controllers
                 Categories = template.Categories
             };
 
-            ViewData["ReturnUrl"] = returnUrl;
             return View(model);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(string sourceName, ShortcodeTemplateViewModel model, string submit, string returnUrl = null)
+        public async Task<IActionResult> Edit(string sourceName, ShortcodeTemplateViewModel model, string submit)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageShortcodeTemplates))
             {
@@ -230,18 +226,16 @@ namespace OrchardCore.Shortcodes.Controllers
 
                 if (submit != "SaveAndContinue")
                 {
-                    return RedirectToReturnUrlOrIndex(returnUrl);
+                    return RedirectToAction(nameof(Index));
                 }
             }
 
             // If we got this far, something failed, redisplay form
-            ViewData["ReturnUrl"] = returnUrl;
-
             return View(model);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Delete(string name, string returnUrl)
+        public async Task<IActionResult> Delete(string name)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageShortcodeTemplates))
             {
@@ -259,19 +253,7 @@ namespace OrchardCore.Shortcodes.Controllers
 
             _notifier.Success(H["Template deleted successfully"]);
 
-            return RedirectToReturnUrlOrIndex(returnUrl);
-        }
-
-        private IActionResult RedirectToReturnUrlOrIndex(string returnUrl)
-        {
-            if ((String.IsNullOrEmpty(returnUrl) == false) && (Url.IsLocalUrl(returnUrl)))
-            {
-                return Redirect(returnUrl);
-            }
-            else
-            {
-                return RedirectToAction(nameof(Index));
-            }
+            return RedirectToAction(nameof(Index));
         }
     }
 }

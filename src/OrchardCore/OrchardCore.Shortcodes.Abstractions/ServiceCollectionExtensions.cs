@@ -13,6 +13,7 @@ namespace OrchardCore.Shortcodes
         {
             services.Configure<ShortcodeOptions>(options => options.AddShortcode(name, describe));
             services.AddScoped<T>();
+
             return services;
         }
 

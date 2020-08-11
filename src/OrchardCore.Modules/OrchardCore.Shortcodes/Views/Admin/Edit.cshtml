@@ -3,7 +3,6 @@
 @inject IShortcodeDescriptorManager ShortcodeDescriptorManager
 
 @{
-    var returnUrl = ViewData["returnUrl"]?.ToString();
     var shortcodeDescriptors = await ShortcodeDescriptorManager.GetShortcodeDescriptors();
     var categories = shortcodeDescriptors
         .SelectMany(s => s.Categories)
@@ -38,7 +37,7 @@
 <h1>@RenderTitleSegments(T["Edit Shortcode"])</h1>
 
 <div asp-validation-summary="All"></div>
-<form asp-action="Edit" asp-route-returnUrl="@ViewData["returnUrl"]" method="post">
+<form asp-action="Edit" method="post">
 
     <input type="hidden" value="@Model.Name" name="sourceName" />
 
@@ -130,10 +129,7 @@
             </div>
         </div>
 
-        @if (Url.IsLocalUrl(returnUrl))
-        {
-            <a class="btn btn-secondary" href="@returnUrl">@T["Cancel"]</a>
-        }
+        <a class="btn btn-secondary" asp-route-action="Index">@T["Cancel"]</a>
     </div>
 </form>
 

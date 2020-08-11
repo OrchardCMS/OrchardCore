@@ -37,16 +37,15 @@ else
 
 <script at="Foot">
     $(function () {
-@{
-    if (culture.GetLanguageDirection() == LanguageDirection.RTL)
-    {
-        <text>
         @* set dir while keeping trumbowg translations dictionary intact *@
-        var langs = jQuery.trumbowyg.langs.@culture.TwoLetterISOLanguageName;
-        langs['_dir'] = '@culture.GetLanguageDirection()';
-        </text>
-    }
-}
+        @if (culture.GetLanguageDirection() == LanguageDirection.RTL)
+        {
+            <text>
+            var langs = jQuery.trumbowyg.langs.@culture.TwoLetterISOLanguageName;
+            langs['_dir'] = '@culture.GetLanguageDirection()';
+            </text>
+        }
+
         var settings = @Html.Raw(trumbowygSettings.Options);
         settings['lang'] = '@culture.TwoLetterISOLanguageName';
 

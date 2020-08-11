@@ -50,7 +50,6 @@ namespace OrchardCore.Shortcodes
             services.AddScoped<IDisplayManager<ShortcodeDescriptor>, DisplayManager<ShortcodeDescriptor>>();
             services.AddScoped<IDisplayDriver<ShortcodeDescriptor>, ShortcodeDescriptorDisplayDriver>();
         }
-
     }
 
     [Feature("OrchardCore.Shortcodes.Templates")]

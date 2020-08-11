@@ -30,15 +30,14 @@
 <script at="Foot">
     $(function () {
         @* set dir while keeping trumbowg translations dictionary intact *@
-@{ 
-    if (culture.GetLanguageDirection() == LanguageDirection.RTL)
-    {
-        <text>        
-        var langs = jQuery.trumbowyg.langs.@culture.TwoLetterISOLanguageName;
-        langs['_dir'] = '@culture.GetLanguageDirection()';
-        </text>
-    }
-}
+        @if (culture.GetLanguageDirection() == LanguageDirection.RTL)
+        {
+            <text>        
+            var langs = jQuery.trumbowyg.langs.@culture.TwoLetterISOLanguageName;
+            langs['_dir'] = '@culture.GetLanguageDirection()';
+            </text>
+        }
+
         @* Extend trumbowyg default buttons. Only use for the wysiwyg editor which gets all buttons by default *@
         var defaultButtons = jQuery.trumbowyg.defaultOptions.btns;
         defaultButtons.splice(6, 0, "insertShortcode");

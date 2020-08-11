@@ -7,7 +7,6 @@ using OrchardCore.Modules.Manifest;
     Version = ManifestConstants.OrchardCoreVersion
 )]
 
-
 [assembly: Feature(
     Id = "OrchardCore.Shortcodes",
     Name = "Shortcodes",
