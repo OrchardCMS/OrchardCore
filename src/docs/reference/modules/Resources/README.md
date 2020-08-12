@@ -489,7 +489,7 @@ Your `Layout.cshtml` or `Layout.liquid` must make a call to the resource manager
 
 These are generally rendered at the lower portion of the `<head>` section.
 
-=== "Razor"
+=== "Liquid"
 
     ``` liquid
     <head>
@@ -498,8 +498,8 @@ These are generally rendered at the lower portion of the `<head>` section.
         {% resources type: "HeadLink" %}
         {% resources type: "HeadScript" %}
         {% resources type: "Stylesheet" %}
-    </head>    
-```
+    </head>
+    ```
 
 === "Razor"
 
