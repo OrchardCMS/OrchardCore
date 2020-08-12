@@ -1110,6 +1110,7 @@ function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaI
   var target = $(document.getElementById($(el).data('for')));
   var initialPaths = target.data("init");
   var mediaFieldEditor = $(el);
+  var idprefix = mediaFieldEditor.attr("id");
   var mediaFieldApp;
   mediaFieldApps.push(mediaFieldApp = new Vue({
     el: mediaFieldEditor.get(0),
@@ -1117,6 +1118,7 @@ function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaI
       mediaItems: [],
       selectedMedia: null,
       smallThumbs: false,
+      idPrefix: idprefix,
       initialized: false
     },
     created: function created() {
@@ -1237,9 +1239,6 @@ function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaI
         self.selectMedia(media);
       });
       var selector = '#' + idOfUploadButton;
-      $(document).bind('drop dragover', function (e) {
-        e.preventDefault();
-      });
       var editorId = mediaFieldEditor.attr('id');
       $(selector).fileupload({
         limitConcurrentUploads: 20,
@@ -1268,12 +1267,19 @@ function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaI
         },
         done: function done(e, data) {
           var newMediaItems = [];
+          var errormsg = "";
 
           if (data.result.files.length > 0) {
             for (var i = 0; i < data.result.files.length; i++) {
-              data.result.files[i].isNew = true;
-              newMediaItems.push(data.result.files[i]);
+              data.result.files[i].isNew = true; //if error is defined probably the file type is not allowed
+
+              if (data.result.files[i].error === undefined || data.result.files[i].error === null) newMediaItems.push(data.result.files[i]);else errormsg += data.result.files[i].error + "\n";
             }
+          }
+
+          if (errormsg !== "") {
+            alert(errormsg);
+            return;
           }
 
           if (newMediaItems.length > 1 && allowMultiple === false) {
@@ -1312,15 +1318,17 @@ function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaI
 
           if (index > -1) {
             removed = this.mediaItems[index];
-            removed.isRemoved = true;
-            this.mediaItems.splice([index], 1, removed); //this.mediaItems.splice(index, 1);
+            removed.isRemoved = true; //this.mediaItems.splice([index], 1, removed);
+
+            this.mediaItems.splice(index, 1);
           }
         } else {
           // The remove button can also remove a unique media item
           if (this.mediaItems.length === 1) {
             removed = this.mediaItems[index];
-            removed.isRemoved = true;
-            this.mediaItems.splice(0, 1, removed); //this.mediaItems.splice(0, 1);
+            removed.isRemoved = true; //this.mediaItems.splice(0, 1, removed);                        
+
+            this.mediaItems.splice(0, 1);
           }
         }
 
@@ -1353,6 +1361,7 @@ function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple)
   var target = $(document.getElementById($(el).data('for')));
   var initialPaths = target.data("init");
   var mediaFieldEditor = $(el);
+  var idprefix = mediaFieldEditor.attr("id");
   var mediaFieldApp;
   mediaFieldApps.push(mediaFieldApp = new Vue({
     el: mediaFieldEditor.get(0),
@@ -1360,6 +1369,7 @@ function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple)
       mediaItems: [],
       selectedMedia: null,
       smallThumbs: false,
+      idPrefix: idprefix,
       initialized: false
     },
     created: function created() {
@@ -1547,7 +1557,7 @@ var mediaFieldApps = [];
 // different media field editors share this component to present the thumbs.
 Vue.component('mediaFieldThumbsContainer', {
   template: '\
-       <div id="mediaContainerMain" v-cloak>\
+       <div :id="idPrefix + \'_mediaContainerMain\'" v-cloak>\
          <div v-if="mediaItems.length < 1" class="card text-center">\
              <div class= "card-body" >\
                 <span class="hint">{{T.noImages}}</span>\
@@ -1599,7 +1609,8 @@ Vue.component('mediaFieldThumbsContainer', {
   props: {
     mediaItems: Array,
     selectedMedia: Object,
-    thumbSize: Number
+    thumbSize: Number,
+    idPrefix: String
   },
   created: function created() {
     var self = this; // retrieving localized strings from view

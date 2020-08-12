@@ -289,7 +289,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       token.string = token.string.slice(0, cur.ch - token.start);
     }
 
-    if (token.string.match(/^[.`"\w@][\w$#]*$/g)) {
+    if (token.string.match(/^[.`"'\w@][\w$#]*$/g)) {
       search = token.string;
       start = token.start;
       end = token.end;

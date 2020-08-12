@@ -135,7 +135,7 @@ namespace OrchardCore.Menu.Controllers
                 menuItems.Add(JObject.FromObject(contentItem));
             }
 
-            _session.Save(menu);
+            await _contentManager.SaveDraftAsync(menu);
 
             return RedirectToAction("Edit", "Admin", new { area = "OrchardCore.Contents", contentItemId = menuContentItemId });
         }
@@ -227,7 +227,7 @@ namespace OrchardCore.Menu.Controllers
                 MergeNullValueHandling = MergeNullValueHandling.Merge
             });
 
-            _session.Save(menu);
+            await _contentManager.SaveDraftAsync(menu);
 
             return RedirectToAction("Edit", "Admin", new { area = "OrchardCore.Contents", contentItemId = menuContentItemId });
         }
@@ -268,7 +268,8 @@ namespace OrchardCore.Menu.Controllers
             }
 
             menuItem.Remove();
-            _session.Save(menu);
+
+            await _contentManager.SaveDraftAsync(menu);
 
             _notifier.Success(H["Menu item deleted successfully"]);
 

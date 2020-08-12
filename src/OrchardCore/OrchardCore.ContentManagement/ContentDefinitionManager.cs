@@ -332,9 +332,14 @@ namespace OrchardCore.ContentManagement
                 },
                 state: null);
 
-                record = _contentDefinitionStore.GetContentDefinitionAsync().GetAwaiter().GetResult();
+                bool cacheable;
 
-                _memoryCache.Set(CacheKey, record, changeToken);
+                (cacheable, record) = _contentDefinitionStore.GetContentDefinitionAsync().GetAwaiter().GetResult();
+
+                if (cacheable)
+                {
+                    _memoryCache.Set(CacheKey, record, changeToken);
+                }
             }
 
             return record;
