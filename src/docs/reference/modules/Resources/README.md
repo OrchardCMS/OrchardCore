@@ -268,7 +268,7 @@ Specify a location the script should load using `at`, for example `Foot` to rend
 
     ``` html
     <script asp-name="bootstrap" at="Foot"></script>
-```
+    ```
 
 Link and styles tag helpers always inject into the header section of the HTML document regardless of the `at` value.
 
@@ -407,7 +407,7 @@ The style block will only be injected once based on its name and can optionally 
             /* some style */
         }
     {% endscriptblock %}
-```
+    ```
 
 === "Razor"
 
