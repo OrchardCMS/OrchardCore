@@ -155,7 +155,7 @@ namespace OrchardCore.OpenId.Controllers
                 default:
                     return View(new AuthorizeViewModel
                     {
-                        ApplicationName = await _applicationManager.GetDisplayNameAsync(application),
+                        ApplicationName = await _applicationManager.GetLocalizedDisplayNameAsync(application),
                         RequestId = request.RequestId,
                         Scope = request.Scope
                     });

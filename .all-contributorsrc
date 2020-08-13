@@ -1802,6 +1802,42 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "rjpowers10",
+      "name": "rjpowers10",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/68876423?v=4",
+      "profile": "https://github.com/rjpowers10",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "thomasebsmith",
+      "name": "Thomas Smith",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/42979377?v=4",
+      "profile": "https://thomasebsmith.github.io/",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "KshitizGIT",
+      "name": "KshitizGIT",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/8330582?v=4",
+      "profile": "http://kshitizshakya.com.np",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "khurram4u2",
+      "name": "khurram4u2",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/56805276?v=4",
+      "profile": "https://github.com/khurram4u2",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true

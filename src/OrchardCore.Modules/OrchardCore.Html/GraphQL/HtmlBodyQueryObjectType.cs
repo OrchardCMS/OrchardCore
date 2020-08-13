@@ -11,6 +11,7 @@ using OrchardCore.Html.Settings;
 using OrchardCore.Html.ViewModels;
 using OrchardCore.Shortcodes.Services;
 using OrchardCore.Liquid;
+using Shortcodes;
 
 namespace OrchardCore.Html.GraphQL
 {
@@ -38,6 +39,7 @@ namespace OrchardCore.Html.GraphQL
             var settings = contentTypePartDefinition.GetSettings<HtmlBodyPartSettings>();
 
             var html = ctx.Source.Html;
+
             if (!settings.SanitizeHtml)
             {
                 var model = new HtmlBodyPartViewModel()
@@ -46,7 +48,6 @@ namespace OrchardCore.Html.GraphQL
                     HtmlBodyPart = ctx.Source,
                     ContentItem = ctx.Source.ContentItem
                 };
-
                 var liquidTemplateManager = serviceProvider.GetRequiredService<ILiquidTemplateManager>();
                 var htmlEncoder = serviceProvider.GetService<HtmlEncoder>();
 
@@ -54,7 +55,12 @@ namespace OrchardCore.Html.GraphQL
                     scope => scope.SetValue("ContentItem", model.ContentItem));
             }
 
-            return await shortcodeService.ProcessAsync(html);
+            return await shortcodeService.ProcessAsync(html,
+                new Context
+                {
+                    ["ContentItem"] = ctx.Source.ContentItem ,
+                    ["TypePartDefinition"] = contentTypePartDefinition
+                });
         }
     }
 }
