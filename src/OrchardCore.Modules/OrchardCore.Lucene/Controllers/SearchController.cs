@@ -120,7 +120,6 @@ namespace OrchardCore.Lucene.Controllers
             // We Query Lucene index
             var analyzer = _luceneAnalyzerManager.CreateAnalyzer(await _luceneIndexSettingsService.GetIndexAnalyzerAsync(luceneIndexSettings.IndexName));
             var queryParser = new MultiFieldQueryParser(LuceneSettings.DefaultVersion, luceneSettings.DefaultSearchFields, analyzer);
-            var query = queryParser.Parse(QueryParser.Escape(viewModel.Terms));
 
             // Fetch one more result than PageSize to generate "More" links
             var start = 0;
@@ -137,8 +136,24 @@ namespace OrchardCore.Lucene.Controllers
                 end = Convert.ToInt32(pagerParameters.After) + pager.PageSize + 1;
             }
 
-            var contentItemIds = (await _searchQueryService.ExecuteQueryAsync(query, searchSettings.SearchIndex, start, end))
-                .ToList();
+            var terms = viewModel.Terms;
+            if (!searchSettings.AllowLuceneQueriesInSearch)
+            {
+                terms = QueryParser.Escape(terms);
+            }
+
+            IList<string> contentItemIds;
+            try
+            {
+                var query = queryParser.Parse(terms);
+                contentItemIds = (await _searchQueryService.ExecuteQueryAsync(query, searchSettings.SearchIndex, start, end))
+                    .ToList();
+            }
+            catch (ParseException)
+            {
+                // Silently ignore client errors in search syntax. Report no results instead.
+                contentItemIds = new List<string>();
+            }
 
             // We Query database to retrieve content items.
             IQuery<ContentItem> queryDb;
