@@ -33,14 +33,24 @@ namespace OrchardCore.ContentManagement
                 return scopedCache.ContentDefinitionRecord;
             }
 
-            return scopedCache.ContentDefinitionRecord = await GetContentDefinitionAsync();
+            (_, var result) = await GetContentDefinitionAsync();
+
+            return scopedCache.ContentDefinitionRecord = result;
         }
 
         /// <summary>
         /// Gets a single document (or create a new one) for caching and that should not be updated.
         /// </summary>
-        public Task<ContentDefinitionRecord> GetContentDefinitionAsync()
+        public Task<(bool, ContentDefinitionRecord)> GetContentDefinitionAsync()
         {
+            var scopedCache = ShellScope.Services.GetRequiredService<FileContentDefinitionScopedCache>();
+
+            if (scopedCache.ContentDefinitionRecord != null)
+            {
+                // Return the already loaded document but indicating that it should not be cached.
+                return Task.FromResult((false, scopedCache.ContentDefinitionRecord));
+            }
+
             ContentDefinitionRecord result;
 
             if (!File.Exists(Filename))
@@ -59,7 +69,7 @@ namespace OrchardCore.ContentManagement
                 }
             }
 
-            return Task.FromResult(result);
+            return Task.FromResult((true, result));
         }
 
         public Task SaveContentDefinitionAsync(ContentDefinitionRecord contentDefinitionRecord)

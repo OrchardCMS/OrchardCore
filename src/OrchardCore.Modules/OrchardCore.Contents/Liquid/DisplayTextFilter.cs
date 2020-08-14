@@ -2,8 +2,9 @@ using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
 using OrchardCore.ContentManagement;
+using OrchardCore.Liquid;
 
-namespace OrchardCore.Liquid.Filters
+namespace OrchardCore.Contents.Liquid
 {
     public class DisplayTextFilter : ILiquidFilter
     {

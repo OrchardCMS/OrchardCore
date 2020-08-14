@@ -12,7 +12,7 @@
     <PackageManagement Include="Azure.Storage.Blobs" Version="12.4.4" />
     <PackageManagement Include="Castle.Core" Version="4.4.1" />
     <PackageManagement Include="Irony.Core" Version="1.0.7" />
-    <PackageManagement Include="Fluid.Core" Version="1.0.0-beta-9672" />
+    <PackageManagement Include="Fluid.Core" Version="1.0.0-beta-9681" />
     <PackageManagement Include="GraphQL" Version="2.4.0" />
     <PackageManagement Include="Jint" Version="3.0.0-beta-1632" />
     <PackageManagement Include="HtmlSanitizer" Version="5.0.331" />
@@ -34,17 +34,17 @@
     <PackageManagement Include="OpenIddict.Core" Version="[3.0.0-beta3.20403.69]" />
     <PackageManagement Include="OrchardCore.Translations.All" Version="1.0.0-rc2-108003" />
     <PackageManagement Include="Serilog.AspNetCore" Version="3.4.0" />
-    <PackageManagement Include="Shortcodes" Version="1.0.0-beta-141475106" />
+    <PackageManagement Include="Shortcodes" Version="1.0.0-beta-175913881" />
     <PackageManagement Include="SixLabors.ImageSharp.Web" Version="1.0.0-rc0003" />
     <PackageManagement Include="xunit.analyzers" Version="0.10.0" />
     <PackageManagement Include="xunit" Version="2.4.1" />
     <PackageManagement Include="xunit.runner.visualstudio" Version="2.4.1" />
-    <PackageManagement Include="YesSql.Abstractions" Version="2.0.0-beta-1481" />
-    <PackageManagement Include="YesSql.Core" Version="2.0.0-beta-1481" />
-    <PackageManagement Include="YesSql.Provider.MySql" Version="1.0.0-beta-1481" />
-    <PackageManagement Include="YesSql.Provider.PostgreSql" Version="1.0.0-beta-1481" />
-    <PackageManagement Include="YesSql.Provider.SqLite" Version="1.0.0-beta-1481" />
-    <PackageManagement Include="YesSql.Provider.SqlServer" Version="1.0.0-beta-1481" />
+    <PackageManagement Include="YesSql.Abstractions" Version="2.0.0-beta-1514" />
+    <PackageManagement Include="YesSql.Core" Version="2.0.0-beta-1514" />
+    <PackageManagement Include="YesSql.Provider.MySql" Version="1.0.0-beta-1514" />
+    <PackageManagement Include="YesSql.Provider.PostgreSql" Version="1.0.0-beta-1514" />
+    <PackageManagement Include="YesSql.Provider.SqLite" Version="1.0.0-beta-1514" />
+    <PackageManagement Include="YesSql.Provider.SqlServer" Version="1.0.0-beta-1514" />
   </ItemGroup>
 
 </Project>

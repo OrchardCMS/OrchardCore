@@ -1,0 +1,30 @@
+
+@import "../../node_modules/bootstrap/scss/functions";
+@import "../../node_modules/bootstrap/scss/variables";
+@import "../../node_modules/bootstrap/scss/mixins/breakpoints";
+
+.shortcode-modal-btn {
+    position: absolute; 
+    top: 0; 
+    right:0;    
+    svg {
+        width: 24px;
+    }
+    z-index: 500;
+}
+
+.shortcode-modal-wrapper {
+    position: relative;
+}
+
+@include media-breakpoint-up(lg) {
+    .modal-shortcodes {
+        .modal-lg {
+            max-width: 1200px;
+        }
+    }
+}
+
+#shortcodePreview {
+    max-width: 310px;
+}
