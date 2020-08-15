@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.Title;
+using OrchardCore.DisplayManagement.Zones;
 using OrchardCore.Settings;
 
 namespace OrchardCore.DisplayManagement.Razor
@@ -268,7 +269,7 @@ namespace OrchardCore.DisplayManagement.Razor
 
             var zone = ThemeLayout[name];
 
-            return zone != null && zone.Items.Count > 0;
+            return zone != null;
         }
 
         /// <summary>
