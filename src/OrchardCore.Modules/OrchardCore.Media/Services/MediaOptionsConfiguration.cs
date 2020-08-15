@@ -54,7 +54,7 @@ namespace OrchardCore.Media.Services
         private const string DefaultAssetsRequestPath = "/media";
 
         // default-src self applied to prevent possible svg xss injection.
-        // style-src applied to prevent console warnings when viewing png files.
+        // style-src applied to allow browser behaviour of wrapping raw images in a styled img element.
         private const string DefaultContentSecurityPolicy = "default-src 'self'; style-src 'unsafe-inline'";
 
         private readonly IShellConfiguration _shellConfiguration;
@@ -98,8 +98,6 @@ namespace OrchardCore.Media.Services
                 {
                     ctx.Context.Response.Headers[HeaderNames.CacheControl] = cacheControl;
                     ctx.Context.Response.Headers[HeaderNames.ContentSecurityPolicy] = contentSecurityPolicy;
-                    // Included for internet explorer compatability.
-                    ctx.Context.Response.Headers["X-Content-Security-Policy"] = contentSecurityPolicy;
                 }
             };
         }

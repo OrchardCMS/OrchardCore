@@ -243,8 +243,32 @@ The following configuration values are used by default and can be customized:
             ".mpg",
             ".ogv", // Ogg
             ".3gp", // 3GPP
-        ]
+        ],
+
+      // The Content Security Policy to apply to assets served from the media library.
+      "ContentSecurityPolicy" : "default-src 'self'; style-src 'unsafe-inline'"
     }
+```
+
+To configure the `StaticFileOptions` in more detail, including event handlers, for the Media Library `StaticFileMiddleware` apply 
+
+```
+services.PostConfigure<MediaOptions>(o => ...);
+```
+
+To configure the `ImageSharpMiddleware` in more detail, including event handlers, apply :
+
+```
+services.PostConfigure<ImageSharpMiddlewareOptions>(o => ...);
+```
+
+!!! note
+    The Media Library `StaticFileOptions` configuration is seperated from the configuration for static files contained in module `wwwroot` folders.
+
+To configure `wwwroot` static file options apply :
+
+```
+services.Configure<StaticFileOptions>(o => ...);
 ```
 
 ## CREDITS
