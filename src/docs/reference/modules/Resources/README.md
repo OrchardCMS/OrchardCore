@@ -49,9 +49,9 @@ The `OrchardCore.Resources` module provides some commonly used ones:
 | jQuery.slim           | Script | 3.5.1         | -              |
 | jQuery-ui             | Script | 1.12.1        | jQuery         |
 | jQuery-ui-i18n        | Script | 1.7.2         | jQuery-ui      |
-| popper                | Script | 1.16.0        | -              |
-| bootstrap             | Script | 3.4.0, 4.5.0  | jQuery, Popper |
-| bootstrap             | Style  | 3.4.0, 4.5.0  | -              |
+| popper                | Script | 1.16.1        | -              |
+| bootstrap             | Script | 3.4.0, 4.5.2  | jQuery, Popper |
+| bootstrap             | Style  | 3.4.0, 4.5.2  | -              |
 | bootstrap-select      | Script | 1.13.18       | -              |
 | bootstrap-select      | Style  | 1.13.18       | -              |
 | bootstrap-slider      | Script | 11.0.2        | -              |
@@ -268,7 +268,7 @@ Specify a location the script should load using `at`, for example `Foot` to rend
 
     ``` html
     <script asp-name="bootstrap" at="Foot"></script>
-```
+    ```
 
 Link and styles tag helpers always inject into the header section of the HTML document regardless of the `at` value.
 
@@ -407,7 +407,7 @@ The style block will only be injected once based on its name and can optionally 
             /* some style */
         }
     {% endscriptblock %}
-```
+    ```
 
 === "Razor"
 
