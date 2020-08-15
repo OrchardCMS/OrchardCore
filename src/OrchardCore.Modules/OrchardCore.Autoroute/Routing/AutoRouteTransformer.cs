@@ -32,6 +32,9 @@ namespace OrchardCore.Autoroute.Routing
                     routeValues[_options.JsonPathKey] = entry.JsonPath;
                 }
 
+                // Prevents the original values from being re-added to the returned dynamic values.
+                values.Clear();
+
                 return new ValueTask<RouteValueDictionary>(routeValues);
             }
 
