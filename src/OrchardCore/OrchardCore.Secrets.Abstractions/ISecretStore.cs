@@ -9,9 +9,16 @@ namespace OrchardCore.Secrets
         string DisplayName { get; }
         bool IsReadOnly { get; }
         Task<Secret> GetSecretAsync(string key, Type type);
-        Task<TSecret> GetSecretAsync<TSecret>(string key) where TSecret : Secret, new();
         Task UpdateSecretAsync(string key, Secret secret);
         Task RemoveSecretAsync(string key);
+    }
+
+    public static class ISecretStoreExtensions
+    {
+        public static Task<TSecret> GetSecretAsync<TSecret>(this ISecretStore secretStore, string key) where TSecret : Secret, new()
+        {
+            return Task.FromResult<TSecret>(secretStore.GetSecretAsync(key, typeof(TSecret)) as TSecret);
+        }
     }
 
     public class SecretStoreDescriptor

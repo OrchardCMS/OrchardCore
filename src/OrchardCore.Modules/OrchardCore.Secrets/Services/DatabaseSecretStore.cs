@@ -43,22 +43,6 @@ namespace OrchardCore.Secrets.Services
             return null;
         }
 
-        public async Task<TSecret> GetSecretAsync<TSecret>(string key) where TSecret : Secret, new()
-        {
-            var secretsDocument = await _manager.GetSecretsDocumentAsync();
-            if (secretsDocument.Secrets.TryGetValue(key, out var documentSecret))
-            {
-                // var value = _databaseSecretDataProtector.Unprotect(documentSecret.Value);
-                // var secret = JsonConvert.DeserializeObject<TSecret>(value);
-
-                // TODO Disabled for dev purposes.
-                var secret = JsonConvert.DeserializeObject<TSecret>(documentSecret.Value);
-
-                return secret;
-            }
-
-            return null;
-        }
         public Task UpdateSecretAsync(string key, Secret secret)
         {
             var documentSecret = new DocumentSecret();
