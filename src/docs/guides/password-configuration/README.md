@@ -31,7 +31,7 @@ https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.identity.passwo
 A better way to achieve this is to read configuration from configuration sources as settings files, environment variables, command-line arguments. For a complete list of the default configuration sources used by the default configuration providers, and how you can customize it, see the related ASP.NET Core documentation:
 https://docs.microsoft.com/en-us/aspnet/core/fundamentals/configuration/?view=aspnetcore-3.1
 
-Using the `appsettings.json` and `appsettings.{Environment}.json` settings files, for example `appsettings.Production.json` and `appsettings.Development.json`, will allow you to specify different settings depending on the environment and transform the configuration section when you deploy it.
+Using the `appsettings.{Environment}.json` settings files, for example `appsettings.json`, `appsettings.Production.json` and `appsettings.Development.json`, will allow you to specify different settings depending on the environment and transform the configuration section when you deploy it.
 
 To do this, add a `Configuration` property in the `Startup` class:
 
