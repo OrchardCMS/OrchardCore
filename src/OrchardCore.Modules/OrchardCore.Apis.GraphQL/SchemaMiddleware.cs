@@ -7,9 +7,11 @@ namespace OrchardCore.Apis.GraphQL
 {
     public class SchemaMiddleware
     {
-        public SchemaMiddleware()
-        {
+        private readonly RequestDelegate _next;
 
+        public SchemaMiddleware(RequestDelegate next)
+        {
+            _next = next;
         }
 
         public async Task Invoke(HttpContext context, ISchemaFactory schemaService)
