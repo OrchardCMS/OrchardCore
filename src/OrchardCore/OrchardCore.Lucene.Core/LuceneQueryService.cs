@@ -78,7 +78,7 @@ namespace OrchardCore.Lucene
         private static SortField GetSortField(JToken item)
         {
             var sortField = ((JProperty)item.First).Name;
-            var sortOrder = ((JProperty) item.First).Value["order"].ToString();
+            var sortOrder = ((JProperty) item.First).Value["order"]?.ToString();
             var sortType = ((JProperty) item.First).Value["type"]?.ToString();
 
             if (sortOrder == "random")

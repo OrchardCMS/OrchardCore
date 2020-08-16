@@ -36,7 +36,6 @@ namespace OrchardCore.Lucene.FieldComparers
         }
 
         public override int CompareTop(int doc) => _random.Next(-1, 2);
-        
 
         public override IComparable this[int slot] => _random.Next();
     }
