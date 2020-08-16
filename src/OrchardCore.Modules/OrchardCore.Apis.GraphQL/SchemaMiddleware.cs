@@ -7,6 +7,11 @@ namespace OrchardCore.Apis.GraphQL
 {
     public class SchemaMiddleware
     {
+        public SchemaMiddleware()
+        {
+
+        }
+
         public async Task Invoke(HttpContext context, ISchemaFactory schemaService)
         {
             var schema = await schemaService.GetSchemaAsync();
