@@ -199,7 +199,7 @@ namespace OrchardCore.ContentTypes.Editors
 
             _contentDefinitionManager.AlterTypeDefinition(contentTypePartDefinition.ContentTypeDefinition.Name, typeBuilder =>
             {
-                typeBuilder.WithPart(contentTypePartDefinition.Name, async typePartBuilder =>
+                typeBuilder.WithPart(contentTypePartDefinition.Name, typePartBuilder =>
                 {
                     typePartDefinitionShape.ContentPart = contentTypePartDefinition;
 
@@ -213,9 +213,9 @@ namespace OrchardCore.ContentTypes.Editors
                         updater
                     );
 
-                    await BindPlacementAsync(partContext);
+                    BindPlacementAsync(partContext).GetAwaiter().GetResult();
 
-                    await _handlers.InvokeAsync((handler, contentTypePartDefinition, partContext) => handler.UpdateTypePartEditorAsync(contentTypePartDefinition, partContext), contentTypePartDefinition, partContext, _logger);
+                    _handlers.InvokeAsync((handler, contentTypePartDefinition, partContext) => handler.UpdateTypePartEditorAsync(contentTypePartDefinition, partContext), contentTypePartDefinition, partContext, _logger).GetAwaiter().GetResult();
                 });
             });
 
@@ -263,7 +263,7 @@ namespace OrchardCore.ContentTypes.Editors
 
             _contentDefinitionManager.AlterPartDefinition(contentPartDefinition.Name, partBuilder =>
             {
-                partBuilder.WithField(contentPartFieldDefinition.Name, async partFieldBuilder =>
+                partBuilder.WithField(contentPartFieldDefinition.Name, partFieldBuilder =>
                 {
                     partFieldDefinitionShape.ContentField = contentPartFieldDefinition;
 
@@ -277,9 +277,9 @@ namespace OrchardCore.ContentTypes.Editors
                         updater
                     );
 
-                    await BindPlacementAsync(fieldContext);
+                    BindPlacementAsync(fieldContext).GetAwaiter().GetResult();
 
-                    await _handlers.InvokeAsync((handler, contentPartFieldDefinition, fieldContext) => handler.UpdatePartFieldEditorAsync(contentPartFieldDefinition, fieldContext), contentPartFieldDefinition, fieldContext, _logger);
+                    _handlers.InvokeAsync((handler, contentPartFieldDefinition, fieldContext) => handler.UpdatePartFieldEditorAsync(contentPartFieldDefinition, fieldContext), contentPartFieldDefinition, fieldContext, _logger).GetAwaiter().GetResult();
                 });
             });
 
