@@ -105,15 +105,18 @@ namespace OrchardCore.DisplayManagement.Zones
             }
             else
             {
-                // Evaluate for cards.
-                var cardGrouping = await ShapeFactory.CreateAsync("CardGrouping", Arguments.From(
-                    new
-                    {
-                        Grouping = groupings[0],
-                        ContentItem = Shape.ContentItem
-                    }));
+               if ( groupings.FirstOrDefault() != null){
+                   // Evaluate for cards.
+                    var cardGrouping = await ShapeFactory.CreateAsync("CardGrouping", Arguments.From(
+                        new
+                        {
+                            Grouping = groupings[0],
+                            ContentItem = Shape.ContentItem
+                        }));
 
-                htmlContentBuilder.AppendHtml(await DisplayAsync(cardGrouping));
+                    htmlContentBuilder.AppendHtml(await DisplayAsync(cardGrouping));
+               }
+                
             }
 
             return htmlContentBuilder;
