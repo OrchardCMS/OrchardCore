@@ -105,7 +105,7 @@ namespace OrchardCore.DisplayManagement.Zones
             }
             else
             {
-               if ( groupings.FirstOrDefault() != null){
+               if ( groupings.Count == 1) {
                    // Evaluate for cards.
                     var cardGrouping = await ShapeFactory.CreateAsync("CardGrouping", Arguments.From(
                         new
