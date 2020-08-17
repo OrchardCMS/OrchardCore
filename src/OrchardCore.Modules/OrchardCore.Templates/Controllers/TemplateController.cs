@@ -235,6 +235,10 @@ namespace OrchardCore.Templates.Controllers
                 {
                     ModelState.AddModelError(nameof(TemplateViewModel.Name), S["A template with the same name already exists."]);
                 }
+                else if (String.IsNullOrWhiteSpace(model.Content))
+                {
+                    ModelState.AddModelError(nameof(TemplateViewModel.Content), S["The content is mandatory."]);
+                }
             }
 
             if (!templatesDocument.Templates.ContainsKey(sourceName))
