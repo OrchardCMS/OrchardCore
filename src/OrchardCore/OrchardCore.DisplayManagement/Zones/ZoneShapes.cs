@@ -107,7 +107,7 @@ namespace OrchardCore.DisplayManagement.Zones
             {
                 // Evaluate for cards.
                 var cardGrouping = await ShapeFactory.CreateAsync("CardGrouping", Arguments.From(
-                    new 
+                    new
                     {
                         Grouping = groupings[0], 
                         ContentItem = Shape.ContentItem
