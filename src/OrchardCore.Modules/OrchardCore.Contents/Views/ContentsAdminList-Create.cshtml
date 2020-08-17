@@ -1,8 +1,14 @@
+@using Microsoft.AspNetCore.Authorization
 @model ContentOptionsViewModel
+@inject IContentManager ContentManager
+@inject IAuthorizationService AuthorizationService
+
 <div class="form-group">
     <div class="btn-group">
         @if (Model.CreatableTypes.Any())
         {
+            ContentItem contentItem = await ContentManager.NewAsync(Model.CreatableTypes?.First().Value);
+            var hasEditContentPermission = await AuthorizationService.AuthorizeAsync(User, OrchardCore.Contents.Permissions.EditContent, contentItem);
             @if (Model.CreatableTypes.Count == 1)
             {
                 <a class="btn btn-sm btn-success" href="@Url.RouteUrl(new { area = "OrchardCore.Contents", controller = "Admin", action = "Create", id = Model.CreatableTypes.First().Value })">@T["New {0}", Model.CreatableTypes.First().Text]</a>
@@ -13,7 +19,10 @@
                 <div class="dropdown-menu dropdown-menu-right scrollable" aria-labelledby="new-dropdown">
                     @foreach (var item in Model.CreatableTypes)
                     {
-                        <a class="dropdown-item" href="@Url.RouteUrl(new { area = "OrchardCore.Contents", controller = "Admin", action = "Create", id = @item.Value })">@T[item.Text]</a>
+                        if(hasEditContentPermission)
+                        {
+                            <a class="dropdown-item" href="@Url.RouteUrl(new { area = "OrchardCore.Contents", controller = "Admin", action = "Create", id = @item.Value })">@T[item.Text]</a>
+                        }
                     }
                 </div>
             }
