@@ -69,9 +69,21 @@ $(function () {
         },
         "|",
         {
+            name: "shortcode",
+            className: "icon-mde-shortcode",
+            title: "Insert Shortcode",
+            default: true,
+            action: function(editor)
+            {
+                shortcodesApp.init(function (defaultValue) {
+                    editor.codemirror.replaceSelection(defaultValue);    
+                });    
+            }
+        },
+        "|",
+        {
             name: "image",
             action: function (editor) {
-                // editor = e;
                 $("#mediaApp").detach().appendTo('#mediaModalMarkdown .modal-body');
                 $("#mediaApp").show();
                 mediaApp.selectedMedias = [];
@@ -138,3 +150,9 @@ $(function () {
         }
     ];
 });
+
+function initializeSimpleMdeShortcodeWrapper(simpleMde) {
+    const toolbar = simpleMde.gui.toolbar;
+
+    $(toolbar).wrap('<div class="shortcode-modal-wrapper"></div>');
+}

@@ -5,9 +5,11 @@
     var culture = await Orchard.GetContentCultureAsync(Model.Field.ContentItem);
 }
 
+@await DisplayAsync(await New.ShortcodeModal())
+
 <div class="form-group">
     <label asp-for="Html">@Model.PartFieldDefinition.DisplayName()</label>
-    <textarea asp-for="Html" rows="5" class="form-control content-preview-text" dir="@culture.GetLanguageDirection()"></textarea>
+    <textarea asp-for="Html" rows="5" class="form-control content-preview-text shortcode-modal-input" dir="@culture.GetLanguageDirection()"></textarea>
     @if (!String.IsNullOrEmpty(settings.Hint))
     {
         <span class="hint">@settings.Hint</span>

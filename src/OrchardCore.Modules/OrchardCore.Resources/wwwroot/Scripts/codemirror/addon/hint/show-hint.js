@@ -430,9 +430,11 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       CodeMirror.signal(this.data, "select", this.data.list[this.selectedHint], node);
     },
     scrollToActive: function scrollToActive() {
-      var node = this.hints.childNodes[this.selectedHint];
+      var margin = this.completion.options.scrollMargin || 0;
+      var node1 = this.hints.childNodes[Math.max(0, this.selectedHint - margin)];
+      var node2 = this.hints.childNodes[Math.min(this.data.list.length - 1, this.selectedHint + margin)];
       var firstNode = this.hints.firstChild;
-      if (node.offsetTop < this.hints.scrollTop) this.hints.scrollTop = node.offsetTop - firstNode.offsetTop;else if (node.offsetTop + node.offsetHeight > this.hints.scrollTop + this.hints.clientHeight) this.hints.scrollTop = node.offsetTop + node.offsetHeight - this.hints.clientHeight + firstNode.offsetTop;
+      if (node1.offsetTop < this.hints.scrollTop) this.hints.scrollTop = node1.offsetTop - firstNode.offsetTop;else if (node2.offsetTop + node2.offsetHeight > this.hints.scrollTop + this.hints.clientHeight) this.hints.scrollTop = node2.offsetTop + node2.offsetHeight - this.hints.clientHeight + firstNode.offsetTop;
     },
     screenAmount: function screenAmount() {
       return Math.floor(this.hints.clientHeight / this.hints.firstChild.offsetHeight) || 1;

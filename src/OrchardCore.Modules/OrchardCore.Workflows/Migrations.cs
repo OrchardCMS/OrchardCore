@@ -1,6 +1,7 @@
 using System;
 using OrchardCore.Data.Migration;
 using OrchardCore.Workflows.Indexes;
+using YesSql.Sql;
 
 namespace OrchardCore.Workflows
 {
@@ -8,14 +9,14 @@ namespace OrchardCore.Workflows
     {
         public int Create()
         {
-            SchemaBuilder.CreateMapIndexTable(nameof(WorkflowTypeIndex), table => table
+            SchemaBuilder.CreateMapIndexTable<WorkflowTypeIndex>(table => table
                 .Column<string>("WorkflowTypeId")
                 .Column<string>("Name")
                 .Column<bool>("IsEnabled")
                 .Column<bool>("HasStart")
             );
 
-            SchemaBuilder.CreateMapIndexTable(nameof(WorkflowTypeStartActivitiesIndex), table => table
+            SchemaBuilder.CreateMapIndexTable<WorkflowTypeStartActivitiesIndex>(table => table
                 .Column<string>("WorkflowTypeId")
                 .Column<string>("Name")
                 .Column<bool>("IsEnabled")
@@ -23,14 +24,14 @@ namespace OrchardCore.Workflows
                 .Column<string>("StartActivityName")
             );
 
-            SchemaBuilder.CreateMapIndexTable(nameof(WorkflowIndex), table => table
+            SchemaBuilder.CreateMapIndexTable<WorkflowIndex>(table => table
                 .Column<string>("WorkflowTypeId")
                 .Column<string>("WorkflowId")
                 .Column<string>("WorkflowStatus")
                 .Column<DateTime>("CreatedUtc")
             );
 
-            SchemaBuilder.CreateMapIndexTable(nameof(WorkflowBlockingActivitiesIndex), table => table
+            SchemaBuilder.CreateMapIndexTable<WorkflowBlockingActivitiesIndex>(table => table
                 .Column<string>("ActivityId")
                 .Column<string>("ActivityName")
                 .Column<bool>("ActivityIsStart")

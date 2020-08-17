@@ -13,6 +13,8 @@
 <style asp-name="codemirror"></style>
 <style asp-name="simplemdecss" asp-src="~/OrchardCore.Markdown/Styles/simplemde.min.css" debug-src="~/OrchardCore.Markdown/Styles/simplemde.css"></style>
 
+@await DisplayAsync(await New.ShortcodeModal())
+
 <div class="form-group simplemde-editor">
     <label asp-for="Markdown">@Model.TypePartDefinition.DisplayName()</label>
     <span class="hint">@T["The markdown text of the content item."]</span>
@@ -22,7 +24,7 @@
 <script at="Foot">
     $(function () {
         var markdownElement = document.getElementById("@Html.IdFor(m => m.Markdown)");
-        // When part rendered by a flow part only the elements scripts are rendered, so the html element will not exist.
+        @* When part is rendered by a flow part only the elements scripts are rendered, so the html element will not exist. *@
         if (markdownElement) {
             var simplemde = new SimpleMDE({
                 element: markdownElement,
@@ -30,6 +32,8 @@
                 toolbar: simplemdeToolbar,
                 autoDownloadFontAwesome: false
             });
+
+            initializeSimpleMdeShortcodeWrapper(simplemde);
 
             simplemde.codemirror.on('change', function () {
                 $(document).trigger('contentpreview:render');
