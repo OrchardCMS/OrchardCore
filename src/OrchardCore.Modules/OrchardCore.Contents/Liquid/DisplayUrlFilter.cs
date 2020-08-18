@@ -8,8 +8,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Routing;
+using OrchardCore.Liquid;
 
-namespace OrchardCore.Liquid.Filters
+namespace OrchardCore.Contents.Liquid
 {
     public class DisplayUrlFilter : ILiquidFilter
     {

@@ -4,6 +4,7 @@ function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple)
     var initialPaths = target.data("init");
 
     var mediaFieldEditor = $(el);
+    var idprefix = mediaFieldEditor.attr("id");
     var mediaFieldApp;
 
     mediaFieldApps.push(mediaFieldApp = new Vue({
@@ -12,6 +13,7 @@ function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple)
             mediaItems: [],
             selectedMedia: null,
             smallThumbs: false,
+            idPrefix: idprefix,
             initialized: false
         },
         created: function () {

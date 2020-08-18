@@ -132,7 +132,7 @@ $(function () {
         mode: "javascript"
     });
     $('#@Html.IdFor(x => x.SyncRolesScript)').data('editor', editor);
-    resetScript(editor.doc.lineCount() > 1);
+    resetScript(editor.doc.getValue() != '');
     syncRolesCheckbox.addEventListener("change", toggleEditorState);
     toggleEditorState();
 });

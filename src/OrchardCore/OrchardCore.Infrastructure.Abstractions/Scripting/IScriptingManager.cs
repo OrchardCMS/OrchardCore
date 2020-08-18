@@ -29,6 +29,6 @@ namespace OrchardCore.Scripting
         /// The list of available method providers for this <see cref="IScriptingManager"/>
         /// instance.
         /// </summary>
-        IList<IGlobalMethodProvider> GlobalMethodProviders { get; }
+        IReadOnlyList<IGlobalMethodProvider> GlobalMethodProviders { get; }
     }
 }

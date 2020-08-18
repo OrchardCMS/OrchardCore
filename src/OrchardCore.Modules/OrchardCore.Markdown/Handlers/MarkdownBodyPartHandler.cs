@@ -13,6 +13,7 @@ using OrchardCore.Markdown.Models;
 using OrchardCore.Markdown.Services;
 using OrchardCore.Markdown.Settings;
 using OrchardCore.Markdown.ViewModels;
+using Shortcodes;
 
 namespace OrchardCore.Markdown.Handlers
 {
@@ -78,7 +79,12 @@ namespace OrchardCore.Markdown.Handlers
                             scope => scope.SetValue("ContentItem", model.ContentItem));
                     }
 
-                    html = await _shortcodeService.ProcessAsync(html);
+                    html = await _shortcodeService.ProcessAsync(html,
+                        new Context
+                        {
+                            ["ContentItem"] = part.ContentItem,
+                            ["TypePartDefinition"] = contentTypePartDefinition
+                        });
 
                     if (settings.SanitizeHtml)
                     {
