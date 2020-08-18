@@ -117,6 +117,13 @@ namespace OrchardCore.Taxonomies
                 pattern: _adminOptions.AdminUrlPrefix + "/Taxonomies/Delete/{taxonomyContentItemId}/{taxonomyItemId}",
                 defaults: new { controller = taxonomyControllerName, action = nameof(AdminController.Delete) }
             );
+
+            routes.MapAreaControllerRoute(
+                name: "Taxonomies.OrderCategorizedContentItems",
+                areaName: "OrchardCore.Taxonomies",
+                pattern: _adminOptions.AdminUrlPrefix + "/Taxonomies/OrderCategorizedContentItems/{taxonomyContentItemId}/{taxonomyItemId}",
+                defaults: new { controller = taxonomyControllerName, action = nameof(AdminController.OrderCategorizedContentItems) }
+            );
         }
     }
 

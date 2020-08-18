@@ -223,7 +223,9 @@ namespace OrchardCore.Taxonomies.Services
                     .ThenByDescending(c => c.CreatedUtc)
                     .ListAsync();
 
-                await RegisterCategorizedItemsOrder(categorizedItems, term.ContentItemId);
+                var startingOrder = categorizedItems.Count();
+
+                await SaveCategorizedItemsOrder(categorizedItems, term.ContentItemId, startingOrder);
             }
         }
 
@@ -246,25 +248,14 @@ namespace OrchardCore.Taxonomies.Services
             }
         }
 
-        public async Task<IEnumerable<ContentItem>> QueryUnpagedOrderedCategorizedItemsAsync(string termContentItemId)
+        public async Task SaveCategorizedItemsOrder(IEnumerable<ContentItem> categorizedItems, string termContentItemId, int topOrderValue)
         {
-            var contentItems = await _session.Query<ContentItem>()
-                .With<TaxonomyIndex>(x => x.TermContentItemId == termContentItemId)
-                .OrderByDescending(x => x.Order)
-                .With<ContentItemIndex>(x => x.Latest)
-                .ListAsync();
+            var orderValue = topOrderValue;
 
-            return await _contentManager.LoadAsync(contentItems);
-        }
-
-        public async Task RegisterCategorizedItemsOrder(IEnumerable<ContentItem> categorizedItems, string termContentItemId)
-        {
-            var termContentItemOrder = categorizedItems.Count();
-
-            // The list of content items is already ordered (first to last), all we do here is register that order on the appropriate field for each content item
+            // The list of content items is already ordered (first to last), all we do here is register that order on the appropriate field for each content item, starting with startingOrder and descending from there
             foreach (var categorizedItem in categorizedItems)
             {
-                RegisterCategorizedItemOrder(categorizedItem, termContentItemId, termContentItemOrder);
+                RegisterCategorizedItemOrder(categorizedItem, termContentItemId, orderValue);
 
                 // Keep the published and draft orders the same to avoid confusion in the admin list.
                 if (!categorizedItem.IsPublished())
@@ -272,17 +263,23 @@ namespace OrchardCore.Taxonomies.Services
                     var publishedCategorizedItem = await _contentManager.GetAsync(categorizedItem.ContentItemId, VersionOptions.Published);
                     if (publishedCategorizedItem != null)
                     {
-                        RegisterCategorizedItemOrder(publishedCategorizedItem, termContentItemId, termContentItemOrder);
+                        RegisterCategorizedItemOrder(publishedCategorizedItem, termContentItemId, orderValue);
                     }
                 }
 
-                --termContentItemOrder;
+                --orderValue;
             }
 
             return;
         }
 
-        private void RegisterCategorizedItemOrder(ContentItem categorizedItem, string termContentItemId, int termContentItemOrder)
+        public int GetTaxonomyTermOrder(ContentItem categorizedItem, string termContentItemId)
+        {
+            (var field, var fieldDefinition) = GetTaxonomyFielForTerm(categorizedItem: categorizedItem, termContentItemId: termContentItemId);
+            return field.TermContentItemOrder[termContentItemId];
+        }
+
+        private void RegisterCategorizedItemOrder(ContentItem categorizedItem, string termContentItemId, int orderValue)
         {
             (var field, var fieldDefinition) = GetTaxonomyFielForTerm(categorizedItem: categorizedItem, termContentItemId: termContentItemId);
 
@@ -290,9 +287,9 @@ namespace OrchardCore.Taxonomies.Services
             {
                 var currentOrder = field.TermContentItemOrder.GetValueOrDefault(termContentItemId, 0);
 
-                if (termContentItemOrder != currentOrder)
+                if (orderValue != currentOrder)
                 {
-                    field.TermContentItemOrder[termContentItemId] = termContentItemOrder;
+                    field.TermContentItemOrder[termContentItemId] = orderValue;
 
                     var jPart = (JObject)categorizedItem.Content[fieldDefinition.PartDefinition.Name];
                     jPart[fieldDefinition.Name] = JObject.FromObject(field);
@@ -347,12 +344,6 @@ namespace OrchardCore.Taxonomies.Services
             }
 
             return (null, null);
-        }
-
-        private int GetTaxonomyTermOrder(ContentItem categorizedItem, string termContentItemId)
-        {
-            (var field, var fieldDefinition) = GetTaxonomyFielForTerm(categorizedItem: categorizedItem, termContentItemId: termContentItemId);
-            return field.TermContentItemOrder[termContentItemId];
         }
     }
 }

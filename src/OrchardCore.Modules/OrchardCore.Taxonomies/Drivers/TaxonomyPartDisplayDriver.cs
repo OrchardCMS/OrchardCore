@@ -42,6 +42,7 @@ namespace OrchardCore.Taxonomies.Drivers
             {
                 model.TermContentType = part.TermContentType;
                 model.EnableOrdering = part.EnableOrdering;
+                model.OrderingPageSize = part.OrderingPageSize;
                 model.TaxonomyPart = part;
             });
         }
@@ -50,7 +51,7 @@ namespace OrchardCore.Taxonomies.Drivers
         {
             var model = new TaxonomyPartEditViewModel();
 
-            if (await updater.TryUpdateModelAsync(model, Prefix, t => t.Hierarchy, t => t.TermContentType, t => t.EnableOrdering))
+            if (await updater.TryUpdateModelAsync(model, Prefix, t => t.Hierarchy, t => t.TermContentType, t => t.EnableOrdering, t => t.OrderingPageSize))
             {
                 if (!String.IsNullOrWhiteSpace(model.Hierarchy))
                 {
@@ -76,6 +77,7 @@ namespace OrchardCore.Taxonomies.Drivers
 
                 part.TermContentType = model.TermContentType;
                 part.EnableOrdering = model.EnableOrdering;
+                part.OrderingPageSize = model.OrderingPageSize;
             }
 
             return Edit(part);

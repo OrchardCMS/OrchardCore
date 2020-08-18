@@ -13,14 +13,14 @@ namespace OrchardCore.Taxonomies.Services
 {
     public interface ITaxonomyFieldService
     {
-        Task InitializeCategorizedItemsOrderAsync(string TaxonomyContentItemId);
+        Task<IEnumerable<ContentItem>> QueryCategorizedItemsAsync(TermPart termPart, bool enableOrdering, PagerSlim pager);
 
-        Task<IEnumerable<ContentItem>> QueryUnpagedOrderedCategorizedItemsAsync(string termContentItemId);
+        Task InitializeCategorizedItemsOrderAsync(string TaxonomyContentItemId);
 
         Task UpdateTaxonomyFieldOrderAsync(TaxonomyField field);
 
-        Task RegisterCategorizedItemsOrder(IEnumerable<ContentItem> categorizedItems, string taxonomyContentItemId);
+        Task SaveCategorizedItemsOrder(IEnumerable<ContentItem> categorizedItems, string taxonomyContentItemId, int topOrderValue);
 
-        Task<IEnumerable<ContentItem>> QueryCategorizedItemsAsync(TermPart termPart, bool enableOrdering, PagerSlim pager);
+        int GetTaxonomyTermOrder(ContentItem categorizedItem, string termContentItemId);
     }
 }

@@ -29,6 +29,13 @@
     </div>
 </div>
 
+<div class="form-group" asp-validation-class-for="OrderingPageSize">
+    <label asp-for="OrderingPageSize">@T["Ordering Page Size"]</label>
+    <input asp-for="OrderingPageSize" class="form-control" />
+    <span asp-validation-for="OrderingPageSize" class="text-danger"></span>
+    <span class="hint">@T["The number of categorized content items to display per page when ordering them."]</span>
+</div>
+
 <div class="form-group" asp-validation-class-for="TermContentType">
     <label asp-for="TermContentType" >@T["Term Content Type"]</label>
     <select asp-for="TermContentType" class="form-control col-sm" asp-items="@(new SelectList(termContentTypes, "Name", "DisplayName"))">

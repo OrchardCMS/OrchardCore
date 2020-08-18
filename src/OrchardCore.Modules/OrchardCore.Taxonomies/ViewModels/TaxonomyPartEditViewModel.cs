@@ -10,6 +10,7 @@ namespace OrchardCore.Taxonomies.ViewModels
         public string TermContentType { get; set; }
 
         public bool EnableOrdering { get; set; }
+        public int OrderingPageSize { get; set; }
 
         [BindNever]
         public TaxonomyPart TaxonomyPart { get; set; }

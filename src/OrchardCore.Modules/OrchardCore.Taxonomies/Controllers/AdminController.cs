@@ -12,6 +12,7 @@ using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.Navigation;
 using OrchardCore.Taxonomies.Indexing;
 using OrchardCore.Taxonomies.Models;
 using OrchardCore.Taxonomies.Services;
@@ -305,7 +306,9 @@ namespace OrchardCore.Taxonomies.Controllers
                 return Forbid();
             }
 
-            if (!taxonomy.As<TaxonomyPart>().EnableOrdering)
+            var taxonomyPart = taxonomy.As<TaxonomyPart>();
+
+            if (!taxonomyPart.EnableOrdering)
             {
                 return NotFound();
             }
@@ -320,31 +323,64 @@ namespace OrchardCore.Taxonomies.Controllers
             var contentItem = taxonomyItem.ToObject<ContentItem>();
             contentItem.Weld<TermPart>();
             contentItem.Alter<TermPart>(t => t.TaxonomyContentItemId = taxonomyContentItemId);
+            contentItem.Alter<TermPart>(t => t.OrderingPageSize = taxonomyPart.OrderingPageSize);
 
             dynamic model = await _contentItemDisplayManager.BuildDisplayAsync(contentItem, _updateModelAccessor.ModelUpdater);
 
             model.Updater = _updateModelAccessor.ModelUpdater;
 
-            model.CategorizedContentItems = await _taxonomyFieldService.QueryUnpagedOrderedCategorizedItemsAsync(taxonomyItemId);
-
-            model.TaxonomyContentItemId = taxonomyContentItemId;
-            model.TaxonomyItemId = taxonomyItemId;
-            model.EnableOrdering = taxonomy.As<TaxonomyPart>().EnableOrdering;
+            // Is this the best way to get the TermPartViewModel created by the TermPart driver, to emulate in OrderCategorizedContentItems.cshtm the "@model TermPartViewModel" of a "normal" View like TermPart.cshtml?
+            model.TermPartViewModel = (ViewModels.TermPartViewModel)((System.Collections.Generic.List<DisplayManagement.IPositioned>)((dynamic)model).Content.Items).Where(i => ((dynamic)i).Metadata.Type == "TermPart").FirstOrDefault();
 
             return View(model);
         }
 
         [HttpPost]
-        public async Task<IActionResult> UpdateCategorizedContentItemOrders(string taxonomyItemId, int oldIndex, int newIndex)
+        public async Task<IActionResult> OrderCategorizedContentItemsPost(string taxonomyContentItemId, string taxonomyItemId, int oldIndex, int newIndex, PagerSlimParameters pagerSlimParameters, int pageSize)
         {
-            var categorizedContentItems = (await _taxonomyFieldService.QueryUnpagedOrderedCategorizedItemsAsync(taxonomyItemId)).ToList();
+            var taxonomy = await _contentManager.GetAsync(taxonomyContentItemId, VersionOptions.Latest);
 
+            if (taxonomy == null)
+            {
+                return NotFound();
+            }
+
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTaxonomies, taxonomy))
+            {
+                return Forbid();
+            }
+
+            JObject taxonomyItem = FindTaxonomyItem(taxonomy.As<TaxonomyPart>().Content, taxonomyItemId);
+
+            if (taxonomyItem == null)
+            {
+                return NotFound();
+            }
+
+            var contentItem = taxonomyItem.ToObject<ContentItem>();
+            contentItem.Weld<TermPart>();
+
+            var termPart = contentItem.As<TermPart>();
+
+            var pager = new PagerSlim(pagerSlimParameters, pageSize);
+
+            var categorizedContentItems = (await _taxonomyFieldService.QueryCategorizedItemsAsync(termPart, true, pager)).ToList();
+
+            var topIndex = Math.Min(newIndex, oldIndex);
+
+            // highest (first) order value on the list
+            var topOrderValue = _taxonomyFieldService.GetTaxonomyTermOrder(categorizedContentItems[topIndex], taxonomyItemId);
+
+            // move the element
             var categorizedContentItem = categorizedContentItems[oldIndex];
-
             categorizedContentItems.Remove(categorizedContentItem);
             categorizedContentItems.Insert(newIndex, categorizedContentItem);
 
-            await _taxonomyFieldService.RegisterCategorizedItemsOrder(categorizedContentItems, taxonomyItemId);
+            // restrict the list to the elements whose order value needs to be changed
+            categorizedContentItems = categorizedContentItems.GetRange(topIndex, Math.Abs(newIndex - oldIndex) + 1);
+
+            // apply and save the new order values
+            await _taxonomyFieldService.SaveCategorizedItemsOrder(categorizedContentItems, taxonomyItemId, topOrderValue);
 
             return Ok();
         }

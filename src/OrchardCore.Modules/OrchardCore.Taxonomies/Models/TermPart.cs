@@ -6,5 +6,6 @@ namespace OrchardCore.Taxonomies.Models
     public class TermPart : ContentPart
     {
         public string TaxonomyContentItemId { get; set; }
+        public int OrderingPageSize { get; set; } = 0;
     }
 }

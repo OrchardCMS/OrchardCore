@@ -46,12 +46,18 @@ namespace OrchardCore.Taxonomies.Drivers
                 return Task.FromResult<IDisplayResult>(Initialize<TermPartViewModel>("TermPart", async m =>
                 {
                     var enableOrdering = (await _contentManager.GetAsync(part.TaxonomyContentItemId, VersionOptions.Latest)).As<TaxonomyPart>().EnableOrdering;
-                    var siteSettings = await _siteService.GetSiteSettingsAsync();
-                    var pager = await GetPagerAsync(context.Updater, siteSettings.PageSize);
+                    var pageSize = part.OrderingPageSize;
+                    if (part.OrderingPageSize == 0)
+                    {
+                        var siteSettings = await _siteService.GetSiteSettingsAsync();
+                        pageSize = siteSettings.PageSize;
+                    }
+                    var pager = await GetPagerAsync(context.Updater, pageSize);
                     m.TaxonomyContentItemId = part.TaxonomyContentItemId;
                     m.ContentItem = part.ContentItem;
                     m.ContentItems = (await _taxonomyFieldService.QueryCategorizedItemsAsync(part, enableOrdering, pager)).ToArray();
                     m.Pager = await context.New.PagerSlim(pager);
+                    
                 })
                 .Location("Detail", "Content:5"));
             }
