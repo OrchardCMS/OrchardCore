@@ -5,7 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace OrchardCore.DisplayManagement.ModelBinding
 {
-    public class ModelBinderAccessorFilter : IActionFilter , IPageFilter
+    public class ModelBinderAccessorFilter : IActionFilter, IPageFilter
     {
         public void OnActionExecuted(ActionExecutedContext context)
         {
@@ -20,7 +20,12 @@ namespace OrchardCore.DisplayManagement.ModelBinding
                 modelBinderAccessor.ModelUpdater = new ControllerModelUpdater(controller);
             }
         }
+
         public void OnPageHandlerSelected(PageHandlerSelectedContext context)
+        {
+        }
+
+        public void OnPageHandlerExecuting(PageHandlerExecutingContext context)
         {
             var page = context.HandlerInstance as PageModel;
 
@@ -29,10 +34,6 @@ namespace OrchardCore.DisplayManagement.ModelBinding
                 var modelBinderAccessor = context.HttpContext.RequestServices.GetRequiredService<IUpdateModelAccessor>();
                 modelBinderAccessor.ModelUpdater = new PageModelUpdater(page);
             }
-        }
-
-        public void OnPageHandlerExecuting(PageHandlerExecutingContext context)
-        {
         }
 
         public void OnPageHandlerExecuted(PageHandlerExecutedContext context)
