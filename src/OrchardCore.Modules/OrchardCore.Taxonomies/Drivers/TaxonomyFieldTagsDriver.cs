@@ -102,7 +102,7 @@ namespace OrchardCore.Taxonomies.Drivers
 
                 if (taxonomy.As<TaxonomyPart>().EnableOrdering)
                 {
-                    await _taxonomyFieldService.UpdateTaxonomyFieldOrderAsync(field);
+                    await _taxonomyFieldService.SyncTaxonomyFieldProperties(field);
                 }
             }
 

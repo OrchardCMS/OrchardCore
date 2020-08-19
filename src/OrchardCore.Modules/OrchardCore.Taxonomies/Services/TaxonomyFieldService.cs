@@ -1,32 +1,19 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Records;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Navigation;
 using OrchardCore.Taxonomies.Indexing;
 using OrchardCore.Taxonomies.Fields;
 using OrchardCore.Taxonomies.Models;
 using YesSql;
-using YesSql.Services;
-using Castle.DynamicProxy.Generators.Emitters.SimpleAST;
 using OrchardCore.Mvc.Utilities;
 using Microsoft.Extensions.DependencyInjection;
-using System.Text.RegularExpressions;
-using Castle.Core.Internal;
-using GraphQL.Types;
-using GraphQL.Instrumentation;
-using Org.BouncyCastle.Math.EC;
-using GraphQL.Validation;
-using OrchardCore.Modules;
-using Microsoft.AspNetCore.Mvc.TagHelpers;
 using OrchardCore.ContentManagement.Metadata.Models;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace OrchardCore.Taxonomies.Services
 {
@@ -229,12 +216,13 @@ namespace OrchardCore.Taxonomies.Services
             }
         }
 
-        public async Task UpdateTaxonomyFieldOrderAsync(TaxonomyField field)
+        // Add or remove from TermContentItemOrder elements that were added or removed from TermContentItemIds
+        public async Task SyncTaxonomyFieldProperties(TaxonomyField field)
         {
             var removedTerms = field.TermContentItemOrder.Where(o => !field.TermContentItemIds.Contains(o.Key)).Select(o => o.Key).ToList();
             foreach (var removedTerm in removedTerms)
             {
-                // Remove the order information because the content item in no longer categorized with this term
+                // Remove the order information because the content item in no longer categorized with this term.
                 field.TermContentItemOrder.Remove(removedTerm);
             }
 
@@ -242,7 +230,7 @@ namespace OrchardCore.Taxonomies.Services
             {
                 if (!field.TermContentItemOrder.ContainsKey(term))
                 {
-                    // When categorized with a new term, when ordering is enabled, the content item goes into the first (higher order) position
+                    // When categorized with a new term, when ordering is enabled, the content item goes into the first (higher order) position.
                     field.TermContentItemOrder.Add(term, await GetNextOrderNumberAsync(term));
                 }
             }
@@ -252,7 +240,7 @@ namespace OrchardCore.Taxonomies.Services
         {
             var orderValue = topOrderValue;
 
-            // The list of content items is already ordered (first to last), all we do here is register that order on the appropriate field for each content item, starting with startingOrder and descending from there
+            // The list of content items is already ordered (first to last), all we do here is register that order on the appropriate field for each content item, starting with topOrderValue and descending from there.
             foreach (var categorizedItem in categorizedItems)
             {
                 RegisterCategorizedItemOrder(categorizedItem, termContentItemId, orderValue);
@@ -290,7 +278,7 @@ namespace OrchardCore.Taxonomies.Services
                 if (orderValue != currentOrder)
                 {
                     field.TermContentItemOrder[termContentItemId] = orderValue;
-
+                    
                     var jPart = (JObject)categorizedItem.Content[fieldDefinition.PartDefinition.Name];
                     jPart[fieldDefinition.Name] = JObject.FromObject(field);
                     categorizedItem.Content[fieldDefinition.PartDefinition.Name] = jPart;
@@ -311,7 +299,7 @@ namespace OrchardCore.Taxonomies.Services
             return 1;
         }
 
-        // Given a content item, this method returns the taxonomy field for a specific taxonomy and/or the one that includes (categorizes) the content item in a specific taxonomy term
+        // Given a content item, this method returns the taxonomy field for a specific taxonomy and/or the one that includes (categorizes) the content item in a specific taxonomy term.
         private (TaxonomyField field, ContentPartFieldDefinition fieldDefinition) GetTaxonomyFielForTerm(ContentItem categorizedItem, string taxonomyContentItemId = null, string termContentItemId = null)
         {
             _contentDefinitionManager = _contentDefinitionManager ?? _serviceProvider.GetRequiredService<IContentDefinitionManager>();

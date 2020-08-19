@@ -17,7 +17,7 @@ namespace OrchardCore.Taxonomies.Services
 
         Task InitializeCategorizedItemsOrderAsync(string TaxonomyContentItemId);
 
-        Task UpdateTaxonomyFieldOrderAsync(TaxonomyField field);
+        Task SyncTaxonomyFieldProperties(TaxonomyField field);
 
         Task SaveCategorizedItemsOrder(IEnumerable<ContentItem> categorizedItems, string taxonomyContentItemId, int topOrderValue);
 

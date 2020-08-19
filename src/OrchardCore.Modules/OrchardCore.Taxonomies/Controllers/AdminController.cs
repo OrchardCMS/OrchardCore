@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using AngleSharp.Html.Dom;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
@@ -13,7 +12,6 @@ using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Navigation;
-using OrchardCore.Taxonomies.Indexing;
 using OrchardCore.Taxonomies.Models;
 using OrchardCore.Taxonomies.Services;
 using YesSql;
@@ -368,7 +366,7 @@ namespace OrchardCore.Taxonomies.Controllers
 
             var topIndex = Math.Min(newIndex, oldIndex);
 
-            // highest (first) order value on the list
+            // highest (first) order value on the list of items that need to be updated
             var topOrderValue = _taxonomyFieldService.GetTaxonomyTermOrder(categorizedContentItems[topIndex], taxonomyItemId);
 
             // move the element
@@ -376,7 +374,7 @@ namespace OrchardCore.Taxonomies.Controllers
             categorizedContentItems.Remove(categorizedContentItem);
             categorizedContentItems.Insert(newIndex, categorizedContentItem);
 
-            // restrict the list to the elements whose order value needs to be changed
+            // restrict the list to the elements whose order value needs to be updated
             categorizedContentItems = categorizedContentItems.GetRange(topIndex, Math.Abs(newIndex - oldIndex) + 1);
 
             // apply and save the new order values
