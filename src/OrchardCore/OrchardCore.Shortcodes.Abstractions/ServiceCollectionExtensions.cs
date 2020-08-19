@@ -12,7 +12,7 @@ namespace OrchardCore.Shortcodes
         public static IServiceCollection AddShortcode<T>(this IServiceCollection services, string name, Action<ShortcodeOption> describe) where T : class, IShortcodeProvider
         {
             services.Configure<ShortcodeOptions>(options => options.AddShortcode(name, describe));
-            services.AddScoped<T>();
+            services.AddScoped<IShortcodeProvider, T>();
 
             return services;
         }
