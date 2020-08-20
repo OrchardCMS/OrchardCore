@@ -74,6 +74,7 @@ namespace OrchardCore.Users.Workflows.Activities
                         }
                     }
                 }
+
                 return Outcomes("Authenticated");
             }
 
