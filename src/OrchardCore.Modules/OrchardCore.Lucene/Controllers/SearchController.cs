@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Lucene.Net.QueryParsers.Classic;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Records;
@@ -32,6 +33,7 @@ namespace OrchardCore.Lucene.Controllers
         private readonly LuceneAnalyzerManager _luceneAnalyzerManager;
         private readonly ISearchQueryService _searchQueryService;
         private readonly ISession _session;
+        private readonly IStringLocalizer S;
         private readonly IEnumerable<IPermissionProvider> _permissionProviders;
         private readonly dynamic New;
         private readonly ILogger _logger;
@@ -45,6 +47,7 @@ namespace OrchardCore.Lucene.Controllers
             LuceneAnalyzerManager luceneAnalyzerManager,
             ISearchQueryService searchQueryService,
             ISession session,
+            IStringLocalizer<SearchController> stringLocalizer,
             IEnumerable<IPermissionProvider> permissionProviders,
             IShapeFactory shapeFactory,
             ILogger<SearchController> logger
@@ -58,6 +61,7 @@ namespace OrchardCore.Lucene.Controllers
             _luceneAnalyzerManager = luceneAnalyzerManager;
             _searchQueryService = searchQueryService;
             _session = session;
+            S = stringLocalizer;
             _permissionProviders = permissionProviders;
             New = shapeFactory;
             _logger = logger;
@@ -149,10 +153,17 @@ namespace OrchardCore.Lucene.Controllers
                 contentItemIds = (await _searchQueryService.ExecuteQueryAsync(query, searchSettings.SearchIndex, start, end))
                     .ToList();
             }
-            catch (ParseException)
+            catch (ParseException e)
             {
-                // Silently ignore client errors in search syntax. Report no results instead.
-                contentItemIds = new List<string>();
+                ModelState.AddModelError("Terms", S["Incorrect query syntax."]);
+                _logger.LogError(e, "Incorrect Lucene search query syntax provided in search:");
+
+                // Return a SearchIndexViewModel without SearchResults or Pager shapes since there is an error.
+                return View(new SearchIndexViewModel
+                {
+                    Terms = viewModel.Terms,
+                    SearchForm = new SearchFormViewModel("Search__Form") { Terms = viewModel.Terms },
+                });
             }
 
             // We Query database to retrieve content items.
