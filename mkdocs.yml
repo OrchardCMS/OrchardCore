@@ -32,6 +32,7 @@ docs_dir: src
 # Extensions
 markdown_extensions:
   - markdown.extensions.admonition
+  - markdown.extensions.attr_list
   - markdown.extensions.codehilite
   - markdown.extensions.def_list
   - markdown.extensions.footnotes
@@ -72,6 +73,13 @@ nav:
         - Recipes and Starter Themes: docs/getting-started/starter-recipes.md
         - Code Generation Templates: docs/getting-started/templates/README.md
         - Create a Theme: docs/getting-started/theme.md
+    - Features:
+        - Features: docs/features/README.md
+        - Core: docs/features/core/README.md
+        - Admin: docs/features/admin/README.md
+        - Content: docs/features/content/README.md
+        - Design: docs/features/design/README.md
+        - Extensibility: docs/features/extensibility/README.md
     - Glossary: 
         - Terms and Concepts: docs/glossary/README.md
     - How-to guides: 
