@@ -63,7 +63,11 @@ namespace OrchardCore.DisplayManagement
 
         private static PlacementInfo CombinePlacements(PlacementInfo first, PlacementInfo second)
         {
-            if (first != null && second != null)
+            if (first == null)
+            {
+                return second;
+            }
+            else if (second != null)
             {
                 CombineAlternates(first.Alternates, second.Alternates);
                 CombineAlternates(first.Wrappers, second.Wrappers);
@@ -81,22 +85,18 @@ namespace OrchardCore.DisplayManagement
                 }
                 first.Source += "," + second.Source;
             }
-            else if (second != null)
-            {
-                return second;
-            }
             return first;
         }
 
         private static AlternatesCollection CombineAlternates(AlternatesCollection first, AlternatesCollection second)
         {
-            if (first != null && second != null)
+            if (first == null)
             {
-                first.AddRange(second);
+                return second;
             }
             else if (second != null)
             {
-                return second;
+                first.AddRange(second);
             }
             return first;
         }
