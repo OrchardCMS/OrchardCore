@@ -79,7 +79,7 @@ namespace OrchardCore.DisplayManagement
                 {
                     first.DefaultPosition = second.DefaultPosition;
                 }
-                first.Source = second.Source + "," + second.Source;
+                first.Source += "," + second.Source;
             }
             else if (second != null)
             {
