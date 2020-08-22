@@ -3,8 +3,10 @@ using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
 using OrchardCore.ContentManagement;
+using OrchardCore.Liquid;
+using OrchardCore.Lists.Models;
 
-namespace OrchardCore.Liquid.Filters
+namespace OrchardCore.Lists.Liquid
 {
     public class ContainerFilter : ILiquidFilter
     {
@@ -24,7 +26,7 @@ namespace OrchardCore.Liquid.Filters
                 throw new ArgumentException("A Content Item was expected");
             }
 
-            string containerId = contentItem.Content?.ContainedPart?.ListContentItemId;
+            var containerId = contentItem.As<ContainedPart>()?.ListContentItemId;
 
             if (containerId != null)
             {
