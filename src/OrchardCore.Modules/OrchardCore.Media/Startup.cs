@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
@@ -35,6 +36,7 @@ using OrchardCore.Media.Processing;
 using OrchardCore.Media.Recipes;
 using OrchardCore.Media.Services;
 using OrchardCore.Media.Settings;
+using OrchardCore.Media.Shortcodes;
 using OrchardCore.Media.TagHelpers;
 using OrchardCore.Media.ViewModels;
 using OrchardCore.Modules;
@@ -43,6 +45,8 @@ using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
+using OrchardCore.Shortcodes;
+using Shortcodes;
 using SixLabors.ImageSharp.Memory;
 using SixLabors.ImageSharp.Web.Caching;
 using SixLabors.ImageSharp.Web.Commands;
@@ -313,6 +317,32 @@ namespace OrchardCore.Media
             services.AddTransient<IDeploymentSource, MediaDeploymentSource>();
             services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<MediaDeploymentStep>());
             services.AddScoped<IDisplayDriver<DeploymentStep>, MediaDeploymentStepDriver>();
+        }
+    }
+
+    [RequireFeatures("OrchardCore.Shortcodes")]
+    public class ShortcodesStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            // Only add image as a descriptor as [media] is deprecated.
+            services.AddShortcode<ImageShortcodeProvider>("image", d => {
+                d.DefaultValue = "[image] [/image]";
+                d.Hint = "Add a image from the media library.";
+                d.Usage =
+@"[image]foo.jpg[/image]<br>
+<table>
+  <tr>
+    <td>Args:</td>
+    <td>width, height, mode</td>
+  </tr>
+  <tr>
+    <td></td>
+    <td>class, alt</td>
+  </tr>
+</table>";
+                d.Categories = new string[] { "HTML Content", "Media" };
+            });
         }
     }
 }

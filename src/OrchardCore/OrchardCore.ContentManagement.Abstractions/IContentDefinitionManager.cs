@@ -52,11 +52,28 @@ namespace OrchardCore.ContentManagement.Metadata
             alteration(builder);
             manager.StoreTypeDefinition(builder.Build());
         }
+
+        public static async Task AlterTypeDefinitionAsync(this IContentDefinitionManager manager, string name, Func<ContentTypeDefinitionBuilder, Task> alterationAsync)
+        {
+            var typeDefinition = manager.LoadTypeDefinition(name) ?? new ContentTypeDefinition(name, name.CamelFriendly());
+            var builder = new ContentTypeDefinitionBuilder(typeDefinition);
+            await alterationAsync(builder);
+            manager.StoreTypeDefinition(builder.Build());
+        }
+
         public static void AlterPartDefinition(this IContentDefinitionManager manager, string name, Action<ContentPartDefinitionBuilder> alteration)
         {
             var partDefinition = manager.LoadPartDefinition(name) ?? new ContentPartDefinition(name);
             var builder = new ContentPartDefinitionBuilder(partDefinition);
             alteration(builder);
+            manager.StorePartDefinition(builder.Build());
+        }
+
+        public static async Task AlterPartDefinitionAsync(this IContentDefinitionManager manager, string name, Func<ContentPartDefinitionBuilder, Task> alterationAsync)
+        {
+            var partDefinition = manager.LoadPartDefinition(name) ?? new ContentPartDefinition(name);
+            var builder = new ContentPartDefinitionBuilder(partDefinition);
+            await alterationAsync(builder);
             manager.StorePartDefinition(builder.Build());
         }
 

@@ -5,7 +5,7 @@ using OrchardCore.Modules.Manifest;
     Author = ManifestConstants.OrchardCoreTeam,
     Website = ManifestConstants.OrchardCoreWebsite,
     Version = ManifestConstants.OrchardCoreVersion,
-    Description = "Adds scripting capabilities.",
+    Description = "The Scripting module adds scripting capabilities.",
     Category = "Infrastructure",
     IsAlwaysEnabled = true
 )]

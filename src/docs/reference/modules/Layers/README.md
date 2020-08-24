@@ -23,7 +23,7 @@ Here are some available functions:
 | `url(url: String): Boolean` | Returns true if the current url matches the provided url. Add a `*` to the end of the url parameter to match any url that start with  |
 | `culture(name: String): Boolean` | Returns true if the current culture name or the current culture's parent name matches the `name` argument |
 
-You can add new functions by implementing an `IGlobalMethodProvider`. See [Scripting](../Scripting/#layers-orchardcorelayers)
+You can add new functions by implementing an `IGlobalMethodProvider`. See [Scripting](../Scripting/README.md#layers-orchardcorelayers)
 
 ## Zones
 
@@ -31,10 +31,14 @@ The zones that are listed can be set in the `Design > Settings > Zones` admin pa
 
 You must have declared the corresponding zones as sections in your theme :
 
-```liquid tab="Liquid"
-{% render_section "Header", required: false %}
-```
+=== "Liquid"
 
-``` html tab="Razor"
+    ``` liquid
+    {% render_section "Header", required: false %}
+    ```
+
+=== "Razor"
+
+``` html
 @await RenderSectionAsync("Header", required: false)
 ```

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
@@ -42,7 +43,8 @@ namespace OrchardCore.Flows.Drivers
                 m.BuildPartDisplayContext = context;
                 m.Settings = context.TypePartDefinition.GetSettings<BagPartSettings>();
             })
-            .Location("Detail", "Content:5");
+            .Location("Detail", "Content:5")
+            .Location("Summary", "Content:5");
         }
 
         public override IDisplayResult Edit(BagPart bagPart, BuildPartEditorContext context)
@@ -67,10 +69,14 @@ namespace OrchardCore.Flows.Drivers
             for (var i = 0; i < model.Prefixes.Length; i++)
             {
                 var contentItem = await _contentManager.NewAsync(model.ContentTypes[i]);
-                var existing = part.ContentItems.FirstOrDefault(x => String.Equals(x.ContentItemId, model.Prefixes[i], StringComparison.OrdinalIgnoreCase));
-                if (existing != null)
+                var existingContentItem = part.ContentItems.FirstOrDefault(x => String.Equals(x.ContentItemId, model.Prefixes[i], StringComparison.OrdinalIgnoreCase));
+                // When the content item already exists merge its elements to preverse nested content item ids.
+                // All of the data for these merged items is then replaced by the model values on update, while a nested content item id is maintained.
+                // This prevents nested items which rely on the content item id, i.e. the media attached field, losing their reference point.
+                if (existingContentItem != null)
                 {
                     contentItem.ContentItemId = model.Prefixes[i];
+                    contentItem.Merge(existingContentItem);
                 }
 
                 var widgetModel = await contentItemDisplayManager.UpdateEditorAsync(contentItem, context.Updater, context.IsNew, htmlFieldPrefix: model.Prefixes[i]);

@@ -6,7 +6,7 @@
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 /*!
- * Bootstrap-select v1.13.16 (https://developer.snapappointments.com/bootstrap-select)
+ * Bootstrap-select v1.13.18 (https://developer.snapappointments.com/bootstrap-select)
  *
  * Copyright 2012-2020 SnapAppointments, LLC
  * Licensed under MIT (https://github.com/snapappointments/bootstrap-select/blob/master/LICENSE)
@@ -828,7 +828,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     elementTemplates.noResults = elementTemplates.li.cloneNode(false);
     elementTemplates.noResults.className = 'no-results';
     elementTemplates.a.setAttribute('role', 'option');
-    if (version.major === '4') elementTemplates.a.className = 'dropdown-item';
+    elementTemplates.a.className = 'dropdown-item';
     elementTemplates.subtext.className = 'text-muted';
     elementTemplates.text = elementTemplates.span.cloneNode(false);
     elementTemplates.text.className = 'text';
@@ -994,7 +994,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       this.init();
     };
 
-    Selectpicker.VERSION = '1.13.16'; // part of this is duplicated in i18n/defaults-en_US.js. Make sure to update both.
+    Selectpicker.VERSION = '1.13.18'; // part of this is duplicated in i18n/defaults-en_US.js. Make sure to update both.
 
     Selectpicker.DEFAULTS = {
       noneSelectedText: 'Nothing selected',
@@ -1049,25 +1049,33 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       constructor: Selectpicker,
       init: function init() {
         var that = this,
-            id = this.$element.attr('id');
+            id = this.$element.attr('id'),
+            element = this.$element[0],
+            form = element.form;
         selectId++;
         this.selectId = 'bs-select-' + selectId;
-        this.$element[0].classList.add('bs-select-hidden');
+        element.classList.add('bs-select-hidden');
         this.multiple = this.$element.prop('multiple');
         this.autofocus = this.$element.prop('autofocus');
 
-        if (this.$element[0].classList.contains('show-tick')) {
+        if (element.classList.contains('show-tick')) {
           this.options.showTick = true;
         }
 
         this.$newElement = this.createDropdown();
         this.buildData();
-        this.$element.after(this.$newElement).prependTo(this.$newElement);
+        this.$element.after(this.$newElement).prependTo(this.$newElement); // ensure select is associated with form element if it got unlinked after moving it inside newElement
+
+        if (form && element.form === null) {
+          if (!form.id) form.id = 'form-' + this.selectId;
+          element.setAttribute('form', form.id);
+        }
+
         this.$button = this.$newElement.children('button');
         this.$menu = this.$newElement.children(Selector.MENU);
         this.$menuInner = this.$menu.children('.inner');
         this.$searchbox = this.$menu.find('input');
-        this.$element[0].classList.remove('bs-select-hidden');
+        element.classList.remove('bs-select-hidden');
         if (this.options.dropdownAlignRight === true) this.$menu[0].classList.add(classNames.MENURIGHT);
 
         if (typeof id !== 'undefined') {
@@ -1121,7 +1129,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
           }
         });
 
-        if (that.$element[0].hasAttribute('required')) {
+        if (element.hasAttribute('required')) {
           this.$element.on('invalid' + EVENT_KEY, function () {
             that.$button[0].classList.add('bs-invalid');
             that.$element.on('shown' + EVENT_KEY + '.invalid', function () {
@@ -1179,12 +1187,13 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
           donebutton = '<div class="bs-donebutton">' + '<div class="btn-group btn-block">' + '<button type="button" class="btn btn-sm ' + classNames.BUTTONCLASS + '">' + this.options.doneButtonText + '</button>' + '</div>' + '</div>';
         }
 
-        drop = '<div class="dropdown bootstrap-select' + showTick + inputGroup + '">' + '<button type="button" class="' + this.options.styleBase + ' dropdown-toggle" ' + (this.options.display === 'static' ? 'data-display="static"' : '') + 'data-toggle="dropdown"' + autofocus + ' role="combobox" aria-owns="' + this.selectId + '" aria-haspopup="listbox" aria-expanded="false">' + '<div class="filter-option">' + '<div class="filter-option-inner">' + '<div class="filter-option-inner-inner"></div>' + '</div> ' + '</div>' + (version.major === '4' ? '' : '<span class="bs-caret">' + this.options.template.caret + '</span>') + '</button>' + '<div class="' + classNames.MENU + ' ' + (version.major === '4' ? '' : classNames.SHOW) + '">' + header + searchbox + actionsbox + '<div class="inner ' + classNames.SHOW + '" role="listbox" id="' + this.selectId + '" tabindex="-1" ' + multiselectable + '>' + '<ul class="' + classNames.MENU + ' inner ' + (version.major === '4' ? classNames.SHOW : '') + '" role="presentation">' + '</ul>' + '</div>' + donebutton + '</div>' + '</div>';
+        drop = '<div class="dropdown bootstrap-select' + showTick + inputGroup + '">' + '<button type="button" tabindex="-1" class="' + this.options.styleBase + ' dropdown-toggle" ' + (this.options.display === 'static' ? 'data-display="static"' : '') + 'data-toggle="dropdown"' + autofocus + ' role="combobox" aria-owns="' + this.selectId + '" aria-haspopup="listbox" aria-expanded="false">' + '<div class="filter-option">' + '<div class="filter-option-inner">' + '<div class="filter-option-inner-inner"></div>' + '</div> ' + '</div>' + (version.major === '4' ? '' : '<span class="bs-caret">' + this.options.template.caret + '</span>') + '</button>' + '<div class="' + classNames.MENU + ' ' + (version.major === '4' ? '' : classNames.SHOW) + '">' + header + searchbox + actionsbox + '<div class="inner ' + classNames.SHOW + '" role="listbox" id="' + this.selectId + '" tabindex="-1" ' + multiselectable + '>' + '<ul class="' + classNames.MENU + ' inner ' + (version.major === '4' ? classNames.SHOW : '') + '" role="presentation">' + '</ul>' + '</div>' + donebutton + '</div>' + '</div>';
         return $(drop);
       },
       setPositionData: function setPositionData() {
         this.selectpicker.view.canHighlight = [];
         this.selectpicker.view.size = 0;
+        this.selectpicker.view.firstHighlightIndex = false;
 
         for (var i = 0; i < this.selectpicker.current.data.length; i++) {
           var li = this.selectpicker.current.data[i],
@@ -1206,6 +1215,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
           if (canHighlight) {
             this.selectpicker.view.size++;
             li.posinset = this.selectpicker.view.size;
+            if (this.selectpicker.view.firstHighlightIndex === false) this.selectpicker.view.firstHighlightIndex = i;
           }
 
           li.position = (i === 0 ? 0 : this.selectpicker.current.data[i - 1].position) + li.height;
@@ -1446,7 +1456,8 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         }
       },
       setPlaceholder: function setPlaceholder() {
-        var updateIndex = false;
+        var that = this,
+            updateIndex = false;
 
         if (this.options.title && !this.multiple) {
           if (!this.selectpicker.view.titleOption) this.selectpicker.view.titleOption = document.createElement('option'); // this option doesn't create a new <li> element, but does add a new option at the start,
@@ -1454,8 +1465,13 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
           updateIndex = true;
           var element = this.$element[0],
-              isSelected = false,
-              titleNotAppended = !this.selectpicker.view.titleOption.parentNode;
+              selectTitleOption = false,
+              titleNotAppended = !this.selectpicker.view.titleOption.parentNode,
+              selectedIndex = element.selectedIndex,
+              selectedOption = element.options[selectedIndex],
+              navigation = window.performance && window.performance.getEntriesByType('navigation'),
+              // Safari doesn't support getEntriesByType('navigation') - fall back to performance.navigation
+          isNotBackForward = navigation && navigation.length ? navigation[0].type !== 'back_forward' : window.performance.navigation.type !== 2;
 
           if (titleNotAppended) {
             // Use native JS to prepend option (faster)
@@ -1464,8 +1480,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
             // the selected item may have been changed by user or programmatically before the bootstrap select plugin runs,
             // if so, the select will have the data-selected attribute
 
-            var $opt = $(element.options[element.selectedIndex]);
-            isSelected = $opt.attr('selected') === undefined && this.$element.data('selected') === undefined;
+            selectTitleOption = !selectedOption || selectedIndex === 0 && selectedOption.defaultSelected === false && this.$element.data('selected') === undefined;
           }
 
           if (titleNotAppended || this.selectpicker.view.titleOption.index !== 0) {
@@ -1475,7 +1490,15 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
           // set using selectedIndex, as setting the selected attr to true here doesn't work in IE11
 
 
-          if (isSelected) element.selectedIndex = 0;
+          if (selectTitleOption && isNotBackForward) {
+            element.selectedIndex = 0;
+          } else if (document.readyState !== 'complete') {
+            // if navigation type is back_forward, there's a chance the select will have its value set by BFCache
+            // wait for that value to be set, then run render again
+            window.addEventListener('pageshow', function () {
+              if (that.selectpicker.view.displayedValue !== element.value) that.render();
+            });
+          }
         }
 
         return updateIndex;
@@ -1584,13 +1607,13 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
           }
         }
 
-        for (var len = selectOptions.length; startIndex < len; startIndex++) {
-          var item = selectOptions[startIndex];
+        for (var len = selectOptions.length, i = startIndex; i < len; i++) {
+          var item = selectOptions[i];
 
           if (item.tagName !== 'OPTGROUP') {
             addOption(item, {});
           } else {
-            addOptgroup(startIndex, selectOptions);
+            addOptgroup(i, selectOptions);
           }
         }
 
@@ -1672,7 +1695,10 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
             countMax,
             hasContent = false;
         button.classList.toggle('bs-placeholder', that.multiple ? !selectedCount : !getSelectValues(element, selectedOptions));
-        this.tabIndex();
+
+        if (!that.multiple && selectedOptions.length === 1) {
+          that.selectpicker.view.displayedValue = getSelectValues(element, selectedOptions);
+        }
 
         if (this.options.selectedTextFormat === 'static') {
           titleFragment = generateOption.text.call(this, {
@@ -2254,25 +2280,13 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       checkDisabled: function checkDisabled() {
         if (this.isDisabled()) {
           this.$newElement[0].classList.add(classNames.DISABLED);
-          this.$button.addClass(classNames.DISABLED).attr('tabindex', -1).attr('aria-disabled', true);
+          this.$button.addClass(classNames.DISABLED).attr('aria-disabled', true);
         } else {
           if (this.$button[0].classList.contains(classNames.DISABLED)) {
             this.$newElement[0].classList.remove(classNames.DISABLED);
             this.$button.removeClass(classNames.DISABLED).attr('aria-disabled', false);
           }
-
-          if (this.$button.attr('tabindex') == -1 && !this.$element.data('tabindex')) {
-            this.$button.removeAttr('tabindex');
-          }
         }
-      },
-      tabIndex: function tabIndex() {
-        if (this.$element.data('tabindex') !== this.$element.attr('tabindex') && this.$element.attr('tabindex') !== -98 && this.$element.attr('tabindex') !== '-98') {
-          this.$element.data('tabindex', this.$element.attr('tabindex'));
-          this.$button.attr('tabindex', this.$element.data('tabindex'));
-        }
-
-        this.$element.attr('tabindex', -98);
       },
       clickListener: function clickListener() {
         var that = this,
@@ -2372,7 +2386,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
               // Toggle the one we have chosen if we are multi select.
               option.selected = !state;
               that.setSelected(clickedIndex, !state);
-              $this.trigger('blur');
+              that.focusedParent.focus();
 
               if (maxOptions !== false || maxOptionsGrp !== false) {
                 var maxReached = maxOptions < getSelectedOptions(element).length,
@@ -2493,12 +2507,30 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
             that.deselectAll();
           }
         });
+        this.$button.on('focus' + EVENT_KEY, function (e) {
+          var tabindex = that.$element[0].getAttribute('tabindex'); // only change when button is actually focused
+
+          if (tabindex !== undefined && e.originalEvent && e.originalEvent.isTrusted) {
+            // apply select element's tabindex to ensure correct order is followed when tabbing to the next element
+            this.setAttribute('tabindex', tabindex); // set element's tabindex to -1 to allow for reverse tabbing
+
+            that.$element[0].setAttribute('tabindex', -1);
+            that.selectpicker.view.tabindex = tabindex;
+          }
+        }).on('blur' + EVENT_KEY, function (e) {
+          // revert everything to original tabindex
+          if (that.selectpicker.view.tabindex !== undefined && e.originalEvent && e.originalEvent.isTrusted) {
+            that.$element[0].setAttribute('tabindex', that.selectpicker.view.tabindex);
+            this.setAttribute('tabindex', -1);
+            that.selectpicker.view.tabindex = undefined;
+          }
+        });
         this.$element.on('change' + EVENT_KEY, function () {
           that.render();
           that.$element.trigger('changed' + EVENT_KEY, changedArguments);
           changedArguments = null;
         }).on('focus' + EVENT_KEY, function () {
-          if (!that.options.mobile) that.$button.trigger('focus');
+          if (!that.options.mobile) that.$button[0].focus();
         });
       },
       liveSearchListener: function liveSearchListener() {
@@ -2506,13 +2538,14 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         this.$button.on('click.bs.dropdown.data-api', function () {
           if (!!that.$searchbox.val()) {
             that.$searchbox.val('');
+            that.selectpicker.search.previousValue = undefined;
           }
         });
         this.$searchbox.on('click.bs.dropdown.data-api focus.bs.dropdown.data-api touchend.bs.dropdown.data-api', function (e) {
           e.stopPropagation();
         });
         this.$searchbox.on('input propertychange', function () {
-          var searchValue = that.$searchbox.val();
+          var searchValue = that.$searchbox[0].value;
           that.selectpicker.search.elements = [];
           that.selectpicker.search.data = [];
 
@@ -2566,10 +2599,13 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
             that.selectpicker.search.elements = searchMatch;
             that.createView(true);
             showNoResults.call(that, searchMatch, searchValue);
-          } else {
+          } else if (that.selectpicker.search.previousValue) {
+            // for IE11 (#2402)
             that.$menuInner.scrollTop(0);
             that.createView(false);
           }
+
+          that.selectpicker.search.previousValue = searchValue;
         });
       },
       _searchStyle: function _searchStyle() {
@@ -2697,7 +2733,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
           } else if (e.which === keyCodes.ARROW_DOWN || downOnTab) {
             // down
             index++;
-            if (index + position0 >= that.selectpicker.view.canHighlight.length) index = 0;
+            if (index + position0 >= that.selectpicker.view.canHighlight.length) index = that.selectpicker.view.firstHighlightIndex;
 
             if (!that.selectpicker.view.canHighlight[index + position0]) {
               index = index + 1 + that.selectpicker.view.canHighlight.slice(index + position0 + 1).indexOf(true);
@@ -2721,9 +2757,9 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
           } else if (e.which === keyCodes.ARROW_DOWN || downOnTab) {
             // down
             // scroll to top and highlight first option
-            if (index === 0) {
+            if (index === that.selectpicker.view.firstHighlightIndex) {
               that.$menuInner[0].scrollTop = 0;
-              liActiveIndex = 0;
+              liActiveIndex = that.selectpicker.view.firstHighlightIndex;
             } else {
               activeLi = that.selectpicker.current.data[liActiveIndex];
               offset = activeLi.position - that.sizeInfo.menuInnerHeight;
@@ -2821,6 +2857,8 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         }
       },
       mobile: function mobile() {
+        // ensure mobile is set to true if mobile function is called after init
+        this.options.mobile = true;
         this.$element[0].classList.add('mobile-device');
       },
       refresh: function refresh() {
@@ -2853,6 +2891,10 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
           this.$bsContainer.remove();
         } else {
           this.$menu.remove();
+        }
+
+        if (this.selectpicker.view.titleOption && this.selectpicker.view.titleOption.parentNode) {
+          this.selectpicker.view.titleOption.parentNode.removeChild(this.selectpicker.view.titleOption);
         }
 
         this.$element.off(EVENT_KEY).removeData('selectpicker').removeClass('bs-select-hidden selectpicker');

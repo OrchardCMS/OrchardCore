@@ -97,10 +97,13 @@ namespace OrchardCore.Menu.Controllers
 
             var contentItem = await _contentManager.NewAsync(id);
 
-            var model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, _updateModelAccessor.ModelUpdater, true);
+            dynamic model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, _updateModelAccessor.ModelUpdater, true);
 
             if (!ModelState.IsValid)
             {
+                model.MenuContentItemId = menuContentItemId;
+                model.MenuItemId = menuItemId;
+
                 return View(model);
             }
 
@@ -132,7 +135,7 @@ namespace OrchardCore.Menu.Controllers
                 menuItems.Add(JObject.FromObject(contentItem));
             }
 
-            _session.Save(menu);
+            await _contentManager.SaveDraftAsync(menu);
 
             return RedirectToAction("Edit", "Admin", new { area = "OrchardCore.Contents", contentItemId = menuContentItemId });
         }
@@ -208,10 +211,13 @@ namespace OrchardCore.Menu.Controllers
 
             var contentItem = menuItem.ToObject<ContentItem>();
 
-            var model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, _updateModelAccessor.ModelUpdater, false);
+            dynamic model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, _updateModelAccessor.ModelUpdater, false);
 
             if (!ModelState.IsValid)
             {
+                model.MenuContentItemId = menuContentItemId;
+                model.MenuItemId = menuItemId;
+
                 return View(model);
             }
 
@@ -221,7 +227,7 @@ namespace OrchardCore.Menu.Controllers
                 MergeNullValueHandling = MergeNullValueHandling.Merge
             });
 
-            _session.Save(menu);
+            await _contentManager.SaveDraftAsync(menu);
 
             return RedirectToAction("Edit", "Admin", new { area = "OrchardCore.Contents", contentItemId = menuContentItemId });
         }
@@ -262,7 +268,8 @@ namespace OrchardCore.Menu.Controllers
             }
 
             menuItem.Remove();
-            _session.Save(menu);
+
+            await _contentManager.SaveDraftAsync(menu);
 
             _notifier.Success(H["Menu item deleted successfully"]);
 
