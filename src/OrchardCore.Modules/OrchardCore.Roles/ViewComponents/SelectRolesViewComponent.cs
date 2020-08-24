@@ -23,12 +23,7 @@ namespace OrchardCore.Roles.ViewComponents
                 selectedRoles = new string[0];
             }
 
-            if (except != null)
-            {
-                selectedRoles = selectedRoles.Except(except);
-            }
-
-            var roleSelections = await BuildRoleSelectionsAsync(selectedRoles);
+            var roleSelections = await BuildRoleSelectionsAsync(selectedRoles, except);
 
             var model = new SelectRolesViewModel
             {
@@ -39,9 +34,15 @@ namespace OrchardCore.Roles.ViewComponents
             return View(model);
         }
 
-        private async Task<IList<Selection<string>>> BuildRoleSelectionsAsync(IEnumerable<string> selectedRoles)
+        private async Task<IList<Selection<string>>> BuildRoleSelectionsAsync(IEnumerable<string> selectedRoles, IEnumerable<string> except)
         {
             var roleNames = await _roleService.GetRoleNamesAsync();
+
+            if (except != null)
+            {
+                roleNames = roleNames.Except(except, StringComparer.OrdinalIgnoreCase);
+            }
+
             return roleNames.Select(x => new Selection<string>
             {
                 IsSelected = selectedRoles.Contains(x),
