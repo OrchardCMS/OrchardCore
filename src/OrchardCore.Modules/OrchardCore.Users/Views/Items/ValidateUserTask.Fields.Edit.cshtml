@@ -3,12 +3,12 @@
 <fieldset class="form-group form-check" asp-validation-class-for="SetUser">
     <input type="checkbox" asp-for="SetUser" class="form-check-input" />
     <span asp-validation-for="SetUser"></span>
-    <label asp-for="SetUser" class="form-check-label">@T["Set the User property if the user is Authenticated"]</label>
+    <label asp-for="SetUser" class="form-check-label">@T["Set the 'User' workflow property if the user is authenticated"]</label>
 </fieldset>
 
 <fieldset class="form-group" asp-validation-class-for="Roles">
     <label asp-for="Roles">@T["Roles"]</label>
     @await Component.InvokeAsync("SelectRoles", new { selectedRoles = Model.Roles, htmlName = Html.NameFor(m => m.Roles), except = new[] { "Anonymous", "Authenticated" } })
     <span asp-validation-for="Roles"></span>
-    <span class="hint">@T["The InRole outcome will be triggerred if the user has at least one of the selected roles."]</span>
+    <span class="hint">@T["The 'InRole' outcome will be triggerred if the user has at least one of the selected roles."]</span>
 </fieldset>
