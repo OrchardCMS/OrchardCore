@@ -1,0 +1,51 @@
+@model ContentItemComponentModel
+
+@{
+    HtmlBodyPart html =  ((ContentItem)Model.ContentItem).As<HtmlBodyPart>();
+}
+<!-- so i've actually come up with two things that are useful. 
+- the idea of content slots in tag helpers / blocks
+- the more complicated issue of how to build part and field components.
+-->
+
+@* <shape type="Title"></shape> *@
+
+<shape2 type="Header">
+    <shape2 slot="Title" Type="Title" title="Model.ContentItem.DisplayText"></shape2>
+    <span slot="SubHeading" class="subheading">
+        <part contentitem="Model.ContentItem" part="HtmlBodyPart"/>
+    </span>
+
+</shape2>
+
+<!-- in this case a slot, and a zone, are the same. But to make this less OrchardCore, and more Html WebComponent (i.e. standards based), we call them slots -->
+@* <component type="@("Header")"> <!-- this component is a generic tag helper which can listen on attributes or the element name. When used like this it produces no wrapping element -->
+  <component slot="Media" type="Media" prop-media="Model.ContentItem.Content.Blog.Image" prop-fallback="@("~/TheBlogTheme/img/home--bg.jpg")"/> <!-- the slot could be defined by the viewmodel, or here. it's a property right -->
+  <component slot="Title" type="Title" title="Model.ContentItem.DisplayText"/> 
+  <span component="Model.ContentItem.Content.HtmlBodyPart" slot="Subheading" class="subheading"> <!-- this is useful, because the component can apply the classes, through it's viewmodel, and render the text -->
+  </span>
+   <component slot="PostMeta" type="PostMeta" data="Model"/> 
+</component>
+  *@
+{{ Model.Content.ContentsMetadata | shape_render }}
+
+
+<!-- These are reasonably obvious -->
+ <!-- This gives a good way to deliver auto part shapes, but not a good way to deliver common properties, like display text, you could not know the name of the property to tell what it was -->
+<field-component field="Model.ContentItem.Content.Blog-Category" displayType="Summary"/>
+<field-component field="Model.ContentItem.Content.Blog-Tags"/>
+
+
+
+<part contentitem="Model.ContentItem" part="ListPart"/>
+
+<!-- this wrapper could be in the ComponentDisplay (potentially), or in a wrapper shape around it -->
+
+
+@* <contentitem contentitem="Model.ContentItem"> <!-- and this could be a block/taghelper context property -->
+    <part part="HtmlBodyPart"/>
+</contentitem> *@
+
+@* <my-paragraph>
+  <span slot="my-text">Let's have some different text!</span>
+</my-paragraph> *@

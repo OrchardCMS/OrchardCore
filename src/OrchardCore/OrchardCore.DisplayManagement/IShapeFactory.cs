@@ -39,6 +39,12 @@ namespace OrchardCore.DisplayManagement
             return factory.CreateAsync(shapeType, Arguments.From(model));
         }
 
+        public static ValueTask<IShape> CreateAsync<TModel>(this IShapeFactory factory, TModel model) where TModel : IShapeComponent
+        {
+            return factory.CreateAsync(model.Metadata.Type, () => new ValueTask<IShape>(model));
+        }
+
+
         private static IShape CreateShape(Type baseType)
         {
             // Don't generate a proxy for shape types

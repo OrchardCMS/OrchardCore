@@ -1,0 +1,51 @@
+{% zone "Header" %}
+    <!-- Page Header -->
+    <!-- Set your background image for this header on the line below. -->
+    {% assign imagePath = Model.ContentItem.Content.BlogPost.Image.Paths.first %}
+    {% if imagePath == nil %}
+        <header class="masthead" style="background-image: url('{{ "~/TheBlogTheme/img/post-bg.jpg" | href }}')">
+    {% else %}
+        <header class="masthead" style="background-image: url('{{ imagePath | asset_url }}')">
+    {% endif %}
+        <div class="overlay"></div>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-md-10 mx-auto">
+                    <div class="post-heading">
+                        <h1>{{ Model.ContentItem.DisplayText }}</h1>
+                        <!-- Maybe this isn't wrapped by the H2 and that is inside the template -->
+                        <h2 class="subheading">{% component Model.ContentItem.Content.BlogPost.Subtitle %}</h2>
+                        <!-- This feels like a shapeviewmodel, but a custom one -->
+                        <span class="meta">
+                            {% assign format = "MMMM dd, yyyy" | t %}
+                            {% assign dateTime = "DateTime" | shape_new: utc: Model.ContentItem.CreatedUtc, format: format | shape_stringify %}
+                            {{ "Posted by" | t }} <a href="#">{{ Model.ContentItem.Owner }}</a> {{ "on {0}" | t: dateTime | raw }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+{% endzone %}
+
+{% component "Header" %}
+  {% component "Image", media:"Model.ContentItem.Content.BlogPost.Image", fallback:"~/TheBlogTheme/img/post-bg.jpg" %}
+  {% component "Title", title:"Model.ContentItem.DisplayText" %}
+  {% component "SubHeading", text: Model.ContentItem.Content.BlogPost.Subtitle %}
+  {% component "PostMeta", data: Model.ContentItem %}
+{% end_component %}
+
+<!-- ContentsMetadata should be rendered automatically, i.e. placement to a head zone 
+But when? what bit should control that kind of stuff ?
+-->
+{{ Model.Content.ContentsMetadata | shape_render }}
+
+
+{{ Model.Content.MarkdownBodyPart | shape_render }}
+{{ Model.Content.BlogPost-Category | shape_render }}
+{{ Model.Content.BlogPost-Tags | shape_render }}
+
+<!-- These are reasonably obvious -->
+{% compoment Model.ContentItem.Content.MarkdownBodypart %}
+{% component Model.ContentItem.Content.BlogPost-Category %}
+{% component Model.ContentItem.Content.BlogPost-Tags %}

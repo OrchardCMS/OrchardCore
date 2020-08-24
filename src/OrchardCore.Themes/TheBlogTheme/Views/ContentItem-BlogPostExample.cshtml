@@ -1,0 +1,94 @@
+@model ContentItemComponentModel
+
+<p>I am stuff</p>
+{% zone "Header" %}
+    <!-- Page Header -->
+    <!-- Set your background image for this header on the line below. -->
+    {% assign imagePath = Model.ContentItem.Content.BlogPost.Image.Paths.first %}
+    {% if imagePath == nil %}
+        <header class="masthead" style="background-image: url('{{ "~/TheBlogTheme/img/post-bg.jpg" | href }}')">
+    {% else %}
+        <header class="masthead" style="background-image: url('{{ imagePath | asset_url }}')">
+    {% endif %}
+        <div class="overlay"></div>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-md-10 mx-auto">
+                    <div class="post-heading">
+                        <h1>{{ Model.ContentItem.DisplayText }}</h1>
+                        <!-- Maybe this isn't wrapped by the H2 and that is inside the template -->
+                        <h2 class="subheading">{% component Model.ContentItem.Content.BlogPost.Subtitle %}</h2>
+                        <!-- This feels like a shapeviewmodel, but a custom one -->
+                        <span class="meta">
+                            {% assign format = "MMMM dd, yyyy" | t %}
+                            {% assign dateTime = "DateTime" | shape_new: utc: Model.ContentItem.CreatedUtc, format: format | shape_stringify %}
+                            {{ "Posted by" | t }} <a href="#">{{ Model.ContentItem.Owner }}</a> {{ "on {0}" | t: dateTime | raw }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+{% endzone %}
+
+<!-- in this case a slot, and a zone, are the same. But to make this less OrchardCore, and more Html WebComponent (i.e. standards based), we call them slots -->
+<component name="Header"> <!-- this component is a generic tag helper which can listen on attributes or the element name. When used like this it produces no wrapping element -->
+  <component slot="Media" name="Media" data-media="Model.BlogPost.Image" data-fallback="~/TheBlogTheme/img/post-bg.jpg"/> <!-- the slot could be defined by the viewmodel, or here. it's a property right -->
+  <component slot="Title" name="Title" title="Model.DisplayText"/>
+  <!-- example of what it would look like if it was wrapped by html -->
+  <component slot="Subheading" field="Model.BlogPost.Subtitle"> 
+      <h2 class="subheading"><outlet/></h2>
+  </component>
+  <h2 component="Model.BlogPost.Subtitle" slot="Subheading" class="subheading"> <!-- this is useful, because the component can apply the classes, through it's viewmodel, and render the text -->
+
+  </h2>
+  <component slot="PostMeta" name="PostMeta" data="Model"/>
+</component>
+
+  <h2 {% component Model.BlogPost.Subtitle %} class="subheading"></h2> <!-- could we do that in liquid ? -->
+<!-- ContentsMetadata should be rendered automatically, i.e. placement to a head zone 
+But when? what bit should control that kind of stuff ?
+-->
+{{ Model.Content.ContentsMetadata | shape_render }}
+
+<!-- These are reasonably obvious -->
+<component part="Model.MarkdownBodypart"/> <!-- This gives a good way to deliver auto part shapes, but not a good way to deliver common properties, like display text, you could not know the name of the property to tell what it was -->
+<component field="Model.BlogPost-Category"/>
+<component field="Model.BlogPost-Tags"/>
+
+<!-- If this was an ngx app it might look like this -->
+<app-header>
+  <app-header-media slot="media" [media]="ContentItem.BlogPost.Image" fallback="~/TheBlogTheme/img/post-bg.jpg">
+  </app-header-media>
+
+  <app-title slot="title" title="My Display Text">
+  </app-title>
+  <h2 slot="subheading" class="subheading">
+    <app-field [field]="Model.BlogPost.Subtitle">
+    </app-field>
+  </h2>
+  <app-sub-meta [contentItem]="Model"></app-sub-meta>
+</app-header>
+
+<!-- app header template -->
+
+<ng-content select="[slot=media]"></ng-content>
+<div class="overlay"></div>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-md-10 mx-auto">
+                <div class="post-heading">
+                    <ng-content select="[slot=title]"></ng-content>
+                    <ng-content select="[slot=subheading]"></ng-content>
+                </div>
+            </div>
+        </div>
+</div>  
+
+<!-- media template, the component model would decide what the url is, and the template would look like -->
+<header class="masthead" style="background-image: url('{{ imagePath }}')">
+
+<!-- app-title template -->
+
+<h1>{{ title}}</h1>
+

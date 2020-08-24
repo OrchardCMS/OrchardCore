@@ -25,6 +25,9 @@ namespace OrchardCore.ContentManagement.Display
 
             services.AddLiquidFilter<ConsoleLogFilter>("console_log");
 
+            services.TryAddTransient<IContentPartComponentManager, ContentPartComponentManager>();
+            services.AddScoped<IContentPartDisplayHandler, ContentPartDisplayCoordinator>();
+
             return services;
         }
     }

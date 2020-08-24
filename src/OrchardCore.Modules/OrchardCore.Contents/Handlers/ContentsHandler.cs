@@ -68,7 +68,7 @@ namespace OrchardCore.Contents.Handlers
                 {
                     metadata.DisplayRouteValues = new RouteValueDictionary {
                         {"Area", "OrchardCore.Contents"},
-                        {"Controller", "Item"},
+                        {"Controller", "ComponentItem"},
                         {"Action", "Display"},
                         {"ContentItemId", context.ContentItem.ContentItemId}
                     };

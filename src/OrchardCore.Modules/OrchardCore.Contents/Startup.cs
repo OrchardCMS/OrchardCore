@@ -286,4 +286,26 @@ namespace OrchardCore.Contents
             services.AddScoped<IContentHandler, ContentTypesSitemapCacheHandler>();
         }
     }
+
+    [Feature("OrchardCore.Contents.Components")]
+    public class ContentsComponentsStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.Configure<AutorouteOptions>(options =>
+            {
+                options.GlobalRouteValues = new RouteValueDictionary
+                {
+                    {"Area", "OrchardCore.Contents"},
+                    {"Controller", "ComponentItem"},
+                    {"Action", "Display"}
+                };
+
+                options.ContentItemIdKey = "contentItemId";
+                options.ContainedContentItemIdKey = "containedContentItemId";
+                options.JsonPathKey = "jsonPath";
+            });
+        }
+
+    }
 }

@@ -1,0 +1,10 @@
+﻿@using OrchardCore.ContentManagement;
+@using OrchardCore.Mvc.Utilities;
+@{
+    ContentItem contentItem = Model.ContentItem;
+    //Html.AddPageClassNames("detail-" + contentItem.ContentType.HtmlClassify());
+            Model.Metadata.Alternates.Add($"ContentItem__{contentItem.ContentType}");
+}
+<p>I ran</p>
+@await DisplayAsync(Model)
+@Orchard.ConsoleLog(Model.Metadata.Alternates as object)

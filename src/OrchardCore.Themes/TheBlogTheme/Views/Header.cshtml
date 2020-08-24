@@ -1,0 +1,46 @@
+@* <zone name="Header">
+    <content slot="Media"></content>
+    <div class="overlay"></div>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-md-10 mx-auto">
+                    <div class="post-heading">
+                        <content slot="Title"></content>
+                        <content slot="SubHeading"></content>
+                    </div>
+                    <content slot="Meta"></content>
+                </div>
+            </div>
+    </div>  
+</zone> *@
+
+<!-- media template, the component model would decide what the url is, and the template would look like -->
+
+
+<!-- app-title template -->
+
+
+<!-- Title shape -->
+
+<zone name="Header">
+    <header class="masthead" style="background-image: url('{{ imagePath }}')">
+    <div class="overlay"></div>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-md-10 mx-auto">
+                    <div class="post-heading">    
+                        @if (Model.Title != null)
+                        {
+                            @await DisplayAsync(Model.Title)
+                        }
+                        else
+                        {
+                            <p>missing title slot</p>
+                        }
+                        <content slot="SubHeading"></content>
+                    </div>
+                    <content slot="Meta"></content>
+                </div>
+            </div>
+    </div>  
+</zone>
