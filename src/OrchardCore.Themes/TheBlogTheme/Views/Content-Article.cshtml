@@ -1,0 +1,42 @@
+{% zone "Header" %}
+    <!-- Page Header -->
+    <!-- Set your background image for this header on the line below. -->
+    {% assign imagePath = Model.ContentItem.Content.Article.Image.Paths.first %}
+    {% if imagePath == nil %}
+        <header class="masthead" style="background-image: url('{{ "~/TheBlogTheme/img/about-bg.jpg" | href }}')">
+    {% else %}
+        <header class="masthead" style="background-image: url('{{ imagePath | asset_url }}')">
+    {% endif %}
+        <div class="overlay"></div>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-md-10 mx-auto">
+                    <div class="page-heading">
+                        <h1>{{ Model.ContentItem.DisplayText }}</h1>
+                        <span class="subheading">{{ Model.ContentItem.Content.Article.Subtitle.Text }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+{% endzone %}
+
+<display type="Header" Fallback="~/TheBlogTheme/img/about-bg.jpg" Image="Model.ContentItem.Content.Article.Image">
+    <display slot="Header-Title">
+        @Model.ContentItem.DisplayText
+    </display>
+    <display slot="Header-Subheading"> <!-- this has no shape or type, so it is designed just to render the content into a slot -->
+        <span class="subheading">@Model.ContentItem.Content.Article.Subtitle.Text</span>
+    </display>
+    @* To achive the below with liquid would be harder  
+    <span asp-slot="Header-Subheading" class="subheading"></span>
+    *@
+    <!-- no metadata in this slot -->
+
+</display>
+
+
+{{ Model.Content.ContentsMetadata.Value }}
+{{ Model.Content.ContentsMetadata | shape_render }}
+
+{{ Model.Content.HtmlBodyPart | shape_render }}

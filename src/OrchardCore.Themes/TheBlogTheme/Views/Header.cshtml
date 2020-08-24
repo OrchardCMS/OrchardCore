@@ -1,0 +1,30 @@
+@{
+    string mediaPath = Model.Image.Paths?[0]?.ToString();
+    if (mediaPath == null)
+    {
+        mediaPath = Model.Fallback; //"~/TheBlogTheme/img/home-bg.jpg";
+    }
+    else 
+    {
+        mediaPath = @Orchard.AssetUrl(mediaPath);
+
+    }
+}
+
+
+<zone name="Header">
+    <header class="masthead" style="background-image: url('@mediaPath')">
+        <div class="overlay"></div>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-md-10 mx-auto">
+                    <div class="site-heading">
+                        <h1><slot name="Header-Title"></slot></h1>
+                        <slot name="Header-Subheading"></slot>
+                        <slot name="Header-Meta" required="False"></slot>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+</zone>
