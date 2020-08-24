@@ -7,8 +7,8 @@ namespace OrchardCore.Contents.TagHelpers
     [HtmlTargetElement("contentitem")]
     public class ContentItemTagHelper : BaseShapeTagHelper
     {
-        public ContentItemTagHelper(IShapeFactory shapeFactory, IDisplayHelper displayHelper)
-            : base(shapeFactory, displayHelper)
+        public ContentItemTagHelper(IShapeScopeManager shapeScopeManager, IShapeFactory shapeFactory, IDisplayHelper displayHelper)
+            : base(shapeScopeManager, shapeFactory, displayHelper)
         {
             Type = "ContentItem";
         }

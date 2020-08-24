@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using OrchardCore.Mvc.Utilities;
 
@@ -13,12 +14,14 @@ namespace OrchardCore.DisplayManagement.TagHelpers
             "id", "alternate", "wrapper", "cache-id", "cache-context", "cache-tag", "cache-fixed-duration", "cache-sliding-duration"
         };
 
+        protected const string SlotName = "slot";
         protected const string PropertyDictionaryName = "prop-all";
         protected const string PropertyPrefix = "prop-";
         private static readonly char[] Separators = { ',', ' ' };
 
         protected IShapeFactory _shapeFactory;
         protected IDisplayHelper _displayHelper;
+        protected IShapeScopeManager _shapeScopeManager;
 
         public string Type { get; set; }
 
@@ -32,11 +35,21 @@ namespace OrchardCore.DisplayManagement.TagHelpers
         internal string Context { get; set; }
         internal string Tag { get; set; }
 
-        protected BaseShapeTagHelper(IShapeFactory shapeFactory, IDisplayHelper displayHelper)
+        protected BaseShapeTagHelper(
+            IShapeScopeManager shapeScopeManager,
+            IShapeFactory shapeFactory, 
+            IDisplayHelper displayHelper)
         {
             _shapeFactory = shapeFactory;
             _displayHelper = displayHelper;
+            _shapeScopeManager = shapeScopeManager;
         }
+
+        [HtmlAttributeName("Shape")]
+        public dynamic Shape { get; set; }
+
+        [HtmlAttributeName(SlotName)]
+        public string Slot { get; set; }
 
         /// <summary>
         /// Additional properties for the shape.
@@ -70,10 +83,12 @@ namespace OrchardCore.DisplayManagement.TagHelpers
                 }
             }
 
-            if (string.IsNullOrWhiteSpace(Type))
-            {
-                Type = output.TagName;
-            }
+            // TODO rethink.
+
+            // if (string.IsNullOrWhiteSpace(Type))
+            // {
+            //     Type = output.TagName;
+            // }
 
             if (string.IsNullOrWhiteSpace(Cache) && output.Attributes.ContainsName("cache-id"))
             {
@@ -108,57 +123,108 @@ namespace OrchardCore.DisplayManagement.TagHelpers
                 }
             }
 
-            var shape = await _shapeFactory.CreateAsync(Type, Arguments.From(properties));
+            // if only has slot, 
 
-            if (output.Attributes.ContainsName("id"))
+            // TODO add Shape property. If not null, create.
+            // Only make a shape if Type is valid.
+            if (!String.IsNullOrEmpty(Type) && Shape == null)
             {
-                shape.Id = Convert.ToString(output.Attributes["id"].Value);
+                Shape = await _shapeFactory.CreateAsync(Type, Arguments.From(properties));
             }
 
-            if (output.Attributes.ContainsName("alternate"))
+            if (Shape != null)
             {
-                shape.Metadata.Alternates.Add(Convert.ToString(output.Attributes["alternate"].Value));
+                if (output.Attributes.ContainsName("id"))
+                {
+                    Shape.Id = Convert.ToString(output.Attributes["id"].Value);
+                }
+
+                if (output.Attributes.ContainsName("alternate"))
+                {
+                    Shape.Metadata.Alternates.Add(Convert.ToString(output.Attributes["alternate"].Value));
+                }
+
+                if (output.Attributes.ContainsName("wrapper"))
+                {
+                    Shape.Metadata.Wrappers.Add(Convert.ToString(output.Attributes["wrapper"].Value));
+                }
+
+
+                // TODO move these into scope so shapes can be nested properly.
+                tagHelperContext.Items.Add(typeof(IShape), Shape);
+
+                if (!string.IsNullOrWhiteSpace(Cache))
+                {
+                    var metadata = Shape.Metadata;
+
+                    metadata.Cache(Cache);
+
+                    if (FixedDuration.HasValue)
+                    {
+                        metadata.Cache().WithExpiryAfter(FixedDuration.Value);
+                    }
+
+                    if (SlidingDuration.HasValue)
+                    {
+                        metadata.Cache().WithExpirySliding(SlidingDuration.Value);
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(Context))
+                    {
+                        var contexts = Context.Split(Separators, StringSplitOptions.RemoveEmptyEntries);
+                        metadata.Cache().AddContext(contexts);
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(Tag))
+                    {
+                        var tags = Tag.Split(Separators, StringSplitOptions.RemoveEmptyEntries);
+                        metadata.Cache().AddTag(tags);
+                    }
+                }
             }
 
-            if (output.Attributes.ContainsName("wrapper"))
+
+            _shapeScopeManager.EnterScope(new ShapeScopeContext());
+            if (Shape != null)
             {
-                shape.Metadata.Wrappers.Add(Convert.ToString(output.Attributes["wrapper"].Value));
+                if (Shape is IShape shape)
+                {
+                    _shapeScopeManager.AddShape(shape);   
+                }
+                
             }
 
-            tagHelperContext.Items.Add(typeof(IShape), shape);
+            // Always render the child content, but we might not use it.
+            // This allows the tag helpers in the child content to activate.
 
-            if (!string.IsNullOrWhiteSpace(Cache))
+            var childContent = await output.GetChildContentAsync();
+
+            IHtmlContent content = null;
+
+            if (Shape != null)
+            {                     
+                content = await _displayHelper.ShapeExecuteAsync(Shape);
+            }
+            else
             {
-                var metadata = shape.Metadata;
-
-                metadata.Cache(Cache);
-
-                if (FixedDuration.HasValue)
-                {
-                    metadata.Cache().WithExpiryAfter(FixedDuration.Value);
-                }
-
-                if (SlidingDuration.HasValue)
-                {
-                    metadata.Cache().WithExpirySliding(SlidingDuration.Value);
-                }
-
-                if (!string.IsNullOrWhiteSpace(Context))
-                {
-                    var contexts = Context.Split(Separators, StringSplitOptions.RemoveEmptyEntries);
-                    metadata.Cache().AddContext(contexts);
-                }
-
-                if (!string.IsNullOrWhiteSpace(Tag))
-                {
-                    var tags = Tag.Split(Separators, StringSplitOptions.RemoveEmptyEntries);
-                    metadata.Cache().AddTag(tags);
-                }
+                content = childContent;
+                // Hmm does this child content not go into the slot, if it has a slot name.
+                // output.Content.SetHtmlContent(childContent);
             }
 
-            await output.GetChildContentAsync();
+            if (Shape == null && !String.IsNullOrEmpty(Slot))
+            {                     
+                // But we're in a new scope now, so this isn't right.
+                _shapeScopeManager.AddSlot(Slot, content);
+            }
+            else
+            {
+                // Hmm does this child content not go into the slot, if it has a slot name.
+                output.Content.SetHtmlContent(content);
+            }            
 
-            output.Content.SetHtmlContent(await _displayHelper.ShapeExecuteAsync(shape));
+
+            _shapeScopeManager.ExitScope();
 
             // We don't want any encapsulating tag around the shape
             output.TagName = null;

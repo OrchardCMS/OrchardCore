@@ -84,6 +84,8 @@ namespace Microsoft.Extensions.DependencyInjection
                     services.AddShapeAttributes<DateTimeShapes>();
                     services.AddShapeAttributes<PageTitleShapes>();
 
+                    services.AddScoped<IShapeScopeManager, DefaultShapeScopeManager>();
+
                     services.AddTagHelpers<AddAlternateTagHelper>();
                     services.AddTagHelpers<AddClassTagHelper>();
                     services.AddTagHelpers<AddWrapperTagHelper>();

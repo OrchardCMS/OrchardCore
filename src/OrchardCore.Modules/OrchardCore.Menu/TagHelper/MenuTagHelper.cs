@@ -7,8 +7,8 @@ namespace OrchardCore.Menu.TagHelpers
     [HtmlTargetElement("menu")]
     public class MenuTagHelper : BaseShapeTagHelper
     {
-        public MenuTagHelper(IShapeFactory shapeFactory, IDisplayHelper displayHelper) :
-            base(shapeFactory, displayHelper)
+        public MenuTagHelper(IShapeScopeManager shapeScopeManager, IShapeFactory shapeFactory, IDisplayHelper displayHelper) :
+            base(shapeScopeManager, shapeFactory, displayHelper)
         {
             Type = "Menu";
         }

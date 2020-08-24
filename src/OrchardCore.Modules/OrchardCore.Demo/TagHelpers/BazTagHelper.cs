@@ -7,8 +7,8 @@ namespace OrchardCore.Demo.TagHelpers
     [HtmlTargetElement("baz")]
     public class BazTagHelper : BaseShapeTagHelper
     {
-        public BazTagHelper(IShapeFactory shapeFactory, IDisplayHelper displayHelper) :
-            base(shapeFactory, displayHelper)
+        public BazTagHelper(IShapeScopeManager shapeScopeManager, IShapeFactory shapeFactory, IDisplayHelper displayHelper) :
+            base(shapeScopeManager, shapeFactory, displayHelper)
         {
             Type = "Baz";
         }

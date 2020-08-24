@@ -6,8 +6,8 @@ namespace OrchardCore.DisplayManagement.TagHelpers
     [HtmlTargetElement("shape", Attributes = PropertyPrefix + "*")]
     public class ShapeTagHelper : BaseShapeTagHelper
     {
-        public ShapeTagHelper(IShapeFactory shapeFactory, IDisplayHelper displayHelper)
-            : base(shapeFactory, displayHelper)
+        public ShapeTagHelper(IShapeScopeManager shapeScopeManager, IShapeFactory shapeFactory, IDisplayHelper displayHelper)
+            : base(shapeScopeManager, shapeFactory, displayHelper)
         {
         }
     }
