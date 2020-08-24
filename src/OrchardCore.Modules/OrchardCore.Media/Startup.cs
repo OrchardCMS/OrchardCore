@@ -291,6 +291,13 @@ namespace OrchardCore.Media
                 pattern: _adminOptions.AdminUrlPrefix + "/MediaCache/Purge",
                 defaults: new { controller = mediaCacheControllerName, action = nameof(MediaCacheController.Purge) }
             );
+
+            routes.MapAreaControllerRoute(
+                name: "Media.Options",
+                areaName: "OrchardCore.Media",
+                pattern: _adminOptions.AdminUrlPrefix + "/Media/Options",
+                defaults: new { controller = adminControllerName, action = nameof(AdminController.Options) }
+            );
         }
 
         private string GetMediaPath(ShellOptions shellOptions, ShellSettings shellSettings, string assetsPath)

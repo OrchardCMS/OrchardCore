@@ -23,6 +23,7 @@ namespace OrchardCore.Media.Controllers
         private readonly IContentTypeProvider _contentTypeProvider;
         private readonly ILogger _logger;
         private readonly IStringLocalizer S;
+        private readonly MediaOptions _mediaOptions;
 
         public AdminController(
             IMediaFileStore mediaFileStore,
@@ -36,7 +37,8 @@ namespace OrchardCore.Media.Controllers
             _mediaFileStore = mediaFileStore;
             _authorizationService = authorizationService;
             _contentTypeProvider = contentTypeProvider;
-            _allowedFileExtensions = options.Value.AllowedFileExtensions;
+            _mediaOptions = options.Value;
+            _allowedFileExtensions = _mediaOptions.AllowedFileExtensions;
             _logger = logger;
             S = stringLocalizer;
         }
@@ -403,11 +405,6 @@ namespace OrchardCore.Media.Controllers
             return new ObjectResult(mediaFolder);
         }
 
-        public IActionResult MediaApplication()
-        {
-            return View();
-        }
-
         public object CreateFileResult(IFileStoreEntry mediaFile)
         {
             _contentTypeProvider.TryGetContentType(mediaFile.Name, out var contentType);
@@ -422,6 +419,16 @@ namespace OrchardCore.Media.Controllers
                 mediaPath = mediaFile.Path,
                 mime = contentType ?? "application/octet-stream"
             };
+        }
+
+        public IActionResult MediaApplication()
+        {
+            return View();
+        }
+
+        public IActionResult Options()
+        {
+            return View(_mediaOptions);
         }
     }
 }
