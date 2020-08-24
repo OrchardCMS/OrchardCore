@@ -1,10 +1,9 @@
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Localization;
-using OrchardCore.Security.Services;
+using Microsoft.Extensions.Options;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Models;
@@ -14,15 +13,13 @@ namespace OrchardCore.Users.Workflows.Activities
     public class ValidateUserTask : TaskActivity
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly UserManager<IUser> _userManager;
+        private readonly string _roleClaimType;
         private readonly IStringLocalizer S;
-        private readonly IRoleService _roleService;
 
-        public ValidateUserTask(UserManager<IUser> userManager, IHttpContextAccessor httpContextAccessor, IStringLocalizer<ValidateUserTask> localizer, IRoleService roleService)
+        public ValidateUserTask(IHttpContextAccessor httpContextAccessor, IOptions<IdentityOptions> optionsAccessor, IStringLocalizer<ValidateUserTask> localizer)
         {
             _httpContextAccessor = httpContextAccessor;
-            _userManager = userManager;
-            _roleService = roleService;
+            _roleClaimType = optionsAccessor.Value.ClaimsIdentity.RoleClaimType;
             S = localizer;
         }
 
@@ -49,7 +46,7 @@ namespace OrchardCore.Users.Workflows.Activities
             return Outcomes(S["Anonymous"], S["Authenticated"], S["InRole"]);
         }
 
-        public async override Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
+        public override ActivityExecutionResult Execute(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
             var user = _httpContextAccessor.HttpContext.User;
             var isAuthenticated = user?.Identity?.IsAuthenticated;
@@ -63,7 +60,11 @@ namespace OrchardCore.Users.Workflows.Activities
 
                 if (Roles.Any())
                 {
-                    var userRoleNames = await _userManager.GetRolesAsync(await _userManager.GetUserAsync(user));
+                    var userRoleNames = user
+                        .FindAll(c => c.Type == _roleClaimType)
+                        .Select(c => c.Value)
+                        .ToList();
+
                     foreach (var role in Roles)
                     {
                         if (userRoleNames.Contains(role))
