@@ -15,7 +15,7 @@ namespace OrchardCore.Users.Workflows.Drivers
         protected override void UpdateActivity(ValidateUserTaskViewModel model, ValidateUserTask activity)
         {
             activity.Roles = model.Roles;
-            model.SetUser = activity.SetUser;
+            activity.SetUser = model.SetUser;
         }
     }
 }
