@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -67,7 +66,7 @@ namespace OrchardCore.Users.Workflows.Activities
                     var userRoleNames = await _userManager.GetRolesAsync(await _userManager.GetUserAsync(user));
                     foreach (var role in Roles)
                     {
-                        if (userRoleNames.Contains(role, StringComparer.CurrentCultureIgnoreCase))
+                        if (userRoleNames.Contains(role))
                         {
                             workflowContext.LastResult = userRoleNames;
                             return Outcomes("InRole");
