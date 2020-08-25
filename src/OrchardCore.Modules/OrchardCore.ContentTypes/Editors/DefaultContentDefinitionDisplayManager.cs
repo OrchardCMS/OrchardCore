@@ -9,7 +9,6 @@ using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Layout;
 using OrchardCore.DisplayManagement.ModelBinding;
-using OrchardCore.DisplayManagement.Theming;
 using OrchardCore.Modules;
 
 namespace OrchardCore.ContentTypes.Editors
@@ -20,7 +19,6 @@ namespace OrchardCore.ContentTypes.Editors
         private readonly IShapeTableManager _shapeTableManager;
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly IShapeFactory _shapeFactory;
-        private readonly IThemeManager _themeManager;
         private readonly ILayoutAccessor _layoutAccessor;
         private readonly ILogger _logger;
 
@@ -29,16 +27,15 @@ namespace OrchardCore.ContentTypes.Editors
             IShapeTableManager shapeTableManager,
             IContentDefinitionManager contentDefinitionManager,
             IShapeFactory shapeFactory,
-            IThemeManager themeManager,
+            IEnumerable<IShapePlacementProvider> placementProviders,
             ILogger<DefaultContentDefinitionDisplayManager> logger,
             ILayoutAccessor layoutAccessor
-            ) : base(shapeTableManager, shapeFactory, themeManager)
+            ) : base(shapeFactory, placementProviders)
         {
             _handlers = handlers;
             _shapeTableManager = shapeTableManager;
             _contentDefinitionManager = contentDefinitionManager;
             _shapeFactory = shapeFactory;
-            _themeManager = themeManager;
             _layoutAccessor = layoutAccessor;
             _logger = logger;
         }
