@@ -1,16 +1,11 @@
 @{
-    string mediaPath = Model.Image.Paths?[0]?.ToString();
-    if (mediaPath == null)
+    string mediaPath = Model.Fallback;
+    if (Model.Image.Paths == null && Model.Image.Paths.Length > 0)
     {
-        mediaPath = Model.Fallback; //"~/TheBlogTheme/img/home-bg.jpg";
-    }
-    else 
-    {
-        mediaPath = @Orchard.AssetUrl(mediaPath);
-
+        mediaPath = @Orchard.AssetUrl((string)Model.Image.Paths?[0]?.ToString());
     }
 }
-
+@Orchard.ConsoleLog(Model as object)
 
 <zone name="Header">
     <header class="masthead" style="background-image: url('@mediaPath')">

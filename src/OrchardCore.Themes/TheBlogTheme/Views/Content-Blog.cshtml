@@ -1,26 +1,5 @@
-{% zone "Header" %}
-    <!-- Page Header -->
-    <!-- Set your background image for this header on the line below. -->
-    {% assign imagePath = Model.ContentItem.Content.Blog.Image.Paths.first %}
-    {% if imagePath == nil %}
-        <header class="masthead" style="background-image: url('{{ "~/TheBlogTheme/img/home-bg.jpg" | href }}')">
-    {% else %}
-        <header class="masthead" style="background-image: url('{{ imagePath | asset_url }}')">
-    {% endif %}
-        <div class="overlay"></div>
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-8 col-md-10 mx-auto">
-                    <div class="site-heading">
-                        <h1>{{ Model.ContentItem.DisplayText }}</h1>
-                        <span class="subheading">{{ Model.Content.HtmlBodyPart | shape_render }}</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </header>
-{% endzone %}
 
+@* 
 <display type="Header" Fallback="~/TheBlogTheme/img/home-bg.jpg" Image="Model.ContentItem.Content.Blog.Image">
     <display slot="Header-Title">
         @Model.ContentItem.DisplayText
@@ -28,10 +7,27 @@
     <display slot="Header-Subheading" tag="span" shape="Model.Content.HtmlBodyPart" class="subheading"></display>
     <!-- no metadata in this slot -->
 
+</display> *@
+
+
+<shape type="Header" prop-fallback="@("/TheBlogTheme/img/home-bg.jpg")" prop-image="@Model.ContentItem.Content.Blog.Image">
+    <template slot="Header-Title">
+        @Model.ContentItem.DisplayText
+    </template>
+    <template slot="Header-Subheading">
+        <display shape="Model.Content.HtmlBodyPart"></display>
+    </template>
+    <!-- no metadata in this slot -->
+
+</shape>
+
+@{
+    Model.Content.Remove("HtmlBodyPart");
+    Model.Content.Remove("Blog-Image");
+}
+
+<display shape="Model.Content">
+    @* pop the metadata helpers in here too*@
 </display>
 
-
-{% shape_remove_item Model.Content "HtmlBodyPart" %}
-{% shape_remove_item Model.Content "Blog-Image" %}
-
-{{ Model.Content | shape_render }}
+<!-- https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_templates_and_slots -->

@@ -1,36 +1,8 @@
-{% zone "Header" %}
-    <!-- Page Header -->
-    <!-- Set your background image for this header on the line below. -->
-    {% assign imagePath = Model.ContentItem.Content.BlogPost.Image.Paths.first %}
-    {% if imagePath == nil %}
-        <header class="masthead" style="background-image: url('{{ "~/TheBlogTheme/img/post-bg.jpg" | href }}')">
-    {% else %}
-        <header class="masthead" style="background-image: url('{{ imagePath | asset_url }}')">
-    {% endif %}
-        <div class="overlay"></div>
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-8 col-md-10 mx-auto">
-                    <div class="post-heading">
-                        <h1>{{ Model.ContentItem.DisplayText }}</h1>
-                        <h2 class="subheading">{{ Model.ContentItem.Content.BlogPost.Subtitle.Text }}</h2>
-                        <span class="meta">
-                            {% assign format = "MMMM dd, yyyy" | t %}
-                            {% assign dateTime = "DateTime" | shape_new: utc: Model.ContentItem.CreatedUtc, format: format | shape_stringify %}
-                            {{ "Posted by" | t }} <a href="#">{{ Model.ContentItem.Owner }}</a> {{ "on {0}" | t: dateTime | raw }}
-                        </span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </header>
-{% endzone %}
 
-
-<display type="Header" Fallback="~/TheBlogTheme/img/post-bg.jpg" Image="Model.ContentItem.Content.BlogPost.Image">
-    <display slot="Header-Title">
+@* <display type="Header" Fallback="~/TheBlogTheme/img/post-bg.jpg" Image="Model.ContentItem.Content.BlogPost.Image">
+    <template slot="Header-Title">
         @Model.ContentItem.DisplayText
-    </display>
+    </template>
     <display slot="Header-Subheading" tag="h2" shape="@(Model.Content.Named("BlogPost-Subtitle"))" class="subheading"></display>
     <display slot="Header-Meta">
         <span class="meta">
@@ -39,11 +11,24 @@
     </display>
 
 
-</display>
+</display> *@
 
+<shape type="Header" prop-fallback="@("/TheBlogTheme/img/post-bg.jpg")" prop-image="@Model.ContentItem.Content.BlogPost.Image">
+    <template slot="Header-Title">
+        @Model.ContentItem.DisplayText
+    </template>
+    <template slot="Header-Subheading">
+        <h2 class="subheading">@Model.ContentItem.Content.BlogPost.Subtitle.Text</h2>
+    </template>    
+    <template slot="Header-Meta">
+        <span class="meta">
+            @T["Posted by"] <a href="#">@Model.ContentItem.Owner</a> on <shape type="DateTime" prop-utc="Model.ContentItem.CreatedUtc" prop-format="@(T["MMMM dd, yyyy"].Value)"></shape>
+        </span>
+    </template>
 
+</shape>
 
-{{ Model.Content.ContentsMetadata | shape_render }}
-{{ Model.Content.MarkdownBodyPart | shape_render }}
-{{ Model.Content.BlogPost-Category | shape_render }}
-{{ Model.Content.BlogPost-Tags | shape_render }}
+@await DisplayAsync(Model.Content.ContentsMetadata)
+@await DisplayAsync(Model.Content.MarkdownBodyPart)
+@await DisplayAsync(Model.Content.Named("BlogPost-Category"))
+@await DisplayAsync(Model.Content.Named("BlogPost-Tags"))

@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using OrchardCore.Mvc.Utilities;
+using OrchardCore.DisplayManagement.Shapes;
 
 namespace OrchardCore.DisplayManagement.TagHelpers
 {
@@ -37,7 +38,7 @@ namespace OrchardCore.DisplayManagement.TagHelpers
 
         protected BaseShapeTagHelper(
             IShapeScopeManager shapeScopeManager,
-            IShapeFactory shapeFactory, 
+            IShapeFactory shapeFactory,
             IDisplayHelper displayHelper)
         {
             _shapeFactory = shapeFactory;
@@ -83,12 +84,10 @@ namespace OrchardCore.DisplayManagement.TagHelpers
                 }
             }
 
-            // TODO rethink.
-
-            // if (string.IsNullOrWhiteSpace(Type))
-            // {
-            //     Type = output.TagName;
-            // }
+            if (string.IsNullOrWhiteSpace(Type))
+            {
+                Type = output.TagName;
+            }
 
             if (string.IsNullOrWhiteSpace(Cache) && output.Attributes.ContainsName("cache-id"))
             {
@@ -123,105 +122,87 @@ namespace OrchardCore.DisplayManagement.TagHelpers
                 }
             }
 
-            // if only has slot, 
-
-            // TODO add Shape property. If not null, create.
-            // Only make a shape if Type is valid.
-            if (!String.IsNullOrEmpty(Type) && Shape == null)
+            if (Shape == null)
             {
                 Shape = await _shapeFactory.CreateAsync(Type, Arguments.From(properties));
             }
 
-            if (Shape != null)
+            if (output.Attributes.ContainsName("id"))
             {
-                if (output.Attributes.ContainsName("id"))
-                {
-                    Shape.Id = Convert.ToString(output.Attributes["id"].Value);
-                }
+                Shape.Id = Convert.ToString(output.Attributes["id"].Value);
+            }
 
-                if (output.Attributes.ContainsName("alternate"))
-                {
-                    Shape.Metadata.Alternates.Add(Convert.ToString(output.Attributes["alternate"].Value));
-                }
+            if (output.Attributes.ContainsName("alternate"))
+            {
+                Shape.Metadata.Alternates.Add(Convert.ToString(output.Attributes["alternate"].Value));
+            }
 
-                if (output.Attributes.ContainsName("wrapper"))
-                {
-                    Shape.Metadata.Wrappers.Add(Convert.ToString(output.Attributes["wrapper"].Value));
-                }
-
-
-                // TODO move these into scope so shapes can be nested properly.
-                tagHelperContext.Items.Add(typeof(IShape), Shape);
-
-                if (!string.IsNullOrWhiteSpace(Cache))
-                {
-                    var metadata = Shape.Metadata;
-
-                    metadata.Cache(Cache);
-
-                    if (FixedDuration.HasValue)
-                    {
-                        metadata.Cache().WithExpiryAfter(FixedDuration.Value);
-                    }
-
-                    if (SlidingDuration.HasValue)
-                    {
-                        metadata.Cache().WithExpirySliding(SlidingDuration.Value);
-                    }
-
-                    if (!string.IsNullOrWhiteSpace(Context))
-                    {
-                        var contexts = Context.Split(Separators, StringSplitOptions.RemoveEmptyEntries);
-                        metadata.Cache().AddContext(contexts);
-                    }
-
-                    if (!string.IsNullOrWhiteSpace(Tag))
-                    {
-                        var tags = Tag.Split(Separators, StringSplitOptions.RemoveEmptyEntries);
-                        metadata.Cache().AddTag(tags);
-                    }
-                }
+            if (output.Attributes.ContainsName("wrapper"))
+            {
+                Shape.Metadata.Wrappers.Add(Convert.ToString(output.Attributes["wrapper"].Value));
             }
 
 
+                // TODO move these into scope so shapes can be nested properly.
+                // tagHelperContext.Items.Add(typeof(IShape), Shape);
+
+            if (!string.IsNullOrWhiteSpace(Cache))
+            {
+                ShapeMetadata metadata = Shape.Metadata;
+
+                metadata.Cache(Cache);
+
+                if (FixedDuration.HasValue)
+                {
+                    metadata.Cache().WithExpiryAfter(FixedDuration.Value);
+                }
+
+                if (SlidingDuration.HasValue)
+                {
+                    metadata.Cache().WithExpirySliding(SlidingDuration.Value);
+                }
+
+                if (!string.IsNullOrWhiteSpace(Context))
+                {
+                    var contexts = Context.Split(Separators, StringSplitOptions.RemoveEmptyEntries);
+                    metadata.Cache().AddContext(contexts);
+                }
+
+                if (!string.IsNullOrWhiteSpace(Tag))
+                {
+                    var tags = Tag.Split(Separators, StringSplitOptions.RemoveEmptyEntries);
+                    metadata.Cache().AddTag(tags);
+                }
+            }
+
             _shapeScopeManager.EnterScope(new ShapeScopeContext());
+
             if (Shape != null)
             {
                 if (Shape is IShape shape)
                 {
-                    _shapeScopeManager.AddShape(shape);   
+                    _shapeScopeManager.AddShape(shape);
                 }
-                
+
             }
 
             // Always render the child content, but we might not use it.
             // This allows the tag helpers in the child content to activate.
 
-            var childContent = await output.GetChildContentAsync();
+            // What happens to this child content?
+            await output.GetChildContentAsync();
 
-            IHtmlContent content = null;
+            var content = await _displayHelper.ShapeExecuteAsync(Shape);
 
-            if (Shape != null)
-            {                     
-                content = await _displayHelper.ShapeExecuteAsync(Shape);
-            }
-            else
+            if (!String.IsNullOrEmpty(Slot))
             {
-                content = childContent;
-                // Hmm does this child content not go into the slot, if it has a slot name.
-                // output.Content.SetHtmlContent(childContent);
-            }
-
-            if (Shape == null && !String.IsNullOrEmpty(Slot))
-            {                     
-                // But we're in a new scope now, so this isn't right.
                 _shapeScopeManager.AddSlot(Slot, content);
             }
             else
             {
                 // Hmm does this child content not go into the slot, if it has a slot name.
                 output.Content.SetHtmlContent(content);
-            }            
+            }
 
 
             _shapeScopeManager.ExitScope();

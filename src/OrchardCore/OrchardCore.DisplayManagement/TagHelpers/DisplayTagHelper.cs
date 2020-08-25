@@ -2,9 +2,7 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 
 namespace OrchardCore.DisplayManagement.TagHelpers
 {
-    [HtmlTargetElement("display", Attributes = nameof(Type))]
-    [HtmlTargetElement("display", Attributes = PropertyPrefix + "*")]
-    [HtmlTargetElement("display", Attributes = nameof(Slot))]
+    [HtmlTargetElement("display", Attributes = "Shape")]
     public class DisplayTagHelper : BaseShapeTagHelper
     {
         public DisplayTagHelper(IShapeScopeManager shapeScopeManager, IShapeFactory shapeFactory, IDisplayHelper displayHelper)

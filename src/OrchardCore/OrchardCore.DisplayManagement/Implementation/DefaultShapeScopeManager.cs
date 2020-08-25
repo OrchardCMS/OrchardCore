@@ -4,6 +4,7 @@ using System.Dynamic;
 using System.Threading.Tasks;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Theming;
+using Microsoft.AspNetCore.Html;
 
 namespace OrchardCore.DisplayManagement.Implementation
 {
@@ -45,6 +46,17 @@ namespace OrchardCore.DisplayManagement.Implementation
             {
                 _scopes.Peek().AddShape(shape);
             }
-        }        
+        }
+
+        public dynamic GetSlot(string slot)
+        {
+            if (_scopes.Count > 0)
+            {
+                return _scopes.Peek().GetSlot(slot);
+            }
+
+            return HtmlString.Empty;
+
+        }
     }
 }

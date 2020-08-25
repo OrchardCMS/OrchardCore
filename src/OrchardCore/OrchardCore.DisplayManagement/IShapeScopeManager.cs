@@ -1,5 +1,5 @@
+using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
 
 namespace OrchardCore.DisplayManagement
@@ -11,6 +11,7 @@ namespace OrchardCore.DisplayManagement
 
         void AddShape(IShape shape);
         void AddSlot(string slot, dynamic content);
+        dynamic GetSlot(string slot);
     }
 
     public class ShapeScopeContext
@@ -31,6 +32,18 @@ namespace OrchardCore.DisplayManagement
             _slots[slot] = content;
 
             return this;
+        }
+
+        public dynamic GetSlot(string slot)
+        {
+            _slots ??= new Dictionary<string, dynamic>(StringComparer.OrdinalIgnoreCase);
+
+            if (_slots.TryGetValue(slot, out var result))
+            {
+                return result;
+            }
+
+            return HtmlString.Empty;
         }
     }
 }
