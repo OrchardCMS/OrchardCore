@@ -362,7 +362,11 @@ namespace OrchardCore.Tenants.Controllers
                 return Forbid();
             }
 
-            if (!_shellHost.TryGetSettings(id, out var shellSettings))
+            var shellSettings = _shellHost.GetAllSettings()
+                .Where(x => String.Equals(x.Name, id, StringComparison.OrdinalIgnoreCase))
+                .FirstOrDefault();
+
+            if (shellSettings == null)
             {
                 return NotFound();
             }
@@ -411,7 +415,11 @@ namespace OrchardCore.Tenants.Controllers
                 ValidateViewModel(model, false);
             }
 
-            if (!_shellHost.TryGetSettings(model.Name, out var shellSettings))
+            var shellSettings = _shellHost.GetAllSettings()
+                .Where(x => String.Equals(x.Name, model.Name, StringComparison.OrdinalIgnoreCase))
+                .FirstOrDefault();
+
+            if (shellSettings == null)
             {
                 return NotFound();
             }
@@ -470,7 +478,11 @@ namespace OrchardCore.Tenants.Controllers
                 return Forbid();
             }
 
-            if (!_shellHost.TryGetSettings(id, out var shellSettings))
+            var shellSettings = _shellHost.GetAllSettings()
+                .Where(s => String.Equals(s.Name, id, StringComparison.OrdinalIgnoreCase))
+                .FirstOrDefault();
+
+            if (shellSettings == null)
             {
                 return NotFound();
             }
@@ -506,7 +518,11 @@ namespace OrchardCore.Tenants.Controllers
                 return Forbid();
             }
 
-            if (!_shellHost.TryGetSettings(id, out var shellSettings))
+            var shellSettings = _shellHost.GetAllSettings()
+                .Where(x => String.Equals(x.Name, id, StringComparison.OrdinalIgnoreCase))
+                .FirstOrDefault();
+
+            if (shellSettings == null)
             {
                 return NotFound();
             }
@@ -535,7 +551,11 @@ namespace OrchardCore.Tenants.Controllers
                 return Forbid();
             }
 
-            if (!_shellHost.TryGetSettings(id, out var shellSettings))
+            var shellSettings = _shellHost.GetAllSettings()
+                .Where(x => String.Equals(x.Name, id, StringComparison.OrdinalIgnoreCase))
+                .FirstOrDefault();
+
+            if (shellSettings == null)
             {
                 return NotFound();
             }
