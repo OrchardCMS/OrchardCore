@@ -9,13 +9,13 @@ namespace OrchardCore.Users.Workflows.Drivers
         protected override void EditActivity(ValidateUserTask activity, ValidateUserTaskViewModel model)
         {
             model.Roles = activity.Roles;
-            model.SetUser = activity.SetUser;
+            model.SetUserName = activity.SetUserName;
         }
 
         protected override void UpdateActivity(ValidateUserTaskViewModel model, ValidateUserTask activity)
         {
             activity.Roles = model.Roles;
-            activity.SetUser = model.SetUser;
+            activity.SetUserName = model.SetUserName;
         }
     }
 }

@@ -27,7 +27,7 @@ namespace OrchardCore.Users.Workflows.Activities
 
         public override LocalizedString Category => S["User"];
 
-        public bool SetUser
+        public bool SetUserName
         {
             get => GetProperty(() => true);
             set => SetProperty(value);
@@ -53,9 +53,9 @@ namespace OrchardCore.Users.Workflows.Activities
 
             if (isAuthenticated == true)
             {
-                if (SetUser)
+                if (SetUserName)
                 {
-                    workflowContext.Properties["User"] = user;
+                    workflowContext.Properties["UserName"] = user.Identity.Name;
                 }
 
                 if (Roles.Any())

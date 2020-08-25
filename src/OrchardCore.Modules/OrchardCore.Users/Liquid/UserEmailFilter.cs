@@ -20,7 +20,16 @@ namespace OrchardCore.Users.Liquid
         {
             if (input.ToObjectValue() is ClaimsPrincipal claimsPrincipal)
             {
-                return FluidValue.Create(await _userManager.GetEmailAsync(await _userManager.GetUserAsync(claimsPrincipal)));
+                // Todo: Use 'IdentityOptions.ClaimsIdentity.EmailClaimType' that will be supported in a future version.
+                // Currently the 'DefaultUserClaimsPrincipalFactory' also uses an hardcoded "email" for the claim type.
+                var email = claimsPrincipal.FindFirstValue("email") ?? claimsPrincipal.FindFirstValue(ClaimTypes.Email);
+
+                if (email == null)
+                {
+                    return NilValue.Instance;
+                }
+
+                return FluidValue.Create(email);
             }
 
             if (input.ToObjectValue() is IUser user)

@@ -4,7 +4,7 @@ namespace OrchardCore.Users.Workflows.ViewModels
 {
     public class ValidateUserTaskViewModel
     {
-        public bool SetUser { get; set; }
+        public bool SetUserName { get; set; }
 
         public IEnumerable<string> Roles { get; set; }
     }
