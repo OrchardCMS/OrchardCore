@@ -13,9 +13,20 @@
             <div class="row">
                 <div class="col-lg-8 col-md-10 mx-auto">
                     <div class="site-heading">
-                        <h1><slot name="Header-Title"></slot></h1>
-                        <slot name="Header-Subheading"></slot>
-                        <slot name="Header-Meta" required="False"></slot>
+                        <h1>
+                            @if (Model.Title != null)
+                            {
+                                @Html.Raw(Model.Title) @* required raw so we can pass attributes *@
+                            }
+                        </h1>
+                        @if (Model.Subheading != null)
+                        {
+                            @await DisplayAsync(Model.Subheading)
+                        }
+                        @if (Model.Meta != null)
+                        {
+                            @await DisplayAsync(Model.Meta)
+                        }
                     </div>
                 </div>
             </div>

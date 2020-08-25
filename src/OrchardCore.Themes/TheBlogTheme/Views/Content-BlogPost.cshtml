@@ -25,10 +25,31 @@
             @T["Posted by"] <a href="#">@Model.ContentItem.Owner</a> on <shape type="DateTime" prop-utc="Model.ContentItem.CreatedUtc" prop-format="@(T["MMMM dd, yyyy"].Value)"></shape>
         </span>
     </template>
-
 </shape>
 
 @await DisplayAsync(Model.Content.ContentsMetadata)
 @await DisplayAsync(Model.Content.MarkdownBodyPart)
 @await DisplayAsync(Model.Content.Named("BlogPost-Category"))
 @await DisplayAsync(Model.Content.Named("BlogPost-Tags"))
+
+
+@{
+    var shape = await New.Header2();
+    shape.Fallback = "/TheBlogTheme/img/post-bg.jpg";
+    shape.Image = Model.ContentItem.Content.BlogPost.Image;
+    shape.Title = Model.ContentItem.DisplayText;
+    shape.Subheading = await New.HeaderBlogPostSubheading();
+    shape.Subheading.Content = Model.ContentItem.Content.BlogPost.Subtitle.Text;
+    shape.Meta = await New.HeaderBlogPostMeta();
+    shape.Meta.ContentItem = Model.ContentItem;
+
+}
+@await DisplayAsync(shape)
+@* 
+HeaderBlogPostSubheading - Template
+<h2 class="subheading">@Model.Content</h2>
+
+HeaderMetaBlogPost - Template
+<span class="meta">
+    @T["Posted by"] <a href="#">@Model.ContentItem.Owner</a> on <shape type="DateTime" prop-utc="Model.ContentItem.CreatedUtc" prop-format="@(T["MMMM dd, yyyy"].Value)"></shape>
+</span> *@

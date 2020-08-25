@@ -12,7 +12,7 @@
 
 <shape type="Header" prop-fallback="@("/TheBlogTheme/img/home-bg.jpg")" prop-image="@Model.ContentItem.Content.Blog.Image">
     <template slot="Header-Title">
-        @Model.ContentItem.DisplayText
+        <span class="text-secondary">@Model.ContentItem.DisplayText</span> <!-- here we are able to alter the contents of the slots html -->
     </template>
     <template slot="Header-Subheading">
         <display shape="Model.Content.HtmlBodyPart"></display>
@@ -20,6 +20,17 @@
     <!-- no metadata in this slot -->
 
 </shape>
+
+@{
+    var shape = await New.Header2();
+    shape.Fallback = "/TheBlogTheme/img/home-bg.jpg";
+    shape.Image = Model.ContentItem.Content.Blog.Image;
+    shape.Title = "<span class='text-secondary'>" + Model.ContentItem.DisplayText + "</span>"; // with this it is harder to change the inner html.
+    shape.Subheading = await New.HeaderBlogSubheading();
+    shape.Subheading.Content = Model.Content.HtmlBodyPart; // doesn't display as it has already been displayed
+
+}
+@await DisplayAsync(shape)
 
 @{
     Model.Content.Remove("HtmlBodyPart");
@@ -31,3 +42,4 @@
 </display>
 
 <!-- https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_templates_and_slots -->
+
