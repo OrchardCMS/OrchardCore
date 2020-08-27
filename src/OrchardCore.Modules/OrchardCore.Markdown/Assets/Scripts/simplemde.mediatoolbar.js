@@ -70,7 +70,7 @@ $(function () {
         "|",
         {
             name: "shortcode",
-            className: "icon-mde-shortcode",
+            className: "icon-shortcode",
             title: "Insert Shortcode",
             default: true,
             action: function(editor)
