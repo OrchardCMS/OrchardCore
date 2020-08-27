@@ -4,6 +4,9 @@
     var allowedFileExtensions = string.Join(", ", Model.AllowedFileExtensions.Select(s => s.ToString()).ToArray());
 }
 <h1>@RenderTitleSegments(T["Media options"])</h1>
+
+<p class="alert alert-secondary">@T["Media is configured with appsettings.json."]</p>
+
 <a href="https://docs.orchardcore.net/en/latest/docs/reference/modules/Media/#configuration">@T["See documentation"]</a>
 <div class="form-group row">
     <label asp-for="SupportedSizes" class="col-sm-2 col-form-label">@T["Supported sizes"]</label>

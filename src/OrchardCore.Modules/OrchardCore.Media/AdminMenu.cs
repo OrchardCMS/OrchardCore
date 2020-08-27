@@ -30,6 +30,14 @@ namespace OrchardCore.Media
                         .LocalNav()
                     ));
 
+            builder.Add(S["Configuration"], configuration => configuration
+                .Add(S["Media"], S["Media"].PrefixPosition(), media => media
+                .Add(S["Options"], S["Options"].PrefixPosition(), contentItems => contentItems
+                    .Action("Options", "Admin", new { area = "OrchardCore.Media" })
+                    .Permission(Permissions.ManageMedia)
+                    .LocalNav())
+                ));
+
             return Task.CompletedTask;
         }
     }
@@ -50,12 +58,13 @@ namespace OrchardCore.Media
                 return Task.CompletedTask;
             }
 
-            builder.Add(S["Content"], content => content
+            builder.Add(S["Configuration"], configuration => configuration
+                .Add(S["Media"], S["Media"].PrefixPosition(), media => media
                 .Add(S["Media Cache"], S["Media Cache"].PrefixPosition(), contentItems => contentItems
                     .Action("Index", "MediaCache", new { area = "OrchardCore.Media" })
                     .Permission(MediaCachePermissions.ManageAssetCache)
                     .LocalNav())
-                );
+                ));
 
             return Task.CompletedTask;
         }
