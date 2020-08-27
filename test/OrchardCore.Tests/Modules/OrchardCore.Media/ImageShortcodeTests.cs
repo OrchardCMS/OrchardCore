@@ -37,6 +37,9 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Media
         [InlineData("", "foo [image]bar[/image] baz", @"foo <img src=""/media/bar""> baz")]
         [InlineData("", @"foo [image width=""100""]bar[/image] baz", @"foo <img src=""/media/bar?width=100""> baz")]
         [InlineData("", @"foo [image width=""100"" height=""50"" mode=""stretch""]bar[/image] baz", @"foo <img src=""/media/bar?width=100&amp;height=50&amp;rmode=stretch""> baz")]
+        [InlineData("", @"foo [image class=""className""]bar[/image] baz", @"foo <img class=""className"" src=""/media/bar""> baz")]
+        [InlineData("", @"foo [image alt=""text""]bar[/image] baz", @"foo <img alt=""text"" src=""/media/bar""> baz")]
+        [InlineData("", @"foo [image width=""100"" height=""50"" mode=""stretch"" alt=""text"" class=""className""]bar[/image] baz", @"foo <img alt=""text"" class=""className"" src=""/media/bar?width=100&amp;height=50&amp;rmode=stretch""> baz")]
         [InlineData("", "foo [image]bar[/image] baz foo [image]bar[/image] baz", @"foo <img src=""/media/bar""> baz foo <img src=""/media/bar""> baz")]
         [InlineData("", "foo [image]bar[/image] baz foo [image]bar[/image] baz foo [image]bar[/image] baz", @"foo <img src=""/media/bar""> baz foo <img src=""/media/bar""> baz foo <img src=""/media/bar""> baz")]
         [InlineData("", "foo [image]bar.png[/image] baz foo-extended [image]bar-extended.png[/image] baz-extended", @"foo <img src=""/media/bar.png""> baz foo-extended <img src=""/media/bar-extended.png""> baz-extended")]
@@ -46,6 +49,8 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Media
 
         public async Task ShouldProcess(string cdnBaseUrl, string text, string expected)
         {
+            var sanitizerOptions = new HtmlSanitizerOptions();
+            sanitizerOptions.Configure.Add(opt => opt.AllowedAttributes.Add("class"));
 
             var fileStore = new DefaultMediaFileStore(
                 Mock.Of<IFileStore>(),
@@ -55,7 +60,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Media
                 Enumerable.Empty<IMediaCreatingEventHandler>(),
                 Mock.Of<ILogger<DefaultMediaFileStore>>());
 
-            var sanitizer = new HtmlSanitizerService(Options.Create(new HtmlSanitizerOptions()));
+            var sanitizer = new HtmlSanitizerService(Options.Create(sanitizerOptions));
 
             var defaultHttpContext = new DefaultHttpContext();
             defaultHttpContext.Request.PathBase = new PathString("/tenant");
@@ -65,7 +70,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Media
 
             var imageProvider = new ImageShortcodeProvider(fileStore,sanitizer, httpContextAccessor, options);
 
-            var processor = new ShortcodeService(new IShortcodeProvider[] { imageProvider });
+            var processor = new ShortcodeService(new IShortcodeProvider[] { imageProvider }, Enumerable.Empty<IShortcodeContextProvider>());
 
             var processed = await processor.ProcessAsync(text);
             Assert.Equal(expected, processed);

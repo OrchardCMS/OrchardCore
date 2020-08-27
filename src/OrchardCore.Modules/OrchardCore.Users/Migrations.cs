@@ -1,5 +1,6 @@
 using OrchardCore.Data.Migration;
 using OrchardCore.Users.Indexes;
+using YesSql.Sql;
 
 namespace OrchardCore.Users
 {
@@ -8,7 +9,7 @@ namespace OrchardCore.Users
         // This is a sequenced migration which on new schemas is complete after UpdateFrom2.
         public int Create()
         {
-            SchemaBuilder.CreateMapIndexTable(nameof(UserIndex), table => table
+            SchemaBuilder.CreateMapIndexTable<UserIndex>(table => table
                 .Column<string>("NormalizedUserName")
                 .Column<string>("NormalizedEmail")
                 .Column<bool>("IsEnabled", c => c.NotNull().WithDefault(true))
@@ -23,9 +24,9 @@ namespace OrchardCore.Users
                 .CreateIndex("IDX_UserIndex_UserId", "UserId", "NormalizedUserName")
             );
 
-            SchemaBuilder.CreateReduceIndexTable(nameof(UserByRoleNameIndex), table => table
-                .Column<string>("RoleName")
-                .Column<int>("Count")
+            SchemaBuilder.CreateReduceIndexTable<UserByRoleNameIndex>(table => table
+               .Column<string>("RoleName")
+               .Column<int>("Count")
             );
 
             return UpdateFrom1();
@@ -33,7 +34,7 @@ namespace OrchardCore.Users
 
         public int UpdateFrom1()
         {
-            SchemaBuilder.CreateMapIndexTable(nameof(UserByLoginInfoIndex), table => table
+            SchemaBuilder.CreateMapIndexTable<UserByLoginInfoIndex>(table => table
                 .Column<string>("LoginProvider")
                 .Column<string>("ProviderKey"));
             return 2;
@@ -41,9 +42,10 @@ namespace OrchardCore.Users
 
         public int UpdateFrom2()
         {
-            SchemaBuilder.CreateMapIndexTable(nameof(UserByClaimIndex), table => table
-                .Column<string>(nameof(UserByClaimIndex.ClaimType))
-                .Column<string>(nameof(UserByClaimIndex.ClaimValue)));
+            SchemaBuilder.CreateMapIndexTable<UserByClaimIndex>(table => table
+               .Column<string>(nameof(UserByClaimIndex.ClaimType))
+               .Column<string>(nameof(UserByClaimIndex.ClaimValue)),
+                null);
 
             // Return 5 here to skip migrations on new database schemas.
             return 5;

@@ -1,14 +1,15 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
+using OrchardCore.Deployment.Services;
 
 namespace OrchardCore.Deployment.Deployment
 {
     public class DeploymentPlanDeploymentSource : IDeploymentSource
     {
-        private readonly DeploymentPlanService _deploymentPlanService;
+        private readonly IDeploymentPlanService _deploymentPlanService;
 
-        public DeploymentPlanDeploymentSource(DeploymentPlanService deploymentPlanService)
+        public DeploymentPlanDeploymentSource(IDeploymentPlanService deploymentPlanService)
         {
             _deploymentPlanService = deploymentPlanService;
         }

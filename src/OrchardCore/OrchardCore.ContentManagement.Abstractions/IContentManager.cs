@@ -56,7 +56,7 @@ namespace OrchardCore.ContentManagement
         Task ImportAsync(IEnumerable<ContentItem> contentItems);
 
         /// <summary>
-        /// Validates a content item 
+        /// Validates a content item
         /// </summary>
         /// <param name="contentItem"></param>
         /// <returns>The validation <see cref="ContentValidateResult"/> result.</returns>
@@ -111,9 +111,17 @@ namespace OrchardCore.ContentManagement
         /// </summary>
         /// <param name="contentItem"></param>
         Task DiscardDraftAsync(ContentItem contentItem);
+
+        /// <summary>
+        /// Saves the content item if it is a draft version.
+        /// </summary>
+        /// <param name="contentItem"></param>
+        Task SaveDraftAsync(ContentItem contentItem);
+
         Task PublishAsync(ContentItem contentItem);
         Task UnpublishAsync(ContentItem contentItem);
         Task<TAspect> PopulateAspectAsync<TAspect>(IContent content, TAspect aspect);
+
         /// <summary>
         /// Makes a clone of the content item
         /// </summary>

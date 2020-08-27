@@ -19,5 +19,6 @@ using OrchardCore.Modules.Manifest;
     Id = "OrchardCore.Taxonomies.ContentsAdminList",
     Name = "Taxonomies Contents List Filters",
     Description = "Provides taxonomy filters in the contents list.",
+    Dependencies = new[] { "OrchardCore.Taxonomies" },
     Category = "Content Management"
 )]

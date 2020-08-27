@@ -12,6 +12,8 @@ using OrchardCore.Html.ViewModels;
 using OrchardCore.Shortcodes.Services;
 using OrchardCore.Infrastructure.Html;
 using OrchardCore.Liquid;
+using OrchardCore.Mvc.ModelBinding;
+using Shortcodes;
 
 namespace OrchardCore.Html.Drivers
 {
@@ -38,7 +40,7 @@ namespace OrchardCore.Html.Drivers
 
         public override IDisplayResult Display(HtmlBodyPart HtmlBodyPart, BuildPartDisplayContext context)
         {
-            return Initialize<HtmlBodyPartViewModel>(GetDisplayShapeType(context), m => BuildViewModelAsync(m, HtmlBodyPart, context.TypePartDefinition.GetSettings<HtmlBodyPartSettings>()))
+            return Initialize<HtmlBodyPartViewModel>(GetDisplayShapeType(context), m => BuildViewModelAsync(m, HtmlBodyPart, context))
                 .Location("Detail", "Content:5")
                 .Location("Summary", "Content:10");
         }
@@ -65,7 +67,7 @@ namespace OrchardCore.Html.Drivers
                 if (!string.IsNullOrEmpty(viewModel.Html) && !_liquidTemplateManager.Validate(viewModel.Html, out var errors))
                 {
                     var partName = context.TypePartDefinition.DisplayName();
-                    context.Updater.ModelState.AddModelError(nameof(model.Html), S["{0} doesn't contain a valid Liquid expression. Details: {1}", partName, string.Join(" ", errors)]);
+                    updater.ModelState.AddModelError(Prefix, nameof(viewModel.Html), S["{0} doesn't contain a valid Liquid expression. Details: {1}", partName, string.Join(" ", errors)]);
                 }
                 else
                 {
@@ -76,11 +78,12 @@ namespace OrchardCore.Html.Drivers
             return Edit(model, context);
         }
 
-        private async ValueTask BuildViewModelAsync(HtmlBodyPartViewModel model, HtmlBodyPart htmlBodyPart, HtmlBodyPartSettings settings)
+        private async ValueTask BuildViewModelAsync(HtmlBodyPartViewModel model, HtmlBodyPart htmlBodyPart, BuildPartDisplayContext context)
         {
             model.Html = htmlBodyPart.Html;
             model.HtmlBodyPart = htmlBodyPart;
             model.ContentItem = htmlBodyPart.ContentItem;
+            var settings = context.TypePartDefinition.GetSettings<HtmlBodyPartSettings>();
 
             if (!settings.SanitizeHtml)
             {
@@ -88,7 +91,12 @@ namespace OrchardCore.Html.Drivers
                     scope => scope.SetValue("ContentItem", model.ContentItem));
             }
 
-            model.Html = await _shortcodeService.ProcessAsync(model.Html);
+            model.Html = await _shortcodeService.ProcessAsync(model.Html,
+                new Context
+                {
+                    ["ContentItem"] = htmlBodyPart.ContentItem,
+                    ["TypePartDefinition"] = context.TypePartDefinition
+                });
         }
     }
 }

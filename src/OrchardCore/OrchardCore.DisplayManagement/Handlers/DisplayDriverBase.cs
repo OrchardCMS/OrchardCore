@@ -48,7 +48,7 @@ namespace OrchardCore.DisplayManagement.Handlers
         /// </summary>
         public ShapeResult Copy<TModel>(string shapeType, TModel model) where TModel : class
         {
-            return Dynamic(shapeType, ctx => ctx.ShapeFactory.CreateAsync(shapeType, model));
+            return Factory(shapeType, ctx => ctx.ShapeFactory.CreateAsync(shapeType, model));
         }
 
         /// <summary>
