@@ -175,7 +175,7 @@ namespace OrchardCore.Media
             // ImageSharp before the static file provider.
             app.UseImageSharp();
 
-            // The file provider is a circular dependency and replacable via di.
+            // The file provider is a circular dependency and replaceable via di.
             mediaOptions.StaticFileOptions.FileProvider = mediaFileProvider;
 
             // Use services.PostConfigure<MediaOptions>() to alter the media static file options event handlers.
