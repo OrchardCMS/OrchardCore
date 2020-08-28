@@ -60,6 +60,8 @@ namespace OrchardCore.Media.Services
             }
 
             context.Succeed(requirement);
+
+            await Task.CompletedTask;
         }
 
         private bool IsMediaFieldsFolder(string childPath)
