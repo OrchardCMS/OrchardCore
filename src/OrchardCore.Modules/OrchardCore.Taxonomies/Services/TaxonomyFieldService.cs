@@ -28,7 +28,7 @@ namespace OrchardCore.Taxonomies.Services
             ISession session,
             IContentManager contentManager,
             IServiceProvider serviceProvider
-            )
+        )
         {
             _session = session;
             _contentManager = contentManager;
@@ -37,6 +37,8 @@ namespace OrchardCore.Taxonomies.Services
 
         public async Task<IEnumerable<ContentItem>> QueryCategorizedItemsAsync(TermPart termPart, bool enableOrdering, PagerSlim pager)
         {
+            IEnumerable<ContentItem> containedItems;
+
             IQuery<ContentItem> query = null;
             if (pager.Before != null)
             {
@@ -46,7 +48,7 @@ namespace OrchardCore.Taxonomies.Services
                     query = _session.Query<ContentItem>()
                         .With<TaxonomyIndex>(x => x.TermContentItemId == termPart.ContentItem.ContentItemId && x.Order > beforeValue)
                         .OrderBy(x => x.Order)
-                        .With<ContentItemIndex>(x => x.Published)
+                        .With<ContentItemIndex>(x => x.Published || (termPart.Ordering && x.Latest))
                         .Take(pager.PageSize + 1);
                 }
                 else
@@ -59,7 +61,7 @@ namespace OrchardCore.Taxonomies.Services
                         .Take(pager.PageSize + 1);
                 }
 
-                var containedItems = await query.ListAsync();
+                containedItems = await query.ListAsync();
 
                 if (containedItems.Count() == 0)
                 {
@@ -91,8 +93,6 @@ namespace OrchardCore.Taxonomies.Services
                         pager.Before = containedItems.First().CreatedUtc.Value.Ticks.ToString();
                     }
                 }
-
-                return await _contentManager.LoadAsync(containedItems);
             }
             else if (pager.After != null)
             {
@@ -102,7 +102,7 @@ namespace OrchardCore.Taxonomies.Services
                     query = _session.Query<ContentItem>()
                         .With<TaxonomyIndex>(x => x.TermContentItemId == termPart.ContentItem.ContentItemId && x.Order < afterValue)
                         .OrderByDescending(x => x.Order)
-                        .With<ContentItemIndex>(x => x.Published)
+                        .With<ContentItemIndex>(x => x.Published || (termPart.Ordering && x.Latest))
                         .Take(pager.PageSize + 1);
                 }
                 else
@@ -114,7 +114,7 @@ namespace OrchardCore.Taxonomies.Services
                         .OrderByDescending(x => x.CreatedUtc)
                         .Take(pager.PageSize + 1);
                 }
-                var containedItems = await query.ListAsync();
+                containedItems = await query.ListAsync();
 
                 if (containedItems.Count() == 0)
                 {
@@ -144,8 +144,6 @@ namespace OrchardCore.Taxonomies.Services
                         pager.After = containedItems.Last().CreatedUtc.Value.Ticks.ToString();
                     }
                 }
-
-                return await _contentManager.LoadAsync(containedItems);
             }
             else
             {
@@ -154,7 +152,7 @@ namespace OrchardCore.Taxonomies.Services
                     query = _session.Query<ContentItem>()
                         .With<TaxonomyIndex>(x => x.TermContentItemId == termPart.ContentItem.ContentItemId)
                         .OrderByDescending(x => x.Order)
-                        .With<ContentItemIndex>(x => x.Published)
+                        .With<ContentItemIndex>(x => x.Published || (termPart.Ordering && x.Latest))
                         .Take(pager.PageSize + 1);
                 }
                 else
@@ -166,7 +164,7 @@ namespace OrchardCore.Taxonomies.Services
                         .Take(pager.PageSize + 1);
                 }
 
-                var containedItems = await query.ListAsync();
+                containedItems = await query.ListAsync();
 
                 if (containedItems.Count() == 0)
                 {
@@ -188,9 +186,9 @@ namespace OrchardCore.Taxonomies.Services
                         pager.After = containedItems.Last().CreatedUtc.Value.Ticks.ToString();
                     }
                 }
-
-                return await _contentManager.LoadAsync(containedItems);
             }
+
+            return (await _contentManager.LoadAsync(containedItems));
         }
 
         public async Task InitializeCategorizedItemsOrderAsync(string taxonomyContentItemId)
@@ -206,17 +204,17 @@ namespace OrchardCore.Taxonomies.Services
                 var categorizedItems = await _session.Query<ContentItem>()
                     .With<TaxonomyIndex>(t => t.TermContentItemId == term.ContentItemId)
                     .OrderByDescending(t => t.Order)
-                    .With<ContentItemIndex>(c => c.Latest)
+                    .With<ContentItemIndex>(c => c.Published || c.Latest)
                     .ThenByDescending(c => c.CreatedUtc)
                     .ListAsync();
 
                 var startingOrder = categorizedItems.Count();
 
-                await SaveCategorizedItemsOrder(categorizedItems, term.ContentItemId, startingOrder);
+                SaveCategorizedItemsOrder(categorizedItems, term.ContentItemId, startingOrder);
             }
         }
 
-        // Add or remove from TermContentItemOrder elements that were added or removed from TermContentItemIds
+        // Add or remove from TermContentItemOrder elements that were added or removed from TermContentItemIds.
         public async Task SyncTaxonomyFieldProperties(TaxonomyField field)
         {
             var removedTerms = field.TermContentItemOrder.Where(o => !field.TermContentItemIds.Contains(o.Key)).Select(o => o.Key).ToList();
@@ -230,13 +228,16 @@ namespace OrchardCore.Taxonomies.Services
             {
                 if (!field.TermContentItemOrder.ContainsKey(term))
                 {
-                    // When categorized with a new term, when ordering is enabled, the content item goes into the first (higher order) position.
+                    // When categorized with a new term, if ordering is enabled, the content item goes into the first (higher order) position.
                     field.TermContentItemOrder.Add(term, await GetNextOrderNumberAsync(term));
                 }
             }
+
+            // Remove any content or the elements would be merged (removed elements would not be cleared), because JsonMerge.ArrayHandling.Replace doesn't handle dictionaries.
+            field.Content.TermContentItemOrder?.RemoveAll();
         }
 
-        public async Task SaveCategorizedItemsOrder(IEnumerable<ContentItem> categorizedItems, string termContentItemId, int topOrderValue)
+        public void SaveCategorizedItemsOrder(IEnumerable<ContentItem> categorizedItems, string termContentItemId, int topOrderValue)
         {
             var orderValue = topOrderValue;
 
@@ -244,17 +245,6 @@ namespace OrchardCore.Taxonomies.Services
             foreach (var categorizedItem in categorizedItems)
             {
                 RegisterCategorizedItemOrder(categorizedItem, termContentItemId, orderValue);
-
-                // Keep the published and draft orders the same to avoid confusion in the admin list.
-                if (!categorizedItem.IsPublished())
-                {
-                    var publishedCategorizedItem = await _contentManager.GetAsync(categorizedItem.ContentItemId, VersionOptions.Published);
-                    if (publishedCategorizedItem != null)
-                    {
-                        RegisterCategorizedItemOrder(publishedCategorizedItem, termContentItemId, orderValue);
-                    }
-                }
-
                 --orderValue;
             }
 
@@ -278,7 +268,7 @@ namespace OrchardCore.Taxonomies.Services
                 if (orderValue != currentOrder)
                 {
                     field.TermContentItemOrder[termContentItemId] = orderValue;
-                    
+
                     var jPart = (JObject)categorizedItem.Content[fieldDefinition.PartDefinition.Name];
                     jPart[fieldDefinition.Name] = JObject.FromObject(field);
                     categorizedItem.Content[fieldDefinition.PartDefinition.Name] = jPart;
@@ -335,5 +325,3 @@ namespace OrchardCore.Taxonomies.Services
         }
     }
 }
-
-

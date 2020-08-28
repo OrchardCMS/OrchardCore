@@ -1,3 +1,4 @@
+
 @using OrchardCore.ContentManagement
 @using OrchardCore.ContentManagement.Metadata
 @using OrchardCore.Mvc.Utilities
@@ -15,6 +16,13 @@
     <script asp-src="~/OrchardCore.Taxonomies/Scripts/ci-term-ordering.min.js" debug-src="~/OrchardCore.Taxonomies/Scripts/ci-term-ordering.js" asp-name="ci-term-ordering" at="Foot" depends-on="sortable, jQuery"></script>
 }
 
+<div class="alert alert-dismissible fade show message-error" role="alert">
+    This list is no longer up to date. Please refresh the page and try again.
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">×</span>
+    </button>
+</div>
+
 <h1>@RenderTitleSegments(T["Order contained items for {0}", taxonomyItem.DisplayText])</h1>
 
 <form asp-action="Edit" asp-route-returnUrl="@Context.Request.Query["ReturnUrl"]" method="post" enctype="multipart/form-data">
@@ -26,6 +34,7 @@
         {
             var contentItemSummary = (dynamic)await ContentItemDisplayManager.BuildDisplayAsync(contentItem, updater, "SummaryAdmin");
             contentItemSummary.Selectors.Add(await New.TaxonomyPart_Sortable());
+            contentItemSummary.Selectors.Add(await New.TaxonomyPart_DraftVersionWarning(ContentItem: contentItem));
             <li class="list-group-item">
                 @await DisplayAsync(contentItemSummary)
             </li>

@@ -322,13 +322,14 @@ namespace OrchardCore.Taxonomies.Controllers
             contentItem.Weld<TermPart>();
             contentItem.Alter<TermPart>(t => t.TaxonomyContentItemId = taxonomyContentItemId);
             contentItem.Alter<TermPart>(t => t.OrderingPageSize = taxonomyPart.OrderingPageSize);
+            contentItem.Alter<TermPart>(t => t.Ordering = true);
 
             dynamic model = await _contentItemDisplayManager.BuildDisplayAsync(contentItem, _updateModelAccessor.ModelUpdater);
 
             model.Updater = _updateModelAccessor.ModelUpdater;
 
             // Is this the best way to get the TermPartViewModel created by the TermPart driver, to emulate in OrderCategorizedContentItems.cshtm the "@model TermPartViewModel" of a "normal" View like TermPart.cshtml?
-            model.TermPartViewModel = (ViewModels.TermPartViewModel)((System.Collections.Generic.List<DisplayManagement.IPositioned>)((dynamic)model).Content.Items).Where(i => ((dynamic)i).Metadata.Type == "TermPart").FirstOrDefault();
+            model.TermPartViewModel = (ViewModels.TermPartViewModel)((System.Collections.Generic.List<DisplayManagement.IPositioned>)((dynamic)model).Content.Items).Where(i => ((dynamic)i).Metadata.Type == "TermPart").First();
 
             return View(model);
         }
@@ -356,9 +357,11 @@ namespace OrchardCore.Taxonomies.Controllers
             }
 
             var contentItem = taxonomyItem.ToObject<ContentItem>();
+
             contentItem.Weld<TermPart>();
 
             var termPart = contentItem.As<TermPart>();
+            contentItem.Alter<TermPart>(t => t.Ordering = true);
 
             var pager = new PagerSlim(pagerSlimParameters, pageSize);
 
@@ -378,7 +381,7 @@ namespace OrchardCore.Taxonomies.Controllers
             categorizedContentItems = categorizedContentItems.GetRange(topIndex, Math.Abs(newIndex - oldIndex) + 1);
 
             // apply and save the new order values
-            await _taxonomyFieldService.SaveCategorizedItemsOrder(categorizedContentItems, taxonomyItemId, topOrderValue);
+            _taxonomyFieldService.SaveCategorizedItemsOrder(categorizedContentItems, taxonomyItemId, topOrderValue);
 
             return Ok();
         }

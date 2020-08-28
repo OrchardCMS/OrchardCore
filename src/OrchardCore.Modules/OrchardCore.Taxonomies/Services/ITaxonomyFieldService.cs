@@ -19,7 +19,7 @@ namespace OrchardCore.Taxonomies.Services
 
         Task SyncTaxonomyFieldProperties(TaxonomyField field);
 
-        Task SaveCategorizedItemsOrder(IEnumerable<ContentItem> categorizedItems, string taxonomyContentItemId, int topOrderValue);
+        void SaveCategorizedItemsOrder(IEnumerable<ContentItem> categorizedItems, string taxonomyContentItemId, int topOrderValue);
 
         int GetTaxonomyTermOrder(ContentItem categorizedItem, string termContentItemId);
     }

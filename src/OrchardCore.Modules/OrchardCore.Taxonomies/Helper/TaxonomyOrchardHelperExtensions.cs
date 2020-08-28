@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
 using OrchardCore;
 using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Records;
 using OrchardCore.Taxonomies.Indexing;
 using YesSql;
 
@@ -60,7 +61,7 @@ public static class TaxonomyOrchardHelperExtensions
         var contentManager = orchardHelper.HttpContext.RequestServices.GetService<IContentManager>();
         var session = orchardHelper.HttpContext.RequestServices.GetService<ISession>();
 
-        var contentItems = await query(session.Query<ContentItem, TaxonomyIndex>()).ListAsync();
+        var contentItems = await query(session.Query<ContentItem, TaxonomyIndex>()).With<ContentItemIndex>(x => x.Published).ListAsync();
 
         return await contentManager.LoadAsync(contentItems);
     }
