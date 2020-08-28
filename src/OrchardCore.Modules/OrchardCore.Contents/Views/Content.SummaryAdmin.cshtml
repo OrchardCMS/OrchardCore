@@ -43,7 +43,7 @@
                         <button type="button" class="btn btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             @T["Actions"]
                         </button>
-                        <div class="dropdown-menu dropdown-menu-right">
+                        <div id="actionsMenu" class="dropdown-menu dropdown-menu-right">
                             @await DisplayAsync(Model.ActionsMenu)
                         </div>
                     </div>
@@ -57,3 +57,15 @@
 {
     <div class="col primary">@await DisplayAsync(Model.Content)</div>
 }
+
+<script at="Foot" type="text/javascript">
+    $(function(){
+        
+        $("#actionsMenu.dropdown-menu").each(function(i, e){
+            var count = $(e).children().length;
+            if(count == 0){
+                $(this).parent().hide();
+            }
+        });
+    });
+</script>

@@ -13,12 +13,5 @@
       "Assets/Scripts/simplemde.mediatoolbar.js"
     ],
     "output": "wwwroot/Scripts/simplemde.mediatoolbar.js"
-  },
-  {
-    "copy": true,
-    "inputs": [
-      "Assets/Styles/fonts/*"
-    ],
-    "output": "wwwroot/Styles/fonts/"
   }
 ]
