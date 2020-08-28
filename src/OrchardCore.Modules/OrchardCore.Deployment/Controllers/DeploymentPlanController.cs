@@ -283,7 +283,7 @@ namespace OrchardCore.Deployment.Controllers
                 {
                     ModelState.AddModelError(nameof(EditDeploymentPlanViewModel.Name), S["The name is mandatory."]);
                 }
-                if (model.Name != deploymentPlan.Name)
+                if (!String.Equals(model.Name, deploymentPlan.Name, StringComparer.OrdinalIgnoreCase))
                 {
                     var count = await _session.QueryIndex<DeploymentPlanIndex>(x => x.Name == model.Name && x.DocumentId != model.Id).CountAsync();
                     if (count > 0)
