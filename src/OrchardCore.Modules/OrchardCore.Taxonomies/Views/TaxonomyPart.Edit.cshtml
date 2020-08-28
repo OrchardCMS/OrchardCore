@@ -30,15 +30,17 @@
 @if (canAddTerm && Model.TermContentType != null)
 {
     var termContentType = ContentDefinitionManager.GetTypeDefinition(Model.TermContentType);
-
-    <a class="btn btn-primary btn-sm"
-        asp-route-action="Create"
-        asp-route-controller="Admin"
-        asp-route-id="@Model.TaxonomyPart.TermContentType"
-        asp-route-taxonomyContentItemId="@Model.TaxonomyPart.ContentItem.ContentItemId"
-        asp-route-area="OrchardCore.Taxonomies">
-        @T["Add {0}", termContentType.DisplayName]
-    </a>
+    @if (termContentType != null)
+    {
+        <a class="btn btn-primary btn-sm"
+            asp-route-action="Create"
+            asp-route-controller="Admin"
+            asp-route-id="@Model.TaxonomyPart.TermContentType"
+            asp-route-taxonomyContentItemId="@Model.TaxonomyPart.ContentItem.ContentItemId"
+            asp-route-area="OrchardCore.Taxonomies">
+            @T["Add {0}", termContentType.DisplayName]
+        </a>
+    }
 }
 
 <p>

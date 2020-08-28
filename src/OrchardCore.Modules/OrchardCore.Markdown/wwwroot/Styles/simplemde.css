@@ -9,17 +9,23 @@
  * @link https://github.com/NextStepWebs/simplemde-markdown-editor
  * @license MIT
  */
+[dir] .simplemde-editor .icon-shortcode {
+  margin-top: 7px; }
+
 .simplemde-editor .CodeMirror {
   height: auto;
   min-height: 300px;
   font: inherit;
   z-index: 1; }
+
 [dir] .simplemde-editor .CodeMirror {
   border: 1px solid #dee2e6;
   padding: 10px; }
+
 [dir=ltr] .simplemde-editor .CodeMirror {
   border-bottom-left-radius: 0.25rem;
   border-bottom-right-radius: 0.25rem; }
+
 [dir=rtl] .simplemde-editor .CodeMirror {
   border-bottom-right-radius: 0.25rem;
   border-bottom-left-radius: 0.25rem; }

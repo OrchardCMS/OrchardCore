@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
+using OrchardCore.ContentPreview;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Mvc.Utilities;
@@ -52,6 +53,9 @@ namespace OrchardCore.Templates.Controllers
             {
                 return this.ChallengeOrForbid();
             }
+
+            // Mark request as a `Preview` request so that drivers / handlers or underlying services can be aware of an active preview mode.
+            HttpContext.Features.Set(new ContentPreviewFeature());
 
             var name = Request.Form["Name"];
             var content = Request.Form["Content"];

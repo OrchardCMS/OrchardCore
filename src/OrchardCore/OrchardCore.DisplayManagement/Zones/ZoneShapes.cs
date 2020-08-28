@@ -103,7 +103,7 @@ namespace OrchardCore.DisplayManagement.Zones
 
                 htmlContentBuilder.AppendHtml(await DisplayAsync(container));
             }
-            else
+            else if (groupings.Count == 1)
             {
                 // Evaluate for cards.
                 var cardGrouping = await ShapeFactory.CreateAsync("CardGrouping", Arguments.From(
@@ -112,7 +112,7 @@ namespace OrchardCore.DisplayManagement.Zones
                         Grouping = groupings[0],
                         ContentItem = Shape.ContentItem
                     }));
-
+                    
                 htmlContentBuilder.AppendHtml(await DisplayAsync(cardGrouping));
             }
 
