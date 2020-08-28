@@ -59,9 +59,12 @@ namespace OrchardCore.Media.Services
                 return;
             }
 
-            context.Succeed(requirement);
-
-            await Task.CompletedTask;
+            // Lazy load to prevent circular dependencies
+            var authorizationService = _serviceProvider.GetService<IAuthorizationService>();
+            if (await authorizationService.AuthorizeAsync(context.User, Permissions.ManageMedia))
+            {
+                context.Succeed(requirement);
+            }
         }
 
         private bool IsMediaFieldsFolder(string childPath)
