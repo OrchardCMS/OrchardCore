@@ -9,18 +9,8 @@
   },
   {
     "inputs": [
-      "node_modules/blueimp-file-upload/js/jquery.fileupload.js"
-    ],
-    "output": "Assets/js/Vendor/jquery.fileupload.js"
-  },
-  {
-    "inputs": [
-      "node_modules/blueimp-file-upload/js/jquery.fileupload-validate.js"
-    ],
-    "output": "Assets/js/Vendor/jquery.fileupload-validate.js"
-  },
-  {
-    "inputs": [
+      "./node_modules/blueimp-file-upload/js/jquery.fileupload.js",
+      "./node_modules/blueimp-file-upload/js/jquery.iframe-transport.js",
       "Assets/js/**/*.js"
     ],
     "output": "wwwroot/Scripts/media.js"
