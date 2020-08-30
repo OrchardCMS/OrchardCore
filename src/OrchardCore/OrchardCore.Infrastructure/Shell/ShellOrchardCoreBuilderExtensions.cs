@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Configuration;
@@ -38,6 +39,16 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddSingleton<IShellConfigurationSources, ShellConfigurationSources>();
             services.AddTransient<IConfigureOptions<ShellOptions>, ShellOptionsSetup>();
             services.AddSingleton<IShellSettingsManager, ShellSettingsManager>();
+
+            return builder;
+        }
+
+        /// <summary>
+        /// Adds an hosted service to keep tenant states in sync in a distributed environment.
+        /// </summary>
+        public static OrchardCoreBuilder AddShellHostedService(this OrchardCoreBuilder builder)
+        {
+            builder.ApplicationServices.AddSingleton<IHostedService, ShellHostedService>();
 
             return builder;
         }

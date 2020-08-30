@@ -36,13 +36,13 @@ namespace OrchardCore.Environment.Shell
         /// built for subsequent requests, while existing requests get flushed.
         /// </summary>
         /// <param name="settings"></param>
-        Task ReloadShellContextAsync(ShellSettings settings);
+        Task ReloadShellContextAsync(ShellSettings settings, bool eventSink = false);
 
         /// <summary>
         /// Releases a shell so that a new one will be built for subsequent requests.
         /// Note: Can be used to free up resources after a given time of inactivity.
         /// </summary>
-        Task ReleaseShellContextAsync(ShellSettings settings);
+        Task ReleaseShellContextAsync(ShellSettings settings, bool eventSink = false);
 
         /// <summary>
         /// Lists all available <see cref="ShellContext"/> instances.
@@ -60,5 +60,20 @@ namespace OrchardCore.Environment.Shell
         /// Retrieves all shell settings.
         /// </summary>
         IEnumerable<ShellSettings> GetAllSettings();
+
+        /// <summary>
+        /// The <see cref="ShellInitializedEvent"/> delegate that will get called on <see cref="InitializeAsync"/>.
+        /// </summary>
+        ShellInitializedEvent InitializedAsync { get; set; }
+
+        /// <summary>
+        /// The <see cref="ShellReleasedEvent"/> delegate that will get called on <see cref="ReleaseShellContextAsync"/>.
+        /// </summary>
+        ShellReleasedEvent ReleasedAsync { get; set; }
+
+        /// <summary>
+        /// The <see cref="ShellReloadedEvent"/> delegate that will get called on <see cref="ReloadShellContextAsync"/>.
+        /// </summary>
+        ShellReloadedEvent ReloadedAsync { get; set; }
     }
 }

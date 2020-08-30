@@ -47,6 +47,10 @@ namespace OrchardCore.Environment.Shell
             _logger = logger;
         }
 
+        public ShellInitializedEvent InitializedAsync { get; set; }
+        public ShellReleasedEvent ReleasedAsync { get; set; }
+        public ShellReloadedEvent ReloadedAsync { get; set; }
+
         public async Task InitializeAsync()
         {
             if (!_initialized)
@@ -99,7 +103,7 @@ namespace OrchardCore.Environment.Shell
                 {
                     // If the context is released, it is removed from the dictionary so that the next iteration
                     // or a new call on 'GetOrCreateShellContextAsync()' will recreate a new shell context.
-                    _shellContexts.TryRemove(settings.Name, out var value);
+                    _shellContexts.TryRemove(settings.Name, out _);
                     shell = null;
                 }
             }
@@ -127,7 +131,7 @@ namespace OrchardCore.Environment.Shell
                 {
                     // If the context is released, it is removed from the dictionary so that the next
                     // iteration or a new call on 'GetScopeAsync()' will recreate a new shell context.
-                    _shellContexts.TryRemove(settings.Name, out var value);
+                    _shellContexts.TryRemove(settings.Name, out _);
                 }
             }
 
@@ -151,12 +155,18 @@ namespace OrchardCore.Environment.Shell
         /// Reloads the settings and releases the shell so that a new one will be
         /// built for subsequent requests, while existing requests get flushed.
         /// </summary>
-        public async Task ReloadShellContextAsync(ShellSettings settings)
+        public async Task ReloadShellContextAsync(ShellSettings settings, bool eventSink = false)
         {
             // A disabled shell still in use will be released by its last scope.
             if (!CanReleaseShell(settings))
             {
                 _runningShellTable.Remove(settings);
+
+                if (!eventSink && settings.State != TenantState.Initializing)
+                {
+                    await (ReloadedAsync?.Invoke(settings.Name) ?? Task.CompletedTask);
+                }
+
                 return;
             }
 
@@ -198,10 +208,17 @@ namespace OrchardCore.Environment.Shell
                 settings = await _shellSettingsManager.LoadSettingsAsync(settings.Name);
 
                 // Consistency: We may have been the last to add the shell but not with the last settings.
-                if (settings.Identifier == currentIdentifier)
+                if (settings.Identifier != currentIdentifier)
                 {
-                    return;
+                    continue;
                 }
+
+                if (!eventSink && settings.State != TenantState.Initializing)
+                {
+                    await (ReloadedAsync?.Invoke(settings.Name) ?? Task.CompletedTask);
+                }
+
+                return;
             }
 
             throw new ShellHostReloadException(
@@ -212,11 +229,16 @@ namespace OrchardCore.Environment.Shell
         /// Releases a shell so that a new one will be built for subsequent requests.
         /// Note: Can be used to free up resources after a given time of inactivity.
         /// </summary>
-        public Task ReleaseShellContextAsync(ShellSettings settings)
+        public Task ReleaseShellContextAsync(ShellSettings settings, bool eventSink = false)
         {
             // A disabled shell still in use will be released by its last scope.
             if (!CanReleaseShell(settings))
             {
+                if (!eventSink && settings.State != TenantState.Initializing)
+                {
+                    return ReleasedAsync?.Invoke(settings.Name) ?? Task.CompletedTask;
+                }
+
                 return Task.CompletedTask;
             }
 
@@ -227,6 +249,11 @@ namespace OrchardCore.Environment.Shell
 
             // Add a 'PlaceHolder' allowing to retrieve the settings until the shell will be rebuilt.
             _shellContexts.TryAdd(context.Settings.Name, new ShellContext.PlaceHolder { Settings = settings });
+
+            if (!eventSink && settings.State != TenantState.Initializing)
+            {
+                return ReleasedAsync?.Invoke(settings.Name) ?? Task.CompletedTask;
+            }
 
             return Task.CompletedTask;
         }
@@ -289,6 +316,8 @@ namespace OrchardCore.Environment.Shell
                     AddAndRegisterShell(new ShellContext.PlaceHolder { Settings = settings });
                 };
             }
+
+            await (InitializedAsync?.Invoke() ?? Task.CompletedTask);
 
             if (_logger.IsEnabled(LogLevel.Information))
             {
