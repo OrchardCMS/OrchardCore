@@ -40,9 +40,9 @@
     </div>
 </div>
 <script at="Foot">
-    $('#@(id)_input_slider').bootstrapSlider({ tooltip: 'always', id: '@(id)_slider' }).on('slide', function (ev) {
+    $('#@(id)_input_slider').bootstrapSlider({ tooltip: 'always', id: '@(id)_input_slider' }).on('slide', function (ev) {
         $('#@(id)').val(ev.value);
     });
 
-    $('#@(id)_slider').addClass('w-100');
+    $('#@(id)_input_slider').addClass('w-100');
 </script>
