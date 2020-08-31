@@ -9873,6 +9873,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     220: "\\",
     221: "]",
     222: "'",
+    224: "Mod",
     63232: "Up",
     63233: "Down",
     63234: "Left",
@@ -10149,7 +10150,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       name = "Ctrl-" + name;
     }
 
-    if ((flipCtrlCmd ? event.ctrlKey : event.metaKey) && base != "Cmd") {
+    if ((flipCtrlCmd ? event.ctrlKey : event.metaKey) && base != "Mod") {
       name = "Cmd-" + name;
     }
 
@@ -14612,6 +14613,6 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
   CodeMirror.fromTextArea = fromTextArea;
   addLegacyProps(CodeMirror);
-  CodeMirror.version = "5.56.0";
+  CodeMirror.version = "5.57.0";
   return CodeMirror;
 });

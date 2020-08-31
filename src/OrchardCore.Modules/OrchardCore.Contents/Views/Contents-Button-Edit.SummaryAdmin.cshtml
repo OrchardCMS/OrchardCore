@@ -1,12 +1,18 @@
+@using Microsoft.AspNetCore.Authorization
 @using OrchardCore.ContentManagement
+@inject IAuthorizationService AuthorizationService
 @inject IContentManager ContentManager
 
 @{
     ContentItem contentItem = Model.ContentItem;
     var hasPublished = await ContentManager.HasPublishedVersionAsync(contentItem);
+    var hasEditContentPermission = await AuthorizationService.AuthorizeAsync(User, OrchardCore.Contents.Permissions.EditContent, contentItem);
 }
 
-<a edit-for="@contentItem" asp-route-returnUrl="@FullRequestPath" class="btn btn-primary btn-sm">@T["Edit"]</a>
+@if(hasEditContentPermission)
+{
+    <a edit-for="@contentItem" asp-route-returnUrl="@FullRequestPath" class="btn btn-primary btn-sm">@T["Edit"]</a>
+}
 
 @if (hasPublished)
 {

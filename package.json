@@ -6,6 +6,7 @@
     "watch": " gulp watch",
     "install:orchardcore.apis.graphql": "cd src/OrchardCore.Modules/OrchardCore.Apis.GraphQL && npm install",
     "install:orchardcore.markdown": "cd src/OrchardCore.Modules/OrchardCore.Markdown && npm install",
+    "install:orchardcore.media": "cd src/OrchardCore.Modules/OrchardCore.Media && npm install",
     "install:orchardcore.resources": "cd src/OrchardCore.Modules/OrchardCore.Resources && npm install",
     "install:orchardcore.setup": "cd src/OrchardCore.Modules/OrchardCore.Setup && npm install",
     "install:orchardcore.themes": "cd src/OrchardCore.Modules/OrchardCore.Themes && npm install",
