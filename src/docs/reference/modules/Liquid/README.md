@@ -292,6 +292,14 @@ The following properties are available on the `User` object.
 | `Identity.Name` | `admin` | The name of the authenticated user. |
 | `Identity.Claims` |  | The claims of the authenticated user. |
 
+##### user_email filter
+
+Returns the user's email.
+
+```liquid
+{{ User | user_email }}
+```
+
 #### User has_permission filter
 
 Checks if the User has permission clearance, optionally on a resource
