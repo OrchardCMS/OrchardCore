@@ -2,6 +2,8 @@ using System;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
 using Newtonsoft.Json;
@@ -22,7 +24,8 @@ namespace OrchardCore.Localization.Drivers
     public class LocalizationSettingsDisplayDriver : SectionDisplayDriver<ISite, LocalizationSettings>
     {
         public const string GroupId = "localization";
-
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IAuthorizationService _authorizationService;
         private readonly INotifier _notifier;
         private readonly IShellHost _shellHost;
         private readonly ShellSettings _shellSettings;
@@ -41,6 +44,8 @@ namespace OrchardCore.Localization.Drivers
             INotifier notifier,
             IShellHost shellHost,
             ShellSettings shellSettings,
+            IHttpContextAccessor httpContextAccessor,
+            IAuthorizationService authorizationService,
             IHtmlLocalizer<LocalizationSettingsDisplayDriver> h,
             IStringLocalizer<LocalizationSettingsDisplayDriver> s
         )
@@ -48,13 +53,22 @@ namespace OrchardCore.Localization.Drivers
             _notifier = notifier;
             _shellHost = shellHost;
             _shellSettings = shellSettings;
+            _httpContextAccessor = httpContextAccessor;
+            _authorizationService = authorizationService;
             H = h;
             S = s;
         }
 
         /// <inheritdocs />
-        public override IDisplayResult Edit(LocalizationSettings section, BuildEditorContext context)
+        public override async Task<IDisplayResult> EditAsync(LocalizationSettings section, BuildEditorContext context)
         {
+            var user = _httpContextAccessor.HttpContext?.User;
+
+            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageCultures))
+            {
+                return null;
+            }
+
             return Initialize<LocalizationSettingsViewModel>("LocalizationSettings_Edit", model =>
                 {
                     model.Cultures = CultureInfo.GetCultures(CultureTypes.AllCultures)
@@ -78,6 +92,13 @@ namespace OrchardCore.Localization.Drivers
         /// <inheritdocs />
         public override async Task<IDisplayResult> UpdateAsync(LocalizationSettings section, BuildEditorContext context)
         {
+            var user = _httpContextAccessor.HttpContext?.User;
+
+            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageCultures))
+            {
+                return null;
+            }
+
             if (context.GroupId == GroupId)
             {
                 var model = new LocalizationSettingsViewModel();

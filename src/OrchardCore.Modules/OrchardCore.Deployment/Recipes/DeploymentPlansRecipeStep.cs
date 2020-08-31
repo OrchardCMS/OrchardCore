@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
+using OrchardCore.Deployment.Services;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 
@@ -15,11 +16,11 @@ namespace OrchardCore.Deployment.Recipes
     public class DeploymentPlansRecipeStep : IRecipeStepHandler
     {
         private readonly IServiceProvider _serviceProvider;
-        private readonly DeploymentPlanService _deploymentPlanService;
+        private readonly IDeploymentPlanService _deploymentPlanService;
 
         public DeploymentPlansRecipeStep(
             IServiceProvider serviceProvider,
-            DeploymentPlanService deploymentPlanService)
+            IDeploymentPlanService deploymentPlanService)
         {
             _serviceProvider = serviceProvider;
             _deploymentPlanService = deploymentPlanService;

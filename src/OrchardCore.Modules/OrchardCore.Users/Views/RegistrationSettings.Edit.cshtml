@@ -162,7 +162,7 @@
             mode: "javascript"
         });
         $('#@Html.IdFor(x => x.GenerateUsernameScript)').data('editor', editor);
-        resetScript(editor.doc.lineCount() > 1);
+        resetScript(editor.doc.getValue() != '');
     };
     //]]>
 </script>
