@@ -56,7 +56,17 @@ namespace OrchardCore.DisplayManagement.Implementation
             }
 
             return HtmlString.Empty;
+        }
 
+        public IShape GetCurrentShape()
+        {
+
+            if (_scopes.Count > 0)
+            {
+                return _scopes.Peek().GetCurrentShape();
+            }
+
+            return null; // I think we have a null shape we could return here if that makes more sense.
         }
     }
 }

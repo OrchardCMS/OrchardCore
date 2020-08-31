@@ -22,6 +22,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
+using OrchardCore.DisplayManagement.Blocks;
 using OrchardCore.DisplayManagement.Layout;
 using OrchardCore.DisplayManagement.Liquid.Filters;
 using OrchardCore.DisplayManagement.Liquid.Internal;
@@ -97,6 +98,11 @@ namespace OrchardCore.DisplayManagement.Liquid
             Factory.RegisterTag<CacheExpiresOnTag>("cache_expires_on");
             Factory.RegisterTag<CacheExpiresAfterTag>("cache_expires_after");
             Factory.RegisterTag<CacheExpiresSlidingTag>("cache_expires_sliding");
+
+            Factory.RegisterBlock<ShapeBlock>("shapeblock");
+            Factory.RegisterBlock<DisplayBlock>("display");
+            Factory.RegisterBlock<TemplateBlock>("template");
+            Factory.RegisterTag<SlotTag>("slot");
 
             NamedHelperTag.RegisterDefaultArgument("shape", "type");
             NamedHelperBlock.RegisterDefaultArgument("zone", "name");

@@ -1,0 +1,19 @@
+{% assign expr = nil %}
+{% shapeblock type: "Header", fallback: "/TheBlogTheme/img/home-bg.jpg", image: Model.ContentItem.Content.Blog.Image %}
+    {% template slot: "Header-Title" %}
+        <span class="text-secondary">{{ Model.ContentItem.DisplayText }}</span> <!-- here we are able to alter the contents of the slots html -->
+    {% endtemplate %}
+    {% template slot: "Header-Subheading" %}
+        <span class="subheading">
+            {% display shape: Model.Content.HtmlBodyPart %}
+                {% shape_type expr type: "HeaderHtmlBody" %} <!-- hmm issue here. haven't seend how to have an empty expression and only pass arguments here -->
+            {% enddisplay %}
+        </span>
+    {% endtemplate %}
+{% endshapeblock %}
+
+
+{% shape_remove_item Model.Content "HtmlBodyPart" %}
+{% shape_remove_item Model.Content "Blog-Image" %}
+
+{{ Model.Content | shape_render }}

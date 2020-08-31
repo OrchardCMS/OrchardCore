@@ -1,0 +1,21 @@
+{% assign mediaPath = Model.ContentItem.Content.Blog.Image.Paths.first %}
+{% if mediaPath == nil %}
+    {% assign mediaPath = Model.Fallback %}
+{% endif %}
+
+{% zone name: "Header" %}
+    <header class="masthead" style="background-image: url('{{ mediaPath }}')">
+        <div class="overlay"></div>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-md-10 mx-auto">
+                    <div class="site-heading">
+                        <h1>{% slot name: "Header-Title" %}</h1>
+                        {% slot name: "Header-Subheading" %}
+                        {% slot name: "Header-Meta" %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+{% endzone %}

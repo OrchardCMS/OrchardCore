@@ -12,6 +12,7 @@ namespace OrchardCore.DisplayManagement
         void AddShape(IShape shape);
         void AddSlot(string slot, dynamic content);
         dynamic GetSlot(string slot);
+        IShape GetCurrentShape();
     }
 
     public class ShapeScopeContext
@@ -44,6 +45,11 @@ namespace OrchardCore.DisplayManagement
             }
 
             return HtmlString.Empty;
+        }
+
+        public IShape GetCurrentShape()
+        {
+            return _shape;
         }
     }
 }

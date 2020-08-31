@@ -15,7 +15,9 @@
         <span class="text-secondary">@Model.ContentItem.DisplayText</span> <!-- here we are able to alter the contents of the slots html -->
     </template>
     <template slot="Header-Subheading">
-        <display shape="Model.Content.HtmlBodyPart"></display>
+        <span class="subheading">
+            <display shape="Model.Content.HtmlBodyPart"></display>
+        </span>
     </template>
     <!-- no metadata in this slot -->
 
