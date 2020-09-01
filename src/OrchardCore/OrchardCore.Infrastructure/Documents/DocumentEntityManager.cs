@@ -1,16 +1,17 @@
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
+using OrchardCore.Data.Documents;
 
-namespace OrchardCore.Documents.States
+namespace OrchardCore.Documents
 {
     /// <summary>
-    /// Shares tenant level states.
+    /// A generic service to keep in sync any single <see cref="IDocumentEntity"/> between an <see cref="IDocumentStore"/> and a multi level cache.
     /// </summary>
-    public class DocumentStates<TDocumentEntity> : IDocumentStates where TDocumentEntity : class, IDocumentEntity, new()
+    public class DocumentEntityManager<TDocumentEntity> : IDocumentEntityManager<TDocumentEntity> where TDocumentEntity : class, IDocumentEntity, new()
     {
         private readonly IDocumentManager<TDocumentEntity> _documentManager;
 
-        public DocumentStates(IDocumentManager<TDocumentEntity> documentManager) => _documentManager = documentManager;
+        public DocumentEntityManager(IDocumentManager<TDocumentEntity> documentManager) => _documentManager = documentManager;
 
         public async Task<T> GetAsync<T>(string key) where T : new()
         {
