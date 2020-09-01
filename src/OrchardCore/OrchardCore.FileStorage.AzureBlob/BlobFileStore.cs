@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -108,18 +109,30 @@ namespace OrchardCore.FileStorage.AzureBlob
                         folderPath = folderPath.Substring(_basePrefix.Length - 1);
                     }
 
-                    folderPath = folderPath.TrimEnd('/');
+                    folderPath = folderPath.Trim('/');
                     results.Add(new BlobDirectory(folderPath, _clock.UtcNow));
                 }
                 else
                 {
-                    var itemName = Path.GetFileName(WebUtility.UrlDecode(blob.Blob.Name));
+                    var itemName = Path.GetFileName(WebUtility.UrlDecode(blob.Blob.Name)).Trim('/');
                     // Ignore directory marker files.
                     if (includeSubDirectories || itemName != _directoryMarkerFileName)
                     {
-                        var itemPath = this.Combine(path, itemName);
+                        var itemPath = this.Combine(path.Trim('/'), itemName);
                         results.Add(new BlobFile(itemPath, blob.Blob.Properties.ContentLength, blob.Blob.Properties.LastModified));
                     }
+                }
+            }
+
+            if (includeSubDirectories)
+            {
+                var directories = results.Where(x => x.IsDirectory).ToArray();
+                // TODO Parralel.
+                foreach(var directory in directories)
+                {
+                    var nextResults = await this.GetDirectoryContentAsync(directory.Path, true);
+
+                    results.AddRange(nextResults);
                 }
             }
 
@@ -236,7 +249,7 @@ namespace OrchardCore.FileStorage.AzureBlob
         }
 
         // Reduces the need to call blob.FetchAttributes, and blob.ExistsAsync,
-        // as Azure Storage Library will perform these actions on OpenReadAsync(). 
+        // as Azure Storage Library will perform these actions on OpenReadAsync().
         public Task<Stream> GetFileStreamAsync(IFileStoreEntry fileStoreEntry)
         {
             return GetFileStreamAsync(fileStoreEntry.Path);
