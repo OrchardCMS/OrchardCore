@@ -91,7 +91,19 @@ namespace OrchardCore.FileStorage.AzureBlob
             return null;
         }
 
-        public async Task<IEnumerable<IFileStoreEntry>> GetDirectoryContentAsync(string path = null, bool includeSubDirectories = false)
+        public Task<IEnumerable<IFileStoreEntry>> GetDirectoryContentAsync(string path = null, bool includeSubDirectories = false)
+        {
+            if (includeSubDirectories)
+            {
+                return GetDirectoryContentFlatAsync(path);
+            }
+            else
+            {
+                return GetDirectoryContentByHeirachyAsync(path);
+            }
+        }
+
+        private async Task<IEnumerable<IFileStoreEntry>> GetDirectoryContentByHeirachyAsync(string path = null)
         {
             var results = new List<IFileStoreEntry>();
 
@@ -116,7 +128,7 @@ namespace OrchardCore.FileStorage.AzureBlob
                 {
                     var itemName = Path.GetFileName(WebUtility.UrlDecode(blob.Blob.Name)).Trim('/');
                     // Ignore directory marker files.
-                    if (includeSubDirectories || itemName != _directoryMarkerFileName)
+                    if (itemName != _directoryMarkerFileName)
                     {
                         var itemPath = this.Combine(path.Trim('/'), itemName);
                         results.Add(new BlobFile(itemPath, blob.Blob.Properties.ContentLength, blob.Blob.Properties.LastModified));
@@ -124,15 +136,54 @@ namespace OrchardCore.FileStorage.AzureBlob
                 }
             }
 
-            if (includeSubDirectories)
-            {
-                var directories = results.Where(x => x.IsDirectory).ToArray();
-                // TODO Parralel.
-                foreach(var directory in directories)
-                {
-                    var nextResults = await this.GetDirectoryContentAsync(directory.Path, true);
+            return results
+                    .OrderByDescending(x => x.IsDirectory)
+                    .ToArray();
+        }
 
-                    results.AddRange(nextResults);
+        private async Task<IEnumerable<IFileStoreEntry>> GetDirectoryContentFlatAsync(string path = null)
+        {
+            var results = new List<IFileStoreEntry>();
+
+            var directories = new HashSet<string>();
+
+            var prefix = this.Combine(_basePrefix, path);
+            prefix = NormalizePrefix(prefix);
+
+            var page = _blobContainer.GetBlobsAsync(BlobTraits.Metadata, BlobStates.None, prefix);
+            await foreach (var blob in page)
+            {
+                var name = WebUtility.UrlDecode(blob.Name);
+
+                // A flat blob listing does not return a folder hierachy.
+                // We can infer a heirachy by examining the paths return for the file contents
+                // and evaluate whether a directory exists and has been added to the results listing.
+
+                // TODO 
+                // This includes directory marker files, but we need to check on the other end of recipes to make sure these directories
+                // include a marker file, or a create directory command which would create one.
+
+                var directory = System.IO.Path.GetDirectoryName(name);
+                if (!directories.Contains(directory))
+                {
+                    directories.Add(directory);
+
+                    if (!String.IsNullOrEmpty(_basePrefix))
+                    {
+                        directory = directory.Substring(_basePrefix.Length - 1);
+                    }
+
+                    results.Add(new BlobDirectory(directory, _clock.UtcNow));
+                }
+
+                // Ignore directory marker files.
+                if (!name.EndsWith(_directoryMarkerFileName))
+                {
+                    if (!String.IsNullOrEmpty(_basePrefix))
+                    {
+                        name = name.Substring(_basePrefix.Length - 1);
+                    }
+                    results.Add(new BlobFile(name, blob.Properties.ContentLength, blob.Properties.LastModified));
                 }
             }
 
@@ -140,6 +191,7 @@ namespace OrchardCore.FileStorage.AzureBlob
                     .OrderByDescending(x => x.IsDirectory)
                     .ToArray();
         }
+
 
         public async Task<bool> TryCreateDirectoryAsync(string path)
         {
