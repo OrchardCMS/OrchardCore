@@ -55,8 +55,6 @@ namespace OrchardCore.Localization
 
             public LocalizedString GetString(string name, params object[] arguments) =>
                 NullStringLocalizerFactory.NullLocalizer.Instance.GetString(name, arguments);
-
-            IHtmlLocalizer IHtmlLocalizer.WithCulture(CultureInfo culture) => Instance;
         }
     }
 }

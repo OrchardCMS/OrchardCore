@@ -74,9 +74,6 @@ namespace OrchardCore.Localization.PortableObject
                 : GetAllStrings(culture);
         }
 
-        [Obsolete("This method will be removed in the upcoming ASP.NET Core major release.")]
-        public IStringLocalizer WithCulture(CultureInfo culture) => this;
-
         /// <inheritdocs />
         public (LocalizedString, object[]) GetTranslation(string name, params object[] arguments)
         {
