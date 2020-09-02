@@ -9,17 +9,12 @@ namespace OrchardCore.Media.TagHelpers
     public class AnchorTagHelper : TagHelper
     {
         private const string AssetHrefAttributeName = "asset-href";
-
         private const string AnchorTagName = "a";
-
         private const string HrefAttributeName = "href";
-
         private const string AppendVersionAttributeName = "asp-append-version";
 
         private readonly IMediaFileStore _mediaFileStore;
-
         private readonly IFileVersionProvider _fileVersionProvider;
-
         private readonly IHttpContextAccessor _httpContextAccessor;
 
         public override int Order => -10;
