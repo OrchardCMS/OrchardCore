@@ -5,7 +5,7 @@ using OrchardCore.Environment.Shell.Scope;
 
 namespace OrchardCore.Environment.Shell
 {
-    public interface IShellHost : IShellDescriptorManagerEventHandler
+    public interface IShellHost : IShellEvents, IShellDescriptorManagerEventHandler
     {
         /// <summary>
         /// Ensure that all the <see cref="ShellContext"/> are pre-created and available to process requests.
@@ -60,20 +60,5 @@ namespace OrchardCore.Environment.Shell
         /// Retrieves all shell settings.
         /// </summary>
         IEnumerable<ShellSettings> GetAllSettings();
-
-        /// <summary>
-        /// The <see cref="ShellInitializedEvent"/> delegate that will get called on <see cref="InitializeAsync"/>.
-        /// </summary>
-        ShellInitializedEvent InitializedAsync { get; set; }
-
-        /// <summary>
-        /// The <see cref="ShellReleasedEvent"/> delegate that will get called on <see cref="ReleaseShellContextAsync"/>.
-        /// </summary>
-        ShellReleasedEvent ReleasedAsync { get; set; }
-
-        /// <summary>
-        /// The <see cref="ShellReloadedEvent"/> delegate that will get called on <see cref="ReloadShellContextAsync"/>.
-        /// </summary>
-        ShellReloadedEvent ReloadedAsync { get; set; }
     }
 }
