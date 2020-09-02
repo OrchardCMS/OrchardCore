@@ -90,7 +90,7 @@ namespace OrchardCore.Deployment
             }
         }
 
-        public async Task CreateOrUpdateDeploymentPlans(IEnumerable<DeploymentPlan> deploymentPlans)
+        public async Task CreateOrUpdateDeploymentPlansAsync(IEnumerable<DeploymentPlan> deploymentPlans)
         {
             var names = deploymentPlans.Select(x => x.Name);
 
