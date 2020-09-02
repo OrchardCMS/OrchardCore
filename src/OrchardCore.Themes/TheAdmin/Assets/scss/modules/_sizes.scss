@@ -14,3 +14,38 @@
         }
     }
 }
+
+// Size Column Groupings
+// Creates mixins to target sizes contained inside a column grouping to expand small sizes.
+// ------------------------------
+@mixin make-col-sizes-fix($breakpoint)
+{
+    @each $prop, $abbrev in (width: w, height: h) {
+        @each $size in map-keys($sizes) {
+            .#{$abbrev}-#{$breakpoint}-#{$size} {
+                #{$prop}: 100% !important;
+            }
+        }
+    }  
+}
+
+@mixin make-col-sizes-grouping($grouping)
+{
+    &.col-#{$grouping}{
+        @each $breakpoint in map-keys($grid-breakpoints){
+            @include make-col-sizes-fix($breakpoint);
+        }
+    }
+}
+
+.ta-col-grouping {
+    @each $breakpoint in map-keys($grid-breakpoints) {
+        @if $grid-row-columns > 0 {
+            @include make-col-sizes-grouping($breakpoint);      
+            @for $i from 1 through $grid-columns / 2 {
+                @include make-col-sizes-grouping(#{$breakpoint}-#{$i});
+            }            
+        }      
+    }
+
+}
