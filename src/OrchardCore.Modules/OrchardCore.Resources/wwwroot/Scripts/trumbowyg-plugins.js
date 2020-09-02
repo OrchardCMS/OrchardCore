@@ -293,6 +293,115 @@
     }
   });
 })(jQuery);
+(function ($) {
+  'use strict';
+
+  $.extend(true, $.trumbowyg, {
+    langs: {
+      // jshint camelcase:false
+      en: {
+        fontFamily: 'Font'
+      },
+      da: {
+        fontFamily: 'Skrifttype'
+      },
+      fr: {
+        fontFamily: 'Police'
+      },
+      de: {
+        fontFamily: 'Schriftart'
+      },
+      nl: {
+        fontFamily: 'Lettertype'
+      },
+      tr: {
+        fontFamily: 'Yazı Tipi'
+      },
+      zh_tw: {
+        fontFamily: '字體'
+      },
+      pt_br: {
+        fontFamily: 'Fonte'
+      },
+      ko: {
+        fontFamily: '글꼴'
+      }
+    }
+  }); // jshint camelcase:true
+
+  var defaultOptions = {
+    fontList: [{
+      name: 'Arial',
+      family: 'Arial, Helvetica, sans-serif'
+    }, {
+      name: 'Arial Black',
+      family: 'Arial Black, Gadget, sans-serif'
+    }, {
+      name: 'Comic Sans',
+      family: 'Comic Sans MS, Textile, cursive, sans-serif'
+    }, {
+      name: 'Courier New',
+      family: 'Courier New, Courier, monospace'
+    }, {
+      name: 'Georgia',
+      family: 'Georgia, serif'
+    }, {
+      name: 'Impact',
+      family: 'Impact, Charcoal, sans-serif'
+    }, {
+      name: 'Lucida Console',
+      family: 'Lucida Console, Monaco, monospace'
+    }, {
+      name: 'Lucida Sans',
+      family: 'Lucida Sans Uncide, Lucida Grande, sans-serif'
+    }, {
+      name: 'Palatino',
+      family: 'Palatino Linotype, Book Antiqua, Palatino, serif'
+    }, {
+      name: 'Tahoma',
+      family: 'Tahoma, Geneva, sans-serif'
+    }, {
+      name: 'Times New Roman',
+      family: 'Times New Roman, Times, serif'
+    }, {
+      name: 'Trebuchet',
+      family: 'Trebuchet MS, Helvetica, sans-serif'
+    }, {
+      name: 'Verdana',
+      family: 'Verdana, Geneva, sans-serif'
+    }]
+  }; // Add dropdown with web safe fonts
+
+  $.extend(true, $.trumbowyg, {
+    plugins: {
+      fontfamily: {
+        init: function init(trumbowyg) {
+          trumbowyg.o.plugins.fontfamily = $.extend({}, defaultOptions, trumbowyg.o.plugins.fontfamily || {});
+          trumbowyg.addBtnDef('fontfamily', {
+            dropdown: buildDropdown(trumbowyg),
+            hasIcon: false,
+            text: trumbowyg.lang.fontFamily
+          });
+        }
+      }
+    }
+  });
+
+  function buildDropdown(trumbowyg) {
+    var dropdown = [];
+    $.each(trumbowyg.o.plugins.fontfamily.fontList, function (index, font) {
+      trumbowyg.addBtnDef('fontfamily_' + index, {
+        title: '<span style="font-family: ' + font.family + ';">' + font.name + '</span>',
+        hasIcon: false,
+        fn: function fn() {
+          trumbowyg.execCmd('fontName', font.family, true);
+        }
+      });
+      dropdown.push('fontfamily_' + index);
+    });
+    return dropdown;
+  }
+})(jQuery);
 /* ===========================================================
  * trumbowyg.colors.js v1.2
  * Colors picker plugin for Trumbowyg
@@ -621,115 +730,6 @@
         trumbowyg.addBtnDef(defaultEmojiBtnName, defaultEmojiBtnDef);
         dropdown.push(defaultEmojiBtnName);
       }
-    });
-    return dropdown;
-  }
-})(jQuery);
-(function ($) {
-  'use strict';
-
-  $.extend(true, $.trumbowyg, {
-    langs: {
-      // jshint camelcase:false
-      en: {
-        fontFamily: 'Font'
-      },
-      da: {
-        fontFamily: 'Skrifttype'
-      },
-      fr: {
-        fontFamily: 'Police'
-      },
-      de: {
-        fontFamily: 'Schriftart'
-      },
-      nl: {
-        fontFamily: 'Lettertype'
-      },
-      tr: {
-        fontFamily: 'Yazı Tipi'
-      },
-      zh_tw: {
-        fontFamily: '字體'
-      },
-      pt_br: {
-        fontFamily: 'Fonte'
-      },
-      ko: {
-        fontFamily: '글꼴'
-      }
-    }
-  }); // jshint camelcase:true
-
-  var defaultOptions = {
-    fontList: [{
-      name: 'Arial',
-      family: 'Arial, Helvetica, sans-serif'
-    }, {
-      name: 'Arial Black',
-      family: 'Arial Black, Gadget, sans-serif'
-    }, {
-      name: 'Comic Sans',
-      family: 'Comic Sans MS, Textile, cursive, sans-serif'
-    }, {
-      name: 'Courier New',
-      family: 'Courier New, Courier, monospace'
-    }, {
-      name: 'Georgia',
-      family: 'Georgia, serif'
-    }, {
-      name: 'Impact',
-      family: 'Impact, Charcoal, sans-serif'
-    }, {
-      name: 'Lucida Console',
-      family: 'Lucida Console, Monaco, monospace'
-    }, {
-      name: 'Lucida Sans',
-      family: 'Lucida Sans Uncide, Lucida Grande, sans-serif'
-    }, {
-      name: 'Palatino',
-      family: 'Palatino Linotype, Book Antiqua, Palatino, serif'
-    }, {
-      name: 'Tahoma',
-      family: 'Tahoma, Geneva, sans-serif'
-    }, {
-      name: 'Times New Roman',
-      family: 'Times New Roman, Times, serif'
-    }, {
-      name: 'Trebuchet',
-      family: 'Trebuchet MS, Helvetica, sans-serif'
-    }, {
-      name: 'Verdana',
-      family: 'Verdana, Geneva, sans-serif'
-    }]
-  }; // Add dropdown with web safe fonts
-
-  $.extend(true, $.trumbowyg, {
-    plugins: {
-      fontfamily: {
-        init: function init(trumbowyg) {
-          trumbowyg.o.plugins.fontfamily = $.extend({}, defaultOptions, trumbowyg.o.plugins.fontfamily || {});
-          trumbowyg.addBtnDef('fontfamily', {
-            dropdown: buildDropdown(trumbowyg),
-            hasIcon: false,
-            text: trumbowyg.lang.fontFamily
-          });
-        }
-      }
-    }
-  });
-
-  function buildDropdown(trumbowyg) {
-    var dropdown = [];
-    $.each(trumbowyg.o.plugins.fontfamily.fontList, function (index, font) {
-      trumbowyg.addBtnDef('fontfamily_' + index, {
-        title: '<span style="font-family: ' + font.family + ';">' + font.name + '</span>',
-        hasIcon: false,
-        fn: function fn() {
-          trumbowyg.execCmd('fontName', font.family, true);
-        }
-      });
-      dropdown.push('fontfamily_' + index);
     });
     return dropdown;
   }
@@ -1139,259 +1139,6 @@
     }
   });
 })(jQuery);
-(function ($) {
-  'use strict';
-
-  $.extend(true, $.trumbowyg, {
-    langs: {
-      // jshint camelcase:false
-      en: {
-        lineheight: 'Line height',
-        lineheights: {
-          '0.9': 'Small',
-          'normal': 'Regular',
-          '1.5': 'Large',
-          '2.0': 'Extra large'
-        }
-      },
-      da: {
-        lineheight: 'Linjehøjde',
-        lineheights: {
-          '0.9': 'Lille',
-          'normal': 'Normal',
-          '1.5': 'Stor',
-          '2.0': 'Ekstra stor'
-        }
-      },
-      fr: {
-        lineheight: 'Hauteur de ligne',
-        lineheights: {
-          '0.9': 'Petite',
-          'normal': 'Normale',
-          '1.5': 'Grande',
-          '2.0': 'Très grande'
-        }
-      },
-      nl: {
-        lineheight: 'Regelhoogte',
-        lineheights: {
-          '0.9': 'Klein',
-          'normal': 'Normaal',
-          '1.5': 'Groot',
-          '2.0': 'Extra groot'
-        }
-      },
-      tr: {
-        lineheight: 'Satır yüksekliği',
-        lineheights: {
-          '0.9': 'Küçük',
-          'normal': 'Normal',
-          '1.5': 'Büyük',
-          '2.0': 'Çok Büyük'
-        }
-      },
-      zh_tw: {
-        lineheight: '文字間距',
-        lineheights: {
-          '0.9': '小',
-          'normal': '正常',
-          '1.5': '大',
-          '2.0': '特大'
-        }
-      },
-      pt_br: {
-        lineheight: 'Altura de linha',
-        lineheights: {
-          '0.9': 'Pequena',
-          'normal': 'Regular',
-          '1.5': 'Grande',
-          '2.0': 'Extra grande'
-        }
-      },
-      it: {
-        lineheight: 'Altezza linea',
-        lineheights: {
-          '0.9': 'Bassa',
-          'normal': 'Normale',
-          '1.5': 'Alta',
-          '2.0': 'Molto alta'
-        }
-      },
-      ko: {
-        lineheight: '줄 간격',
-        lineheights: {
-          '0.9': '좁게',
-          'normal': '보통',
-          '1.5': '넓게',
-          '2.0': '아주 넓게'
-        }
-      }
-    }
-  }); // jshint camelcase:true
-
-  var defaultOptions = {
-    sizeList: ['0.9', 'normal', '1.5', '2.0']
-  }; // Add dropdown with font sizes
-
-  $.extend(true, $.trumbowyg, {
-    plugins: {
-      lineheight: {
-        init: function init(trumbowyg) {
-          trumbowyg.o.plugins.lineheight = $.extend({}, defaultOptions, trumbowyg.o.plugins.lineheight || {});
-          trumbowyg.addBtnDef('lineheight', {
-            dropdown: buildDropdown(trumbowyg)
-          });
-        }
-      }
-    }
-  }); // Build the dropdown
-
-  function buildDropdown(trumbowyg) {
-    var dropdown = [];
-    $.each(trumbowyg.o.plugins.lineheight.sizeList, function (index, size) {
-      trumbowyg.addBtnDef('lineheight_' + size, {
-        text: trumbowyg.lang.lineheights[size] || size,
-        hasIcon: false,
-        fn: function fn() {
-          trumbowyg.saveRange();
-          var text = trumbowyg.getRangeText();
-
-          if (text.replace(/\s/g, '') !== '') {
-            try {
-              var parent = getSelectionParentElement();
-              $(parent).css('lineHeight', size);
-            } catch (e) {}
-          }
-        }
-      });
-      dropdown.push('lineheight_' + size);
-    });
-    return dropdown;
-  } // Get the selection's parent
-
-
-  function getSelectionParentElement() {
-    var parentEl = null,
-        selection;
-
-    if (window.getSelection) {
-      selection = window.getSelection();
-
-      if (selection.rangeCount) {
-        parentEl = selection.getRangeAt(0).commonAncestorContainer;
-
-        if (parentEl.nodeType !== 1) {
-          parentEl = parentEl.parentNode;
-        }
-      }
-    } else if ((selection = document.selection) && selection.type !== 'Control') {
-      parentEl = selection.createRange().parentElement();
-    }
-
-    return parentEl;
-  }
-})(jQuery);
-/*/* ===========================================================
- * trumbowyg.insertaudio.js v1.0
- * InsertAudio plugin for Trumbowyg
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Author : Adam Hess (AdamHess)
- */
-(function ($) {
-  'use strict';
-
-  var insertAudioOptions = {
-    src: {
-      label: 'URL',
-      required: true
-    },
-    autoplay: {
-      label: 'AutoPlay',
-      required: false,
-      type: 'checkbox'
-    },
-    muted: {
-      label: 'Muted',
-      required: false,
-      type: 'checkbox'
-    },
-    preload: {
-      label: 'preload options',
-      required: false
-    }
-  };
-  $.extend(true, $.trumbowyg, {
-    langs: {
-      // jshint camelcase:false
-      en: {
-        insertAudio: 'Insert Audio'
-      },
-      da: {
-        insertAudio: 'Indsæt lyd'
-      },
-      fr: {
-        insertAudio: 'Insérer un son'
-      },
-      ru: {
-        insertAudio: 'Вставить аудио'
-      },
-      ja: {
-        insertAudio: '音声の挿入'
-      },
-      tr: {
-        insertAudio: 'Ses Ekle'
-      },
-      pt_br: {
-        insertAudio: 'Inserir áudio'
-      },
-      ko: {
-        insertAudio: '소리 넣기'
-      } // jshint camelcase:true
-
-    },
-    plugins: {
-      insertAudio: {
-        init: function init(trumbowyg) {
-          var btnDef = {
-            fn: function fn() {
-              var insertAudioCallback = function insertAudioCallback(v) {
-                // controls should always be show otherwise the audio will
-                // be invisible defeating the point of a wysiwyg
-                var html = '<audio controls';
-
-                if (v.src) {
-                  html += ' src=\'' + v.src + '\'';
-                }
-
-                if (v.autoplay) {
-                  html += ' autoplay';
-                }
-
-                if (v.muted) {
-                  html += ' muted';
-                }
-
-                if (v.preload) {
-                  html += ' preload=\'' + v + '\'';
-                }
-
-                html += '></audio>';
-                var node = $(html)[0];
-                trumbowyg.range.deleteContents();
-                trumbowyg.range.insertNode(node);
-                return true;
-              };
-
-              trumbowyg.openModalInsert(trumbowyg.lang.insertAudio, insertAudioOptions, insertAudioCallback);
-            }
-          };
-          trumbowyg.addBtnDef('insertAudio', btnDef);
-        }
-      }
-    }
-  });
-})(jQuery);
 /*/* ===========================================================
  * trumbowyg.history.js v1.0
  * history plugin for Trumbowyg
@@ -1597,6 +1344,259 @@
       }
     }
   });
+})(jQuery);
+/*/* ===========================================================
+ * trumbowyg.insertaudio.js v1.0
+ * InsertAudio plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : Adam Hess (AdamHess)
+ */
+(function ($) {
+  'use strict';
+
+  var insertAudioOptions = {
+    src: {
+      label: 'URL',
+      required: true
+    },
+    autoplay: {
+      label: 'AutoPlay',
+      required: false,
+      type: 'checkbox'
+    },
+    muted: {
+      label: 'Muted',
+      required: false,
+      type: 'checkbox'
+    },
+    preload: {
+      label: 'preload options',
+      required: false
+    }
+  };
+  $.extend(true, $.trumbowyg, {
+    langs: {
+      // jshint camelcase:false
+      en: {
+        insertAudio: 'Insert Audio'
+      },
+      da: {
+        insertAudio: 'Indsæt lyd'
+      },
+      fr: {
+        insertAudio: 'Insérer un son'
+      },
+      ru: {
+        insertAudio: 'Вставить аудио'
+      },
+      ja: {
+        insertAudio: '音声の挿入'
+      },
+      tr: {
+        insertAudio: 'Ses Ekle'
+      },
+      pt_br: {
+        insertAudio: 'Inserir áudio'
+      },
+      ko: {
+        insertAudio: '소리 넣기'
+      } // jshint camelcase:true
+
+    },
+    plugins: {
+      insertAudio: {
+        init: function init(trumbowyg) {
+          var btnDef = {
+            fn: function fn() {
+              var insertAudioCallback = function insertAudioCallback(v) {
+                // controls should always be show otherwise the audio will
+                // be invisible defeating the point of a wysiwyg
+                var html = '<audio controls';
+
+                if (v.src) {
+                  html += ' src=\'' + v.src + '\'';
+                }
+
+                if (v.autoplay) {
+                  html += ' autoplay';
+                }
+
+                if (v.muted) {
+                  html += ' muted';
+                }
+
+                if (v.preload) {
+                  html += ' preload=\'' + v + '\'';
+                }
+
+                html += '></audio>';
+                var node = $(html)[0];
+                trumbowyg.range.deleteContents();
+                trumbowyg.range.insertNode(node);
+                return true;
+              };
+
+              trumbowyg.openModalInsert(trumbowyg.lang.insertAudio, insertAudioOptions, insertAudioCallback);
+            }
+          };
+          trumbowyg.addBtnDef('insertAudio', btnDef);
+        }
+      }
+    }
+  });
+})(jQuery);
+(function ($) {
+  'use strict';
+
+  $.extend(true, $.trumbowyg, {
+    langs: {
+      // jshint camelcase:false
+      en: {
+        lineheight: 'Line height',
+        lineheights: {
+          '0.9': 'Small',
+          'normal': 'Regular',
+          '1.5': 'Large',
+          '2.0': 'Extra large'
+        }
+      },
+      da: {
+        lineheight: 'Linjehøjde',
+        lineheights: {
+          '0.9': 'Lille',
+          'normal': 'Normal',
+          '1.5': 'Stor',
+          '2.0': 'Ekstra stor'
+        }
+      },
+      fr: {
+        lineheight: 'Hauteur de ligne',
+        lineheights: {
+          '0.9': 'Petite',
+          'normal': 'Normale',
+          '1.5': 'Grande',
+          '2.0': 'Très grande'
+        }
+      },
+      nl: {
+        lineheight: 'Regelhoogte',
+        lineheights: {
+          '0.9': 'Klein',
+          'normal': 'Normaal',
+          '1.5': 'Groot',
+          '2.0': 'Extra groot'
+        }
+      },
+      tr: {
+        lineheight: 'Satır yüksekliği',
+        lineheights: {
+          '0.9': 'Küçük',
+          'normal': 'Normal',
+          '1.5': 'Büyük',
+          '2.0': 'Çok Büyük'
+        }
+      },
+      zh_tw: {
+        lineheight: '文字間距',
+        lineheights: {
+          '0.9': '小',
+          'normal': '正常',
+          '1.5': '大',
+          '2.0': '特大'
+        }
+      },
+      pt_br: {
+        lineheight: 'Altura de linha',
+        lineheights: {
+          '0.9': 'Pequena',
+          'normal': 'Regular',
+          '1.5': 'Grande',
+          '2.0': 'Extra grande'
+        }
+      },
+      it: {
+        lineheight: 'Altezza linea',
+        lineheights: {
+          '0.9': 'Bassa',
+          'normal': 'Normale',
+          '1.5': 'Alta',
+          '2.0': 'Molto alta'
+        }
+      },
+      ko: {
+        lineheight: '줄 간격',
+        lineheights: {
+          '0.9': '좁게',
+          'normal': '보통',
+          '1.5': '넓게',
+          '2.0': '아주 넓게'
+        }
+      }
+    }
+  }); // jshint camelcase:true
+
+  var defaultOptions = {
+    sizeList: ['0.9', 'normal', '1.5', '2.0']
+  }; // Add dropdown with font sizes
+
+  $.extend(true, $.trumbowyg, {
+    plugins: {
+      lineheight: {
+        init: function init(trumbowyg) {
+          trumbowyg.o.plugins.lineheight = $.extend({}, defaultOptions, trumbowyg.o.plugins.lineheight || {});
+          trumbowyg.addBtnDef('lineheight', {
+            dropdown: buildDropdown(trumbowyg)
+          });
+        }
+      }
+    }
+  }); // Build the dropdown
+
+  function buildDropdown(trumbowyg) {
+    var dropdown = [];
+    $.each(trumbowyg.o.plugins.lineheight.sizeList, function (index, size) {
+      trumbowyg.addBtnDef('lineheight_' + size, {
+        text: trumbowyg.lang.lineheights[size] || size,
+        hasIcon: false,
+        fn: function fn() {
+          trumbowyg.saveRange();
+          var text = trumbowyg.getRangeText();
+
+          if (text.replace(/\s/g, '') !== '') {
+            try {
+              var parent = getSelectionParentElement();
+              $(parent).css('lineHeight', size);
+            } catch (e) {}
+          }
+        }
+      });
+      dropdown.push('lineheight_' + size);
+    });
+    return dropdown;
+  } // Get the selection's parent
+
+
+  function getSelectionParentElement() {
+    var parentEl = null,
+        selection;
+
+    if (window.getSelection) {
+      selection = window.getSelection();
+
+      if (selection.rangeCount) {
+        parentEl = selection.getRangeAt(0).commonAncestorContainer;
+
+        if (parentEl.nodeType !== 1) {
+          parentEl = parentEl.parentNode;
+        }
+      }
+    } else if ((selection = document.selection) && selection.type !== 'Control') {
+      parentEl = selection.createRange().parentElement();
+    }
+
+    return parentEl;
+  }
 })(jQuery);
 /* ===========================================================
  * trumbowyg.mathMl.js v1.0
@@ -2019,55 +2019,6 @@
   });
 })(jQuery);
 /* ===========================================================
- * trumbowyg.pasteimage.js v1.0
- * Basic base64 paste plugin for Trumbowyg
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Author : Alexandre Demode (Alex-D)
- *          Twitter : @AlexandreDemode
- *          Website : alex-d.fr
- */
-(function ($) {
-  'use strict';
-
-  $.extend(true, $.trumbowyg, {
-    plugins: {
-      pasteImage: {
-        init: function init(trumbowyg) {
-          trumbowyg.pasteHandlers.push(function (pasteEvent) {
-            try {
-              var items = (pasteEvent.originalEvent || pasteEvent).clipboardData.items,
-                  mustPreventDefault = false,
-                  reader;
-
-              for (var i = items.length - 1; i >= 0; i -= 1) {
-                if (items[i].type.match(/^image\//)) {
-                  reader = new FileReader();
-                  /* jshint -W083 */
-
-                  reader.onloadend = function (event) {
-                    trumbowyg.execCmd('insertImage', event.target.result, false, true);
-                  };
-                  /* jshint +W083 */
-
-
-                  reader.readAsDataURL(items[i].getAsFile());
-                  mustPreventDefault = true;
-                }
-              }
-
-              if (mustPreventDefault) {
-                pasteEvent.stopPropagation();
-                pasteEvent.preventDefault();
-              }
-            } catch (c) {}
-          });
-        }
-      }
-    }
-  });
-})(jQuery);
-/* ===========================================================
  * trumbowyg.preformatted.js v1.0
  * Preformatted plugin for Trumbowyg
  * http://alex-d.github.com/Trumbowyg
@@ -2209,6 +2160,123 @@
     } else if (iscode) {
       $(container).contents().unwrap('code');
     }
+  }
+})(jQuery);
+/* ===========================================================
+ * trumbowyg.pasteimage.js v1.0
+ * Basic base64 paste plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : Alexandre Demode (Alex-D)
+ *          Twitter : @AlexandreDemode
+ *          Website : alex-d.fr
+ */
+(function ($) {
+  'use strict';
+
+  $.extend(true, $.trumbowyg, {
+    plugins: {
+      pasteImage: {
+        init: function init(trumbowyg) {
+          trumbowyg.pasteHandlers.push(function (pasteEvent) {
+            try {
+              var items = (pasteEvent.originalEvent || pasteEvent).clipboardData.items,
+                  mustPreventDefault = false,
+                  reader;
+
+              for (var i = items.length - 1; i >= 0; i -= 1) {
+                if (items[i].type.match(/^image\//)) {
+                  reader = new FileReader();
+                  /* jshint -W083 */
+
+                  reader.onloadend = function (event) {
+                    trumbowyg.execCmd('insertImage', event.target.result, false, true);
+                  };
+                  /* jshint +W083 */
+
+
+                  reader.readAsDataURL(items[i].getAsFile());
+                  mustPreventDefault = true;
+                }
+              }
+
+              if (mustPreventDefault) {
+                pasteEvent.stopPropagation();
+                pasteEvent.preventDefault();
+              }
+            } catch (c) {}
+          });
+        }
+      }
+    }
+  });
+})(jQuery);
+/* ===========================================================
+ * trumbowyg.specialchars.js v0.99
+ * Unicode characters picker plugin for Trumbowyg
+ * http://alex-d.github.com/Trumbowyg
+ * ===========================================================
+ * Author : Renaud Hoyoux (geektortoise)
+*/
+(function ($) {
+  'use strict';
+
+  var defaultOptions = {
+    symbolList: [// currencies
+    '0024', '20AC', '00A3', '00A2', '00A5', '00A4', '2030', null, // legal signs
+    '00A9', '00AE', '2122', null, // textual sign
+    '00A7', '00B6', '00C6', '00E6', '0152', '0153', null, '2022', '25CF', '2023', '25B6', '2B29', '25C6', null, //maths
+    '00B1', '00D7', '00F7', '21D2', '21D4', '220F', '2211', '2243', '2264', '2265']
+  };
+  $.extend(true, $.trumbowyg, {
+    langs: {
+      en: {
+        specialChars: 'Special characters'
+      },
+      fr: {
+        specialChars: 'Caractères spéciaux'
+      },
+      ko: {
+        specialChars: '특수문자'
+      }
+    },
+    plugins: {
+      specialchars: {
+        init: function init(trumbowyg) {
+          trumbowyg.o.plugins.specialchars = trumbowyg.o.plugins.specialchars || defaultOptions;
+          var specialCharsBtnDef = {
+            dropdown: buildDropdown(trumbowyg)
+          };
+          trumbowyg.addBtnDef('specialChars', specialCharsBtnDef);
+        }
+      }
+    }
+  });
+
+  function buildDropdown(trumbowyg) {
+    var dropdown = [];
+    $.each(trumbowyg.o.plugins.specialchars.symbolList, function (i, symbol) {
+      if (symbol === null) {
+        symbol = '&nbsp';
+      } else {
+        symbol = '&#x' + symbol;
+      }
+
+      var btn = symbol.replace(/:/g, ''),
+          defaultSymbolBtnName = 'symbol-' + btn,
+          defaultSymbolBtnDef = {
+        text: symbol,
+        hasIcon: false,
+        fn: function fn() {
+          var encodedSymbol = String.fromCodePoint(parseInt(symbol.replace('&#', '0')));
+          trumbowyg.execCmd('insertText', encodedSymbol);
+          return true;
+        }
+      };
+      trumbowyg.addBtnDef(defaultSymbolBtnName, defaultSymbolBtnDef);
+      dropdown.push(defaultSymbolBtnName);
+    });
+    return dropdown;
   }
 })(jQuery);
 ;
@@ -2492,74 +2560,6 @@
       }
     }
   });
-})(jQuery);
-/* ===========================================================
- * trumbowyg.specialchars.js v0.99
- * Unicode characters picker plugin for Trumbowyg
- * http://alex-d.github.com/Trumbowyg
- * ===========================================================
- * Author : Renaud Hoyoux (geektortoise)
-*/
-(function ($) {
-  'use strict';
-
-  var defaultOptions = {
-    symbolList: [// currencies
-    '0024', '20AC', '00A3', '00A2', '00A5', '00A4', '2030', null, // legal signs
-    '00A9', '00AE', '2122', null, // textual sign
-    '00A7', '00B6', '00C6', '00E6', '0152', '0153', null, '2022', '25CF', '2023', '25B6', '2B29', '25C6', null, //maths
-    '00B1', '00D7', '00F7', '21D2', '21D4', '220F', '2211', '2243', '2264', '2265']
-  };
-  $.extend(true, $.trumbowyg, {
-    langs: {
-      en: {
-        specialChars: 'Special characters'
-      },
-      fr: {
-        specialChars: 'Caractères spéciaux'
-      },
-      ko: {
-        specialChars: '특수문자'
-      }
-    },
-    plugins: {
-      specialchars: {
-        init: function init(trumbowyg) {
-          trumbowyg.o.plugins.specialchars = trumbowyg.o.plugins.specialchars || defaultOptions;
-          var specialCharsBtnDef = {
-            dropdown: buildDropdown(trumbowyg)
-          };
-          trumbowyg.addBtnDef('specialChars', specialCharsBtnDef);
-        }
-      }
-    }
-  });
-
-  function buildDropdown(trumbowyg) {
-    var dropdown = [];
-    $.each(trumbowyg.o.plugins.specialchars.symbolList, function (i, symbol) {
-      if (symbol === null) {
-        symbol = '&nbsp';
-      } else {
-        symbol = '&#x' + symbol;
-      }
-
-      var btn = symbol.replace(/:/g, ''),
-          defaultSymbolBtnName = 'symbol-' + btn,
-          defaultSymbolBtnDef = {
-        text: symbol,
-        hasIcon: false,
-        fn: function fn() {
-          var encodedSymbol = String.fromCodePoint(parseInt(symbol.replace('&#', '0')));
-          trumbowyg.execCmd('insertText', encodedSymbol);
-          return true;
-        }
-      };
-      trumbowyg.addBtnDef(defaultSymbolBtnName, defaultSymbolBtnDef);
-      dropdown.push(defaultSymbolBtnName);
-    });
-    return dropdown;
-  }
 })(jQuery);
 /* ===========================================================
  * trumbowyg.table.custom.js v2.0

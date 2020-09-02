@@ -3,11 +3,11 @@ using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
 using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.ShortCodes.Services;
+using OrchardCore.Shortcodes.Services;
 
 namespace OrchardCore.Liquid.Filters
 {
-    public class ShortCodeFilter : ILiquidFilter
+    public class ShortcodeFilter : ILiquidFilter
     {
         public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
         {
@@ -16,9 +16,12 @@ namespace OrchardCore.Liquid.Filters
                 throw new ArgumentException("Services missing while invoking 'shortcode'");
             }
 
-            var shortCodeService = ((IServiceProvider)services).GetRequiredService<IShortCodeService>();
+            var shortcodeService = ((IServiceProvider)services).GetRequiredService<IShortcodeService>();
 
-            return new StringValue(await shortCodeService.ProcessAsync(input.ToStringValue()));
+            // TODO This provides no context to the shortcode service.
+            // It could take a content item as an argument to provide some context.
+
+            return new StringValue(await shortcodeService.ProcessAsync(input.ToStringValue()));
         }
     }
 }

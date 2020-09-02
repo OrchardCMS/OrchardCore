@@ -168,6 +168,12 @@
   },
   {
     "inputs": [
+      "node_modules/jquery.easing/jquery.easing.js"
+    ],
+    "output": "wwwroot/Scripts/jquery.easing.js"
+  },
+  {
+    "inputs": [
       "node_modules/jquery-resizable-dom/dist/jquery-resizable.js"
     ],
     "output": "wwwroot/Scripts/jquery-resizable.js"
@@ -199,6 +205,12 @@
       "node_modules/trumbowyg/dist/trumbowyg.js"
     ],
     "output": "wwwroot/Scripts/trumbowyg.js"
+  },
+  {
+    "inputs": [
+      "Assets/trumbowyg/js/trumbowyg.shortcodes.js"
+    ],
+    "output": "wwwroot/Scripts/trumbowyg.shortcodes.js"
   },
   {
     "inputs": [

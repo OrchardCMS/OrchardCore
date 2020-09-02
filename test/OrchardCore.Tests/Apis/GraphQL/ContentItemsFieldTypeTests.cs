@@ -77,7 +77,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
             {
                 var builder = new SchemaBuilder(store.Configuration, await session.DemandAsync());
 
-                builder.CreateMapIndexTable(nameof(ContentItemIndex), table => table
+                builder.CreateMapIndexTable<ContentItemIndex>(table => table
                     .Column<string>("ContentItemId", c => c.WithLength(26))
                     .Column<string>("ContentItemVersionId", c => c.WithLength(26))
                     .Column<bool>("Latest")
@@ -91,11 +91,11 @@ namespace OrchardCore.Tests.Apis.GraphQL
                     .Column<string>("DisplayText", column => column.Nullable().WithLength(ContentItemIndex.MaxDisplayTextSize))
                 );
 
-                builder.CreateMapIndexTable(nameof(AnimalIndex), column => column
+                builder.CreateMapIndexTable<AnimalIndex>(table => table
                     .Column<string>(nameof(AnimalIndex.Name))
                 );
 
-                builder.CreateMapIndexTable(nameof(AnimalTraitsIndex), column => column
+                builder.CreateMapIndexTable<AnimalTraitsIndex>(table => table
                     .Column<bool>(nameof(AnimalTraitsIndex.IsHappy))
                     .Column<bool>(nameof(AnimalTraitsIndex.IsScary))
                 );

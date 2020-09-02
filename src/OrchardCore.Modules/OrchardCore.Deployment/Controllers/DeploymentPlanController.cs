@@ -218,6 +218,12 @@ namespace OrchardCore.Deployment.Controllers
                 {
                     ModelState.AddModelError(nameof(CreateDeploymentPlanViewModel.Name), S["The name is mandatory."]);
                 }
+
+                var count = await _session.QueryIndex<DeploymentPlanIndex>(x => x.Name == model.Name).CountAsync();
+                if (count > 0)
+                {
+                    ModelState.AddModelError(nameof(CreateDeploymentPlanViewModel.Name), S["A deployment plan with the same name already exists."]);
+                }
             }
 
             if (ModelState.IsValid)
@@ -276,6 +282,14 @@ namespace OrchardCore.Deployment.Controllers
                 if (String.IsNullOrWhiteSpace(model.Name))
                 {
                     ModelState.AddModelError(nameof(EditDeploymentPlanViewModel.Name), S["The name is mandatory."]);
+                }
+                if (!String.Equals(model.Name, deploymentPlan.Name, StringComparison.OrdinalIgnoreCase))
+                {
+                    var count = await _session.QueryIndex<DeploymentPlanIndex>(x => x.Name == model.Name && x.DocumentId != model.Id).CountAsync();
+                    if (count > 0)
+                    {
+                        ModelState.AddModelError(nameof(CreateDeploymentPlanViewModel.Name), S["A deployment plan with the same name already exists."]);
+                    }
                 }
             }
 

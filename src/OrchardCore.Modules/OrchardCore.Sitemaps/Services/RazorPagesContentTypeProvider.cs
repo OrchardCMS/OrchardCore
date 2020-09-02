@@ -42,7 +42,7 @@ namespace OrchardCore.Sitemaps.Services
                 return Task.FromResult(url);
             }
 
-            return null;
+            return Task.FromResult<string>(null);
         }
 
         public IEnumerable<ContentTypeDefinition> ListRoutableTypeDefinitions()

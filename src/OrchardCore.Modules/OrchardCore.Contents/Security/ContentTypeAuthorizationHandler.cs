@@ -43,7 +43,7 @@ namespace OrchardCore.Contents.Security
                 }
             }
 
-            var contentTypePermission = ContentTypePermissions.ConvertToDynamicPermission(permission ?? requirement.Permission);
+            var contentTypePermission = ContentTypePermissionsHelper.ConvertToDynamicPermission(permission ?? requirement.Permission);
 
             if (contentTypePermission != null)
             {
@@ -55,7 +55,7 @@ namespace OrchardCore.Contents.Security
 
                 if (!String.IsNullOrEmpty(contentType))
                 {
-                    permission = ContentTypePermissions.CreateDynamicPermission(contentTypePermission, contentType);
+                    permission = ContentTypePermissionsHelper.CreateDynamicPermission(contentTypePermission, contentType);
                 }
             }
 
