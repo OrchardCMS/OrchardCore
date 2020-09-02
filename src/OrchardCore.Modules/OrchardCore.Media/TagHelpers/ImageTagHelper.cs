@@ -58,11 +58,11 @@ namespace OrchardCore.Media.TagHelpers
 
             if (AppendVersion && _fileVersionProvider != null)
             {
-                output.Attributes.SetAttribute(AssetSrcAttributeName, _fileVersionProvider.AddFileVersionToPath(_httpContextAccessor.HttpContext.Request.PathBase, resolvedUrl));
+                output.Attributes.SetAttribute(SourceAttributeName, _fileVersionProvider.AddFileVersionToPath(_httpContextAccessor.HttpContext.Request.PathBase, resolvedUrl));
             }
             else
             {
-                output.Attributes.SetAttribute(AssetSrcAttributeName, resolvedUrl);
+                output.Attributes.SetAttribute(SourceAttributeName, resolvedUrl);
             }
         }
     }
