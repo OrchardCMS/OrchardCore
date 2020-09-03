@@ -98,11 +98,11 @@ namespace OrchardCore.FileStorage.AzureBlob
             }
             else
             {
-                return GetDirectoryContentByHeirarchyAsync(path);
+                return GetDirectoryContentByHierarchyAsync(path);
             }
         }
 
-        private async Task<IEnumerable<IFileStoreEntry>> GetDirectoryContentByHeirarchyAsync(string path = null)
+        private async Task<IEnumerable<IFileStoreEntry>> GetDirectoryContentByHierarchyAsync(string path = null)
         {
             var results = new List<IFileStoreEntry>();
 
