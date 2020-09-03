@@ -91,11 +91,11 @@
 
     togglePassword.addEventListener('click', function (e) {
         // toggle the type attribute
-        type = password.getAttribute('type') === 'password' ? 'text' : 'password';
-        icon = this.getElementsByClassName('icon')[0];
+        type = password.getAttribute('type') === 'password' ? 'text' : 'password';        
         password.setAttribute('type', type);
 
         // toggle the eye slash icon
+        icon = this.getElementsByClassName('icon')[0];
         type === 'password' ? icon.setAttribute('data-icon', 'eye') : icon.setAttribute('data-icon', 'eye-slash');
     });
 </script>
