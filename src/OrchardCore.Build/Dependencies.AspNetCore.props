@@ -13,10 +13,12 @@
     <PackageManagement Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="$(AspNetCorePreviewVersion)" />
     <PackageManagement Include="Microsoft.AspNetCore.Authentication.Twitter" Version="$(AspNetCorePreviewVersion)" />
     <PackageManagement Include="Microsoft.AspNetCore.DataProtection.AzureStorage" Version="$(AspNetCoreVersion)" />
+    <PackageManagement Include="Microsoft.AspNetCore.DataProtection.StackExchangeRedis" Version="$(AspNetCorePreviewVersion)" />
     <PackageManagement Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="$(AspNetCorePreviewVersion)" />
     <PackageManagement Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="$(AspNetCorePreviewVersion)" />
     <PackageManagement Include="Microsoft.AspNetCore.Mvc.Testing" Version="$(AspNetCorePreviewVersion)" />
     <PackageManagement Include="Microsoft.AspNetCore.Owin" Version="$(AspNetCorePreviewVersion)" />
+    <PackageManagement Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="$(AspNetCorePreviewVersion2)" />
     <PackageManagement Include="Microsoft.Extensions.Http.Polly" Version="$(AspNetCorePreviewVersion2)" />
   </ItemGroup>
 </Project>
