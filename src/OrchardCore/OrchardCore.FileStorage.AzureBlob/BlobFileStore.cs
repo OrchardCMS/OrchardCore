@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -130,7 +129,7 @@ namespace OrchardCore.FileStorage.AzureBlob
                     // Ignore directory marker files.
                     if (itemName != _directoryMarkerFileName)
                     {
-                        var itemPath = this.Combine(path.Trim('/'), itemName);
+                        var itemPath = this.Combine(path?.Trim('/'), itemName);
                         results.Add(new BlobFile(itemPath, blob.Blob.Properties.ContentLength, blob.Blob.Properties.LastModified));
                     }
                 }
@@ -145,6 +144,7 @@ namespace OrchardCore.FileStorage.AzureBlob
         {
             var results = new List<IFileStoreEntry>();
 
+            // Folders are considered case sensitive in blob storage.
             var directories = new HashSet<string>();
 
             var prefix = this.Combine(_basePrefix, path);
@@ -156,22 +156,18 @@ namespace OrchardCore.FileStorage.AzureBlob
                 var name = WebUtility.UrlDecode(blob.Name);
 
                 // A flat blob listing does not return a folder hierachy.
-                // We can infer a heirachy by examining the paths return for the file contents
-                // and evaluate whether a directory exists and has been added to the results listing.
-
-                // TODO 
-                // This includes directory marker files, but we need to check on the other end of recipes to make sure these directories
-                // include a marker file, or a create directory command which would create one.
-
-                var directory = System.IO.Path.GetDirectoryName(name);
-                if (!directories.Contains(directory))
+                // We can infer a heirachy by examining the paths returned for the file contents
+                // and evaluate whether a directory exists and should be added to the results listing.
+                var directory = Path.GetDirectoryName(name);
+                // Strip base folder from directory name.
+                if (!String.IsNullOrEmpty(_basePrefix))
+                {
+                    directory = directory.Substring(_basePrefix.Length - 1);
+                }                
+                // Do not include root folder, or current path, or multiple folders in folder listing.
+                if (!String.IsNullOrEmpty(directory) && !directories.Contains(directory) && (String.IsNullOrEmpty(path) ? true : !directory.EndsWith(path)))
                 {
                     directories.Add(directory);
-
-                    if (!String.IsNullOrEmpty(_basePrefix))
-                    {
-                        directory = directory.Substring(_basePrefix.Length - 1);
-                    }
 
                     results.Add(new BlobDirectory(directory, _clock.UtcNow));
                 }
@@ -183,7 +179,7 @@ namespace OrchardCore.FileStorage.AzureBlob
                     {
                         name = name.Substring(_basePrefix.Length - 1);
                     }
-                    results.Add(new BlobFile(name, blob.Properties.ContentLength, blob.Properties.LastModified));
+                    results.Add(new BlobFile(name.Trim('/'), blob.Properties.ContentLength, blob.Properties.LastModified));
                 }
             }
 
