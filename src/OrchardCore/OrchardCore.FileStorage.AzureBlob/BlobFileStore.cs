@@ -98,11 +98,11 @@ namespace OrchardCore.FileStorage.AzureBlob
             }
             else
             {
-                return GetDirectoryContentByHeirachyAsync(path);
+                return GetDirectoryContentByHeirarchyAsync(path);
             }
         }
 
-        private async Task<IEnumerable<IFileStoreEntry>> GetDirectoryContentByHeirachyAsync(string path = null)
+        private async Task<IEnumerable<IFileStoreEntry>> GetDirectoryContentByHeirarchyAsync(string path = null)
         {
             var results = new List<IFileStoreEntry>();
 
@@ -155,7 +155,7 @@ namespace OrchardCore.FileStorage.AzureBlob
             {
                 var name = WebUtility.UrlDecode(blob.Name);
 
-                // A flat blob listing does not return a folder hierachy.
+                // A flat blob listing does not return a folder hierarchy.
                 // We can infer a heirachy by examining the paths returned for the file contents
                 // and evaluate whether a directory exists and should be added to the results listing.
                 var directory = Path.GetDirectoryName(name);
