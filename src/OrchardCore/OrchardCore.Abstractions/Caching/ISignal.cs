@@ -1,13 +1,14 @@
+using System.Threading.Tasks;
 using Microsoft.Extensions.Primitives;
 using OrchardCore.Environment.Shell.Scope;
+using OrchardCore.Modules;
 
 namespace OrchardCore.Environment.Cache
 {
-    public interface ISignal
+    public interface ISignal : IModularTenantEvents
     {
         IChangeToken GetToken(string key);
-
-        void SignalToken(string key);
+        Task SignalTokenAsync(string key);
     }
 
     public static class SignalExtensions
