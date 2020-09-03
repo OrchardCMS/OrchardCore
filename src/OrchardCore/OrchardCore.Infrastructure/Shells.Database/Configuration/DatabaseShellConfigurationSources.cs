@@ -41,10 +41,10 @@ namespace OrchardCore.Shells.Database.Configuration
 
         public async Task AddSourcesAsync(string tenant, IConfigurationBuilder builder)
         {
-            JObject configurations;
+            JObject configurations = null;
 
             using var context = await _shellContextFactory.GetDatabaseContextAsync(_options);
-            using (var scope = context.ServiceProvider.CreateScope())
+            await context.CreateScope().UsingAsync(async scope =>
             {
                 var session = scope.ServiceProvider.GetRequiredService<ISession>();
 
@@ -71,7 +71,8 @@ namespace OrchardCore.Shells.Database.Configuration
 
                     session.Save(document, checkConcurrency: true);
                 }
-            }
+            },
+            activate: false);
 
             var configuration = configurations.GetValue(tenant) as JObject;
             builder.AddJsonStream(new MemoryStream(Encoding.UTF8.GetBytes(configuration.ToString(Formatting.None))));
@@ -80,7 +81,7 @@ namespace OrchardCore.Shells.Database.Configuration
         public async Task SaveAsync(string tenant, IDictionary<string, string> data)
         {
             using var context = await _shellContextFactory.GetDatabaseContextAsync(_options);
-            using (var scope = context.ServiceProvider.CreateScope())
+            await context.CreateScope().UsingAsync(async scope =>
             {
                 var session = scope.ServiceProvider.GetRequiredService<ISession>();
 
@@ -116,7 +117,8 @@ namespace OrchardCore.Shells.Database.Configuration
                 document.ShellConfigurations = configurations;
 
                 session.Save(document, checkConcurrency: true);
-            }
+            },
+            activate: false);
         }
 
         private async Task<bool> TryMigrateFromFileAsync(string tenant, JObject configurations)

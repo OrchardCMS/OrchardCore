@@ -158,7 +158,7 @@ namespace OrchardCore.Environment.Shell
         /// </summary>
         public async Task ReloadShellContextAsync(ShellSettings settings, bool eventSink = false)
         {
-            if (!eventSink)
+            if (!eventSink && settings.State != TenantState.Initializing)
             {
                 await (ReloadingAsync?.Invoke(settings.Name) ?? Task.CompletedTask);
             }
@@ -229,7 +229,7 @@ namespace OrchardCore.Environment.Shell
         /// </summary>
         public async Task ReleaseShellContextAsync(ShellSettings settings, bool eventSink = false)
         {
-            if (!eventSink)
+            if (!eventSink && settings.State != TenantState.Initializing)
             {
                 await (ReleasingAsync?.Invoke(settings.Name) ?? Task.CompletedTask);
             }

@@ -142,14 +142,12 @@ namespace OrchardCore.Documents
                 return _scopedCache;
             }
 
-            var idData = await _distributedCache.GetAsync(_options.CacheIdKey);
+            var id = await _distributedCache.GetStringAsync(_options.CacheIdKey);
 
-            if (idData == null)
+            if (id == null)
             {
                 return null;
             }
-
-            var id = Encoding.UTF8.GetString(idData);
 
             if (id == "NULL")
             {
@@ -242,8 +240,6 @@ namespace OrchardCore.Documents
 
         private async Task UpdateDistributedCacheAsync(TDocument document)
         {
-            var idData = Encoding.UTF8.GetBytes(document.Identifier ?? "NULL");
-
             if (_isDistributed)
             {
                 var data = Serialize(document);
@@ -251,7 +247,7 @@ namespace OrchardCore.Documents
                 await _distributedCache.SetAsync(_options.CacheKey, data, _options);
             }
 
-            await _distributedCache.SetAsync(_options.CacheIdKey, idData, _options);
+            await _distributedCache.SetStringAsync(_options.CacheIdKey, document.Identifier ?? "NULL", _options);
         }
 
         internal static byte[] Serialize(TDocument document) =>

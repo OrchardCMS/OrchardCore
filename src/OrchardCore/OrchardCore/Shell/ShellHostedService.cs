@@ -15,10 +15,11 @@ namespace OrchardCore.Environment.Shell
 {
     internal class ShellHostedService : BackgroundService
     {
-        private static readonly TimeSpan MinIdleTime = TimeSpan.FromSeconds(1);
-        private const string AlShellsIdKeyPrefix = "ALL_SHELLS_ID";
+        private const string AllShellsIdKey = "ALL_SHELLS_ID";
         private const string ReleaseIdKeyPrefix = "RELEASE_ID_";
         private const string ReloadIdKeyPrefix = "RELOAD_ID_";
+
+        private static readonly TimeSpan MinIdleTime = TimeSpan.FromSeconds(1);
 
         private readonly IShellHost _shellHost;
         private readonly IShellSettingsManager _shellSettingsManager;
@@ -73,18 +74,20 @@ namespace OrchardCore.Environment.Shell
 
                         if (distributedCache is MemoryDistributedCache)
                         {
-                            // return;
+                            return;
                         }
 
                         var allSettings = _shellHost.GetAllSettings();
 
-                        var allShellsId = await distributedCache.GetStringAsync(AlShellsIdKeyPrefix);
+                        var allShellsId = await distributedCache.GetStringAsync(AllShellsIdKey);
 
                         if (_allShellsId != allShellsId)
                         {
                             _allShellsId = allShellsId;
 
-                            var names = (await _shellSettingsManager.LoadSettingsNamesAsync()).Except(allSettings.Select(s => s.Name));
+                            var names = (await _shellSettingsManager.LoadSettingsNamesAsync())
+                                .Except(allSettings
+                                .Select(s => s.Name));
 
                             var newSettings = new List<ShellSettings>();
 
@@ -142,10 +145,8 @@ namespace OrchardCore.Environment.Shell
         {
             var names = await _shellSettingsManager.LoadSettingsNamesAsync();
 
-            if (!names.Any(n => n == ShellHelper.DefaultShellName))
+            if (names.FirstOrDefault(n => n == ShellHelper.DefaultShellName) == null)
             {
-                _initialized = true;
-
                 return;
             }
 
@@ -164,14 +165,15 @@ namespace OrchardCore.Environment.Shell
 
                 if (distributedCache is MemoryDistributedCache)
                 {
-                    // return;
+                    return;
                 }
 
-                var _allShellsId = await distributedCache.GetStringAsync(AlShellsIdKeyPrefix);
+                var _allShellsId = await distributedCache.GetStringAsync(AllShellsIdKey);
 
                 foreach (var name in names)
                 {
                     var shellState = _shellStates.GetOrAdd(name, name => new ShellState() { Name = name });
+
                     shellState.ReleaseId = await distributedCache.GetStringAsync(ReleaseIdKeyPrefix + name);
                     shellState.ReloadId = await distributedCache.GetStringAsync(ReloadIdKeyPrefix + name);
                 }
@@ -196,7 +198,7 @@ namespace OrchardCore.Environment.Shell
 
                     if (distributedCache is MemoryDistributedCache)
                     {
-                        // return;
+                        return Task.CompletedTask;
                     }
 
                     var shellState = _shellStates.GetOrAdd(name, name => new ShellState() { Name = name });
@@ -215,6 +217,13 @@ namespace OrchardCore.Environment.Shell
 
         public async Task ReloadingAsync(string name)
         {
+            if (name == ShellHelper.DefaultShellName && !_initialized)
+            {
+                _initialized = true;
+
+                return;
+            }
+
             var semaphore = _shellSemaphores.GetOrAdd(name, (name) => new SemaphoreSlim(1));
 
             await semaphore.WaitAsync();
@@ -229,7 +238,7 @@ namespace OrchardCore.Environment.Shell
 
                     if (distributedCache is MemoryDistributedCache)
                     {
-                        // return;
+                        return;
                     }
 
                     var shellState = _shellStates.GetOrAdd(name, name => new ShellState() { Name = name });
@@ -238,9 +247,9 @@ namespace OrchardCore.Environment.Shell
 
                     await distributedCache.SetStringAsync(ReloadIdKeyPrefix + name, shellState.ReloadId);
 
-                    if (!_shellHost.TryGetSettings(name, out _))
+                    if (name != ShellHelper.DefaultShellName && !_shellHost.TryGetSettings(name, out _))
                     {
-                        await distributedCache.SetStringAsync(AlShellsIdKeyPrefix, IdGenerator.GenerateId());
+                        await distributedCache.SetStringAsync(AllShellsIdKey, IdGenerator.GenerateId());
                     }
                 });
             }
