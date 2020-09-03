@@ -37,8 +37,12 @@
                             <a asp-controller="ResetPassword" asp-action="ForgotPassword" class="label-link">@T["Forgot your password?"]</a>
                         }
                     </label>
-
-                    <input asp-for="Password" class="form-control" tabindex="2" />
+                    <div class="input-group">
+                        <input asp-for="Password" class="form-control" tabindex="2" />
+                        <div class="input-group-append">
+                            <button class="btn btn-outline-secondary" type="button" id="togglePassword"><i class="icon far fa-eye"></i></button>
+                        </div>
+                    </div>
                     <span asp-validation-for="Password" class="text-danger"></span>
                 </div>
                 <div class="form-group custom-control custom-checkbox">
@@ -81,3 +85,17 @@
         </div>
     }
 </div>
+<script type="text/javascript">
+    togglePassword = document.querySelector('#togglePassword');
+    password = document.querySelector('#Password');
+
+    togglePassword.addEventListener('click', function (e) {
+        // toggle the type attribute
+        type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+        icon = this.getElementsByClassName('icon')[0];
+        password.setAttribute('type', type);
+
+        // toggle the eye slash icon
+        type === 'password' ? icon.setAttribute('data-icon', 'eye') : icon.setAttribute('data-icon', 'eye-slash');
+    });
+</script>
