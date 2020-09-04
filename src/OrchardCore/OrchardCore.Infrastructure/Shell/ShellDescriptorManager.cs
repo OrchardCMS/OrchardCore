@@ -105,6 +105,8 @@ namespace OrchardCore.Environment.Shell.Data.Descriptors
 
             _session.Save(shellDescriptorRecord);
 
+            await _session.CommitAsync();
+
             await _shellDescriptorManagerEventHandlers.InvokeAsync((handler, shellDescriptorRecord, _shellSettings) =>
                 handler.ChangedAsync(shellDescriptorRecord, _shellSettings), shellDescriptorRecord, _shellSettings, _logger);
         }

@@ -167,7 +167,6 @@ namespace OrchardCore.Environment.Shell
             if (!CanReleaseShell(settings))
             {
                 _runningShellTable.Remove(settings);
-
                 return;
             }
 
@@ -211,12 +210,10 @@ namespace OrchardCore.Environment.Shell
                 settings = await _shellSettingsManager.LoadSettingsAsync(settings.Name);
 
                 // Consistency: We may have been the last to add the shell but not with the last settings.
-                if (settings.Identifier != currentIdentifier)
+                if (settings.Identifier == currentIdentifier)
                 {
-                    continue;
+                    return;
                 }
-
-                return;
             }
 
             throw new ShellHostReloadException(

@@ -20,6 +20,7 @@ namespace OrchardCore.Environment.Shell
         private const string ReloadIdKeyPrefix = "RELOAD_ID_";
 
         private static readonly TimeSpan MinIdleTime = TimeSpan.FromSeconds(1);
+        private static readonly TimeSpan MaxBusyTime = TimeSpan.FromSeconds(1);
 
         private readonly IShellHost _shellHost;
         private readonly IShellSettingsManager _shellSettingsManager;
@@ -54,6 +55,8 @@ namespace OrchardCore.Environment.Shell
 
             try
             {
+                var maxBusyDelay = Task.CompletedTask;
+
                 while (!stoppingToken.IsCancellationRequested)
                 {
                     if (!await TryWaitAsync(MinIdleTime, stoppingToken))
@@ -101,6 +104,16 @@ namespace OrchardCore.Environment.Shell
 
                         foreach (var settings in allSettings)
                         {
+                            if (maxBusyDelay.IsCompleted)
+                            {
+                                if (!await TryWaitAsync(MinIdleTime, stoppingToken))
+                                {
+                                    break;
+                                }
+
+                                maxBusyDelay = Task.Delay(MaxBusyTime, stoppingToken);
+                            }
+
                             var semaphore = _shellSemaphores.GetOrAdd(settings.Name, (name) => new SemaphoreSlim(1));
 
                             await semaphore.WaitAsync();
@@ -112,18 +125,18 @@ namespace OrchardCore.Environment.Shell
                                 var releaseId = await distributedCache.GetStringAsync(ReleaseIdKeyPrefix + settings.Name);
                                 var reloadId = await distributedCache.GetStringAsync(ReloadIdKeyPrefix + settings.Name);
 
-                                if (shellState.ReloadId != reloadId)
-                                {
-                                    shellState.ReloadId = reloadId;
-                                    shellState.ReleaseId = releaseId;
-
-                                    await _shellHost.ReloadShellContextAsync(settings, eventSink: true);
-                                }
-                                else if (shellState.ReleaseId != releaseId)
+                                if (releaseId != null && shellState.ReleaseId != releaseId)
                                 {
                                     shellState.ReleaseId = releaseId;
 
                                     await _shellHost.ReleaseShellContextAsync(settings, eventSink: true);
+                                }
+
+                                if (reloadId != null && shellState.ReloadId != reloadId)
+                                {
+                                    shellState.ReloadId = reloadId;
+
+                                    await _shellHost.ReloadShellContextAsync(settings, eventSink: true);
                                 }
                             }
                             finally
