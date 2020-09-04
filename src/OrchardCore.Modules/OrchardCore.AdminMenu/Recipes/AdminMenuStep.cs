@@ -34,7 +34,7 @@ namespace OrchardCore.AdminMenu.Recipes
             {
                 var adminMenu = token.ToObject<Models.AdminMenu>(serializer);
 
-                // When the id is not supplied create a new menu, otherwise replace the existing menu, or create a new menu.
+                // When the id is not supplied generate an id, otherwise replace the menu if it exists, or create a new menu.
                 if (String.IsNullOrEmpty(adminMenu.Id))
                 {
                     adminMenu.Id = Guid.NewGuid().ToString("n");
