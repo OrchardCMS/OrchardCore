@@ -12,5 +12,24 @@
             </div>
         </div>
         <input asp-for="DisplayText" class="form-control" placeholder="@T["Search all content items"]" type="search" />
+        <div id="filter-clear-cnt" class="input-group-append d-none">
+            <button class="btn btn-light btn-sm" style="border:1px solid lightgrey" type="button"
+                id="filter-clear-btn">
+                @T["Clear"]
+            </button>
+        </div>
+        <script at="Foot">
+            $(function () {
+                if($("#@Html.IdFor(m => m.DisplayText)").val() !== "")
+                    $("#filter-clear-cnt").removeClass("d-none");
+
+                $("#filter-clear-btn").on("click", function (e) {
+                    e.preventDefault();
+
+                    $("#@Html.IdFor(m => m.DisplayText)").val("");
+                    $("[name='submit.Filter']").click();
+                });
+            });
+        </script>
     </div>
 </div>
