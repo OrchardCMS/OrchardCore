@@ -33,8 +33,8 @@ namespace OrchardCore.AdminMenu.Recipes
             foreach (JObject token in model.Data)
             {
                 var adminMenu = token.ToObject<Models.AdminMenu>(serializer);
-                
-                // When the id is not supplied create a new tree, otherwise replace or create the existing tree.
+
+                // When the id is not supplied create a new menu, otherwise replace the existing menu, or create a new menu.
                 if (String.IsNullOrEmpty(adminMenu.Id))
                 {
                     adminMenu.Id = Guid.NewGuid().ToString("n");
