@@ -93,7 +93,7 @@ namespace OrchardCore.Contents.Controllers
             }
 
             // Populate the creatable types.
-             if (!string.IsNullOrEmpty(model.Options.SelectedContentType))
+            if (!string.IsNullOrEmpty(model.Options.SelectedContentType))
             {
                 var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(model.Options.SelectedContentType);
                 if (contentTypeDefinition == null)
