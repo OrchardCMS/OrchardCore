@@ -93,7 +93,7 @@ namespace OrchardCore.Contents.Controllers
             }
 
             // Populate the creatable types.
-            if (!string.IsNullOrEmpty(model.Options.SelectedContentType))
+             if (!string.IsNullOrEmpty(model.Options.SelectedContentType))
             {
                 var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(model.Options.SelectedContentType);
                 if (contentTypeDefinition == null)
@@ -102,7 +102,7 @@ namespace OrchardCore.Contents.Controllers
                 }
 
                 // Allows non creatable types to be created by another admin page.
-                if (model.Options.CanCreateSelectedContentType)
+                if (contentTypeDefinition.GetSettings<ContentTypeSettings>().Creatable || model.Options.CanCreateSelectedContentType)
                 {
                     model.Options.CreatableTypes = new List<SelectListItem>
                     {
@@ -110,8 +110,7 @@ namespace OrchardCore.Contents.Controllers
                     };
                 }
             }
-
-            if (model.Options.CreatableTypes == null)
+            else
             {
                 var contentTypes = _contentDefinitionManager
                     .ListTypeDefinitions()
