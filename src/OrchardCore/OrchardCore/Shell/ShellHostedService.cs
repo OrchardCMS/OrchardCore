@@ -89,8 +89,7 @@ namespace OrchardCore.Environment.Shell
                             _allShellsId = allShellsId;
 
                             var names = (await _shellSettingsManager.LoadSettingsNamesAsync())
-                                .Except(allSettings
-                                .Select(s => s.Name));
+                                .Except(allSettings.Select(s => s.Name));
 
                             var newSettings = new List<ShellSettings>();
 
