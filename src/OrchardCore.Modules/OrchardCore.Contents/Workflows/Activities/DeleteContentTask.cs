@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
@@ -23,13 +24,41 @@ namespace OrchardCore.Contents.Workflows.Activities
 
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            return Outcomes(S["Deleted"]);
+            return Outcomes(S["Deleted"], S["Noop"]);
         }
 
         public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
             var content = await GetContentAsync(workflowContext);
-            await ContentManager.RemoveAsync(content.ContentItem);
+
+            if (content == null)
+            {
+                throw new InvalidOperationException($"The '{nameof(DeleteContentTask)}' failed to retrieve the content item.");
+            }
+
+            if (String.Equals(InlineEvent.ContentItemId, content.ContentItem.ContentItemId, StringComparison.OrdinalIgnoreCase))
+            {
+                return Outcomes("Noop");
+            }
+
+            var contentItem = await ContentManager.GetAsync(content.ContentItem.ContentItemId, VersionOptions.Latest);
+
+            if (contentItem == null)
+            {
+                if (content is ContentItemIdExpressionResult)
+                {
+                    throw new InvalidOperationException($"The '{nameof(DeleteContentTask)}' failed to retrieve the content item.");
+                }
+
+                contentItem = content.ContentItem;
+            }
+
+            if (InlineEvent.IsStart && InlineEvent.ContentType == contentItem.ContentType && InlineEvent.Name == nameof(ContentDeletedEvent))
+            {
+                throw new InvalidOperationException($"The '{nameof(DeleteContentTask)}' can't delete the content item as it is executed inline from a starting '{nameof(ContentDeletedEvent)}' of the same content type, which would result in an infinitive loop.");
+            }
+
+            await ContentManager.RemoveAsync(contentItem);
 
             return Outcomes("Deleted");
         }

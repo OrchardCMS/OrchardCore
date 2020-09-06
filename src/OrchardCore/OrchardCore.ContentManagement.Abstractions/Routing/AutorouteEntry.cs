@@ -30,7 +30,7 @@ namespace OrchardCore.ContentManagement.Routing
         public string ContainedContentItemId;
 
         /// <summary>
-        /// The json path of an item contained within then document.
+        /// The json path of an item contained within the document.
         /// </summary>
         public string JsonPath;
     }

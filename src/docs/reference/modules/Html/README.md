@@ -33,6 +33,12 @@ The following properties are available on `HtmlBodyPart`:
 | `Content` | The raw content of the part. |
 | `ContentItem` | The content item containing this part. |
 
+## Sanitization
+
+By default all HTML input is sanitized when the `HtmlBodyPart` is saved.
+
+You can disable this by unchecking the `Sanitize HTML` setting, or further configuring the [HTML Sanitizer](../../core/Sanitizer/README.md)
+
 ## Editors
 
 The __HtmlBody Part__ editor can be different for each content type. In the __HtmlBody Part__ settings of a 

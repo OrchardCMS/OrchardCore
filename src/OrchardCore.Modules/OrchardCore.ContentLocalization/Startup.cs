@@ -18,7 +18,6 @@ using OrchardCore.ContentLocalization.Sitemaps;
 using OrchardCore.ContentLocalization.ViewModels;
 using OrchardCore.Contents.Services;
 using OrchardCore.Contents.ViewModels;
-using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Indexing;
 using OrchardCore.Liquid;
@@ -38,6 +37,7 @@ namespace OrchardCore.ContentLocalization
         static Startup()
         {
             TemplateContext.GlobalMemberAccessStrategy.Register<LocalizationPartViewModel>();
+            TemplateContext.GlobalMemberAccessStrategy.Register<CultureInfo>();
         }
 
         public Startup(IOptions<AdminOptions> adminOptions)
@@ -56,6 +56,9 @@ namespace OrchardCore.ContentLocalization
 
             services.AddScoped<IContentsAdminListFilter, LocalizationPartContentsAdminListFilter>();
             services.AddScoped<IDisplayDriver<ContentOptionsViewModel>, LocalizationContentsAdminListDisplayDriver>();
+
+            services.AddLiquidFilter<ContentLocalizationFilter>("localization_set");
+            services.AddLiquidFilter<SwitchCultureUrlFilter>("switch_culture_url");
         }
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
@@ -102,21 +105,6 @@ namespace OrchardCore.ContentLocalization
             services.AddScoped<ISitemapContentItemValidationProvider, SitemapLocalizedContentItemValidationProvider>();
             services.AddScoped<ISitemapContentItemExtendedMetadataProvider, SitemapUrlHrefLangExtendedMetadataProvider>();
             services.Replace(ServiceDescriptor.Scoped<IContentItemsQueryProvider, LocalizedContentItemsQueryProvider>());
-        }
-    }
-
-    [RequireFeatures("OrchardCore.Liquid")]
-    public class LiquidStartup : StartupBase
-    {
-        static LiquidStartup()
-        {
-            TemplateContext.GlobalMemberAccessStrategy.Register<CultureInfo>();
-        }
-
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddLiquidFilter<ContentLocalizationFilter>("localization_set");
-            services.AddLiquidFilter<SwitchCultureUrlFilter>("switch_culture_url");
         }
     }
 }

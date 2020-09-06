@@ -51,7 +51,6 @@
         "OrchardCore.Layers",
         "OrchardCore.Lucene",
         "OrchardCore.Lists",
-        "OrchardCore.Liquid",
         "OrchardCore.Markdown",
         "OrchardCore.Media",
         "OrchardCore.Queries",
