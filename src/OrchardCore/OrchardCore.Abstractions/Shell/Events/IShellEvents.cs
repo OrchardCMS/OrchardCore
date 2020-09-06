@@ -1,11 +1,11 @@
-namespace OrchardCore.Environment.Shell
+namespace OrchardCore.Environment.Shell.Events
 {
     public interface IShellEvents
     {
         /// <summary>
-        /// The <see cref="ShellInitializingEvent"/> delegate that will get called on <see cref="IShellHost.InitializeAsync"/>.
+        /// The <see cref="ShellsEvent"/> delegate that will get called on <see cref="IShellHost.InitializeAsync"/>.
         /// </summary>
-        ShellInitializingEvent InitializingAsync { get; set; }
+        ShellsEvent InitializingAsync { get; set; }
 
         /// <summary>
         /// The <see cref="ShellEvent"/> delegate that will get called on <see cref="IShellHost.ReleaseShellContextAsync"/>.

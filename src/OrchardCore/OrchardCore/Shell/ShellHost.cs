@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Descriptor.Models;
+using OrchardCore.Environment.Shell.Events;
 using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Environment.Shell.Scope;
 
@@ -48,7 +49,7 @@ namespace OrchardCore.Environment.Shell
             _logger = logger;
         }
 
-        public ShellInitializingEvent InitializingAsync { get; set; }
+        public ShellsEvent InitializingAsync { get; set; }
         public ShellEvent ReleasingAsync { get; set; }
         public ShellEvent ReloadingAsync { get; set; }
 
