@@ -99,18 +99,20 @@ namespace OrchardCore.Environment.Shell
                             allSettings = allSettings.Concat(newSettings);
                         }
 
-                        var maxBusyDelay = Task.Delay(MaxBusyTime, stoppingToken);
+                        var startTime = DateTime.UtcNow;
 
                         foreach (var settings in allSettings)
                         {
-                            if (maxBusyDelay.IsCompleted)
+                            var maxBusyTime = DateTime.UtcNow - startTime;
+
+                            if (maxBusyTime > MaxBusyTime)
                             {
                                 if (!await TryWaitAsync(MinIdleTime, stoppingToken))
                                 {
                                     break;
                                 }
 
-                                maxBusyDelay = Task.Delay(MaxBusyTime, stoppingToken);
+                                startTime = DateTime.UtcNow;
                             }
 
                             var semaphore = _shellSemaphores.GetOrAdd(settings.Name, (name) => new SemaphoreSlim(1));
@@ -122,7 +124,6 @@ namespace OrchardCore.Environment.Shell
                                 var shellIdentifier = _shellIdentifiers.GetOrAdd(settings.Name, name => new ShellIdentifier() { Name = name });
 
                                 var releaseId = await distributedCache.GetStringAsync(ReleaseIdKeyPrefix + settings.Name);
-                                var reloadId = await distributedCache.GetStringAsync(ReloadIdKeyPrefix + settings.Name);
 
                                 if (releaseId != null && shellIdentifier.ReleaseId != releaseId)
                                 {
@@ -131,12 +132,19 @@ namespace OrchardCore.Environment.Shell
                                     await _shellHost.ReleaseShellContextAsync(settings, eventSink: true);
                                 }
 
+                                var reloadId = await distributedCache.GetStringAsync(ReloadIdKeyPrefix + settings.Name);
+
                                 if (reloadId != null && shellIdentifier.ReloadId != reloadId)
                                 {
                                     shellIdentifier.ReloadId = reloadId;
 
                                     await _shellHost.ReloadShellContextAsync(settings, eventSink: true);
                                 }
+                            }
+                            catch (Exception ex) when (!ex.IsFatal())
+                            {
+                                _logger.LogError(ex, "Error while syncing tenant '{TenantName}'.", settings.Name);
+                                throw (ex);
                             }
                             finally
                             {
@@ -187,6 +195,7 @@ namespace OrchardCore.Environment.Shell
                     var shellIdentifier = _shellIdentifiers.GetOrAdd(name, name => new ShellIdentifier() { Name = name });
 
                     shellIdentifier.ReleaseId = await distributedCache.GetStringAsync(ReleaseIdKeyPrefix + name);
+
                     shellIdentifier.ReloadId = await distributedCache.GetStringAsync(ReloadIdKeyPrefix + name);
                 }
             });
