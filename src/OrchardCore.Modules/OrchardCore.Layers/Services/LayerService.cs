@@ -26,12 +26,12 @@ namespace OrchardCore.Layers.Services
         /// <summary>
         /// Loads the layers document from the store for updating and that should not be cached.
         /// </summary>
-        public Task<LayersDocument> LoadLayersAsync() => _documentManager.GetMutableAsync();
+        public Task<LayersDocument> LoadLayersAsync() => _documentManager.GetOrCreateMutableAsync();
 
         /// <summary>
         /// Gets the layers document from the cache for sharing and that should not be updated.
         /// </summary>
-        public Task<LayersDocument> GetLayersAsync() => _documentManager.GetImmutableAsync();
+        public Task<LayersDocument> GetLayersAsync() => _documentManager.GetOrCreateImmutableAsync();
 
         public async Task<IEnumerable<ContentItem>> GetLayerWidgetsAsync(
             Expression<Func<ContentItemIndex, bool>> predicate)

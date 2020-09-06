@@ -81,11 +81,11 @@ namespace OrchardCore.Sitemaps.Services
         /// <summary>
         /// Loads the sitemap document from the store for updating and that should not be cached.
         /// </summary>
-        private Task<SitemapDocument> LoadDocumentAsync() => _documentManager.GetMutableAsync();
+        private Task<SitemapDocument> LoadDocumentAsync() => _documentManager.GetOrCreateMutableAsync();
 
         /// <summary>
         /// Gets the sitemap document from the cache for sharing and that should not be updated.
         /// </summary>
-        private Task<SitemapDocument> GetDocumentAsync() => _documentManager.GetImmutableAsync();
+        private Task<SitemapDocument> GetDocumentAsync() => _documentManager.GetOrCreateImmutableAsync();
     }
 }

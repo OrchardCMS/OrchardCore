@@ -41,12 +41,12 @@ namespace OrchardCore.Roles.Services
         /// <summary>
         /// Loads the roles document from the store for updating and that should not be cached.
         /// </summary>
-        private Task<RolesDocument> LoadRolesAsync() => _documentManager.GetMutableAsync();
+        private Task<RolesDocument> LoadRolesAsync() => _documentManager.GetOrCreateMutableAsync();
 
         /// <summary>
         /// Gets the roles document from the cache for sharing and that should not be updated.
         /// </summary>
-        private Task<RolesDocument> GetRolesAsync() => _documentManager.GetImmutableAsync();
+        private Task<RolesDocument> GetRolesAsync() => _documentManager.GetOrCreateImmutableAsync();
 
         /// <summary>
         /// Updates the store with the provided roles document and then updates the cache.

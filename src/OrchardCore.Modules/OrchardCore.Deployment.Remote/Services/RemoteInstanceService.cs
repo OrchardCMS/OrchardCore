@@ -15,12 +15,12 @@ namespace OrchardCore.Deployment.Remote.Services
         /// <summary>
         /// Loads the remote instances document from the store for updating and that should not be cached.
         /// </summary>
-        public Task<RemoteInstanceList> LoadRemoteInstanceListAsync() => _documentManager.GetMutableAsync();
+        public Task<RemoteInstanceList> LoadRemoteInstanceListAsync() => _documentManager.GetOrCreateMutableAsync();
 
         /// <summary>
         /// Gets the remote instances document from the cache for sharing and that should not be updated.
         /// </summary>
-        public Task<RemoteInstanceList> GetRemoteInstanceListAsync() => _documentManager.GetImmutableAsync();
+        public Task<RemoteInstanceList> GetRemoteInstanceListAsync() => _documentManager.GetOrCreateImmutableAsync();
 
         public async Task<RemoteInstance> LoadRemoteInstanceAsync(string id)
         {

@@ -16,12 +16,12 @@ namespace OrchardCore.BackgroundTasks.Services
         /// <summary>
         /// Loads the background task document from the store for updating and that should not be cached.
         /// </summary>
-        public Task<BackgroundTaskDocument> LoadDocumentAsync() => _documentManager.GetMutableAsync();
+        public Task<BackgroundTaskDocument> LoadDocumentAsync() => _documentManager.GetOrCreateMutableAsync();
 
         /// <summary>
         /// Gets the background task document from the cache for sharing and that should not be updated.
         /// </summary>
-        public Task<BackgroundTaskDocument> GetDocumentAsync() => _documentManager.GetImmutableAsync();
+        public Task<BackgroundTaskDocument> GetDocumentAsync() => _documentManager.GetOrCreateImmutableAsync();
 
         public async Task RemoveAsync(string name)
         {

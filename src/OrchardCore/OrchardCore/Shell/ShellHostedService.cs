@@ -141,11 +141,6 @@ namespace OrchardCore.Environment.Shell
                                     await _shellHost.ReloadShellContextAsync(settings, eventSink: true);
                                 }
                             }
-                            catch (Exception ex) when (!ex.IsFatal())
-                            {
-                                _logger.LogError(ex, "Error while syncing tenant '{TenantName}'.", settings.Name);
-                                throw (ex);
-                            }
                             finally
                             {
                                 semaphore.Release();

@@ -31,7 +31,7 @@ namespace OrchardCore.Data.Documents
         }
 
         /// <inheritdoc />
-        public async Task<T> GetMutableAsync<T>(Func<Task<T>> factoryAsync = null) where T : class, new()
+        public async Task<T> GetOrCreateMutableAsync<T>(Func<Task<T>> factoryAsync = null) where T : class, new()
         {
             var loaded = ShellScope.Get<T>(typeof(T));
 
@@ -50,7 +50,7 @@ namespace OrchardCore.Data.Documents
         }
 
         /// <inheritdoc />
-        public async Task<(bool, T)> GetImmutableAsync<T>(Func<Task<T>> factoryAsync = null) where T : class, new()
+        public async Task<(bool, T)> GetOrCreateImmutableAsync<T>(Func<Task<T>> factoryAsync = null) where T : class, new()
         {
             var loaded = ShellScope.Get<T>(typeof(T));
 

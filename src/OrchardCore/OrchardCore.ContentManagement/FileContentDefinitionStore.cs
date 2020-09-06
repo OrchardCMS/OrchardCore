@@ -15,10 +15,10 @@ namespace OrchardCore.ContentManagement
         }
 
         /// <inheritdoc />
-        public Task<ContentDefinitionRecord> LoadContentDefinitionAsync() => _documentManager.GetMutableAsync();
+        public Task<ContentDefinitionRecord> LoadContentDefinitionAsync() => _documentManager.GetOrCreateMutableAsync();
 
         /// <inheritdoc />
-        public Task<ContentDefinitionRecord> GetContentDefinitionAsync() => _documentManager.GetImmutableAsync();
+        public Task<ContentDefinitionRecord> GetContentDefinitionAsync() => _documentManager.GetOrCreateImmutableAsync();
 
         /// <inheritdoc />
         public Task SaveContentDefinitionAsync(ContentDefinitionRecord contentDefinitionRecord) => _documentManager.UpdateAsync(contentDefinitionRecord);

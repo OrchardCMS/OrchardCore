@@ -13,12 +13,12 @@ namespace OrchardCore.Templates.Services
         /// <summary>
         /// Loads the templates document from the store for updating and that should not be cached.
         /// </summary>
-        public Task<TemplatesDocument> LoadTemplatesDocumentAsync() => _documentManager.GetMutableAsync();
+        public Task<TemplatesDocument> LoadTemplatesDocumentAsync() => _documentManager.GetOrCreateMutableAsync();
 
         /// <summary>
         /// Gets the templates document from the cache for sharing and that should not be updated.
         /// </summary>
-        public Task<TemplatesDocument> GetTemplatesDocumentAsync() => _documentManager.GetImmutableAsync();
+        public Task<TemplatesDocument> GetTemplatesDocumentAsync() => _documentManager.GetOrCreateImmutableAsync();
 
         public async Task RemoveTemplateAsync(string name)
         {

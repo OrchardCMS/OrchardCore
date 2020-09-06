@@ -16,14 +16,14 @@ namespace OrchardCore.Lucene
         /// <summary>
         /// Loads the index settings document from the store for updating and that should not be cached.
         /// </summary>
-        public Task<LuceneIndexSettingsDocument> LoadDocumentAsync() => DocumentManager.GetMutableAsync();
+        public Task<LuceneIndexSettingsDocument> LoadDocumentAsync() => DocumentManager.GetOrCreateMutableAsync();
 
         /// <summary>
         /// Gets the index settings document from the cache for sharing and that should not be updated.
         /// </summary>
         public async Task<LuceneIndexSettingsDocument> GetDocumentAsync()
         {
-            var document = await DocumentManager.GetImmutableAsync();
+            var document = await DocumentManager.GetOrCreateImmutableAsync();
 
             foreach (var name in document.LuceneIndexSettings.Keys)
             {

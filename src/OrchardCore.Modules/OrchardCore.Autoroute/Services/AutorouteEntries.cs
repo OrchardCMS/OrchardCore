@@ -114,12 +114,12 @@ namespace OrchardCore.Autoroute.Services
         /// <summary>
         /// Loads the autoroute document for updating and that should not be cached.
         /// </summary>
-        private Task<AutorouteDocument> LoadDocumentAsync() => DocumentManager.GetMutableAsync(CreateDocumentAsync);
+        private Task<AutorouteDocument> LoadDocumentAsync() => DocumentManager.GetOrCreateMutableAsync(CreateDocumentAsync);
 
         /// <summary>
         /// Gets the autoroute document for sharing and that should not be updated.
         /// </summary>
-        private Task<AutorouteDocument> GetDocumentAsync() => DocumentManager.GetImmutableAsync(CreateDocumentAsync);
+        private Task<AutorouteDocument> GetDocumentAsync() => DocumentManager.GetOrCreateImmutableAsync(CreateDocumentAsync);
 
         protected virtual async Task<AutorouteDocument> CreateDocumentAsync()
         {

@@ -76,7 +76,7 @@ namespace OrchardCore.Layers.Services
                     return;
                 }
 
-                var layerState = await _layerStateManager.GetImmutableAsync();
+                var layerState = await _layerStateManager.GetOrCreateImmutableAsync();
 
                 if (!_memoryCache.TryGetValue<CacheEntry>(WidgetsKey, out var cacheEntry) || cacheEntry.Identifier != layerState.Identifier)
                 {

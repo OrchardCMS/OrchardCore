@@ -66,12 +66,12 @@ namespace OrchardCore.Queries.Services
         /// <summary>
         /// Loads the queries document from the store for updating and that should not be cached.
         /// </summary>
-        public Task<QueriesDocument> LoadDocumentAsync() => _documentManager.GetMutableAsync();
+        public Task<QueriesDocument> LoadDocumentAsync() => _documentManager.GetOrCreateMutableAsync();
 
         /// <summary>
         /// Gets the queries document from the cache for sharing and that should not be updated.
         /// </summary>
-        public Task<QueriesDocument> GetDocumentAsync() => _documentManager.GetImmutableAsync();
+        public Task<QueriesDocument> GetDocumentAsync() => _documentManager.GetOrCreateImmutableAsync();
 
         public Task<IQueryResults> ExecuteQueryAsync(Query query, IDictionary<string, object> parameters)
         {

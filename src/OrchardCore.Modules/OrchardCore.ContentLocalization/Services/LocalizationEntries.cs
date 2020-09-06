@@ -99,12 +99,12 @@ namespace OrchardCore.ContentLocalization.Services
         /// <summary>
         /// Loads the localization document for updating and that should not be cached.
         /// </summary>
-        private Task<LocalizationDocument> LoadDocumentAsync() => DocumentManager.GetMutableAsync(CreateDocumentAsync);
+        private Task<LocalizationDocument> LoadDocumentAsync() => DocumentManager.GetOrCreateMutableAsync(CreateDocumentAsync);
 
         /// <summary>
         /// Gets the localization document for sharing and that should not be updated.
         /// </summary>
-        private Task<LocalizationDocument> GetDocumentAsync() => DocumentManager.GetImmutableAsync(CreateDocumentAsync);
+        private Task<LocalizationDocument> GetDocumentAsync() => DocumentManager.GetOrCreateImmutableAsync(CreateDocumentAsync);
 
         private async Task<LocalizationDocument> CreateDocumentAsync()
         {

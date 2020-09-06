@@ -13,12 +13,12 @@ namespace OrchardCore.Shortcodes.Services
         /// <summary>
         /// Loads the shortcode templates document from the store for updating and that should not be cached.
         /// </summary>
-        public Task<ShortcodeTemplatesDocument> LoadShortcodeTemplatesDocumentAsync() => _documentManager.GetMutableAsync();
+        public Task<ShortcodeTemplatesDocument> LoadShortcodeTemplatesDocumentAsync() => _documentManager.GetOrCreateMutableAsync();
 
         /// <summary>
         /// Gets the shortcode templates document from the cache for sharing and that should not be updated.
         /// </summary>
-        public Task<ShortcodeTemplatesDocument> GetShortcodeTemplatesDocumentAsync() => _documentManager.GetImmutableAsync();
+        public Task<ShortcodeTemplatesDocument> GetShortcodeTemplatesDocumentAsync() => _documentManager.GetOrCreateImmutableAsync();
 
         public async Task RemoveShortcodeTemplateAsync(string name)
         {

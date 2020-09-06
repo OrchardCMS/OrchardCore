@@ -47,13 +47,13 @@ namespace OrchardCore.Documents
             }
         }
 
-        public async Task<TDocument> GetMutableAsync(Func<Task<TDocument>> factoryAsync = null)
+        public async Task<TDocument> GetOrCreateMutableAsync(Func<Task<TDocument>> factoryAsync = null)
         {
             TDocument document = null;
 
             if (!_isVolatile)
             {
-                document = await _documentStore.GetMutableAsync(factoryAsync);
+                document = await _documentStore.GetOrCreateMutableAsync(factoryAsync);
 
                 if (_memoryCache.TryGetValue<TDocument>(_options.CacheKey, out var cached) && document == cached)
                 {
@@ -77,7 +77,7 @@ namespace OrchardCore.Documents
             return document;
         }
 
-        public async Task<TDocument> GetImmutableAsync(Func<Task<TDocument>> factoryAsync = null)
+        public async Task<TDocument> GetOrCreateImmutableAsync(Func<Task<TDocument>> factoryAsync = null)
         {
             var document = await GetInternalAsync();
 
@@ -87,7 +87,7 @@ namespace OrchardCore.Documents
 
                 if (!_isVolatile)
                 {
-                    (cacheable, document) = await _documentStore.GetImmutableAsync(factoryAsync);
+                    (cacheable, document) = await _documentStore.GetOrCreateImmutableAsync(factoryAsync);
                 }
                 else
                 {
@@ -208,7 +208,7 @@ namespace OrchardCore.Documents
             // Consistency: We may have been the last to update the cache but not with the last stored document.
             if (!_isVolatile && _options.CheckConsistency.Value)
             {
-                (_, var stored) = await _documentStore.GetImmutableAsync<TDocument>();
+                (_, var stored) = await _documentStore.GetOrCreateImmutableAsync<TDocument>();
 
                 if (stored.Identifier != document.Identifier)
                 {

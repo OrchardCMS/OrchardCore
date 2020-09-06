@@ -15,12 +15,12 @@ namespace OrchardCore.AdminMenu
         /// <summary>
         /// Loads the admin menus from the store for updating and that should not be cached.
         /// </summary>
-        public Task<AdminMenuList> LoadAdminMenuListAsync() => _documentManager.GetMutableAsync();
+        public Task<AdminMenuList> LoadAdminMenuListAsync() => _documentManager.GetOrCreateMutableAsync();
 
         /// <summary>
         /// Gets the admin menus from the cache for sharing and that should not be updated.
         /// </summary>
-        public Task<AdminMenuList> GetAdminMenuListAsync() => _documentManager.GetImmutableAsync();
+        public Task<AdminMenuList> GetAdminMenuListAsync() => _documentManager.GetOrCreateImmutableAsync();
 
         public async Task SaveAsync(Models.AdminMenu tree)
         {

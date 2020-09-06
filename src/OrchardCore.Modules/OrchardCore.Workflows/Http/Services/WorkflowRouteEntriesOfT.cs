@@ -66,12 +66,12 @@ namespace OrchardCore.Workflows.Http.Services
         /// <summary>
         /// Loads the workflow route document for updating and that should not be cached.
         /// </summary>
-        private Task<TWorkflowRouteDocument> LoadDocumentAsync() => DocumentManager.GetMutableAsync(CreateDocumentAsync);
+        private Task<TWorkflowRouteDocument> LoadDocumentAsync() => DocumentManager.GetOrCreateMutableAsync(CreateDocumentAsync);
 
         /// <summary>
         /// Gets the workflow route document for sharing and that should not be updated.
         /// </summary>
-        private Task<TWorkflowRouteDocument> GetDocumentAsync() => DocumentManager.GetImmutableAsync(CreateDocumentAsync);
+        private Task<TWorkflowRouteDocument> GetDocumentAsync() => DocumentManager.GetOrCreateImmutableAsync(CreateDocumentAsync);
 
         protected virtual Task<TWorkflowRouteDocument> CreateDocumentAsync() => Task.FromResult(new TWorkflowRouteDocument());
 

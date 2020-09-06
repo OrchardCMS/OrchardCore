@@ -65,12 +65,12 @@ namespace OrchardCore.Sitemaps.Routing
         /// <summary>
         /// Loads the sitemap route document for updating and that should not be cached.
         /// </summary>
-        private Task<SitemapRouteDocument> LoadDocumentAsync() => DocumentManager.GetMutableAsync(CreateDocumentAsync);
+        private Task<SitemapRouteDocument> LoadDocumentAsync() => DocumentManager.GetOrCreateMutableAsync(CreateDocumentAsync);
 
         /// <summary>
         /// Gets the sitemap route document for sharing and that should not be updated.
         /// </summary>
-        private Task<SitemapRouteDocument> GetDocumentAsync() => DocumentManager.GetImmutableAsync(CreateDocumentAsync);
+        private Task<SitemapRouteDocument> GetDocumentAsync() => DocumentManager.GetOrCreateImmutableAsync(CreateDocumentAsync);
 
         private async Task<SitemapRouteDocument> CreateDocumentAsync()
         {
