@@ -10,7 +10,7 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
-using OrchardCore.Documents.States;
+using OrchardCore.Documents;
 using OrchardCore.Entities;
 using OrchardCore.Layers.Handlers;
 using OrchardCore.Layers.Models;
@@ -29,34 +29,34 @@ namespace OrchardCore.Layers.Controllers
         private readonly ILayerService _layerService;
         private readonly IAuthorizationService _authorizationService;
         private readonly ISession _session;
-        private readonly IVolatileStates _states;
+        private readonly IUpdateModelAccessor _updateModelAccessor;
+        private readonly IVolatileDocumentManager<LayerState> _layerStateManager;
         private readonly IStringLocalizer S;
         private readonly IHtmlLocalizer H;
         private readonly INotifier _notifier;
-        private readonly IUpdateModelAccessor _updateModelAccessor;
 
         public AdminController(
-            IVolatileStates states,
-            IAuthorizationService authorizationService,
-            ISession session,
-            ILayerService layerService,
             IContentManager contentManager,
             IContentItemDisplayManager contentItemDisplayManager,
             ISiteService siteService,
+            ILayerService layerService,
+            IAuthorizationService authorizationService,
+            ISession session,
+            IUpdateModelAccessor updateModelAccessor,
+            IVolatileDocumentManager<LayerState> layerStateManager,
             IStringLocalizer<AdminController> stringLocalizer,
             IHtmlLocalizer<AdminController> htmlLocalizer,
-            INotifier notifier,
-            IUpdateModelAccessor updateModelAccessor)
+            INotifier notifier)
         {
-            _states = states;
-            _authorizationService = authorizationService;
-            _session = session;
-            _layerService = layerService;
             _contentManager = contentManager;
             _contentItemDisplayManager = contentItemDisplayManager;
             _siteService = siteService;
-            _notifier = notifier;
+            _layerService = layerService;
+            _authorizationService = authorizationService;
+            _session = session;
             _updateModelAccessor = updateModelAccessor;
+            _layerStateManager = layerStateManager;
+            _notifier = notifier;
             S = stringLocalizer;
             H = htmlLocalizer;
         }
@@ -289,7 +289,7 @@ namespace OrchardCore.Layers.Controllers
             }
 
             // The state will be updated once the ambient session is committed.
-            await _states.SetAsync(LayerMetadataHandler.StateKey, new Data.Documents.Document() { Identifier = IdGenerator.GenerateId() });
+            await _layerStateManager.UpdateAsync(new LayerState());
 
             if (Request.Headers != null && Request.Headers["X-Requested-With"] == "XMLHttpRequest")
             {

@@ -14,7 +14,7 @@ using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.Theming;
 using OrchardCore.DisplayManagement.Zones;
-using OrchardCore.Documents.States;
+using OrchardCore.Documents;
 using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Layers.Handlers;
 using OrchardCore.Layers.Models;
@@ -36,7 +36,7 @@ namespace OrchardCore.Layers.Services
         private readonly IThemeManager _themeManager;
         private readonly IAdminThemeService _adminThemeService;
         private readonly ILayerService _layerService;
-        private readonly IVolatileStates _states;
+        private readonly IVolatileDocumentManager<LayerState> _layerStateManager;
 
         public LayerFilter(
             ILayerService layerService,
@@ -47,7 +47,7 @@ namespace OrchardCore.Layers.Services
             IMemoryCache memoryCache,
             IThemeManager themeManager,
             IAdminThemeService adminThemeService,
-            IVolatileStates states)
+            IVolatileDocumentManager<LayerState> layerStateManager)
         {
             _layerService = layerService;
             _layoutAccessor = layoutAccessor;
@@ -57,7 +57,7 @@ namespace OrchardCore.Layers.Services
             _memoryCache = memoryCache;
             _themeManager = themeManager;
             _adminThemeService = adminThemeService;
-            _states = states;
+            _layerStateManager = layerStateManager;
         }
 
         public async Task OnResultExecutionAsync(ResultExecutingContext context, ResultExecutionDelegate next)
@@ -76,7 +76,7 @@ namespace OrchardCore.Layers.Services
                     return;
                 }
 
-                var layerState = await _states.GetAsync<Document>(LayerMetadataHandler.StateKey);
+                var layerState = await _layerStateManager.GetImmutableAsync();
 
                 if (!_memoryCache.TryGetValue<CacheEntry>(WidgetsKey, out var cacheEntry) || cacheEntry.Identifier != layerState.Identifier)
                 {

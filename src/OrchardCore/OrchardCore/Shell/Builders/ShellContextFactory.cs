@@ -35,16 +35,17 @@ namespace OrchardCore.Environment.Shell.Builders
 
             var describedContext = await CreateDescribedContextAsync(settings, MinimumShellDescriptor());
 
-            ShellDescriptor currentDescriptor;
-            using (var scope = describedContext.ServiceProvider.CreateScope())
+            ShellDescriptor currentDescriptor = null;
+            await describedContext.CreateScope().UsingAsync(async scope =>
             {
                 var shellDescriptorManager = scope.ServiceProvider.GetService<IShellDescriptorManager>();
                 currentDescriptor = await shellDescriptorManager.GetShellDescriptorAsync();
-            }
+            },
+            activate: false);
 
             if (currentDescriptor != null)
             {
-                describedContext.Release();
+                describedContext.Dispose();
                 return await CreateDescribedContextAsync(settings, currentDescriptor);
             }
 

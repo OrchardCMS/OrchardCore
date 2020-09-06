@@ -1,11 +1,12 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using OrchardCore.Environment.Shell.Builders;
+using OrchardCore.Environment.Shell.Events;
 using OrchardCore.Environment.Shell.Scope;
 
 namespace OrchardCore.Environment.Shell
 {
-    public interface IShellHost : IShellDescriptorManagerEventHandler
+    public interface IShellHost : IShellEvents, IShellDescriptorManagerEventHandler
     {
         /// <summary>
         /// Ensure that all the <see cref="ShellContext"/> are pre-created and available to process requests.
@@ -36,13 +37,13 @@ namespace OrchardCore.Environment.Shell
         /// built for subsequent requests, while existing requests get flushed.
         /// </summary>
         /// <param name="settings"></param>
-        Task ReloadShellContextAsync(ShellSettings settings);
+        Task ReloadShellContextAsync(ShellSettings settings, bool eventSink = false);
 
         /// <summary>
         /// Releases a shell so that a new one will be built for subsequent requests.
         /// Note: Can be used to free up resources after a given time of inactivity.
         /// </summary>
-        Task ReleaseShellContextAsync(ShellSettings settings);
+        Task ReleaseShellContextAsync(ShellSettings settings, bool eventSink = false);
 
         /// <summary>
         /// Lists all available <see cref="ShellContext"/> instances.

@@ -2,29 +2,27 @@ using System.Threading.Tasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.Data.Documents;
-using OrchardCore.Documents.States;
+using OrchardCore.Documents;
 using OrchardCore.Layers.Models;
 
 namespace OrchardCore.Layers.Handlers
 {
     public class LayerMetadataHandler : ContentHandlerBase
     {
-        public const string StateKey = "OrchardCore.Layers:LayerMetadata";
+        private readonly IVolatileDocumentManager<LayerState> _layerStateManager;
 
-        private readonly IVolatileStates _states;
-
-        public LayerMetadataHandler(IVolatileStates states)
+        public LayerMetadataHandler(IVolatileDocumentManager<LayerState> layerStateManager)
         {
-            _states = states;
+            _layerStateManager = layerStateManager;
         }
 
-        public override Task PublishedAsync(PublishContentContext context) => UpdateLayerIdentifierAsync(context.ContentItem);
+        public override Task PublishedAsync(PublishContentContext context) => UpdateAsync(context.ContentItem);
 
-        public override Task RemovedAsync(RemoveContentContext context) => UpdateLayerIdentifierAsync(context.ContentItem);
+        public override Task RemovedAsync(RemoveContentContext context) => UpdateAsync(context.ContentItem);
 
-        public override Task UnpublishedAsync(PublishContentContext context) => UpdateLayerIdentifierAsync(context.ContentItem);
+        public override Task UnpublishedAsync(PublishContentContext context) => UpdateAsync(context.ContentItem);
 
-        private Task UpdateLayerIdentifierAsync(ContentItem contentItem)
+        private Task UpdateAsync(ContentItem contentItem)
         {
             var layerMetadata = contentItem.As<LayerMetadata>();
 
@@ -34,7 +32,11 @@ namespace OrchardCore.Layers.Handlers
             }
 
             // Checked by the 'LayerFilter'.
-            return _states.SetAsync(StateKey, new Document() { Identifier = IdGenerator.GenerateId() });
+            return _layerStateManager.UpdateAsync(new LayerState());
         }
+    }
+
+    public class LayerState : Document
+    {
     }
 }

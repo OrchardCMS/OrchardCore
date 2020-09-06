@@ -1,7 +1,6 @@
 using OrchardCore.Data.Documents;
 using OrchardCore.Documents;
 using OrchardCore.Documents.Options;
-using OrchardCore.Documents.States;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -21,8 +20,9 @@ namespace Microsoft.Extensions.DependencyInjection
                 services.AddSingleton<IDocumentOptionsFactory, DocumentOptionsFactory>();
                 services.AddTransient(typeof(DocumentOptions<>));
 
-                services.AddScoped<IPersistentStates, PersistentStates>();
-                services.AddScoped<IVolatileStates, VolatileStates>();
+                services.AddScoped(typeof(IDocumentEntityManager<>), typeof(DocumentEntityManager<>));
+                services.AddScoped(typeof(IVolatileDocumentEntityManager<>), typeof(VolatileDocumentEntityManager<>));
+                services.AddScoped(typeof(IDocumentEntityManager<,>), typeof(DocumentEntityManager<,>));
             });
         }
     }
