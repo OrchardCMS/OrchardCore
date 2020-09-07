@@ -15,9 +15,9 @@ namespace OrchardCore.Secrets
 
     public static class ISecretStoreExtensions
     {
-        public static Task<TSecret> GetSecretAsync<TSecret>(this ISecretStore secretStore, string key) where TSecret : Secret, new()
+        public static async Task<TSecret> GetSecretAsync<TSecret>(this ISecretStore secretStore, string key) where TSecret : Secret, new()
         {
-            return Task.FromResult<TSecret>(secretStore.GetSecretAsync(key, typeof(TSecret)) as TSecret);
+            return (await secretStore.GetSecretAsync(key, typeof(TSecret))) as TSecret;
         }
     }
 
