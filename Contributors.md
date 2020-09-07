@@ -1,7 +1,7 @@
 # Contributors ✨
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-196-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-197-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
@@ -271,6 +271,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <td align="center"><a href="https://thomasebsmith.github.io/"><img src="https://avatars3.githubusercontent.com/u/42979377?v=4" width="100px;" alt=""/><br /><sub><b>Thomas Smith</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=thomasebsmith" title="Code">💻</a></td>
     <td align="center"><a href="http://kshitizshakya.com.np"><img src="https://avatars2.githubusercontent.com/u/8330582?v=4" width="100px;" alt=""/><br /><sub><b>KshitizGIT</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=KshitizGIT" title="Code">💻</a></td>
     <td align="center"><a href="https://github.com/khurram4u2"><img src="https://avatars2.githubusercontent.com/u/56805276?v=4" width="100px;" alt=""/><br /><sub><b>khurram4u2</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=khurram4u2" title="Code">💻</a></td>
+    <td align="center"><a href="https://github.com/mvarblow"><img src="https://avatars2.githubusercontent.com/u/1827487?v=4" width="100px;" alt=""/><br /><sub><b>Matt Varblow</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=mvarblow" title="Documentation">📖</a></td>
   </tr>
 </table>
 
