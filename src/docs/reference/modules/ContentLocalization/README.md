@@ -48,13 +48,17 @@ The cookie can be set during recipes using the settings step. Here is a sample s
 The `ContentCulturePicker` shape loads data for the `ContentCulturePickerContainer` shape.  
 You should always render this shape in your theme:
 
-``` liquid tab="Liquid"
-{% shape "ContentCulturePicker" %}
-```
+=== "Liquid"
 
-``` html tab="Razor"
-<shape type="ContentCulturePicker" />
-```
+    ``` liquid
+    {% shape "ContentCulturePicker" %}
+    ```
+
+=== "Razor"
+
+    ``` html
+    <shape type="ContentCulturePicker" />
+    ```
 
 #### `ContentCulturePickerContainer`
 
@@ -68,41 +72,44 @@ You should override this shape in your theme.
 
 ##### ContentCulturePickerContainer Example
 
-``` liquid tab="Liquid"
-<ul>
-    <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" id="oc-culture-picker" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{Model.CurrentCulture.DisplayName}}</a>
-        <div class="dropdown-menu" aria-labelledby="oc-culture-picker">
-        {% for culture in Model.SupportedCultures %}
-            {% if culture.Name != Model.CurrentCulture.Name  %}
-            <a class="dropdown-item" href="{{culture.Name | switch_culture_url }}">{{culture.DisplayName}}</a>
-            {% endif %}
-        {% endfor %}
-        </div>
-    </li>
-</ul>
+=== "Razor"
 
-```
+    ``` liquid
+    <ul>
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="oc-culture-picker" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{Model.CurrentCulture.DisplayName}}</a>
+            <div class="dropdown-menu" aria-labelledby="oc-culture-picker">
+            {% for culture in Model.SupportedCultures %}
+                {% if culture.Name != Model.CurrentCulture.Name  %}
+                <a class="dropdown-item" href="{{culture.Name | switch_culture_url }}">{{culture.DisplayName}}</a>
+                {% endif %}
+            {% endfor %}
+            </div>
+        </li>
+    </ul>
+    ```
 
-``` html tab="Razor"
-<ul>
-    <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" id="oc-culture-picker" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">@Model.CurrentCulture.DisplayName</a>
-        <div class="dropdown-menu" aria-labelledby="oc-culture-picker">
-            @foreach (var culture in Model.SupportedCultures)
-            {
-                if (!string.Equals((string)culture.Name, (string)Model.CurrentCulture.Name, StringComparison.OrdinalIgnoreCase))
+=== "Razor"
+
+    ``` html
+    <ul>
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="oc-culture-picker" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">@Model.CurrentCulture.DisplayName</a>
+            <div class="dropdown-menu" aria-labelledby="oc-culture-picker">
+                @foreach (var culture in Model.SupportedCultures)
                 {
-                    <a asp-route="RedirectToLocalizedContent"
-                       asp-route-area="OrchardCore.ContentLocalization"
-                       asp-route-targetculture="@culture.Name"
-                       asp-route-contentItemUrl="@Context.Request.Path"
-                       class="dropdown-item">@culture.DisplayName</a>
+                    if (!string.Equals((string)culture.Name, (string)Model.CurrentCulture.Name, StringComparison.OrdinalIgnoreCase))
+                    {
+                        <a asp-route="RedirectToLocalizedContent"
+                        asp-route-area="OrchardCore.ContentLocalization"
+                        asp-route-targetculture="@culture.Name"
+                        asp-route-contentItemUrl="@Context.Request.Path"
+                        class="dropdown-item">@culture.DisplayName</a>
+                    }
                 }
-            }
-        </div>
-    </li>
-</ul>
+            </div>
+        </li>
+    </ul>
 ```
 
 ## Liquid filters

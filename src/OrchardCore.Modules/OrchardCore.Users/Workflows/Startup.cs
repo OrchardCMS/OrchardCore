@@ -22,6 +22,7 @@ namespace OrchardCore.Users.Workflows
             services.AddActivity<UserLoggedInEvent, UserLoggedInEventDisplay>();
             services.AddScoped<IUserEventHandler, UserEventHandler>();
             services.AddActivity<AssignUserRoleTask, AssignUserRoleTaskDisplay>();
+            services.AddActivity<ValidateUserTask, ValidateUserTaskDisplay>();
         }
     }
 }

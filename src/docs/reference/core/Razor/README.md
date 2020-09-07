@@ -20,7 +20,7 @@ Many extensions methods are available in Razor with `@Orchard`.
 | `GetRecentContentItemsByContentTypeAsync(string contentType, int maxContentItems = 10)` | OrchardCore.Contents | Loads content items of a specific type. |
 | `LiquidToHtmlAsync(string liquid)` | [OrchardCore.Liquid](../../modules/Liquid/README.md#razor-helpers) | Parses a liquid string to HTML. |
 | `LiquidToHtmlAsync(string liquid, object model)` | [OrchardCore.Liquid](../../modules/Liquid/README.md#razor-helpers) | Parses a liquid string to HTML. |
-| `SanitizeHtml(string html)` | [OrchardCore.Infrastructure](../../core/Sanitize/README.md#razor-helpers) | Sanitizes an HTML string. |
+| `SanitizeHtml(string html)` | [OrchardCore.Infrastructure](../Sanitizer/README.md#razor-helper) | Sanitizes an HTML string. |
 | `QueryListItemsCountAsync(string listContentItemId, Expression<Func<ContentItemIndex, bool>> itemPredicate = null)` | OrchardCore.Lists | Returns list count. |
 | `QueryListItemsAsync(string listContentItemId, Expression<Func<ContentItemIndex, bool>> itemPredicate = null)` | [OrchardCore.List](../../modules/List/README.md#orchard-helpers) | Returns list items. |
 | `MarkdownToHtmlAsync(string listContentItemId, Expression<Func<ContentItemIndex, bool>> itemPredicate = null)` | [OrchardCore.Markdown](../../modules/Markdown/README.md#razor-helper) | Converts Markdown string to HTML. |
