@@ -12,7 +12,7 @@ namespace OrchardCore.Templates.Cms.Module.Settings
     {
         public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater)
         {
-            if (!String.Equals(nameof(MyTestPart), contentPartDefinition.Name))
+            if (!String.Equals(nameof(MyTestPart), contentTypePartDefinition.PartDefinition.Name))
             {
                 return null;
             }
