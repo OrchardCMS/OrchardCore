@@ -48,7 +48,10 @@ Add a reference to `OrchardCore.Logging.Serilog`.
         public static IHost BuildHost(string[] args) =>
             Host.CreateDefaultBuilder(args)
                 .ConfigureLogging(logging => logging.ClearProviders())
-                .UseSerilog()
+                .UseSerilog((hostingContext, configBuilder) =>
+                {
+                    configBuilder.ReadFrom.Configuration(hostingContext.Configuration).Enrich.FromLogContext();
+                })
                 .ConfigureWebHostDefaults(webBuilder => webBuilder
                     .UseStartup<Startup>())
                 .Build();

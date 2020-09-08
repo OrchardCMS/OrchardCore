@@ -1838,6 +1838,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "mvarblow",
+      "name": "Matt Varblow",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/1827487?v=4",
+      "profile": "https://github.com/mvarblow",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "skipCi": true
