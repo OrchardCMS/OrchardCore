@@ -4,7 +4,7 @@ using OrchardCore.Deployment;
 namespace OrchardCore.ContentTypes.Deployment
 {
     /// <summary>
-    /// Adds selected content definitions to a <see cref="DeploymentPlanResult"/>.
+    /// Deletes selected content definitions to a <see cref="DeploymentPlanResult"/>.
     /// </summary>
     public class DeleteContentDefinitionDeploymentStep : DeploymentStep
     {
