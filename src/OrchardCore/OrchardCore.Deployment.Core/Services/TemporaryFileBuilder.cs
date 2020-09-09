@@ -22,9 +22,25 @@ namespace OrchardCore.Deployment.Core.Services
             {
                 if (Directory.Exists(Folder))
                 {
-                    Directory.Delete(Folder, true);
+                     SafeDeleteDirectory(Folder);
                 }
             }
+        }
+
+        private static void SafeDeleteDirectory(string targetDirectory)
+        {
+            foreach (string file in Directory.GetFiles(targetDirectory))
+            {
+                File.SetAttributes(file, FileAttributes.Normal);
+                File.Delete(file);
+            }
+
+            foreach (string dir in Directory.GetDirectories(targetDirectory))
+            {
+                SafeDeleteDirectory(dir);
+            }
+
+            Directory.Delete(targetDirectory, false);
         }
 
         public async Task SetFileAsync(string subpath, Stream stream)

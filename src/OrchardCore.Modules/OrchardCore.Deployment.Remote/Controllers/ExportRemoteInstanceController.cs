@@ -72,30 +72,25 @@ namespace OrchardCore.Deployment.Remote.Controllers
 
             using (var fileBuilder = new TemporaryFileBuilder())
             {
-                archiveFileName = PathExtensions.Combine(Path.GetTempPath(), filename);
+                archiveFileName = PathExtensions.Combine(Path.GetTempPath(), Path.GetRandomFileName());
 
                 var deploymentPlanResult = new DeploymentPlanResult(fileBuilder, new RecipeDescriptor());
                 await _deploymentManager.ExecuteDeploymentPlanAsync(deploymentPlan, deploymentPlanResult);
 
-                if (System.IO.File.Exists(archiveFileName))
-                {
-                    System.IO.File.Delete(archiveFileName);
-                }
-
                 ZipFile.CreateFromDirectory(fileBuilder.Folder, archiveFileName);
             }
 
-            HttpResponseMessage response;
-
             try
             {
+                HttpResponseMessage response;
+
                 using (var requestContent = new MultipartFormDataContent())
                 {
                     requestContent.Add(new StreamContent(
                         new FileStream(archiveFileName,
                         FileMode.Open, FileAccess.Read, FileShare.ReadWrite, 1, FileOptions.Asynchronous | FileOptions.SequentialScan)
                     ),
-                        nameof(ImportViewModel.Content), Path.GetFileName(archiveFileName));
+                        nameof(ImportViewModel.Content), filename);
                     requestContent.Add(new StringContent(remoteInstance.ClientName), nameof(ImportViewModel.ClientName));
                     requestContent.Add(new StringContent(remoteInstance.ApiKey), nameof(ImportViewModel.ApiKey));
 

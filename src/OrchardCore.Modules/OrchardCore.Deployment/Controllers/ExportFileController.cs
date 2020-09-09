@@ -54,8 +54,9 @@ namespace OrchardCore.Deployment.Controllers
 
             using (var fileBuilder = new TemporaryFileBuilder())
             {
-                archiveFileName = PathExtensions.Combine(Path.GetTempPath(), filename);
-
+                // use random name for archive to prevent collision
+                archiveFileName = PathExtensions.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+                
                 var recipeDescriptor = new RecipeDescriptor();
                 var recipeFileDeploymentStep = deploymentPlan.DeploymentSteps.FirstOrDefault(ds => ds.Name == nameof(RecipeFileDeploymentStep)) as RecipeFileDeploymentStep;
 
@@ -72,9 +73,23 @@ namespace OrchardCore.Deployment.Controllers
                     recipeDescriptor.Tags = (recipeFileDeploymentStep.Tags ?? "").Split(',', StringSplitOptions.RemoveEmptyEntries);
                 }
 
-                var deploymentPlanResult = new DeploymentPlanResult(fileBuilder, recipeDescriptor);
-                await _deploymentManager.ExecuteDeploymentPlanAsync(deploymentPlan, deploymentPlanResult);
-                ZipFile.CreateFromDirectory(fileBuilder.Folder, archiveFileName);
+                try
+                {
+                    var deploymentPlanResult = new DeploymentPlanResult(fileBuilder, recipeDescriptor);
+                    await _deploymentManager.ExecuteDeploymentPlanAsync(deploymentPlan, deploymentPlanResult);
+                    ZipFile.CreateFromDirectory(fileBuilder.Folder, archiveFileName);
+                }
+                catch
+                {
+                    var file = new FileInfo(archiveFileName);
+
+                    if (file.Exists)
+                    {
+                        file.Delete();
+                    }
+
+                    throw;
+                }
             }
 
             return new PhysicalFileResult(archiveFileName, "application/zip") { FileDownloadName = filename };
