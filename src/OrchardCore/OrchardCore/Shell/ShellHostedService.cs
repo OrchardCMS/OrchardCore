@@ -20,7 +20,7 @@ namespace OrchardCore.Environment.Shell
         private const string ReloadIdKeyPrefix = "RELOAD_ID_";
 
         private static readonly TimeSpan MinIdleTime = TimeSpan.FromSeconds(1);
-        private static readonly TimeSpan MaxBusyTime = TimeSpan.FromSeconds(1);
+        private static readonly TimeSpan MaxBusyTime = TimeSpan.FromSeconds(2);
 
         private readonly IShellHost _shellHost;
         private readonly IShellSettingsManager _shellSettingsManager;
@@ -71,9 +71,9 @@ namespace OrchardCore.Environment.Shell
 
                     await scope.UsingAsync(async scope =>
                     {
-                        var distributedCache = scope.ServiceProvider.GetRequiredService<IDistributedCache>();
+                        var distributedCache = scope.ServiceProvider.GetService<IDistributedCache>();
 
-                        if (distributedCache is MemoryDistributedCache)
+                        if (distributedCache == null || distributedCache is MemoryDistributedCache)
                         {
                             return;
                         }
@@ -82,7 +82,7 @@ namespace OrchardCore.Environment.Shell
 
                         var shellsId = await distributedCache.GetStringAsync(ShellsIdKey);
 
-                        if (_shellsId != shellsId)
+                        if (shellsId != null && _shellsId != shellsId)
                         {
                             _shellsId = shellsId;
 
@@ -121,24 +121,32 @@ namespace OrchardCore.Environment.Shell
 
                             try
                             {
-                                var shellIdentifier = _shellIdentifiers.GetOrAdd(settings.Name, name => new ShellIdentifier() { Name = name });
-
                                 var releaseId = await distributedCache.GetStringAsync(ReleaseIdKeyPrefix + settings.Name);
 
-                                if (releaseId != null && shellIdentifier.ReleaseId != releaseId)
+                                if (releaseId != null)
                                 {
-                                    shellIdentifier.ReleaseId = releaseId;
+                                    var shellIdentifier = _shellIdentifiers.GetOrAdd(settings.Name, name => new ShellIdentifier() { Name = name });
 
-                                    await _shellHost.ReleaseShellContextAsync(settings, eventSink: true);
+                                    if (shellIdentifier.ReleaseId != releaseId)
+                                    {
+                                        shellIdentifier.ReleaseId = releaseId;
+
+                                        await _shellHost.ReleaseShellContextAsync(settings, eventSink: true);
+                                    }
                                 }
 
                                 var reloadId = await distributedCache.GetStringAsync(ReloadIdKeyPrefix + settings.Name);
 
-                                if (reloadId != null && shellIdentifier.ReloadId != reloadId)
+                                if (reloadId != null)
                                 {
-                                    shellIdentifier.ReloadId = reloadId;
+                                    var shellIdentifier = _shellIdentifiers.GetOrAdd(settings.Name, name => new ShellIdentifier() { Name = name });
 
-                                    await _shellHost.ReloadShellContextAsync(settings, eventSink: true);
+                                    if (shellIdentifier.ReloadId != reloadId)
+                                    {
+                                        shellIdentifier.ReloadId = reloadId;
+
+                                        await _shellHost.ReloadShellContextAsync(settings, eventSink: true);
+                                    }
                                 }
                             }
                             finally
@@ -176,9 +184,9 @@ namespace OrchardCore.Environment.Shell
 
             await scope.UsingAsync(async scope =>
             {
-                var distributedCache = scope.ServiceProvider.GetRequiredService<IDistributedCache>();
+                var distributedCache = scope.ServiceProvider.GetService<IDistributedCache>();
 
-                if (distributedCache is MemoryDistributedCache)
+                if (distributedCache == null || distributedCache is MemoryDistributedCache)
                 {
                     return;
                 }
@@ -187,11 +195,23 @@ namespace OrchardCore.Environment.Shell
 
                 foreach (var name in names)
                 {
-                    var shellIdentifier = _shellIdentifiers.GetOrAdd(name, name => new ShellIdentifier() { Name = name });
+                    var releaseId = await distributedCache.GetStringAsync(ReleaseIdKeyPrefix + name);
 
-                    shellIdentifier.ReleaseId = await distributedCache.GetStringAsync(ReleaseIdKeyPrefix + name);
+                    if (releaseId != null)
+                    {
+                        var shellIdentifier = _shellIdentifiers.GetOrAdd(name, name => new ShellIdentifier() { Name = name });
 
-                    shellIdentifier.ReloadId = await distributedCache.GetStringAsync(ReloadIdKeyPrefix + name);
+                        shellIdentifier.ReleaseId = releaseId;
+                    }
+
+                    var reloadId = await distributedCache.GetStringAsync(ReloadIdKeyPrefix + name);
+
+                    if (reloadId != null)
+                    {
+                        var shellIdentifier = _shellIdentifiers.GetOrAdd(name, name => new ShellIdentifier() { Name = name });
+
+                        shellIdentifier.ReloadId = reloadId;
+                    }
                 }
             });
 
@@ -210,9 +230,9 @@ namespace OrchardCore.Environment.Shell
 
                 await scope.UsingAsync(scope =>
                 {
-                    var distributedCache = scope.ServiceProvider.GetRequiredService<IDistributedCache>();
+                    var distributedCache = scope.ServiceProvider.GetService<IDistributedCache>();
 
-                    if (distributedCache is MemoryDistributedCache)
+                    if (distributedCache == null || distributedCache is MemoryDistributedCache)
                     {
                         return Task.CompletedTask;
                     }
@@ -250,9 +270,9 @@ namespace OrchardCore.Environment.Shell
 
                 await scope.UsingAsync(async scope =>
                 {
-                    var distributedCache = scope.ServiceProvider.GetRequiredService<IDistributedCache>();
+                    var distributedCache = scope.ServiceProvider.GetService<IDistributedCache>();
 
-                    if (distributedCache is MemoryDistributedCache)
+                    if (distributedCache == null || distributedCache is MemoryDistributedCache)
                     {
                         return;
                     }
