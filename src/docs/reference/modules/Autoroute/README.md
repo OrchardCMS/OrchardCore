@@ -92,7 +92,7 @@ The `AutoroutePart` supports routing of these _container_ types.
 To enabled routing of _contained_ content items the `AutoroutePart` must be configured correctly.
 
 - Add the `AutoroutePart` to the _container or parent_ content type definition.
-- Enable `Allow Route Contained Items` on the `AutoroutePart Settings`.
+- Enable `Allow contained item routing` on the `AutoroutePart Settings`.
 - Enable `Route Contained Items` on the _container_ content item.
 
 Optionally, add the `AutoroutePart` to the content type definition of the _contained or child_ content items, to manage the contained item routes.
