@@ -8,19 +8,23 @@ namespace OrchardCore.Mvc.Utilities
         /// Returns the proper actionresult for unauthorized or unauthenticated users.
         /// Will return a forbid when the user is authenticated.
         /// Will return a challenge when the user is not authenticated.
-        /// If a authentication scheme is specified, will return a challenge to it.
         /// </summary>
         /// <param name="controller"></param>
-        /// <param name="authenticationScheme"></param>
         /// <returns>The proper actionresult based upon if the user is authenticated</returns>
-        public static ActionResult ChallengeOrForbid(this Controller controller, string authenticationScheme = null)
-        {
-            if (!string.IsNullOrEmpty(authenticationScheme))
-            {
-                return controller.User.Identity.IsAuthenticated ? (ActionResult)controller.Forbid(new string[] { authenticationScheme }) : (ActionResult)controller.Challenge(new string[] { authenticationScheme });
-            }
+        public static ActionResult ChallengeOrForbid(this Controller controller)
+            => controller.User.Identity.IsAuthenticated ? (ActionResult)controller.Forbid() : (ActionResult)controller.Challenge();
 
-            return controller.User.Identity.IsAuthenticated ? (ActionResult)controller.Forbid() : (ActionResult)controller.Challenge();
-        }
+        /// <summary>
+        /// Returns the proper actionresult for unauthorized or unauthenticated users
+        /// with the specified authenticationSchemes.
+        /// Will return a forbid when the user is authenticated.
+        /// Will return a challenge when the user is not authenticated.
+        /// If authentication schemes are specified, will return a challenge to them.
+        /// </summary>
+        /// <param name="controller"></param>
+        /// <param name="authenticationSchemes">The authentication schemes to challenge.</param>
+        /// <returns>The proper actionresult based upon if the user is authenticated</returns>
+        public static ActionResult ChallengeOrForbid(this Controller controller, params string[] authenticationSchemes)
+            => controller.User.Identity.IsAuthenticated ? (ActionResult)controller.Forbid(authenticationSchemes) : (ActionResult)controller.Challenge(authenticationSchemes);
     }
 }
