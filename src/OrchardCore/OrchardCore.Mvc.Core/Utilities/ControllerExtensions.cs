@@ -17,7 +17,7 @@ namespace OrchardCore.Mvc.Utilities
         {
             if (!string.IsNullOrEmpty(authenticationScheme))
             {
-                return controller.User.Identity.IsAuthenticated ? (ActionResult)controller.Forbid() : (ActionResult)controller.Challenge(new string[] { authenticationScheme });
+                return controller.User.Identity.IsAuthenticated ? (ActionResult)controller.Forbid(new string[] { authenticationScheme }) : (ActionResult)controller.Challenge(new string[] { authenticationScheme });
             }
 
             return controller.User.Identity.IsAuthenticated ? (ActionResult)controller.Forbid() : (ActionResult)controller.Challenge();
