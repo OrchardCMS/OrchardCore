@@ -74,7 +74,7 @@ namespace OrchardCore.Environment.Shell
                         continue;
                     }
 
-                    if (!_shellHost.TryGetSettings(ShellHelper.DefaultShellName, out var defautSettings))
+                    if (!_shellHost.TryGetSettings(ShellHelper.DefaultShellName, out var defautSettings) || defautSettings.State != TenantState.Running)
                     {
                         continue;
                     }
@@ -90,94 +90,90 @@ namespace OrchardCore.Environment.Shell
                         _defaultContext = defaultContext;
                     }
 
-                    await _isolatedContext.CreateScope().UsingAsync(async scope =>
+                    var distributedCache = _isolatedContext.ServiceProvider.GetService<IDistributedCache>();
+
+                    if (distributedCache == null || distributedCache is MemoryDistributedCache)
                     {
-                        var distributedCache = scope.ServiceProvider.GetService<IDistributedCache>();
+                        continue;
+                    }
 
-                        if (distributedCache == null || distributedCache is MemoryDistributedCache)
+                    var allSettings = _shellHost.GetAllSettings();
+
+                    var shellsId = await distributedCache.GetStringAsync(ShellsIdKey);
+
+                    if (shellsId != null && _shellsId != shellsId)
+                    {
+                        _shellsId = shellsId;
+
+                        var names = (await _shellSettingsManager.LoadSettingsNamesAsync())
+                            .Except(allSettings.Select(s => s.Name));
+
+                        var newSettings = new List<ShellSettings>();
+
+                        foreach (var name in names)
                         {
-                            return;
+                            newSettings.Add(await _shellSettingsManager.LoadSettingsAsync(name));
                         }
 
-                        var allSettings = _shellHost.GetAllSettings();
+                        allSettings = allSettings.Concat(newSettings);
+                    }
 
-                        var shellsId = await distributedCache.GetStringAsync(ShellsIdKey);
+                    var startTime = DateTime.UtcNow;
 
-                        if (shellsId != null && _shellsId != shellsId)
+                    foreach (var settings in allSettings)
+                    {
+                        var maxBusyTime = DateTime.UtcNow - startTime;
+
+                        if (maxBusyTime > MaxBusyTime)
                         {
-                            _shellsId = shellsId;
-
-                            var names = (await _shellSettingsManager.LoadSettingsNamesAsync())
-                                .Except(allSettings.Select(s => s.Name));
-
-                            var newSettings = new List<ShellSettings>();
-
-                            foreach (var name in names)
+                            if (!await TryWaitAsync(MinIdleTime, stoppingToken))
                             {
-                                newSettings.Add(await _shellSettingsManager.LoadSettingsAsync(name));
+                                break;
                             }
 
-                            allSettings = allSettings.Concat(newSettings);
+                            startTime = DateTime.UtcNow;
                         }
 
-                        var startTime = DateTime.UtcNow;
+                        var semaphore = _shellSemaphores.GetOrAdd(settings.Name, (name) => new SemaphoreSlim(1));
 
-                        foreach (var settings in allSettings)
+                        await semaphore.WaitAsync();
+
+                        try
                         {
-                            var maxBusyTime = DateTime.UtcNow - startTime;
+                            var releaseId = await distributedCache.GetStringAsync(ReleaseIdKeyPrefix + settings.Name);
 
-                            if (maxBusyTime > MaxBusyTime)
+                            if (releaseId != null)
                             {
-                                if (!await TryWaitAsync(MinIdleTime, stoppingToken))
+                                var shellIdentifier = _shellIdentifiers.GetOrAdd(settings.Name, name => new ShellIdentifier() { Name = name });
+
+                                if (shellIdentifier.ReleaseId != releaseId)
                                 {
-                                    break;
-                                }
+                                    shellIdentifier.ReleaseId = releaseId;
 
-                                startTime = DateTime.UtcNow;
-                            }
-
-                            var semaphore = _shellSemaphores.GetOrAdd(settings.Name, (name) => new SemaphoreSlim(1));
-
-                            await semaphore.WaitAsync();
-
-                            try
-                            {
-                                var releaseId = await distributedCache.GetStringAsync(ReleaseIdKeyPrefix + settings.Name);
-
-                                if (releaseId != null)
-                                {
-                                    var shellIdentifier = _shellIdentifiers.GetOrAdd(settings.Name, name => new ShellIdentifier() { Name = name });
-
-                                    if (shellIdentifier.ReleaseId != releaseId)
-                                    {
-                                        shellIdentifier.ReleaseId = releaseId;
-
-                                        await _shellHost.ReleaseShellContextAsync(settings, eventSink: true);
-                                    }
-                                }
-
-                                var reloadId = await distributedCache.GetStringAsync(ReloadIdKeyPrefix + settings.Name);
-
-                                if (reloadId != null)
-                                {
-                                    var shellIdentifier = _shellIdentifiers.GetOrAdd(settings.Name, name => new ShellIdentifier() { Name = name });
-
-                                    if (shellIdentifier.ReloadId != reloadId)
-                                    {
-                                        shellIdentifier.ReloadId = reloadId;
-
-                                        await _shellHost.ReloadShellContextAsync(settings, eventSink: true);
-                                    }
+                                    await _shellHost.ReleaseShellContextAsync(settings, eventSink: true);
                                 }
                             }
-                            finally
+
+                            var reloadId = await distributedCache.GetStringAsync(ReloadIdKeyPrefix + settings.Name);
+
+                            if (reloadId != null)
                             {
-                                semaphore.Release();
-                                _shellSemaphores.TryRemove(settings.Name, out semaphore);
+                                var shellIdentifier = _shellIdentifiers.GetOrAdd(settings.Name, name => new ShellIdentifier() { Name = name });
+
+                                if (shellIdentifier.ReloadId != reloadId)
+                                {
+                                    shellIdentifier.ReloadId = reloadId;
+
+                                    await _shellHost.ReloadShellContextAsync(settings, eventSink: true);
+                                }
                             }
                         }
-                    },
-                    activate: false);
+                        finally
+                        {
+                            semaphore.Release();
+                            _shellSemaphores.TryRemove(settings.Name, out semaphore);
+                        }
+                    }
                 }
             }
             catch (Exception ex) when (!ex.IsFatal())
@@ -206,68 +202,68 @@ namespace OrchardCore.Environment.Shell
 
             using var isolatedContext = await _shellContextFactory.CreateShellContextAsync(defautSettings);
 
-            await isolatedContext.CreateScope().UsingAsync(async scope =>
+            var distributedCache = isolatedContext.ServiceProvider.GetService<IDistributedCache>();
+
+            if (distributedCache == null || distributedCache is MemoryDistributedCache)
             {
-                var distributedCache = scope.ServiceProvider.GetService<IDistributedCache>();
+                _initialized = true;
 
-                if (distributedCache == null || distributedCache is MemoryDistributedCache)
+                return;
+            }
+
+            _shellsId = await distributedCache.GetStringAsync(ShellsIdKey);
+
+            foreach (var name in names)
+            {
+                var releaseId = await distributedCache.GetStringAsync(ReleaseIdKeyPrefix + name);
+
+                if (releaseId != null)
                 {
-                    return;
+                    var shellIdentifier = _shellIdentifiers.GetOrAdd(name, name => new ShellIdentifier() { Name = name });
+
+                    shellIdentifier.ReleaseId = releaseId;
                 }
 
-                _shellsId = await distributedCache.GetStringAsync(ShellsIdKey);
+                var reloadId = await distributedCache.GetStringAsync(ReloadIdKeyPrefix + name);
 
-                foreach (var name in names)
+                if (reloadId != null)
                 {
-                    var releaseId = await distributedCache.GetStringAsync(ReleaseIdKeyPrefix + name);
+                    var shellIdentifier = _shellIdentifiers.GetOrAdd(name, name => new ShellIdentifier() { Name = name });
 
-                    if (releaseId != null)
-                    {
-                        var shellIdentifier = _shellIdentifiers.GetOrAdd(name, name => new ShellIdentifier() { Name = name });
-
-                        shellIdentifier.ReleaseId = releaseId;
-                    }
-
-                    var reloadId = await distributedCache.GetStringAsync(ReloadIdKeyPrefix + name);
-
-                    if (reloadId != null)
-                    {
-                        var shellIdentifier = _shellIdentifiers.GetOrAdd(name, name => new ShellIdentifier() { Name = name });
-
-                        shellIdentifier.ReloadId = reloadId;
-                    }
+                    shellIdentifier.ReloadId = reloadId;
                 }
-            },
-            activate: false);
+            }
 
             _initialized = true;
         }
 
         public async Task ReleasingAsync(string name)
         {
+            if (!_shellHost.TryGetSettings(ShellHelper.DefaultShellName, out var defautSettings) || defautSettings.State != TenantState.Running)
+            {
+                return;
+            }
+
+            var isolatedContext = await _shellContextFactory.CreateShellContextAsync(defautSettings);
+
+            var distributedCache = isolatedContext.ServiceProvider.GetService<IDistributedCache>();
+
+            if (distributedCache == null || distributedCache is MemoryDistributedCache)
+            {
+                return;
+            }
+
             var semaphore = _shellSemaphores.GetOrAdd(name, (name) => new SemaphoreSlim(1));
 
             await semaphore.WaitAsync();
 
             try
             {
-                var scope = await _shellHost.GetScopeAsync(ShellHelper.DefaultShellName);
+                var shellIdentifier = _shellIdentifiers.GetOrAdd(name, name => new ShellIdentifier() { Name = name });
 
-                await scope.UsingAsync(scope =>
-                {
-                    var distributedCache = scope.ServiceProvider.GetService<IDistributedCache>();
+                shellIdentifier.ReleaseId = IdGenerator.GenerateId();
 
-                    if (distributedCache == null || distributedCache is MemoryDistributedCache)
-                    {
-                        return Task.CompletedTask;
-                    }
-
-                    var shellIdentifier = _shellIdentifiers.GetOrAdd(name, name => new ShellIdentifier() { Name = name });
-
-                    shellIdentifier.ReleaseId = IdGenerator.GenerateId();
-
-                    return distributedCache.SetStringAsync(ReleaseIdKeyPrefix + name, shellIdentifier.ReleaseId);
-                });
+                await distributedCache.SetStringAsync(ReleaseIdKeyPrefix + name, shellIdentifier.ReleaseId);
             }
             finally
             {
@@ -278,10 +274,24 @@ namespace OrchardCore.Environment.Shell
 
         public async Task ReloadingAsync(string name)
         {
+            if (!_shellHost.TryGetSettings(ShellHelper.DefaultShellName, out var defautSettings) || defautSettings.State != TenantState.Running)
+            {
+                return;
+            }
+
             if (name == ShellHelper.DefaultShellName && !_initialized)
             {
                 _initialized = true;
 
+                return;
+            }
+
+            var isolatedContext = await _shellContextFactory.CreateShellContextAsync(defautSettings);
+
+            var distributedCache = isolatedContext.ServiceProvider.GetService<IDistributedCache>();
+
+            if (distributedCache == null || distributedCache is MemoryDistributedCache)
+            {
                 return;
             }
 
@@ -291,28 +301,16 @@ namespace OrchardCore.Environment.Shell
 
             try
             {
-                var scope = await _shellHost.GetScopeAsync(ShellHelper.DefaultShellName);
+                var shellIdentifier = _shellIdentifiers.GetOrAdd(name, name => new ShellIdentifier() { Name = name });
 
-                await scope.UsingAsync(async scope =>
+                shellIdentifier.ReloadId = IdGenerator.GenerateId();
+
+                await distributedCache.SetStringAsync(ReloadIdKeyPrefix + name, shellIdentifier.ReloadId);
+
+                if (name != ShellHelper.DefaultShellName && !_shellHost.TryGetSettings(name, out _))
                 {
-                    var distributedCache = scope.ServiceProvider.GetService<IDistributedCache>();
-
-                    if (distributedCache == null || distributedCache is MemoryDistributedCache)
-                    {
-                        return;
-                    }
-
-                    var shellIdentifier = _shellIdentifiers.GetOrAdd(name, name => new ShellIdentifier() { Name = name });
-
-                    shellIdentifier.ReloadId = IdGenerator.GenerateId();
-
-                    await distributedCache.SetStringAsync(ReloadIdKeyPrefix + name, shellIdentifier.ReloadId);
-
-                    if (name != ShellHelper.DefaultShellName && !_shellHost.TryGetSettings(name, out _))
-                    {
-                        await distributedCache.SetStringAsync(ShellsIdKey, IdGenerator.GenerateId());
-                    }
-                });
+                    await distributedCache.SetStringAsync(ShellsIdKey, IdGenerator.GenerateId());
+                }
             }
             finally
             {
