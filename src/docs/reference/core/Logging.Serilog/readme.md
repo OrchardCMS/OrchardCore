@@ -62,7 +62,7 @@ Add a reference to `OrchardCore.Logging.Serilog`.
 ``` csharp
         using OrchardCore.Logging;
         ...
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
