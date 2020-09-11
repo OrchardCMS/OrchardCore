@@ -12,7 +12,7 @@ using OrchardCore.Environment.Cache;
 
 namespace OrchardCore.DynamicCache.TagHelpers
 {
-    [HtmlTargetElement("cache", Attributes = CacheIdAttributeName)]
+    [HtmlTargetElement("dynamic-cache", Attributes = CacheIdAttributeName)]
     public class DynamicCacheTagHelper : TagHelper
     {
         private const string CacheIdAttributeName = "cache-id";

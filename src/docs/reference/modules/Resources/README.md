@@ -364,7 +364,7 @@ You can also inject a named custom script.
 === "Razor"
 
     ``` html
-    <script name="Carousel" at="Foot" depends-on="jQuery">
+    <script asp-name="Carousel" at="Foot" depends-on="jQuery">
         document.write('<!-- some script -->');
     </script>
     ```
@@ -412,7 +412,7 @@ The style block will only be injected once based on its name and can optionally 
 === "Razor"
 
     ``` html
-    <style name="my-style" depends-on="the-theme">
+    <style asp-name="my-style" depends-on="the-theme">
         .my-class {
             /* some style */
         }

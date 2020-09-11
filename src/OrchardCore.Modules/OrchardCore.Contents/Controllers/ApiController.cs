@@ -38,7 +38,7 @@ namespace OrchardCore.Content.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.AccessContentApi))
             {
-                return this.ChallengeOrForbid();
+                return this.ChallengeOrForbid("Api");
             }
 
             var contentItem = await _contentManager.GetAsync(contentItemId);
@@ -50,7 +50,7 @@ namespace OrchardCore.Content.Controllers
 
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ViewContent, contentItem))
             {
-                return this.ChallengeOrForbid();
+                return this.ChallengeOrForbid("Api");
             }
 
             return Ok(contentItem);
@@ -62,7 +62,7 @@ namespace OrchardCore.Content.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.AccessContentApi))
             {
-                return this.ChallengeOrForbid();
+                return this.ChallengeOrForbid("Api");
             }
 
             var contentItem = await _contentManager.GetAsync(contentItemId);
@@ -74,7 +74,7 @@ namespace OrchardCore.Content.Controllers
 
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.DeleteContent, contentItem))
             {
-                return this.ChallengeOrForbid();
+                return this.ChallengeOrForbid("Api");
             }
 
             await _contentManager.RemoveAsync(contentItem);
@@ -87,7 +87,7 @@ namespace OrchardCore.Content.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.AccessContentApi))
             {
-                return this.ChallengeOrForbid();
+                return this.ChallengeOrForbid("Api");
             }
 
             // It is really important to keep the proper method calls order with the ContentManager
@@ -99,7 +99,7 @@ namespace OrchardCore.Content.Controllers
             {
                 if (!await _authorizationService.AuthorizeAsync(User, Permissions.PublishContent))
                 {
-                    return this.ChallengeOrForbid();
+                    return this.ChallengeOrForbid("Api");
                 }
 
                 var newContentItem = await _contentManager.NewAsync(model.ContentType);
@@ -130,7 +130,7 @@ namespace OrchardCore.Content.Controllers
             {
                 if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContent, contentItem))
                 {
-                    return this.ChallengeOrForbid();
+                    return this.ChallengeOrForbid("Api");
                 }
 
                 contentItem.Merge(model, UpdateJsonMergeSettings);

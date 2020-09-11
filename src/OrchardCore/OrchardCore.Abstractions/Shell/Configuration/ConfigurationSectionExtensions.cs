@@ -1,6 +1,6 @@
-﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration;
 
-namespace OrchardCore.Environment.Extensions.Utility
+namespace OrchardCore.Environment.Shell.Configuration
 {
     /// <summary>
     /// A helper class that gets a configuration section using the new format (using single underscore) while being backward compatible with the dot-notation.

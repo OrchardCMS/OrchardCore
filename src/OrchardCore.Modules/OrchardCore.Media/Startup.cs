@@ -158,6 +158,7 @@ namespace OrchardCore.Media
 
             services.AddTagHelpers<ImageTagHelper>();
             services.AddTagHelpers<ImageResizeTagHelper>();
+            services.AddTagHelpers<AnchorTagHelper>();
         }
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
@@ -326,7 +327,8 @@ namespace OrchardCore.Media
         public override void ConfigureServices(IServiceCollection services)
         {
             // Only add image as a descriptor as [media] is deprecated.
-            services.AddShortcode<ImageShortcodeProvider>("image", d => {
+            services.AddShortcode<ImageShortcodeProvider>("image", d =>
+            {
                 d.DefaultValue = "[image] [/image]";
                 d.Hint = "Add a image from the media library.";
                 d.Usage =
