@@ -8,6 +8,7 @@ using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Modules;
 
@@ -23,6 +24,7 @@ namespace OrchardCore.Environment.Shell
         private static readonly TimeSpan MaxBusyTime = TimeSpan.FromSeconds(2);
 
         private readonly IShellHost _shellHost;
+        private readonly IShellContextFactory _shellContextFactory;
         private readonly IShellSettingsManager _shellSettingsManager;
         private readonly ILogger _logger;
 
@@ -32,12 +34,17 @@ namespace OrchardCore.Environment.Shell
         private bool _initialized;
         private string _shellsId;
 
+        private ShellContext _defaultContext;
+        private ShellContext _isolatedContext;
+
         public ShellHostedService(
             IShellHost shellHost,
+            IShellContextFactory shellContextFactory,
             IShellSettingsManager shellSettingsManager,
             ILogger<ShellHostedService> logger)
         {
             _shellHost = shellHost;
+            _shellContextFactory = shellContextFactory;
             _shellSettingsManager = shellSettingsManager;
             _logger = logger;
 
@@ -67,9 +74,23 @@ namespace OrchardCore.Environment.Shell
                         continue;
                     }
 
-                    var scope = await _shellHost.GetScopeAsync(ShellHelper.DefaultShellName);
+                    if (!_shellHost.TryGetSettings(ShellHelper.DefaultShellName, out var defautSettings))
+                    {
+                        continue;
+                    }
 
-                    await scope.UsingAsync(async scope =>
+                    var defaultContext = await _shellHost.GetOrCreateShellContextAsync(defautSettings);
+
+                    if (_defaultContext != defaultContext)
+                    {
+                        _isolatedContext?.Dispose();
+
+                        _isolatedContext = await _shellContextFactory.CreateShellContextAsync(defautSettings);
+
+                        _defaultContext = defaultContext;
+                    }
+
+                    await _isolatedContext.CreateScope().UsingAsync(async scope =>
                     {
                         var distributedCache = scope.ServiceProvider.GetService<IDistributedCache>();
 
@@ -155,13 +176,16 @@ namespace OrchardCore.Environment.Shell
                                 _shellSemaphores.TryRemove(settings.Name, out semaphore);
                             }
                         }
-                    });
+                    },
+                    activate: false);
                 }
             }
             catch (Exception ex) when (!ex.IsFatal())
             {
                 _logger.LogError(ex, "Error while executing '{ServiceName}', the service is stopping.", nameof(ShellHostedService));
             }
+
+            _isolatedContext?.Dispose();
         }
 
         public async Task InitializingAsync()
@@ -173,16 +197,16 @@ namespace OrchardCore.Environment.Shell
                 return;
             }
 
-            var defaultSettings = await _shellSettingsManager.LoadSettingsAsync(ShellHelper.DefaultShellName);
+            var defautSettings = await _shellSettingsManager.LoadSettingsAsync(ShellHelper.DefaultShellName);
 
-            if (defaultSettings.State != TenantState.Running)
+            if (defautSettings?.State != TenantState.Running)
             {
                 return;
             }
 
-            var scope = await _shellHost.GetScopeAsync(defaultSettings);
+            using var isolatedContext = await _shellContextFactory.CreateShellContextAsync(defautSettings);
 
-            await scope.UsingAsync(async scope =>
+            await isolatedContext.CreateScope().UsingAsync(async scope =>
             {
                 var distributedCache = scope.ServiceProvider.GetService<IDistributedCache>();
 
@@ -213,7 +237,8 @@ namespace OrchardCore.Environment.Shell
                         shellIdentifier.ReloadId = reloadId;
                     }
                 }
-            });
+            },
+            activate: false);
 
             _initialized = true;
         }
