@@ -263,7 +263,7 @@ services.PostConfigure<ImageSharpMiddlewareOptions>(o => ...);
 ```
 
 !!! note
-    The Media Library `StaticFileOptions` configuration is seperated from the configuration for static files contained in module `wwwroot` folders.
+    The Media Library `StaticFileOptions` configuration is separated from the configuration for static files contained in module `wwwroot` folders.
 
 To configure `wwwroot` static file options apply:
 
