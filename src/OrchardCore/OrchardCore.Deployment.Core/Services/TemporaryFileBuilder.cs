@@ -31,7 +31,6 @@ namespace OrchardCore.Deployment.Core.Services
         {
             foreach (string file in Directory.GetFiles(targetDirectory))
             {
-                File.SetAttributes(file, FileAttributes.Normal);
                 File.Delete(file);
             }
 
