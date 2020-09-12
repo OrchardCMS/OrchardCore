@@ -36,10 +36,12 @@ namespace OrchardCore.Media
                 new PermissionStereotype
                 {
                     Name = "Author",
+                    Permissions = new[] { ManageMedia } // Replace this by ManageOwnMedia when it's implemented
                 },
                 new PermissionStereotype
                 {
                     Name = "Contributor",
+                    Permissions = new[] { ManageMedia } // Replace this by ManageOwnMedia when it's implemented
                 },
             };
         }
