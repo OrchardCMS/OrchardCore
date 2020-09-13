@@ -25,6 +25,8 @@ using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Environment.Shell.Descriptor.Models;
 using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Localization;
+using OrchardCore.Locking;
+using OrchardCore.Locking.Distributed;
 using OrchardCore.Modules;
 using OrchardCore.Modules.FileProviders;
 using SameSiteMode = Microsoft.AspNetCore.Http.SameSiteMode;
@@ -54,7 +56,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 builder = new OrchardCoreBuilder(services);
                 services.AddSingleton(builder);
 
-                AddDefaultServices(services);
+                AddDefaultServices(builder);
                 AddShellServices(services);
                 AddExtensionServices(builder);
                 AddStaticFiles(builder);
@@ -85,8 +87,10 @@ namespace Microsoft.Extensions.DependencyInjection
             return services;
         }
 
-        private static void AddDefaultServices(IServiceCollection services)
+        private static void AddDefaultServices(OrchardCoreBuilder builder)
         {
+            var services = builder.ApplicationServices;
+
             services.AddLogging();
             services.AddOptions();
 
@@ -111,6 +115,12 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddSingleton<IPoweredByMiddlewareOptions, PoweredByMiddlewareOptions>();
 
             services.AddScoped<IOrchardHelper, DefaultOrchardHelper>();
+
+            builder.ConfigureServices(s =>
+            {
+                s.AddSingleton<ILock, LocalLock>();
+                s.AddSingleton<IDistributedLock>(sp => sp.GetRequiredService<LocalLock>());
+            });
         }
 
         private static void AddShellServices(IServiceCollection services)
