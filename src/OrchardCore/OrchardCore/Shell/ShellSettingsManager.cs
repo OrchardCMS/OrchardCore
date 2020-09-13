@@ -247,7 +247,7 @@ namespace OrchardCore.Environment.Shell
             var configuration = configurationBuilder.Build().GetSection("OrchardCore");
 
             _configuredTenants = configuration.GetChildren()
-                .Where(section => Enum.TryParse<TenantState>(section["State"], ignoreCase: true, out var result))
+                .Where(section => Enum.TryParse<TenantState>(section["State"], ignoreCase: true, out _))
                 .Select(section => section.Key)
                 .Distinct()
                 .ToArray();

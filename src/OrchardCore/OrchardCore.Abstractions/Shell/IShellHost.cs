@@ -53,6 +53,12 @@ namespace OrchardCore.Environment.Shell
         IEnumerable<ShellContext> ListShellContexts();
 
         /// <summary>
+        /// Tries to retrieve the shell context associated with the specified tenant.
+        /// The shell may have been temporarily removed while releasing or reloading.
+        /// </summary>
+        bool TryGetShellContext(string name, out ShellContext shellContext);
+
+        /// <summary>
         /// Tries to retrieve the shell settings associated with the specified tenant.
         /// </summary>
         bool TryGetSettings(string name, out ShellSettings settings);

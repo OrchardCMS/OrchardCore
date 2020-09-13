@@ -255,6 +255,20 @@ namespace OrchardCore.Environment.Shell
         public IEnumerable<ShellContext> ListShellContexts() => _shellContexts.Values.ToArray();
 
         /// <summary>
+        /// Tries to retrieve the shell context associated with the specified tenant.
+        /// The shell may have been temporarily removed while releasing or reloading.
+        /// </summary>
+        public bool TryGetShellContext(string name, out ShellContext shellContext)
+        {
+            if (_shellContexts.TryGetValue(name, out shellContext))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
         /// Tries to retrieve the shell settings associated with the specified tenant.
         /// </summary>
         /// <returns><c>true</c> if the settings could be found, <c>false</c> otherwise.</returns>

@@ -31,7 +31,6 @@ namespace OrchardCore.Environment.Shell
         private readonly ConcurrentDictionary<string, ShellIdentifier> _shellIdentifiers = new ConcurrentDictionary<string, ShellIdentifier>();
         private readonly ConcurrentDictionary<string, SemaphoreSlim> _shellSemaphores = new ConcurrentDictionary<string, SemaphoreSlim>();
 
-        private bool _initialized;
         private string _shellsId;
 
         private ShellContext _defaultContext;
@@ -69,23 +68,21 @@ namespace OrchardCore.Environment.Shell
                         break;
                     }
 
-                    if (!_initialized)
+                    if (!_shellHost.TryGetShellContext(ShellHelper.DefaultShellName, out var defaultContext))
                     {
                         continue;
                     }
 
-                    if (!_shellHost.TryGetSettings(ShellHelper.DefaultShellName, out var defautSettings) || defautSettings.State != TenantState.Running)
+                    if (defaultContext.Settings.State != TenantState.Running)
                     {
                         continue;
                     }
-
-                    var defaultContext = await _shellHost.GetOrCreateShellContextAsync(defautSettings);
 
                     if (_defaultContext != defaultContext)
                     {
                         _isolatedContext?.Dispose();
 
-                        _isolatedContext = await _shellContextFactory.CreateShellContextAsync(defautSettings);
+                        _isolatedContext = await _shellContextFactory.CreateShellContextAsync(defaultContext.Settings);
 
                         _defaultContext = defaultContext;
                     }
@@ -182,17 +179,12 @@ namespace OrchardCore.Environment.Shell
             }
 
             _isolatedContext?.Dispose();
+
+            _defaultContext = null;
         }
 
         public async Task InitializingAsync()
         {
-            var names = await _shellSettingsManager.LoadSettingsNamesAsync();
-
-            if (!names.Any(n => n == ShellHelper.DefaultShellName))
-            {
-                return;
-            }
-
             var defautSettings = await _shellSettingsManager.LoadSettingsAsync(ShellHelper.DefaultShellName);
 
             if (defautSettings?.State != TenantState.Running)
@@ -206,10 +198,10 @@ namespace OrchardCore.Environment.Shell
 
             if (distributedCache == null || distributedCache is MemoryDistributedCache)
             {
-                _initialized = true;
-
                 return;
             }
+
+            var names = await _shellSettingsManager.LoadSettingsNamesAsync();
 
             _shellsId = await distributedCache.GetStringAsync(ShellsIdKey);
 
@@ -233,18 +225,21 @@ namespace OrchardCore.Environment.Shell
                     shellIdentifier.ReloadId = reloadId;
                 }
             }
-
-            _initialized = true;
         }
 
         public async Task ReleasingAsync(string name)
         {
-            if (!_shellHost.TryGetSettings(ShellHelper.DefaultShellName, out var defautSettings) || defautSettings.State != TenantState.Running)
+            if (!_shellHost.TryGetSettings(ShellHelper.DefaultShellName, out var defautSettings))
             {
                 return;
             }
 
-            var isolatedContext = await _shellContextFactory.CreateShellContextAsync(defautSettings);
+            if (defautSettings.State != TenantState.Running)
+            {
+                return;
+            }
+
+            using var isolatedContext = await _shellContextFactory.CreateShellContextAsync(defautSettings);
 
             var distributedCache = isolatedContext.ServiceProvider.GetService<IDistributedCache>();
 
@@ -274,19 +269,17 @@ namespace OrchardCore.Environment.Shell
 
         public async Task ReloadingAsync(string name)
         {
-            if (!_shellHost.TryGetSettings(ShellHelper.DefaultShellName, out var defautSettings) || defautSettings.State != TenantState.Running)
+            if (!_shellHost.TryGetSettings(ShellHelper.DefaultShellName, out var defautSettings))
             {
                 return;
             }
 
-            if (name == ShellHelper.DefaultShellName && !_initialized)
+            if (defautSettings.State != TenantState.Running)
             {
-                _initialized = true;
-
                 return;
             }
 
-            var isolatedContext = await _shellContextFactory.CreateShellContextAsync(defautSettings);
+            using var isolatedContext = await _shellContextFactory.CreateShellContextAsync(defautSettings);
 
             var distributedCache = isolatedContext.ServiceProvider.GetService<IDistributedCache>();
 
