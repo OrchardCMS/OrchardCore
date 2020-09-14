@@ -44,7 +44,7 @@ install:
   - ps: $GeneratePackages = ($IsMasterBranch -or $IsDevBranch -or $IsReleaseBranch)
 
 # Uncomment to download a specific version of dotnet
-  - ps: Invoke-WebRequest "https://raw.githubusercontent.com/dotnet/cli/master/scripts/obtain/dotnet-install.ps1" -OutFile "dotnet-install.ps1" 
+  - ps: Invoke-WebRequest "https://dot.net/v1/dotnet-install.ps1" -OutFile "dotnet-install.ps1" 
   - ps: .\dotnet-install.ps1 --Version 5.0.0-rc.1.20451.14
 
 build_script:
