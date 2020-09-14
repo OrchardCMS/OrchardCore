@@ -73,7 +73,7 @@ namespace OrchardCore.Tenants.Controllers
 
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTenants))
             {
-                return this.ChallengeOrForbid();
+                return this.ChallengeOrForbid("Api");
             }
 
             if (!String.IsNullOrEmpty(model.Name) && !Regex.IsMatch(model.Name, @"^\w+$"))
@@ -137,12 +137,12 @@ namespace OrchardCore.Tenants.Controllers
         {
             if (!IsDefaultShell())
             {
-                return this.ChallengeOrForbid();
+                return this.ChallengeOrForbid("Api");
             }
 
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTenants))
             {
-                return this.ChallengeOrForbid();
+                return this.ChallengeOrForbid("Api");
             }
 
             if (!ModelState.IsValid)
