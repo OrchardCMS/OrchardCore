@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using GraphQL.Language.AST;
 using GraphQL.Validation;
 using Microsoft.Extensions.DependencyInjection;
@@ -18,8 +19,8 @@ namespace OrchardCore.Apis.GraphQL.ValidationRules
             _maxNumberOfResults = settings.MaxNumberOfResults;
             _maxNumberOfResultsValidationMode = settings.MaxNumberOfResultsValidationMode;
         }
-
-        public INodeVisitor Validate(ValidationContext validationContext)
+                
+        public Task<INodeVisitor> ValidateAsync(ValidationContext validationContext)
         {
             return new EnterLeaveListener(_ =>
             {

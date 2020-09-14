@@ -14,6 +14,7 @@ using OrchardCore.Markdown.Services;
 using OrchardCore.Markdown.Settings;
 using OrchardCore.Markdown.ViewModels;
 using Shortcodes;
+using GraphQL;
 
 namespace OrchardCore.Markdown.GraphQL
 {
@@ -32,7 +33,7 @@ namespace OrchardCore.Markdown.GraphQL
                 .ResolveLockedAsync(ToHtml);
         }
 
-        private static async Task<object> ToHtml(ResolveFieldContext<MarkdownBodyPart> ctx)
+        private static async Task<object> ToHtml(IResolveFieldContext<MarkdownBodyPart> ctx)
         {
             if (string.IsNullOrEmpty(ctx.Source.Markdown))
             {

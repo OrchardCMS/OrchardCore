@@ -7,9 +7,9 @@ namespace OrchardCore.Apis.GraphQL
 {
     public static class DataLoaderExtensions
     {
-        public static Task<T[]> LoadAsync<TKey, T>(this IDataLoader<TKey, T> dataLoader, IEnumerable<TKey> keys)
+        public static Task<IDataLoaderResult[]> LoadAsync<TKey, T>(this IDataLoader<TKey, T> dataLoader, IEnumerable<TKey> keys)
         {
-            var tasks = new List<Task<T>>();
+            var tasks = new List<IDataLoaderResult<T>>();
 
             foreach (var key in keys)
             {
@@ -19,7 +19,7 @@ namespace OrchardCore.Apis.GraphQL
             return Task.WhenAll(tasks);
         }
 
-        public static Task<T[]> LoadAsync<TKey, T>(this IDataLoader<TKey, T> dataLoader, params TKey[] keys)
+        public static Task<IDataLoaderResult[]> LoadAsync<TKey, T>(this IDataLoader<TKey, T> dataLoader, params TKey[] keys)
         {
             return dataLoader.LoadAsync(keys.AsEnumerable());
         }

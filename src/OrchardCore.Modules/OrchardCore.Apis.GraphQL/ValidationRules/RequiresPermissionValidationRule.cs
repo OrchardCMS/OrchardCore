@@ -1,4 +1,5 @@
 using System.Linq;
+using System.Threading.Tasks;
 using GraphQL.Language.AST;
 using GraphQL.Types;
 using GraphQL.Validation;
@@ -12,7 +13,7 @@ namespace OrchardCore.Apis.GraphQL.ValidationRules
     {
         public static readonly string ErrorCode = "Unauthorized";
 
-        public INodeVisitor Validate(ValidationContext validationContext)
+        public Task<INodeVisitor> ValidateAsync(ValidationContext validationContext)
         {
             var context = (GraphQLContext)validationContext.UserContext;
 
