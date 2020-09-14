@@ -43,7 +43,7 @@
                         <button type="button" class="btn btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             @T["Actions"]
                         </button>
-                        <div id="actionsMenu" class="dropdown-menu dropdown-menu-right">
+                        <div class="actions-menu dropdown-menu dropdown-menu-right">
                             @await DisplayAsync(Model.ActionsMenu)
                         </div>
                     </div>
@@ -61,7 +61,7 @@
 <script asp-name="removeEmptyActionsMenu" at="Foot" type="text/javascript">
     $(function(){
         
-        $("#actionsMenu.dropdown-menu").each(function(i, e){
+        $(".actions-menu.dropdown-menu").each(function(i, e){
             var count = $(e).children().length;
             if(count == 0){
                 $(this).parent().hide();
