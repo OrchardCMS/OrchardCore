@@ -1,24 +1,24 @@
 <Project>
   <PropertyGroup>
-    <AspNetCoreVersion>3.1.7</AspNetCoreVersion>
-    <AspNetCorePreviewVersion>5.0.0-preview.8.20414.8</AspNetCorePreviewVersion>
-    <AspNetCorePreviewVersion2>5.0.0-preview.8.20407.3</AspNetCorePreviewVersion2>
+    <AspNetCoreVersion>3.1.8</AspNetCoreVersion>
+    <AspNetCoreRCVersion>5.0.0-rc.1.20451.17</AspNetCoreRCVersion>
+    <AspNetCoreRCVersion2>5.0.0-rc.1.20451.7</AspNetCoreRCVersion2>
     <AspNetCoreTargetFramework>net5.0</AspNetCoreTargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <PackageManagement Include="Microsoft.AspNetCore.Authentication.AzureAD.UI" Version="$(AspNetCorePreviewVersion)" />
-    <PackageManagement Include="Microsoft.AspNetCore.Authentication.Facebook" Version="$(AspNetCorePreviewVersion)" />
-    <PackageManagement Include="Microsoft.AspNetCore.Authentication.Google" Version="$(AspNetCorePreviewVersion)" />
-    <PackageManagement Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" Version="$(AspNetCorePreviewVersion)" />
-    <PackageManagement Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="$(AspNetCorePreviewVersion)" />
-    <PackageManagement Include="Microsoft.AspNetCore.Authentication.Twitter" Version="$(AspNetCorePreviewVersion)" />
+    <PackageManagement Include="Microsoft.AspNetCore.Authentication.AzureAD.UI" Version="$(AspNetCoreRCVersion)" />
+    <PackageManagement Include="Microsoft.AspNetCore.Authentication.Facebook" Version="$(AspNetCoreRCVersion)" />
+    <PackageManagement Include="Microsoft.AspNetCore.Authentication.Google" Version="$(AspNetCoreRCVersion)" />
+    <PackageManagement Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" Version="$(AspNetCoreRCVersion)" />
+    <PackageManagement Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="$(AspNetCoreRCVersion)" />
+    <PackageManagement Include="Microsoft.AspNetCore.Authentication.Twitter" Version="$(AspNetCoreRCVersion)" />
     <PackageManagement Include="Microsoft.AspNetCore.DataProtection.AzureStorage" Version="$(AspNetCoreVersion)" />
-    <PackageManagement Include="Microsoft.AspNetCore.DataProtection.StackExchangeRedis" Version="$(AspNetCorePreviewVersion)" />
-    <PackageManagement Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="$(AspNetCorePreviewVersion)" />
-    <PackageManagement Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="$(AspNetCorePreviewVersion)" />
-    <PackageManagement Include="Microsoft.AspNetCore.Mvc.Testing" Version="$(AspNetCorePreviewVersion)" />
-    <PackageManagement Include="Microsoft.AspNetCore.Owin" Version="$(AspNetCorePreviewVersion)" />
-    <PackageManagement Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="$(AspNetCorePreviewVersion2)" />
-    <PackageManagement Include="Microsoft.Extensions.Http.Polly" Version="$(AspNetCorePreviewVersion2)" />
+    <PackageManagement Include="Microsoft.AspNetCore.DataProtection.StackExchangeRedis" Version="$(AspNetCoreRCVersion)" />
+    <PackageManagement Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="$(AspNetCoreRCVersion)" />
+    <PackageManagement Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="$(AspNetCoreRCVersion)" />
+    <PackageManagement Include="Microsoft.AspNetCore.Mvc.Testing" Version="$(AspNetCoreRCVersion)" />
+    <PackageManagement Include="Microsoft.AspNetCore.Owin" Version="$(AspNetCoreRCVersion)" />
+    <PackageManagement Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="$(AspNetCoreRCVersion2)" />
+    <PackageManagement Include="Microsoft.Extensions.Http.Polly" Version="$(AspNetCoreRCVersion2)" />
   </ItemGroup>
 </Project>

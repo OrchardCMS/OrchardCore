@@ -66,7 +66,7 @@ namespace OrchardCore.DataProtection.Azure
             catch (Exception e)
             {
                 _logger.LogCritical(e, "Unable to parse data protection connection string.");
-                throw e;
+                throw;
             }
 
             try
@@ -118,7 +118,7 @@ namespace OrchardCore.DataProtection.Azure
                 catch (Exception e)
                 {
                     _logger.LogCritical(e, "Unable to parse data protection blob name.");
-                    throw e;
+                    throw;
                 }
             }
 
