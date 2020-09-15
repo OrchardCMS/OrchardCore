@@ -99,7 +99,7 @@ namespace OrchardCore.Environment.Shell
                 {
                     // If the context is released, it is removed from the dictionary so that the next iteration
                     // or a new call on 'GetOrCreateShellContextAsync()' will recreate a new shell context.
-                    _shellContexts.TryRemove(settings.Name, out var value);
+                    _shellContexts.TryRemove(settings.Name, out _);
                     shell = null;
                 }
             }
@@ -127,7 +127,7 @@ namespace OrchardCore.Environment.Shell
                 {
                     // If the context is released, it is removed from the dictionary so that the next
                     // iteration or a new call on 'GetScopeAsync()' will recreate a new shell context.
-                    _shellContexts.TryRemove(settings.Name, out var value);
+                    _shellContexts.TryRemove(settings.Name, out _);
                 }
             }
 

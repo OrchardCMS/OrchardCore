@@ -28,6 +28,7 @@ namespace OrchardCore.Environment.Shell.Scope
         private readonly HashSet<string> _deferredSignals = new HashSet<string>();
         private readonly List<Func<ShellScope, Task>> _deferredTasks = new List<Func<ShellScope, Task>>();
 
+        private bool _standaloneContext;
         private bool _disposed = false;
 
         public ShellScope(ShellContext shellContext)
@@ -201,9 +202,20 @@ namespace OrchardCore.Environment.Shell.Scope
         public void StartAsyncFlow() => _current.Value = this;
 
         /// <summary>
-        /// Execute a delegate using this shell scope.
+        /// Executes a delegate using this shell scope, intended to be used for advanced scenarios when the scope has been
+        /// created on a standalone shell context that shoud not be activated, terminated or disposed by this scope. Allows
+        /// to resolve and use specific services without invoking tenant events, but by still using an isolated async flow.
         /// </summary>
-        public async Task UsingAsync(Func<ShellScope, Task> execute, bool activate = true)
+        public Task UsingScopeOnStandaloneContextAsync(Func<ShellScope, Task> execute)
+        {
+            _standaloneContext = true;
+            return UsingAsync(execute);
+        }
+
+        /// <summary>
+        /// Executes a delegate using this shell scope.
+        /// </summary>
+        public async Task UsingAsync(Func<ShellScope, Task> execute)
         {
             if (Current == this)
             {
@@ -215,10 +227,7 @@ namespace OrchardCore.Environment.Shell.Scope
             {
                 StartAsyncFlow();
 
-                if (activate)
-                {
-                    await ActivateShellAsync();
-                }
+                await ActivateShellAsync();
 
                 await execute(this);
 
@@ -233,7 +242,7 @@ namespace OrchardCore.Environment.Shell.Scope
         /// </summary>
         public async Task ActivateShellAsync()
         {
-            if (ShellContext.IsActivated)
+            if (ShellContext.IsActivated || _standaloneContext)
             {
                 return;
             }
@@ -327,6 +336,11 @@ namespace OrchardCore.Environment.Shell.Scope
                 await callback(this);
             }
 
+            if (_standaloneContext)
+            {
+                return;
+            }
+
             if (_deferredSignals.Any())
             {
                 var signal = ShellContext.ServiceProvider.GetRequiredService<ISignal>();
@@ -388,6 +402,11 @@ namespace OrchardCore.Environment.Shell.Scope
         /// </summary>
         private async Task<bool> TerminateShellAsync()
         {
+            if (_standaloneContext)
+            {
+                return false;
+            }
+
             // A disabled shell still in use is released by its last scope.
             if (ShellContext.Settings.State == TenantState.Disabled)
             {
