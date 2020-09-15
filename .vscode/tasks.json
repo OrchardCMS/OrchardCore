@@ -85,14 +85,14 @@
 				]
 			},
 			"args": [
-				"-f",
-				"${workspaceRoot}/build/release"
+				"-rfv",
+				"${workspaceRoot}/build/release/*"
 			]
 		},
 		{
 			"label": "Dotnet Publish (self-contained)",
 			"type": "shell",
-			"command": "dotnet publish ${workspaceRoot}/src/OrchardCore.Cms.Web.csproj",
+			"command": "dotnet",
 			"windows":{
 				"command": "dotnet",
 				"args": [
@@ -115,7 +115,7 @@
 		{
 			"label": "Dotnet Publish (framework dependent)",
 			"type": "shell",
-			"command": "dotnet publish ${workspaceRoot}/src/OrchardCore.Cms.Web.csproj",
+			"command": "dotnet",
 			"windows":{
 				"command": "dotnet",
 				"args": [
