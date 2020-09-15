@@ -87,39 +87,47 @@ Everything you need to know about Shapes is in [this video](https://youtu.be/gKL
 
 You can use the `<shape>` tag helper to render any shape, even pass properties.
 
-``` html tab="Razor"
-@{
-    var intValue = 1;
-    var stringValue = "a";
-}
+=== "Razor"
 
-@await DisplayAsync(await New.MyShape(Foo: 1, Bar: "a"))
+    ``` html
+    @{
+        var intValue = 1;
+        var stringValue = "a";
+    }
 
-<shape type="MyShape" foo="1" bar="a" />
+    @await DisplayAsync(await New.MyShape(Foo: 1, Bar: "a"))
 
-<shape type="MyShape" prop-foo="1" bar="a" />
+    <shape type="MyShape" foo="1" bar="a" />
 
-<shape type="MyShape" prop-foo="@intValue" prop-bar="@stringValue" />
-```
+    <shape type="MyShape" prop-foo="1" bar="a" />
 
-``` liquid tab="Liquid"
-{% assign customShape = "MyShape" | shape_new %}
-{% shape_add_properties customShape my_string: "String Test 3", my_int: 1 %}
-{{ customShape | shape_render }}
+    <shape type="MyShape" prop-foo="@intValue" prop-bar="@stringValue" />
+    ```
 
-{% "MyShape" | shape_new | shape_properties: my_int: 3, my_string: "String Test 3" | shape_render %}
-```
+=== "Liquid"
+
+    ``` liquid
+    {% assign customShape = "MyShape" | shape_new %}
+    {% shape_add_properties customShape my_string: "String Test 3", my_int: 1 %}
+    {{ customShape | shape_render }}
+
+    {% "MyShape" | shape_new | shape_properties: my_int: 3, my_string: "String Test 3" | shape_render %}
+    ```
 
 For rendering content items, you could also use the following tag helper.
 Note: you need to add `@addTagHelper *, OrchardCore.Contents` to your `_ViewImports.cshtml` file to load this tag helper.
 
-``` html tab="Razor"
-<contentitem alias="alias:main-menu" display-type="Detail" />
-```
+=== "Razor"
 
-``` liquid tab="Liquid"
-{% contentitem alias:"alias:main-menu" display_type="Detail" %}
-```
+    ``` html
+    <contentitem alias="alias:main-menu" display-type="Detail" />
+    ```
+
+=== "Liquid"
+
+    ``` liquid
+    {% contentitem alias:"alias:main-menu" display_type="Detail" %}
+    ```
 
 #### Manipulating shape metadata
 

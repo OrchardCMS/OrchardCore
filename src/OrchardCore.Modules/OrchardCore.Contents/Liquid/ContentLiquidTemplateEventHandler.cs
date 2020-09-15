@@ -9,12 +9,12 @@ namespace OrchardCore.Contents.Liquid
     public class ContentLiquidTemplateEventHandler : ILiquidTemplateEventHandler
     {
         private readonly IContentManager _contentManager;
-        private readonly IContentAliasManager _contentAliasManager;
+        private readonly IContentHandleManager _contentHandleManager;
 
-        public ContentLiquidTemplateEventHandler(IContentManager contentManager, IContentAliasManager contentAliasManager)
+        public ContentLiquidTemplateEventHandler(IContentManager contentManager, IContentHandleManager contentHandleManager)
         {
             _contentManager = contentManager;
-            _contentAliasManager = contentAliasManager;
+            _contentHandleManager = contentHandleManager;
         }
 
         public Task RenderingAsync(TemplateContext context)
@@ -32,16 +32,16 @@ namespace OrchardCore.Contents.Liquid
                 return new LiquidPropertyAccessor(async contentItemVersionId => FluidValue.Create(await _contentManager.GetVersionAsync(contentItemVersionId)));
             });
 
-            context.MemberAccessStrategy.Register<LiquidContentAccessor, LiquidPropertyAccessor>("Latest", obj => new LiquidPropertyAccessor(name => GetContentByAlias(name, true)));
+            context.MemberAccessStrategy.Register<LiquidContentAccessor, LiquidPropertyAccessor>("Latest", obj => new LiquidPropertyAccessor(name => GetContentByHandleAsync(name, true)));
 
-            context.MemberAccessStrategy.Register<LiquidContentAccessor, FluidValue>((obj, name) => GetContentByAlias(name));
+            context.MemberAccessStrategy.Register<LiquidContentAccessor, FluidValue>((obj, name) => GetContentByHandleAsync(name));
 
             return Task.CompletedTask;
         }
 
-        private async Task<FluidValue> GetContentByAlias(string alias, bool latest = false)
+        private async Task<FluidValue> GetContentByHandleAsync(string handle, bool latest = false)
         {
-            var contentItemId = await _contentAliasManager.GetContentItemIdAsync(alias);
+            var contentItemId = await _contentHandleManager.GetContentItemIdAsync(handle);
 
             if (contentItemId == null)
             {

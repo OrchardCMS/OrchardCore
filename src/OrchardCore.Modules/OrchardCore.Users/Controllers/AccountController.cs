@@ -163,7 +163,7 @@ namespace OrchardCore.Users.Controllers
 
             if (localUser == null || !localUser.IsEnabled)
             {
-                ModelState.AddModelError(String.Empty, S["Your account is disabled. Please contact an administrator."]);
+                ModelState.AddModelError(String.Empty, S["The specified user is not allowed to sign in."]);
                 return true;
             }
 

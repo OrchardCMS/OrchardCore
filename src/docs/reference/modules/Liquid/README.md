@@ -198,6 +198,17 @@ Output
 <h3>Services</h3>
 ```
 
+### `sanitize_html`
+
+Sanitizes some HTML content.
+
+```liquid
+{% capture output %}
+  <span class="text-primary">{{ Content }}</span>
+{% endcapture %}
+{{ output | sanitize_html | raw }}
+```
+
 ## Json Filters
 
 ### `json`
@@ -303,6 +314,14 @@ The following properties are available on the `User` object.
 | --------- | ---- |------------ |
 | `Identity.Name` | `admin` | The name of the authenticated user. |
 | `Identity.Claims` |  | The claims of the authenticated user. |
+
+##### user_email filter
+
+Returns the user's email.
+
+```liquid
+{{ User | user_email }}
+```
 
 #### User has_permission filter
 
@@ -795,7 +814,7 @@ Using `helper` invokes the `validation_for` tag helper of ASP.NET Core with `spa
 
 ### `link`
 
-Invokes the `link` tag helper from the `Orchard.ResourceManagement` package.
+Invokes the `link` tag helper from the `Orchard.ResourceManagement` package. [see this section](../Resources/README.md#link-tag)
 
 ### `meta`
 

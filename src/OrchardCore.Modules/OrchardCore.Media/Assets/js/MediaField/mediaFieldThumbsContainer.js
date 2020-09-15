@@ -2,7 +2,7 @@
 // different media field editors share this component to present the thumbs.
 Vue.component('mediaFieldThumbsContainer', {
     template: '\
-       <div id="mediaContainerMain" v-cloak>\
+       <div :id="idPrefix + \'_mediaContainerMain\'" v-cloak>\
          <div v-if="mediaItems.length < 1" class="card text-center">\
              <div class= "card-body" >\
                 <span class="hint">{{T.noImages}}</span>\
@@ -54,7 +54,8 @@ Vue.component('mediaFieldThumbsContainer', {
     props: {
         mediaItems: Array,
         selectedMedia: Object,
-        thumbSize: Number
+        thumbSize: Number,
+        idPrefix: String
     },
     created: function () {
 

@@ -1,4 +1,4 @@
-using System.Net.Http;
+using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
@@ -40,23 +40,23 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
                 secondContentItem[nameof(AutoroutePart)][nameof(AutoroutePart.Path)] = "blog/post-1";
                 data.Add(secondContentItem);
 
-                var response = await context.PostRecipeAsync(recipe, false);
-
                 // Test
-                Assert.Throws<HttpRequestException>(() => response.EnsureSuccessStatusCode());
+                await Assert.ThrowsAnyAsync<Exception>(async () =>
+                {
+                    var response = await context.PostRecipeAsync(recipe, false);
+                    response.EnsureSuccessStatusCode();
+                });
 
                 // Confirm creation of both content items was cancelled.
-                using (var shellScope = await BlogPostDeploymentContext.ShellHost.GetScopeAsync(context.TenantName))
+                var shellScope = await BlogPostDeploymentContext.ShellHost.GetScopeAsync(context.TenantName);
+                await shellScope.UsingAsync(async scope =>
                 {
-                    await shellScope.UsingAsync(async scope =>
-                    {
-                        var session = scope.ServiceProvider.GetRequiredService<ISession>();
-                        var blogPosts = await session.Query<ContentItem, ContentItemIndex>(x =>
-                            x.ContentType == "BlogPost").ListAsync();
+                    var session = scope.ServiceProvider.GetRequiredService<ISession>();
+                    var blogPosts = await session.Query<ContentItem, ContentItemIndex>(x =>
+                        x.ContentType == "BlogPost").ListAsync();
 
-                        Assert.Single(blogPosts);
-                    });
-                }
+                    Assert.Single(blogPosts);
+                });
             }
         }
     }

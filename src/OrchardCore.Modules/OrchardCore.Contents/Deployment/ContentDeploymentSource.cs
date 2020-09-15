@@ -36,6 +36,17 @@ namespace OrchardCore.Contents.Deployment
 
                 // Don't serialize the Id as it could be interpreted as an updated object when added back to YesSql.
                 objectData.Remove(nameof(ContentItem.Id));
+
+                if (contentStep.ExportAsSetupRecipe)
+                {
+                    objectData[nameof(ContentItem.Owner)] = "[js: parameters('AdminUsername')]";
+                    objectData[nameof(ContentItem.Author)] = "[js: parameters('AdminUsername')]";
+                    objectData[nameof(ContentItem.ContentItemId)] = "[js: uuid()]";
+                    objectData.Remove(nameof(ContentItem.ContentItemVersionId));
+                    objectData.Remove(nameof(ContentItem.CreatedUtc));
+                    objectData.Remove(nameof(ContentItem.ModifiedUtc));
+                    objectData.Remove(nameof(ContentItem.PublishedUtc));
+                }
                 data.Add(objectData);
             }
 

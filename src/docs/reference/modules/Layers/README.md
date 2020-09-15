@@ -31,10 +31,14 @@ The zones that are listed can be set in the `Design > Settings > Zones` admin pa
 
 You must have declared the corresponding zones as sections in your theme :
 
-```liquid tab="Liquid"
-{% render_section "Header", required: false %}
-```
+=== "Liquid"
 
-``` html tab="Razor"
+    ``` liquid
+    {% render_section "Header", required: false %}
+    ```
+
+=== "Razor"
+
+``` html
 @await RenderSectionAsync("Header", required: false)
 ```
