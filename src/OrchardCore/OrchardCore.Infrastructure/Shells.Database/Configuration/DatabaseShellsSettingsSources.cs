@@ -44,7 +44,7 @@ namespace OrchardCore.Shells.Database.Configuration
             DatabaseShellsSettings document = null;
 
             using var context = await _shellContextFactory.GetDatabaseContextAsync(_options);
-            await context.CreateScope().UsingAsync(async scope =>
+            await context.CreateScope().UsingScopeOnStandaloneContextAsync(async scope =>
             {
                 var session = scope.ServiceProvider.GetRequiredService<ISession>();
 
@@ -61,8 +61,7 @@ namespace OrchardCore.Shells.Database.Configuration
 
                     session.Save(document, checkConcurrency: true);
                 }
-            },
-            activate: false);
+            });
 
             builder.AddJsonStream(new MemoryStream(Encoding.UTF8.GetBytes(document.ShellsSettings.ToString(Formatting.None))));
         }
@@ -70,7 +69,7 @@ namespace OrchardCore.Shells.Database.Configuration
         public async Task SaveAsync(string tenant, IDictionary<string, string> data)
         {
             using var context = await _shellContextFactory.GetDatabaseContextAsync(_options);
-            await context.CreateScope().UsingAsync(async scope =>
+            await context.CreateScope().UsingScopeOnStandaloneContextAsync(async scope =>
             {
                 var session = scope.ServiceProvider.GetRequiredService<ISession>();
 
@@ -106,8 +105,7 @@ namespace OrchardCore.Shells.Database.Configuration
                 document.ShellsSettings = tenantsSettings;
 
                 session.Save(document, checkConcurrency: true);
-            },
-            activate: false);
+            });
         }
 
         private async Task<bool> TryMigrateFromFileAsync(DatabaseShellsSettings document)
