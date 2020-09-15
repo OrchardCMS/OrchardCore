@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OpenIddict.Abstractions;
@@ -15,10 +16,11 @@ namespace OrchardCore.OpenId.Services.Managers
     {
         public OpenIdAuthorizationManager(
             IOpenIddictAuthorizationCache<TAuthorization> cache,
-            IOpenIddictAuthorizationStoreResolver resolver,
+            IStringLocalizer<OpenIddictResources> localizer,
             ILogger<OpenIddictAuthorizationManager<TAuthorization>> logger,
-            IOptionsMonitor<OpenIddictCoreOptions> options)
-            : base(cache, resolver, logger, options)
+            IOptionsMonitor<OpenIddictCoreOptions> options,
+            IOpenIddictAuthorizationStoreResolver resolver)
+            : base(cache, localizer, logger, options, resolver)
         {
         }
 

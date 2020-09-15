@@ -29,11 +29,6 @@ namespace OrchardCore.Contents.Controllers
 
         public async Task<IActionResult> Display(string contentItemId, string jsonPath)
         {
-            if (contentItemId == null)
-            {
-                return NotFound();
-            }
-
             var contentItem = await _contentManager.GetAsync(contentItemId, jsonPath);
 
             if (contentItem == null)

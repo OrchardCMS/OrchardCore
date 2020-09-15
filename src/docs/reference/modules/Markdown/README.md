@@ -48,6 +48,47 @@ The following properties are available on the `MarkdownFieldViewModel` class.
 | `Part` | `ContentPart` | The part this field is attached to. |
 | `PartFieldDefinition` | `ContentPartFieldDefinition` | The part field definition. |
 
+## Sanitization
+
+Markdown output is sanitized during the rendering of content with Display Management.
+
+You can disable this by unchecking the `Sanitize HTML` setting, or further configuring the [HTML Sanitizer](../../core/Sanitizer/README.md)
+
+When rendering content directly you can disable sanitization by passing a boolean to the helper.
+
+## Markdown Pipeline
+
+The markdown pipeline is configurable using `IOptions<MarkdownPipelineOptions>` during service registration with a configuration 
+extension method `ConfigureMarkdownPipeline`.
+
+By default the pipeline disables HTML by converting any HTML found in the Markdown content to escaped HTML entities.
+
+You may call this extension method multiple times during the startup pipeline to alter configurations.
+
+To clear this configuration:
+
+```
+services
+    .AddOrchardCms()
+    .ConfigureServices(tenantServices =>
+        tenantServices.PostConfigure<MarkdownPipelineOptions>(o =>
+            {
+                o.Configure.Clear();
+            }));
+```
+
+To include other `MarkdownPipelineOptions`:
+
+```
+services
+    .AddOrchardCms()
+    .ConfigureServices(tenantServices =>
+        tenantServices.ConfigureMarkdownPipeline((pipeline) => 
+        { 
+            pipeline.UseAdvancedExtensions();
+        }));
+```
+
 ## Editors
 
 The __Markdown Part__ editor can be different for each content type. In the __Markdown Part__ settings of a 
@@ -116,6 +157,14 @@ To render a Markdown string to HTML within Razor use the `MarkdownToHtmlAsync` h
 In this example we assume that `Model.ContentItem.Content.MarkdownParagraph.Content` represents an `MarkdownField`, and `Markdown` is the field value, and we cast to a string, as extension methods do not support dynamic dispatching.
 
 This helper will also parse any liquid included in the Markdown.
+
+By default this helper will also sanitize the Markdown. 
+
+To disable sanitization:
+
+```csharp
+@await Orchard.MarkdownToHtmlAsync((string)Model.ContentItem.Content.MarkdownParagraph.Content.Markdown, false)
+```
 
 ## CREDITS
 
