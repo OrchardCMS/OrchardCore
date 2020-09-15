@@ -156,7 +156,7 @@ namespace OrchardCore.FileStorage.AzureBlob
                 var name = WebUtility.UrlDecode(blob.Name);
 
                 // A flat blob listing does not return a folder hierarchy.
-                // We can infer a heirachy by examining the paths returned for the file contents
+                // We can infer a hierarchy by examining the paths returned for the file contents
                 // and evaluate whether a directory exists and should be added to the results listing.
                 var directory = Path.GetDirectoryName(name);
                 // Strip base folder from directory name.
