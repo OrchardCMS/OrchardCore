@@ -127,7 +127,7 @@
                 previewRendering = false;
                 return;
             }
-            formData += '&' + $.param({ 'Alias': contentPreviewUrl || "" });
+            formData += '&' + $.param({ 'Handle': contentPreviewUrl || "" });
 
             $.post(renderPreviewUrl, formData)
                 .done(function (data) {
