@@ -10,7 +10,7 @@ using YesSql;
 public static class ContentRazorHelperExtensions
 {
     /// <summary>
-    /// Returns a content item id from its handle.
+    /// Returns a content item id by its handle.
     /// </summary>
     /// <param name="handle">The handle.</param>
     /// <example>GetContentItemIdByHandleAsync("alias:carousel")</example>
@@ -18,8 +18,8 @@ public static class ContentRazorHelperExtensions
     /// <returns>A content item id or <c>null</c> if it was not found.</returns>
     public static Task<string> GetContentItemIdByHandleAsync(this IOrchardHelper orchardHelper, string handle)
     {
-        var contentAliasManager = orchardHelper.HttpContext.RequestServices.GetService<IContentAliasManager>();
-        return contentAliasManager.GetContentItemIdAsync(handle);
+        var contentHandleManager = orchardHelper.HttpContext.RequestServices.GetService<IContentHandleManager>();
+        return contentHandleManager.GetContentItemIdAsync(handle);
     }
 
     /// <summary>
