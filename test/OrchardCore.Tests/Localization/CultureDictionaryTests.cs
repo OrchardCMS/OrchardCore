@@ -42,7 +42,7 @@ namespace OrchardCore.Tests.Localization
         }
 
         [Fact]
-        public void IntexerThrowsPluralFormNotFoundExceptionIfSpecifiedPluralFormDoesntExist()
+        public void IndexerThrowsPluralFormNotFoundExceptionIfSpecifiedPluralFormDoesntExist()
         {
             // Arrange
             var dictionary = new CultureDictionary("cs", _csPluralRule);
