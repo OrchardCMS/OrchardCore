@@ -28,8 +28,8 @@ namespace OrchardCore.Environment.Shell.Scope
         private readonly HashSet<string> _deferredSignals = new HashSet<string>();
         private readonly List<Func<ShellScope, Task>> _deferredTasks = new List<Func<ShellScope, Task>>();
 
-        private bool _standaloneContext;
-        private bool _disposed = false;
+        private bool _serviceScopeOnly;
+        private bool _disposed;
 
         public ShellScope(ShellContext shellContext)
         {
@@ -202,13 +202,13 @@ namespace OrchardCore.Environment.Shell.Scope
         public void StartAsyncFlow() => _current.Value = this;
 
         /// <summary>
-        /// Executes a delegate using this shell scope, intended to be used for advanced scenarios when the scope has been
-        /// created on a standalone shell context that shoud not be activated, terminated or disposed by this scope. Allows
-        /// to resolve and use specific services without invoking tenant events, but by still using an isolated async flow.
+        /// Executes a delegate using this shell scope but only as a service scope, so without invoking any tenant event,
+        /// but by still using an isolated async flow. Used in advanced scenarios to resolve scoped services if the scope
+        /// has been created on a standalone context that should not be activated, terminated, or disposed by this scope.
         /// </summary>
-        public Task UsingScopeOnStandaloneContextAsync(Func<ShellScope, Task> execute)
+        public Task UsingAsServiceScopeOnlyAsync(Func<ShellScope, Task> execute)
         {
-            _standaloneContext = true;
+            _serviceScopeOnly = true;
             return UsingAsync(execute);
         }
 
@@ -242,7 +242,7 @@ namespace OrchardCore.Environment.Shell.Scope
         /// </summary>
         public async Task ActivateShellAsync()
         {
-            if (ShellContext.IsActivated || _standaloneContext)
+            if (ShellContext.IsActivated || _serviceScopeOnly)
             {
                 return;
             }
@@ -336,7 +336,7 @@ namespace OrchardCore.Environment.Shell.Scope
                 await callback(this);
             }
 
-            if (_standaloneContext)
+            if (_serviceScopeOnly)
             {
                 return;
             }
@@ -402,7 +402,7 @@ namespace OrchardCore.Environment.Shell.Scope
         /// </summary>
         private async Task<bool> TerminateShellAsync()
         {
-            if (_standaloneContext)
+            if (_serviceScopeOnly)
             {
                 return false;
             }
