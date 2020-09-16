@@ -174,20 +174,11 @@ namespace OrchardCore.Media
             // ImageSharp before the static file provider.
             app.UseImageSharp();
 
-            // Use the same cache control header as ImageSharp does for resized images.
-            var cacheControl = "public, must-revalidate, max-age=" + TimeSpan.FromDays(mediaOptions.MaxBrowserCacheDays).TotalSeconds.ToString();
+            // The file provider is a circular dependency and replaceable via di.
+            mediaOptions.StaticFileOptions.FileProvider = mediaFileProvider;
 
-            app.UseStaticFiles(new StaticFileOptions
-            {
-                // The tenant's prefix is already implied by the infrastructure.
-                RequestPath = mediaOptions.AssetsRequestPath,
-                FileProvider = mediaFileProvider,
-                ServeUnknownFileTypes = true,
-                OnPrepareResponse = ctx =>
-                {
-                    ctx.Context.Response.Headers[HeaderNames.CacheControl] = cacheControl;
-                }
-            });
+            // Use services.PostConfigure<MediaOptions>() to alter the media static file options event handlers.
+            app.UseStaticFiles(mediaOptions.StaticFileOptions);
 
             var adminControllerName = typeof(AdminController).ControllerName();
 
