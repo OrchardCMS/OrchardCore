@@ -4,29 +4,29 @@ using OrchardCore.ContentManagement.Routing;
 
 namespace OrchardCore.Autoroute.Services
 {
-    public class AutorouteAliasProvider : IContentAliasProvider
+    public class AutorouteHandleProvider : IContentHandleProvider
     {
         private readonly IAutorouteEntries _autorouteEntries;
 
-        public AutorouteAliasProvider(IAutorouteEntries autorouteEntries)
+        public AutorouteHandleProvider(IAutorouteEntries autorouteEntries)
         {
             _autorouteEntries = autorouteEntries;
         }
 
         public int Order => 10;
 
-        public async Task<string> GetContentItemIdAsync(string alias)
+        public async Task<string> GetContentItemIdAsync(string handle)
         {
-            if (alias.StartsWith("slug:", System.StringComparison.OrdinalIgnoreCase))
+            if (handle.StartsWith("slug:", System.StringComparison.OrdinalIgnoreCase))
             {
-                alias = alias.Substring(5);
+                handle = handle.Substring(5);
 
-                if (!alias.StartsWith('/'))
+                if (!handle.StartsWith('/'))
                 {
-                    alias = "/" + alias;
+                    handle = "/" + handle;
                 }
 
-                (var found, var entry) = await _autorouteEntries.TryGetEntryByPathAsync(alias);
+                (var found, var entry) = await _autorouteEntries.TryGetEntryByPathAsync(handle);
 
                 if (found)
                 {
