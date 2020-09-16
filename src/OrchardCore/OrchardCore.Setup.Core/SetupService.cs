@@ -145,7 +145,7 @@ namespace OrchardCore.Setup.Services
 
             using (var shellContext = await _shellContextFactory.CreateDescribedContextAsync(shellSettings, shellDescriptor))
             {
-                await shellContext.CreateScope().UsingScopeOnStandaloneContextAsync(async scope =>
+                await shellContext.CreateScope().UsingAsServiceScopeOnlyAsync(async scope =>
                 {
                     IStore store;
 
