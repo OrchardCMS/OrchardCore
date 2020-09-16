@@ -4,7 +4,7 @@
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.14.0",
     "bootstrap": "4.5.2",
-    "bootstrap-scss": "4.5.0",
+    "bootstrap-scss": "4.5.2",
     "bootstrap-select": "1.13.18",
     "bootstrap-slider": "11.0.2",
     "codemirror": "5.57.0",
@@ -14,8 +14,8 @@
     "popper.js": "1.16.0",
     "sortablejs": "^1.10.2",
     "trumbowyg": "2.21.0",
-    "vue": "^2.6.11",
+    "vue": "^2.6.12",
     "vue-multiselect": "^2.1.6",
-    "vuedraggable": "^2.23.2"
+    "vuedraggable": "^2.24.1"
   }
 }

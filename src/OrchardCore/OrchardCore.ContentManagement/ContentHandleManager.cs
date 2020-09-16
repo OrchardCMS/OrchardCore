@@ -5,18 +5,18 @@ using System.Threading.Tasks;
 
 namespace OrchardCore.ContentManagement
 {
-    public class ContentAliasManager : IContentAliasManager
+    public class ContentHandleManager : IContentHandleManager
     {
-        private readonly IEnumerable<IContentAliasProvider> _contentAliasProviders;
+        private readonly IEnumerable<IContentHandleProvider> _contentHandleProviders;
 
-        public ContentAliasManager(IEnumerable<IContentAliasProvider> contentAliasProviders)
+        public ContentHandleManager(IEnumerable<IContentHandleProvider> contentHandleProviders)
         {
-            _contentAliasProviders = contentAliasProviders.OrderBy(x => x.Order);
+            _contentHandleProviders = contentHandleProviders.OrderBy(x => x.Order);
         }
 
         public async Task<string> GetContentItemIdAsync(string alias)
         {
-            foreach (var provider in _contentAliasProviders)
+            foreach (var provider in _contentHandleProviders)
             {
                 var result = await provider.GetContentItemIdAsync(alias);
 
