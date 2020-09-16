@@ -1,5 +1,5 @@
-#ignore all files
-**
+# .dockerignore
 
-#except release
-!/build/release
+Dockerfile
+[b|B]in
+[O|o]bj
