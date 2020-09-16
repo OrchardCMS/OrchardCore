@@ -93,6 +93,7 @@ namespace OrchardCore.Contents.Controllers
             }
 
             // Populate the creatable types.
+            model.Options.CreatableTypes = new List<SelectListItem>();
             if (!string.IsNullOrEmpty(model.Options.SelectedContentType))
             {
                 var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(model.Options.SelectedContentType);
@@ -104,10 +105,9 @@ namespace OrchardCore.Contents.Controllers
                 // Allows non creatable types to be created by another admin page.
                 if (contentTypeDefinition.GetSettings<ContentTypeSettings>().Creatable || model.Options.CanCreateSelectedContentType)
                 {
-                    model.Options.CreatableTypes = new List<SelectListItem>
-                    {
+                    model.Options.CreatableTypes.Add(
                         new SelectListItem(new LocalizedString(contentTypeDefinition.DisplayName, contentTypeDefinition.DisplayName).Value, contentTypeDefinition.Name)
-                    };
+                    );
                 }
             }
             else
@@ -117,16 +117,15 @@ namespace OrchardCore.Contents.Controllers
                     .Where(ctd => ctd.GetSettings<ContentTypeSettings>().Creatable)
                     .OrderBy(ctd => ctd.DisplayName);
 
-                var creatableList = new List<SelectListItem>();
                 if (contentTypes.Any())
                 {
                     foreach (var contentTypeDefinition in contentTypes)
                     {
-                        creatableList.Add(new SelectListItem(new LocalizedString(contentTypeDefinition.DisplayName, contentTypeDefinition.DisplayName).Value, contentTypeDefinition.Name));
+                        model.Options.CreatableTypes.Add(
+                            new SelectListItem(new LocalizedString(contentTypeDefinition.DisplayName, contentTypeDefinition.DisplayName).Value, contentTypeDefinition.Name)
+                            );
                     }
                 }
-
-                model.Options.CreatableTypes = creatableList;
             }
 
             // We populate the remaining SelectLists.
