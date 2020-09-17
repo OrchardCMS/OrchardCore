@@ -1,0 +1,28 @@
+@model OrchardCore.FileStorage.AzureBlob.BlobStorageOptions
+<h1>@RenderTitleSegments(T["Azure Blob storage options"])</h1>
+
+<p class="alert alert-secondary">@T["Azure Blob storage is configured with appsettings.json."]</p>
+
+<a href="https://docs.orchardcore.net/en/dev/docs/reference/modules/Media.Azure/#configuration">@T["See documentation"]</a>
+<div class="form-group row">
+    <label asp-for="ConnectionString" class="col-sm-2 col-form-label">@T["ConnectionString"]</label>
+    <div class="col-sm-10">        
+        <code><input type="text" class="form-control-plaintext" value="@Model.ConnectionString" /></code>
+        <span class="hint">@T["The connection string."]</span>
+    </div>
+</div>
+
+<div class="form-group row">
+    <label asp-for="ContainerName" class="col-sm-2 col-form-label">@T["ContainerName"]</label>
+    <div class="col-sm-10">        
+        <code><input type="text" class="form-control-plaintext" value="@Model.ContainerName" /></code>
+        <span class="hint">@T["The container name"]</span>
+    </div>
+</div>
+<div class="form-group row">
+    <label asp-for="BasePath" class="col-sm-2 col-form-label">@T["BasePath"]</label>
+    <div class="col-sm-10">        
+        <code><input type="text" class="form-control-plaintext" value="@Model.BasePath" /></code>
+        <span class="hint">@T["The base path."]</span>
+    </div>
+</div>

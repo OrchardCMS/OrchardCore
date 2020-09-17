@@ -1,12 +1,15 @@
 using System;
 using System.IO;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using OrchardCore.Admin;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.FileStorage;
@@ -21,13 +24,25 @@ namespace OrchardCore.Media.Azure
     [Feature("OrchardCore.Media.Azure.Storage")]
     public class Startup : Modules.StartupBase
     {
+        private readonly AdminOptions _adminOptions;
         private readonly ILogger _logger;
         private readonly IShellConfiguration _configuration;
 
-        public Startup(ILogger<Startup> logger, IShellConfiguration configuration)
+        public Startup(IOptions<AdminOptions> adminOptions, ILogger<Startup> logger, IShellConfiguration configuration)
         {
+            _adminOptions = adminOptions.Value;
             _logger = logger;
             _configuration = configuration;
+        }
+
+        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+        {
+            routes.MapAreaControllerRoute(
+                name: "AzureBlob.Options",
+                areaName: "OrchardCore.Media.Azure",
+                pattern: _adminOptions.AdminUrlPrefix + "/MediaAzureBlob/Options",
+                defaults: new { controller = nameof(AdminController), action = nameof(AdminController.Options) }
+            );
         }
 
         public override int Order => 10;
