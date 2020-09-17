@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using OrchardCore.ContentLocalization.Models;
 using OrchardCore.ContentLocalization.Services;
 using OrchardCore.Entities;
@@ -21,15 +22,18 @@ namespace OrchardCore.ContentLocalization.Controllers
         private readonly ISiteService _siteService;
         private readonly ILocalizationService _locationService;
         private readonly IContentCulturePickerService _culturePickerService;
+        private readonly CulturePickerOptions _culturePickerOptions;
 
         public ContentCulturePickerController(
             ISiteService siteService,
             ILocalizationService locationService,
-            IContentCulturePickerService culturePickerService)
+            IContentCulturePickerService culturePickerService,
+            IOptions<CulturePickerOptions> culturePickerOptions)
         {
             _siteService = siteService;
             _locationService = locationService;
             _culturePickerService = culturePickerService;
+            _culturePickerOptions = culturePickerOptions.Value;
         }
 
         [HttpGet]
@@ -58,7 +62,7 @@ namespace OrchardCore.ContentLocalization.Controllers
                     Response.Cookies.Append(
                         CookieRequestCultureProvider.DefaultCookieName,
                         CookieRequestCultureProvider.MakeCookieValue(new RequestCulture(targetCulture)),
-                        new CookieOptions { Expires = DateTime.UtcNow.AddDays(14) }
+                        new CookieOptions { Expires = DateTime.UtcNow.AddDays(_culturePickerOptions.CookieLifeTime) }
                     );
                 }
 

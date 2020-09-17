@@ -3,7 +3,7 @@
 
 @inject IAuthorizationService AuthorizationService
 
-<style asp-src="/OrchardCore.PublishLater/Styles/publish-later.min.css" debug-src="/OrchardCore.PublishLater/Styles/publish-later.css"></style>
+<style asp-src="~/OrchardCore.PublishLater/Styles/publish-later.min.css" debug-src="~/OrchardCore.PublishLater/Styles/publish-later.css"></style>
 
 @if (await AuthorizationService.AuthorizeAsync(User, OrchardCore.Contents.CommonPermissions.PublishContent, Model.ContentItem))
 {

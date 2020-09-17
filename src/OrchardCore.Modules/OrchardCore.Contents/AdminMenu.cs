@@ -41,7 +41,7 @@ namespace OrchardCore.Contents
                 .AddClass("content").Id("content")
                 .Add(S["Content Items"], S["Content Items"].PrefixPosition(), contentItems => contentItems
                     .Permission(Permissions.EditOwnContent)
-                    .Action(nameof(AdminController.List), typeof(AdminController).ControllerName(), new { area = "OrchardCore.Contents" })
+                    .Action(nameof(AdminController.List), typeof(AdminController).ControllerName(), new { area = "OrchardCore.Contents", contentTypeId = "" })
                     .LocalNav())
                 );
             var contentTypes = contentTypeDefinitions.Where(ctd => ctd.GetSettings<ContentTypeSettings>().Creatable).OrderBy(ctd => ctd.DisplayName);
@@ -58,7 +58,7 @@ namespace OrchardCore.Contents
                         if (createRouteValues.Any())
                             newMenu.Add(new LocalizedString(contentTypeDefinition.DisplayName, contentTypeDefinition.DisplayName), "5", item => item
                                 .Action(cim.CreateRouteValues["Action"] as string, cim.CreateRouteValues["Controller"] as string, cim.CreateRouteValues)
-                                .Permission(ContentTypePermissions.CreateDynamicPermission(ContentTypePermissions.PermissionTemplates[Permissions.PublishOwnContent.Name], contentTypeDefinition))
+                                .Permission(ContentTypePermissionsHelper.CreateDynamicPermission(ContentTypePermissionsHelper.PermissionTemplates[Permissions.PublishOwnContent.Name], contentTypeDefinition))
                                 );
                     }
                 });

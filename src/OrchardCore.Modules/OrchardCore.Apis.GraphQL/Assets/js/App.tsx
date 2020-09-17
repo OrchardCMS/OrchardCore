@@ -123,7 +123,6 @@ function App() {
                 onToggleExplorer={handleToggleExplorer}
             />
             <GraphiQL
-                ref={ref => (_graphiql = ref)}
                 fetcher={fetcher}
                 schema={schema}
                 variables={parameters.variables}

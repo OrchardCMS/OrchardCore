@@ -1,7 +1,6 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.DisplayManagement.ModelBinding;
@@ -30,11 +29,6 @@ namespace OrchardCore.Contents.Controllers
 
         public async Task<IActionResult> Display(string contentItemId, string jsonPath)
         {
-            if (contentItemId == null)
-            {
-                return NotFound();
-            }
-
             var contentItem = await _contentManager.GetAsync(contentItemId, jsonPath);
 
             if (contentItem == null)

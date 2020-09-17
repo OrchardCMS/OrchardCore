@@ -1,7 +1,7 @@
 /*!
- * Start Bootstrap - Coming Soon v5.0.7 (https://startbootstrap.com/template-overviews/coming-soon)
- * Copyright 2013-2019 Start Bootstrap
- * Licensed under MIT (https://github.com/BlackrockDigital/startbootstrap-coming-soon/blob/master/LICENSE)
+ * Start Bootstrap - Coming Soon v5.0.8 (https://startbootstrap.com/themes/coming-soon)
+ * Copyright 2013-2020 Start Bootstrap
+ * Licensed under MIT (https://github.com/StartBootstrap/startbootstrap-coming-soon/blob/master/LICENSE)
  */
 
 html {
@@ -41,7 +41,7 @@ video {
 @media (pointer: coarse) and (hover: none) {
   body {
     background: url("../img/bg-mobile-fallback.jpg") #002E66 no-repeat center center scroll;
-    background-position: cover;
+    background-size: cover;
   }
   body video {
     display: none;

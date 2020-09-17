@@ -8,6 +8,7 @@ Designed to be completed in 15-30 minutes, these guides provide quick, hands-on 
 
 - [Creating a Modular ASP.NET Core Application](create-modular-application-mvc/README.md)
 - [Running Code on Startup](run-code-on-startup/README.md)
+- [Customizing encoding settings](encoding-settings/README.md)
 
 ### Orchard Core CMS Guides
 
@@ -18,6 +19,7 @@ These guides are specific to Orchard Core CMS
 - [Installing Localization Files](install-localization-files/README.md)
 - [Integrate facebook plugins](integrate-facebook-plugins/README.md)
 - [Implement Full Text search](implement-fulltext-search/README.md)
+- [Integrate AzureAD as external provider](azuread-integration/README.md)
 
 ## Tutorials
 

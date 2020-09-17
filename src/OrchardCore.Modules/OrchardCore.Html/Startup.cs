@@ -26,7 +26,7 @@ namespace OrchardCore.Html
         {
             // Body Part
             services.AddContentPart<HtmlBodyPart>()
-                .UseDisplayDriver<HtmlBodyPartDisplay>()
+                .UseDisplayDriver<HtmlBodyPartDisplayDriver>()
                 .AddHandler<HtmlBodyPartHandler>();
 
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, HtmlBodyPartSettingsDisplayDriver>();

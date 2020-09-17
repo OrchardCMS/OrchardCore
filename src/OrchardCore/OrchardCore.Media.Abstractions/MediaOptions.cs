@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 
 namespace OrchardCore.Media
@@ -47,5 +48,10 @@ namespace OrchardCore.Media
         /// The path used to store media assets. The path can be relative to the tenant's App_Data folder, or absolute.
         /// </summary>
         public string AssetsPath { get; set; }
+
+        /// <summary>
+        /// The static file options used to serve non resized media.
+        /// </summary>
+        public StaticFileOptions StaticFileOptions { get; set; }
     }
 }
