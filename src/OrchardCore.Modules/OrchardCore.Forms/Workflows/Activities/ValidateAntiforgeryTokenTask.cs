@@ -13,6 +13,7 @@ namespace OrchardCore.Forms.Workflows.Activities
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAntiforgery _antiforgery;
+        private readonly IStringLocalizer S;
 
         public ValidateAntiforgeryTokenTask(
             IHttpContextAccessor httpContextAccessor,
@@ -22,19 +23,20 @@ namespace OrchardCore.Forms.Workflows.Activities
         {
             _httpContextAccessor = httpContextAccessor;
             _antiforgery = antiforgery;
-            T = localizer;
+            S = localizer;
         }
 
         public override string Name => nameof(ValidateAntiforgeryTokenTask);
-        public override LocalizedString DisplayText => T["Validate Antiforgery Token Task"];
-        public override LocalizedString Category => T["Validation"];
-        public override bool HasEditor => false;
 
-        private IStringLocalizer T { get; set; }
+        public override LocalizedString DisplayText => S["Validate Antiforgery Token Task"];
+
+        public override LocalizedString Category => S["Validation"];
+
+        public override bool HasEditor => false;
 
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            return Outcomes(T["Done"], T["Valid"], T["Invalid"]);
+            return Outcomes(S["Done"], S["Valid"], S["Invalid"]);
         }
 
         public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)

@@ -179,7 +179,7 @@ Keep these things in mind when working with the deployment step editor:
 The following configuration values are used by default and can be customized:
 
 ```json
-    "OrchardCore.Media": {
+    "OrchardCore_Media": {
 
       // The accepted sizes for custom width and height
       "SupportedSizes": [ 16, 32, 50, 100, 160, 240, 480, 600, 1024, 2048 ],
@@ -243,14 +243,38 @@ The following configuration values are used by default and can be customized:
             ".mpg",
             ".ogv", // Ogg
             ".3gp", // 3GPP
-        ]
+        ],
+
+      // The Content Security Policy to apply to assets served from the media library.
+      "ContentSecurityPolicy" : "default-src 'self'; style-src 'unsafe-inline'"
     }
+```
+
+To configure the `StaticFileOptions` in more detail, including event handlers, for the Media Library `StaticFileMiddleware` apply:
+
+```
+services.PostConfigure<MediaOptions>(o => ...);
+```
+
+To configure the `ImageSharpMiddleware` in more detail, including event handlers, apply:
+
+```
+services.PostConfigure<ImageSharpMiddlewareOptions>(o => ...);
+```
+
+!!! note
+    The Media Library `StaticFileOptions` configuration is separated from the configuration for static files contained in module `wwwroot` folders.
+
+To configure `wwwroot` static file options apply:
+
+```
+services.Configure<StaticFileOptions>(o => ...);
 ```
 
 ## CREDITS
 
 ### ImageSharp
 
-<https://sixlabors.com/projects/imagesharp/>  
+<https://sixlabors.com/products/imagesharpweb/>  
 Copyright 2012 James South  
-Licensed under the Apache License, Version 2.0
+Licensed under the Apache License, Version 2.0, or with a commercial support license <https://sixlabors.com/pricing>

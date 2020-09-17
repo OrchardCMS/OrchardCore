@@ -1,10 +1,10 @@
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Modules;
+using OrchardCore.Users.Handlers;
 using OrchardCore.Users.Workflows.Activities;
 using OrchardCore.Users.Workflows.Drivers;
-using OrchardCore.Modules;
-using OrchardCore.Workflows.Helpers;
-using OrchardCore.Users.Handlers;
 using OrchardCore.Users.Workflows.Handlers;
+using OrchardCore.Workflows.Helpers;
 
 namespace OrchardCore.Users.Workflows
 {
@@ -15,9 +15,14 @@ namespace OrchardCore.Users.Workflows
         {
             services.AddActivity<RegisterUserTask, RegisterUserTaskDisplay>();
             services.AddActivity<UserCreatedEvent, UserCreatedEventDisplay>();
+            services.AddActivity<UserDeletedEvent, UserDeletedEventDisplay>();
+            services.AddActivity<UserEnabledEvent, UserEnabledEventDisplay>();
+            services.AddActivity<UserDisabledEvent, UserDisabledEventDisplay>();
+            services.AddActivity<UserUpdatedEvent, UserUpdatedEventDisplay>();
             services.AddActivity<UserLoggedInEvent, UserLoggedInEventDisplay>();
-            services.AddScoped<IUserCreatedEventHandler, UserCreatedHandler>();
+            services.AddScoped<IUserEventHandler, UserEventHandler>();
             services.AddActivity<AssignUserRoleTask, AssignUserRoleTaskDisplay>();
+            services.AddActivity<ValidateUserTask, ValidateUserTaskDisplay>();
         }
     }
 }

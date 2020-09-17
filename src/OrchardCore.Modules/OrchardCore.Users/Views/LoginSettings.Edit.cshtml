@@ -1,5 +1,6 @@
 @model OrchardCore.Users.Models.LoginSettings
 
+<style asp-name="codemirror"></style>
 <script asp-name="codemirror" depends-on="admin" at="Foot"></script>
 <script asp-name="codemirror-mode-javascript" at="Foot"></script>
 <script asp-name="codemirror-addon-display-autorefresh" at="Foot"></script>
@@ -76,7 +77,6 @@
     <textarea asp-for="SyncRolesScript" rows="1" class="form-control content-preview-text"></textarea>
 </div>
 
-
 <script at="Foot">
     function resetScript(keepText) {
         var editor = $('#@Html.IdFor(x => x.SyncRolesScript)').data('editor');
@@ -104,7 +104,7 @@
                 '        log("Warning", "Provider " + loginProvider + " was not handled");\n' +
     	        '        break;\n' +
                 '}\n' +
-                '*/\n' 
+                '*/\n'
             );
         }
     }
@@ -132,7 +132,7 @@ $(function () {
         mode: "javascript"
     });
     $('#@Html.IdFor(x => x.SyncRolesScript)').data('editor', editor);
-    resetScript(editor.doc.lineCount() > 1);
+    resetScript(editor.doc.getValue() != '');
     syncRolesCheckbox.addEventListener("change", toggleEditorState);
     toggleEditorState();
 });

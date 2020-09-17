@@ -34,7 +34,6 @@ namespace OrchardCore.AdminMenu
         {
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<INavigationProvider, AdminMenu>();
-            services.AddTransient<IDataMigration, Migrations>();
 
             services.AddScoped<IAdminMenuService, AdminMenuService>();
             services.AddScoped<AdminMenuNavigationProvidersCoordinator, AdminMenuNavigationProvidersCoordinator>();
@@ -46,7 +45,6 @@ namespace OrchardCore.AdminMenu
             services.AddTransient<IDeploymentSource, AdminMenuDeploymentSource>();
             services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AdminMenuDeploymentStep>());
             services.AddScoped<IDisplayDriver<DeploymentStep>, AdminMenuDeploymentStepDriver>();
-
 
             // placeholder treeNode
             services.AddSingleton<IAdminNodeProviderFactory>(new AdminNodeProviderFactory<PlaceholderAdminNode>());
@@ -121,6 +119,18 @@ namespace OrchardCore.AdminMenu
                 areaName: "OrchardCore.AdminMenu",
                 pattern: _adminOptions.AdminUrlPrefix + "/AdminMenu/Node/Edit",
                 defaults: new { controller = nodeControllerName, action = nameof(NodeController.Edit) }
+            );
+            routes.MapAreaControllerRoute(
+                name: "AdminMenuNodeToggle",
+                areaName: "OrchardCore.AdminMenu",
+                pattern: _adminOptions.AdminUrlPrefix + "/AdminMenu/Node/Toggle",
+                defaults: new { controller = nodeControllerName, action = nameof(NodeController.Toggle) }
+            );
+            routes.MapAreaControllerRoute(
+                name: "AdminMenuNodeMoveNode",
+                areaName: "OrchardCore.AdminMenu",
+                pattern: _adminOptions.AdminUrlPrefix + "/AdminMenu/Node/MoveNode",
+                defaults: new { controller = nodeControllerName, action = nameof(NodeController.MoveNode) }
             );
         }
     }

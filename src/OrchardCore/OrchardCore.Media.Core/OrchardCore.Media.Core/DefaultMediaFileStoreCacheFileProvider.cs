@@ -21,7 +21,7 @@ namespace OrchardCore.Media.Core
         // Use default stream copy buffer size to stay in gen0 garbage collection.
         private const int StreamCopyBufferSize = 81920;
 
-        private readonly ILogger<DefaultMediaFileStoreCacheFileProvider> _logger;
+        private readonly ILogger _logger;
 
         public DefaultMediaFileStoreCacheFileProvider(ILogger<DefaultMediaFileStoreCacheFileProvider> logger, PathString virtualPathBase, string root) : base(root)
         {
@@ -95,6 +95,46 @@ namespace OrchardCore.Media.Core
             }
 
             return Task.FromResult(hasErrors);
+        }
+
+        public Task<bool> TryDeleteDirectoryAsync(string path)
+        {
+            var directoryInfo = GetFileInfo(path);
+
+            try
+            {
+                Directory.Delete(directoryInfo.PhysicalPath, true);
+            }
+            catch (IOException ex)
+            {
+                _logger.LogError(ex, "Error deleting cache folder {Path}", directoryInfo.PhysicalPath);
+                return Task.FromResult(false);
+            }
+
+            return Task.FromResult(true);
+        }
+
+        public Task<bool> TryDeleteFileAsync(string path)
+        {
+            var fileInfo = GetFileInfo(path);
+
+            if (fileInfo.Exists)
+            {
+                try
+                {
+                    File.Delete(fileInfo.PhysicalPath);
+                    return Task.FromResult(true);
+                }
+                catch (IOException ex)
+                {
+                    _logger.LogError(ex, "Error deleting cache file {Path}", fileInfo.PhysicalPath);
+                    return Task.FromResult(false);
+                }
+            }
+            else
+            {
+                return Task.FromResult(false);
+            }
         }
     }
 }

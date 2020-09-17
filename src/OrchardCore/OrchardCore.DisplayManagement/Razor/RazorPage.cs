@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Localization;
@@ -101,6 +100,7 @@ namespace OrchardCore.DisplayManagement.Razor
         }
 
         private dynamic _themeLayout;
+
         public dynamic ThemeLayout
         {
             get
@@ -127,7 +127,7 @@ namespace OrchardCore.DisplayManagement.Razor
                 {
                     if (layout.Metadata.Alternates.Count > 0)
                     {
-                        return layout.Metadata.Alternates.Last();
+                        return layout.Metadata.Alternates.Last;
                     }
 
                     return layout.Metadata.Type;
@@ -142,7 +142,7 @@ namespace OrchardCore.DisplayManagement.Razor
                 {
                     if (layout.Metadata.Alternates.Contains(value))
                     {
-                        if (layout.Metadata.Alternates.Last() == value)
+                        if (layout.Metadata.Alternates.Last == value)
                         {
                             return;
                         }
@@ -156,6 +156,7 @@ namespace OrchardCore.DisplayManagement.Razor
         }
 
         private IPageTitleBuilder _pageTitleBuilder;
+
         public IPageTitleBuilder Title
         {
             get
@@ -181,7 +182,7 @@ namespace OrchardCore.DisplayManagement.Razor
                 if (_t == null)
                 {
                     _t = Context.RequestServices.GetRequiredService<IViewLocalizer>();
-                    ((IViewContextAware)_t).Contextualize(this.ViewContext);
+                    ((IViewContextAware)_t).Contextualize(ViewContext);
                 }
 
                 return _t;
@@ -267,7 +268,7 @@ namespace OrchardCore.DisplayManagement.Razor
 
             var zone = ThemeLayout[name];
 
-            return zone != null && zone.Items.Count > 0;
+            return zone != null;
         }
 
         /// <summary>
@@ -335,7 +336,7 @@ namespace OrchardCore.DisplayManagement.Razor
 
             var zone = ThemeLayout[name];
 
-            if (required && zone != null && zone.Items.Count == 0)
+            if (required && zone != null && zone is Shape && zone.Items.Count == 0)
             {
                 throw new InvalidOperationException("Zone not found: " + name);
             }

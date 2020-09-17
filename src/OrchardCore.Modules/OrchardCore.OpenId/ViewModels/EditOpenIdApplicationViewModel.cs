@@ -1,8 +1,10 @@
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
-using OrchardCore.OpenId.Validators;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Localization;
 
 namespace OrchardCore.OpenId.ViewModels
 {
@@ -10,10 +12,13 @@ namespace OrchardCore.OpenId.ViewModels
     {
         [HiddenInput]
         public string Id { get; set; }
+
         [Required]
         public string ClientId { get; set; }
+
         [Required]
         public string DisplayName { get; set; }
+
         public string RedirectUris { get; set; }
         public string PostLogoutRedirectUris { get; set; }
         public string Type { get; set; }
@@ -27,16 +32,29 @@ namespace OrchardCore.OpenId.ViewModels
         public bool AllowImplicitFlow { get; set; }
         public bool AllowLogoutEndpoint { get; set; }
 
-        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
-        {
-            return OpenIdUrlValidator.ValidateUrls(nameof(RedirectUris), RedirectUris)
-                .Union(OpenIdUrlValidator.ValidateUrls(nameof(PostLogoutRedirectUris), PostLogoutRedirectUris));
-        }
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext) => ValidateUrls(validationContext, nameof(RedirectUris), RedirectUris)
+                .Union(ValidateUrls(validationContext, nameof(PostLogoutRedirectUris), PostLogoutRedirectUris));
 
         public class RoleEntry
         {
             public string Name { get; set; }
             public bool Selected { get; set; }
+        }
+
+        private IEnumerable<ValidationResult> ValidateUrls(ValidationContext context, string memberName, string member)
+        {
+            if (member != null)
+            {
+                var S = context.GetRequiredService<IStringLocalizer<EditOpenIdApplicationViewModel>>();
+
+                foreach (var url in member.Split(new[] { ' ', ',' }, StringSplitOptions.RemoveEmptyEntries))
+                {
+                    if (!Uri.TryCreate(url, UriKind.Absolute, out var uri) || !uri.IsWellFormedOriginalString())
+                    {
+                        yield return new ValidationResult(S["{0} is not well-formed", url], new[] { memberName });
+                    }
+                }
+            }
         }
     }
 }

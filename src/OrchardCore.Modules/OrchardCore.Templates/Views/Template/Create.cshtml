@@ -3,6 +3,7 @@
     var returnUrl = ViewData["returnUrl"]?.ToString();
 }
 
+<style asp-name="codemirror"></style>
 <script asp-name="codemirror" depends-on="admin" at="Foot"></script>
 <script asp-name="codemirror-mode-javascript" at="Foot"></script>
 <script asp-name="codemirror-addon-display-autorefresh" at="Foot"></script>
@@ -35,6 +36,7 @@
     <div class="form-group" asp-validation-class-for="Content">
         <label asp-for="Content">@T["Content"]</label>
         <textarea asp-for="Content" rows="10" class="form-control"></textarea>
+        <span asp-validation-for="Content"></span>
         <span class="hint">@T["The Liquid template."]</span>
     </div>
 
@@ -58,7 +60,6 @@
         {
             <a class="btn btn-info" href="@Url.Action("Index", "Preview", new { area = "OrchardCore.Templates" })" target="_blank">@T["Preview"]</a>
         }
-
     </div>
 </form>
 
@@ -69,5 +70,4 @@
             document.getElementById('@Html.IdFor(x => x.Name)'),
             document.getElementById('@Html.IdFor(x => x.Content)'));
     });
-
 </script>

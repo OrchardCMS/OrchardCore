@@ -1,4 +1,4 @@
-﻿using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.ContentManagement.Metadata.Models;
 
 namespace OrchardCore.ContentTypes.Events
 {

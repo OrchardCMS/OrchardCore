@@ -2,10 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
+using OrchardCore.ContentPreview;
 using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Indexing;
 using OrchardCore.Modules;
@@ -15,8 +17,12 @@ namespace OrchardCore.Lucene.Handlers
     public class LuceneIndexingContentHandler : ContentHandlerBase
     {
         private readonly List<ContentContextBase> _contexts = new List<ContentContextBase>();
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public LuceneIndexingContentHandler() { }
+        public LuceneIndexingContentHandler(IHttpContextAccessor httpContextAccessor)
+        {
+            _httpContextAccessor = httpContextAccessor;
+        }
 
         public override Task PublishedAsync(PublishContentContext context) => AddContextAsync(context);
         public override Task CreatedAsync(CreateContentContext context) => AddContextAsync(context);
@@ -26,6 +32,18 @@ namespace OrchardCore.Lucene.Handlers
 
         private Task AddContextAsync(ContentContextBase context)
         {
+            // Do not index a preview content item.
+            if (_httpContextAccessor.HttpContext?.Features.Get<ContentPreviewFeature>()?.Previewing == true)
+            {
+                return Task.CompletedTask;
+            }
+
+            if (context.ContentItem.Id == 0)
+            {
+                // Ignore that case, when Update is called on a content item which has not be "created" yet.
+                return Task.CompletedTask;
+            }
+
             if (_contexts.Count == 0)
             {
                 var contexts = _contexts;

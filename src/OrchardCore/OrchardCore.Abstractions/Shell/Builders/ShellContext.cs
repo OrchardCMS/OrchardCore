@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using OrchardCore.Environment.Shell.Builders.Models;
+using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Environment.Shell.Scope;
 
 namespace OrchardCore.Environment.Shell.Builders
@@ -22,7 +23,7 @@ namespace OrchardCore.Environment.Shell.Builders
         public IServiceProvider ServiceProvider { get; set; }
 
         /// <summary>
-        /// Whether the shell is activated. 
+        /// Whether the shell is activated.
         /// </summary>
         public bool IsActivated { get; set; }
 
@@ -48,7 +49,10 @@ namespace OrchardCore.Environment.Shell.Builders
 
         public ShellScope CreateScope()
         {
-            if (_placeHolder)
+            // We can't create a scope with a null 'ServiceProvider' meaning that the shell has been disposed. Normally, the
+            // 'ShellHost' removes the shell from its collection as soon as it is released so that a new one will be created.
+            // But this may happen when a shell releases its dependent shells and disposes those that are not in use.
+            if (_placeHolder || (ServiceProvider == null && Settings.State != TenantState.Disabled))
             {
                 return null;
             }
@@ -87,9 +91,9 @@ namespace OrchardCore.Environment.Shell.Builders
                 return;
             }
 
-            // When a tenant is changed and should be restarted, its shell context is replaced with a new one, 
-            // so that new request can't use it anymore. However some existing request might still be running and try to 
-            // resolve or use its services. We then call this method to count the remaining references and dispose it 
+            // When a tenant is changed and should be restarted, its shell context is replaced with a new one,
+            // so that new request can't use it anymore. However some existing request might still be running and try to
+            // resolve or use its services. We then call this method to count the remaining references and dispose it
             // when the number reached zero.
 
             lock (_synLock)
@@ -103,7 +107,6 @@ namespace OrchardCore.Environment.Shell.Builders
 
                 if (_dependents != null)
                 {
-
                     foreach (var dependent in _dependents)
                     {
                         if (dependent.TryGetTarget(out var shellContext))

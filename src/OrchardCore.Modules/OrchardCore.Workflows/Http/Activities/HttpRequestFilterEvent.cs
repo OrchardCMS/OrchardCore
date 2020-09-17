@@ -13,20 +13,20 @@ namespace OrchardCore.Workflows.Http.Activities
     public class HttpRequestFilterEvent : EventActivity
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IStringLocalizer S;
+
         public static string EventName => nameof(HttpRequestFilterEvent);
 
         public HttpRequestFilterEvent(IStringLocalizer<HttpRequestFilterEvent> localizer, IHttpContextAccessor httpContextAccessor)
         {
-            T = localizer;
+            S = localizer;
             _httpContextAccessor = httpContextAccessor;
         }
 
-        private IStringLocalizer T { get; }
-
         public override string Name => EventName;
-        public override LocalizedString DisplayText => T["Http Request Filter Event"];
+        public override LocalizedString DisplayText => S["Http Request Filter Event"];
 
-        public override LocalizedString Category => T["HTTP"];
+        public override LocalizedString Category => S["HTTP"];
 
         public string HttpMethod
         {
@@ -62,24 +62,28 @@ namespace OrchardCore.Workflows.Http.Activities
         {
             var httpContext = _httpContextAccessor.HttpContext;
             var httpRequest = httpContext.Request;
-            var isHttpMethodMatch = string.Equals(HttpMethod, httpRequest.Method, System.StringComparison.OrdinalIgnoreCase);
+            var isHttpMethodMatch = String.Equals(HttpMethod, httpRequest.Method, StringComparison.OrdinalIgnoreCase);
 
             if (!isHttpMethodMatch)
+            {
                 return false;
+            }
 
             var routeValues = RouteValues;
             var currentRouteValues = httpContext.Request.RouteValues;
             var isRouteMatch = RouteMatches(routeValues, currentRouteValues);
 
             if (!isRouteMatch)
+            {
                 return false;
+            }
 
             return true;
         }
 
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            return Outcomes(T["Matched"]);
+            return Outcomes(S["Matched"]);
         }
 
         public override ActivityExecutionResult Resume(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
@@ -99,7 +103,7 @@ namespace OrchardCore.Workflows.Http.Activities
             return a.All(x =>
             {
                 var valueA = x.Value?.ToString();
-                return b.ContainsKey(x.Key) && string.Equals(valueA, b[x.Key]?.ToString(), StringComparison.OrdinalIgnoreCase);
+                return b.ContainsKey(x.Key) && String.Equals(valueA, b[x.Key]?.ToString(), StringComparison.OrdinalIgnoreCase);
             });
         }
     }

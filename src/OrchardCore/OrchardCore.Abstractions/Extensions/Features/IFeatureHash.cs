@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 
 namespace OrchardCore.Environment.Extensions.Features
 {
@@ -27,6 +27,5 @@ namespace OrchardCore.Environment.Extensions.Features
         /// The implementation is efficient in order to be called frequently.
         /// </returns>
         Task<int> GetFeatureHashAsync(string featureId);
-
     }
 }

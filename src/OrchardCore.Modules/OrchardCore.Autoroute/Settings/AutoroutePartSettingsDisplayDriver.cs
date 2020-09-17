@@ -14,14 +14,13 @@ namespace OrchardCore.Autoroute.Settings
     public class AutoroutePartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver
     {
         private readonly ILiquidTemplateManager _templateManager;
+        private readonly IStringLocalizer S;
 
         public AutoroutePartSettingsDisplayDriver(ILiquidTemplateManager templateManager, IStringLocalizer<AutoroutePartSettingsDisplayDriver> localizer)
         {
             _templateManager = templateManager;
-            T = localizer;
+            S = localizer;
         }
-
-        public IStringLocalizer T { get; }
 
         public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater)
         {
@@ -38,6 +37,10 @@ namespace OrchardCore.Autoroute.Settings
                 model.AllowUpdatePath = settings.AllowUpdatePath;
                 model.Pattern = settings.Pattern;
                 model.ShowHomepageOption = settings.ShowHomepageOption;
+                model.AllowDisabled = settings.AllowDisabled;
+                model.AllowRouteContainedItems = settings.AllowRouteContainedItems;
+                model.ManageContainedItemRoutes = settings.ManageContainedItemRoutes;
+                model.AllowAbsolutePath = settings.AllowAbsolutePath;
                 model.AutoroutePartSettings = settings;
             }).Location("Content");
         }
@@ -55,11 +58,15 @@ namespace OrchardCore.Autoroute.Settings
                 m => m.Pattern,
                 m => m.AllowCustomPath,
                 m => m.AllowUpdatePath,
-                m => m.ShowHomepageOption);
+                m => m.ShowHomepageOption,
+                m => m.AllowDisabled,
+                m => m.AllowRouteContainedItems,
+                m => m.ManageContainedItemRoutes,
+                m => m.AllowAbsolutePath);
 
             if (!string.IsNullOrEmpty(model.Pattern) && !_templateManager.Validate(model.Pattern, out var errors))
             {
-                context.Updater.ModelState.AddModelError(nameof(model.Pattern), T["Pattern doesn't contain a valid Liquid expression. Details: {0}", string.Join(" ", errors)]);
+                context.Updater.ModelState.AddModelError(nameof(model.Pattern), S["Pattern doesn't contain a valid Liquid expression. Details: {0}", string.Join(" ", errors)]);
             }
             else
             {
@@ -68,7 +75,11 @@ namespace OrchardCore.Autoroute.Settings
                     Pattern = model.Pattern,
                     AllowCustomPath = model.AllowCustomPath,
                     AllowUpdatePath = model.AllowUpdatePath,
-                    ShowHomepageOption = model.ShowHomepageOption
+                    ShowHomepageOption = model.ShowHomepageOption,
+                    AllowDisabled = model.AllowDisabled,
+                    AllowRouteContainedItems = model.AllowRouteContainedItems,
+                    ManageContainedItemRoutes = model.ManageContainedItemRoutes,
+                    AllowAbsolutePath = model.AllowAbsolutePath
                 });
             }
 

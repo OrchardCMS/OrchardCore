@@ -3,19 +3,16 @@ using System.IO;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.TagHelpers.Cache;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement;
 using OrchardCore.Environment.Cache;
-using OrchardCore.Modules;
 
 namespace OrchardCore.DynamicCache.TagHelpers
 {
-    [HtmlTargetElement("cache", Attributes = CacheIdAttributeName)]
+    [HtmlTargetElement("dynamic-cache", Attributes = CacheIdAttributeName)]
     public class DynamicCacheTagHelper : TagHelper
     {
         private const string CacheIdAttributeName = "cache-id";
@@ -39,13 +36,6 @@ namespace OrchardCore.DynamicCache.TagHelpers
         /// Gets the <see cref="System.Text.Encodings.Web.HtmlEncoder"/> which encodes the content to be cached.
         /// </summary>
         protected HtmlEncoder HtmlEncoder { get; }
-
-        /// <summary>
-        /// Gets or sets the <see cref="ViewContext"/> for the current executing View.
-        /// </summary>
-        [HtmlAttributeNotBound]
-        [ViewContext]
-        public ViewContext ViewContext { get; set; }
 
         /// <summary>
         /// Gets or sets a <see cref="string" /> identifying this cache entry.
@@ -93,28 +83,26 @@ namespace OrchardCore.DynamicCache.TagHelpers
         /// Prefix used by <see cref="CacheTagHelper"/> instances when creating entries in <see cref="IDynamicCacheService"/>.
         /// </summary>
         public static readonly string CacheKeyPrefix = nameof(DynamicCacheTagHelper);
+
         private const string CachePriorityAttributeName = "priority";
-        private readonly IClock _clock;
         private readonly IDynamicCacheService _dynamicCacheService;
         private readonly ICacheScopeManager _cacheScopeManager;
-        private readonly ILogger<DynamicCacheTagHelper> _logger;
         private readonly DynamicCacheTagHelperService _dynamicCacheTagHelperService;
+        private readonly CacheOptions _cacheOptions;
 
         public DynamicCacheTagHelper(
-            IClock clock,
             IDynamicCacheService dynamicCacheService,
             ICacheScopeManager cacheScopeManager,
-            ILogger<DynamicCacheTagHelper> logger,
             HtmlEncoder htmlEncoder,
-            DynamicCacheTagHelperService dynamicCacheTagHelperService)
-            
+            DynamicCacheTagHelperService dynamicCacheTagHelperService,
+            IOptions<CacheOptions> cacheOptions)
+
         {
-            _clock = clock;
             _dynamicCacheService = dynamicCacheService;
             _cacheScopeManager = cacheScopeManager;
-            _logger = logger;
             HtmlEncoder = htmlEncoder;
             _dynamicCacheTagHelperService = dynamicCacheTagHelperService;
+            _cacheOptions = cacheOptions.Value;
         }
 
         /// <summary>
@@ -186,14 +174,12 @@ namespace OrchardCore.DynamicCache.TagHelpers
 
                 try
                 {
-                    content = await output.GetChildContentAsync();
+                    content = await ProcessContentAsync(output, cacheContext);
                 }
                 finally
                 {
                     _cacheScopeManager.ExitScope();
                 }
-
-                content = await ProcessContentAsync(output, cacheContext);
             }
             else
             {
@@ -208,7 +194,6 @@ namespace OrchardCore.DynamicCache.TagHelpers
 
         public async Task<IHtmlContent> ProcessContentAsync(TagHelperOutput output, CacheContext cacheContext)
         {
-
             IHtmlContent content = null;
 
             while (content == null)
@@ -238,7 +223,30 @@ namespace OrchardCore.DynamicCache.TagHelpers
                             {
                                 using (var writer = new StringWriter(sb.Builder))
                                 {
+                                    // Write the start of a cache debug block.
+                                    if (_cacheOptions.DebugMode)
+                                    {
+                                        // No need to optimize this code as it will be used for debugging purpose.
+                                        writer.WriteLine();
+                                        writer.WriteLine($"<!-- CACHE BLOCK: {cacheContext.CacheId} ({Guid.NewGuid()})");
+                                        writer.WriteLine($"         VARY BY: {String.Join(", ", cacheContext.Contexts)}");
+                                        writer.WriteLine($"    DEPENDENCIES: {String.Join(", ", cacheContext.Tags)}");
+                                        writer.WriteLine($"      EXPIRES ON: {cacheContext.ExpiresOn}");
+                                        writer.WriteLine($"   EXPIRES AFTER: {cacheContext.ExpiresAfter}");
+                                        writer.WriteLine($" EXPIRES SLIDING: {cacheContext.ExpiresSliding}");
+                                        writer.WriteLine("-->");
+                                    }
+
+                                    // Always write the content regardless of debug mode.
                                     processedContent.WriteTo(writer, HtmlEncoder);
+
+                                    // Write the end of a cache debug block.
+                                    if (_cacheOptions.DebugMode)
+                                    {
+                                        writer.WriteLine();
+                                        writer.WriteLine($"<!-- END CACHE BLOCK: {cacheContext.CacheId} -->");
+                                    }
+
                                     await writer.FlushAsync();
                                 }
 
@@ -253,8 +261,6 @@ namespace OrchardCore.DynamicCache.TagHelpers
 
                                 content = formattingContext.Html;
                             }
-
-
                         }
                         else
                         {

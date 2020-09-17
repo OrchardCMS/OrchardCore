@@ -1,4 +1,3 @@
-
 @using OrchardCore.ContentManagement
 @using OrchardCore.ContentManagement.Records
 @using YesSql;
@@ -12,7 +11,7 @@
 }
 
 <div class="form-group">
-    <div class="row col-md">
+    <div class="row col-medium">
         <label asp-for="Hint">@T["Hint"]</label>
         <textarea asp-for="Hint" rows="2" class="form-control"></textarea>
         <span class="hint">@T["The hint text to display for this field on the editor."]</span>
@@ -43,7 +42,7 @@
     <div class="custom-control custom-checkbox">
         <input asp-for="Unique" type="checkbox" class="custom-control-input" />
         <label class="custom-control-label" asp-for="Unique">@T["Unique"]</label>
-        <span class="hint">— @T["Whether only one element is selected."]</span>
+        <span class="hint">— @T["Whether only one element can be selected."]</span>
     </div>
 </div>
 

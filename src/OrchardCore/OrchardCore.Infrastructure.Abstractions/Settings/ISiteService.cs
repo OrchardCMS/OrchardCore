@@ -9,7 +9,7 @@ namespace OrchardCore.Settings
     public interface ISiteService
     {
         /// <summary>
-        /// Returns the site settings for udpate.
+        /// Returns the site settings for update.
         /// </summary>
         Task<ISite> LoadSiteSettingsAsync();
 

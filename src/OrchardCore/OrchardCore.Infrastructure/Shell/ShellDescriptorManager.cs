@@ -15,7 +15,7 @@ using YesSql;
 namespace OrchardCore.Environment.Shell.Data.Descriptors
 {
     /// <summary>
-    /// Implements <see cref="IShellDescriptorManager"/> by providing the list of features store in the database. 
+    /// Implements <see cref="IShellDescriptorManager"/> by providing the list of features store in the database.
     /// </summary>
     public class ShellDescriptorManager : IShellDescriptorManager
     {
@@ -25,6 +25,7 @@ namespace OrchardCore.Environment.Shell.Data.Descriptors
         private readonly IEnumerable<IShellDescriptorManagerEventHandler> _shellDescriptorManagerEventHandlers;
         private readonly ISession _session;
         private readonly ILogger _logger;
+
         private ShellDescriptor _shellDescriptor;
 
         public ShellDescriptorManager(
@@ -104,10 +105,13 @@ namespace OrchardCore.Environment.Shell.Data.Descriptors
 
             _session.Save(shellDescriptorRecord);
 
-            // Update cached reference
-            _shellDescriptor = shellDescriptorRecord;
+            // In the 'ChangedAsync()' event the shell will be released so that, on request, a new one will be built.
+            // So, we commit the session earlier to prevent a new shell from being built from an outdated descriptor.
 
-            await _shellDescriptorManagerEventHandlers.InvokeAsync((handler, shellDescriptorRecord, _shellSettings) => handler.Changed(shellDescriptorRecord, _shellSettings.Name), shellDescriptorRecord, _shellSettings, _logger);
+            await _session.CommitAsync();
+
+            await _shellDescriptorManagerEventHandlers.InvokeAsync((handler, shellDescriptorRecord, _shellSettings) =>
+                handler.ChangedAsync(shellDescriptorRecord, _shellSettings), shellDescriptorRecord, _shellSettings, _logger);
         }
 
         private class ConfiguredFeatures

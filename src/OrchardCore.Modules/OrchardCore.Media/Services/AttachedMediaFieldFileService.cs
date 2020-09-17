@@ -4,9 +4,10 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Localization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement;
+using OrchardCore.ContentPreview;
 using OrchardCore.FileStorage;
 using OrchardCore.Media.ViewModels;
 
@@ -14,19 +15,20 @@ namespace OrchardCore.Media.Services
 {
     /// <summary>
     /// Handles file management operations related to the attached media field
-    /// </summary>    
+    /// </summary>
     public class AttachedMediaFieldFileService
     {
         private readonly IMediaFileStore _fileStore;
-        private readonly IStringLocalizer<AttachedMediaFieldFileService> T;
-        private readonly ILogger<AttachedMediaFieldFileService> _logger;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly ILogger _logger;
 
-        public AttachedMediaFieldFileService(IMediaFileStore fileStore,
-            IStringLocalizer<AttachedMediaFieldFileService> stringLocalizer,
+        public AttachedMediaFieldFileService(
+            IMediaFileStore fileStore,
+            IHttpContextAccessor httpContextAccessor,
             ILogger<AttachedMediaFieldFileService> logger)
         {
             _fileStore = fileStore;
-            T = stringLocalizer;
+            _httpContextAccessor = httpContextAccessor;
             _logger = logger;
 
             MediaFieldsFolder = "mediafields";
@@ -54,7 +56,12 @@ namespace OrchardCore.Media.Services
         {
             if (items == null)
             {
-                throw new System.ArgumentNullException(nameof(items));
+                throw new ArgumentNullException(nameof(items));
+            }
+
+            if (_httpContextAccessor.HttpContext?.Features.Get<ContentPreviewFeature>()?.Previewing == true)
+            {
+                return;
             }
 
             await EnsureGlobalDirectoriesAsync();
@@ -70,7 +77,7 @@ namespace OrchardCore.Media.Services
             await _fileStore.TryCreateDirectoryAsync(MediaFieldsTempSubFolder);
         }
 
-        // Files just uploaded and then inmediately discarded.
+        // Files just uploaded and then immediately discarded.
         private async Task RemoveTemporaryAsync(List<EditMediaFieldItemInfo> items)
         {
             foreach (var item in items.Where(i => i.IsRemoved && i.IsNew))

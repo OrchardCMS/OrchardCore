@@ -27,13 +27,15 @@ namespace OrchardCore.DisplayManagement.Shapes
         public string DisplayType { get; set; }
         public string Position { get; set; }
         public string Tab { get; set; }
+        public string Card { get; set; }
+        public string Column { get; set;}
         public string PlacementSource { get; set; }
         public string Prefix { get; set; }
         public string Name { get; set; }
+        public string Differentiator { get; set; }
         public AlternatesCollection Wrappers { get; set; }
         public AlternatesCollection Alternates { get; set; }
         public bool IsCached => _cacheContext != null;
-        public bool WasExecuted { get; set; }
         public IHtmlContent ChildContent { get; set; }
 
         /// <summary>
@@ -77,7 +79,7 @@ namespace OrchardCore.DisplayManagement.Shapes
         /// </summary>
         public CacheContext Cache(string cacheId)
         {
-            if(_cacheContext == null || _cacheContext.CacheId != cacheId)
+            if (_cacheContext == null || _cacheContext.CacheId != cacheId)
             {
                 _cacheContext = new CacheContext(cacheId);
             }
@@ -93,5 +95,4 @@ namespace OrchardCore.DisplayManagement.Shapes
             return _cacheContext;
         }
     }
-
 }

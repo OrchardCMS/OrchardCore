@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 
 namespace OrchardCore.Media
@@ -28,7 +29,7 @@ namespace OrchardCore.Media
         public int MaxCacheDays { get; set; }
 
         /// <summary>
-        /// The maximum size of an uploaded file in bytes. 
+        /// The maximum size of an uploaded file in bytes.
         /// NB: You might still need to configure the limit in IIS (https://docs.microsoft.com/en-us/iis/configuration/system.webserver/security/requestfiltering/requestlimits/)
         /// </summary>
         public int MaxFileSize { get; set; }
@@ -47,5 +48,10 @@ namespace OrchardCore.Media
         /// The path used to store media assets. The path can be relative to the tenant's App_Data folder, or absolute.
         /// </summary>
         public string AssetsPath { get; set; }
+
+        /// <summary>
+        /// The static file options used to serve non resized media.
+        /// </summary>
+        public StaticFileOptions StaticFileOptions { get; set; }
     }
 }

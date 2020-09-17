@@ -18,10 +18,10 @@ namespace OrchardCore.Lists.GraphQL
 {
     public class ListQueryObjectType : ObjectGraphType<ListPart>
     {
-        public ListQueryObjectType(IStringLocalizer<ListQueryObjectType> T)
+        public ListQueryObjectType(IStringLocalizer<ListQueryObjectType> S)
         {
             Name = "ListPart";
-            Description = T["Represents a collection of content items."];
+            Description = S["Represents a collection of content items."];
 
             Field<ListGraphType<ContentItemInterface>, IEnumerable<ContentItem>>()
                 .Name("contentItems")
@@ -46,7 +46,7 @@ namespace OrchardCore.Lists.GraphQL
         {
             if (contentItemIds is null || !contentItemIds.Any())
             {
-                 return new Dictionary<string, ContentItem>().ToLookup(k => k.Key, v => v.Value);
+                return new Dictionary<string, ContentItem>().ToLookup(k => k.Key, v => v.Value);
             }
 
             var query = await session.Query<ContentItem>()

@@ -19,10 +19,6 @@
 
   <ItemGroup>
     <EmbeddedResource Remove="**\*.less;**\*.scss;" />
-    <EmbeddedResource Remove="wwwroot\gulpfile.js" />
-    <EmbeddedResource Remove="wwwroot\index.html" />
-    <EmbeddedResource Remove="wwwroot\package-lock.json" />
-    <EmbeddedResource Remove="wwwroot\package.json" />
   </ItemGroup>
 
 </Project>

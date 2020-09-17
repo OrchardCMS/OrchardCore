@@ -1,11 +1,9 @@
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
-using Microsoft.AspNetCore.Mvc.Localization;
-using Microsoft.Extensions.Caching.Memory;
 using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Environment.Shell;
 using OrchardCore.ReverseProxy.Settings;
@@ -19,21 +17,30 @@ namespace OrchardCore.ReverseProxy.Drivers
         private const string SettingsGroupId = "ReverseProxy";
         private readonly IShellHost _shellHost;
         private readonly ShellSettings _shellSettings;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IAuthorizationService _authorizationService;
 
         public ReverseProxySettingsDisplayDriver(
             IShellHost shellHost,
             ShellSettings shellSettings,
-            IHtmlLocalizer<ReverseProxySettingsDisplayDriver> stringLocalizer)
+            IHttpContextAccessor httpContextAccessor,
+            IAuthorizationService authorizationService)
         {
             _shellHost = shellHost;
             _shellSettings = shellSettings;
-            T = stringLocalizer;
+            _httpContextAccessor = httpContextAccessor;
+            _authorizationService = authorizationService;
         }
 
-        IHtmlLocalizer T { get; }
-
-        public override IDisplayResult Edit(ReverseProxySettings section, BuildEditorContext context)
+        public override async Task<IDisplayResult> EditAsync(ReverseProxySettings section, BuildEditorContext context)
         {
+            var user = _httpContextAccessor.HttpContext?.User;
+
+            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ReverseProxySettings))
+            {
+                return null;
+            }
+
             return Initialize<ReverseProxySettingsViewModel>("ReverseProxySettings_Edit", model =>
             {
                 model.EnableXForwardedFor = section.ForwardedHeaders.HasFlag(ForwardedHeaders.XForwardedFor);
@@ -44,6 +51,13 @@ namespace OrchardCore.ReverseProxy.Drivers
 
         public override async Task<IDisplayResult> UpdateAsync(ReverseProxySettings section, BuildEditorContext context)
         {
+            var user = _httpContextAccessor.HttpContext?.User;
+
+            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ReverseProxySettings))
+            {
+                return null;
+            }
+
             if (context.GroupId == SettingsGroupId)
             {
                 var model = new ReverseProxySettingsViewModel();
@@ -61,10 +75,10 @@ namespace OrchardCore.ReverseProxy.Drivers
                 if (model.EnableXForwardedProto)
                     section.ForwardedHeaders |= ForwardedHeaders.XForwardedProto;
 
-                // If the settings are valid, reload the current tenant.
+                // If the settings are valid, release the current tenant.
                 if (context.Updater.ModelState.IsValid)
                 {
-                    await _shellHost.ReloadShellContextAsync(_shellSettings);
+                    await _shellHost.ReleaseShellContextAsync(_shellSettings);
                 }
             }
 

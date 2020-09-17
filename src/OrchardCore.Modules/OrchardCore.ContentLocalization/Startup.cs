@@ -7,45 +7,77 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
+using OrchardCore.Admin;
+using OrchardCore.ContentLocalization.Controllers;
 using OrchardCore.ContentLocalization.Drivers;
-using OrchardCore.ContentLocalization.Handlers;
 using OrchardCore.ContentLocalization.Indexing;
 using OrchardCore.ContentLocalization.Liquid;
 using OrchardCore.ContentLocalization.Models;
 using OrchardCore.ContentLocalization.Records;
 using OrchardCore.ContentLocalization.Security;
 using OrchardCore.ContentLocalization.Services;
+using OrchardCore.ContentLocalization.Sitemaps;
 using OrchardCore.ContentLocalization.ViewModels;
-using OrchardCore.ContentManagement.Display.ContentDisplay;
-using OrchardCore.ContentManagement.Handlers;
+using OrchardCore.Contents.Services;
+using OrchardCore.Contents.ViewModels;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Indexing;
 using OrchardCore.Liquid;
 using OrchardCore.Modules;
+using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
+using OrchardCore.Sitemaps.Builders;
 using YesSql;
 
 namespace OrchardCore.ContentLocalization
 {
     public class Startup : StartupBase
     {
+        private readonly AdminOptions _adminOptions;
+        private readonly IShellConfiguration _shellConfiguration;
+
         static Startup()
         {
             TemplateContext.GlobalMemberAccessStrategy.Register<LocalizationPartViewModel>();
+            TemplateContext.GlobalMemberAccessStrategy.Register<CultureInfo>();
+        }
+
+        public Startup(IShellConfiguration shellConfiguration, IOptions<AdminOptions> adminOptions)
+        {
+            _shellConfiguration = shellConfiguration;
+            _adminOptions = adminOptions.Value;
         }
 
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<IContentPartDisplayDriver, LocalizationPartDisplayDriver>();
+            services.Configure<CulturePickerOptions>(_shellConfiguration.GetSection("OrchardCore_ContentLocalization_CulturePickerOptions"));
+
             services.AddScoped<IContentPartIndexHandler, LocalizationPartIndexHandler>();
             services.AddSingleton<ILocalizationEntries, LocalizationEntries>();
-            services.AddScoped<IContentPartHandler, LocalizationPartHandler>();
             services.AddContentLocalization();
 
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<IAuthorizationHandler, LocalizeContentAuthorizationHandler>();
+
+            services.AddScoped<IContentsAdminListFilter, LocalizationPartContentsAdminListFilter>();
+            services.AddScoped<IDisplayDriver<ContentOptionsViewModel>, LocalizationContentsAdminListDisplayDriver>();
+
+            services.AddLiquidFilter<ContentLocalizationFilter>("localization_set");
+            services.AddLiquidFilter<SwitchCultureUrlFilter>("switch_culture_url");
+        }
+
+        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+        {
+            routes.MapAreaControllerRoute(
+                name: "ContentLocalization.Localize",
+                areaName: "OrchardCore.ContentLocalization",
+                pattern: _adminOptions.AdminUrlPrefix + "/ContentLocalization",
+                defaults: new { controller = typeof(AdminController).ControllerName(), action = nameof(AdminController.Localize) }
+            );
         }
     }
 
@@ -86,17 +118,15 @@ namespace OrchardCore.ContentLocalization
             }));
         }
     }
-    [RequireFeatures("OrchardCore.Liquid")]
-    public class LiquidStartup : StartupBase
+
+    [Feature("OrchardCore.ContentLocalization.Sitemaps")]
+    public class SitemapsStartup : StartupBase
     {
-        static LiquidStartup()
-        {
-            TemplateContext.GlobalMemberAccessStrategy.Register<CultureInfo>();
-        }
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddLiquidFilter<ContentLocalizationFilter>("localization_set");
-            services.AddLiquidFilter<SwitchCultureUrlFilter>("switch_culture_url");
+            services.AddScoped<ISitemapContentItemValidationProvider, SitemapLocalizedContentItemValidationProvider>();
+            services.AddScoped<ISitemapContentItemExtendedMetadataProvider, SitemapUrlHrefLangExtendedMetadataProvider>();
+            services.Replace(ServiceDescriptor.Scoped<IContentItemsQueryProvider, LocalizedContentItemsQueryProvider>());
         }
     }
 }

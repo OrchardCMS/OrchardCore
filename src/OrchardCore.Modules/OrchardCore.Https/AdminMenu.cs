@@ -24,7 +24,7 @@ namespace OrchardCore.Https
             builder
                 .Add(S["Security"], security => security
                     .Add(S["Settings"], settings => settings
-                        .Add(S["HTTPS"], S["HTTPS"], entry => entry
+                        .Add(S["HTTPS"], S["HTTPS"].PrefixPosition(), entry => entry
                             .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = "Https" })
                             .Permission(Permissions.ManageHttps)
                             .LocalNav()

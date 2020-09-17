@@ -7,10 +7,10 @@ namespace OrchardCore.Flows.GraphQL
 {
     public class FlowPartQueryObjectType : ObjectGraphType<FlowPart>
     {
-        public FlowPartQueryObjectType(IStringLocalizer<FlowPartQueryObjectType> T)
+        public FlowPartQueryObjectType(IStringLocalizer<FlowPartQueryObjectType> S)
         {
             Name = "FlowPart";
-            Description = T["A FlowPart allows to add content items directly within another content item"];
+            Description = S["A FlowPart allows to add content items directly within another content item"];
 
             Field<ListGraphType<ContentItemInterface>>(
                 "widgets",

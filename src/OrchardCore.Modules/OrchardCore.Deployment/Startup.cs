@@ -10,6 +10,7 @@ using OrchardCore.Deployment.Core;
 using OrchardCore.Deployment.Deployment;
 using OrchardCore.Deployment.Indexes;
 using OrchardCore.Deployment.Recipes;
+using OrchardCore.Deployment.Services;
 using OrchardCore.Deployment.Steps;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
@@ -46,10 +47,14 @@ namespace OrchardCore.Deployment
             services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<CustomFileDeploymentStep>());
             services.AddScoped<IDisplayDriver<DeploymentStep>, CustomFileDeploymentStepDriver>();
 
+            // Recipe File deployment step
+            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<RecipeFileDeploymentStep>());
+            services.AddScoped<IDisplayDriver<DeploymentStep>, RecipeFileDeploymentStepDriver>();
+
             services.AddSingleton<IIndexProvider, DeploymentPlanIndexProvider>();
             services.AddTransient<IDataMigration, Migrations>();
 
-            services.AddScoped<DeploymentPlanService>();
+            services.AddScoped<IDeploymentPlanService, DeploymentPlanService>();
 
             services.AddRecipeExecutionStep<DeploymentPlansRecipeStep>();
 
@@ -98,6 +103,13 @@ namespace OrchardCore.Deployment
                 areaName: "OrchardCore.Deployment",
                 pattern: _adminOptions.AdminUrlPrefix + "/DeploymentPlan/Import/Index",
                 defaults: new { controller = typeof(ImportController).ControllerName(), action = nameof(ImportController.Index) }
+            );
+
+            routes.MapAreaControllerRoute(
+                name: "DeploymentPlanImportJson",
+                areaName: "OrchardCore.Deployment",
+                pattern: _adminOptions.AdminUrlPrefix + "/DeploymentPlan/Import/Json",
+                defaults: new { controller = typeof(ImportController).ControllerName(), action = nameof(ImportController.Json) }
             );
 
             routes.MapAreaControllerRoute(

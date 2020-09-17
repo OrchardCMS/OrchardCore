@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Admin;
@@ -14,13 +15,15 @@ using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Navigation;
+using OrchardCore.Routing;
 using OrchardCore.Settings;
 using YesSql;
+using YesSql.Services;
 
 namespace OrchardCore.Deployment.Controllers
 {
     [Admin]
-    public class DeploymentPlanController : Controller, IUpdateModel
+    public class DeploymentPlanController : Controller
     {
         private readonly IAuthorizationService _authorizationService;
         private readonly IDisplayManager<DeploymentStep> _displayManager;
@@ -28,10 +31,11 @@ namespace OrchardCore.Deployment.Controllers
         private readonly ISession _session;
         private readonly ISiteService _siteService;
         private readonly INotifier _notifier;
+        private readonly IUpdateModelAccessor _updateModelAccessor;
         private readonly IStringLocalizer S;
         private readonly IHtmlLocalizer H;
         private readonly dynamic New;
-        
+
         public DeploymentPlanController(
             IAuthorizationService authorizationService,
             IDisplayManager<DeploymentStep> displayManager,
@@ -41,15 +45,17 @@ namespace OrchardCore.Deployment.Controllers
             IShapeFactory shapeFactory,
             IStringLocalizer<DeploymentPlanController> stringLocalizer,
             IHtmlLocalizer<DeploymentPlanController> htmlLocalizer,
-            INotifier notifier)
+            INotifier notifier,
+            IUpdateModelAccessor updateModelAccessor)
         {
             _displayManager = displayManager;
             _factories = factories;
             _authorizationService = authorizationService;
             _session = session;
             _siteService = siteService;
-            New = shapeFactory;
             _notifier = notifier;
+            _updateModelAccessor = updateModelAccessor;
+            New = shapeFactory;
             S = stringLocalizer;
             H = htmlLocalizer;
         }
@@ -58,12 +64,12 @@ namespace OrchardCore.Deployment.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageDeploymentPlan))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.Export))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var siteSettings = await _siteService.GetSiteSettingsAsync();
@@ -102,14 +108,54 @@ namespace OrchardCore.Deployment.Controllers
                 Pager = pagerShape
             };
 
+            model.Options.DeploymentPlansBulkAction = new List<SelectListItem>() {
+                new SelectListItem() { Text = S["Delete"], Value = nameof(DeploymentPlansBulkAction.Delete) }
+            };
+
             return View(model);
+        }
+
+        [HttpPost, ActionName(nameof(Index))]
+        [FormValueRequired("submit.Filter")]
+        public ActionResult IndexFilterPOST(DeploymentPlanIndexViewModel model)
+        {
+            return RedirectToAction(nameof(Index), new RouteValueDictionary {
+                { "Options.Search", model.Options.Search }
+            });
+        }
+
+        [HttpPost, ActionName(nameof(Index))]
+        [FormValueRequired("submit.BulkAction")]
+        public async Task<ActionResult> IndexBulkActionPOST(DeploymentPlanIndexOptions options, IEnumerable<int> itemIds)
+        {
+            if (itemIds?.Count() > 0)
+            {
+                var checkedItems = await _session.Query<DeploymentPlan, DeploymentPlanIndex>().Where(x => x.DocumentId.IsIn(itemIds)).ListAsync();
+                switch (options.BulkAction)
+                {
+                    case DeploymentPlansBulkAction.None:
+                        break;
+                    case DeploymentPlansBulkAction.Delete:
+                        foreach (var item in checkedItems)
+                        {
+                            _session.Delete(item);
+
+                            _notifier.Success(H["Deployment plan {0} successfully deleted.", item.Name]);
+                        }
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            }
+
+            return RedirectToAction(nameof(Index));
         }
 
         public async Task<IActionResult> Display(int id)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageDeploymentPlan))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var deploymentPlan = await _session.GetAsync<DeploymentPlan>(id);
@@ -122,7 +168,7 @@ namespace OrchardCore.Deployment.Controllers
             var items = new List<dynamic>();
             foreach (var step in deploymentPlan.DeploymentSteps)
             {
-                dynamic item = await _displayManager.BuildDisplayAsync(step, this, "Summary");
+                dynamic item = await _displayManager.BuildDisplayAsync(step, _updateModelAccessor.ModelUpdater, "Summary");
                 item.DeploymentStep = step;
                 items.Add(item);
             }
@@ -131,7 +177,7 @@ namespace OrchardCore.Deployment.Controllers
             foreach (var factory in _factories)
             {
                 var step = factory.Create();
-                dynamic thumbnail = await _displayManager.BuildDisplayAsync(step, this, "Thumbnail");
+                dynamic thumbnail = await _displayManager.BuildDisplayAsync(step, _updateModelAccessor.ModelUpdater, "Thumbnail");
                 thumbnail.DeploymentStep = step;
                 thumbnails.Add(factory.Name, thumbnail);
             }
@@ -150,7 +196,7 @@ namespace OrchardCore.Deployment.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageDeploymentPlan))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var model = new CreateDeploymentPlanViewModel();
@@ -163,7 +209,7 @@ namespace OrchardCore.Deployment.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageDeploymentPlan))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             if (ModelState.IsValid)
@@ -171,6 +217,12 @@ namespace OrchardCore.Deployment.Controllers
                 if (String.IsNullOrWhiteSpace(model.Name))
                 {
                     ModelState.AddModelError(nameof(CreateDeploymentPlanViewModel.Name), S["The name is mandatory."]);
+                }
+
+                var count = await _session.QueryIndex<DeploymentPlanIndex>(x => x.Name == model.Name).CountAsync();
+                if (count > 0)
+                {
+                    ModelState.AddModelError(nameof(CreateDeploymentPlanViewModel.Name), S["A deployment plan with the same name already exists."]);
                 }
             }
 
@@ -191,13 +243,13 @@ namespace OrchardCore.Deployment.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageDeploymentPlan))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var deploymentPlan = await _session.GetAsync<DeploymentPlan>(id);
 
             if (deploymentPlan == null)
-            { 
+            {
                 return NotFound();
             }
 
@@ -215,7 +267,7 @@ namespace OrchardCore.Deployment.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageDeploymentPlan))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var deploymentPlan = await _session.GetAsync<DeploymentPlan>(model.Id);
@@ -230,6 +282,14 @@ namespace OrchardCore.Deployment.Controllers
                 if (String.IsNullOrWhiteSpace(model.Name))
                 {
                     ModelState.AddModelError(nameof(EditDeploymentPlanViewModel.Name), S["The name is mandatory."]);
+                }
+                if (!String.Equals(model.Name, deploymentPlan.Name, StringComparison.OrdinalIgnoreCase))
+                {
+                    var count = await _session.QueryIndex<DeploymentPlanIndex>(x => x.Name == model.Name && x.DocumentId != model.Id).CountAsync();
+                    if (count > 0)
+                    {
+                        ModelState.AddModelError(nameof(CreateDeploymentPlanViewModel.Name), S["A deployment plan with the same name already exists."]);
+                    }
                 }
             }
 
@@ -253,7 +313,7 @@ namespace OrchardCore.Deployment.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageDeploymentPlan))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var deploymentPlan = await _session.GetAsync<DeploymentPlan>(id);
@@ -266,7 +326,7 @@ namespace OrchardCore.Deployment.Controllers
             _session.Delete(deploymentPlan);
 
             _notifier.Success(H["Deployment plan deleted successfully"]);
-            
+
             return RedirectToAction(nameof(Index));
         }
     }

@@ -64,6 +64,13 @@ namespace OrchardCore.Templates
             );
 
             routes.MapAreaControllerRoute(
+                name: "Templates.Admin",
+                areaName: "OrchardCore.Templates",
+                pattern: _adminOptions.AdminUrlPrefix + "/Templates/Admin",
+                defaults: new { controller = templateControllerName, action = nameof(TemplateController.Admin) }
+            );
+
+            routes.MapAreaControllerRoute(
                 name: "Templates.Create",
                 areaName: "OrchardCore.Templates",
                 pattern: _adminOptions.AdminUrlPrefix + "/Templates/Create",
