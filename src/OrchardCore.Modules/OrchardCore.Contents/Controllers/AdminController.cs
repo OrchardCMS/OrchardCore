@@ -87,13 +87,13 @@ namespace OrchardCore.Contents.Controllers
             var pager = new Pager(pagerParameters, siteSettings.PageSize);
 
             // This is used by the AdminMenus so needs to be passed into the options.
-            if (!string.IsNullOrEmpty(contentTypeId))
+            if (!String.IsNullOrEmpty(contentTypeId))
             {
                 model.Options.SelectedContentType = contentTypeId;
             }
 
             // Populate the creatable types.
-            if (!string.IsNullOrEmpty(model.Options.SelectedContentType))
+            if (!String.IsNullOrEmpty(model.Options.SelectedContentType))
             {
                 var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(model.Options.SelectedContentType);
                 if (contentTypeDefinition == null)
@@ -101,14 +101,15 @@ namespace OrchardCore.Contents.Controllers
                     return NotFound();
                 }
 
+                var creatableList = new List<SelectListItem>();
+
                 // Allows non creatable types to be created by another admin page.
-                if (model.Options.CanCreateSelectedContentType)
+                if (contentTypeDefinition.GetSettings<ContentTypeSettings>().Creatable || model.Options.CanCreateSelectedContentType)
                 {
-                    model.Options.CreatableTypes = new List<SelectListItem>
-                    {
-                        new SelectListItem(new LocalizedString(contentTypeDefinition.DisplayName, contentTypeDefinition.DisplayName).Value, contentTypeDefinition.Name)
-                    };
+                    creatableList.Add(new SelectListItem(new LocalizedString(contentTypeDefinition.DisplayName, contentTypeDefinition.DisplayName).Value, contentTypeDefinition.Name));
                 }
+
+                model.Options.CreatableTypes = creatableList;
             }
 
             if (model.Options.CreatableTypes == null)
