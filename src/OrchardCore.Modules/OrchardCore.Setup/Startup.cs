@@ -18,10 +18,10 @@ namespace OrchardCore.Setup
     public class Startup : StartupBase
     {
         private readonly string _defaultCulture = CultureInfo.InstalledUICulture.Name;
+        private readonly IShellConfiguration _shellConfiguration;
         private string[] _supportedCultures = new string[] {
             "ar", "cs", "de", "el", "en", "es", "fa", "fr", "it", "ja", "pl", "pt-BR", "ru", "sv", "tr", "vi", "zh-CN", "zh-TW"
         };
-        private readonly IShellConfiguration _shellConfiguration;
 
         public Startup(IShellConfiguration shellConfiguration)
         {
