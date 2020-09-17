@@ -27,6 +27,7 @@ namespace OrchardCore.ContentManagement.Display
         private readonly IEnumerable<IContentPartDisplayDriver> _partDisplayDrivers;
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly ITypeActivatorFactory<ContentPart> _contentPartFactory;
+        private readonly ILogger _logger;
 
         public ContentItemDisplayCoordinator(
             IContentPartDisplayDriverResolver contentPartDisplayDriverResolver,
@@ -48,18 +49,16 @@ namespace OrchardCore.ContentManagement.Display
 
             foreach (var element in partDisplayDrivers.Select(x => x.GetType()))
             {
-                logger.LogWarning("The content part display driver '{ContentPartDisplayDriver}' should not be registerd in DI. Use UseDisplayDriver<T> instead.", element);
+                logger.LogWarning("The content part display driver '{ContentPartDisplayDriver}' should not be registered in DI. Use UseDisplayDriver<T> instead.", element);
             }
 
             foreach (var element in fieldDisplayDrivers.Select(x => x.GetType()))
             {
-                logger.LogWarning("The content field display driver '{ContentFieldDisplayDriver}' should not be registerd in DI. Use UseDisplayDriver<T> instead.", element);
+                logger.LogWarning("The content field display driver '{ContentFieldDisplayDriver}' should not be registered in DI. Use UseDisplayDriver<T> instead.", element);
             }
 
-            Logger = logger;
+            _logger = logger;
         }
-
-        private ILogger Logger { get; set; }
 
         public async Task BuildDisplayAsync(ContentItem contentItem, BuildDisplayContext context)
         {
@@ -82,7 +81,7 @@ namespace OrchardCore.ContentManagement.Display
                 }
                 catch (Exception ex)
                 {
-                    InvokeExtensions.HandleException(ex, Logger, displayDriver.GetType().Name, nameof(BuildDisplayAsync));
+                    InvokeExtensions.HandleException(ex, _logger, displayDriver.GetType().Name, nameof(BuildDisplayAsync));
                 }
             }
 
@@ -109,11 +108,11 @@ namespace OrchardCore.ContentManagement.Display
                         }
                         catch (Exception ex)
                         {
-                            InvokeExtensions.HandleException(ex, Logger, partDisplayDrivers.GetType().Name, nameof(BuildDisplayAsync));
+                            InvokeExtensions.HandleException(ex, _logger, partDisplayDrivers.GetType().Name, nameof(BuildDisplayAsync));
                         }
                     }
                     // TODO: This can be removed in a future release as the recommended way is to use ContentOptions.
-                    // Iteratate existing driver registrations as multiple drivers maybe not be registered with ContentOptions.
+                    // Iterate existing driver registrations as multiple drivers maybe not be registered with ContentOptions.
                     foreach (var displayDriver in _partDisplayDrivers)
                     {
                         try
@@ -126,7 +125,7 @@ namespace OrchardCore.ContentManagement.Display
                         }
                         catch (Exception ex)
                         {
-                            InvokeExtensions.HandleException(ex, Logger, displayDriver.GetType().Name, nameof(BuildDisplayAsync));
+                            InvokeExtensions.HandleException(ex, _logger, displayDriver.GetType().Name, nameof(BuildDisplayAsync));
                         }
                     }
                     var tempContext = context;
@@ -171,6 +170,8 @@ namespace OrchardCore.ContentManagement.Display
                         }
 
                         context = new BuildDisplayContext(shapeResult.Shape, context.DisplayType, context.GroupId, context.ShapeFactory, context.Layout, context.Updater);
+                        // With a new display context we have the default FindPlacementDelegate that returns null, so we reuse the delegate from the temp context.
+                        context.FindPlacement = tempContext.FindPlacement;
                     }
 
                     foreach (var contentPartFieldDefinition in contentTypePartDefinition.PartDefinition.Fields)
@@ -188,11 +189,11 @@ namespace OrchardCore.ContentManagement.Display
                             }
                             catch (Exception ex)
                             {
-                                InvokeExtensions.HandleException(ex, Logger, fieldDisplayDriver.GetType().Name, nameof(BuildDisplayAsync));
+                                InvokeExtensions.HandleException(ex, _logger, fieldDisplayDriver.GetType().Name, nameof(BuildDisplayAsync));
                             }
                         }
                         // TODO: This can be removed in a future release as the recommended way is to use ContentOptions.
-                        // Iteratate existing driver registrations as multiple drivers maybe not be registered with ContentOptions.
+                        // Iterate existing driver registrations as multiple drivers maybe not be registered with ContentOptions.
                         foreach (var displayDriver in _fieldDisplayDrivers)
                         {
                             try
@@ -205,7 +206,7 @@ namespace OrchardCore.ContentManagement.Display
                             }
                             catch (Exception ex)
                             {
-                                InvokeExtensions.HandleException(ex, Logger, displayDriver.GetType().Name, nameof(BuildDisplayAsync));
+                                InvokeExtensions.HandleException(ex, _logger, displayDriver.GetType().Name, nameof(BuildDisplayAsync));
                             }
                         }
                     }
@@ -242,7 +243,7 @@ namespace OrchardCore.ContentManagement.Display
                 }
                 catch (Exception ex)
                 {
-                    InvokeExtensions.HandleException(ex, Logger, displayDriver.GetType().Name, nameof(BuildEditorAsync));
+                    InvokeExtensions.HandleException(ex, _logger, displayDriver.GetType().Name, nameof(BuildEditorAsync));
                 }
             }
 
@@ -274,9 +275,9 @@ namespace OrchardCore.ContentManagement.Display
                     {
                         await result.ApplyAsync(context);
                     }
-                }, part, typePartDefinition, context, Logger);
+                }, part, typePartDefinition, context, _logger);
                 // TODO: This can be removed in a future release as the recommended way is to use ContentOptions.
-                // Iteratate existing driver registrations as multiple drivers maybe not be registered with ContentOptions.
+                // Iterate existing driver registrations as multiple drivers maybe not be registered with ContentOptions.
                 await _partDisplayDrivers.InvokeAsync(async (driver, part, typePartDefinition, context) =>
                 {
                     var result = await driver.BuildEditorAsync(part, typePartDefinition, context);
@@ -284,7 +285,7 @@ namespace OrchardCore.ContentManagement.Display
                     {
                         await result.ApplyAsync(context);
                     }
-                }, part, typePartDefinition, context, Logger);
+                }, part, typePartDefinition, context, _logger);
 
                 foreach (var partFieldDefinition in typePartDefinition.PartDefinition.Fields)
                 {
@@ -300,9 +301,9 @@ namespace OrchardCore.ContentManagement.Display
                         {
                             await result.ApplyAsync(context);
                         }
-                    }, part, partFieldDefinition, typePartDefinition, context, Logger);
+                    }, part, partFieldDefinition, typePartDefinition, context, _logger);
                     // TODO: This can be removed in a future release as the recommended way is to use ContentOptions.
-                    // Iteratate existing driver registrations as multiple drivers maybe not be registered with ContentOptions.
+                    // Iterate existing driver registrations as multiple drivers maybe not be registered with ContentOptions.
                     await _fieldDisplayDrivers.InvokeAsync(async (driver, part, partFieldDefinition, typePartDefinition, context) =>
                     {
                         var result = await driver.BuildEditorAsync(part, partFieldDefinition, typePartDefinition, context);
@@ -310,7 +311,7 @@ namespace OrchardCore.ContentManagement.Display
                         {
                             await result.ApplyAsync(context);
                         }
-                    }, part, partFieldDefinition, typePartDefinition, context, Logger);
+                    }, part, partFieldDefinition, typePartDefinition, context, _logger);
                 }
             }
         }
@@ -342,7 +343,7 @@ namespace OrchardCore.ContentManagement.Display
                 }
                 catch (Exception ex)
                 {
-                    InvokeExtensions.HandleException(ex, Logger, displayDriver.GetType().Name, nameof(UpdateEditorAsync));
+                    InvokeExtensions.HandleException(ex, _logger, displayDriver.GetType().Name, nameof(UpdateEditorAsync));
                 }
             }
 
@@ -371,9 +372,9 @@ namespace OrchardCore.ContentManagement.Display
                     {
                         await result.ApplyAsync(context);
                     }
-                }, part, typePartDefinition, context, Logger);
+                }, part, typePartDefinition, context, _logger);
                 // TODO: This can be removed in a future release as the recommended way is to use ContentOptions.
-                // Iteratate existing driver registrations as multiple drivers maybe not be registered with ContentOptions.
+                // Iterate existing driver registrations as multiple drivers maybe not be registered with ContentOptions.
                 await _partDisplayDrivers.InvokeAsync(async (driver, part, typePartDefinition, context) =>
                 {
                     var result = await driver.UpdateEditorAsync(part, typePartDefinition, context);
@@ -381,7 +382,7 @@ namespace OrchardCore.ContentManagement.Display
                     {
                         await result.ApplyAsync(context);
                     }
-                }, part, typePartDefinition, context, Logger);
+                }, part, typePartDefinition, context, _logger);
 
                 foreach (var partFieldDefinition in typePartDefinition.PartDefinition.Fields)
                 {
@@ -397,9 +398,9 @@ namespace OrchardCore.ContentManagement.Display
                         {
                             await result.ApplyAsync(context);
                         }
-                    }, part, partFieldDefinition, typePartDefinition, context, Logger);
+                    }, part, partFieldDefinition, typePartDefinition, context, _logger);
                     // TODO: This can be removed in a future release as the recommended way is to use ContentOptions.
-                    // Iteratate existing driver registrations as multiple drivers maybe not be registered with ContentOptions.
+                    // Iterate existing driver registrations as multiple drivers maybe not be registered with ContentOptions.
                     await _fieldDisplayDrivers.InvokeAsync(async (driver, part, partFieldDefinition, typePartDefinition, context) =>
                     {
                         var result = await driver.UpdateEditorAsync(part, partFieldDefinition, typePartDefinition, context);
@@ -407,7 +408,7 @@ namespace OrchardCore.ContentManagement.Display
                         {
                             await result.ApplyAsync(context);
                         }
-                    }, part, partFieldDefinition, typePartDefinition, context, Logger);
+                    }, part, partFieldDefinition, typePartDefinition, context, _logger);
                 }
             }
         }

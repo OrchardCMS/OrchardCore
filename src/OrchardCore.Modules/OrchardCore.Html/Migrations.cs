@@ -8,6 +8,7 @@ using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Data.Migration;
+using OrchardCore.Html.Settings;
 using YesSql;
 
 namespace OrchardCore.Html
@@ -15,7 +16,7 @@ namespace OrchardCore.Html
     public class Migrations : DataMigration
     {
         private readonly ISession _session;
-        private readonly ILogger<Migrations> _logger;
+        private readonly ILogger _logger;
         private readonly IContentDefinitionManager _contentDefinitionManager;
 
         public Migrations(
@@ -110,6 +111,24 @@ namespace OrchardCore.Html
             }
 
             return 4;
+        }
+
+        // This code can be removed in a later version.
+        public int UpdateFrom4()
+        {
+            // For backwards compatability with liquid filters we disable html sanitization on existing field definitions.
+            foreach (var contentType in _contentDefinitionManager.LoadTypeDefinitions())
+            {
+                if (contentType.Parts.Any(x => x.PartDefinition.Name == "HtmlBodyPart"))
+                {
+                    _contentDefinitionManager.AlterTypeDefinition(contentType.Name, x => x.WithPart("HtmlBodyPart", part =>
+                    {
+                        part.MergeSettings<HtmlBodyPartSettings>(x => x.SanitizeHtml = false);
+                    }));
+                }
+            }
+
+            return 5;
         }
     }
 }

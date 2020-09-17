@@ -2,9 +2,9 @@
   "name": "ComingSoon",
   "displayName": "Coming Soon",
   "description": "Coming Soon website.",
-  "author": "The Orchard Team",
-  "website": "https://orchardproject.net",
-  "version": "2.0",
+  "author": "The Orchard Core Team",
+  "website": "https://orchardcore.net",
+  "version": "1.0.0-rc2",
   "issetuprecipe": true,
   "categories": [ "default" ],
   "tags": [ "comingsoon" ],
@@ -47,7 +47,6 @@
         "OrchardCore.HomeRoute",
         "OrchardCore.Html",
 
-        "OrchardCore.Liquid",
         "OrchardCore.Localization",
 
         "OrchardCore.Media",
@@ -57,9 +56,9 @@
         "OrchardCore.Resources",
         "OrchardCore.Roles",
 
-
         "OrchardCore.Scripting",
         "OrchardCore.Settings",
+        "OrchardCore.Shortcodes.Templates",
 
         "OrchardCore.Templates",
         "OrchardCore.Tenants",

@@ -56,9 +56,18 @@ $(function () {
     className: "fas fa-link fa-sm",
     title: "Create Link"
   }, "|", {
+    name: "shortcode",
+    className: "icon-shortcode",
+    title: "Insert Shortcode",
+    "default": true,
+    action: function action(editor) {
+      shortcodesApp.init(function (defaultValue) {
+        editor.codemirror.replaceSelection(defaultValue);
+      });
+    }
+  }, "|", {
     name: "image",
     action: function action(editor) {
-      // editor = e;
       $("#mediaApp").detach().appendTo('#mediaModalMarkdown .modal-body');
       $("#mediaApp").show();
       mediaApp.selectedMedias = [];
@@ -67,7 +76,7 @@ $(function () {
         var mediaMarkdownContent = "";
 
         for (i = 0; i < mediaApp.selectedMedias.length; i++) {
-          mediaMarkdownContent += ' {{ "' + mediaApp.selectedMedias[i].mediaPath + '" | asset_url | img_tag }}';
+          mediaMarkdownContent += ' [image]' + mediaApp.selectedMedias[i].mediaPath + '[/image]';
         }
 
         var cm = editor.codemirror;
@@ -116,3 +125,8 @@ $(function () {
     title: "Toggle Fullscreen"
   }];
 });
+
+function initializeSimpleMdeShortcodeWrapper(simpleMde) {
+  var toolbar = simpleMde.gui.toolbar;
+  $(toolbar).wrap('<div class="shortcode-modal-wrapper"></div>');
+}

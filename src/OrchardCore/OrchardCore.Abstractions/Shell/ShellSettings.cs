@@ -36,13 +36,13 @@ namespace OrchardCore.Environment.Shell
             Name = settings.Name;
         }
 
-        public string Description
-        {
-            get => _settings["Description"];
-            set => _settings["Description"] = value;
-        }
-
         public string Name { get; set; }
+
+        public string Identifier
+        {
+            get => _settings["Identifier"];
+            set => _settings["Identifier"] = value;
+        }
 
         public string RequestUrlHost
         {

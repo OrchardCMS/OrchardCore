@@ -109,8 +109,7 @@ namespace OrchardCore.Environment.Shell.Configuration
                     providers.AddRange(_configurationProviders);
                 }
 
-                _updatableData = new UpdatableDataProvider(_initialData ??
-                    Enumerable.Empty<KeyValuePair<string, string>>());
+                _updatableData = new UpdatableDataProvider(_initialData ?? Enumerable.Empty<KeyValuePair<string, string>>());
 
                 providers.Add(_updatableData);
 
@@ -136,7 +135,14 @@ namespace OrchardCore.Environment.Shell.Configuration
 
         public string this[string key]
         {
-            get => Configuration[key];
+            get
+            {
+                var value = Configuration[key];
+
+                return value ?? (key.Contains('_')
+                    ? Configuration[key.Replace('_', '.')]
+                    : null);
+            }
             set
             {
                 EnsureConfiguration();
@@ -146,7 +152,7 @@ namespace OrchardCore.Environment.Shell.Configuration
 
         public IConfigurationSection GetSection(string key)
         {
-            return Configuration.GetSection(key);
+            return Configuration.GetSectionCompat(key);
         }
 
         public IEnumerable<IConfigurationSection> GetChildren()

@@ -34,6 +34,7 @@ namespace OrchardCore.Lucene.Controllers
         private readonly ISession _session;
         private readonly IEnumerable<IPermissionProvider> _permissionProviders;
         private readonly dynamic New;
+        private readonly ILogger _logger;
 
         public SearchController(
             IAuthorizationService authorizationService,
@@ -59,11 +60,8 @@ namespace OrchardCore.Lucene.Controllers
             _session = session;
             _permissionProviders = permissionProviders;
             New = shapeFactory;
-
-            Logger = logger;
+            _logger = logger;
         }
-
-        private ILogger Logger { get; set; }
 
         [HttpGet]
         public async Task<IActionResult> Search(SearchIndexViewModel viewModel, PagerSlimParameters pagerParameters)
@@ -83,13 +81,13 @@ namespace OrchardCore.Lucene.Controllers
             }
             else
             {
-                Logger.LogInformation("Couldn't execute search. The search index doesn't exist.");
+                _logger.LogInformation("Couldn't execute search. The search index doesn't exist.");
                 return BadRequest("Search is not configured.");
             }
 
             if (searchSettings.SearchIndex != null && !_luceneIndexProvider.Exists(searchSettings.SearchIndex))
             {
-                Logger.LogInformation("Couldn't execute search. The search index doesn't exist.");
+                _logger.LogInformation("Couldn't execute search. The search index doesn't exist.");
                 return BadRequest("Search is not configured.");
             }
 
@@ -97,7 +95,7 @@ namespace OrchardCore.Lucene.Controllers
 
             if (luceneSettings == null || luceneSettings?.DefaultSearchFields == null)
             {
-                Logger.LogInformation("Couldn't execute search. No Lucene settings was defined.");
+                _logger.LogInformation("Couldn't execute search. No Lucene settings was defined.");
                 return BadRequest("Search is not configured.");
             }
 
@@ -105,7 +103,7 @@ namespace OrchardCore.Lucene.Controllers
 
             if (luceneIndexSettings == null)
             {
-                Logger.LogInformation($"Couldn't execute search. No Lucene index settings was defined for ({searchSettings.SearchIndex}) index.");
+                _logger.LogInformation($"Couldn't execute search. No Lucene index settings was defined for ({searchSettings.SearchIndex}) index.");
                 return BadRequest($"Search index ({searchSettings.SearchIndex}) is not configured.");
             }
 
@@ -139,7 +137,8 @@ namespace OrchardCore.Lucene.Controllers
                 end = Convert.ToInt32(pagerParameters.After) + pager.PageSize + 1;
             }
 
-            var contentItemIds = await _searchQueryService.ExecuteQueryAsync(query, searchSettings.SearchIndex, start, end);
+            var contentItemIds = (await _searchQueryService.ExecuteQueryAsync(query, searchSettings.SearchIndex, start, end))
+                .ToList();
 
             // We Query database to retrieve content items.
             IQuery<ContentItem> queryDb;
@@ -157,7 +156,8 @@ namespace OrchardCore.Lucene.Controllers
                     .Take(pager.PageSize + 1);
             }
 
-            var containedItems = await queryDb.ListAsync();
+            // Sort the content items by their rank in the search results returned by Lucene.
+            var containedItems = (await queryDb.ListAsync()).OrderBy(x => contentItemIds.IndexOf(x.ContentItemId));
 
             // We set the PagerSlim before and after links
             if (pagerParameters.After != null || pagerParameters.Before != null)

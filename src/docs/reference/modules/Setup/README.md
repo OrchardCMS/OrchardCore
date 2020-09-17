@@ -36,7 +36,7 @@ The value will be retrieved from the `appsettings.json` tenant file.
 The following configuration values are used by default and can be customized:
 
 ```json
-    "OrchardCore.Setup": {
+    "OrchardCore_Setup": {
       "DefaultCulture": "", // When using "" the system OS culture will be used
       "SupportedCultures": [
         "ar", 

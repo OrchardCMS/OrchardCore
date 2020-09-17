@@ -6,8 +6,7 @@ namespace OrchardCore.OpenId.YesSql.Models
     public class OpenIdAuthorization
     {
         /// <summary>
-        /// Gets or sets the unique identifier
-        /// associated with the current application.
+        /// Gets or sets the unique identifier associated with the current application.
         /// </summary>
         public string AuthorizationId { get; set; }
 
@@ -18,16 +17,14 @@ namespace OrchardCore.OpenId.YesSql.Models
         public string ApplicationId { get; set; }
 
         /// <summary>
-        /// Gets or sets the physical identifier
-        /// associated with the current authorization.
+        /// Gets or sets the physical identifier associated with the current authorization.
         /// </summary>
         public int Id { get; set; }
 
         /// <summary>
-        /// Gets or sets the additional properties
-        /// associated with the current authorization.
+        /// Gets or sets the additional properties associated with the current authorization.
         /// </summary>
-        public virtual JObject Properties { get; set; }
+        public JObject Properties { get; set; }
 
         /// <summary>
         /// Gets or sets the scopes associated with the current authorization.

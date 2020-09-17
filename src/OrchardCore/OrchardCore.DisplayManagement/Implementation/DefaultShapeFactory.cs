@@ -12,16 +12,19 @@ namespace OrchardCore.DisplayManagement.Implementation
         private readonly IEnumerable<IShapeFactoryEvents> _events;
         private readonly IShapeTableManager _shapeTableManager;
         private readonly IThemeManager _themeManager;
+        private readonly IServiceProvider _serviceProvider;
         private ShapeTable _scopedShapeTable;
 
         public DefaultShapeFactory(
             IEnumerable<IShapeFactoryEvents> events,
             IShapeTableManager shapeTableManager,
-            IThemeManager themeManager)
+            IThemeManager themeManager,
+            IServiceProvider serviceProvider)
         {
             _events = events;
             _shapeTableManager = shapeTableManager;
             _themeManager = themeManager;
+            _serviceProvider = serviceProvider;
         }
 
         public dynamic New => this;
@@ -61,6 +64,7 @@ namespace OrchardCore.DisplayManagement.Implementation
 
             var creatingContext = new ShapeCreatingContext
             {
+                ServiceProvider = _serviceProvider,
                 New = this,
                 ShapeFactory = this,
                 ShapeType = shapeType,
@@ -87,6 +91,7 @@ namespace OrchardCore.DisplayManagement.Implementation
             // Create the new instance
             var createdContext = new ShapeCreatedContext
             {
+                ServiceProvider = _serviceProvider,
                 New = creatingContext.New,
                 ShapeFactory = creatingContext.ShapeFactory,
                 ShapeType = creatingContext.ShapeType,

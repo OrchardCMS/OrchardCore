@@ -2,10 +2,10 @@ using OrchardCore.Modules.Manifest;
 
 [assembly: Module(
     Name = "Recipes",
-    Author = "The Orchard Team",
-    Website = "https://orchardproject.net",
-    Version = "2.0.0",
-    Description = "Provides Orchard Recipes.",
+    Author = ManifestConstants.OrchardCoreTeam,
+    Website = ManifestConstants.OrchardCoreWebsite,
+    Version = ManifestConstants.OrchardCoreVersion,
+    Description = "The Recipes module allows you to execute recipe steps from json files.",
     Dependencies = new[]
     {
         "OrchardCore.Features",

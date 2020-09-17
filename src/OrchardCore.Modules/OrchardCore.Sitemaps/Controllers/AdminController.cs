@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.Localization;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
@@ -34,8 +33,6 @@ namespace OrchardCore.Sitemaps.Controllers
         private readonly ISitemapCacheProvider _sitemapCacheProvider;
         private readonly IUpdateModelAccessor _updateModelAccessor;
         private readonly INotifier _notifier;
-
-        private readonly IStringLocalizer T;
         private readonly IHtmlLocalizer H;
         private readonly dynamic New;
 
@@ -51,7 +48,6 @@ namespace OrchardCore.Sitemaps.Controllers
             IUpdateModelAccessor updateModelAccessor,
             INotifier notifier,
             IShapeFactory shapeFactory,
-            IStringLocalizer<AdminController> stringLocalizer,
             IHtmlLocalizer<AdminController> htmlLocalizer)
         {
             _sitemapService = sitemapService;
@@ -64,7 +60,6 @@ namespace OrchardCore.Sitemaps.Controllers
             _sitemapCacheProvider = sitemapCacheProvider;
             _updateModelAccessor = updateModelAccessor;
             _notifier = notifier;
-            T = stringLocalizer;
             H = htmlLocalizer;
             New = shapeFactory;
         }

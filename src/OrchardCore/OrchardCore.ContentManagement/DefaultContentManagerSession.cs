@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 
 namespace OrchardCore.ContentManagement
@@ -14,7 +13,11 @@ namespace OrchardCore.ContentManagement
         {
             _hasItems = true;
 
-            _itemByVersionId.Add(item.Id, item);
+            // Don't fail to re-add an item if it is the same instance.
+            if (!_itemByVersionId.TryGetValue(item.Id, out var existing) || existing != item)
+            {
+                _itemByVersionId.Add(item.Id, item);
+            }
 
             // is it the  Published version ?
             if (item.Published)

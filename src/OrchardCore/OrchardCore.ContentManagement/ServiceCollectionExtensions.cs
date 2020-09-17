@@ -27,10 +27,13 @@ namespace OrchardCore.ContentManagement
             services.AddSingleton<ITypeActivatorFactory<ContentField>, ContentFieldFactory>();
 
             services.AddSingleton<IContentItemIdGenerator, DefaultContentItemIdGenerator>();
-            services.AddScoped<IContentAliasManager, ContentAliasManager>();
+            services.AddScoped<IContentHandleManager, ContentHandleManager>();
+            // This code can be removed in a future release.
+            services.AddScoped<IContentAliasManager>(sp => (IContentAliasManager)sp.GetRequiredService<IContentHandleManager>());
 
             services.AddOptions<ContentOptions>();
             services.AddScoped<IContentPartHandlerResolver, ContentPartHandlerResolver>();
+
             return services;
         }
 

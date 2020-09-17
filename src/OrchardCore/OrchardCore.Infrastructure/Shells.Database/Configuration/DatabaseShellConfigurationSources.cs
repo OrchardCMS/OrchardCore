@@ -30,7 +30,7 @@ namespace OrchardCore.Shells.Database.Configuration
         {
             _options = configuration
                 .GetSection("OrchardCore")
-                .GetSection("OrchardCore.Shells.Database")
+                .GetSectionCompat("OrchardCore_Shells_Database")
                 .Get<DatabaseShellsStorageOptions>()
                 ?? new DatabaseShellsStorageOptions();
 

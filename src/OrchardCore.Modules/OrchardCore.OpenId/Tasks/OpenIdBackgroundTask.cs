@@ -13,7 +13,7 @@ namespace OrchardCore.OpenId.Tasks
     [BackgroundTask(Schedule = "*/30 * * * *", Description = "Performs various cleanup operations for OpenID-related features.")]
     public class OpenIdBackgroundTask : IBackgroundTask
     {
-        private readonly ILogger<OpenIdBackgroundTask> _logger;
+        private readonly ILogger _logger;
         private readonly IOpenIdServerService _serverService;
 
         public OpenIdBackgroundTask(
@@ -28,7 +28,7 @@ namespace OrchardCore.OpenId.Tasks
         {
             try
             {
-                await _serverService.PruneSigningKeysAsync();
+                await _serverService.PruneManagedCertificatesAsync();
             }
             catch (OperationCanceledException exception) when (exception.CancellationToken == cancellationToken)
             {
