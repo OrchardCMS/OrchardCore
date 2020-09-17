@@ -36,7 +36,7 @@ script:
         rm -rf ./App_Data;
         dotnet publish -c Release -o $TRAVIS_BUILD_DIR/.build/release;
         cd $TRAVIS_BUILD_DIR;
-        docker build -t orchardproject/orchardcore-cms-linux:latest -t orchardproject/orchardcore-cms-linux:1.0.0-rc2 .;
+        docker build -f Dockerfile-CI -t orchardproject/orchardcore-cms-linux:latest -t orchardproject/orchardcore-cms-linux:1.0.0-rc2 .;
         echo "$DOCKER_PASS" | docker login -u="$DOCKER_USER" --password-stdin;
         docker push orchardproject/orchardcore-cms-linux;
     fi;
@@ -45,7 +45,7 @@ script:
         rm -rf ./App_Data;
         dotnet publish -c Release -o $TRAVIS_BUILD_DIR/.build/release;
         cd $TRAVIS_BUILD_DIR;
-        docker build -t orchardproject/orchardcore-cms-linux:dev .;
+        docker build -f Dockerfile-CI -t orchardproject/orchardcore-cms-linux:dev .;
         echo "$DOCKER_PASS" | docker login -u="$DOCKER_USER" --password-stdin;
         docker push orchardproject/orchardcore-cms-linux;
     fi;

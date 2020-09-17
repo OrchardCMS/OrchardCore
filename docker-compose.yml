@@ -3,13 +3,20 @@ services:
     web:
         build: 
             context: .
-            dockerfile: Dockerfile-compose
+            dockerfile: Dockerfile
         ports:
             - "5009:80"
         depends_on:
+            - sqlserver
             - mysql
+            - postgresql
+    sqlserver:
+        image: "mcr.microsoft.com/mssql/server"
+        environment:
+            SA_PASSWORD: "pEKoU!8n123&"
+            ACCEPT_EULA: "Y"
     mysql:
-        image: mysql:5.7
+        image: mysql:latest
         restart: always
         environment:
             MYSQL_DATABASE: 'db'
@@ -27,7 +34,18 @@ services:
             - '3306'
             # Where our data will be persisted
         volumes:
-            - mysql:/var/lib/mysql
+            - mysql-data:/var/lib/mysql
+    postgresql:
+        image: postgres:latest
+        volumes:
+            - postgresql-data:/var/lib/postgresql/data
+        ports:
+            - 5432:5432
+        environment:
+            POSTGRES_USER: unicorn_user
+            POSTGRES_PASSWORD: magical_password
+            POSTGRES_DB: rainbow_database
 # Names our volume
 volumes:
-  mysql:
+    mysql-data:
+    postgresql-data:
