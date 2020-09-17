@@ -87,14 +87,13 @@ namespace OrchardCore.Contents.Controllers
             var pager = new Pager(pagerParameters, siteSettings.PageSize);
 
             // This is used by the AdminMenus so needs to be passed into the options.
-            if (!string.IsNullOrEmpty(contentTypeId))
+            if (!String.IsNullOrEmpty(contentTypeId))
             {
                 model.Options.SelectedContentType = contentTypeId;
             }
 
             // Populate the creatable types.
-            model.Options.CreatableTypes = new List<SelectListItem>();
-            if (!string.IsNullOrEmpty(model.Options.SelectedContentType))
+            if (!String.IsNullOrEmpty(model.Options.SelectedContentType))
             {
                 var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(model.Options.SelectedContentType);
                 if (contentTypeDefinition == null)
@@ -102,30 +101,34 @@ namespace OrchardCore.Contents.Controllers
                     return NotFound();
                 }
 
+                var creatableList = new List<SelectListItem>();
+
                 // Allows non creatable types to be created by another admin page.
                 if (contentTypeDefinition.GetSettings<ContentTypeSettings>().Creatable || model.Options.CanCreateSelectedContentType)
                 {
-                    model.Options.CreatableTypes.Add(
-                        new SelectListItem(new LocalizedString(contentTypeDefinition.DisplayName, contentTypeDefinition.DisplayName).Value, contentTypeDefinition.Name)
-                    );
+                    creatableList.Add(new SelectListItem(new LocalizedString(contentTypeDefinition.DisplayName, contentTypeDefinition.DisplayName).Value, contentTypeDefinition.Name));
                 }
+
+                model.Options.CreatableTypes = creatableList;
             }
-            else
+
+            if (model.Options.CreatableTypes == null)
             {
                 var contentTypes = _contentDefinitionManager
                     .ListTypeDefinitions()
                     .Where(ctd => ctd.GetSettings<ContentTypeSettings>().Creatable)
                     .OrderBy(ctd => ctd.DisplayName);
 
+                var creatableList = new List<SelectListItem>();
                 if (contentTypes.Any())
                 {
                     foreach (var contentTypeDefinition in contentTypes)
                     {
-                        model.Options.CreatableTypes.Add(
-                            new SelectListItem(new LocalizedString(contentTypeDefinition.DisplayName, contentTypeDefinition.DisplayName).Value, contentTypeDefinition.Name)
-                            );
+                        creatableList.Add(new SelectListItem(new LocalizedString(contentTypeDefinition.DisplayName, contentTypeDefinition.DisplayName).Value, contentTypeDefinition.Name));
                     }
                 }
+
+                model.Options.CreatableTypes = creatableList;
             }
 
             // We populate the remaining SelectLists.
