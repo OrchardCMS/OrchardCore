@@ -156,31 +156,39 @@ namespace OrchardCore.Contents.Controllers
                 new SelectListItem() { Text = S["Delete"], Value = nameof(ContentsBulkAction.Remove) }
             };
 
-            var listableTypes = new List<ContentTypeDefinition>();
-            foreach (var ctd in _contentDefinitionManager.ListTypeDefinitions())
+            //doesn't fill model.Options.ContentTypeOptions to hide "Content Type" filter on the right side of the interface, because user viewing a list of a specific contenttype items
+            if (string.IsNullOrEmpty(contentTypeId) && model.Options.ContentTypeOptions == null)
             {
-                if (ctd.GetSettings<ContentTypeSettings>().Listable)
+                var listableTypes = new List<ContentTypeDefinition>();
+                foreach (var ctd in _contentDefinitionManager.ListTypeDefinitions())
                 {
-                    var authorized = await _authorizationService.AuthorizeAsync(User, Permissions.EditContent, await _contentManager.NewAsync(ctd.Name));
-                    if (authorized)
+                    if (ctd.GetSettings<ContentTypeSettings>().Listable)
                     {
-                        listableTypes.Add(ctd);
+                        var authorized = await _authorizationService.AuthorizeAsync(User, Permissions.EditContent, await _contentManager.NewAsync(ctd.Name));
+                        if (authorized)
+                        {
+                            listableTypes.Add(ctd);
+                        }
                     }
+                }
+
+                var contentTypeOptions = listableTypes
+                    .Select(ctd => new KeyValuePair<string, string>(ctd.Name, ctd.DisplayName))
+                    .ToList().OrderBy(kvp => kvp.Value);
+
+                model.Options.ContentTypeOptions = new List<SelectListItem>
+                {
+                    new SelectListItem() { Text = S["All content types"], Value = "" }
+                };
+                foreach (var option in contentTypeOptions)
+                {
+                    model.Options.ContentTypeOptions.Add(new SelectListItem() { Text = option.Value, Value = option.Key });
                 }
             }
 
-            var contentTypeOptions = listableTypes
-                .Select(ctd => new KeyValuePair<string, string>(ctd.Name, ctd.DisplayName))
-                .ToList().OrderBy(kvp => kvp.Value);
-
-            model.Options.ContentTypeOptions = new List<SelectListItem>
-            {
-                new SelectListItem() { Text = S["All content types"], Value = "" }
-            };
-            foreach (var option in contentTypeOptions)
-            {
-                model.Options.ContentTypeOptions.Add(new SelectListItem() { Text = option.Value, Value = option.Key });
-            }
+            //if ContentTypeOptions is not initialized by query string or by the code above, initialize it
+            if (model.Options.ContentTypeOptions == null)
+                model.Options.ContentTypeOptions = new List<SelectListItem>();
 
             // With the model populated we filter the query, allowing the filters to alter the model.
             var query = await _contentsAdminListQueryService.QueryAsync(model.Options, _updateModelAccessor.ModelUpdater);
