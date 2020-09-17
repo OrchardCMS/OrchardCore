@@ -88,6 +88,7 @@ nav:
         - Customize encoding settings: docs/guides/encoding-settings/README.md
         - Understanding Content Definitions Stores: docs/guides/content-definitions/README.md 
         - Change password configuration: docs/guides/password-configuration/README.md 
+        - Azure AD integration: docs/guides/azuread-integration/README.md 
     - Key Topics: 
         - Manage your Content: docs/topics/content-management/README.md
         - Customize the Display: docs/topics/display/README.md
@@ -178,6 +179,7 @@ nav:
             - DataProtection (Azure Storage): docs/reference/modules/DataProtection.Azure/README.md
     - Resources: 
         - Learning: docs/resources/README.md
+        - Meeting: docs/resources/meeting/README.md
         - Workshops: docs/resources/workshops/README.md
         - Branding: docs/resources/branding/README.md
     - Releases: 
