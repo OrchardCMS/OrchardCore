@@ -29,9 +29,9 @@ namespace OrchardCore.Localization
             {
                 builder
                     .Add(S["Configuration"], NavigationConstants.AdminMenuConfigurationPosition, localization => localization
-                    .AddClass("localization").Id("localization")
                         .Add(S["Settings"], settings => settings
-                            .Add(S["Cultures"], S["Cultures"], entry => entry
+                            .Add(S["Cultures"], S["Cultures"].PrefixPosition(), entry => entry
+                            .AddClass("cultures").Id("cultures")
                                 .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = LocalizationSettingsDisplayDriver.GroupId })
                                 .Permission(Permissions.ManageCultures)
                                 .LocalNav()

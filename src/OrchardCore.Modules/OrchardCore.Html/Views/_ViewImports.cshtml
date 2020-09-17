@@ -4,7 +4,14 @@
 *@
 
 @inherits OrchardCore.DisplayManagement.Razor.RazorPage<TModel>
+@using OrchardCore.ContentLocalization
+@using OrchardCore.ContentManagement.Metadata.Models
 @using OrchardCore.DisplayManagement
+@using OrchardCore.Html.ViewModels
+@using OrchardCore.Html.Settings
+@using OrchardCore.Localization
+@using OrchardCore.Mvc.Utilities
+@using System.Globalization
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @addTagHelper *, OrchardCore.DisplayManagement
 @addTagHelper *, OrchardCore.ResourceManagement

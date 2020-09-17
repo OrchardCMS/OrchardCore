@@ -17,13 +17,12 @@ namespace OrchardCore.Workflows.Http.Services
             var actionName = routeValues.GetValue<string>("action");
             var areaName = routeValues.GetValue<string>("area");
 
-            var entries = _entries.Values.SelectMany(x => x).Where(x =>
+            return _entries.Values.SelectMany(x => x).Where(x =>
                 x.HttpMethod == httpMethod
                 && (x.ControllerName == controllerName || string.IsNullOrWhiteSpace(x.ControllerName))
                 && (x.ActionName == actionName || string.IsNullOrWhiteSpace(x.ActionName))
-                && (x.AreaName == areaName || string.IsNullOrWhiteSpace(x.AreaName)));
-
-            return entries.ToList();
+                && (x.AreaName == areaName || string.IsNullOrWhiteSpace(x.AreaName)))
+                .ToArray();
         }
 
         public void AddEntries(IEnumerable<WorkflowRoutesEntry> entries)

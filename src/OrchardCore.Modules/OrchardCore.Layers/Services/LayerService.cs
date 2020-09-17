@@ -52,11 +52,16 @@ namespace OrchardCore.Layers.Services
             {
                 var changeToken = ChangeToken;
 
-                layers = await _sessionHelper.GetForCachingAsync<LayersDocument>();
+                bool cacheable;
 
-                layers.IsReadonly = true;
+                (cacheable, layers) = await _sessionHelper.GetForCachingAsync<LayersDocument>();
 
-                _memoryCache.Set(LayersCacheKey, layers, changeToken);
+                if (cacheable)
+                {
+                    layers.IsReadonly = true;
+
+                    _memoryCache.Set(LayersCacheKey, layers, changeToken);
+                }
             }
 
             return layers;

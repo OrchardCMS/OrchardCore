@@ -24,13 +24,14 @@ namespace OrchardCore.Menu
 
             var rvd = new RouteValueDictionary
             {
+                { "contentTypeId", "Menu" },
                 { "Area", "OrchardCore.Contents" },
                 { "Options.SelectedContentType", "Menu" },
                 { "Options.CanCreateSelectedContentType", true }
             };
 
             builder.Add(S["Content"], design => design
-                    .Add(S["Menus"], S["Menus"], menus => menus
+                    .Add(S["Menus"], S["Menus"].PrefixPosition(), menus => menus
                         .Permission(Permissions.ManageMenu)
                         .Action("List", "Admin", rvd)
                         .LocalNav()

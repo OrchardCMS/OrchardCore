@@ -48,7 +48,6 @@ namespace OrchardCore.Setup.Services
             IShellHost shellHost,
             IHostEnvironment hostingEnvironment,
             IShellContextFactory shellContextFactory,
-            IRunningShellTable runningShellTable,
             IEnumerable<IRecipeHarvester> recipeHarvesters,
             ILogger<SetupService> logger,
             IStringLocalizer<SetupService> stringLocalizer,

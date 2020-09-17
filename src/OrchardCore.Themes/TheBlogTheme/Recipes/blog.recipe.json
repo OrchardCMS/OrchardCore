@@ -2,9 +2,9 @@
   "name": "Blog",
   "displayName": "Blog",
   "description": "Provides a functional Blog with CMS features.",
-  "author": "The Orchard Team",
-  "website": "https://orchardproject.net",
-  "version": "2.0",
+  "author": "The Orchard Core Team",
+  "website": "https://orchardcore.net",
+  "version": "1.0.0-rc2",
   "issetuprecipe": true,
   "categories": [ "default" ],
   "tags": [ "blog" ],
@@ -61,11 +61,11 @@
         "OrchardCore.Layers",
         "OrchardCore.Lucene",
         "OrchardCore.Lists",
-        "OrchardCore.Liquid",
         "OrchardCore.Markdown",
         "OrchardCore.Media",
         "OrchardCore.Menu",
         "OrchardCore.Queries",
+        "OrchardCore.Shortcodes.Templates",
         "OrchardCore.Taxonomies",
         "OrchardCore.Title",
         "OrchardCore.Templates",
@@ -115,7 +115,7 @@
               "Name": "Article",
               "Settings": {
                 "ContentTypePartSettings": {
-                  "Position": "2"
+                  "Position": "3"
                 }
               }
             },
@@ -139,7 +139,7 @@
               "Settings": {
                 "ContentTypePartSettings": {
                   "Editor": "Wysiwyg",
-                  "Position": "3"
+                  "Position": "2"
                 }
               }
             },
@@ -249,7 +249,7 @@
               "Name": "BlogPost",
               "Settings": {
                 "ContentTypePartSettings": {
-                  "Position": "2"
+                  "Position": "3"
                 }
               }
             },
@@ -259,7 +259,7 @@
               "Settings": {
                 "ContentTypePartSettings": {
                   "Editor": "Wysiwyg",
-                  "Position": "3"
+                  "Position": "2"
                 }
               }
             }
@@ -315,7 +315,7 @@
               "Name": "Blog",
               "Settings": {
                 "ContentTypePartSettings": {
-                  "Position": "2"
+                  "Position": "3"
                 }
               }
             },
@@ -324,7 +324,7 @@
               "Name": "HtmlBodyPart",
               "Settings": {
                 "ContentTypePartSettings": {
-                  "Position": "3"
+                  "Position": "2"
                 }
               }
             },
@@ -603,7 +603,21 @@
                   "Position": "0"
                 }
               }
-            }
+            },
+            {
+              "PartName": "AutoroutePart",
+              "Name": "AutoroutePart",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "Position": "2"
+                },
+                "AutoroutePartSettings": {
+                  "AllowCustomPath": true,
+                  "Pattern": "{{ Model.ContentItem | display_text | slugify }}",
+                  "ManageContainedItemRoutes": true
+                }
+              }
+            }           
           ]
         },
         {
@@ -629,6 +643,20 @@
               "Settings": {
                 "ContentTypePartSettings": {
                   "Position": "0"
+                }
+              }
+            },
+            {
+              "PartName": "AutoroutePart",
+              "Name": "AutoroutePart",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "Position": "2"
+                },
+                "AutoroutePartSettings": {
+                  "AllowCustomPath": true,
+                  "Pattern": "{{ Model.ContentItem | display_text | slugify }}",
+                  "ManageContainedItemRoutes": true
                 }
               }
             }
@@ -657,7 +685,6 @@
                   "Template": null
                 },
                 "MediaFieldSettings": {
-                  "Required": true,
                   "Multiple": false
                 }
               }
@@ -695,11 +722,10 @@
                   "Template": null
                 },
                 "MediaFieldSettings": {
-                  "Required": true,
                   "Multiple": false
                 }
               }  
-            },   			
+            },              
             {
               "FieldName": "TaxonomyField",
               "Name": "Tags",
@@ -712,7 +738,6 @@
                 },
                 "ContentIndexSettings": {},
                 "TaxonomyFieldSettings": {
-                  "Required": true,
                   "TaxonomyContentItemId": "[js: variables('tagsContentItemId')]"
                 },
                 "TaxonomyFieldTagsEditorSettings": {}
@@ -728,7 +753,6 @@
                 },
                 "ContentIndexSettings": {},
                 "TaxonomyFieldSettings": {
-                  "Required": true,
                   "TaxonomyContentItemId": "[js: variables('categoriesContentItemId')]",
                   "Unique": true,
                   "LeavesOnly": true
@@ -760,7 +784,6 @@
                   "Position": "0"
                 },
                 "MediaFieldSettings": {
-                  "Required": false,
                   "Multiple": false
                 }
               }
@@ -993,6 +1016,12 @@
                 "DisplayText": "Earth",
                 "TitlePart": {
                   "Title": "Earth"
+                },
+                "AutoroutePart": {
+                  "Path": "earth"
+                },
+                "TermPart": {
+                  "TaxonomyContentItemId": "[js: variables('tagsContentItemId')]"
                 }
               },
               {
@@ -1001,6 +1030,12 @@
                 "DisplayText": "Exploration",
                 "TitlePart": {
                   "Title": "Exploration"
+                },
+                "AutoroutePart": {
+                  "Path": "exploration"
+                },
+                "TermPart": {
+                  "TaxonomyContentItemId": "[js: variables('tagsContentItemId')]"
                 }
               },
               {
@@ -1009,10 +1044,20 @@
                 "DisplayText": "Space",
                 "TitlePart": {
                   "Title": "Space"
+                },
+                "AutoroutePart": {
+                  "Path": "space"
+                },
+                "TermPart": {
+                  "TaxonomyContentItemId": "[js: variables('tagsContentItemId')]"
                 }
               }
             ],
             "TermContentType": "Tag"
+          },
+          "AutoroutePart": {
+            "Path": "tags",
+            "RouteContainedItems": true
           }
         },
         {
@@ -1040,10 +1085,20 @@
                 },
                 "TitlePart": {
                   "Title": "Travel"
+                },
+                "AutoroutePart": {
+                  "Path": "travel"
+                },
+                "TermPart": {
+                  "TaxonomyContentItemId": "[js: variables('categoriesContentItemId')]"
                 }
               }
             ],
             "TermContentType": "Category"
+          },
+          "AutoroutePart": {
+            "Path": "categories",
+            "RouteContainedItems": true
           }
         },
         {

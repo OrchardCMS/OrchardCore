@@ -1,5 +1,6 @@
 @model OrchardCore.Users.Models.LoginSettings
 
+<style asp-name="codemirror"></style>
 <script asp-name="codemirror" depends-on="admin" at="Foot"></script>
 <script asp-name="codemirror-mode-javascript" at="Foot"></script>
 <script asp-name="codemirror-addon-display-autorefresh" at="Foot"></script>
@@ -131,7 +132,7 @@ $(function () {
         mode: "javascript"
     });
     $('#@Html.IdFor(x => x.SyncRolesScript)').data('editor', editor);
-    resetScript(editor.doc.lineCount() > 1);
+    resetScript(editor.doc.getValue() != '');
     syncRolesCheckbox.addEventListener("change", toggleEditorState);
     toggleEditorState();
 });

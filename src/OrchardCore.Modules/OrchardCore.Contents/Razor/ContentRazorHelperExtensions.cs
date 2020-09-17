@@ -10,18 +10,7 @@ using YesSql;
 public static class ContentRazorHelperExtensions
 {
     /// <summary>
-    /// Returns a content item id from its alias.
-    /// </summary>
-    /// <param name="alias">The alias.</param>
-    /// <returns>A content item id or <c>null</c> if it was not found.</returns>
-    [Obsolete("Use GetContentItemIdByHandleAsync() instead.")]
-    public static Task<string> GetContentItemIdByAliasAsync(this IOrchardHelper orchardHelper, string alias)
-    {
-        return orchardHelper.GetContentItemIdByHandleAsync(alias);
-    }
-
-    /// <summary>
-    /// Returns a content item id from its handle.
+    /// Returns a content item id by its handle.
     /// </summary>
     /// <param name="handle">The handle.</param>
     /// <example>GetContentItemIdByHandleAsync("alias:carousel")</example>
@@ -29,20 +18,8 @@ public static class ContentRazorHelperExtensions
     /// <returns>A content item id or <c>null</c> if it was not found.</returns>
     public static Task<string> GetContentItemIdByHandleAsync(this IOrchardHelper orchardHelper, string handle)
     {
-        var contentAliasManager = orchardHelper.HttpContext.RequestServices.GetService<IContentAliasManager>();
-        return contentAliasManager.GetContentItemIdAsync(handle);
-    }
-
-    /// <summary>
-    /// Loads a content item by its alias.
-    /// </summary>
-    /// <param name="alias">The alias to load.</param>
-    /// <param name="latest">Whether a draft should be loaded if available. <c>false</c> by default.</param>
-    /// <returns>A content item with the specific name, or <c>null</c> if it doesn't exist.</returns>
-    [Obsolete("Use GetContentItemByHandleAsync() instead.")]
-    public static async Task<ContentItem> GetContentItemByAliasAsync(this IOrchardHelper orchardHelper, string alias, bool latest = false)
-    {
-        return await orchardHelper.GetContentItemByHandleAsync(alias, latest);
+        var contentHandleManager = orchardHelper.HttpContext.RequestServices.GetService<IContentHandleManager>();
+        return contentHandleManager.GetContentItemIdAsync(handle);
     }
 
     /// <summary>

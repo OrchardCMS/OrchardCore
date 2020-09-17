@@ -29,7 +29,7 @@ namespace OrchardCore.Sitemaps.Routing
 
             string sitemapId = address.ExplicitValues[_options.SitemapIdKey]?.ToString();
 
-            if (string.IsNullOrEmpty(sitemapId) || !_entries.TryGetPath(sitemapId, out var path))
+            if (string.IsNullOrEmpty(sitemapId) || !_entries.TryGetPathBySitemapId(sitemapId, out var path))
             {
                 return Enumerable.Empty<Endpoint>();
             }

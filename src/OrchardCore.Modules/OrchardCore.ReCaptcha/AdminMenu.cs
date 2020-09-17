@@ -25,7 +25,7 @@ namespace OrchardCore.ReCaptcha
             builder
                 .Add(S["Security"], security => security
                     .Add(S["Settings"], settings => settings
-                        .Add(S["reCaptcha"], S["reCaptcha"], registration => registration
+                        .Add(S["reCaptcha"], S["reCaptcha"].PrefixPosition(), registration => registration
                             .Permission(Permissions.ManageReCaptchaSettings)
                             .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = ReCaptchaSettingsDisplayDriver.GroupId })
                             .LocalNav()

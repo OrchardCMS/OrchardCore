@@ -93,7 +93,7 @@ namespace OrchardCore.DisplayManagement.Implementation
                 // invoking ShapeMetadata displaying events
                 shapeMetadata.Displaying.Invoke(action => action(displayContext), _logger);
 
-                // use pre-fectched content if available (e.g. coming from specific cache implementation)
+                // use pre-fetched content if available (e.g. coming from specific cache implementation)
                 if (displayContext.ChildContent != null)
                 {
                     shape.Metadata.ChildContent = displayContext.ChildContent;
@@ -181,7 +181,7 @@ namespace OrchardCore.DisplayManagement.Implementation
         {
             // Note: The shape type of a descriptor is a fundamental shape type that never contains
             // any '__' separator. If a shape type contains some '__' separators, its fundamental
-            // shape type is the left part just before the 1st occurence of the '__' separator.
+            // shape type is the left part just before the 1st occurrence of the '__' separator.
 
             // As a fast path we 1st use the shapeType as is but it may contain some '__'.
             if (!shapeTable.Descriptors.TryGetValue(shapeType, out var shapeDescriptor))

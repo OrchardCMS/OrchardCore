@@ -44,7 +44,12 @@ namespace OrchardCore.Lucene
             {
                 _changeToken = ChangeToken;
 
-                var document = await SessionHelper.GetForCachingAsync<LuceneIndexSettingsDocument>();
+                (var cacheable, var document) = await SessionHelper.GetForCachingAsync<LuceneIndexSettingsDocument>();
+
+                if (!cacheable)
+                {
+                    return document;
+                }
 
                 foreach (var name in document.LuceneIndexSettings.Keys)
                 {

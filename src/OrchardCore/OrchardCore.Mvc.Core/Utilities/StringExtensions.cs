@@ -5,8 +5,8 @@ using System.Globalization;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
-
 using Microsoft.Extensions.Localization;
+using Newtonsoft.Json.Linq;
 
 namespace OrchardCore.Mvc.Utilities
 {
@@ -451,6 +451,7 @@ namespace OrchardCore.Mvc.Utilities
             var nextIsUpper = true;
             attribute = attribute.Trim();
             var result = new StringBuilder(attribute.Length);
+
             foreach (var c in attribute)
             {
                 if (c == upperAfterDelimiter)
@@ -472,6 +473,22 @@ namespace OrchardCore.Mvc.Utilities
             }
 
             return result.ToString();
+        }
+
+        /// <summary>
+        /// Tests if a string is valid json.
+        /// </summary>
+        public static bool IsJson(this string json)
+        {
+            try
+            {
+                JToken.Parse(json);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
     }
 }

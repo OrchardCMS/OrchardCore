@@ -22,10 +22,10 @@ namespace OrchardCore.Twitter
             {
                 builder.Add(S["Security"], security => security
                         .Add(S["Authentication"], authentication => authentication
-                        .Add(S["Twitter"], S["Twitter"], settings => settings
+                        .Add(S["Sign in with Twitter"], S["Sign in with Twitter"].PrefixPosition(), settings => settings
                         .AddClass("twitter").Id("twitter")
-                            .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = TwitterConstants.Features.Twitter })
-                            .Permission(Permissions.ManageTwitter)
+                            .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = TwitterConstants.Features.Signin })
+                            .Permission(Permissions.ManageTwitterSignin)
                             .LocalNav())
                     ));
             }
@@ -47,12 +47,12 @@ namespace OrchardCore.Twitter
         {
             if (String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
             {
-                builder.Add(S["Security"], security => security
-                        .Add(S["Twitter"], S["Twitter"], settings => settings
-                        .AddClass("twitter").Id("twitter")
-                        .Add(S["Sign in with Twitter"], S["Sign in with Twitter"], client => client
-                            .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = TwitterConstants.Features.Signin })
-                            .Permission(Permissions.ManageTwitterSignin)
+                builder.Add(S["Configuration"], configuration => configuration
+                        .Add(S["Settings"], settings => settings
+                            .Add(S["Twitter"], S["Twitter"].PrefixPosition(), settings => settings
+                            .AddClass("twitter").Id("twitter")
+                            .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = TwitterConstants.Features.Twitter })
+                            .Permission(Permissions.ManageTwitter)
                             .LocalNav())
                     ));
             }
