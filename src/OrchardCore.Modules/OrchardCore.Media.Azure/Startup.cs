@@ -19,6 +19,7 @@ using OrchardCore.Media.Core.Events;
 using OrchardCore.Media.Events;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
+using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Media.Azure
 {
@@ -124,6 +125,7 @@ namespace OrchardCore.Media.Azure
                 services.AddSingleton<IMediaEventHandler, DefaultMediaFileStoreCacheEventHandler>();
 
                 services.AddScoped<IModularTenantEvents, CreateMediaBlobContainerEvent>();
+                services.AddScoped<IPermissionProvider, Permissions>();
                 services.AddScoped<INavigationProvider, AdminMenu>();
             }
         }

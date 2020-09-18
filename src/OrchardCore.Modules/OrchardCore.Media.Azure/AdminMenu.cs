@@ -1,12 +1,10 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
-using OrchardCore.Modules;
 using OrchardCore.Navigation;
 
 namespace OrchardCore.Media.Azure
 {
-    [Feature("OrchardCore.Media.Azure")]
     public class AdminMenu : INavigationProvider
     {
         private readonly IStringLocalizer S;
