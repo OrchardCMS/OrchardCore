@@ -1,13 +1,17 @@
-using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Localization;
 
 namespace OrchardCore.Setup.Options
 {
-    public class AutoSetupOptions : IValidatableObject
+    public class AutoSetup
+    {
+        public List<TenantOptions> Tenants { get; set; }
+    }
+
+    public class TenantOptions : IValidatableObject
     {
         public string SiteName { get; set; }
         public string AdminUsername { get; set; }
@@ -20,10 +24,12 @@ namespace OrchardCore.Setup.Options
         public string DatabaseTablePrefix { get; set; }
         public string RecipeName { get; set; }
         public string SiteTimeZone { get; set; }
+        public string UrlPrefix { get; set; }
+        public string UrlHost { get; set; }
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
-            var T = validationContext.GetService<IStringLocalizer<AutoSetupOptions>>();
+            var T = validationContext.GetService<IStringLocalizer<TenantOptions>>();
 
             if (String.IsNullOrWhiteSpace(SiteName))
             {
@@ -51,7 +57,7 @@ namespace OrchardCore.Setup.Options
             }
 
             if (String.IsNullOrWhiteSpace(DatabaseConnectionString))
-            { 
+            {
                 yield return new ValidationResult(T["The field {0} is not provided", "Database ConnectionString"], new[] { nameof(DatabaseConnectionString) });
             }
 

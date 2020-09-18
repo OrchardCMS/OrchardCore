@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Data;
-using System.Data.Common;
 using System.Linq;
 using System.Text;
 using Microsoft.AspNetCore.Builder;
@@ -40,54 +38,71 @@ namespace OrchardCore.Setup
 
             if (siteIsUninitialized)
             {
-                var optionsAccessor = scopedServices.GetRequiredService<IOptions<AutoSetupOptions>>();
+                var optionsAccessor = scopedServices.GetRequiredService<IOptions<AutoSetup>>();
                 var options = optionsAccessor.Value;
+                var errors = false;
 
                 if (options != null)
                 {
-                    _logger.LogInformation("AutoSetup is initializing the site");
-                    var validationContext = new ValidationContext(options, scopedServices, null);
-                    var validationErrors = options.Validate(validationContext);
+                    var setupService = scopedServices.GetRequiredService<ISetupService>();
 
-                    if (validationErrors.Any())
+                    foreach (var tenantOptions in options.Tenants)
                     {
-                        var stringBuilder = new StringBuilder();
-                        foreach (var error in validationErrors)
+                        _logger.LogInformation("AutoSetup is initializing the site");
+                        var validationContext = new ValidationContext(options, scopedServices, null);
+                        var validationErrors = tenantOptions.Validate(validationContext);
+
+                        if (validationErrors.Any())
                         {
-                            stringBuilder.Append(error.ErrorMessage);
-                        }
-                        _logger.LogError("AutoSetup did not start, configuration has following errors: {errors}", stringBuilder.ToString());
-                    }
-                    else
-                    {
-                        var setupService = scopedServices.GetRequiredService<ISetupService>();
-
-                        var setupContext = GetSetupContext(options, setupService, settings);
-
-                        setupService.SetupAsync(setupContext)
-                            .GetAwaiter()
-                            .GetResult();
-
-                        if (setupContext.Errors.Count == 0)
-                        {
-                            _logger.LogInformation("AutoSetup succesfully provisioned the site, redirecting");
-                            IHttpContextAccessor accessor = scopedServices.GetRequiredService<IHttpContextAccessor>();
-                            accessor.HttpContext.Response.Redirect("/");
-
-                            // Complete the request
-                            accessor.HttpContext.Response.CompleteAsync()
-                                .GetAwaiter()
-                                .GetResult();
+                            var stringBuilder = new StringBuilder();
+                            foreach (var error in validationErrors)
+                            {
+                                stringBuilder.Append(error.ErrorMessage);
+                            }
+                            _logger.LogError("AutoSetup did not start, configuration has following errors: {errors}", stringBuilder.ToString());
                         }
                         else
                         {
-                            var stringBuilder = new StringBuilder();
-                            foreach (var error in setupContext.Errors)
+                            var setupContext = GetSetupContext(tenantOptions, setupService, settings);
+
+                            string[] hardcoded =
                             {
-                                stringBuilder.Append($"{error.Key} : '{error.Value}'");
+                                //"OrchardCore.Tenants"
+                            };
+
+                            setupContext.EnabledFeatures = hardcoded.Union(setupContext.EnabledFeatures ?? Enumerable.Empty<string>()).Distinct().ToList();
+
+                            setupService.SetupAsync(setupContext)
+                                .GetAwaiter()
+                                .GetResult();
+
+                            if (setupContext.Errors.Count == 0)
+                            {
+                                _logger.LogInformation("AutoSetup succesfully provisioned the site {0}", tenantOptions.SiteName);
                             }
-                            _logger.LogError("AutoSetup failed with errors: {errors}", stringBuilder.ToString());
+                            else
+                            {
+                                errors = true;
+                                var stringBuilder = new StringBuilder();
+                                foreach (var error in setupContext.Errors)
+                                {
+                                    stringBuilder.Append($"{error.Key} : '{error.Value}'");
+                                }
+                                _logger.LogError("AutoSetup failed with errors: {errors}", stringBuilder.ToString());
+                            }
                         }
+                    }
+
+                    if (!errors)
+                    {
+                        _logger.LogInformation("AutoSetup succesfully provisioned the site, redirecting");
+                        var accessor = scopedServices.GetRequiredService<IHttpContextAccessor>();
+                        accessor.HttpContext.Response.Redirect("/");
+
+                        // Complete the request
+                        accessor.HttpContext.Response.CompleteAsync()
+                            .GetAwaiter()
+                            .GetResult();
                     }
                 }
             }
@@ -95,13 +110,16 @@ namespace OrchardCore.Setup
             return next;
         }
 
-        private SetupContext GetSetupContext(AutoSetupOptions options, ISetupService setupService, ShellSettings shellSettings)
+        private SetupContext GetSetupContext(TenantOptions options, ISetupService setupService, ShellSettings shellSettings)
         {
             var recipes = setupService.GetSetupRecipesAsync()
                 .GetAwaiter()
                 .GetResult();
 
             var recipe = recipes.SingleOrDefault(r => r.Name == options.RecipeName);
+            shellSettings.Name = options.SiteName;
+            shellSettings.RequestUrlHost = options.UrlHost != "Empty" ? options.UrlHost : String.Empty;
+            shellSettings.RequestUrlPrefix = options.UrlPrefix != "Empty" ? options.UrlPrefix : String.Empty;
 
             var setupContext = new SetupContext()
             {

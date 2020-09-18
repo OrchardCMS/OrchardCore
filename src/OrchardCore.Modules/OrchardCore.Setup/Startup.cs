@@ -37,7 +37,7 @@ namespace OrchardCore.Setup
             services.Replace(ServiceDescriptor.Singleton<ILocalizationFileLocationProvider, ModularPoFileLocationProvider>());
             services.AddTransient<Microsoft.AspNetCore.Hosting.IStartupFilter, AutoSetupStartupFilter>();
             var configuration = _shellConfiguration.GetSection("OrchardCore.Setup.AutoSetup");
-            services.Configure<AutoSetupOptions>(configuration);
+            services.Configure<AutoSetup>(configuration);
             services.AddSetup();
         }
 
