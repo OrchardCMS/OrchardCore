@@ -202,9 +202,9 @@ namespace OrchardCore.Environment.Shell.Scope
         public void StartAsyncFlow() => _current.Value = this;
 
         /// <summary>
-        /// Executes a delegate using this shell scope but only as a service scope, so without invoking any tenant event,
-        /// but by still using an isolated async flow. Used in advanced scenarios to resolve scoped services if the scope
-        /// has been created on a standalone context that should not be activated, terminated, or disposed by this scope.
+        /// Executes a delegate using this shell scope in an isolated async flow,
+        /// but as a service scope only without managing the shell state and
+        /// without invoking any tenant event.
         /// </summary>
         public Task UsingAsServiceScopeOnlyAsync(Func<ShellScope, Task> execute)
         {
@@ -213,7 +213,8 @@ namespace OrchardCore.Environment.Shell.Scope
         }
 
         /// <summary>
-        /// Execute a delegate using this shell scope.
+        /// Executes a delegate using this shell scope in an isolated async flow,
+        /// while managing the shell state and invoking tenant events.
         /// </summary>
         public async Task UsingAsync(Func<ShellScope, Task> execute)
         {
