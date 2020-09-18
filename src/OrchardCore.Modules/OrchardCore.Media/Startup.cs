@@ -53,6 +53,7 @@ using SixLabors.ImageSharp.Web.Commands;
 using SixLabors.ImageSharp.Web.DependencyInjection;
 using SixLabors.ImageSharp.Web.Middleware;
 using SixLabors.ImageSharp.Web.Processors;
+using SixLabors.ImageSharp.Web.Providers;
 
 namespace OrchardCore.Media
 {
@@ -131,16 +132,10 @@ namespace OrchardCore.Media
             // Add ImageSharp Configuration first, to override ImageSharp defaults.
             services.AddTransient<IConfigureOptions<ImageSharpMiddlewareOptions>, MediaImageSharpConfiguration>();
 
-            services.AddImageSharpCore()
-                .SetRequestParser<QueryCollectionRequestParser>()
-                .SetMemoryAllocator<ArrayPoolMemoryAllocator>()
-                .SetCache<PhysicalFileSystemCache>()
-                .SetCacheHash<CacheHash>()
+            services.AddImageSharp()
+                .RemoveProvider<PhysicalFileSystemProvider>()
                 .AddProvider<MediaResizingFileProvider>()
-                .AddProcessor<ResizeWebProcessor>()
-                .AddProcessor<FormatWebProcessor>()
-                .AddProcessor<ImageVersionProcessor>()
-                .AddProcessor<BackgroundColorWebProcessor>();
+                .AddProcessor<ImageVersionProcessor>();
 
             // Media Field
             services.AddContentField<MediaField>()
