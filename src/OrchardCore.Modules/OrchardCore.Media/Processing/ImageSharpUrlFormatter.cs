@@ -21,7 +21,6 @@ namespace OrchardCore.Media.Processing
         Jpg,
         Png,
         Tga
-
     }
 
     internal class ImageSharpUrlFormatter
