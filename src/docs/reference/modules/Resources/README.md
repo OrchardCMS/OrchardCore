@@ -49,6 +49,8 @@ The `OrchardCore.Resources` module provides some commonly used ones:
 | jQuery.slim           | Script | 3.5.1         | -              |
 | jQuery-ui             | Script | 1.12.1        | jQuery         |
 | jQuery-ui-i18n        | Script | 1.7.2         | jQuery-ui      |
+| jquery.easing         | Script | 1.4.1         | -              |
+| jquery-resizable-dom  | Script | 0.35.0        | -              |
 | popper                | Script | 1.16.1        | -              |
 | bootstrap             | Script | 3.4.0, 4.5.2  | jQuery, Popper |
 | bootstrap             | Style  | 3.4.0, 4.5.2  | -              |
@@ -61,6 +63,10 @@ The `OrchardCore.Resources` module provides some commonly used ones:
 | font-awesome          | Style  | 4.7.0, 5.14.0 | -              |
 | font-awesome          | Script | 5.14.0        | -              |
 | font-awesome-v4-shims | Script | 5.14.0        | -              |
+| Sortable              | Script | 1.10.2        | -              |
+| trumbowyg             | Script | 2.21.0        | -              |
+| vue-multiselect       | Script | 2.1.6         | -              |
+| vuedraggable          | Script | 2.24.1        | Sortable       |
 
 ### Registering a Resource Manifest
 
