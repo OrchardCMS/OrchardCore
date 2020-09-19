@@ -1,3 +1,4 @@
+@using OrchardCore.Contents.Core;
 @inject IAuthorizationService AuthorizationService
 @inject IContentManager ContentManager
 
@@ -6,20 +7,20 @@
     var hasPublished = await ContentManager.HasPublishedVersionAsync(contentItem);
     var hasDraft = contentItem.HasDraft();
     var hasClonePermission = await AuthorizationService.AuthorizeAsync(User, OrchardCore.Contents.Permissions.CloneContent, contentItem);
-    var hasDeletePermission = await AuthorizationService.AuthorizeAsync(User, OrchardCore.Contents.Permissions.DeleteContent, contentItem);
-    var hasEditPermission = await AuthorizationService.AuthorizeAsync(User, OrchardCore.Contents.Permissions.EditContent, contentItem);
-    var hasPreviewPermission = await AuthorizationService.AuthorizeAsync(User, OrchardCore.Contents.Permissions.PreviewContent, contentItem);
-    var hasPublishPermission = await AuthorizationService.AuthorizeAsync(User, OrchardCore.Contents.Permissions.PublishContent, contentItem);
+    var hasDeletePermission = await ContentTypeAuthorizationHelper.AuthorizeDynamicPermissionAsync(Context.Request.HttpContext, OrchardCore.Contents.Permissions.DeleteContent, contentItem);
+    var hasEditPermission = await ContentTypeAuthorizationHelper.AuthorizeDynamicPermissionAsync(Context.Request.HttpContext, OrchardCore.Contents.Permissions.EditContent, contentItem);
+    var hasPreviewPermission = await ContentTypeAuthorizationHelper.AuthorizeDynamicPermissionAsync(Context.Request.HttpContext, OrchardCore.Contents.Permissions.PreviewContent, contentItem);
+    var hasPublishPermission = await ContentTypeAuthorizationHelper.AuthorizeDynamicPermissionAsync(Context.Request.HttpContext, OrchardCore.Contents.Permissions.PublishContent, contentItem);
 }
 
 @if (hasDraft)
 {
-    if(hasPublishPermission)
+    if (hasPublishPermission)
     {
         <a asp-action="Publish" asp-controller="Admin" asp-route-area="OrchardCore.Contents" asp-route-contentItemId="@contentItem.ContentItemId" asp-route-returnUrl="@FullRequestPath" itemprop="UnsafeUrl" class="dropdown-item btn-sm">@T["Publish Draft"]</a>
     }
-    
-    if(hasPreviewPermission)
+
+    if (hasPreviewPermission)
     {
         <a asp-action="Preview" asp-controller="Item" asp-route-area="OrchardCore.Contents" asp-route-contentItemId="@contentItem.ContentItemId" class="dropdown-item btn-sm">@T["Preview Draft"]</a>
     }
