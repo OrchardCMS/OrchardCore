@@ -403,7 +403,7 @@ namespace OrchardCore.Environment.Shell.Scope
         }
 
         /// <summary>
-        /// Terminate the shell, if released and in its last scope, by calling the related event handlers.
+        /// Terminates the shell, if released and in its last scope, by calling the related event handlers.
         /// Returns true if the shell context should be disposed consequently to this scope being released.
         /// </summary>
         private async Task<bool> TerminateShellAsync()
