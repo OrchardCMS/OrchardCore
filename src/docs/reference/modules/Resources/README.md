@@ -173,7 +173,7 @@ resourceManager.AppendMeta(new MetaEntry { Name = "keywords", Content = "orchard
 
 ### Using the Tag Helpers
 
-From your module, in the `_ViewImports.cshtml` or your view, add `@addTagHelper *, OrchardCore.ResourceManagement`.
+From your module, in the `_ViewImports.cshtml` or your view, add `@addTagHelper *, OrchardCore.ResourceManagement`, and take a direct reference to the `OrchardCore.ResourceManagement` nuget package.
 
 #### Register a named script or stylesheet
 
@@ -535,6 +535,9 @@ These should be rendered at the bottom of the `<body>` section.
     </body>
     ```
 
+!!! note
+    When using tag helpers in Razor you must take a direct reference to the `OrchardCore.ResourceManagement` nuget package in each theme or module that uses the tag helpers. This is not required when using Liquid.
+    
 ### Logging
 
 If you register a resource by name and it is not found this will be logged as an error in your `App_Data/Logs` folder.
