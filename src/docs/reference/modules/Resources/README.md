@@ -536,7 +536,7 @@ These should be rendered at the bottom of the `<body>` section.
     ```
 
 !!! note
-    When using tag helpers in Razor you must take a direct reference to the `OrchardCore.ResourceManagement` nuget package in each theme or module that uses the tag helpers. This is not required when using Liquid.
+    When using tag helpers in Razor, you must take a direct reference to the `OrchardCore.ResourceManagement` nuget package in each theme or module that uses the tag helpers. This is not required when using Liquid.
     
 ### Logging
 
