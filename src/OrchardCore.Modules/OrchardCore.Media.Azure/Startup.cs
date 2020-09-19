@@ -18,6 +18,7 @@ using OrchardCore.Media.Core;
 using OrchardCore.Media.Core.Events;
 using OrchardCore.Media.Events;
 using OrchardCore.Modules;
+using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
 
@@ -43,7 +44,7 @@ namespace OrchardCore.Media.Azure
                 name: "AzureBlob.Options",
                 areaName: "OrchardCore.Media.Azure",
                 pattern: _adminOptions.AdminUrlPrefix + "/MediaAzureBlob/Options",
-                defaults: new { controller = nameof(AdminController), action = nameof(AdminController.Options) }
+                defaults: new { controller = typeof(AdminController).ControllerName(), action = nameof(AdminController.Options) }
             );
         }
 
