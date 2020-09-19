@@ -203,13 +203,14 @@ namespace OrchardCore.Environment.Shell.Scope
 
         /// <summary>
         /// Executes a delegate using this shell scope in an isolated async flow,
-        /// but as a service scope only without managing the shell state and
+        /// but only as a service scope without managing the shell state and
         /// without invoking any tenant event.
         /// </summary>
-        public Task UsingAsServiceScopeOnlyAsync(Func<ShellScope, Task> execute)
+        public Task UsingServiceScopeAsync(Func<IServiceScope, Task> execute)
         {
             _serviceScopeOnly = true;
-            return UsingAsync(execute);
+
+            return UsingAsync(scope => execute(_serviceScope));
         }
 
         /// <summary>
