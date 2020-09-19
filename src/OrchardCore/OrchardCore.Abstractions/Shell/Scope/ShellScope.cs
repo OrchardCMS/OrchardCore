@@ -206,11 +206,10 @@ namespace OrchardCore.Environment.Shell.Scope
         /// but only as a service scope without managing the shell state and
         /// without invoking any tenant event.
         /// </summary>
-        public Task UsingServiceScopeAsync(Func<IServiceScope, Task> execute)
+        public Task UsingServiceScopeAsync(Func<ShellScope, Task> execute)
         {
             _serviceScopeOnly = true;
-
-            return UsingAsync(scope => execute(_serviceScope));
+            return UsingAsync(execute);
         }
 
         /// <summary>
@@ -244,7 +243,12 @@ namespace OrchardCore.Environment.Shell.Scope
         /// </summary>
         public async Task ActivateShellAsync()
         {
-            if (ShellContext.IsActivated || _serviceScopeOnly)
+            if (ShellContext.IsActivated)
+            {
+                return;
+            }
+
+            if (_serviceScopeOnly)
             {
                 return;
             }
@@ -399,7 +403,7 @@ namespace OrchardCore.Environment.Shell.Scope
         }
 
         /// <summary>
-        /// Terminate the shell, if released and in its last scope, by calling the related event handlers.
+        /// Terminates the shell, if released and in its last scope, by calling the related event handlers.
         /// Returns true if the shell context should be disposed consequently to this scope being released.
         /// </summary>
         private async Task<bool> TerminateShellAsync()

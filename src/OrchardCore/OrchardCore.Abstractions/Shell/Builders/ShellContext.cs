@@ -47,6 +47,9 @@ namespace OrchardCore.Environment.Shell.Builders
             }
         }
 
+        /// <summary>
+        /// Creates a <see cref="ShellScope"/> on this shell context.
+        /// </summary>
         public ShellScope CreateScope()
         {
             // We can't create a scope with a null 'ServiceProvider' meaning that the shell has been disposed. Normally, the
@@ -126,7 +129,7 @@ namespace OrchardCore.Environment.Shell.Builders
         }
 
         /// <summary>
-        /// Registers the specified shellContext as a dependency such that they are also reloaded when the current shell context is reloaded.
+        /// Registers the specified shellContext as a dependency such that they are also released when the current shell context is released.
         /// </summary>
         public void AddDependentShell(ShellContext shellContext)
         {
