@@ -15,7 +15,6 @@ using OrchardCore.DisplayManagement.Layout;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.Modules;
-using OrchardCore.Mvc.ModelBinding;
 
 namespace OrchardCore.ContentManagement.Display
 {
