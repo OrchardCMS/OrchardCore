@@ -25,7 +25,7 @@ namespace OrchardCore.Contents.Core
             }
             else
             {
-                return false;
+                return Task.FromResult(false);
             }
 
             var contentTypePermission = ContentTypePermissionsHelper.ConvertToDynamicPermission(permission ?? requirementPermission);
