@@ -23,6 +23,10 @@ namespace OrchardCore.Contents.Core
                     permission = GetOwnerVariation(requirementPermission);
                 }
             }
+            else
+            {
+                return false;
+            }
 
             var contentTypePermission = ContentTypePermissionsHelper.ConvertToDynamicPermission(permission ?? requirementPermission);
 
