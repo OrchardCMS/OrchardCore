@@ -3,7 +3,6 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
 using OrchardCore.Contents.Core;
 using OrchardCore.Security;
@@ -13,14 +12,11 @@ namespace OrchardCore.Contents.Security
 {
     public class ContentTypeAuthorizationHandler : AuthorizationHandler<PermissionRequirement>
     {
-        private readonly IServiceProvider _serviceProvider;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
         public ContentTypeAuthorizationHandler(
-            IServiceProvider serviceProvider,
             IHttpContextAccessor httpContextAccessor)
         {
-            _serviceProvider = serviceProvider;
             _httpContextAccessor = httpContextAccessor;
         }
 
