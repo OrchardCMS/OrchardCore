@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -15,6 +16,7 @@ using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.ContentManagement.Records;
+using OrchardCore.Contents.Core;
 using OrchardCore.Contents.Services;
 using OrchardCore.Contents.ViewModels;
 using OrchardCore.DisplayManagement;
@@ -33,7 +35,7 @@ namespace OrchardCore.Contents.Controllers
         private readonly IContentManager _contentManager;
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly ISiteService _siteService;
-        private readonly ISession _session;
+        private readonly YesSql.ISession _session;
         private readonly IContentItemDisplayManager _contentItemDisplayManager;
         private readonly INotifier _notifier;
         private readonly IAuthorizationService _authorizationService;
@@ -42,6 +44,7 @@ namespace OrchardCore.Contents.Controllers
         private readonly IHtmlLocalizer H;
         private readonly IStringLocalizer S;
         private readonly IUpdateModelAccessor _updateModelAccessor;
+        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IShapeFactory _shapeFactory;
         private readonly dynamic New;
         private readonly ILogger _logger;
@@ -53,14 +56,15 @@ namespace OrchardCore.Contents.Controllers
             IContentDefinitionManager contentDefinitionManager,
             ISiteService siteService,
             INotifier notifier,
-            ISession session,
+            YesSql.ISession session,
             IShapeFactory shapeFactory,
             IDisplayManager<ContentOptionsViewModel> contentOptionsDisplayManager,
             IContentsAdminListQueryService contentsAdminListQueryService,
             ILogger<AdminController> logger,
             IHtmlLocalizer<AdminController> htmlLocalizer,
             IStringLocalizer<AdminController> stringLocalizer,
-            IUpdateModelAccessor updateModelAccessor)
+            IUpdateModelAccessor updateModelAccessor,
+            IHttpContextAccessor httpContextAccessor)
         {
             _authorizationService = authorizationService;
             _notifier = notifier;
@@ -70,6 +74,7 @@ namespace OrchardCore.Contents.Controllers
             _contentManager = contentManager;
             _contentDefinitionManager = contentDefinitionManager;
             _updateModelAccessor = updateModelAccessor;
+            _httpContextAccessor = httpContextAccessor;
             _contentOptionsDisplayManager = contentOptionsDisplayManager;
             _contentsAdminListQueryService = contentsAdminListQueryService;
 
@@ -83,6 +88,7 @@ namespace OrchardCore.Contents.Controllers
         [HttpGet]
         public async Task<IActionResult> List(ListContentsViewModel model, PagerParameters pagerParameters, string contentTypeId = "")
         {
+            var context = _httpContextAccessor.HttpContext;
             var siteSettings = await _siteService.GetSiteSettingsAsync();
             var pager = new Pager(pagerParameters, siteSettings.PageSize);
 
@@ -124,7 +130,10 @@ namespace OrchardCore.Contents.Controllers
                 {
                     foreach (var contentTypeDefinition in contentTypes)
                     {
-                        creatableList.Add(new SelectListItem(new LocalizedString(contentTypeDefinition.DisplayName, contentTypeDefinition.DisplayName).Value, contentTypeDefinition.Name));
+                        if (await ContentTypeAuthorizationHelper.AuthorizeDynamicPermissionAsync(context, Permissions.EditContent, new ContentItem { ContentType = contentTypeDefinition.Name }))
+                        {
+                            creatableList.Add(new SelectListItem(new LocalizedString(contentTypeDefinition.DisplayName, contentTypeDefinition.DisplayName).Value, contentTypeDefinition.Name));
+                        }
                     }
                 }
 
