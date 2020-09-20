@@ -6,8 +6,8 @@
 @{
     ContentItem contentItem = Model.ContentItem;
     var hasPublished = await ContentManager.HasPublishedVersionAsync(contentItem);
-    var hasEditPermission = await ContentTypeAuthorizationHelper.AuthorizeDynamicPermissionAsync(Context.Request.HttpContext, OrchardCore.Contents.Permissions.EditContent, contentItem);
-    var hasViewPermission = await ContentTypeAuthorizationHelper.AuthorizeDynamicPermissionAsync(Context.Request.HttpContext, OrchardCore.Contents.Permissions.ViewContent, contentItem);
+    var hasEditPermission = await ContentTypeAuthorizationHelper.AuthorizeDynamicPermissionAsync(Context.Request.HttpContext, OrchardCore.Contents.CommonPermissions.EditContent, contentItem);
+    var hasViewPermission = await ContentTypeAuthorizationHelper.AuthorizeDynamicPermissionAsync(Context.Request.HttpContext, OrchardCore.Contents.CommonPermissions.ViewContent, contentItem);
 }
 
 @if (hasEditPermission)

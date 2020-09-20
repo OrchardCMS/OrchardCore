@@ -130,7 +130,7 @@ namespace OrchardCore.Contents.Controllers
                 {
                     foreach (var contentTypeDefinition in contentTypes)
                     {
-                        if (await ContentTypeAuthorizationHelper.AuthorizeDynamicPermissionAsync(context, Permissions.EditContent, new ContentItem { ContentType = contentTypeDefinition.Name }))
+                        if (await ContentTypeAuthorizationHelper.AuthorizeDynamicPermissionAsync(context, CommonPermissions.EditContent, new ContentItem { ContentType = contentTypeDefinition.Name }))
                         {
                             creatableList.Add(new SelectListItem(new LocalizedString(contentTypeDefinition.DisplayName, contentTypeDefinition.DisplayName).Value, contentTypeDefinition.Name));
                         }

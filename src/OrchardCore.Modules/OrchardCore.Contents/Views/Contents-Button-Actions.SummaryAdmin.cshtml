@@ -6,11 +6,11 @@
     ContentItem contentItem = Model.ContentItem;
     var hasPublished = await ContentManager.HasPublishedVersionAsync(contentItem);
     var hasDraft = contentItem.HasDraft();
-    var hasClonePermission = await AuthorizationService.AuthorizeAsync(User, OrchardCore.Contents.Permissions.CloneContent, contentItem);
-    var hasDeletePermission = await ContentTypeAuthorizationHelper.AuthorizeDynamicPermissionAsync(Context.Request.HttpContext, OrchardCore.Contents.Permissions.DeleteContent, contentItem);
-    var hasEditPermission = await ContentTypeAuthorizationHelper.AuthorizeDynamicPermissionAsync(Context.Request.HttpContext, OrchardCore.Contents.Permissions.EditContent, contentItem);
-    var hasPreviewPermission = await ContentTypeAuthorizationHelper.AuthorizeDynamicPermissionAsync(Context.Request.HttpContext, OrchardCore.Contents.Permissions.PreviewContent, contentItem);
-    var hasPublishPermission = await ContentTypeAuthorizationHelper.AuthorizeDynamicPermissionAsync(Context.Request.HttpContext, OrchardCore.Contents.Permissions.PublishContent, contentItem);
+    var hasClonePermission = await ContentTypeAuthorizationHelper.AuthorizeDynamicPermissionAsync(Context.Request.HttpContext, OrchardCore.Contents.CommonPermissions.CloneContent, contentItem);
+    var hasDeletePermission = await ContentTypeAuthorizationHelper.AuthorizeDynamicPermissionAsync(Context.Request.HttpContext, OrchardCore.Contents.CommonPermissions.DeleteContent, contentItem);
+    var hasEditPermission = await ContentTypeAuthorizationHelper.AuthorizeDynamicPermissionAsync(Context.Request.HttpContext, OrchardCore.Contents.CommonPermissions.EditContent, contentItem);
+    var hasPreviewPermission = await ContentTypeAuthorizationHelper.AuthorizeDynamicPermissionAsync(Context.Request.HttpContext, OrchardCore.Contents.CommonPermissions.PreviewContent, contentItem);
+    var hasPublishPermission = await ContentTypeAuthorizationHelper.AuthorizeDynamicPermissionAsync(Context.Request.HttpContext, OrchardCore.Contents.CommonPermissions.PublishContent, contentItem);
 }
 
 @if (hasDraft)

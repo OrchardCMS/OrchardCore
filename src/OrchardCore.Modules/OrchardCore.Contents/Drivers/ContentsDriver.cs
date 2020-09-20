@@ -55,12 +55,12 @@ namespace OrchardCore.Contents.Drivers
 
                 results.Add(contentsMetadataShape);
 
-                var hasViewPermission = await ContentTypeAuthorizationHelper.AuthorizeDynamicPermissionAsync(context, Permissions.ViewContent, contentItem);
-                var hasEditPermission = await ContentTypeAuthorizationHelper.AuthorizeDynamicPermissionAsync(context, Permissions.EditContent, contentItem);
-                var hasPublishPermission = await ContentTypeAuthorizationHelper.AuthorizeDynamicPermissionAsync(context, Permissions.PublishContent, contentItem);
-                var hasDeletePermission = await ContentTypeAuthorizationHelper.AuthorizeDynamicPermissionAsync(context, Permissions.DeleteContent, contentItem);
-                var hasClonePermission = false; //await AuthorizationService.AuthorizeAsync(context.User, Permissions.CloneContent, contentItem);
-                var hasPreviewPermission = await ContentTypeAuthorizationHelper.AuthorizeDynamicPermissionAsync(context, Permissions.PreviewContent, contentItem);
+                var hasViewPermission = await ContentTypeAuthorizationHelper.AuthorizeDynamicPermissionAsync(context, CommonPermissions.ViewContent, contentItem);
+                var hasEditPermission = await ContentTypeAuthorizationHelper.AuthorizeDynamicPermissionAsync(context, CommonPermissions.EditContent, contentItem);
+                var hasPublishPermission = await ContentTypeAuthorizationHelper.AuthorizeDynamicPermissionAsync(context, CommonPermissions.PublishContent, contentItem);
+                var hasDeletePermission = await ContentTypeAuthorizationHelper.AuthorizeDynamicPermissionAsync(context, CommonPermissions.DeleteContent, contentItem);
+                var hasClonePermission = await ContentTypeAuthorizationHelper.AuthorizeDynamicPermissionAsync(context, CommonPermissions.CloneContent, contentItem);
+                var hasPreviewPermission = await ContentTypeAuthorizationHelper.AuthorizeDynamicPermissionAsync(context, CommonPermissions.PreviewContent, contentItem);
 
                 if (hasEditPermission || hasViewPermission)
                 {
