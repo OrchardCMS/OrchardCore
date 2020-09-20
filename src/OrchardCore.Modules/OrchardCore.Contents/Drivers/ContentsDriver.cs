@@ -66,7 +66,7 @@ namespace OrchardCore.Contents.Drivers
 
                 if (hasPublishPermission)
                 {
-                    results.Add(Shape("Contents_SummaryAdmin__Button__Actions", new ContentItemViewModel(model)).Location("SummaryAdmin", "Actions:10"));
+                    results.Add(Shape("Contents_SummaryAdmin__Button__Actions", new ContentItemViewModel(model)).Location("SummaryAdmin", "ActionsMenu:10"));
                 }
             }
 
