@@ -2,8 +2,10 @@ using System;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
+using OrchardCore.Contents.Core;
 using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
 
@@ -12,10 +14,14 @@ namespace OrchardCore.Contents.Security
     public class ContentTypeAuthorizationHandler : AuthorizationHandler<PermissionRequirement>
     {
         private readonly IServiceProvider _serviceProvider;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public ContentTypeAuthorizationHandler(IServiceProvider serviceProvider)
+        public ContentTypeAuthorizationHandler(
+            IServiceProvider serviceProvider,
+            IHttpContextAccessor httpContextAccessor)
         {
             _serviceProvider = serviceProvider;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, PermissionRequirement requirement)
@@ -33,42 +39,7 @@ namespace OrchardCore.Contents.Security
 
             var contentItem = context.Resource as ContentItem;
 
-            Permission permission = null;
-
-            if (contentItem != null)
-            {
-                if (OwnerVariationExists(requirement.Permission) && HasOwnership(context.User, contentItem))
-                {
-                    permission = GetOwnerVariation(requirement.Permission);
-                }
-            }
-
-            var contentTypePermission = ContentTypePermissionsHelper.ConvertToDynamicPermission(permission ?? requirement.Permission);
-
-            if (contentTypePermission != null)
-            {
-                // The resource can be a content type name
-                // This is unescessary as we do contentItem = context.Resource previously ???
-                var contentType = contentItem != null
-                    ? contentItem.ContentType
-                    : Convert.ToString(context.Resource.ToString())
-                    ;
-
-                if (!String.IsNullOrEmpty(contentType))
-                {
-                    permission = ContentTypePermissionsHelper.CreateDynamicPermission(contentTypePermission, contentType);
-                }
-            }
-
-            if (permission == null)
-            {
-                return;
-            }
-
-            // Lazy load to prevent circular dependencies
-            var authorizationService = _serviceProvider.GetService<IAuthorizationService>();
-
-            if (await authorizationService.AuthorizeAsync(context.User, permission))
+            if (await ContentTypeAuthorizationHelper.AuthorizeDynamicPermissionAsync(_httpContextAccessor.HttpContext, requirement.Permission, contentItem))
             {
                 context.Succeed(requirement);
             }
