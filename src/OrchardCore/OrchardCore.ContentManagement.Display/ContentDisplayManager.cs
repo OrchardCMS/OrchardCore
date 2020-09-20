@@ -44,9 +44,9 @@ namespace OrchardCore.ContentManagement.Display
             IShapeFactory shapeFactory,
             IEnumerable<IShapePlacementProvider> placementProviders,
             ILogger<ContentItemDisplayManager> logger,
-            ILayoutAccessor layoutAccessor,
-            IContentPartHandlerResolver contentPartHandlerResolver
-            ) : base(shapeTableManager, shapeFactory, themeManager)
+            IContentPartHandlerResolver contentPartHandlerResolver,
+            ILayoutAccessor layoutAccessor
+            ) : base(shapeFactory, placementProviders)
         {
             _handlers = handlers;
             _contentHandlers = contentHandlers;
