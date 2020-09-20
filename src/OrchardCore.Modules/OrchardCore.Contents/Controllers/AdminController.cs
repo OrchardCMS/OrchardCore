@@ -544,7 +544,9 @@ namespace OrchardCore.Contents.Controllers
                 return NotFound();
             }
 
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.CloneContent, contentItem))
+            var hasClonePermission = await ContentTypeAuthorizationHelper.AuthorizeDynamicPermissionAsync(_httpContextAccessor.HttpContext, OrchardCore.Contents.CommonPermissions.CloneContent, contentItem);
+
+            if (!hasClonePermission)
             {
                 return Forbid();
             }
