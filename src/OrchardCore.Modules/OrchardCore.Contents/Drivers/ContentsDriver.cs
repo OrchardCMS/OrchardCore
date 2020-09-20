@@ -26,15 +26,15 @@ namespace OrchardCore.Contents.Drivers
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public override async Task<IDisplayResult> DisplayAsync(ContentItem model, IUpdateModel updater)
+        public override async Task<IDisplayResult> DisplayAsync(ContentItem contentItem, IUpdateModel updater)
         {
             // We add custom alternates. This could be done generically to all shapes coming from ContentDisplayDriver but right now it's
             // only necessary on this shape. Otherwise c.f. ContentPartDisplayDriver
 
             var context = _httpContextAccessor.HttpContext;
             var results = new List<IDisplayResult>();
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(model.ContentType);
-            var contentsMetadataShape = Shape("ContentsMetadata", new ContentItemViewModel(model)).Location("Detail", "Content:before");
+            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
+            var contentsMetadataShape = Shape("ContentsMetadata", new ContentItemViewModel(contentItem)).Location("Detail", "Content:before");
 
             if (contentTypeDefinition != null)
             {
@@ -55,23 +55,26 @@ namespace OrchardCore.Contents.Drivers
 
                 results.Add(contentsMetadataShape);
 
-                var hasEditPermission = await ContentTypeAuthorizationHelper.AuthorizeDynamicPermissionAsync(context, Permissions.EditContent, model);
+                var hasViewPermission = await ContentTypeAuthorizationHelper.AuthorizeDynamicPermissionAsync(context, Permissions.ViewContent, contentItem);
+                var hasEditPermission = await ContentTypeAuthorizationHelper.AuthorizeDynamicPermissionAsync(context, Permissions.EditContent, contentItem);
+                var hasPublishPermission = await ContentTypeAuthorizationHelper.AuthorizeDynamicPermissionAsync(context, Permissions.PublishContent, contentItem);
+                var hasDeletePermission = await ContentTypeAuthorizationHelper.AuthorizeDynamicPermissionAsync(context, Permissions.DeleteContent, contentItem);
+                var hasClonePermission = false; //await AuthorizationService.AuthorizeAsync(context.User, Permissions.CloneContent, contentItem);
+                var hasPreviewPermission = await ContentTypeAuthorizationHelper.AuthorizeDynamicPermissionAsync(context, Permissions.PreviewContent, contentItem);
 
-                if (hasEditPermission)
+                if (hasEditPermission || hasViewPermission)
                 {
-                    results.Add(Shape("Contents_SummaryAdmin__Button__Edit", new ContentItemViewModel(model)).Location("SummaryAdmin", "Actions:10"));
+                    results.Add(Shape("Contents_SummaryAdmin__Button__Edit", new ContentItemViewModel(contentItem)).Location("SummaryAdmin", "Actions:10"));
                 }
 
-                var hasPublishPermission = await ContentTypeAuthorizationHelper.AuthorizeDynamicPermissionAsync(context, Permissions.PublishContent, model);
-
-                if (hasPublishPermission)
+                if (hasPublishPermission || hasDeletePermission || hasClonePermission || hasPreviewPermission)
                 {
-                    results.Add(Shape("Contents_SummaryAdmin__Button__Actions", new ContentItemViewModel(model)).Location("SummaryAdmin", "ActionsMenu:10"));
+                    results.Add(Shape("Contents_SummaryAdmin__Button__Actions", new ContentItemViewModel(contentItem)).Location("SummaryAdmin", "ActionsMenu:10"));
                 }
             }
 
-            results.Add(Shape("Contents_SummaryAdmin__Tags", new ContentItemViewModel(model)).Location("SummaryAdmin", "Tags:10"));
-            results.Add(Shape("Contents_SummaryAdmin__Meta", new ContentItemViewModel(model)).Location("SummaryAdmin", "Meta:20"));
+            results.Add(Shape("Contents_SummaryAdmin__Tags", new ContentItemViewModel(contentItem)).Location("SummaryAdmin", "Tags:10"));
+            results.Add(Shape("Contents_SummaryAdmin__Meta", new ContentItemViewModel(contentItem)).Location("SummaryAdmin", "Meta:20"));
 
             return Combine(results.ToArray());
         }
