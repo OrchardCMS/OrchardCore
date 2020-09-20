@@ -105,7 +105,6 @@ namespace OrchardCore.ContentLocalization
             await Handlers.InvokeAsync((handler, context) => handler.LocalizingAsync(context), context, _logger);
             await ReversedHandlers.InvokeAsync((handler, context) => handler.LocalizedAsync(context), context, _logger);
 
-            _session.Save(cloned);
             return cloned;
         }
 

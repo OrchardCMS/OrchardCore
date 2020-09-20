@@ -15,8 +15,7 @@ function initializeTagsEditor(element) {
                 var selectableTagTerms = allTagTerms;
 
                 // Leaves only filters selectableTerms.
-                if (element.dataset.leavesOnly == 'true')
-                {
+                if (element.dataset.leavesOnly == 'true') {
                     selectableTagTerms = selectableTagTerms.filter(function (tagTerm) { return tagTerm.isLeaf });
                     // Self heal when leaves only value is updated.
                     allTagTerms.forEach(function (tagTerm) {
@@ -37,8 +36,6 @@ function initializeTagsEditor(element) {
                     termEntriesKey: element.dataset.termEntriesKey,
                     contentItemIdKey: element.dataset.contentItemIdKey,
                     selectedKey: element.dataset.selectedKey,
-                    partName: element.dataset.partName,
-                    fieldName: element.dataset.fieldName,
                     selectedTagTerms: selectedTagTerms,
                     selectableTagTerms: selectableTagTerms,
                     allTagTerms: allTagTerms
@@ -74,7 +71,7 @@ function initializeTagsEditor(element) {
 
                             // Add to selectedTerms to display in vue-multi-select.
                             self.selectedTagTerms.push(tagTerm);
-                            
+
                         },
                         error: function () {
                             alert(self.createTagErrorMessage);
@@ -93,11 +90,11 @@ function initializeTagsEditor(element) {
                 },
                 termEntriesContentItemName(tagTerm) {
                     var indexOf = this.allTagTerms.indexOf(tagTerm);
-                    return `${this.partName}.${this.fieldName}.${this.termEntriesKey}[${indexOf}].${this.contentItemIdKey}`;
+                    return `${this.termEntriesKey}[${indexOf}].${this.contentItemIdKey}`;
                 },
                 termEntriesSelectedName(tagTerm) {
                     var indexOf = this.allTagTerms.indexOf(tagTerm);
-                    return `${this.partName}.${this.fieldName}.${this.termEntriesKey}[${indexOf}].${this.selectedKey}`;
+                    return `${this.termEntriesKey}[${indexOf}].${this.selectedKey}`;
                 }
             }
         });

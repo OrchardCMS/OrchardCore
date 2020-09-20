@@ -50,6 +50,7 @@ namespace OrchardCore.Alias.Drivers
         {
             model.Alias = part.Alias;
             model.AliasPart = part;
+            model.ContentItem = part.ContentItem;
             model.Settings = settings;
         }
 
