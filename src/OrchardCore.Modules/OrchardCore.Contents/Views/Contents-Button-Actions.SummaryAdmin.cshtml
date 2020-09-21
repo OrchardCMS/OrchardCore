@@ -1,4 +1,3 @@
-@using OrchardCore.Contents.Core;
 @inject IAuthorizationService AuthorizationService
 @inject IContentManager ContentManager
 
@@ -6,11 +5,11 @@
     ContentItem contentItem = Model.ContentItem;
     var hasPublished = await ContentManager.HasPublishedVersionAsync(contentItem);
     var hasDraft = contentItem.HasDraft();
-    //var hasClonePermission = await AuthorizationService.AuthorizeAsync(User, OrchardCore.Contents.CommonPermissions.CloneContent, contentItem);
     var hasDeletePermission = await AuthorizationService.AuthorizeAsync(User, OrchardCore.Contents.CommonPermissions.DeleteContent, contentItem);
     var hasEditPermission = await AuthorizationService.AuthorizeAsync(User, OrchardCore.Contents.CommonPermissions.EditContent, contentItem);
     var hasPreviewPermission = await AuthorizationService.AuthorizeAsync(User, OrchardCore.Contents.CommonPermissions.PreviewContent, contentItem);
     var hasPublishPermission = await AuthorizationService.AuthorizeAsync(User, OrchardCore.Contents.CommonPermissions.PublishContent, contentItem);
+    //var hasClonePermission = await AuthorizationService.AuthorizeAsync(User, OrchardCore.Contents.CommonPermissions.CloneContent, contentItem);
 }
 
 @if (hasDraft)

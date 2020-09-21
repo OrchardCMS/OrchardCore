@@ -8,7 +8,6 @@ using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.ViewModels;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
-using OrchardCore.Contents.Core;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 
@@ -58,12 +57,12 @@ namespace OrchardCore.Contents.Drivers
 
                 results.Add(contentsMetadataShape);
 
-                var hasViewPermission = await _authorizationService.AuthorizeAsync(context.User, OrchardCore.Contents.CommonPermissions.ViewContent, contentItem);
-                var hasEditPermission = await _authorizationService.AuthorizeAsync(context.User, OrchardCore.Contents.CommonPermissions.EditContent, contentItem);
-                var hasPublishPermission = await _authorizationService.AuthorizeAsync(context.User, OrchardCore.Contents.CommonPermissions.PublishContent, contentItem);
-                var hasDeletePermission = await _authorizationService.AuthorizeAsync(context.User, OrchardCore.Contents.CommonPermissions.DeleteContent, contentItem);
-                //var hasClonePermission = await _authorizationService.AuthorizeAsync(context.User, OrchardCore.Contents.CommonPermissions.CloneContent, contentItem);
-                var hasPreviewPermission = await _authorizationService.AuthorizeAsync(context.User, OrchardCore.Contents.CommonPermissions.PreviewContent, contentItem);
+                var hasViewPermission = await _authorizationService.AuthorizeAsync(context.User, CommonPermissions.ViewContent, contentItem);
+                var hasEditPermission = await _authorizationService.AuthorizeAsync(context.User, CommonPermissions.EditContent, contentItem);
+                var hasPublishPermission = await _authorizationService.AuthorizeAsync(context.User, CommonPermissions.PublishContent, contentItem);
+                var hasDeletePermission = await _authorizationService.AuthorizeAsync(context.User, CommonPermissions.DeleteContent, contentItem);
+                var hasPreviewPermission = await _authorizationService.AuthorizeAsync(context.User, CommonPermissions.PreviewContent, contentItem);
+                //var hasClonePermission = await _authorizationService.AuthorizeAsync(context.User, CommonPermissions.CloneContent, contentItem);
 
                 if (hasEditPermission || hasViewPermission)
                 {
@@ -93,14 +92,14 @@ namespace OrchardCore.Contents.Drivers
                 return null;
             }
 
-            var hasPublishPermission = await ContentTypeAuthorizationHelper.AuthorizeDynamicPermissionAsync(context, Permissions.PublishContent, contentItem);
+            var hasPublishPermission = await _authorizationService.AuthorizeAsync(context.User, CommonPermissions.PublishContent, contentItem);
 
             if (hasPublishPermission)
             {
                 results.Add(Dynamic("Content_PublishButton").Location("Actions:10"));
             }
 
-            var hasEditPermission = await ContentTypeAuthorizationHelper.AuthorizeDynamicPermissionAsync(context, Permissions.EditContent, contentItem);
+            var hasEditPermission = await _authorizationService.AuthorizeAsync(context.User, CommonPermissions.EditContent, contentItem);
 
             if (hasEditPermission)
             {
