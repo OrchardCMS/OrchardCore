@@ -6,11 +6,11 @@
     ContentItem contentItem = Model.ContentItem;
     var hasPublished = await ContentManager.HasPublishedVersionAsync(contentItem);
     var hasDraft = contentItem.HasDraft();
-    var hasClonePermission = await ContentTypeAuthorizationHelper.AuthorizeDynamicPermissionAsync(Context.Request.HttpContext, OrchardCore.Contents.CommonPermissions.CloneContent, contentItem);
-    var hasDeletePermission = await ContentTypeAuthorizationHelper.AuthorizeDynamicPermissionAsync(Context.Request.HttpContext, OrchardCore.Contents.CommonPermissions.DeleteContent, contentItem);
-    var hasEditPermission = await ContentTypeAuthorizationHelper.AuthorizeDynamicPermissionAsync(Context.Request.HttpContext, OrchardCore.Contents.CommonPermissions.EditContent, contentItem);
-    var hasPreviewPermission = await ContentTypeAuthorizationHelper.AuthorizeDynamicPermissionAsync(Context.Request.HttpContext, OrchardCore.Contents.CommonPermissions.PreviewContent, contentItem);
-    var hasPublishPermission = await ContentTypeAuthorizationHelper.AuthorizeDynamicPermissionAsync(Context.Request.HttpContext, OrchardCore.Contents.CommonPermissions.PublishContent, contentItem);
+    //var hasClonePermission = await AuthorizationService.AuthorizeAsync(User, OrchardCore.Contents.CommonPermissions.CloneContent, contentItem);
+    var hasDeletePermission = await AuthorizationService.AuthorizeAsync(User, OrchardCore.Contents.CommonPermissions.DeleteContent, contentItem);
+    var hasEditPermission = await AuthorizationService.AuthorizeAsync(User, OrchardCore.Contents.CommonPermissions.EditContent, contentItem);
+    var hasPreviewPermission = await AuthorizationService.AuthorizeAsync(User, OrchardCore.Contents.CommonPermissions.PreviewContent, contentItem);
+    var hasPublishPermission = await AuthorizationService.AuthorizeAsync(User, OrchardCore.Contents.CommonPermissions.PublishContent, contentItem);
 }
 
 @if (hasDraft)
@@ -46,7 +46,4 @@
     <a remove-for="@contentItem" class="dropdown-item btn-sm" asp-route-returnUrl="@FullRequestPath" itemprop="RemoveUrl UnsafeUrl" data-title="@T["Delete"]" data-message="@T["Are you sure you want to delete this content item?"]">@T["Delete"]</a>
 }
 
-@if (hasClonePermission)
-{
-    <a asp-action="Clone" asp-controller="Admin" asp-route-area="OrchardCore.Contents" asp-route-contentItemId="@contentItem.ContentItemId" asp-route-returnUrl="@FullRequestPath" itemprop="UnsafeUrl" class="dropdown-item btn-sm">@T["Clone"]</a>
-}
+

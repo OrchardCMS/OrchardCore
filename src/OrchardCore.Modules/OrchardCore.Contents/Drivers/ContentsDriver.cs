@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
@@ -17,13 +18,15 @@ namespace OrchardCore.Contents.Drivers
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly IHttpContextAccessor _httpContextAccessor;
-
+        private readonly IAuthorizationService _authorizationService;
         public ContentsDriver(
             IContentDefinitionManager contentDefinitionManager,
-            IHttpContextAccessor httpContextAccessor)
+            IHttpContextAccessor httpContextAccessor,
+            IAuthorizationService authorizationService)
         {
             _contentDefinitionManager = contentDefinitionManager;
             _httpContextAccessor = httpContextAccessor;
+            _authorizationService = authorizationService;
         }
 
         public override async Task<IDisplayResult> DisplayAsync(ContentItem contentItem, IUpdateModel updater)
@@ -55,19 +58,19 @@ namespace OrchardCore.Contents.Drivers
 
                 results.Add(contentsMetadataShape);
 
-                var hasViewPermission = await ContentTypeAuthorizationHelper.AuthorizeDynamicPermissionAsync(context, CommonPermissions.ViewContent, contentItem);
-                var hasEditPermission = await ContentTypeAuthorizationHelper.AuthorizeDynamicPermissionAsync(context, CommonPermissions.EditContent, contentItem);
-                var hasPublishPermission = await ContentTypeAuthorizationHelper.AuthorizeDynamicPermissionAsync(context, CommonPermissions.PublishContent, contentItem);
-                var hasDeletePermission = await ContentTypeAuthorizationHelper.AuthorizeDynamicPermissionAsync(context, CommonPermissions.DeleteContent, contentItem);
-                var hasClonePermission = await ContentTypeAuthorizationHelper.AuthorizeDynamicPermissionAsync(context, CommonPermissions.CloneContent, contentItem);
-                var hasPreviewPermission = await ContentTypeAuthorizationHelper.AuthorizeDynamicPermissionAsync(context, CommonPermissions.PreviewContent, contentItem);
+                var hasViewPermission = await _authorizationService.AuthorizeAsync(context.User, OrchardCore.Contents.CommonPermissions.ViewContent, contentItem);
+                var hasEditPermission = await _authorizationService.AuthorizeAsync(context.User, OrchardCore.Contents.CommonPermissions.EditContent, contentItem);
+                var hasPublishPermission = await _authorizationService.AuthorizeAsync(context.User, OrchardCore.Contents.CommonPermissions.PublishContent, contentItem);
+                var hasDeletePermission = await _authorizationService.AuthorizeAsync(context.User, OrchardCore.Contents.CommonPermissions.DeleteContent, contentItem);
+                //var hasClonePermission = await _authorizationService.AuthorizeAsync(context.User, OrchardCore.Contents.CommonPermissions.CloneContent, contentItem);
+                var hasPreviewPermission = await _authorizationService.AuthorizeAsync(context.User, OrchardCore.Contents.CommonPermissions.PreviewContent, contentItem);
 
                 if (hasEditPermission || hasViewPermission)
                 {
                     results.Add(Shape("Contents_SummaryAdmin__Button__Edit", new ContentItemViewModel(contentItem)).Location("SummaryAdmin", "Actions:10"));
                 }
 
-                if (hasPublishPermission || hasDeletePermission || hasClonePermission || hasPreviewPermission)
+                if (hasPublishPermission || hasDeletePermission || hasPreviewPermission)
                 {
                     results.Add(Shape("Contents_SummaryAdmin__Button__Actions", new ContentItemViewModel(contentItem)).Location("SummaryAdmin", "ActionsMenu:10"));
                 }
