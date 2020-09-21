@@ -100,6 +100,11 @@ namespace OrchardCore.Contents.Security
                 return Permissions.PreviewOwnContent;
             }
 
+            if (permission.Name == Permissions.CloneContent.Name)
+            {
+                return Permissions.CloneOwnContent;
+            }
+
             return null;
         }
 
