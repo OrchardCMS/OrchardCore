@@ -74,8 +74,18 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Predicates
                     if (propertyProvider.TryGetValue(values.Last(), out var columnName))
                     {
                         _usedAliases.Add(alias);
+                        // Switch the given alias in the path with the mapped alias.
+                        // aliasPart.alias -> AliasPartIndex.Alias
                         return Dialect.QuoteForTableName($"{_tablePrefix}{alias}") + "." + Dialect.QuoteForColumnName(columnName);
                     }
+                }
+                else 
+                {
+                    // no property provider exists; hope sql is case-insensitive (will break postgres; property providers must be supplied for postgres)
+                    // Switch the given alias in the path with the mapped alias.
+                    // aliasPart.Alias -> AliasPartIndex.alias
+                    _usedAliases.Add(alias);
+                    return Dialect.QuoteForTableName($"{_tablePrefix}{alias}") + "." + Dialect.QuoteForColumnName(values[1]);
                 }
             }
 
