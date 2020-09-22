@@ -92,6 +92,11 @@ namespace OrchardCore.Contents.Services
                 {
                     query.With<ContentItemIndex>(x => x.ContentType.IsIn(listableTypes.Select(t => t.Name).ToArray()));
                 }
+                else
+                {
+                    //We never list HtmlWidget in the Content Items List
+                    query.With<ContentItemIndex>(x => x.ContentType != "HtmlWidget");
+                }
             }
 
             // Apply OrderBy filters.
