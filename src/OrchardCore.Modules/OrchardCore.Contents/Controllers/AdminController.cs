@@ -157,7 +157,7 @@ namespace OrchardCore.Contents.Controllers
             };
 
             // When using the AdminMenus ContentTypes Feature and specifying a Content Type hide the 'Content Type' filter.
-            if (string.IsNullOrEmpty(contentTypeId) && model.Options.ContentTypeOptions == null)
+            if (String.IsNullOrEmpty(contentTypeId) && model.Options.ContentTypeOptions == null)
             {
                 var listableTypes = new List<ContentTypeDefinition>();
                 foreach (var ctd in _contentDefinitionManager.ListTypeDefinitions())
