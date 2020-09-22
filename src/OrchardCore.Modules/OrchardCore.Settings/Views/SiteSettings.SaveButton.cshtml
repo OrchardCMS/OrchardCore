@@ -1,7 +1,7 @@
 <button class="primaryAction btn btn-primary" type="submit">@T["Save"]</button>
 
 @{
-    var returnUrl = Context.Request.Query["returnUrl"];
+    var returnUrl = Context.Request.Query["returnurl"];
 }
 
 @if (!String.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))

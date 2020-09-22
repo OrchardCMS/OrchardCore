@@ -105,7 +105,7 @@ namespace OrchardCore.OpenId.Controllers
                 });
             }
 
-            ViewData["ReturnUrl"] = returnUrl;
+            ViewData["returnurl"] = returnUrl;
             return View(model);
         }
 
@@ -124,7 +124,7 @@ namespace OrchardCore.OpenId.Controllers
 
             if (!ModelState.IsValid)
             {
-                ViewData["ReturnUrl"] = returnUrl;
+                ViewData["returnurl"] = returnUrl;
                 return View(model);
             }
 
@@ -193,7 +193,7 @@ namespace OrchardCore.OpenId.Controllers
                 });
             }
 
-            ViewData["ReturnUrl"] = returnUrl;
+            ViewData["returnurl"] = returnUrl;
             return View(model);
         }
 
@@ -224,7 +224,7 @@ namespace OrchardCore.OpenId.Controllers
 
             if (!ModelState.IsValid)
             {
-                ViewData["ReturnUrl"] = returnUrl;
+                ViewData["returnurl"] = returnUrl;
                 return View(model);
             }
 

@@ -111,7 +111,7 @@ namespace OrchardCore.OpenId.Controllers
             }
 
             ViewData[nameof(OpenIdServerSettings)] = await GetServerSettingsAsync();
-            ViewData["ReturnUrl"] = returnUrl;
+            ViewData["returnurl"] = returnUrl;
             return View(model);
         }
 
@@ -142,7 +142,7 @@ namespace OrchardCore.OpenId.Controllers
             if (!ModelState.IsValid)
             {
                 ViewData[nameof(OpenIdServerSettings)] = await GetServerSettingsAsync();
-                ViewData["ReturnUrl"] = returnUrl;
+                ViewData["returnurl"] = returnUrl;
                 return View(model);
             }
 
@@ -263,7 +263,7 @@ namespace OrchardCore.OpenId.Controllers
             }
 
             ViewData[nameof(OpenIdServerSettings)] = await GetServerSettingsAsync();
-            ViewData["ReturnUrl"] = returnUrl;
+            ViewData["returnurl"] = returnUrl;
             return View(model);
         }
 
@@ -309,7 +309,7 @@ namespace OrchardCore.OpenId.Controllers
             if (!ModelState.IsValid)
             {
                 ViewData[nameof(OpenIdServerSettings)] = await GetServerSettingsAsync();
-                ViewData["ReturnUrl"] = returnUrl;
+                ViewData["returnurl"] = returnUrl;
                 return View(model);
             }
 

@@ -3,7 +3,7 @@
 
 @{
     ContentItem contentItem = Model.ContentItem;
-    var returnUrl = Context.Request.Query["returnUrl"];
+    var returnUrl = Context.Request.Query["returnurl"];
     var hasPublishContentPermission = await AuthorizationService.AuthorizeAsync(User, OrchardCore.Contents.Permissions.PublishContent, contentItem);
 }
 

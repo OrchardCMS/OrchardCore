@@ -26,7 +26,7 @@
                 @await DisplayAsync(Model.Actions)
 
                 @{
-                    var returnUrl = Context.Request.Query["returnUrl"];
+                    var returnUrl = Context.Request.Query["returnurl"];
                 }
 
                 @if (!String.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
@@ -48,8 +48,8 @@
 
 @if (Model.Actions != null)
 {
-    @if (!String.IsNullOrWhiteSpace(Context.Request.Query["returnUrl"]))
+    @if (!String.IsNullOrWhiteSpace(Context.Request.Query["returnurl"]))
     {
-        @Html.Hidden("returnUrl", Context.Request.Query["returnUrl"])
+        @Html.Hidden("returnurl", Context.Request.Query["returnurl"])
     }
 }

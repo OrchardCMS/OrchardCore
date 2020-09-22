@@ -16,8 +16,8 @@
                         {
                             var routeWithId = new RouteValueDictionary(target.Route);
                             routeWithId["id"] = Site.As<ExportContentToDeploymentTargetSettings>().ExportContentToDeploymentTargetPlanId;
-                            var returnUrl = Context.Request.Query["returnUrl"];
-                            routeWithId["returnUrl"] = FullRequestPath;
+                            var returnUrl = Context.Request.Query["returnurl"];
+                            routeWithId["returnurl"] = FullRequestPath;
                             <div class="col-sm-12 col-md-6 col-lg-4 d-flex align-items-stretch card-item">
                                 <div class="card w-100 mb-3">
                                     <div class="card-body">

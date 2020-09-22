@@ -3,7 +3,7 @@
 
 @{
     ContentItem contentItem = Model.ContentItem;
-    var returnUrl = Context.Request.Query["returnUrl"];
+    var returnUrl = Context.Request.Query["returnurl"];
     var hasEditContentPermission = await AuthorizationService.AuthorizeAsync(User, OrchardCore.Contents.Permissions.EditContent, contentItem);
 }
 
