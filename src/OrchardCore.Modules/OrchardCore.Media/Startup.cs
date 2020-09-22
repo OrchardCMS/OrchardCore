@@ -158,6 +158,7 @@ namespace OrchardCore.Media
             // Media Profiles
             services.AddScoped<MediaProfilesManager>();
             services.AddScoped<IMediaProfileService, MediaProfileService>();
+            services.AddRecipeExecutionStep<MediaProfileStep>();
         }
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
@@ -338,6 +339,10 @@ namespace OrchardCore.Media
             services.AddTransient<IDeploymentSource, MediaDeploymentSource>();
             services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<MediaDeploymentStep>());
             services.AddScoped<IDisplayDriver<DeploymentStep>, MediaDeploymentStepDriver>();
+
+            services.AddTransient<IDeploymentSource, AllMediaProfilesDeploymentSource>();
+            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AllMediaProfilesDeploymentStep>());
+            services.AddScoped<IDisplayDriver<DeploymentStep>, AllMediaProfilesDeploymentStepDriver>();            
         }
     }
 
