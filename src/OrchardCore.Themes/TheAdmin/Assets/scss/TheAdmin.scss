@@ -1251,3 +1251,9 @@ ul.pager li a {
     overflow-y: auto;
     max-height: 250px;
 }
+
+input[type=password]::-ms-reveal,
+input[type=password]::-ms-clear
+{
+    display: none;
+}
