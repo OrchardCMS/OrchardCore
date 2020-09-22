@@ -157,9 +157,12 @@ namespace OrchardCore.Environment.Shell
         /// Reloads the settings and releases the shell so that a new one will be
         /// built for subsequent requests, while existing requests get flushed.
         /// </summary>
-        public async Task ReloadShellContextAsync(ShellSettings settings, bool eventSink = false)
+        /// <param name="eventSource">
+        /// Whether the related <see cref="ShellEvent"/> is invoked.
+        /// </param>
+        public async Task ReloadShellContextAsync(ShellSettings settings, bool eventSource = true)
         {
-            if (ReloadingAsync != null && !eventSink && settings.State != TenantState.Initializing)
+            if (ReloadingAsync != null && eventSource && settings.State != TenantState.Initializing)
             {
                 await ReloadingAsync(settings.Name);
             }
@@ -225,9 +228,12 @@ namespace OrchardCore.Environment.Shell
         /// Releases a shell so that a new one will be built for subsequent requests.
         /// Note: Can be used to free up resources after a given time of inactivity.
         /// </summary>
-        public async Task ReleaseShellContextAsync(ShellSettings settings, bool eventSink = false)
+        /// <param name="eventSource">
+        /// Whether the related <see cref="ShellEvent"/> is invoked.
+        /// </param>
+        public async Task ReleaseShellContextAsync(ShellSettings settings, bool eventSource = true)
         {
-            if (ReleasingAsync != null && !eventSink && settings.State != TenantState.Initializing)
+            if (ReleasingAsync != null && eventSource && settings.State != TenantState.Initializing)
             {
                 await ReleasingAsync(settings.Name);
             }
@@ -263,13 +269,11 @@ namespace OrchardCore.Environment.Shell
         /// <summary>
         /// Tries to retrieve the shell settings associated with the specified tenant.
         /// </summary>
-        /// <returns><c>true</c> if the settings could be found, <c>false</c> otherwise.</returns>
         public bool TryGetSettings(string name, out ShellSettings settings) => _shellSettings.TryGetValue(name, out settings);
 
         /// <summary>
         /// Retrieves all shell settings.
         /// </summary>
-        /// <returns>All shell settings.</returns>
         public IEnumerable<ShellSettings> GetAllSettings() => _shellSettings.Values.ToArray();
 
         private async Task PreCreateAndRegisterShellsAsync()

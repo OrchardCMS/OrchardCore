@@ -16,34 +16,35 @@ namespace OrchardCore.Environment.Shell
         /// <summary>
         /// Returns an existing <see cref="ShellContext"/> or creates a new one if necessary.
         /// </summary>
-        /// <param name="settings">The <see cref="ShellSettings"/> object representing the shell to get.</param>
-        /// <returns></returns>
         Task<ShellContext> GetOrCreateShellContextAsync(ShellSettings settings);
 
         /// <summary>
         /// Creates a standalone service scope that can be used to resolve local services.
         /// </summary>
-        /// <param name="settings">The <see cref="ShellSettings"/> object representing the shell to get.</param>
         Task<ShellScope> GetScopeAsync(ShellSettings settings);
 
         /// <summary>
         /// Updates an existing shell configuration and then reloads the shell.
         /// </summary>
-        /// <param name="settings"></param>
         Task UpdateShellSettingsAsync(ShellSettings settings);
 
         /// <summary>
         /// Reloads the settings and releases the shell so that a new one will be
         /// built for subsequent requests, while existing requests get flushed.
         /// </summary>
-        /// <param name="settings"></param>
-        Task ReloadShellContextAsync(ShellSettings settings, bool eventSink = false);
+        /// <param name="eventSource">
+        /// Whether the related <see cref="ShellEvent"/> is invoked.
+        /// </param>
+        Task ReloadShellContextAsync(ShellSettings settings, bool eventSource = true);
 
         /// <summary>
         /// Releases a shell so that a new one will be built for subsequent requests.
         /// Note: Can be used to free up resources after a given time of inactivity.
         /// </summary>
-        Task ReleaseShellContextAsync(ShellSettings settings, bool eventSink = false);
+        /// <param name="eventSource">
+        /// Whether the related <see cref="ShellEvent"/> is invoked.
+        /// </param>
+        Task ReleaseShellContextAsync(ShellSettings settings, bool eventSource = true);
 
         /// <summary>
         /// Lists all available <see cref="ShellContext"/> instances.

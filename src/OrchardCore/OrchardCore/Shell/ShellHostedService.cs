@@ -157,7 +157,7 @@ namespace OrchardCore.Environment.Shell
                                 {
                                     shellIdentifier.ReleaseId = releaseId;
 
-                                    await _shellHost.ReleaseShellContextAsync(settings, eventSink: true);
+                                    await _shellHost.ReleaseShellContextAsync(settings, eventSource: false);
                                 }
                             }
 
@@ -171,7 +171,7 @@ namespace OrchardCore.Environment.Shell
                                 {
                                     shellIdentifier.ReloadId = reloadId;
 
-                                    await _shellHost.ReloadShellContextAsync(settings, eventSink: true);
+                                    await _shellHost.ReloadShellContextAsync(settings, eventSource: false);
                                 }
                             }
                         }
