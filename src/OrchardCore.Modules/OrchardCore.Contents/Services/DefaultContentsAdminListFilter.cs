@@ -79,6 +79,7 @@ namespace OrchardCore.Contents.Services
                 var listTypeDefinitions = _contentDefinitionManager.ListTypeDefinitions();
                 var userListableTypes = new List<ContentTypeDefinition>();
                 var nonListableTypes = new List<ContentTypeDefinition>();
+
                 foreach (var ctd in listTypeDefinitions)
                 {
                     if (ctd.GetSettings<ContentTypeSettings>().Listable)
@@ -94,6 +95,7 @@ namespace OrchardCore.Contents.Services
                         nonListableTypes.Add(ctd);
                     }
                 }
+
                 if (userListableTypes.Any())
                 {
                     query.With<ContentItemIndex>(x => x.ContentType.IsIn(userListableTypes.Select(t => t.Name).ToArray()));
