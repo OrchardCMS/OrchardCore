@@ -25,6 +25,7 @@ namespace OrchardCore.Contents
         public static readonly Permission CloneContent = CommonPermissions.CloneContent;
         public static readonly Permission CloneOwnContent = CommonPermissions.CloneOwnContent;
         public static readonly Permission AccessContentApi = new Permission("AccessContentApi", "Access content via the api");
+        public static readonly Permission AccessAdminContentList = new Permission("AccessAdminContentList", "Access admin content list");
 
         //public static readonly Permission MetaListContent = new Permission { ImpliedBy = new[] { EditOwnContent, PublishOwnContent, DeleteOwnContent } };
 
@@ -44,7 +45,8 @@ namespace OrchardCore.Contents
                 PreviewContent,
                 CloneContent,
                 CloneOwnContent,
-                AccessContentApi
+                AccessContentApi,
+                AccessAdminContentList
             }
             .AsEnumerable());
         }
@@ -54,22 +56,22 @@ namespace OrchardCore.Contents
             return new[] {
                 new PermissionStereotype {
                     Name = "Administrator",
-                    Permissions = new[] { PublishContent, EditContent, DeleteContent, PreviewContent, CloneContent, AccessContentApi}
+                    Permissions = new[] { PublishContent, EditContent, DeleteContent, PreviewContent, CloneContent, AccessAdminContentList, AccessContentApi }
                 },
                 new PermissionStereotype {
                     Name = "Editor",
-                    Permissions = new[] { PublishContent, EditContent, DeleteContent, PreviewContent, CloneContent }
+                    Permissions = new[] { PublishContent, EditContent, DeleteContent, PreviewContent, CloneContent, AccessAdminContentList }
                 },
                 new PermissionStereotype {
                     Name = "Moderator"
                 },
                 new PermissionStereotype {
                     Name = "Author",
-                    Permissions = new[] { PublishOwnContent, EditOwnContent, DeleteOwnContent, PreviewOwnContent, CloneOwnContent }
+                    Permissions = new[] { PublishOwnContent, EditOwnContent, DeleteOwnContent, PreviewOwnContent, CloneOwnContent, AccessAdminContentList }
                 },
                 new PermissionStereotype {
                     Name = "Contributor",
-                    Permissions = new[] { EditOwnContent, PreviewOwnContent, CloneOwnContent }
+                    Permissions = new[] { EditOwnContent, PreviewOwnContent, CloneOwnContent, AccessAdminContentList }
                 },
                 new PermissionStereotype {
                     Name = "Authenticated",
@@ -77,7 +79,7 @@ namespace OrchardCore.Contents
                 },
                 new PermissionStereotype {
                     Name = "Anonymous",
-                    Permissions = new[] { ViewContent}
+                    Permissions = new[] { ViewContent }
                 },
             };
         }

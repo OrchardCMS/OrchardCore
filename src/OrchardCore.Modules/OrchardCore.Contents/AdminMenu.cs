@@ -40,7 +40,7 @@ namespace OrchardCore.Contents
             builder.Add(S["Content"], NavigationConstants.AdminMenuContentPosition, content => content
                 .AddClass("content").Id("content")
                 .Add(S["Content Items"], S["Content Items"].PrefixPosition(), contentItems => contentItems
-                    .Permission(Permissions.EditOwnContent)
+                    .Permission(Permissions.AccessAdminContentList)
                     .Action(nameof(AdminController.List), typeof(AdminController).ControllerName(), new { area = "OrchardCore.Contents", contentTypeId = "" })
                     .LocalNav())
                 );
