@@ -374,9 +374,9 @@ namespace OrchardCore.Resources
                 .DefineScript("vuedraggable")
                 .SetDependencies("vuejs", "Sortable")
                 .SetUrl("~/OrchardCore.Resources/Scripts/vuedraggable.umd.min.js", "~/OrchardCore.Resources/Scripts/vuedraggable.umd.js")
-                .SetCdn("https://cdn.jsdelivr.net/npm/vuedraggable@2.23.2/dist/vuedraggable.umd.min.js", "https://cdn.jsdelivr.net/npm/vuedraggable@2.23.2/dist/vuedraggable.umd.js")
-                .SetCdnIntegrity("sha384-76x2+A0FtaKEJTehctEO1ZZD7nUoFvLP4cEa2yCznMsOjj0SvK2rd24FgP9EnuzJ", "sha384-xdeWopJ4Lu/6a41wOnXJ7yjwWe7TrZ0RDREHDKk8OpnzYZSrwxg3r8MqAbog8Y0l")
-                .SetVersion("2.23.2");
+                .SetCdn("https://cdn.jsdelivr.net/npm/vuedraggable@2.24.1/dist/vuedraggable.umd.min.js", "https://cdn.jsdelivr.net/npm/vuedraggable@2.24.1/dist/vuedraggable.umd.js")
+                .SetCdnIntegrity("sha384-95XQBb8XRK8jN1TR3CjE7Shlbm1m/8JNzMu/ACCsnWu/yFvMTkCjDHVXbOVl7Moi", "sha384-10hAGRrbDQC4KS+gdeuUtzyGr+4JdQ4PFfU58+1uy+D7WkEgCcI9xlUPBa10fdf7")
+                .SetVersion("2.24.1");
         }
     }
 }

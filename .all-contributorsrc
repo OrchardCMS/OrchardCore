@@ -536,7 +536,8 @@
       "avatar_url": "https://avatars3.githubusercontent.com/u/379390?v=4",
       "profile": "https://www.zeta.com.au/",
       "contributions": [
-        "code"
+        "code",
+        "doc"
       ]
     },
     {
@@ -1837,6 +1838,15 @@
       "profile": "https://github.com/khurram4u2",
       "contributions": [
         "code"
+      ]
+    },
+    {
+      "login": "mvarblow",
+      "name": "Matt Varblow",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/1827487?v=4",
+      "profile": "https://github.com/mvarblow",
+      "contributions": [
+        "doc"
       ]
     }
   ],
