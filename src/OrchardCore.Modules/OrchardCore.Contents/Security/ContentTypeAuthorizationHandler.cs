@@ -26,6 +26,7 @@ namespace OrchardCore.Contents.Security
                 return;
             }
 
+            // If we are not evaluating a ContentItem then return.
             if (context.Resource == null)
             {
                 return;
