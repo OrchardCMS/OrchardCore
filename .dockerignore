@@ -1,5 +1,9 @@
-#ignore all files
-*/*
+#ignore all
+**
 
-#except release
-!/.build/release/*
+#except src for build
+!./src/*
+
+#ignore all prebuild
+[b|B]in
+[O|o]bj

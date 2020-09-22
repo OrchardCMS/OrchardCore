@@ -1,0 +1,51 @@
+version: '3.3'
+services:
+    web:
+        build: 
+            context: .
+            dockerfile: Dockerfile
+        ports:
+            - "5009:80"
+        depends_on:
+            - sqlserver
+            - mysql
+            - postgresql
+    sqlserver:
+        image: "mcr.microsoft.com/mssql/server"
+        environment:
+            SA_PASSWORD: "pEKoU!8n123&"
+            ACCEPT_EULA: "Y"
+    mysql:
+        image: mysql:latest
+        restart: always
+        environment:
+            MYSQL_DATABASE: 'orchardcore_database'
+            # So you don't have to use root, but you can if you like
+            MYSQL_USER: 'orchardcore_user'
+            # You can use whatever password you like
+            MYSQL_PASSWORD: 'orchardcore_password'
+            # Password for root access
+            MYSQL_ROOT_PASSWORD: 'root_password'
+        ports:
+            # <Port exposed> : < MySQL Port running inside container>
+            - '3306:3306'
+        expose:
+            # Opens port 3306 on the container
+            - '3306'
+            # Where our data will be persisted
+        volumes:
+            - mysql-data:/var/lib/mysql
+    postgresql:
+        image: postgres:latest
+        volumes:
+            - postgresql-data:/var/lib/postgresql/data
+        ports:
+            - 5432:5432
+        environment:
+            POSTGRES_USER: orchardcore_user
+            POSTGRES_PASSWORD: orchardcore_password
+            POSTGRES_DB: orchardcore_database
+# Names our volume
+volumes:
+    mysql-data:
+    postgresql-data:
