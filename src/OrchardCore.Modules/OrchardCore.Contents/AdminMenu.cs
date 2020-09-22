@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
@@ -16,15 +17,18 @@ namespace OrchardCore.Contents
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly IContentManager _contentManager;
+        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IStringLocalizer S;
 
         public AdminMenu(
-            IStringLocalizer<AdminMenu> localizer,
             IContentDefinitionManager contentDefinitionManager,
-            IContentManager contentManager)
+            IContentManager contentManager,
+            IHttpContextAccessor httpContextAccessor,
+            IStringLocalizer<AdminMenu> localizer)
         {
             _contentDefinitionManager = contentDefinitionManager;
             _contentManager = contentManager;
+            _httpContextAccessor = httpContextAccessor;
             S = localizer;
         }
 
@@ -55,6 +59,7 @@ namespace OrchardCore.Contents
                         var ci = await _contentManager.NewAsync(contentTypeDefinition.Name);
                         var cim = await _contentManager.PopulateAspectAsync<ContentItemMetadata>(ci);
                         var createRouteValues = cim.CreateRouteValues;
+                        createRouteValues.Add("returnurl", _httpContextAccessor.HttpContext.Request.PathBase + "/Admin/Contents/ContentItems");
                         if (createRouteValues.Any())
                             newMenu.Add(new LocalizedString(contentTypeDefinition.DisplayName, contentTypeDefinition.DisplayName), "5", item => item
                                 .Action(cim.CreateRouteValues["Action"] as string, cim.CreateRouteValues["Controller"] as string, cim.CreateRouteValues)
