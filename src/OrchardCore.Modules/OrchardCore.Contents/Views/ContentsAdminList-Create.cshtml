@@ -1,14 +1,11 @@
 @model ContentOptionsViewModel
-@{
-    var returnUrl = @Context.Request.Path;
-}
 <div class="form-group">
     <div class="btn-group">
         @if (Model.CreatableTypes.Any())
         {
             @if (Model.CreatableTypes.Count == 1)
             {
-                <a class="btn btn-sm btn-success" href="@Url.RouteUrl(new { area = "OrchardCore.Contents", controller = "Admin", action = "Create", id = Model.CreatableTypes.First().Value, returnurl = returnUrl })">@T["New {0}", Model.CreatableTypes.First().Text]</a>
+                <a class="btn btn-sm btn-success" href="@Url.RouteUrl(new { area = "OrchardCore.Contents", controller = "Admin", action = "Create", id = Model.CreatableTypes.First().Value, returnurl = FullRequestPath })">@T["New {0}", Model.CreatableTypes.First().Text]</a>
             }
             else
             {
@@ -16,7 +13,7 @@
                 <div class="dropdown-menu dropdown-menu-right scrollable" aria-labelledby="new-dropdown">
                     @foreach (var item in Model.CreatableTypes)
                     {
-                        <a class="dropdown-item" href="@Url.RouteUrl(new { area = "OrchardCore.Contents", controller = "Admin", action = "Create", id = @item.Value, returnurl = returnUrl })">@T[item.Text]</a>
+                        <a class="dropdown-item" href="@Url.RouteUrl(new { area = "OrchardCore.Contents", controller = "Admin", action = "Create", id = @item.Value, returnurl = FullRequestPath })">@T[item.Text]</a>
                     }
                 </div>
             }
