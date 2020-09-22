@@ -92,19 +92,22 @@ namespace OrchardCore.Contents.Services
                 {
                     query.With<ContentItemIndex>(x => x.ContentType.IsIn(listableTypes.Select(t => t.Name).ToArray()));
                 }
-
-                // Make sure we always remove ContentItems from non-listable ContentTypes
-                var nonListableTypes = new List<ContentTypeDefinition>();
-                foreach (var ctd in _contentDefinitionManager.ListTypeDefinitions())
+                else
                 {
-                    if (!ctd.GetSettings<ContentTypeSettings>().Listable)
+                    // Make sure we remove ContentItems from non-listable ContentTypes if
+                    // user doesn't have any unrestricted listable ContentType
+                    var nonListableTypes = new List<ContentTypeDefinition>();
+                    foreach (var ctd in _contentDefinitionManager.ListTypeDefinitions())
                     {
-                        nonListableTypes.Add(ctd);
+                        if (!ctd.GetSettings<ContentTypeSettings>().Listable)
+                        {
+                            nonListableTypes.Add(ctd);
+                        }
                     }
-                }
-                if(nonListableTypes.Any())
-                {
-                    query.With<ContentItemIndex>(x => x.ContentType.IsNotIn(nonListableTypes.Select(t => t.Name).ToArray()));
+                    if(nonListableTypes.Any())
+                    {
+                        query.With<ContentItemIndex>(x => x.ContentType.IsNotIn(nonListableTypes.Select(t => t.Name).ToArray()));
+                    }
                 }
             }
 
