@@ -51,7 +51,7 @@ Here is a more detailed [roadmap](https://github.com/OrchardCMS/OrchardCore/wiki
 
 ### Docker
 
-- Run `docker run --name orchardcms orchardproject/orchardcore-cms-linux:latest`
+- Run `docker run --name orchardcms -p 80:80 orchardproject/orchardcore-cms-linux:latest`
 
 Docker images and parameters can be found at <https://hub.docker.com/u/orchardproject/>
 
