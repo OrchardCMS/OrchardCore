@@ -49,7 +49,7 @@ namespace OrchardCore.Environment.Shell
             _shellSettingsManager = shellSettingsManager;
             _logger = logger;
 
-            shellHost.InitializingAsync += InitializingAsync;
+            shellHost.LoadingAsync += LoadingAsync;
             shellHost.ReleasingAsync += ReleasingAsync;
             shellHost.ReloadingAsync += ReloadingAsync;
         }
@@ -193,7 +193,7 @@ namespace OrchardCore.Environment.Shell
             _defaultContext = null;
         }
 
-        public async Task InitializingAsync()
+        public async Task LoadingAsync()
         {
             var defautSettings = await _shellSettingsManager.LoadSettingsAsync(ShellHelper.DefaultShellName);
 

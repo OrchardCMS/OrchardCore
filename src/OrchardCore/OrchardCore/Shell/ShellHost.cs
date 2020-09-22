@@ -49,7 +49,7 @@ namespace OrchardCore.Environment.Shell
             _logger = logger;
         }
 
-        public ShellsEvent InitializingAsync { get; set; }
+        public ShellsEvent LoadingAsync { get; set; }
         public ShellEvent ReleasingAsync { get; set; }
         public ShellEvent ReloadingAsync { get; set; }
 
@@ -159,9 +159,9 @@ namespace OrchardCore.Environment.Shell
         /// </summary>
         public async Task ReloadShellContextAsync(ShellSettings settings, bool eventSink = false)
         {
-            if (!eventSink && settings.State != TenantState.Initializing)
+            if (ReloadingAsync != null && !eventSink && settings.State != TenantState.Initializing)
             {
-                await (ReloadingAsync?.Invoke(settings.Name) ?? Task.CompletedTask);
+                await ReloadingAsync(settings.Name);
             }
 
             // A disabled shell still in use will be released by its last scope.
@@ -227,9 +227,9 @@ namespace OrchardCore.Environment.Shell
         /// </summary>
         public async Task ReleaseShellContextAsync(ShellSettings settings, bool eventSink = false)
         {
-            if (!eventSink && settings.State != TenantState.Initializing)
+            if (ReleasingAsync != null && !eventSink && settings.State != TenantState.Initializing)
             {
-                await (ReleasingAsync?.Invoke(settings.Name) ?? Task.CompletedTask);
+                await ReleasingAsync(settings.Name);
             }
 
             // A disabled shell still in use will be released by its last scope.
@@ -283,7 +283,10 @@ namespace OrchardCore.Environment.Shell
             // 'ITypeFeatureProvider' and their areas defined in the application conventions.
             await _extensionManager.LoadFeaturesAsync();
 
-            await (InitializingAsync?.Invoke() ?? Task.CompletedTask);
+            if (LoadingAsync != null)
+            {
+                await LoadingAsync();
+            }
 
             // Is there any tenant right now?
             var allSettings = (await _shellSettingsManager.LoadSettingsAsync()).Where(CanCreateShell).ToArray();
