@@ -111,3 +111,4 @@ after_deploy:
       echo "$env:DOCKER_PASS" | docker login -u="$env:DOCKER_USER" --password-stdin
       docker push orchardproject/orchardcore-cms-windows
     }
+    
