@@ -76,8 +76,9 @@ namespace OrchardCore.Contents.Services
             }
             else
             {
+                var listTypeDefinitions = _contentDefinitionManager.ListTypeDefinitions();
                 var listableTypes = new List<ContentTypeDefinition>();
-                foreach (var ctd in _contentDefinitionManager.ListTypeDefinitions())
+                foreach (var ctd in listTypeDefinitions)
                 {
                     if (ctd.GetSettings<ContentTypeSettings>().Listable)
                     {
@@ -97,7 +98,7 @@ namespace OrchardCore.Contents.Services
                     // Make sure we remove ContentItems from non-listable ContentTypes if
                     // user doesn't have any unrestricted listable ContentType
                     var nonListableTypes = new List<ContentTypeDefinition>();
-                    foreach (var ctd in _contentDefinitionManager.ListTypeDefinitions())
+                    foreach (var ctd in listTypeDefinitions)
                     {
                         if (!ctd.GetSettings<ContentTypeSettings>().Listable)
                         {
