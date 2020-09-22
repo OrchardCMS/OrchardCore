@@ -162,7 +162,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         if (ch != ">" || !state.lexical || state.lexical.type != ">") {
           if (stream.eat("=")) {
             if (ch == "!" || ch == "=") stream.eat("=");
-          } else if (/[<>*+\-]/.test(ch)) {
+          } else if (/[<>*+\-|&?]/.test(ch)) {
             stream.eat(ch);
             if (ch == ">") stream.eat(ch);
           }
