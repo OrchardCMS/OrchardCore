@@ -156,7 +156,7 @@ namespace OrchardCore.Contents.Controllers
                 new SelectListItem() { Text = S["Delete"], Value = nameof(ContentsBulkAction.Remove) }
             };
 
-            //doesn't fill model.Options.ContentTypeOptions to hide "Content Type" filter on the right side of the interface, because user viewing a list of a specific contenttype items
+            // When using the AdminMenus ContentTypes Feature and specifying a Content Type hide the 'Content Type' filter.
             if (string.IsNullOrEmpty(contentTypeId) && model.Options.ContentTypeOptions == null)
             {
                 var listableTypes = new List<ContentTypeDefinition>();
