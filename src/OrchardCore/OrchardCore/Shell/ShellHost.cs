@@ -428,7 +428,7 @@ namespace OrchardCore.Environment.Shell
         }
 
         /// <summary>
-        /// Whether or not a shell can be released and removed from the list, true if disabled and still in use.
+        /// Whether or not a shell can be released and removed from the list, false if disabled and still in use.
         /// Note: A disabled shell still in use will be released by its last scope, and keeping it in the list
         /// prevents a consumer from creating a new one that would have a null service provider.
         /// </summary>
