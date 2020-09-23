@@ -92,7 +92,8 @@ namespace OrchardCore.Contents.Services
             if(!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.ViewAllAdminContentList))
             {
                 query.With<ContentItemIndex>(x => x.Owner == _httpContextAccessor.HttpContext.User.Identity.Name);
-
+            }
+            
             // Apply OrderBy filters.
             switch (model.OrderBy)
             {
