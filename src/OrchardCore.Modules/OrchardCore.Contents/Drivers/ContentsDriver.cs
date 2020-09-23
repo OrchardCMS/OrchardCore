@@ -28,15 +28,14 @@ namespace OrchardCore.Contents.Drivers
             _authorizationService = authorizationService;
         }
 
-        public override async Task<IDisplayResult> DisplayAsync(ContentItem contentItem, IUpdateModel updater)
+        public override IDisplayResult Display(ContentItem model, IUpdateModel updater)
         {
             // We add custom alternates. This could be done generically to all shapes coming from ContentDisplayDriver but right now it's
             // only necessary on this shape. Otherwise c.f. ContentPartDisplayDriver
 
-            var context = _httpContextAccessor.HttpContext;
-            var results = new List<IDisplayResult>();
-            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
-            var contentsMetadataShape = Shape("ContentsMetadata", new ContentItemViewModel(contentItem)).Location("Detail", "Content:before");
+            var contentsMetadataShape = Shape("ContentsMetadata", new ContentItemViewModel(model)).Location("Detail", "Content:before");
+
+            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(model.ContentType);
 
             if (contentTypeDefinition != null)
             {
@@ -54,31 +53,15 @@ namespace OrchardCore.Contents.Drivers
                         ctx.Shape.Metadata.Alternates.Add($"{stereotype}__ContentsMetadata");
                     }
                 });
-
-                results.Add(contentsMetadataShape);
-
-                var hasViewPermission = await _authorizationService.AuthorizeAsync(context.User, CommonPermissions.ViewContent, contentItem);
-                var hasEditPermission = await _authorizationService.AuthorizeAsync(context.User, CommonPermissions.EditContent, contentItem);
-                var hasPublishPermission = await _authorizationService.AuthorizeAsync(context.User, CommonPermissions.PublishContent, contentItem);
-                var hasDeletePermission = await _authorizationService.AuthorizeAsync(context.User, CommonPermissions.DeleteContent, contentItem);
-                var hasPreviewPermission = await _authorizationService.AuthorizeAsync(context.User, CommonPermissions.PreviewContent, contentItem);
-                var hasClonePermission = await _authorizationService.AuthorizeAsync(context.User, CommonPermissions.CloneContent, contentItem);
-
-                if (hasEditPermission || hasViewPermission)
-                {
-                    results.Add(Shape("Contents_SummaryAdmin__Button__Edit", new ContentItemViewModel(contentItem)).Location("SummaryAdmin", "Actions:10"));
-                }
-
-                if (hasPublishPermission || hasDeletePermission || hasPreviewPermission || hasClonePermission)
-                {
-                    results.Add(Shape("Contents_SummaryAdmin__Button__Actions", new ContentItemViewModel(contentItem)).Location("SummaryAdmin", "ActionsMenu:10"));
-                }
             }
 
-            results.Add(Shape("Contents_SummaryAdmin__Tags", new ContentItemViewModel(contentItem)).Location("SummaryAdmin", "Tags:10"));
-            results.Add(Shape("Contents_SummaryAdmin__Meta", new ContentItemViewModel(contentItem)).Location("SummaryAdmin", "Meta:20"));
-
-            return Combine(results.ToArray());
+            return Combine(
+                contentsMetadataShape,
+                Shape("Contents_SummaryAdmin__Tags", new ContentItemViewModel(model)).Location("SummaryAdmin", "Tags:10"),
+                Shape("Contents_SummaryAdmin__Meta", new ContentItemViewModel(model)).Location("SummaryAdmin", "Meta:20"),
+                Shape("Contents_SummaryAdmin__Button__Edit", new ContentItemViewModel(model)).Location("SummaryAdmin", "Actions:10"),
+                Shape("Contents_SummaryAdmin__Button__Actions", new ContentItemViewModel(model)).Location("SummaryAdmin", "ActionsMenu:10")
+            );
         }
 
         public override async Task<IDisplayResult> EditAsync(ContentItem contentItem, IUpdateModel updater)
