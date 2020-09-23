@@ -119,17 +119,17 @@ namespace OrchardCore.Contents.Controllers
 
             if (model.Options.CreatableTypes == null)
             {
-                var contentTypes = _contentDefinitionManager
+                var contentTypeDefinitions = _contentDefinitionManager
                     .ListTypeDefinitions()
                     .Where(ctd => ctd.GetSettings<ContentTypeSettings>().Creatable)
                     .OrderBy(ctd => ctd.DisplayName);
 
                 var creatableList = new List<SelectListItem>();
-                if (contentTypes.Any())
+                if (contentTypeDefinitions.Any())
                 {
                     foreach (var contentTypeDefinition in contentTypes)
                     {
-                        if (await _authorizationService.AuthorizeAsync(context.User, CommonPermissions.EditContent, new ContentItem { ContentType = contentTypeDefinition.Name, Owner = context.User.Identity.Name }))
+                        if (await _authorizationService.AuthorizeAsync(context.User, CommonPermissions.EditContent, new ContentItem { ContentType = contentTypeDefinition.Name }))
                         {
                             creatableList.Add(new SelectListItem(new LocalizedString(contentTypeDefinition.DisplayName, contentTypeDefinition.DisplayName).Value, contentTypeDefinition.Name));
                         }
