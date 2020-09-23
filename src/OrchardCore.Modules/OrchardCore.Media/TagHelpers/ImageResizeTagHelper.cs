@@ -14,6 +14,8 @@ namespace OrchardCore.Media.TagHelpers
         private const string ImageSizeWidthAttributeName = ImageSizeAttributePrefix + "width";
         private const string ImageSizeHeightAttributeName = ImageSizeAttributePrefix + "height";
         private const string ImageSizeModeAttributeName = ImageSizeAttributePrefix + "resize-mode";
+        private const string ImageQualityAttributeName = ImageSizeAttributePrefix + "quality";
+        private const string ImageFormatAttributeName = ImageSizeAttributePrefix + "format";
 
         [HtmlAttributeName(ImageSizeWidthAttributeName)]
         public int? ImageWidth { get; set; }
@@ -21,8 +23,14 @@ namespace OrchardCore.Media.TagHelpers
         [HtmlAttributeName(ImageSizeHeightAttributeName)]
         public int? ImageHeight { get; set; }
 
+        [HtmlAttributeName(ImageQualityAttributeName)]
+        public int? ImageQuality { get; set; }
+
         [HtmlAttributeName(ImageSizeModeAttributeName)]
         public ResizeMode ResizeMode { get; set; }
+
+        [HtmlAttributeName(ImageFormatAttributeName)]
+        public Format ImageFormat { get; set; }
 
         [HtmlAttributeName("src")]
         public string Src { get; set; }
@@ -41,7 +49,7 @@ namespace OrchardCore.Media.TagHelpers
                 return;
             }
 
-            var resizedSrc = ImageSharpUrlFormatter.GetImageResizeUrl(imgSrc, ImageWidth, ImageHeight, ResizeMode);
+            var resizedSrc = ImageSharpUrlFormatter.GetImageResizeUrl(imgSrc, ImageWidth, ImageHeight, ResizeMode, ImageQuality, ImageFormat);
             output.Attributes.SetAttribute("src", resizedSrc);
         }
     }
