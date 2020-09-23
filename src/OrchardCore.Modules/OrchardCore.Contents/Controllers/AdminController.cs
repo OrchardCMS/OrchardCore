@@ -188,14 +188,18 @@ namespace OrchardCore.Contents.Controllers
 
             //if ContentTypeOptions is not initialized by query string or by the code above, initialize it
             if (model.Options.ContentTypeOptions == null)
+            {
                 model.Options.ContentTypeOptions = new List<SelectListItem>();
+            }
 
             // With the model populated we filter the query, allowing the filters to alter the model.
             var query = await _contentsAdminListQueryService.QueryAsync(model.Options, _updateModelAccessor.ModelUpdater);
 
             var maxPagedCount = siteSettings.MaxPagedCount;
             if (maxPagedCount > 0 && pager.PageSize > maxPagedCount)
+            {
                 pager.PageSize = maxPagedCount;
+            }
 
             // We prepare the pager
             var routeData = new RouteData();
