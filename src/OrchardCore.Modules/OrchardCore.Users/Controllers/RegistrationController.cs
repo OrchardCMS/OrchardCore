@@ -58,7 +58,7 @@ namespace OrchardCore.Users.Controllers
                 return NotFound();
             }
 
-            ViewData["returnurl"] = returnUrl;
+            ViewData["ReturnUrl"] = returnUrl;
             return View();
         }
 
@@ -87,7 +87,7 @@ namespace OrchardCore.Users.Controllers
                 }
             }
             
-            ViewData["returnurl"] = returnUrl;
+            ViewData["ReturnUrl"] = returnUrl;
 
             if (TryValidateModel(model) && ModelState.IsValid)
             {

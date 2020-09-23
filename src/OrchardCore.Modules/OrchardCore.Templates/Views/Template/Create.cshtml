@@ -1,6 +1,6 @@
 @model TemplateViewModel
 @{
-    var returnUrl = ViewData["returnurl"]?.ToString();
+    var returnUrl = ViewData["returnUrl"]?.ToString();
 }
 
 <style asp-name="codemirror"></style>
@@ -17,7 +17,7 @@
 <h1>@RenderTitleSegments(T["Create Template"])</h1>
 
 <div asp-validation-summary="ModelOnly"></div>
-<form asp-action="Create" asp-route-returnUrl="@ViewData["returnurl"]" method="post">
+<form asp-action="Create" asp-route-returnUrl="@ViewData["returnUrl"]" method="post">
     <input type="hidden" asp-for="AdminTemplates" />
 
     <div class="form-group" asp-validation-class-for="Name">

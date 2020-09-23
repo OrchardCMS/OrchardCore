@@ -163,7 +163,6 @@ namespace OrchardCore.Users
 
                 options.LoginPath = "/" + userOptions.Value.LoginPath;
                 options.AccessDeniedPath = "/Error/403";
-                options.ReturnUrlParameter = options.ReturnUrlParameter.ToString().ToLowerInvariant();
             });
 
             services.AddSingleton<IIndexProvider, UserIndexProvider>();

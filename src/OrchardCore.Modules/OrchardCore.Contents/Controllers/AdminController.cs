@@ -397,7 +397,7 @@ namespace OrchardCore.Contents.Controllers
 
             if (!string.IsNullOrEmpty(returnUrl))
             {
-                adminRouteValues.Add("returnurl", returnUrl);
+                adminRouteValues.Add("returnUrl", returnUrl);
             }
 
             return RedirectToRoute(adminRouteValues);
@@ -517,7 +517,7 @@ namespace OrchardCore.Contents.Controllers
             }
             else if (stayOnSamePage)
             {
-                return RedirectToAction("Edit", new RouteValueDictionary { { "ContentItemId", contentItem.ContentItemId }, { "returnurl", returnUrl } });
+                return RedirectToAction("Edit", new RouteValueDictionary { { "ContentItemId", contentItem.ContentItemId }, { "returnUrl", returnUrl } });
             }
             else
             {

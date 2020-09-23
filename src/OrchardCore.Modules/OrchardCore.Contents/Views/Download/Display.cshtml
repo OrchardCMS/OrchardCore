@@ -5,7 +5,7 @@
     var contentTypeDefinition = ContentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
     var typeDisplayName = contentTypeDefinition?.DisplayName ?? contentItem.ContentType.CamelFriendly();
 
-    var returnUrl = Context.Request.Query["returnurl"];
+    var returnUrl = Context.Request.Query["returnUrl"];
 }
 
 <style asp-name="codemirror"></style>

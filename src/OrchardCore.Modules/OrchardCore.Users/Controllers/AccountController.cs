@@ -74,11 +74,11 @@ namespace OrchardCore.Users.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public async Task<IActionResult> Login(string returnurl = null)
+        public async Task<IActionResult> Login(string returnUrl = null)
         {
             if (HttpContext.User != null && HttpContext.User.Identity.IsAuthenticated)
             {
-                returnurl = null;
+                returnUrl = null;
             }
 
             // Clear the existing external cookie to ensure a clean login process
@@ -99,17 +99,17 @@ namespace OrchardCore.Users.Controllers
                     var expiration = new TimeSpan(0, 0, 5);
                     var protectedToken = dataProtector.Protect(token.ToString(), _clock.UtcNow.Add(expiration));
                     await _distributedCache.SetAsync(token.ToString(), token.ToByteArray(), new DistributedCacheEntryOptions() { AbsoluteExpirationRelativeToNow = expiration });
-                    return RedirectToAction(nameof(DefaultExternalLogin), new { protectedToken, returnurl });
+                    return RedirectToAction(nameof(DefaultExternalLogin), new { protectedToken, returnUrl });
                 }
             }
 
-            ViewData["returnurl"] = returnurl;
+            ViewData["ReturnUrl"] = returnUrl;
             return View();
         }
 
         [HttpGet]
         [AllowAnonymous]
-        public async Task<IActionResult> DefaultExternalLogin(string protectedToken, string returnurl = null)
+        public async Task<IActionResult> DefaultExternalLogin(string protectedToken, string returnUrl = null)
         {
             var loginSettings = (await _siteService.GetSiteSettingsAsync()).As<LoginSettings>();
             if (loginSettings.UseExternalProviderIfOnlyOneDefined)
@@ -128,7 +128,7 @@ namespace OrchardCore.Users.Controllers
                             var cacheToken = new Guid(tokenBytes);
                             if (token.Equals(cacheToken))
                             {
-                                return ExternalLogin(schemes.First().Name, returnurl);
+                                return ExternalLogin(schemes.First().Name, returnUrl);
                             }
                         }
                     }
@@ -173,9 +173,9 @@ namespace OrchardCore.Users.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Login(LoginViewModel model, string returnurl = null)
+        public async Task<IActionResult> Login(LoginViewModel model, string returnUrl = null)
         {
-            ViewData["returnurl"] = returnurl;
+            ViewData["ReturnUrl"] = returnUrl;
 
             if (model == null)
                 throw new ArgumentNullException(nameof(model));
@@ -206,7 +206,7 @@ namespace OrchardCore.Users.Controllers
                                 {
                                     _logger.LogInformation(1, "User logged in.");
                                     await _accountEvents.InvokeAsync((e, model) => e.LoggedInAsync(model.UserName), model, _logger);
-                                    return await LoggedInActionResult(user, returnurl);
+                                    return await LoggedInActionResult(user, returnUrl);
                                 }
                             }
                         }
@@ -265,11 +265,11 @@ namespace OrchardCore.Users.Controllers
             }
         }
 
-        private IActionResult RedirectToLocal(string returnurl)
+        private IActionResult RedirectToLocal(string returnUrl)
         {
-            if (Url.IsLocalUrl(returnurl))
+            if (Url.IsLocalUrl(returnUrl))
             {
-                return Redirect(returnurl);
+                return Redirect(returnUrl);
             }
             else
             {
@@ -277,7 +277,7 @@ namespace OrchardCore.Users.Controllers
             }
         }
 
-        private async Task<IActionResult> LoggedInActionResult(IUser user, string returnurl = null, ExternalLoginInfo info = null)
+        private async Task<IActionResult> LoggedInActionResult(IUser user, string returnUrl = null, ExternalLoginInfo info = null)
         {
             var workflowManager = HttpContext.RequestServices.GetService<IWorkflowManager>();
             if (workflowManager != null)
@@ -291,16 +291,16 @@ namespace OrchardCore.Users.Controllers
                     input: input, correlationId: ((User)user).Id.ToString());
             }
 
-            return RedirectToLocal(returnurl);
+            return RedirectToLocal(returnUrl);
         }
 
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public IActionResult ExternalLogin(string provider, string returnurl = null)
+        public IActionResult ExternalLogin(string provider, string returnUrl = null)
         {
             // Request a redirect to the external login provider.
-            var redirectUrl = Url.Action(nameof(ExternalLoginCallback), "Account", new { returnurl });
+            var redirectUrl = Url.Action(nameof(ExternalLoginCallback), "Account", new { returnUrl });
             var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
             return Challenge(properties, provider);
         }
@@ -369,7 +369,7 @@ namespace OrchardCore.Users.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public async Task<IActionResult> ExternalLoginCallback(string returnurl = null, string remoteError = null)
+        public async Task<IActionResult> ExternalLoginCallback(string returnUrl = null, string remoteError = null)
         {
             if (remoteError != null)
             {
@@ -396,7 +396,7 @@ namespace OrchardCore.Users.Controllers
                     var signInResult = await ExternalLoginSignInAsync(user, info);
                     if (signInResult.Succeeded)
                     {
-                        return await LoggedInActionResult(user, returnurl, info);
+                        return await LoggedInActionResult(user, returnUrl, info);
                     }
                     else
                     {
@@ -411,7 +411,7 @@ namespace OrchardCore.Users.Controllers
                 if (!string.IsNullOrWhiteSpace(email))
                     user = await _userManager.FindByEmailAsync(email);
 
-                ViewData["returnurl"] = returnurl;
+                ViewData["ReturnUrl"] = returnUrl;
                 ViewData["LoginProvider"] = info.LoginProvider;
 
                 if (user != null)
@@ -472,7 +472,7 @@ namespace OrchardCore.Users.Controllers
                                     var signInResult = await ExternalLoginSignInAsync(user, info);
                                     if (signInResult.Succeeded)
                                     {
-                                        return await LoggedInActionResult(user, returnurl, info);
+                                        return await LoggedInActionResult(user, returnUrl, info);
                                     }
                                     else
                                     {
@@ -493,7 +493,7 @@ namespace OrchardCore.Users.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> RegisterExternalLogin(RegisterExternalLoginViewModel model, string returnurl = null)
+        public async Task<IActionResult> RegisterExternalLogin(RegisterExternalLoginViewModel model, string returnUrl = null)
         {
             IUser user = null;
             var settings = (await _siteService.GetSiteSettingsAsync()).As<RegistrationSettings>();
@@ -511,7 +511,7 @@ namespace OrchardCore.Users.Controllers
                 return NotFound();
             }
 
-            ViewData["returnurl"] = returnurl;
+            ViewData["ReturnUrl"] = returnUrl;
             ViewData["LoginProvider"] = info.LoginProvider;
 
             model.NoPassword = settings.NoPasswordForExternalUsers;
@@ -556,7 +556,7 @@ namespace OrchardCore.Users.Controllers
                         var signInResult = await ExternalLoginSignInAsync(user, info);
                         if (signInResult.Succeeded)
                         {
-                            return await LoggedInActionResult(user, returnurl, info);
+                            return await LoggedInActionResult(user, returnUrl, info);
                         }
                     }
                     AddIdentityErrors(identityResult);
@@ -568,7 +568,7 @@ namespace OrchardCore.Users.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> LinkExternalLogin(LinkExternalLoginViewModel model, string returnurl = null)
+        public async Task<IActionResult> LinkExternalLogin(LinkExternalLoginViewModel model, string returnUrl = null)
         {
             var settings = (await _siteService.GetSiteSettingsAsync()).As<RegistrationSettings>();
             var info = await _signInManager.GetExternalLoginInfoAsync();
@@ -608,7 +608,7 @@ namespace OrchardCore.Users.Controllers
                     // the user is not allowed to login
                     if ((await ExternalLoginSignInAsync(user, info)).Succeeded)
                     {
-                        return await LoggedInActionResult(user, returnurl, info);
+                        return await LoggedInActionResult(user, returnUrl, info);
                     }
                 }
                 AddIdentityErrors(identityResult);

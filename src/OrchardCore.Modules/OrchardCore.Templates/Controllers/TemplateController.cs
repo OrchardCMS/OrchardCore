@@ -103,7 +103,7 @@ namespace OrchardCore.Templates.Controllers
                 return Forbid();
             }
 
-            ViewData["returnurl"] = returnUrl;
+            ViewData["ReturnUrl"] = returnUrl;
             return View(new TemplateViewModel() { AdminTemplates = adminTemplates });
         }
 
@@ -120,7 +120,7 @@ namespace OrchardCore.Templates.Controllers
                 return Forbid();
             }
 
-            ViewData["returnurl"] = returnUrl;
+            ViewData["ReturnUrl"] = returnUrl;
 
             if (ModelState.IsValid)
             {
@@ -203,7 +203,7 @@ namespace OrchardCore.Templates.Controllers
                 Description = template.Description
             };
 
-            ViewData["returnurl"] = returnUrl;
+            ViewData["ReturnUrl"] = returnUrl;
             return View(model);
         }
 
@@ -267,7 +267,7 @@ namespace OrchardCore.Templates.Controllers
             }
 
             // If we got this far, something failed, redisplay form
-            ViewData["returnurl"] = returnUrl;
+            ViewData["ReturnUrl"] = returnUrl;
             return View(model);
         }
 
