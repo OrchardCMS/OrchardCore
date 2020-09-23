@@ -3,9 +3,9 @@ using OrchardCore.OpenId;
 
 [assembly: Module(
     Name = "OpenID",
-    Author = "The Orchard Team",
-    Website = "https://orchardproject.net",
-    Version = "2.0.0"
+    Author = ManifestConstants.OrchardCoreTeam,
+    Website = ManifestConstants.OrchardCoreWebsite,
+    Version = ManifestConstants.OrchardCoreVersion
 )]
 
 [assembly: Feature(
@@ -48,8 +48,5 @@ using OrchardCore.OpenId;
     Name = "OpenID Token Validation",
     Category = "OpenID Connect",
     Description = "Validates tokens issued by the Orchard OpenID server or by a remote server supporting JWT and OpenID Connect discovery.",
-    Dependencies = new[]
-    {
-        OpenIdConstants.Features.Core
-    }
+    Dependencies = new[] { OpenIdConstants.Features.Core }
 )]

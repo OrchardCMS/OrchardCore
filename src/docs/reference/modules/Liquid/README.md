@@ -14,7 +14,7 @@ If you need to render some raw HTML chars you can use the `raw` filter.
 ## Content Item Filters
 
 All the default filters that are available in the standard Liquid syntax are available in OrchardCore.  
-On top of that each Orchard module can provide custom filters for their own purpose.  
+On top of that each Orchard module can provide custom filters for their own purpose. 
 Here is a list of common filters that apply to content items.
 
 ### `display_url`
@@ -49,22 +49,6 @@ Output
 My Blog Post
 ```
 
-### `slugify`
-
-Convert a text into a string that can be used in a URL.
-
-Input
-
-```liquid
-{{ "This is some text" | slugify }}
-```
-
-Output
-
-```text
-this-is-some-text
-```
-
 ### `container`
 
 Returns the container content item of another content item.
@@ -81,6 +65,23 @@ Output
 
 ```text
 Blog
+```
+## String Filters
+
+### `slugify`
+
+Convert a text into a string that can be used in a URL.
+
+Input
+
+```liquid
+{{ "This is some text" | slugify }}
+```
+
+Output
+
+```text
+this-is-some-text
 ```
 
 ### `local`
@@ -120,6 +121,7 @@ Output
 ```text
 Bonjour!
 ```
+## Html Filters
 
 ### `html_class`
 
@@ -173,6 +175,32 @@ Output
 <h3>Services</h3>
 ```
 
+### `sanitize_html`
+
+Sanitizes some HTML content.
+
+```liquid
+{% capture output %}
+  <span class="text-primary">{{ Content }}</span>
+{% endcapture %}
+{{ output | sanitize_html | raw }}
+```
+
+## Json Filters
+
+### `json`
+
+Serializes the input value to a json string. To format the json indented, pass the `true` argument to the liquid filter.
+
+Example:
+
+```liquid
+
+{{ Model.ContentItem.Content | json }}
+
+{{ Model.ContentItem.Content | json: true }}
+```
+
 ### `jsonparse`
 
 Converts a json string to a JObject. 
@@ -214,6 +242,7 @@ The following properties are available on the `ContentItem` object.
 | `Id` | `12` | The id of the document in the database. |
 | `ContentItemId` | `4qs7mv9xc4ttg5ktm61qj9dy5d` | The common identifier of all versions of the content item. |
 | `ContentItemVersionId` | `4jp895achc3hj1qy7xq8f10nmv` | The unique identifier of the content item version. |
+| `DisplayText` | `Blog` | The title of a content item. Can be edited manually by using the TitlePart. |
 | `Number` | `6` | The version number. |
 | `Owner` | `admin` | The username of the creator of this content item. |
 | `Author` | `admin` | The username of the editor of this version. |
@@ -223,12 +252,16 @@ The following properties are available on the `ContentItem` object.
 | `CreatedUtc` | `2017-05-25 00:27:22.647` | When the content item was first created or first published. |
 | `ModifiedUtc` | `2017-05-25 00:27:22.647` | When the content item version was created. |
 | `PublishedUtc` | `2017-05-25 00:27:22.647` | When the content item was last published. |
-| `Content` | `{ ... }` | A document containing all the content properties. See specific documentation for usage. |
+| `Content` | `{ ... }` | A document containing all the content properties. See below for usage. |
 
 #### Content property
 
-The `Content` property of a content item exposes all its elements, like parts and fields. It is possible to
+The `Content` property of a content item exposes all of its parts and fields. It is possible to
 inspect all the available properties by evaluating `Content` directly. It will then render the full document.
+
+```liquid
+<pre>{{ Model.ContentItem.Content }}</pre>
+```
 
 The convention is that each Part is exposed by its name as the first level.  
 If the content item has custom fields, they will be available under a part whose name will match the content type.
@@ -245,6 +278,8 @@ Similarly, if the content item has a `Title` part, we can access it like this:
 ```liquid
 {{ Model.ContentItem.Content.TitlePart.Title }}
 ```
+**Note**: This is no longer the recommended way to display the title of a content item.
+Use the `Model.ContentItem.DisplayText` property instead.
 
 ### User
 
@@ -256,6 +291,14 @@ The following properties are available on the `User` object.
 | --------- | ---- |------------ |
 | `Identity.Name` | `admin` | The name of the authenticated user. |
 | `Identity.Claims` |  | The claims of the authenticated user. |
+
+##### user_email filter
+
+Returns the user's email.
+
+```liquid
+{{ User | user_email }}
+```
 
 #### User has_permission filter
 
@@ -683,7 +726,7 @@ Input
 {% shape_cache my_shape cache_id: "my-shape", cache_expires_after: "00:05:00" %}
 ```
 
-For more information about the available caching parameters please refer to [this section](../OrchardCore.DynamicCache/#shape-tag-helper-attributes)
+For more information about the available caching parameters please refer to [this section](../DynamicCache/README.md#shape-tag-helper-attributes)
 
 ### `zone`
 
@@ -748,23 +791,23 @@ Using `helper` invokes the `validation_for` tag helper of ASP.NET Core with `spa
 
 ### `link`
 
-Invokes the `link` tag helper from the `Orchard.ResourceManagement` package.
+Invokes the `link` tag helper from the `Orchard.ResourceManagement` package. [see this section](../Resources/README.md#link-tag)
 
 ### `meta`
 
-Invokes the `meta` tag helper from the `Orchard.ResourceManagement` package. [see this section](../Resources/#meta-tags)
+Invokes the `meta` tag helper from the `Orchard.ResourceManagement` package. [see this section](../Resources/README.md#meta-tags)
 
 ### `resources`
 
-Invokes the `resources` tag helper from the `Orchard.ResourceManagement` package. [see this section](../Resources/#rendering)
+Invokes the `resources` tag helper from the `Orchard.ResourceManagement` package. [see this section](../Resources/README.md#rendering)
 
 ### `script`
 
-Invokes the `script` tag helper from the `Orchard.ResourceManagement` package. [see this section](../Resources/#inline-definition)
+Invokes the `script` tag helper from the `Orchard.ResourceManagement` package. [see this section](../Resources/README.md#inline-definition)
 
 ### `style`
 
-Invokes the `style` tag helper from the `Orchard.ResourceManagement` package. [see this section](../Resources/#inline-definition)
+Invokes the `style` tag helper from the `Orchard.ResourceManagement` package. [see this section](../Resources/README.md#inline-definition)
 
 ### `a`
 

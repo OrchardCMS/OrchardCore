@@ -19,9 +19,18 @@ function initializeTemplatePreview(nameElement, editorElement) {
     editor = CodeMirror.fromTextArea(editorElement, {
         autoRefresh: true,
         lineNumbers: true,
-        styleActiveLine: true,
+        lineWrapping: true,
         matchBrackets: true,
+        styleActiveLine: true,
         mode: { name: "liquid" },
+        extraKeys: {
+            "F11": function (cm) {
+                cm.setOption("fullScreen", !cm.getOption("fullScreen"));
+            },
+            "Esc": function (cm) {
+                if (cm.getOption("fullScreen")) cm.setOption("fullScreen", false);
+            }
+        }
     });
 
     editor.on('change', function (cm) {

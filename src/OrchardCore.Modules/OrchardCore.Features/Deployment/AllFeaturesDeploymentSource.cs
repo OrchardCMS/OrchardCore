@@ -17,20 +17,24 @@ namespace OrchardCore.Features.Deployment
 
         public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
         {
-            var allFeaturesState = step as AllFeaturesDeploymentStep;
+            var allFeaturesStep = step as AllFeaturesDeploymentStep;
 
-            if (allFeaturesState == null)
+            if (allFeaturesStep == null)
             {
                 return;
             }
 
             var features = await _moduleService.GetAvailableFeaturesAsync();
-
-            result.Steps.Add(new JObject(
+            var featureStep = new JObject(
                 new JProperty("name", "Feature"),
-                new JProperty("enable", features.Where(f => f.IsEnabled).Select(f => f.Descriptor.Id).ToArray()),
-                new JProperty("disable", features.Where(f => !f.IsEnabled).Select(f => f.Descriptor.Id).ToArray())
-            ));
+                new JProperty("enable", features.Where(f => f.IsEnabled).Select(f => f.Descriptor.Id).ToArray())
+            );
+
+            if (!allFeaturesStep.IgnoreDisabledFeatures)
+            {
+                featureStep.Property("enable").AddAfterSelf(new JProperty("disable", features.Where(f => !f.IsEnabled).Select(f => f.Descriptor.Id).ToArray()));
+            }
+            result.Steps.Add(featureStep);
         }
     }
 }

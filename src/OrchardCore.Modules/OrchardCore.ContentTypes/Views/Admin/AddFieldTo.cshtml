@@ -12,7 +12,7 @@
 <form asp-action="AddFieldTo" asp-route-returnUrl="@ViewData["returnUrl"]">
     @Html.ValidationSummary()
     <div class="form-group">
-        <div class="row col-md">
+        <div class="row col-medium">
             <label for="DisplayName">@T["Display Name"]</label>
             <input asp-for="DisplayName" class="form-control" autofocus />
             <span class="hint">@T["Name of the field as it will be displayed in screens."]</span>
@@ -20,7 +20,7 @@
     </div>
 
     <div class="form-group">
-        <div class="row col-sm">
+        <div class="row col-small">
             <label for="Name">@T["Technical Name"]</label>
             <input asp-for="Name" class="form-control" />
             <span class="hint">@T["Technical name of the field."]</span>

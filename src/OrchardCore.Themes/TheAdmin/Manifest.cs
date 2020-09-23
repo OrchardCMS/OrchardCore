@@ -1,10 +1,11 @@
 using OrchardCore.DisplayManagement.Manifest;
+using OrchardCore.Modules.Manifest;
 
 [assembly: Theme(
-    Name = "TheAdmin Theme",
-    Author = "The Orchard Team",
-    Website = "https://orchardproject.net",
-    Version = "2.0.0",
+    Name = "The Admin Theme",
+    Author = ManifestConstants.OrchardCoreTeam,
+    Website = ManifestConstants.OrchardCoreWebsite,
+    Version = ManifestConstants.OrchardCoreVersion,
     Description = "The default Admin theme.",
-    Tags = new [] { "admin" }
+    Tags = new [] { ManifestConstants.AdminTag }
 )]

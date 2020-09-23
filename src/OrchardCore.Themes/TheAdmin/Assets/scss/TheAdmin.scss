@@ -68,19 +68,9 @@ body {
     @extend .navbar, .navbar-expand-md, .navbar-light, .fixed-top;
     height: $top-nav-height;
     border-bottom: $border-content;
-    z-index: $zindex-fixed;
-    padding: 0px;
-    padding-top: 0.3em;
+    z-index: $zindex-sticky;
+    padding-left: 0px;
     background-color: white;
-
-    .navbar-collapse.collapsing, .navbar-collapse.show {
-        background-color: white;
-
-        .navbar-nav .nav-link {
-            padding: 0.5rem 1rem !important;
-            text-align: right;
-        }
-    }
 
     .nav-link {
         font-size: 14px;
@@ -89,15 +79,6 @@ body {
     .breadcrumb {
         background-color: transparent;
         margin-top: 1rem;
-    }
-
-    .navbar-toggler {
-        padding: 5px;
-    }
-
-    .navbar-toggler-icon {
-        width: 1.2em;
-        height: 1.2em;
     }
 }
 
@@ -111,7 +92,7 @@ body {
     margin-right: 24px;
     padding-left: 36px;
     padding-top: 10px;
-    background-image: url('/TheAdmin/logo.png');
+    background-image: url(../logo.png);
     background-repeat: no-repeat;
     background-position: left center;
     background-size: 28px auto;
@@ -128,6 +109,8 @@ body {
         color: rgba(0,120,212,1);
     }
 }
+
+
 // When left-sidebar is compact nav brand is compacted too.
 // It displays logo only, not text.
 .left-sidebar-compact .ta-navbar-brand {
@@ -138,8 +121,12 @@ body {
         display: none;
     }
 }
+
+
+
 // Layout 2 : ta-content
 // -----------------------------
+
 .ta-content {
     padding: 15px;
     margin-left: $left-navigation-width;
@@ -165,8 +152,10 @@ body {
         transition: margin-left 0.5s ease-in-out;
     }
 }
+
 // Layout 3 : ta-left-sidebar when expanded
 // ----------------------------------------
+
 body:not(.left-sidebar-compact) {
     #ta-left-sidebar {
         background-color: #EAEAEA;
@@ -463,7 +452,7 @@ body:not(.left-sidebar-compact) {
             margin: 0px auto;
         }
 
-        #filter, #filter:focus {
+        #filter, #filter:focus{
             border: none;
             box-shadow: unset;
         }
@@ -890,8 +879,8 @@ body:not(.left-sidebar-compact) {
             margin: 0px auto;
         }
 
-        #filter, #filter:focus {
-            display: none;
+        #filter, #filter:focus{
+            display:none;
         }
     }
 }
@@ -907,6 +896,7 @@ body:not(.left-sidebar-compact) {
         }
     }
 }
+
 // fixing a flickering that occurs on compact leftbar while icons load.
 html:not(.fontawesome-i2svg-complete) #left-nav ul.menu-admin > li > .item-label {
     background-color: $gray-100 !important;
@@ -1149,28 +1139,69 @@ ul.pager li a {
 .related {
     @extend .float-right;
 }
+
 // Responsive sizes
 // Creates mixins to target all breakpoints
 // ------------------------------
-.col-xs {
+.col-xsmall {
     @extend .col-8, .col-sm-4, .col-md-3, .col-lg-2, .col-xl-1;
 }
 
-.col-sm {
+.col-small {
     @extend .col-12, .col-sm-9, .col-md-6, .col-lg-3, .col-xl-3;
 }
 
-.col-md {
+.col-medium {
     @extend .col-12, .col-sm-12, .col-md-10, .col-lg-8, .col-xl-6;
 }
 
-.col-lg {
+.col-large {
     @extend .col-12, .col-sm-12, .col-md-12, .col-lg-12, .col-xl-9;
 }
 
-.col-xl {
+.col-xlarge {
     @extend .col-12, .col-sm-12, .col-md-12, .col-lg-12, .col-xl-12;
 }
+
+// Row / Column Groupings
+// Creates mixins to target columns contained inside a column grouping to expand small sizes.
+// ------------------------------
+
+@mixin make-col-fix($breakpoint)
+{
+    .col-#{$breakpoint} {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+}
+
+@mixin make-col-grouping($grouping)
+{
+    &.col-#{$grouping} {       
+        @each $breakpoint in map-keys($grid-breakpoints) {    
+            @include make-col-fix(#{$breakpoint});                   
+            @for $i from 1 through $grid-columns / 2 {
+                @include make-col-fix(#{$breakpoint}-#{$i});
+            }
+        }
+    } 
+}
+
+.ta-col-grouping {
+    // Column fixes
+    @each $breakpoint in map-keys($grid-breakpoints) {
+        @if $grid-row-columns > 0 {
+            // Column fixes
+            @include make-col-grouping(#{$breakpoint}); // Include a fix for unspecified cols, i.e. col-md
+            // Only apply to the lower half of the grid.
+            @for $i from 1 through $grid-columns / 2 { // Include a fix for specified cols, i.e. col-md-3
+                @include make-col-grouping(#{$breakpoint}-#{$i});
+            }           
+        }      
+    }
+
+}
+
 // No transitions on load
 // Prevents Firefox and Edge transitions on load.
 // This class is added by default and removed trought Javascript
@@ -1216,7 +1247,13 @@ ul.pager li a {
     background-color: red;
 }
 
-.dropdown-menu.scrollable {
+.dropdown-menu.scrollable{
     overflow-y: auto;
     max-height: 250px;
+}
+
+input[type=password]::-ms-reveal,
+input[type=password]::-ms-clear
+{
+    display: none;
 }

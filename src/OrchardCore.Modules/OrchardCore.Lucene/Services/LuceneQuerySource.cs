@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid;
 using Newtonsoft.Json.Linq;
@@ -22,6 +23,7 @@ namespace OrchardCore.Lucene
         private readonly ILuceneQueryService _queryService;
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly ISession _session;
+        private readonly JavaScriptEncoder _javaScriptEncoder;
 
         public LuceneQuerySource(
             LuceneIndexManager luceneIndexProvider,
@@ -29,7 +31,8 @@ namespace OrchardCore.Lucene
             LuceneAnalyzerManager luceneAnalyzerManager,
             ILuceneQueryService queryService,
             ILiquidTemplateManager liquidTemplateManager,
-            ISession session)
+            ISession session,
+            JavaScriptEncoder javaScriptEncoder)
         {
             _luceneIndexProvider = luceneIndexProvider;
             _luceneIndexSettingsService = luceneIndexSettingsService;
@@ -37,6 +40,7 @@ namespace OrchardCore.Lucene
             _queryService = queryService;
             _liquidTemplateManager = liquidTemplateManager;
             _session = session;
+            _javaScriptEncoder = javaScriptEncoder;
         }
 
         public string Name => "Lucene";
@@ -63,7 +67,7 @@ namespace OrchardCore.Lucene
                     }
                 }
 
-                var tokenizedContent = await _liquidTemplateManager.RenderAsync(luceneQuery.Template, System.Text.Encodings.Web.JavaScriptEncoder.Default);
+                var tokenizedContent = await _liquidTemplateManager.RenderAsync(luceneQuery.Template, _javaScriptEncoder);
                 var parameterizedQuery = JObject.Parse(tokenizedContent);
 
                 var analyzer = _luceneAnalyzerManager.CreateAnalyzer(await _luceneIndexSettingsService.GetIndexAnalyzerAsync(luceneQuery.Index));

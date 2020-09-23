@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
@@ -32,14 +33,24 @@ namespace OrchardCore.ContentManagement
                 return scopedCache.ContentDefinitionRecord;
             }
 
-            return scopedCache.ContentDefinitionRecord = await GetContentDefinitionAsync();
+            (_, var result) = await GetContentDefinitionAsync();
+
+            return scopedCache.ContentDefinitionRecord = result;
         }
 
         /// <summary>
         /// Gets a single document (or create a new one) for caching and that should not be updated.
         /// </summary>
-        public Task<ContentDefinitionRecord> GetContentDefinitionAsync()
+        public Task<(bool, ContentDefinitionRecord)> GetContentDefinitionAsync()
         {
+            var scopedCache = ShellScope.Services.GetRequiredService<FileContentDefinitionScopedCache>();
+
+            if (scopedCache.ContentDefinitionRecord != null)
+            {
+                // Return the already loaded document but indicating that it should not be cached.
+                return Task.FromResult((false, scopedCache.ContentDefinitionRecord));
+            }
+
             ContentDefinitionRecord result;
 
             if (!File.Exists(Filename))
@@ -58,13 +69,19 @@ namespace OrchardCore.ContentManagement
                 }
             }
 
-            return Task.FromResult(result);
+            return Task.FromResult((true, result));
         }
 
         public Task SaveContentDefinitionAsync(ContentDefinitionRecord contentDefinitionRecord)
         {
             lock (this)
             {
+                var directoryPath = Path.GetDirectoryName(Filename);
+                if (!String.IsNullOrEmpty(directoryPath) && !Directory.Exists(directoryPath))
+                {
+                    Directory.CreateDirectory(directoryPath);
+                }
+
                 using (var file = File.CreateText(Filename))
                 {
                     var serializer = new JsonSerializer();

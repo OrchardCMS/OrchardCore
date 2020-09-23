@@ -2,9 +2,9 @@ using OrchardCore.Modules.Manifest;
 
 [assembly: Module(
     Name = "Content Fields",
-    Author = "The Orchard Team",
-    Website = "https://orchardproject.net",
-    Version = "2.0.0",
+    Author = ManifestConstants.OrchardCoreTeam,
+    Website = ManifestConstants.OrchardCoreWebsite,
+    Version = ManifestConstants.OrchardCoreVersion,
     Category = "Content Management"
 )]
 
@@ -13,7 +13,7 @@ using OrchardCore.Modules.Manifest;
     Name = "Content Fields",
     Category = "Content Management",
     Description = "Content Fields module adds common content fields to be used with your custom types.",
-    Dependencies = new[] { "OrchardCore.ContentTypes" }
+    Dependencies = new[] { "OrchardCore.ContentTypes", "OrchardCore.Shortcodes" }
 )]
 
 [assembly: Feature(
