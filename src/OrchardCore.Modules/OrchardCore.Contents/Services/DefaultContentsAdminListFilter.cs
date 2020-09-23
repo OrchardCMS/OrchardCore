@@ -76,36 +76,20 @@ namespace OrchardCore.Contents.Services
             }
             else
             {
-                var listTypeDefinitions = _contentDefinitionManager.ListTypeDefinitions();
-                var userListableTypes = new List<ContentTypeDefinition>();
-                var nonListableTypes = new List<ContentTypeDefinition>();
-
-                foreach (var ctd in listTypeDefinitions)
+                var listableTypes = new List<ContentTypeDefinition>();
+                foreach (var ctd in _contentDefinitionManager.ListTypeDefinitions())
                 {
                     if (ctd.GetSettings<ContentTypeSettings>().Listable)
                     {
                         var authorized = await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.EditContent, await _contentManager.NewAsync(ctd.Name));
                         if (authorized)
                         {
-                            userListableTypes.Add(ctd);
+                            listableTypes.Add(ctd);
                         }
                     }
-                    else
-                    {
-                        nonListableTypes.Add(ctd);
-                    }
                 }
-
-                if (userListableTypes.Any())
-                {
-                    query.With<ContentItemIndex>(x => x.ContentType.IsIn(userListableTypes.Select(t => t.Name).ToArray()));
-                }
-                else if(nonListableTypes.Any())
-                {
-                    // Make sure we remove ContentItems from non-listable ContentTypes if
-                    // user doesn't have any unrestricted listable ContentType
-                    query.With<ContentItemIndex>(x => x.ContentType.IsNotIn(nonListableTypes.Select(t => t.Name).ToArray()));
-                }
+                
+                query.With<ContentItemIndex>(x => x.ContentType.IsIn(listableTypes.Select(t => t.Name).ToArray()));
             }
 
             // Apply OrderBy filters.
