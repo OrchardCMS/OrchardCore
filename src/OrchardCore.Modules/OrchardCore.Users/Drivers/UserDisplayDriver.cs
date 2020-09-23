@@ -83,6 +83,7 @@ namespace OrchardCore.Users.Drivers
         public override async Task<IDisplayResult> UpdateAsync(User user, UpdateEditorContext context)
         {
             var model = new EditUserViewModel();
+            var httpContext = _httpContextAccessor.HttpContext;
 
             if (!await context.Updater.TryUpdateModelAsync(model, Prefix))
             {
@@ -95,7 +96,7 @@ namespace OrchardCore.Users.Drivers
             var usersOfAdminRole = await _userManager.GetUsersInRoleAsync("Administrator");
             if (!model.IsEnabled && user.IsEnabled)
             {
-                if (user.UserName != _httpContextAccessor.HttpContext.User.Identity.Name)
+                if (user.UserName != httpContext.User.Identity.Name)
                 {
                     if(usersOfAdminRole.Count == 1 && usersOfAdminRole.First().UserName == user.UserName)
                     {
@@ -140,7 +141,7 @@ namespace OrchardCore.Users.Drivers
                 }
             }
 
-            if (model.UserName != user.UserName && user.UserName == _httpContextAccessor.HttpContext.User.Identity.Name)
+            if (model.UserName != user.UserName && user.UserName == httpContext.User.Identity.Name)
             {
                 context.Updater.ModelState.AddModelError(string.Empty, S["Cannot modify user name of the currently logged in user."]);
             }
