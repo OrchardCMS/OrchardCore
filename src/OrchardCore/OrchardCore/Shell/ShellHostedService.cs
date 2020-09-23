@@ -158,6 +158,10 @@ namespace OrchardCore.Environment.Shell
                                 }
                             }
                         }
+                        catch (Exception ex) when (!ex.IsFatal())
+                        {
+                            _logger.LogError(ex, "Error while syncing the tenant '{TenantName}' through the distributed cache.", settings.Name);
+                        }
                         finally
                         {
                             semaphore.Release();
@@ -191,25 +195,32 @@ namespace OrchardCore.Environment.Shell
                 return;
             }
 
-            _shellChangedId = await distributedCache.GetStringAsync(ShellChangedIdKey);
-            _shellCreatedId = await distributedCache.GetStringAsync(ShellCreatedIdKey);
-
-            var names = await _shellSettingsManager.LoadSettingsNamesAsync();
-            foreach (var name in names)
+            try
             {
-                var releaseId = await distributedCache.GetStringAsync(name + ReleaseIdKeySuffix);
-                if (releaseId != null)
-                {
-                    var shellIdentifier = _shellIdentifiers.GetOrAdd(name, name => new ShellIdentifier());
-                    shellIdentifier.ReleaseId = releaseId;
-                }
+                _shellChangedId = await distributedCache.GetStringAsync(ShellChangedIdKey);
+                _shellCreatedId = await distributedCache.GetStringAsync(ShellCreatedIdKey);
 
-                var reloadId = await distributedCache.GetStringAsync(name + ReloadIdKeySuffix);
-                if (reloadId != null)
+                var names = await _shellSettingsManager.LoadSettingsNamesAsync();
+                foreach (var name in names)
                 {
-                    var shellIdentifier = _shellIdentifiers.GetOrAdd(name, name => new ShellIdentifier());
-                    shellIdentifier.ReloadId = reloadId;
+                    var releaseId = await distributedCache.GetStringAsync(name + ReleaseIdKeySuffix);
+                    if (releaseId != null)
+                    {
+                        var shellIdentifier = _shellIdentifiers.GetOrAdd(name, name => new ShellIdentifier());
+                        shellIdentifier.ReleaseId = releaseId;
+                    }
+
+                    var reloadId = await distributedCache.GetStringAsync(name + ReloadIdKeySuffix);
+                    if (reloadId != null)
+                    {
+                        var shellIdentifier = _shellIdentifiers.GetOrAdd(name, name => new ShellIdentifier());
+                        shellIdentifier.ReloadId = reloadId;
+                    }
                 }
+            }
+            catch (Exception ex) when (!ex.IsFatal())
+            {
+                _logger.LogError(ex, "Error while reading the shell identifiers of all tenants from the distributed cache.");
             }
         }
 
@@ -242,6 +253,10 @@ namespace OrchardCore.Environment.Shell
 
                 await distributedCache.SetStringAsync(name + ReleaseIdKeySuffix, shellIdentifier.ReleaseId);
                 await distributedCache.SetStringAsync(ShellChangedIdKey, shellIdentifier.ReleaseId);
+            }
+            catch (Exception ex) when (!ex.IsFatal())
+            {
+                _logger.LogError(ex, "Error while updating the release identifier of tenant '{TenantName}' in the distributed cache.", name);
             }
             finally
             {
@@ -285,6 +300,10 @@ namespace OrchardCore.Environment.Shell
                 }
 
                 await distributedCache.SetStringAsync(ShellChangedIdKey, shellIdentifier.ReloadId);
+            }
+            catch (Exception ex) when (!ex.IsFatal())
+            {
+                _logger.LogError(ex, "Error while updating the reload identifier of tenant '{TenantName}' in the distributed cache.", name);
             }
             finally
             {
