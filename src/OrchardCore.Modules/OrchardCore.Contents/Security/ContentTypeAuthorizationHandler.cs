@@ -38,7 +38,8 @@ namespace OrchardCore.Contents.Security
 
             if (contentItem != null)
             {
-                if(contentItem.Owner != null){
+                if(contentItem.Owner != null)
+                {
                     if (OwnerVariationExists(requirement.Permission) && HasOwnership(context.User, contentItem))
                     {
                         permission = GetOwnerVariation(requirement.Permission);
