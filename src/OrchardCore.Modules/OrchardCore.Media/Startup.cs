@@ -133,7 +133,6 @@ namespace OrchardCore.Media
             services.AddTransient<IConfigureOptions<ImageSharpMiddlewareOptions>, MediaImageSharpConfiguration>();
 
             services.AddImageSharp()
-                .SetMemoryAllocator<ArrayPoolMemoryAllocator>()
                 .RemoveProvider<PhysicalFileSystemProvider>()
                 .AddProvider<MediaResizingFileProvider>()
                 .AddProcessor<ImageVersionProcessor>();
