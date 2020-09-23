@@ -7264,6 +7264,9 @@ $(function () {
     setCompactStatus();
   }
 });
+$('span.title').each(function () {
+  $(this).prev('.icon').prop('title', $(this).text());
+});
 $('.leftbar-compactor').click(function () {
   $('body').hasClass('left-sidebar-compact') ? unSetCompactStatus() : setCompactStatus(true);
 });

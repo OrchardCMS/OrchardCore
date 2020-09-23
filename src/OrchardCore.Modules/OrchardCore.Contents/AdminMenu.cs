@@ -63,7 +63,7 @@ namespace OrchardCore.Contents
                         var ci = await _contentManager.NewAsync(contentTypeDefinition.Name);
                         var cim = await _contentManager.PopulateAspectAsync<ContentItemMetadata>(ci);
                         var createRouteValues = cim.CreateRouteValues;
-                        createRouteValues.Add("returnurl", _linkGenerator.GetPathByRouteValues(_httpContextAccessor.HttpContext, "", new
+                        createRouteValues.Add("returnUrl", _linkGenerator.GetPathByRouteValues(_httpContextAccessor.HttpContext, "", new
                         {
                             area = "OrchardCore.Contents",
                             controller = "Admin",
