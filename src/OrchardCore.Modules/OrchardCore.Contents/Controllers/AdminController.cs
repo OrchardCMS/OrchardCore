@@ -127,7 +127,7 @@ namespace OrchardCore.Contents.Controllers
                 var creatableList = new List<SelectListItem>();
                 if (contentTypeDefinitions.Any())
                 {
-                    foreach (var contentTypeDefinition in contentTypes)
+                    foreach (var contentTypeDefinition in contentTypeDefinitions)
                     {
                         if (await _authorizationService.AuthorizeAsync(context.User, CommonPermissions.EditContent, new ContentItem { ContentType = contentTypeDefinition.Name }))
                         {
