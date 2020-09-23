@@ -83,40 +83,32 @@ namespace OrchardCore.Environment.Shell
                     if (_defaultContext != defaultContext)
                     {
                         _isolatedContext?.Dispose();
-
                         _isolatedContext = await _shellContextFactory.CreateShellContextAsync(defaultContext.Settings);
-
                         _defaultContext = defaultContext;
                     }
 
                     var distributedCache = _isolatedContext.ServiceProvider.GetService<IDistributedCache>();
-
                     if (distributedCache == null || distributedCache is MemoryDistributedCache)
                     {
                         continue;
                     }
 
                     var shellChangedId = await distributedCache.GetStringAsync(ShellChangedIdKey);
-
                     if (shellChangedId == null || _shellChangedId == shellChangedId)
                     {
                         continue;
                     }
 
                     _shellChangedId = shellChangedId;
-
                     var allSettings = _shellHost.GetAllSettings();
 
                     var shellCreatedId = await distributedCache.GetStringAsync(ShellCreatedIdKey);
-
                     if (shellCreatedId != null && _shellCreatedId != shellCreatedId)
                     {
                         _shellCreatedId = shellCreatedId;
-
-                        var names = (await _shellSettingsManager.LoadSettingsNamesAsync()).Except(allSettings.Select(s => s.Name));
-
                         var createdSettings = new List<ShellSettings>();
 
+                        var names = (await _shellSettingsManager.LoadSettingsNamesAsync()).Except(allSettings.Select(s => s.Name));
                         foreach (var name in names)
                         {
                             createdSettings.Add(await _shellSettingsManager.LoadSettingsAsync(name));
@@ -130,7 +122,6 @@ namespace OrchardCore.Environment.Shell
                     foreach (var settings in allSettings)
                     {
                         var maxBusyTime = DateTime.UtcNow - startTime;
-
                         if (maxBusyTime > MaxBusyTime)
                         {
                             if (!await TryWaitAsync(MinIdleTime, stoppingToken))
@@ -142,35 +133,27 @@ namespace OrchardCore.Environment.Shell
                         }
 
                         var semaphore = _shellSemaphores.GetOrAdd(settings.Name, name => new SemaphoreSlim(1));
-
                         await semaphore.WaitAsync();
-
                         try
                         {
                             var releaseId = await distributedCache.GetStringAsync(settings.Name + ReleaseIdKeySuffix);
-
                             if (releaseId != null)
                             {
                                 var shellIdentifier = _shellIdentifiers.GetOrAdd(settings.Name, name => new ShellIdentifier());
-
                                 if (shellIdentifier.ReleaseId != releaseId)
                                 {
                                     shellIdentifier.ReleaseId = releaseId;
-
                                     await _shellHost.ReleaseShellContextAsync(settings, eventSource: false);
                                 }
                             }
 
                             var reloadId = await distributedCache.GetStringAsync(settings.Name + ReloadIdKeySuffix);
-
                             if (reloadId != null)
                             {
                                 var shellIdentifier = _shellIdentifiers.GetOrAdd(settings.Name, name => new ShellIdentifier());
-
                                 if (shellIdentifier.ReloadId != reloadId)
                                 {
                                     shellIdentifier.ReloadId = reloadId;
-
                                     await _shellHost.ReloadShellContextAsync(settings, eventSource: false);
                                 }
                             }
@@ -189,14 +172,12 @@ namespace OrchardCore.Environment.Shell
             }
 
             _isolatedContext?.Dispose();
-
             _defaultContext = null;
         }
 
         public async Task LoadingAsync()
         {
             var defautSettings = await _shellSettingsManager.LoadSettingsAsync(ShellHelper.DefaultShellName);
-
             if (defautSettings?.State != TenantState.Running)
             {
                 return;
@@ -205,35 +186,28 @@ namespace OrchardCore.Environment.Shell
             using var isolatedContext = await _shellContextFactory.CreateShellContextAsync(defautSettings);
 
             var distributedCache = isolatedContext.ServiceProvider.GetService<IDistributedCache>();
-
             if (distributedCache == null || distributedCache is MemoryDistributedCache)
             {
                 return;
             }
 
             _shellChangedId = await distributedCache.GetStringAsync(ShellChangedIdKey);
-
             _shellCreatedId = await distributedCache.GetStringAsync(ShellCreatedIdKey);
 
             var names = await _shellSettingsManager.LoadSettingsNamesAsync();
-
             foreach (var name in names)
             {
                 var releaseId = await distributedCache.GetStringAsync(name + ReleaseIdKeySuffix);
-
                 if (releaseId != null)
                 {
                     var shellIdentifier = _shellIdentifiers.GetOrAdd(name, name => new ShellIdentifier());
-
                     shellIdentifier.ReleaseId = releaseId;
                 }
 
                 var reloadId = await distributedCache.GetStringAsync(name + ReloadIdKeySuffix);
-
                 if (reloadId != null)
                 {
                     var shellIdentifier = _shellIdentifiers.GetOrAdd(name, name => new ShellIdentifier());
-
                     shellIdentifier.ReloadId = reloadId;
                 }
             }
@@ -254,24 +228,19 @@ namespace OrchardCore.Environment.Shell
             using var isolatedContext = await _shellContextFactory.CreateShellContextAsync(defautSettings);
 
             var distributedCache = isolatedContext.ServiceProvider.GetService<IDistributedCache>();
-
             if (distributedCache == null || distributedCache is MemoryDistributedCache)
             {
                 return;
             }
 
             var semaphore = _shellSemaphores.GetOrAdd(name, name => new SemaphoreSlim(1));
-
             await semaphore.WaitAsync();
-
             try
             {
                 var shellIdentifier = _shellIdentifiers.GetOrAdd(name, name => new ShellIdentifier());
-
                 shellIdentifier.ReleaseId = IdGenerator.GenerateId();
 
                 await distributedCache.SetStringAsync(name + ReleaseIdKeySuffix, shellIdentifier.ReleaseId);
-
                 await distributedCache.SetStringAsync(ShellChangedIdKey, shellIdentifier.ReleaseId);
             }
             finally
@@ -296,20 +265,16 @@ namespace OrchardCore.Environment.Shell
             using var isolatedContext = await _shellContextFactory.CreateShellContextAsync(defautSettings);
 
             var distributedCache = isolatedContext.ServiceProvider.GetService<IDistributedCache>();
-
             if (distributedCache == null || distributedCache is MemoryDistributedCache)
             {
                 return;
             }
 
             var semaphore = _shellSemaphores.GetOrAdd(name, name => new SemaphoreSlim(1));
-
             await semaphore.WaitAsync();
-
             try
             {
                 var shellIdentifier = _shellIdentifiers.GetOrAdd(name, name => new ShellIdentifier());
-
                 shellIdentifier.ReloadId = IdGenerator.GenerateId();
 
                 await distributedCache.SetStringAsync(name + ReloadIdKeySuffix, shellIdentifier.ReloadId);
@@ -333,7 +298,6 @@ namespace OrchardCore.Environment.Shell
             try
             {
                 await Task.Delay(delay, stoppingToken);
-
                 return true;
             }
             catch (TaskCanceledException)
