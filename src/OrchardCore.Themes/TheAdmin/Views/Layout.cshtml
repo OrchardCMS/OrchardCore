@@ -22,8 +22,11 @@
 </head>
 <body class="preload">
     <div class="ta-wrapper">
-        <div class="ta-navbar-top">
-            <a class="ta-navbar-brand" href="@Url.Content("~/")"><span>@Site.SiteName</span></a>
+        <div class="ta-navbar-top navbar-expand-lg navbar-light bg-light">
+            <a class="ta-navbar-brand" href="@Url.Content("~/")">@Site.SiteName</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-links" aria-controls="navbar-links" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
             <div class="collapse navbar-collapse" id="navbar-links">
                 <div class="mr-auto">
                     @await RenderSectionAsync("NavbarTop", required: false)
