@@ -96,22 +96,22 @@ namespace OrchardCore.Users.Drivers
             var usersOfAdminRole = await _userManager.GetUsersInRoleAsync("Administrator");
             if (!model.IsEnabled && user.IsEnabled)
             {
-                if (user.UserName != httpContext.User.Identity.Name)
+                if (usersOfAdminRole.Count == 1 && usersOfAdminRole.First().UserName == user.UserName)
                 {
-                    if (usersOfAdminRole.Count == 1 && usersOfAdminRole.First().UserName == user.UserName)
-                    {
-                        _notifier.Warning(H["Cannot disable the super administrator."]);
-                    }
-                    else
+                    _notifier.Warning(H["Cannot disable the super administrator."]);
+                }
+                else
+                {
+                    if (user.UserName != httpContext.User.Identity.Name)
                     {
                         user.IsEnabled = model.IsEnabled;
                         var userContext = new UserContext(user);
                         await Handlers.InvokeAsync((handler, context) => handler.DisabledAsync(userContext), userContext, _logger);
                     }
-                }
-                else
-                {
-                    _notifier.Warning(H["Cannot disable current user."]);
+                    else
+                    {
+                        _notifier.Warning(H["Cannot disable current user."]);
+                    }
                 }
             }
             else if (model.IsEnabled && !user.IsEnabled)
@@ -155,8 +155,6 @@ namespace OrchardCore.Users.Drivers
                     context.Updater.ModelState.AddModelError(string.Empty, S["The email is already used."]);
                 }
             }
-
-            
 
             if (context.Updater.ModelState.IsValid)
             {
