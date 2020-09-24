@@ -14250,6 +14250,11 @@ html[dir], [dir] body {
     margin-top: 1rem; }
   .ta-navbar-top .btn.nav-link, .ta-navbar-top .nav-link.button {
     display: inline-block; }
+  @media (max-width: 767.98px) {
+    [dir] .ta-navbar-top .navbar-collapse li:first-child .nav-link {
+      padding-top: 15px; }
+    [dir] .ta-navbar-top .navbar-collapse li:last-child .nav-link {
+      padding-bottom: 0px; } }
 
 .ta-navbar-brand {
   overflow: hidden;

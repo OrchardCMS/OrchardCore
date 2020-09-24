@@ -85,8 +85,20 @@ body {
         margin-top: 1rem;
     }
 
-    .btn.nav-link{
+    .btn.nav-link {
         display: inline-block;
+    }
+
+    @include media-breakpoint-down(sm) {
+        .navbar-collapse {
+            li:first-child .nav-link {
+                padding-top: 15px;
+            }
+
+            li:last-child .nav-link {
+                padding-bottom: 0px;
+            }
+        }
     }
 }
 
