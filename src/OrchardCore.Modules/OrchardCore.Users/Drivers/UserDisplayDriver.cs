@@ -98,7 +98,7 @@ namespace OrchardCore.Users.Drivers
             {
                 if (user.UserName != httpContext.User.Identity.Name)
                 {
-                    if(usersOfAdminRole.Count == 1 && usersOfAdminRole.First().UserName == user.UserName)
+                    if (usersOfAdminRole.Count == 1 && usersOfAdminRole.First().UserName == user.UserName)
                     {
                         _notifier.Warning(H["Cannot disable unique administrator."]);
                     }
