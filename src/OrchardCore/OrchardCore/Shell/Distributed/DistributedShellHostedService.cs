@@ -12,9 +12,9 @@ using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Modules;
 
-namespace OrchardCore.Environment.Shell
+namespace OrchardCore.Environment.Shell.Distributed
 {
-    internal class ShellHostedService : BackgroundService
+    internal class DistributedShellHostedService : BackgroundService
     {
         private const string ShellChangedIdKey = "SHELL_CHANGED_ID";
         private const string ShellCreatedIdKey = "SHELL_CREATED_ID";
@@ -39,11 +39,11 @@ namespace OrchardCore.Environment.Shell
         private ShellContext _defaultContext;
         private ShellContext _isolatedContext;
 
-        public ShellHostedService(
+        public DistributedShellHostedService(
             IShellHost shellHost,
             IShellContextFactory shellContextFactory,
             IShellSettingsManager shellSettingsManager,
-            ILogger<ShellHostedService> logger)
+            ILogger<DistributedShellHostedService> logger)
         {
             _shellHost = shellHost;
             _shellContextFactory = shellContextFactory;
@@ -59,7 +59,7 @@ namespace OrchardCore.Environment.Shell
         {
             stoppingToken.Register(() =>
             {
-                _logger.LogInformation("'{ServiceName}' is stopping.", nameof(ShellHostedService));
+                _logger.LogInformation("'{ServiceName}' is stopping.", nameof(DistributedShellHostedService));
             });
 
             try
@@ -87,6 +87,11 @@ namespace OrchardCore.Environment.Shell
                         _isolatedContext?.Dispose();
                         _isolatedContext = await _shellContextFactory.CreateShellContextAsync(defaultContext.Settings);
                         _defaultContext = defaultContext;
+                    }
+
+                    if (_isolatedContext.ServiceProvider.GetService<DistributedShellMarkerService>() == null)
+                    {
+                        continue;
                     }
 
                     var distributedCache = _isolatedContext.ServiceProvider.GetService<IDistributedCache>();
@@ -202,7 +207,7 @@ namespace OrchardCore.Environment.Shell
             }
             catch (Exception ex) when (!ex.IsFatal())
             {
-                _logger.LogError(ex, "Error while executing '{ServiceName}', the service is stopping.", nameof(ShellHostedService));
+                _logger.LogError(ex, "Error while executing '{ServiceName}', the service is stopping.", nameof(DistributedShellHostedService));
             }
 
             _isolatedContext?.Dispose();
