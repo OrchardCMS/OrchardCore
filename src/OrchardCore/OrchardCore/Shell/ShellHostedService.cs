@@ -23,6 +23,7 @@ namespace OrchardCore.Environment.Shell
 
         private static readonly TimeSpan MinIdleTime = TimeSpan.FromSeconds(1);
         private static readonly TimeSpan MaxBusyTime = TimeSpan.FromSeconds(2);
+        private static readonly TimeSpan MaxRetryTime = TimeSpan.FromMinutes(1);
 
         private readonly IShellHost _shellHost;
         private readonly IShellContextFactory _shellContextFactory;
@@ -63,9 +64,10 @@ namespace OrchardCore.Environment.Shell
 
             try
             {
+                var minIdleTime = MinIdleTime;
                 while (!stoppingToken.IsCancellationRequested)
                 {
-                    if (!await TryWaitAsync(MinIdleTime, stoppingToken))
+                    if (!await TryWaitAsync(minIdleTime, stoppingToken))
                     {
                         break;
                     }
@@ -93,7 +95,33 @@ namespace OrchardCore.Environment.Shell
                         continue;
                     }
 
-                    var shellChangedId = await distributedCache.GetStringAsync(ShellChangedIdKey);
+                    string shellChangedId, shellCreatedId;
+                    try
+                    {
+                        shellChangedId = await distributedCache.GetStringAsync(ShellChangedIdKey);
+                        shellCreatedId = await distributedCache.GetStringAsync(ShellCreatedIdKey);
+                    }
+                    catch (Exception ex) when (!ex.IsFatal())
+                    {
+                        if (minIdleTime == MinIdleTime)
+                        {
+                            _logger.LogError(ex, "Unable to read the distributed cache before syncing all tenants.");
+                        }
+
+                        if (minIdleTime < MaxRetryTime)
+                        {
+                            minIdleTime *= 2;
+                            if (minIdleTime > MaxRetryTime)
+                            {
+                                minIdleTime = MaxRetryTime;
+                            }
+                        }
+
+                        continue;
+                    }
+
+                    minIdleTime = MinIdleTime;
+
                     if (shellChangedId == null || _shellChangedId == shellChangedId)
                     {
                         continue;
@@ -102,7 +130,6 @@ namespace OrchardCore.Environment.Shell
                     _shellChangedId = shellChangedId;
                     var allSettings = _shellHost.GetAllSettings();
 
-                    var shellCreatedId = await distributedCache.GetStringAsync(ShellCreatedIdKey);
                     if (shellCreatedId != null && _shellCreatedId != shellCreatedId)
                     {
                         _shellCreatedId = shellCreatedId;
@@ -157,10 +184,13 @@ namespace OrchardCore.Environment.Shell
                                     await _shellHost.ReloadShellContextAsync(settings, eventSource: false);
                                 }
                             }
+
+                            minIdleTime = MinIdleTime;
                         }
                         catch (Exception ex) when (!ex.IsFatal())
                         {
-                            _logger.LogError(ex, "Error while syncing the tenant '{TenantName}' through the distributed cache.", settings.Name);
+                            _logger.LogError(ex, "Unable to read the distributed cache while syncing the tenant '{TenantName}'.", settings.Name);
+                            break;
                         }
                         finally
                         {
@@ -220,7 +250,7 @@ namespace OrchardCore.Environment.Shell
             }
             catch (Exception ex) when (!ex.IsFatal())
             {
-                _logger.LogError(ex, "Error while reading the shell identifiers of all tenants from the distributed cache.");
+                _logger.LogError(ex, "Unable to read the distributed cache before loading all tenants.");
             }
         }
 
@@ -256,7 +286,7 @@ namespace OrchardCore.Environment.Shell
             }
             catch (Exception ex) when (!ex.IsFatal())
             {
-                _logger.LogError(ex, "Error while updating the release identifier of tenant '{TenantName}' in the distributed cache.", name);
+                _logger.LogError(ex, "Unable to update the distributed cache before releasing the tenant '{TenantName}'.", name);
             }
             finally
             {
@@ -303,7 +333,7 @@ namespace OrchardCore.Environment.Shell
             }
             catch (Exception ex) when (!ex.IsFatal())
             {
-                _logger.LogError(ex, "Error while updating the reload identifier of tenant '{TenantName}' in the distributed cache.", name);
+                _logger.LogError(ex, "Unable to update the distributed cache before reloading the tenant '{TenantName}'.", name);
             }
             finally
             {
