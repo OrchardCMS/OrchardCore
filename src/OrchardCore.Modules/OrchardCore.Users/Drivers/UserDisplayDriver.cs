@@ -194,7 +194,7 @@ namespace OrchardCore.Users.Drivers
                         // Make sure we always have at least one administrator account
                         if (usersOfAdminRole.Count == 1 && usersOfAdminRole.First().UserName == user.UserName && role == "Administrator")
                         {
-                            _notifier.Warning(H["Cannot remove administrator role from unique administrator."]);
+                            _notifier.Warning(H["Cannot remove administrator role from the only administrator."]);
                             continue;
                         }
                         else
