@@ -11,7 +11,7 @@ namespace OrchardCore.Environment.Extensions
         {
             Features = Enumerable.Empty<IFeatureInfo>();
             Id = extensionId;
-            Manifest = new NotFoundManifestInfo(extensionId);
+            Manifest = new NotFoundManifestInfo();
         }
 
         public bool Exists => false;

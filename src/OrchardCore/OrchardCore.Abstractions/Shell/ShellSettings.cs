@@ -36,12 +36,6 @@ namespace OrchardCore.Environment.Shell
             Name = settings.Name;
         }
 
-        public string Description
-        {
-            get => _configuration["Description"];
-            set => _configuration["Description"] = value;
-        }
-
         public string Name { get; set; }
 
         public string Identifier

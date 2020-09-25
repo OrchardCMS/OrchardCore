@@ -1,10 +1,10 @@
-# HTML Santizer
+# HTML Sanitizer
 
-An HTML Santizer is available as part of the Orchard Core Infrastructure.
+An HTML Sanitizer is available as part of the Orchard Core Infrastructure.
 
 The Sanitizer cleans user input that could lead to XSS attacks.
 
-It is used by default for the following parts and fields
+It is used by default for the following parts and fields:
 
 - HTML Body Part
 - HTML Field

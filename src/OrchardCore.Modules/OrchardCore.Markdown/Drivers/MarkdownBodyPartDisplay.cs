@@ -14,6 +14,7 @@ using OrchardCore.Markdown.Services;
 using OrchardCore.Markdown.Settings;
 using OrchardCore.Markdown.ViewModels;
 using OrchardCore.Mvc.ModelBinding;
+using Shortcodes;
 
 namespace OrchardCore.Markdown.Drivers
 {
@@ -43,7 +44,7 @@ namespace OrchardCore.Markdown.Drivers
 
         public override IDisplayResult Display(MarkdownBodyPart markdownBodyPart, BuildPartDisplayContext context)
         {
-            return Initialize<MarkdownBodyPartViewModel>(GetDisplayShapeType(context), m => BuildViewModel(m, markdownBodyPart, context.TypePartDefinition.GetSettings<MarkdownBodyPartSettings>()))
+            return Initialize<MarkdownBodyPartViewModel>(GetDisplayShapeType(context), m => BuildViewModel(m, markdownBodyPart, context))
                 .Location("Detail", "Content:10")
                 .Location("Summary", "Content:10");
         }
@@ -79,7 +80,7 @@ namespace OrchardCore.Markdown.Drivers
             return Edit(model, context);
         }
 
-        private async ValueTask BuildViewModel(MarkdownBodyPartViewModel model, MarkdownBodyPart markdownBodyPart, MarkdownBodyPartSettings settings)
+        private async ValueTask BuildViewModel(MarkdownBodyPartViewModel model, MarkdownBodyPart markdownBodyPart, BuildPartDisplayContext context)
         {
             model.Markdown = markdownBodyPart.Markdown;
             model.MarkdownBodyPart = markdownBodyPart;
@@ -89,6 +90,8 @@ namespace OrchardCore.Markdown.Drivers
             // so filters must be run after the markdown has been processed.
             model.Html = _markdownService.ToHtml(model.Markdown ?? "");
 
+            var settings = context.TypePartDefinition.GetSettings<MarkdownBodyPartSettings>();
+
             // The liquid rendering is for backwards compatability and can be removed in a future version.
             if (!settings.SanitizeHtml)
             {
@@ -96,7 +99,12 @@ namespace OrchardCore.Markdown.Drivers
                     scope => scope.SetValue("ContentItem", model.ContentItem));
             }
 
-            model.Html = await _shortcodeService.ProcessAsync(model.Html ?? "");
+            model.Html = await _shortcodeService.ProcessAsync(model.Html,
+                new Context
+                {
+                    ["ContentItem"] = markdownBodyPart.ContentItem,
+                    ["TypePartDefinition"] =  context.TypePartDefinition
+                });
 
             if (settings.SanitizeHtml)
             {

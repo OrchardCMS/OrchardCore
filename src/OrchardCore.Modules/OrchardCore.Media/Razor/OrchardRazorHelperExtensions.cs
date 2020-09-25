@@ -9,7 +9,7 @@ public static class OrchardRazorHelperExtensions
     /// <summary>
     /// Returns the relative URL of the specifier asset path with optional resizing parameters.
     /// </summary>
-    public static string AssetUrl(this IOrchardHelper orchardHelper, string assetPath, int? width = null, int? height = null, ResizeMode resizeMode = ResizeMode.Undefined, bool appendVersion = false)
+    public static string AssetUrl(this IOrchardHelper orchardHelper, string assetPath, int? width = null, int? height = null, ResizeMode resizeMode = ResizeMode.Undefined, bool appendVersion = false, int? quality = null, Format format = Format.Undefined)
     {
         var mediaFileStore = orchardHelper.HttpContext.RequestServices.GetService<IMediaFileStore>();
 
@@ -20,7 +20,7 @@ public static class OrchardRazorHelperExtensions
 
         var resolvedAssetPath = mediaFileStore.MapPathToPublicUrl(assetPath);
 
-        var resizedUrl = orchardHelper.ImageResizeUrl(resolvedAssetPath, width, height, resizeMode);
+        var resizedUrl = orchardHelper.ImageResizeUrl(resolvedAssetPath, width, height, resizeMode, quality, format);
 
         if (appendVersion)
         {
@@ -34,8 +34,8 @@ public static class OrchardRazorHelperExtensions
     /// <summary>
     /// Returns a URL with custom resizing parameters for an existing image path.
     /// </summary>
-    public static string ImageResizeUrl(this IOrchardHelper orchardHelper, string imagePath, int? width = null, int? height = null, ResizeMode resizeMode = ResizeMode.Undefined)
+    public static string ImageResizeUrl(this IOrchardHelper orchardHelper, string imagePath, int? width = null, int? height = null, ResizeMode resizeMode = ResizeMode.Undefined, int? quality = null, Format format = Format.Undefined)
     {
-        return ImageSharpUrlFormatter.GetImageResizeUrl(imagePath, width, height, resizeMode);
+        return ImageSharpUrlFormatter.GetImageResizeUrl(imagePath, width, height, resizeMode, quality, format);
     }
 }
