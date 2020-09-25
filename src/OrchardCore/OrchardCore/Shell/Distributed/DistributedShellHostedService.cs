@@ -189,8 +189,6 @@ namespace OrchardCore.Environment.Shell.Distributed
                                     await _shellHost.ReloadShellContextAsync(settings, eventSource: false);
                                 }
                             }
-
-                            minIdleTime = MinIdleTime;
                         }
                         catch (Exception ex) when (!ex.IsFatal())
                         {

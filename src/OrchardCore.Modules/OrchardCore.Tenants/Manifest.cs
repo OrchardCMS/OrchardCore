@@ -26,7 +26,7 @@ using OrchardCore.Modules.Manifest;
 [assembly: Feature(
     Id = "OrchardCore.Tenants.Distributed",
     Name = "Distributed Tenants",
-    Description = "Allows to keep in sync tenants in a distributed environment, needs a concrete implementation of a distributed cache, as provided by the Redis Cache feature.",
+    Description = "Keeps in sync tenants in a distributed environment, needs a distributed cache implementation as provided by the Redis Cache feature.",
     Category = "Infrastructure",
     DefaultTenantOnly = true
 )]
