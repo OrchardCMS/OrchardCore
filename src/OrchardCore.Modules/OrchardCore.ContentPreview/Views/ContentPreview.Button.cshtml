@@ -1,10 +1,11 @@
 @using OrchardCore.ContentManagement
+@using OrchardCore.Contents
 @inject IAuthorizationService AuthorizationService
 
 @{
     ContentItem contentItem = Model.ContentItem;
     var previewId = Guid.NewGuid();
-    var hasPreviewPermission = await AuthorizationService.AuthorizeAsync(User, OrchardCore.Contents.CommonPermissions.PreviewContent, contentItem);
+    var hasPreviewPermission = await AuthorizationService.AuthorizeAsync(User, CommonPermissions.PreviewContent, contentItem);
 }
 
 @if (hasPreviewPermission)

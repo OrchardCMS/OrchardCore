@@ -18,7 +18,6 @@ namespace OrchardCore.ContentPreview
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<IContentDisplayDriver, ContentPreviewDriver>();
-            services.AddScoped<IPermissionProvider, Permissions>();
 
             // Preview Part
             services.AddContentPart<PreviewPart>()

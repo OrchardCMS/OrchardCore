@@ -89,7 +89,7 @@ namespace OrchardCore.Contents.Services
                 query.With<ContentItemIndex>(x => x.ContentType.IsIn(listableTypes.Select(t => t.Name).ToArray()));
             }
 
-            if(!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.ViewAllAdminContentList))
+            if(!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.ViewRestrictedItemsAdminContentList))
             {
                 query.With<ContentItemIndex>(x => x.Owner == _httpContextAccessor.HttpContext.User.Identity.Name);
             }
