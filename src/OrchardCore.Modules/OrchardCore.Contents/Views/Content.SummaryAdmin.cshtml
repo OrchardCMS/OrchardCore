@@ -70,15 +70,3 @@
 {
     <div class="col primary">@await DisplayAsync(Model.Content)</div>
 }
-
-<script asp-name="removeEmptyActionsMenu" at="Foot" type="text/javascript">
-    $(function () {
-
-        $(".actions-menu.dropdown-menu").each(function (i, e) {
-            var count = $(e).children().length;
-            if (count == 0) {
-                $(this).parent().hide();
-            }
-        });
-    });
-</script>
