@@ -169,7 +169,7 @@ namespace OrchardCore.Contents.Controllers
             {
                 if (ctd.GetSettings<ContentTypeSettings>().Listable)
                 {
-                    var authorized = await _authorizationService.AuthorizeAsync(User, Permissions.EditContent, await _contentManager.NewAsync(ctd.Name));
+                    var authorized = await _authorizationService.AuthorizeAsync(User, CommonPermissions.EditContent, await _contentManager.NewAsync(ctd.Name));
                     if (authorized)
                     {
                         listableTypes.Add(ctd);
@@ -255,7 +255,7 @@ namespace OrchardCore.Contents.Controllers
                     case ContentsBulkAction.PublishNow:
                         foreach (var item in checkedContentItems)
                         {
-                            if (!await _authorizationService.AuthorizeAsync(User, Permissions.PublishContent, item))
+                            if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.PublishContent, item))
                             {
                                 _notifier.Warning(H["Couldn't publish selected content."]);
                                 _session.Cancel();
@@ -269,7 +269,7 @@ namespace OrchardCore.Contents.Controllers
                     case ContentsBulkAction.Unpublish:
                         foreach (var item in checkedContentItems)
                         {
-                            if (!await _authorizationService.AuthorizeAsync(User, Permissions.PublishContent, item))
+                            if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.PublishContent, item))
                             {
                                 _notifier.Warning(H["Couldn't unpublish selected content."]);
                                 _session.Cancel();
@@ -283,7 +283,7 @@ namespace OrchardCore.Contents.Controllers
                     case ContentsBulkAction.Remove:
                         foreach (var item in checkedContentItems)
                         {
-                            if (!await _authorizationService.AuthorizeAsync(User, Permissions.DeleteContent, item))
+                            if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.DeleteContent, item))
                             {
                                 _notifier.Warning(H["Couldn't remove selected content."]);
                                 _session.Cancel();
@@ -314,7 +314,7 @@ namespace OrchardCore.Contents.Controllers
             // Set the current user as the owner to check for ownership permissions on creation
             contentItem.Owner = User.Identity.Name;
 
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContent, contentItem))
+            if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.EditContent, contentItem))
             {
                 return Forbid();
             }
@@ -352,7 +352,7 @@ namespace OrchardCore.Contents.Controllers
             // Set the current user as the owner to check for ownership permissions on creation
             dummyContent.Owner = User.Identity.Name;
 
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.PublishContent, dummyContent))
+            if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.PublishContent, dummyContent))
             {
                 return Forbid();
             }
@@ -376,7 +376,7 @@ namespace OrchardCore.Contents.Controllers
             // Set the current user as the owner to check for ownership permissions on creation
             contentItem.Owner = User.Identity.Name;
 
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContent, contentItem))
+            if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.EditContent, contentItem))
             {
                 return Forbid();
             }
@@ -420,7 +420,7 @@ namespace OrchardCore.Contents.Controllers
                 return NotFound();
             }
 
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ViewContent, contentItem))
+            if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.ViewContent, contentItem))
             {
                 return Forbid();
             }
@@ -439,7 +439,7 @@ namespace OrchardCore.Contents.Controllers
                 return NotFound();
             }
 
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContent, contentItem))
+            if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.EditContent, contentItem))
             {
                 return Forbid();
             }
@@ -479,7 +479,7 @@ namespace OrchardCore.Contents.Controllers
                 return NotFound();
             }
 
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.PublishContent, content))
+            if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.PublishContent, content))
             {
                 return Forbid();
             }
@@ -504,7 +504,7 @@ namespace OrchardCore.Contents.Controllers
                 return NotFound();
             }
 
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContent, contentItem))
+            if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.EditContent, contentItem))
             {
                 return Forbid();
             }
@@ -543,7 +543,7 @@ namespace OrchardCore.Contents.Controllers
                 return NotFound();
             }
 
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.CloneContent, contentItem))
+            if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.CloneContent, contentItem))
             {
                 return Forbid();
             }
@@ -573,7 +573,7 @@ namespace OrchardCore.Contents.Controllers
                 return NotFound();
             }
 
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.DeleteContent, contentItem))
+            if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.DeleteContent, contentItem))
             {
                 return Forbid();
             }
@@ -597,7 +597,7 @@ namespace OrchardCore.Contents.Controllers
         {
             var contentItem = await _contentManager.GetAsync(contentItemId, VersionOptions.Latest);
 
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.DeleteContent, contentItem))
+            if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.DeleteContent, contentItem))
             {
                 return Forbid();
             }
@@ -625,7 +625,7 @@ namespace OrchardCore.Contents.Controllers
                 return NotFound();
             }
 
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.PublishContent, contentItem))
+            if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.PublishContent, contentItem))
             {
                 return Forbid();
             }
@@ -655,7 +655,7 @@ namespace OrchardCore.Contents.Controllers
                 return NotFound();
             }
 
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.PublishContent, contentItem))
+            if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.PublishContent, contentItem))
             {
                 return Forbid();
             }
