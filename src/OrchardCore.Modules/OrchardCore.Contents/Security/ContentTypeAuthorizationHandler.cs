@@ -26,6 +26,7 @@ namespace OrchardCore.Contents.Security
                 return;
             }
 
+            // If we are not evaluating a ContentItem then return.
             if (context.Resource == null)
             {
                 return;
@@ -37,9 +38,19 @@ namespace OrchardCore.Contents.Security
 
             if (contentItem != null)
             {
-                if (OwnerVariationExists(requirement.Permission) && HasOwnership(context.User, contentItem))
+                if (contentItem.Owner != null) // If we want to evaluate a specific content item authorization
                 {
-                    permission = GetOwnerVariation(requirement.Permission);
+                    if (OwnerVariationExists(requirement.Permission) && HasOwnership(context.User, contentItem))
+                    {
+                        permission = GetOwnerVariation(requirement.Permission);
+                    }
+                }
+                else // If we want to evaluate if a user has authorization on a ContentType globally
+                {
+                    if (OwnerVariationExists(requirement.Permission))
+                    {
+                        permission = GetOwnerVariation(requirement.Permission);
+                    }
                 }
             }
 
@@ -98,6 +109,11 @@ namespace OrchardCore.Contents.Security
             if (permission.Name == Permissions.PreviewContent.Name)
             {
                 return Permissions.PreviewOwnContent;
+            }
+
+            if (permission.Name == Permissions.CloneContent.Name)
+            {
+                return Permissions.CloneOwnContent;
             }
 
             return null;

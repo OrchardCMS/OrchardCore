@@ -19,18 +19,15 @@ namespace OrchardCore.Contents.Services
     public class DefaultContentsAdminListFilter : IContentsAdminListFilter
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
-        private readonly IContentManager _contentManager;
         private readonly IAuthorizationService _authorizationService;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
         public DefaultContentsAdminListFilter(
             IContentDefinitionManager contentDefinitionManager,
-            IContentManager contentManager,
             IAuthorizationService authorizationService,
             IHttpContextAccessor httpContextAccessor)
         {
             _contentDefinitionManager = contentDefinitionManager;
-            _contentManager = contentManager;
             _authorizationService = authorizationService;
             _httpContextAccessor = httpContextAccessor;
         }
@@ -81,17 +78,15 @@ namespace OrchardCore.Contents.Services
                 {
                     if (ctd.GetSettings<ContentTypeSettings>().Listable)
                     {
-                        var authorized = await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.EditContent, await _contentManager.NewAsync(ctd.Name));
+                        var authorized = await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.EditContent, new ContentItem { ContentType = ctd.Name });
                         if (authorized)
                         {
                             listableTypes.Add(ctd);
                         }
                     }
                 }
-                if (listableTypes.Any())
-                {
-                    query.With<ContentItemIndex>(x => x.ContentType.IsIn(listableTypes.Select(t => t.Name).ToArray()));
-                }
+                
+                query.With<ContentItemIndex>(x => x.ContentType.IsIn(listableTypes.Select(t => t.Name).ToArray()));
             }
 
             // Apply OrderBy filters.

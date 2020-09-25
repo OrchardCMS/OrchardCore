@@ -46,15 +46,13 @@ namespace OrchardCore.Tests.Apis.Context
             OriginalBlogPost = await content.Content.ReadAsAsync<ContentItem>();
             OriginalBlogPostVersionId = OriginalBlogPost.ContentItemVersionId;
 
-            using (var shellScope = await ShellHost.GetScopeAsync(TenantName))
+            var shellScope = await ShellHost.GetScopeAsync(TenantName);
+            await shellScope.UsingAsync(async scope =>
             {
-                await shellScope.UsingAsync(async scope =>
-                {
-                    var remoteClientService = scope.ServiceProvider.GetRequiredService<RemoteClientService>();
+                var remoteClientService = scope.ServiceProvider.GetRequiredService<RemoteClientService>();
 
-                    await remoteClientService.CreateRemoteClientAsync(RemoteDeploymentClientName, RemoteDeploymentApiKey);
-                });
-            }
+                await remoteClientService.CreateRemoteClientAsync(RemoteDeploymentClientName, RemoteDeploymentApiKey);
+            });
         }
 
         public JObject GetContentStepRecipe(ContentItem contentItem, Action<JObject> mutation)
