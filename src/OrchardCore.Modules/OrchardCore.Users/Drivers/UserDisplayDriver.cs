@@ -29,6 +29,7 @@ namespace OrchardCore.Users.Drivers
         private readonly ILogger _logger;
         private readonly IStringLocalizer S;
         private readonly IHtmlLocalizer H;
+        private static readonly string _administratorRole = "Administrator";
 
         public UserDisplayDriver(
             UserManager<IUser> userManager,
@@ -48,7 +49,6 @@ namespace OrchardCore.Users.Drivers
             _notifier = notifier;
             _logger = logger;
             Handlers = handlers;
-
             H = htmlLocalizer;
             S = stringLocalizer;
         }
@@ -93,7 +93,7 @@ namespace OrchardCore.Users.Drivers
             model.UserName = model.UserName?.Trim();
             model.Email = model.Email?.Trim();
 
-            var usersOfAdminRole = await _userManager.GetUsersInRoleAsync("Administrator");
+            var usersOfAdminRole = await _userManager.GetUsersInRoleAsync(_administratorRole);
             if (!model.IsEnabled && user.IsEnabled)
             {
                 if (usersOfAdminRole.Count == 1 && usersOfAdminRole.First().UserName == user.UserName)
@@ -192,7 +192,7 @@ namespace OrchardCore.Users.Drivers
                     foreach (var role in rolesToRemove)
                     {
                         // Make sure we always have at least one administrator account
-                        if (usersOfAdminRole.Count == 1 && usersOfAdminRole.First().UserName == user.UserName && role == "Administrator")
+                        if (usersOfAdminRole.Count == 1 && usersOfAdminRole.First().UserName == user.UserName && role == _administratorRole)
                         {
                             _notifier.Warning(H["Cannot remove administrator role from the only administrator."]);
                             continue;
