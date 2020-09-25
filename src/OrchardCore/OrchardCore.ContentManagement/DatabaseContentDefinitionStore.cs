@@ -25,7 +25,7 @@ namespace OrchardCore.ContentManagement
         /// <summary>
         /// Gets a single document (or create a new one) for caching and that should not be updated.
         /// </summary>
-        public Task<ContentDefinitionRecord> GetContentDefinitionAsync()
+        public Task<(bool, ContentDefinitionRecord)> GetContentDefinitionAsync()
             => _sessionHelper.GetForCachingAsync<ContentDefinitionRecord>();
 
         public Task SaveContentDefinitionAsync(ContentDefinitionRecord contentDefinitionRecord)

@@ -2,7 +2,6 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Routing;
 using Newtonsoft.Json.Linq;
-using OrchardCore.Environment.Cache;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 

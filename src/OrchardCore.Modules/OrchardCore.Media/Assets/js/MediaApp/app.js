@@ -32,7 +32,7 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
             mediaApp = new Vue({
                 el: '#mediaApp',
                 data: {
-                    selectedFolder: root,
+                    selectedFolder: {},
                     mediaItems: [],
                     selectedMedias: [],
                     errors: [],
@@ -118,6 +118,11 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                         self.selectedMedias = [];
                     });                                                          
 
+                    if (!localStorage.getItem('mediaApplicationPrefs')) {
+                        self.selectedFolder = root
+                        return;
+                    }
+
                     self.currentPrefs = JSON.parse(localStorage.getItem('mediaApplicationPrefs'));
                 },
                 computed: {
@@ -154,6 +159,11 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                             case 'mime':
                                 filtered.sort(function (a, b) {
                                     return self.sortAsc ? a.mime.toLowerCase().localeCompare(b.mime.toLowerCase()) : b.mime.toLowerCase().localeCompare(a.mime.toLowerCase());
+                                });
+                                break;
+                            case 'lastModify':
+                                filtered.sort(function (a, b) {
+                                    return self.sortAsc ? a.lastModify - b.lastModify : b.lastModify - a.lastModify;
                                 });
                                 break;
                             default:
