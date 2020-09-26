@@ -55,9 +55,6 @@ namespace OrchardCore.Media.Filters
 
             IDictionary<string, string> queryStringParams = null;
 
-            // Regardless of where we do this it will change the query string which isn't greate for seo.
-            // But tweaks to the robots.txt file should be able to ignore query strings on a /media path
-
             // Profile is a named argument only.
             var profile = arguments["profile"];
 

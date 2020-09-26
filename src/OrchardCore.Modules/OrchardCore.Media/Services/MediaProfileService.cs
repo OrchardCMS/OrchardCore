@@ -7,6 +7,7 @@ namespace OrchardCore.Media.Services
 {
     public class MediaProfileService : IMediaProfileService
     {
+        private static IDictionary<string, string> NullProfile = new Dictionary<string, string>();
         private readonly MediaProfilesManager _mediaProfilesManager;
 
         public MediaProfileService(MediaProfilesManager mediaProfilesManager)
@@ -46,12 +47,12 @@ namespace OrchardCore.Media.Services
                 }
 
                 return commands;
+            }
+            else
+            {
+                return NullProfile;
 
             }
-
-            // TODO log quietly?
-            throw new Exception("Media profile not found");
-
         }
     }
 }
