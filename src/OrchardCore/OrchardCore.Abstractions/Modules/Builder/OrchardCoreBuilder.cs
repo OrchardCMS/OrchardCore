@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Configuration;
 using OrchardCore.Environment.Shell.Descriptor.Models;
 using OrchardCore.Modules;
 
@@ -14,9 +15,14 @@ namespace Microsoft.Extensions.DependencyInjection
 
         public OrchardCoreBuilder(IServiceCollection services)
         {
+            Configuration = (IConfiguration)services
+                .FirstOrDefault(d => d.ServiceType == typeof(IConfiguration))
+                .ImplementationFactory(null);
+
             ApplicationServices = services;
         }
 
+        public IConfiguration Configuration { get; }
         public IServiceCollection ApplicationServices { get; }
 
         public OrchardCoreBuilder RegisterStartup<T>() where T : class, IStartup
