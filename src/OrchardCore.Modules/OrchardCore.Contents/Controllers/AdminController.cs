@@ -164,30 +164,40 @@ namespace OrchardCore.Contents.Controllers
                 new SelectListItem() { Text = S["Delete"], Value = nameof(ContentsBulkAction.Remove) }
             };
 
-            var listableTypes = new List<ContentTypeDefinition>();
-            foreach (var ctd in _contentDefinitionManager.ListTypeDefinitions())
+            // When using the AdminMenus ContentTypes Feature and specifying a Content Type hide the 'Content Type' filter.
+            if (String.IsNullOrEmpty(contentTypeId) && model.Options.ContentTypeOptions == null)
             {
-                if (ctd.GetSettings<ContentTypeSettings>().Listable)
+                var listableTypes = new List<ContentTypeDefinition>();
+                foreach (var ctd in _contentDefinitionManager.ListTypeDefinitions())
                 {
-                    var authorized = await _authorizationService.AuthorizeAsync(User, CommonPermissions.EditContent, await _contentManager.NewAsync(ctd.Name));
-                    if (authorized)
+                    if (ctd.GetSettings<ContentTypeSettings>().Listable)
                     {
-                        listableTypes.Add(ctd);
+                    var authorized = await _authorizationService.AuthorizeAsync(User, CommonPermissions.EditContent, await _contentManager.NewAsync(ctd.Name));
+                        if (authorized)
+                        {
+                            listableTypes.Add(ctd);
+                        }
                     }
+                }
+
+                var contentTypeOptions = listableTypes
+                    .Select(ctd => new KeyValuePair<string, string>(ctd.Name, ctd.DisplayName))
+                    .ToList().OrderBy(kvp => kvp.Value);
+
+                model.Options.ContentTypeOptions = new List<SelectListItem>
+                {
+                    new SelectListItem() { Text = S["All content types"], Value = "" }
+                };
+                foreach (var option in contentTypeOptions)
+                {
+                    model.Options.ContentTypeOptions.Add(new SelectListItem() { Text = option.Value, Value = option.Key });
                 }
             }
 
-            var contentTypeOptions = listableTypes
-                .Select(ctd => new KeyValuePair<string, string>(ctd.Name, ctd.DisplayName))
-                .ToList().OrderBy(kvp => kvp.Value);
-
-            model.Options.ContentTypeOptions = new List<SelectListItem>
+            //if ContentTypeOptions is not initialized by query string or by the code above, initialize it
+            if (model.Options.ContentTypeOptions == null)
             {
-                new SelectListItem() { Text = S["All content types"], Value = "" }
-            };
-            foreach (var option in contentTypeOptions)
-            {
-                model.Options.ContentTypeOptions.Add(new SelectListItem() { Text = option.Value, Value = option.Key });
+                model.Options.ContentTypeOptions = new List<SelectListItem>();
             }
 
             // With the model populated we filter the query, allowing the filters to alter the model.
@@ -195,7 +205,9 @@ namespace OrchardCore.Contents.Controllers
 
             var maxPagedCount = siteSettings.MaxPagedCount;
             if (maxPagedCount > 0 && pager.PageSize > maxPagedCount)
+            {
                 pager.PageSize = maxPagedCount;
+            }
 
             // We prepare the pager
             var routeData = new RouteData();
