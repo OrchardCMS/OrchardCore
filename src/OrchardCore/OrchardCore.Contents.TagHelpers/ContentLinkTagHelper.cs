@@ -89,9 +89,29 @@ namespace OrchardCore.Contents.TagHelpers
                     return;
                 }
 
-                ApplyRouteValues(tagHelperContext, metadata.DisplayRouteValues);
+                if (metadata.DisplayRouteValues.ContainsKey("PreviewUrl"))
+                {
+                    var previewUrl = metadata.DisplayRouteValues["PreviewUrl"].ToString();
+                    if (!previewUrl.StartsWith('~'))
+                    {
+                        if (previewUrl.StartsWith('/'))
+                        {
+                            previewUrl = '~' + previewUrl;
+                        }
+                        else
+                        {
+                            previewUrl = "~/" + previewUrl;
+                        }
+                    }
 
-                output.Attributes.SetAttribute("href", urlHelper.Action(metadata.DisplayRouteValues["action"].ToString(), metadata.DisplayRouteValues));
+                    output.Attributes.SetAttribute("href", urlHelper.Content(previewUrl));
+                }
+                else
+                {
+                    ApplyRouteValues(tagHelperContext, metadata.DisplayRouteValues);
+
+                    output.Attributes.SetAttribute("href", urlHelper.Action(metadata.DisplayRouteValues["action"].ToString(), metadata.DisplayRouteValues));
+                }
             }
             else if (EditFor != null)
             {
