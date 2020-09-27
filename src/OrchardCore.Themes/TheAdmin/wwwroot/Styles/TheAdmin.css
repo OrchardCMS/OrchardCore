@@ -14231,14 +14231,15 @@ html[dir], [dir] body {
 
 [dir] .ta-navbar-top {
   border-bottom: 1px solid #DEDEDE;
+  padding: 0.3rem 1rem;
   background-color: white;
   box-shadow: 0 0.46875rem 2.1875rem rgba(4, 9, 20, 0.03), 0 0.9375rem 1.40625rem rgba(4, 9, 20, 0.03), 0 0.25rem 0.53125rem rgba(4, 9, 20, 0.05), 0 0.125rem 0.1875rem rgba(4, 9, 20, 0.03); }
 
 [dir=ltr] .ta-navbar-top {
-  padding-left: 0px; }
+  padding-left: 0; }
 
 [dir=rtl] .ta-navbar-top {
-  padding-right: 0px; }
+  padding-right: 0; }
   .ta-navbar-top .nav-link {
     font-size: 14px; }
   [dir=ltr] .ta-navbar-top .nav-item {
@@ -14297,7 +14298,7 @@ html[dir], [dir] body {
 
 [dir] .ta-content {
   padding: 15px;
-  margin-top: 59px;
+  margin-top: 52px;
   margin-bottom: 40px; }
 
 [dir=ltr] .ta-content {
@@ -14330,7 +14331,7 @@ html[dir], [dir] body {
 body:not(.left-sidebar-compact) #ta-left-sidebar {
   z-index: 7;
   position: fixed;
-  top: 59px;
+  top: 52px;
   bottom: 0;
   width: 260px;
   color: #343a40;
@@ -14614,7 +14615,7 @@ body:not(.left-sidebar-compact) #ta-left-sidebar {
 .left-sidebar-compact #ta-left-sidebar {
   z-index: 1000;
   position: fixed;
-  top: 59px;
+  top: 52px;
   bottom: 0;
   width: 48px;
   color: #343a40;
