@@ -103,7 +103,12 @@ namespace OrchardCore.Alias.Handlers
 
         public override Task RemovedAsync(RemoveContentContext context, AliasPart instance)
         {
-            return _tagCache.RemoveTagAsync($"alias:{instance.Alias}");
+            if (context.NoActiveVersionLeft)
+            {
+                return _tagCache.RemoveTagAsync($"alias:{instance.Alias}");
+            }
+
+            return Task.CompletedTask;
         }
 
         public override Task UnpublishedAsync(PublishContentContext context, AliasPart instance)
