@@ -67,10 +67,7 @@ function setCompactStatus(explicit) {
     //$('#left-nav').scrollTop = 0;
     //leftMenuPS.update();
 
-    if (leftMenuPS) {
-        leftMenuPS.destroy();
-        leftMenuPS = null; // to make sure garbages are collected
-    }
+
 
     //set PerfectScrollBar on sub-menu items.
     var submenus = $('#left-nav > ul > li > [id^="m"]');
