@@ -190,15 +190,20 @@ body:not(.left-sidebar-compact) {
         border-right: $border-content;
         transition: left 0.2s ease-in-out, width 0.2s ease-in-out;
         font-family: "Segoe UI VSS (Regular)","Segoe UI","-apple-system",BlinkMacSystemFont,Roboto,"Helvetica Neue",Helvetica,Ubuntu,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
+
+        figure {
+            margin: 0;
+        }
+
         // Rotate the chevron's icon when the menu is active
-        label[aria-expanded="true"] {
+        figcaption[aria-expanded="true"] {
             .chevron {
                 transform: rotate(90deg);
                 transition-duration: 0.2s;
             }
         }
 
-        label[aria-expanded="false"] {
+        figcaption[aria-expanded="false"] {
             .chevron {
                 transition-duration: 0.2s;
             }
@@ -219,7 +224,7 @@ body:not(.left-sidebar-compact) {
             margin-left: -25px;
         }
 
-        label, a {
+        figcaption, a {
             position: relative;
             display: block;
             margin: 0;
@@ -496,7 +501,7 @@ body:not(.left-sidebar-compact) {
         transition: left 0.2s ease-in-out, width 0.2s ease-in-out;
         font-family: "Segoe UI VSS (Regular)","Segoe UI","-apple-system",BlinkMacSystemFont,Roboto,"Helvetica Neue",Helvetica,Ubuntu,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
 
-        label[aria-expanded="false"] {
+        figcaption[aria-expanded="false"] {
             .chevron {
                 transition-duration: 0.2s;
             }
@@ -517,7 +522,7 @@ body:not(.left-sidebar-compact) {
             margin-left: -25px;
         }
 
-        label, a {
+        figcaption, a {
             position: relative;
             display: block;
             margin: 0;
@@ -756,7 +761,7 @@ body:not(.left-sidebar-compact) {
                     top: 0;
                 }
 
-                > li > label {
+                > li > figcaption {
                     .btn-nostyle {
                         display: none;
                     }
@@ -909,7 +914,7 @@ body:not(.left-sidebar-compact) {
 .left-sidebar-compact {
     #ta-left-sidebar {
         // Rotate the chevron's icon when the menu is active
-        label[aria-expanded="true"] {
+        figcaption[aria-expanded="true"] {
             .chevron {
                 transform: rotate(90deg);
                 transition-duration: 0.2s;

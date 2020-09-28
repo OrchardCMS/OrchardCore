@@ -14349,13 +14349,15 @@ body:not(.left-sidebar-compact) #ta-left-sidebar {
   right: 0px;
   border-left: 1px solid #DEDEDE;
   transition: right 0.2s ease-in-out, width 0.2s ease-in-out; }
-  [dir] body:not(.left-sidebar-compact) #ta-left-sidebar label[aria-expanded="true"] .chevron {
+  [dir] body:not(.left-sidebar-compact) #ta-left-sidebar figure {
+    margin: 0; }
+  [dir] body:not(.left-sidebar-compact) #ta-left-sidebar figcaption[aria-expanded="true"] .chevron {
     transition-duration: 0.2s; }
-  [dir=ltr] body:not(.left-sidebar-compact) #ta-left-sidebar label[aria-expanded="true"] .chevron {
+  [dir=ltr] body:not(.left-sidebar-compact) #ta-left-sidebar figcaption[aria-expanded="true"] .chevron {
   transform: rotate(90deg); }
-  [dir=rtl] body:not(.left-sidebar-compact) #ta-left-sidebar label[aria-expanded="true"] .chevron {
+  [dir=rtl] body:not(.left-sidebar-compact) #ta-left-sidebar figcaption[aria-expanded="true"] .chevron {
     transform: rotate(-90deg); }
-  [dir] body:not(.left-sidebar-compact) #ta-left-sidebar label[aria-expanded="false"] .chevron {
+  [dir] body:not(.left-sidebar-compact) #ta-left-sidebar figcaption[aria-expanded="false"] .chevron {
     transition-duration: 0.2s; }
   body:not(.left-sidebar-compact) #ta-left-sidebar .collapse {
     display: none; }
@@ -14370,10 +14372,10 @@ body:not(.left-sidebar-compact) #ta-left-sidebar {
   [dir=rtl] body:not(.left-sidebar-compact) #ta-left-sidebar .chevron {
     right: 100%;
     margin-right: -25px; }
-  body:not(.left-sidebar-compact) #ta-left-sidebar label, body:not(.left-sidebar-compact) #ta-left-sidebar a {
+  body:not(.left-sidebar-compact) #ta-left-sidebar figcaption, body:not(.left-sidebar-compact) #ta-left-sidebar a {
     position: relative;
     display: block; }
-  [dir] body:not(.left-sidebar-compact) #ta-left-sidebar label, [dir] body:not(.left-sidebar-compact) #ta-left-sidebar a {
+  [dir] body:not(.left-sidebar-compact) #ta-left-sidebar figcaption, [dir] body:not(.left-sidebar-compact) #ta-left-sidebar a {
     margin: 0; }
   body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav {
     position: relative;
@@ -14633,7 +14635,7 @@ body:not(.left-sidebar-compact) #ta-left-sidebar {
   right: 0px;
   border-left: 1px solid #DEDEDE;
   transition: right 0.2s ease-in-out, width 0.2s ease-in-out; }
-  [dir] .left-sidebar-compact #ta-left-sidebar label[aria-expanded="false"] .chevron {
+  [dir] .left-sidebar-compact #ta-left-sidebar figcaption[aria-expanded="false"] .chevron {
     transition-duration: 0.2s; }
   .left-sidebar-compact #ta-left-sidebar .collapse {
     display: none; }
@@ -14648,10 +14650,10 @@ body:not(.left-sidebar-compact) #ta-left-sidebar {
   [dir=rtl] .left-sidebar-compact #ta-left-sidebar .chevron {
     right: 100%;
     margin-right: -25px; }
-  .left-sidebar-compact #ta-left-sidebar label, .left-sidebar-compact #ta-left-sidebar a {
+  .left-sidebar-compact #ta-left-sidebar figcaption, .left-sidebar-compact #ta-left-sidebar a {
     position: relative;
     display: block; }
-  [dir] .left-sidebar-compact #ta-left-sidebar label, [dir] .left-sidebar-compact #ta-left-sidebar a {
+  [dir] .left-sidebar-compact #ta-left-sidebar figcaption, [dir] .left-sidebar-compact #ta-left-sidebar a {
     margin: 0; }
   .left-sidebar-compact #ta-left-sidebar #left-nav {
     position: relative;
@@ -14853,7 +14855,7 @@ body:not(.left-sidebar-compact) #ta-left-sidebar {
       border-right: 3px solid;
       border-right-color: #0078D4;
       right: 0; }
-    .left-sidebar-compact #ta-left-sidebar #left-nav > ul > li > label .btn-nostyle {
+    .left-sidebar-compact #ta-left-sidebar #left-nav > ul > li > figcaption .btn-nostyle {
       display: none; }
     .left-sidebar-compact #ta-left-sidebar #left-nav ul li .item-label, .left-sidebar-compact #ta-left-sidebar #left-nav li a:hover, .left-sidebar-compact #ta-left-sidebar #left-nav li a:active, .left-sidebar-compact #ta-left-sidebar #left-nav li a:visited {
       text-decoration: none; }
@@ -14999,7 +15001,7 @@ body:not(.left-sidebar-compact) #ta-left-sidebar {
     margin: 0px auto; }
   .left-sidebar-compact #ta-left-sidebar #filter, .left-sidebar-compact #ta-left-sidebar #filter:focus {
     display: none; }
-.left-sidebar-compact #ta-left-sidebar label[aria-expanded="true"] .chevron {
+.left-sidebar-compact #ta-left-sidebar figcaption[aria-expanded="true"] .chevron {
   transform: rotate(90deg);
   transition-duration: 0.2s; }
 
