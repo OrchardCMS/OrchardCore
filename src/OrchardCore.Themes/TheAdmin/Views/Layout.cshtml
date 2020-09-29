@@ -22,9 +22,8 @@
 </head>
 <body class="preload">
     <div class="ta-wrapper">
-        <div class="ta-navbar-top">
-            <a class="ta-navbar-brand" href="@Url.Content("~/")"><span>@Site.SiteName</span></a>
-            <div class="collapse navbar-collapse" id="navbar-links">
+        <div class="ta-navbar-top navbar-expand-lg navbar-light bg-light">
+            <a class="ta-navbar-brand" href="@Url.Content("~/")">@Site.SiteName</a>
                 <div class="mr-auto">
                     @await RenderSectionAsync("NavbarTop", required: false)
                 </div>
