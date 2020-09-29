@@ -12,5 +12,9 @@
     <ProjectReference Include="..\OrchardCore.FileStorage.Abstractions\OrchardCore.FileStorage.Abstractions.csproj" />
     <ProjectReference Include="..\OrchardCore.Media.Abstractions\OrchardCore.Media.Abstractions.csproj" />
   </ItemGroup>
+  
+  <ItemGroup>
+    <Folder Include="OrchardCore.Media.Core\" />
+  </ItemGroup>
 
 </Project>
