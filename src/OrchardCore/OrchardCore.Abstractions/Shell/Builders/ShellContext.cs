@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using System.Threading.Tasks;
 using OrchardCore.Environment.Shell.Builders.Models;
 using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Environment.Shell.Scope;
@@ -69,7 +70,8 @@ namespace OrchardCore.Environment.Shell.Builders
                 return scope;
             }
 
-            scope.Dispose();
+            // Otherwise let this new scope manage the shell state as usual.
+            scope.UsingAsync(_ => Task.CompletedTask).GetAwaiter().GetResult();
 
             return null;
         }
@@ -126,13 +128,15 @@ namespace OrchardCore.Environment.Shell.Builders
                 {
                     if (ServiceProvider != null)
                     {
-                        // So let a new scope manage the shell state, if it becomes and remains the last scope.
-                        new ShellScope(this).Dispose();
+                        // So let a new scope manage the shell state as usual, if it remains the last one.
+                        new ShellScope(this).UsingAsync(_ => Task.CompletedTask).GetAwaiter().GetResult();
                     }
                     else
                     {
                         Dispose();
                     }
+
+                    var test3 = ShellScope.Current;
                 }
             }
         }
