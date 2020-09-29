@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using OrchardCore.Environment.Shell.Builders.Models;
 using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Environment.Shell.Scope;
@@ -12,9 +13,9 @@ namespace OrchardCore.Environment.Shell.Builders
     /// </summary>
     public class ShellContext : IDisposable
     {
-        private bool _disposed = false;
-        internal volatile int _refCount = 0;
-        internal bool _released = false;
+        private bool _disposed;
+        internal volatile int _refCount;
+        internal bool _released;
         private List<WeakReference<ShellContext>> _dependents;
         private object _synLock = new object();
 
@@ -119,17 +120,25 @@ namespace OrchardCore.Environment.Shell.Builders
                     }
                 }
 
-                // A ShellContext is usually disposed when the last scope is disposed, but if there are no scopes
-                // then we need to dispose it right away.
-                if (_refCount == 0)
+                // A ShellContext is usually disposed when the last scope is disposed, but if there is no scope
+                // then we need to dispose it right away, but we would need to invoke terminate event handlers.
+                if (Interlocked.CompareExchange(ref _refCount, 0, 0) == 0)
                 {
-                    Dispose();
+                    if (ServiceProvider != null)
+                    {
+                        // So let a new scope manage the shell state, if it becomes and remains the last scope.
+                        new ShellScope(this).Dispose();
+                    }
+                    else
+                    {
+                        Dispose();
+                    }
                 }
             }
         }
 
         /// <summary>
-        /// Registers the specified shellContext as a dependency such that they are also released when the current shell context is released.
+        /// Registers the specified shellContext as a dependent such that it is also released when the current shell context is released.
         /// </summary>
         public void AddDependentShell(ShellContext shellContext)
         {
