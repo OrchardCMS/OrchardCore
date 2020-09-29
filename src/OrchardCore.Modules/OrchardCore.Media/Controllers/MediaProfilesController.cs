@@ -18,6 +18,7 @@ using OrchardCore.Settings;
 using OrchardCore.Media.Models;
 using OrchardCore.Media.Services;
 using OrchardCore.Media.ViewModels;
+using OrchardCore.Media.Processing;
 
 namespace OrchardCore.Media.Controllers
 {
@@ -91,11 +92,7 @@ namespace OrchardCore.Media.Controllers
 
             var model = new MediaProfileViewModel();
 
-            model.AvailableWidths.Add(new SelectListItem() { Text = S["Undefined"], Value = "" });
-            model.AvailableHeights.Add(new SelectListItem() { Text = S["Undefined"], Value = "" });
-
-            model.AvailableWidths.AddRange(_mediaOptions.SupportedSizes.Select(x => new SelectListItem() { Text = x.ToString(), Value = x.ToString() }));
-            model.AvailableHeights.AddRange(_mediaOptions.SupportedSizes.Select(x => new SelectListItem() { Text = x.ToString(), Value = x.ToString() }));
+            BuildViewModel(model);
 
             return View(model);
         }
@@ -181,10 +178,7 @@ namespace OrchardCore.Media.Controllers
                 Quality = mediaProfile.Quality
             };
 
-            model.AvailableWidths.Add(new SelectListItem() { Text = S["Unspecified"], Value = "" });
-            model.AvailableHeights.Add(new SelectListItem() { Text = S["Unspecified"], Value = "" });
-            model.AvailableWidths.AddRange(_mediaOptions.SupportedSizes.Select(x => new SelectListItem() { Text = x.ToString(), Value = x.ToString() }));
-            model.AvailableHeights.AddRange(_mediaOptions.SupportedSizes.Select(x => new SelectListItem() { Text = x.ToString(), Value = x.ToString() }));
+            BuildViewModel(model);
 
             return View(model);
         }
@@ -236,6 +230,8 @@ namespace OrchardCore.Media.Controllers
             }
 
             // If we got this far, something failed, redisplay form
+            BuildViewModel(model);
+
             return View(model);
         }
 
@@ -259,6 +255,30 @@ namespace OrchardCore.Media.Controllers
             _notifier.Success(H["Media profile deleted successfully"]);
 
             return RedirectToAction(nameof(Index));
+        }
+
+        private void BuildViewModel(MediaProfileViewModel model)
+        {
+            model.AvailableWidths.Add(new SelectListItem() { Text = S["Default"], Value = "" });
+            model.AvailableHeights.Add(new SelectListItem() { Text = S["Default"], Value = "" });
+            model.AvailableWidths.AddRange(_mediaOptions.SupportedSizes.Select(x => new SelectListItem() { Text = x.ToString(), Value = x.ToString() }));
+            model.AvailableHeights.AddRange(_mediaOptions.SupportedSizes.Select(x => new SelectListItem() { Text = x.ToString(), Value = x.ToString() }));
+
+            model.AvailableResizeModes.Add(new SelectListItem() { Text = S["Default (Max)"], Value = ((int)ResizeMode.Undefined).ToString() });
+            model.AvailableResizeModes.Add(new SelectListItem() { Text = S["Max"], Value = ((int)ResizeMode.Max).ToString() });
+            model.AvailableResizeModes.Add(new SelectListItem() { Text = S["Crop"], Value = ((int)ResizeMode.Crop).ToString() });
+            model.AvailableResizeModes.Add(new SelectListItem() { Text = S["Pad"], Value = ((int)ResizeMode.Pad).ToString() });
+            model.AvailableResizeModes.Add(new SelectListItem() { Text = S["BoxPad"], Value = ((int)ResizeMode.BoxPad).ToString() });
+            model.AvailableResizeModes.Add(new SelectListItem() { Text = S["Min"], Value = ((int)ResizeMode.Min).ToString() });
+            model.AvailableResizeModes.Add(new SelectListItem() { Text = S["Stretch"], Value = ((int)ResizeMode.Stretch).ToString() });
+
+
+            model.AvailableFormats.Add(new SelectListItem() { Text = S["Default"], Value = ((int)Format.Undefined).ToString() });
+            model.AvailableFormats.Add(new SelectListItem() { Text = S["Bmp"], Value = ((int)Format.Bmp).ToString() });
+            model.AvailableFormats.Add(new SelectListItem() { Text = S["Gif"], Value = ((int)Format.Gif).ToString() });
+            model.AvailableFormats.Add(new SelectListItem() { Text = S["Jpg"], Value = ((int)Format.Jpg).ToString() });
+            model.AvailableFormats.Add(new SelectListItem() { Text = S["Png"], Value = ((int)Format.Png).ToString() });
+            model.AvailableFormats.Add(new SelectListItem() { Text = S["Tga"], Value = ((int)Format.Tga).ToString() });
         }
     }
 }

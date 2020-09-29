@@ -22,5 +22,10 @@ namespace OrchardCore.Media.ViewModels
 
         [BindNever]
         public List<SelectListItem> AvailableHeights { get; set; } = new List<SelectListItem>();
+
+        [BindNever]
+        public List<SelectListItem> AvailableResizeModes { get; set; } = new List<SelectListItem>();
+        [BindNever]
+        public List<SelectListItem> AvailableFormats { get; set; } = new List<SelectListItem>();
     }
 }
