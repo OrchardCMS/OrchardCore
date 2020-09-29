@@ -109,7 +109,7 @@ namespace OrchardCore.Layers.Services
                             display = Convert.ToBoolean(engine.Evaluate(scope, layer.Rule));
                         }
 
-                        layersCache[layer.Rule] = display;
+                        layersCache[layer.Name] = display;
                     }
 
                     if (!display)
