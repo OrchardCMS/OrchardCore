@@ -27,15 +27,15 @@ namespace OrchardCore.ContentManagement.GraphQL
 
             services.AddOptions<GraphQLContentOptions>();
 
-            services.AddSingleton(typeof(IIndexPropertyProvider), typeof(IndexPropertyProvider<ContentItemIndex>));
+            services.AddWhereInputIndexPropertyProvider<ContentItemIndex>();
 
             return services;
         }
 
         public static void AddWhereInputIndexPropertyProvider<IIndexType>(this IServiceCollection services)
-        where IIndexType : MapIndex
+            where IIndexType : MapIndex
         {
-            services.AddSingleton(typeof(IIndexPropertyProvider), typeof(IndexPropertyProvider<IIndexType>));
+            services.AddSingleton<IIndexPropertyProvider, IndexPropertyProvider<IIndexType>>();
         }
 
         /// <summary>
@@ -50,7 +50,5 @@ namespace OrchardCore.ContentManagement.GraphQL
         {
             services.AddTransient<IGraphQLFilter<TObjectTypeToFilter>, TFilterType>();
         }
-
-    
     }
 }
