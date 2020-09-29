@@ -57,12 +57,17 @@ namespace OrchardCore.ContentLocalization.Handlers
 
         public override Task RemovedAsync(RemoveContentContext context, LocalizationPart part)
         {
-            return _entries.RemoveEntryAsync(new LocalizationEntry()
+            if (context.NoActiveVersionLeft)
             {
-                ContentItemId = part.ContentItem.ContentItemId,
-                LocalizationSet = part.LocalizationSet,
-                Culture = part.Culture.ToLowerInvariant()
-            });
+                return _entries.RemoveEntryAsync(new LocalizationEntry()
+                {
+                    ContentItemId = part.ContentItem.ContentItemId,
+                    LocalizationSet = part.LocalizationSet,
+                    Culture = part.Culture.ToLowerInvariant()
+                });
+            }
+
+            return Task.CompletedTask;
         }
 
         public override Task CloningAsync(CloneContentContext context, LocalizationPart part)
