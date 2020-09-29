@@ -37,7 +37,8 @@ namespace OrchardCore.Environment.Shell.Distributed
         private string _shellCreatedId;
 
         private ShellContext _defaultContext;
-        private ShellContext _isolatedContext;
+        private IsolatedContext _isolatedContext;
+        private bool _terminated;
 
         public DistributedShellHostedService(
             IShellHost shellHost,
@@ -84,17 +85,26 @@ namespace OrchardCore.Environment.Shell.Distributed
 
                     if (_defaultContext != defaultContext)
                     {
-                        _isolatedContext?.Dispose();
-                        _isolatedContext = await _shellContextFactory.CreateShellContextAsync(defaultContext.Settings);
                         _defaultContext = defaultContext;
+                        var previousContext = _isolatedContext;
+
+                        var isolatedContext = new IsolatedContext(await _shellContextFactory.CreateShellContextAsync(defaultContext.Settings));
+
+                        lock (this)
+                        {
+                            _isolatedContext = isolatedContext.Acquire();
+                            previousContext?.Dispose();
+                        }
                     }
 
-                    if (_isolatedContext.ServiceProvider.GetService<DistributedShellMarkerService>() == null)
+                    var context = _isolatedContext;
+
+                    if (context.ServiceProvider.GetService<DistributedShellMarkerService>() == null)
                     {
                         continue;
                     }
 
-                    var distributedCache = _isolatedContext.ServiceProvider.GetService<IDistributedCache>();
+                    var distributedCache = context.ServiceProvider.GetService<IDistributedCache>();
                     if (distributedCache == null || distributedCache is MemoryDistributedCache)
                     {
                         continue;
@@ -208,21 +218,36 @@ namespace OrchardCore.Environment.Shell.Distributed
                 _logger.LogError(ex, "Error while executing '{ServiceName}', the service is stopping.", nameof(DistributedShellHostedService));
             }
 
-            _isolatedContext?.Dispose();
+            lock (this)
+            {
+                _isolatedContext?.Dispose();
+                _isolatedContext = null;
+            }
+
             _defaultContext = null;
+            _terminated = true;
         }
 
         public async Task LoadingAsync()
         {
+            if (_terminated)
+            {
+                return;
+            }
+
             var defautSettings = await _shellSettingsManager.LoadSettingsAsync(ShellHelper.DefaultShellName);
             if (defautSettings?.State != TenantState.Running)
             {
                 return;
             }
 
-            using var isolatedContext = await _shellContextFactory.CreateShellContextAsync(defautSettings);
+            using var context = await _shellContextFactory.CreateShellContextAsync(defautSettings);
+            if (context.ServiceProvider.GetService<DistributedShellMarkerService>() == null)
+            {
+                return;
+            }
 
-            var distributedCache = isolatedContext.ServiceProvider.GetService<IDistributedCache>();
+            var distributedCache = context.ServiceProvider.GetService<IDistributedCache>();
             if (distributedCache == null || distributedCache is MemoryDistributedCache)
             {
                 return;
@@ -259,6 +284,11 @@ namespace OrchardCore.Environment.Shell.Distributed
 
         public async Task ReleasingAsync(string name)
         {
+            if (_terminated)
+            {
+                return;
+            }
+
             if (!_shellHost.TryGetSettings(ShellHelper.DefaultShellName, out var defautSettings))
             {
                 return;
@@ -269,9 +299,24 @@ namespace OrchardCore.Environment.Shell.Distributed
                 return;
             }
 
-            using var isolatedContext = await _shellContextFactory.CreateShellContextAsync(defautSettings);
+            IsolatedContext isolatedContext;
+            lock (this)
+            {
+                isolatedContext = _isolatedContext?.Acquire();
+            }
 
-            var distributedCache = isolatedContext.ServiceProvider.GetService<IDistributedCache>();
+            if (isolatedContext == null)
+            {
+                isolatedContext = new IsolatedContext(await _shellContextFactory.CreateShellContextAsync(defautSettings)).Acquire();
+            }
+
+            using var context = isolatedContext;
+            if (context.ServiceProvider.GetService<DistributedShellMarkerService>() == null)
+            {
+                return;
+            }
+
+            var distributedCache = context.ServiceProvider.GetService<IDistributedCache>();
             if (distributedCache == null || distributedCache is MemoryDistributedCache)
             {
                 return;
@@ -300,6 +345,11 @@ namespace OrchardCore.Environment.Shell.Distributed
 
         public async Task ReloadingAsync(string name)
         {
+            if (_terminated)
+            {
+                return;
+            }
+
             if (!_shellHost.TryGetSettings(ShellHelper.DefaultShellName, out var defautSettings))
             {
                 return;
@@ -310,9 +360,24 @@ namespace OrchardCore.Environment.Shell.Distributed
                 return;
             }
 
-            using var isolatedContext = await _shellContextFactory.CreateShellContextAsync(defautSettings);
+            IsolatedContext isolatedContext;
+            lock (this)
+            {
+                isolatedContext = _isolatedContext?.Acquire();
+            }
 
-            var distributedCache = isolatedContext.ServiceProvider.GetService<IDistributedCache>();
+            if (isolatedContext == null)
+            {
+                isolatedContext = new IsolatedContext(await _shellContextFactory.CreateShellContextAsync(defautSettings)).Acquire();
+            }
+
+            using var context = isolatedContext;
+            if (context.ServiceProvider.GetService<DistributedShellMarkerService>() == null)
+            {
+                return;
+            }
+
+            var distributedCache = context.ServiceProvider.GetService<IDistributedCache>();
             if (distributedCache == null || distributedCache is MemoryDistributedCache)
             {
                 return;
@@ -362,6 +427,47 @@ namespace OrchardCore.Environment.Shell.Distributed
         {
             public string ReleaseId { get; set; }
             public string ReloadId { get; set; }
+        }
+
+        internal class IsolatedContext : IDisposable
+        {
+            private ShellContext _context;
+            internal volatile int _count;
+            private bool _disposed;
+
+            public IsolatedContext(ShellContext context)
+            {
+                _context = context;
+            }
+
+            public IServiceProvider ServiceProvider => _context.ServiceProvider;
+
+            public IsolatedContext Acquire()
+            {
+                if (_disposed)
+                {
+                    return null;
+                }
+
+                Interlocked.Increment(ref _count);
+                return this;
+            }
+
+            public void Dispose()
+            {
+                if (_disposed)
+                {
+                    return;
+                }
+
+                if (Interlocked.CompareExchange(ref _count, 1, 1) == 1)
+                {
+                    _context.Dispose();
+                    _disposed = true;
+                }
+
+                Interlocked.Decrement(ref _count);
+            }
         }
     }
 }
