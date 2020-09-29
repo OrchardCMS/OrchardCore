@@ -8526,3 +8526,7 @@ a.text-dark:hover, a.text-dark:focus {
 
 .form-control:invalid {
   outline: none; }
+
+input[type=password]::-ms-reveal,
+input[type=password]::-ms-clear {
+  display: none; }

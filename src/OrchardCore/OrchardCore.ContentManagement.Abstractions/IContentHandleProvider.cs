@@ -2,9 +2,9 @@
 
 namespace OrchardCore.ContentManagement
 {
-    public interface IContentAliasProvider
+    public interface IContentHandleProvider
     {
         int Order { get; }
-        Task<string> GetContentItemIdAsync(string alias);
+        Task<string> GetContentItemIdAsync(string handle);
     }
 }

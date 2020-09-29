@@ -10,7 +10,7 @@ namespace OrchardCore.Environment.Shell
         {
             return new ShellSettings()
             {
-                Name = "Default",
+                Name = ShellHelper.DefaultShellName,
                 State = Models.TenantState.Running
             };
         }
