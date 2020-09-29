@@ -377,6 +377,12 @@ namespace OrchardCore.Resources
                 .SetCdn("https://cdn.jsdelivr.net/npm/vuedraggable@2.24.1/dist/vuedraggable.umd.min.js", "https://cdn.jsdelivr.net/npm/vuedraggable@2.24.1/dist/vuedraggable.umd.js")
                 .SetCdnIntegrity("sha384-95XQBb8XRK8jN1TR3CjE7Shlbm1m/8JNzMu/ACCsnWu/yFvMTkCjDHVXbOVl7Moi", "sha384-10hAGRrbDQC4KS+gdeuUtzyGr+4JdQ4PFfU58+1uy+D7WkEgCcI9xlUPBa10fdf7")
                 .SetVersion("2.24.1");
+
+            manifest
+                .DefineScript("jscookie")
+                .SetDependencies("jQuery")
+                .SetUrl("~/OrchardCore.Resources/Scripts/js.cookie.min.js", "~/OrchardCore.Resources/Scripts/js.cookie.js")
+                .SetVersion("2.1.4");
         }
     }
 }

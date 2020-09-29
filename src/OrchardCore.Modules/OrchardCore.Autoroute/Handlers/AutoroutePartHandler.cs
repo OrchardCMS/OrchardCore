@@ -134,7 +134,7 @@ namespace OrchardCore.Autoroute.Handlers
 
         public override async Task RemovedAsync(RemoveContentContext context, AutoroutePart part)
         {
-            if (!String.IsNullOrWhiteSpace(part.Path))
+            if (!String.IsNullOrWhiteSpace(part.Path) && context.NoActiveVersionLeft)
             {
                 await _entries.RemoveEntryAsync(part.ContentItem.ContentItemId, part.Path);
 
