@@ -171,7 +171,7 @@ namespace OrchardCore.Resources
                 .DefineScript("codemirror")
                 .SetUrl("~/OrchardCore.Resources/Scripts/codemirror/codemirror.min.js", "~/OrchardCore.Resources/Scripts/codemirror/codemirror.js")
                 .SetCdn("https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.58.0/codemirror.min.js", "https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.58.0/codemirror.js")
-                .SetCdnIntegrity("sha384-MCaZNN0tRoN3lWByTquAyxWBS/0wrHU9NMKw0CIWNJWXkYTeusXLdDNwabsW8IG6", "ssha384-UDuTjzyPkNH6K+A+nd0fjKvdgjh5dPuKk15tBaWwUDWdPr1qzALnBHLJXNWFjeth")
+                .SetCdnIntegrity("sha384-MCaZNN0tRoN3lWByTquAyxWBS/0wrHU9NMKw0CIWNJWXkYTeusXLdDNwabsW8IG6", "sha384-UDuTjzyPkNH6K+A+nd0fjKvdgjh5dPuKk15tBaWwUDWdPr1qzALnBHLJXNWFjeth")
                 .SetVersion("5.58.0");
 
             manifest
