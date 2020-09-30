@@ -240,7 +240,7 @@ namespace OrchardCore.Environment.Shell.Scope
         }
 
         /// <summary>
-        /// Terminates a shell through this shell scope if it remains the last one
+        /// Terminates a shell through this shell scope if it is and remains the last one.
         /// </summary>
         public async Task TerminateShellAsync()
         {
