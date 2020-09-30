@@ -7,7 +7,7 @@ namespace Microsoft.Extensions.DependencyInjection
     public static class DatabaseShellsOrchardCoreBuilderExtensions
     {
         /// <summary>
-        /// Registers host services to load shells settings and configuration from the database.
+        /// Host services to load shells settings and configuration from database.
         /// </summary>
         public static OrchardCoreBuilder AddDatabaseShellsConfiguration(this OrchardCoreBuilder builder)
         {
