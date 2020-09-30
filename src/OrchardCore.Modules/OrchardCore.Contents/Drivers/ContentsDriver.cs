@@ -48,14 +48,10 @@ namespace OrchardCore.Contents.Drivers
 
             return Combine(
                 contentsMetadataShape,
-                Shape("Contents_SummaryAdmin__Tags", new ContentItemViewModel(model)).Location("SummaryAdmin", "Tags:10")
-                    .Differentiator("SummaryAdmin-Tags"),
-                Shape("Contents_SummaryAdmin__Meta", new ContentItemViewModel(model)).Location("SummaryAdmin", "Meta:20")
-                    .Differentiator("SummaryAdmin-Meta"),
-                Shape("Contents_SummaryAdmin__Button__Edit", new ContentItemViewModel(model)).Location("SummaryAdmin", "Actions:10")
-                    .Differentiator("SummaryAdmin-Button-Edit"),
-                Shape("Contents_SummaryAdmin__Button__Actions", new ContentItemViewModel(model)).Location("SummaryAdmin", "ActionsMenu:10")
-                    .Differentiator("SummaryAdmin-Button-Actions")
+                Shape("ContentsTags_SummaryAdmin", new ContentItemViewModel(model)).Location("SummaryAdmin", "Tags:10"),
+                Shape("ContentsMeta_SummaryAdmin", new ContentItemViewModel(model)).Location("SummaryAdmin", "Meta:20"),
+                Shape("ContentsButtonEdit_SummaryAdmin", new ContentItemViewModel(model)).Location("SummaryAdmin", "Actions:10"),
+                Shape("ContentsButtonActions_SummaryAdmin", new ContentItemViewModel(model)).Location("SummaryAdmin", "ActionsMenu:10")
             );
         }
 
