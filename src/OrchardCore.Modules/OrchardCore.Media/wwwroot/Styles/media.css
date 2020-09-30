@@ -5,17 +5,17 @@
 
 #mediaApp {
   position: absolute;
-  top: 48px;
+  top: 52px;
   bottom: 0; }
 
 [dir=ltr] #mediaApp {
   right: 0;
-  left: 240px;
+  left: 259px;
   transition: left 0.2s ease-in-out, width 0.2s ease-in-out; }
 
 [dir=rtl] #mediaApp {
   left: 0;
-  right: 240px;
+  right: 259px;
   transition: right 0.2s ease-in-out, width 0.2s ease-in-out; }
   #mediaApp #mediaContainer {
     display: flex;

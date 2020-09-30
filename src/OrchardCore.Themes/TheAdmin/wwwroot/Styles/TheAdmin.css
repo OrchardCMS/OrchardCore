@@ -14267,7 +14267,7 @@ html[dir], [dir] body {
 
 [dir] .ta-navbar-brand {
   padding-top: 10px;
-  background-image: url(../logo.png);
+  background-image: url(/TheAdmin/logo.png);
   background-repeat: no-repeat;
   background-size: 28px auto; }
 
@@ -14349,6 +14349,10 @@ body:not(.left-sidebar-compact) #ta-left-sidebar {
   right: 0px;
   border-left: 1px solid #DEDEDE;
   transition: right 0.2s ease-in-out, width 0.2s ease-in-out; }
+  body:not(.left-sidebar-compact) #ta-left-sidebar ::-webkit-scrollbar {
+    width: 4px; }
+  [dir] body:not(.left-sidebar-compact) #ta-left-sidebar ::-webkit-scrollbar-thumb {
+    background-color: #495057; }
   [dir] body:not(.left-sidebar-compact) #ta-left-sidebar figure {
     margin: 0; }
   [dir] body:not(.left-sidebar-compact) #ta-left-sidebar figcaption[aria-expanded="true"] .chevron {
@@ -14410,15 +14414,10 @@ body:not(.left-sidebar-compact) #ta-left-sidebar {
         content: "";
         width: 92%;
         height: 1px;
-        display: block;
-        position: absolute; }
+        display: block; }
       [dir] body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav > ul > li:first-child:after {
         background: rgba(0, 0, 0, 0.1);
-        margin: 0px auto 4px auto; }
-      [dir=ltr] body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav > ul > li:first-child:after {
-  left: 10px; }
-      [dir=rtl] body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav > ul > li:first-child:after {
-        right: 10px; }
+        margin: 0px auto; }
     body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav > ul > li > ul > li {
       line-height: 2.5em; }
     body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav > ul > li.active:not(.has-items)::before {
@@ -14434,6 +14433,12 @@ body:not(.left-sidebar-compact) #ta-left-sidebar {
       border-right: 3px solid;
       border-right-color: #0078D4;
       right: 0; }
+    body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav > ul.menu-admin {
+      overflow-y: auto;
+      overflow-x: hidden;
+      height: 100%;
+      scrollbar-width: thin;
+      scrollbar-color: #495057 #EAEAEA; }
     [dir] body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav > ul.menu-admin {
       margin-bottom: 40px; }
       body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav > ul.menu-admin .item-label {
@@ -14625,7 +14630,8 @@ body:not(.left-sidebar-compact) #ta-left-sidebar {
   bottom: 0;
   width: 48px;
   color: #343a40;
-  font-family: "Segoe UI VSS (Regular)","Segoe UI","-apple-system",BlinkMacSystemFont,Roboto,"Helvetica Neue",Helvetica,Ubuntu,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol"; }
+  font-family: "Segoe UI VSS (Regular)","Segoe UI","-apple-system",BlinkMacSystemFont,Roboto,"Helvetica Neue",Helvetica,Ubuntu,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
+  scrollbar-width: thin; }
 
 [dir] .left-sidebar-compact #ta-left-sidebar {
   background-color: #EAEAEA; }
@@ -14639,6 +14645,10 @@ body:not(.left-sidebar-compact) #ta-left-sidebar {
   right: 0px;
   border-left: 1px solid #DEDEDE;
   transition: right 0.2s ease-in-out, width 0.2s ease-in-out; }
+  .left-sidebar-compact #ta-left-sidebar ::-webkit-scrollbar {
+    width: 4px; }
+  [dir] .left-sidebar-compact #ta-left-sidebar ::-webkit-scrollbar-thumb {
+    background-color: #495057; }
   [dir] .left-sidebar-compact #ta-left-sidebar figure {
     margin: 0; }
   [dir] .left-sidebar-compact #ta-left-sidebar figcaption[aria-expanded="false"] .chevron {
@@ -14701,6 +14711,12 @@ body:not(.left-sidebar-compact) #ta-left-sidebar {
         margin: 0px auto 4px auto; }
     .left-sidebar-compact #ta-left-sidebar #left-nav > ul > li > ul > li {
       line-height: 2.5em; }
+    .left-sidebar-compact #ta-left-sidebar #left-nav > ul.menu-admin {
+      overflow-y: auto;
+      overflow-x: hidden;
+      height: 100%;
+      scrollbar-width: thin;
+      scrollbar-color: #495057 #EAEAEA; }
     [dir] .left-sidebar-compact #ta-left-sidebar #left-nav > ul.menu-admin {
       margin-bottom: 40px; }
     .left-sidebar-compact #ta-left-sidebar #left-nav > ul .item-label {

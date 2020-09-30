@@ -113,7 +113,7 @@ body {
     margin-right: 24px;
     padding-left: 36px;
     padding-top: 10px;
-    background-image: url(../logo.png);
+    background-image: url(/TheAdmin/logo.png);
     background-repeat: no-repeat;
     background-position: left center;
     background-size: 28px auto;
@@ -191,9 +191,17 @@ body:not(.left-sidebar-compact) {
         transition: left 0.2s ease-in-out, width 0.2s ease-in-out;
         font-family: "Segoe UI VSS (Regular)","Segoe UI","-apple-system",BlinkMacSystemFont,Roboto,"Helvetica Neue",Helvetica,Ubuntu,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
 
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background-color: #495057;
+        }
+
         figure {
             margin: 0;
-        }
+        }   
 
         // Rotate the chevron's icon when the menu is active
         figcaption[aria-expanded="true"] {
@@ -267,9 +275,7 @@ body:not(.left-sidebar-compact) {
                         height: 1px;
                         background: rgba(0, 0, 0, 0.1);
                         display: block;
-                        margin: 0px auto 4px auto;
-                        position: absolute;
-                        left: 10px;
+                        margin: 0px auto;
                     }
                 }
 
@@ -290,7 +296,12 @@ body:not(.left-sidebar-compact) {
                 // the padding when leftbar is collapsed. Avoid small movement
                 // when switching between the two states
                 &.menu-admin {
+                    overflow-y: auto;
+                    overflow-x: hidden;
+                    height: 100%;
                     margin-bottom: 40px;
+                    scrollbar-width: thin;
+                    scrollbar-color: #495057 #EAEAEA;
 
                     .item-label {
                         padding-left: 0px !important;
@@ -507,6 +518,16 @@ body:not(.left-sidebar-compact) {
         transition: left 0.2s ease-in-out, width 0.2s ease-in-out;
         font-family: "Segoe UI VSS (Regular)","Segoe UI","-apple-system",BlinkMacSystemFont,Roboto,"Helvetica Neue",Helvetica,Ubuntu,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
 
+        scrollbar-width: thin;
+
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background-color: #495057;
+        }   
+
         figure {
             margin: 0;
         }
@@ -590,7 +611,12 @@ body:not(.left-sidebar-compact) {
                 // the padding when leftbar is collapsed. Avoid small movement
                 // when switching between the two states
                 &.menu-admin {
+                    overflow-y: auto;
+                    overflow-x: hidden;
+                    height: 100%;
                     margin-bottom: 40px;
+                    scrollbar-width: thin;
+                    scrollbar-color: #495057 #EAEAEA;
                 }
 
                 .item-label {

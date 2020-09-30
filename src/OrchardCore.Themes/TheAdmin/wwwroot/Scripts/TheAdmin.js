@@ -7253,13 +7253,10 @@ var leftMenuPS; // When we load compact status from preferences we need to do so
 // UserPreferencesLoader has already added the needed class.
 
 $(function () {
-  leftMenuPS = new PerfectScrollbar('#left-nav', {
-    suppressScrollX: true
-  }); // We set leftbar to compact if :
+  // We set leftbar to compact if :
   // 1. That preference was stored by the user the last time he was on the page
   // 2. Or it's the first time on page and page is small.
   //
-
   if ($('body').hasClass('left-sidebar-compact') || $('body').hasClass('no-admin-preferences') && $(window).width() < 768) {
     setCompactStatus();
   }
@@ -7307,9 +7304,7 @@ function setCompactStatus(explicit) {
 
   setTimeout(function () {
     $('#left-nav > ul > li').css("transition", "none");
-  }, 200); //$('#left-nav').scrollTop = 0;
-  //leftMenuPS.update();
-  //set PerfectScrollBar on sub-menu items.
+  }, 200); //set PerfectScrollBar on sub-menu items.
 
   var submenus = $('#left-nav > ul > li > [id^="m"]');
   submenus.each(function (index) {
@@ -7332,25 +7327,6 @@ function unSetCompactStatus() {
   $('#left-nav ul.menu-admin > li > figcaption').attr('data-toggle', 'collapse');
   $('#left-nav li.has-items').removeClass("visible");
   $('#left-nav > ul > li').css("transition", "");
-
-  if (leftMenuPS == null) {
-    leftMenuPS = new PerfectScrollbar('#left-nav', {
-      suppressScrollX: true
-    });
-  } else {
-    leftMenuPS.destroy();
-    leftMenuPS = null; // to make sure garbages are collected
-
-    leftMenuPS = new PerfectScrollbar('#left-nav', {
-      suppressScrollX: true
-    });
-  } //remove PerfectScrollBar on sub-menu items
-
-
-  subMenuArray.forEach(function (ps) {
-    ps.destroy();
-    ps = null; // to make sure garbages are collected
-  });
   isCompactExplicit = false;
   persistAdminPreferences();
 }
