@@ -45,10 +45,10 @@
                 //Prefixes
                 PrefixValue: widget.ContentItemId,
                 HtmlFieldPrefix: htmlFieldPrefix,
-                PrefixesId: Html.IdFor(x => x.Prefixes),
+                PrefixesId: widget.ContentItemId + "_" + Html.IdFor(x => x.Prefixes),
                 PrefixesName: Html.NameFor(x => x.Prefixes),
                 //Content Types
-                ContentTypesId: Html.IdFor(x => x.ContentTypes),
+                ContentTypesId: widget.ContentItemId + "_" + Html.IdFor(x => x.ContentTypes),
                 ContentTypesName: Html.NameFor(x => x.ContentTypes)
             );
             @await DisplayAsync(contentCard)
