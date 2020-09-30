@@ -101,6 +101,7 @@ nav:
 #        - Configuration: docs/topics/configuration/README.md
         - Workflows: docs/topics/workflows/README.md
         - Contributing to the docs: docs/topics/docs-contributions/README.md
+        - Publishing a new release: docs/topics/publishing-releases/README.md
     - Reference: 
         - CMS Modules: 
             - Content Types: docs/reference/modules/ContentTypes/README.md

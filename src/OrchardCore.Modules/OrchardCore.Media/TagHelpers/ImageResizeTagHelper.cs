@@ -15,7 +15,6 @@ namespace OrchardCore.Media.TagHelpers
     public class ImageResizeTagHelper : TagHelper
     {
         private const string ImageSizeAttributePrefix = "img-";
-
         private const string ImageSizeWidthAttributeName = ImageSizeAttributePrefix + "width";
         private const string ImageSizeHeightAttributeName = ImageSizeAttributePrefix + "height";
         private const string ImageSizeModeAttributeName = ImageSizeAttributePrefix + "resize-mode";
@@ -74,6 +73,7 @@ namespace OrchardCore.Media.TagHelpers
             }
 
             var resizedSrc = ImageSharpUrlFormatter.GetImageResizeUrl(imgSrc, queryStringParams, ImageWidth, ImageHeight, ResizeMode, ImageQuality, ImageFormat);
+
             output.Attributes.SetAttribute("src", resizedSrc);
         }
     }

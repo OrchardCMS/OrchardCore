@@ -39,9 +39,6 @@ namespace OrchardCore.Media.Processing
                 queryStringParams = new Dictionary<string, string>();
             }
 
-            // var pathParts = path.Split('?');
-            // var query = HttpUtility.ParseQueryString(pathParts.Length > 1 ? pathParts[1] : string.Empty);
-
             if (width.HasValue)
             {
                 queryStringParams["width"] = width.ToString();
@@ -60,6 +57,7 @@ namespace OrchardCore.Media.Processing
             if (quality.HasValue)
             {
                 queryStringParams["quality"] = quality.ToString();
+
             }
 
             if (format != Format.Undefined)
@@ -68,8 +66,6 @@ namespace OrchardCore.Media.Processing
             }
 
             return QueryHelpers.AddQueryString(path, queryStringParams);
-
-            // return $"{pathParts[0]}?{query.ToString()}";
         }
     }
 }
