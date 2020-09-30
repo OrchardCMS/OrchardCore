@@ -44,12 +44,13 @@ namespace OrchardCore.Lucene.Drivers
                     model.SearchIndex = section.SearchIndex;
                     model.SearchFields = String.Join(", ", section.DefaultSearchFields ?? new string[0]);
                     model.SearchIndexes = (await _luceneIndexSettingsService.GetSettingsAsync()).Select(x => x.IndexName);
+                    model.AllowLuceneQueriesInSearch = section.AllowLuceneQueriesInSearch;
                 }).Location("Content:2").OnGroup(GroupId);
         }
 
         public override async Task<IDisplayResult> UpdateAsync(LuceneSettings section, BuildEditorContext context)
         {
-           var user = _httpContextAccessor.HttpContext?.User;
+            var user = _httpContextAccessor.HttpContext?.User;
 
             if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageIndexes))
             {
@@ -64,6 +65,7 @@ namespace OrchardCore.Lucene.Drivers
 
                 section.SearchIndex = model.SearchIndex;
                 section.DefaultSearchFields = model.SearchFields?.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                section.AllowLuceneQueriesInSearch = model.AllowLuceneQueriesInSearch;
             }
 
             return await EditAsync(section, context);
