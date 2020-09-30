@@ -70,8 +70,7 @@ namespace OrchardCore.Environment.Shell.Builders
                 return scope;
             }
 
-            // Otherwise let this new scope manage the shell state as usual.
-            scope.UsingAsync(_ => Task.CompletedTask).GetAwaiter().GetResult();
+            scope.Dispose();
 
             return null;
         }
@@ -123,20 +122,18 @@ namespace OrchardCore.Environment.Shell.Builders
                 }
 
                 // A ShellContext is usually disposed when the last scope is disposed, but if there is no scope
-                // then we need to dispose it right away, but we would need to invoke terminate event handlers.
+                // then we need to dispose it right away, and we also need to call the terminate event handlers.
                 if (Interlocked.CompareExchange(ref _refCount, 0, 0) == 0)
                 {
                     if (ServiceProvider != null)
                     {
-                        // So let a new scope manage the shell state as usual, if it remains the last one.
-                        new ShellScope(this).UsingAsync(_ => Task.CompletedTask).GetAwaiter().GetResult();
+                        // So let a new shell scope manage the shell context state as usual.
+                        new ShellScope(this).TerminateShellAsync().GetAwaiter().GetResult();
                     }
                     else
                     {
                         Dispose();
                     }
-
-                    var test3 = ShellScope.Current;
                 }
             }
         }
