@@ -459,6 +459,8 @@ namespace OrchardCore.Environment.Shell.Scope
                 return;
             }
 
+            _disposed = true;
+
             _serviceScope.Dispose();
 
             if (_disposeShellContext)
@@ -468,8 +470,6 @@ namespace OrchardCore.Environment.Shell.Scope
 
             // Decrement the counter at the very end of the scope
             Interlocked.Decrement(ref ShellContext._refCount);
-
-            _disposed = true;
         }
     }
 }

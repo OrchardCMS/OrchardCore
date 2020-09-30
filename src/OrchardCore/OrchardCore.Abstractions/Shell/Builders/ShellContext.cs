@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
-using System.Threading.Tasks;
 using OrchardCore.Environment.Shell.Builders.Models;
 using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Environment.Shell.Scope;
@@ -70,7 +69,8 @@ namespace OrchardCore.Environment.Shell.Builders
                 return scope;
             }
 
-            scope.Dispose();
+            // Otherwise, let it manage the shell state as usual.
+            scope.TerminateShellAsync().GetAwaiter().GetResult();
 
             return null;
         }
@@ -95,6 +95,15 @@ namespace OrchardCore.Environment.Shell.Builders
                 // Prevent infinite loops with circular dependencies
                 return;
             }
+
+            // A disabled shell still in use is released by its last scope.
+            //if (Settings.State == TenantState.Disabled)
+            //{
+            //    if (Interlocked.CompareExchange(ref _refCount, 0, 0) > 0)
+            //    {
+            //        return;
+            //    }
+            //}
 
             // When a tenant is changed and should be restarted, its shell context is replaced with a new one,
             // so that new request can't use it anymore. However some existing request might still be running and try to
@@ -184,6 +193,8 @@ namespace OrchardCore.Environment.Shell.Builders
                 return;
             }
 
+            _disposed = true;
+
             // Disposes all the services registered for this shell
             if (ServiceProvider != null)
             {
@@ -194,8 +205,6 @@ namespace OrchardCore.Environment.Shell.Builders
             IsActivated = false;
             Blueprint = null;
             Pipeline = null;
-
-            _disposed = true;
         }
 
         ~ShellContext()
