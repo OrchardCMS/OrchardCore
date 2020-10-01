@@ -20,9 +20,9 @@
             </ol>
         </div>
 
-        <div id="mediaContainerMain" class="pl-0 ml-4 mr-4 mt-4" v-cloak>
+        <div id="mediaContainerMain" v-cloak>
             <div class="media-container-top-bar">
-                <nav class="nav action-bar pb-2">
+                <nav class="nav action-bar pb-3 pt-3 pl-3">
                     <div class="form-inline mr-auto">
                         <a href="javascript:;" class="btn btn-light btn-sm mr-2" v-on:click="selectAll">
                             @T["Select All"]
@@ -87,7 +87,7 @@
                     </div>
                 </nav>
             </div>
-            <div class="media-container-middle mb-2">
+            <div class="media-container-middle p-3">
                 <upload-list></upload-list>
 
                 <media-items-table :sort-by="sortBy" :sort-asc="sortAsc"
@@ -104,7 +104,7 @@
                 <div class="alert-info pt-2 pb-2 pl-2 pr-2" v-show="mediaItems.length > 0 && filteredMediaItems.length < 1">@T["Nothing to show with this filter"]</div>
                 <div class="alert-info pt-2 pb-2 pl-2 pr-2" v-show="mediaItems.length < 1">@T["This folder is empty"]</div>
             </div>
-            <div v-show="filteredMediaItems.length > 0" class="media-container-footer pt-2">
+            <div v-show="filteredMediaItems.length > 0" class="media-container-footer p-3">
                 <pager :source-items="filteredMediaItems"> </pager>
             </div>
         </div>

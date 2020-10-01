@@ -5,14 +5,14 @@
 Vue.component('pager', {
     template: `
         <nav id="media-pager" aria-label="Pagination Navigation" role="navigation" :data-computed-trigger="itemsInCurrentPage.length">
-            <ul class= "pagination  pagination-sm">
+            <ul class="pagination pagination-sm m-0">
                 <li class="page-item media-first-button" :class="{disabled : !canDoFirst}">
                     <a class="page-link" href="#" :tabindex="canDoFirst ? 0 : -1" v-on:click="goFirst">{{ T.pagerFirstButton }}</a>
                 </li>
                 <li class="page-item" :class="{disabled : !canDoPrev}">
                     <a class="page-link" href="#" :tabindex="canDoPrev ? 0 : -1" v-on:click="previous">{{ T.pagerPreviousButton }}</a>
                 </li>
-                <li  v-if="link !== -1" class="page-item page-number"  :class="{active : current == link - 1}" v-for="link in pageLinks">
+                <li v-if="link !== -1" class="page-item page-number"  :class="{active : current == link - 1}" v-for="link in pageLinks">
                     <a class="page-link" href="#" v-on:click="goTo(link - 1)" :aria-label="'Goto Page' + link">
                         {{link}}
                         <span v-if="current == link -1" class="sr-only">(current)</span>

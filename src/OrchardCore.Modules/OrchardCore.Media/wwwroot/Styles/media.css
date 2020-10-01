@@ -31,7 +31,6 @@
     [dir=rtl] #mediaApp #mediaContainer #navigationApp {
       border-left: 1px solid rgba(0, 0, 0, 0.1); }
     #mediaApp #mediaContainer #mediaContainerMain {
-      height: 100%;
       display: flex;
       flex-direction: column;
       flex-grow: 1; }
@@ -569,27 +568,21 @@ ol.media-items-grid {
   position: static;
   height: 100%; }
 
-[dir] .modal-content .modal-body #mediaApp {
-  margin: 0px -15px 0px -15px;
-  margin-top: 0; }
-
 .media-modal .modal-body {
   height: 100%;
   overflow-y: auto; }
 
 [dir] .media-modal .modal-body {
-  padding-bottom: 0px; }
+  padding: 0; }
   [dir=ltr] .media-modal .modal-body #mediaContainer #navigationApp {
   border-right: none !important; }
   [dir=rtl] .media-modal .modal-body #mediaContainer #navigationApp {
     border-left: none !important; }
   [dir=ltr] .media-modal .modal-body #mediaContainer #mediaContainerMain {
   border-left: 1px solid rgba(0, 0, 0, 0.1);
-  padding-left: 1.5rem !important;
   margin-left: 0 !important; }
   [dir=rtl] .media-modal .modal-body #mediaContainer #mediaContainerMain {
     border-right: 1px solid rgba(0, 0, 0, 0.1);
-    padding-right: 1.5rem !important;
     margin-right: 0 !important; }
   .media-modal .modal-body #mediaContainer #folder-tree a,
   .media-modal .modal-body #mediaContainer .breadcrumb-item a {
