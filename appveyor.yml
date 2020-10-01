@@ -16,6 +16,7 @@ skip_commits:
     - src/docs/**/*
 
 environment:
+  nodejs_version: "6"
   global:
     DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
     DOTNET_CLI_TELEMETRY_OPTOUT: 1
@@ -37,6 +38,7 @@ cache:
 
 # Install scripts. (runs after repo cloning)
 install:
+- ps: Install-Product node $env:nodejs_version
   - ps: $env:BuildNumber= $env:APPVEYOR_BUILD_NUMBER
   - ps: $IsMasterBranch = ($env:APPVEYOR_REPO_BRANCH -eq "master" -And -not $env:APPVEYOR_PULL_REQUEST_NUMBER)
   - ps: $IsDevBranch = ($env:APPVEYOR_REPO_BRANCH -eq "dev" -And -not $env:APPVEYOR_PULL_REQUEST_NUMBER)
