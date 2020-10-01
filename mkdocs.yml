@@ -4,8 +4,8 @@ theme:
   logo: docs/assets/images/orchard-logo.png
   favicon: docs/assets/images/favicon-blue.png
   features:
-    - instant
-    - tabs
+    - navigation.instant
+    - navigation.tabs
   palette:
     primary: blue
     accent: light blue
