@@ -1,3 +1,4 @@
+@using OrchardCore.Contents
 @using OrchardCore.ContentManagement
 @inject IAuthorizationService AuthorizationService
 @inject IContentManager ContentManager
@@ -5,8 +6,8 @@
 @{
     ContentItem contentItem = Model.ContentItem;
     var hasPublished = await ContentManager.HasPublishedVersionAsync(contentItem);
-    var hasEditPermission = await AuthorizationService.AuthorizeAsync(User, OrchardCore.Contents.CommonPermissions.EditContent, contentItem);
-    var hasViewPermission = await AuthorizationService.AuthorizeAsync(User, OrchardCore.Contents.CommonPermissions.ViewContent, contentItem);
+    var hasEditPermission = await AuthorizationService.AuthorizeAsync(User, CommonPermissions.EditContent, contentItem);
+    var hasViewPermission = await AuthorizationService.AuthorizeAsync(User, CommonPermissions.ViewContent, contentItem);
 }
 
 @if (hasEditPermission)
