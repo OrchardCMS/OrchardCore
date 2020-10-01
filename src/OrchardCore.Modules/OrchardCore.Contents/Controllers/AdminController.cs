@@ -172,7 +172,8 @@ namespace OrchardCore.Contents.Controllers
                 {
                     if (ctd.GetSettings<ContentTypeSettings>().Listable)
                     {
-                    var authorized = await _authorizationService.AuthorizeAsync(User, CommonPermissions.EditContent, await _contentManager.NewAsync(ctd.Name));
+                        var authorized = await _authorizationService.AuthorizeAsync(User, CommonPermissions.EditContent, await _contentManager.NewAsync(ctd.Name));
+                        
                         if (authorized)
                         {
                             listableTypes.Add(ctd);
