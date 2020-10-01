@@ -7,9 +7,9 @@
     var culture = await Orchard.GetContentCultureAsync(Model.Field.ContentItem);
 }
 
-<script asp-name="trumbowyg" depends-on="admin" version="2" at="Foot"></script>
 <style asp-name="trumbowyg" version="2"></style>
 <script asp-src="~/OrchardCore.ContentFields/Scripts/trumbowyg.media.tag.min.js" debug-src="~/OrchardCore.ContentFields/Scripts/trumbowyg.media.tag.js" depends-on="trumbowyg" at="Foot"></script>
+<script asp-name="trumbowyg-shortcodes" at="Foot"></script>
 
 <div class="form-group">
     <label asp-for="Html">@Model.PartFieldDefinition.DisplayName()</label>
@@ -32,7 +32,26 @@
 
 <script at="Foot">
     $(function () {
-        $('#@Html.IdFor(m => m.Html)').trumbowyg().on('tbwchange', function () {
+        @* set dir while keeping trumbowg translations dictionary intact *@
+        @if (culture.GetLanguageDirection() == LanguageDirection.RTL)
+        {
+            <text>        
+            var langs = jQuery.trumbowyg.langs.@culture.TwoLetterISOLanguageName;
+            langs['_dir'] = '@culture.GetLanguageDirection()';
+            </text>
+        }
+
+        @* Extend trumbowyg default buttons. Only use for the wysiwyg editor which gets all buttons by default *@
+        var defaultButtons = jQuery.trumbowyg.defaultOptions.btns;
+        if (defaultButtons[6] !== "insertShortcode") {
+            defaultButtons.splice(6, 0, "insertShortcode");
+        }
+
+        var settings = { 
+            lang: '@culture.TwoLetterISOLanguageName'
+        }
+
+        $('#@Html.IdFor(m => m.Html)').trumbowyg(settings).on('tbwchange', function () {
             $(document).trigger('contentpreview:render');
         });
     });
