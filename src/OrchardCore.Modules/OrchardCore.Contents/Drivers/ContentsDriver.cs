@@ -66,17 +66,17 @@ namespace OrchardCore.Contents.Drivers
 
                 if (hasEditPermission || hasViewPermission)
                 {
-                    results.Add(Shape("Contents_SummaryAdmin__Button__Edit", new ContentItemViewModel(contentItem)).Location("SummaryAdmin", "Actions:10"));
+                    results.Add(Shape("ContentsButtonEdit_SummaryAdmin", new ContentItemViewModel(contentItem)).Location("SummaryAdmin", "Actions:10"));
                 }
 
                 if (hasPublishPermission || hasDeletePermission || hasPreviewPermission || hasClonePermission)
                 {
-                    results.Add(Shape("Contents_SummaryAdmin__Button__Actions", new ContentItemViewModel(contentItem)).Location("SummaryAdmin", "ActionsMenu:10"));
+                    results.Add(Shape("ContentsButtonActions_SummaryAdmin", new ContentItemViewModel(contentItem)).Location("SummaryAdmin", "ActionsMenu:10"));
                 }
             }
 
-            results.Add(Shape("Contents_SummaryAdmin__Tags", new ContentItemViewModel(contentItem)).Location("SummaryAdmin", "Tags:10"));
-            results.Add(Shape("Contents_SummaryAdmin__Meta", new ContentItemViewModel(contentItem)).Location("SummaryAdmin", "Meta:20"));
+            results.Add(Shape("ContentsTags_SummaryAdmin", new ContentItemViewModel(contentItem)).Location("SummaryAdmin", "Tags:10"));
+            results.Add(Shape("ContentsMeta_SummaryAdmin", new ContentItemViewModel(contentItem)).Location("SummaryAdmin", "Meta:20"));
 
             return Combine(results.ToArray());
         }
