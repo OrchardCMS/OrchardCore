@@ -13,9 +13,19 @@ namespace OrchardCore.Media.Processing
         Stretch
     }
 
+    public enum Format
+    {
+        Undefined,
+        Bmp,
+        Gif,
+        Jpg,
+        Png,
+        Tga
+    }
+
     internal class ImageSharpUrlFormatter
     {
-        public static string GetImageResizeUrl(string path, int? width = null, int? height = null, ResizeMode resizeMode = ResizeMode.Undefined)
+        public static string GetImageResizeUrl(string path, int? width = null, int? height = null, ResizeMode resizeMode = ResizeMode.Undefined, int? quality = null, Format format = Format.Undefined)
         {
             if (string.IsNullOrEmpty(path) || (!width.HasValue && !height.HasValue))
             {
@@ -38,6 +48,16 @@ namespace OrchardCore.Media.Processing
             if (resizeMode != ResizeMode.Undefined)
             {
                 query["rmode"] = resizeMode.ToString().ToLower();
+            }
+
+            if (quality.HasValue)
+            {
+                query["quality"] = quality.ToString();
+            }
+
+            if (format != Format.Undefined)
+            {
+                query["format"] = format.ToString().ToLower();
             }
 
             return $"{pathParts[0]}?{query.ToString()}";
