@@ -1,5 +1,4 @@
 @using OrchardCore.ContentManagement
-@using OrchardCore.Contents
 @inject IAuthorizationService AuthorizationService
 @{
     ContentItem contentItem = Model.ContentItem;
@@ -17,7 +16,7 @@
             <input type="checkbox" class="custom-control-input" value="@contentItem.Id" name="itemIds" id="itemIds-@contentItem.Id">
             <label class="custom-control-label" for="itemIds-@contentItem.Id"></label>
         </div>
-        @if (await AuthorizationService.AuthorizeAsync(User, CommonPermissions.EditContent, contentItem))
+        @if (await AuthorizationService.AuthorizeAsync(User, OrchardCore.Contents.CommonPermissions.EditContent, contentItem))
         {
             <div class="d-inline">
                 <a admin-for="@contentItem" asp-route-returnUrl="@FullRequestPath" /> - <small class="text-muted">@contentItem.ContentType</small>
