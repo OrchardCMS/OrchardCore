@@ -28,7 +28,7 @@ environment:
     NUGET_API_KEY:
         secure: nhxlp80FeVXTBsSsLok7RVUPbSa+DKEwbhqa4EJrf8vzK+vD9Jff1v+eA6HUP402
 
-stack: node 9, docker
+stack: node 12, docker
 
 # build cache to preserve files/folders between builds
 cache:
