@@ -364,15 +364,15 @@ namespace OrchardCore.Resources
                 .SetVersion("2.1.6");
 
             manifest
-                .DefineScript("Sortable")
-                .SetUrl("~/OrchardCore.Resources/Scripts/Sortable.min.js", "~/OrchardCore.Resources/Scripts/Sortable.js")
-                .SetCdn("https://cdn.jsdelivr.net/npm/sortablejs@1.10.2/Sortable.min.js", "https://cdn.jsdelivr.net/npm/sortablejs@1.10.2/Sortable.js")
-                .SetCdnIntegrity("sha384-6qM1TfKo1alBw3Uw9AWXnaY5h0G3ScEjxtUm4TwRJm7HRmDX8UfiDleTAEEg5vIe", "sha384-lNRluF0KgEfw4KyH2cJAoBAMzRHZVp5bgBGAzRxHeXoFqb5admHjitlZ2dmspHmC")
-                .SetVersion("1.10.2");
+                .DefineScript("sortable")
+                .SetUrl("~/OrchardCore.Resources/Scripts/sortable.umd.js")
+                .SetCdn("https://cdn.jsdelivr.net/npm/sortablejs@1.12.0/dist/sortable.umd.js")
+                .SetCdnIntegrity("sha384-6OKHU1INb53MRb+PAD0gIo5uKCyYFzqpsysy2D6aC4InJm0YbQHJKwNHzl8djg73")
+                .SetVersion("1.12.0");
 
             manifest
                 .DefineScript("vuedraggable")
-                .SetDependencies("vuejs", "Sortable")
+                .SetDependencies("vuejs", "sortable")
                 .SetUrl("~/OrchardCore.Resources/Scripts/vuedraggable.umd.min.js", "~/OrchardCore.Resources/Scripts/vuedraggable.umd.js")
                 .SetCdn("https://cdn.jsdelivr.net/npm/vuedraggable@2.24.1/dist/vuedraggable.umd.min.js", "https://cdn.jsdelivr.net/npm/vuedraggable@2.24.1/dist/vuedraggable.umd.js")
                 .SetCdnIntegrity("sha384-95XQBb8XRK8jN1TR3CjE7Shlbm1m/8JNzMu/ACCsnWu/yFvMTkCjDHVXbOVl7Moi", "sha384-10hAGRrbDQC4KS+gdeuUtzyGr+4JdQ4PFfU58+1uy+D7WkEgCcI9xlUPBa10fdf7")

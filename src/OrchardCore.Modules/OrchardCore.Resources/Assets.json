@@ -255,16 +255,9 @@
   {
     "copy": true,
     "inputs": [
-      "node_modules/sortablejs/Sortable.min.js"
+      "node_modules/sortablejs/dist/sortable.umd.js"
     ],
-    "output": "wwwroot/Scripts/Sortable.min.js"
-  },
-  {
-    "copy": true,
-    "inputs": [
-      "node_modules/sortablejs/Sortable.js"
-    ],
-    "output": "wwwroot/Scripts/Sortable.js"
+    "output": "wwwroot/Scripts/sortable.umd.js"
   },
   {
     "copy": true,

@@ -43,30 +43,31 @@ Named resources are well-known scripts and stylesheets that are described in a m
 They have a name, a type (script, stylesheet) and optionally a version.  
 The `OrchardCore.Resources` module provides some commonly used ones:
 
-| Name                  | Type   | Versions      | Dependencies   |
-| --------------------- | ------ | ------------- | -------------- |
-| jQuery                | Script | 3.5.1         | -              |
-| jQuery.slim           | Script | 3.5.1         | -              |
-| jQuery-ui             | Script | 1.12.1        | jQuery         |
-| jQuery-ui-i18n        | Script | 1.7.2         | jQuery-ui      |
-| jquery.easing         | Script | 1.4.1         | -              |
-| jquery-resizable-dom  | Script | 0.35.0        | -              |
-| popper                | Script | 1.16.1        | -              |
-| bootstrap             | Script | 3.4.0, 4.5.2  | jQuery, Popper |
-| bootstrap             | Style  | 3.4.0, 4.5.2  | -              |
-| bootstrap-select      | Script | 1.13.18       | -              |
-| bootstrap-select      | Style  | 1.13.18       | -              |
-| bootstrap-slider      | Script | 11.0.2        | -              |
-| bootstrap-slider      | Style  | 11.0.2        | -              |
-| codemirror            | Script | 5.58.0        | -              |
-| codemirror            | Style  | 5.58.0        | -              |
-| font-awesome          | Style  | 4.7.0, 5.15.0 | -              |
-| font-awesome          | Script | 5.15.0        | -              |
-| font-awesome-v4-shims | Script | 5.15.0        | -              |
-| Sortable              | Script | 1.10.2        | -              |
-| trumbowyg             | Script | 2.21.0        | -              |
-| vue-multiselect       | Script | 2.1.6         | -              |
-| vuedraggable          | Script | 2.24.1        | Sortable       |
+| Name                  | Type   | Versions      | Dependencies    |
+| --------------------- | ------ | ------------- | --------------- |
+| jQuery                | Script | 3.5.1         | -               |
+| jQuery.slim           | Script | 3.5.1         | -               |
+| jQuery-ui             | Script | 1.12.1        | jQuery          |
+| jQuery-ui-i18n        | Script | 1.7.2         | jQuery-ui       |
+| jquery.easing         | Script | 1.4.1         | -               |
+| jquery-resizable-dom  | Script | 0.35.0        | -               |
+| popper                | Script | 1.16.1        | -               |
+| bootstrap             | Script | 3.4.0, 4.5.2  | jQuery, Popper  |
+| bootstrap             | Style  | 3.4.0, 4.5.2  | -               |
+| bootstrap-select      | Script | 1.13.18       | -               | 
+| bootstrap-select      | Style  | 1.13.18       | -               |
+| bootstrap-slider      | Script | 11.0.2        | -               |
+| bootstrap-slider      | Style  | 11.0.2        | -               |
+| codemirror            | Script | 5.58.0        | -               |
+| codemirror            | Style  | 5.58.0        | -               |
+| font-awesome          | Style  | 4.7.0, 5.15.0 | -               |
+| font-awesome          | Script | 5.15.0        | -               |
+| font-awesome-v4-shims | Script | 5.15.0        | -               |
+| sortable              | Script | 1.12.0        | -               |
+| trumbowyg             | Script | 2.21.0        | -               |
+| vue-multiselect       | Script | 2.1.6         | -               |
+| vuedraggable          | Script | 2.24.1        | vuejs, sortable |
+| vuejs                 | Script | 2.6.11        |                 |
 
 ### Registering a Resource Manifest
 
