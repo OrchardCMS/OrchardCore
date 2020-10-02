@@ -256,9 +256,11 @@
         });
 
         toggleConnectionString = document.querySelector('#toggleConnectionString');
-        toggleConnectionString.addEventListener('click', function (e) {
-            togglePasswordVisibility(document.querySelector('#ConnectionString'), document.querySelector('#toggleConnectionString'))
-        });
+        if (toggleConnectionString) {
+            toggleConnectionString.addEventListener('click', function (e) {
+                togglePasswordVisibility(document.querySelector('#ConnectionString'), document.querySelector('#toggleConnectionString'))
+            });
+        }
 
         togglePassword = document.querySelector('#togglePassword');
         togglePassword.addEventListener('click', function (e) {
