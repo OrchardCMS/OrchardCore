@@ -1866,6 +1866,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "NogginBox",
+      "name": "Richard Garside",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/729381?v=4",
+      "profile": "http://www.nogginbox.co.uk",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "skipCi": true
