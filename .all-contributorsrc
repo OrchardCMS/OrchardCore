@@ -1857,6 +1857,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "serverside-is",
+      "name": "Marco Serralheiro",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/3681658?v=4",
+      "profile": "http://www.serverside.pt",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true

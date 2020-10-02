@@ -1,7 +1,7 @@
 # Contributors ✨
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-198-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-199-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
@@ -273,6 +273,9 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <td align="center"><a href="https://github.com/khurram4u2"><img src="https://avatars2.githubusercontent.com/u/56805276?v=4" width="100px;" alt=""/><br /><sub><b>khurram4u2</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=khurram4u2" title="Code">💻</a></td>
     <td align="center"><a href="https://github.com/mvarblow"><img src="https://avatars2.githubusercontent.com/u/1827487?v=4" width="100px;" alt=""/><br /><sub><b>Matt Varblow</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=mvarblow" title="Documentation">📖</a></td>
     <td align="center"><a href="https://bit.ly/2zZJkF3"><img src="https://avatars2.githubusercontent.com/u/8790510?v=4" width="100px;" alt=""/><br /><sub><b>Rajdeep Chandra</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=Rajdeepc" title="Code">💻</a></td>
+  </tr>
+  <tr>
+    <td align="center"><a href="http://www.serverside.pt"><img src="https://avatars3.githubusercontent.com/u/3681658?v=4" width="100px;" alt=""/><br /><sub><b>Marco Serralheiro</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=serverside-is" title="Code">💻</a></td>
   </tr>
 </table>
 
