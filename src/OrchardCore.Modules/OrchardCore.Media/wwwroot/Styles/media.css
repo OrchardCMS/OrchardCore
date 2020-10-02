@@ -378,18 +378,13 @@ ol.media-items-grid {
 [dir] #breadcrumb {
   background-color: transparent;
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-  border-radius: 0px;
-  padding-bottom: 8px; }
+  border-radius: 0px; }
   #breadcrumb .breadcrumb-path {
     flex-grow: 1; }
-  [dir] #breadcrumb .breadcrumb-path {
-    margin-bottom: 4px; }
-  [dir=ltr] #breadcrumb .breadcrumb-path {
-  margin-right: 8px; }
-  [dir=rtl] #breadcrumb .breadcrumb-path {
-    margin-left: 8px; }
-    #breadcrumb .breadcrumb-path .breadcrumb-item a {
-      color: #495057; }
+    #breadcrumb .breadcrumb-path .breadcrumb-item {
+      display: inline-block; }
+      #breadcrumb .breadcrumb-path .breadcrumb-item a {
+        color: #495057; }
   #breadcrumb .breadcrumb-buttons {
     justify-content: flex-start;
     flex-grow: 1; }

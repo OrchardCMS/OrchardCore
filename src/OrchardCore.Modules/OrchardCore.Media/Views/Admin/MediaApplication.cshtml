@@ -76,8 +76,8 @@
                     </div>
                 </nav>
 
-                <nav id="breadcrumb" class="d-flex d-lg-none justify-content-end align-items-end pl-3 pr-3 mb-4">
-                    <div class="breadcrumb-path">
+                <nav id="breadcrumb" class="d-flex justify-content-end align-items-end">
+                    <div class="breadcrumb-path p-3">
                         <span class="breadcrumb-item" :class="{ active: isHome }"><a :href="isHome ? null : '#'" v-on:click="selectRoot">@T["Media Library"]</a></span>
                         <span v-for="(folder, i) in parents" v-cloak
                               class="breadcrumb-item"

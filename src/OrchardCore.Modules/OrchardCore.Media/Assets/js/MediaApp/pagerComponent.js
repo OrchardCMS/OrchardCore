@@ -4,7 +4,8 @@
 // <pager> component
 Vue.component('pager', {
     template: `
-        <nav id="media-pager" aria-label="Pagination Navigation" role="navigation" :data-computed-trigger="itemsInCurrentPage.length">
+    <div>
+        <nav id="media-pager" class="d-flex justify-content-center" aria-label="Pagination Navigation" role="navigation" :data-computed-trigger="itemsInCurrentPage.length">
             <ul class="pagination pagination-sm m-0">
                 <li class="page-item media-first-button" :class="{disabled : !canDoFirst}">
                     <a class="page-link" href="#" :tabindex="canDoFirst ? 0 : -1" v-on:click="goFirst">{{ T.pagerFirstButton }}</a>
@@ -34,14 +35,19 @@ Vue.component('pager', {
                         </select>
                     </div>
                 </li>
+            </ul>
+        </nav>
+        <nav class="d-flex justify-content-center">
+            <ul class="pagination pagination-sm m-0 mt-2">
                 <li class="page-item ml-4 page-info">
                     <span class="page-link disabled text-muted ">{{ T.pagerPageLabel }} {{current + 1}}/{{totalPages}}</span>
                 </li>
                 <li class="page-item ml-4 total-info">
-                     <span class="page-link disabled text-muted "> {{ T.pagerTotalLabel }} {{total}}</span>
+                    <span class="page-link disabled text-muted "> {{ T.pagerTotalLabel }} {{total}}</span>
                 </li>
             </ul>
         </nav>
+        </div>
         `,
     props: {
         sourceItems: Array
