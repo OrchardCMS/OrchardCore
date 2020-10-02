@@ -17,7 +17,7 @@ namespace OrchardCore.Forms.Drivers
             var formPart = model.As<FormPart>();
             if (formPart != null && context.DisplayType == "Detail")
             {
-                //Add wrapper for content type
+                // Add wrapper for content type
                 formItemShape.Metadata.Wrappers.Add($"Form_Wrapper__{model.ContentType}");
 
                 // Add wrapper for <form> tag
