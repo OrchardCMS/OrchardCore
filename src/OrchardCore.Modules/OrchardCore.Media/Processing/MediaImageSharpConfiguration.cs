@@ -36,8 +36,20 @@ namespace OrchardCore.Media.Processing
                 {
                     validation.Commands.Remove(ResizeWebProcessor.Compand);
                     validation.Commands.Remove(ResizeWebProcessor.Sampler);
-                    validation.Commands.Remove(ResizeWebProcessor.Xy);
-                    validation.Commands.Remove(ResizeWebProcessor.Anchor);
+                    // Center is xy
+                    // validation.Commands.Remove(ResizeWebProcessor.Xy);
+                    // Anchor is position
+                    //        Center = 0,
+                    //
+                    // Summary:
+                    //     Anchors the position of the image to the top of it's bounding container.
+                    // Top = 1,
+                    // Bottom = 2,
+                    //
+                    // Summary:
+                    //     Anchors the position of the image to the left of it's bounding container.
+                    // Left = 3,
+                    // validation.Commands.Remove(ResizeWebProcessor.Anchor);
                     validation.Commands.Remove(BackgroundColorWebProcessor.Color);
 
                     if (!validation.Commands.ContainsKey(ResizeWebProcessor.Mode))
