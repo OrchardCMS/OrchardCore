@@ -14710,6 +14710,12 @@ body:not(.left-sidebar-compact) #ta-left-sidebar {
         display: none; }
     .left-sidebar-compact #ta-left-sidebar #left-nav > ul > li > figure > ul > li {
       line-height: 2.5em; }
+    .left-sidebar-compact #ta-left-sidebar #left-nav > ul.menu-admin {
+      overflow-y: auto;
+      overflow-x: hidden;
+      height: 100%;
+      scrollbar-width: thin;
+      scrollbar-color: #495057 #EAEAEA; }
     [dir] .left-sidebar-compact #ta-left-sidebar #left-nav > ul.menu-admin {
       margin-bottom: 40px; }
     .left-sidebar-compact #ta-left-sidebar #left-nav > ul .item-label {

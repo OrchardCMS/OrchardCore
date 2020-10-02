@@ -610,11 +610,12 @@ body:not(.left-sidebar-compact) {
                 // the padding when leftbar is collapsed. Avoid small movement
                 // when switching between the two states
                 &.menu-admin {
-                    //overflow-y: auto;
-                    //overflow-x: hidden;
+                    overflow-y: auto;
+                    overflow-x: hidden;
+                    height: 100%;
                     margin-bottom: 40px;
-                    //scrollbar-width: thin;
-                    //scrollbar-color: #495057 #EAEAEA;
+                    scrollbar-width: thin;
+                    scrollbar-color: #495057 #EAEAEA;
                 }
 
                 .item-label {
