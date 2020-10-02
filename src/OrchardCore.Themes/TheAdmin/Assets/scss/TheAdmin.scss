@@ -279,9 +279,10 @@ body:not(.left-sidebar-compact) {
                     }
                 }
 
-                > li > ul > li {
+                > li > figure > ul > li {
                     line-height: 2.5em;
                 }
+
                 // first level menu items that have no items and are active
                 > li.active:not(.has-items)::before {
                     border-left: 3px solid;
@@ -292,6 +293,7 @@ body:not(.left-sidebar-compact) {
                     position: absolute;
                     top: 0;
                 }
+
                 // changing the padding of the icons on the first level to match
                 // the padding when leftbar is collapsed. Avoid small movement
                 // when switching between the two states
@@ -328,7 +330,7 @@ body:not(.left-sidebar-compact) {
                         }
                     }
 
-                    > li > .item-label > .collapse-icon {
+                    > li > figure > figcaption > .item-label > .collapse-icon {
                         color: rgba(255, 0, 0, 0);
                         display: flex;
                         justify-content: center;
@@ -353,7 +355,7 @@ body:not(.left-sidebar-compact) {
                 outline: none;
             }
 
-            > li > .item-label {
+            > li > figure > figcaption > .item-label {
                 width: 100%;
             }
 
@@ -376,14 +378,14 @@ body:not(.left-sidebar-compact) {
             background-color: rgba(0, 0, 0, 0.1);
         }
 
-        li > ul > li.active > .item-label {
+        li > figure > ul > li.active > .item-label {
             background: rgba(0, 0, 0, 0.1);
             color: rgba(0,0,0,.9) !important;
             font-weight: 600;
             padding-left: (2 * $link-padding-left + 16) !important;
         }
 
-        li.active > ul > li.active > .item-label::before {
+        li.active > figure > ul > li.active > .item-label::before {
             border-left: 3px solid;
             border-left-color: #0078D4;
             bottom: 0;
@@ -393,7 +395,7 @@ body:not(.left-sidebar-compact) {
             top: 0;
         }
 
-        li.active > ul > li > .item-label::before {
+        li.active > figure > ul > li > .item-label::before {
             border-left: 3px solid;
             border-left-color: rgba(0,0,0,.2);
             bottom: 0;
@@ -403,11 +405,11 @@ body:not(.left-sidebar-compact) {
             top: 0;
         }
 
-        li.has-items.active > .item-label {
+        li.has-items.active > figure > figcaption > .item-label {
             padding-left: (2 * $link-padding-left + 16) !important;
         }
 
-        li.has-items.active > .item-label::before {
+        li.has-items.active > figure > figcaption > .item-label::before {
             border-left: 3px solid;
             border-left-color: rgba(0,0,0,0.1);
             bottom: 0;
@@ -417,12 +419,12 @@ body:not(.left-sidebar-compact) {
             top: 0;
         }
 
-        li.active > .item-label {
+        li.active > figure > figcaption > .item-label {
             background-color: rgba(0, 0, 0, 0.05);
             font-weight: 600;
         }
 
-        li.active > .item-label:hover {
+        li.active > figure > figcaption > .item-label:hover {
             background-color: rgba(0, 0, 0, 0.1);
         }
 
@@ -446,18 +448,16 @@ body:not(.left-sidebar-compact) {
             top: 0;
         }
 
-        li ul > li {
-            > .item-label {
-                background: rgba(0,0,0,0.05);
-                color: $gray-700 !important;
+        li ul > li > .item-label, li ul > li > figure > figcaption > .item-label {
+            background: rgba(0,0,0,0.05);
+            color: $gray-700 !important;
 
-                > span.icon {
-                    font-size: 16px !important;
-                }
+            > span.icon {
+                font-size: 16px !important;
             }
         }
 
-        li.active ul > li > .item-label::before {
+        li.active ul > li > figure > figcaption > .item-label::before {
             border-left: 3px solid;
             border-left-color: rgba(0,0,0,.2);
             bottom: 0;
