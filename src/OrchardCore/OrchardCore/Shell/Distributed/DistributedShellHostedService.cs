@@ -433,7 +433,6 @@ namespace OrchardCore.Environment.Shell.Distributed
         {
             private ShellContext _context;
             internal volatile int _count;
-            private bool _disposed;
 
             public IsolatedContext(ShellContext context)
             {
@@ -444,29 +443,17 @@ namespace OrchardCore.Environment.Shell.Distributed
 
             public IsolatedContext Acquire()
             {
-                if (_disposed)
-                {
-                    return null;
-                }
-
                 Interlocked.Increment(ref _count);
                 return this;
             }
 
             public void Dispose()
             {
-                if (_disposed)
-                {
-                    return;
-                }
-
-                if (Interlocked.CompareExchange(ref _count, 1, 1) == 1)
+                Interlocked.Decrement(ref _count);
+                if (Interlocked.CompareExchange(ref _count, 0, 0) == 0)
                 {
                     _context.Dispose();
-                    _disposed = true;
                 }
-
-                Interlocked.Decrement(ref _count);
             }
         }
     }
