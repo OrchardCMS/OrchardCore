@@ -96,14 +96,11 @@ namespace OrchardCore.Environment.Shell.Builders
                 return;
             }
 
-            // A disabled shell still in use is released by its last scope.
-            //if (Settings.State == TenantState.Disabled)
-            //{
-            //    if (Interlocked.CompareExchange(ref _refCount, 0, 0) > 0)
-            //    {
-            //        return;
-            //    }
-            //}
+            if (ServiceProvider == null)
+            {
+                Dispose();
+                return;
+            }
 
             // When a tenant is changed and should be restarted, its shell context is replaced with a new one,
             // so that new request can't use it anymore. However some existing request might still be running and try to
@@ -116,6 +113,10 @@ namespace OrchardCore.Environment.Shell.Builders
                 {
                     return;
                 }
+
+                // Before marking the shell as released, create a shell scope that will be used to manage
+                // the shell state as usual, by calling terminate event handlers and disposing the shell.
+                var scope = new ShellScope(this);
 
                 _released = true;
 
@@ -131,19 +132,8 @@ namespace OrchardCore.Environment.Shell.Builders
                 }
 
                 // A ShellContext is usually disposed when the last scope is disposed, but if there is no scope
-                // then we need to dispose it right away, and we also need to call the terminate event handlers.
-                if (Interlocked.CompareExchange(ref _refCount, 0, 0) == 0)
-                {
-                    if (ServiceProvider != null)
-                    {
-                        // So let a new shell scope manage the shell context state as usual.
-                        new ShellScope(this).TerminateShellAsync().GetAwaiter().GetResult();
-                    }
-                    else
-                    {
-                        Dispose();
-                    }
-                }
+                // then we need to dispose it right away, so let's use this shell scope manage the shell state.
+                scope.TerminateShellAsync().GetAwaiter().GetResult();
             }
         }
 
