@@ -40,7 +40,9 @@
 
         @* Extend trumbowyg default buttons. Only use for the wysiwyg editor which gets all buttons by default *@
         var defaultButtons = jQuery.trumbowyg.defaultOptions.btns;
-        defaultButtons.splice(6, 0, "insertShortcode");
+        if (defaultButtons[6] !== "insertShortcode") {
+            defaultButtons.splice(6, 0, "insertShortcode");
+        }
                 
         var settings = { 
             lang: '@culture.TwoLetterISOLanguageName'
