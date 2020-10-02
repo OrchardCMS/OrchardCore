@@ -79,21 +79,28 @@ namespace OrchardCore.Lucene
                 }
             }
 
-            TopDocs docs = context.IndexSearcher.Search(
-                query,
-                size + from,
-                sortField == null ? Sort.RELEVANCE : new Sort(sortFields.ToArray())
-            );
+            LuceneTopDocs result = new LuceneTopDocs();
+            TopDocs docs = null;
 
-            if (from > 0)
+            if(size > 0)
             {
-                docs = new TopDocs(docs.TotalHits - from, docs.ScoreDocs.Skip(from).ToArray(), docs.MaxScore);
+                docs = context.IndexSearcher.Search(
+                    query,
+                    size + from,
+                    sortField == null ? Sort.RELEVANCE : new Sort(sortFields.ToArray())
+                );
+
+                if (from > 0)
+                {
+                    docs = new TopDocs(docs.TotalHits - from, docs.ScoreDocs.Skip(from).ToArray(), docs.MaxScore);
+                }
+
+                var collector = new TotalHitCountCollector();
+                context.IndexSearcher.Search(query, collector);
+
+                result.TopDocs = docs;
+                result.Count = collector.TotalHits;
             }
-
-            var collector = new TotalHitCountCollector();
-            context.IndexSearcher.Search(query, collector);
-
-            var result = new LuceneTopDocs { TopDocs = docs, Count = collector.TotalHits };
 
             return Task.FromResult(result);
         }
