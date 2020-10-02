@@ -1,4 +1,3 @@
-var leftMenuPS;
 // When we load compact status from preferences we need to do some other tasks besides adding the class to the body.
 // UserPreferencesLoader has already added the needed class.
 $(function () {
@@ -41,7 +40,7 @@ function setCompactStatus(explicit) {
     // This if is to avoid that when sliding from expanded to compact the 
     // underliyng ul is visible while shrinking. It is ugly.    
     if (!$('body').hasClass('left-sidebar-compact')) {
-        var labels = $('#left-nav ul.menu-admin > li > .item-label');
+        var labels = $('#left-nav ul.menu-admin > li > figure > figcaption > .item-label');
         labels.css('background-color', 'transparent');
         setTimeout(function () {
             labels.css('background-color', '');
@@ -53,9 +52,9 @@ function setCompactStatus(explicit) {
     // When leftbar is expanded  all ul tags are collapsed.
     // When leftbar is compacted we don't want the first level collapsed. 
     // We want it expanded so that hovering over the root buttons shows the full submenu
-    $('#left-nav ul.menu-admin > li > ul').removeClass('collapse');
+    $('#left-nav ul.menu-admin > li > figure > ul').removeClass('collapse');
     // When hovering, don't want toggling when clicking on label
-    $('#left-nav ul.menu-admin > li > figcaption').attr('data-toggle', '');
+    $('#left-nav ul.menu-admin > li > figure > figcaption').attr('data-toggle', '');
     $('#left-nav li.has-items').removeClass("visible");
 
     //after menu has collapsed we set the transitions to none so that we don't do any transition
@@ -64,14 +63,6 @@ function setCompactStatus(explicit) {
         $('#left-nav > ul > li').css("transition", "none");
     }, 200); 
     
-
-
-    //set PerfectScrollBar on sub-menu items.
-    var submenus = $('#left-nav > ul > li > [id^="m"]');
-    submenus.each(function (index) {
-        subMenuArray[index] = new PerfectScrollbar(this, { suppressScrollX: true });
-    });
-
     if (explicit == true) {
         isCompactExplicit = explicit;
     }
@@ -82,12 +73,10 @@ function unSetCompactStatus() {
     $('body').removeClass('left-sidebar-compact');
 
     // resetting what we disabled for compact state
-    $('#left-nav ul.menu-admin > li > ul').addClass('collapse');    
-    $('#left-nav ul.menu-admin > li > figcaption').attr('data-toggle', 'collapse');
+    $('#left-nav ul.menu-admin > li > figure > ul').addClass('collapse');    
+    $('#left-nav ul.menu-admin > li > figure > figcaption').attr('data-toggle', 'collapse');
     $('#left-nav li.has-items').removeClass("visible");
     $('#left-nav > ul > li').css("transition", "");
-
-
 
     isCompactExplicit = false;
     persistAdminPreferences();
