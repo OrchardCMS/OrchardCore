@@ -1,4 +1,4 @@
-function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple) {
+function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple, allowAltText) {
 
     var target = $(document.getElementById($(el).data('for')));
     var initialPaths = target.data("init");
@@ -14,7 +14,9 @@ function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple)
             selectedMedia: null,
             smallThumbs: false,
             idPrefix: idprefix,
-            initialized: false
+            initialized: false,
+            allowAltText: allowAltText,
+            editingAltText: ''
         },
         created: function () {
             var self = this;
@@ -32,7 +34,7 @@ function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple)
                         if (x.mediaPath === 'not-found') {
                             return;
                         }
-                        mediaPaths.push({ Path: x.mediaPath });
+                        mediaPaths.push({ path: x.mediaPath, altText: x.altText });
                     });
                     return JSON.stringify(mediaPaths);
                 },
@@ -43,24 +45,25 @@ function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple)
                     var items = [];
                     var length = 0;
                     mediaPaths.forEach(function (x, i) {
-                        items.push({ name: ' ' + x.Path, mime: '', mediaPath: '' }); // don't remove the space. Something different is needed or it wont react when the real name arrives.
+                        items.push({ name: ' ' + x.path, mime: '', mediaPath: '' }); // don't remove the space. Something different is needed or it wont react when the real name arrives.
                         promise = $.when(signal).done(function () {
                             $.ajax({
-                                url: mediaItemUrl + "?path=" + encodeURIComponent(x.Path),
+                                url: mediaItemUrl + "?path=" + encodeURIComponent(x.path),
                                 method: 'GET',
                                 success: function (data) {
                                     data.vuekey = data.name + i.toString();
+                                    data.altText = x.altText; // This value is not returned from the ajax call.
                                     items.splice(i, 1, data);
                                     if (items.length === ++length) {
-                                        items.forEach(function (x) {
-                                            self.mediaItems.push(x);
+                                        items.forEach(function (y) {
+                                            self.mediaItems.push(y);
                                         });
                                         self.initialized = true;
                                     }
                                 },
                                 error: function (error) {
                                     console.log(error);
-                                    items.splice(i, 1, { name: x.Path, mime: '', mediaPath: 'not-found' });
+                                    items.splice(i, 1, { name: x.path, mime: '', mediaPath: 'not-found', altText: x.altText });
                                     if (items.length === ++length) {
                                         items.forEach(function (x) {
                                             self.mediaItems.push(x);
@@ -136,6 +139,14 @@ function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple)
                         return true;
                     });
                 }
+            },
+            showAltTextModal: function (event) {
+                var modal = $(this.$refs.altTextModal).modal();
+                this.editingAltText = this.selectedMedia.altText;
+            },
+            closeAltTextModal: function (event) {
+                $(this.$refs.altTextModal).modal('hide');
+                this.selectedMedia.altText = this.editingAltText;
             },
             addMediaFiles: function (files) {
                 if ((files.length > 1) && (allowMultiple === false)) {

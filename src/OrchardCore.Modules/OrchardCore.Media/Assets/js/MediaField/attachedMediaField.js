@@ -1,4 +1,4 @@
-function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaItemUrl, allowMultiple, tempUploadFolder) {
+function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaItemUrl, allowMultiple, allowAltText, tempUploadFolder) {
 
     var target = $(document.getElementById($(el).data('for')));
     var initialPaths = target.data("init");
@@ -14,7 +14,9 @@ function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaI
             selectedMedia: null,
             smallThumbs: false,
             idPrefix: idprefix,
-            initialized: false
+            initialized: false,
+            allowAltText: allowAltText,
+            editingAltText: ''
         },
         created: function () {
             var self = this;
@@ -32,7 +34,7 @@ function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaI
                         if (x.mediaPath === 'not-found') {
                             return;
                         }
-                        mediaPaths.push({ Path: x.mediaPath, IsRemoved: x.isRemoved, IsNew: x.isNew });
+                        mediaPaths.push({ path: x.mediaPath, isRemoved: x.isRemoved, isNew: x.isNew, altText: x.altText });
                     });
                     return JSON.stringify(mediaPaths);
                 },
@@ -43,13 +45,14 @@ function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaI
                     var items = [];
                     var length = 0;
                     mediaPaths.forEach(function (x, i) {
-                        items.push({ name: ' ' + x.Path, mime: '', mediaPath: '' }); // don't remove the space. Something different is needed or it wont react when the real name arrives.
+                        items.push({ name: ' ' + x.path, mime: '', mediaPath: '' }); // don't remove the space. Something different is needed or it wont react when the real name arrives.
                         promise = $.when(signal).done(function () {
                             $.ajax({
-                                url: mediaItemUrl + "?path=" + encodeURIComponent(x.Path),
+                                url: mediaItemUrl + "?path=" + encodeURIComponent(x.path),
                                 method: 'GET',
                                 success: function (data) {
-                                    data.vuekey = data.name + i.toString(); // just because a unique key is required by Vue on v-for 
+                                    data.vuekey = data.name + i.toString(); // Because a unique key is required by Vue on v-for 
+                                    data.altText = x.altText; // This value is not returned from the ajax call.
                                     items.splice(i, 1, data);
                                     if (items.length === ++length) {
                                         items.forEach(function (x) {
@@ -60,7 +63,7 @@ function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaI
                                 },
                                 error: function (error) {
                                     console.log(JSON.stringify(error));
-                                    items.splice(i, 1, { name: x.Path, mime: '', mediaPath: 'not-found' });
+                                    items.splice(i, 1, { name: x.path, mime: '', mediaPath: 'not-found', altText: '' });
                                     if (items.length === ++length) {
                                         items.forEach(function (x) {
                                             self.mediaItems.push(x);
@@ -211,6 +214,14 @@ function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaI
                     }
                 }
                 this.selectedMedia = null;
+            },
+            showAltTextModal: function (event) {
+                var modal = $(this.$refs.altTextModal).modal();
+                this.editingAltText = this.selectedMedia.altText;
+            },
+            closeAltTextModal: function (event) {
+                $(this.$refs.altTextModal).modal('hide');
+                this.selectedMedia.altText = this.editingAltText;
             },
             selectAndDeleteMedia: function (media) {
                 var self = this;

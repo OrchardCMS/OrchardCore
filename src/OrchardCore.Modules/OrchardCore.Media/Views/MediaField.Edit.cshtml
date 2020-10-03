@@ -1,5 +1,6 @@
 @model OrchardCore.Media.ViewModels.EditMediaFieldViewModel
-@using OrchardCore.Media.Settings;
+@using System.Globalization
+@using OrchardCore.Media.Settings
 @using OrchardCore.ContentManagement.Metadata.Models
 
 @{
@@ -21,20 +22,23 @@
     <div class="form-control-plaintext media-field-toolbar" v-cloak>
         <div class="btn-group">
             <button type="button" class="btn btn-secondary btn-sm" :disabled="mediaItems.length < 1" v-on:click="smallThumbs = !smallThumbs">
-                <span v-show="!smallThumbs" title="@T[" Small Thumbs"]"><i class="fa fa-compress"></i></span>
-                <span v-show="smallThumbs" title="@T[" Large Thumbs"]"><i class="fa fa-expand"></i></span>
+                <span v-show="!smallThumbs" title="@T[" Small Thumbs"]"><i class="fas fa-compress-alt"></i></span>
+                <span v-show="smallThumbs" title="@T[" Large Thumbs"]"><i class="fas fa-expand-alt"></i></span>
             </button>
-            <a href="javascript:;" v-show="canAddMedia" v-on:click="showModal" class="btn btn-secondary btn-sm"><i class="fa fa-plus"></i></a>
-            <a href="javascript:;" v-on:click="removeSelected" class="btn btn-secondary btn-sm" v-bind:class="{ disabled : !selectedMedia }"><i class="fa fa-trash"></i></a>
+            <a href="javascript:;" v-show="canAddMedia" v-on:click="showModal" class="btn btn-secondary btn-sm"><i class="fas fa-plus"></i></a>
+            <a href="javascript:;" v-show="allowAltText" v-on:click="showAltTextModal" class="btn btn-secondary btn-sm" v-bind:class="{ disabled : !selectedMedia }"><i class="far fa-comment"></i></a>
+            <a href="javascript:;" v-on:click="removeSelected" class="btn btn-secondary btn-sm" v-bind:class="{ disabled : !selectedMedia }"><i class="fas fa-trash-alt"></i></a>
         </div>
         <label class="selected-media-name">
-            <code class="text-right" v-if="selectedMedia">@T["{{{{ selectedMedia.name }}}} ({{{{ isNaN(fileSize)? 0 : fileSize }}}} KB)"]</code>
+            <code class="text-right" v-if="selectedMedia">@T["{{{{ selectedMedia.name }}}}{{{{ selectedMedia.altText === '' ? '' : ', ' + selectedMedia.altText }}}} ({{{{ isNaN(fileSize)? 0 : fileSize }}}} KB)"]</code>
         </label>
     </div>
 
     <media-field-thumbs-container :media-items="mediaItems" :thumb-size="thumbSize" :selected-media="selectedMedia" :id-prefix="idPrefix"></media-field-thumbs-container>
-</div>
 
+    <partial name="Shared/MediaFieldEditAltTextModal.cshtml" />
+
+</div>
 
 <div class="modal" id="@Html.IdFor(m => m)-ModalBody">
     <div class="modal-dialog modal-lg media-modal" role="document">
@@ -63,6 +67,7 @@
         document.getElementById('@Html.IdFor(m => m)'),
         document.getElementById('@Html.IdFor(m => m)-ModalBody'),
         '@Url.Action("GetMediaItem", "Admin", new { area = "OrchardCore.Media" })',
-        @(settings.Multiple ? "true" : "false"));
+        @(settings.Multiple ? "true" : "false"),
+        @(settings.AllowAltText ? "true" : "false"));
 </script> 
   

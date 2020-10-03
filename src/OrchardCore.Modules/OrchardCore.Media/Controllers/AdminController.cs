@@ -420,7 +420,8 @@ namespace OrchardCore.Media.Controllers
                 folder = mediaFile.DirectoryPath,
                 url = _mediaFileStore.MapPathToPublicUrl(mediaFile.Path),
                 mediaPath = mediaFile.Path,
-                mime = contentType ?? "application/octet-stream"
+                mime = contentType ?? "application/octet-stream",
+                altText = String.Empty
             };
         }
     }
