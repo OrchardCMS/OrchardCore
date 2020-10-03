@@ -140,7 +140,7 @@ namespace OrchardCore.Queries.Sql
 
             if (!String.IsNullOrEmpty(_where))
             {
-                sqlBuilder.WhereAnd(_where);
+                sqlBuilder.WhereAlso(_where);
             }
 
             EvaluateGroupClause(selectStatement.ChildNodes[5]);

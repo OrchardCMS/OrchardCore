@@ -16,7 +16,6 @@ using OrchardCore.OpenId.YesSql.Indexes;
 using OrchardCore.OpenId.YesSql.Models;
 using YesSql;
 using YesSql.Services;
-using static OpenIddict.Abstractions.OpenIddictConstants;
 
 namespace OrchardCore.OpenId.YesSql.Stores
 {
@@ -372,10 +371,11 @@ namespace OrchardCore.OpenId.YesSql.Stores
 
                 var authorizations = await _session.Query<TAuthorization, OpenIdAuthorizationIndex>(
                     authorization => authorization.CreationDate < threshold &&
-                                    (authorization.Status != Statuses.Valid ||
-                                    (authorization.Type == AuthorizationTypes.AdHoc &&
-                                     authorization.AuthorizationId.IsNotInAny<OpenIdTokenIndex>(
-                                         token => token.AuthorizationId)))).Skip(offset).Take(1_000).ListAsync();
+                                    (authorization.Status != OpenIddictConstants.Statuses.Valid ||
+                                    (authorization.Type == OpenIddictConstants.AuthorizationTypes.AdHoc &&
+                                     authorization.AuthorizationId.IsNotIn<OpenIdTokenIndex>(
+                                         token => token.AuthorizationId,
+                                         token => token.Id != 0)))).Skip(offset).Take(1_000).ListAsync();
 
                 foreach (var authorization in authorizations)
                 {
