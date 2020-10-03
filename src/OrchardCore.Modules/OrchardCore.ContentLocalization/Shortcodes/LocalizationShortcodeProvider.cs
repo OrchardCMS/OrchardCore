@@ -18,13 +18,12 @@ namespace OrchardCore.ContentLocalization.Shortcodes
             }
 
             var language = arguments.NamedOrDefault("lang");
-
             var currentCulture = CultureInfo.CurrentCulture.Name;
-
             if(!string.Equals(language, currentCulture, StringComparison.InvariantCultureIgnoreCase))
             {
                 return Null;
             }
+
             return new ValueTask<string>(content);
         }
     }

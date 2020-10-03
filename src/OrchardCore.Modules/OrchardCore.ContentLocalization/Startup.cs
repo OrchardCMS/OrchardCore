@@ -131,6 +131,7 @@ namespace OrchardCore.ContentLocalization
             services.Replace(ServiceDescriptor.Scoped<IContentItemsQueryProvider, LocalizedContentItemsQueryProvider>());
         }
     }
+
     [RequireFeatures("OrchardCore.Shortcodes")]
     public class ShortcodesStartup : StartupBase
     {
@@ -141,7 +142,7 @@ namespace OrchardCore.ContentLocalization
                 d.DefaultValue = "[locale '{language_code}'] [/locale]";
                 d.Hint = "Conditionally render content in the specified language";
                 d.Usage = "[locale 'en'] English Text[/locale][locale 'fr'] French Text[/locale]";
-                d.Categories = new string[] { "Localization" };
+                d.Categories = new string[] { "Content", "Localization" };
             });
         }
     }
