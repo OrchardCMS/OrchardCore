@@ -362,12 +362,12 @@ namespace OrchardCore.Lucene.Controllers
                 try
                 {
                     var parameterizedQuery = JObject.Parse(tokenizedContent);
-                    var docs = await _queryService.SearchAsync(context, parameterizedQuery);
+                    var luceneTopDocs = await _queryService.SearchAsync(context, parameterizedQuery);
                     
-                    if(docs.TopDocs != null)
+                    if(luceneTopDocs != null)
                     {
-                        model.Documents = docs.TopDocs.ScoreDocs.Select(hit => searcher.Doc(hit.Doc)).ToList();
-                        model.Count = docs.Count;
+                        model.Documents = luceneTopDocs.TopDocs.ScoreDocs.Select(hit => searcher.Doc(hit.Doc)).ToList();
+                        model.Count = luceneTopDocs.Count;
                     }
                 }
                 catch (Exception e)

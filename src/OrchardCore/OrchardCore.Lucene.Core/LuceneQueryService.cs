@@ -79,12 +79,12 @@ namespace OrchardCore.Lucene
                 }
             }
 
-            LuceneTopDocs result = new LuceneTopDocs();
-            TopDocs docs = null;
+            LuceneTopDocs result = null;
+            TopDocs topDocs = null;
 
             if(size > 0)
             {
-                docs = context.IndexSearcher.Search(
+                topDocs = context.IndexSearcher.Search(
                     query,
                     size + from,
                     sortField == null ? Sort.RELEVANCE : new Sort(sortFields.ToArray())
@@ -92,14 +92,13 @@ namespace OrchardCore.Lucene
 
                 if (from > 0)
                 {
-                    docs = new TopDocs(docs.TotalHits - from, docs.ScoreDocs.Skip(from).ToArray(), docs.MaxScore);
+                    topDocs = new TopDocs(topDocs.TotalHits - from, topDocs.ScoreDocs.Skip(from).ToArray(), topDocs.MaxScore);
                 }
 
                 var collector = new TotalHitCountCollector();
                 context.IndexSearcher.Search(query, collector);
 
-                result.TopDocs = docs;
-                result.Count = collector.TotalHits;
+                result = new LuceneTopDocs(){ TopDocs = topDocs, Count = collector.TotalHits };
             }
 
             return Task.FromResult(result);
