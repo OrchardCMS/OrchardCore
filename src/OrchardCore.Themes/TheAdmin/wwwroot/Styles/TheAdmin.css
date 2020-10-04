@@ -14074,23 +14074,35 @@ html[dir], [dir] body {
   left: 0; }
 
 .ta-navbar-top {
-  height: 49px;
-  z-index: 1000; }
+  z-index: calc($zindex-sticky + 1); }
 
 [dir] .ta-navbar-top {
   border-bottom: 1px solid #DEDEDE;
-  background-color: white; }
+  padding: 0.3rem 1rem;
+  background-color: white;
+  box-shadow: 0 0.46875rem 2.1875rem rgba(4, 9, 20, 0.03), 0 0.9375rem 1.40625rem rgba(4, 9, 20, 0.03), 0 0.25rem 0.53125rem rgba(4, 9, 20, 0.05), 0 0.125rem 0.1875rem rgba(4, 9, 20, 0.03); }
 
 [dir=ltr] .ta-navbar-top {
-  padding-left: 0px; }
+  padding-left: 0; }
 
 [dir=rtl] .ta-navbar-top {
-  padding-right: 0px; }
+  padding-right: 0; }
   .ta-navbar-top .nav-link {
     font-size: 14px; }
+  [dir=ltr] .ta-navbar-top .nav-item {
+  text-align: right; }
+  [dir=rtl] .ta-navbar-top .nav-item {
+    text-align: left; }
   [dir] .ta-navbar-top .breadcrumb {
     background-color: transparent;
     margin-top: 1rem; }
+  .ta-navbar-top .btn.nav-link, .ta-navbar-top .nav-link.button {
+    display: inline-block; }
+  @media (max-width: 767.98px) {
+    [dir] .ta-navbar-top .navbar-collapse li:first-child .nav-link {
+      padding-top: 15px; }
+    [dir] .ta-navbar-top .navbar-collapse li:last-child .nav-link {
+      padding-bottom: 0px; } }
 
 .ta-navbar-brand {
   overflow: hidden;
@@ -14133,7 +14145,7 @@ html[dir], [dir] body {
 
 [dir] .ta-content {
   padding: 15px;
-  margin-top: 49px;
+  margin-top: 52px;
   margin-bottom: 40px; }
 
 [dir=ltr] .ta-content {
@@ -14166,7 +14178,7 @@ html[dir], [dir] body {
 body:not(.left-sidebar-compact) #ta-left-sidebar {
   z-index: 7;
   position: fixed;
-  top: 49px;
+  top: 52px;
   bottom: 0;
   width: 260px;
   color: #343a40;
@@ -14450,7 +14462,7 @@ body:not(.left-sidebar-compact) #ta-left-sidebar {
 .left-sidebar-compact #ta-left-sidebar {
   z-index: 1000;
   position: fixed;
-  top: 49px;
+  top: 52px;
   bottom: 0;
   width: 48px;
   color: #343a40;
@@ -19958,6 +19970,10 @@ ul.pager {
 .dropdown-menu.scrollable {
   overflow-y: auto;
   max-height: 250px; }
+
+input[type=password]::-ms-reveal,
+input[type=password]::-ms-clear {
+  display: none; }
 
 /*
  * Container style

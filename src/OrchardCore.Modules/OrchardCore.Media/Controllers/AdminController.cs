@@ -45,7 +45,7 @@ namespace OrchardCore.Media.Controllers
 
         public async Task<IActionResult> Index()
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageOwnMedia))
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMedia))
             {
                 return Forbid();
             }
@@ -55,7 +55,7 @@ namespace OrchardCore.Media.Controllers
 
         public async Task<ActionResult<IEnumerable<IFileStoreEntry>>> GetFolders(string path)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageOwnMedia))
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMedia))
             {
                 return Forbid();
             }
@@ -92,7 +92,7 @@ namespace OrchardCore.Media.Controllers
                 path = "";
             }
 
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageOwnMedia)
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMedia)
                 || !await _authorizationService.AuthorizeAsync(User, Permissions.ManageAttachedMediaFieldsFolder, (object)path))
             {
                 return Forbid();
@@ -119,7 +119,7 @@ namespace OrchardCore.Media.Controllers
 
         public async Task<ActionResult<object>> GetMediaItem(string path)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageOwnMedia))
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMedia))
             {
                 return Forbid();
             }
@@ -146,7 +146,7 @@ namespace OrchardCore.Media.Controllers
             string contentType,
             ICollection<IFormFile> files)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageOwnMedia))
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMedia))
             {
                 return Forbid();
             }
@@ -213,7 +213,7 @@ namespace OrchardCore.Media.Controllers
         [HttpPost]
         public async Task<IActionResult> DeleteFolder(string path)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageOwnMedia)
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMedia)
                 || !await _authorizationService.AuthorizeAsync(User, Permissions.ManageAttachedMediaFieldsFolder, (object)path))
             {
                 return Forbid();
@@ -241,7 +241,7 @@ namespace OrchardCore.Media.Controllers
         [HttpPost]
         public async Task<IActionResult> DeleteMedia(string path)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageOwnMedia)
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMedia)
                 || !await _authorizationService.AuthorizeAsync(User, Permissions.ManageAttachedMediaFieldsFolder, (object)path))
             {
                 return Forbid();
@@ -261,7 +261,7 @@ namespace OrchardCore.Media.Controllers
         [HttpPost]
         public async Task<IActionResult> MoveMedia(string oldPath, string newPath)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageOwnMedia)
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMedia)
                 || !await _authorizationService.AuthorizeAsync(User, Permissions.ManageAttachedMediaFieldsFolder, (object)oldPath))
             {
                 return Forbid();
@@ -295,7 +295,7 @@ namespace OrchardCore.Media.Controllers
         [HttpPost]
         public async Task<IActionResult> DeleteMediaList(string[] paths)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageOwnMedia))
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMedia))
             {
                 return Forbid();
             }
@@ -325,7 +325,7 @@ namespace OrchardCore.Media.Controllers
         [HttpPost]
         public async Task<IActionResult> MoveMediaList(string[] mediaNames, string sourceFolder, string targetFolder)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageOwnMedia)
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMedia)
                 || !await _authorizationService.AuthorizeAsync(User, Permissions.ManageAttachedMediaFieldsFolder, (object)sourceFolder)
                 || !await _authorizationService.AuthorizeAsync(User, Permissions.ManageAttachedMediaFieldsFolder, (object)targetFolder))
             {
@@ -380,7 +380,7 @@ namespace OrchardCore.Media.Controllers
 
             var newPath = _mediaFileStore.Combine(path, name);
 
-            if (!await authorizationService.AuthorizeAsync(User, Permissions.ManageOwnMedia)
+            if (!await authorizationService.AuthorizeAsync(User, Permissions.ManageMedia)
                 || !await authorizationService.AuthorizeAsync(User, Permissions.ManageAttachedMediaFieldsFolder, (object)newPath))
             {
                 return Forbid();

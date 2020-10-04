@@ -12,9 +12,11 @@ $(function () {
         || (($('body').hasClass('no-admin-preferences') && $(window).width() < 768))){
         setCompactStatus();
     }
-
 });
 
+$('span.title').each(function () {
+    $(this).prev('.icon').prop('title', $(this).text());
+});
 
 $('.leftbar-compactor').click(function () {
     $('body').hasClass('left-sidebar-compact') ? unSetCompactStatus() : setCompactStatus(true);
@@ -31,7 +33,6 @@ $(document).on("click", function (event) {
         $('#left-nav li.has-items').removeClass("visible");
     }
 });
-
 
 var isCompactExplicit = (isCompactExplicit === undefined) ? false : isCompactExplicit ;
 var subMenuArray = new Array();
@@ -80,11 +81,8 @@ function setCompactStatus(explicit) {
     if (explicit == true) {
         isCompactExplicit = explicit;
     }
-    persistAdminPreferences();
-    
+    persistAdminPreferences();    
 }
-
-
 
 function unSetCompactStatus() {
     $('body').removeClass('left-sidebar-compact');
