@@ -54,7 +54,7 @@ Here is a more detailed [roadmap](https://github.com/OrchardCMS/OrchardCore/wiki
 - Run `docker run --name orchardcms -p 8080:80 orchardproject/orchardcore-cms-linux:latest`
 
 Docker images and parameters can be found at <https://hub.docker.com/u/orchardproject/>  
-See Docker documentation https://docs.docker.com/engine/reference/commandline/run/#publish-or-expose-port--p---expose to expose different port.
+See [Docker documentation](https://docs.docker.com/engine/reference/commandline/run/#publish-or-expose-port--p---expose) to expose different port.
 
 ### Documentation
 
