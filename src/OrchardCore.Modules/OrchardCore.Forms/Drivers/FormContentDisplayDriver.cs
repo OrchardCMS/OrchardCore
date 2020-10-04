@@ -1,7 +1,6 @@
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
-using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Forms.Models;
