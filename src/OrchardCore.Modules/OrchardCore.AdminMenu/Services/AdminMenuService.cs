@@ -47,14 +47,19 @@ namespace OrchardCore.AdminMenu
             {
                 var changeToken = ChangeToken;
 
-                adminMenuList = await _sessionHelper.GetForCachingAsync<AdminMenuList>();
+                bool cacheable;
 
-                foreach (var adminMenu in adminMenuList.AdminMenu)
+                (cacheable, adminMenuList) = await _sessionHelper.GetForCachingAsync<AdminMenuList>();
+
+                if (cacheable)
                 {
-                    adminMenu.IsReadonly = true;
-                }
+                    foreach (var adminMenu in adminMenuList.AdminMenu)
+                    {
+                        adminMenu.IsReadonly = true;
+                    }
 
-                _memoryCache.Set(AdminMenuCacheKey, adminMenuList, changeToken);
+                    _memoryCache.Set(AdminMenuCacheKey, adminMenuList, changeToken);
+                }
             }
 
             return adminMenuList;

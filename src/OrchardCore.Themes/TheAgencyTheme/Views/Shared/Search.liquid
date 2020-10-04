@@ -1,15 +1,19 @@
 {% zone "Header" %}
     <header class="masthead">
         <div class="container">
-            <div class="intro-text">
-                <div class="intro-lead-in"></div>
-                <div class="intro-heading text-uppercase">{{ "Search" | t}}</div>
-          </div>
+            <div class="masthead-subheading"></div>
+            <div class="masthead-heading text-uppercase">{{ "Search" | t}}</div>
         </div>
     </header>
 {% endzone %}
 
 {{ Model.SearchForm | shape_render }}
+
+{% unless Model.SearchResults %}
+  {% if Model.Terms %}
+    {% helper "span", validation_for: "Terms", class: "alert alert-danger" %}
+  {% endif %}
+{% endunless %}
 
 {{ Model.SearchResults | shape_render }}
 

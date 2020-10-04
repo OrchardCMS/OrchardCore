@@ -25,7 +25,7 @@
                 <div class="form-group" asp-validation-class-for="ChangeFrequency">
                     <label asp-for="ChangeFrequency">@T["Change Frequency"] </label>
                     <select asp-for="ChangeFrequency" class="form-control w-25" asp-items="Html.GetEnumSelectList<ChangeFrequency>()"></select>
-                    <span class="hint">@T["The default frequency these content types are likely to change."]</span>
+                    <span class="hint">@T["The default frequency with which these content types are likely to change."]</span>
                 </div>
                 <div class="form-group" asp-validation-class-for="Priority">
                     <label asp-for="Priority">@T["Priority"] </label>
@@ -206,7 +206,13 @@
 
             var selected = $(e.target).prop('checked');
             $(listItem).find('select, input:not(.content-type-checkbox)').each(function () {
-                selected ? $(this).prop('readonly', false) : $(this).prop('readonly', true);
+                if (selected) {
+                    $(this).prop('readonly', false)
+                    $(this).prop('disabled', false);
+                } else {
+                    $(this).prop('readonly', true);
+                    $(this).prop('disabled', true);
+                }
             });
         });
 
