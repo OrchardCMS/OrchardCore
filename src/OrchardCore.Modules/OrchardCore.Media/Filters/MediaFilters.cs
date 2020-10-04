@@ -55,6 +55,8 @@ namespace OrchardCore.Media.Filters
             var width = arguments["width"].Or(arguments.At(0));
             var height = arguments["height"].Or(arguments.At(1));
             var mode = arguments["mode"].Or(arguments.At(2));
+            var quality = arguments["quality"].Or(arguments.At(3));
+            var format = arguments["format"].Or(arguments.At(4));
 
             if (!width.IsNil())
             {
@@ -69,6 +71,16 @@ namespace OrchardCore.Media.Filters
             if (!mode.IsNil())
             {
                 queryStringParams.Add("rmode", mode.ToStringValue());
+            }
+
+            if (!quality.IsNil())
+            {
+                queryStringParams.Add("quality", quality.ToStringValue());
+            }
+
+            if (!format.IsNil())
+            {
+                queryStringParams.Add("format", format.ToStringValue());
             }
 
             return new ValueTask<FluidValue>(new StringValue(QueryHelpers.AddQueryString(url, queryStringParams)));

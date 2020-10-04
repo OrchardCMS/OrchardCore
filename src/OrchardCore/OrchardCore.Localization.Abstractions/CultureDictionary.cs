@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 
 namespace OrchardCore.Localization
 {
@@ -53,7 +54,7 @@ namespace OrchardCore.Localization
                 var pluralForm = count.HasValue ? PluralRule(count.Value) : 0;
                 if (pluralForm >= translations.Length)
                 {
-                    throw new PluralFormNotFoundException($"Plural form '{pluralForm}' doesn't exist for the key '{key}' in the '{CultureName}' culture.");
+                    throw new PluralFormNotFoundException($"Plural form '{pluralForm}' doesn't exist for the key '{key}' in the '{CultureName}' culture.", new PluralForm(key, pluralForm, CultureInfo.GetCultureInfo(CultureName)));
                 }
 
                 return translations[pluralForm];

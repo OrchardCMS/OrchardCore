@@ -14,6 +14,8 @@ using OrchardCore.OpenId.Abstractions.Stores;
 using OrchardCore.OpenId.YesSql.Indexes;
 using OrchardCore.OpenId.YesSql.Models;
 using YesSql;
+using YesSql.Services;
+using static OpenIddict.Abstractions.OpenIddictConstants;
 
 namespace OrchardCore.OpenId.YesSql.Stores
 {
@@ -394,7 +396,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
             => throw new NotSupportedException();
 
         /// <inheritdoc/>
-        public virtual async ValueTask PruneAsync(CancellationToken cancellationToken = default)
+        public virtual async ValueTask PruneAsync(DateTimeOffset threshold, CancellationToken cancellationToken = default)
         {
             // Note: Entity Framework Core doesn't support set-based deletes, which prevents removing
             // entities in a single command without having to retrieve and materialize them first.
@@ -407,8 +409,12 @@ namespace OrchardCore.OpenId.YesSql.Stores
                 cancellationToken.ThrowIfCancellationRequested();
 
                 var tokens = await _session.Query<TToken, OpenIdTokenIndex>(
-                    token => token.ExpirationDate < DateTimeOffset.UtcNow ||
-                             token.Status != OpenIddictConstants.Statuses.Valid).Skip(offset).Take(1_000).ListAsync();
+                    token => token.CreationDate < threshold &&
+                           ((token.Status != Statuses.Inactive && token.Status != Statuses.Valid) ||
+                             token.AuthorizationId.IsNotIn<OpenIdAuthorizationIndex>(
+                                authorization => authorization.AuthorizationId,
+                                authorization => authorization.Status == Statuses.Valid) ||
+                             token.ExpirationDate < DateTimeOffset.UtcNow)).Skip(offset).Take(1_000).ListAsync();
 
                 foreach (var token in tokens)
                 {
