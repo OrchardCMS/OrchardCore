@@ -56,7 +56,19 @@
     "inputs": [
       "node_modules/codemirror/lib/codemirror.css"
     ],
-    "output": "wwwroot/Scripts/codemirror/codemirror.css"
+    "output": "wwwroot/Styles/codemirror/codemirror.css"
+  },
+  {
+    "inputs": [
+      "node_modules/codemirror/addon/display/fullscreen.css"
+    ],
+    "output": "wwwroot/Styles/codemirror/addon/display/fullscreen.css"
+  },
+  {
+    "inputs": [
+      "node_modules/codemirror/addon/hint/show-hint.css"
+    ],
+    "output": "wwwroot/Styles/codemirror/addon/hint/show-hint.css"
   },
   {
     "inputs": [
@@ -66,9 +78,39 @@
   },
   {
     "inputs": [
+      "node_modules/codemirror/addon/selection/active-line.js"
+    ],
+    "output": "wwwroot/Scripts/codemirror/addon/selection/active-line.js"
+  },
+  {
+    "inputs": [
       "node_modules/codemirror/addon/display/autorefresh.js"
     ],
     "output": "wwwroot/Scripts/codemirror/addon/display/autorefresh.js"
+  },
+  {
+    "inputs": [
+      "node_modules/codemirror/addon/display/fullscreen.js"
+    ],
+    "output": "wwwroot/Scripts/codemirror/addon/display/fullscreen.js"
+  },
+  {
+    "inputs": [
+      "node_modules/codemirror/addon/edit/closetag.js"
+    ],
+    "output": "wwwroot/Scripts/codemirror/addon/edit/closetag.js"
+  },
+  {
+    "inputs": [
+      "node_modules/codemirror/addon/hint/show-hint.js"
+    ],
+    "output": "wwwroot/Scripts/codemirror/addon/hint/show-hint.js"
+  },
+  {
+    "inputs": [
+      "node_modules/codemirror/addon/hint/sql-hint.js"
+    ],
+    "output": "wwwroot/Scripts/codemirror/addon/hint/sql-hint.js"
   },
   {
     "inputs": [
@@ -126,6 +168,12 @@
   },
   {
     "inputs": [
+      "node_modules/jquery.easing/jquery.easing.js"
+    ],
+    "output": "wwwroot/Scripts/jquery.easing.js"
+  },
+  {
+    "inputs": [
       "node_modules/jquery-resizable-dom/dist/jquery-resizable.js"
     ],
     "output": "wwwroot/Scripts/jquery-resizable.js"
@@ -157,6 +205,12 @@
       "node_modules/trumbowyg/dist/trumbowyg.js"
     ],
     "output": "wwwroot/Scripts/trumbowyg.js"
+  },
+  {
+    "inputs": [
+      "Assets/trumbowyg/js/trumbowyg.shortcodes.js"
+    ],
+    "output": "wwwroot/Scripts/trumbowyg.shortcodes.js"
   },
   {
     "inputs": [
@@ -239,5 +293,12 @@
       "node_modules/@fortawesome/fontawesome-free/webfonts/*"
     ],
     "output": "wwwroot/Vendor/fontawesome-free/webfonts/@"
+  },
+  {
+    "generateSourceMaps": false,
+    "inputs": [
+      "Assets/js/js.cookie.js"
+    ],
+    "output": "wwwroot/Scripts/js.cookie.js"
   }
 ]

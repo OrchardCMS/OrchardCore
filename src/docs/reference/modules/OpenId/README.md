@@ -1,11 +1,10 @@
-# `OrchardCore.OpenId`
+# OpenID (`OrchardCore.OpenId`)
 
 ## OpenID Connect Module
 
 `OrchardCore.OpenId` provides the following features:
 
 - Core Components
-- Entity Framework Core Stores
 - Authorization Server
 - Management Interface
 - Token Validation
@@ -14,10 +13,6 @@
 ## Core Components
 
 Registers the core components used by the OpenID module.
-
-## Entity Framework Core Stores
-
-Provides an Entity Framework Core 2.x adapter for the OpenID module.
 
 ## Management Interface
 
@@ -41,15 +36,17 @@ Configuration can be set through the _OpenID Connect_ settings menu in the admin
 
 Available settings are:
 
-- Testing Mode: Enabling Testing mode, removes the need of providing a certificate for signing tokens providing an ephemeral key. Also removes the requirement of using HTTPS for issuing tokens.
-- Token Format: there are two options:
-  - JWT: This format uses signed JWT standard tokens (not encrypted). It requires that the SSL certificate being used is accepted as a trusted certificate by the client.
-  - Encrypted: This format uses non-standard opaque tokens encrypted by the ASP.NET data protection block. It doesn't require the client to accept the SSL certificate as a trusted certificate.
+- Token Format:
+  - Data Protection: this format - enabled by default - uses non-standard opaque tokens encrypted by the ASP.NET Core Data Protection stack.
+  - Json Web Token: this format uses signed JWT standard tokens. The tokens are encrypted by default but access token encryption can be turned off
+to allow third-party resource servers to use the JWT tokens produced by the Orchard OpenID server.
 - Authority: Orchard URL used by Orchard to act as an identity server.
-- Audiences: URLs of the resource servers for which the identity server issues valid JWT tokens.
-- Certificate Store Location: CurrentUser/LocalMachine <https://msdn.microsoft.com/en-us/library/system.security.cryptography.x509certificates.storelocation(v=vs.110).aspx>
-- Certificate Store Name: AddressBook/AuthRootCertificateAuthority/Disallowed/My/Root/TrustedPeople/TrustedPublisher <https://msdn.microsoft.com/en-us/library/system.security.cryptography.x509certificates.storename(v=vs.110).aspx>
-- Certificate Thumbprint: The thumbprint of the certificate (it is recommended to not use same certificate that is being used for SSL).
+- Signing Certificate Store Location: CurrentUser/LocalMachine <https://msdn.microsoft.com/en-us/library/system.security.cryptography.x509certificates.storelocation(v=vs.110).aspx>
+- Signing Certificate Store Name: AddressBook/AuthRootCertificateAuthority/Disallowed/My/Root/TrustedPeople/TrustedPublisher <https://msdn.microsoft.com/en-us/library/system.security.cryptography.x509certificates.storename(v=vs.110).aspx>
+- Encryption Certificate Thumbprint: the thumbprint of the signing certificate (it is recommended to not use same certificate that is being used for SSL).
+- Encryption Certificate Store Location: CurrentUser/LocalMachine <https://msdn.microsoft.com/en-us/library/system.security.cryptography.x509certificates.storelocation(v=vs.110).aspx>
+- Encryption Certificate Store Name: AddressBook/AuthRootCertificateAuthority/Disallowed/My/Root/TrustedPeople/TrustedPublisher <https://msdn.microsoft.com/en-us/library/system.security.cryptography.x509certificates.storename(v=vs.110).aspx>
+- Encryption Certificate Thumbprint: the thumbprint of the encryption certificate (it is recommended to not use same certificate that is being used for SSL).
 - Enable Token Endpoint.
 - Enable Authorization Endpoint.
 - Enable Logout Endpoint.
@@ -66,12 +63,14 @@ A sample of OpenID Connect Settings recipe step:
 {
       "name": "OpenIdServerSettings",
       "TestingModeEnabled": false,
-      "AccessTokenFormat": "JWT", //JWT or Encrypted
+      "AccessTokenFormat": "JsonWebToken", // JsonWebToken or DataProtection
       "Authority": "https://www.orchardproject.net",
-      "Audiences": ["https://www.orchardproject.net","https://orchardharvest.org/"],
-      "CertificateStoreLocation": "LocalMachine", //More info: https://msdn.microsoft.com/en-us/library/system.security.cryptography.x509certificates.storelocation(v=vs.110).aspx
-      "CertificateStoreName": "My", //More info: https://msdn.microsoft.com/en-us/library/system.security.cryptography.x509certificates.storename(v=vs.110).aspx
-      "CertificateThumbprint": "27CCA66EF38EF46CD9022431FB1FF0F2DF5CA1D7",
+      "SigningCertificateStoreLocation": "LocalMachine", //More info: https://msdn.microsoft.com/en-us/library/system.security.cryptography.x509certificates.storelocation(v=vs.110).aspx
+      "SigningCertificateStoreName": "My", //More info: https://msdn.microsoft.com/en-us/library/system.security.cryptography.x509certificates.storename(v=vs.110).aspx
+      "SigningCertificateThumbprint": "27CCA66EF38EF46CD9022431FB1FF0F2DF5CA1D7",
+      "EncryptionCertificateStoreLocation": "LocalMachine",
+      "EncryptionCertificateStoreName": "My",
+      "EncryptionCertificateThumbprint": "BC34460ABEA2D576EA68E8FFCFEEB3F45C94FB0F",
       "EnableTokenEndpoint": true,
       "EnableAuthorizationEndpoint": false,
       "EnableLogoutEndpoint": true,
@@ -118,7 +117,7 @@ A sample of OpenID Connect App recipe step:
       "ClientId": "openidtest",
       "DisplayName": "Open Id Test",
       "Type": "Confidential",
-       "ClientSecret": "MyPassword",
+      "ClientSecret": "MyPassword",
       "EnableTokenEndpoint": true,
       "EnableAuthorizationEndpoint": false,
       "EnableLogoutEndpoint": true,
@@ -136,13 +135,14 @@ A sample of OpenID Connect App recipe step:
 Scopes can be set through OpenID Connect Scopes menu in the admin dashboard (through the Management Interface feature) and also through a recipe step.
 
 OpenID Connect Scopes require the following configuration.
-|||
-|-|:-|
-|Name|Unique name of the scope.|
-|Display Name|Display name associated with the current scope.|
-|Description|Describe how this scope is used in the system.|
-|Tenants|Build the audience based on tenants names.|
-|Additional resources|Build the audience based on the space seperated strings provided.|
+
+| Property | Description |
+| -------- | ----------- |
+| Name | Unique name of the scope. |
+| Display Name | Display name associated with the current scope. |
+| Description | Describe how this scope is used in the system. |
+| Tenants | Build the audience based on tenants names. |
+| Additional resources | Build the audience based on the space separated strings provided. |
 
 A sample of OpenID Connect Scope recipe step:
 
@@ -240,11 +240,12 @@ To use the certificate on an Azure hosted site.
 - Validates token by a remote server supporting JWT and OpenID Connect discovery.
 
 Token Validation require the following configuration.
-|||
-|-|:-|
-|Authorization server tenant|The tenant that runs OpenID Connect Server. If none is selected, then the following properties must be provided.|
-|Authority|The address of the remote OpenID Connect server that issued the token.|
-|Audience|Defines the intended recipient of the token that must be checked.|
+
+| Property | Description |
+| -------- | ----------- |
+| Authorization server tenant | The tenant that runs OpenID Connect Server. If none is selected, then the following properties must be provided. |
+| Authority | The address of the remote OpenID Connect server that issued the token. |
+| Audience | Defines the intended recipient of the token that must be checked. |
 
 A sample of Token Validation Settings recipe step:
 

@@ -61,11 +61,11 @@
         "OrchardCore.Layers",
         "OrchardCore.Lucene",
         "OrchardCore.Lists",
-        "OrchardCore.Liquid",
         "OrchardCore.Markdown",
         "OrchardCore.Media",
         "OrchardCore.Menu",
         "OrchardCore.Queries",
+        "OrchardCore.Shortcodes.Templates",
         "OrchardCore.Taxonomies",
         "OrchardCore.Title",
         "OrchardCore.Templates",
@@ -115,7 +115,7 @@
               "Name": "Article",
               "Settings": {
                 "ContentTypePartSettings": {
-                  "Position": "2"
+                  "Position": "3"
                 }
               }
             },
@@ -139,7 +139,7 @@
               "Settings": {
                 "ContentTypePartSettings": {
                   "Editor": "Wysiwyg",
-                  "Position": "3"
+                  "Position": "2"
                 }
               }
             },
@@ -249,7 +249,7 @@
               "Name": "BlogPost",
               "Settings": {
                 "ContentTypePartSettings": {
-                  "Position": "2"
+                  "Position": "3"
                 }
               }
             },
@@ -259,7 +259,7 @@
               "Settings": {
                 "ContentTypePartSettings": {
                   "Editor": "Wysiwyg",
-                  "Position": "3"
+                  "Position": "2"
                 }
               }
             }
@@ -315,7 +315,7 @@
               "Name": "Blog",
               "Settings": {
                 "ContentTypePartSettings": {
-                  "Position": "2"
+                  "Position": "3"
                 }
               }
             },
@@ -324,7 +324,7 @@
               "Name": "HtmlBodyPart",
               "Settings": {
                 "ContentTypePartSettings": {
-                  "Position": "3"
+                  "Position": "2"
                 }
               }
             },
@@ -685,7 +685,6 @@
                   "Template": null
                 },
                 "MediaFieldSettings": {
-                  "Required": true,
                   "Multiple": false
                 }
               }
@@ -723,7 +722,6 @@
                   "Template": null
                 },
                 "MediaFieldSettings": {
-                  "Required": true,
                   "Multiple": false
                 }
               }  
@@ -740,7 +738,6 @@
                 },
                 "ContentIndexSettings": {},
                 "TaxonomyFieldSettings": {
-                  "Required": true,
                   "TaxonomyContentItemId": "[js: variables('tagsContentItemId')]"
                 },
                 "TaxonomyFieldTagsEditorSettings": {}
@@ -756,7 +753,6 @@
                 },
                 "ContentIndexSettings": {},
                 "TaxonomyFieldSettings": {
-                  "Required": true,
                   "TaxonomyContentItemId": "[js: variables('categoriesContentItemId')]",
                   "Unique": true,
                   "LeavesOnly": true
@@ -788,7 +784,6 @@
                   "Position": "0"
                 },
                 "MediaFieldSettings": {
-                  "Required": false,
                   "Multiple": false
                 }
               }

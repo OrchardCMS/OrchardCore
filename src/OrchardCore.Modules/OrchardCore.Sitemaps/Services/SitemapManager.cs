@@ -115,15 +115,19 @@ namespace OrchardCore.Sitemaps.Services
             {
                 var changeToken = ChangeToken;
 
-                document = await _sessionHelper.GetForCachingAsync<SitemapDocument>();
+                bool cacheable;
 
-                foreach (var sitemap in document.Sitemaps.Values)
+                (cacheable, document) = await _sessionHelper.GetForCachingAsync<SitemapDocument>();
+
+                if (cacheable)
                 {
-                    sitemap.IsReadonly = true;
+                    foreach (var sitemap in document.Sitemaps.Values)
+                    {
+                        sitemap.IsReadonly = true;
+                    }
+
+                    _memoryCache.Set(SitemapsDocumentCacheKey, document, changeToken);
                 }
-
-                _memoryCache.Set(SitemapsDocumentCacheKey, document, changeToken);
-
             }
 
             return document;
