@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Threading;
 using OrchardCore.Environment.Shell.Builders.Models;
 using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Environment.Shell.Scope;
@@ -15,7 +14,7 @@ namespace OrchardCore.Environment.Shell.Builders
     {
         private bool _disposed;
         private List<WeakReference<ShellContext>> _dependents;
-        private object _synLock = new object();
+        private readonly object _synLock = new object();
 
         internal volatile int _refCount;
         internal volatile int _terminated;
@@ -64,7 +63,7 @@ namespace OrchardCore.Environment.Shell.Builders
             // Don't start using a new scope on a released shell.
             if (_released)
             {
-                // But let it manage the shell state if it remains the last scope.
+                // But let it manage the shell state as usual.
                 scope.TerminateShellAsync().GetAwaiter().GetResult();
                 return null;
             }
@@ -83,7 +82,7 @@ namespace OrchardCore.Environment.Shell.Builders
         public int ActiveScopes => _refCount;
 
         /// <summary>
-        /// Mark the <see cref="ShellContext"/> as a candidate to be disposed.
+        /// Mark the <see cref="ShellContext"/> as released and then a candidate to be disposed.
         /// </summary>
         public void Release() => ReleaseInternal();
 

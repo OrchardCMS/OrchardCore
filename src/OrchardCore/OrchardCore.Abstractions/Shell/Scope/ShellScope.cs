@@ -33,7 +33,7 @@ namespace OrchardCore.Environment.Shell.Scope
 
         public ShellScope(ShellContext shellContext)
         {
-            // Prevent the context from being disposed until the end of the last scope
+            // Prevent the context from being disposed until the end of the scope
             Interlocked.Increment(ref shellContext._refCount);
             ShellContext = shellContext;
 
@@ -41,6 +41,7 @@ namespace OrchardCore.Environment.Shell.Scope
             // a scope on a disabled shell or already disposed.
             if (shellContext.ServiceProvider == null)
             {
+                // Keep the counter clean before failing.
                 Interlocked.Decrement(ref shellContext._refCount);
 
                 throw new ArgumentNullException(nameof(shellContext.ServiceProvider),
@@ -238,9 +239,9 @@ namespace OrchardCore.Environment.Shell.Scope
         }
 
         /// <summary>
-        /// Terminates a shell through this shell scope if it is and remains the last one.
+        /// Terminates a shell using this shell scope.
         /// </summary>
-        public async Task TerminateShellAsync()
+        internal async Task TerminateShellAsync()
         {
             using (this)
             {
@@ -280,13 +281,7 @@ namespace OrchardCore.Environment.Shell.Scope
                 // The tenant gets activated here.
                 if (!ShellContext.IsActivated)
                 {
-                    var scope = ShellContext.CreateScope();
-                    if (scope == null)
-                    {
-                        return;
-                    }
-
-                    await scope.UsingServiceScopeAsync(async scope =>
+                    await new ShellScope(ShellContext).UsingServiceScopeAsync(async scope =>
                     {
                         var tenantEvents = scope.ServiceProvider.GetServices<IModularTenantEvents>();
                         foreach (var tenantEvent in tenantEvents)
@@ -411,7 +406,10 @@ namespace OrchardCore.Environment.Shell.Scope
 
             _terminated = true;
 
-            // If the shell context is released, it will be disposed if the ref counter is equal to 0.
+            // If the shell context is released and in its last shell scope, according to the ref counter value,
+            // the terminate event handlers are called, and the shell will be disposed at the end of this scope.
+
+            // Check if the decremented value of the counter reached 0.
             if (Interlocked.Decrement(ref ShellContext._refCount) == 0)
             {
                 // A disabled shell still in use is released by its last scope.
@@ -456,6 +454,7 @@ namespace OrchardCore.Environment.Shell.Scope
             _disposed = true;
             _serviceScope.Dispose();
 
+            // Check if the shell has been terminated.
             if (_shellTerminated)
             {
                 ShellContext.Dispose();
@@ -463,6 +462,7 @@ namespace OrchardCore.Environment.Shell.Scope
 
             if (!_terminated)
             {
+                // Keep the counter clean if not already decremented.
                 Interlocked.Decrement(ref ShellContext._refCount);
             }
         }
