@@ -37,8 +37,8 @@
     <PackageManagement Include="Serilog.AspNetCore" Version="3.4.0" />
     <PackageManagement Include="Shortcodes" Version="1.0.0-beta-175913881" />
     <PackageManagement Include="SixLabors.ImageSharp.Web" Version="1.0.0" />
-    <PackageManagement Include="Swashbuckle.AspNetCore" Version="5.5.1" />
-    <PackageManagement Include="Swashbuckle.AspNetCore.Annotations" Version="5.5.1" />
+    <PackageManagement Include="Swashbuckle.AspNetCore" Version="5.6.3" />
+    <PackageManagement Include="Swashbuckle.AspNetCore.Annotations" Version="5.6.3" />
     <PackageManagement Include="xunit.analyzers" Version="0.10.0" />
     <PackageManagement Include="xunit" Version="2.4.1" />
     <PackageManagement Include="xunit.runner.visualstudio" Version="2.4.1" />
