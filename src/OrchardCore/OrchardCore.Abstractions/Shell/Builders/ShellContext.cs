@@ -160,7 +160,7 @@ namespace OrchardCore.Environment.Shell.Builders
         }
 
         /// <summary>
-        /// Registers the specified shellContext as a dependent such that it is also released when the current shell context is released.
+        /// Registers the specified shellContext as dependent such that it is also released when the current shell context is released.
         /// </summary>
         public void AddDependentShell(ShellContext shellContext)
         {
