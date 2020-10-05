@@ -17,6 +17,10 @@
   left: 0;
   right: 259px;
   transition: right 0.2s ease-in-out, width 0.2s ease-in-out; }
+  #mediaApp ::-webkit-scrollbar {
+    width: 4px; }
+  [dir] #mediaApp ::-webkit-scrollbar-thumb {
+    background-color: #495057; }
   #mediaApp #mediaContainer {
     display: flex;
     flex-direction: column;
@@ -52,7 +56,9 @@
     #mediaApp #navigationApp {
       height: 100%;
       width: 240px;
-      overflow: auto; } }
+      overflow: auto;
+      scrollbar-width: thin;
+      scrollbar-color: #495057 #EAEAEA; } }
   #mediaApp .alert-info {
     font-size: 0.875rem; }
   [dir] #mediaApp .message-warning {

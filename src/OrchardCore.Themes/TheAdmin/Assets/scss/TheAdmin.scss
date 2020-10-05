@@ -524,7 +524,7 @@ body:not(.left-sidebar-compact) {
 
         ::-webkit-scrollbar-thumb {
             background-color: #495057;
-        }   
+        }
 
         figure {
             margin: 0;
@@ -610,12 +610,7 @@ body:not(.left-sidebar-compact) {
                 // the padding when leftbar is collapsed. Avoid small movement
                 // when switching between the two states
                 &.menu-admin {
-                    overflow-y: auto;
-                    overflow-x: hidden;
-                    height: 100%;
                     margin-bottom: 40px;
-                    scrollbar-width: thin;
-                    scrollbar-color: #495057 #EAEAEA;
                 }
 
                 .item-label {
@@ -721,6 +716,11 @@ body:not(.left-sidebar-compact) {
                     overflow: visible;
                     width: $left-navigation-width-when-compact + $left-navigation-width;
                     transition: none;
+                    position: static;
+
+                    figure {
+                        position: static;
+                    }
 
                     span.title, span.icon {
                         display: block;
