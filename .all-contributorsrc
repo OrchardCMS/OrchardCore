@@ -536,7 +536,8 @@
       "avatar_url": "https://avatars3.githubusercontent.com/u/379390?v=4",
       "profile": "https://www.zeta.com.au/",
       "contributions": [
-        "code"
+        "code",
+        "doc"
       ]
     },
     {
@@ -1837,6 +1838,42 @@
       "profile": "https://github.com/khurram4u2",
       "contributions": [
         "code"
+      ]
+    },
+    {
+      "login": "mvarblow",
+      "name": "Matt Varblow",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/1827487?v=4",
+      "profile": "https://github.com/mvarblow",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "Rajdeepc",
+      "name": "Rajdeep Chandra",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/8790510?v=4",
+      "profile": "https://bit.ly/2zZJkF3",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "serverside-is",
+      "name": "Marco Serralheiro",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/3681658?v=4",
+      "profile": "http://www.serverside.pt",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "NogginBox",
+      "name": "Richard Garside",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/729381?v=4",
+      "profile": "http://www.nogginbox.co.uk",
+      "contributions": [
+        "doc"
       ]
     }
   ],

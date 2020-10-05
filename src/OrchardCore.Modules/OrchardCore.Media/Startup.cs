@@ -10,7 +10,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Microsoft.Net.Http.Headers;
 using OrchardCore.Admin;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
@@ -22,7 +21,6 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Environment.Shell;
 using OrchardCore.FileStorage;
 using OrchardCore.FileStorage.FileSystem;
-using OrchardCore.Shortcodes;
 using OrchardCore.Liquid;
 using OrchardCore.Media.Controllers;
 using OrchardCore.Media.Core;
@@ -34,9 +32,9 @@ using OrchardCore.Media.Filters;
 using OrchardCore.Media.Handlers;
 using OrchardCore.Media.Processing;
 using OrchardCore.Media.Recipes;
-using OrchardCore.Media.Shortcodes;
 using OrchardCore.Media.Services;
 using OrchardCore.Media.Settings;
+using OrchardCore.Media.Shortcodes;
 using OrchardCore.Media.TagHelpers;
 using OrchardCore.Media.ViewModels;
 using OrchardCore.Modules;
@@ -45,13 +43,10 @@ using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
-using Shortcodes;
-using SixLabors.ImageSharp.Memory;
-using SixLabors.ImageSharp.Web.Caching;
-using SixLabors.ImageSharp.Web.Commands;
+using OrchardCore.Shortcodes;
 using SixLabors.ImageSharp.Web.DependencyInjection;
 using SixLabors.ImageSharp.Web.Middleware;
-using SixLabors.ImageSharp.Web.Processors;
+using SixLabors.ImageSharp.Web.Providers;
 
 namespace OrchardCore.Media
 {
@@ -130,16 +125,10 @@ namespace OrchardCore.Media
             // Add ImageSharp Configuration first, to override ImageSharp defaults.
             services.AddTransient<IConfigureOptions<ImageSharpMiddlewareOptions>, MediaImageSharpConfiguration>();
 
-            services.AddImageSharpCore()
-                .SetRequestParser<QueryCollectionRequestParser>()
-                .SetMemoryAllocator<ArrayPoolMemoryAllocator>()
-                .SetCache<PhysicalFileSystemCache>()
-                .SetCacheHash<CacheHash>()
+            services.AddImageSharp()
+                .RemoveProvider<PhysicalFileSystemProvider>()
                 .AddProvider<MediaResizingFileProvider>()
-                .AddProcessor<ResizeWebProcessor>()
-                .AddProcessor<FormatWebProcessor>()
-                .AddProcessor<ImageVersionProcessor>()
-                .AddProcessor<BackgroundColorWebProcessor>();
+                .AddProcessor<ImageVersionProcessor>();
 
             // Media Field
             services.AddContentField<MediaField>()
@@ -157,8 +146,7 @@ namespace OrchardCore.Media
 
             services.AddTagHelpers<ImageTagHelper>();
             services.AddTagHelpers<ImageResizeTagHelper>();
-
-            services.AddScoped<IShortcodeProvider, ImageShortcodeProvider>();
+            services.AddTagHelpers<AnchorTagHelper>();
         }
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
@@ -176,20 +164,11 @@ namespace OrchardCore.Media
             // ImageSharp before the static file provider.
             app.UseImageSharp();
 
-            // Use the same cache control header as ImageSharp does for resized images.
-            var cacheControl = "public, must-revalidate, max-age=" + TimeSpan.FromDays(mediaOptions.MaxBrowserCacheDays).TotalSeconds.ToString();
+            // The file provider is a circular dependency and replaceable via di.
+            mediaOptions.StaticFileOptions.FileProvider = mediaFileProvider;
 
-            app.UseStaticFiles(new StaticFileOptions
-            {
-                // The tenant's prefix is already implied by the infrastructure.
-                RequestPath = mediaOptions.AssetsRequestPath,
-                FileProvider = mediaFileProvider,
-                ServeUnknownFileTypes = true,
-                OnPrepareResponse = ctx =>
-                {
-                    ctx.Context.Response.Headers[HeaderNames.CacheControl] = cacheControl;
-                }
-            });
+            // Use services.PostConfigure<MediaOptions>() to alter the media static file options event handlers.
+            app.UseStaticFiles(mediaOptions.StaticFileOptions);
 
             var adminControllerName = typeof(AdminController).ControllerName();
 
@@ -318,6 +297,33 @@ namespace OrchardCore.Media
             services.AddTransient<IDeploymentSource, MediaDeploymentSource>();
             services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<MediaDeploymentStep>());
             services.AddScoped<IDisplayDriver<DeploymentStep>, MediaDeploymentStepDriver>();
+        }
+    }
+
+    [RequireFeatures("OrchardCore.Shortcodes")]
+    public class ShortcodesStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            // Only add image as a descriptor as [media] is deprecated.
+            services.AddShortcode<ImageShortcodeProvider>("image", d =>
+            {
+                d.DefaultValue = "[image] [/image]";
+                d.Hint = "Add a image from the media library.";
+                d.Usage =
+@"[image]foo.jpg[/image]<br>
+<table>
+  <tr>
+    <td>Args:</td>
+    <td>width, height, mode</td>
+  </tr>
+  <tr>
+    <td></td>
+    <td>class, alt</td>
+  </tr>
+</table>";
+                d.Categories = new string[] { "HTML Content", "Media" };
+            });
         }
     }
 }

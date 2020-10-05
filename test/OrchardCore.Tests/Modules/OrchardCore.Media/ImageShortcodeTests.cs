@@ -70,7 +70,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Media
 
             var imageProvider = new ImageShortcodeProvider(fileStore,sanitizer, httpContextAccessor, options);
 
-            var processor = new ShortcodeService(new IShortcodeProvider[] { imageProvider });
+            var processor = new ShortcodeService(new IShortcodeProvider[] { imageProvider }, Enumerable.Empty<IShortcodeContextProvider>());
 
             var processed = await processor.ProcessAsync(text);
             Assert.Equal(expected, processed);

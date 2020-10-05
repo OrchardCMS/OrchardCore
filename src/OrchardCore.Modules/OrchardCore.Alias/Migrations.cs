@@ -4,6 +4,7 @@ using OrchardCore.Alias.Models;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.Data.Migration;
+using YesSql.Sql;
 
 namespace OrchardCore.Alias
 {
@@ -24,7 +25,7 @@ namespace OrchardCore.Alias
 
             // NOTE: The Alias Length has been upgraded from 64 characters to 767.
             // For existing SQL databases update the AliasPartIndex tables Alias column length manually.
-            SchemaBuilder.CreateMapIndexTable(nameof(AliasPartIndex), table => table
+            SchemaBuilder.CreateMapIndexTable<AliasPartIndex>(table => table
                 .Column<string>("Alias", col => col.WithLength(AliasPartDisplayDriver.MaxAliasLength))
                 .Column<string>("ContentItemId", c => c.WithLength(26))
                 .Column<bool>("Latest", c => c.WithDefault(false))

@@ -12,7 +12,7 @@
 <script asp-name="codemirror-mode-xml" at="Foot"></script>
 
 <script asp-src="~/OrchardCore.Liquid/codemirror/liquid.js" at="Foot"></script>
-<script asp-src="~/OrchardCore.Templates/templatepreview.edit.js" at="Foot"></script>
+<script asp-name="templatepreview-edit" at="Foot"></script>
 
 <h1>@RenderTitleSegments(T["Create Template"])</h1>
 
@@ -36,6 +36,7 @@
     <div class="form-group" asp-validation-class-for="Content">
         <label asp-for="Content">@T["Content"]</label>
         <textarea asp-for="Content" rows="10" class="form-control"></textarea>
+        <span asp-validation-for="Content"></span>
         <span class="hint">@T["The Liquid template."]</span>
     </div>
 

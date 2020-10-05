@@ -103,10 +103,10 @@ namespace OrchardCore.Tenants.Controllers
                         Description = x["Description"],
                         Name = x.Name,
                         ShellSettings = x,
-                        IsDefaultTenant = string.Equals(x.Name, ShellHelper.DefaultShellName, StringComparison.OrdinalIgnoreCase)
+                        IsDefaultTenant = String.Equals(x.Name, ShellHelper.DefaultShellName, StringComparison.OrdinalIgnoreCase)
                     };
 
-                    if (x.State == TenantState.Uninitialized && !string.IsNullOrEmpty(x["Secret"]))
+                    if (x.State == TenantState.Uninitialized && !String.IsNullOrEmpty(x["Secret"]))
                     {
                         entry.Token = dataProtector.Protect(x["Secret"], _clock.UtcNow.Add(new TimeSpan(24, 0, 0)));
                     }
@@ -114,7 +114,7 @@ namespace OrchardCore.Tenants.Controllers
                     return entry;
                 }).ToList();
 
-            if (!string.IsNullOrWhiteSpace(options.Search))
+            if (!String.IsNullOrWhiteSpace(options.Search))
             {
                 entries = entries.Where(t => t.Name.IndexOf(options.Search, StringComparison.OrdinalIgnoreCase) > -1 ||
                     (t.ShellSettings != null &&
@@ -220,7 +220,7 @@ namespace OrchardCore.Tenants.Controllers
             foreach (var tenantName in model.TenantNames ?? Enumerable.Empty<string>())
             {
                 var shellSettings = allSettings
-                    .Where(x => string.Equals(x.Name, tenantName, StringComparison.OrdinalIgnoreCase))
+                    .Where(x => String.Equals(x.Name, tenantName, StringComparison.OrdinalIgnoreCase))
                     .FirstOrDefault();
 
                 if (shellSettings == null)
@@ -231,7 +231,7 @@ namespace OrchardCore.Tenants.Controllers
                 switch (model.BulkAction.ToString())
                 {
                     case "Disable":
-                        if (string.Equals(shellSettings.Name, ShellHelper.DefaultShellName, StringComparison.OrdinalIgnoreCase))
+                        if (String.Equals(shellSettings.Name, ShellHelper.DefaultShellName, StringComparison.OrdinalIgnoreCase))
                         {
                             _notifier.Warning(H["You cannot disable the default tenant."]);
                         }
@@ -363,7 +363,7 @@ namespace OrchardCore.Tenants.Controllers
             }
 
             var shellSettings = _shellHost.GetAllSettings()
-                .Where(x => string.Equals(x.Name, id, StringComparison.OrdinalIgnoreCase))
+                .Where(x => String.Equals(x.Name, id, StringComparison.OrdinalIgnoreCase))
                 .FirstOrDefault();
 
             if (shellSettings == null)
@@ -416,7 +416,7 @@ namespace OrchardCore.Tenants.Controllers
             }
 
             var shellSettings = _shellHost.GetAllSettings()
-                .Where(x => string.Equals(x.Name, model.Name, StringComparison.OrdinalIgnoreCase))
+                .Where(x => String.Equals(x.Name, model.Name, StringComparison.OrdinalIgnoreCase))
                 .FirstOrDefault();
 
             if (shellSettings == null)
@@ -479,7 +479,7 @@ namespace OrchardCore.Tenants.Controllers
             }
 
             var shellSettings = _shellHost.GetAllSettings()
-                .Where(s => string.Equals(s.Name, id, StringComparison.OrdinalIgnoreCase))
+                .Where(s => String.Equals(s.Name, id, StringComparison.OrdinalIgnoreCase))
                 .FirstOrDefault();
 
             if (shellSettings == null)
@@ -487,7 +487,7 @@ namespace OrchardCore.Tenants.Controllers
                 return NotFound();
             }
 
-            if (string.Equals(shellSettings.Name, ShellHelper.DefaultShellName, StringComparison.OrdinalIgnoreCase))
+            if (String.Equals(shellSettings.Name, ShellHelper.DefaultShellName, StringComparison.OrdinalIgnoreCase))
             {
                 _notifier.Error(H["You cannot disable the default tenant."]);
                 return RedirectToAction(nameof(Index));
@@ -519,7 +519,7 @@ namespace OrchardCore.Tenants.Controllers
             }
 
             var shellSettings = _shellHost.GetAllSettings()
-                .Where(x => string.Equals(x.Name, id, StringComparison.OrdinalIgnoreCase))
+                .Where(x => String.Equals(x.Name, id, StringComparison.OrdinalIgnoreCase))
                 .FirstOrDefault();
 
             if (shellSettings == null)
@@ -552,8 +552,7 @@ namespace OrchardCore.Tenants.Controllers
             }
 
             var shellSettings = _shellHost.GetAllSettings()
-                .OrderBy(x => x.Name)
-                .Where(x => string.Equals(x.Name, id, StringComparison.OrdinalIgnoreCase))
+                .Where(x => String.Equals(x.Name, id, StringComparison.OrdinalIgnoreCase))
                 .FirstOrDefault();
 
             if (shellSettings == null)
@@ -581,35 +580,35 @@ namespace OrchardCore.Tenants.Controllers
                 ModelState.AddModelError(nameof(EditTenantViewModel.ConnectionString), S["The connection string is mandatory for this provider."]);
             }
 
-            if (string.IsNullOrWhiteSpace(model.Name))
+            if (String.IsNullOrWhiteSpace(model.Name))
             {
                 ModelState.AddModelError(nameof(EditTenantViewModel.Name), S["The tenant name is mandatory."]);
             }
 
             var allSettings = _shellHost.GetAllSettings();
 
-            if (newTenant && allSettings.Any(tenant => string.Equals(tenant.Name, model.Name, StringComparison.OrdinalIgnoreCase)))
+            if (newTenant && allSettings.Any(tenant => String.Equals(tenant.Name, model.Name, StringComparison.OrdinalIgnoreCase)))
             {
                 ModelState.AddModelError(nameof(EditTenantViewModel.Name), S["A tenant with the same name already exists.", model.Name]);
             }
 
-            if (!string.IsNullOrEmpty(model.Name) && !Regex.IsMatch(model.Name, @"^\w+$"))
+            if (!String.IsNullOrEmpty(model.Name) && !Regex.IsMatch(model.Name, @"^\w+$"))
             {
                 ModelState.AddModelError(nameof(EditTenantViewModel.Name), S["Invalid tenant name. Must contain characters only and no spaces."]);
             }
 
-            if (!IsDefaultShell() && string.IsNullOrWhiteSpace(model.RequestUrlHost) && string.IsNullOrWhiteSpace(model.RequestUrlPrefix))
+            if (!IsDefaultShell() && String.IsNullOrWhiteSpace(model.RequestUrlHost) && String.IsNullOrWhiteSpace(model.RequestUrlPrefix))
             {
                 ModelState.AddModelError(nameof(EditTenantViewModel.RequestUrlPrefix), S["Host and url prefix can not be empty at the same time."]);
             }
 
             var allOtherShells = allSettings.Where(tenant => !string.Equals(tenant.Name, model.Name, StringComparison.OrdinalIgnoreCase));
-            if (allOtherShells.Any(tenant => string.Equals(tenant.RequestUrlPrefix, model.RequestUrlPrefix?.Trim(), StringComparison.OrdinalIgnoreCase) && string.Equals(tenant.RequestUrlHost, model.RequestUrlHost, StringComparison.OrdinalIgnoreCase)))
+            if (allOtherShells.Any(tenant => String.Equals(tenant.RequestUrlPrefix, model.RequestUrlPrefix?.Trim(), StringComparison.OrdinalIgnoreCase) && String.Equals(tenant.RequestUrlHost, model.RequestUrlHost, StringComparison.OrdinalIgnoreCase)))
             {
                 ModelState.AddModelError(nameof(EditTenantViewModel.RequestUrlPrefix), S["A tenant with the same host and prefix already exists.", model.Name]);
             }
 
-            if (!string.IsNullOrWhiteSpace(model.RequestUrlPrefix))
+            if (!String.IsNullOrWhiteSpace(model.RequestUrlPrefix))
             {
                 if (model.RequestUrlPrefix.Contains('/'))
                 {
@@ -620,7 +619,7 @@ namespace OrchardCore.Tenants.Controllers
 
         private bool IsDefaultShell()
         {
-            return string.Equals(_currentShellSettings.Name, ShellHelper.DefaultShellName, StringComparison.OrdinalIgnoreCase);
+            return String.Equals(_currentShellSettings.Name, ShellHelper.DefaultShellName, StringComparison.OrdinalIgnoreCase);
         }
     }
 }

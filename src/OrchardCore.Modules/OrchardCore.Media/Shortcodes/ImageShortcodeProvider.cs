@@ -37,7 +37,7 @@ namespace OrchardCore.Media.Shortcodes
             _options = options.Value;
         }
 
-        public ValueTask<string> EvaluateAsync(string identifier, Arguments arguments, string content)
+        public ValueTask<string> EvaluateAsync(string identifier, Arguments arguments, string content, Context context)
         {
             if (!Shortcodes.Contains(identifier))
             {
@@ -80,6 +80,8 @@ namespace OrchardCore.Media.Shortcodes
                 var width = arguments.Named("width");
                 var height = arguments.Named("height");
                 var mode = arguments.Named("mode");
+                var quality = arguments.Named("quality");
+                var format = arguments.Named("format");
                 className = arguments.Named("class");
                 altText = arguments.Named("alt");
 
@@ -96,6 +98,16 @@ namespace OrchardCore.Media.Shortcodes
                 if (mode != null)
                 {
                     queryStringParams.Add("rmode", mode);
+                }
+
+                if (quality != null)
+                {
+                    queryStringParams.Add("quality", quality);
+                }
+
+                if (format != null)
+                {
+                    queryStringParams.Add("format", format);
                 }
 
                 if (className != null)
