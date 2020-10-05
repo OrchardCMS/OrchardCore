@@ -7,7 +7,7 @@ If you want to provide documentation for your Api, implement the IOpenApiDefinit
 Use the Document property to describe general metadata about the Api.
 Use the predicate to filter for objects that belong to your Api definition.
 
-Example;
+Example:
 
 <code>
 public class OrchardApiDefinition : IOpenApiDefinition
