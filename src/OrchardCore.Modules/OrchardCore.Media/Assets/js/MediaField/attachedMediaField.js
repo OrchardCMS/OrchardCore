@@ -1,4 +1,4 @@
-function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaItemUrl, allowMultiple, allowAltText, tempUploadFolder) {
+function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaItemUrl, allowMultiple, allowAltText, allowCenterCropping, tempUploadFolder) {
 
     var target = $(document.getElementById($(el).data('for')));
     var initialPaths = target.data("init");
@@ -16,7 +16,9 @@ function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaI
             idPrefix: idprefix,
             initialized: false,
             allowAltText: allowAltText,
-            editingAltText: ''
+            backupAltText: '',
+            allowCenterCropping: allowCenterCropping,
+            backupCenter: [ null, null ]
         },
         created: function () {
             var self = this;
@@ -34,7 +36,7 @@ function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaI
                         if (x.mediaPath === 'not-found') {
                             return;
                         }
-                        mediaPaths.push({ path: x.mediaPath, isRemoved: x.isRemoved, isNew: x.isNew, altText: x.altText });
+                        mediaPaths.push({ path: x.mediaPath, isRemoved: x.isRemoved, isNew: x.isNew, altText: x.altText, center: x.center });
                     });
                     return JSON.stringify(mediaPaths);
                 },
@@ -53,6 +55,7 @@ function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaI
                                 success: function (data) {
                                     data.vuekey = data.name + i.toString(); // Because a unique key is required by Vue on v-for 
                                     data.altText = x.altText; // This value is not returned from the ajax call.
+                                    data.center = x.center; // This value is not returned from the ajax call.
                                     items.splice(i, 1, data);
                                     if (items.length === ++length) {
                                         items.forEach(function (x) {
@@ -63,7 +66,7 @@ function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaI
                                 },
                                 error: function (error) {
                                     console.log(JSON.stringify(error));
-                                    items.splice(i, 1, { name: x.path, mime: '', mediaPath: 'not-found', altText: '' });
+                                    items.splice(i, 1, { name: x.path, mime: '', mediaPath: 'not-found', altText: '', center: [ null, null ]  });
                                     if (items.length === ++length) {
                                         items.forEach(function (x) {
                                             self.mediaItems.push(x);
@@ -216,12 +219,70 @@ function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaI
                 this.selectedMedia = null;
             },
             showAltTextModal: function (event) {
-                var modal = $(this.$refs.altTextModal).modal();
-                this.editingAltText = this.selectedMedia.altText;
+                $(this.$refs.altTextModal).modal();
+                this.backupAltText = this.selectedMedia.altText;
             },
-            closeAltTextModal: function (event) {
+            showCenterCroppingModal: function (event) {
+                $(this.$refs.centerCroppingModal).modal();
+                // Cause a refresh to recalc heights.
+                this.$set(this.selectedMedia.center, 0, this.selectedMedia.center[0]);
+                this.$set(this.selectedMedia.center, 1, this.selectedMedia.center[1]);
+                this.backupCenter = this.selectedMedia.center;
+            },
+            cancelAltTextModal: function (event) {
                 $(this.$refs.altTextModal).modal('hide');
-                this.selectedMedia.altText = this.editingAltText;
+                this.selectedMedia.altText = this.backupAltText;
+            },           
+            cancelCenterCroppingModal: function (event) {
+                $(this.$refs.centerCroppingModal).modal('hide');
+                this.selectedMedia.center = this.backupCenter;
+            },            
+            clearCenterCrop: function (event) {
+                this.$set(this.selectedMedia.center, 0, null);
+                this.$set(this.selectedMedia.center, 1, null);
+            },  
+            onCropDrop: function(event) {
+                var image = this.$refs.cropImage;
+
+                this.$set(this.selectedMedia.center, 0, event.offsetX / image.clientWidth);
+                this.$set(this.selectedMedia.center, 1, event.offsetY / image.clientHeight);
+            },
+            cropLeft: function () {
+                if (this.$refs.cropImage && this.selectedMedia) {
+                    var position = this.selectedMedia.center[0] * this.$refs.cropImage.clientWidth;
+                    if (position < 17) {
+                        position = 17;
+                    }
+                    return position + 'px';
+                } else {
+                    return '0';
+                }
+            },            
+            cropTop: function () {
+                if (this.$refs.cropImage && this.selectedMedia) {
+                    var position = this.selectedMedia.center[1] * this.$refs.cropImage.clientHeight;
+                    if (position < 15) {
+                        position = 15;
+                    }
+                    return position + 'px';
+                } else {
+                    return '0';
+                }
+            },
+            setCrop: function (event) {
+                var image = this.$refs.cropImage;
+                this.$set(this.selectedMedia.center, 0, event.offsetX / image.clientWidth);
+                this.$set(this.selectedMedia.center, 1, event.offsetY / image.clientHeight);
+            },          
+            addMediaFiles: function (files) {
+                if ((files.length > 1) && (allowMultiple === false)) {
+                    alert($('#onlyOneItemMessage').val());
+                    mediaFieldApp.mediaItems.push(files[0]);
+                    mediaFieldApp.initialized = true;
+                } else {
+                    mediaFieldApp.mediaItems = mediaFieldApp.mediaItems.concat(files);
+                    mediaFieldApp.initialized = true;
+                }
             },
             selectAndDeleteMedia: function (media) {
                 var self = this;
@@ -234,10 +295,13 @@ function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaI
             }
         },
         watch: {
-            mediaItems: function () {
-                // Trigger preview rendering
-                setTimeout(function () { $(document).trigger('contentpreview:render'); }, 100);
-            },
+            mediaItems: {
+                deep: true,
+                handler () {
+                    // Trigger preview rendering
+                    setTimeout(function () { $(document).trigger('contentpreview:render'); }, 100);
+                }
+            }, 
             currentPrefs: function (newPrefs) {
                 localStorage.setItem('mediaFieldPrefs', JSON.stringify(newPrefs));
             }

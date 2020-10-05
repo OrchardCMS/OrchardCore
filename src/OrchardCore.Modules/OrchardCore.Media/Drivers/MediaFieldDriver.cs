@@ -70,6 +70,18 @@ namespace OrchardCore.Media.Drivers
                     }
                 }
 
+                if (settings.AllowCenterCropping)
+                {
+                    var centers = field.GetCenters();
+                    for(var i = 0; i < itemPaths.Count(); i++)
+                    {
+                        if (i >= 0 && i < centers.Length)
+                        {
+                            itemPaths[i].Center = centers[i];
+                        }
+                    }
+                }
+
                 model.Paths = JsonConvert.SerializeObject(itemPaths, Settings);
                 model.TempUploadFolder = _attachedMediaFieldFileService.MediaFieldsTempSubFolder;
                 model.Field = field;
@@ -126,6 +138,16 @@ namespace OrchardCore.Media.Drivers
                 {
                     field.Content.Remove("AltTexts");
                 }
+
+                if (settings.AllowCenterCropping)
+                {
+                    field.SetCenters(items.Select(t => t.Center).ToArray());
+                }
+                else if (field.Content.ContainsKey("Centers")) // Less well known properties should be self healing.
+                {
+                    field.Content.Remove("Centers");
+                }
+
             }
 
             return Edit(field, context);

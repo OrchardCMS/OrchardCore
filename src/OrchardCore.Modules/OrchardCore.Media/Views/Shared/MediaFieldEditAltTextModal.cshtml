@@ -1,24 +1,21 @@
-@model dynamic
-@* @Orchard.ConsoleLog(Model as object) *@
-    <div class="modal" ref="altTextModal">
-    @* <div class="modal" id="article_image-alttextmodalbody"> *@
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">@T["Enter alt text"]</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
+<div class="modal" ref="altTextModal">
+    <div v-if="selectedMedia" class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">@T["Enter alt text"]</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <input class="form-control" v-if="selectedMedia" v-model="selectedMedia.altText"/>
                 </div>
-                <div class="modal-body">
-                    <div class="form-group">
-                        <input class="form-control" v-model="editingAltText"/>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" v-on:click="closeAltTextModal">@T["OK"]</button>
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">@T["Cancel"]</button>
-                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">@T["OK"]</button>
+                <button type="button" class="btn btn-secondary" v-on:click="cancelAltTextModal">@T["Cancel"]</button>
             </div>
         </div>
     </div>
+</div>

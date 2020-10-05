@@ -561,6 +561,15 @@ ol.media-items-grid {
       position: absolute;
       z-index: -1; }
 
+@media (min-width: 992px) {
+  .media-crop-modal .modal-lg {
+    max-width: 1200px; } }
+
+.media-crop-modal .icon-media-crop {
+  position: absolute;
+  line-height: 0px;
+  color: #e83e8c; }
+
 .media-modal.modal-dialog,
 .media-modal .modal-content {
   height: 95%; }

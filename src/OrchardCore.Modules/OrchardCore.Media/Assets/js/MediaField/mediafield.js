@@ -1,4 +1,4 @@
-function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple, allowAltText) {
+function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple, allowAltText, allowCenterCropping) {
 
     var target = $(document.getElementById($(el).data('for')));
     var initialPaths = target.data("init");
@@ -16,7 +16,9 @@ function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple,
             idPrefix: idprefix,
             initialized: false,
             allowAltText: allowAltText,
-            editingAltText: ''
+            backupAltText: '',
+            allowCenterCropping: allowCenterCropping,
+            backupCenter: [ null, null ]
         },
         created: function () {
             var self = this;
@@ -34,7 +36,7 @@ function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple,
                         if (x.mediaPath === 'not-found') {
                             return;
                         }
-                        mediaPaths.push({ path: x.mediaPath, altText: x.altText });
+                        mediaPaths.push({ path: x.mediaPath, altText: x.altText, center: x.center });
                     });
                     return JSON.stringify(mediaPaths);
                 },
@@ -53,6 +55,7 @@ function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple,
                                 success: function (data) {
                                     data.vuekey = data.name + i.toString();
                                     data.altText = x.altText; // This value is not returned from the ajax call.
+                                    data.center = x.center; // This value is not returned from the ajax call.
                                     items.splice(i, 1, data);
                                     if (items.length === ++length) {
                                         items.forEach(function (y) {
@@ -63,7 +66,7 @@ function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple,
                                 },
                                 error: function (error) {
                                     console.log(error);
-                                    items.splice(i, 1, { name: x.path, mime: '', mediaPath: 'not-found', altText: x.altText });
+                                    items.splice(i, 1, { name: x.path, mime: '', mediaPath: 'not-found', altText: '', center: [ null, null ] });
                                     if (items.length === ++length) {
                                         items.forEach(function (x) {
                                             self.mediaItems.push(x);
@@ -99,8 +102,7 @@ function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple,
                     }
                     this.smallThumbs = newPrefs.smallThumbs;
                 }
-            }
-
+            },
         },
         mounted: function () {
             var self = this;
@@ -141,13 +143,61 @@ function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple,
                 }
             },
             showAltTextModal: function (event) {
-                var modal = $(this.$refs.altTextModal).modal();
-                this.editingAltText = this.selectedMedia.altText;
+                $(this.$refs.altTextModal).modal();
+                this.backupAltText = this.selectedMedia.altText;
             },
-            closeAltTextModal: function (event) {
+            cancelAltTextModal: function (event) {
                 $(this.$refs.altTextModal).modal('hide');
-                this.selectedMedia.altText = this.editingAltText;
+                this.selectedMedia.altText = this.backupAltText;
             },
+            showCenterCroppingModal: function (event) {
+                $(this.$refs.centerCroppingModal).modal();
+                // Cause a refresh to recalc heights.
+                this.$set(this.selectedMedia.center, 0, this.selectedMedia.center[0]);
+                this.$set(this.selectedMedia.center, 1, this.selectedMedia.center[1]);
+                this.backupCenter = this.selectedMedia.center;
+            },            
+            cancelCenterCroppingModal: function (event) {
+                $(this.$refs.centerCroppingModal).modal('hide');
+                this.selectedMedia.center = this.backupCenter;
+            },            
+            clearCenterCrop: function (event) {
+                this.$set(this.selectedMedia.center, 0, null);
+                this.$set(this.selectedMedia.center, 1, null);
+            },  
+            onCropDrop: function(event) {
+                var image = this.$refs.cropImage;
+
+                this.$set(this.selectedMedia.center, 0, event.offsetX / image.clientWidth);
+                this.$set(this.selectedMedia.center, 1, event.offsetY / image.clientHeight);
+            },
+            cropLeft: function () {
+                if (this.$refs.cropImage && this.selectedMedia) {
+                    var position = this.selectedMedia.center[0] * this.$refs.cropImage.clientWidth;
+                    if (position < 17) {
+                        position = 17;
+                    }
+                    return position + 'px';
+                } else {
+                    return '0';
+                }
+            },            
+            cropTop: function () {
+                if (this.$refs.cropImage && this.selectedMedia) {
+                    var position = this.selectedMedia.center[1] * this.$refs.cropImage.clientHeight;
+                    if (position < 15) {
+                        position = 15;
+                    }
+                    return position + 'px';
+                } else {
+                    return '0';
+                }
+            },
+            setCrop: function (event) {
+                var image = this.$refs.cropImage;
+                this.$set(this.selectedMedia.center, 0, event.offsetX / image.clientWidth);
+                this.$set(this.selectedMedia.center, 1, event.offsetY / image.clientHeight);
+            },         
             addMediaFiles: function (files) {
                 if ((files.length > 1) && (allowMultiple === false)) {
                     alert($('#onlyOneItemMessage').val());
@@ -184,10 +234,13 @@ function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple,
             }
         },
         watch: {
-            mediaItems: function () {
-                // Trigger preview rendering
-                setTimeout(function () { $(document).trigger('contentpreview:render'); }, 100);
-            },
+            mediaItems: {
+                deep: true,
+                handler () {
+                    // Trigger preview rendering
+                    setTimeout(function () { $(document).trigger('contentpreview:render'); }, 100);
+                }
+            },            
             currentPrefs: function (newPrefs) {
                 localStorage.setItem('mediaFieldPrefs', JSON.stringify(newPrefs));
             }

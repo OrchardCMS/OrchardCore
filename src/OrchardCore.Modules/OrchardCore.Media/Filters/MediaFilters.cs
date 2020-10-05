@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.WebUtilities;
@@ -55,8 +56,9 @@ namespace OrchardCore.Media.Filters
             var width = arguments["width"].Or(arguments.At(0));
             var height = arguments["height"].Or(arguments.At(1));
             var mode = arguments["mode"].Or(arguments.At(2));
-            var quality = arguments["quality"].Or(arguments.At(3));
-            var format = arguments["format"].Or(arguments.At(4));
+            var quality = arguments["quality"];//.Or(arguments.At(3));
+            var format = arguments["format"];//.Or(arguments.At(4));
+            var center = arguments["center"];
 
             if (!width.IsNil())
             {
@@ -81,6 +83,24 @@ namespace OrchardCore.Media.Filters
             if (!format.IsNil())
             {
                 queryStringParams.Add("format", format.ToStringValue());
+            }
+
+            if (!center.IsNil() && center.Type == FluidValues.Array)
+            {
+                var xy = String.Empty;
+                foreach (var value in center.Enumerate())
+                {
+                    if (!value.IsNil())
+                    {
+                        xy = String.Empty;
+                        break;
+                    }
+                    xy = xy + value.ToNumberValue().ToString() + ',';
+                }
+                if (!String.IsNullOrEmpty(xy))
+                {
+                    queryStringParams.Add("rxy", xy.Trim(','));
+                }
             }
 
             return new ValueTask<FluidValue>(new StringValue(QueryHelpers.AddQueryString(url, queryStringParams)));

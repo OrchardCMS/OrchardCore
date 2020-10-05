@@ -30,6 +30,7 @@
                 <i class="fa fa-upload"></i>
             </label>
             <a href="javascript:;" v-show="allowAltText" v-on:click="showAltTextModal" class="btn btn-secondary btn-sm" v-bind:class="{ disabled : !selectedMedia }"><i class="far fa-comment"></i></a>
+            <a href="javascript:;" v-show="allowCenterCropping" v-on:click="showCenterCroppingModal" class="btn btn-secondary btn-sm" v-bind:class="{ disabled : !selectedMedia }"><i class="fas fa-crop-alt"></i></a>
             <a href="javascript:;" v-on:click="removeSelected" class="btn btn-secondary btn-sm" v-bind:class="{ disabled : !selectedMedia }"><i class="fas fa-trash-alt"></i></a>
         </div>
         <label class="selected-media-name">
@@ -42,6 +43,7 @@
     <media-field-thumbs-container :media-items="mediaItems" :thumb-size="thumbSize" :selected-media="selectedMedia" :id-prefix="idPrefix"></media-field-thumbs-container>
     
     <partial name="Shared/MediaFieldEditAltTextModal.cshtml" />
+    <partial name="Shared/MediaFieldEditCropModal.cshtml" />
 
 </div>
 
@@ -55,5 +57,6 @@
         '@Url.Action("GetMediaItem", "Admin", new { area = "OrchardCore.Media" })',
         @(settings.Multiple ? "true" : "false"),
         @(settings.AllowAltText ? "true" : "false"),
+        @(settings.AllowCenterCropping ? "true" : "false"),
         '@Model.TempUploadFolder');
 </script>

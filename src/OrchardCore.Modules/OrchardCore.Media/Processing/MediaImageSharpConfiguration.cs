@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Web.Commands;
 using SixLabors.ImageSharp.Web.Middleware;
 using SixLabors.ImageSharp.Web.Processors;
 
@@ -36,6 +37,21 @@ namespace OrchardCore.Media.Processing
                 {
                     validation.Commands.Remove(ResizeWebProcessor.Compand);
                     validation.Commands.Remove(ResizeWebProcessor.Sampler);
+
+                    float[] coordinates = validation.Parser.ParseValue<float[]>(validation.Commands.GetValueOrDefault(ResizeWebProcessor.Xy), validation.Culture);
+
+                    if (coordinates.Length != 2)
+                    {
+                        validation.Commands.Remove(ResizeWebProcessor.Xy);
+                    }
+                    else
+                    {
+                        // This prevents a 0.9999 being seen as a different image to 0.9, to prevent disk filling.
+                        var x = coordinates[0].ToString("0.#");
+                        var y = coordinates[1].ToString("0.#");
+                        validation.Commands[ResizeWebProcessor.Xy] = x + ',' + y;
+                    }
+
                     // Center is xy
                     // validation.Commands.Remove(ResizeWebProcessor.Xy);
                     // Anchor is position

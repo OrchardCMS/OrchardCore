@@ -2,6 +2,7 @@ using System;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.Media.Fields;
+using SixLabors.ImageSharp;
 
 namespace OrchardCore.Media.ViewModels
 {
@@ -20,6 +21,10 @@ namespace OrchardCore.Media.ViewModels
         // Alt text is an option that maybe applied to a media field through settings.
         public bool AllowAltText { get; set; }
         public string AltTexts { get; set; }
+
+        // Center cropping dimensions are an option that maybe applied to a media field through settings.
+        public bool AllowCenterCropping { get; set; }
+        public float[][] Centers { get; set; }
     }
 
     public class EditMediaFieldItemInfo
@@ -34,5 +39,6 @@ namespace OrchardCore.Media.ViewModels
 
         // Alt text is an option that maybe applied to a media field through settings.
         public string AltText { get; set; } = String.Empty;
+        public float?[] Center { get; set; } = Array.Empty<float?>();
     }
 }

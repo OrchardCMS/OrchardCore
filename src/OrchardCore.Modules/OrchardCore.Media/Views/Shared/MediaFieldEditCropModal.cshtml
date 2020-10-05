@@ -1,0 +1,33 @@
+    <div class="modal media-crop-modal" ref="centerCroppingModal">
+        <div v-if="selectedMedia" class="modal-dialog modal-lg" role="document" >
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">@T["Select a crop point"]</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body w-100 h100">
+                    <div class="bg-secondary d-flex justify-content-center">
+                        <img class="img-fluid" v-bind:src="selectedMedia.url" ref="cropImage" v-on:mousedown="setCrop" v-on:drop='onCropDrop($event)' v-on:dragover.prevent v-on:dragenter.prevent/>
+                        <span v-if="selectedMedia.center[0] && selectedMedia.center[1]" class="icon-media-crop" draggable v-bind:style="{ left: cropLeft(), top: cropTop() }">
+                            <i class="fas fa-bullseye"  ></i>
+                        </span>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    @* <div class="form-group">
+                        <input class="form-control" v-model="selectedMedia.center[0]"/>
+                        <input class="form-control" v-model="selectedMedia.center[1]"/>
+                    </div> *@
+                    <div class="d-flex w-100 justify-content-between">
+                        <button type="button" class="btn btn-primary " v-on:click="clearCenterCrop">@T["Clear Crop"]</button>
+                        <div>
+                            <button type="button" class="btn btn-success" data-dismiss="modal">@T["OK"]</button>
+                            <button type="button" class="btn btn-secondary" v-on:click="cancelCenterCroppingModal">@T["Cancel"]</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
