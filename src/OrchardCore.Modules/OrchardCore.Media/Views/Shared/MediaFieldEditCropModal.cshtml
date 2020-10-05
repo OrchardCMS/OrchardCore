@@ -11,7 +11,7 @@
                     <div class="bg-secondary d-flex justify-content-center">
                         <img class="img-fluid" v-bind:src="selectedMedia.url" ref="cropImage" v-on:mousedown="setCrop" v-on:drop='onCropDrop($event)' v-on:dragover.prevent v-on:dragenter.prevent/>
                         <span v-if="selectedMedia.center[0] && selectedMedia.center[1]" class="icon-media-crop" draggable v-bind:style="{ left: cropLeft(), top: cropTop() }">
-                            <i class="fas fa-bullseye"  ></i>
+                            <i class="fas fa-crosshairs"></i>
                         </span>
                     </div>
                 </div>
