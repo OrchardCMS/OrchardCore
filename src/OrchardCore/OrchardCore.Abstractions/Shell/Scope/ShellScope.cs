@@ -35,13 +35,14 @@ namespace OrchardCore.Environment.Shell.Scope
         {
             // Prevent the context from being disposed until the end of the last scope
             Interlocked.Increment(ref shellContext._refCount);
-
             ShellContext = shellContext;
 
             // The service provider is null if we try to create
             // a scope on a disabled shell or already disposed.
             if (shellContext.ServiceProvider == null)
             {
+                Interlocked.Decrement(ref shellContext._refCount);
+
                 throw new ArgumentNullException(nameof(shellContext.ServiceProvider),
                     $"Can't resolve a scope on tenant: {shellContext.Settings.Name}");
             }
@@ -409,21 +410,28 @@ namespace OrchardCore.Environment.Shell.Scope
             }
 
             _terminated = true;
-            Interlocked.Decrement(ref ShellContext._refCount);
 
-            // If the context is still being released, it will be disposed if the ref counter is equal to 0.
-            if (Interlocked.CompareExchange(ref ShellContext._refCount, 0, 0) == 0)
+            // If the shell context is released, it will be disposed if the ref counter is equal to 0.
+            if (Interlocked.Decrement(ref ShellContext._refCount) == 0)
             {
-                if (!ShellContext._released && ShellContext.Settings.State != TenantState.Disabled)
+                // A disabled shell still in use is released by its last scope.
+                if (ShellContext.Settings.State == TenantState.Disabled)
+                {
+                    ShellContext.ReleaseFromLastScope();
+                }
+
+                if (!ShellContext._released)
                 {
                     return;
                 }
 
-                // A disabled shell still in use is released by its last scope.
-                if (ShellContext.Settings.State == TenantState.Disabled)
+                // Ensures that the terminate event handlers are called once.
+                if (Interlocked.Exchange(ref ShellContext._terminated, 1) == 1)
                 {
-                    ShellContext.Release();
+                    return;
                 }
+
+                _shellTerminated = true;
 
                 var tenantEvents = _serviceScope.ServiceProvider.GetServices<IModularTenantEvents>();
                 foreach (var tenantEvent in tenantEvents)
@@ -435,8 +443,6 @@ namespace OrchardCore.Environment.Shell.Scope
                 {
                     await tenantEvent.TerminatedAsync();
                 }
-
-                _shellTerminated = true;
             }
         }
 

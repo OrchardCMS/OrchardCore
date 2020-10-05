@@ -14,10 +14,12 @@ namespace OrchardCore.Environment.Shell.Builders
     public class ShellContext : IDisposable
     {
         private bool _disposed;
-        internal volatile int _refCount;
-        internal bool _released;
         private List<WeakReference<ShellContext>> _dependents;
         private object _synLock = new object();
+
+        internal volatile int _refCount;
+        internal volatile int _terminated;
+        internal bool _released;
 
         public ShellSettings Settings { get; set; }
         public ShellBlueprint Blueprint { get; set; }
@@ -33,8 +35,6 @@ namespace OrchardCore.Environment.Shell.Builders
         /// </summary>
         public IShellPipeline Pipeline { get; set; }
 
-        private bool _placeHolder;
-
         public class PlaceHolder : ShellContext
         {
             /// <summary>
@@ -42,8 +42,8 @@ namespace OrchardCore.Environment.Shell.Builders
             /// </summary>
             public PlaceHolder()
             {
-                _placeHolder = true;
                 _released = true;
+                _terminated = 1;
                 _disposed = true;
             }
         }
@@ -53,26 +53,23 @@ namespace OrchardCore.Environment.Shell.Builders
         /// </summary>
         public ShellScope CreateScope()
         {
-            // We can't create a scope with a null 'ServiceProvider' meaning that the shell has been disposed. Normally, the
-            // 'ShellHost' removes the shell from its collection as soon as it is released so that a new one will be created.
-            // But this may happen when a shell releases its dependent shells and disposes those that are not in use.
-            if (_placeHolder || (ServiceProvider == null && Settings.State != TenantState.Disabled))
+            // Don't create a shell scope on a released shell.
+            if (_released)
             {
                 return null;
             }
 
             var scope = new ShellScope(this);
 
-            // A new scope can be only used on a non released shell.
-            if (!_released)
+            // Don't start using a new scope on a released shell.
+            if (_released)
             {
-                return scope;
+                // But let it manage the shell state if it remains the last scope.
+                scope.TerminateShellAsync().GetAwaiter().GetResult();
+                return null;
             }
 
-            // Otherwise, let it manage the shell state as usual.
-            scope.TerminateShellAsync().GetAwaiter().GetResult();
-
-            return null;
+            return scope;
         }
 
         /// <summary>
@@ -86,9 +83,15 @@ namespace OrchardCore.Environment.Shell.Builders
         public int ActiveScopes => _refCount;
 
         /// <summary>
-        /// Mark the <see cref="ShellContext"/> has a candidate to be released.
+        /// Mark the <see cref="ShellContext"/> as a candidate to be disposed.
         /// </summary>
-        public void Release()
+        public void Release() => ReleaseInternal();
+
+        internal void ReleaseFromLastScope() => ReleaseInternal(ReleaseMode.FromLastScope);
+
+        internal void ReleaseFromDependency() => ReleaseInternal(ReleaseMode.FromDependency);
+
+        private void ReleaseInternal(ReleaseMode mode = ReleaseMode.Normal)
         {
             if (_released == true)
             {
@@ -96,9 +99,9 @@ namespace OrchardCore.Environment.Shell.Builders
                 return;
             }
 
-            if (ServiceProvider == null)
+            // A disabled shell still in use will be released by its last scope.
+            if (mode == ReleaseMode.FromDependency && Settings.State == TenantState.Disabled && _refCount != 0)
             {
-                Dispose();
                 return;
             }
 
@@ -107,6 +110,7 @@ namespace OrchardCore.Environment.Shell.Builders
             // resolve or use its services. We then call this method to count the remaining references and dispose it
             // when the number reached zero.
 
+            ShellScope scope = null;
             lock (_synLock)
             {
                 if (_released == true)
@@ -114,9 +118,11 @@ namespace OrchardCore.Environment.Shell.Builders
                     return;
                 }
 
-                // Before marking the shell as released, create a shell scope that will be used to manage
-                // the shell state as usual, by calling terminate event handlers and disposing the shell.
-                var scope = new ShellScope(this);
+                // Create a scope that will be used to manage the shell state.
+                if (mode != ReleaseMode.FromLastScope && ServiceProvider != null)
+                {
+                    scope = new ShellScope(this);
+                }
 
                 _released = true;
 
@@ -126,15 +132,32 @@ namespace OrchardCore.Environment.Shell.Builders
                     {
                         if (dependent.TryGetTarget(out var shellContext))
                         {
-                            shellContext.Release();
+                            shellContext.ReleaseFromDependency();
                         }
                     }
                 }
-
-                // A ShellContext is usually disposed when the last scope is disposed, but if there is no scope
-                // then we need to dispose it right away, so let's use this shell scope manage the shell state.
-                scope.TerminateShellAsync().GetAwaiter().GetResult();
             }
+
+            if (scope != null)
+            {
+                // Let this scope manage the shell state as usual.
+                scope.TerminateShellAsync().GetAwaiter().GetResult();
+                return;
+            }
+
+            if (mode == ReleaseMode.FromLastScope)
+            {
+                return;
+            }
+
+            Dispose();
+        }
+
+        private enum ReleaseMode
+        {
+            Normal,
+            FromLastScope,
+            FromDependency
         }
 
         /// <summary>
