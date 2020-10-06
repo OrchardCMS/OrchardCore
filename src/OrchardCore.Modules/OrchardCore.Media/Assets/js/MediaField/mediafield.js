@@ -238,7 +238,7 @@ function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple,
                 deep: true,
                 handler () {
                     // Trigger preview rendering
-                    setTimeout(function () { $(document).trigger('contentpreview:render'); }, 100);
+                    setTimeout(function () { $(document).trigger('contentpreview:render'); }, 100); 
                 }
             },            
             currentPrefs: function (newPrefs) {

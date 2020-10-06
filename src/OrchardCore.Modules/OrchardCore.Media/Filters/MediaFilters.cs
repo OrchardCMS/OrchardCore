@@ -90,7 +90,7 @@ namespace OrchardCore.Media.Filters
                 var xy = String.Empty;
                 foreach (var value in center.Enumerate())
                 {
-                    if (!value.IsNil())
+                    if (value.IsNil())
                     {
                         xy = String.Empty;
                         break;
