@@ -8852,6 +8852,7 @@ $(function () {
   var lastHeight = $(this).height(); //this = window
 
   leftNav = $('#left-nav');
+  topBar = $('.ta-navbar-top');
   var widthBreakPoint = 768;
   var heightBreakPoint = leftNav.height();
   lastWidthDirection = "";
@@ -8864,7 +8865,7 @@ $(function () {
     var width = $(this).width();
     var height = $(this).height();
     var widthBreakPoint = 768;
-    var heightBreakPoint = leftNav.height();
+    var heightBreakPoint = leftNav.height() + topBar.height();
     var widthDirection = width < lastWidth ? 'reducing' : 'increasing';
     var heightDirection = height < lastHeight ? 'reducing' : 'increasing';
 
@@ -8903,7 +8904,7 @@ $(function () {
         BreakpointHeightChangeManaged = true;
       }
 
-      if (heightDirection == "increasing" && height < heightBreakPoint) {
+      if (heightDirection == "increasing" && height > heightBreakPoint) {
         // breakpoint reached while going up
         if (isCompactExplicit == false) {
           setCompactStatus();
