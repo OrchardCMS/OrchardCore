@@ -1,9 +1,6 @@
 @using OrchardCore.ContentManagement
 @using OrchardCore.Forms.Models;
 @using OrchardCore.Mvc.Utilities;
-@using Newtonsoft.Json.Linq;
-
-@inject OrchardCore.ContentManagement.Display.IContentItemDisplayManager ContentItemDisplayManager
 
 @{
     var formPart = ((ContentItem)Model.ContentItem).As<FormPart>();
