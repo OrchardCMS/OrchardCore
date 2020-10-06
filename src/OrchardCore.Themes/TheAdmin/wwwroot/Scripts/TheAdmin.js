@@ -8851,10 +8851,10 @@ $(function () {
 
   var lastHeight = $(this).height(); //this = window
 
-  leftNav = $('#left-nav');
+  leftNav = $('.left-sidebar-compact').find('#left-nav');
   topBar = $('.ta-navbar-top');
   var widthBreakPoint = 768;
-  var heightBreakPoint = leftNav.height();
+  var heightBreakPoint = leftNav.height() + topBar.height();
   lastWidthDirection = "";
   lastHeightDirection = "";
   var lastWidthDirectionManaged = "";
@@ -8862,19 +8862,13 @@ $(function () {
   BreakpointWidthChangeManaged = false;
   BreakpointHeightChangeManaged = false;
   $(window).on('resize', function () {
+    // for width resizing
     var width = $(this).width();
-    var height = $(this).height();
     var widthBreakPoint = 768;
-    var heightBreakPoint = leftNav.height() + topBar.height();
     var widthDirection = width < lastWidth ? 'reducing' : 'increasing';
-    var heightDirection = height < lastHeight ? 'reducing' : 'increasing';
 
     if (widthDirection !== lastWidthDirection) {
       BreakpointWidthChangeManaged = false; // need to listen for breakpoint            
-    }
-
-    if (heightDirection !== lastHeightDirection) {
-      BreakpointHeightChangeManaged = false; // need to listen for breakpoint            
     }
 
     if (BreakpointWidthChangeManaged == false && widthDirection != lastWidthDirectionManaged) {
@@ -8896,27 +8890,28 @@ $(function () {
       }
     }
 
-    if (BreakpointHeightChangeManaged == false && heightDirection != lastHeightDirectionManaged) {
-      if (heightDirection == "reducing" && height < heightBreakPoint) {
-        // breakpoint reached while going down
-        unSetCompactStatus();
-        lastHeightDirectionManaged = heightDirection;
-        BreakpointHeightChangeManaged = true;
+    lastWidthDirection = widthDirection;
+    lastWidth = width; // for height resizing
+
+    if ($('.left-sidebar-compact').find('#left-nav').length > 0) {
+      var height = $(this).height();
+      var heightBreakPoint = leftNav.height() + topBar.height();
+      var heightDirection = height < lastHeight ? 'reducing' : 'increasing';
+
+      if (heightDirection !== lastHeightDirection) {
+        BreakpointHeightChangeManaged = false; // need to listen for breakpoint            
       }
 
-      if (heightDirection == "increasing" && height > heightBreakPoint) {
-        // breakpoint reached while going up
-        if (isCompactExplicit == false) {
-          setCompactStatus();
-        }
+      if (BreakpointHeightChangeManaged == false) {
+        if (height < heightBreakPoint) {
+          // breakpoint reached while going down
+          unSetCompactStatus(); //lastHeightDirectionManaged = heightDirection;
 
-        lastHeightDirectionManaged = heightDirection;
-        BreakpointHeightChangeManaged = true;
+          BreakpointHeightChangeManaged = true;
+        }
       }
     }
 
-    lastWidthDirection = widthDirection;
-    lastWidth = width;
     lastHeightDirection = heightDirection;
     lastHeight = height;
   });
