@@ -276,7 +276,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
   </tr>
   <tr>
     <td align="center"><a href="http://www.serverside.pt"><img src="https://avatars3.githubusercontent.com/u/3681658?v=4" width="100px;" alt=""/><br /><sub><b>Marco Serralheiro</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=serverside-is" title="Code">💻</a></td>
-    <td align="center"><a href="http://www.nogginbox.co.uk"><img src="https://avatars3.githubusercontent.com/u/729381?v=4" width="100px;" alt=""/><br /><sub><b>Richard Garside</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=NogginBox" title="Documentation">📖</a></td>
+    <td align="center"><a href="http://www.nogginbox.co.uk"><img src="https://avatars3.githubusercontent.com/u/729381?v=4" width="100px;" alt=""/><br /><sub><b>Richard Garside</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=NogginBox" title="Documentation">📖</a> <a href="https://github.com/OrchardCMS/OrchardCore/commits?author=NogginBox" title="Code">💻</a></td>
   </tr>
 </table>
 
