@@ -412,7 +412,7 @@ namespace OrchardCore.Environment.Shell.Scope
             // Check if the decremented value of the counter reached 0.
             if (Interlocked.Decrement(ref ShellContext._refCount) == 0)
             {
-                // A disabled shell still in use is released by its last scope.
+                // A disabled shell in use is released by its last scope.
                 if (ShellContext.Settings.State == TenantState.Disabled)
                 {
                     ShellContext.ReleaseFromLastScope();
@@ -422,6 +422,10 @@ namespace OrchardCore.Environment.Shell.Scope
                 {
                     return;
                 }
+
+                // Normally only one scope can reach this point, but when a disabled shell is lazily released,
+                // even it was also removed from the running shell table, just before releasing it in its last
+                // scope, a new scope on it (and then a new last scope) can be still created by another shell.
 
                 // Ensures that the terminate event handlers are called once.
                 if (Interlocked.Exchange(ref ShellContext._terminated, 1) == 1)
@@ -462,7 +466,7 @@ namespace OrchardCore.Environment.Shell.Scope
 
             if (!_terminated)
             {
-                // Keep the counter clean if not already decremented.
+                // Keep the counter clean if not yet decremented.
                 Interlocked.Decrement(ref ShellContext._refCount);
             }
         }

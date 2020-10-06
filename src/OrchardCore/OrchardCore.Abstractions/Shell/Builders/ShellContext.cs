@@ -18,6 +18,7 @@ namespace OrchardCore.Environment.Shell.Builders
 
         internal volatile int _refCount;
         internal volatile int _terminated;
+        internal bool _releasing;
         internal bool _released;
 
         public ShellSettings Settings { get; set; }
@@ -42,7 +43,6 @@ namespace OrchardCore.Environment.Shell.Builders
             public PlaceHolder()
             {
                 _released = true;
-                _terminated = 1;
                 _disposed = true;
             }
         }
@@ -63,7 +63,7 @@ namespace OrchardCore.Environment.Shell.Builders
             // Don't start using a new scope on a released shell.
             if (_released)
             {
-                // But let it manage the shell state as usual.
+                // But let this scope manage the shell state as usual.
                 scope.TerminateShellAsync().GetAwaiter().GetResult();
                 return null;
             }
@@ -90,15 +90,15 @@ namespace OrchardCore.Environment.Shell.Builders
 
         internal void ReleaseFromDependency() => ReleaseInternal(ReleaseMode.FromDependency);
 
-        private void ReleaseInternal(ReleaseMode mode = ReleaseMode.Normal)
+        internal void ReleaseInternal(ReleaseMode mode = ReleaseMode.Normal)
         {
-            if (_released == true)
+            if (_releasing)
             {
                 // Prevent infinite loops with circular dependencies
                 return;
             }
 
-            // A disabled shell still in use will be released by its last scope.
+            // A disabled shell still in use will be released by its last scope, as checked at the host level.
             if (mode == ReleaseMode.FromDependency && Settings.State == TenantState.Disabled && _refCount != 0)
             {
                 return;
@@ -112,18 +112,12 @@ namespace OrchardCore.Environment.Shell.Builders
             ShellScope scope = null;
             lock (_synLock)
             {
-                if (_released == true)
+                if (_releasing)
                 {
                     return;
                 }
 
-                // Create a scope that will be used to manage the shell state.
-                if (mode != ReleaseMode.FromLastScope && ServiceProvider != null)
-                {
-                    scope = new ShellScope(this);
-                }
-
-                _released = true;
+                _releasing = true;
 
                 if (_dependents != null)
                 {
@@ -137,22 +131,32 @@ namespace OrchardCore.Environment.Shell.Builders
                 }
             }
 
-            if (scope != null)
+            if (mode == ReleaseMode.FromLastScope)
             {
-                // Let this scope manage the shell state as usual.
-                scope.TerminateShellAsync().GetAwaiter().GetResult();
+                _released = true;
                 return;
             }
 
-            if (mode == ReleaseMode.FromLastScope)
+            // Before marking the shell as released, we create a new scope that will manage the shell state,
+            // so that we always use the same shell scope logic to check if the reference counter reaches 0.
+            if (ServiceProvider != null)
             {
+                scope = new ShellScope(this);
+            }
+
+            _released = true;
+
+            if (scope != null)
+            {
+                // Use this scope to manage the shell state as usual.
+                scope.TerminateShellAsync().GetAwaiter().GetResult();
                 return;
             }
 
             Dispose();
         }
 
-        private enum ReleaseMode
+        internal enum ReleaseMode
         {
             Normal,
             FromLastScope,
