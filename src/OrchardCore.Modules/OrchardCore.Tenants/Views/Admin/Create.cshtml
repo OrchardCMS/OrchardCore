@@ -49,7 +49,7 @@
                 @foreach (var recipe in Model.Recipes)
                 {
                     <option value="@recipe.Name" selected="@(Model.RecipeName == recipe.Name)">
-                        @recipe.Name
+                        @recipe.DisplayName
                     </option>
                 }
             </select>
