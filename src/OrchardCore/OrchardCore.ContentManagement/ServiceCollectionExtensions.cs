@@ -28,8 +28,6 @@ namespace OrchardCore.ContentManagement
 
             services.AddSingleton<IContentItemIdGenerator, DefaultContentItemIdGenerator>();
             services.AddScoped<IContentHandleManager, ContentHandleManager>();
-            // This code can be removed in a future release.
-            services.AddScoped<IContentAliasManager>(sp => (IContentAliasManager)sp.GetRequiredService<IContentHandleManager>());
 
             services.AddOptions<ContentOptions>();
             services.AddScoped<IContentPartHandlerResolver, ContentPartHandlerResolver>();
