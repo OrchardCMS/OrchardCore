@@ -409,10 +409,10 @@ namespace OrchardCore.Environment.Shell.Scope
             // If the shell context is released and in its last shell scope, according to the ref counter value,
             // the terminate event handlers are called, and the shell will be disposed at the end of this scope.
 
-            // Check if the decremented value of the counter reached 0.
+            // Check if the decremented value of the ref counter reached 0.
             if (Interlocked.Decrement(ref ShellContext._refCount) == 0)
             {
-                // A disabled shell in use is released by its last scope.
+                // A disabled shell still in use is released by its last scope.
                 if (ShellContext.Settings.State == TenantState.Disabled)
                 {
                     ShellContext.ReleaseFromLastScope();
@@ -423,11 +423,13 @@ namespace OrchardCore.Environment.Shell.Scope
                     return;
                 }
 
-                // Normally only one scope can reach this point, but when a disabled shell is lazily released,
-                // even it was also removed from the running shell table, just before releasing it in its last
-                // scope, a new scope on it (and then a new last scope) can be still created by another shell.
+                // If released after the counter reached 0, a new last scope may have been created.
+                if (Interlocked.CompareExchange(ref ShellContext._refCount, 0, 0) != 0)
+                {
+                    return;
+                }
 
-                // Ensures that the terminate event handlers are called once.
+                // If a new last scope reached this point, ensure that the shell is terminated once.
                 if (Interlocked.Exchange(ref ShellContext._terminated, 1) == 1)
                 {
                     return;

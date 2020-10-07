@@ -18,7 +18,6 @@ namespace OrchardCore.Environment.Shell.Builders
 
         internal volatile int _refCount;
         internal volatile int _terminated;
-        internal bool _releasing;
         internal bool _released;
 
         public ShellSettings Settings { get; set; }
@@ -92,7 +91,7 @@ namespace OrchardCore.Environment.Shell.Builders
 
         internal void ReleaseInternal(ReleaseMode mode = ReleaseMode.Normal)
         {
-            if (_releasing)
+            if (_released)
             {
                 // Prevent infinite loops with circular dependencies
                 return;
@@ -112,12 +111,10 @@ namespace OrchardCore.Environment.Shell.Builders
             ShellScope scope = null;
             lock (_synLock)
             {
-                if (_releasing)
+                if (_released)
                 {
                     return;
                 }
-
-                _releasing = true;
 
                 if (_dependents != null)
                 {
