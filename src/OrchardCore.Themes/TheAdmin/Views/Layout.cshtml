@@ -17,7 +17,7 @@
     <resources type="Header" />
 
     <!-- This script can't wait to the footer -->
-    <script type="text/javascript" asp-src="~/TheAdmin/Scripts/userPreferencesLoader.min.js" debug-src="~/TheAdmin/Scripts/userPreferencesLoader.js"></script>
+    <script asp-src="~/TheAdmin/Scripts/userPreferencesLoader.min.js" debug-src="~/TheAdmin/Scripts/userPreferencesLoader.js"></script>
     @await RenderSectionAsync("HeadMeta", required: false)
 </head>
 <body class="preload">
@@ -45,7 +45,7 @@
 
             @await RenderBodyAsync()
         </div>
-    </div><!-- /.ta-wrapper -->
+    <!-- /.ta-wrapper -->
 
     @await RenderSectionAsync("Footer", required: false)
 

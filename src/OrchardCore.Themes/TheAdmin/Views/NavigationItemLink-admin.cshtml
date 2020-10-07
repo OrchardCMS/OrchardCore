@@ -5,6 +5,7 @@
     Model.Metadata.Alternates.Add("NavigationItemText_Id__" + Model.Id);
     
     TagBuilder tag = Tag(Model, "a");
+    tag.Attributes["id"] = null;
     
     tag.AddCssClass("item-label d-flex");
     tag.Attributes["href"] = Model.Href ?? "#";
@@ -12,7 +13,7 @@
     
     if(Model.HasItems)
     {
-        tag.InnerHtml.AppendHtml(Html.Raw("<button class=\"btn-nostyle\"><span class=\"collapse-icon\"><i class=\"fas fa-chevron-right fa-xs chevron\"></i></span></button>"));
+        tag.InnerHtml.AppendHtml(Html.Raw("<div class=\"btn-nostyle\"><span class=\"collapse-icon\"><i class=\"fas fa-chevron-right fa-xs chevron\"></i></span></div>"));
     }
 }
 

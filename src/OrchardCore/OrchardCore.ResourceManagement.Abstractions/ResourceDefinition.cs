@@ -254,9 +254,9 @@ namespace OrchardCore.ResourceManagement
                 case "script":
                     tagBuilder = new TagBuilder("script")
                     {
-                        Attributes = {
-                            { "type", "text/javascript" }
-                        }
+                        //Attributes = {
+                        //    { "type", "text/javascript" }
+                        //}
                     };
                     filePathAttributeName = "src";
                     break;
