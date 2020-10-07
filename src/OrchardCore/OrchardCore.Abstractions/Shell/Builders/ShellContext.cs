@@ -126,22 +126,21 @@ namespace OrchardCore.Environment.Shell.Builders
                         }
                     }
                 }
+
+                if (mode != ReleaseMode.FromLastScope && ServiceProvider != null)
+                {
+                    // Before marking the shell as released, we create a new scope that will manage the shell state,
+                    // so that we always use the same shell scope logic to check if the reference counter reached 0.
+                    scope = new ShellScope(this);
+                }
+
+                _released = true;
             }
 
             if (mode == ReleaseMode.FromLastScope)
             {
-                _released = true;
                 return;
             }
-
-            // Before marking the shell as released, we create a new scope that will manage the shell state,
-            // so that we always use the same shell scope logic to check if the reference counter reaches 0.
-            if (ServiceProvider != null)
-            {
-                scope = new ShellScope(this);
-            }
-
-            _released = true;
 
             if (scope != null)
             {
