@@ -55,7 +55,7 @@ $(function () {
 var shortcodesApp;
 
 function initializeShortcodesApp(element) {
-    if (element) {
+    if (element && !shortcodesApp) {
         var elementId = element.id;
 
         shortcodesApp = new Vue({

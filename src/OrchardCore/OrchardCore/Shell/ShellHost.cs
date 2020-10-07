@@ -97,7 +97,6 @@ namespace OrchardCore.Environment.Shell
                     finally
                     {
                         semaphore.Release();
-                        _shellSemaphores.TryRemove(settings.Name, out semaphore);
                     }
                 }
 

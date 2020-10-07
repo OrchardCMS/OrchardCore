@@ -21,10 +21,19 @@ function initializeTemplatePreview(nameElement, editorElement) {
   editor = CodeMirror.fromTextArea(editorElement, {
     autoRefresh: true,
     lineNumbers: true,
-    styleActiveLine: true,
+    lineWrapping: true,
     matchBrackets: true,
+    styleActiveLine: true,
     mode: {
       name: "liquid"
+    },
+    extraKeys: {
+      "F11": function F11(cm) {
+        cm.setOption("fullScreen", !cm.getOption("fullScreen"));
+      },
+      "Esc": function Esc(cm) {
+        if (cm.getOption("fullScreen")) cm.setOption("fullScreen", false);
+      }
     }
   });
   editor.on('change', function (cm) {

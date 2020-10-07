@@ -15,7 +15,7 @@
     <PackageManagement Include="Fluid.Core" Version="1.0.0-beta-9693" />
     <PackageManagement Include="GraphQL" Version="2.4.0" />
     <PackageManagement Include="Jint" Version="3.0.0-beta-1632" />
-    <PackageManagement Include="HtmlSanitizer" Version="5.0.343" />
+    <PackageManagement Include="HtmlSanitizer" Version="5.0.353" />
     <PackageManagement Include="Lucene.Net" Version="4.8.0-beta00012" />
     <PackageManagement Include="Lucene.Net.Analysis.Common" Version="4.8.0-beta00012" />
     <PackageManagement Include="Lucene.Net.QueryParser" Version="4.8.0-beta00012" />
@@ -24,13 +24,13 @@
     <PackageManagement Include="Microsoft.NET.Test.Sdk" Version="16.2.0" />
     <PackageManagement Include="MimeKit" Version="2.9.2" />
     <PackageManagement Include="MiniProfiler.AspNetCore.Mvc" Version="4.2.1" />
-    <PackageManagement Include="Moq" Version="4.14.5" />
+    <PackageManagement Include="Moq" Version="4.14.6" />
     <PackageManagement Include="ncrontab" Version="3.3.1" />
     <PackageManagement Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageManagement Include="NLog.Web.AspNetCore" Version="4.9.3" />
     <PackageManagement Include="NodaTime" Version="3.0.0" />
-    <PackageManagement Include="OpenIddict.AspNetCore" Version="[3.0.0-beta3.20403.69]" />
-    <PackageManagement Include="OpenIddict.Core" Version="[3.0.0-beta3.20403.69]" />
+    <PackageManagement Include="OpenIddict.AspNetCore" Version="[3.0.0-beta5.20503.76]" />
+    <PackageManagement Include="OpenIddict.Core" Version="[3.0.0-beta5.20503.76]" />
     <PackageManagement Include="OrchardCore.Translations.All" Version="1.0.0-rc2-108003" />
     <PackageManagement Include="Serilog.AspNetCore" Version="3.4.0" />
     <PackageManagement Include="Shortcodes" Version="1.0.0-beta-175913881" />
