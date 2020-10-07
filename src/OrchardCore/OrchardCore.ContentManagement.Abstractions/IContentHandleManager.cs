@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace OrchardCore.ContentManagement
 {
-    public interface IContentHandleManager 
+    public interface IContentHandleManager
     {
         Task<string> GetContentItemIdAsync(string handle);
     }
