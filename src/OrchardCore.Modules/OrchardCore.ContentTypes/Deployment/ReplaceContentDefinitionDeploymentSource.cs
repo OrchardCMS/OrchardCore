@@ -6,36 +6,36 @@ using OrchardCore.Deployment;
 
 namespace OrchardCore.ContentTypes.Deployment
 {
-    public class ContentDefinitionDeploymentSource : IDeploymentSource
+    public class ReplaceContentDefinitionDeploymentSource : IDeploymentSource
     {
         private readonly IContentDefinitionStore _contentDefinitionStore;
 
-        public ContentDefinitionDeploymentSource(IContentDefinitionStore contentDefinitionStore)
+        public ReplaceContentDefinitionDeploymentSource(IContentDefinitionStore contentDefinitionStore)
         {
             _contentDefinitionStore = contentDefinitionStore;
         }
 
         public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
         {
-            if (!(step is ContentDefinitionDeploymentStep contentDefinitionStep))
+            if (!(step is ReplaceContentDefinitionDeploymentStep replaceContentDefinitionStep))
             {
                 return;
             }
 
             var contentTypeDefinitionRecord = await _contentDefinitionStore.LoadContentDefinitionAsync();
 
-            var contentTypes = contentDefinitionStep.IncludeAll
+            var contentTypes = replaceContentDefinitionStep.IncludeAll
                 ? contentTypeDefinitionRecord.ContentTypeDefinitionRecords
                 : contentTypeDefinitionRecord.ContentTypeDefinitionRecords
-                    .Where(x => contentDefinitionStep.ContentTypes.Contains(x.Name));
+                    .Where(x => replaceContentDefinitionStep.ContentTypes.Contains(x.Name));
 
-            var contentParts = contentDefinitionStep.IncludeAll
+            var contentParts = replaceContentDefinitionStep.IncludeAll
                 ? contentTypeDefinitionRecord.ContentPartDefinitionRecords
                 : contentTypeDefinitionRecord.ContentPartDefinitionRecords
-                        .Where(x => contentDefinitionStep.ContentParts.Contains(x.Name));
+                        .Where(x => replaceContentDefinitionStep.ContentParts.Contains(x.Name));
 
             result.Steps.Add(new JObject(
-                new JProperty("name", "ContentDefinition"),
+                new JProperty("name", "ReplaceContentDefinition"),
                 new JProperty("ContentTypes", JArray.FromObject(contentTypes)),
                 new JProperty("ContentParts", JArray.FromObject(contentParts))
             ));

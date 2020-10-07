@@ -1,9 +1,9 @@
 @using OrchardCore.DisplayManagement.Views
 @using OrchardCore.ContentTypes.Deployment
-@model ShapeViewModel<ContentDefinitionDeploymentStep>
+@model ShapeViewModel<ReplaceContentDefinitionDeploymentStep>
 @inject OrchardCore.ContentManagement.Metadata.IContentDefinitionManager ContentDefinitionManager
 
-<h5>@T["Update Content Definitions"]</h5>
+<h5>@T["Replace Content Definitions"]</h5>
 
 @if (Model.Value.IncludeAll)
 {

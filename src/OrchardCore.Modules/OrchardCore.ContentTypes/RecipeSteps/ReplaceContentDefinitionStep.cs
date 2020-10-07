@@ -9,47 +9,62 @@ using OrchardCore.Recipes.Services;
 namespace OrchardCore.ContentTypes.RecipeSteps
 {
     /// <summary>
-    /// This recipe step creates content definitions.
+    /// This recipe step replaces content definition records.
     /// </summary>
-    public class ContentDefinitionStep : IRecipeStepHandler
+    public class ReplaceContentDefinitionStep : IRecipeStepHandler
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
 
-        public ContentDefinitionStep(IContentDefinitionManager contentDefinitionManager)
+        public ReplaceContentDefinitionStep(IContentDefinitionManager contentDefinitionManager)
         {
             _contentDefinitionManager = contentDefinitionManager;
         }
 
         public Task ExecuteAsync(RecipeExecutionContext context)
         {
-            if (!String.Equals(context.Name, "ContentDefinition", StringComparison.OrdinalIgnoreCase))
+            if (!String.Equals(context.Name, "ReplaceContentDefinition", StringComparison.OrdinalIgnoreCase))
             {
                 return Task.CompletedTask;
             }
 
-            var step = context.Step.ToObject<ContentDefinitionStepModel>();
+            var step = context.Step.ToObject<ReplaceContentDefinitionStepModel>();
 
             foreach (var contentType in step.ContentTypes)
             {
-                var newType = _contentDefinitionManager.LoadTypeDefinition(contentType.Name)
-                    ?? new ContentTypeDefinition(contentType.Name, contentType.DisplayName);
-
-                UpdateContentType(newType, contentType);
+                var newType = _contentDefinitionManager.LoadTypeDefinition(contentType.Name);
+                if (newType != null)
+                {   
+                    ReplaceContentType(newType, contentType, true);
+                }
+                else
+                {
+                    ReplaceContentType(new ContentTypeDefinition(contentType.Name, contentType.DisplayName), contentType, false);
+                }
             }
 
             foreach (var contentPart in step.ContentParts)
             {
-                var newPart = _contentDefinitionManager.LoadPartDefinition(contentPart.Name)
-                    ?? new ContentPartDefinition(contentPart.Name);
-
-                UpdateContentPart(newPart, contentPart);
+                var newPart = _contentDefinitionManager.LoadPartDefinition(contentPart.Name);
+                if (newPart != null)
+                {
+                    ReplaceContentPart(newPart, contentPart, true);    
+                }
+                else
+                {
+                    ReplaceContentPart(new ContentPartDefinition(contentPart.Name), contentPart, false);
+                }
             }
 
             return Task.CompletedTask;
         }
 
-        private void UpdateContentType(ContentTypeDefinition type, ContentTypeDefinitionRecord record)
+        private void ReplaceContentType(ContentTypeDefinition type, ContentTypeDefinitionRecord record, bool exists)
         {
+            if (exists)
+            {
+                _contentDefinitionManager.DeleteTypeDefinition(type.Name);
+            }
+
             _contentDefinitionManager.AlterTypeDefinition(type.Name, builder =>
             {
                 if (!String.IsNullOrEmpty(record.DisplayName))
@@ -65,8 +80,13 @@ namespace OrchardCore.ContentTypes.RecipeSteps
             });
         }
 
-        private void UpdateContentPart(ContentPartDefinition part, ContentPartDefinitionRecord record)
+        private void ReplaceContentPart(ContentPartDefinition part, ContentPartDefinitionRecord record, bool exists)
         {
+            if (exists)
+            {
+                _contentDefinitionManager.DeletePartDefinition(part.Name);
+            }
+
             _contentDefinitionManager.AlterPartDefinition(part.Name, builder =>
             {
                 builder.MergeSettings(record.Settings);
@@ -82,7 +102,7 @@ namespace OrchardCore.ContentTypes.RecipeSteps
             });
         }
 
-        private class ContentDefinitionStepModel
+        private class ReplaceContentDefinitionStepModel
         {
             public ContentTypeDefinitionRecord[] ContentTypes { get; set; } = Array.Empty<ContentTypeDefinitionRecord>();
             public ContentPartDefinitionRecord[] ContentParts { get; set; } = Array.Empty<ContentPartDefinitionRecord>();
