@@ -8849,71 +8849,40 @@ function removeDiacritics(str) {
 $(function () {
   lastWidth = $(this).width(); //this = window
 
-  var lastHeight = $(this).height(); //this = window
-
-  leftNav = $('.left-sidebar-compact').find('#left-nav');
-  topBar = $('.ta-navbar-top');
-  var widthBreakPoint = 768;
-  var heightBreakPoint = leftNav.height() + topBar.height();
-  lastWidthDirection = "";
-  lastHeightDirection = "";
-  var lastWidthDirectionManaged = "";
-  var lastHeightDirectionManaged = "";
-  BreakpointWidthChangeManaged = false;
-  BreakpointHeightChangeManaged = false;
+  var breakPoint = 768;
+  lastDirection = "";
+  var lastDirectionManaged = "";
+  BreakpointChangeManaged = false;
   $(window).on('resize', function () {
-    // for width resizing
     var width = $(this).width();
-    var widthBreakPoint = 768;
-    var widthDirection = width < lastWidth ? 'reducing' : 'increasing';
+    var breakPoint = 768;
+    var direction = width < lastWidth ? 'reducing' : 'increasing';
 
-    if (widthDirection !== lastWidthDirection) {
-      BreakpointWidthChangeManaged = false; // need to listen for breakpoint            
+    if (direction !== lastDirection) {
+      BreakpointChangeManaged = false; // need to listen for breakpoint            
     }
 
-    if (BreakpointWidthChangeManaged == false && widthDirection != lastWidthDirectionManaged) {
-      if (widthDirection == "reducing" && width < widthBreakPoint) {
+    if (BreakpointChangeManaged == false && direction != lastDirectionManaged) {
+      if (direction == "reducing" && width < breakPoint) {
         // breakpoint reached while going down
         setCompactStatus();
-        lastWidthDirectionManaged = widthDirection;
-        BreakpointWidthChangeManaged = true;
+        lastDirectionManaged = direction;
+        BreakpointChangeManaged = true;
       }
 
-      if (widthDirection == "increasing" && width > widthBreakPoint) {
+      if (direction == "increasing" && width > breakPoint) {
         // breakpoint reached while going up
         if (isCompactExplicit == false) {
           unSetCompactStatus();
         }
 
-        lastWidthDirectionManaged = widthDirection;
-        BreakpointWidthChangeManaged = true;
+        lastDirectionManaged = direction;
+        BreakpointChangeManaged = true;
       }
     }
 
-    lastWidthDirection = widthDirection;
-    lastWidth = width; // for height resizing
-
-    if ($('.left-sidebar-compact').find('#left-nav').length > 0) {
-      var height = $(this).height();
-      var heightBreakPoint = leftNav.height() + topBar.height();
-      var heightDirection = height < lastHeight ? 'reducing' : 'increasing';
-
-      if (heightDirection !== lastHeightDirection) {
-        BreakpointHeightChangeManaged = false; // need to listen for breakpoint            
-      }
-
-      if (BreakpointHeightChangeManaged == false) {
-        if (height < heightBreakPoint) {
-          // breakpoint reached while going down
-          unSetCompactStatus(); //lastHeightDirectionManaged = heightDirection;
-
-          BreakpointHeightChangeManaged = true;
-        }
-      }
-    }
-
-    lastHeightDirection = heightDirection;
-    lastHeight = height;
+    lastDirection = direction;
+    lastWidth = width;
   });
 });
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }

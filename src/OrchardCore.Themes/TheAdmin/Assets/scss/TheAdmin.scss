@@ -103,11 +103,9 @@ body {
     }
 }
 
-
 .ta-navbar-brand {
     @extend .navbar-brand;
     overflow: hidden;
-    width: 230px;
     height: 42px;
     margin-left: 11px;
     margin-right: 24px;
@@ -240,7 +238,8 @@ body:not(.left-sidebar-compact) {
 
         #left-nav {
             position: relative;
-            height: calc(100% - 50px);
+            flex: 1 1 auto;
+            height: calc(100% - 51px - 38px);  // minus footer and search input heights
 
             ul {
                 margin: 0;
@@ -558,7 +557,10 @@ body:not(.left-sidebar-compact) {
         }
 
         #left-nav {
-            position: relative;
+            flex: 1 1 auto;
+            height: calc(100% - 51px);
+            overflow-x: hidden;
+            overflow-y: auto;
 
             ul {
                 margin: 0;
@@ -582,6 +584,7 @@ body:not(.left-sidebar-compact) {
                 }
 
                 > li {
+                    height: 48px;
                     line-height: 3em;
                     width: $left-navigation-width-when-compact - 1;
                     transition: width 0.2s ease-in-out;
@@ -603,13 +606,6 @@ body:not(.left-sidebar-compact) {
 
                 > li > figure > ul > li {
                     line-height: 2.5em;
-                }
-
-                // changing the padding of the icons on the first level to match
-                // the padding when leftbar is collapsed. Avoid small movement
-                // when switching between the two states
-                &.menu-admin {
-                    margin-bottom: 40px;
                 }
 
                 .item-label {
@@ -669,6 +665,14 @@ body:not(.left-sidebar-compact) {
                     top: 0;
                 }
 
+                > li.has-items.visible > figure > figcaption {
+                    box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.2);
+
+                    > a.item-label {
+                        z-index: 9999;
+                    }
+                }
+
                 > li .item-label:hover:not(:first-child) {
                     color: $gray-100;
                     background-color: rgba(0, 0, 0, 0.1);
@@ -717,8 +721,9 @@ body:not(.left-sidebar-compact) {
                     transition: none;
                     position: static;
 
-                    figure {
-                        position: static;
+                    > figure {
+                        position: absolute;
+                        z-index: 999;
                     }
 
                     span.title, span.icon {
@@ -734,7 +739,7 @@ body:not(.left-sidebar-compact) {
                     -moz-box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.2);
                     box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.2);
                     max-height: 250px;
-                    z-index: -1;
+                    z-index: 1;
                     overflow-x: hidden;
                     overflow-y: auto;
                     scrollbar-width: thin;
@@ -779,6 +784,7 @@ body:not(.left-sidebar-compact) {
                         overflow: hidden;
                         white-space: nowrap;
                         text-overflow: ellipsis;
+                        width: 260px;
                     }
 
                     > span.title:after {

@@ -14259,7 +14259,6 @@ html[dir], [dir] body {
 
 .ta-navbar-brand {
   overflow: hidden;
-  width: 230px;
   height: 42px;
   white-space: nowrap;
   font-size: 14px;
@@ -14383,7 +14382,8 @@ body:not(.left-sidebar-compact) #ta-left-sidebar {
     margin: 0; }
   body:not(.left-sidebar-compact) #ta-left-sidebar #left-nav {
     position: relative;
-    height: calc(100% - 50px);
+    flex: 1 1 auto;
+    height: calc(100% - 51px - 38px);
     /*.btn-nostyle:focus, .btn-nostyle:active {
                 background-color: rgba(0, 0, 0, 0.3);
                 color: white;
@@ -14671,7 +14671,10 @@ body:not(.left-sidebar-compact) #ta-left-sidebar {
   [dir] .left-sidebar-compact #ta-left-sidebar figcaption, [dir] .left-sidebar-compact #ta-left-sidebar a {
     margin: 0; }
   .left-sidebar-compact #ta-left-sidebar #left-nav {
-    position: relative;
+    flex: 1 1 auto;
+    height: calc(100% - 51px);
+    overflow-x: hidden;
+    overflow-y: auto;
     /*.btn-nostyle:focus, .btn-nostyle:active {
                 background-color: rgba(0, 0, 0, 0.3);
                 color: white;
@@ -14692,6 +14695,7 @@ body:not(.left-sidebar-compact) #ta-left-sidebar {
       [dir] .left-sidebar-compact #ta-left-sidebar #left-nav > ul li .item-label {
         cursor: pointer; }
     .left-sidebar-compact #ta-left-sidebar #left-nav > ul > li {
+      height: 48px;
       line-height: 3em;
       width: 47px;
       transition: width 0.2s ease-in-out; }
@@ -14709,8 +14713,6 @@ body:not(.left-sidebar-compact) #ta-left-sidebar {
         display: none; }
     .left-sidebar-compact #ta-left-sidebar #left-nav > ul > li > figure > ul > li {
       line-height: 2.5em; }
-    [dir] .left-sidebar-compact #ta-left-sidebar #left-nav > ul.menu-admin {
-      margin-bottom: 40px; }
     .left-sidebar-compact #ta-left-sidebar #left-nav > ul .item-label {
       display: flex; }
     [dir=ltr] .left-sidebar-compact #ta-left-sidebar #left-nav > ul .item-label {
@@ -14758,6 +14760,10 @@ body:not(.left-sidebar-compact) #ta-left-sidebar {
       border-right: 3px solid;
       border-right-color: #0078D4;
       right: 0; }
+    [dir] .left-sidebar-compact #ta-left-sidebar #left-nav > ul > li.has-items.visible > figure > figcaption {
+      box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.2); }
+      .left-sidebar-compact #ta-left-sidebar #left-nav > ul > li.has-items.visible > figure > figcaption > a.item-label {
+        z-index: 9999; }
     .left-sidebar-compact #ta-left-sidebar #left-nav > ul > li .item-label:hover:not(:first-child) {
       color: #f8f9fa; }
     [dir] .left-sidebar-compact #ta-left-sidebar #left-nav > ul > li .item-label:hover:not(:first-child) {
@@ -14798,8 +14804,9 @@ body:not(.left-sidebar-compact) #ta-left-sidebar {
       width: 308px;
       transition: none;
       position: static; }
-      .left-sidebar-compact #ta-left-sidebar #left-nav > ul > li.visible figure {
-        position: static; }
+      .left-sidebar-compact #ta-left-sidebar #left-nav > ul > li.visible > figure {
+        position: absolute;
+        z-index: 999; }
       .left-sidebar-compact #ta-left-sidebar #left-nav > ul > li.visible span.title, .left-sidebar-compact #ta-left-sidebar #left-nav > ul > li.visible span.icon {
         display: block; }
     .left-sidebar-compact #ta-left-sidebar #left-nav > ul > li > figure > ul {
@@ -14808,7 +14815,7 @@ body:not(.left-sidebar-compact) #ta-left-sidebar {
       -webkit-box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.2);
       -moz-box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.2);
       max-height: 250px;
-      z-index: -1;
+      z-index: 1;
       overflow-x: hidden;
       overflow-y: auto;
       scrollbar-width: thin;
@@ -14851,7 +14858,8 @@ body:not(.left-sidebar-compact) #ta-left-sidebar {
         width: calc(100% - 48px);
         overflow: hidden;
         white-space: nowrap;
-        text-overflow: ellipsis; }
+        text-overflow: ellipsis;
+        width: 260px; }
       .left-sidebar-compact #ta-left-sidebar #left-nav > ul > li > figure > figcaption > .item-label > span.title:after {
         content: "";
         height: 1px;
