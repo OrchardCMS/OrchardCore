@@ -95,15 +95,12 @@ namespace OrchardCore.Environment.Shell.Distributed
                         _defaultContext = defaultContext;
                         var previousContext = _isolatedContext;
 
-                        // Build a new isolated context based on the settings of the default tenant.
-                        var isolatedContext = new IsolatedContext(await _shellContextFactory.CreateShellContextAsync(defaultContext.Settings));
+                        // Build and acquire a new isolated context based on the settings of the default tenant.
+                        _isolatedContext = new IsolatedContext(await _shellContextFactory.CreateShellContextAsync(defaultContext.Settings))
+                            .Acquire();
 
-                        lock (this)
-                        {
-                            // Acquire this context and dispose the previous one.
-                            _isolatedContext = isolatedContext.Acquire();
-                            previousContext?.Dispose();
-                        }
+                        // Dispose the previous one.
+                        previousContext?.Dispose();
                     }
 
                     var context = _isolatedContext;
@@ -249,11 +246,10 @@ namespace OrchardCore.Environment.Shell.Distributed
                 _logger.LogError(ex, "Error while executing '{ServiceName}', the service is stopping.", nameof(DistributedShellHostedService));
             }
 
-            lock (this)
-            {
-                _isolatedContext?.Dispose();
-                _isolatedContext = null;
-            }
+            var previous = _isolatedContext;
+
+            _isolatedContext = null;
+            previous?.Dispose();
 
             _defaultContext = null;
             _terminated = true;
@@ -341,16 +337,12 @@ namespace OrchardCore.Environment.Shell.Distributed
                 return;
             }
 
-            IsolatedContext isolatedContext;
-            lock (this)
-            {
-                // Try to acquire the isolated context.
-                isolatedContext = _isolatedContext?.Acquire();
-            }
+            // Try to acquire the shared isolated context.
+            var isolatedContext = _isolatedContext?.Acquire();
 
             if (isolatedContext == null)
             {
-                // Or create a new one if not yet initialized by the main loop.
+                // Or create a new one for a local usage if not yet initialized.
                 isolatedContext = new IsolatedContext(await _shellContextFactory.CreateShellContextAsync(defautSettings)).Acquire();
             }
 
@@ -412,16 +404,12 @@ namespace OrchardCore.Environment.Shell.Distributed
                 return;
             }
 
-            IsolatedContext isolatedContext;
-            lock (this)
-            {
-                // Try to acquire the isolated context.
-                isolatedContext = _isolatedContext?.Acquire();
-            }
+            // Try to acquire the shared isolated context.
+            var isolatedContext = _isolatedContext?.Acquire();
 
             if (isolatedContext == null)
             {
-                // Or create a new one if not yet initialized by the main loop.
+                // Or create a new one for a local usage if not yet initialized.
                 isolatedContext = new IsolatedContext(await _shellContextFactory.CreateShellContextAsync(defautSettings)).Acquire();
             }
 
