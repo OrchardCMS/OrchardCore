@@ -7297,7 +7297,7 @@ function setCompactStatus(explicit) {
 
   $('#left-nav ul.menu-admin > li > figure > ul').removeClass('collapse'); // When hovering, don't want toggling when clicking on label
 
-  $('#left-nav ul.menu-admin > li > figure > figcaption').attr('data-toggle', '');
+  $('#left-nav ul.menu-admin > li > figure > figcaption > a').attr('data-toggle', '');
   $('#left-nav li.has-items').removeClass("visible"); //after menu has collapsed we set the transitions to none so that we don't do any transition
   //animation when open a sub-menu
 
@@ -7316,7 +7316,7 @@ function unSetCompactStatus() {
   $('body').removeClass('left-sidebar-compact'); // resetting what we disabled for compact state
 
   $('#left-nav ul.menu-admin > li > figure > ul').addClass('collapse');
-  $('#left-nav ul.menu-admin > li > figure > figcaption').attr('data-toggle', 'collapse');
+  $('#left-nav ul.menu-admin > li > figure > figcaption a').attr('data-toggle', 'collapse');
   $('#left-nav li.has-items').removeClass("visible");
   $('#left-nav > ul > li').css("transition", "");
   isCompactExplicit = false;

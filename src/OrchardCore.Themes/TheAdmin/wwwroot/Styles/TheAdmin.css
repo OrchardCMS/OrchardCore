@@ -14354,13 +14354,13 @@ body:not(.left-sidebar-compact) #ta-left-sidebar {
     background-color: #495057; }
   [dir] body:not(.left-sidebar-compact) #ta-left-sidebar figure {
     margin: 0; }
-  [dir] body:not(.left-sidebar-compact) #ta-left-sidebar figcaption[aria-expanded="true"] .chevron {
+  [dir] body:not(.left-sidebar-compact) #ta-left-sidebar a[aria-expanded="true"] .chevron {
     transition-duration: 0.2s; }
-  [dir=ltr] body:not(.left-sidebar-compact) #ta-left-sidebar figcaption[aria-expanded="true"] .chevron {
+  [dir=ltr] body:not(.left-sidebar-compact) #ta-left-sidebar a[aria-expanded="true"] .chevron {
   transform: rotate(90deg); }
-  [dir=rtl] body:not(.left-sidebar-compact) #ta-left-sidebar figcaption[aria-expanded="true"] .chevron {
+  [dir=rtl] body:not(.left-sidebar-compact) #ta-left-sidebar a[aria-expanded="true"] .chevron {
     transform: rotate(-90deg); }
-  [dir] body:not(.left-sidebar-compact) #ta-left-sidebar figcaption[aria-expanded="false"] .chevron {
+  [dir] body:not(.left-sidebar-compact) #ta-left-sidebar a[aria-expanded="false"] .chevron {
     transition-duration: 0.2s; }
   body:not(.left-sidebar-compact) #ta-left-sidebar .collapse {
     display: none; }
@@ -14650,7 +14650,7 @@ body:not(.left-sidebar-compact) #ta-left-sidebar {
     background-color: #495057; }
   [dir] .left-sidebar-compact #ta-left-sidebar figure {
     margin: 0; }
-  [dir] .left-sidebar-compact #ta-left-sidebar figcaption[aria-expanded="false"] .chevron {
+  [dir] .left-sidebar-compact #ta-left-sidebar a[aria-expanded="false"] .chevron {
     transition-duration: 0.2s; }
   .left-sidebar-compact #ta-left-sidebar .collapse {
     display: none; }
@@ -15058,7 +15058,7 @@ body:not(.left-sidebar-compact) #ta-left-sidebar {
     margin: 0px auto; }
   .left-sidebar-compact #ta-left-sidebar #filter, .left-sidebar-compact #ta-left-sidebar #filter:focus {
     display: none; }
-.left-sidebar-compact #ta-left-sidebar figcaption[aria-expanded="true"] .chevron {
+.left-sidebar-compact #ta-left-sidebar a[aria-expanded="true"] .chevron {
   transform: rotate(90deg);
   transition-duration: 0.2s; }
 

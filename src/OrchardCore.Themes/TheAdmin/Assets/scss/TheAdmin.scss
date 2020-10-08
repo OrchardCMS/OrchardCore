@@ -202,14 +202,14 @@ body:not(.left-sidebar-compact) {
         }   
 
         // Rotate the chevron's icon when the menu is active
-        figcaption[aria-expanded="true"] {
+        a[aria-expanded="true"] {
             .chevron {
                 transform: rotate(90deg);
                 transition-duration: 0.2s;
             }
         }
 
-        figcaption[aria-expanded="false"] {
+        a[aria-expanded="false"] {
             .chevron {
                 transition-duration: 0.2s;
             }
@@ -529,7 +529,7 @@ body:not(.left-sidebar-compact) {
             margin: 0;
         }
 
-        figcaption[aria-expanded="false"] {
+        a[aria-expanded="false"] {
             .chevron {
                 transition-duration: 0.2s;
             }
@@ -981,7 +981,7 @@ body:not(.left-sidebar-compact) {
 .left-sidebar-compact {
     #ta-left-sidebar {
         // Rotate the chevron's icon when the menu is active
-        figcaption[aria-expanded="true"] {
+        a[aria-expanded="true"] {
             .chevron {
                 transform: rotate(90deg);
                 transition-duration: 0.2s;

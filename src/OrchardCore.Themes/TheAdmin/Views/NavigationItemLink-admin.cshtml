@@ -6,9 +6,27 @@
     
     TagBuilder tag = Tag(Model, "a");
     tag.Attributes["id"] = null;
-    
     tag.AddCssClass("item-label d-flex");
     tag.Attributes["href"] = Model.Href ?? "#";
+
+    if(Model.HasItems)
+    {
+        tag.Attributes["data-toggle"] = "collapse";
+        tag.Attributes["data-target"] = "#m" + Model.GetHashCode().ToString();
+        tag.Attributes["aria-expanded"] = "false";
+        tag.Attributes["aria-controls"] = "m" + Model.GetHashCode().ToString();
+        tag.TagRenderMode = TagRenderMode.Normal;
+
+        if ((bool)Model.Selected)
+        {
+            tag.Attributes["aria-expanded"] = "true";
+        }
+        else
+        {
+            tag.Attributes["aria-expanded"] = "false";
+        }
+    }
+
     tag.InnerHtml.AppendHtml(await DisplayAsync(Model));
     
     if(Model.HasItems)

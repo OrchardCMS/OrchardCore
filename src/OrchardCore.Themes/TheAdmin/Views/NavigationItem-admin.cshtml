@@ -15,28 +15,25 @@
     if (Model.HasItems)
     {
         li.AddCssClass("has-items");
-        li.Attributes["id"] = null;
         var figure = new TagBuilder("figure");
-        figure.Attributes["aria-labelledby"] = "figcaption";
         var figCaption = new TagBuilder("figcaption");
-        figCaption.Attributes["data-toggle"] = "collapse";
-        figCaption.Attributes["data-target"] = "#m" + Model.GetHashCode().ToString();
-        figCaption.Attributes["aria-expanded"] = "false";
-        figCaption.Attributes["aria-controls"] = "m" + Model.GetHashCode().ToString();
-        figCaption.Attributes["role"] = "legend";
-        figCaption.TagRenderMode = TagRenderMode.Normal;
 
+        if(li.Attributes.Where(a => a.Key == "id").Count() > 0)
+        {
+            figure.Attributes["aria-labelledby"] = li.Attributes["id"] ;
+            figCaption.Attributes["id"] = li.Attributes["id"];
+            li.Attributes["id"] = null;
+        }
+        
         var ul = new TagBuilder("ul");
         ul.Attributes["Id"] = "m" + Model.GetHashCode().ToString();
 
         if ((bool)Model.Selected)
         {
-            figCaption.Attributes["aria-expanded"] = "true";
             ul.AddCssClass("collapse show");
         }
         else
         {
-            figCaption.Attributes["aria-expanded"] = "false";
             ul.AddCssClass("collapse");
         }
 
