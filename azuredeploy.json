@@ -32,28 +32,28 @@
                 "description": "Type of database to use"
             }
         },
-        "sqlServerName": {
+        "sqlServerInstanceName": {
             "type": "string",
             "defaultValue": "",
             "metadata": {
                 "description": "(Only if SqlServer is selected) The name of the Sql Server instance"
             }
         },
-        "databaseName": {
+        "sqlServerDatabaseName": {
             "type": "string",
             "defaultValue": "",
             "metadata": {
                 "description": "(Only if SqlServer is selected) The name of the Sql Server database"
             }
         },
-        "sqlAdministratorLogin": {
+        "sqlServerAdministratorLogin": {
             "type": "string",
             "defaultValue": "",
             "metadata": {
                 "description": "(Only if SqlServer is selected) The admin user of the SQL Server"
             }
         },
-        "sqlAdministratorLoginPassword": {
+        "sqlServerAdministratorLoginPassword": {
             "type": "securestring",
             "defaultValue": "",
             "metadata": {
@@ -70,7 +70,7 @@
     "resources": [
         {
             "condition": "[equals(parameters('databaseType'),'SqlServer')]",
-            "name": "[parameters('sqlServerName')]",
+            "name": "[parameters('sqlServerInstanceName')]",
             "type": "Microsoft.Sql/servers",
             "apiVersion": "2014-04-01",
             "location": "[resourceGroup().location]",
@@ -78,13 +78,13 @@
                 "displayName": "SqlServer"
             },
             "properties": {
-                "administratorLogin": "[parameters('sqlAdministratorLogin')]",
-                "administratorLoginPassword": "[parameters('sqlAdministratorLoginPassword')]",
+                "administratorLogin": "[parameters('sqlServerAdministratorLogin')]",
+                "administratorLoginPassword": "[parameters('sqlServerAdministratorLoginPassword')]",
                 "version": "12.0"
             },
             "resources": [
                 {
-                    "name": "[parameters('databaseName')]",
+                    "name": "[parameters('sqlServerDatabaseName')]",
                     "type": "databases",
                     "apiVersion": "2015-01-01",
                     "location": "[resourceGroup().location]",
@@ -97,7 +97,7 @@
                         "requestedServiceObjectiveName": "[variables('databaseServiceObjectiveName')]"
                     },
                     "dependsOn": [
-                        "[parameters('sqlServerName')]"
+                        "[parameters('sqlServerInstanceName')]"
                     ],
                     "resources": [
                         {
@@ -109,7 +109,7 @@
                                 "status": "Enabled"
                             },
                             "dependsOn": [
-                                "[parameters('databaseName')]"
+                                "[parameters('sqlServerDatabaseName')]"
                             ]
                         }
                     ]
@@ -124,7 +124,7 @@
                         "startIpAddress": "0.0.0.0"
                     },
                     "dependsOn": [
-                        "[parameters('sqlServerName')]"
+                        "[parameters('sqlServerInstanceName')]"
                     ]
                 }
             ]
@@ -176,7 +176,7 @@
         "connectionString" : {
             "condition": "[equals(parameters('databaseType'),'SqlServer')]",
             "type": "string",
-            "value": "[concat('Server=tcp:',reference(parameters('sqlserverName')).fullyQualifiedDomainName,',1433;Initial Catalog=',parameters('databaseName'),';Persist Security Info=False;User ID=',parameters('sqlAdministratorLogin'),';Password=',parameters('sqlAdministratorLoginPassword'),';MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;')]"
+            "value": "[concat('Server=tcp:',reference(parameters('sqlServerInstanceName')).fullyQualifiedDomainName,',1433;Initial Catalog=',parameters('sqlServerDatabaseName'),';Persist Security Info=False;User ID=',parameters('sqlServerAdministratorLogin'),';Password=',parameters('sqlServerAdministratorLoginPassword'),';MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;')]"
         }
     }
 }
