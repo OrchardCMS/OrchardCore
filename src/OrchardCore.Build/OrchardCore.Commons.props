@@ -16,11 +16,29 @@
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
     <LangVersion>8.0</LangVersion>
 
+    <!-- Add Current Git Commit and Branch to Build  -->
+    <GitCommit Condition="'$(SourceRevisionId)'!=''">$(SourceRevisionId)</GitCommit>
+    <GitBranch Condition="'$(GitBranch)'==''">dev</GitBranch>
+
     <!-- Common NuGet properties-->
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <!--This is used to generate symbol package for Source Link-->
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     
     <!-- This is used by GitHub Repository to find which repository should contain the package when updloaded -->
     <RepositoryUrl>https://github.com/OrchardCMS/OrchardCore</RepositoryUrl>
+    <PackageProjectUrl>https://www.orchardcore.net/</PackageProjectUrl>
+    <RepositoryCommit>$(GitCommit)</RepositoryCommit>
+    <RepositoryBranch>$(GitBranch)</RepositoryBranch>
     
+    <PackageTags>OrchardCore OrchardCoreCMS CMS MVC AspNetCore</PackageTags>
+    <Copyright>Orchard Core CMS Community and Contributors</Copyright>
+    <Authors>Orchard Core CMS Community and Contributors</Authors>
+    <Owners>Orchard Core CMS Community and Contributors</Owners>
   </PropertyGroup>
-
+  <ItemGroup>
+      <!--This is used for Source Link -->
+       <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All"/>
+  </ItemGroup>
 </Project>
