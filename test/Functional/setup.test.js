@@ -13,6 +13,7 @@ jest.setTimeout(debug ? 60000 : 30000);
 
 beforeAll(async () => {
     try {
+        orchard.cleanAppData('../../src/OrchardCore.Cms.Web');
         basePath = orchard.run('../../src/OrchardCore.Cms.Web', 'OrchardCore.Cms.Web.dll');
         browser = await puppeteer.launch(debug ? { headless: false, slowMo: 100 } : {});
         page = await browser.newPage();
@@ -27,7 +28,6 @@ afterAll(async () => {
     }
 
     orchard.stop();
-    orchard.cleanAppData('../../src/OrchardCore.Cms.Web');
     orchard.printLog();
 });
 

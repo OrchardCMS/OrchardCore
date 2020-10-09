@@ -238,8 +238,8 @@
         </div>
     </div>
 </form>
-<script src="~/OrchardCore.Setup/Scripts/setup.min.js" type="text/javascript"></script>
-<script type="text/javascript">
+<script src="~/OrchardCore.Setup/Scripts/setup.min.js"></script>
+<script>
     $(function(){
         $('#Password').strength({
             minLength: @(options.Password.RequiredLength),
@@ -256,9 +256,11 @@
         });
 
         toggleConnectionString = document.querySelector('#toggleConnectionString');
-        toggleConnectionString.addEventListener('click', function (e) {
-            togglePasswordVisibility(document.querySelector('#ConnectionString'), document.querySelector('#toggleConnectionString'))
-        });
+        if (toggleConnectionString) {
+            toggleConnectionString.addEventListener('click', function (e) {
+                togglePasswordVisibility(document.querySelector('#ConnectionString'), document.querySelector('#toggleConnectionString'))
+            });
+        }
 
         togglePassword = document.querySelector('#togglePassword');
         togglePassword.addEventListener('click', function (e) {
