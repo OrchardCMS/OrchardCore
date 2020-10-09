@@ -38,19 +38,9 @@ namespace OrchardCore.Contents.Security
 
             if (contentItem != null)
             {
-                if (contentItem.Owner != null) // If we want to evaluate a specific content item authorization
+                if (OwnerVariationExists(requirement.Permission) && HasOwnership(context.User, contentItem))
                 {
-                    if (OwnerVariationExists(requirement.Permission) && HasOwnership(context.User, contentItem))
-                    {
-                        permission = GetOwnerVariation(requirement.Permission);
-                    }
-                }
-                else // If we want to evaluate if a user has authorization on a ContentType globally
-                {
-                    if (OwnerVariationExists(requirement.Permission))
-                    {
-                        permission = GetOwnerVariation(requirement.Permission);
-                    }
+                    permission = GetOwnerVariation(requirement.Permission);
                 }
             }
 
