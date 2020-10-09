@@ -8,13 +8,14 @@ The below table lists the different code/features areas and their owners:
 | @sfmskywalker | Forms, Workflows |
 | @Jetski5822 | GraphQL |
 | @carlwoodhouse | GraphQL |
-| @PinpointTownes | OpenID |
+| @kevinchalet | OpenID |
 | @deanmarcussen | Azure, Media, Shortcodes, Sitemaps, Taxonomies |
 | @agriffard | Docs, Crowdin Translations, Try, Website |
-| @hishamco | Cultures, Localization, RTL, Translation |
+| @hishamco | Cultures, Email, Localization, RTL, Translation, UI |
 | @jptissot | Localization, Tests |
 | @larremp | Workshops |
 | @lukaskabrt | Po files extractor |
+| @matiasmolleja | Media |
 | @MichaelPetrinolis | External authentication providers |
 | @Piedone | PublishLater, Preview packages |
 | @sebastienros | YesSql, Fluid, Jint, Shortcodes |
