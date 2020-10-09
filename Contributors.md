@@ -1,7 +1,7 @@
 # Contributors ✨
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-200-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-201-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
@@ -214,7 +214,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <td align="center"><a href="https://github.com/Tearion"><img src="https://avatars3.githubusercontent.com/u/16781740?v=4" width="100px;" alt=""/><br /><sub><b>tearion</b></sub></a><br /><a href="#translation-Tearion" title="Translation">🌍</a></td>
     <td align="center"><a href="https://github.com/Habbni"><img src="https://avatars0.githubusercontent.com/u/13678304?v=4" width="100px;" alt=""/><br /><sub><b>habbni</b></sub></a><br /><a href="#translation-Habbni" title="Translation">🌍</a></td>
     <td align="center"><a href="https://github.com/EternityTeam"><img src="https://avatars3.githubusercontent.com/u/14150259?v=4" width="100px;" alt=""/><br /><sub><b>Eternity</b></sub></a><br /><a href="#translation-EternityTeam" title="Translation">🌍</a></td>
-    <td align="center"><a href="https://github.com/nakamura2000"><img src="https://avatars1.githubusercontent.com/u/22187826?v=4" width="100px;" alt=""/><br /><sub><b>nakamura2000</b></sub></a><br /><a href="#translation-nakamura2000" title="Translation">🌍</a></td>
+    <td align="center"><a href="https://github.com/nakamura2000"><img src="https://avatars1.githubusercontent.com/u/22187826?v=4" width="100px;" alt=""/><br /><sub><b>nakamura2000</b></sub></a><br /><a href="#translation-nakamura2000" title="Translation">🌍</a> <a href="https://github.com/OrchardCMS/OrchardCore/commits?author=nakamura2000" title="Code">💻</a></td>
     <td align="center"><a href="https://www.simplesyn.net"><img src="https://avatars0.githubusercontent.com/u/7062785?v=4" width="100px;" alt=""/><br /><sub><b>Georg von Kries</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=gvkries" title="Code">💻</a></td>
     <td align="center"><a href="https://github.com/mguma"><img src="https://avatars1.githubusercontent.com/u/1769143?v=4" width="100px;" alt=""/><br /><sub><b>Marco Guetg</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=mguma" title="Code">💻</a> <a href="#translation-mguma" title="Translation">🌍</a></td>
   </tr>
@@ -276,7 +276,8 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
   </tr>
   <tr>
     <td align="center"><a href="http://www.serverside.pt"><img src="https://avatars3.githubusercontent.com/u/3681658?v=4" width="100px;" alt=""/><br /><sub><b>Marco Serralheiro</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=serverside-is" title="Code">💻</a></td>
-    <td align="center"><a href="http://www.nogginbox.co.uk"><img src="https://avatars3.githubusercontent.com/u/729381?v=4" width="100px;" alt=""/><br /><sub><b>Richard Garside</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=NogginBox" title="Documentation">📖</a></td>
+    <td align="center"><a href="http://www.nogginbox.co.uk"><img src="https://avatars3.githubusercontent.com/u/729381?v=4" width="100px;" alt=""/><br /><sub><b>Richard Garside</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=NogginBox" title="Documentation">📖</a> <a href="https://github.com/OrchardCMS/OrchardCore/commits?author=NogginBox" title="Code">💻</a></td>
+    <td align="center"><a href="https://github.com/lomholdt"><img src="https://avatars0.githubusercontent.com/u/1733744?v=4" width="100px;" alt=""/><br /><sub><b>Jonas Lomholdt</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=lomholdt" title="Documentation">📖</a></td>
   </tr>
 </table>
 
