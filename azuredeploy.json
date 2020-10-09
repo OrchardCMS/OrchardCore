@@ -34,26 +34,30 @@
         },
         "sqlServerName": {
             "type": "string",
+            "defaultValue": "",
             "metadata": {
-                "description": "The name of the sql server. It has to be unique."
+                "description": "(Only if SqlServer is selected) The name of the Sql Server instance"
             }
         },
         "databaseName": {
             "type": "string",
+            "defaultValue": "",
             "metadata": {
-                "description": "The name of the sql databaseName. It has to be unique."
+                "description": "(Only if SqlServer is selected) The name of the Sql Server database"
             }
         },
         "sqlAdministratorLogin": {
             "type": "string",
+            "defaultValue": "",
             "metadata": {
-                "description": "The admin user of the SQL Server"
+                "description": "(Only if SqlServer is selected) The admin user of the SQL Server"
             }
         },
         "sqlAdministratorLoginPassword": {
             "type": "securestring",
+            "defaultValue": "",
             "metadata": {
-                "description": "The password of the admin user of the SQL Server"
+                "description": "(Only if SqlServer is selected) The password of the admin user of the SQL Server"
             }
         }
     },
