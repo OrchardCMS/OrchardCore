@@ -40,7 +40,7 @@ namespace OrchardCore.Environment.Shell.Distributed
         private string _shellCreatedId;
 
         private ShellContext _defaultContext;
-        private IsolatedContext _isolatedContext;
+        private volatile IsolatedContext _isolatedContext;
         private bool _terminated;
 
         public DistributedShellHostedService(
@@ -95,12 +95,11 @@ namespace OrchardCore.Environment.Shell.Distributed
                         _defaultContext = defaultContext;
                         var previousContext = _isolatedContext;
 
-                        // Build and acquire a new isolated context based on the settings of the default tenant.
-                        _isolatedContext = new IsolatedContext(await _shellContextFactory.CreateShellContextAsync(defaultContext.Settings))
-                            .Acquire();
+                        // Build a new isolated context based on the settings of the default tenant.
+                        _isolatedContext = new IsolatedContext(await _shellContextFactory.CreateShellContextAsync(defaultContext.Settings));
 
-                        // Dispose the previous one.
-                        previousContext?.Dispose();
+                        // Release the previous one.
+                        previousContext?.Release();
                     }
 
                     var context = _isolatedContext;
@@ -118,22 +117,21 @@ namespace OrchardCore.Environment.Shell.Distributed
                         continue;
                     }
 
-                    // Try to retrieve the tenant global identifiers from the distributed cache.
-                    string shellChangedId, shellCreatedId;
+                    // Try to retrieve the global tenant changed identifier from the distributed cache.
+                    string shellChangedId;
                     try
                     {
                         shellChangedId = await distributedCache.GetStringAsync(ShellChangedIdKey);
-                        shellCreatedId = await distributedCache.GetStringAsync(ShellCreatedIdKey);
                     }
                     catch (Exception ex) when (!ex.IsFatal())
                     {
                         // Log the error only once.
                         if (minIdleTime == MinIdleTime)
                         {
-                            _logger.LogError(ex, "Unable to read the distributed cache before syncing all tenants.");
+                            _logger.LogError(ex, "Unable to read the distributed before checking if a tenant has changed.");
                         }
 
-                        // Retry but with a longer idle time.
+                        // We will retry but after a longer idle time.
                         if (minIdleTime < MaxRetryTime)
                         {
                             minIdleTime *= 2;
@@ -155,6 +153,20 @@ namespace OrchardCore.Environment.Shell.Distributed
                     }
 
                     _shellChangedId = shellChangedId;
+
+                    // Try to retrieve the global tenant created identifier from the distributed cache.
+                    string shellCreatedId;
+                    try
+                    {
+                        shellCreatedId = await distributedCache.GetStringAsync(ShellCreatedIdKey);
+                    }
+                    catch (Exception ex) when (!ex.IsFatal())
+                    {
+                        _logger.LogError(ex, "Unable to read the distributed before checking if a tenant has been created.");
+                        continue;
+                    }
+
+                    // Retrieve all tenant settings that are already loaded.
                     var allSettings = _shellHost.GetAllSettings();
 
                     // Check if at least one tenant has been created.
@@ -163,21 +175,21 @@ namespace OrchardCore.Environment.Shell.Distributed
                         _shellCreatedId = shellCreatedId;
                         var createdSettings = new List<ShellSettings>();
 
-                        // The new tenants are those that are not already loaded.
+                        // The new created tenants are those that are not already loaded.
                         var names = (await _shellSettingsManager.LoadSettingsNamesAsync()).Except(allSettings.Select(s => s.Name));
                         foreach (var name in names)
                         {
-                            // Load the settings of each new tenant.
+                            // Load and enlist the settings of each new created tenant.
                             createdSettings.Add(await _shellSettingsManager.LoadSettingsAsync(name));
                         }
 
-                        // Add all newly loaded settings to the list.
+                        // Add all newly loaded tenant settings to the list.
                         allSettings = allSettings.Concat(createdSettings);
                     }
 
                     var startTime = DateTime.UtcNow;
 
-                    // Check specific identifiers of all tenants.
+                    // Keep in sync all tenants by checking their specific identifiers.
                     foreach (var settings in allSettings)
                     {
                         // If busy for a too long time.
@@ -246,13 +258,10 @@ namespace OrchardCore.Environment.Shell.Distributed
                 _logger.LogError(ex, "Error while executing '{ServiceName}', the service is stopping.", nameof(DistributedShellHostedService));
             }
 
-            var previous = _isolatedContext;
-
-            _isolatedContext = null;
-            previous?.Dispose();
-
-            _defaultContext = null;
             _terminated = true;
+            _isolatedContext?.Release();
+            _isolatedContext = null;
+            _defaultContext = null;
         }
 
         public async Task LoadingAsync()
@@ -342,8 +351,8 @@ namespace OrchardCore.Environment.Shell.Distributed
 
             if (isolatedContext == null)
             {
-                // Or create a new one for a local usage if not yet initialized.
-                isolatedContext = new IsolatedContext(await _shellContextFactory.CreateShellContextAsync(defautSettings)).Acquire();
+                // Or create a new one for a local usage, if not yet initialized.
+                isolatedContext = new IsolatedContext(await _shellContextFactory.CreateShellContextAsync(defautSettings));
             }
 
             using var context = isolatedContext;
@@ -372,7 +381,7 @@ namespace OrchardCore.Environment.Shell.Distributed
                 // Update the release identifier of this tenant in the distributed cache.
                 await distributedCache.SetStringAsync(name + ReleaseIdKeySuffix, shellIdentifier.ReleaseId);
 
-                // Also update the global identifier telling that a tenant has been changed.
+                // Also update the global identifier specifying that a tenant has changed.
                 await distributedCache.SetStringAsync(ShellChangedIdKey, shellIdentifier.ReleaseId);
             }
             catch (Exception ex) when (!ex.IsFatal())
@@ -409,8 +418,8 @@ namespace OrchardCore.Environment.Shell.Distributed
 
             if (isolatedContext == null)
             {
-                // Or create a new one for a local usage if not yet initialized.
-                isolatedContext = new IsolatedContext(await _shellContextFactory.CreateShellContextAsync(defautSettings)).Acquire();
+                // Or create a new one for a local usage, if not yet initialized.
+                isolatedContext = new IsolatedContext(await _shellContextFactory.CreateShellContextAsync(defautSettings));
             }
 
             using var context = isolatedContext;
@@ -442,11 +451,11 @@ namespace OrchardCore.Environment.Shell.Distributed
                 // Check if it is a new created tenant that has not been already loaded.
                 if (name != ShellHelper.DefaultShellName && !_shellHost.TryGetSettings(name, out _))
                 {
-                    // Also update the global identifier telling that a tenant has been created.
+                    // Also update the global identifier specifying that a tenant has been created.
                     await distributedCache.SetStringAsync(ShellCreatedIdKey, shellIdentifier.ReloadId);
                 }
 
-                // Also update the global identifier telling that a tenant has been changed.
+                // Also update the global identifier specifying that a tenant has changed.
                 await distributedCache.SetStringAsync(ShellChangedIdKey, shellIdentifier.ReloadId);
             }
             catch (Exception ex) when (!ex.IsFatal())
@@ -481,10 +490,12 @@ namespace OrchardCore.Environment.Shell.Distributed
         internal class IsolatedContext : IDisposable
         {
             private ShellContext _context;
-            internal volatile int _count;
+            private volatile int _count;
+            private bool _released;
 
             public IsolatedContext(ShellContext context)
             {
+                Interlocked.Increment(ref _count);
                 _context = context;
             }
 
@@ -492,8 +503,26 @@ namespace OrchardCore.Environment.Shell.Distributed
 
             public IsolatedContext Acquire()
             {
+                if (_released)
+                {
+                    return null;
+                }
+
                 Interlocked.Increment(ref _count);
+
+                if (_released)
+                {
+                    Dispose();
+                    return null;
+                }
+
                 return this;
+            }
+
+            public void Release()
+            {
+                _released = true;
+                Dispose();
             }
 
             public void Dispose()
