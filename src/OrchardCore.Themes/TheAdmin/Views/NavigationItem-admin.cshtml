@@ -24,7 +24,7 @@
             figCaption.Attributes["id"] = li.Attributes["id"];
             li.Attributes["id"] = null;
         }
-        
+
         var ul = new TagBuilder("ul");
         ul.Attributes["Id"] = "m" + Model.GetHashCode().ToString();
 
@@ -50,6 +50,22 @@
     }
     else
     {
+        var prefix = "icon-class-";
+
+        // Extract classes that are not icons from Model.Classes
+        var notIconClasses = ((IEnumerable<string>)Model.Classes)
+                        .ToList()
+                        .Where(c => !c.StartsWith(prefix, StringComparison.OrdinalIgnoreCase));
+
+        if (notIconClasses.Count() > 0)
+        {
+            li.Attributes["class"] = string.Join(" ", notIconClasses);
+        }
+        else
+        {
+            li.Attributes.Remove("class");
+        }
+
         li.InnerHtml.AppendHtml(await DisplayAsync(Model));
     }
 }
