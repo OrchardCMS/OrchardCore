@@ -91,11 +91,14 @@ namespace OrchardCore.Contents.Security
         /// <summary>
         /// Evaluate if we can edit at least one content type
         /// </summary>
-        public static async Task<bool> IsAllowedToEditAContentTypeAsync(IAuthorizationService authorizationService, IEnumerable<ContentTypeDefinition> contentTypeDefinitions, HttpContext context)
+        public static async Task<bool> IsAllowedToAContentTypeAsync(IAuthorizationService authorizationService, Permission requiredPermission, IEnumerable<ContentTypeDefinition> contentTypeDefinitions, HttpContext context)
         {
             foreach(var contentTypeDefinition in contentTypeDefinitions)
             {
-                var permission = CreateDynamicPermission(PermissionTemplates[CommonPermissions.EditOwnContent.Name], contentTypeDefinition);
+                var permission = GetOwnerVariation(requiredPermission);
+                var contentTypePermission = ConvertToDynamicPermission(permission);
+                permission = CreateDynamicPermission(contentTypePermission, contentTypeDefinition);
+                
                 if(await authorizationService.AuthorizeAsync(context.User, permission, new ContentItem{ ContentType = contentTypeDefinition.Name, Owner = context.User.Identity.Name }))
                 {
                     return true;
@@ -104,5 +107,39 @@ namespace OrchardCore.Contents.Security
 
             return false;
         }
+        private static Permission GetOwnerVariation(Permission permission)
+        {
+            if (permission.Name == CommonPermissions.PublishContent.Name)
+            {
+                return CommonPermissions.PublishOwnContent;
+            }
+
+            if (permission.Name == CommonPermissions.EditContent.Name)
+            {
+                return CommonPermissions.EditOwnContent;
+            }
+
+            if (permission.Name == CommonPermissions.DeleteContent.Name)
+            {
+                return CommonPermissions.DeleteOwnContent;
+            }
+
+            if (permission.Name == CommonPermissions.ViewContent.Name)
+            {
+                return CommonPermissions.ViewOwnContent;
+            }
+
+            if (permission.Name == CommonPermissions.PreviewContent.Name)
+            {
+                return CommonPermissions.PreviewOwnContent;
+            }
+
+            if (permission.Name == CommonPermissions.CloneContent.Name)
+            {
+                return CommonPermissions.CloneOwnContent;
+            }
+
+            return null;
+        }      
     }
 }
