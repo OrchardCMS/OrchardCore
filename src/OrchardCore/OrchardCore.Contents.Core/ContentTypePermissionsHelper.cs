@@ -89,7 +89,7 @@ namespace OrchardCore.Contents.Security
         }
 
         /// <summary>
-        /// Evaluate if we can edit at least one content type
+        /// Evaluate if we have a specific owner variation permission to at least one content type
         /// </summary>
         public static async Task<bool> IsAllowedToAContentTypeAsync(IAuthorizationService authorizationService, Permission requiredPermission, IEnumerable<ContentTypeDefinition> contentTypeDefinitions, HttpContext context)
         {
