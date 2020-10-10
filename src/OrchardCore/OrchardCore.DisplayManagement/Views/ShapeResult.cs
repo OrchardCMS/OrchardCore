@@ -24,7 +24,7 @@ namespace OrchardCore.DisplayManagement.Views
         private Action<CacheContext> _cache;
         private string _groupId;
         private Action<ShapeDisplayContext> _displaying;
-        private Func<Task<bool>> _resultConditionAsync;
+        private Func<Task<bool>> _ifAsync;
 
         public ShapeResult(string shapeType, Func<IBuildShapeContext, ValueTask<IShape>> shapeBuilder)
             : this(shapeType, shapeBuilder, null)
@@ -106,7 +106,7 @@ namespace OrchardCore.DisplayManagement.Views
             }
 
             // If a condition has been applied to this result evaluate it only if the shape has been placed.
-            if (_resultConditionAsync != null && !(await _resultConditionAsync.Invoke()))
+            if (_ifAsync != null && !(await _ifAsync.Invoke()))
             {
                 return;
             }
@@ -297,11 +297,11 @@ namespace OrchardCore.DisplayManagement.Views
 
         /// <summary>
         /// Sets a condition that must return true for the shape to render.
-        /// The condition is only evaluated after placing the shape.
+        /// The condition is only evaluated if the shape has been placed.
         /// </summary>
-        public ShapeResult ResultConditionAsync(Func<Task<bool>> resultConditionAsync)
+        public ShapeResult IfAsync(Func<Task<bool>> ifAsync)
         {
-            _resultConditionAsync = resultConditionAsync;
+            _ifAsync = ifAsync;
             return this;
         }
 
