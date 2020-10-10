@@ -30,7 +30,7 @@ script:
   - if test "$TRAVIS_OS_NAME" == "linux"; then export PATH="/home/travis/.dotnet":"$PATH"; fi
   - if test "$TRAVIS_OS_NAME" == "osx"; then export PATH="/Users/travis/.dotnet":"$PATH"; fi
   - dotnet --info
-  - dotnet build -c Release
+  - dotnet build -c Release /p:SourceRevisionId=$TRAVIS_COMMIT /p:GitBranch=$TRAVIS_BRANCH
   - if [[ "$TRAVIS_BRANCH" == "master" ]] && [[ "$TRAVIS_OS_NAME" == "linux" ]] && [[ "$TRAVIS_PULL_REQUEST" == "false" ]]; then
         cd $TRAVIS_BUILD_DIR/src/OrchardCore.Cms.Web;
         rm -rf ./App_Data;
