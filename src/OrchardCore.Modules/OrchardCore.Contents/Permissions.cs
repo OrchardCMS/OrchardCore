@@ -26,7 +26,7 @@ namespace OrchardCore.Contents
         public static readonly Permission CloneOwnContent = CommonPermissions.CloneOwnContent;
         public static readonly Permission AccessContentApi = new Permission("AccessContentApi", "Access content via the api");
         public static readonly Permission AccessAdminContentList = new Permission("AccessAdminContentList", "Access admin content list");
-        public static readonly Permission ViewRestrictedItemsAdminContentList = new Permission("ViewRestrictedItemsAdminContentList", "View restricted/unrestricted content item(s) in admin content list");
+        public static readonly Permission ViewNotOwnedItemsAdminContentList = new Permission("ViewNotOwnedItemsAdminContentList", "View content item(s) not owned by user in admin content list");
 
         //public static readonly Permission MetaListContent = new Permission { ImpliedBy = new[] { EditOwnContent, PublishOwnContent, DeleteOwnContent } };
 
@@ -48,7 +48,7 @@ namespace OrchardCore.Contents
                 CloneOwnContent,
                 AccessContentApi,
                 AccessAdminContentList,
-                ViewRestrictedItemsAdminContentList
+                ViewNotOwnedItemsAdminContentList
             }
             .AsEnumerable());
         }
@@ -58,11 +58,11 @@ namespace OrchardCore.Contents
             return new[] {
                 new PermissionStereotype {
                     Name = "Administrator",
-                    Permissions = new[] { PublishContent, EditContent, DeleteContent, PreviewContent, CloneContent, AccessAdminContentList, AccessContentApi, ViewRestrictedItemsAdminContentList }
+                    Permissions = new[] { PublishContent, EditContent, DeleteContent, PreviewContent, CloneContent, AccessAdminContentList, AccessContentApi, ViewNotOwnedItemsAdminContentList }
                 },
                 new PermissionStereotype {
                     Name = "Editor",
-                    Permissions = new[] { PublishContent, EditContent, DeleteContent, PreviewContent, CloneContent, AccessAdminContentList, ViewRestrictedItemsAdminContentList }
+                    Permissions = new[] { PublishContent, EditContent, DeleteContent, PreviewContent, CloneContent, AccessAdminContentList, ViewNotOwnedItemsAdminContentList }
                 },
                 new PermissionStereotype {
                     Name = "Moderator"

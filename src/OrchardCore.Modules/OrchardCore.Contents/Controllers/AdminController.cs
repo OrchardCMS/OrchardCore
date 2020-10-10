@@ -146,11 +146,15 @@ namespace OrchardCore.Contents.Controllers
             model.Options.ContentStatuses = new List<SelectListItem>()
             {
                 new SelectListItem() { Text = S["Latest"], Value = nameof(ContentsStatus.Latest) },
-                new SelectListItem() { Text = S["Owned by me"], Value = nameof(ContentsStatus.Owner) },
                 new SelectListItem() { Text = S["Published"], Value = nameof(ContentsStatus.Published) },
                 new SelectListItem() { Text = S["Unpublished"], Value = nameof(ContentsStatus.Draft) },
                 new SelectListItem() { Text = S["All versions"], Value = nameof(ContentsStatus.AllVersions) }
             };
+
+            if(await _authorizationService.AuthorizeAsync(context.User, Permissions.ViewNotOwnedItemsAdminContentList))
+            {
+                model.Options.ContentStatuses.Insert(1, new SelectListItem() { Text = S["Owned by me"], Value = nameof(ContentsStatus.Owner) });
+            }
 
             model.Options.ContentSorts = new List<SelectListItem>()
             {
