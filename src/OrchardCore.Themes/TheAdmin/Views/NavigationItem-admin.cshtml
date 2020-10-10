@@ -6,6 +6,22 @@
     Model.Metadata.Type = "NavigationItemLink";
     Model.Metadata.Alternates.Add("NavigationItemLink_Id__" + Model.Id);
 
+    var prefix = "icon-class-";
+
+    // Extract classes that are not icons from Model.Classes
+    var notIconClasses = ((IEnumerable<string>)Model.Classes)
+                    .ToList()
+                    .Where(c => !c.StartsWith(prefix, StringComparison.OrdinalIgnoreCase));
+
+    if (notIconClasses.Count() > 0)
+    {
+        li.Attributes["class"] = string.Join(" ", notIconClasses);
+    }
+    else
+    {
+        li.Attributes.Remove("class");
+    }
+
     if ((bool)Model.Selected)
     {
         li.AddCssClass("active");
@@ -50,22 +66,6 @@
     }
     else
     {
-        var prefix = "icon-class-";
-
-        // Extract classes that are not icons from Model.Classes
-        var notIconClasses = ((IEnumerable<string>)Model.Classes)
-                        .ToList()
-                        .Where(c => !c.StartsWith(prefix, StringComparison.OrdinalIgnoreCase));
-
-        if (notIconClasses.Count() > 0)
-        {
-            li.Attributes["class"] = string.Join(" ", notIconClasses);
-        }
-        else
-        {
-            li.Attributes.Remove("class");
-        }
-
         li.InnerHtml.AppendHtml(await DisplayAsync(Model));
     }
 }
