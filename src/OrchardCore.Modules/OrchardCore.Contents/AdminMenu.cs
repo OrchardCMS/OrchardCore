@@ -56,19 +56,7 @@ namespace OrchardCore.Contents
                 content.AddClass("content").Id("content");
                 await content.AddAsync(S["Content Items"], S["Content Items"].PrefixPosition(), async contentItems =>
                 {
-                    // TODO: Move this to helper class static method as it can be reused in some places.
-                    var showContentItemsMenu = false;
-                    
-                    foreach(var contentType in contentTypes)
-                    {
-                        if(await _authorizationService.AuthorizeAsync(context.User, Permissions.EditContent, new ContentItem{ ContentType = contentType.Name, Owner = context.User.Identity.Name }))
-                        {
-                            showContentItemsMenu = true;
-                            break;
-                        }
-                    }
-
-                    if(!showContentItemsMenu)
+                    if(!await ContentTypePermissionsHelper.IsAllowedToEditAContentTypeAsync(_authorizationService, contentTypes, context))
                     {
                         contentItems.Permission(Permissions.EditContent);
                     }

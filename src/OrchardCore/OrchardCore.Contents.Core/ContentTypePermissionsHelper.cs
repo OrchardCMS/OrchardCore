@@ -1,7 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata.Models;
+
 using OrchardCore.Security.Permissions;
 
 
@@ -22,6 +27,12 @@ namespace OrchardCore.Contents.Security
         private static readonly Permission ViewOwnContent = new Permission("ViewOwn_{0}", "View own {0}", new[] { ViewContent, CommonPermissions.ViewOwnContent });
         private static readonly Permission PreviewContent = new Permission("Preview_{0}", "Preview {0} by others", new[] { EditContent, CommonPermissions.PreviewContent });
         private static readonly Permission PreviewOwnContent = new Permission("PreviewOwn_{0}", "Preview own {0}", new[] { PreviewContent, CommonPermissions.PreviewOwnContent });
+        private readonly IAuthorizationService _authorizationService;
+
+        public ContentTypePermissionsHelper(IAuthorizationService authorizationService)
+        {
+            _authorizationService = authorizationService;
+        }
 
         public static readonly Dictionary<string, Permission> PermissionTemplates = new Dictionary<string, Permission>
         {
@@ -75,6 +86,23 @@ namespace OrchardCore.Contents.Security
                 String.Format(template.Description, contentType),
                 (template.ImpliedBy ?? new Permission[0]).Select(t => CreateDynamicPermission(t, contentType))
             );
+        }
+
+        /// <summary>
+        /// Evaluate if we can edit at least one content type
+        /// </summary>
+        public static async Task<bool> IsAllowedToEditAContentTypeAsync(IAuthorizationService authorizationService, IEnumerable<ContentTypeDefinition> contentTypeDefinitions, HttpContext context)
+        {
+            foreach(var contentTypeDefinition in contentTypeDefinitions)
+            {
+                var permission = CreateDynamicPermission(PermissionTemplates[CommonPermissions.EditOwnContent.Name], contentTypeDefinition);
+                if(await authorizationService.AuthorizeAsync(context.User, permission, new ContentItem{ ContentType = contentTypeDefinition.Name, Owner = context.User.Identity.Name }))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 }

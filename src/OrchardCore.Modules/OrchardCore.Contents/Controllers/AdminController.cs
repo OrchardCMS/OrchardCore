@@ -16,6 +16,7 @@ using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.ContentManagement.Records;
+using OrchardCore.Contents.Security;
 using OrchardCore.Contents.Services;
 using OrchardCore.Contents.ViewModels;
 using OrchardCore.DisplayManagement;
@@ -88,6 +89,10 @@ namespace OrchardCore.Contents.Controllers
         public async Task<IActionResult> List(ListContentsViewModel model, PagerParameters pagerParameters, string contentTypeId = "")
         {
             var context = _httpContextAccessor.HttpContext;
+            var contentTypeDefinitions = _contentDefinitionManager.ListTypeDefinitions()
+                    .Where(ctd => ctd.GetSettings<ContentTypeSettings>().Creatable)
+                    .OrderBy(ctd => ctd.DisplayName);
+
             var siteSettings = await _siteService.GetSiteSettingsAsync();
             var pager = new Pager(pagerParameters, siteSettings.PageSize);
 
@@ -119,11 +124,6 @@ namespace OrchardCore.Contents.Controllers
 
             if (model.Options.CreatableTypes == null)
             {
-                var contentTypeDefinitions = _contentDefinitionManager
-                    .ListTypeDefinitions()
-                    .Where(ctd => ctd.GetSettings<ContentTypeSettings>().Creatable)
-                    .OrderBy(ctd => ctd.DisplayName);
-
                 var creatableList = new List<SelectListItem>();
                 if (contentTypeDefinitions.Any())
                 {
