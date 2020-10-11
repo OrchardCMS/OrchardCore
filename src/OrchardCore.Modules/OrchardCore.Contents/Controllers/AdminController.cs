@@ -93,22 +93,9 @@ namespace OrchardCore.Contents.Controllers
                     .Where(ctd => ctd.GetSettings<ContentTypeSettings>().Creatable)
                     .OrderBy(ctd => ctd.DisplayName);
 
-            var hasEditPermission = await _authorizationService.AuthorizeAsync(User, CommonPermissions.EditContent);
-            var hasEditAContentTypePermission = await _authorizationService.IsAuthorizedToAContentTypeAsync(User, CommonPermissions.EditContent, contentTypeDefinitions);
-
-            if(hasEditPermission)
+            if(!await _authorizationService.IsAuthorizedToAContentTypeAsync(User, CommonPermissions.EditContent, contentTypeDefinitions))
             {
-                if(!hasEditAContentTypePermission)
-                {
-                    return Forbid();
-                }
-            }
-            else
-            {
-                if(!hasEditAContentTypePermission)
-                {
-                    return Forbid();
-                }
+                return Forbid();
             }
 
             var siteSettings = await _siteService.GetSiteSettingsAsync();
