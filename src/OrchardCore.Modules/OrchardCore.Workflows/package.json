@@ -5,6 +5,6 @@
     "bootstrap": "4.5.2",
     "@types/bootstrap": "4.5.0",
     "jsplumb": "2.14.6",
-    "@types/jquery": "3.5.1"
+    "@types/jquery": "3.5.2"
   }
 }
