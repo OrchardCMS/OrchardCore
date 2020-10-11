@@ -92,6 +92,11 @@ namespace OrchardCore.Lucene.Controllers
 
         public async Task<ActionResult> Index(AdminIndexViewModel model, PagerParameters pagerParameters)
         {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageIndexes))
+            {
+                return Forbid();
+            }
+            
             model.Indexes = (await _luceneIndexSettingsService.GetSettingsAsync()).Select(i => new IndexViewModel { Name = i.IndexName });
 
             var siteSettings = await _siteService.GetSiteSettingsAsync();
