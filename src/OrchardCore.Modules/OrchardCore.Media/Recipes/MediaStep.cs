@@ -107,9 +107,9 @@ namespace OrchardCore.Media.Recipes
 
             /// <summary>
             /// URL where the content is read from. Use when the file
-            /// will be available on the remote website.
-            /// If Base64 property or SourcePath property are set, thet take
-            /// precedence ovar SourceUrl.
+            /// will be available on a remote website.
+            /// If Base64 property or SourcePath property are set, they take
+            /// precedence over SourceUrl.
             /// </summary>
             public string SourceUrl { get; set; }
         }
