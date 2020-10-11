@@ -61,7 +61,7 @@ namespace OrchardCore.Contents.Drivers
                         var hasViewPermission = await _authorizationService.AuthorizeAsync(context.User, CommonPermissions.ViewContent, contentItem);
                         var hasEditPermission = await _authorizationService.AuthorizeAsync(context.User, CommonPermissions.EditContent, contentItem);
                         
-                        if (hasEditPermission || hasViewPermission)
+                        if (hasViewPermission || hasEditPermission)
                         {
                             return true;
                         }
@@ -106,9 +106,7 @@ namespace OrchardCore.Contents.Drivers
 
             results.Add(Dynamic("Content_PublishButton").Location("Actions:10")
                 .RenderWhen(async () => {
-                    var hasPublishPermission = await _authorizationService.AuthorizeAsync(context.User, CommonPermissions.PublishContent, contentItem);
-
-                    if (hasPublishPermission)
+                    if (await _authorizationService.AuthorizeAsync(context.User, CommonPermissions.PublishContent, contentItem))
                     {
                         return true;
                     }
