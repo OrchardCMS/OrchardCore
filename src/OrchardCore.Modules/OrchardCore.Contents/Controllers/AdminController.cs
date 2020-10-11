@@ -105,7 +105,10 @@ namespace OrchardCore.Contents.Controllers
             }
             else
             {
-                return Forbid();
+                if(!hasEditAContentTypePermission)
+                {
+                    return Forbid();
+                }
             }
 
             var siteSettings = await _siteService.GetSiteSettingsAsync();
