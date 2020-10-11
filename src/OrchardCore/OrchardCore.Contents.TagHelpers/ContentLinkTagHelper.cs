@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -82,17 +83,12 @@ namespace OrchardCore.Contents.TagHelpers
             if (DisplayFor != null)
             {
                 contentItem = DisplayFor;
-                metadata = await _contentManager.PopulateAspectAsync<ContentItemMetadata>(DisplayFor);
+                var previewAspect = await _contentManager.PopulateAspectAsync<PreviewAspect>(contentItem);
 
-                if (metadata.DisplayRouteValues == null)
+                if (!string.IsNullOrEmpty(previewAspect.PreviewUrl))
                 {
-                    return;
-                }
-
-                if (metadata.DisplayRouteValues.ContainsKey("PreviewUrl"))
-                {
-                    var previewUrl = metadata.DisplayRouteValues["PreviewUrl"].ToString();
-                    if (!previewUrl.StartsWith('~'))
+                    var previewUrl = previewAspect.PreviewUrl;
+                    if (!previewUrl.StartsWith("~/", StringComparison.OrdinalIgnoreCase))
                     {
                         if (previewUrl.StartsWith('/'))
                         {
@@ -105,13 +101,19 @@ namespace OrchardCore.Contents.TagHelpers
                     }
 
                     output.Attributes.SetAttribute("href", urlHelper.Content(previewUrl));
+                    return;
                 }
-                else
-                {
-                    ApplyRouteValues(tagHelperContext, metadata.DisplayRouteValues);
 
-                    output.Attributes.SetAttribute("href", urlHelper.Action(metadata.DisplayRouteValues["action"].ToString(), metadata.DisplayRouteValues));
+                metadata = await _contentManager.PopulateAspectAsync<ContentItemMetadata>(DisplayFor);
+
+                if (metadata.DisplayRouteValues == null)
+                {
+                    return;
                 }
+
+                ApplyRouteValues(tagHelperContext, metadata.DisplayRouteValues);
+
+                output.Attributes.SetAttribute("href", urlHelper.Action(metadata.DisplayRouteValues["action"].ToString(), metadata.DisplayRouteValues));
             }
             else if (EditFor != null)
             {

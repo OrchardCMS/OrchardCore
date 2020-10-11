@@ -2,7 +2,6 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Fluid;
-using Microsoft.AspNetCore.Routing;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Metadata;
@@ -43,37 +42,18 @@ namespace OrchardCore.ContentPreview.Handlers
 
             if (!String.IsNullOrEmpty(pattern))
             {
-                string previewUrl = null;
-
-                var model = new PreviewPartViewModel()
+                await context.ForAsync<PreviewAspect>(async previewAspect =>
                 {
-                    PreviewPart = part,
-                    ContentItem = part.ContentItem
-                };
-
-                previewUrl = await _liquidTemplateManager.RenderAsync(pattern, NullEncoder.Default, model,
-                    scope => scope.SetValue("ContentItem", model.ContentItem));
-
-                previewUrl = previewUrl.Replace("\r", String.Empty).Replace("\n", String.Empty);
-
-                await context.ForAsync<PreviewAspect>(previewAspect =>
-                 {
-                     previewAspect.PreviewUrl = previewUrl;
-                     return Task.CompletedTask;
-                 });
-                await context.ForAsync<ContentItemMetadata>(metadata =>
-                {
-                    if (metadata.DisplayRouteValues == null)
+                    var model = new PreviewPartViewModel()
                     {
-                        metadata.DisplayRouteValues = new RouteValueDictionary {
-                            {"PreviewUrl", previewUrl}
-                        };
-                    }
-                    else
-                    {
-                        metadata.DisplayRouteValues.Add("PreviewUrl", previewUrl);
-                    }
-                    return Task.CompletedTask;
+                        PreviewPart = part,
+                        ContentItem = part.ContentItem
+                    };
+
+                    previewAspect.PreviewUrl = await _liquidTemplateManager.RenderAsync(pattern, NullEncoder.Default, model,
+                        scope => scope.SetValue("ContentItem", model.ContentItem));
+
+                    previewAspect.PreviewUrl = previewAspect.PreviewUrl.Replace("\r", String.Empty).Replace("\n", String.Empty);
                 });
             }
 
