@@ -17,14 +17,13 @@
     <resources type="Header" />
 
     <!-- This script can't wait to the footer -->
-    <script type="text/javascript" asp-src="~/TheAdmin/Scripts/userPreferencesLoader.min.js" debug-src="~/TheAdmin/Scripts/userPreferencesLoader.js"></script>
+    <script asp-src="~/TheAdmin/Scripts/userPreferencesLoader.min.js" debug-src="~/TheAdmin/Scripts/userPreferencesLoader.js"></script>
     @await RenderSectionAsync("HeadMeta", required: false)
 </head>
 <body class="preload">
     <div class="ta-wrapper">
-        <div class="ta-navbar-top">
-            <a class="ta-navbar-brand" href="@Url.Content("~/")"><span>@Site.SiteName</span></a>
-            <div class="collapse navbar-collapse" id="navbar-links">
+        <div class="ta-navbar-top navbar-expand-lg navbar-light bg-light">
+            <a class="ta-navbar-brand" href="@Url.Content("~/")">@Site.SiteName</a>
                 <div class="mr-auto">
                     @await RenderSectionAsync("NavbarTop", required: false)
                 </div>

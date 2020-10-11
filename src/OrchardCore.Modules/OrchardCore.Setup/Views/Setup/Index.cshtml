@@ -182,8 +182,8 @@
                 <label asp-for="ConnectionString">@T["Connection string"]</label>
                 <div class="input-group mb-2 mb-sm-0">
                     <input asp-for="ConnectionString" class="form-control pwd" type="password" required />
-                    <div class="input-group-append reveal" title="@T["Show/hide connection string"]">
-                        <button type="button" class="btn btn-secondary" tabindex="-1" aria-hidden="true"><i class="fa fa-eye-slash"></i></button>
+                    <div class="input-group-append" title="@T["Show/hide connection string"]">
+                        <button type="button" id="toggleConnectionString" class="btn btn-secondary" tabindex="-1" aria-hidden="true"><i class="icon fa fa-eye"></i></button>
                     </div>
                 </div>
                 <span asp-validation-for="ConnectionString" class="text-danger"></span>
@@ -209,14 +209,24 @@
         <div class="row">
             <div class="form-group col-md-6" asp-validation-class-for="Password">
                 <label asp-for="Password">@T["Password"]</label>
-                <input asp-for="Password" type="password" class="form-control" data-toggle="popover" data-placement="top" data-trigger="focus" data-title="@T["Password strength"]" data-content="@passwordTooltip" required pattern="@passwordRegex" />
+                <div class="input-group">
+                    <input asp-for="Password" class="form-control" data-toggle="popover" data-placement="top" data-trigger="focus" data-title="@T["Password strength"]" data-content="@passwordTooltip" required pattern="@passwordRegex" />
+                    <div class="input-group-append">
+                        <button tabindex="-1" class="btn btn-secondary" type="button" id="togglePassword"><i class="icon fa fa-eye"></i></button>
+                    </div>
+                </div>
                 <div id="passwordStrength"></div>
                 <span asp-validation-for="Password" class="text-danger"></span>
             </div>
 
             <div class="form-group col-md-6" asp-validation-class-for="PasswordConfirmation">
                 <label asp-for="PasswordConfirmation">@T["Password Confirmation"]</label>
-                <input asp-for="PasswordConfirmation" type="password" class="form-control" title="@passwordTooltip" required pattern="@passwordRegex" />
+                <div class="input-group">
+                    <input asp-for="PasswordConfirmation" class="form-control" title="@passwordTooltip" required pattern="@passwordRegex" />
+                    <div class="input-group-append">
+                        <button tabindex="-1" class="btn btn-secondary" type="button" id="togglePasswordConfirmation"><i class="icon fa fa-eye"></i></button>
+                    </div>
+                </div>
                 <span asp-validation-for="PasswordConfirmation" class="text-danger"></span>
             </div>
         </div>
@@ -228,8 +238,8 @@
         </div>
     </div>
 </form>
-<script src="~/OrchardCore.Setup/Scripts/setup.min.js" type="text/javascript"></script>
-<script type="text/javascript">
+<script src="~/OrchardCore.Setup/Scripts/setup.min.js"></script>
+<script>
     $(function(){
         $('#Password').strength({
             minLength: @(options.Password.RequiredLength),
@@ -245,17 +255,21 @@
             trigger: 'focus'
         });
 
-        $(".reveal").on('click',function() {
-            var $pwd = $(".pwd");
-            if ($pwd.attr('type') === 'password') {
-                $pwd.attr('type', 'text');
-                $(this).find('button > i').toggleClass('fa-eye-slash fa-eye');
-                $pwd.focus();
-            } else {
-                $pwd.attr('type', 'password');
-                $(this).find('button > i').toggleClass('fa-eye fa-eye-slash');
-                $pwd.focus();
-            }
+        toggleConnectionString = document.querySelector('#toggleConnectionString');
+        if (toggleConnectionString) {
+            toggleConnectionString.addEventListener('click', function (e) {
+                togglePasswordVisibility(document.querySelector('#ConnectionString'), document.querySelector('#toggleConnectionString'))
+            });
+        }
+
+        togglePassword = document.querySelector('#togglePassword');
+        togglePassword.addEventListener('click', function (e) {
+            togglePasswordVisibility(document.querySelector('#Password'), document.querySelector('#togglePassword'))
+        });
+
+        togglePasswordConfirmation = document.querySelector('#togglePasswordConfirmation');
+        togglePasswordConfirmation.addEventListener('click', function(e) {
+            togglePasswordVisibility(document.querySelector('#PasswordConfirmation'), document.querySelector('#togglePasswordConfirmation'))
         });
     })
 </script>

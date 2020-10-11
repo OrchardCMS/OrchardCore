@@ -9,8 +9,8 @@
   </ItemGroup>
   
   <ItemGroup>
-    <ProjectReference Include="..\..\OrchardCore.FileStorage.Abstractions\OrchardCore.FileStorage.Abstractions.csproj" />
-    <ProjectReference Include="..\..\OrchardCore.Media.Abstractions\OrchardCore.Media.Abstractions.csproj" />
+    <ProjectReference Include="..\OrchardCore.FileStorage.Abstractions\OrchardCore.FileStorage.Abstractions.csproj" />
+    <ProjectReference Include="..\OrchardCore.Media.Abstractions\OrchardCore.Media.Abstractions.csproj" />
   </ItemGroup>
 
 </Project>

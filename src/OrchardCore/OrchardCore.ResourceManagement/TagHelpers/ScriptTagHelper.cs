@@ -283,12 +283,6 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                     builder.Attributes.Add(attribute.Name, attribute.Value.ToString());
                 }
 
-                // If no type was specified, define a default one
-                if (!builder.Attributes.ContainsKey("type"))
-                {
-                    builder.Attributes.Add("type", "text/javascript");
-                }
-
                 if (At == ResourceLocation.Head)
                 {
                     _resourceManager.RegisterHeadScript(builder);
