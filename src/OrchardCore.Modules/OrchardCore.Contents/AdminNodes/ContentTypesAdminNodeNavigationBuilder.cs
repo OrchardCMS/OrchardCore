@@ -10,6 +10,7 @@ using OrchardCore.AdminMenu.Services;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Metadata.Settings;
+using OrchardCore.Contents;
 using OrchardCore.Contents.Security;
 using OrchardCore.Navigation;
 
@@ -62,7 +63,7 @@ namespace OrchardCore.Contents.AdminNodes
                     cTypeMenu.Priority(node.Priority);
                     cTypeMenu.Position(node.Position);
                     cTypeMenu.Permission(
-                        ContentTypePermissionsHelper.CreateDynamicPermission(ContentTypePermissionsHelper.PermissionTemplates[Permissions.PublishOwnContent.Name], ctd));
+                        ContentTypePermissionsHelper.CreateDynamicPermission(ContentTypePermissionsHelper.PermissionTemplates[CommonPermissions.PublishOwnContent.Name], ctd));
 
                     GetIconClasses(ctd, node).ToList().ForEach(c => cTypeMenu.AddClass(c));
                 });
