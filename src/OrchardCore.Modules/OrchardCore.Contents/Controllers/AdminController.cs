@@ -93,7 +93,7 @@ namespace OrchardCore.Contents.Controllers
                     .Where(ctd => ctd.GetSettings<ContentTypeSettings>().Creatable)
                     .OrderBy(ctd => ctd.DisplayName);
 
-            if(!await _authorizationService.IsAuthorizedToAContentTypeAsync(User, CommonPermissions.EditContent, contentTypeDefinitions))
+            if(!await _authorizationService.IsAuthorizedToAContentTypeAsync(User, CommonPermissions.EditContent, contentTypeDefinitions, _contentManager))
             {
                 return Forbid();
             }

@@ -56,7 +56,7 @@ namespace OrchardCore.Contents
                 content.AddClass("content").Id("content");
                 await content.AddAsync(S["Content Items"], S["Content Items"].PrefixPosition(), async contentItems =>
                 {
-                    if(!await _authorizationService.IsAuthorizedToAContentTypeAsync(context.User, CommonPermissions.EditContent, contentTypes))
+                    if(!await _authorizationService.IsAuthorizedToAContentTypeAsync(context.User, CommonPermissions.EditContent, contentTypes, _contentManager))
                     {
                         contentItems.Permission(Permissions.EditContent);
                     }

@@ -5,7 +5,9 @@ using OrchardCore.Contents;
 using OrchardCore.Contents.Security;
 using OrchardCore.Security.Permissions;
 using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.ContentManagement.Metadata.Settings;
 
 namespace Microsoft.AspNetCore.Authorization
 {
@@ -14,7 +16,7 @@ namespace Microsoft.AspNetCore.Authorization
         /// <summary>
         /// Evaluate if we have a specific owner variation permission to at least one content type
         /// </summary>
-        public static async Task<bool> IsAuthorizedToAContentTypeAsync(this IAuthorizationService service, ClaimsPrincipal user, Permission requiredPermission, IEnumerable<ContentTypeDefinition> contentTypeDefinitions)
+        public static async Task<bool> IsAuthorizedToAContentTypeAsync(this IAuthorizationService service, ClaimsPrincipal user, Permission requiredPermission, IEnumerable<ContentTypeDefinition> contentTypeDefinitions, IContentManager contentManager)
         {
             foreach(var contentTypeDefinition in contentTypeDefinitions)
             {
@@ -22,7 +24,10 @@ namespace Microsoft.AspNetCore.Authorization
                 var contentTypePermission = ContentTypePermissionsHelper.ConvertToDynamicPermission(permission);
                 permission = ContentTypePermissionsHelper.CreateDynamicPermission(contentTypePermission, contentTypeDefinition);
                 
-                if(await service.AuthorizeAsync(user, permission, new ContentItem{ ContentType = contentTypeDefinition.Name, Owner = user.Identity.Name }))
+                var contentItem = await contentManager.NewAsync(contentTypeDefinition.Name);
+                contentItem.Owner = user.Identity.Name;
+
+                if(await service.AuthorizeAsync(user, permission, contentItem))
                 {
                     return true;
                 }
