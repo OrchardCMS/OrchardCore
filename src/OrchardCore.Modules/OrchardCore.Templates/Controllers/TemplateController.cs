@@ -50,11 +50,18 @@ namespace OrchardCore.Templates.Controllers
 
         public Task<IActionResult> Admin(PagerParameters pagerParameters)
         {
+            var querystring = this.Request.QueryString.Value;
+            var query = "";
+            if (querystring.Contains("displayText"))
+            {
+                query = querystring.Substring(querystring.IndexOf('=') + 1);
+            }
+
             // Used to provide a different url such that the Admin Templates menu entry doesn't collide with the Templates ones
-            return Index(pagerParameters, true);
+            return Index(pagerParameters, query, true);
         }
 
-        public async Task<IActionResult> Index(PagerParameters pagerParameters, bool adminTemplates = false)
+        public async Task<IActionResult> Index(PagerParameters pagerParameters, string displayText, bool adminTemplates = false)
         {
             if (!adminTemplates && !await _authorizationService.AuthorizeAsync(User, Permissions.ManageTemplates))
             {
@@ -76,8 +83,15 @@ namespace OrchardCore.Templates.Controllers
             var count = templatesDocument.Templates.Count;
 
             var templates = templatesDocument.Templates.OrderBy(x => x.Key)
-                .Skip(pager.GetStartIndex())
-                .Take(pager.PageSize);
+                            .Skip(pager.GetStartIndex())
+                            .Take(pager.PageSize);
+            if (displayText != null)
+            {
+                templates = templatesDocument.Templates.OrderBy(x => x.Key)
+               .Where(template => template.Key.Contains(displayText))
+               .Skip(pager.GetStartIndex())
+               .Take(pager.PageSize);
+            }
 
             var pagerShape = (await New.Pager(pager)).TotalItemCount(count);
 

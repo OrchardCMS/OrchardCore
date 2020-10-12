@@ -5,7 +5,7 @@
     int endIndex = startIndex + Model.Templates.Count - 1;
 }
 
-<form asp-action="Index">
+<form asp-controller="Template" method="get">
     @* the form is necessary to generate and antiforgery token for the delete action *@
     <div class="row">
         <div class="form-group col-xl-4 col-sm-6">
@@ -24,6 +24,8 @@
             </div>
         </div>
     </div>
+
+    <input class="form-control" name="displayText" placeholder="@T["Search all templates"]" type="search" />
     <ul class="list-group">
         <li class="list-group-item bg-light">
             <div class="row">
