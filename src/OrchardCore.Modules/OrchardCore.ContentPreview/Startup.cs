@@ -21,7 +21,6 @@ namespace OrchardCore.ContentPreview
             services.AddScoped<IResourceManifestProvider, ResourceManifest>();
 
             services.AddScoped<IContentDisplayDriver, ContentPreviewDriver>();
-            services.AddScoped<IPermissionProvider, Permissions>();
 
             // Preview Part
             services.AddContentPart<PreviewPart>()
