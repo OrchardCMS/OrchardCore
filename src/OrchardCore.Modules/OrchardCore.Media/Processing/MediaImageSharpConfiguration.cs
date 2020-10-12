@@ -28,9 +28,6 @@ namespace OrchardCore.Media.Processing
             options.OnParseCommandsAsync = validation =>
             {
                 // Force some parameters to prevent disk filling.
-                // For more advanced resize parameters the usage of profiles will be necessary.
-                // This can be done with a custom IImageWebProcessor implementation that would
-                // accept profile names.
 
                 if (validation.Commands.Count > 0)
                 {
