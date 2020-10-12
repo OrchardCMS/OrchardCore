@@ -1457,7 +1457,8 @@
       "avatar_url": "https://avatars1.githubusercontent.com/u/22187826?v=4",
       "profile": "https://github.com/nakamura2000",
       "contributions": [
-        "translation"
+        "translation",
+        "code"
       ]
     },
     {
@@ -1872,6 +1873,16 @@
       "name": "Richard Garside",
       "avatar_url": "https://avatars3.githubusercontent.com/u/729381?v=4",
       "profile": "http://www.nogginbox.co.uk",
+      "contributions": [
+        "doc",
+        "code"
+      ]
+    },
+    {
+      "login": "lomholdt",
+      "name": "Jonas Lomholdt",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/1733744?v=4",
+      "profile": "https://github.com/lomholdt",
       "contributions": [
         "doc"
       ]
