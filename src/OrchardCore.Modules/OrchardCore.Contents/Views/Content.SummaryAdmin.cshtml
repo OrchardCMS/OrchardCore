@@ -46,25 +46,25 @@
         }
     </div>
 
-    @if (Model.Actions != null)
-    {
-        <div class="col-xl-6 col-sm-12 related">
-            <div class="float-right">
+    <div class="col-xl-6 col-sm-12 related">
+        <div class="float-right">
+            @if (Model.Actions != null)
+            {
                 @await DisplayAsync(Model.Actions)
-                @if (Model.ActionsMenu != null)
-                {
-                    <div class="btn-group">
-                        <button type="button" class="btn btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            @T["Actions"]
-                        </button>
-                        <div class="actions-menu dropdown-menu dropdown-menu-right">
-                            @await DisplayAsync(Model.ActionsMenu)
-                        </div>
+            }
+            @if (Model.ActionsMenu != null)
+            {
+                <div class="btn-group">
+                    <button type="button" class="btn btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        @T["Actions"]
+                    </button>
+                    <div class="actions-menu dropdown-menu dropdown-menu-right">
+                        @await DisplayAsync(Model.ActionsMenu)
                     </div>
-                }
-            </div>
+                </div>
+            }
         </div>
-    }
+    </div>
 </div>
 
 @if (Model.Content != null)
