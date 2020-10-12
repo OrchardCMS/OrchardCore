@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -58,6 +57,9 @@ namespace OrchardCore.Environment.Shell.Distributed
             shellHost.ReloadingAsync += ReloadingAsync;
         }
 
+        /// <summary>
+        /// Keep in sync tenants by sharing shell identifiers through an <see cref="IDistributedCache"/>.
+        /// </summary>
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             stoppingToken.Register(() =>
@@ -126,6 +128,7 @@ namespace OrchardCore.Environment.Shell.Distributed
                         continue;
                     }
 
+                    // Reset the min idle time if it was increased.
                     minIdleTime = MinIdleTime;
 
                     // Check if at least one tenant has changed.
@@ -134,6 +137,7 @@ namespace OrchardCore.Environment.Shell.Distributed
                         continue;
                     }
 
+                    // Keep in sync the tenant changed global identifier.
                     _shellChangedId = shellChangedId;
 
                     // Try to retrieve the tenant created global identifier from the distributed cache.
@@ -149,36 +153,32 @@ namespace OrchardCore.Environment.Shell.Distributed
                     }
 
                     // Retrieve all tenant settings that are already loaded.
-                    var allSettings = _shellHost.GetAllSettings();
+                    var allSettings = _shellHost.GetAllSettings().ToList();
 
                     // Check if at least one tenant has been created.
                     if (shellCreatedId != null && _shellCreatedId != shellCreatedId)
                     {
+                        // Keep in sync the tenant created global identifier.
                         _shellCreatedId = shellCreatedId;
-                        var createdSettings = new List<ShellSettings>();
 
                         // Retrieve all new created tenants that are not already loaded.
                         var names = await _shellSettingsManager.LoadSettingsNamesAsync();
                         foreach (var name in names.Except(allSettings.Select(s => s.Name)))
                         {
                             // Load and enlist the settings of each new created tenant.
-                            createdSettings.Add(await _shellSettingsManager.LoadSettingsAsync(name));
+                            allSettings.Add(await _shellSettingsManager.LoadSettingsAsync(name));
                         }
-
-                        // Add the settings of all newly created tenants.
-                        allSettings = allSettings.Concat(createdSettings);
                     }
 
+                    // start of the busy period.
                     var startTime = DateTime.UtcNow;
 
                     // Keep in sync all tenants by checking their specific identifiers.
                     foreach (var settings in allSettings)
                     {
-                        // If busy for a too long time.
-                        var maxBusyTime = DateTime.UtcNow - startTime;
-                        if (maxBusyTime > MaxBusyTime)
+                        // If busy for a too long time, wait again.
+                        if (DateTime.UtcNow - startTime > MaxBusyTime)
                         {
-                            // Wait again for the idle time.
                             if (!await TryWaitAsync(MinIdleTime, stoppingToken))
                             {
                                 break;
@@ -246,6 +246,9 @@ namespace OrchardCore.Environment.Shell.Distributed
             _context = null;
         }
 
+        /// <summary>
+        /// Called before loading all tenants to initialize the local shell identifiers from the distributed cache.
+        /// </summary>
         public async Task LoadingAsync()
         {
             if (_terminated)
@@ -305,6 +308,9 @@ namespace OrchardCore.Environment.Shell.Distributed
             }
         }
 
+        /// <summary>
+        /// Called before releasing a tenant to update the related shell identifiers, locally and in the distributed cache.
+        /// </summary>
         public async Task ReleasingAsync(string name)
         {
             if (_terminated)
@@ -353,6 +359,9 @@ namespace OrchardCore.Environment.Shell.Distributed
             }
         }
 
+        /// <summary>
+        /// Called before reloading a tenant to update the related shell identifiers, locally and in the distributed cache.
+        /// </summary>
         public async Task ReloadingAsync(string name)
         {
             if (_terminated)
@@ -408,23 +417,29 @@ namespace OrchardCore.Environment.Shell.Distributed
             }
         }
 
+        /// <summary>
+        /// Creates a distributed context to be shared and based on the provided shell settings.
+        /// </summary>
         private async Task<DistributedContext> CreateDistributedContextAsync(ShellSettings settings) =>
             new DistributedContext(await _shellContextFactory.CreateShellContextAsync(settings));
 
+        /// <summary>
+        /// Acquires the shared distributed context or creates a new one if not yet initialized.
+        /// </summary>
         private Task<DistributedContext> AcquireOrCreateDistributedContextAsync(ShellSettings settings)
         {
-            // Try to acquire the distributed context.
             var distributedContext = _context?.Acquire();
-
             if (distributedContext == null)
             {
-                // Or create a new one if it is not yet built.
                 return CreateDistributedContextAsync(settings);
             }
 
             return Task.FromResult(distributedContext);
         }
 
+        /// <summary>
+        /// Tries to wait for a given delay, returns false if it has been cancelled.
+        /// </summary>
         private async Task<bool> TryWaitAsync(TimeSpan delay, CancellationToken stoppingToken)
         {
             try

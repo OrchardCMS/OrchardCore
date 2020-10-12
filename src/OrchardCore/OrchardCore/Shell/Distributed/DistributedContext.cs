@@ -63,7 +63,7 @@ namespace OrchardCore.Environment.Shell.Distributed
 
         public void Dispose()
         {
-            // The last owner dispose the context.
+            // The last use disposes the shell context.
             if (Interlocked.Decrement(ref _count) == 0)
             {
                 _context.Dispose();
