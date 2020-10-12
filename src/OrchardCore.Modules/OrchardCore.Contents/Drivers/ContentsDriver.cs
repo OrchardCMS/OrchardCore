@@ -55,21 +55,7 @@ namespace OrchardCore.Contents.Drivers
                 });
 
                 results.Add(contentsMetadataShape);
-
-                results.Add(Shape("ContentsButtonEdit_SummaryAdmin", new ContentItemViewModel(contentItem)).Location("SummaryAdmin", "Actions:10")
-                    .RenderWhen(async () => {
-                        var hasViewPermission = await _authorizationService.AuthorizeAsync(context.User, CommonPermissions.ViewContent, contentItem);
-                        var hasEditPermission = await _authorizationService.AuthorizeAsync(context.User, CommonPermissions.EditContent, contentItem);
-                        
-                        if (hasViewPermission || hasEditPermission)
-                        {
-                            return true;
-                        }
-
-                        return false;
-                    })
-                );
-
+                results.Add(Shape("ContentsButtonEdit_SummaryAdmin", new ContentItemViewModel(contentItem)).Location("SummaryAdmin", "Actions:10"));
                 results.Add(Shape("ContentsButtonActions_SummaryAdmin", new ContentItemViewModel(contentItem)).Location("SummaryAdmin", "ActionsMenu:10")
                     .RenderWhen(async () => {
                         var hasPublishPermission = await _authorizationService.AuthorizeAsync(context.User, CommonPermissions.PublishContent, contentItem);
