@@ -10,6 +10,15 @@
   },
   {
     "generateSourceMaps": false,
+    "generateRTL": true,
+    "inputs": [
+      "Assets/scss/TheAdminDark.scss",
+      "Assets/scss/perfect-scrollbar.css"
+    ],
+    "output": "wwwroot/Styles/TheAdminDark.css"
+  },
+  {
+    "generateSourceMaps": false,
     "inputs": [
       "node_modules/popper.js/dist/umd/popper.js",
       "node_modules/bootstrap/dist/js/bootstrap.js",
