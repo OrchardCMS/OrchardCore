@@ -83,8 +83,8 @@ namespace OrchardCore.Templates.Controllers
             var count = templatesDocument.Templates.Count;
 
             var templates = templatesDocument.Templates.OrderBy(x => x.Key)
-                .Skip(pager.GetStartIndex())
-                .Take(pager.PageSize);
+                            .Skip(pager.GetStartIndex())
+                            .Take(pager.PageSize);
             if (displayText != null)
             {
                 templates = templatesDocument.Templates.OrderBy(x => x.Key)
