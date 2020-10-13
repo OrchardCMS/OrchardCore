@@ -92,6 +92,11 @@ namespace OrchardCore.Lucene.Controllers
 
         public async Task<ActionResult> Index(AdminIndexViewModel model, PagerParameters pagerParameters)
         {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageIndexes))
+            {
+                return Forbid();
+            }
+            
             model.Indexes = (await _luceneIndexSettingsService.GetSettingsAsync()).Select(i => new IndexViewModel { Name = i.IndexName });
 
             var siteSettings = await _siteService.GetSiteSettingsAsync();
@@ -362,9 +367,13 @@ namespace OrchardCore.Lucene.Controllers
                 try
                 {
                     var parameterizedQuery = JObject.Parse(tokenizedContent);
-                    var docs = await _queryService.SearchAsync(context, parameterizedQuery);
-                    model.Documents = docs.TopDocs.ScoreDocs.Select(hit => searcher.Doc(hit.Doc)).ToList();
-                    model.Count = docs.Count;
+                    var luceneTopDocs = await _queryService.SearchAsync(context, parameterizedQuery);
+                    
+                    if(luceneTopDocs != null)
+                    {
+                        model.Documents = luceneTopDocs.TopDocs.ScoreDocs.Select(hit => searcher.Doc(hit.Doc)).ToList();
+                        model.Count = luceneTopDocs.Count;
+                    }
                 }
                 catch (Exception e)
                 {
