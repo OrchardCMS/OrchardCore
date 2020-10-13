@@ -3,8 +3,7 @@
     "generateSourceMaps": false,
     "generateRTL": true,
     "inputs": [
-      "Assets/scss/TheAdmin.scss",
-      "Assets/scss/perfect-scrollbar.css"
+      "Assets/scss/TheAdmin.scss"
     ],
     "output": "wwwroot/Styles/TheAdmin.css"
   },
