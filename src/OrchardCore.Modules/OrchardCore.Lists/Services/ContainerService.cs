@@ -146,7 +146,7 @@ namespace OrchardCore.Lists.Services
             }
         }
 
-        public async Task<IEnumerable<ContentItem>> QueryContainedItemsAsync(string contentItemId, bool enableOrdering, PagerSlim pager, bool publishedOnly)
+        public async Task<IEnumerable<ContentItem>> QueryContainedItemsAsync(string contentItemId, bool enableOrdering, PagerSlim pager, bool publishedOnly, ListPartFilter listPartFilter)
         {
             IQuery<ContentItem> query = null;
             if (pager.Before != null)
