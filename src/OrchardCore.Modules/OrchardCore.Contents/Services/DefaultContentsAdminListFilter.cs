@@ -96,7 +96,7 @@ namespace OrchardCore.Contents.Services
             // If we set the ListContent permission
             // to false we can only view our own content and 
             // we bypass the corresponding ContentsStatus by owned content filtering
-            if(!await _authorizationService.AuthorizeAsync(user, Permissions.ListContent))
+            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ListContent))
             {
                 query.With<ContentItemIndex>(x => x.Owner == user.Identity.Name);
             }

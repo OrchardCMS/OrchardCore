@@ -27,7 +27,7 @@ namespace Microsoft.AspNetCore.Authorization
                 var contentItem = await contentManager.NewAsync(contentTypeDefinition.Name);
                 contentItem.Owner = user.Identity.Name;
 
-                if(await service.AuthorizeAsync(user, permission, contentItem))
+                if (await service.AuthorizeAsync(user, permission, contentItem))
                 {
                     return true;
                 }
