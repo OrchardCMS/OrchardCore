@@ -563,7 +563,7 @@ body:not(.left-sidebar-compact) {
             overflow-y: auto;
             scrollbar-width: thin;
             scrollbar-color: #495057 #EAEAEA;
-            
+
             ul {
                 margin: 0;
                 padding: 0;
@@ -748,7 +748,7 @@ body:not(.left-sidebar-compact) {
                     scrollbar-color: #495057 #EAEAEA;
                 }
 
-                @media (max-height: 400px){
+                @media (max-height: 414px){
                     > li.visible {
                         > figure {
                             position: static;

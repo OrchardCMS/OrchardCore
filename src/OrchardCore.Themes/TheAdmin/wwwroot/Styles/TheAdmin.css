@@ -14675,7 +14675,7 @@ body:not(.left-sidebar-compact) #ta-left-sidebar {
   left: 48px; }
     [dir=rtl] .left-sidebar-compact #ta-left-sidebar #left-nav > ul > li > figure > ul {
       right: 48px; }
-    @media (max-height: 400px) {
+    @media (max-height: 414px) {
       .left-sidebar-compact #ta-left-sidebar #left-nav > ul > li.visible > figure {
         position: static;
         z-index: unset; }
