@@ -49,7 +49,7 @@
                             <button type="button" class="btn btn-danger dropdown-toggle dropdown-toggle-split" data-reference="parent" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <span class="sr-only">@T["Toggle Dropdown"]</span>
                             </button>
-                            <div class="dropdown-menu">
+                            <div class="dropdown-menu dropdown-menu-right">
                                 <a asp-action="Toggle"
                                    asp-route-id="@entry.AdminMenu.Id"
                                    class="dropdown-item btn-sm" itemprop="UnsafeUrl">@(entry.AdminMenu.Enabled ? T["Disable"] : T["Enable"])</a>

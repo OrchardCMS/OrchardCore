@@ -67,16 +67,17 @@
     border-bottom: $media-border-content;
     border-radius: 0px;
     min-height: 50px;
-    padding-bottom: 8px;
     font-size: 0.875rem;
 
     .breadcrumb-path {
-        margin-bottom: 4px;
-        margin-right: 8px;
         flex-grow: 1;
 
-        .breadcrumb-item a {
-            color: $gray-700;
+        .breadcrumb-item {
+            display: inline-block;
+            
+            a {
+                color: $gray-700;
+            }
         }
     }
 
