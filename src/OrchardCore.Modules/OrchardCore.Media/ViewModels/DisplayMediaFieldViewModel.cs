@@ -7,7 +7,6 @@ namespace OrchardCore.Media.ViewModels
     public class DisplayMediaFieldViewModel
     {
         public string[] Paths => Field.Paths;
-        public string[] AltTexts => Field.GetAltTexts();
         public MediaField Field { get; set; }
         public ContentPart Part { get; set; }
         public ContentPartFieldDefinition PartFieldDefinition { get; set; }

@@ -58,14 +58,14 @@ namespace OrchardCore.Media.Drivers
             return Initialize<EditMediaFieldViewModel>(GetEditorShapeType(context), model =>
             {
                 var settings = context.PartFieldDefinition.GetSettings<MediaFieldSettings>();
-                if (settings.AllowAltText)
+                if (settings.AllowMediaText)
                 {
-                    var altTexts = field.GetAltTexts();
+                    var mediaTexts = field.MediaTexts;
                     for(var i = 0; i < itemPaths.Count(); i++)
                     {
-                        if (i >= 0 && i < altTexts.Length)
+                        if (i >= 0 && i < mediaTexts.Length)
                         {
-                            itemPaths[i].AltText = altTexts[i];
+                            itemPaths[i].MediaText = mediaTexts[i];
                         }
                     }
                 }
@@ -87,7 +87,7 @@ namespace OrchardCore.Media.Drivers
                 model.Field = field;
                 model.Part = context.ContentPart;
                 model.PartFieldDefinition = context.PartFieldDefinition;
-                model.AllowAltText = settings.AllowAltText;
+                model.AllowMediaText = settings.AllowMediaText;
             });
         }
 
@@ -130,13 +130,13 @@ namespace OrchardCore.Media.Drivers
                     updater.ModelState.AddModelError(Prefix, nameof(model.Paths), S["{0}: Selecting multiple media is forbidden.", context.PartFieldDefinition.DisplayName()]);
                 }
 
-                if (settings.AllowAltText)
+                if (settings.AllowMediaText)
                 {
-                    field.SetAltTexts(items.Select(t => t.AltText).ToArray());
+                    field.MediaTexts = items.Select(t => t.MediaText).ToArray();
                 }
-                else if (field.Content.ContainsKey("AltTexts")) // Less well known properties should be self healing.
+                else
                 {
-                    field.Content.Remove("AltTexts");
+                    field.MediaTexts = Array.Empty<string>();
                 }
 
                 if (settings.AllowCenterCropping)

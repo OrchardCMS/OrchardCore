@@ -9,7 +9,7 @@ namespace OrchardCore.Media.Settings
 
         [DefaultValue(true)]
         public bool Multiple { get; set; } = true;
-        public bool AllowAltText { get; set; }
+        public bool AllowMediaText { get; set; }
         public bool AllowCenterCropping { get; set; }
     }
 }

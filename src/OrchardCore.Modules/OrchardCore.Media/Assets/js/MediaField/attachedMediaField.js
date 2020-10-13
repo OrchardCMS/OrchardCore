@@ -1,4 +1,4 @@
-function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaItemUrl, allowMultiple, allowAltText, allowCenterCropping, tempUploadFolder) {
+function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaItemUrl, allowMultiple, allowMediaText, allowCenterCropping, tempUploadFolder) {
 
     var target = $(document.getElementById($(el).data('for')));
     var initialPaths = target.data("init");
@@ -15,8 +15,8 @@ function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaI
             smallThumbs: false,
             idPrefix: idprefix,
             initialized: false,
-            allowAltText: allowAltText,
-            backupAltText: '',
+            allowMediaText: allowMediaText,
+            backupMediaText: '',
             allowCenterCropping: allowCenterCropping,
             backupCenter: [ null, null ]
         },
@@ -36,7 +36,7 @@ function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaI
                         if (x.mediaPath === 'not-found') {
                             return;
                         }
-                        mediaPaths.push({ path: x.mediaPath, isRemoved: x.isRemoved, isNew: x.isNew, altText: x.altText, center: x.center });
+                        mediaPaths.push({ path: x.mediaPath, isRemoved: x.isRemoved, isNew: x.isNew, mediaText: x.mediaText, center: x.center });
                     });
                     return JSON.stringify(mediaPaths);
                 },
@@ -54,7 +54,7 @@ function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaI
                                 method: 'GET',
                                 success: function (data) {
                                     data.vuekey = data.name + i.toString(); // Because a unique key is required by Vue on v-for 
-                                    data.altText = x.altText; // This value is not returned from the ajax call.
+                                    data.mediaText = x.mediaText; // This value is not returned from the ajax call.
                                     data.center = x.center; // This value is not returned from the ajax call.
                                     items.splice(i, 1, data);
                                     if (items.length === ++length) {
@@ -66,7 +66,7 @@ function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaI
                                 },
                                 error: function (error) {
                                     console.log(JSON.stringify(error));
-                                    items.splice(i, 1, { name: x.path, mime: '', mediaPath: 'not-found', altText: '', center: [ null, null ]  });
+                                    items.splice(i, 1, { name: x.path, mime: '', mediaPath: 'not-found', mediaText: '', center: [ null, null ]  });
                                     if (items.length === ++length) {
                                         items.forEach(function (x) {
                                             self.mediaItems.push(x);
@@ -218,9 +218,9 @@ function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaI
                 }
                 this.selectedMedia = null;
             },
-            showAltTextModal: function (event) {
-                $(this.$refs.altTextModal).modal();
-                this.backupAltText = this.selectedMedia.altText;
+            showMediaTextModal: function (event) {
+                $(this.$refs.mediaTextModal).modal();
+                this.backupMediaText = this.selectedMedia.mediaText;
             },
             showCenterCroppingModal: function (event) {
                 $(this.$refs.centerCroppingModal).modal();
@@ -229,9 +229,9 @@ function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaI
                 this.$set(this.selectedMedia.center, 1, this.selectedMedia.center[1]);
                 this.backupCenter = this.selectedMedia.center;
             },
-            cancelAltTextModal: function (event) {
-                $(this.$refs.altTextModal).modal('hide');
-                this.selectedMedia.altText = this.backupAltText;
+            cancelMediaTextModal: function (event) {
+                $(this.$refs.mediaTextModal).modal('hide');
+                this.selectedMedia.mediaText = this.backupMediaText;
             },           
             cancelCenterCroppingModal: function (event) {
                 $(this.$refs.centerCroppingModal).modal('hide');

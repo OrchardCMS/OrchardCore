@@ -6,7 +6,7 @@
         <header class="masthead" style="background-image: url('{{ "~/TheBlogTheme/img/home-bg.jpg" | href }}')">
     {% else %}
         {% assign center = Model.ContentItem.Content.Blog.Image.Centers.first %}
-        <header class="masthead" style="background-image: url('{{ imagePath | asset_url | resize_url: profile: 'banner', center: center }}')">
+        <header class="masthead" style="background-image: url('{{ imagePath | asset_url | resize_url: profile: 'banner', mode: 'crop', center: center }}')">
     {% endif %}
         <div class="overlay"></div>
         <div class="container">

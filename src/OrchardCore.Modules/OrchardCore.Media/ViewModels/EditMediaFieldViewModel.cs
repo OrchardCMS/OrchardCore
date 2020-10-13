@@ -18,9 +18,9 @@ namespace OrchardCore.Media.ViewModels
         // This will be used by the uploader of an attached media field
         public string TempUploadFolder { get; set; }
 
-        // Alt text is an option that maybe applied to a media field through settings.
-        public bool AllowAltText { get; set; }
-        public string AltTexts { get; set; }
+        // Media Text is an option that maybe applied to a media field through settings.
+        public bool AllowMediaText { get; set; }
+        public string MediaTexts { get; set; }
 
         // Center cropping dimensions are an option that maybe applied to a media field through settings.
         public bool AllowCenterCropping { get; set; }
@@ -38,7 +38,7 @@ namespace OrchardCore.Media.ViewModels
         public bool IsRemoved { get; set; }
 
         // Alt text is an option that maybe applied to a media field through settings.
-        public string AltText { get; set; } = String.Empty;
+        public string MediaText { get; set; } = String.Empty;
         public float?[] Center { get; set; } = Array.Empty<float?>();
     }
 }
