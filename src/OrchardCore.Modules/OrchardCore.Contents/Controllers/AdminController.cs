@@ -156,7 +156,7 @@ namespace OrchardCore.Contents.Controllers
                 new SelectListItem() { Text = S["All versions"], Value = nameof(ContentsStatus.AllVersions) }
             };
 
-            if(await _authorizationService.AuthorizeAsync(context.User, Permissions.ViewNotOwnedItemsAdminContentList))
+            if(await _authorizationService.AuthorizeAsync(context.User, Permissions.ListContent))
             {
                 model.Options.ContentStatuses.Insert(1, new SelectListItem() { Text = S["Owned by me"], Value = nameof(ContentsStatus.Owner) });
             }

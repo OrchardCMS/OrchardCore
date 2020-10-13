@@ -93,10 +93,10 @@ namespace OrchardCore.Contents.Services
                 query.With<ContentItemIndex>(x => x.ContentType.IsIn(listableTypes.Select(t => t.Name).ToArray()));
             }
 
-            // If we set the ViewNotOwnedItemsAdminContentList permission
+            // If we set the ListContent permission
             // to false we can only view our own content and 
             // we bypass the corresponding ContentsStatus by owned content filtering
-            if(!await _authorizationService.AuthorizeAsync(user, Permissions.ViewNotOwnedItemsAdminContentList))
+            if(!await _authorizationService.AuthorizeAsync(user, Permissions.ListContent))
             {
                 query.With<ContentItemIndex>(x => x.Owner == user.Identity.Name);
             }
