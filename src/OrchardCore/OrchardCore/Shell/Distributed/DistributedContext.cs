@@ -37,7 +37,7 @@ namespace OrchardCore.Environment.Shell.Distributed
 
         public DistributedContext Acquire()
         {
-            // Can't acquire a released context.
+            // Don't acquire a released context.
             if (_released)
             {
                 return null;
@@ -45,7 +45,7 @@ namespace OrchardCore.Environment.Shell.Distributed
 
             Interlocked.Increment(ref _count);
 
-            // Can't use a released context.
+            // Don't start using a released context.
             if (_released)
             {
                 Dispose();
