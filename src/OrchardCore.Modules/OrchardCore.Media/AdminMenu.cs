@@ -32,11 +32,15 @@ namespace OrchardCore.Media
 
             builder.Add(S["Configuration"], configuration => configuration
                 .Add(S["Media"], S["Media"].PrefixPosition(), media => media
-                .Add(S["Media Options"], S["Media Options"].PrefixPosition(), options => options
-                    .Action("Options", "Admin", new { area = "OrchardCore.Media" })
-                    .Permission(Permissions.ManageMedia)
-                    .LocalNav())
-                ));
+                    .Add(S["Media Options"], S["Media Options"].PrefixPosition(), options => options
+                        .Action("Options", "Admin", new { area = "OrchardCore.Media" })
+                        .Permission(Permissions.ManageMedia)
+                        .LocalNav())
+                    .Add(S["Media Profiles"], S["Media Profiles"].PrefixPosition(), mediaProfiles => mediaProfiles
+                        .Action("Index", "MediaProfiles", new { area = "OrchardCore.Media" })
+                        .Permission(Permissions.ManageMediaProfiles)
+                        .LocalNav())
+            ));
 
             return Task.CompletedTask;
         }

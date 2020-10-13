@@ -49,7 +49,7 @@
                 @foreach (var recipe in Model.Recipes)
                 {
                     <option value="@recipe.Name" selected="@(Model.RecipeName == recipe.Name)">
-                        @recipe.Name
+                        @recipe.DisplayName
                     </option>
                 }
             </select>
@@ -92,4 +92,4 @@
     </div>
 </form>
 
-<script at="Foot" type="text/javascript" asp-src="~/OrchardCore.Tenants/Scripts/tenant.js" depends-on="jquery"></script>
+<script at="Foot" asp-src="~/OrchardCore.Tenants/Scripts/tenant.js" depends-on="jquery"></script>

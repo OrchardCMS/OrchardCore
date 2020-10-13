@@ -147,6 +147,11 @@ namespace OrchardCore.Media
             services.AddTagHelpers<ImageTagHelper>();
             services.AddTagHelpers<ImageResizeTagHelper>();
             services.AddTagHelpers<AnchorTagHelper>();
+
+            // Media Profiles
+            services.AddScoped<MediaProfilesManager>();
+            services.AddScoped<IMediaProfileService, MediaProfileService>();
+            services.AddRecipeExecutionStep<MediaProfileStep>();
         }
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
@@ -277,6 +282,35 @@ namespace OrchardCore.Media
                 areaName: "OrchardCore.Media",
                 pattern: _adminOptions.AdminUrlPrefix + "/Media/Options",
                 defaults: new { controller = adminControllerName, action = nameof(AdminController.Options) }
+                
+            var mediaProfilesControllerName = typeof(MediaProfilesController).ControllerName();
+
+            routes.MapAreaControllerRoute(
+                name: "MediaProfiles.Index",
+                areaName: "OrchardCore.Media",
+                pattern: _adminOptions.AdminUrlPrefix + "/MediaProfiles",
+                defaults: new { controller = mediaProfilesControllerName, action = nameof(MediaProfilesController.Index) }
+            );
+
+            routes.MapAreaControllerRoute(
+                name: "MediaProfiles.Create",
+                areaName: "OrchardCore.Media",
+                pattern: _adminOptions.AdminUrlPrefix + "/MediaProfiles/Create",
+                defaults: new { controller = mediaProfilesControllerName, action = nameof(MediaProfilesController.Create) }
+            );
+
+            routes.MapAreaControllerRoute(
+                name: "MediaProfiles.Edit",
+                areaName: "OrchardCore.Media",
+                pattern: _adminOptions.AdminUrlPrefix + "/MediaProfiles/Edit",
+                defaults: new { controller = mediaProfilesControllerName, action = nameof(MediaProfilesController.Edit) }
+            );
+
+            routes.MapAreaControllerRoute(
+                name: "MediaProfiles.Delete",
+                areaName: "OrchardCore.Media",
+                pattern: _adminOptions.AdminUrlPrefix + "/MediaProfiles/Delete",
+                defaults: new { controller = mediaProfilesControllerName, action = nameof(MediaProfilesController.Delete) }
             );
         }
 
@@ -304,6 +338,10 @@ namespace OrchardCore.Media
             services.AddTransient<IDeploymentSource, MediaDeploymentSource>();
             services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<MediaDeploymentStep>());
             services.AddScoped<IDisplayDriver<DeploymentStep>, MediaDeploymentStepDriver>();
+
+            services.AddTransient<IDeploymentSource, AllMediaProfilesDeploymentSource>();
+            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AllMediaProfilesDeploymentStep>());
+            services.AddScoped<IDisplayDriver<DeploymentStep>, AllMediaProfilesDeploymentStepDriver>();            
         }
     }
 

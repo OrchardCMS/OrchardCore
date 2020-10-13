@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.ContentPreview.Models;
+using OrchardCore.Contents;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Utilities;
@@ -48,7 +49,7 @@ namespace OrchardCore.ContentPreview.Controllers
         [HttpPost]
         public async Task<IActionResult> Render()
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ContentPreview))
+            if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.PreviewContent))
             {
                 return this.ChallengeOrForbid();
             }
