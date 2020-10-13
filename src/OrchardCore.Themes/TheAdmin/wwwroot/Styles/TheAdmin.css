@@ -14522,6 +14522,8 @@ body:not(.left-sidebar-compact) #ta-left-sidebar {
     height: calc(100% - 51px);
     overflow-x: hidden;
     overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #495057 #EAEAEA;
     /*.btn-nostyle:focus, .btn-nostyle:active {
                 background-color: rgba(0, 0, 0, 0.3);
                 color: white;
@@ -14673,6 +14675,35 @@ body:not(.left-sidebar-compact) #ta-left-sidebar {
   left: 48px; }
     [dir=rtl] .left-sidebar-compact #ta-left-sidebar #left-nav > ul > li > figure > ul {
       right: 48px; }
+    @media (max-height: 400px) {
+      .left-sidebar-compact #ta-left-sidebar #left-nav > ul > li.visible > figure {
+        position: static;
+        z-index: unset; }
+        .left-sidebar-compact #ta-left-sidebar #left-nav > ul > li.visible > figure > ul:before {
+          content: attr(data-title);
+          font-size: 14px;
+          font-weight: bold; }
+        [dir] .left-sidebar-compact #ta-left-sidebar #left-nav > ul > li.visible > figure > ul:before {
+          padding: 0 20px; }
+      .left-sidebar-compact #ta-left-sidebar #left-nav > ul > li > figure > ul {
+        position: absolute;
+        width: 260px;
+        -webkit-box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.2);
+        -moz-box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.2);
+        height: calc(100vh - 52px);
+        max-height: unset;
+        z-index: 1;
+        overflow-x: hidden;
+        overflow-y: auto;
+        scrollbar-width: thin;
+        scrollbar-color: #495057 #EAEAEA;
+        top: 0px; }
+      [dir] .left-sidebar-compact #ta-left-sidebar #left-nav > ul > li > figure > ul {
+        box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.2); }
+      [dir=ltr] .left-sidebar-compact #ta-left-sidebar #left-nav > ul > li > figure > ul {
+    left: 48px; }
+      [dir=rtl] .left-sidebar-compact #ta-left-sidebar #left-nav > ul > li > figure > ul {
+        right: 48px; } }
     [dir] .left-sidebar-compact #ta-left-sidebar #left-nav > ul > li > figure > ul li .item-label:hover {
       background-color: rgba(0, 0, 0, 0.05); }
     .left-sidebar-compact #ta-left-sidebar #left-nav > ul > li > figure > figcaption > .item-label {

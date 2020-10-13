@@ -45,6 +45,7 @@
 
         var ul = new TagBuilder("ul");
         ul.Attributes["Id"] = "m" + Model.GetHashCode().ToString();
+        ul.Attributes["data-title"] = Model.Text;
 
         if ((bool)Model.Selected)
         {

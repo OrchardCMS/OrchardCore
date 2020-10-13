@@ -561,7 +561,9 @@ body:not(.left-sidebar-compact) {
             height: calc(100% - 51px);
             overflow-x: hidden;
             overflow-y: auto;
-
+            scrollbar-width: thin;
+            scrollbar-color: #495057 #EAEAEA;
+            
             ul {
                 margin: 0;
                 padding: 0;
@@ -744,6 +746,39 @@ body:not(.left-sidebar-compact) {
                     overflow-y: auto;
                     scrollbar-width: thin;
                     scrollbar-color: #495057 #EAEAEA;
+                }
+
+                @media (max-height: 400px){
+                    > li.visible {
+                        > figure {
+                            position: static;
+                            z-index: unset;
+
+                            > ul:before{
+                                content: attr(data-title);
+                                padding: 0 20px;
+                                font-size: 14px;
+                                font-weight: bold;
+                            }
+                        }
+                    }
+
+                    > li > figure > ul {
+                        position: absolute;
+                        left: $left-navigation-width-when-compact;
+                        width: $left-navigation-width;
+                        -webkit-box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.2);
+                        -moz-box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.2);
+                        box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.2);
+                        height: calc(100vh - 52px);
+                        max-height: unset;
+                        z-index: 1;
+                        overflow-x: hidden;
+                        overflow-y: auto;
+                        scrollbar-width: thin;
+                        scrollbar-color: #495057 #EAEAEA;
+                        top: 0px;
+                    }
                 }
 
                 > li > figure > ul li .item-label:hover {
@@ -977,6 +1012,7 @@ body:not(.left-sidebar-compact) {
         }
     }
 }
+
 /* rtl:ignore */
 .left-sidebar-compact {
     #ta-left-sidebar {
