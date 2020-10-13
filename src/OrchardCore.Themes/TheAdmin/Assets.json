@@ -11,8 +11,7 @@
     "generateSourceMaps": false,
     "generateRTL": true,
     "inputs": [
-      "Assets/scss/TheAdminDark.scss",
-      "Assets/scss/perfect-scrollbar.css"
+      "Assets/scss/TheAdminDark.scss"
     ],
     "output": "wwwroot/Styles/TheAdminDark.css"
   },

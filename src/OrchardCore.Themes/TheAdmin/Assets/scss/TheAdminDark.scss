@@ -7,6 +7,8 @@
 @import "modules/bootswatch/darkly/_variables.scss";
 @import "../../node_modules/bootstrap/scss/bootstrap";
 
+$admin-menu-bg-color: rgb(36, 39, 40);
+
 @import "modules/_sizes.scss";
 @import "modules/_cursors.scss";
 @import "modules/_word-wrap.scss";
