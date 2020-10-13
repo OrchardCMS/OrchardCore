@@ -76,48 +76,7 @@ namespace OrchardCore.Media.Filters
                 var format = arguments["format"];
                 var center = arguments["center"];
 
-                if (!width.IsNil())
-                {
-                    queryStringParams["width"] = width.ToStringValue();
-                }
-
-                if (!height.IsNil())
-                {
-                    queryStringParams["height"] = height.ToStringValue();
-                }
-
-                if (!mode.IsNil())
-                {
-                    queryStringParams["rmode"] = mode.ToStringValue();
-                }
-
-                if (!quality.IsNil())
-                {
-                    queryStringParams["quality"] = quality.ToStringValue();
-                }
-
-                if (!format.IsNil())
-                {
-                    queryStringParams["format"] = format.ToStringValue();
-                }
-
-                if (!center.IsNil() && center.Type == FluidValues.Array)
-                {
-                    var xy = String.Empty;
-                    foreach (var value in center.Enumerate())
-                    {
-                        if (value.IsNil())
-                        {
-                            xy = String.Empty;
-                            break;
-                        }
-                        xy = xy + value.ToNumberValue().ToString() + ',';
-                    }
-                    if (!String.IsNullOrEmpty(xy))
-                    {
-                        queryStringParams.Add("rxy", xy.Trim(','));
-                    }
-                }
+                ApplyQueryStringParams(queryStringParams, width, height, mode, quality, format, center);
             }
             else
             {
@@ -128,53 +87,58 @@ namespace OrchardCore.Media.Filters
                 var mode = arguments["mode"].Or(arguments.At(2));
                 var quality = arguments["quality"].Or(arguments.At(3));
                 var format = arguments["format"].Or(arguments.At(4));
-                var center = arguments["center"];
+                var center = arguments["center"].Or(arguments.At(5));
 
-                if (!width.IsNil())
-                {
-                    queryStringParams.Add("width", width.ToStringValue());
-                }
-
-                if (!height.IsNil())
-                {
-                    queryStringParams.Add("height", height.ToStringValue());
-                }
-
-                if (!mode.IsNil())
-                {
-                    queryStringParams.Add("rmode", mode.ToStringValue());
-                }
-
-                if (!quality.IsNil())
-                {
-                    queryStringParams.Add("quality", quality.ToStringValue());
-                }
-
-                if (!format.IsNil())
-                {
-                    queryStringParams.Add("format", format.ToStringValue());
-                }
-
-                if (!center.IsNil() && center.Type == FluidValues.Array)
-                {
-                    var xy = String.Empty;
-                    foreach (var value in center.Enumerate())
-                    {
-                        if (value.IsNil())
-                        {
-                            xy = String.Empty;
-                            break;
-                        }
-                        xy = xy + value.ToNumberValue().ToString() + ',';
-                    }
-                    if (!String.IsNullOrEmpty(xy))
-                    {
-                        queryStringParams.Add("rxy", xy.Trim(','));
-                    }
-                }
+                ApplyQueryStringParams(queryStringParams, width, height, mode, quality, format, center);
             }
 
             return new StringValue(QueryHelpers.AddQueryString(url, queryStringParams));
+        }
+
+        private static void ApplyQueryStringParams(IDictionary<string, string> queryStringParams, FluidValue width, FluidValue height, FluidValue mode, FluidValue quality, FluidValue format, FluidValue center)
+        {
+            if (!width.IsNil())
+            {
+                queryStringParams.Add("width", width.ToStringValue());
+            }
+
+            if (!height.IsNil())
+            {
+                queryStringParams.Add("height", height.ToStringValue());
+            }
+
+            if (!mode.IsNil())
+            {
+                queryStringParams.Add("rmode", mode.ToStringValue());
+            }
+
+            if (!quality.IsNil())
+            {
+                queryStringParams.Add("quality", quality.ToStringValue());
+            }
+
+            if (!format.IsNil())
+            {
+                queryStringParams.Add("format", format.ToStringValue());
+            }
+
+            if (!center.IsNil() && center.Type == FluidValues.Array)
+            {
+                var xy = String.Empty;
+                foreach (var value in center.Enumerate())
+                {
+                    if (value.IsNil())
+                    {
+                        xy = String.Empty;
+                        break;
+                    }
+                    xy = xy + value.ToNumberValue().ToString() + ',';
+                }
+                if (!String.IsNullOrEmpty(xy))
+                {
+                    queryStringParams.Add("rxy", xy.Trim(','));
+                }
+            }
         }
     }
 }
