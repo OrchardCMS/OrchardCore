@@ -49,7 +49,7 @@ namespace OrchardCore.Contents.Feeds.Builders
                     feedItem.Element.SetElementValue("title", WebUtility.HtmlEncode(contentItem.DisplayText));
                     feedItem.Element.Add(link);
 
-                    feedItem.Element.SetElementValue("description", bodyAspect.Body != null ? $"<![CDATA[{bodyAspect.Body?.ToString()}]]>" : String.Empty);
+                    feedItem.Element.Add(new XElement("description", new XCData(bodyAspect.Body?.ToString() ?? String.Empty)));
 
                     if (contentItem.PublishedUtc != null)
                     {
@@ -75,7 +75,7 @@ namespace OrchardCore.Contents.Feeds.Builders
                     });
 
                     context.Builder.AddProperty(context, feedItem, "title", WebUtility.HtmlEncode(contentItem.DisplayText));
-                    context.Builder.AddProperty(context, feedItem, "description", bodyAspect.Body != null ? $"<![CDATA[{bodyAspect.Body?.ToString()}]]>" : String.Empty);
+                    context.Builder.AddProperty(context, feedItem, "description", new XCData(bodyAspect.Body?.ToString() ?? String.Empty).ToString());
 
                     if (contentItem.PublishedUtc != null)
                     {
