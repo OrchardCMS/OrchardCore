@@ -66,7 +66,12 @@ namespace OrchardCore.Lists.Feeds
                 context.Response.Element.SetElementValue("title", WebUtility.HtmlEncode(contentItem.DisplayText));
                 context.Response.Element.Add(link);
 
-                context.Response.Element.SetElementValue("description", bodyAspect.Body != null ? $"<![CDATA[{bodyAspect.Body?.ToString()}]]>" : String.Empty);
+                var description = new XElement("description");
+                if(bodyAspect.Body != null)
+                {
+                    description.Add(new XCData(bodyAspect.Body?.ToString()));
+                }
+                context.Response.Element.Add(description);
 
                 context.Response.Contextualize(contextualize =>
                 {

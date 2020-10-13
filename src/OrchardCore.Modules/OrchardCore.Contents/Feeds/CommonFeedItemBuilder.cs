@@ -49,7 +49,12 @@ namespace OrchardCore.Contents.Feeds.Builders
                     feedItem.Element.SetElementValue("title", WebUtility.HtmlEncode(contentItem.DisplayText));
                     feedItem.Element.Add(link);
 
-                    feedItem.Element.SetElementValue("description", bodyAspect.Body != null ? $"<![CDATA[{bodyAspect.Body?.ToString()}]]>" : String.Empty);
+                    var description = new XElement("description");
+                    if(bodyAspect.Body != null)
+                    {
+                        description.Add(new XCData(bodyAspect.Body?.ToString()));
+                    }
+                    feedItem.Element.Add(description);
 
                     if (contentItem.PublishedUtc != null)
                     {
