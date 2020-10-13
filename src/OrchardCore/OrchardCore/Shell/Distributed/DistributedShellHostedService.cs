@@ -69,11 +69,11 @@ namespace OrchardCore.Environment.Shell.Distributed
 
             try
             {
-                var minIdleTime = MinIdleTime;
+                var idleTime = MinIdleTime;
                 while (!stoppingToken.IsCancellationRequested)
                 {
                     // Waiting for the idle time on each loop.
-                    if (!await TryWaitAsync(minIdleTime, stoppingToken))
+                    if (!await TryWaitAsync(idleTime, stoppingToken))
                     {
                         break;
                     }
@@ -85,21 +85,11 @@ namespace OrchardCore.Environment.Shell.Distributed
                         continue;
                     }
 
-                    // Check if the default tenant has changed.
-                    if (_defaultContext != defaultContext)
-                    {
-                        _defaultContext = defaultContext;
-                        var previousContext = _context;
-
-                        // Create a new distributed context based on the default tenant settings.
-                        _context = await CreateDistributedContextAsync(defaultContext.Settings);
-
-                        // Release the previous one.
-                        previousContext?.Release();
-                    }
+                    // Gets or creates the distributed context if the default tenant has changed.
+                    var context = await GetOrCreateDistributedContextAsync(defaultContext);
 
                     // If the required distributed features are not enabled, nothing to do.
-                    var distributedCache = _context.DistributedCache;
+                    var distributedCache = context.DistributedCache;
                     if (distributedCache == null)
                     {
                         continue;
@@ -113,23 +103,13 @@ namespace OrchardCore.Environment.Shell.Distributed
                     }
                     catch (Exception ex) when (!ex.IsFatal())
                     {
-                        // We will retry but after a longer idle time.
-                        if (minIdleTime < MaxRetryTime)
-                        {
-                            minIdleTime *= 2;
-                            if (minIdleTime >= MaxRetryTime)
-                            {
-                                // Log the error only once.
-                                _logger.LogError(ex, "Unable to read the distributed cache before checking if a tenant has changed.");
-                                minIdleTime = MaxRetryTime;
-                            }
-                        }
-
+                        // Get the next idle time before retrying.
+                        idleTime = NextIdleTimeBeforeRetry(idleTime, ex);
                         continue;
                     }
 
-                    // Reset the min idle time if it was increased.
-                    minIdleTime = MinIdleTime;
+                    // Reset the idle time if it was increased.
+                    idleTime = MinIdleTime;
 
                     // Check if at least one tenant has changed.
                     if (shellChangedId == null || _shellChangedId == shellChangedId)
@@ -170,12 +150,21 @@ namespace OrchardCore.Environment.Shell.Distributed
                         }
                     }
 
-                    // start of the busy period.
+                    // Init the busy start time.
                     var startTime = DateTime.UtcNow;
 
                     // Keep in sync all tenants by checking their specific identifiers.
                     foreach (var settings in allSettings)
                     {
+                        if (!await TryWaitAfterBusyTime(startTime, stoppingToken))
+                        {
+                            break;
+                        }
+
+                        // Reset the busy start time.
+                        startTime = DateTime.UtcNow;
+
+
                         // If busy for a too long time, wait again.
                         if (DateTime.UtcNow - startTime > MaxBusyTime)
                         {
@@ -184,6 +173,7 @@ namespace OrchardCore.Environment.Shell.Distributed
                                 break;
                             }
 
+                            // Reset the busy start time.
                             startTime = DateTime.UtcNow;
                         }
 
@@ -263,7 +253,7 @@ namespace OrchardCore.Environment.Shell.Distributed
                 return;
             }
 
-            // Create a distributed context as the shared one is not yet built.
+            // Create a local distributed context because it is not yet initialized.
             using var context = await CreateDistributedContextAsync(defautSettings);
 
             // If the required distributed features are not enabled, nothing to do.
@@ -418,13 +408,34 @@ namespace OrchardCore.Environment.Shell.Distributed
         }
 
         /// <summary>
-        /// Creates a distributed context to be shared and based on the provided shell settings.
+        /// Creates a distributed context based on the default tenant settings.
         /// </summary>
-        private async Task<DistributedContext> CreateDistributedContextAsync(ShellSettings settings) =>
-            new DistributedContext(await _shellContextFactory.CreateShellContextAsync(settings));
+        private async Task<DistributedContext> CreateDistributedContextAsync(ShellSettings defaultSettings) =>
+            new DistributedContext(await _shellContextFactory.CreateShellContextAsync(defaultSettings));
 
         /// <summary>
-        /// Acquires the shared distributed context or creates a new one if not yet initialized.
+        /// Gets or creates the distributed context if the default tenant has changed.
+        /// </summary>
+        private async Task<DistributedContext> GetOrCreateDistributedContextAsync(ShellContext defaultContext)
+        {
+            // Check if the default tenant has changed.
+            if (_defaultContext != defaultContext)
+            {
+                _defaultContext = defaultContext;
+                var previousContext = _context;
+
+                // Create a new distributed context based on the default tenant settings.
+                _context = await CreateDistributedContextAsync(defaultContext.Settings);
+
+                // Release the previous one.
+                previousContext?.Release();
+            }
+
+            return _context;
+        }
+
+        /// <summary>
+        /// Acquires the distributed context or creates a new one if not yet initialized.
         /// </summary>
         private Task<DistributedContext> AcquireOrCreateDistributedContextAsync(ShellSettings settings)
         {
@@ -435,6 +446,41 @@ namespace OrchardCore.Environment.Shell.Distributed
             }
 
             return Task.FromResult(distributedContext);
+        }
+
+        /// <summary>
+        /// Increases and checks the idle time before retrying to read the distributed cache.
+        /// </summary>
+        private TimeSpan NextIdleTimeBeforeRetry(TimeSpan idleTime, Exception ex)
+        {
+            if (idleTime < MaxRetryTime)
+            {
+                idleTime *= 2;
+                if (idleTime >= MaxRetryTime)
+                {
+                    // Log the error only once.
+                    _logger.LogError(ex, "Unable to read the distributed cache before checking if a tenant has changed.");
+                    idleTime = MaxRetryTime;
+                }
+            }
+
+            return idleTime;
+        }
+
+        /// <summary>
+        /// Tries to wait for the min idle time after the max busy time, returns false if it has been cancelled.
+        /// </summary>
+        private async Task<bool> TryWaitAfterBusyTime(DateTime startTime, CancellationToken stoppingToken)
+        {
+            if (DateTime.UtcNow - startTime > MaxBusyTime)
+            {
+                if (!await TryWaitAsync(MinIdleTime, stoppingToken))
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         /// <summary>
