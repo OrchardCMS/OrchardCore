@@ -17,14 +17,37 @@ namespace OrchardCore.ContentLocalization.Shortcodes
                 return Null;
             }
 
-            var language = arguments.NamedOrDefault("lang");
-            var currentCulture = CultureInfo.CurrentCulture.Name;
-            if(!string.Equals(language, currentCulture, StringComparison.InvariantCultureIgnoreCase))
+            var language = arguments.NamedOrDefault("lang")?.ToLower();
+            var argFallback = arguments.NamedOrAt("fallback", 1);
+            // default value of true for the fallback
+            var fallback = argFallback == null ? true : Convert.ToBoolean(argFallback); ;
+            var currentCulture = CultureInfo.CurrentCulture;
+
+            if (fallback)
             {
-                return Null;
+                // fallback to parent culture, if the current culture is en-CA and the shortcode targets en, the html will be output
+                do
+                {
+                    if (currentCulture.Name.Equals(language, StringComparison.CurrentCultureIgnoreCase))
+                    {
+                        return new ValueTask<string>(content);
+                    }
+
+                    currentCulture = currentCulture.Parent;
+                }
+                while (currentCulture != CultureInfo.InvariantCulture);
+            }
+            else
+            {
+                if (currentCulture.Name.Equals(language, StringComparison.CurrentCultureIgnoreCase))
+                {
+                    return new ValueTask<string>(content);
+                }
             }
 
-            return new ValueTask<string>(content);
+            return Null;
+        
+
         }
     }
 }
