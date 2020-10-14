@@ -22,7 +22,7 @@
 
     tag.AddCssClass("item-label d-flex");
 
-    if(Model.HasItems)
+    if (Model.HasItems)
     {
         tag.Attributes["data-toggle"] = "collapse";
         tag.Attributes["data-target"] = "#m" + Model.GetHashCode().ToString();
@@ -42,7 +42,7 @@
 
     tag.InnerHtml.AppendHtml(await DisplayAsync(Model));
 
-    if(Model.HasItems)
+    if (Model.HasItems)
     {
         tag.InnerHtml.AppendHtml(Html.Raw("<div class=\"btn-nostyle\"><span class=\"collapse-icon\"><i class=\"fas fa-chevron-right fa-xs chevron\"></i></span></div>"));
     }
