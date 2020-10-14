@@ -35,7 +35,7 @@
             pathString = pathString.Add('/' + shellSettings.RequestUrlPrefix);
         }
 
-        QueryString queryString;
+        QueryString queryString = new QueryString();
 
         if (!string.IsNullOrEmpty(shellSettingsEntry.Token))
         {
