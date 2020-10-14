@@ -31,6 +31,7 @@
     <PackageProjectUrl>https://www.orchardcore.net/</PackageProjectUrl>
     <RepositoryCommit>$(GitCommit)</RepositoryCommit>
     <RepositoryBranch>$(GitBranch)</RepositoryBranch>
+    <PackageLicenseExpression>BSD-3-Clause</PackageLicenseExpression>
     
     <PackageTags>OrchardCore OrchardCoreCMS CMS MVC AspNetCore</PackageTags>
     <Copyright>Orchard Core CMS Community and Contributors</Copyright>
