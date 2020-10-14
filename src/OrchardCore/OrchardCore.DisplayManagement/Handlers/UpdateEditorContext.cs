@@ -22,7 +22,6 @@ namespace OrchardCore.DisplayManagement.Handlers
             if (_validationHandler == null)
             {
                 throw new InvalidOperationException($"{nameof(ValidateAsync)} function is not set.");
-                //return Array.Empty<ValidationResult>();
             }
             return await _validationHandler.Invoke(partName, model);
         }
@@ -31,7 +30,5 @@ namespace OrchardCore.DisplayManagement.Handlers
         {
             _validationHandler = handler;
         }
-
-
     }
 }
