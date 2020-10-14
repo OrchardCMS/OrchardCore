@@ -25,7 +25,6 @@ namespace OrchardCore.Tests.Modules.Contents.Feeds
             var contentManagerMock = new Mock<IContentManager>();
             var commonFeedItemBuilder = new CommonFeedItemBuilder(contentManagerMock.Object);
             var feedContext = CreateFeedContext(format);
-            var bodyContent = "<p>The news description goes here ...</p>";
 
             contentManagerMock.SetReturnsDefault(Task.FromResult(new ContentItemMetadata
             {
@@ -34,7 +33,7 @@ namespace OrchardCore.Tests.Modules.Contents.Feeds
 
             contentManagerMock.SetReturnsDefault(Task.FromResult(new BodyAspect
             {
-                Body = new HtmlString(bodyContent)
+                Body = new HtmlString("<p>The news description goes here ...</p>")
             }));
 
             feedContext.Builder.AddItem(feedContext, new ContentItem
@@ -47,7 +46,10 @@ namespace OrchardCore.Tests.Modules.Contents.Feeds
             await commonFeedItemBuilder.PopulateAsync(feedContext);
 
             // Assert
-            Assert.Contains($"<![CDATA[{bodyContent}]]>", feedContext.Response.Items[0].Element.ToString());
+            var description = feedContext.Response.Items[0].Element.Element("description").ToString();
+
+            Assert.NotEqual("<description>&lt;![CDATA[&lt;p&gt;The news description goes here ...&lt;/p&gt;]]&gt;</description>", description);
+            Assert.Equal("<description><![CDATA[<p>The news description goes here ...</p>]]></description>", description);
         }
 
         private static FeedContext CreateFeedContext(string format)
