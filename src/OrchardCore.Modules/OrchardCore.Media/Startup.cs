@@ -281,7 +281,7 @@ namespace OrchardCore.Media
                 name: "Media.Options",
                 areaName: "OrchardCore.Media",
                 pattern: _adminOptions.AdminUrlPrefix + "/Media/Options",
-                defaults: new { controller = adminControllerName, action = nameof(AdminController.Options) }
+                defaults: new { controller = adminControllerName, action = nameof(AdminController.Options) };
                 
             var mediaProfilesControllerName = typeof(MediaProfilesController).ControllerName();
 
