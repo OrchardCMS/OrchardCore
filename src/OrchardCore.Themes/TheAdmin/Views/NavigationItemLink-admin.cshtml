@@ -4,38 +4,48 @@
     Model.Metadata.Type = "NavigationItemText";
     Model.Metadata.Alternates.Add("NavigationItemText_Id__" + Model.Id);
 
-    TagBuilder tag;
+    TagBuilder tag = Tag(Model, "a");
+    tag.Attributes["id"] = null;
+    tag.Attributes["href"] = Model.Href ?? "#";
 
-    if (Model.HasItems)
+    var prefix = "icon-class-";
+
+    // Extract classes that are not icons from Model.Classes
+    var notIconClasses = ((IEnumerable<string>)Model.Classes)
+                    .ToList()
+                    .Where(c => !c.StartsWith(prefix, StringComparison.OrdinalIgnoreCase));
+
+    if (notIconClasses.Count() > 0)
     {
-        // Label
-        tag = new TagBuilder("label");
-        tag.AddCssClass("item-label");
+        tag.Attributes["class"] = string.Join(" ", notIconClasses);
+    }
+
+    tag.AddCssClass("item-label d-flex");
+
+    if(Model.HasItems)
+    {
         tag.Attributes["data-toggle"] = "collapse";
         tag.Attributes["data-target"] = "#m" + Model.GetHashCode().ToString();
         tag.Attributes["aria-expanded"] = "false";
         tag.Attributes["aria-controls"] = "m" + Model.GetHashCode().ToString();
-        tag.Attributes["role"] = "button";
+        tag.TagRenderMode = TagRenderMode.Normal;
 
         if ((bool)Model.Selected)
         {
             tag.Attributes["aria-expanded"] = "true";
         }
-        else {
+        else
+        {
             tag.Attributes["aria-expanded"] = "false";
         }
-
-        tag.TagRenderMode = TagRenderMode.Normal;
-        tag.InnerHtml.AppendHtml(await DisplayAsync(Model));
-
-        tag.InnerHtml.AppendHtml(Html.Raw($"<button class=\"btn-nostyle\"><span class=\"collapse-icon\"><i class=\"fas fa-chevron-{(Orchard.CultureDir() == "ltr" ? "right" : "left")} fa-xs chevron\"></i></span></button>"));
     }
-    else
+
+    tag.InnerHtml.AppendHtml(await DisplayAsync(Model));
+
+    if(Model.HasItems)
     {
-        tag = Tag(Model, "a");
-        tag.AddCssClass("item-label d-flex");
-        tag.Attributes["href"] = Model.Href ?? "#";
-        tag.InnerHtml.AppendHtml(await DisplayAsync(Model));
+        tag.InnerHtml.AppendHtml(Html.Raw("<div class=\"btn-nostyle\"><span class=\"collapse-icon\"><i class=\"fas fa-chevron-right fa-xs chevron\"></i></span></div>"));
     }
 }
+
 @tag
