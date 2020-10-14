@@ -22,9 +22,10 @@ namespace OrchardCore.Environment.Shell.Distributed
         private const string ReleaseIdKeySuffix = "_RELEASE_ID";
         private const string ReloadIdKeySuffix = "_RELOAD_ID";
 
+        private const int MaxRetryCount = 10;
+
         private static readonly TimeSpan MinIdleTime = TimeSpan.FromSeconds(1);
         private static readonly TimeSpan MaxBusyTime = TimeSpan.FromSeconds(2);
-        private static readonly TimeSpan MaxRetryTime = TimeSpan.FromMinutes(1);
 
         private readonly IShellHost _shellHost;
         private readonly IShellContextFactory _shellContextFactory;
@@ -39,6 +40,9 @@ namespace OrchardCore.Environment.Shell.Distributed
 
         private ShellContext _defaultContext;
         private DistributedContext _context;
+
+        private DateTime _busyStartTime;
+        private int _retryCounter;
         private bool _terminated;
 
         public DistributedShellHostedService(
@@ -69,11 +73,10 @@ namespace OrchardCore.Environment.Shell.Distributed
 
             try
             {
-                var idleTime = MinIdleTime;
                 while (!stoppingToken.IsCancellationRequested)
                 {
-                    // Waiting for the idle time on each loop.
-                    if (!await TryWaitAsync(idleTime, stoppingToken))
+                    // Wait for the min idle time on each loop.
+                    if (!await TryWaitAsync(MinIdleTime, stoppingToken))
                     {
                         break;
                     }
@@ -85,13 +88,20 @@ namespace OrchardCore.Environment.Shell.Distributed
                         continue;
                     }
 
-                    // Gets or creates the distributed context if the default tenant has changed.
+                    // Gets or creates a new distributed context if the default tenant has changed.
                     var context = await GetOrCreateDistributedContextAsync(defaultContext);
 
                     // If the required distributed features are not enabled, nothing to do.
                     var distributedCache = context.DistributedCache;
                     if (distributedCache == null)
                     {
+                        continue;
+                    }
+
+                    // Wait before retrying to read the cache, unless the retry counter reached the maximum.
+                    if (!await TryWaitBeforeRetry(stoppingToken))
+                    {
+                        // Note: The retry counter can be reset by releasing or by reloading the default tenant.
                         continue;
                     }
 
@@ -103,13 +113,17 @@ namespace OrchardCore.Environment.Shell.Distributed
                     }
                     catch (Exception ex) when (!ex.IsFatal())
                     {
-                        // Get the next idle time before retrying.
-                        idleTime = NextIdleTimeBeforeRetry(idleTime, ex);
+                        if (_retryCounter++ >= MaxRetryCount)
+                        {
+                            // Log an error once, only when the retry counter reached the maximum.
+                            _logger.LogError(ex, "Unable to read the distributed cache before checking if a tenant has changed.");
+                        }
+
                         continue;
                     }
 
-                    // Reset the idle time if it was increased.
-                    idleTime = MinIdleTime;
+                    // Reset the retry counter.
+                    _retryCounter = 0;
 
                     // Check if at least one tenant has changed.
                     if (shellChangedId == null || _shellChangedId == shellChangedId)
@@ -151,30 +165,15 @@ namespace OrchardCore.Environment.Shell.Distributed
                     }
 
                     // Init the busy start time.
-                    var startTime = DateTime.UtcNow;
+                    var _busyStartTime = DateTime.UtcNow;
 
                     // Keep in sync all tenants by checking their specific identifiers.
                     foreach (var settings in allSettings)
                     {
-                        if (!await TryWaitAfterBusyTime(startTime, stoppingToken))
+                        // Wait for the min idle time after the max busy time.
+                        if (!await TryWaitAfterBusyTime(stoppingToken))
                         {
                             break;
-                        }
-
-                        // Reset the busy start time.
-                        startTime = DateTime.UtcNow;
-
-
-                        // If busy for a too long time, wait again.
-                        if (DateTime.UtcNow - startTime > MaxBusyTime)
-                        {
-                            if (!await TryWaitAsync(MinIdleTime, stoppingToken))
-                            {
-                                break;
-                            }
-
-                            // Reset the busy start time.
-                            startTime = DateTime.UtcNow;
                         }
 
                         var semaphore = _semaphores.GetOrAdd(settings.Name, name => new SemaphoreSlim(1));
@@ -182,7 +181,7 @@ namespace OrchardCore.Environment.Shell.Distributed
                         try
                         {
                             // Try to retrieve the release identifier of this tenant from the distributed cache.
-                            var releaseId = await distributedCache.GetStringAsync(settings.Name + ReleaseIdKeySuffix);
+                            var releaseId = await distributedCache.GetStringAsync(ReleaseIdKey(settings.Name));
                             if (releaseId != null)
                             {
                                 // Check if the release identifier of this tenant has changed.
@@ -198,7 +197,7 @@ namespace OrchardCore.Environment.Shell.Distributed
                             }
 
                             // Try to retrieve the reload identifier of this tenant from the distributed cache.
-                            var reloadId = await distributedCache.GetStringAsync(settings.Name + ReloadIdKeySuffix);
+                            var reloadId = await distributedCache.GetStringAsync(ReloadIdKey(settings.Name));
                             if (reloadId != null)
                             {
                                 // Check if the reload identifier of this tenant has changed.
@@ -274,7 +273,7 @@ namespace OrchardCore.Environment.Shell.Distributed
                 foreach (var name in names)
                 {
                     // Retrieve the release identifier of this tenant from the distributed cache.
-                    var releaseId = await distributedCache.GetStringAsync(name + ReleaseIdKeySuffix);
+                    var releaseId = await distributedCache.GetStringAsync(ReleaseIdKey(name));
                     if (releaseId != null)
                     {
                         // Initialize the release identifier of this tenant in the local collection.
@@ -283,7 +282,7 @@ namespace OrchardCore.Environment.Shell.Distributed
                     }
 
                     // Retrieve the reload identifier of this tenant from the distributed cache.
-                    var reloadId = await distributedCache.GetStringAsync(name + ReloadIdKeySuffix);
+                    var reloadId = await distributedCache.GetStringAsync(ReloadIdKey(name));
                     if (reloadId != null)
                     {
                         // Initialize the reload identifier of this tenant in the local collection.
@@ -334,7 +333,7 @@ namespace OrchardCore.Environment.Shell.Distributed
                 identifier.ReleaseId = IdGenerator.GenerateId();
 
                 // Update the release identifier of this tenant in the distributed cache.
-                await distributedCache.SetStringAsync(name + ReleaseIdKeySuffix, identifier.ReleaseId);
+                await distributedCache.SetStringAsync(ReleaseIdKey(name), identifier.ReleaseId);
 
                 // Also update the global identifier specifying that a tenant has changed.
                 await distributedCache.SetStringAsync(ShellChangedIdKey, identifier.ReleaseId);
@@ -385,7 +384,7 @@ namespace OrchardCore.Environment.Shell.Distributed
                 identifier.ReloadId = IdGenerator.GenerateId();
 
                 // Update the reload identifier of this tenant in the distributed cache.
-                await distributedCache.SetStringAsync(name + ReloadIdKeySuffix, identifier.ReloadId);
+                await distributedCache.SetStringAsync(ReloadIdKey(name), identifier.ReloadId);
 
                 // Check if it is a new created tenant that has not been already loaded.
                 if (name != ShellHelper.DefaultShellName && !_shellHost.TryGetSettings(name, out _))
@@ -407,6 +406,9 @@ namespace OrchardCore.Environment.Shell.Distributed
             }
         }
 
+        private string ReleaseIdKey(string name) => name + ReleaseIdKeySuffix;
+        private string ReloadIdKey(string name) => name + ReloadIdKeySuffix;
+
         /// <summary>
         /// Creates a distributed context based on the default tenant settings.
         /// </summary>
@@ -414,7 +416,8 @@ namespace OrchardCore.Environment.Shell.Distributed
             new DistributedContext(await _shellContextFactory.CreateShellContextAsync(defaultSettings));
 
         /// <summary>
-        /// Gets or creates the distributed context if the default tenant has changed.
+        /// Gets the distributed context or creates a new one if the default tenant has changed.
+        /// Also, resets the retry counter if the default tenant has changed, e.g. was reloaded.
         /// </summary>
         private async Task<DistributedContext> GetOrCreateDistributedContextAsync(ShellContext defaultContext)
         {
@@ -429,6 +432,9 @@ namespace OrchardCore.Environment.Shell.Distributed
 
                 // Release the previous one.
                 previousContext?.Release();
+
+                // Reset the retry counter.
+                _retryCounter = 0;
             }
 
             return _context;
@@ -449,42 +455,55 @@ namespace OrchardCore.Environment.Shell.Distributed
         }
 
         /// <summary>
-        /// Increases and checks the idle time before retrying to read the distributed cache.
+        /// Tries to wait for a delay based on the retry counter, if it is no more equal to zero,
+        /// returns false if it was cancelled, or if the retry counter reached the maximum count.
+        /// Note: The retry counter can be reset by releasing or by reloading the default tenant.
         /// </summary>
-        private TimeSpan NextIdleTimeBeforeRetry(TimeSpan idleTime, Exception ex)
+        private async Task<bool> TryWaitBeforeRetry(CancellationToken stoppingToken)
         {
-            if (idleTime < MaxRetryTime)
+            if (_retryCounter == 0)
             {
-                idleTime *= 2;
-                if (idleTime >= MaxRetryTime)
-                {
-                    // Log the error only once.
-                    _logger.LogError(ex, "Unable to read the distributed cache before checking if a tenant has changed.");
-                    idleTime = MaxRetryTime;
-                }
+                // We can retry without waiting.
+                return true;
             }
 
-            return idleTime;
+            if (_retryCounter >= MaxRetryCount)
+            {
+                // Don't wait but don't retry.
+                return false;
+            }
+
+            var retryDelai = MinIdleTime * Math.Pow(2, _retryCounter);
+
+            if (!await TryWaitAsync(retryDelai, stoppingToken))
+            {
+                return false;
+            }
+
+            // After the delay we now can retry.
+            return true;
         }
 
         /// <summary>
-        /// Tries to wait for the min idle time after the max busy time, returns false if it has been cancelled.
+        /// Tries to wait for the min idle time after the max busy time, returns false if it was cancelled.
         /// </summary>
-        private async Task<bool> TryWaitAfterBusyTime(DateTime startTime, CancellationToken stoppingToken)
+        private async Task<bool> TryWaitAfterBusyTime(CancellationToken stoppingToken)
         {
-            if (DateTime.UtcNow - startTime > MaxBusyTime)
+            if (DateTime.UtcNow - _busyStartTime > MaxBusyTime)
             {
                 if (!await TryWaitAsync(MinIdleTime, stoppingToken))
                 {
                     return false;
                 }
+
+                _busyStartTime = DateTime.UtcNow;
             }
 
             return true;
         }
 
         /// <summary>
-        /// Tries to wait for a given delay, returns false if it has been cancelled.
+        /// Tries to wait for a given delay, returns false if it was cancelled.
         /// </summary>
         private async Task<bool> TryWaitAsync(TimeSpan delay, CancellationToken stoppingToken)
         {
