@@ -3,6 +3,11 @@
   <PropertyGroup>
     <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
     <RootNamespace>OrchardCore.Admin</RootNamespace>
+
+    <!-- NuGet properties-->
+    <Title>Orchard Core Admin Abstractions</Title>
+    <Description>Abstractions of OrchardCore Admin Module.</Description>
+
   </PropertyGroup>
 
   <ItemGroup>

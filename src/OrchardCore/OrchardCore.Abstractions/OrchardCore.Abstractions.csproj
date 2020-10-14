@@ -2,6 +2,11 @@
 
   <PropertyGroup>
     <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
+
+    <!-- NuGet properties-->
+    <Title>OrchardCore Abstractions</Title>
+    <Description>Abstractions of OrchardCore ShellHost.</Description>
+
   </PropertyGroup>
 
   <ItemGroup>
