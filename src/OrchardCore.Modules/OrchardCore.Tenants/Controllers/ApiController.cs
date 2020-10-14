@@ -304,7 +304,7 @@ namespace OrchardCore.Tenants.Controllers
                 pathString = pathString.Add('/' + shellSettings.RequestUrlPrefix);
             }
 
-            QueryString queryString;
+            QueryString queryString = new QueryString();
 
             if (!String.IsNullOrEmpty(token))
             {
