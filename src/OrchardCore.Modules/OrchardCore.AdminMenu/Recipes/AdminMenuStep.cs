@@ -12,11 +12,11 @@ namespace OrchardCore.AdminMenu.Recipes
     /// </summary>
     public class AdminMenuStep : IRecipeStepHandler
     {
-        private readonly IAdminMenuService _AdminMenuService;
+        private readonly IAdminMenuService _adminMenuService;
 
-        public AdminMenuStep(IAdminMenuService AdminMenuervice)
+        public AdminMenuStep(IAdminMenuService adminMenuService)
         {
-            _AdminMenuService = AdminMenuervice;
+            _adminMenuService = adminMenuService;
         }
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
@@ -33,8 +33,14 @@ namespace OrchardCore.AdminMenu.Recipes
             foreach (JObject token in model.Data)
             {
                 var adminMenu = token.ToObject<Models.AdminMenu>(serializer);
-                adminMenu.Id = Guid.NewGuid().ToString("n");// we always add it as a new tree.
-                await _AdminMenuService.SaveAsync(adminMenu);
+
+                // When the id is not supplied generate an id, otherwise replace the menu if it exists, or create a new menu.
+                if (String.IsNullOrEmpty(adminMenu.Id))
+                {
+                    adminMenu.Id = Guid.NewGuid().ToString("n");
+                }
+
+                await _adminMenuService.SaveAsync(adminMenu);
             }
 
             return;

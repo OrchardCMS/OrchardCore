@@ -17,7 +17,7 @@ namespace OrchardCore.Markdown.Settings
 
                 model.SanitizeHtml = settings.SanitizeHtml;
                 model.Hint = settings.Hint;
-            }).Location("Content");
+            }).Location("Content:20");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)

@@ -46,7 +46,7 @@
     </div>
 </form>
 
-<script at="Foot" type="text/javascript">
+<script at="Foot">
     $(function () {
         var searchBox = $('#search-box');
 
@@ -72,10 +72,10 @@
                 $('#roles > li').toggle(true);
                 var visible = $('#roles > li:visible');
                 if (visible.length == 0) {
-                    $('#list-alert').removeClass("d-none");
+                    $('#list-alert').addClass("d-none");
                 }
                 else {
-                    $('#list-alert').addClass("d-none");
+                    $('#list-alert').removeClass("d-none");
                 }
             }
             else {

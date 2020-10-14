@@ -60,7 +60,7 @@ namespace OrchardCore.Autoroute
             services.AddScoped<IDataMigration, Migrations>();
 
             services.AddSingleton<IAutorouteEntries, AutorouteEntries>();
-            services.AddScoped<IContentAliasProvider, AutorouteAliasProvider>();
+            services.AddScoped<IContentHandleProvider, AutorouteHandleProvider>();
 
             services.AddScoped<ILiquidTemplateEventHandler, ContentAutorouteLiquidTemplateEventHandler>();
 
