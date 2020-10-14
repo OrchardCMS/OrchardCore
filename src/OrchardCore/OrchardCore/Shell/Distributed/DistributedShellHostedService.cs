@@ -21,7 +21,6 @@ namespace OrchardCore.Environment.Shell.Distributed
         private const string ShellCreatedIdKey = "SHELL_CREATED_ID";
         private const string ReleaseIdKeySuffix = "_RELEASE_ID";
         private const string ReloadIdKeySuffix = "_RELOAD_ID";
-
         private const int MaxRetryCount = 10;
 
         private static readonly TimeSpan MinIdleTime = TimeSpan.FromSeconds(1);
@@ -115,7 +114,7 @@ namespace OrchardCore.Environment.Shell.Distributed
                     {
                         if (_retryCounter++ >= MaxRetryCount)
                         {
-                            // Log an error once, only when the retry counter reached the maximum.
+                            // Log an error only when the retry counter has reached the maximum and then prevents another attempt.
                             _logger.LogError(ex, "Unable to read the distributed cache before checking if a tenant has changed.");
                         }
 
@@ -156,10 +155,13 @@ namespace OrchardCore.Environment.Shell.Distributed
                         _shellCreatedId = shellCreatedId;
 
                         // Retrieve all new created tenants that are not already loaded.
-                        var names = await _shellSettingsManager.LoadSettingsNamesAsync();
-                        foreach (var name in names.Except(allSettings.Select(s => s.Name)))
+                        var names = (await _shellSettingsManager.LoadSettingsNamesAsync())
+                            .Except(allSettings.Select(s => s.Name))
+                            .ToArray();
+
+                        // Load and enlist the settings of all new created tenant.
+                        foreach (var name in names)
                         {
-                            // Load and enlist the settings of each new created tenant.
                             allSettings.Add(await _shellSettingsManager.LoadSettingsAsync(name));
                         }
                     }
