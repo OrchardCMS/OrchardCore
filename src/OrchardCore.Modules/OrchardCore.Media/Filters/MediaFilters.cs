@@ -99,27 +99,27 @@ namespace OrchardCore.Media.Filters
         {
             if (!width.IsNil())
             {
-                queryStringParams.Add("width", width.ToStringValue());
+                queryStringParams["width"] = width.ToStringValue();
             }
 
             if (!height.IsNil())
             {
-                queryStringParams.Add("height", height.ToStringValue());
+                queryStringParams["height"] = height.ToStringValue();
             }
 
             if (!mode.IsNil())
             {
-                queryStringParams.Add("rmode", mode.ToStringValue());
+                queryStringParams["rmode"] = mode.ToStringValue();
             }
 
             if (!quality.IsNil())
             {
-                queryStringParams.Add("quality", quality.ToStringValue());
+                queryStringParams["quality"] = quality.ToStringValue();
             }
 
             if (!format.IsNil())
             {
-                queryStringParams.Add("format", format.ToStringValue());
+                queryStringParams["format"] = format.ToStringValue();
             }
 
             if (!center.IsNil() && center.Type == FluidValues.Array)
@@ -136,7 +136,7 @@ namespace OrchardCore.Media.Filters
                 }
                 if (!String.IsNullOrEmpty(xy))
                 {
-                    queryStringParams.Add("rxy", xy.Trim(','));
+                    queryStringParams["rxy"] = xy.Trim(',');
                 }
             }
         }
