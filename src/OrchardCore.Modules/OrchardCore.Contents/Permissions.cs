@@ -25,7 +25,7 @@ namespace OrchardCore.Contents
         public static readonly Permission CloneContent = CommonPermissions.CloneContent;
         public static readonly Permission CloneOwnContent = CommonPermissions.CloneOwnContent;
         public static readonly Permission AccessContentApi = new Permission("AccessContentApi", "Access content via the api");
-        public static readonly Permission ListContent = new Permission("ListContent", "List content item(s) not owned by user");
+        public static readonly Permission ListContent = new Permission("ListContent", "List content item(s) owned by all users");
 
         //public static readonly Permission MetaListContent = new Permission { ImpliedBy = new[] { EditOwnContent, PublishOwnContent, DeleteOwnContent } };
 
