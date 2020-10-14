@@ -89,7 +89,7 @@ namespace OrchardCore.Environment.Shell.Distributed
                         continue;
                     }
 
-                    // Gets or creates a new distributed context if the default tenant has changed.
+                    // Get or create a new distributed context if the default tenant has changed.
                     var context = await GetOrCreateDistributedContextAsync(defaultContext);
 
                     // If the required distributed features are not enabled, nothing to do.
