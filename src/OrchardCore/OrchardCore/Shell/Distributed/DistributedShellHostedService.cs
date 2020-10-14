@@ -21,9 +21,9 @@ namespace OrchardCore.Environment.Shell.Distributed
         private const string ShellCreatedIdKey = "SHELL_CREATED_ID";
         private const string ReleaseIdKeySuffix = "_RELEASE_ID";
         private const string ReloadIdKeySuffix = "_RELOAD_ID";
-        private const int MaxRetryCount = 10;
 
         private static readonly TimeSpan MinIdleTime = TimeSpan.FromSeconds(1);
+        private static readonly TimeSpan MaxRetryTime = TimeSpan.FromMinutes(1);
         private static readonly TimeSpan MaxBusyTime = TimeSpan.FromSeconds(2);
 
         private readonly IShellHost _shellHost;
@@ -41,7 +41,6 @@ namespace OrchardCore.Environment.Shell.Distributed
         private DistributedContext _context;
 
         private DateTime _busyStartTime;
-        private int _retryCounter;
         private bool _terminated;
 
         public DistributedShellHostedService(
@@ -72,10 +71,13 @@ namespace OrchardCore.Environment.Shell.Distributed
 
             try
             {
+                // Init the idle time.
+                var idleTime = MinIdleTime;
+
                 while (!stoppingToken.IsCancellationRequested)
                 {
-                    // Wait for the min idle time on each loop.
-                    if (!await TryWaitAsync(MinIdleTime, stoppingToken))
+                    // Wait for the current idle time on each loop.
+                    if (!await TryWaitAsync(idleTime, stoppingToken))
                     {
                         break;
                     }
@@ -97,13 +99,6 @@ namespace OrchardCore.Environment.Shell.Distributed
                         continue;
                     }
 
-                    // Wait before retrying to read the cache, unless the retry counter reached the maximum.
-                    if (!await TryWaitBeforeRetry(stoppingToken))
-                    {
-                        // Note: The retry counter can be reset by releasing or by reloading the default tenant.
-                        continue;
-                    }
-
                     // Try to retrieve the tenant changed global identifier from the distributed cache.
                     string shellChangedId;
                     try
@@ -112,17 +107,13 @@ namespace OrchardCore.Environment.Shell.Distributed
                     }
                     catch (Exception ex) when (!ex.IsFatal())
                     {
-                        if (_retryCounter++ >= MaxRetryCount)
-                        {
-                            // Log an error only when the retry counter has reached the maximum and then prevents another attempt.
-                            _logger.LogError(ex, "Unable to read the distributed cache before checking if a tenant has changed.");
-                        }
-
+                        // Get the next idle time before retrying to read the distributed cache.
+                        idleTime = NextIdleTimeBeforeRetry(idleTime, ex);
                         continue;
                     }
 
-                    // Reset the retry counter.
-                    _retryCounter = 0;
+                    // Reset the idle time.
+                    idleTime = MinIdleTime;
 
                     // Check if at least one tenant has changed.
                     if (shellChangedId == null || _shellChangedId == shellChangedId)
@@ -419,7 +410,6 @@ namespace OrchardCore.Environment.Shell.Distributed
 
         /// <summary>
         /// Gets the distributed context or creates a new one if the default tenant has changed.
-        /// Also, resets the retry counter if the default tenant has changed, e.g. was reloaded.
         /// </summary>
         private async Task<DistributedContext> GetOrCreateDistributedContextAsync(ShellContext defaultContext)
         {
@@ -434,9 +424,6 @@ namespace OrchardCore.Environment.Shell.Distributed
 
                 // Release the previous one.
                 previousContext?.Release();
-
-                // Reset the retry counter.
-                _retryCounter = 0;
             }
 
             return _context;
@@ -457,33 +444,23 @@ namespace OrchardCore.Environment.Shell.Distributed
         }
 
         /// <summary>
-        /// Tries to wait for a delay based on the retry counter, if it is no more equal to zero,
-        /// returns false if it was cancelled, or if the retry counter reached the maximum count.
-        /// Note: The retry counter can be reset by releasing or by reloading the default tenant.
+        /// Gets the next idle time before retrying to read the distributed cache.
         /// </summary>
-        private async Task<bool> TryWaitBeforeRetry(CancellationToken stoppingToken)
+        private TimeSpan NextIdleTimeBeforeRetry(TimeSpan idleTime, Exception ex)
         {
-            if (_retryCounter == 0)
+            if (idleTime < MaxRetryTime)
             {
-                // We can retry without waiting.
-                return true;
+                // Log an error on each retry, but only before reaching the 'MaxRetryTime', to not fill out the log.
+                _logger.LogError(ex, "Unable to read the distributed cache before checking if a tenant has changed.");
+
+                idleTime *= 2;
+                if (idleTime > MaxRetryTime)
+                {
+                    idleTime = MaxRetryTime;
+                }
             }
 
-            if (_retryCounter >= MaxRetryCount)
-            {
-                // Don't wait but don't retry.
-                return false;
-            }
-
-            var retryDelai = MinIdleTime * Math.Pow(2, _retryCounter);
-
-            if (!await TryWaitAsync(retryDelai, stoppingToken))
-            {
-                return false;
-            }
-
-            // After the delay we now can retry.
-            return true;
+            return idleTime;
         }
 
         /// <summary>
