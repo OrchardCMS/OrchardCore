@@ -75,7 +75,7 @@ namespace OrchardCore.Contents.Feeds.Builders
                     });
 
                     context.Builder.AddProperty(context, feedItem, "title", WebUtility.HtmlEncode(contentItem.DisplayText));
-                    context.Builder.AddProperty(context, feedItem, "description", new XCData(bodyAspect.Body?.ToString() ?? String.Empty).ToString());
+                    context.Builder.AddProperty(context, feedItem, new XElement("description", new XCData(bodyAspect.Body?.ToString() ?? String.Empty)));
 
                     if (contentItem.PublishedUtc != null)
                     {

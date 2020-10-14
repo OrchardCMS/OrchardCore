@@ -79,7 +79,7 @@ namespace OrchardCore.Lists.Feeds
             else
             {
                 context.Builder.AddProperty(context, null, "title", contentItem.DisplayText);
-                context.Builder.AddProperty(context, null, "description", new XCData(bodyAspect.Body?.ToString() ?? String.Empty).ToString());
+                context.Builder.AddProperty(context, null, new XElement("description", new XCData(bodyAspect.Body?.ToString() ?? String.Empty)));
 
                 context.Response.Contextualize(contextualize =>
                 {
