@@ -20,10 +20,10 @@
         <draggable v-model="data.options" :tag="'tbody'">
             <tr v-for="(option, index) in data.options" :key="index">
                 <td>
-                    <input type="text" class="form-control" v-model="option.text" placeholder="Enter the text" />
+                    <input type="text" class="form-control" v-model="option.text" placeholder="@T["Enter the text"]" />
                 </td>
                 <td>
-                    <input type="text" class="form-control courier" v-model="option.value" placeholder="Enter a value" />
+                    <input type="text" class="form-control courier" v-model="option.value" placeholder="@T["Enter a value"]" />
                 </td>
                 <td class="text-center align-middle">
                     <div class="custom-control custom-radio ml-2">
