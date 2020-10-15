@@ -9,13 +9,6 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
         return;
     }
 
-    var root = {
-        name:  $('#t-mediaLibrary').text(),
-        path: '',
-        folder: '',
-        isDirectory: true
-    };
-
     initialized = true;
 
     if (!mediaApplicationUrl) {
@@ -29,6 +22,13 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
             $('.ta-content').append(content);
 
             $(document).trigger('mediaapplication:ready');
+            
+            var root = {
+                name:  $('#t-mediaLibrary').text(),
+                path: '',
+                folder: '',
+                isDirectory: true
+            };
 
             mediaApp = new Vue({
                 el: '#mediaApp',
