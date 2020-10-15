@@ -52,6 +52,12 @@ namespace OrchardCore.Themes.Controllers
         public async Task<ActionResult> Index()
         {
             var installThemes = await _authorizationService.AuthorizeAsync(User, StandardPermissions.SiteOwner); // only site owners
+
+            if (!installThemes)
+            {
+                return Forbid();
+            }
+
             //&& _shellSettings.Name == ShellSettings.; // of the default tenant
             //&& _featureManager.GetEnabledFeatures().FirstOrDefault(f => f.Id == "PackagingServices") != null
 

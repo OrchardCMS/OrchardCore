@@ -136,7 +136,7 @@ namespace OrchardCore.Autoroute.Handlers
 
         public override Task RemovedAsync(RemoveContentContext context, AutoroutePart part)
         {
-            if (!String.IsNullOrWhiteSpace(part.Path))
+            if (!String.IsNullOrWhiteSpace(part.Path) && context.NoActiveVersionLeft)
             {
                 _entries.RemoveEntry(part.ContentItem.ContentItemId, part.Path);
 
@@ -157,23 +157,23 @@ namespace OrchardCore.Autoroute.Handlers
 
             if (part.Path == "/")
             {
-                context.Fail(S["Your permalink can't be set to the homepage, please use the homepage option instead."]);
+                context.Fail(S["Your permalink can't be set to the homepage, please use the homepage option instead."], nameof(part.Path));
             }
 
             if (part.Path?.IndexOfAny(AutoroutePartDisplay.InvalidCharactersForPath) > -1 || part.Path?.IndexOf(' ') > -1 || part.Path?.IndexOf("//") > -1)
             {
                 var invalidCharactersForMessage = string.Join(", ", AutoroutePartDisplay.InvalidCharactersForPath.Select(c => $"\"{c}\""));
-                context.Fail(S["Please do not use any of the following characters in your permalink: {0}. No spaces, or consecutive slashes, are allowed (please use dashes or underscores instead).", invalidCharactersForMessage]);
+                context.Fail(S["Please do not use any of the following characters in your permalink: {0}. No spaces, or consecutive slashes, are allowed (please use dashes or underscores instead).", invalidCharactersForMessage], nameof(part.Path));
             }
 
             if (part.Path?.Length > AutoroutePartDisplay.MaxPathLength)
             {
-                context.Fail(S["Your permalink is too long. The permalink can only be up to {0} characters.", AutoroutePartDisplay.MaxPathLength]);
+                context.Fail(S["Your permalink is too long. The permalink can only be up to {0} characters.", AutoroutePartDisplay.MaxPathLength], nameof(part.Path));
             }
 
             if (!await IsAbsolutePathUniqueAsync(part.Path, part.ContentItem.ContentItemId))
             {
-                context.Fail(S["Your permalink is already in use."]);
+                context.Fail(S["Your permalink is already in use."], nameof(part.Path));
             }
 
         }

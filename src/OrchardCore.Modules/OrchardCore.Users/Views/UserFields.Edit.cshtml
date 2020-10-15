@@ -44,14 +44,7 @@
     @for (var i = 0; i < Model.Roles.Length; i++)
     {
         <div class="custom-control custom-checkbox">
-            @if (Model.UserName == User.Identity.Name)
-            {
-                <input asp-for="Roles[i].IsSelected" type="checkbox" class="custom-control-input" disabled>
-            }
-            else
-            {
-                <input asp-for="Roles[i].IsSelected" type="checkbox" class="custom-control-input">
-            }
+            <input asp-for="Roles[i].IsSelected" type="checkbox" class="custom-control-input">
             <input type="hidden" asp-for="Roles[i].Role" />
             <label class="custom-control-label cursor-pointer" asp-for="Roles[i].IsSelected">@Model.Roles[i].Role</label>
         </div>
@@ -60,14 +53,7 @@
 
 <div class="form-group">
     <div class="custom-control custom-switch">
-        @if (Model.UserName == User.Identity.Name)
-        {
-            <input asp-for="IsEnabled" type="checkbox" class="custom-control-input" checked="@Model.IsEnabled" disabled />
-        }
-        else
-        {
-            <input asp-for="IsEnabled" type="checkbox" class="custom-control-input" checked="@Model.IsEnabled" />
-        }
+        <input asp-for="IsEnabled" type="checkbox" class="custom-control-input" checked="@Model.IsEnabled" />
         <label asp-for="IsEnabled" class="custom-control-label cursor-pointer">@T["Is enabled?"]</label>
         <span class="hint">— @T["Uncheck to disable this user account."]</span>
     </div>
