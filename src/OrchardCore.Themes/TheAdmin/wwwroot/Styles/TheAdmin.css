@@ -14039,6 +14039,44 @@ html[dir], [dir] body {
   margin-bottom: 40px;
   cursor: default; }
 
+/* Scroll To Top */
+#top-link {
+  transition: all .25s ease-in-out;
+  position: fixed;
+  bottom: 0;
+  display: inline-flex;
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  transition: background-color .3s, opacity .5s, visibility .5s;
+  opacity: 0;
+  visibility: hidden; }
+[dir] #top-link {
+  cursor: pointer;
+  border-radius: 5px;
+  padding: .25em;
+  background-color: #EAEAEA !important; }
+[dir=ltr] #top-link {
+  right: 0;
+  margin: 0 3em 3em 0; }
+[dir=rtl] #top-link {
+  left: 0;
+  margin: 0 0 3em 3em; }
+
+#top-link.show {
+  opacity: 1;
+  visibility: visible; }
+
+[dir] #top-link:hover {
+  background-color: #DFE0E1 !important; }
+
+svg {
+  fill: #495057;
+  width: 24px;
+  height: 12px; }
+
 [dir] .cursor-move {
   cursor: move; }
 
