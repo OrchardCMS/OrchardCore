@@ -53,6 +53,9 @@ namespace OrchardCore.Forms
             services.AddContentPart<InputPart>()
                     .UseDisplayDriver<InputPartDisplay>();
 
+            services.AddContentPart<SelectPart>()
+                .UseDisplayDriver<SelectPartDisplayDriver>();
+
             services.AddContentPart<TextAreaPart>()
                     .UseDisplayDriver<TextAreaPartDisplay>();
 
