@@ -1,19 +1,20 @@
 var initialized;
 var mediaApp;
 
-var root = {
-    name: 'Media Library',
-    path: '',
-    folder: '',
-    isDirectory: true
-}
-
 var bus = new Vue();
 
-function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl, pathBase) {
+function initializeMediaApplication(mediaLibraryName, displayMediaApplication, mediaApplicationUrl, pathBase) {
+
     if (initialized) {
         return;
     }
+
+    var root = {
+        name: mediaLibraryName,
+        path: '',
+        folder: '',
+        isDirectory: true
+    };
 
     initialized = true;
 
