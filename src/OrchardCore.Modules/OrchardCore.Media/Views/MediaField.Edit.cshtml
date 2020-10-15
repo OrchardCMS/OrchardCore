@@ -57,7 +57,7 @@
 <partial name="Shared/MediaFieldEditLocalization.cshtml" />
 
 <script at="Foot">
-    initializeMediaApplication('@T["Media Library"]', false, '@Url.Action("MediaApplication", "Admin", new { area = "OrchardCore.Media" })', '@Context.Request.PathBase.ToString()');
+    initializeMediaApplication(false, '@Url.Action("MediaApplication", "Admin", new { area = "OrchardCore.Media" })', '@Context.Request.PathBase.ToString()');
 
     initializeMediaField(
         document.getElementById('@Html.IdFor(m => m)'),

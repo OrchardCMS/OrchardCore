@@ -3,14 +3,14 @@ var mediaApp;
 
 var bus = new Vue();
 
-function initializeMediaApplication(mediaLibraryName, displayMediaApplication, mediaApplicationUrl, pathBase) {
+function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl, pathBase) {
 
     if (initialized) {
         return;
     }
 
     var root = {
-        name: mediaLibraryName,
+        name:  $('#t-mediaLibrary').text(),
         path: '',
         folder: '',
         isDirectory: true
