@@ -40,7 +40,7 @@ namespace OrchardCore.Contents.Sitemaps
         public override async Task BuildSourceAsync(ContentTypesSitemapSource source, SitemapBuilderContext context)
         {
             var queryContext = new ContentItemsQueryContext();
-            await _contentItemsQueryProvider.GetContentItems(source, queryContext);
+            await _contentItemsQueryProvider.GetContentItemsAsync(source, queryContext);
 
             foreach (var sciemp in _sitemapContentItemExtendedMetadataProviders)
             {

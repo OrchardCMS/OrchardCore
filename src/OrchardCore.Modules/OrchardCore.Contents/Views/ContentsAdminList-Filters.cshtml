@@ -4,7 +4,7 @@
 }
 <div class="form-group mb-n1 filter">
     <div class="btn-group mt-1">
-        @if(Model.ContentTypeOptions.Any())
+        @if (Model.ContentTypeOptions.Any())
         {
             <select asp-for="SelectedContentType" asp-items="Model.ContentTypeOptions" class="selectpicker contenttypes-selectpicker show-tick mr-2" data-header="@T["Filter by content type"]" data-live-search="true" data-selected-text-format="static" data-width="fit" title="@T["Content Type"]" data-style="btn-sm">
             </select>
@@ -14,7 +14,7 @@
     </div>
 </div>
 
-<script at="Foot" type="text/javascript">
+<script at="Foot">
     $(function () {
         @* This has some issues due to the admin menus arrangement. (the admin menu remains active when changing)
             TODO reset the cookie on change.

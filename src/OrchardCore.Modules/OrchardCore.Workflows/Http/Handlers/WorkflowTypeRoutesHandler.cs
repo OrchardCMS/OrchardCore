@@ -18,26 +18,23 @@ namespace OrchardCore.Workflows.Http.Handlers
 
         public override Task CreatedAsync(WorkflowTypeCreatedContext context)
         {
-            UpdateRouteEntries(context);
-            return Task.CompletedTask;
+            return UpdateRouteEntriesAsync(context);
         }
 
         public override Task UpdatedAsync(WorkflowTypeUpdatedContext context)
         {
-            UpdateRouteEntries(context);
-            return Task.CompletedTask;
+            return UpdateRouteEntriesAsync(context);
         }
 
         public override Task DeletedAsync(WorkflowTypeDeletedContext context)
         {
-            _workflowRouteEntries.RemoveEntries(context.WorkflowType.Id.ToString());
-            return Task.CompletedTask;
+            return _workflowRouteEntries.RemoveEntriesAsync(context.WorkflowType.Id.ToString());
         }
 
-        private void UpdateRouteEntries(WorkflowTypeContext context)
+        private Task UpdateRouteEntriesAsync(WorkflowTypeContext context)
         {
             var entries = WorkflowTypeRouteEntries.GetWorkflowTypeRoutesEntries(context.WorkflowType, _activityLibrary);
-            _workflowRouteEntries.AddEntries(entries);
+            return _workflowRouteEntries.AddEntriesAsync(entries);
         }
     }
 }
