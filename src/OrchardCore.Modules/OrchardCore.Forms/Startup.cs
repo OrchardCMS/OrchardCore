@@ -20,6 +20,7 @@ namespace OrchardCore.Forms
             TemplateContext.GlobalMemberAccessStrategy.Register<FormInputElementPart>();
             TemplateContext.GlobalMemberAccessStrategy.Register<LabelPart>();
             TemplateContext.GlobalMemberAccessStrategy.Register<InputPart>();
+            TemplateContext.GlobalMemberAccessStrategy.Register<SelectPart>();
             TemplateContext.GlobalMemberAccessStrategy.Register<TextAreaPart>();
             TemplateContext.GlobalMemberAccessStrategy.Register<ButtonPart>();
         }
