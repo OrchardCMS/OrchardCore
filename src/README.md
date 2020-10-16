@@ -86,6 +86,8 @@ You can also read the [Code Generation Templates documentation](docs/getting-sta
 
 ### Visual Studio
 
+For more details on the various development tools we recommend for using with Orchard Core check out [the Development Tools documentation page](docs/resources/development-tools/README.md).
+
 - Download Visual Studio 2019 (any edition) from <https://www.visualstudio.com/downloads/>.
 - Open `OrchardCore.sln` and wait for Visual Studio to restore all Nuget packages.
 - Ensure `OrchardCore.Cms.Web` is the startup project and run it.
