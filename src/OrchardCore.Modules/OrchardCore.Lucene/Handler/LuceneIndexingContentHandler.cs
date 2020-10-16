@@ -85,6 +85,7 @@ namespace OrchardCore.Lucene.Handlers
                 {
                     var cultureAspect = await contentManager.PopulateAspectAsync(context.ContentItem, new CultureAspect());
                     bool ignoreIndexedCulture = indexSettings.Culture == "any" ? false : cultureAspect?.Culture.Name != indexSettings.Culture;
+                    
                     if (indexSettings.IndexedContentTypes.Contains(context.ContentItem.ContentType) && !ignoreIndexedCulture)
                     {
                         if (!indexSettings.IndexLatest && !publishedLoaded)
