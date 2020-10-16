@@ -120,7 +120,7 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                     });                                                          
 
                     if (!localStorage.getItem('mediaApplicationPrefs')) {
-                        self.selectedFolder = root
+                        self.selectedFolder = root;
                         return;
                     }
 
@@ -189,7 +189,7 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                                 smallThumbs: this.smallThumbs,
                                 selectedFolder: this.selectedFolder,
                                 gridView: this.gridView
-                            }
+                            };
                         },
                         set: function (newPrefs) {
                             if (!newPrefs) {
@@ -277,7 +277,7 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                         return result;
                     },
                     deleteFolder: function () {
-                        var folder = this.selectedFolder
+                        var folder = this.selectedFolder;
                         var self = this;
                         // The root folder can't be deleted
                         if (folder == this.root.model) {
@@ -340,7 +340,7 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                                     },
                                     success: function (data) {
                                         for (var i = 0; i < self.selectedMedias.length; i++) {
-                                            var index = self.mediaItems && self.mediaItems.indexOf(self.selectedMedias[i])
+                                            var index = self.mediaItems && self.mediaItems.indexOf(self.selectedMedias[i]);
                                             if (index > -1) {
                                                 self.mediaItems.splice(index, 1);
                                                 bus.$emit('mediaDeleted', self.selectedMedias[i]);
@@ -372,7 +372,7 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                                     success: function (data) {
                                         var index = self.mediaItems && self.mediaItems.indexOf(media)
                                         if (index > -1) {
-                                            self.mediaItems.splice(index, 1)
+                                            self.mediaItems.splice(index, 1);
                                             bus.$emit('mediaDeleted', media);
                                         }
                                         //self.selectedMedia = null;
