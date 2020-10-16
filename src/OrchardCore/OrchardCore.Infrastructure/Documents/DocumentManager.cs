@@ -145,7 +145,7 @@ namespace OrchardCore.Documents
             string id;
             if (_isDistributed)
             {
-                // cache the id locally for one second to prevent network contention.
+                // Cache the id locally for one second to prevent network contention.
                 id = await _memoryCache.GetOrCreateAsync(_options.CacheIdKey, entry =>
                 {
                     entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(1);
@@ -154,7 +154,7 @@ namespace OrchardCore.Documents
             }
             else
             {
-                // Othewise, always get the id from the in memory distributed cache.
+                // Otherwise, always get the id from the in memory distributed cache.
                 id = await _distributedCache.GetStringAsync(_options.CacheIdKey);
             }
 
