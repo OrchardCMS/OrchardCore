@@ -2,7 +2,7 @@ using System;
 using GraphQL;
 using GraphQL.DataLoader;
 using GraphQL.Execution;
-using GraphQL.Http;
+using GraphQL.NewtonsoftJson;
 using GraphQL.Validation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;

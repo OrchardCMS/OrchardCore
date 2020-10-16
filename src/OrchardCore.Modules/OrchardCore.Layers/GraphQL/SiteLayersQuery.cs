@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using GraphQL;
 using GraphQL.Types;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
@@ -37,7 +38,7 @@ namespace OrchardCore.Layers.GraphQL
             return Task.CompletedTask;
         }
 
-        private async Task<IEnumerable<Layer>> ResolveAsync(ResolveFieldContext resolveContext)
+        private async Task<IEnumerable<Layer>> ResolveAsync(IResolveFieldContext resolveContext)
         {
             var layerService = resolveContext.ResolveServiceProvider().GetService<ILayerService>();
             var allLayers = await layerService.GetLayersAsync();

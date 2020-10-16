@@ -12,6 +12,7 @@ using OrchardCore.Html.ViewModels;
 using OrchardCore.Shortcodes.Services;
 using OrchardCore.Liquid;
 using Shortcodes;
+using GraphQL;
 
 namespace OrchardCore.Html.GraphQL
 {
@@ -28,7 +29,7 @@ namespace OrchardCore.Html.GraphQL
                 .ResolveLockedAsync(RenderHtml);
         }
 
-        private static async Task<object> RenderHtml(ResolveFieldContext<HtmlBodyPart> ctx)
+        private static async Task<object> RenderHtml(IResolveFieldContext<HtmlBodyPart> ctx)
         {
             var serviceProvider = ctx.ResolveServiceProvider();
             var shortcodeService = serviceProvider.GetRequiredService<IShortcodeService>();
