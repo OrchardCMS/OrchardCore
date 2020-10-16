@@ -5,7 +5,7 @@
     {% if imagePath == nil %}
         <header class="masthead" style="background-image: url('{{ "~/TheBlogTheme/img/about-bg.jpg" | href }}')">
     {% else %}
-        <header class="masthead" style="background-image: url('{{ imagePath | asset_url }}')">
+        <header class="masthead" style="background-image: url('{{ imagePath | asset_url | resize_url: profile: 'banner' }}')">
     {% endif %}
         <div class="overlay"></div>
         <div class="container">

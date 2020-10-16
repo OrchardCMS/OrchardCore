@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,7 +7,6 @@ using System.Threading.Tasks;
 using GraphQL;
 using GraphQL.Types;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Primitives;
 using OrchardCore.Environment.Shell.Scope;
 
 namespace OrchardCore.Apis.GraphQL.Services
@@ -15,7 +15,7 @@ namespace OrchardCore.Apis.GraphQL.Services
     {
         private readonly IEnumerable<ISchemaBuilder> _schemaBuilders;
         private readonly SemaphoreSlim _schemaGenerationSemaphore = new SemaphoreSlim(1, 1);
-        private readonly ConcurrentDictionary<ISchemaBuilder, IChangeToken> _changeTokens = new ConcurrentDictionary<ISchemaBuilder, IChangeToken>();
+        private readonly ConcurrentDictionary<ISchemaBuilder, string> _identifiers = new ConcurrentDictionary<ISchemaBuilder, string>();
 
         private ISchema _schema;
 
@@ -26,7 +26,18 @@ namespace OrchardCore.Apis.GraphQL.Services
 
         public async Task<ISchema> GetSchemaAsync()
         {
-            if (_schema is object && !_changeTokens.Values.Any(x => x.HasChanged))
+            var hasChanged = false;
+
+            foreach (var builder in _schemaBuilders)
+            {
+                if (_identifiers.TryGetValue(builder, out var identifier) && await builder.GetIdentifierAsync() != identifier)
+                {
+                    hasChanged = true;
+                    break;
+                }
+            }
+
+            if (_schema is object && !hasChanged)
             {
                 return _schema;
             }
@@ -35,7 +46,16 @@ namespace OrchardCore.Apis.GraphQL.Services
 
             try
             {
-                if (_schema is object && !_changeTokens.Values.Any(x => x.HasChanged))
+                foreach (var builder in _schemaBuilders)
+                {
+                    if (_identifiers.TryGetValue(builder, out var identifier) && await builder.GetIdentifierAsync() != identifier)
+                    {
+                        hasChanged = true;
+                        break;
+                    }
+                }
+
+                if (_schema is object && !hasChanged)
                 {
                     return _schema;
                 }
@@ -53,12 +73,15 @@ namespace OrchardCore.Apis.GraphQL.Services
 
                 foreach (var builder in _schemaBuilders)
                 {
-                    var token = await builder.BuildAsync(schema);
+                    var identifier = await builder.GetIdentifierAsync();
 
-                    if (token is object)
+                    // null being a valid value not yet updated.
+                    if (identifier != String.Empty)
                     {
-                        _changeTokens[builder] = token;
+                        _identifiers[builder] = identifier;
                     }
+
+                    await builder.BuildAsync(schema);
                 }
 
                 foreach (var type in serviceProvider.GetServices<IInputObjectGraphType>())

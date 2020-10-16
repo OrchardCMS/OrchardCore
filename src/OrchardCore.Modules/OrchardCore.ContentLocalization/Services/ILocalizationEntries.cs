@@ -1,27 +1,23 @@
 using System.Collections.Generic;
-using System.Collections.Immutable;
+using System.Threading.Tasks;
 using OrchardCore.ContentLocalization.Models;
 
 namespace OrchardCore.ContentLocalization.Services
 {
     public interface ILocalizationEntries
     {
-        bool TryGetLocalization(string contentItemId, out LocalizationEntry localization);
-        ImmutableArray<LocalizationEntry> GetLocalizations(string localizationSet);
-        void AddEntries(IEnumerable<LocalizationEntry> entries);
-        void RemoveEntries(IEnumerable<LocalizationEntry> entries);
+        Task<(bool, LocalizationEntry)> TryGetLocalizationAsync(string contentItemId);
+        Task<IEnumerable<LocalizationEntry>> GetLocalizationsAsync(string localizationSet);
+        Task AddEntriesAsync(IEnumerable<LocalizationEntry> entries);
+        Task RemoveEntriesAsync(IEnumerable<LocalizationEntry> entries);
     }
 
     public static class LocalizationEntriesExtensions
     {
-        public static void AddEntry(this ILocalizationEntries entries, LocalizationEntry entry)
-        {
-            entries.AddEntries(new[] { entry });
-        }
+        public static Task AddEntryAsync(this ILocalizationEntries entries, LocalizationEntry entry)
+            => entries.AddEntriesAsync(new[] { entry });
 
-        public static void RemoveEntry(this ILocalizationEntries entries, LocalizationEntry entry)
-        {
-            entries.RemoveEntries(new[] { entry });
-        }
+        public static Task RemoveEntryAsync(this ILocalizationEntries entries, LocalizationEntry entry)
+        => entries.RemoveEntriesAsync(new[] { entry });
     }
 }

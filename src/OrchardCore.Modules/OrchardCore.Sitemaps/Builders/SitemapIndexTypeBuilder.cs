@@ -46,7 +46,7 @@ namespace OrchardCore.Sitemaps.Builders
                 return;
             }
 
-            var containedSitemaps = (await _sitemapManager.ListSitemapsAsync())
+            var containedSitemaps = (await _sitemapManager.GetSitemapsAsync())
                 .Where(s => s.Enabled && indexSource.ContainedSitemapIds.Any(id => id == s.SitemapId));
 
             foreach (var containedSitemap in containedSitemaps)
