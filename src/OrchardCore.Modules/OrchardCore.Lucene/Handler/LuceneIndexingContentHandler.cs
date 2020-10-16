@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using OrchardCore.ContentLocalization;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentPreview;
@@ -83,9 +82,8 @@ namespace OrchardCore.Lucene.Handlers
 
                 foreach (var indexSettings in await luceneIndexSettingsService.GetSettingsAsync())
                 {
-                    var cultureAspect = await contentManager.PopulateAspectAsync(context.ContentItem, new CultureAspect());
-                    bool ignoreIndexedCulture = indexSettings.Culture == "any" ? false : cultureAspect?.Culture.Name != indexSettings.Culture;
-                    
+                    var ignoreIndexedCulture = indexSettings.Culture == "any" ? false : context.ContentItem.Content?.LocalizationPart?.Culture != indexSettings.Culture;
+
                     if (indexSettings.IndexedContentTypes.Contains(context.ContentItem.ContentType) && !ignoreIndexedCulture)
                     {
                         if (!indexSettings.IndexLatest && !publishedLoaded)
