@@ -142,7 +142,21 @@ namespace OrchardCore.Documents
                 return _scopedCache;
             }
 
-            var id = await _distributedCache.GetStringAsync(_options.CacheIdKey);
+            string id;
+            if (_isDistributed)
+            {
+                // cache the id locally for one second to prevent network contention.
+                id = await _memoryCache.GetOrCreateAsync(_options.CacheIdKey, entry =>
+                {
+                    entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(1);
+                    return _distributedCache.GetStringAsync(_options.CacheIdKey);
+                });
+            }
+            else
+            {
+                // Othewise, always get the id from the in memory distributed cache.
+                id = await _distributedCache.GetStringAsync(_options.CacheIdKey);
+            }
 
             if (id == null)
             {
@@ -191,6 +205,12 @@ namespace OrchardCore.Documents
                 SlidingExpiration = _options.SlidingExpiration
             });
 
+            if (_isDistributed)
+            {
+                // Remove the id from the one second cache.
+                _memoryCache.Remove(_options.CacheIdKey);
+            }
+
             return _scopedCache = document;
         }
 
@@ -204,6 +224,12 @@ namespace OrchardCore.Documents
                 AbsoluteExpirationRelativeToNow = _options.AbsoluteExpirationRelativeToNow,
                 SlidingExpiration = _options.SlidingExpiration
             });
+
+            if (_isDistributed)
+            {
+                // Remove the id from the one second cache.
+                _memoryCache.Remove(_options.CacheIdKey);
+            }
 
             // Consistency: We may have been the last to update the cache but not with the last stored document.
             if (!_isVolatile && _options.CheckConsistency.Value)
@@ -243,7 +269,6 @@ namespace OrchardCore.Documents
             if (_isDistributed)
             {
                 var data = Serialize(document);
-
                 await _distributedCache.SetAsync(_options.CacheKey, data, _options);
             }
 
