@@ -4,6 +4,9 @@
 #except src for build
 !./src/*
 
+#excluse any App_Data folder
+**/App_Data/
+
 #ignore all prebuild
 **/[b|B]in/
 **/[O|o]bj/
