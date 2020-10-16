@@ -5,5 +5,5 @@
 !./src/*
 
 #ignore all prebuild
-[b|B]in
-[O|o]bj
+**/bin/
+**/obj/
