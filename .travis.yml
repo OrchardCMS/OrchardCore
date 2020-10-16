@@ -5,7 +5,6 @@ before_install:
      echo "Not running CI since only docs were changed."
      exit
    fi
-    
 language: csharp
 sudo: required
 services:
