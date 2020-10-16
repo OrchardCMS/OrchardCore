@@ -118,11 +118,11 @@ namespace OrchardCore.OpenId.Configuration
             options.EnableTokenEndpointPassthrough = true;
             options.EnableUserinfoEndpointPassthrough = true;
 
-            // Note: caching is enabled for both the authorization and logout endpoints to allow sending
+            // Note: caching is enabled for both authorization and logout requests to allow sending
             // large POST authorization and logout requests, but can be programmatically disabled, as the
             // authorization and logout views support flowing the entire payload and not just the request_id.
-            options.EnableAuthorizationEndpointCaching = true;
-            options.EnableLogoutEndpointCaching = true;
+            options.EnableAuthorizationRequestCaching = true;
+            options.EnableLogoutRequestCaching = true;
 
             // Note: error pass-through is enabled to allow the actions of the MVC authorization controller
             // to handle the errors returned by the interactive endpoints without relying on the generic

@@ -16,6 +16,8 @@
         if (String.IsNullOrEmpty(Model.PrefixValue))
         {
             Model.PrefixValue = Guid.NewGuid().ToString("n");
+            Model.PrefixesId =  Model.PrefixValue + "_" + Model.PrefixesId;
+            Model.ContentTypesId =  Model.PrefixValue + "_" + Model.ContentTypesId;
         }
 
         //Build Editor for Content Item

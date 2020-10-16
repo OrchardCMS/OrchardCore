@@ -5,7 +5,7 @@
         {
             @if (Model.CreatableTypes.Count == 1)
             {
-                <a class="btn btn-sm btn-success" href="@Url.RouteUrl(new { area = "OrchardCore.Contents", controller = "Admin", action = "Create", id = Model.CreatableTypes.First().Value })">@T["New {0}", Model.CreatableTypes.First().Text]</a>
+                <a class="btn btn-sm btn-success" href="@Url.RouteUrl(new { area = "OrchardCore.Contents", controller = "Admin", action = "Create", id = Model.CreatableTypes.First().Value, returnUrl = FullRequestPath })">@T["New {0}", Model.CreatableTypes.First().Text]</a>
             }
             else
             {
@@ -13,7 +13,7 @@
                 <div class="dropdown-menu dropdown-menu-right scrollable" aria-labelledby="new-dropdown">
                     @foreach (var item in Model.CreatableTypes)
                     {
-                        <a class="dropdown-item" href="@Url.RouteUrl(new { area = "OrchardCore.Contents", controller = "Admin", action = "Create", id = @item.Value })">@T[item.Text]</a>
+                        <a class="dropdown-item" href="@Url.RouteUrl(new { area = "OrchardCore.Contents", controller = "Admin", action = "Create", id = @item.Value, returnUrl = FullRequestPath })">@T[item.Text]</a>
                     }
                 </div>
             }

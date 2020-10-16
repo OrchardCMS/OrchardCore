@@ -40,10 +40,10 @@ namespace OrchardCore.Sitemaps.Services
                 updater.ModelState.AddModelError(Prefix, Path, S["Your permalink can't be set to the homepage"]);
             }
 
-            if (path.IndexOfAny(InvalidCharactersForPath) > -1 || path.IndexOf(' ') > -1 || path.IndexOf("//") > -1)
+            if (path.IndexOfAny(InvalidCharactersForPath) > -1 || path.IndexOf(' ') > -1)
             {
                 var invalidCharactersForMessage = string.Join(", ", InvalidCharactersForPath.Select(c => $"\"{c}\""));
-                updater.ModelState.AddModelError(Prefix, Path, S["Please do not use any of the following characters in your permalink: {0}. No spaces, or consecutive slashes, are allowed (please use dashes or underscores instead).", invalidCharactersForMessage]);
+                updater.ModelState.AddModelError(Prefix, Path, S["Please do not use any of the following characters in your permalink: {0}. No spaces are allowed (please use dashes or underscores instead).", invalidCharactersForMessage]);
             }
 
             // Precludes possibility of collision with Autoroute as Autoroute excludes . as a valid path character.
@@ -60,12 +60,12 @@ namespace OrchardCore.Sitemaps.Services
             var routeExists = false;
             if (string.IsNullOrEmpty(sitemapId))
             {
-                routeExists = (await _sitemapManager.ListSitemapsAsync())
+                routeExists = (await _sitemapManager.GetSitemapsAsync())
                     .Any(p => String.Equals(p.Path, path, StringComparison.OrdinalIgnoreCase));
             }
             else
             {
-                routeExists = (await _sitemapManager.ListSitemapsAsync())
+                routeExists = (await _sitemapManager.GetSitemapsAsync())
                     .Any(p => p.SitemapId != sitemapId && String.Equals(p.Path, path, StringComparison.OrdinalIgnoreCase));
             }
 

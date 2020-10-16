@@ -99,13 +99,48 @@ Stretches the resized image to fit the bounds of its container.
 
 Resizes the image using the same functionality as `max` then removes any image area falling outside the bounds of its container.
 
-### mode Input
+#### mode Input
 
 `{{ 'animals/kittens.jpg' | asset_url | resize_url: width:100, height:240, mode:'crop' }}`
 
-### mode Output
+#### mode Output
 
 `<img src="~/media/animals/kittens.jpg?width=100&height=240&rmode=crop" />`
+
+#### `quality` (or fourth argument)
+
+The quality used when compressing the image.
+
+!!! note
+    The quality argument is only supported for `JPG` images, but can be combined with the `format` argument to convert to `JPG`
+
+#### `format` (or fifth argument)
+
+The image format to use when processing the ouput of an image.
+
+Supported formats include `bmp`, `gif`, `jpg`, `png`, `tga`.
+
+Can be combined with the `quality` argument to convert an image to a `JPG` and reduce the quality.
+
+#### quality/format Input
+
+`{{ 'animals/kittens.jpg' | asset_url | resize_url: width:100, height:240, mode:'crop', quality: 50, format:'jpg' }}`
+
+#### quality/format Output
+
+`<img src="~/media/animals/kittens.jpg?width=100&height=240&rmode=crop&quality=50&format=jpg" />`
+
+### `profile` (named argument)
+
+A [Media Profile](#media-profiles) can be specified as a named argument to provide preset formatting commands.
+
+#### `profile` Input
+
+`{{ 'animals/kittens.jpg' | asset_url | resize_url: profile : 'medium' }}`
+
+#### `profile` Output
+
+`<img src="~/media/animals/kittens.jpg?width=240&height=240" />`
 
 ### `append_version`
 
@@ -129,6 +164,10 @@ To obtain the correct URL for a resized asset use `AssetUrl` with the optional w
 
 `@Orchard.AssetUrl(Model.Paths[0], width: 100 , height: 240, resizeMode: ResizeMode.Crop)`
 
+To obtain the correct URL for a resized asset use `AssetUrl` with the optional width, height, resizeMode, quality and format parameters, e.g.:
+
+`@Orchard.AssetUrl(Model.Paths[0], width: 100 , height: 240, resizeMode: ResizeMode.Crop, quality: 50, format: Format.Jpg)`
+
 To append a version hash for an asset use `AssetUrl` with the append version parameter, e.g.:
 
 `@Orchard.AssetUrl(Model.Paths[0], appendVersion: true)`
@@ -137,17 +176,30 @@ or with resizing options as well, noting that the version hash is based on the s
 
 `@Orchard.AssetUrl(Model.Paths[0], width: 100 , height: 240, resizeMode: ResizeMode.Crop, appendVersion: true)`
 
+To use a [Media Profile](#media-profiles), use the `AssetProfileUrlAsync` helper extension method on the view's base `Orchard` property, e.g.:
+
+`@await Orchard.AssetProfileUrlAsync(Model.Paths[0], "medium")`
+
+
 ### Razor image resizing tag helpers
 
-To use the image tag helpers add `@addTagHelper *, OrchardCore.Media` to `_ViewImports.cshtml`.
+To use the image tag helpers add `@addTagHelper *, OrchardCore.Media` to `_ViewImports.cshtml`, and take a direct reference to the `OrchardCore.Media` nuget package.
 
-`asset-src` is used to obtain the correct URL for the asset and set the `src` attribute. Width, height and resize mode can be set using `img-width`, `img-height` and `img-resize-mode` respectively. e.g.:
+`asset-src` is used to obtain the correct URL for the asset and set the `src` attribute. Width, height, resize mode, quality and format can be set using `img-width`, `img-height`, `img-resize-mode`, `img-quality`, and `img-format` respectively. e.g.:
 
-`<img asset-src="Model.Paths[0]" alt="..." img-width="100" img-height="240" img-resize-mode="Crop" />`
+`<img asset-src="Model.Paths[0]" alt="..." img-width="100" img-height="240" img-resize-mode="Crop" img-quality="50" img-format="Jpg" />`
 
 Alternatively the Asset Url can be resolved independently and the `src` attribute used:
 
-`<img src="@Orchard.AssetUrl(Model.Paths[0])" alt="..." img-width="100" img-height="240" img-resize-mode="Crop" />`
+`<img src="@Orchard.AssetUrl(Model.Paths[0])" alt="..." img-width="100" img-height="240" img-resize-mode="Crop" img-quality="50" img-format="Jpg" />`
+
+To use a [Media Profile](#media-profiles) set the `asset-src` property and the `img-profile` attribute.
+
+`<img asset-src="Model.Paths[0]" alt="..." img-profile="medium" />`
+
+You can optionally include more formatting information, or override the profiles properties.
+
+`<img asset-src="Model.Paths[0]" alt="..." img-profile="medium" img-quality="50" img-format="Jpg" />`
 
 ### Razor append version
 
@@ -164,6 +216,9 @@ Or when using the MVC tag helpers and the image is resolved from static assets, 
 `<img src="/favicon.ico" asp-append-version="true"/>`
 
 > The Razor Helper is accessible on the `Orchard` property if the view is using Orchard Core's Razor base class, or by injecting `OrchardCore.IOrchardHelper` in all other cases.
+
+!!! note
+    When using tag helpers in Razor, you must take a direct reference to the `OrchardCore.Media` nuget package in each theme or module that uses the tag helpers. This is not required when using Liquid.
 
 ## Deployment Step Editor
 
@@ -270,6 +325,39 @@ To configure `wwwroot` static file options apply:
 ```
 services.Configure<StaticFileOptions>(o => ...);
 ```
+
+## Media Profiles
+
+Media profiles allow you to defined preset image resizing and formatting commands.
+
+You can create a media profile from the _Configuration -> Media -> Media Profiles_ menu.
+
+When specifying a media profile with either the liquid, razor helper, or tag helper you provide the profile name, and any additional commands which you want to apply to the media item.
+
+=== "Liquid"
+
+    ``` liquid
+    {% resize_url profile: 'medium' %}
+    {% resize_url profile: 'medium', mode: 'crop' %}
+    ```
+
+=== "Razor"
+
+    ``` html
+    @await Orchard.AssetProfileUrlAsync(Model.Paths[0], "medium");
+    @await Orchard.AssetProfileUrlAsync(Model.Paths[0], "medium", resizeMode: ResizeMode.Crop);
+    ```
+
+=== "Tag"
+
+    ``` html
+    <img asset-src="Model.Paths[0]" img-profile="medium" />
+    <img asset-src="Model.Paths[0]" img-profile="medium" img-resize-mode="Crop"/>
+    ```
+
+!!! note
+    Media Profiles are only available from the [Preview Feed](../../../getting-started/preview-package-source)
+
 
 ## CREDITS
 
