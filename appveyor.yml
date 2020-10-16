@@ -98,6 +98,7 @@ after_deploy:
       Get-ChildItem -path ".\App_Data\" | Remove-Item -Recurse -Confirm:$false -Force
       dotnet publish -c Release --no-build -o $env:APPVEYOR_BUILD_FOLDER\.build\release
       cd $env:APPVEYOR_BUILD_FOLDER
+      export DOCKER_BUILDKIT=1
       docker build -f Dockerfile-CI -t orchardproject/orchardcore-cms-windows:latest -t orchardproject/orchardcore-cms-windows:1.0.0-rc2 .
       echo "$env:DOCKER_PASS" | docker login -u="$env:DOCKER_USER" --password-stdin
       docker push orchardproject/orchardcore-cms-windows
@@ -109,6 +110,7 @@ after_deploy:
       Get-ChildItem -path ".\App_Data\" | Remove-Item -Recurse -Confirm:$false -Force
       dotnet publish -c Release  --no-build -o $env:APPVEYOR_BUILD_FOLDER\.build\release
       cd $env:APPVEYOR_BUILD_FOLDER
+      export DOCKER_BUILDKIT=1
       docker build -f Dockerfile-CI -t orchardproject/orchardcore-cms-windows:dev .
       echo "$env:DOCKER_PASS" | docker login -u="$env:DOCKER_USER" --password-stdin
       docker push orchardproject/orchardcore-cms-windows
