@@ -20,10 +20,10 @@
     "postinstall": "run-s install:*"
   },
   "devDependencies": {
-    "@babel/core": "^7.11.6",
-    "@babel/preset-env": "^7.11.5",
-    "@babel/preset-flow": "7.10.4",
-    "all-contributors-cli": "^6.17.4",
+    "@babel/core": "^7.12.3",
+    "@babel/preset-env": "^7.12.1",
+    "@babel/preset-flow": "7.12.1",
+    "all-contributors-cli": "^6.19.0",
     "es6-promise": "4.2.8",
     "glob": "^7.1.6",
     "graceful-fs": "4.2.4",
