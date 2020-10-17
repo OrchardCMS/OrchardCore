@@ -188,7 +188,7 @@ namespace OrchardCore.Lucene
                                 }
 
                                 var cultureAspect = await contentManager.PopulateAspectAsync(context.ContentItem, new CultureAspect());
-                                var ignoreIndexedCulture = settings.Culture == "any" ? false : cultureAspect.Culture != settings.Culture;
+                                var ignoreIndexedCulture = settings.Culture == "any" ? false : cultureAspect.Culture.Name != settings.Culture;
 
                                 // Ignore if the content item content type or culture is not indexed in this index
                                 if (!settings.IndexedContentTypes.Contains(context.ContentItem.ContentType) || ignoreIndexedCulture)
