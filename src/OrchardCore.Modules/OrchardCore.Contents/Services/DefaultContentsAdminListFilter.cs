@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -60,7 +61,7 @@ namespace OrchardCore.Contents.Services
 
             if (model.ContentsStatus == ContentsStatus.Owner)
             {
-                query.With<ContentItemIndex>(x => x.Owner == _httpContextAccessor.HttpContext.User.Identity.Name);
+                query.With<ContentItemIndex>(x => x.OwnerId == _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
             }
 
             // Filter the creatable types.

@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -43,9 +44,13 @@ namespace OrchardCore.Contents.Drivers
 
             if (settings.DisplayOwnerEditor)
             {
-                return Initialize<OwnerEditorViewModel>("CommonPart_Edit__Owner", model =>
+                return Initialize<OwnerEditorViewModel>("CommonPart_Edit__Owner", async model =>
                 {
-                    model.Owner = part.ContentItem.Owner;
+                    if (part.ContentItem.OwnerId != null)
+                    {
+                        var user = await _userService.GetUserByUniqueIdAsync(part.ContentItem.OwnerId);
+                        model.Owner = user.UserName;
+                    }
                 });
             }
 
@@ -65,6 +70,10 @@ namespace OrchardCore.Contents.Drivers
 
             if (!settings.DisplayOwnerEditor)
             {
+                if (part.ContentItem.OwnerId == null)
+                {
+                    part.ContentItem.OwnerId = currentUser.FindFirstValue(ClaimTypes.NameIdentifier);
+                }
                 if (part.ContentItem.Owner == null)
                 {
                     part.ContentItem.Owner = currentUser.Identity.Name;
@@ -76,7 +85,8 @@ namespace OrchardCore.Contents.Drivers
 
                 if (part.ContentItem.Owner != null)
                 {
-                    model.Owner = part.ContentItem.Owner;
+                    var user = await _userService.GetUserByUniqueIdAsync(part.ContentItem.OwnerId);
+                    model.Owner = user.UserName;
                 }
 
                 var priorOwner = model.Owner;
@@ -93,6 +103,7 @@ namespace OrchardCore.Contents.Drivers
                     else
                     {
                         part.ContentItem.Owner = newOwner.UserName;
+                        part.ContentItem.OwnerId = newOwner.UserId;
                     }
                 }
             }

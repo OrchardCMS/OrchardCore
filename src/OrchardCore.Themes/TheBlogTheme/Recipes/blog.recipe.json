@@ -965,6 +965,9 @@
         {
           "ContentType": "Menu",
           "ContentItemId": "[js: variables('menuContentItemId')]",
+          "Owner": "[js: parameters('AdminUsername')]",
+          "OwnerId": "[js: parameters('AdminUserId')]",
+          "Author": "[js: parameters('AdminUsername')]",
           "DisplayText": "Main Menu",
           "Latest": true,
           "Published": true,
@@ -998,6 +1001,9 @@
         },
         {
           "ContentItemId": "[js: variables('tagsContentItemId')]",
+          "Owner": "[js: parameters('AdminUsername')]",
+          "OwnerId": "[js: parameters('AdminUserId')]",
+          "Author": "[js: parameters('AdminUsername')]",
           "ContentType": "Taxonomy",
           "DisplayText": "Tags",
           "Latest": true,
@@ -1062,6 +1068,9 @@
         },
         {
           "ContentItemId": "[js: variables('categoriesContentItemId')]",
+          "Owner": "[js: parameters('AdminUsername')]",
+          "OwnerId": "[js: parameters('AdminUserId')]",
+          "Author": "[js: parameters('AdminUsername')]",
           "ContentType": "Taxonomy",
           "DisplayText": "Categories",
           "Latest": true,
@@ -1108,6 +1117,7 @@
           "Latest": true,
           "Published": true,
           "Owner": "[js: parameters('AdminUsername')]",
+          "OwnerId": "[js: parameters('AdminUserId')]",
           "Author": "[js: parameters('AdminUsername')]",
           "TitlePart": {
             "Title": "Blog"
@@ -1134,6 +1144,7 @@
           "Latest": true,
           "Published": true,
           "Owner": "[js: parameters('AdminUsername')]",
+          "OwnerId": "[js: parameters('AdminUserId')]",
           "Author": "[js: parameters('AdminUsername')]",
           "TitlePart": {
             "Title": "Man must explore, and this is exploration at its greatest"
@@ -1185,6 +1196,7 @@
           "Latest": true,
           "Published": true,
           "Owner": "[js: parameters('AdminUsername')]",
+          "OwnerId": "[js: parameters('AdminUserId')]",
           "Author": "[js: parameters('AdminUsername')]",
           "AutoroutePart": {
             "Path": "about",
@@ -1214,6 +1226,7 @@
           "Latest": true,
           "Published": true,
           "Owner": "[js: parameters('AdminUsername')]",
+          "OwnerId": "[js: parameters('AdminUserId')]",
           "Author": "[js: parameters('AdminUsername')]",
           "LayerMetadata": {
             "Layer": "Always",

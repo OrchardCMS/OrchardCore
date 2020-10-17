@@ -69,6 +69,10 @@ namespace OrchardCore.Settings.Deployment
                         data.Add(new JProperty(nameof(ISite.SuperUser), site.SuperUser));
                         break;
 
+                    case "SuperUserId":
+                        data.Add(new JProperty(nameof(ISite.SuperUserId), site.SuperUserId));
+                        break;
+
                     case "TimeZoneId":
                         data.Add(new JProperty(nameof(ISite.TimeZoneId), site.TimeZoneId));
                         break;

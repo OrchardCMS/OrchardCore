@@ -78,6 +78,7 @@ public static class OrchardRazorHelperExtensions
         o.Add(new JProperty(nameof(ContentItem.ModifiedUtc), contentItem.ModifiedUtc));
         o.Add(new JProperty(nameof(ContentItem.PublishedUtc), contentItem.PublishedUtc));
         o.Add(new JProperty(nameof(ContentItem.CreatedUtc), contentItem.CreatedUtc));
+        o.Add(new JProperty(nameof(ContentItem.OwnerId), contentItem.OwnerId));
         o.Add(new JProperty(nameof(ContentItem.Owner), contentItem.Owner));
         o.Add(new JProperty(nameof(ContentItem.Author), contentItem.Author));
 

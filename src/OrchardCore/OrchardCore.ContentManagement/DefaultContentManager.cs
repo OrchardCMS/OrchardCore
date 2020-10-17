@@ -678,6 +678,7 @@ namespace OrchardCore.ContentManagement
             // Maintain modified and published dates as these will be reset by the Create Handlers
             var modifiedUtc = contentItem.ModifiedUtc;
             var publishedUtc = contentItem.PublishedUtc;
+            var ownerId = contentItem.OwnerId;
             var owner = contentItem.Owner;
             var author = contentItem.Author;
 
@@ -742,6 +743,14 @@ namespace OrchardCore.ContentManagement
             if (publishedUtc.HasValue)
             {
                 contentItem.PublishedUtc = publishedUtc;
+            }
+
+            // TODO perhaps we should check if the user exists in this database.
+            // and if they do not set it to the importing user as owner.
+            // this would prevent orphaned content owners.
+            if (!String.IsNullOrEmpty(ownerId))
+            {
+                contentItem.OwnerId = ownerId;
             }
 
             // There is a risk here that the owner or author does not exist in the importing system.

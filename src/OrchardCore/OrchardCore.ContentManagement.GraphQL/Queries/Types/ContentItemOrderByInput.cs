@@ -17,6 +17,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
             Field<OrderByDirectionGraphType>("createdUtc");
             Field<OrderByDirectionGraphType>("modifiedUtc");
             Field<OrderByDirectionGraphType>("publishedUtc");
+            Field<OrderByDirectionGraphType>("ownerId");
             Field<OrderByDirectionGraphType>("owner");
             Field<OrderByDirectionGraphType>("author");
         }

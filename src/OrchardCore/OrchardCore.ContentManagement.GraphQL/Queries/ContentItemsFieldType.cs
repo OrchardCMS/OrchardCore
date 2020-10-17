@@ -376,6 +376,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                             case "createdUtc": selector = x => x.CreatedUtc; break;
                             case "modifiedUtc": selector = x => x.ModifiedUtc; break;
                             case "publishedUtc": selector = x => x.PublishedUtc; break;
+                            case "ownerId": selector = x => x.OwnerId; break;
                             case "owner": selector = x => x.Owner; break;
                             case "author": selector = x => x.Author; break;
                         }

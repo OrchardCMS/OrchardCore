@@ -30,6 +30,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
             Field<DateTimeGraphType>("modifiedUtc", resolve: ci => ci.Source.ModifiedUtc, description: "The date and time of modification");
             Field<DateTimeGraphType>("publishedUtc", resolve: ci => ci.Source.PublishedUtc, description: "The date and time of publication");
             Field<DateTimeGraphType>("createdUtc", resolve: ci => ci.Source.CreatedUtc, description: "The date and time of creation");
+            Field(ci => ci.OwnerId).Description("The owner id of the content item");
             Field(ci => ci.Owner).Description("The owner of the content item");
             Field(ci => ci.Author).Description("The author of the content item");
 

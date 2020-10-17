@@ -75,7 +75,10 @@ namespace OrchardCore.Users.Services
                 throw new ArgumentException("Expected a User instance.", nameof(user));
             }
 
-            newUser.UserId = _userIdGenerator.GenerateUniqueId(user);
+            if (String.IsNullOrEmpty(newUser.UserId))
+            {
+                newUser.UserId = _userIdGenerator.GenerateUniqueId(user);
+            }
 
             _session.Save(user);
 
@@ -120,8 +123,7 @@ namespace OrchardCore.Users.Services
 
         public async Task<IUser> FindByIdAsync(string userId, CancellationToken cancellationToken = default(CancellationToken))
         {
-            // For backwards compatability we check also check the UserId against the NormalizedUserName.
-            return await _session.Query<User, UserIndex>(u => u.UserId == userId || u.NormalizedUserName == userId).FirstOrDefaultAsync();
+            return await _session.Query<User, UserIndex>(u => u.UserId == userId).FirstOrDefaultAsync();
         }
 
         public async Task<IUser> FindByNameAsync(string normalizedUserName, CancellationToken cancellationToken = default(CancellationToken))

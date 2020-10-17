@@ -74,6 +74,7 @@
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.OpenId\OrchardCore.OpenId.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.PublishLater\OrchardCore.PublishLater.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Queries\OrchardCore.Queries.csproj" PrivateAssets="none" />
+    <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Upgrade\OrchardCore.Upgrade.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.ReCaptcha\OrchardCore.ReCaptcha.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Recipes\OrchardCore.Recipes.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Resources\OrchardCore.Resources.csproj" PrivateAssets="none" />

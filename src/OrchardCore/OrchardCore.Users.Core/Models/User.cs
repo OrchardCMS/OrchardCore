@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Identity;
 using OrchardCore.Entities;
@@ -8,25 +7,7 @@ namespace OrchardCore.Users.Models
     public class User : Entity, IUser
     {
         public int Id { get; set; }
-        private string _userId;
-        public string UserId
-        {
-            get
-            {
-                if (String.IsNullOrEmpty(_userId))
-                {
-                    // Ensure that an update to this user will save the original user name when it has been changed.
-                    _userId = NormalizedUserName;
-                    return NormalizedUserName;
-                }
-                else
-                {
-                    return _userId;
-                }
-            }
-            set => _userId = value;
-        }
-
+        public string UserId { get; set; }
         public string UserName { get; set; }
         public string NormalizedUserName { get; set; }
         public string Email { get; set; }

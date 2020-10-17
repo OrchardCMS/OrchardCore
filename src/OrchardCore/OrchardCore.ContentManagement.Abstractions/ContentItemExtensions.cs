@@ -104,7 +104,12 @@ namespace OrchardCore.ContentManagement
             if (props.ContainsKey(nameof(contentItem.Owner)))
             {
                 contentItem.Owner = props[nameof(contentItem.Owner)].ToString();
-                contentItem.Author = props[nameof(contentItem.Owner)].ToString();
+                contentItem.Data.Remove(nameof(contentItem.Owner));
+            }
+
+            if (props.ContainsKey(nameof(contentItem.OwnerId)))
+            {
+                contentItem.OwnerId = props[nameof(contentItem.OwnerId)].ToString();
                 contentItem.Data.Remove(nameof(contentItem.Owner));
             }
 

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -111,6 +112,7 @@ namespace OrchardCore.Recipes.Controllers
                 {
                     site.SiteName,
                     AdminUsername = User.Identity.Name,
+                    AdminUserId = User.FindFirstValue(ClaimTypes.NameIdentifier)
                 },
                 CancellationToken.None);
             }

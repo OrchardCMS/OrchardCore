@@ -38,6 +38,11 @@ namespace OrchardCore.Contents.Indexing
                 DocumentIndexOptions.Store);
 
             context.DocumentIndex.Set(
+                IndexingConstants.OwnerIdKey,
+                context.ContentItem.OwnerId,
+                DocumentIndexOptions.Store);
+
+            context.DocumentIndex.Set(
                 IndexingConstants.AuthorKey,
                 context.ContentItem.Author,
                 DocumentIndexOptions.Store);
