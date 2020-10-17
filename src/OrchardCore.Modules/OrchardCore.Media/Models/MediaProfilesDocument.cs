@@ -1,11 +1,12 @@
 using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
+using OrchardCore.Data.Documents;
 using OrchardCore.Media.Processing;
 
 namespace OrchardCore.Media.Models
 {
-    public class MediaProfilesDocument
+    public class MediaProfilesDocument : Document
     {
         public Dictionary<string, MediaProfile> MediaProfiles { get; } = new Dictionary<string, MediaProfile>(StringComparer.OrdinalIgnoreCase);
     }

@@ -13,7 +13,6 @@ using OrchardCore.Navigation;
 using OrchardCore.Queries.ViewModels;
 using OrchardCore.Routing;
 using OrchardCore.Settings;
-using YesSql;
 
 namespace OrchardCore.Queries.Controllers
 {
@@ -25,7 +24,6 @@ namespace OrchardCore.Queries.Controllers
         private readonly IQueryManager _queryManager;
         private readonly IEnumerable<IQuerySource> _querySources;
         private readonly IDisplayManager<Query> _displayManager;
-        private readonly ISession _session;
         private readonly IUpdateModelAccessor _updateModelAccessor;
         private readonly IHtmlLocalizer H;
         private readonly dynamic New;
@@ -39,10 +37,8 @@ namespace OrchardCore.Queries.Controllers
             INotifier notifier,
             IQueryManager queryManager,
             IEnumerable<IQuerySource> querySources,
-            ISession session,
             IUpdateModelAccessor updateModelAccessor)
         {
-            _session = session;
             _displayManager = displayManager;
             _authorizationService = authorizationService;
             _siteService = siteService;
