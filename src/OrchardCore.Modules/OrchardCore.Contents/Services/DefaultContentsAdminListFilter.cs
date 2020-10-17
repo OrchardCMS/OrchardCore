@@ -75,7 +75,7 @@ namespace OrchardCore.Contents.Services
                     var hasContentListPermission = await _authorizationService.AuthorizeAsync(user, ContentTypePermissionsHelper.CreateDynamicPermission(ContentTypePermissionsHelper.PermissionTemplates[CommonPermissions.ListContent.Name], contentTypeDefinition), contentItem);
                     if (hasContentListPermission)
                     {
-                        query.With<ContentItemIndex>(x => x.ContentType == model.SelectedContentType && x.Owner != null);
+                        query.With<ContentItemIndex>(x => x.ContentType == model.SelectedContentType);
                     }
                     else
                     {
@@ -116,7 +116,7 @@ namespace OrchardCore.Contents.Services
 
                 if (authorizedContentListContentTypes.Any())
                 {
-                    query.With<ContentItemIndex>().Where(x => (x.ContentType.IsIn(authorizedContentListContentTypes.Select(t => t.Name).ToArray()) && x.Owner != null) || (x.ContentType.IsIn(unauthorizedContentListContentTypes.Select(t => t.Name).ToArray()) && x.Owner == user.Identity.Name));
+                    query.With<ContentItemIndex>().Where(x => (x.ContentType.IsIn(authorizedContentListContentTypes.Select(t => t.Name).ToArray())) || (x.ContentType.IsIn(unauthorizedContentListContentTypes.Select(t => t.Name).ToArray()) && x.Owner == user.Identity.Name));
                 }
                 else
                 {
