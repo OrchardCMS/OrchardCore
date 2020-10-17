@@ -10,6 +10,7 @@ using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Contents.ViewModels;
+using OrchardCore.Contents.Security;
 using OrchardCore.DisplayManagement.ModelBinding;
 using YesSql;
 using YesSql.Services;
@@ -68,12 +69,25 @@ namespace OrchardCore.Contents.Services
                 {
                     // We display a specific type even if it's not listable so that admin pages
                     // can reuse the Content list page for specific types.
-                    query.With<ContentItemIndex>(x => x.ContentType == model.SelectedContentType);
+                    var contentItem = await _contentManager.NewAsync(contentTypeDefinition.Name);
+                    contentItem.Owner = user.Identity.Name;
+
+                    var hasContentListPermission = await _authorizationService.AuthorizeAsync(user, ContentTypePermissionsHelper.CreateDynamicPermission(ContentTypePermissionsHelper.PermissionTemplates[CommonPermissions.ListContent.Name], contentTypeDefinition), contentItem);
+                    if (hasContentListPermission)
+                    {
+                        query.With<ContentItemIndex>(x => x.ContentType == model.SelectedContentType && x.Owner != null);
+                    }
+                    else
+                    {
+                        query.With<ContentItemIndex>(x => x.ContentType == model.SelectedContentType && x.Owner == user.Identity.Name);
+                    }
                 }
             }
             else
             {
                 var listableTypes = new List<ContentTypeDefinition>();
+                var authorizedContentListContentTypes = new List<ContentTypeDefinition>();
+                var unauthorizedContentListContentTypes = new List<ContentTypeDefinition>();
                 foreach (var ctd in _contentDefinitionManager.ListTypeDefinitions())
                 {
                     if (ctd.GetSettings<ContentTypeSettings>().Listable)
@@ -81,33 +95,52 @@ namespace OrchardCore.Contents.Services
                         // We want to list the content item if the user can edit their own items at least. It might display content items the user won't be able to edit though.
                         var contentItem = await _contentManager.NewAsync(ctd.Name);
                         contentItem.Owner = user.Identity.Name;
-                        
-                        var authorized = await _authorizationService.AuthorizeAsync(user, CommonPermissions.EditContent, contentItem);
-                        if (authorized)
+
+                        var hasEditPermission = await _authorizationService.AuthorizeAsync(user, CommonPermissions.EditContent, contentItem);
+                        if (hasEditPermission)
                         {
                             listableTypes.Add(ctd);
                         }
+
+                        var hasContentListPermission = await _authorizationService.AuthorizeAsync(user, ContentTypePermissionsHelper.CreateDynamicPermission(ContentTypePermissionsHelper.PermissionTemplates[CommonPermissions.ListContent.Name], ctd), contentItem);
+                        if (hasContentListPermission)
+                        {
+                            authorizedContentListContentTypes.Add(ctd);
+                        }
+                        else
+                        {
+                            unauthorizedContentListContentTypes.Add(ctd);
+                        }
                     }
                 }
-                
-                query.With<ContentItemIndex>(x => x.ContentType.IsIn(listableTypes.Select(t => t.Name).ToArray()));
-            }
 
-            // If we set the ListContent permission
-            // to false we can only view our own content and 
-            // we bypass the corresponding ContentsStatus by owned content filtering
-            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ListContent))
-            {
-                query.With<ContentItemIndex>(x => x.Owner == user.Identity.Name);
-            }
-            else
-            {
-                if (model.ContentsStatus == ContentsStatus.Owner)
+                if (authorizedContentListContentTypes.Any())
                 {
-                    query.With<ContentItemIndex>(x => x.Owner == user.Identity.Name);
+                    query.With<ContentItemIndex>().Where(x => (x.ContentType.IsIn(authorizedContentListContentTypes.Select(t => t.Name).ToArray()) && x.Owner != null) || (x.ContentType.IsIn(unauthorizedContentListContentTypes.Select(t => t.Name).ToArray()) && x.Owner == user.Identity.Name));
+                }
+                else
+                {
+                    query.With<ContentItemIndex>(x => x.ContentType.IsIn(listableTypes.Select(t => t.Name).ToArray()));
+
+                    // If we set the ListContent permission
+                    // to false we can only view our own content and
+                    // we bypass the corresponding ContentsStatus by owned content filtering
+                    if (!await _authorizationService.AuthorizeAsync(user, Permissions.ListContent))
+                    {
+                        query.With<ContentItemIndex>(x => x.Owner == user.Identity.Name);
+                    }
+                    else
+                    {
+                        if (model.ContentsStatus == ContentsStatus.Owner)
+                        {
+                            query.With<ContentItemIndex>(x => x.Owner == user.Identity.Name);
+                        }
+                    }
                 }
             }
-            
+
+
+
             // Apply OrderBy filters.
             switch (model.OrderBy)
             {
