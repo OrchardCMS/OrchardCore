@@ -5,8 +5,10 @@
 
     <!-- NuGet properties-->
     <Title>OrchardCore Abstractions</Title>
-    <Description>Abstractions of OrchardCore ShellHost.</Description>
-
+    <Description>$(OCFrameworkDescription)
+    
+    Abstractions of OrchardCore ShellHost.</Description>
+    <PackageTags>$(PackageTags) OrchardCoreFramework</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
