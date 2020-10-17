@@ -1,4 +1,4 @@
-namespace OrchardCore.ContentPreview.Models
+namespace OrchardCore.ContentManagement
 {
     public class PreviewAspect
     {
