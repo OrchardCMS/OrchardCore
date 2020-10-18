@@ -436,6 +436,13 @@ body:not(.left-sidebar-compact) {
                     line-height: 2.5em;
                 }
 
+                > li:not(.has-items) .item-label
+                {
+                    > span.icon {
+                        font-size: 22px;
+                    }
+                }
+
                 .item-label {
                     padding-left: 0px !important;
                     display: flex;
@@ -446,7 +453,7 @@ body:not(.left-sidebar-compact) {
                         font-size: 16px;
 
                         svg {
-                            width: 27px;
+                            width: 35px;
                         }
                     }
 

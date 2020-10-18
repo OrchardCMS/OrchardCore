@@ -8937,6 +8937,8 @@ body:not(.left-sidebar-compact) #ta-left-sidebar {
         display: none; }
     .left-sidebar-compact #ta-left-sidebar #left-nav > ul > li > figure > ul > li {
       line-height: 2.5em; }
+    .left-sidebar-compact #ta-left-sidebar #left-nav > ul > li:not(.has-items) .item-label > span.icon {
+      font-size: 22px; }
     .left-sidebar-compact #ta-left-sidebar #left-nav > ul .item-label {
       display: flex; }
     [dir=ltr] .left-sidebar-compact #ta-left-sidebar #left-nav > ul .item-label {
@@ -8949,7 +8951,7 @@ body:not(.left-sidebar-compact) #ta-left-sidebar {
       [dir] .left-sidebar-compact #ta-left-sidebar #left-nav > ul .item-label > span.icon {
         padding: 0 5px; }
         .left-sidebar-compact #ta-left-sidebar #left-nav > ul .item-label > span.icon svg {
-          width: 27px; }
+          width: 35px; }
       .left-sidebar-compact #ta-left-sidebar #left-nav > ul .item-label > span.icon-none {
         flex-shrink: 0;
         font-size: 16px;
