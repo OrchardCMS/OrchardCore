@@ -95,7 +95,8 @@ namespace OrchardCore.Contents.Services
                 {
                     if (ctd.GetSettings<ContentTypeSettings>().Listable)
                     {
-                        // We want to list the content item if the user can edit their own items at least. It might display content items the user won't be able to edit though.
+                        // We want to list the content item if the user can edit their own items at least.
+                        // It might display content items the user won't be able to edit though.
                         var contentItem = await _contentManager.NewAsync(ctd.Name);
                         contentItem.Owner = user.Identity.Name;
 
