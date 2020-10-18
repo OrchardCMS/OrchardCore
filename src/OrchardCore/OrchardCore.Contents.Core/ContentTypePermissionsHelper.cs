@@ -58,21 +58,14 @@ namespace OrchardCore.Contents.Security
         /// </summary>
         public static Permission CreateDynamicPermission(Permission template, ContentTypeDefinition typeDefinition)
         {
-            try{
-                return new Permission(
-                    String.Format(template.Name, typeDefinition.Name),
-                    String.Format(template.Description, typeDefinition.DisplayName),
-                    (template.ImpliedBy ?? new Permission[0]).Select(t => CreateDynamicPermission(t, typeDefinition))
-                )
-                {
-                    Category = typeDefinition.DisplayName
-                };
-            }
-            catch(Exception)
+            return new Permission(
+                String.Format(template.Name, typeDefinition.Name),
+                String.Format(template.Description, typeDefinition.DisplayName),
+                (template.ImpliedBy ?? new Permission[0]).Select(t => CreateDynamicPermission(t, typeDefinition))
+            )
             {
-                return null;
-            }
-
+                Category = typeDefinition.DisplayName
+            };
         }
 
         /// <summary>
