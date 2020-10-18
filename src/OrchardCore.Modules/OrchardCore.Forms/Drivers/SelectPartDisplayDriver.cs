@@ -55,7 +55,7 @@ namespace OrchardCore.Forms.Drivers
                 }
                 catch
                 {
-                    updater.ModelState.AddModelError(Prefix, S["The options are written in an incorrect format."]);
+                    updater.ModelState.AddModelError(Prefix, nameof(viewModel.Options), S["The options are written in an incorrect format."]);
                 }
             }
 
