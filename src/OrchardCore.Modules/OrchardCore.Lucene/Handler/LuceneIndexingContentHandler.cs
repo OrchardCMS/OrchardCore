@@ -66,6 +66,7 @@ namespace OrchardCore.Lucene.Handlers
             var luceneIndexManager = services.GetRequiredService<LuceneIndexManager>();
             var luceneIndexSettingsService = services.GetRequiredService<LuceneIndexSettingsService>();
             var logger = services.GetRequiredService<ILogger<LuceneIndexingContentHandler>>();
+            var orchardHelper = services.GetService<IOrchardHelper>();
             // Multiple items may have been updated in the same scope, e.g through a recipe.
             var contextsGroupById = contexts.GroupBy(c => c.ContentItem.ContentItemId, c => c);
 
@@ -80,8 +81,8 @@ namespace OrchardCore.Lucene.Handlers
 
                 foreach (var indexSettings in await luceneIndexSettingsService.GetSettingsAsync())
                 {
-                    var cultureAspect = await contentManager.PopulateAspectAsync(context.ContentItem, new CultureAspect());
-                    var ignoreIndexedCulture = indexSettings.Culture == "any" ? false : cultureAspect.Culture.Name != indexSettings.Culture;
+                    var culture = await orchardHelper.GetContentCultureAsync(context.ContentItem);
+                    var ignoreIndexedCulture = indexSettings.Culture == "any"? false : culture?.Name != indexSettings.Culture;
 
                     if (indexSettings.IndexedContentTypes.Contains(context.ContentItem.ContentType) && !ignoreIndexedCulture)
                     {

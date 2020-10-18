@@ -1,6 +1,7 @@
 using System.Globalization;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.ContentLocalization.Models;
 using OrchardCore.ContentManagement;
 
 namespace OrchardCore.ContentLocalization
@@ -21,7 +22,11 @@ namespace OrchardCore.ContentLocalization
             var contentManager = orchardHelper.HttpContext.RequestServices.GetService<IContentManager>();
             var cultureAspect = await contentManager.PopulateAspectAsync(contentItem, new CultureAspect());
 
-            return cultureAspect.Culture;
+            // Workaround to ignore the default culture that has been set to CultureAspect.Culture
+            // for the content item which doesn't have a LocalizationPart attached
+            return contentItem.Has<LocalizationPart>()
+                ? cultureAspect.Culture
+                : null;
         }
     }
 }
