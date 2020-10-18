@@ -61,6 +61,8 @@ namespace OrchardCore.Contents.Services
                     break;
             }
 
+            var canListAllContent = await _authorizationService.AuthorizeAsync(user, Permissions.ListContent);
+
             // Filter the creatable types.
             if (!string.IsNullOrEmpty(model.SelectedContentType))
             {
@@ -86,8 +88,9 @@ namespace OrchardCore.Contents.Services
             else
             {
                 var listableTypes = new List<ContentTypeDefinition>();
-                var authorizedContentListContentTypes = new List<ContentTypeDefinition>();
-                var unauthorizedContentListContentTypes = new List<ContentTypeDefinition>();
+                var authorizedContentTypes = new List<ContentTypeDefinition>();
+                var unauthorizedContentTypes = new List<ContentTypeDefinition>();
+
                 foreach (var ctd in _contentDefinitionManager.ListTypeDefinitions())
                 {
                     if (ctd.GetSettings<ContentTypeSettings>().Listable)
@@ -102,21 +105,24 @@ namespace OrchardCore.Contents.Services
                             listableTypes.Add(ctd);
                         }
 
-                        var hasContentListPermission = await _authorizationService.AuthorizeAsync(user, ContentTypePermissionsHelper.CreateDynamicPermission(ContentTypePermissionsHelper.PermissionTemplates[CommonPermissions.ListContent.Name], ctd), contentItem);
-                        if (hasContentListPermission)
+                        if(!canListAllContent)
                         {
-                            authorizedContentListContentTypes.Add(ctd);
-                        }
-                        else
-                        {
-                            unauthorizedContentListContentTypes.Add(ctd);
+                            var hasContentListPermission = await _authorizationService.AuthorizeAsync(user, ContentTypePermissionsHelper.CreateDynamicPermission(ContentTypePermissionsHelper.PermissionTemplates[CommonPermissions.ListContent.Name], ctd), contentItem);
+                            if (hasContentListPermission)
+                            {
+                                authorizedContentTypes.Add(ctd);
+                            }
+                            else
+                            {
+                                unauthorizedContentTypes.Add(ctd);
+                            }
                         }
                     }
                 }
 
-                if (authorizedContentListContentTypes.Any())
+                if (authorizedContentTypes.Any() && !canListAllContent)
                 {
-                    query.With<ContentItemIndex>().Where(x => (x.ContentType.IsIn(authorizedContentListContentTypes.Select(t => t.Name).ToArray())) || (x.ContentType.IsIn(unauthorizedContentListContentTypes.Select(t => t.Name).ToArray()) && x.Owner == user.Identity.Name));
+                    query.With<ContentItemIndex>().Where(x => (x.ContentType.IsIn(authorizedContentTypes.Select(t => t.Name).ToArray())) || (x.ContentType.IsIn(unauthorizedContentTypes.Select(t => t.Name).ToArray()) && x.Owner == user.Identity.Name));
                 }
                 else
                 {
@@ -125,7 +131,7 @@ namespace OrchardCore.Contents.Services
                     // If we set the ListContent permission
                     // to false we can only view our own content and
                     // we bypass the corresponding ContentsStatus by owned content filtering
-                    if (!await _authorizationService.AuthorizeAsync(user, Permissions.ListContent))
+                    if (!canListAllContent)
                     {
                         query.With<ContentItemIndex>(x => x.Owner == user.Identity.Name);
                     }
@@ -138,8 +144,6 @@ namespace OrchardCore.Contents.Services
                     }
                 }
             }
-
-
 
             // Apply OrderBy filters.
             switch (model.OrderBy)
