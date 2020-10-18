@@ -3,12 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Primitives;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Records;
-using OrchardCore.Data;
-using OrchardCore.Environment.Cache;
+using OrchardCore.Documents;
 using OrchardCore.Layers.Indexes;
 using OrchardCore.Layers.Models;
 using YesSql;
@@ -17,55 +14,24 @@ namespace OrchardCore.Layers.Services
 {
     public class LayerService : ILayerService
     {
-        private const string LayersCacheKey = "LayersDocument";
-
-        private readonly ISignal _signal;
         private readonly ISession _session;
-        private readonly ISessionHelper _sessionHelper;
-        private readonly IMemoryCache _memoryCache;
+        private readonly IDocumentManager<LayersDocument> _documentManager;
 
-        public LayerService(
-            ISignal signal,
-            ISession session,
-            ISessionHelper sessionHelper,
-            IMemoryCache memoryCache)
+        public LayerService(ISession session, IDocumentManager<LayersDocument> documentManager)
         {
-            _signal = signal;
             _session = session;
-            _sessionHelper = sessionHelper;
-            _memoryCache = memoryCache;
+            _documentManager = documentManager;
         }
 
-        public IChangeToken ChangeToken => _signal.GetToken(LayersCacheKey);
+        /// <summary>
+        /// Loads the layers document from the store for updating and that should not be cached.
+        /// </summary>
+        public Task<LayersDocument> LoadLayersAsync() => _documentManager.GetOrCreateMutableAsync();
 
         /// <summary>
-        /// Returns the document from the database to be updated.
+        /// Gets the layers document from the cache for sharing and that should not be updated.
         /// </summary>
-        public Task<LayersDocument> LoadLayersAsync() => _sessionHelper.LoadForUpdateAsync<LayersDocument>();
-
-        /// <summary>
-        /// Returns the document from the cache or creates a new one. The result should not be updated.
-        /// </summary>
-        public async Task<LayersDocument> GetLayersAsync()
-        {
-            if (!_memoryCache.TryGetValue<LayersDocument>(LayersCacheKey, out var layers))
-            {
-                var changeToken = ChangeToken;
-
-                bool cacheable;
-
-                (cacheable, layers) = await _sessionHelper.GetForCachingAsync<LayersDocument>();
-
-                if (cacheable)
-                {
-                    layers.IsReadonly = true;
-
-                    _memoryCache.Set(LayersCacheKey, layers, changeToken);
-                }
-            }
-
-            return layers;
-        }
+        public Task<LayersDocument> GetLayersAsync() => _documentManager.GetOrCreateImmutableAsync();
 
         public async Task<IEnumerable<ContentItem>> GetLayerWidgetsAsync(
             Expression<Func<ContentItemIndex, bool>> predicate)
@@ -88,18 +54,14 @@ namespace OrchardCore.Layers.Services
                 .ToList();
         }
 
+        /// <summary>
+        /// Updates the store with the provided layers document and then updates the cache.
+        /// </summary>
         public async Task UpdateAsync(LayersDocument layers)
         {
-            if (layers.IsReadonly)
-            {
-                throw new ArgumentException("The object is read-only");
-            }
-
             var existing = await LoadLayersAsync();
             existing.Layers = layers.Layers;
-
-            _session.Save(existing);
-            _signal.DeferredSignalToken(LayersCacheKey);
+            await _documentManager.UpdateAsync(layers);
         }
     }
 }
