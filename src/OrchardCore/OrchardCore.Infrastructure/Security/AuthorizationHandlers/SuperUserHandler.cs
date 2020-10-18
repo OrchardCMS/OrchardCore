@@ -33,8 +33,8 @@ namespace OrchardCore.Security.AuthorizationHandlers
             {
                 SucceedAllRequirements(context);
             }
-            // TODO This may not actually be necesary.
             // This method is maintained for backwards compatability during an upgrade migration where a user id has not been set yet.
+            // It can be removed in a later release.
             else if (String.IsNullOrEmpty(site.SuperUserId) && String.Equals(context.User.Identity.Name, site.SuperUser, StringComparison.OrdinalIgnoreCase))
             {
                 SucceedAllRequirements(context);

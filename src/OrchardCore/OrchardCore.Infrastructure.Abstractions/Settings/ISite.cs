@@ -11,7 +11,8 @@ namespace OrchardCore.Settings
         string SiteSalt { get; set; }
 
         /// <summary>
-        /// The SuperUser property is deprecated, but not yet set obsolete
+        /// The SuperUser property is deprecated, but not yet set obsolete.
+        /// It will be removed in a later release. <see cref="SuperUserId"/>
         /// </summary>
         string SuperUser { get; set; }
         string SuperUserId { get; set; }

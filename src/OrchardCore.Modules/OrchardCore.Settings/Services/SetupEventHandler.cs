@@ -32,6 +32,7 @@ namespace OrchardCore.Settings.Services
             // Updating site settings
             var siteSettings = await _siteService.LoadSiteSettingsAsync();
             siteSettings.SiteName = siteName;
+            siteSettings.SuperUser = userName;
             siteSettings.SuperUserId = userId;
             siteSettings.TimeZoneId = siteTimeZone;
             await _siteService.UpdateSiteSettingsAsync(siteSettings);
