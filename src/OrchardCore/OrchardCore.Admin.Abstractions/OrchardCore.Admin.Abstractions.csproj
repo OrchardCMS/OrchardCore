@@ -9,7 +9,7 @@
     <Description>$(OCCMSDescription)
 
     Abstractions of OrchardCore Admin Module.</Description>
-    <PackageTags>$(PackageTags) OrchardCoreCMS Admin Abstractions</PackageTags>
+    <PackageTags>$(PackageTags) OrchardCoreCMS Abstractions</PackageTags>
 
   </PropertyGroup>
 

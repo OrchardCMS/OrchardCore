@@ -9,7 +9,7 @@
     <Description>$(OCCMSDescription)
 
     Admin module creates an admin section for the site.</Description>
-    <PackageTags>$(PackageTags) OrchardCoreCMS Admin</PackageTags>
+    <PackageTags>$(PackageTags) OrchardCoreCMS</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
