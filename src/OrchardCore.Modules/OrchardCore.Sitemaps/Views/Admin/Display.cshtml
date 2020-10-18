@@ -13,7 +13,7 @@
             <div class="btn-group">
                 @if (Model.Sitemap.Enabled)
                 {
-                    <a asp-action="Index" asp-controller="Sitemap" asp-area="OrchardCore.Sitemaps" asp-route-sitemapId="@Model.Sitemap.SitemapId" class="btn btn-success btn-sm" itemprop="">@T["View"]</a>
+                    <a asp-action="Index" asp-controller="Sitemap" asp-area="OrchardCore.Sitemaps" asp-route-sitemapId="@Model.Sitemap.SitemapId" class="btn btn-success btn-sm">@T["View"]</a>
                 }
             </div>
         </li>
@@ -52,11 +52,11 @@
 </form>
 
 <!-- Modal -->
-<div class="modal fade" id="modalSources" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div class="modal fade" id="modalSources" tabindex="-1" role="dialog" aria-labelledby="available-sources-title" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">@T["Available Sources"]</h5>
+                <h5 class="modal-title" id="available-sources-title">@T["Available Sources"]</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>

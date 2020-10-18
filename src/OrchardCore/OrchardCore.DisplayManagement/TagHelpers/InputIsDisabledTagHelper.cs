@@ -23,7 +23,6 @@ namespace OrchardCore.DisplayManagement.TagHelpers
                 var d = new TagHelperAttribute("disabled", "disabled");
                 output.Attributes.Add(d);
             }
-            base.Process(context, output);
         }
     }
 }

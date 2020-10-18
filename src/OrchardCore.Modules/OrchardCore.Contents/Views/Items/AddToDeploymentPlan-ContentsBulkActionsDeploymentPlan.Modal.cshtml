@@ -1,13 +1,14 @@
+@using OrchardCore.Deployment
 @inject IDeploymentPlanService DeploymentPlanService
 @{
     var deploymentPlans = await DeploymentPlanService.GetAllDeploymentPlansAsync();
 }
 <zone name="Footer">
-    <div class="modal fade" id="modalAddToDeploymentPlanContentsBulkActionsDeploymentPlan" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal fade" id="modalAddToDeploymentPlanContentsBulkActionsDeploymentPlan" tabindex="-1" role="dialog" aria-labelledby="deployment-plans-title" aria-hidden="true">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">@T["Available Deployment Plans"]</h5>
+                    <h5 class="modal-title" id="deployment-plans-title">@T["Available Deployment Plans"]</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>

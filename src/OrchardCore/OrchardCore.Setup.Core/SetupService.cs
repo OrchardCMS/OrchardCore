@@ -41,7 +41,6 @@ namespace OrchardCore.Setup.Services
         /// <param name="hostingEnvironment">The <see cref="IHostEnvironment"/>.</param>
         /// <param name="shellContextFactory">The <see cref="IShellContextFactory"/>.</param>
         /// <param name="setupUserIdGenerator">The <see cref="ISetupUserIdGenerator"/>.</param>
-        /// <param name="runningShellTable">The <see cref="IRunningShellTable"/>.</param>
         /// <param name="recipeHarvesters">A list of <see cref="IRecipeHarvester"/>s.</param>
         /// <param name="logger">The <see cref="ILogger"/>.</param>
         /// <param name="stringLocalizer">The <see cref="IStringLocalizer"/>.</param>
@@ -50,7 +49,6 @@ namespace OrchardCore.Setup.Services
             IShellHost shellHost,
             IHostEnvironment hostingEnvironment,
             IShellContextFactory shellContextFactory,
-            IRunningShellTable runningShellTable,
             ISetupUserIdGenerator setupUserIdGenerator,
             IEnumerable<IRecipeHarvester> recipeHarvesters,
             ILogger<SetupService> logger,
@@ -156,7 +154,7 @@ namespace OrchardCore.Setup.Services
 
             using (var shellContext = await _shellContextFactory.CreateDescribedContextAsync(shellSettings, shellDescriptor))
             {
-                await shellContext.CreateScope().UsingAsync(async scope =>
+                await shellContext.CreateScope().UsingServiceScopeAsync(async scope =>
                 {
                     IStore store;
 

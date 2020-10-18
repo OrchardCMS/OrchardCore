@@ -31,7 +31,7 @@ namespace OrchardCore.ContentLocalization.Sitemaps
             _localizationService = localizationService;
         }
 
-        public async Task GetContentItems(ContentTypesSitemapSource source, ContentItemsQueryContext queryContext)
+        public async Task GetContentItemsAsync(ContentTypesSitemapSource source, ContentItemsQueryContext queryContext)
         {
             var routeableContentTypeDefinitions = _routeableContentTypeCoordinator.ListRoutableTypeDefinitions();
 

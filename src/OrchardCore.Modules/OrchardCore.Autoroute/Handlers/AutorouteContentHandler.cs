@@ -17,11 +17,12 @@ namespace OrchardCore.Autoroute.Handlers
 
         public override Task GetContentItemAspectAsync(ContentItemAspectContext context)
         {
-            return context.ForAsync<ContentItemMetadata>(metadata =>
+            return context.ForAsync<ContentItemMetadata>(async metadata =>
             {
                 // When a content item is contained we provide different route values when generating urls.
-                if (_autorouteEntries.TryGetEntryByContentItemId(context.ContentItem.ContentItemId, out var entry) &&
-                    !string.IsNullOrEmpty(entry.ContainedContentItemId))
+                (var found, var entry) = await _autorouteEntries.TryGetEntryByContentItemIdAsync(context.ContentItem.ContentItemId);
+
+                if (found && !string.IsNullOrEmpty(entry.ContainedContentItemId))
                 {
                     metadata.DisplayRouteValues = new RouteValueDictionary {
                         { "Area", "OrchardCore.Contents" },
@@ -31,8 +32,6 @@ namespace OrchardCore.Autoroute.Handlers
                         { "ContainedContentItemId", entry.ContainedContentItemId }
                     };
                 }
-
-                return Task.CompletedTask;
             });
         }
     }

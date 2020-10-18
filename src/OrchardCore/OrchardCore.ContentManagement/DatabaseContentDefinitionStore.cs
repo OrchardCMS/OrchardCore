@@ -1,38 +1,25 @@
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Metadata.Records;
-using OrchardCore.Data;
-using YesSql;
+using OrchardCore.Documents;
 
 namespace OrchardCore.ContentManagement
 {
     public class DatabaseContentDefinitionStore : IContentDefinitionStore
     {
-        private readonly ISession _session;
-        private readonly ISessionHelper _sessionHelper;
+        private readonly IDocumentManager<ContentDefinitionRecord> _documentManager;
 
-        public DatabaseContentDefinitionStore(ISession session, ISessionHelper sessionHelper)
+        public DatabaseContentDefinitionStore(IDocumentManager<ContentDefinitionRecord> documentManager)
         {
-            _session = session;
-            _sessionHelper = sessionHelper;
+            _documentManager = documentManager;
         }
 
-        /// <summary>
-        /// Loads a single document (or create a new one) for updating and that should not be cached.
-        /// </summary>
-        public Task<ContentDefinitionRecord> LoadContentDefinitionAsync()
-            => _sessionHelper.LoadForUpdateAsync<ContentDefinitionRecord>();
+        /// <inheritdoc />
+        public Task<ContentDefinitionRecord> LoadContentDefinitionAsync() => _documentManager.GetOrCreateMutableAsync();
 
-        /// <summary>
-        /// Gets a single document (or create a new one) for caching and that should not be updated.
-        /// </summary>
-        public Task<(bool, ContentDefinitionRecord)> GetContentDefinitionAsync()
-            => _sessionHelper.GetForCachingAsync<ContentDefinitionRecord>();
+        /// <inheritdoc />
+        public Task<ContentDefinitionRecord> GetContentDefinitionAsync() => _documentManager.GetOrCreateImmutableAsync();
 
-        public Task SaveContentDefinitionAsync(ContentDefinitionRecord contentDefinitionRecord)
-        {
-            _session.Save(contentDefinitionRecord);
-
-            return Task.CompletedTask;
-        }
+        /// <inheritdoc />
+        public Task SaveContentDefinitionAsync(ContentDefinitionRecord contentDefinitionRecord) => _documentManager.UpdateAsync(contentDefinitionRecord);
     }
 }

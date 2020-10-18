@@ -272,7 +272,7 @@
               "Name": "ComingSoon",
               "Settings": {
                 "ContentTypePartSettings": {
-                  "Position": "4"
+                  "Position": "5"
                 }
               }
             },
@@ -306,7 +306,7 @@
                 "ContentTypePartSettings": {
                   "DisplayName": "Social Icons",
                   "Description": "The list of social icons to display in the Coming Soon page",
-                  "Position": "5"
+                  "Position": "6"
                 },
                 "BagPartSettings": {
                   "ContainedContentTypes": [
@@ -320,13 +320,22 @@
               "Name": "FlowPart",
               "Settings": {
                 "ContentTypePartSettings": {
-                  "Position": "3"
+                  "Position": "4"
                 }
               }
             },
             {
               "PartName": "FormPart",
               "Name": "FormPart",
+              "Settings": {
+                "ContentTypePartSettings": {
+                  "Position": "3"
+                }
+              }
+            },
+            {
+              "PartName": "FormElementPart",
+              "Name": "FormElementPart",
               "Settings": {
                 "ContentTypePartSettings": {
                   "Position": "2"

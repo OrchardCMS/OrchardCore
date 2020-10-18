@@ -47,7 +47,7 @@ using OrchardCore.Navigation;
 using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Sitemaps.Builders;
-using OrchardCore.Sitemaps.Cache;
+using OrchardCore.Sitemaps.Handlers;
 using OrchardCore.Sitemaps.Models;
 using OrchardCore.Sitemaps.Services;
 
@@ -89,7 +89,7 @@ namespace OrchardCore.Contents
             services.AddScoped<IContentItemIndexHandler, FullTextContentIndexHandler>();
             services.AddScoped<IContentItemIndexHandler, AspectsContentIndexHandler>();
             services.AddScoped<IContentItemIndexHandler, DefaultContentIndexHandler>();
-            services.AddScoped<IContentAliasProvider, ContentItemIdAliasProvider>();
+            services.AddScoped<IContentHandleProvider, ContentItemIdHandleProvider>();
             services.AddScoped<IContentItemIndexHandler, ContentItemIndexCoordinator>();
 
             services.AddIdGeneration();
@@ -278,12 +278,12 @@ namespace OrchardCore.Contents
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<ISitemapSourceBuilder, ContentTypesSitemapSourceBuilder>();
-            services.AddScoped<ISitemapSourceCacheManager, ContentTypesSitemapSourceCacheManager>();
+            services.AddScoped<ISitemapSourceUpdateHandler, ContentTypesSitemapSourceUpdateHandler>();
             services.AddScoped<ISitemapSourceModifiedDateProvider, ContentTypesSitemapSourceModifiedDateProvider>();
             services.AddScoped<IDisplayDriver<SitemapSource>, ContentTypesSitemapSourceDriver>();
             services.AddScoped<ISitemapSourceFactory, SitemapSourceFactory<ContentTypesSitemapSource>>();
             services.AddScoped<IContentItemsQueryProvider, DefaultContentItemsQueryProvider>();
-            services.AddScoped<IContentHandler, ContentTypesSitemapCacheHandler>();
+            services.AddScoped<IContentHandler, ContentTypesSitemapUpdateHandler>();
         }
     }
 }
