@@ -130,6 +130,18 @@ Can be combined with the `quality` argument to convert an image to a `JPG` and r
 
 `<img src="~/media/animals/kittens.jpg?width=100&height=240&rmode=crop&quality=50&format=jpg" />`
 
+### `profile` (named argument)
+
+A [Media Profile](#media-profiles) can be specified as a named argument to provide preset formatting commands.
+
+#### `profile` Input
+
+`{{ 'animals/kittens.jpg' | asset_url | resize_url: profile : 'medium' }}`
+
+#### `profile` Output
+
+`<img src="~/media/animals/kittens.jpg?width=240&height=240" />`
+
 ### `append_version`
 
 Appends a version hash for an asset. Can be piped together with the other media filters.
@@ -164,6 +176,11 @@ or with resizing options as well, noting that the version hash is based on the s
 
 `@Orchard.AssetUrl(Model.Paths[0], width: 100 , height: 240, resizeMode: ResizeMode.Crop, appendVersion: true)`
 
+To use a [Media Profile](#media-profiles), use the `AssetProfileUrlAsync` helper extension method on the view's base `Orchard` property, e.g.:
+
+`@await Orchard.AssetProfileUrlAsync(Model.Paths[0], "medium")`
+
+
 ### Razor image resizing tag helpers
 
 To use the image tag helpers add `@addTagHelper *, OrchardCore.Media` to `_ViewImports.cshtml`, and take a direct reference to the `OrchardCore.Media` nuget package.
@@ -175,6 +192,14 @@ To use the image tag helpers add `@addTagHelper *, OrchardCore.Media` to `_ViewI
 Alternatively the Asset Url can be resolved independently and the `src` attribute used:
 
 `<img src="@Orchard.AssetUrl(Model.Paths[0])" alt="..." img-width="100" img-height="240" img-resize-mode="Crop" img-quality="50" img-format="Jpg" />`
+
+To use a [Media Profile](#media-profiles) set the `asset-src` property and the `img-profile` attribute.
+
+`<img asset-src="Model.Paths[0]" alt="..." img-profile="medium" />`
+
+You can optionally include more formatting information, or override the profiles properties.
+
+`<img asset-src="Model.Paths[0]" alt="..." img-profile="medium" img-quality="50" img-format="Jpg" />`
 
 ### Razor append version
 
@@ -300,6 +325,42 @@ To configure `wwwroot` static file options apply:
 ```
 services.Configure<StaticFileOptions>(o => ...);
 ```
+
+## Media Profiles
+
+Media profiles allow you to defined preset image resizing and formatting commands.
+
+You can create a media profile from the _Configuration -> Media -> Media Profiles_ menu.
+
+When specifying a media profile with either the liquid, razor helper, or tag helper you provide the profile name, and any additional commands which you want to apply to the media item.
+
+=== "Liquid"
+
+    ``` liquid
+    {% resize_url profile: 'medium' %}
+    {% resize_url profile: 'medium', mode: 'crop' %}
+    ```
+
+=== "Razor"
+
+    ``` html
+    @await Orchard.AssetProfileUrlAsync(Model.Paths[0], "medium");
+    @await Orchard.AssetProfileUrlAsync(Model.Paths[0], "medium", resizeMode: ResizeMode.Crop);
+    ```
+
+=== "Tag"
+
+    ``` html
+    <img asset-src="Model.Paths[0]" img-profile="medium" />
+    <img asset-src="Model.Paths[0]" img-profile="medium" img-resize-mode="Crop"/>
+    ```
+
+!!! note
+    Media Profiles are only available from the [Preview Feed](../../../getting-started/preview-package-source)
+
+## Video
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/BQHUlvPFRR4" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 ## CREDITS
 

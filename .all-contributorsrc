@@ -1457,7 +1457,8 @@
       "avatar_url": "https://avatars1.githubusercontent.com/u/22187826?v=4",
       "profile": "https://github.com/nakamura2000",
       "contributions": [
-        "translation"
+        "translation",
+        "code"
       ]
     },
     {
@@ -1884,6 +1885,15 @@
       "profile": "https://github.com/lomholdt",
       "contributions": [
         "doc"
+      ]
+    },
+    {
+      "login": "scriptmaster",
+      "name": "ScriptMaster",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/544175?v=4",
+      "profile": "https://github.com/scriptmaster",
+      "contributions": [
+        "code"
       ]
     }
   ],

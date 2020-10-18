@@ -42,7 +42,7 @@ namespace OrchardCore.Contents.Deployment.Download
 
             // Export permission is required as the overriding permission.
             // Requesting EditContent would allow custom permissions to deny access to this content item.
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContent, contentItem))
+            if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.EditContent, contentItem))
             {
                 return Forbid();
             }
@@ -73,7 +73,7 @@ namespace OrchardCore.Contents.Deployment.Download
 
             // Export permission is required as the overriding permission.
             // Requesting EditContent would allow custom permissions to deny access to this content item.
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContent, contentItem))
+            if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.EditContent, contentItem))
             {
                 return Forbid();
             }

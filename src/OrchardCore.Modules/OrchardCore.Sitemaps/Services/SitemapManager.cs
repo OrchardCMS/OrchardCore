@@ -1,61 +1,32 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Primitives;
-using OrchardCore.Data;
-using OrchardCore.Environment.Cache;
+using OrchardCore.Documents;
 using OrchardCore.Sitemaps.Models;
 using OrchardCore.Sitemaps.Routing;
-using YesSql;
 
 namespace OrchardCore.Sitemaps.Services
 {
     public class SitemapManager : ISitemapManager
     {
-        private const string SitemapsDocumentCacheKey = nameof(SitemapsDocumentCacheKey);
-
-        private readonly IMemoryCache _memoryCache;
-        private readonly ISession _session;
-        private readonly ISignal _signal;
-        private readonly ISessionHelper _sessionHelper;
+        private readonly IDocumentManager<SitemapDocument> _documentManager;
         private readonly SitemapEntries _sitemapEntries;
 
-        public SitemapManager(
-            IMemoryCache memoryCache,
-            ISession session,
-            ISignal signal,
-            ISessionHelper sessionHelper,
-            SitemapEntries sitemapEntries
+        public SitemapManager(IDocumentManager<SitemapDocument> documentManager, SitemapEntries sitemapEntries
             )
         {
-            _memoryCache = memoryCache;
-            _session = session;
-            _signal = signal;
-            _sessionHelper = sessionHelper;
+            _documentManager = documentManager;
             _sitemapEntries = sitemapEntries;
         }
 
-        public IChangeToken ChangeToken => _signal.GetToken(SitemapsDocumentCacheKey);
-
-        public async Task BuildAllSitemapRouteEntriesAsync()
+        public async Task<IEnumerable<SitemapType>> LoadSitemapsAsync()
         {
-            var document = await GetDocumentAsync();
-            BuildAllSitemapRouteEntries(document);
+            return (await LoadDocumentAsync()).Sitemaps.Values.ToArray();
         }
 
-        public async Task DeleteSitemapAsync(string sitemapId)
+        public async Task<IEnumerable<SitemapType>> GetSitemapsAsync()
         {
-            var existing = await LoadDocumentAsync();
-            existing.Sitemaps.Remove(sitemapId);
-
-            _session.Save(existing);
-            _signal.DeferredSignalToken(SitemapsDocumentCacheKey);
-
-            BuildAllSitemapRouteEntries(existing);
-
-            return;
+            return (await GetDocumentAsync()).Sitemaps.Values.ToArray();
         }
 
         public async Task<SitemapType> LoadSitemapAsync(string sitemapId)
@@ -80,70 +51,41 @@ namespace OrchardCore.Sitemaps.Services
             return null;
         }
 
-        public async Task<IEnumerable<SitemapType>> ListSitemapsAsync()
+        public async Task DeleteSitemapAsync(string sitemapId)
         {
-            return (await GetDocumentAsync()).Sitemaps.Values;
-        }
-
-        public async Task SaveSitemapAsync(string sitemapId, SitemapType sitemap)
-        {
-            if (sitemap.IsReadonly)
-            {
-                throw new ArgumentException("The object is read-only");
-            }
-
             var existing = await LoadDocumentAsync();
             existing.Sitemaps.Remove(sitemapId);
-            existing.Sitemaps[sitemapId] = sitemap;
 
-            _session.Save(existing);
-            _signal.DeferredSignalToken(SitemapsDocumentCacheKey);
+            await _documentManager.UpdateAsync(existing);
+            await _sitemapEntries.BuildEntriesAsync(existing.Sitemaps.Values);
+        }
 
-            BuildAllSitemapRouteEntries(existing);
+        public async Task UpdateSitemapAsync(SitemapType sitemap)
+        {
+            var existing = await LoadDocumentAsync();
 
-            return;
+            existing.Sitemaps[sitemap.SitemapId] = sitemap;
+            sitemap.Identifier = IdGenerator.GenerateId();
+
+            await _documentManager.UpdateAsync(existing);
+            await _sitemapEntries.BuildEntriesAsync(existing.Sitemaps.Values);
+        }
+
+        public async Task UpdateSitemapAsync()
+        {
+            var existing = await LoadDocumentAsync();
+            await _documentManager.UpdateAsync(existing);
+            await _sitemapEntries.BuildEntriesAsync(existing.Sitemaps.Values);
         }
 
         /// <summary>
-        /// Returns the document from the database to be updated.
+        /// Loads the sitemap document from the store for updating and that should not be cached.
         /// </summary>
-        private Task<SitemapDocument> LoadDocumentAsync() => _sessionHelper.LoadForUpdateAsync<SitemapDocument>();
+        private Task<SitemapDocument> LoadDocumentAsync() => _documentManager.GetOrCreateMutableAsync();
 
-        private async Task<SitemapDocument> GetDocumentAsync()
-        {
-            if (!_memoryCache.TryGetValue<SitemapDocument>(SitemapsDocumentCacheKey, out var document))
-            {
-                var changeToken = ChangeToken;
-
-                bool cacheable;
-
-                (cacheable, document) = await _sessionHelper.GetForCachingAsync<SitemapDocument>();
-
-                if (cacheable)
-                {
-                    foreach (var sitemap in document.Sitemaps.Values)
-                    {
-                        sitemap.IsReadonly = true;
-                    }
-
-                    _memoryCache.Set(SitemapsDocumentCacheKey, document, changeToken);
-                }
-            }
-
-            return document;
-        }
-
-        private void BuildAllSitemapRouteEntries(SitemapDocument document)
-        {
-            var entries = document.Sitemaps.Values
-                .Where(x => x.Enabled)
-                .Select(sitemap => new SitemapEntry
-                {
-                    Path = sitemap.Path,
-                    SitemapId = sitemap.SitemapId
-                });
-
-            _sitemapEntries.BuildEntries(entries);
-        }
+        /// <summary>
+        /// Gets the sitemap document from the cache for sharing and that should not be updated.
+        /// </summary>
+        private Task<SitemapDocument> GetDocumentAsync() => _documentManager.GetOrCreateImmutableAsync();
     }
 }

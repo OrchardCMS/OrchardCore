@@ -82,7 +82,7 @@ namespace OrchardCore.Lucene
             LuceneTopDocs result = null;
             TopDocs topDocs = null;
 
-            if(size > 0)
+            if (size > 0)
             {
                 topDocs = context.IndexSearcher.Search(
                     query,
