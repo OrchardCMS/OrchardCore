@@ -52,8 +52,8 @@ The `OrchardCore.Resources` module provides some commonly used ones:
 | jquery.easing         | Script | 1.4.1         | -              |
 | jquery-resizable-dom  | Script | 0.35.0        | -              |
 | popper                | Script | 1.16.1        | -              |
-| bootstrap             | Script | 3.4.0, 4.5.2  | jQuery, Popper |
-| bootstrap             | Style  | 3.4.0, 4.5.2  | -              |
+| bootstrap             | Script | 3.4.0, 4.5.3  | jQuery, Popper |
+| bootstrap             | Style  | 3.4.0, 4.5.3  | -              |
 | bootstrap-select      | Script | 1.13.18       | -              |
 | bootstrap-select      | Style  | 1.13.18       | -              |
 | bootstrap-slider      | Script | 11.0.2        | -              |
