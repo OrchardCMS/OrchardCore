@@ -176,37 +176,33 @@ namespace OrchardCore.Contents.Controllers
                 new SelectListItem() { Text = S["Delete"], Value = nameof(ContentsBulkAction.Remove) }
             };
 
-            // When using the AdminMenus ContentTypes Feature and specifying a Content Type hide the 'Content Type' filter.
-            if (String.IsNullOrEmpty(contentTypeId) && model.Options.ContentTypeOptions == null)
+            var listableTypes = new List<ContentTypeDefinition>();
+            foreach (var ctd in _contentDefinitionManager.ListTypeDefinitions())
             {
-                var listableTypes = new List<ContentTypeDefinition>();
-                foreach (var ctd in _contentDefinitionManager.ListTypeDefinitions())
+                if (ctd.GetSettings<ContentTypeSettings>().Listable)
                 {
-                    if (ctd.GetSettings<ContentTypeSettings>().Listable)
+                    var contentItem = await _contentManager.NewAsync(ctd.Name);
+                    contentItem.Owner = context.User.Identity.Name;
+                    var authorized = await _authorizationService.AuthorizeAsync(User, CommonPermissions.EditContent, contentItem);
+
+                    if (authorized)
                     {
-                        var contentItem = await _contentManager.NewAsync(ctd.Name);
-                        contentItem.Owner = context.User.Identity.Name;
-                        var authorized = await _authorizationService.AuthorizeAsync(User, CommonPermissions.EditContent, contentItem);
-                        
-                        if (authorized)
-                        {
-                            listableTypes.Add(ctd);
-                        }
+                        listableTypes.Add(ctd);
                     }
                 }
+            }
 
-                var contentTypeOptions = listableTypes
-                    .Select(ctd => new KeyValuePair<string, string>(ctd.Name, ctd.DisplayName))
-                    .ToList().OrderBy(kvp => kvp.Value);
+            var contentTypeOptions = listableTypes
+                .Select(ctd => new KeyValuePair<string, string>(ctd.Name, ctd.DisplayName))
+                .ToList().OrderBy(kvp => kvp.Value);
 
-                model.Options.ContentTypeOptions = new List<SelectListItem>
-                {
-                    new SelectListItem() { Text = S["All content types"], Value = "" }
-                };
-                foreach (var option in contentTypeOptions)
-                {
-                    model.Options.ContentTypeOptions.Add(new SelectListItem() { Text = option.Value, Value = option.Key });
-                }
+            model.Options.ContentTypeOptions = new List<SelectListItem>
+            {
+                new SelectListItem() { Text = S["All content types"], Value = "" }
+            };
+            foreach (var option in contentTypeOptions)
+            {
+                model.Options.ContentTypeOptions.Add(new SelectListItem() { Text = option.Value, Value = option.Key, Selected = (option.Value == model.Options.SelectedContentType) });
             }
 
             //if ContentTypeOptions is not initialized by query string or by the code above, initialize it
