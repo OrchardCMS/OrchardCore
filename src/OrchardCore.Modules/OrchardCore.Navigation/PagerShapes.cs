@@ -278,10 +278,26 @@ namespace OrchardCore.Navigation
                     else
                     {
                         if (p == 1)
+                        {
                             routeData.Remove(pageKey);
+                        }
                         else
+                        {
                             routeData[pageKey] = p;
-                        shape.Add(await New.Pager_Link(Value: p, RouteValues: new RouteValueDictionary(routeData), Pager: shape));
+                        }
+
+                        var pagerItem = await New.Pager_Link(Value: p, RouteValues: new RouteValueDictionary(routeData), Pager: shape);
+
+                        if (p > currentPage)
+                        {
+                            pagerItem.Attributes["rel"] = "next";
+                        }
+                        else if (p < currentPage)
+                        {
+                            pagerItem.Attributes["rel"] = "prev";
+                        }
+
+                        shape.Add(pagerItem);
                     }
                 }
             }
@@ -367,7 +383,6 @@ namespace OrchardCore.Navigation
         {
             shape.Metadata.Alternates.Clear();
             shape.Metadata.Type = "Pager_Link";
-            shape.Attributes["rel"] = "nofollow";
             return DisplayAsync(shape);
         }
 
@@ -376,7 +391,7 @@ namespace OrchardCore.Navigation
         {
             shape.Metadata.Alternates.Clear();
             shape.Metadata.Type = "Pager_Link";
-            shape.Attributes["rel"] = "nofollow";
+            shape.Attributes["rel"] = "prev";
             return DisplayAsync(shape);
         }
 
@@ -387,7 +402,7 @@ namespace OrchardCore.Navigation
             shape.Metadata.Type = "Pager_Link";
             var parentTag = (TagBuilder)shape.Properties["Tag"];
             parentTag.AddCssClass("active");
-            shape.Attributes["rel"] = "nofollow";
+            shape.Attributes["rel"] = "canonical";
             return DisplayAsync(shape);
         }
 
@@ -396,7 +411,7 @@ namespace OrchardCore.Navigation
         {
             shape.Metadata.Alternates.Clear();
             shape.Metadata.Type = "Pager_Link";
-            shape.Attributes["rel"] = "nofollow";
+            shape.Attributes["rel"] = "next";
             return DisplayAsync(shape);
         }
 
@@ -405,7 +420,6 @@ namespace OrchardCore.Navigation
         {
             shape.Metadata.Alternates.Clear();
             shape.Metadata.Type = "Pager_Link";
-            shape.Attributes["rel"] = "nofollow";
             return DisplayAsync(shape);
         }
 
@@ -414,7 +428,6 @@ namespace OrchardCore.Navigation
         {
             shape.Metadata.Alternates.Clear();
             shape.Metadata.Type = "ActionLink";
-            shape.Attributes["rel"] = "nofollow";
             return DisplayAsync(shape);
         }
 
@@ -440,7 +453,15 @@ namespace OrchardCore.Navigation
                 rvd = RouteValues as RouteValueDictionary ?? new RouteValueDictionary(RouteValues);
             }
 
-            shape.Attributes["href"] = Url.Action((string)rvd["action"], (string)rvd["controller"], rvd);
+            if (!Disabled)
+            {
+                shape.Attributes["href"] = Url.Action((string)rvd["action"], (string)rvd["controller"], rvd);
+            }
+            else
+            {
+                shape.Attributes.Remove("href");
+            }
+
             var tag = Shape.GetTagBuilder("a", null, shape.Classes, shape.Attributes);
 
             tag.InnerHtml.AppendHtml(CoerceHtmlString(Value));
