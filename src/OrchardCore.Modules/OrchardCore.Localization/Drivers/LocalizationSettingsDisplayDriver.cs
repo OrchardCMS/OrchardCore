@@ -18,9 +18,6 @@ using OrchardCore.Settings;
 
 namespace OrchardCore.Localization.Drivers
 {
-    /// <summary>
-    /// Represents a <see cref="DisplayDriver"/> for the localization settings section in the admin site.
-    /// </summary>
     public class LocalizationSettingsDisplayDriver : SectionDisplayDriver<ISite, LocalizationSettings>
     {
         public const string GroupId = "localization";
@@ -32,14 +29,6 @@ namespace OrchardCore.Localization.Drivers
         private readonly IHtmlLocalizer H;
         private readonly IStringLocalizer S;
 
-        /// <summary>
-        /// Creates a new instance of <see cref="LocalizationSettingsDisplayDriver"/>.
-        /// </summary>
-        /// <param name="notifier">The <see cref="INotifier"/>.</param>
-        /// <param name="shellHost">The <see cref="IShellHost"/>.</param>
-        /// <param name="shellSettings">The <see cref="ShellSettings"/>.</param>
-        /// <param name="h">The <see cref="IHtmlLocalizer"/>.</param>
-        /// <param name="s">The <see cref="IStringLocalizer"/>.</param>
         public LocalizationSettingsDisplayDriver(
             INotifier notifier,
             IShellHost shellHost,

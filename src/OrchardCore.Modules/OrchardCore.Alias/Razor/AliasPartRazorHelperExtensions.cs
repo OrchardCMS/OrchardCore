@@ -12,6 +12,7 @@ public static class AliasPartRazorHelperExtensions
     /// <summary>
     /// Returns a content item id by its alias.
     /// </summary>
+    /// <param name="orchardHelper">The <see cref="IOrchardHelper"/>.</param>
     /// <param name="alias">The alias.</param>
     /// <example>GetContentItemIdByAliasAsync("carousel")</example>
     /// <returns>A content item id or <c>null</c> if it was not found.</returns>
@@ -37,6 +38,7 @@ public static class AliasPartRazorHelperExtensions
     /// <summary>
     /// Loads a content item by its alias.
     /// </summary>
+    /// <param name="orchardHelper">The <see cref="IOrchardHelper"/>.</param>
     /// <param name="alias">The alias to load.</param>
     /// <param name="latest">Whether a draft should be loaded if available. <c>false</c> by default.</param>
     /// <example>GetContentItemIdByAliasAsync("carousel")</example>
