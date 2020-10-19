@@ -119,8 +119,6 @@ namespace OrchardCore.Lists
             services.AddContentPart<ListPart>()
                 .UseDisplayDriver<ListPartFeedDisplayDriver>()
                 .AddHandler<ListPartFeedHandler>();
-
-
         }
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
