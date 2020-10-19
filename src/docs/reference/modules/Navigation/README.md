@@ -124,7 +124,7 @@ would in turn look for the template `Pager-MainBlog.Previous.cshtml`.
 
 ## SEO
 
-To block search engines from crawling all your pagers links ; it is possible to override the Pager anchors "rel" attributes with "no-follow". To enable this you will need simply to do this : 
+In order to block search engines from crawling all your pagers links, it is possible to override the Pager anchors "rel" attributes with "no-follow". To achieve this, you can simply do this: 
 
 === "Liquid"
 
