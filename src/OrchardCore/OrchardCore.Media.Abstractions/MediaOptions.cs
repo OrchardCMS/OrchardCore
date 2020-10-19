@@ -50,8 +50,21 @@ namespace OrchardCore.Media
         public string AssetsPath { get; set; }
 
         /// <summary>
+        /// When using crop anchors specifies the length of precision to allow.
+        /// When <see cref="UseTokenizedQueryString" /> is true allows any precision length.
+        /// </summary>
+        public int CropPrecision { get; set; }
+
+        /// <summary>
+        /// Encrypts the image processing query string to prevent disc filling.
+        /// </summary>
+        public bool UseTokenizedQueryString { get; set; }
+
+        /// <summary>
         /// The static file options used to serve non resized media.
         /// </summary>
         public StaticFileOptions StaticFileOptions { get; set; }
+
+        public const string EncryptedCommandCacheKeyPrefix = "MediaCommands:";
     }
 }

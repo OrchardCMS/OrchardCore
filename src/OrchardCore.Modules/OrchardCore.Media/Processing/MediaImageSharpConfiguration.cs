@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Web.Commands;
@@ -26,49 +27,69 @@ namespace OrchardCore.Media.Processing
             options.BrowserMaxAge = TimeSpan.FromDays(_mediaOptions.MaxBrowserCacheDays);
             options.CacheMaxAge = TimeSpan.FromDays(_mediaOptions.MaxCacheDays);
             options.CachedNameLength = 12;
-            options.OnParseCommandsAsync = validation =>
+            options.OnParseCommandsAsync = commandContext =>
             {
-                // Force some parameters to prevent disk filling.
-
-                if (validation.Commands.Count > 0)
+                if (commandContext.Commands.Count == 0)
                 {
-                    validation.Commands.Remove(ResizeWebProcessor.Compand);
-                    validation.Commands.Remove(ResizeWebProcessor.Sampler);
+                    return Task.CompletedTask;
+                }
 
-                    float[] coordinates = validation.Parser.ParseValue<float[]>(validation.Commands.GetValueOrDefault(ResizeWebProcessor.Xy), validation.Culture);
-
-                    if (coordinates.Length != 2)
+                var mediaOptions = commandContext.Context.RequestServices.GetRequiredService<IOptions<MediaOptions>>().Value;
+                if (mediaOptions.UseTokenizedQueryString)
+                {
+                    if (commandContext.Commands.ContainsKey(TokenCommandProcessor.TokenCommand))
                     {
-                        validation.Commands.Remove(ResizeWebProcessor.Xy);
+                        var mediaTokenService =  commandContext.Context.RequestServices.GetRequiredService<IMediaTokenService>();
+                        var token = commandContext.Parser.ParseValue<string>(commandContext.Commands.GetValueOrDefault(TokenCommandProcessor.TokenCommand), commandContext.Culture);
+                        var commands = mediaTokenService.GetTokenizedCommands(token);
+
+                        commandContext.Commands.Clear();
+
+                        // When token is invalid no image commands will be processed.
+                        if (commands == null)
+                        {
+                            return Task.CompletedTask;
+                        }
+
+                        // Set commands to the tokens value.
+                        foreach(var command in commands)
+                        {
+                            commandContext.Commands[command.Key] = command.Value;
+                        }
                     }
                     else
                     {
-                        // This prevents a 0.9999 being seen as a different image to 0.9, to prevent disk filling.
-                        var x = coordinates[0].ToString("0.#");
-                        var y = coordinates[1].ToString("0.#");
-                        validation.Commands[ResizeWebProcessor.Xy] = x + ',' + y;
+                        // When tokenization is enabled, but a token is not present, clear the commands to no-op the image processing pipeline.
+                        commandContext.Commands.Clear();
+                        return Task.CompletedTask;
                     }
+                }
 
-                    // Center is xy
-                    // validation.Commands.Remove(ResizeWebProcessor.Xy);
-                    // Anchor is position
-                    //        Center = 0,
-                    //
-                    // Summary:
-                    //     Anchors the position of the image to the top of it's bounding container.
-                    // Top = 1,
-                    // Bottom = 2,
-                    //
-                    // Summary:
-                    //     Anchors the position of the image to the left of it's bounding container.
-                    // Left = 3,
-                    // validation.Commands.Remove(ResizeWebProcessor.Anchor);
-                    validation.Commands.Remove(BackgroundColorWebProcessor.Color);
+                commandContext.Commands.Remove(ResizeWebProcessor.Compand);
+                commandContext.Commands.Remove(ResizeWebProcessor.Sampler);
+                if (commandContext.Commands.ContainsKey(ResizeWebProcessor.Xy))
+                {
+                    var coordinates = commandContext.Parser.ParseValue<float[]>(commandContext.Commands.GetValueOrDefault(ResizeWebProcessor.Xy), commandContext.Culture);
 
-                    if (!validation.Commands.ContainsKey(ResizeWebProcessor.Mode))
+                    if (coordinates.Length != 2)
                     {
-                        validation.Commands[ResizeWebProcessor.Mode] = "max";
+                        commandContext.Commands.Remove(ResizeWebProcessor.Xy);
                     }
+                    else if (!mediaOptions.UseTokenizedQueryString)
+                    {
+                        var cropFormat = "0." + new String('#', mediaOptions.CropPrecision);
+                        var x = coordinates[0].ToString(cropFormat);
+                        var y = coordinates[1].ToString(cropFormat);
+                        commandContext.Commands[ResizeWebProcessor.Xy] = x + ',' + y;
+                    }
+                }
+
+                commandContext.Commands.Remove(ResizeWebProcessor.Anchor);
+                commandContext.Commands.Remove(BackgroundColorWebProcessor.Color);
+
+                if (!commandContext.Commands.ContainsKey(ResizeWebProcessor.Mode))
+                {
+                    commandContext.Commands[ResizeWebProcessor.Mode] = "max";
                 }
 
                 return Task.CompletedTask;

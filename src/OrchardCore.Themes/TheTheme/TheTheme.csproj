@@ -19,6 +19,7 @@
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Users\OrchardCore.Users.csproj" />
 
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Menu\OrchardCore.Menu.csproj" />
+    <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Media\OrchardCore.Media.csproj" />
   </ItemGroup>
 
 </Project>

@@ -129,7 +129,10 @@ namespace OrchardCore.Media
             services.AddImageSharp()
                 .RemoveProvider<PhysicalFileSystemProvider>()
                 .AddProvider<MediaResizingFileProvider>()
-                .AddProcessor<ImageVersionProcessor>();
+                .AddProcessor<ImageVersionProcessor>()
+                .AddProcessor<TokenCommandProcessor>();
+
+            services.AddSingleton<IMediaTokenService, MediaTokenService>();
 
             // Media Field
             services.AddContentField<MediaField>()
@@ -336,7 +339,7 @@ namespace OrchardCore.Media
 
             services.AddTransient<IDeploymentSource, AllMediaProfilesDeploymentSource>();
             services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AllMediaProfilesDeploymentStep>());
-            services.AddScoped<IDisplayDriver<DeploymentStep>, AllMediaProfilesDeploymentStepDriver>();            
+            services.AddScoped<IDisplayDriver<DeploymentStep>, AllMediaProfilesDeploymentStepDriver>();
         }
     }
 

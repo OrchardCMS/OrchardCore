@@ -53,6 +53,9 @@ namespace OrchardCore.Media.Services
         private const string DefaultAssetsPath = "Media";
         private const string DefaultAssetsRequestPath = "/media";
 
+        private const int DefaultCropPrecision = 1;
+        private const bool DefaultUseTokenizedQueryString = false;
+
         // default-src self applied to prevent possible svg xss injection.
         // style-src applied to allow browser behaviour of wrapping raw images in a styled img element.
         private const string DefaultContentSecurityPolicy = "default-src 'self'; style-src 'unsafe-inline'";
@@ -84,6 +87,8 @@ namespace OrchardCore.Media.Services
             options.CdnBaseUrl = section.GetValue("CdnBaseUrl", String.Empty).TrimEnd('/').ToLower();
             options.AssetsRequestPath = section.GetValue("AssetsRequestPath", DefaultAssetsRequestPath);
             options.AssetsPath = section.GetValue("AssetsPath", DefaultAssetsPath);
+            options.CropPrecision = section.GetValue("CropPrecision", DefaultCropPrecision);
+            options.UseTokenizedQueryString = section.GetValue("UseTokenizedQueryString", DefaultUseTokenizedQueryString);
 
             var contentSecurityPolicy = section.GetValue("ContentSecurityPolicy", DefaultContentSecurityPolicy);
 

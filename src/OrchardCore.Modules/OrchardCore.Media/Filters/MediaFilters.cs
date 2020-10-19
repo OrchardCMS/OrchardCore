@@ -5,6 +5,7 @@ using Fluid;
 using Fluid.Values;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using OrchardCore.Liquid;
 using OrchardCore.Media.Services;
 
@@ -54,18 +55,19 @@ namespace OrchardCore.Media.Filters
             var url = input.ToStringValue();
 
             IDictionary<string, string> queryStringParams = null;
+            if (!ctx.AmbientValues.TryGetValue("Services", out var services))
+            {
+                throw new ArgumentException("Services missing while invoking 'resize_url'");
+            }
+
+            var serviceProvider = ((IServiceProvider)services);
 
             // Profile is a named argument only.
             var profile = arguments["profile"];
 
             if (!profile.IsNil())
             {
-                if (!ctx.AmbientValues.TryGetValue("Services", out var services))
-                {
-                    throw new ArgumentException("Services missing while invoking 'resize_url'");
-                }
-
-                var mediaProfileService = ((IServiceProvider)services).GetRequiredService<IMediaProfileService>();
+                var mediaProfileService = serviceProvider.GetRequiredService<IMediaProfileService>();
                 queryStringParams = await mediaProfileService.GetMediaProfileCommands(profile.ToStringValue());
 
                 // Additional commands to a profile must be named.
@@ -92,7 +94,17 @@ namespace OrchardCore.Media.Filters
                 ApplyQueryStringParams(queryStringParams, width, height, mode, quality, format, center);
             }
 
-            return new StringValue(QueryHelpers.AddQueryString(url, queryStringParams));
+            var resizedUrl = QueryHelpers.AddQueryString(url, queryStringParams);
+
+            var mediaOptions = serviceProvider.GetRequiredService<IOptions<MediaOptions>>().Value;
+
+            if (mediaOptions.UseTokenizedQueryString)
+            {
+                var mediaTokenService = serviceProvider.GetRequiredService<IMediaTokenService>();
+                resizedUrl = mediaTokenService.TokenizePath(resizedUrl);
+            }
+
+            return new StringValue(resizedUrl);
         }
 
         private static void ApplyQueryStringParams(IDictionary<string, string> queryStringParams, FluidValue width, FluidValue height, FluidValue mode, FluidValue quality, FluidValue format, FluidValue center)
