@@ -24,7 +24,7 @@ namespace OrchardCore.Lists.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> UpdateContentItemOrders(string containerId, int oldIndex, int newIndex, PagerSlimParameters pagerSlimParameters, int pageSize)
+        public async Task<IActionResult> UpdateContentItemOrders(string containerId, int oldIndex, int newIndex, PagerSlimParameters pagerSlimParameters, int pageSize, ListPart listPart)
         {
             var pager = new PagerSlim(pagerSlimParameters, pageSize);
             // Reverse pager as it represents the next page(s), rather than current page
@@ -53,7 +53,7 @@ namespace OrchardCore.Lists.Controllers
             }
 
             // Include draft items.
-            var pageOfContentItems = (await _containerService.QueryContainedItemsAsync(containerId, true, pager, false)).ToList();
+            var pageOfContentItems = (await _containerService.QueryContainedItemsAsync(containerId, true, pager, false, null)).ToList();
             if (pageOfContentItems == null || !pageOfContentItems.Any())
             {
                 return NotFound();

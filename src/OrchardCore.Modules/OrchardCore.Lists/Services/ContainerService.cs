@@ -3,11 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using GraphQL;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Lists.Indexes;
 using OrchardCore.Lists.Models;
+using OrchardCore.Lists.ViewModels;
 using OrchardCore.Navigation;
+using OrchardCore.Title.Models;
 using YesSql;
 using YesSql.Services;
 
@@ -276,13 +279,16 @@ namespace OrchardCore.Lists.Services
                         .Take(pager.PageSize + 1);
                 }
 
-                var containedItems = await query.ListAsync();
+               var containedItems = await query.ListAsync();
 
                 if (containedItems.Count() == 0)
                 {
                     return containedItems;
                 }
-
+                if (listPartFilter.DisplayText != null)
+                {
+                    containedItems = containedItems.Where<ContentItem>(i => i.ContentItem.As<TitlePart>().Title.Contains(listPartFilter.DisplayText)).ToList();
+                }
                 pager.Before = null;
                 pager.After = null;
 

@@ -1,10 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
+using OrchardCore.ContentManagement;
 
 namespace OrchardCore.Lists.Models
 {
-    class ListPartFilter
+    public class ListPartFilter
     {
         public string DisplayText { get; set; }
 
