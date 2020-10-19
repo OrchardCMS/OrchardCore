@@ -1896,6 +1896,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "jagbarcelo",
+      "name": "jagbarcelo",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/6704109?v=4",
+      "profile": "https://github.com/jagbarcelo",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true
