@@ -68,10 +68,6 @@ namespace OrchardCore.Lists
             services.AddScoped<IContentItemIndexHandler, ContainedPartContentIndexHandler>();
             services.AddScoped<IContainerService, ContainerService>();
 
-            services.AddContentPart<ListPart>()
-                .UseDisplayDriver<ListPartFeedDisplayDriver>()
-                .AddHandler<ListPartFeedHandler>();
-
             // Liquid
             services.AddLiquidFilter<ListCountFilter>("list_count");
             services.AddLiquidFilter<ListItemsFilter>("list_items");
@@ -80,13 +76,6 @@ namespace OrchardCore.Lists
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            routes.MapAreaControllerRoute(
-                name: "ListFeed",
-                areaName: "OrchardCore.Feeds",
-                pattern: "Contents/Lists/{contentItemId}/rss",
-                defaults: new { controller = "Feed", action = "Index", format = "rss" }
-            );
-
             routes.MapAreaControllerRoute(
                 name: "ListOrder",
                 areaName: "OrchardCore.Lists",
@@ -124,9 +113,23 @@ namespace OrchardCore.Lists
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            // Feeds            
+            // Feeds
             services.AddScoped<IFeedQueryProvider, ListFeedQuery>();
-            
+
+            services.AddContentPart<ListPart>()
+                .UseDisplayDriver<ListPartFeedDisplayDriver>()
+                .AddHandler<ListPartFeedHandler>();
+
+
+        }
+        public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+        {
+            routes.MapAreaControllerRoute(
+                name: "ListFeed",
+                areaName: "OrchardCore.Feeds",
+                pattern: "Contents/Lists/{contentItemId}/rss",
+                defaults: new { controller = "Feed", action = "Index", format = "rss" }
+            );
         }
     }
 }
