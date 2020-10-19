@@ -68,9 +68,6 @@ namespace OrchardCore.Lists
             services.AddScoped<IContentItemIndexHandler, ContainedPartContentIndexHandler>();
             services.AddScoped<IContainerService, ContainerService>();
 
-            // Feeds
-            // TODO: Create feature
-            services.AddScoped<IFeedQueryProvider, ListFeedQuery>();
             services.AddContentPart<ListPart>()
                 .UseDisplayDriver<ListPartFeedDisplayDriver>()
                 .AddHandler<ListPartFeedHandler>();
@@ -119,6 +116,17 @@ namespace OrchardCore.Lists
             services.AddScoped<IContentLocalizationPartHandler, ListPartLocalizationHandler>();
             services.AddContentPart<LocalizationPart>()
                 .AddHandler<LocalizationContainedPartHandler>();
+        }
+    }
+
+    [RequireFeatures("OrchardCore.Feeds")]
+    public class FeedsStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            // Feeds            
+            services.AddScoped<IFeedQueryProvider, ListFeedQuery>();
+            
         }
     }
 }
