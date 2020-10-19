@@ -704,7 +704,8 @@
       "profile": "https://www.davidhayden.me",
       "contributions": [
         "code",
-        "blog"
+        "blog",
+        "doc"
       ]
     },
     {
@@ -1885,6 +1886,24 @@
       "profile": "https://github.com/lomholdt",
       "contributions": [
         "doc"
+      ]
+    },
+    {
+      "login": "scriptmaster",
+      "name": "ScriptMaster",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/544175?v=4",
+      "profile": "https://github.com/scriptmaster",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "jagbarcelo",
+      "name": "jagbarcelo",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/6704109?v=4",
+      "profile": "https://github.com/jagbarcelo",
+      "contributions": [
+        "code"
       ]
     }
   ],

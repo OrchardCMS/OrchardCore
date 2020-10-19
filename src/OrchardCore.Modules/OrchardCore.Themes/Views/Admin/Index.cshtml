@@ -25,7 +25,7 @@ else
                         {
                             <small><a href="@themeEntry.Extension.Manifest.Website" target="_blank">@themeEntry.Extension.Manifest.Website</a></small><br />
                         }
-                        @if(themeEntry.Extension.Manifest.Tags.Any())
+                        @if (themeEntry.Extension.Manifest.Tags.Any())
                         {
                             <small>@T["Tags: {0}", string.Join(", ", themeEntry.Extension.Manifest.Tags.ToArray())]</small><br />
                         }
