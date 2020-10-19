@@ -1,13 +1,11 @@
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.Contents;
 using OrchardCore.Contents.Security;
 using OrchardCore.Security.Permissions;
-using OrchardCore.ContentManagement;
-using OrchardCore.ContentManagement.Metadata;
-using OrchardCore.ContentManagement.Metadata.Models;
-using OrchardCore.ContentManagement.Metadata.Settings;
 
 namespace Microsoft.AspNetCore.Authorization
 {
@@ -18,12 +16,12 @@ namespace Microsoft.AspNetCore.Authorization
         /// </summary>
         public static async Task<bool> AuthorizeContentTypeDefinitionsAsync(this IAuthorizationService service, ClaimsPrincipal user, Permission requiredPermission, IEnumerable<ContentTypeDefinition> contentTypeDefinitions, IContentManager contentManager)
         {
-            foreach(var contentTypeDefinition in contentTypeDefinitions)
+            foreach (var contentTypeDefinition in contentTypeDefinitions)
             {
                 var permission = GetOwnerVariation(requiredPermission);
                 var contentTypePermission = ContentTypePermissionsHelper.ConvertToDynamicPermission(permission);
                 permission = ContentTypePermissionsHelper.CreateDynamicPermission(contentTypePermission, contentTypeDefinition);
-                
+
                 var contentItem = await contentManager.NewAsync(contentTypeDefinition.Name);
                 contentItem.Owner = user.Identity.Name;
 
