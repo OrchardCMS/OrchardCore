@@ -3,6 +3,7 @@ using System.Threading;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Environment.Shell.Builders;
+using OrchardCore.Locking;
 using OrchardCore.Locking.Distributed;
 
 namespace OrchardCore.Environment.Shell.Distributed
@@ -34,7 +35,7 @@ namespace OrchardCore.Environment.Shell.Distributed
             DistributedCache = distributedCache;
 
             var distributedLock = context.ServiceProvider.GetService<IDistributedLock>();
-            if (distributedLock == null || distributedLock is MemoryDistributedCache)
+            if (distributedLock == null || distributedLock is LocalLock)
             {
                 return;
             }
