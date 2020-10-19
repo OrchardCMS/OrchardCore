@@ -209,7 +209,7 @@ namespace OrchardCore.Contents.Controllers
                 }
             }
 
-            //if ContentTypeOptions is not initialized by query string or by the code above, initialize it
+            // If ContentTypeOptions is not initialized by query string or by the code above, initialize it
             if (model.Options.ContentTypeOptions == null)
             {
                 model.Options.ContentTypeOptions = new List<SelectListItem>();
