@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement;
+using OrchardCore.ContentLocalization;
 using OrchardCore.Entities;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Indexing;
@@ -186,7 +187,8 @@ namespace OrchardCore.Lucene
                                     continue;
                                 }
 
-                                var ignoreIndexedCulture = settings.Culture == "any" ? false : context.ContentItem.Content?.LocalizationPart?.Culture != settings.Culture;
+                                var contentItemCultureAspect = await contentManager.PopulateAspectAsync(context.ContentItem, new CultureAspect(){ Culture = null });
+                                var ignoreIndexedCulture = settings.Culture == "any" ? false : contentItemCultureAspect.Culture?.Name != settings.Culture;
 
                                 // Ignore if the content item content type or culture is not indexed in this index
                                 if (!settings.IndexedContentTypes.Contains(context.ContentItem.ContentType) || ignoreIndexedCulture)

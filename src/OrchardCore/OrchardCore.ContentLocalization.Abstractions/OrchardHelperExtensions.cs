@@ -15,11 +15,12 @@ namespace OrchardCore.ContentLocalization
         /// </summary>
         /// <param name="orchardHelper">The <see cref="IOrchardHelper"/>.</param>
         /// <param name="contentItem">The <see cref="ContentItem"/> in which to get its culture.</param>
+        /// <param name="defaultCulture">The <see cref="CultureInfo"/> the default culture it should fallback to.</param>
         /// <returns></returns>
-        public async static Task<CultureInfo> GetContentCultureAsync(this IOrchardHelper orchardHelper, ContentItem contentItem)
+        public async static Task<CultureInfo> GetContentCultureAsync(this IOrchardHelper orchardHelper, ContentItem contentItem, CultureInfo defaultCulture = CultureInfo.CurrentUICulture)
         {
             var contentManager = orchardHelper.HttpContext.RequestServices.GetService<IContentManager>();
-            var cultureAspect = await contentManager.PopulateAspectAsync(contentItem, new CultureAspect());
+            var cultureAspect = await contentManager.PopulateAspectAsync(contentItem, new CultureAspect(){ Culture = defaultCulture });
 
             return cultureAspect.Culture;
         }
