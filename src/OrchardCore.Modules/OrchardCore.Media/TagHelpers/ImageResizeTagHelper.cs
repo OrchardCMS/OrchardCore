@@ -48,7 +48,7 @@ namespace OrchardCore.Media.TagHelpers
         public string ImageProfile { get; set; }
 
         [HtmlAttributeName(ImageCenterAttributeName)]
-        public float[] ImageCenter { get; set; }
+        public float?[] ImageCenter { get; set; }
 
         [HtmlAttributeName("src")]
         public string Src { get; set; }

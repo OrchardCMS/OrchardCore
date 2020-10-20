@@ -58,8 +58,8 @@ namespace OrchardCore.Media.Processing
                 }
             }
 
-            // Using the command string as a key retrieve from cache
-            var key = String.Concat(processingCommands.Keys);
+            // Using the command values as a key retrieve from cache
+            var key = String.Concat(processingCommands.Values);
 
             var queryStringTokenKey = TokenCacheKeyPrefix + key;
 
