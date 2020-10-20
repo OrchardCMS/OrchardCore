@@ -42,7 +42,7 @@ namespace OrchardCore.Environment.Shell
         /// Releases a shell so that a new one will be built for subsequent requests.
         /// Note: Can be used to free up resources after a given time of inactivity.
         /// </summary>
-        /// <param name="settings">The <see cref="ShellSettings"/> to reload</param>
+        /// <param name="settings">The <see cref="ShellSettings"/> to reload.</param>
         /// <param name="eventSource">
         /// Whether the related <see cref="ShellEvent"/> is invoked.
         /// </param>
