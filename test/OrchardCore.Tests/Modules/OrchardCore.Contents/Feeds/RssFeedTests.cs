@@ -52,6 +52,42 @@ namespace OrchardCore.Tests.Modules.Contents.Feeds
             Assert.Equal("<description><![CDATA[<p>The news description goes here ...</p>]]></description>", description);
         }
 
+        [Theory]
+        [InlineData("rss")]
+        [InlineData("non rss")]
+        public async Task AvoidDoubleEncodeStrings(string format)
+        {
+            // Arrange
+            var contentManagerMock = new Mock<IContentManager>();
+            var commonFeedItemBuilder = new CommonFeedItemBuilder(contentManagerMock.Object);
+            var feedContext = CreateFeedContext(format);
+
+            contentManagerMock.SetReturnsDefault(Task.FromResult(new ContentItemMetadata
+            {
+                DisplayRouteValues = new RouteValueDictionary()
+            }));
+
+            contentManagerMock.SetReturnsDefault(Task.FromResult(new BodyAspect
+            {
+                Body = new HtmlString("<p>The news description goes here ...</p>")
+            }));
+
+            feedContext.Builder.AddItem(feedContext, new ContentItem
+            {
+                DisplayText = "It's a great title & so much > than anybody's!",
+                PublishedUtc = DateTime.UtcNow
+            });
+
+            // Act
+            await commonFeedItemBuilder.PopulateAsync(feedContext);
+
+            // Assert
+            var title = feedContext.Response.Items[0].Element.Element("title").ToString();
+
+            Assert.NotEqual("<title>It&amp;#39;s a great title &amp;amp; so much &amp;gt; than anybody&amp;#39;s!</title>", title);
+            Assert.Equal("<title>It's a great title &amp; so much &gt; than anybody's!</title>", title);
+        }
+
         private static FeedContext CreateFeedContext(string format)
         {
             var feedContextMock = new Mock<FeedContext>(Mock.Of<IUpdateModel>(), format);
