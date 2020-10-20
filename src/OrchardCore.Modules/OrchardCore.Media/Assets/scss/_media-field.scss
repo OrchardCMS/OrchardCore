@@ -1,7 +1,3 @@
-@import "../../node_modules/bootstrap/scss/functions";
-@import "../../node_modules/bootstrap/scss/variables";
-@import "../../node_modules/bootstrap/scss/mixins/breakpoints";
-
 .media-field-toolbar {
     display: flex;
 
@@ -31,7 +27,7 @@
     }
 }
 
-@include media-breakpoint-up(lg) {
+@media (min-width: 992px) {
     .media-crop-modal {
         .modal-lg {
             max-width: 1200px;
@@ -40,6 +36,10 @@
 }
 
 .media-crop-modal {
+    // TODO fix. breaks centering
+    // .img-modal {
+    //     max-height: 70vh;
+    // }
     .icon-media-crop {
         position: absolute;
         line-height: 0px;

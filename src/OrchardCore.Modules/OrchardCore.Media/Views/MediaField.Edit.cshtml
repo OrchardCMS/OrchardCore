@@ -27,7 +27,7 @@
             </button>
             <a href="javascript:;" v-show="canAddMedia" v-on:click="showModal" class="btn btn-secondary btn-sm"><i class="fas fa-plus"></i></a>
             <a href="javascript:;" v-show="allowMediaText" v-on:click="showMediaTextModal" class="btn btn-secondary btn-sm" v-bind:class="{ disabled : !selectedMedia }"><i class="far fa-comment"></i></a>
-            <a href="javascript:;" v-show="allowCenterCropping" v-on:click="showCenterCroppingModal" class="btn btn-secondary btn-sm" v-bind:class="{ disabled : !selectedMedia }"><i class="fas fa-crop-alt"></i></a>
+            <a href="javascript:;" v-show="allowCenterCropping" v-on:click="showCenterCroppingModal" class="btn btn-secondary btn-sm" v-bind:class="{ disabled : !selectedMedia }"><i class="fas fa-crosshairs"></i></a>
             <a href="javascript:;" v-on:click="removeSelected" class="btn btn-secondary btn-sm" v-bind:class="{ disabled : !selectedMedia }"><i class="fas fa-trash-alt"></i></a>
         </div>
         <label class="selected-media-name">
