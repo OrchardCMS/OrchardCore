@@ -22,13 +22,12 @@
 </head>
 <body class="preload">
     <div class="ta-wrapper">
-        <div class="ta-navbar-top navbar-expand-lg navbar-light bg-light">
+        <div class="ta-navbar-top navbar-expand-lg bg-primary">
             <a class="ta-navbar-brand" href="@Url.Content("~/")">@Site.SiteName</a>
-                <div class="mr-auto">
-                    @await RenderSectionAsync("NavbarTop", required: false)
-                </div>
-                @await DisplayAsync(await New.UserMenu())
+            <div class="mr-auto">
+                @await RenderSectionAsync("NavbarTop", required: false)
             </div>
+            @(await DisplayAsync(await New.UserMenu()))
         </div>
 
         <div id="ta-left-sidebar" class="d-flex flex-column justify-content-between align-items-stretch">
@@ -45,7 +44,7 @@
 
             @await RenderBodyAsync()
         </div>
-    </div><!-- /.ta-wrapper -->
+    </div>
 
     @await RenderSectionAsync("Footer", required: false)
 

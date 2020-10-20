@@ -96,7 +96,7 @@ namespace OrchardCore.Lucene.Controllers
             {
                 return Forbid();
             }
-            
+
             model.Indexes = (await _luceneIndexSettingsService.GetSettingsAsync()).Select(i => new IndexViewModel { Name = i.IndexName });
 
             var siteSettings = await _siteService.GetSiteSettingsAsync();
@@ -368,8 +368,8 @@ namespace OrchardCore.Lucene.Controllers
                 {
                     var parameterizedQuery = JObject.Parse(tokenizedContent);
                     var luceneTopDocs = await _queryService.SearchAsync(context, parameterizedQuery);
-                    
-                    if(luceneTopDocs != null)
+
+                    if (luceneTopDocs != null)
                     {
                         model.Documents = luceneTopDocs.TopDocs.ScoreDocs.Select(hit => searcher.Doc(hit.Doc)).ToList();
                         model.Count = luceneTopDocs.Count;

@@ -3,12 +3,9 @@
 
 
 // Variables ===================================================================
-
-$web-font-path: "https://fonts.googleapis.com/css?family=Lato:400,700,400italic&display=swap" !default;
-@import url($web-font-path);
-
+@import "_admin-variables.scss";
 // Navbar ======================================================================
-
+@import "../../_sidebar-menu.scss";
 // Buttons =====================================================================
 
 // Typography ==================================================================

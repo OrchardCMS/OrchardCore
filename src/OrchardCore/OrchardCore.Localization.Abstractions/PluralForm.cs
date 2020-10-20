@@ -13,9 +13,9 @@ namespace OrchardCore.Localization
         /// <param name="key">The localized string.</param>
         /// <param name="form">The plural form.</param>
         public PluralForm(string key, int form)
-            :this(key, form, CultureInfo.CurrentUICulture)
+            : this(key, form, CultureInfo.CurrentUICulture)
         {
-            
+
         }
 
         /// <summary>

@@ -1,4 +1,3 @@
-using Markdig;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore.Infrastructure.Html;
@@ -54,7 +53,8 @@ namespace OrchardCore.Tests.Html
             });
 
             // Act. Reconfigure to remove defaults.
-            services.Configure<HtmlSanitizerOptions>(o => {
+            services.Configure<HtmlSanitizerOptions>(o =>
+            {
                 o.Configure.Clear();
             });
 

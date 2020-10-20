@@ -22,7 +22,7 @@ namespace OrchardCore.Tests.Localization
         public void MergeOverwritesTranslationsForSameKeys()
         {
             var dictionary = new CultureDictionary("cs", _csPluralRule);
-            var record = new CultureDictionaryRecord("ball","míč", "míče", "míčů");
+            var record = new CultureDictionaryRecord("ball", "míč", "míče", "míčů");
             var record2 = new CultureDictionaryRecord("ball", "balón", "balóny", "balónů");
 
             dictionary.MergeTranslations(new[] { record });

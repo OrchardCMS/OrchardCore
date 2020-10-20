@@ -322,9 +322,9 @@ namespace OrchardCore.Tests.Apis.ContentManagement.ContentApiController
                         .QueryIndex<AutoroutePartIndex>(x => x.ContentItemId == publishedContentItem.ContentItemId)
                         .FirstOrDefaultAsync();
 
-                        // The Autoroute part was not welded on, so ContentManager.NewAsync should add it
-                        // with an empty path and then generate a unique path from the liquid pattern.
-                        Assert.Equal("blog/some-other-blog-post", publishedContentItem.As<AutoroutePart>().Path);
+                    // The Autoroute part was not welded on, so ContentManager.NewAsync should add it
+                    // with an empty path and then generate a unique path from the liquid pattern.
+                    Assert.Equal("blog/some-other-blog-post", publishedContentItem.As<AutoroutePart>().Path);
                 });
             }
         }

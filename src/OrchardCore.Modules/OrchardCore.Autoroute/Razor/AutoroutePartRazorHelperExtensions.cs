@@ -13,7 +13,7 @@ public static class AutoroutePartRazorHelperExtensions
     /// <param name="slug">The slug.</param>
     /// <example>GetContentItemIdBySlugAsync("myblog/my-blog-post")</example>
     /// <returns>A content item id or <c>null</c> if it was not found.</returns>
-    public static Task<string> GetContentItemIdBySlugAsync(this IOrchardHelper orchardHelper, string slug)
+    public static async Task<string> GetContentItemIdBySlugAsync(this IOrchardHelper orchardHelper, string slug)
     {
         if (String.IsNullOrEmpty(slug))
         {
@@ -32,12 +32,15 @@ public static class AutoroutePartRazorHelperExtensions
         }
 
         var autorouteEntries = orchardHelper.HttpContext.RequestServices.GetService<IAutorouteEntries>();
-        if (autorouteEntries.TryGetEntryByPath(slug, out var entry))
+
+        (var found, var entry) = await autorouteEntries.TryGetEntryByPathAsync(slug);
+
+        if (found)
         {
-            return Task.FromResult(entry.ContentItemId);
+            return entry.ContentItemId;
         }
 
-        return Task.FromResult<string>(null);
+        return null;
     }
 
     /// <summary>

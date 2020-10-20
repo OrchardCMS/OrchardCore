@@ -2,9 +2,11 @@
 
 // Because !default means that a variable is not assigned if it already contains a value,
 // we alter the variable before importing boostrap as _variables.scss will use !default
+
 @import "modules/bootswatch/darkly/_variables.scss";
-@import "modules/bootswatch/TheAdmin/_variables.scss";
 @import "../../node_modules/bootstrap/scss/bootstrap";
+@import "modules/bootswatch/darkly/_bootswatch.scss";
+
 @import "modules/_sizes.scss";
 @import "modules/_cursors.scss";
 @import "modules/_word-wrap.scss";
@@ -12,5 +14,4 @@
 @import "codemirror.scss";
 @import "jquery-ui-datepicker-override.scss";
 
-@import "modules/bootswatch/TheAdmin/_bootswatch.scss";
-@import "modules/bootswatch/darkly/_bootswatch.scss";
+@import "modules/bootswatch/darkly/_admin.scss";

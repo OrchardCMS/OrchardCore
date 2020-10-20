@@ -4,10 +4,10 @@ using Fluid;
 using Microsoft.AspNetCore.Html;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore;
-using OrchardCore.Shortcodes.Services;
 using OrchardCore.Infrastructure.Html;
 using OrchardCore.Liquid;
 using OrchardCore.Markdown.Services;
+using OrchardCore.Shortcodes.Services;
 
 public static class ContentRazorHelperExtensions
 {
