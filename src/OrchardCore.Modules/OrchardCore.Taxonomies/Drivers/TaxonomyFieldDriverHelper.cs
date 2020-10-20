@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
-using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Taxonomies.Fields;
 using OrchardCore.Taxonomies.ViewModels;
 

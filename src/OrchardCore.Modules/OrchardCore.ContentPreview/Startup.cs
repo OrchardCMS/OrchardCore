@@ -10,7 +10,6 @@ using OrchardCore.ContentPreview.Settings;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data.Migration;
 using OrchardCore.ResourceManagement;
-using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.ContentPreview
 {

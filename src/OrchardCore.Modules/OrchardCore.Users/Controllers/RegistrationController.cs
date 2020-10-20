@@ -86,7 +86,7 @@ namespace OrchardCore.Users.Controllers
                     ModelState.AddModelError("Email", S["A user with the same email already exists."]);
                 }
             }
-            
+
             ViewData["ReturnUrl"] = returnUrl;
 
             if (TryValidateModel(model) && ModelState.IsValid)

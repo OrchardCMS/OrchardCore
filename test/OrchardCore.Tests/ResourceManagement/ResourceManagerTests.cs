@@ -282,7 +282,8 @@ namespace OrchardCore.Tests.ResourceManagement
                 StubFileVersionProvider.Instance
             );
 
-            var linkEntry = new LinkEntry {
+            var linkEntry = new LinkEntry
+            {
                 Rel = "foo",
                 Href = "bar.ext"
             };
