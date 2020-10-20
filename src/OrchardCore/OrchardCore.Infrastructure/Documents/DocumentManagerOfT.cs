@@ -9,7 +9,7 @@ namespace OrchardCore.Documents
     /// A <see cref="DocumentManager<TDocument>"/> using a given type of <see cref="IDocumentStore"/>.
     /// </summary>
     public class DocumentManager<TDocumentStore, TDocument> : DocumentManager<TDocument>, IDocumentManager<TDocumentStore, TDocument>
-        where TDocumentStore: IDocumentStore where TDocument : class, IDocument, new()
+        where TDocumentStore : IDocumentStore where TDocument : class, IDocument, new()
     {
         public DocumentManager(
             TDocumentStore documentStore,

@@ -2,7 +2,6 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore;
-using OrchardCore.Alias.Indexes;
 using OrchardCore.Alias.Services;
 using OrchardCore.ContentManagement;
 using YesSql;

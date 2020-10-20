@@ -265,6 +265,6 @@ namespace OrchardCore.OpenId.Services.Managers
             => ListInRoleAsync(role, cancellationToken);
 
         ValueTask IOpenIdApplicationManager.SetRolesAsync(object application, ImmutableArray<string> roles, CancellationToken cancellationToken)
-            => SetRolesAsync((TApplication) application, roles, cancellationToken);
+            => SetRolesAsync((TApplication)application, roles, cancellationToken);
     }
 }

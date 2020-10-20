@@ -9,7 +9,7 @@ namespace OrchardCore.Infrastructure.Html
 
         public HtmlSanitizerService(IOptions<HtmlSanitizerOptions> options)
         {
-            foreach(var action in options.Value.Configure)
+            foreach (var action in options.Value.Configure)
             {
                 action?.Invoke(_sanitizer);
             }

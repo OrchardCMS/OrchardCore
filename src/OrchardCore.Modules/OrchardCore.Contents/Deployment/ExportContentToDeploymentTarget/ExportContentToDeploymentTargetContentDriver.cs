@@ -3,9 +3,8 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.ViewModels;
 using OrchardCore.Deployment;
-using OrchardCore.Deployment.Services;
-using OrchardCore.DisplayManagement.Views;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Entities;
 using OrchardCore.Settings;
 

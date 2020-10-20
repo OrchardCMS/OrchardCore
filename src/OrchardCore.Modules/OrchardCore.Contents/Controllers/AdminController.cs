@@ -186,7 +186,7 @@ namespace OrchardCore.Contents.Controllers
                         var contentItem = await _contentManager.NewAsync(ctd.Name);
                         contentItem.Owner = context.User.Identity.Name;
                         var authorized = await _authorizationService.AuthorizeAsync(User, CommonPermissions.EditContent, contentItem);
-                        
+
                         if (authorized)
                         {
                             listableTypes.Add(ctd);
