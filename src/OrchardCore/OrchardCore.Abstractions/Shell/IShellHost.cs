@@ -32,7 +32,7 @@ namespace OrchardCore.Environment.Shell
         /// Reloads the settings and releases the shell so that a new one will be
         /// built for subsequent requests, while existing requests get flushed.
         /// </summary>
-        /// <param name="settings">The <see cref="ShellSettings"/> to reload</param>
+        /// <param name="settings">The <see cref="ShellSettings"/> to reload.</param>
         /// <param name="eventSource">
         /// Whether the related <see cref="ShellEvent"/> is invoked.
         /// </param>
