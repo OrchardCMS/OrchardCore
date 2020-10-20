@@ -175,8 +175,7 @@ namespace OrchardCore.Contents.Controllers
                 new SelectListItem() { Text = S["Delete"], Value = nameof(ContentsBulkAction.Remove) }
             };
 
-            // When using the AdminMenus ContentTypes Feature and specifying a Content Type hide the 'Content Type' filter.
-            if (String.IsNullOrEmpty(contentTypeId) && model.Options.ContentTypeOptions == null)
+            if ((String.IsNullOrEmpty(model.Options.SelectedContentType) || String.IsNullOrEmpty(contentTypeId)) && model.Options.ContentTypeOptions == null)
             {
                 var listableTypes = new List<ContentTypeDefinition>();
                 foreach (var ctd in _contentDefinitionManager.ListTypeDefinitions())
@@ -202,13 +201,14 @@ namespace OrchardCore.Contents.Controllers
                 {
                     new SelectListItem() { Text = S["All content types"], Value = "" }
                 };
+
                 foreach (var option in contentTypeOptions)
                 {
-                    model.Options.ContentTypeOptions.Add(new SelectListItem() { Text = option.Value, Value = option.Key });
+                    model.Options.ContentTypeOptions.Add(new SelectListItem() { Text = option.Value, Value = option.Key, Selected = (option.Value == model.Options.SelectedContentType) });
                 }
             }
 
-            //if ContentTypeOptions is not initialized by query string or by the code above, initialize it
+            // If ContentTypeOptions is not initialized by query string or by the code above, initialize it
             if (model.Options.ContentTypeOptions == null)
             {
                 model.Options.ContentTypeOptions = new List<SelectListItem>();
