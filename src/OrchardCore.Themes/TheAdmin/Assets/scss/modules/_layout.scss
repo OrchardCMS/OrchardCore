@@ -1,0 +1,220 @@
+body {
+    margin-bottom: $footer-height;
+    cursor: default;
+}
+
+@include cursor-class(move);
+@include cursor-class(pointer);
+
+/* rtl:ignore */
+[dir=rtl] .dropdown-menu {
+    left: auto !important;
+    right: 0px !important;
+    transform: translate3d(0px, 38px, 0px) !important;
+}
+
+// Layout
+// -----------------------------
+
+
+// Layout 1 : ta-navbar-top
+// -----------------------------
+
+.ta-navbar-top {
+    @extend .navbar, .navbar-expand-md, .navbar-light, .fixed-top;
+    border-bottom: $border-content;
+    z-index: calc($zindex-sticky + 1);
+    padding: 0.3rem 1rem;
+    padding-left: 0;
+    box-shadow: 0 0.46875rem 2.1875rem rgba(4,9,20,0.03), 0 0.9375rem 1.40625rem rgba(4,9,20,0.03), 0 0.25rem 0.53125rem rgba(4,9,20,0.05), 0 0.125rem 0.1875rem rgba(4,9,20,0.03);
+
+    .nav-link {
+        font-size: 14px;
+    }
+
+    .nav-item {
+        text-align: right;
+    }
+
+    .breadcrumb {
+        background-color: transparent;
+        margin-top: 1rem;
+    }
+
+    .btn.nav-link {
+        display: inline-block;
+    }
+
+    @include media-breakpoint-down(sm) {
+        .navbar-collapse {
+            li:first-child .nav-link {
+                padding-top: 15px;
+            }
+
+            li:last-child .nav-link {
+                padding-bottom: 0px;
+            }
+        }
+    }
+}
+
+.ta-navbar-brand {
+    @extend .navbar-brand;
+    overflow: hidden;
+    height: 42px;
+    margin-left: 11px;
+    margin-right: 24px;
+    padding-left: 36px;
+    padding-top: 10px;
+    background-image: url(/TheAdmin/logo.png);
+    background-repeat: no-repeat;
+    background-position: left center;
+    background-size: 28px auto;
+    white-space: nowrap;
+    font-size: 14px;
+    transition: width 0.2s ease-in-out;
+
+    span:first-child {
+        margin-left: 5px;
+    }
+
+    span:last-child {
+        font-weight: bold;
+        color: rgba(0,120,212,1);
+    }
+}
+
+// When left-sidebar is compact nav brand is compacted too.
+// It displays logo only, not text.
+.left-sidebar-compact .ta-navbar-brand {
+    width: 30px;
+    height: 42px;
+
+    span {
+        display: none;
+    }
+}
+
+// Layout 2 : ta-content
+// -----------------------------
+
+.ta-content {
+    padding: 15px;
+    margin-left: $left-navigation-width;
+    margin-top: $top-nav-height;
+    margin-bottom: $footer-height;
+    transition: margin-left 0.2s ease-in-out;
+
+    h1 {
+        line-height: 40px;
+        font-size: 28px;
+        letter-spacing: -.04em;
+        font-weight: bold;
+    }
+}
+
+.left-sidebar-compact .ta-content {
+    margin-left: $left-navigation-width-when-compact;
+}
+
+@include media-breakpoint-down(sm) {
+    .ta-content {
+        margin-left: $left-navigation-width-when-compact;
+        transition: margin-left 0.5s ease-in-out;
+    }
+}
+
+.auth-wrapper {
+    width: 100%;
+    max-width: 800px;
+    margin: auto;
+}
+
+// Layout 6 : login layout
+// -----------------------------------
+.ta-content-login {
+    margin-left: 0;
+}
+
+.auth-form {
+    label {
+        display: block;
+    }
+}
+// END OF LAYOUT
+
+// Toolbar
+// ------------------------------
+.admin-toolbar {
+    @extend .navbar, .navbar-expand-md, .navbar-light;
+    margin-bottom: 1em;
+    background-color: $gray-200;
+}
+
+// Sortable
+// ------------------------------
+.ui-sortable {
+    min-height: $font-size-base;
+}
+
+.with-checkbox .list-group-item {
+    padding: 0.75rem 0.5rem;
+}
+
+.properties {
+    @extend .w-100;
+}
+
+.related {
+    @extend .float-right;
+}
+
+// No transitions on load
+// Prevents Firefox and Edge transitions on load.
+// This class is added by default and removed trought Javascript
+// after a few milliseconds.
+// https://css-tricks.com/transitions-only-after-page-load/
+// ------------------------------
+.preload * {
+    -webkit-transition: none !important;
+    -moz-transition: none !important;
+    -ms-transition: none !important;
+    -o-transition: none !important;
+}
+
+.persona {
+    position: relative;
+    text-align: center;
+    height: 48px;
+    width: 48px;
+    flex: 0 0 auto;
+
+    &.small {
+        width: 24px;
+        height: 24px;
+    }
+
+    .persona-content {
+        border-radius: 50%;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        color: white;
+
+        &.small {
+            font-size: 11px;
+            line-height: 24px;
+        }
+    }
+}
+
+.disable.custom-control-input:checked ~ .custom-control-label::before {
+    border-color: red;
+    background-color: red;
+}
+
+.dropdown-menu.scrollable{
+    overflow-y: auto;
+    max-height: 250px;
+}

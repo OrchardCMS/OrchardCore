@@ -5,13 +5,17 @@
 
 @import "modules/bootswatch/darkly/_variables.scss";
 @import "../../node_modules/bootstrap/scss/bootstrap";
-@import "modules/bootswatch/darkly/_bootswatch.scss";
 
-@import "modules/_sizes.scss";
-@import "modules/_cursors.scss";
-@import "modules/_word-wrap.scss";
+@import "modules/admin/_messages.scss";
+@import "modules/admin/_pager.scss";
+@import "modules/admin/_grid.scss";
+@import "modules/admin/_tabs.scss";
+@import "modules/admin/_sizes.scss";
+@import "modules/admin/_cursors.scss";
+@import "modules/admin/_word-wrap.scss";
 @import "bootstrap-switch.scss";
 @import "codemirror.scss";
 @import "jquery-ui-datepicker-override.scss";
 
-@import "modules/bootswatch/darkly/_admin.scss";
+@import "modules/bootswatch/darkly/_bootswatch.scss";
+ 
