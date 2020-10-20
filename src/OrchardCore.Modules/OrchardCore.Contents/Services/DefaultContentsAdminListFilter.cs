@@ -9,8 +9,8 @@ using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.ContentManagement.Records;
-using OrchardCore.Contents.ViewModels;
 using OrchardCore.Contents.Security;
+using OrchardCore.Contents.ViewModels;
 using OrchardCore.DisplayManagement.ModelBinding;
 using YesSql;
 using YesSql.Services;
@@ -106,7 +106,7 @@ namespace OrchardCore.Contents.Services
                             listableTypes.Add(ctd);
                         }
 
-                        if(!canListAllContent)
+                        if (!canListAllContent)
                         {
                             var hasContentListPermission = await _authorizationService.AuthorizeAsync(user, ContentTypePermissionsHelper.CreateDynamicPermission(ContentTypePermissionsHelper.PermissionTemplates[CommonPermissions.ListContent.Name], ctd), contentItem);
                             if (hasContentListPermission)
