@@ -20066,3 +20066,7 @@ ul.pager {
 input[type=password]::-ms-reveal,
 input[type=password]::-ms-clear {
   display: none; }
+
+.action-bar {
+  top: 3.3rem;
+  z-index: 1050; }
