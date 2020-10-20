@@ -20067,8 +20067,6 @@ input[type=password]::-ms-reveal,
 input[type=password]::-ms-clear {
   display: none; }
 
-.sticky {
-  position: -webkit-sticky;
-  position: sticky;
+.action-bar {
   top: 3.3rem;
   z-index: 1050; }
