@@ -17,7 +17,10 @@ using OrchardCore.Localization.ViewModels;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Localization.Drivers
-{
+{    
+    /// <summary>
+    /// Represents a <see cref="SectionDisplayDriver{TModel,TSection}"/> for the localization settings section in the admin site.
+    /// </summary>
     public class LocalizationSettingsDisplayDriver : SectionDisplayDriver<ISite, LocalizationSettings>
     {
         public const string GroupId = "localization";
