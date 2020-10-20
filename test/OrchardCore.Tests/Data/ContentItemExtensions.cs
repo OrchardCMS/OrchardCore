@@ -43,7 +43,7 @@ namespace OrchardCore.Tests.Data
             Assert.Equal(actual.Field?.Text, value);
         }
 
-        [Fact] 
+        [Fact]
         public void MergeReflectsChangesToWellKnownProperties()
         {
             // Setup

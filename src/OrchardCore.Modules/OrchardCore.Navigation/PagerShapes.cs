@@ -251,7 +251,7 @@ namespace OrchardCore.Navigation
             }
 
             // first
-            var firstItem = await New.Pager_First(Value: firstText, RouteValues: new RouteValueDictionary(routeData), Pager: shape, Disabled: Page < 2 );
+            var firstItem = await New.Pager_First(Value: firstText, RouteValues: new RouteValueDictionary(routeData), Pager: shape, Disabled: Page < 2);
 
             if (noFollow)
             {
@@ -313,11 +313,11 @@ namespace OrchardCore.Navigation
 
                         if (p > currentPage)
                         {
-                            pagerItem.Attributes["rel"] = noFollow ? "no-follow": "next";
+                            pagerItem.Attributes["rel"] = noFollow ? "no-follow" : "next";
                         }
                         else if (p < currentPage)
                         {
-                            pagerItem.Attributes["rel"] = noFollow ? "no-follow": "prev";
+                            pagerItem.Attributes["rel"] = noFollow ? "no-follow" : "prev";
                         }
 
                         shape.Add(pagerItem);

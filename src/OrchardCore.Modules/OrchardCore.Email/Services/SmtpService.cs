@@ -16,9 +16,9 @@ namespace OrchardCore.Email.Services
     public class SmtpService : ISmtpService
     {
         private const string EmailExtension = ".eml";
-        
+
         private static readonly char[] EmailsSeparator = new char[] { ',', ';', ' ' };
-        
+
         private readonly SmtpSettings _options;
         private readonly ILogger _logger;
         private readonly IStringLocalizer S;

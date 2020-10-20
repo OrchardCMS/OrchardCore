@@ -105,7 +105,7 @@ namespace OrchardCore.ContentLocalization.Sitemaps
             {
                 // Test that content types are still valid to include in sitemap.
                 var typesToIndex = routeableContentTypeDefinitions
-                    .Where(ctd => source.ContentTypes.Any(s => String.Equals(ctd.Name,s.ContentTypeName)))
+                    .Where(ctd => source.ContentTypes.Any(s => String.Equals(ctd.Name, s.ContentTypeName)))
                     .Select(x => x.Name);
 
                 // No advantage here in reducing with localized index.

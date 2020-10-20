@@ -16,7 +16,6 @@ using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.ContentManagement.Records;
-using OrchardCore.Contents.Security;
 using OrchardCore.Contents.Services;
 using OrchardCore.Contents.ViewModels;
 using OrchardCore.DisplayManagement;
@@ -187,7 +186,7 @@ namespace OrchardCore.Contents.Controllers
                         var contentItem = await _contentManager.NewAsync(ctd.Name);
                         contentItem.Owner = context.User.Identity.Name;
                         var authorized = await _authorizationService.AuthorizeAsync(User, CommonPermissions.EditContent, contentItem);
-                        
+
                         if (authorized)
                         {
                             listableTypes.Add(ctd);

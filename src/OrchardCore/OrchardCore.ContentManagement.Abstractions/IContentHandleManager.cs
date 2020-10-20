@@ -9,5 +9,5 @@ namespace OrchardCore.ContentManagement
     }
 
     [Obsolete("This interface has been renamed to IContentHandlerManager")]
-    public interface IContentAliasManager {}
+    public interface IContentAliasManager { }
 }

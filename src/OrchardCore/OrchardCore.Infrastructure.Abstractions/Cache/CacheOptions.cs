@@ -1,5 +1,3 @@
-using System;
-
 namespace OrchardCore.Environment.Cache
 {
     public class CacheOptions
