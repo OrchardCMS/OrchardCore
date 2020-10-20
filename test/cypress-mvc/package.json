@@ -1,0 +1,15 @@
+{
+  "devDependencies": {
+    "cypress": "^5.4.0",
+    "cypress-orchardcore": "0.0.4",
+    "rimraf": "^3.0.2"
+  },
+  "scripts": {
+    "build": "node -e \"require('cypress-orchardcore/test-runner').build('../../src/OrchardCore.Mvc.Web')\"",
+    "clean": "node -e \"require('cypress-orchardcore/test-runner').clean('../../src/OrchardCore.Mvc.Web')\"",
+    "host": "node -e \"require('cypress-orchardcore/test-runner').host('../../src/OrchardCore.Mvc.Web', 'OrchardCore.Mvc.Web.dll')\"",
+    "test": "node -e \"require('cypress-orchardcore/test-runner').e2e('../../src/OrchardCore.Mvc.Web', 'OrchardCore.Mvc.Web.dll')\"",
+    "test:clean": "node -e \"require('cypress-orchardcore/test-runner').e2e('../../src/OrchardCore.Mvc.Web', 'OrchardCore.Mvc.Web.dll', true)\"",
+    "cypress": "cypress open"
+  }
+}
