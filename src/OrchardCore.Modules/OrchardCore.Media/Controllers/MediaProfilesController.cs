@@ -7,18 +7,15 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
-using OrchardCore.Liquid;
-using OrchardCore.Modules;
-using OrchardCore.Navigation;
-using OrchardCore.Settings;
 using OrchardCore.Media.Models;
+using OrchardCore.Media.Processing;
 using OrchardCore.Media.Services;
 using OrchardCore.Media.ViewModels;
-using OrchardCore.Media.Processing;
+using OrchardCore.Navigation;
+using OrchardCore.Settings;
 
 namespace OrchardCore.Media.Controllers
 {
@@ -221,7 +218,7 @@ namespace OrchardCore.Media.Controllers
 
                 await _mediaProfilesManager.RemoveMediaProfileAsync(sourceName);
 
-                await  _mediaProfilesManager.UpdateMediaProfileAsync(model.Name, mediaProfile);
+                await _mediaProfilesManager.UpdateMediaProfileAsync(model.Name, mediaProfile);
 
                 if (submit != "SaveAndContinue")
                 {

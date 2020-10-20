@@ -7,7 +7,7 @@ namespace OrchardCore.Data.Documents
     /// A cacheable, committable and cancellable document store allowing to get documents from a shared cache while being able
     /// to update them to the store at the scope level, and allowing to register delegates that get called after committing.
     /// </summary>
-    public interface IDocumentStore 
+    public interface IDocumentStore
     {
         /// <summary>
         /// Loads a single document (or create a new one) for updating and that should not be cached.

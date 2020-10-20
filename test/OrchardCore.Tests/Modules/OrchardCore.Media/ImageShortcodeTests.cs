@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -66,9 +65,9 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Media
             defaultHttpContext.Request.PathBase = new PathString("/tenant");
             var httpContextAccessor = Mock.Of<IHttpContextAccessor>(hca => hca.HttpContext == defaultHttpContext);
 
-            var options = Options.Create(new ResourceManagementOptions{ CdnBaseUrl = cdnBaseUrl });
+            var options = Options.Create(new ResourceManagementOptions { CdnBaseUrl = cdnBaseUrl });
 
-            var imageProvider = new ImageShortcodeProvider(fileStore,sanitizer, httpContextAccessor, options);
+            var imageProvider = new ImageShortcodeProvider(fileStore, sanitizer, httpContextAccessor, options);
 
             var processor = new ShortcodeService(new IShortcodeProvider[] { imageProvider }, Enumerable.Empty<IShortcodeContextProvider>());
 

@@ -87,10 +87,10 @@ namespace OrchardCore.OpenId.Controllers
 
             var authorizations = await _authorizationManager.FindAsync(
                 subject: result.Principal.GetUserIdentifier(),
-                client : await _applicationManager.GetIdAsync(application),
-                status : Statuses.Valid,
-                type   : AuthorizationTypes.Permanent,
-                scopes : request.GetScopes()).ToListAsync();
+                client: await _applicationManager.GetIdAsync(application),
+                status: Statuses.Valid,
+                type: AuthorizationTypes.Permanent,
+                scopes: request.GetScopes()).ToListAsync();
 
             switch (await _applicationManager.GetConsentTypeAsync(application))
             {
@@ -129,10 +129,10 @@ namespace OrchardCore.OpenId.Controllers
                     {
                         authorization = await _authorizationManager.CreateAsync(
                             principal: principal,
-                            subject  : principal.GetUserIdentifier(),
-                            client   : await _applicationManager.GetIdAsync(application),
-                            type     : AuthorizationTypes.Permanent,
-                            scopes   : principal.GetScopes());
+                            subject: principal.GetUserIdentifier(),
+                            client: await _applicationManager.GetIdAsync(application),
+                            type: AuthorizationTypes.Permanent,
+                            scopes: principal.GetScopes());
                     }
 
                     principal.SetAuthorizationId(await _authorizationManager.GetIdAsync(authorization));
@@ -221,10 +221,10 @@ namespace OrchardCore.OpenId.Controllers
 
             var authorizations = await _authorizationManager.FindAsync(
                 subject: User.GetUserIdentifier(),
-                client : await _applicationManager.GetIdAsync(application),
-                status : Statuses.Valid,
-                type   : AuthorizationTypes.Permanent,
-                scopes : request.GetScopes()).ToListAsync();
+                client: await _applicationManager.GetIdAsync(application),
+                status: Statuses.Valid,
+                type: AuthorizationTypes.Permanent,
+                scopes: request.GetScopes()).ToListAsync();
 
             // Note: the same check is already made in the GET action but is repeated
             // here to ensure a malicious user can't abuse this POST endpoint and
@@ -264,10 +264,10 @@ namespace OrchardCore.OpenId.Controllers
                     {
                         authorization = await _authorizationManager.CreateAsync(
                             principal: principal,
-                            subject  : principal.GetUserIdentifier(),
-                            client   : await _applicationManager.GetIdAsync(application),
-                            type     : AuthorizationTypes.Permanent,
-                            scopes   : principal.GetScopes());
+                            subject: principal.GetUserIdentifier(),
+                            client: await _applicationManager.GetIdAsync(application),
+                            type: AuthorizationTypes.Permanent,
+                            scopes: principal.GetScopes());
                     }
 
                     principal.SetAuthorizationId(await _authorizationManager.GetIdAsync(authorization));
@@ -512,10 +512,10 @@ namespace OrchardCore.OpenId.Controllers
 
             var authorizations = await _authorizationManager.FindAsync(
                 subject: principal.GetUserIdentifier(),
-                client : await _applicationManager.GetIdAsync(application),
-                status : Statuses.Valid,
-                type   : AuthorizationTypes.Permanent,
-                scopes : request.GetScopes()).ToListAsync();
+                client: await _applicationManager.GetIdAsync(application),
+                status: Statuses.Valid,
+                type: AuthorizationTypes.Permanent,
+                scopes: request.GetScopes()).ToListAsync();
 
             // If the application is configured to use external consent,
             // reject the request if no existing authorization can be found.
@@ -530,7 +530,7 @@ namespace OrchardCore.OpenId.Controllers
                     }), OpenIddictServerAspNetCoreDefaults.AuthenticationScheme);
             }
 
-            var identity = (ClaimsIdentity) principal.Identity;
+            var identity = (ClaimsIdentity)principal.Identity;
 
             identity.AddClaim(OpenIdConstants.Claims.EntityType, OpenIdConstants.EntityTypes.User,
                 Destinations.AccessToken, Destinations.IdentityToken);
@@ -552,11 +552,11 @@ namespace OrchardCore.OpenId.Controllers
             if (authorization == null)
             {
                 authorization = await _authorizationManager.CreateAsync(
-                    principal : principal,
-                    subject   : principal.GetUserIdentifier(),
-                    client    : await _applicationManager.GetIdAsync(application),
-                    type      : AuthorizationTypes.Permanent,
-                    scopes    : principal.GetScopes());
+                    principal: principal,
+                    subject: principal.GetUserIdentifier(),
+                    client: await _applicationManager.GetIdAsync(application),
+                    type: AuthorizationTypes.Permanent,
+                    scopes: principal.GetScopes());
             }
 
             principal.SetAuthorizationId(await _authorizationManager.GetIdAsync(authorization));
@@ -608,7 +608,7 @@ namespace OrchardCore.OpenId.Controllers
                 }
             }
 
-            var identity = (ClaimsIdentity) principal.Identity;
+            var identity = (ClaimsIdentity)principal.Identity;
 
             identity.AddClaim(OpenIdConstants.Claims.EntityType, OpenIdConstants.EntityTypes.User,
                 Destinations.AccessToken, Destinations.IdentityToken);
@@ -644,9 +644,9 @@ namespace OrchardCore.OpenId.Controllers
                 // Only add the claim to the id_token if the corresponding scope was granted.
                 // The other claims will only be added to the access_token.
                 case OpenIdConstants.Claims.EntityType:
-                case Claims.Name  when principal.HasScope(Scopes.Profile):
+                case Claims.Name when principal.HasScope(Scopes.Profile):
                 case Claims.Email when principal.HasScope(Scopes.Email):
-                case Claims.Role  when principal.HasScope(Scopes.Roles):
+                case Claims.Role when principal.HasScope(Scopes.Roles):
                     yield return Destinations.AccessToken;
                     yield return Destinations.IdentityToken;
                     break;

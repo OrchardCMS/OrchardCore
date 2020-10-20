@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.ContentTypes.ViewModels;
 using OrchardCore.Deployment;
@@ -33,7 +32,7 @@ namespace OrchardCore.ContentTypes.Deployment
         {
             var model = new DeleteContentDefinitionStepViewModel();
 
-            if (await updater.TryUpdateModelAsync(model, Prefix)) 
+            if (await updater.TryUpdateModelAsync(model, Prefix))
             {
                 step.ContentTypes = model.ContentTypes.Split(new[] { ' ', ',' }, StringSplitOptions.RemoveEmptyEntries);
                 step.ContentParts = model.ContentParts.Split(new[] { ' ', ',' }, StringSplitOptions.RemoveEmptyEntries);
