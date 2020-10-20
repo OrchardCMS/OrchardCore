@@ -19956,29 +19956,6 @@ html[dir]:not(.fontawesome-i2svg-complete) #left-nav ul.menu-admin > li > .item-
 [dir] .preload * {
   -webkit-transition: none !important; }
 
-.persona {
-  position: relative;
-  height: 48px;
-  width: 48px;
-  flex: 0 0 auto; }
-
-[dir] .persona {
-  text-align: center; }
-  .persona.small, .persona.hint {
-    width: 24px;
-    height: 24px; }
-  .persona .persona-content {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    justify-content: center;
-    color: white; }
-  [dir] .persona .persona-content {
-    border-radius: 50%; }
-    .persona .persona-content.small, .persona .persona-content.hint {
-      font-size: 11px;
-      line-height: 24px; }
-
 [dir] .disable.custom-control-input:checked ~ .custom-control-label::before {
   border-color: red;
   background-color: red; }
