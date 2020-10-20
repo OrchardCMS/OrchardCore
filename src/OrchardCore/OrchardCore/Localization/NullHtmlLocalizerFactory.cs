@@ -20,6 +20,7 @@ namespace OrchardCore.Localization
         /// <inheritdocs />
         public IHtmlLocalizer Create(Type resourceSource) => NullLocalizer.Instance;
 
+
         private class NullLocalizer : IHtmlLocalizer
         {
             private static readonly PluralizationRuleDelegate _defaultPluralRule = n => (n == 1) ? 0 : 1;
@@ -55,6 +56,9 @@ namespace OrchardCore.Localization
 
             public LocalizedString GetString(string name, params object[] arguments) =>
                 NullStringLocalizerFactory.NullLocalizer.Instance.GetString(name, arguments);
+
+            [Obsolete("This method removed in the ASP.NET 5.")]
+            public IHtmlLocalizer WithCulture(CultureInfo culture) => Instance;
         }
     }
 }
