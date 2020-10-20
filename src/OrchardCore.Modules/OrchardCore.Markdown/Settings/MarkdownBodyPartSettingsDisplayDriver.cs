@@ -5,6 +5,7 @@ using OrchardCore.ContentTypes.Editors;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Markdown.Models;
+using OrchardCore.Markdown.ViewModels;
 
 namespace OrchardCore.Markdown.Settings
 {
@@ -17,8 +18,13 @@ namespace OrchardCore.Markdown.Settings
                 return null;
             }
 
-            return Initialize<MarkdownBodyPartSettings>("MarkdownBodyPartSettings_Edit", model => contentTypePartDefinition.PopulateSettings<MarkdownBodyPartSettings>(model))
-                .Location("Content");
+            return Initialize<MarkdownBodyPartSettingsViewModel>("MarkdownBodyPartSettings_Edit", model =>
+                {
+                    var settings = contentTypePartDefinition.GetSettings<MarkdownBodyPartSettings>();
+
+                    model.SanitizeHtml = settings.SanitizeHtml;
+                })
+                .Location("Content:20");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)
@@ -28,11 +34,15 @@ namespace OrchardCore.Markdown.Settings
                 return null;
             }
 
-            var model = new MarkdownBodyPartSettings();
+            var model = new MarkdownBodyPartSettingsViewModel();
+            var settings = new MarkdownBodyPartSettings();
 
-            await context.Updater.TryUpdateModelAsync(model, Prefix);
+            if (await context.Updater.TryUpdateModelAsync(model, Prefix))
+            {
+                settings.SanitizeHtml = model.SanitizeHtml;
 
-            context.Builder.WithSettings(model);
+                context.Builder.WithSettings(settings);
+            }
 
             return Edit(contentTypePartDefinition, context.Updater);
         }

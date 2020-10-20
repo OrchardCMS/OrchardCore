@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -8,7 +9,6 @@ using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Layout;
 using OrchardCore.DisplayManagement.ModelBinding;
-using OrchardCore.DisplayManagement.Theming;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Helpers;
 using OrchardCore.Workflows.Options;
@@ -18,10 +18,16 @@ namespace OrchardCore.Workflows.Services
     public class ActivityDisplayManager : IActivityDisplayManager
     {
         private readonly DisplayManager<IActivity> _displayManager;
-        public ActivityDisplayManager(IOptions<WorkflowOptions> workflowOptions, IServiceProvider serviceProvider, IShapeTableManager shapeTableManager, IShapeFactory shapeFactory, IThemeManager themeManager, ILogger<DisplayManager<IActivity>> displayManagerLogger, ILayoutAccessor layoutAccessor)
+        public ActivityDisplayManager(
+            IOptions<WorkflowOptions> workflowOptions,
+            IServiceProvider serviceProvider,
+            IShapeFactory shapeFactory,
+            IEnumerable<IShapePlacementProvider> placementProviders,
+            ILogger<DisplayManager<IActivity>> displayManagerLogger,
+            ILayoutAccessor layoutAccessor)
         {
             var drivers = workflowOptions.Value.ActivityDisplayDriverTypes.Select(x => serviceProvider.CreateInstance<IDisplayDriver<IActivity>>(x));
-            _displayManager = new DisplayManager<IActivity>(drivers, shapeTableManager, shapeFactory, themeManager, displayManagerLogger, layoutAccessor);
+            _displayManager = new DisplayManager<IActivity>(drivers, shapeFactory, placementProviders, displayManagerLogger, layoutAccessor);
         }
 
         public Task<IShape> BuildDisplayAsync(IActivity model, IUpdateModel updater, string displayType = "", string groupId = "")

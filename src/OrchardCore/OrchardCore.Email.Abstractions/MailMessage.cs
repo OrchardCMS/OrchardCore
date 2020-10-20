@@ -6,7 +6,7 @@ namespace OrchardCore.Email
     public class MailMessage
     {
         /// <summary>
-        /// Gets or sets the sender of the email.
+        /// Gets or sets the author of the email.
         /// </summary>
         public string From { get; set; }
 
@@ -29,6 +29,14 @@ namespace OrchardCore.Email
         /// Gets or sets the replied to emails.
         /// </summary>
         public string ReplyTo { get; set; }
+
+        /// <summary>
+        /// Gets or sets the actual submitter of the email.
+        /// </summary>
+        /// <remark>
+        /// This property is required if not the same as <see cref="From"/>, for more information please refer to https://ietf.org/rfc/rfc822.txt.
+        /// </remark>
+        public string Sender { get; set; }
 
         /// <summary>
         /// Gets or sets the message subject.

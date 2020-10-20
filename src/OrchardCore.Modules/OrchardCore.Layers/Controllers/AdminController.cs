@@ -10,8 +10,8 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.Documents;
 using OrchardCore.Entities;
-using OrchardCore.Environment.Cache;
 using OrchardCore.Layers.Handlers;
 using OrchardCore.Layers.Models;
 using OrchardCore.Layers.Services;
@@ -29,38 +29,37 @@ namespace OrchardCore.Layers.Controllers
         private readonly ILayerService _layerService;
         private readonly IAuthorizationService _authorizationService;
         private readonly ISession _session;
-        private readonly ISignal _signal;
-        private readonly INotifier _notifier;
         private readonly IUpdateModelAccessor _updateModelAccessor;
+        private readonly IVolatileDocumentManager<LayerState> _layerStateManager;
+        private readonly IStringLocalizer S;
+        private readonly IHtmlLocalizer H;
+        private readonly INotifier _notifier;
 
         public AdminController(
-            ISignal signal,
-            IAuthorizationService authorizationService,
-            ISession session,
-            ILayerService layerService,
             IContentManager contentManager,
             IContentItemDisplayManager contentItemDisplayManager,
             ISiteService siteService,
-            IStringLocalizer<AdminController> s,
-            IHtmlLocalizer<AdminController> h,
-            INotifier notifier,
-            IUpdateModelAccessor updateModelAccessor)
+            ILayerService layerService,
+            IAuthorizationService authorizationService,
+            ISession session,
+            IUpdateModelAccessor updateModelAccessor,
+            IVolatileDocumentManager<LayerState> layerStateManager,
+            IStringLocalizer<AdminController> stringLocalizer,
+            IHtmlLocalizer<AdminController> htmlLocalizer,
+            INotifier notifier)
         {
-            _signal = signal;
-            _authorizationService = authorizationService;
-            _session = session;
-            _layerService = layerService;
             _contentManager = contentManager;
             _contentItemDisplayManager = contentItemDisplayManager;
             _siteService = siteService;
-            _notifier = notifier;
+            _layerService = layerService;
+            _authorizationService = authorizationService;
+            _session = session;
             _updateModelAccessor = updateModelAccessor;
-            S = s;
-            H = h;
+            _layerStateManager = layerStateManager;
+            _notifier = notifier;
+            S = stringLocalizer;
+            H = htmlLocalizer;
         }
-
-        public IStringLocalizer S { get; }
-        public IHtmlLocalizer H { get; }
 
         public async Task<IActionResult> Index()
         {
@@ -289,8 +288,8 @@ namespace OrchardCore.Layers.Controllers
                 }
             }
 
-            // Clear the cache after the session is committed.
-            _signal.DeferredSignalToken(LayerMetadataHandler.LayerChangeToken);
+            // The state will be updated once the ambient session is committed.
+            await _layerStateManager.UpdateAsync(new LayerState());
 
             if (Request.Headers != null && Request.Headers["X-Requested-With"] == "XMLHttpRequest")
             {

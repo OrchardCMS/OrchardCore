@@ -7,12 +7,12 @@ namespace OrchardCore.Apis.GraphQL
 {
     public class AdminMenu : INavigationProvider
     {
+        private readonly IStringLocalizer S;
+
         public AdminMenu(IStringLocalizer<AdminMenu> localizer)
         {
             S = localizer;
         }
-
-        public IStringLocalizer S { get; }
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
@@ -24,7 +24,7 @@ namespace OrchardCore.Apis.GraphQL
             builder
                 .Add(S["Configuration"], NavigationConstants.AdminMenuConfigurationPosition, design => design
                     .AddClass("menu-configuration").Id("configuration")
-                    .Add(S["GraphiQL"], S["GraphiQL"], deployment => deployment
+                    .Add(S["GraphiQL"], S["GraphiQL"].PrefixPosition(), deployment => deployment
                         .Action("Index", "Admin", new { area = "OrchardCore.Apis.GraphQL" })
                         .Permission(Permissions.ExecuteGraphQL)
                         .LocalNav()

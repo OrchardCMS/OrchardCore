@@ -1,11 +1,12 @@
-@using OrchardCore.ContentManagement.Metadata.Settings;
+@using OrchardCore.ContentManagement.Metadata.Models
+
 @inject OrchardCore.ContentManagement.Metadata.IContentDefinitionManager ContentDefinitionManager
 
 @{
     var contentItem = (IContent)Model.ContentItem;
     var contentTypeDisplayText = ContentDefinitionManager.GetTypeDefinition((string)Model.ContentItem.ContentType).DisplayName;
     var contentItemDisplayText = contentItem.ContentItem.DisplayText;
-    var widgetContentTypes = ContentDefinitionManager.ListTypeDefinitions().Where(t => t.GetSettings<ContentTypeSettings>().Stereotype == "Widget");
+    var widgetContentTypes = (IEnumerable<ContentTypeDefinition>)Model.ContainedContentTypes;
 
     var editorId = "contentEditor_" + Model.PrefixValue;
 }
@@ -21,28 +22,31 @@
         <span data-content-type-display-text="@contentTypeDisplayText" class="widget-editor-header-text">@T["{0} {1}", contentItemDisplayText, contentTypeDisplayText]</span>
         <div class="btn-widget-metadata border border-info w-100">
             <div class="btn-group">
-                 @if(Model.Footer != null)
+                @if (Model.Footer != null)
                 {
                     @await DisplayAsync(Model.Footer)
                 }
                 @if (Model.CanInsert != false)
                 {
                     <div class="btn-group">
+                        <button class="toggleAll btn btn-secondary btn-sm" onclick="toggleWidgets(); return false;" title="@T["Toggle all widgets"]">
+                            <i class="fa fa-angle-double-up" aria-hidden="true"></i>
+                        </button>
                         <button type="button" title="@T["Insert Widget"]" class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <i class="fa fa-plus" aria-hidden="true"></i>
                         </button>
                         <div class="dropdown-menu dropdown-menu-right">
-                            @foreach (var type in widgetContentTypes)
+                            @foreach (var type in widgetContentTypes.OrderBy(w => w.DisplayName))
                             {
                                 <a class="dropdown-item insert-widget btn-sm"
-                                    data-target-id="@Model.TargetId"
-                                    data-prefixes-name="@Model.PrefixesName"
-                                    data-flowmetadata="true"
-                                    data-parent-content-type="@Model.ParentContentType"
-                                    data-part-name="@Model.CollectionPartName"
-                                    data-contenttypes-name="@Model.ContentTypesName"
-                                    data-widget-type="@type.Name"
-                                    href="javascript:;">@type.DisplayName</a>
+                                   data-target-id="@Model.TargetId"
+                                   data-prefixes-name="@Model.PrefixesName"
+                                   data-flowmetadata="true"
+                                   data-parent-content-type="@Model.ParentContentType"
+                                   data-part-name="@Model.CollectionPartName"
+                                   data-contenttypes-name="@Model.ContentTypesName"
+                                   data-widget-type="@type.Name"
+                                   href="javascript:;">@type.DisplayName</a>
                             }
                         </div>
                     </div>
@@ -50,10 +54,10 @@
             </div>
         </div>
         <div class="btn-group btn-group-sm float-right" role="group">
-        @if (Model.CanDelete != false)
-        {
-            <button type="button" class="btn btn-danger widget-delete" data-title="@T["Delete"]" data-message="@T["Are you sure you want to remove this item?"]"><i class="fa fa-trash" aria-hidden="true"></i></button>
-        }
+            @if (Model.CanDelete != false)
+            {
+                <button type="button" class="btn btn-danger widget-delete" data-title="@T["Delete"]" data-message="@T["Are you sure you want to remove this item?"]"><i class="fa fa-trash" aria-hidden="true"></i></button>
+            }
         </div>
     </div>
     <div class="widget-editor-body card-body px-2 py-1">

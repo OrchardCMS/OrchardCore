@@ -15,7 +15,7 @@
     @Html.ValidationSummary()
 
     <div class="form-group">
-        <div class="row col-sm">
+        <div class="row col-small">
             <label asp-for="Name">@T["Technical Name"]</label>
             <input asp-for="Name" class="form-control" readonly />
             <span class="hint">@T["Technical name of the part."]</span>
@@ -56,7 +56,7 @@
     </div>
 </form>
 
-<script at="Foot" type="text/javascript">
+<script at="Foot">
     //<![CDATA[
     $(function () {
         Sortable.create(document.getElementById("fields"));

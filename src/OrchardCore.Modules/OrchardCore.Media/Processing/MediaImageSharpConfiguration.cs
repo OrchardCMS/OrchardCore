@@ -1,3 +1,5 @@
+using System;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Web.Middleware;
@@ -20,15 +22,12 @@ namespace OrchardCore.Media.Processing
         public void Configure(ImageSharpMiddlewareOptions options)
         {
             options.Configuration = Configuration.Default;
-            options.MaxBrowserCacheDays = _mediaOptions.MaxBrowserCacheDays;
-            options.MaxCacheDays = _mediaOptions.MaxCacheDays;
+            options.BrowserMaxAge = TimeSpan.FromDays(_mediaOptions.MaxBrowserCacheDays);
+            options.CacheMaxAge = TimeSpan.FromDays(_mediaOptions.MaxCacheDays);
             options.CachedNameLength = 12;
-            options.OnParseCommands = validation =>
+            options.OnParseCommandsAsync = validation =>
             {
                 // Force some parameters to prevent disk filling.
-                // For more advanced resize parameters the usage of profiles will be necessary.
-                // This can be done with a custom IImageWebProcessor implementation that would
-                // accept profile names.
 
                 if (validation.Commands.Count > 0)
                 {
@@ -43,9 +42,9 @@ namespace OrchardCore.Media.Processing
                         validation.Commands[ResizeWebProcessor.Mode] = "max";
                     }
                 }
+
+                return Task.CompletedTask;
             };
-            options.OnProcessed = _ => { };
-            options.OnPrepareResponse = _ => { };
         }
     }
 }

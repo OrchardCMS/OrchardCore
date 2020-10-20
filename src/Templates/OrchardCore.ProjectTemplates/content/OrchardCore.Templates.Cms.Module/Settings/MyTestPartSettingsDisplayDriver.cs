@@ -2,16 +2,17 @@ using System;
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Templates.Cms.Module.Models;
 
 namespace OrchardCore.Templates.Cms.Module.Settings
 {
-    public class MyTestPartSettingsDisplayDriver : ContentPartDefinitionDisplayDriver
+    public class MyTestPartSettingsDisplayDriver : ContentTypePartDefinitionDisplayDriver
     {
-        public override IDisplayResult Edit(ContentPartDefinition contentPartDefinition)
+        public override IDisplayResult Edit(ContentTypePartDefinition contentTypePartDefinition, IUpdateModel updater)
         {
-            if (!String.Equals(nameof(MyTestPart), contentPartDefinition.Name))
+            if (!String.Equals(nameof(MyTestPart), contentTypePartDefinition.PartDefinition.Name))
             {
                 return null;
             }
@@ -25,9 +26,9 @@ namespace OrchardCore.Templates.Cms.Module.Settings
             }).Location("Content");
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(ContentPartDefinition contentPartDefinition, UpdatePartEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)
         {
-            if (!String.Equals(nameof(MyTestPart), contentPartDefinition.Name))
+            if (!String.Equals(nameof(MyTestPart), contentTypePartDefinition.PartDefinition.Name))
             {
                 return null;
             }
@@ -39,7 +40,7 @@ namespace OrchardCore.Templates.Cms.Module.Settings
                 context.Builder.WithSettings(new MyTestPartSettings { MySetting = model.MySetting });
             }
 
-            return Edit(contentPartDefinition);
+            return Edit(contentPartDefinition, context.Updater);
         }
     }
 }

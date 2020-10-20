@@ -13,7 +13,7 @@
             <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" id="bulk-action-menu-button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 @T["Bulk Actions"]
             </button>
-            <div class="dropdown-menu" aria-labelledby="bulk-action-menu-button">
+            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="bulk-action-menu-button">
                 <a class="dropdown-item" href="#" data-action="@nameof(FeaturesBulkAction.Disable)">@T["Disable"]</a>
                 <a class="dropdown-item" href="#" data-action="@nameof(FeaturesBulkAction.Enable)">@T["Enable"]</a>
                 <a class="dropdown-item" href="#" data-action="@nameof(FeaturesBulkAction.Toggle)">@T["Toggle"]</a>
@@ -30,7 +30,7 @@
                     <div class="input-group-prepend">
                         <span class="input-group-text bg-secondary text-light">@T["Filter"]</span>
                     </div>
-                    <input id="search-box" class="form-control mr-sm-2" type="text" placeholder="@T["Search"]" autofocus="autofocus">
+                    <input id="search-box" class="form-control mr-sm-2" placeholder="@T["Search"]" type="search" autofocus>
                 </div>
             </div>
         </div>
@@ -151,7 +151,7 @@
         }
     }
 </form>
-<script at="Foot" type="text/javascript">
+<script at="Foot">
     $(function () {
         var searchBox = $('#search-box');
 
@@ -190,7 +190,9 @@
             }
         });
 
-        $(".dropdown-menu a").on('click', function () {
+        $(".dropdown-menu a").filter(function() {
+            return $(this).data("action");
+        }).on('click', function () {
             $("[name='BulkAction']").val($(this).data('action'));
             $("[name='submit.BulkAction']").click();
         });

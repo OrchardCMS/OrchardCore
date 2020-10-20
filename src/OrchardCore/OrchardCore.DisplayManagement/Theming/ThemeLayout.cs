@@ -37,7 +37,7 @@ namespace OrchardCore.DisplayManagement.Theming
                 {
                     foreach (var zone in layout.Properties.ToArray())
                     {
-                        if (zone.Value is IShape shape)
+                        if (!(zone.Value is ZoneOnDemand) && zone.Value is IShape shape)
                         {
                             // Render each layout zone
                             var htmlZone = await DisplayAsync(shape);

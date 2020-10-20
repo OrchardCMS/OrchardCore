@@ -1,6 +1,5 @@
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
-using OrchardCore.Alias.Indexes;
 using OrchardCore.Alias.Models;
 using OrchardCore.Alias.Settings;
 using OrchardCore.Alias.ViewModels;
@@ -19,7 +18,7 @@ namespace OrchardCore.Alias.Drivers
         public const int MaxAliasLength = 767;
 
         private readonly ISession _session;
-        private readonly IStringLocalizer<AliasPartDisplayDriver> S;
+        private readonly IStringLocalizer S;
 
         public AliasPartDisplayDriver(
             ISession session,
@@ -39,7 +38,8 @@ namespace OrchardCore.Alias.Drivers
         {
             await updater.TryUpdateModelAsync(model, Prefix, t => t.Alias);
 
-            await ValidateAsync(model, updater);
+            var errors = await context.ValidateAsync(model);
+            updater.ModelState.BindValidationResults(Prefix, errors);
 
             return Edit(model, context);
         }
@@ -48,20 +48,9 @@ namespace OrchardCore.Alias.Drivers
         {
             model.Alias = part.Alias;
             model.AliasPart = part;
+            model.ContentItem = part.ContentItem;
             model.Settings = settings;
         }
 
-        private async Task ValidateAsync(AliasPart alias, IUpdateModel updater)
-        {
-            if (alias.Alias?.Length > MaxAliasLength)
-            {
-                updater.ModelState.AddModelError(Prefix, nameof(alias.Alias), S["Your alias is too long. The alias can only be up to {0} characters.", MaxAliasLength]);
-            }
-
-            if (alias.Alias != null && (await _session.QueryIndex<AliasPartIndex>(o => o.Alias == alias.Alias && o.ContentItemId != alias.ContentItem.ContentItemId).CountAsync()) > 0)
-            {
-                updater.ModelState.AddModelError(Prefix, nameof(alias.Alias), S["Your alias is already in use."]);
-            }
-        }
     }
 }

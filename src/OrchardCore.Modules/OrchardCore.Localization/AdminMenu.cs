@@ -11,7 +11,7 @@ namespace OrchardCore.Localization
     /// </summary>
     public class AdminMenu : INavigationProvider
     {
-        private readonly IStringLocalizer<AdminMenu> S;
+        private readonly IStringLocalizer S;
 
         /// <summary>
         /// Creates a new instance of the <see cref="AdminMenu"/>.
@@ -29,9 +29,9 @@ namespace OrchardCore.Localization
             {
                 builder
                     .Add(S["Configuration"], NavigationConstants.AdminMenuConfigurationPosition, localization => localization
-                    .AddClass("localization").Id("localization")
                         .Add(S["Settings"], settings => settings
-                            .Add(S["Cultures"], S["Cultures"], entry => entry
+                            .Add(S["Cultures"], S["Cultures"].PrefixPosition(), entry => entry
+                            .AddClass("cultures").Id("cultures")
                                 .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = LocalizationSettingsDisplayDriver.GroupId })
                                 .Permission(Permissions.ManageCultures)
                                 .LocalNav()

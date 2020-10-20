@@ -12,10 +12,12 @@ namespace OrchardCore.Lists.Drivers
     public class ContainedPartLocalizationHandler : ContentLocalizationPartHandlerBase<LocalizationPart>
     {
         private readonly ISession _session;
+
         public ContainedPartLocalizationHandler(ISession session)
         {
             _session = session;
         }
+
         /// <summary>
         /// Assign the Localized version of the List when localizing the Contained Item
         /// </summary>

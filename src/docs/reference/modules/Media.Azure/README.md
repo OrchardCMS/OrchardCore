@@ -18,7 +18,7 @@ The following configuration values are used by default and can be customized:
 ```json
 {
    "OrchardCore": {
-    "OrchardCore.Media.Azure": {
+    "OrchardCore_Media_Azure": {
       // Set to your Azure Storage account connection string.
       "ConnectionString": "", 
       // Set to the Azure Blob container name. A container name must be a valid DNS name and conform to Azure container naming rules eg. lowercase only.
@@ -49,14 +49,14 @@ The `ShellSettings` property is made available to the liquid template.
 The `ContainerName` property and the `BasePath` property are the only templatable properties.
 
 !!! note
-When templating the `ContainerName`  using  `{{ ShellSettings.Name }}`, the tenant's name will be automatically lowercased, however, you must also make sure the `ContainerName` conforms to other Azure Blob naming conventions as set out in Azure's documentation.
+    When templating the `ContainerName`  using  `{{ ShellSettings.Name }}`, the tenant's name will be automatically lowercased, however, you must also make sure the `ContainerName` conforms to other Azure Blob naming conventions as set out in Azure's documentation.
 
 ### Configuring a container per tenant.
  
 ```json
 {
   "OrchardCore": {
-    "OrchardCore.Media.Azure": {
+    "OrchardCore_Media_Azure": {
       // Set to your Azure Storage account connection string.
       "ConnectionString": "", 
       // Optionally configure with liquid. A container name must be a valid DNS name and conform to Azure container naming rules eg. lowercase only.
@@ -74,7 +74,7 @@ When templating the `ContainerName`  using  `{{ ShellSettings.Name }}`, the tena
 ```json
 {
   "OrchardCore": {
-    "OrchardCore.Media.Azure": {
+    "OrchardCore_Media_Azure": {
       // Set to your Azure Storage account connection string.
       "ConnectionString": "", 
       // Optionally configure with liquid. A container name must be a valid DNS name and conform to Azure container naming rules eg. lowercase only.

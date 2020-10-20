@@ -3,15 +3,6 @@
 ** Any changes made directly to this file will be overwritten next time its asset group is processed by Gulp.
 */
 
-html, body, .ta-wrapper {
-  height: 100%;
-  margin-bottom: 0px;
-  overflow: auto; }
-
-.ta-content {
-  height: calc(100% - 59px);
-  margin-bottom: 0px; }
-
 .fade-in-pager {
   opacity: 0.001;
   transition: opacity 0.2s 0.2s;

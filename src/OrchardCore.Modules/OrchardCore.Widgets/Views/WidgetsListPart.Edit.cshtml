@@ -54,6 +54,7 @@
                                     CanDelete: true,
                                     //Input hidden
                                     //Prefixes
+                                    PrefixValue: widget.ContentItemId,
                                     HtmlFieldPrefix: htmlFieldPrefix,
                                     PrefixesId: Html.IdFor(x => x.Prefixes),
                                     PrefixesName: Html.NameFor(x => x.Prefixes),
@@ -130,7 +131,7 @@
                                     <i class="fa fa-plus" aria-hidden="true"></i>
                                 </button>
                                 <div class="dropdown-menu">
-                                    @foreach (var type in widgetContentTypes)
+                                    @foreach (var type in widgetContentTypes.OrderBy(w => w.DisplayName))
                                     {
                                         <a class="dropdown-item add-list-widget  btn-sm"
                                         data-target-id="@widgetTemplatePlaceholderId"

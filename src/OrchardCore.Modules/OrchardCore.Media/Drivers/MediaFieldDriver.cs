@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
@@ -13,21 +14,24 @@ using OrchardCore.Media.Fields;
 using OrchardCore.Media.Services;
 using OrchardCore.Media.Settings;
 using OrchardCore.Media.ViewModels;
+using OrchardCore.Mvc.ModelBinding;
 
 namespace OrchardCore.Media.Drivers
 {
     public class MediaFieldDisplayDriver : ContentFieldDisplayDriver<MediaField>
     {
         private readonly AttachedMediaFieldFileService _attachedMediaFieldFileService;
+        private readonly IStringLocalizer S;
+        private readonly ILogger _logger;
 
         public MediaFieldDisplayDriver(AttachedMediaFieldFileService attachedMediaFieldFileService,
-            IStringLocalizer<MediaFieldDisplayDriver> localizer)
+            IStringLocalizer<MediaFieldDisplayDriver> localizer,
+            ILogger<MediaFieldDisplayDriver> logger)
         {
             _attachedMediaFieldFileService = attachedMediaFieldFileService;
             S = localizer;
+            _logger = logger;
         }
-
-        public IStringLocalizer S { get; }
 
         public override IDisplayResult Display(MediaField field, BuildFieldDisplayContext context)
         {
@@ -73,9 +77,10 @@ namespace OrchardCore.Media.Drivers
                     {
                         await _attachedMediaFieldFileService.HandleFilesOnFieldUpdateAsync(items, context.ContentPart.ContentItem);
                     }
-                    catch (Exception)
+                    catch (Exception e)
                     {
-                        updater.ModelState.AddModelError(Prefix, S["{0}: There was an error handling the files.", context.PartFieldDefinition.DisplayName()]);
+                        updater.ModelState.AddModelError(Prefix, nameof(model.Paths), S["{0}: There was an error handling the files.", context.PartFieldDefinition.DisplayName()]);
+                        _logger.LogError(e, "Error handling attached media files for field '{Field}'", context.PartFieldDefinition.DisplayName());
                     }
                 }
 
@@ -85,12 +90,12 @@ namespace OrchardCore.Media.Drivers
 
                 if (settings.Required && field.Paths.Length < 1)
                 {
-                    updater.ModelState.AddModelError(Prefix, S["{0}: A media is required.", context.PartFieldDefinition.DisplayName()]);
+                    updater.ModelState.AddModelError(Prefix, nameof(model.Paths), S["{0}: A media is required.", context.PartFieldDefinition.DisplayName()]);
                 }
 
                 if (field.Paths.Length > 1 && !settings.Multiple)
                 {
-                    updater.ModelState.AddModelError(Prefix, S["{0}: Selecting multiple media is forbidden.", context.PartFieldDefinition.DisplayName()]);
+                    updater.ModelState.AddModelError(Prefix, nameof(model.Paths), S["{0}: Selecting multiple media is forbidden.", context.PartFieldDefinition.DisplayName()]);
                 }
             }
 
