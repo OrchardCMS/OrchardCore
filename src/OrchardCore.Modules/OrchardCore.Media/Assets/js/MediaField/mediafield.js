@@ -172,10 +172,14 @@ function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple,
                 this.$set(this.selectedMedia.center, 1, event.offsetY / image.clientHeight);
             },
             cropLeft: function () {
-                if (this.$refs.cropImage && this.selectedMedia) {
-                    var position = this.selectedMedia.center[0] * this.$refs.cropImage.clientWidth;
-                    if (position < 17) {
+                if (this.$refs.cropImage && this.$refs.modalBody && this.selectedMedia) {
+                    // When image is shrunk compare against the modal body.
+                    var offset = (this.$refs.modalBody.clientWidth - this.$refs.cropImage.clientWidth) / 2;
+                    var position = (this.selectedMedia.center[0] * this.$refs.cropImage.clientWidth) + offset;
+                    if (position < 17) { // Adjust so the target doesn't show outside image.
                         position = 17;
+                    } else {
+                        position = position - 8; // Adjust to hit the mouse pointer.
                     }
                     return position + 'px';
                 } else {
@@ -185,8 +189,10 @@ function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple,
             cropTop: function () {
                 if (this.$refs.cropImage && this.selectedMedia) {
                     var position = this.selectedMedia.center[1] * this.$refs.cropImage.clientHeight;
-                    if (position < 15) {
+                    if (position < 15) { // Adjustment so the target doesn't show outside image.
                         position = 15;
+                    } else {
+                        position = position + 5; // Adjust to hit the mouse pointer.
                     }
                     return position + 'px';
                 } else {

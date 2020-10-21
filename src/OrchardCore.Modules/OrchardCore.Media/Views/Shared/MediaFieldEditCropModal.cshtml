@@ -7,7 +7,7 @@
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <div class="modal-body w-100">
+                <div class="modal-body w-100" ref="modalBody">
                     <div class="bg-secondary d-flex justify-content-center">
                         <img class="img-fluid img-modal" v-bind:src="selectedMedia.url" ref="cropImage" v-on:mousedown="setCrop" v-on:drop='onCropDrop($event)' v-on:dragover.prevent v-on:dragenter.prevent/>
                         <span v-if="selectedMedia.center[0] && selectedMedia.center[1]" class="icon-media-crop" draggable v-bind:style="{ left: cropLeft(), top: cropTop() }">

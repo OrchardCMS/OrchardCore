@@ -565,6 +565,9 @@ ol.media-items-grid {
   .media-crop-modal .modal-lg {
     max-width: 1200px; } }
 
+.media-crop-modal .img-modal {
+  max-height: 70vh; }
+
 .media-crop-modal .icon-media-crop {
   position: absolute;
   line-height: 0px;
