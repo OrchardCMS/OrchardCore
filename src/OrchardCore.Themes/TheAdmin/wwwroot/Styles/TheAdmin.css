@@ -20070,3 +20070,7 @@ input[type=password]::-ms-clear {
 .action-bar {
   top: 3.3rem;
   z-index: 1050; }
+
+.filter-bar {
+  top: 7.4rem;
+  z-index: 1050; }
