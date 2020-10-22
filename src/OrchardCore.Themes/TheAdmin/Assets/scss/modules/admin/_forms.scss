@@ -9,7 +9,7 @@
 }
 
 .field-validation-error {
-    @extend small
+    @extend small;
 }
 
 .input-validation-error {
@@ -24,7 +24,8 @@
     display: inline;
 }
 
-.code, .form-control.code {
+.code,
+.form-control.code {
     font-family: $font-family-monospace;
     font-size: $code-font-size;
     padding: $kbd-padding-y $kbd-padding-x;
@@ -53,8 +54,7 @@ select[multiple] {
     min-height: 300px;
 }
 
-input[type=password]::-ms-reveal,
-input[type=password]::-ms-clear
-{
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear {
     display: none;
 }

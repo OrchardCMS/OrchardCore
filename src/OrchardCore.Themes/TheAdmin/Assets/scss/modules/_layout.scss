@@ -7,13 +7,13 @@ body {
 @include cursor-class(pointer);
 
 /* rtl:ignore */
-[dir=rtl] .dropdown-menu {
+[dir="rtl"] .dropdown-menu {
     left: auto !important;
     right: 0px !important;
     transform: translate3d(0px, 38px, 0px) !important;
 }
 
-.dropdown-menu.scrollable{
+.dropdown-menu.scrollable {
     overflow-y: auto;
     max-height: 250px;
 }
@@ -31,7 +31,7 @@ body {
     h1 {
         line-height: 40px;
         font-size: 28px;
-        letter-spacing: -.04em;
+        letter-spacing: -0.04em;
         font-weight: bold;
     }
 }

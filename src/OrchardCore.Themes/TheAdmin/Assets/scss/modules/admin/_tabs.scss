@@ -26,7 +26,7 @@
         @include transition($btn-transition);
 
         &:hover {
-            background-color: darken($gray-600, 7.5%)
+            background-color: darken($gray-600, 7.5%);
         }
 
         &.active {
