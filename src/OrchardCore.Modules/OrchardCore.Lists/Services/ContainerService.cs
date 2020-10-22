@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using AngleSharp.Css.Dom;
 using GraphQL;
-using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Lists.Indexes;
@@ -20,19 +19,19 @@ namespace OrchardCore.Lists.Services
 {
     public class ContainerService : IContainerService
     {
-        private readonly ISession _session;
+        private readonly YesSql.ISession _session;
         private readonly IContentManager _contentManager;
-        private readonly IAuthorizationService _authorizationService;
+        private readonly IHttpContextAccessor _hca;
 
         public ContainerService(
-            ISession session,
+            YesSql.ISession session,
             IContentManager contentManager,
-            IAuthorizationService authorizationService
+            IHttpContextAccessor hca
             )
         {
             _session = session;
             _contentManager = contentManager;
-            _authorizationService = authorizationService;
+            _hca = hca;
         }
 
         public async Task<int> GetNextOrderNumberAsync(string contentItemId)
@@ -306,8 +305,7 @@ namespace OrchardCore.Lists.Services
                             containedItems = containedItems.Where(i => i.ContentItem.Published);
                             break;
                         case (int)ListPartFilterViewModel.ContentsStatus.Owner:
-                            
-                           // containedItems = containedItems.Where(i => i.Owner == _authorizationService.AuthorizeAsync(User, contentItemId)
+                            containedItems = containedItems.Where(i => i.Owner == _hca.HttpContext.User.Identity.Name);
                             break;
                         default:
                             break;
