@@ -57,8 +57,8 @@ namespace OrchardCore.Lists.Drivers
                         var settings = context.TypePartDefinition.GetSettings<ListPartSettings>();
                         var listpartFilterViewModel = new ListPartFilterViewModel();
                         var listpartFilter = new ListPartFilter();
-                        await _updateModelAccessor.ModelUpdater.TryUpdateModelAsync<ListPartFilterViewModel>(listpartFilterViewModel, Prefix, m => m.DisplayText);
-                        listpartFilter.DisplayText = listpartFilterViewModel.DisplayText;
+                        await _updateModelAccessor.ModelUpdater.TryUpdateModelAsync(listpartFilterViewModel, Prefix);
+                        //listpartFilter.DisplayText = listpartFilterViewModel.DisplayText;
                         
                        /* var qs = _hca.HttpContext.Request.Query.Keys;
                         if (_hca.HttpContext.Request.Query.ContainsKey("ListPart.ListPartFilterViewModel.DisplayText"))
@@ -67,7 +67,9 @@ namespace OrchardCore.Lists.Drivers
                             listpartFilter.DisplayText = value;
                         }*/
                         model.ListPart = listPart;
-                       // await context.Updater.TryUpdateModelAsync(listpartFilter, Prefix);
+                        listpartFilter.DisplayText = listpartFilterViewModel.DisplayText;
+                        listpartFilter.BulkAction = (ContentsBulkAction)listpartFilterViewModel.BulkAction;
+                        listpartFilter.Status = (ContentsStatus)listpartFilterViewModel.Status;
                         model.ContentItems = (await _containerService.QueryContainedItemsAsync(listPart.ContentItem.ContentItemId, settings.EnableOrdering, pager, false, listpartFilter)).ToArray();
                         model.ContainedContentTypeDefinitions = GetContainedContentTypes(context);
                         model.Context = context;

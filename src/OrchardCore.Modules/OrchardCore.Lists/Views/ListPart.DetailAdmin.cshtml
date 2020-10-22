@@ -1,6 +1,7 @@
-@model OrchardCore.Lists.ViewModels.ListPartViewModel
+@model ListPartViewModel
 @using OrchardCore.ContentManagement
 @using OrchardCore.ContentManagement.Metadata.Models;
+@using OrchardCore.Lists.ViewModels;
 
 @inject OrchardCore.ContentManagement.Display.IContentItemDisplayManager ContentItemDisplayManager
 @{
@@ -61,12 +62,12 @@ else
                             @T["Filters"]
                         </button>
                         <div class="dropdown-menu" aria-labelledby="filter-dropdown">
-                            <a class="dropdown-item" href="?Options.ContentsStatus=Draft">@T["Only draft items"]</a>
-                            <a class="dropdown-item" href="?Options.ContentsStatus=Published">@T["Only published items"]</a>
-                            <a class="dropdown-item" href="?Options.ContentsStatus=Owner">@T["Owned by me"]</a>
+                            <a class="dropdown-item" href="?Status=Draft">@T["Only draft items"]</a>
+                            <a class="dropdown-item" href="?Status=Published">@T["Only published items"]</a>
+                            <a class="dropdown-item" href="?Status=Owner">@T["Owned by me"]</a>
                         </div>
                     </div>
-                    <input asp-for="ListPartFilterViewModel.DisplayText" class="form-control" placeholder="@T["Search all List items"]" type="search" />
+                    <input name=@nameof(ListPartFilterViewModel.DisplayText) class="form-control" placeholder="@T["Search all List items"]" type="search" />
                 </div>
             </div>
         </form>

@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using AngleSharp.Css.Dom;
 using GraphQL;
+using Microsoft.AspNetCore.Authorization;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Lists.Indexes;
@@ -20,14 +22,17 @@ namespace OrchardCore.Lists.Services
     {
         private readonly ISession _session;
         private readonly IContentManager _contentManager;
+        private readonly IAuthorizationService _authorizationService;
 
         public ContainerService(
             ISession session,
-            IContentManager contentManager
+            IContentManager contentManager,
+            IAuthorizationService authorizationService
             )
         {
             _session = session;
             _contentManager = contentManager;
+            _authorizationService = authorizationService;
         }
 
         public async Task<int> GetNextOrderNumberAsync(string contentItemId)
@@ -279,16 +284,37 @@ namespace OrchardCore.Lists.Services
                         .Take(pager.PageSize + 1);
                 }
 
-               var containedItems = await query.ListAsync();
+                var containedItems = await query.ListAsync();
 
                 if (containedItems.Count() == 0)
                 {
                     return containedItems;
                 }
+
                 if (listPartFilter.DisplayText != null)
                 {
                     containedItems = containedItems.Where<ContentItem>(i => i.ContentItem.As<TitlePart>().Title.Contains(listPartFilter.DisplayText)).ToList();
                 }
+                if ((int)listPartFilter.Status != (int)ListPartFilterViewModel.ContentsStatus.None)
+                {
+                    switch ((int)listPartFilter.Status)
+                    {
+                        case (int)ListPartFilterViewModel.ContentsStatus.Draft:
+                            containedItems = containedItems.Where(i => i.ContentItem.HasDraft());
+                            break;
+                        case (int)ListPartFilterViewModel.ContentsStatus.Published:
+                            containedItems = containedItems.Where(i => i.ContentItem.Published);
+                            break;
+                        case (int)ListPartFilterViewModel.ContentsStatus.Owner:
+                            
+                           // containedItems = containedItems.Where(i => i.Owner == _authorizationService.AuthorizeAsync(User, contentItemId)
+                            break;
+                        default:
+                            break;
+                    }
+
+                }
+
                 pager.Before = null;
                 pager.After = null;
 

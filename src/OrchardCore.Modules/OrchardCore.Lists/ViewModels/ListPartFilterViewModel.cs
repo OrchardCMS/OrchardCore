@@ -1,13 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
-
 namespace OrchardCore.Lists.ViewModels
 {
     public class ListPartFilterViewModel
     {
-
-        public string DisplayText { get; set; }
+       public string DisplayText { get; set; }
 
         public string SelectedContentType { get; set; }
 
@@ -15,7 +10,7 @@ namespace OrchardCore.Lists.ViewModels
 
         public ContentsOrder OrderBy { get; set; }
 
-        //public ContentsStatus ContentsStatus { get; set; }
+        public ContentsStatus Status { get; set; }
 
         public ContentsBulkAction BulkAction { get; set; }
 
@@ -29,6 +24,7 @@ namespace OrchardCore.Lists.ViewModels
 
         public enum ContentsStatus
         {
+            None,
             Draft,
             Published,
             AllVersions,

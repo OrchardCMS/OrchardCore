@@ -1,5 +1,3 @@
-using OrchardCore.ContentManagement;
-
 namespace OrchardCore.Lists.Models
 {
     public class ListPartFilter
@@ -12,7 +10,7 @@ namespace OrchardCore.Lists.Models
 
         public ContentsOrder OrderBy { get; set; }
 
-        public ContentsStatus ContentsStatus { get; set; }
+        public ContentsStatus Status { get; set; }
 
         public ContentsBulkAction BulkAction { get; set; }
     }
@@ -27,6 +25,7 @@ namespace OrchardCore.Lists.Models
 
     public enum ContentsStatus
     {
+        None,
         Draft,
         Published,
         AllVersions,
