@@ -33,7 +33,6 @@ namespace OrchardCore.ContentManagement.Metadata
         /// <summary>
         /// Returns an unique identifier that is updated when content definitions have changed.
         /// </summary>
-        /// <returns>
         Task<string> GetIdentifierAsync();
     }
 

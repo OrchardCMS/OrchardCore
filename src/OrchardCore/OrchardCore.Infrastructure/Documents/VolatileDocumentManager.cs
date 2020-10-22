@@ -6,7 +6,7 @@ using OrchardCore.Documents.Options;
 namespace OrchardCore.Documents
 {
     /// <summary>
-    /// A <see cref="DocumentManager<TDocument>"/> using a multi level cache but without any persistent storage.
+    /// A <see cref="DocumentManager{TDocument}"/> using a multi level cache but without any persistent storage.
     /// </summary>
     public class VolatileDocumentManager<TDocument> : DocumentManager<TDocument>, IVolatileDocumentManager<TDocument> where TDocument : class, IDocument, new()
     {

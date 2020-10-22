@@ -88,7 +88,7 @@ namespace OrchardCore.DisplayManagement.Shapes
         }
 
         /// <summary>
-        /// Returns the <see cref="ShapeMetadataCacheContext"/> instance if the shape is cached.
+        /// Returns the <see cref="CacheContext"/> instance if the shape is cached.
         /// </summary>
         public CacheContext Cache()
         {
