@@ -8,6 +8,9 @@
   top: 52px;
   bottom: 0; }
 
+[dir] #mediaApp {
+  background-color: #fff; }
+
 [dir=ltr] #mediaApp {
   right: 0;
   left: 259px;
