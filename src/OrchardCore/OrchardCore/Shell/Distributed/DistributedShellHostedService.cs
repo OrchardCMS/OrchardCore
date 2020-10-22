@@ -153,8 +153,7 @@ namespace OrchardCore.Environment.Shell.Distributed
 
                     // Init the busy start time.
                     var _busyStartTime = DateTime.UtcNow;
-
-                    var success = true;
+                    var syncingSuccess = true;
 
                     // Keep in sync all tenants by checking their specific identifiers.
                     foreach (var settings in allSettings)
@@ -203,7 +202,7 @@ namespace OrchardCore.Environment.Shell.Distributed
                         }
                         catch (Exception ex) when (!ex.IsFatal())
                         {
-                            success = false;
+                            syncingSuccess = false;
                             _logger.LogError(ex, "Unable to read the distributed cache while syncing the tenant '{TenantName}'.", settings.Name);
                             break;
                         }
@@ -214,7 +213,7 @@ namespace OrchardCore.Environment.Shell.Distributed
                     }
 
                     // Keep in sync the tenant global identifiers.
-                    if (success)
+                    if (syncingSuccess)
                     {
                         _shellChangedId = shellChangedId;
                         _shellCreatedId = shellCreatedId;
