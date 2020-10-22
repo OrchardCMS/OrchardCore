@@ -79,7 +79,7 @@ namespace OrchardCore.DynamicCache.TagHelpers
         public bool Enabled { get; set; } = true;
 
         /// <summary>
-        /// Prefix used by <see cref="CacheTagHelper"/> instances when creating entries in <see cref="IDynamicCacheService"/>.
+        /// Prefix used by <see cref="DynamicCacheTagHelper"/> instances when creating entries in <see cref="IDynamicCacheService"/>.
         /// </summary>
         public static readonly string CacheKeyPrefix = nameof(DynamicCacheTagHelper);
 

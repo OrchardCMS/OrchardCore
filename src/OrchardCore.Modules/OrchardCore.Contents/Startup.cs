@@ -106,10 +106,6 @@ namespace OrchardCore.Contents
             services.AddScoped<IContentTypeDefinitionDisplayDriver, FullTextAspectSettingsDisplayDriver>();
             services.AddScoped<IContentHandler, FullTextAspectSettingsHandler>();
 
-            // Feeds
-            // TODO: Move to feature
-            services.AddScoped<IFeedItemBuilder, CommonFeedItemBuilder>();
-
             services.AddTagHelpers<ContentLinkTagHelper>();
             services.AddTagHelpers<ContentItemTagHelper>();
             services.Configure<AutorouteOptions>(options =>
@@ -284,6 +280,16 @@ namespace OrchardCore.Contents
             services.AddScoped<ISitemapSourceFactory, SitemapSourceFactory<ContentTypesSitemapSource>>();
             services.AddScoped<IContentItemsQueryProvider, DefaultContentItemsQueryProvider>();
             services.AddScoped<IContentHandler, ContentTypesSitemapUpdateHandler>();
+        }
+    }
+
+    [RequireFeatures("OrchardCore.Feeds")]
+    public class FeedsStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            // Feeds
+            services.AddScoped<IFeedItemBuilder, CommonFeedItemBuilder>();
         }
     }
 }

@@ -19967,6 +19967,10 @@ html[dir]:not(.fontawesome-i2svg-complete) #left-nav ul.menu-admin > li > .item-
   border-color: red;
   background-color: red; }
 
+.action-bar {
+  top: 3.3rem;
+  z-index: 1050; }
+
 .blockquote-footer {
   color: #888; }
 
