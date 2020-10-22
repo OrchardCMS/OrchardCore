@@ -251,7 +251,7 @@ namespace OrchardCore.Environment.Shell
             }
 
             // Add a 'PlaceHolder' allowing to retrieve the settings until the shell will be rebuilt.
-            if (_shellContexts.TryAdd(context.Settings.Name, new ShellContext.PlaceHolder { Settings = settings }))
+            if (_shellContexts.TryAdd(settings.Name, new ShellContext.PlaceHolder { Settings = settings }))
             {
                 _shellSettings[settings.Name] = settings;
             }
