@@ -1,9 +1,4 @@
-// Custom variables
-
-// Because !default means that a variable is not assigned if it already contains a value,
-// we alter the variable before importing boostrap as _variables.scss will use !default
-
-@import "modules/bootswatch/default/_variables.scss";
+@import "modules/theme/default/_variables.scss";
 @import "../../node_modules/bootstrap/scss/bootstrap";
 
 @import "modules/admin/_messages.scss";
@@ -13,8 +8,9 @@
 @import "modules/admin/_sizes.scss";
 @import "modules/admin/_cursors.scss";
 @import "modules/admin/_word-wrap.scss";
-@import "bootstrap-switch.scss";
-@import "codemirror.scss";
-@import "jquery-ui-datepicker-override.scss";
+@import "modules/admin/_login.scss";
+@import "modules/admin/_switch.scss";
+@import "modules/admin/_codemirror.scss";
+@import "modules/admin/_jquery-ui.scss";
 
-@import "modules/bootswatch/default/_bootswatch.scss";
+@import "modules/theme/default/_bootswatch.scss";

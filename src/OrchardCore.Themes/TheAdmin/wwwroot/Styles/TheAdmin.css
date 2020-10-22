@@ -4,7 +4,7 @@
 */
 
 /*!
- * Bootstrap v4.5.2 (https://getbootstrap.com/)
+ * Bootstrap v4.5.3 (https://getbootstrap.com/)
  * Copyright 2011-2020 The Bootstrap Authors
  * Copyright 2011-2020 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
@@ -208,7 +208,8 @@ caption {
   text-align: right; }
 
 [dir] th {
-  text-align: inherit; }
+  text-align: inherit;
+  text-align: -webkit-match-parent; }
 
 label {
   display: inline-block; }
@@ -3183,7 +3184,8 @@ input[type="button"].btn-block {
   position: relative;
   z-index: 1;
   display: block;
-  min-height: 1.5rem; }
+  min-height: 1.5rem;
+  color-adjust: exact; }
 
 [dir=ltr] .custom-control {
   padding-left: 1.5rem; }
@@ -4620,6 +4622,7 @@ input[type="button"].btn-block {
   .alert-dismissible .close {
     position: absolute;
     top: 0;
+    z-index: 2;
     color: inherit; }
   [dir] .alert-dismissible .close {
     padding: 0.75rem 1.25rem; }
@@ -8489,7 +8492,7 @@ a.text-dark:hover, a.text-dark:focus {
 
 .text-break {
   word-break: break-word !important;
-  overflow-wrap: break-word !important; }
+  word-wrap: break-word !important; }
 
 .text-reset {
   color: inherit !important; }
@@ -18866,6 +18869,15 @@ ul.pager {
 .ta-col-grouping.col-xl-6 .h-xl-auto, .ta-col-grouping.col-medium .h-xl-auto {
   height: 100% !important; }
 
+[dir=ltr] .ta-content-login {
+  margin-left: 0; }
+
+[dir=rtl] .ta-content-login {
+  margin-right: 0; }
+
+.auth-form label {
+  display: block; }
+
 .switch {
   font-size: 1rem;
   position: relative; }
@@ -19005,6 +19017,74 @@ ul.pager {
 
 #ui-datepicker-div {
   z-index: 100 !important; }
+
+.ta-navbar-top {
+  z-index: calc($zindex-sticky + 1); }
+
+[dir] .ta-navbar-top {
+  border-bottom: 1px solid #DEDEDE;
+  padding: 0.3rem 1rem;
+  box-shadow: 0 0.46875rem 2.1875rem rgba(4, 9, 20, 0.03), 0 0.9375rem 1.40625rem rgba(4, 9, 20, 0.03), 0 0.25rem 0.53125rem rgba(4, 9, 20, 0.05), 0 0.125rem 0.1875rem rgba(4, 9, 20, 0.03); }
+
+[dir=ltr] .ta-navbar-top {
+  padding-left: 0; }
+
+[dir=rtl] .ta-navbar-top {
+  padding-right: 0; }
+  .ta-navbar-top .nav-link {
+    font-size: 14px; }
+  [dir=ltr] .ta-navbar-top .nav-item {
+  text-align: right; }
+  [dir=rtl] .ta-navbar-top .nav-item {
+    text-align: left; }
+  [dir] .ta-navbar-top .breadcrumb {
+    background-color: transparent;
+    margin-top: 1rem; }
+  .ta-navbar-top .btn.nav-link, .ta-navbar-top .nav-link.button {
+    display: inline-block; }
+  @media (max-width: 767.98px) {
+    [dir] .ta-navbar-top .navbar-collapse li:first-child .nav-link {
+      padding-top: 15px; }
+    [dir] .ta-navbar-top .navbar-collapse li:last-child .nav-link {
+      padding-bottom: 0px; } }
+
+.ta-navbar-brand {
+  overflow: hidden;
+  height: 42px;
+  white-space: nowrap;
+  font-size: 14px;
+  transition: width 0.2s ease-in-out; }
+
+[dir] .ta-navbar-brand {
+  padding-top: 10px;
+  background-image: url(/TheAdmin/logo.png);
+  background-repeat: no-repeat;
+  background-size: 28px auto; }
+
+[dir=ltr] .ta-navbar-brand {
+  margin-left: 11px;
+  margin-right: 24px;
+  padding-left: 36px;
+  background-position: left center; }
+
+[dir=rtl] .ta-navbar-brand {
+  margin-right: 11px;
+  margin-left: 24px;
+  padding-right: 36px;
+  background-position: right center; }
+  [dir=ltr] .ta-navbar-brand span:first-child {
+  margin-left: 5px; }
+  [dir=rtl] .ta-navbar-brand span:first-child {
+    margin-right: 5px; }
+  .ta-navbar-brand span:last-child {
+    font-weight: bold;
+    color: #0078d4; }
+
+.left-sidebar-compact .ta-navbar-brand {
+  width: 30px;
+  height: 42px; }
+  .left-sidebar-compact .ta-navbar-brand span {
+    display: none; }
 
 body:not(.left-sidebar-compact) #ta-left-sidebar {
   z-index: 7;
@@ -19822,73 +19902,9 @@ html[dir]:not(.fontawesome-i2svg-complete) #left-nav ul.menu-admin > li > .item-
   right: 0px !important;
   transform: translate3d(0px, 38px, 0px) !important; }
 
-.ta-navbar-top {
-  z-index: calc($zindex-sticky + 1); }
-
-[dir] .ta-navbar-top {
-  border-bottom: 1px solid #DEDEDE;
-  padding: 0.3rem 1rem;
-  box-shadow: 0 0.46875rem 2.1875rem rgba(4, 9, 20, 0.03), 0 0.9375rem 1.40625rem rgba(4, 9, 20, 0.03), 0 0.25rem 0.53125rem rgba(4, 9, 20, 0.05), 0 0.125rem 0.1875rem rgba(4, 9, 20, 0.03); }
-
-[dir=ltr] .ta-navbar-top {
-  padding-left: 0; }
-
-[dir=rtl] .ta-navbar-top {
-  padding-right: 0; }
-  .ta-navbar-top .nav-link {
-    font-size: 14px; }
-  [dir=ltr] .ta-navbar-top .nav-item {
-  text-align: right; }
-  [dir=rtl] .ta-navbar-top .nav-item {
-    text-align: left; }
-  [dir] .ta-navbar-top .breadcrumb {
-    background-color: transparent;
-    margin-top: 1rem; }
-  .ta-navbar-top .btn.nav-link, .ta-navbar-top .nav-link.button {
-    display: inline-block; }
-  @media (max-width: 767.98px) {
-    [dir] .ta-navbar-top .navbar-collapse li:first-child .nav-link {
-      padding-top: 15px; }
-    [dir] .ta-navbar-top .navbar-collapse li:last-child .nav-link {
-      padding-bottom: 0px; } }
-
-.ta-navbar-brand {
-  overflow: hidden;
-  height: 42px;
-  white-space: nowrap;
-  font-size: 14px;
-  transition: width 0.2s ease-in-out; }
-
-[dir] .ta-navbar-brand {
-  padding-top: 10px;
-  background-image: url(/TheAdmin/logo.png);
-  background-repeat: no-repeat;
-  background-size: 28px auto; }
-
-[dir=ltr] .ta-navbar-brand {
-  margin-left: 11px;
-  margin-right: 24px;
-  padding-left: 36px;
-  background-position: left center; }
-
-[dir=rtl] .ta-navbar-brand {
-  margin-right: 11px;
-  margin-left: 24px;
-  padding-right: 36px;
-  background-position: right center; }
-  [dir=ltr] .ta-navbar-brand span:first-child {
-  margin-left: 5px; }
-  [dir=rtl] .ta-navbar-brand span:first-child {
-    margin-right: 5px; }
-  .ta-navbar-brand span:last-child {
-    font-weight: bold;
-    color: #0078d4; }
-
-.left-sidebar-compact .ta-navbar-brand {
-  width: 30px;
-  height: 42px; }
-  .left-sidebar-compact .ta-navbar-brand span {
-    display: none; }
+.dropdown-menu.scrollable {
+  overflow-y: auto;
+  max-height: 250px; }
 
 [dir] .ta-content {
   padding: 15px;
@@ -19929,15 +19945,6 @@ html[dir]:not(.fontawesome-i2svg-complete) #left-nav ul.menu-admin > li > .item-
 [dir] .auth-wrapper {
   margin: auto; }
 
-[dir=ltr] .ta-content-login {
-  margin-left: 0; }
-
-[dir=rtl] .ta-content-login {
-  margin-right: 0; }
-
-.auth-form label {
-  display: block; }
-
 [dir] .admin-toolbar {
   margin-bottom: 1em;
   background-color: #e9ecef; }
@@ -19959,10 +19966,6 @@ html[dir]:not(.fontawesome-i2svg-complete) #left-nav ul.menu-admin > li > .item-
 [dir] .disable.custom-control-input:checked ~ .custom-control-label::before {
   border-color: red;
   background-color: red; }
-
-.dropdown-menu.scrollable {
-  overflow-y: auto;
-  max-height: 250px; }
 
 [dir] .bg-primary {
   background-color: #f8f9fa !important; }
