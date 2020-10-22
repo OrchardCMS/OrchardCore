@@ -5,6 +5,7 @@
     right: 0;
     left: 259px;
     transition: left 0.2s ease-in-out, width 0.2s ease-in-out;
+    background-color: $body-bg;
     
     ::-webkit-scrollbar {
         width: 4px;
