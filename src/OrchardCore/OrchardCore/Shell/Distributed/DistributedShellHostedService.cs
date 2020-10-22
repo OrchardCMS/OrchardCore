@@ -121,9 +121,6 @@ namespace OrchardCore.Environment.Shell.Distributed
                         continue;
                     }
 
-                    // Keep in sync the tenant changed global identifier.
-                    _shellChangedId = shellChangedId;
-
                     // Try to retrieve the tenant created global identifier from the distributed cache.
                     string shellCreatedId;
                     try
@@ -142,9 +139,6 @@ namespace OrchardCore.Environment.Shell.Distributed
                     // Check if at least one tenant has been created.
                     if (shellCreatedId != null && _shellCreatedId != shellCreatedId)
                     {
-                        // Keep in sync the tenant created global identifier.
-                        _shellCreatedId = shellCreatedId;
-
                         // Retrieve all new created tenants that are not already loaded.
                         var names = (await _shellSettingsManager.LoadSettingsNamesAsync())
                             .Except(allSettings.Select(s => s.Name))
@@ -159,6 +153,8 @@ namespace OrchardCore.Environment.Shell.Distributed
 
                     // Init the busy start time.
                     var _busyStartTime = DateTime.UtcNow;
+
+                    var success = true;
 
                     // Keep in sync all tenants by checking their specific identifiers.
                     foreach (var settings in allSettings)
@@ -207,6 +203,7 @@ namespace OrchardCore.Environment.Shell.Distributed
                         }
                         catch (Exception ex) when (!ex.IsFatal())
                         {
+                            success = false;
                             _logger.LogError(ex, "Unable to read the distributed cache while syncing the tenant '{TenantName}'.", settings.Name);
                             break;
                         }
@@ -214,6 +211,13 @@ namespace OrchardCore.Environment.Shell.Distributed
                         {
                             semaphore.Release();
                         }
+                    }
+
+                    // Keep in sync the tenant global identifiers.
+                    if (success)
+                    {
+                        _shellChangedId = shellChangedId;
+                        _shellCreatedId = shellCreatedId;
                     }
                 }
             }
@@ -258,8 +262,8 @@ namespace OrchardCore.Environment.Shell.Distributed
             try
             {
                 // Retrieve the tenant global identifiers from the distributed cache.
-                _shellChangedId = await distributedCache.GetStringAsync(ShellChangedIdKey);
-                _shellCreatedId = await distributedCache.GetStringAsync(ShellCreatedIdKey);
+                var shellChangedId = await distributedCache.GetStringAsync(ShellChangedIdKey);
+                var shellCreatedId = await distributedCache.GetStringAsync(ShellCreatedIdKey);
 
                 // Retrieve the names of all the tenants.
                 var names = await _shellSettingsManager.LoadSettingsNamesAsync();
@@ -283,6 +287,10 @@ namespace OrchardCore.Environment.Shell.Distributed
                         identifier.ReloadId = reloadId;
                     }
                 }
+
+                // Keep in sync the tenant global identifiers.
+                _shellChangedId = shellChangedId;
+                _shellCreatedId = shellCreatedId;
             }
             catch (Exception ex) when (!ex.IsFatal())
             {
