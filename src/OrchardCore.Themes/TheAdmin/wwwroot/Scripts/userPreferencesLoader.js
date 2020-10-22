@@ -20,6 +20,12 @@ var observer = new MutationObserver(function (mutations) {
           }
 
           isCompactExplicit = adminPreferences.isCompactExplicit;
+
+          if (adminPreferences.darkmode == true) {
+            body.className += ' darkmode';
+          }
+
+          darkmode = adminPreferences.darkmode;
         } else {
           body.className += ' no-admin-preferences';
         } // we're done: 

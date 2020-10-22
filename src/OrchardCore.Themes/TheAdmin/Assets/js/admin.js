@@ -43,7 +43,7 @@ function confirmDialog({callback, ...options}) {
 
 $(function () {
     $("body").removeClass("preload");
-});
+}); 
 
 $(function () {
     $("body").on("click", "[itemprop~='RemoveUrl']", function () {

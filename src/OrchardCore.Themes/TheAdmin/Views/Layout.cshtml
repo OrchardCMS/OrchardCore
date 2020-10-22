@@ -8,7 +8,7 @@
     <link type="image/x-icon" rel="shortcut icon" href="~/TheAdmin/favicon.ico" />
 
     <!-- Bootstrap CSS -->
-    <style asp-name="admin" asp-src="~/TheAdmin/Styles/TheAdminDark.min.css" debug-src="~/TheAdmin/Styles/TheAdminDark.css" depends-on="jQuery-ui"></style>
+    <style id="admin-css" asp-name="admin" asp-src="~/TheAdmin/Styles/admin.min.css" debug-src="~/TheAdmin/Styles/admin.css" depends-on="jQuery-ui"></style>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons|Material+Icons+Outlined|Material+Icons+Two+Tone|Material+Icons+Round|Material+Icons+Sharp" rel="stylesheet">
 
     <script asp-name="font-awesome" at="Foot" version="5"></script>
@@ -28,6 +28,7 @@
                 @await RenderSectionAsync("NavbarTop", required: false)
             </div>
             @(await DisplayAsync(await New.UserMenu()))
+            <a id="btn-darkmode" class="btn btn-sm btn-light ml-2" title="@T["Dark mode"]"><i class="fas fa-moon"></i></a>
         </div>
 
         <div id="ta-left-sidebar" class="d-flex flex-column justify-content-between align-items-stretch">

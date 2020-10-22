@@ -3,17 +3,17 @@
     "generateSourceMaps": false,
     "generateRTL": true,
     "inputs": [
-      "Assets/scss/TheAdmin.scss"
+      "Assets/scss/admin.scss"
     ],
-    "output": "wwwroot/Styles/TheAdmin.css"
+    "output": "wwwroot/Styles/admin.css"
   },
   {
     "generateSourceMaps": false,
     "generateRTL": true,
     "inputs": [
-      "Assets/scss/TheAdminDark.scss"
+      "Assets/scss/admin-dark.scss"
     ],
-    "output": "wwwroot/Styles/TheAdminDark.css"
+    "output": "wwwroot/Styles/admin-dark.css"
   },
   {
     "generateSourceMaps": false,

@@ -5,15 +5,20 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 
 namespace OrchardCore.ResourceManagement.TagHelpers
 {
+    [HtmlTargetElement("style", Attributes = IdAttributeName)]
     [HtmlTargetElement("style", Attributes = NameAttributeName)]
     [HtmlTargetElement("style", Attributes = SrcAttributeName)]
     [HtmlTargetElement("style", Attributes = AtAttributeName)]
     public class StyleTagHelper : TagHelper
     {
+        private const string IdAttributeName = "id";
         private const string NameAttributeName = "asp-name";
         private const string SrcAttributeName = "asp-src";
         private const string AtAttributeName = "at";
         private const string AppendVersionAttributeName = "asp-append-version";
+
+        [HtmlAttributeName(IdAttributeName)]
+        public string Id { get; set; }
 
         [HtmlAttributeName(NameAttributeName)]
         public string Name { get; set; }
@@ -148,6 +153,11 @@ namespace OrchardCore.ResourceManagement.TagHelpers
 
                 var definition = _resourceManager.InlineManifest.DefineStyle(Name);
                 definition.SetUrl(Src, DebugSrc);
+
+                if (!String.IsNullOrEmpty(Id))
+                {
+                    definition.SetAttribute("id", Id);
+                }
 
                 if (!String.IsNullOrEmpty(Version))
                 {
