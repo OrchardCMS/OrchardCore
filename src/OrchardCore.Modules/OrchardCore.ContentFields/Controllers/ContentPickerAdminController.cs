@@ -2,6 +2,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using OrchardCore.Admin;
 using OrchardCore.ContentFields.Settings;
 using OrchardCore.ContentFields.ViewModels;
@@ -57,7 +59,10 @@ namespace OrchardCore.ContentFields.Controllers
                 PartFieldDefinition = partFieldDefinition
             });
 
-            return new ObjectResult(results.Select(r => new VueMultiselectItemViewModel() { Id = r.ContentItemId, DisplayText = r.DisplayText, HasPublished = r.HasPublished }));
+            return new ObjectResult(
+                JsonConvert.SerializeObject(
+                    results.Select(r => new VueMultiselectItemViewModel() { Id = r.ContentItemId, DisplayText = r.DisplayText, HasPublished = r.HasPublished }),
+                    new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() }));
         }
     }
 }
