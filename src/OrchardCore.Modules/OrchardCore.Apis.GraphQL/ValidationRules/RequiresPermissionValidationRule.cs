@@ -15,7 +15,7 @@ namespace OrchardCore.Apis.GraphQL.ValidationRules
 
         public Task<INodeVisitor> ValidateAsync(ValidationContext validationContext)
         {
-            var context = (GraphQLContext)validationContext.UserContext;
+            var context = (GraphQLUserContext)validationContext.UserContext;
 
             return new EnterLeaveListener(_ =>
             {
@@ -56,7 +56,7 @@ namespace OrchardCore.Apis.GraphQL.ValidationRules
             });
         }
 
-        private static bool Authorize(IProvideMetadata type, GraphQLContext context)
+        private static bool Authorize(IProvideMetadata type, GraphQLUserContext context)
         {
             var authorizationManager = context.ServiceProvider.GetService<IAuthorizationService>();
 

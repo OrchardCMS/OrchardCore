@@ -11,7 +11,7 @@ namespace OrchardCore.Apis.GraphQL
 {
     public static class ResolveFieldContextExtensions
     {
-        public static bool HasPopulatedArgument<TSource>(this IResolveFieldContext<TSource> source, string argumentName)
+        public static bool HasPopulatedArgument(this IResolveFieldContext source, string argumentName)
         {
             if (source.Arguments?.ContainsKey(argumentName) ?? false)
             {
@@ -62,7 +62,7 @@ namespace OrchardCore.Apis.GraphQL
 
         public static IServiceProvider ResolveServiceProvider<T>(this IResolveFieldContext<T> context)
         {
-            return ((GraphQLContext)context.UserContext).ServiceProvider;
+            return ((GraphQLUserContext)context.UserContext).ServiceProvider;
         }
     }
 }

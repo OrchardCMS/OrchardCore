@@ -29,7 +29,7 @@ namespace OrchardCore.Lists.GraphQL
                 .Description("the content items")
                 .Argument<IntGraphType, int>("first", "the first n elements (10 by default)", 10)
                 .Argument<IntGraphType, int>("skip", "the number of elements to skip", 0)
-                .ResolveAsync(async g =>
+                .ResolveAsync(g =>
                 {
                     var serviceProvider = g.ResolveServiceProvider();
                     var session = serviceProvider.GetService<ISession>();
@@ -37,7 +37,7 @@ namespace OrchardCore.Lists.GraphQL
 
                     var dataLoader = accessor.Context.GetOrAddCollectionBatchLoader<string, ContentItem>("ContainedPublishedContentItems", x => LoadPublishedContentItemsForListAsync(x, session));
 
-                    return (await dataLoader.LoadAsync(g.Source.ContentItem.ContentItemId))
+                    return (dataLoader.LoadAsync(g.Source.ContentItem.ContentItemId))
                                 .Skip(g.GetArgument<int>("skip"))
                                 .Take(g.GetArgument<int>("first"));
                 });

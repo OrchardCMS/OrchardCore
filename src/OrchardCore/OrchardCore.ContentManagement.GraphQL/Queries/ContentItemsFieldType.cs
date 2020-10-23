@@ -67,7 +67,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
 
         private async Task<IEnumerable<ContentItem>> Resolve(IResolveFieldContext context)
         {
-            var graphContext = (GraphQLContext)context.UserContext;
+            var graphContext = (GraphQLUserContext)context.UserContext;
 
             var versionOption = VersionOptions.Published;
 
@@ -117,7 +117,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             JObject where,
             IResolveFieldContext fieldContext,
             ISession session,
-            GraphQLContext context)
+            GraphQLUserContext context)
         {
             if (where == null)
             {
@@ -178,7 +178,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             return contentQuery;
         }
 
-        private IQuery<ContentItem> PageQuery(IQuery<ContentItem> contentItemsQuery, IResolveFieldContext context, GraphQLContext graphQLContext)
+        private IQuery<ContentItem> PageQuery(IQuery<ContentItem> contentItemsQuery, IResolveFieldContext context, GraphQLUserContext graphQLContext)
         {
             var first = context.GetArgument<int>("first");
 

@@ -47,7 +47,7 @@ namespace OrchardCore.Localization.GraphQL
 
         private async Task<IEnumerable<SiteCulture>> ResolveAsync(IResolveFieldContext resolveContext)
         {
-            var localizationService = resolveContext.ResolveServiceProvider().GetService<ILocalizationService>();
+            var localizationService = resolveContext.RequestServices.GetService<ILocalizationService>();
 
             var defaultCulture = await localizationService.GetDefaultCultureAsync();
             var supportedCultures = await localizationService.GetSupportedCulturesAsync();

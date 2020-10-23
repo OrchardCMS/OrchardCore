@@ -16,7 +16,7 @@ namespace OrchardCore.Apis.GraphQL.Resolvers
 
         public async Task<TReturnType> Resolve(IResolveFieldContext context)
         {
-            var graphContext = (GraphQLContext)context.UserContext;
+            var graphContext = (GraphQLUserContext)context.UserContext;
 
             await graphContext.ExecutionContextLock.WaitAsync();
 
@@ -44,7 +44,7 @@ namespace OrchardCore.Apis.GraphQL.Resolvers
 
         public new async Task<TReturnType> Resolve(IResolveFieldContext context)
         {
-            var graphContext = (GraphQLContext)context.UserContext;
+            var graphContext = (GraphQLUserContext)context.UserContext;
             await graphContext.ExecutionContextLock.WaitAsync();
 
             try

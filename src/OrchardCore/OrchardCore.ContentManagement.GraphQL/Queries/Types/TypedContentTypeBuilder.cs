@@ -1,4 +1,5 @@
 using System.Linq;
+using GraphQL;
 using GraphQL.Resolvers;
 using GraphQL.Types;
 using Microsoft.AspNetCore.Http;

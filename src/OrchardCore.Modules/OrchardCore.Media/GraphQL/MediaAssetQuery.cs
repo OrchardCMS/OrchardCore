@@ -52,7 +52,7 @@ namespace OrchardCore.Media.GraphQL
 
         private async Task<IEnumerable<IFileStoreEntry>> ResolveAsync(IResolveFieldContext resolveContext)
         {
-            var mediaFileStore = resolveContext.ResolveServiceProvider().GetService<IMediaFileStore>();
+            var mediaFileStore = resolveContext.RequestServices.GetService<IMediaFileStore>();
 
             var path = resolveContext.GetArgument("path", string.Empty);
             var includeSubDirectories = resolveContext.GetArgument("includeSubDirectories", false);

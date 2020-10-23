@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using GraphQL;
 using GraphQL.Types;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -128,7 +129,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
                 var context = new ResolveFieldContext
                 {
                     Arguments = new Dictionary<string, object>(),
-                    UserContext = new GraphQLContext
+                    UserContext = new GraphQLUserContext
                     {
                         ServiceProvider = services
                     },
@@ -139,7 +140,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
                 var ci = new ContentItem { ContentType = "Animal", Published = true, ContentItemId = "1", ContentItemVersionId = "1" };
                 ci.Weld(new AnimalPart { Name = "doug" });
 
-                var session = ((GraphQLContext)context.UserContext).ServiceProvider.GetService<ISession>();
+                var session = ((GraphQLUserContext)context.UserContext).ServiceProvider.GetService<ISession>();
                 session.Save(ci);
                 await session.CommitAsync();
 
@@ -182,7 +183,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
                 var context = new ResolveFieldContext
                 {
                     Arguments = new Dictionary<string, object>(),
-                    UserContext = new GraphQLContext
+                    UserContext = new GraphQLUserContext
                     {
                         ServiceProvider = services
                     },
@@ -193,7 +194,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
                 var ci = new ContentItem { ContentType = "Animal", Published = true, ContentItemId = "1", ContentItemVersionId = "1" };
                 ci.Weld(new AnimalPart { Name = "doug" });
 
-                var session = ((GraphQLContext)context.UserContext).ServiceProvider.GetService<ISession>();
+                var session = ((GraphQLUserContext)context.UserContext).ServiceProvider.GetService<ISession>();
                 session.Save(ci);
                 await session.CommitAsync();
 
@@ -239,7 +240,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
                 var context = new ResolveFieldContext
                 {
                     Arguments = new Dictionary<string, object>(),
-                    UserContext = new GraphQLContext
+                    UserContext = new GraphQLUserContext
                     {
                         ServiceProvider = services
                     },
@@ -250,7 +251,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
                 var ci = new ContentItem { ContentType = "Animal", Published = true, ContentItemId = "1", ContentItemVersionId = "1" };
                 ci.Weld(new AnimalPart { Name = "doug" });
 
-                var session = ((GraphQLContext)context.UserContext).ServiceProvider.GetService<ISession>();
+                var session = ((GraphQLUserContext)context.UserContext).ServiceProvider.GetService<ISession>();
                 session.Save(ci);
                 await session.CommitAsync();
 
@@ -288,7 +289,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
                 var context = new ResolveFieldContext
                 {
                     Arguments = new Dictionary<string, object>(),
-                    UserContext = new GraphQLContext
+                    UserContext = new GraphQLUserContext
                     {
                         ServiceProvider = services
                     },
@@ -298,7 +299,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
                 var ci = new ContentItem { ContentType = "Animal", Published = true, ContentItemId = "1", ContentItemVersionId = "1" };
                 ci.Weld(new Animal { Name = "doug" });
 
-                var session = ((GraphQLContext)context.UserContext).ServiceProvider.GetService<ISession>();
+                var session = ((GraphQLUserContext)context.UserContext).ServiceProvider.GetService<ISession>();
                 session.Save(ci);
                 await session.CommitAsync();
 
@@ -345,7 +346,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
                 var context = new ResolveFieldContext
                 {
                     Arguments = new Dictionary<string, object>(),
-                    UserContext = new GraphQLContext
+                    UserContext = new GraphQLUserContext
                     {
                         ServiceProvider = services
                     },
@@ -361,7 +362,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
                 var ci2 = new ContentItem { ContentType = "Animal", Published = true, ContentItemId = "3", ContentItemVersionId = "3" };
                 ci2.Weld(new Animal { Name = "tommy", IsHappy = false, IsScary = true });
 
-                var session = ((GraphQLContext)context.UserContext).ServiceProvider.GetService<ISession>();
+                var session = ((GraphQLUserContext)context.UserContext).ServiceProvider.GetService<ISession>();
                 session.Save(ci);
                 session.Save(ci1);
                 session.Save(ci2);
@@ -405,7 +406,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
                 var context = new ResolveFieldContext
                 {
                     Arguments = new Dictionary<string, object>(),
-                    UserContext = new GraphQLContext
+                    UserContext = new GraphQLUserContext
                     {
                         ServiceProvider = services
                     },
@@ -416,7 +417,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
                 var ci = new ContentItem { ContentType = "Animal", Published = true, ContentItemId = "1", ContentItemVersionId = "1" };
                 ci.Weld(new AnimalPart { Name = "doug" });
 
-                var session = ((GraphQLContext)context.UserContext).ServiceProvider.GetService<ISession>();
+                var session = ((GraphQLUserContext)context.UserContext).ServiceProvider.GetService<ISession>();
                 session.Save(ci);
                 await session.CommitAsync();
 
@@ -455,7 +456,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
                 var context = new ResolveFieldContext
                 {
                     Arguments = new Dictionary<string, object>(),
-                    UserContext = new GraphQLContext
+                    UserContext = new GraphQLUserContext
                     {
                         ServiceProvider = services
                     },
@@ -478,7 +479,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
                 var ci = new ContentItem { ContentType = "Animal", Published = true, ContentItemId = "1", ContentItemVersionId = "1" };
                 ci.Weld(new AnimalPart { Name = "doug" });
 
-                var session = ((GraphQLContext)context.UserContext).ServiceProvider.GetService<ISession>();
+                var session = ((GraphQLUserContext)context.UserContext).ServiceProvider.GetService<ISession>();
                 session.Save(ci);
                 await session.CommitAsync();
 

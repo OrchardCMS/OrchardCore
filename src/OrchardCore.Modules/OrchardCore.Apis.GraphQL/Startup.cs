@@ -61,7 +61,7 @@ namespace OrchardCore.Apis.GraphQL
                     maxNumberOfResultsValidationMode = _hostingEnvironment.IsDevelopment() ? MaxNumberOfResultsValidationMode.Enabled : MaxNumberOfResultsValidationMode.Disabled;
                 }
 
-                c.BuildUserContext = ctx => new GraphQLContext
+                c.BuildUserContext = ctx => new GraphQLUserContext
                 {
                     HttpContext = ctx,
                     User = ctx.User,

@@ -40,7 +40,7 @@ namespace OrchardCore.Layers.GraphQL
 
         private async Task<IEnumerable<Layer>> ResolveAsync(IResolveFieldContext resolveContext)
         {
-            var layerService = resolveContext.ResolveServiceProvider().GetService<ILayerService>();
+            var layerService = resolveContext.RequestServices.GetService<ILayerService>();
             var allLayers = await layerService.GetLayersAsync();
             return allLayers.Layers;
         }
