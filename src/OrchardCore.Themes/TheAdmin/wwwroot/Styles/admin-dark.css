@@ -55,7 +55,7 @@ article, aside, figcaption, figure, footer, header, hgroup, main, nav, section {
 
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-  font-size: 0.9375rem;
+  font-size: 1rem;
   font-weight: 400;
   line-height: 1.5;
   color: #fff; }
@@ -337,25 +337,25 @@ h1, h2, h3, h4, h5, h6,
   margin-bottom: 0.5rem; }
 
 h1, .h1 {
-  font-size: 3rem; }
-
-h2, .h2 {
   font-size: 2.5rem; }
 
-h3, .h3 {
+h2, .h2 {
   font-size: 2rem; }
 
+h3, .h3 {
+  font-size: 1.75rem; }
+
 h4, .h4 {
-  font-size: 1.40625rem; }
+  font-size: 1.5rem; }
 
 h5, .h5 {
-  font-size: 1.171875rem; }
+  font-size: 1.25rem; }
 
 h6, .h6 {
-  font-size: 0.9375rem; }
+  font-size: 1rem; }
 
 .lead {
-  font-size: 1.171875rem;
+  font-size: 1.25rem;
   font-weight: 300; }
 
 .display-1 {
@@ -424,7 +424,7 @@ small, .field-validation-error,
   text-transform: uppercase; }
 
 .blockquote {
-  font-size: 1.171875rem; }
+  font-size: 1.25rem; }
 
 [dir] .blockquote {
   margin-bottom: 1rem; }
@@ -1552,7 +1552,7 @@ pre {
   display: block;
   width: 100%;
   height: calc(1.5em + 0.75rem + 2px);
-  font-size: 0.9375rem;
+  font-size: 1rem;
   font-weight: 400;
   line-height: 1.5;
   color: #444;
@@ -1616,7 +1616,7 @@ select.form-control:focus::-ms-value {
   margin-bottom: 0; }
 
 .col-form-label-lg {
-  font-size: 1.171875rem;
+  font-size: 1.25rem;
   line-height: 1.5; }
 
 [dir] .col-form-label-lg {
@@ -1624,7 +1624,7 @@ select.form-control:focus::-ms-value {
   padding-bottom: calc(0.5rem + 1px); }
 
 .col-form-label-sm {
-  font-size: 0.8203125rem;
+  font-size: 0.875rem;
   line-height: 1.5; }
 
 [dir] .col-form-label-sm {
@@ -1634,7 +1634,7 @@ select.form-control:focus::-ms-value {
 .form-control-plaintext {
   display: block;
   width: 100%;
-  font-size: 0.9375rem;
+  font-size: 1rem;
   line-height: 1.5;
   color: #fff; }
 
@@ -1653,7 +1653,7 @@ select.form-control:focus::-ms-value {
 
 .form-control-sm {
   height: calc(1.5em + 0.5rem + 2px);
-  font-size: 0.8203125rem;
+  font-size: 0.875rem;
   line-height: 1.5; }
 
 [dir] .form-control-sm {
@@ -1662,7 +1662,7 @@ select.form-control:focus::-ms-value {
 
 .form-control-lg {
   height: calc(1.5em + 1rem + 2px);
-  font-size: 1.171875rem;
+  font-size: 1.25rem;
   line-height: 1.5; }
 
 [dir] .form-control-lg {
@@ -1767,7 +1767,7 @@ textarea.form-control {
   z-index: 5;
   display: none;
   max-width: 100%;
-  font-size: 0.8203125rem;
+  font-size: 0.875rem;
   line-height: 1.5;
   color: #fff; }
 
@@ -1873,7 +1873,7 @@ textarea.form-control {
   z-index: 5;
   display: none;
   max-width: 100%;
-  font-size: 0.8203125rem;
+  font-size: 0.875rem;
   line-height: 1.5;
   color: #fff; }
 
@@ -2031,7 +2031,7 @@ textarea.form-control {
   color: #fff;
   vertical-align: middle;
   user-select: none;
-  font-size: 0.9375rem;
+  font-size: 1rem;
   line-height: 1.5;
   transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out; }
 
@@ -2524,7 +2524,7 @@ fieldset:disabled a.button {
     pointer-events: none; }
 
 .btn-lg, .btn-group-lg > .btn, .btn-group-lg > .button {
-  font-size: 1.171875rem;
+  font-size: 1.25rem;
   line-height: 1.5; }
 
 [dir] .btn-lg, [dir] .btn-group-lg > .btn, [dir] .btn-group-lg > .button {
@@ -2532,7 +2532,7 @@ fieldset:disabled a.button {
   border-radius: 0.3rem; }
 
 .btn-sm, .btn-group-sm > .btn, .btn-group-sm > .button {
-  font-size: 0.8203125rem;
+  font-size: 0.875rem;
   line-height: 1.5; }
 
 [dir] .btn-sm, [dir] .btn-group-sm > .btn, [dir] .btn-group-sm > .button {
@@ -2604,7 +2604,7 @@ input[type="button"].btn-block {
   z-index: 1000;
   display: none;
   min-width: 10rem;
-  font-size: 0.9375rem;
+  font-size: 1rem;
   color: #fff;
   list-style: none; }
 
@@ -2882,7 +2882,7 @@ input[type="button"].btn-block {
 
 .dropdown-header {
   display: block;
-  font-size: 0.8203125rem;
+  font-size: 0.875rem;
   color: #888;
   white-space: nowrap; }
 
@@ -3104,7 +3104,7 @@ input[type="button"].btn-block {
 .input-group-text {
   display: flex;
   align-items: center;
-  font-size: 0.9375rem;
+  font-size: 1rem;
   font-weight: 400;
   line-height: 1.5;
   color: #adb5bd;
@@ -3132,7 +3132,7 @@ input[type="button"].btn-block {
 .input-group-lg > .input-group-prepend > .button,
 .input-group-lg > .input-group-append > .btn,
 .input-group-lg > .input-group-append > .button {
-  font-size: 1.171875rem;
+  font-size: 1.25rem;
   line-height: 1.5; }
 
 [dir] .input-group-lg > .form-control, [dir] .input-group-lg > .custom-select, [dir] .input-group-lg > .input-group-prepend > .input-group-text, [dir] .input-group-lg > .input-group-append > .input-group-text, [dir] .input-group-lg > .input-group-prepend > .btn, [dir] .input-group-lg > .input-group-prepend > .button, [dir] .input-group-lg > .input-group-append > .btn, [dir] .input-group-lg > .input-group-append > .button {
@@ -3151,7 +3151,7 @@ input[type="button"].btn-block {
 .input-group-sm > .input-group-prepend > .button,
 .input-group-sm > .input-group-append > .btn,
 .input-group-sm > .input-group-append > .button {
-  font-size: 0.8203125rem;
+  font-size: 0.875rem;
   line-height: 1.5; }
 
 [dir] .input-group-sm > .form-control, [dir] .input-group-sm > .custom-select, [dir] .input-group-sm > .input-group-prepend > .input-group-text, [dir] .input-group-sm > .input-group-append > .input-group-text, [dir] .input-group-sm > .input-group-prepend > .btn, [dir] .input-group-sm > .input-group-prepend > .button, [dir] .input-group-sm > .input-group-append > .btn, [dir] .input-group-sm > .input-group-append > .button {
@@ -3184,7 +3184,7 @@ input[type="button"].btn-block {
   position: relative;
   z-index: 1;
   display: block;
-  min-height: 1.40625rem;
+  min-height: 1.5rem;
   color-adjust: exact; }
 
 [dir=ltr] .custom-control {
@@ -3206,7 +3206,7 @@ input[type="button"].btn-block {
   position: absolute;
   z-index: -1;
   width: 1rem;
-  height: 1.203125rem;
+  height: 1.25rem;
   opacity: 0; }
 
 [dir=ltr] .custom-control-input {
@@ -3241,7 +3241,7 @@ input[type="button"].btn-block {
   margin-bottom: 0; }
   .custom-control-label::before {
     position: absolute;
-    top: 0.203125rem;
+    top: 0.25rem;
     display: block;
     width: 1rem;
     height: 1rem;
@@ -3256,7 +3256,7 @@ input[type="button"].btn-block {
     right: -1.5rem; }
   .custom-control-label::after {
     position: absolute;
-    top: 0.203125rem;
+    top: 0.25rem;
     display: block;
     width: 1rem;
     height: 1rem;
@@ -3311,7 +3311,7 @@ input[type="button"].btn-block {
   [dir=rtl] .custom-switch .custom-control-label::before {
     right: -2.25rem; }
   .custom-switch .custom-control-label::after {
-    top: calc(0.203125rem + 2px);
+    top: calc(0.25rem + 2px);
     width: calc(1rem - 4px);
     height: calc(1rem - 4px);
     transition: transform 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out; }
@@ -3338,7 +3338,7 @@ input[type="button"].btn-block {
   display: inline-block;
   width: 100%;
   height: calc(1.5em + 0.75rem + 2px);
-  font-size: 0.9375rem;
+  font-size: 1rem;
   font-weight: 400;
   line-height: 1.5;
   color: #444;
@@ -3386,7 +3386,7 @@ input[type="button"].btn-block {
 
 .custom-select-sm {
   height: calc(1.5em + 0.5rem + 2px);
-  font-size: 0.8203125rem; }
+  font-size: 0.875rem; }
 
 [dir] .custom-select-sm {
   padding-top: 0.25rem;
@@ -3400,7 +3400,7 @@ input[type="button"].btn-block {
 
 .custom-select-lg {
   height: calc(1.5em + 1rem + 2px);
-  font-size: 1.171875rem; }
+  font-size: 1.25rem; }
 
 [dir] .custom-select-lg {
   padding-top: 0.5rem;
@@ -3722,13 +3722,13 @@ input[type="button"].btn-block {
 
 .navbar-brand, .ta-navbar-brand {
   display: inline-block;
-  font-size: 1.171875rem;
+  font-size: 1.25rem;
   line-height: inherit;
   white-space: nowrap; }
 
 [dir] .navbar-brand, [dir] .ta-navbar-brand {
-  padding-top: 0.32421875rem;
-  padding-bottom: 0.32421875rem; }
+  padding-top: 0.3125rem;
+  padding-bottom: 0.3125rem; }
 
 [dir=ltr] .navbar-brand, [dir=ltr] .ta-navbar-brand {
   margin-right: 1rem; }
@@ -3775,7 +3775,7 @@ input[type="button"].btn-block {
   align-items: center; }
 
 .navbar-toggler {
-  font-size: 1.171875rem;
+  font-size: 1.25rem;
   line-height: 1; }
 
 [dir] .navbar-toggler {
@@ -4386,7 +4386,7 @@ input[type="button"].btn-block {
   border-color: transparent; }
 
 .pagination-lg .page-link, .pagination-lg ul.pager li a, ul.pager li .pagination-lg a {
-  font-size: 1.171875rem;
+  font-size: 1.25rem;
   line-height: 1.5; }
 
 [dir] .pagination-lg .page-link, [dir] .pagination-lg ul.pager li a, [dir] ul.pager li .pagination-lg a {
@@ -4409,7 +4409,7 @@ input[type="button"].btn-block {
   border-bottom-left-radius: 0.3rem; }
 
 .pagination-sm .page-link, .pagination-sm ul.pager li a, ul.pager li .pagination-sm a {
-  font-size: 0.8203125rem;
+  font-size: 0.875rem;
   line-height: 1.5; }
 
 [dir] .pagination-sm .page-link, [dir] .pagination-sm ul.pager li a, [dir] ul.pager li .pagination-sm a {
@@ -4615,10 +4615,10 @@ input[type="button"].btn-block {
   font-weight: 700; }
 
 [dir=ltr] .alert-dismissible {
-  padding-right: 3.90625rem; }
+  padding-right: 4rem; }
 
 [dir=rtl] .alert-dismissible {
-  padding-left: 3.90625rem; }
+  padding-left: 4rem; }
   .alert-dismissible .close {
     position: absolute;
     top: 0;
@@ -4736,7 +4736,7 @@ input[type="button"].btn-block {
   height: 1rem;
   overflow: hidden;
   line-height: 0;
-  font-size: 0.703125rem; }
+  font-size: 0.75rem; }
 
 [dir] .progress {
   background-color: #444;
@@ -5130,7 +5130,7 @@ input[type="button"].btn-block {
     border-color: #191919; }
 
 .close {
-  font-size: 1.40625rem;
+  font-size: 1.5rem;
   font-weight: 700;
   line-height: 1;
   color: #fff;
@@ -5411,7 +5411,7 @@ a.close.disabled {
   word-spacing: normal;
   white-space: normal;
   line-break: auto;
-  font-size: 0.8203125rem;
+  font-size: 0.875rem;
   word-wrap: break-word;
   opacity: 0; }
 
@@ -5522,7 +5522,7 @@ a.close.disabled {
   word-spacing: normal;
   white-space: normal;
   line-break: auto;
-  font-size: 0.8203125rem;
+  font-size: 0.875rem;
   word-wrap: break-word; }
 
 [dir] .popover {
@@ -5662,7 +5662,7 @@ a.close.disabled {
       border-right-color: #303030; }
 
 .popover-header {
-  font-size: 0.9375rem; }
+  font-size: 1rem; }
 
 [dir] .popover-header {
   padding: 0.5rem 0.75rem;
