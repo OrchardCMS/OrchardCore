@@ -333,6 +333,8 @@ namespace OrchardCore.DisplayManagement.Liquid
                     await handler.RenderingAsync(context);
                 }
 
+                context.FileProvider = context.Services.GetRequiredService<ILiquidViewFileProviderAccessor>().FileProvider;
+
                 context.CultureInfo = CultureInfo.CurrentUICulture;
 
                 contextInternal.IsInitialized = true;
