@@ -14,21 +14,21 @@ $gray-100: #f8f9fa !default;
 $gray-200: #ebebeb !default;
 $gray-300: #dee2e6 !default;
 $gray-400: #ced4da !default;
-$gray-500: #adb5bd !default;
+$gray-500: rgb(42, 45, 47) !default;
 $gray-600: #888 !default;
-$gray-700: #444 !default;
-$gray-800: #303030 !default;
-$gray-900: #222 !default;
+$gray-700: rgba(140, 130, 115, 0.13) !default;
+$gray-800: rgb(24, 26, 27) !default;
+$gray-900: rgb(24, 26, 27) !default;
 $black: #000 !default;
 
-$blue: #375a7f !default;
+$blue: rgb(51, 162, 255) !default;
 $indigo: #6610f2 !default;
 $purple: #6f42c1 !default;
 $pink: #e83e8c !default;
 $red: #e74c3c !default;
 $orange: #fd7e14 !default;
 $yellow: #f39c12 !default;
-$green: #00bc8c !default;
+$green: rgb(24, 101, 42) !default;
 $teal: #20c997 !default;
 $cyan: #3498db !default;
 
@@ -50,7 +50,7 @@ $body-color: $white !default;
 
 // Links
 
-$link-color: $success !default;
+$link-color: $blue !default;
 
 // Fonts
 
@@ -72,7 +72,8 @@ $table-border-color: $gray-700 !default;
 
 // Forms
 
-$input-border-color: $body-bg !default;
+$input-border-color: rgb(60, 65, 68) !default;
+$input-bg: $gray-900 !default;
 
 $input-group-addon-color: $gray-500 !default;
 $input-group-addon-bg: $gray-700 !default;
