@@ -24,18 +24,15 @@ namespace OrchardCore.Tests.Modules.OrchardCore.ContentLocalization
         [Theory]
         [InlineData("en", "foo bar baz", "foo bar baz")]
         [InlineData("en", "foo [locale 'en']bar[/locale][locale 'fr']far[/locale] baz", @"foo bar baz")]
+        [InlineData("en", "foo [locale en]bar[/locale][locale fr]far[/locale] baz", @"foo bar baz")]
         [InlineData("en-CA", "foo [locale 'en']bar[/locale][locale 'fr']far[/locale] baz", @"foo bar baz")]
-        [InlineData("en-CA", "foo [locale 'en' 'false']bar[/locale][locale 'fr' 'false']far[/locale] baz", @"foo  baz")]
+        [InlineData("en-CA", "foo [locale en false]bar[/locale][locale fr]far[/locale] baz", @"foo  baz")]
         [InlineData("fr", "foo [locale 'en']bar[/locale][locale 'fr']far[/locale] baz", @"foo far baz")]
+        [InlineData("fr", "foo [locale en]bar[/locale][locale fr]far[/locale] baz", @"foo far baz")]
         public async Task ShouldProcess(string currentCulture, string text, string expected)
         {
-            var sanitizerOptions = new HtmlSanitizerOptions();
-            sanitizerOptions.Configure.Add(opt => opt.AllowedAttributes.Add("class"));
-
             CultureInfo.CurrentUICulture = new CultureInfo(currentCulture);
             CultureInfo.CurrentCulture = new CultureInfo(currentCulture);
-
-            var sanitizer = new HtmlSanitizerService(Options.Create(sanitizerOptions));
 
             var localizationProvider = new LocalizationShortcodeProvider();
 
