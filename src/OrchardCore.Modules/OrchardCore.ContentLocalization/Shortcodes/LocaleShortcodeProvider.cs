@@ -5,7 +5,7 @@ using Shortcodes;
 
 namespace OrchardCore.ContentLocalization.Shortcodes
 {
-    public class LocalizationShortcodeProvider : IShortcodeProvider
+    public class LocaleShortcodeProvider : IShortcodeProvider
     {
         public const string ShortCodeIdentifier = "locale";
         private static readonly ValueTask<string> Null = new ValueTask<string>((string)null);
@@ -46,8 +46,6 @@ namespace OrchardCore.ContentLocalization.Shortcodes
             }
 
             return Null;
-        
-
         }
     }
 }

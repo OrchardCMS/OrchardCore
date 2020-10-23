@@ -19,7 +19,7 @@ using Xunit;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.ContentLocalization
 {
-    public class LocalizeShortcodeTests
+    public class LocaleShortcodeTests
     {
         [Theory]
         [InlineData("en", "foo bar baz", "foo bar baz")]
@@ -34,9 +34,9 @@ namespace OrchardCore.Tests.Modules.OrchardCore.ContentLocalization
             CultureInfo.CurrentUICulture = new CultureInfo(currentCulture);
             CultureInfo.CurrentCulture = new CultureInfo(currentCulture);
 
-            var localizationProvider = new LocalizationShortcodeProvider();
+            var localeProvider = new LocaleShortcodeProvider();
 
-            var processor = new ShortcodeService(new IShortcodeProvider[] { localizationProvider }, Enumerable.Empty<IShortcodeContextProvider>());
+            var processor = new ShortcodeService(new IShortcodeProvider[] { localeProvider }, Enumerable.Empty<IShortcodeContextProvider>());
 
             var processed = await processor.ProcessAsync(text);
             Assert.Equal(expected, processed);

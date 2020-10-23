@@ -120,7 +120,7 @@ namespace OrchardCore.ContentLocalization
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddShortcode<LocalizationShortcodeProvider>("locale", d =>
+            services.AddShortcode<LocaleShortcodeProvider>("locale", d =>
             {
                 d.DefaultValue = "[locale {language_code}] [/locale]";
                 d.Hint = "Conditionally render content in the specified language";
