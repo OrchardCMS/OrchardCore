@@ -19986,6 +19986,9 @@ html[dir]:not(.fontawesome-i2svg-complete) #left-nav ul.menu-admin > li > .item-
 [dir] .bg-primary {
   background-color: #1b1e1f !important; }
 
+[dir] #mediaApp {
+  background-color: #181a1b; }
+
 .blockquote-footer {
   color: #888; }
 
