@@ -43,6 +43,5 @@ namespace OrchardCore.Mvc.ModelBinding
                 }
             }
         }
-
     }
 }
