@@ -5,13 +5,12 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 
 namespace OrchardCore.ResourceManagement.TagHelpers
 {
-    [HtmlTargetElement("style", Attributes = IdAttributeName)]
     [HtmlTargetElement("style", Attributes = NameAttributeName)]
     [HtmlTargetElement("style", Attributes = SrcAttributeName)]
     [HtmlTargetElement("style", Attributes = AtAttributeName)]
     public class StyleTagHelper : TagHelper
     {
-        private const string IdAttributeName = "id";
+        private const string IdAttributeName = "asp-id";
         private const string NameAttributeName = "asp-name";
         private const string SrcAttributeName = "asp-src";
         private const string AtAttributeName = "at";
