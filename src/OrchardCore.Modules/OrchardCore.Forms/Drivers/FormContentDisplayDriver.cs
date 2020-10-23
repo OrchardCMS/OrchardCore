@@ -1,8 +1,8 @@
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
-using OrchardCore.DisplayManagement.Views;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Forms.Models;
 
 namespace OrchardCore.Forms.Drivers

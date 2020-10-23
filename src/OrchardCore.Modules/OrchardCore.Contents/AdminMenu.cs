@@ -43,7 +43,7 @@ namespace OrchardCore.Contents
         public async Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
             var context = _httpContextAccessor.HttpContext;
-            
+
             if (!String.Equals(name, "admin", StringComparison.OrdinalIgnoreCase))
             {
                 return;
@@ -56,17 +56,17 @@ namespace OrchardCore.Contents
                 content.AddClass("content").Id("content");
                 await content.AddAsync(S["Content Items"], S["Content Items"].PrefixPosition(), async contentItems =>
                 {
-                    if(!await _authorizationService.IsAuthorizedToAContentTypeAsync(context.User, CommonPermissions.EditContent, contentTypes, _contentManager))
+                    if (!await _authorizationService.AuthorizeContentTypeDefinitionsAsync(context.User, CommonPermissions.EditContent, contentTypes, _contentManager))
                     {
                         contentItems.Permission(Permissions.EditContent);
                     }
-                    
+
                     contentItems.Action(nameof(AdminController.List), typeof(AdminController).ControllerName(), new { area = "OrchardCore.Contents", contentTypeId = "" });
                     contentItems.LocalNav();
                 });
             });
 
-            
+
             if (contentTypes.Any())
             {
                 await builder.AddAsync(S["New"], "-1", async newMenu =>

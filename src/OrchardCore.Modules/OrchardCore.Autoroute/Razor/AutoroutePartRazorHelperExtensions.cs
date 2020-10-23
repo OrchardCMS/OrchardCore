@@ -10,10 +10,11 @@ public static class AutoroutePartRazorHelperExtensions
     /// <summary>
     /// Returns a content item id by its slug.
     /// </summary>
+    /// <param name="orchardHelper">The <see cref="IOrchardHelper"/>.</param>
     /// <param name="slug">The slug.</param>
     /// <example>GetContentItemIdBySlugAsync("myblog/my-blog-post")</example>
     /// <returns>A content item id or <c>null</c> if it was not found.</returns>
-    public static Task<string> GetContentItemIdBySlugAsync(this IOrchardHelper orchardHelper, string slug)
+    public static async Task<string> GetContentItemIdBySlugAsync(this IOrchardHelper orchardHelper, string slug)
     {
         if (String.IsNullOrEmpty(slug))
         {
@@ -32,17 +33,21 @@ public static class AutoroutePartRazorHelperExtensions
         }
 
         var autorouteEntries = orchardHelper.HttpContext.RequestServices.GetService<IAutorouteEntries>();
-        if (autorouteEntries.TryGetEntryByPath(slug, out var entry))
+
+        (var found, var entry) = await autorouteEntries.TryGetEntryByPathAsync(slug);
+
+        if (found)
         {
-            return Task.FromResult(entry.ContentItemId);
+            return entry.ContentItemId;
         }
 
-        return Task.FromResult<string>(null);
+        return null;
     }
 
     /// <summary>
     /// Loads a content item by its slug.
     /// </summary>
+    /// <param name="orchardHelper">The <see cref="IOrchardHelper"/>.</param>
     /// <param name="slug">The slug to load.</param>
     /// <param name="latest">Whether a draft should be loaded if available. <c>false</c> by default.</param>
     /// <example>GetContentItemBySlugAsync("myblog/my-blog-post")</example>

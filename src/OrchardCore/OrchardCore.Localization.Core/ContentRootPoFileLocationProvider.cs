@@ -18,8 +18,8 @@ namespace OrchardCore.Localization.PortableObject
         /// <summary>
         /// Creates a new instance of <see cref="ContentRootPoFileLocationProvider"/>.
         /// </summary>
-        /// <param name="hostingEnvironment"><see cref="IHostEnvironment"/>.</param>
-        /// <param name="localizationOptions">The IOptions<LocalizationOptions>.</param>
+        /// <param name="hostingEnvironment">The <see cref="IHostEnvironment"/>.</param>
+        /// <param name="localizationOptions">The <see cref="LocalizationOptions"/>.</param>
         public ContentRootPoFileLocationProvider(IHostEnvironment hostingEnvironment, IOptions<LocalizationOptions> localizationOptions)
         {
             _fileProvider = hostingEnvironment.ContentRootFileProvider;

@@ -1,11 +1,7 @@
-using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Deployment;
-using OrchardCore.Entities;
-using OrchardCore.Media.Models;
 using OrchardCore.Media.Services;
-using OrchardCore.Settings;
 
 namespace OrchardCore.Media.Deployment
 {

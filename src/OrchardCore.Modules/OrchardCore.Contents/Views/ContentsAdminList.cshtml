@@ -6,7 +6,7 @@
 <!-- Hidden submit button do not remove -->
 <input type="submit" name="submit.Filter" id="submitFilter" class="d-none" />
 <input type="submit" name="submit.BulkAction" class="d-none" />
-<input asp-for="Options.BulkAction" type="hidden" />
+@Html.HiddenFor(o => o.Options.BulkAction)
 
 <div class="row">
     <div class="col-xl-4 col-sm-6">
