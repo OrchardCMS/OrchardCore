@@ -1,4 +1,4 @@
-@import "modules/theme/darkly/_variables.scss";
+@import "modules/theme/darkmode/_variables.scss";
 @import "../../node_modules/bootstrap/scss/bootstrap";
 
 @import "modules/admin/_messages.scss";
@@ -13,5 +13,4 @@
 @import "modules/admin/_codemirror.scss";
 @import "modules/admin/_jquery-ui.scss";
 
-@import "modules/theme/darkly/_bootswatch.scss";
- 
+@import "modules/theme/darkmode/_bootswatch.scss";

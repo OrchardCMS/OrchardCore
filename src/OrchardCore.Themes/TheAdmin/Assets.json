@@ -11,9 +11,9 @@
     "generateSourceMaps": false,
     "generateRTL": true,
     "inputs": [
-      "Assets/scss/admin-dark.scss"
+      "Assets/scss/admin-darkmode.scss"
     ],
-    "output": "wwwroot/Styles/TheAdmin-dark.css"
+    "output": "wwwroot/Styles/TheAdmin-darkmode.css"
   },
   {
     "generateSourceMaps": false,
