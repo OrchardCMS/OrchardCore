@@ -129,7 +129,7 @@ services.AddShortcode<ImageShortcodeProvider>("image", describe => {
 
 ### `[locale]`
 
-The `locale` shortcode allows you to conditionally render content in the specified language. 
+The `locale` shortcode allows you to conditionally render content in the specified language. Output is based on the current thread culture.
 ```
 [locale en]English Text[/locale][locale fr]French Text[/locale]
 ```
