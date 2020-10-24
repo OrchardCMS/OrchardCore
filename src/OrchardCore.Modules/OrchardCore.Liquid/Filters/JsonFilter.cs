@@ -40,7 +40,7 @@ namespace OrchardCore.Liquid.Filters
                 case FluidValues.String:
                     var stringValue = input.ToStringValue();
 
-                    if (string.IsNullOrWhiteSpace(stringValue))
+                    if (String.IsNullOrWhiteSpace(stringValue))
                     {
                         return new ValueTask<FluidValue>(input);
                     }

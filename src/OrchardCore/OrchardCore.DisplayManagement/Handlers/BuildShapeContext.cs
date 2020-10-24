@@ -1,3 +1,4 @@
+using System;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.ModelBinding;
 
@@ -10,7 +11,7 @@ namespace OrchardCore.DisplayManagement.Handlers
             Shape = shape;
             ShapeFactory = shapeFactory;
             GroupId = groupId;
-            HtmlFieldPrefix = string.Empty;
+            HtmlFieldPrefix = String.Empty;
             Layout = layout;
             FindPlacement = FindDefaultPlacement;
             Updater = updater;

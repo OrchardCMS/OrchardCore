@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -24,7 +25,7 @@ namespace OrchardCore.Lucene.Services
             var indexName = "Search";
 
             var fieldSettings = searchContext.PartFieldDefinition?.GetSettings<ContentPickerFieldLuceneEditorSettings>();
-            if (!string.IsNullOrWhiteSpace(fieldSettings?.Index))
+            if (!String.IsNullOrWhiteSpace(fieldSettings?.Index))
             {
                 indexName = fieldSettings.Index;
             }
@@ -40,7 +41,7 @@ namespace OrchardCore.Lucene.Services
             {
                 Query query = null;
 
-                if (string.IsNullOrWhiteSpace(searchContext.Query))
+                if (String.IsNullOrWhiteSpace(searchContext.Query))
                 {
                     query = new MatchAllDocsQuery();
                 }

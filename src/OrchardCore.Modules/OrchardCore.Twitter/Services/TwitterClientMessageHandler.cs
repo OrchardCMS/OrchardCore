@@ -46,9 +46,9 @@ namespace OrchardCore.Twitter.Services
             var protrector = _dataProtectionProvider.CreateProtector(TwitterConstants.Features.Twitter);
             var queryString = request.RequestUri.Query;
 
-            if (!string.IsNullOrWhiteSpace(settings.ConsumerSecret))
+            if (!String.IsNullOrWhiteSpace(settings.ConsumerSecret))
                 settings.ConsumerSecret = protrector.Unprotect(settings.ConsumerSecret);
-            if (!string.IsNullOrWhiteSpace(settings.ConsumerSecret))
+            if (!String.IsNullOrWhiteSpace(settings.ConsumerSecret))
                 settings.AccessTokenSecret = protrector.Unprotect(settings.AccessTokenSecret);
 
             var nonce = GetNonce();
@@ -63,7 +63,7 @@ namespace OrchardCore.Twitter.Services
             sortedParameters.Add(Uri.EscapeDataString("oauth_token"), Uri.EscapeDataString(settings.AccessToken));
             sortedParameters.Add(Uri.EscapeDataString("oauth_version"), Uri.EscapeDataString("1.0"));
 
-            if (!string.IsNullOrEmpty(request.RequestUri.Query))
+            if (!String.IsNullOrEmpty(request.RequestUri.Query))
             {
                 foreach (var item in request.RequestUri.Query.Split('&'))
                 {
@@ -76,7 +76,7 @@ namespace OrchardCore.Twitter.Services
 
             var contentString = await request.Content.ReadAsStringAsync();
 
-            if (!string.IsNullOrEmpty(contentString))
+            if (!String.IsNullOrEmpty(contentString))
             {
                 foreach (var item in contentString.Split('&'))
                 {
@@ -88,11 +88,11 @@ namespace OrchardCore.Twitter.Services
                 }
             }
 
-            var baseString = string.Concat(request.Method.Method.ToUpperInvariant(), "&",
+            var baseString = String.Concat(request.Method.Method.ToUpperInvariant(), "&",
                 Uri.EscapeDataString(request.RequestUri.AbsoluteUri.ToString()), "&",
-                Uri.EscapeDataString(string.Join("&", sortedParameters.Select(c => string.Format("{0}={1}", c.Key, c.Value)))));
+                Uri.EscapeDataString(String.Join("&", sortedParameters.Select(c => String.Format("{0}={1}", c.Key, c.Value)))));
 
-            var secret = string.Concat(settings.ConsumerSecret, "&", settings.AccessTokenSecret);
+            var secret = String.Concat(settings.ConsumerSecret, "&", settings.AccessTokenSecret);
             string signature;
             using (var hasher = new HMACSHA1(ASCIIEncoding.ASCII.GetBytes(secret)))
             {

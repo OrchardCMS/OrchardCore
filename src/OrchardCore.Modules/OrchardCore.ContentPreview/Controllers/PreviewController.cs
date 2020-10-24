@@ -125,13 +125,13 @@ namespace OrchardCore.ContentPreview.Controllers
         {
             Debug.Assert(modelError != null);
 
-            if (!string.IsNullOrEmpty(modelError.ErrorMessage))
+            if (!String.IsNullOrEmpty(modelError.ErrorMessage))
             {
                 return modelError.ErrorMessage;
             }
 
             // Default in the ValidationSummary case is no error message.
-            return string.Empty;
+            return String.Empty;
         }
 
         public static string GetModelErrorMessageOrDefault(
@@ -143,7 +143,7 @@ namespace OrchardCore.ContentPreview.Controllers
             Debug.Assert(containingEntry != null);
             Debug.Assert(modelExplorer != null);
 
-            if (!string.IsNullOrEmpty(modelError.ErrorMessage))
+            if (!String.IsNullOrEmpty(modelError.ErrorMessage))
             {
                 return modelError.ErrorMessage;
             }

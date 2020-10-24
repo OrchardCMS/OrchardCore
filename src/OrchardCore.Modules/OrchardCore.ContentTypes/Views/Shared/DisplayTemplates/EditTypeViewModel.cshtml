@@ -13,7 +13,7 @@
         <a asp-route-action="List" asp-route-area="OrchardCore.Contents" asp-route-contentTypeId="@Model.Name" class="btn btn-secondary btn-sm" role="button">@T["List Items"]</a>
         <a asp-route-action="Edit" asp-route-area="OrchardCore.ContentTypes" asp-route-id="@Model.Name" class="btn btn-primary btn-sm" role="button">@T["Edit"]</a>
     </div>
-    @if (!string.IsNullOrWhiteSpace(settings.Stereotype))
+    @if (!String.IsNullOrWhiteSpace(settings.Stereotype))
     {
         <span class="badge badge-info badge-pill" title="Stereotype">@settings.Stereotype</span>
     }

@@ -328,7 +328,7 @@ namespace OrchardCore.Tests.DisplayManagement.Decriptors
         {
             var manager = _serviceProvider.GetService<IShapeTableManager>();
             var shapeTable1 = manager.GetShapeTable(null);
-            var shapeTable2 = manager.GetShapeTable(string.Empty);
+            var shapeTable2 = manager.GetShapeTable(String.Empty);
             Assert.NotNull(shapeTable1.Descriptors["Hello"]);
             Assert.NotNull(shapeTable2.Descriptors["Hello"]);
         }

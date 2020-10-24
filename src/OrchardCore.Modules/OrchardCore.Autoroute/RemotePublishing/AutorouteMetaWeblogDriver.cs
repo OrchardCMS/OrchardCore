@@ -31,7 +31,7 @@ namespace OrchardCore.Autoroute.RemotePublishing
             {
                 var slug = rpcStruct.Optional<string>("wp_slug");
 
-                if (!string.IsNullOrWhiteSpace(slug))
+                if (!String.IsNullOrWhiteSpace(slug))
                 {
                     contentItem.Alter<AutoroutePart>(x => x.Path = slug);
                 }

@@ -1,3 +1,4 @@
+using System;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
@@ -87,7 +88,7 @@ namespace OrchardCore.ReCaptcha.TagHelpers
             var language = Language;
             CultureInfo culture = null;
 
-            if (string.IsNullOrWhiteSpace(language))
+            if (String.IsNullOrWhiteSpace(language))
                 language = await _localizationService.GetDefaultCultureAsync();
 
             try

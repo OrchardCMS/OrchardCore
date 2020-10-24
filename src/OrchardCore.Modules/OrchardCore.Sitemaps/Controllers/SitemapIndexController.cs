@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -71,7 +72,7 @@ namespace OrchardCore.Sitemaps.Controllers
             var sitemaps = (await _sitemapManager.GetSitemapsAsync())
                 .OfType<SitemapIndex>();
 
-            if (!string.IsNullOrWhiteSpace(options.Search))
+            if (!String.IsNullOrWhiteSpace(options.Search))
             {
                 sitemaps = sitemaps.Where(smp => smp.Name.Contains(options.Search));
             }

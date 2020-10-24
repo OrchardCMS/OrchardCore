@@ -38,7 +38,7 @@ namespace OrchardCore.ContentTypes.Editors
     {
         public override bool CanHandleModel(ContentPartFieldDefinition model)
         {
-            return string.Equals(typeof(TField).Name, model.FieldDefinition.Name);
+            return String.Equals(typeof(TField).Name, model.FieldDefinition.Name);
         }
     }
 }

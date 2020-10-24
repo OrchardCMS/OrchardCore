@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -45,7 +46,7 @@ namespace OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget
             var model = new ExportContentToDeploymentTargetModel();
             await _updateModelAccessor.ModelUpdater.TryUpdateModelAsync(model, "ExportContentToDeploymentTarget", m => m.ItemIds, m => m.Latest, m => m.ContentItemId);
 
-            if (!string.IsNullOrEmpty(model.ContentItemId))
+            if (!String.IsNullOrEmpty(model.ContentItemId))
             {
                 var contentItem = await _contentManager.GetAsync(model.ContentItemId, model.Latest ? VersionOptions.Latest : VersionOptions.Published);
                 if (contentItem != null)

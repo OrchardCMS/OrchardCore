@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -48,7 +49,7 @@ namespace OrchardCore.DisplayManagement.Liquid.TagHelpers
 
             public void AddRequiredAttributes(TagMatchingRuleDescriptorBuilder ruleBuilder)
             {
-                if (string.IsNullOrEmpty(_requiredAttributes))
+                if (String.IsNullOrEmpty(_requiredAttributes))
                 {
                     return;
                 }

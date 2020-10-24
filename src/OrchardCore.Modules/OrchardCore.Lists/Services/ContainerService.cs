@@ -153,7 +153,7 @@ namespace OrchardCore.Lists.Services
             {
                 if (enableOrdering)
                 {
-                    var beforeValue = int.Parse(pager.Before);
+                    var beforeValue = Int32.Parse(pager.Before);
                     query = _session.Query<ContentItem>()
                         .With<ContainedPartIndex>(CreateOrderedContainedPartIndexFilter(beforeValue, null, contentItemId))
                         .OrderByDescending(x => x.Order)
@@ -162,7 +162,7 @@ namespace OrchardCore.Lists.Services
                 }
                 else
                 {
-                    var beforeValue = new DateTime(long.Parse(pager.Before));
+                    var beforeValue = new DateTime(Int64.Parse(pager.Before));
                     query = _session.Query<ContentItem>()
                         .With<ContainedPartIndex>(x => x.ListContentItemId == contentItemId)
                         .With<ContentItemIndex>(CreateDefaultContentIndexFilter(beforeValue, null, publishedOnly))
@@ -207,7 +207,7 @@ namespace OrchardCore.Lists.Services
             {
                 if (enableOrdering)
                 {
-                    var afterValue = int.Parse(pager.After);
+                    var afterValue = Int32.Parse(pager.After);
                     query = _session.Query<ContentItem>()
                         .With<ContainedPartIndex>(CreateOrderedContainedPartIndexFilter(null, afterValue, contentItemId))
                         .OrderBy(x => x.Order)
@@ -216,7 +216,7 @@ namespace OrchardCore.Lists.Services
                 }
                 else
                 {
-                    var afterValue = new DateTime(long.Parse(pager.After));
+                    var afterValue = new DateTime(Int64.Parse(pager.After));
                     query = _session.Query<ContentItem>()
                         .With<ContainedPartIndex>(CreateOrderedContainedPartIndexFilter(null, null, contentItemId))
                         .With<ContentItemIndex>(CreateDefaultContentIndexFilter(null, afterValue, publishedOnly))

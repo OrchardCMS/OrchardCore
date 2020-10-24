@@ -158,7 +158,7 @@ namespace OrchardCore.Autoroute.Handlers
 
             if (part.Path?.IndexOfAny(AutoroutePartDisplay.InvalidCharactersForPath) > -1 || part.Path?.IndexOf(' ') > -1 || part.Path?.IndexOf("//") > -1)
             {
-                var invalidCharactersForMessage = string.Join(", ", AutoroutePartDisplay.InvalidCharactersForPath.Select(c => $"\"{c}\""));
+                var invalidCharactersForMessage = String.Join(", ", AutoroutePartDisplay.InvalidCharactersForPath.Select(c => $"\"{c}\""));
                 context.Fail(S["Please do not use any of the following characters in your permalink: {0}. No spaces, or consecutive slashes, are allowed (please use dashes or underscores instead).", invalidCharactersForMessage], nameof(part.Path));
             }
 
@@ -344,7 +344,7 @@ namespace OrchardCore.Autoroute.Handlers
             var unversionedPath = path;
 
             var versionSeparatorPosition = path.LastIndexOf('-');
-            if (versionSeparatorPosition > -1 && int.TryParse(path.Substring(versionSeparatorPosition).TrimStart('-'), out version))
+            if (versionSeparatorPosition > -1 && Int32.TryParse(path.Substring(versionSeparatorPosition).TrimStart('-'), out version))
             {
                 unversionedPath = path.Substring(0, versionSeparatorPosition);
             }
@@ -425,7 +425,7 @@ namespace OrchardCore.Autoroute.Handlers
             var unversionedPath = path;
 
             var versionSeparatorPosition = path.LastIndexOf('-');
-            if (versionSeparatorPosition > -1 && int.TryParse(path.Substring(versionSeparatorPosition).TrimStart('-'), out version))
+            if (versionSeparatorPosition > -1 && Int32.TryParse(path.Substring(versionSeparatorPosition).TrimStart('-'), out version))
             {
                 unversionedPath = path.Substring(0, versionSeparatorPosition);
             }
@@ -454,7 +454,7 @@ namespace OrchardCore.Autoroute.Handlers
             if (possibleConflicts.Any())
             {
                 if (possibleConflicts.Any(x => x.ContentItemId != contentItemId) ||
-                    possibleConflicts.Any(x => !string.IsNullOrEmpty(x.ContainedContentItemId) && x.ContainedContentItemId != contentItemId))
+                    possibleConflicts.Any(x => !String.IsNullOrEmpty(x.ContainedContentItemId) && x.ContainedContentItemId != contentItemId))
                 {
                     isUnique = false;
                 }

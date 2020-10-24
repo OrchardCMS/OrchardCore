@@ -20,7 +20,7 @@ namespace OrchardCore.Facebook.Recipes
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
         {
-            if (!string.Equals(context.Name, "FacebookCoreSettings", StringComparison.OrdinalIgnoreCase))
+            if (!String.Equals(context.Name, "FacebookCoreSettings", StringComparison.OrdinalIgnoreCase))
             {
                 return;
             }

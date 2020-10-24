@@ -58,7 +58,7 @@ namespace OrchardCore.Media.Controllers
                 return Forbid();
             }
 
-            if (string.IsNullOrEmpty(path))
+            if (String.IsNullOrEmpty(path))
             {
                 path = "";
             }
@@ -85,7 +85,7 @@ namespace OrchardCore.Media.Controllers
 
         public async Task<ActionResult<IEnumerable<object>>> GetMediaItems(string path)
         {
-            if (string.IsNullOrEmpty(path))
+            if (String.IsNullOrEmpty(path))
             {
                 path = "";
             }
@@ -122,7 +122,7 @@ namespace OrchardCore.Media.Controllers
                 return Forbid();
             }
 
-            if (string.IsNullOrEmpty(path))
+            if (String.IsNullOrEmpty(path))
             {
                 return NotFound();
             }
@@ -149,7 +149,7 @@ namespace OrchardCore.Media.Controllers
                 return Forbid();
             }
 
-            if (string.IsNullOrEmpty(path))
+            if (String.IsNullOrEmpty(path))
             {
                 path = "";
             }
@@ -217,7 +217,7 @@ namespace OrchardCore.Media.Controllers
                 return Forbid();
             }
 
-            if (string.IsNullOrEmpty(path))
+            if (String.IsNullOrEmpty(path))
             {
                 return StatusCode(StatusCodes.Status403Forbidden, S["Cannot delete root media folder"]);
             }
@@ -245,7 +245,7 @@ namespace OrchardCore.Media.Controllers
                 return Forbid();
             }
 
-            if (string.IsNullOrEmpty(path))
+            if (String.IsNullOrEmpty(path))
             {
                 return NotFound();
             }
@@ -265,7 +265,7 @@ namespace OrchardCore.Media.Controllers
                 return Forbid();
             }
 
-            if (string.IsNullOrEmpty(oldPath) || string.IsNullOrEmpty(newPath))
+            if (String.IsNullOrEmpty(oldPath) || String.IsNullOrEmpty(newPath))
             {
                 return NotFound();
             }
@@ -331,14 +331,14 @@ namespace OrchardCore.Media.Controllers
             }
 
             if ((mediaNames == null) || (mediaNames.Length < 1)
-                || string.IsNullOrEmpty(sourceFolder)
-                || string.IsNullOrEmpty(targetFolder))
+                || String.IsNullOrEmpty(sourceFolder)
+                || String.IsNullOrEmpty(targetFolder))
             {
                 return NotFound();
             }
 
-            sourceFolder = sourceFolder == "root" ? string.Empty : sourceFolder;
-            targetFolder = targetFolder == "root" ? string.Empty : targetFolder;
+            sourceFolder = sourceFolder == "root" ? String.Empty : sourceFolder;
+            targetFolder = targetFolder == "root" ? String.Empty : targetFolder;
 
             var filesOnError = new List<string>();
 
@@ -358,7 +358,7 @@ namespace OrchardCore.Media.Controllers
 
             if (filesOnError.Count > 0)
             {
-                return BadRequest(S["Error when moving files. Maybe they already exist on the target folder? Files on error: {0}", string.Join(",", filesOnError)].ToString());
+                return BadRequest(S["Error when moving files. Maybe they already exist on the target folder? Files on error: {0}", String.Join(",", filesOnError)].ToString());
             }
             else
             {
@@ -371,7 +371,7 @@ namespace OrchardCore.Media.Controllers
             string path, string name,
             [FromServices] IAuthorizationService authorizationService)
         {
-            if (string.IsNullOrEmpty(path))
+            if (String.IsNullOrEmpty(path))
             {
                 path = "";
             }

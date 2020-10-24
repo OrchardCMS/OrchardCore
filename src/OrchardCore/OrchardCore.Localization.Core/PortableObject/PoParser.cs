@@ -119,7 +119,7 @@ namespace OrchardCore.Localization.PortableObject
             var keyAndValue = line.Split(null, 2);
             if (keyAndValue.Length != 2)
             {
-                return (PoContext.Other, string.Empty);
+                return (PoContext.Other, String.Empty);
             }
 
             var content = Unescape(TrimQuote(keyAndValue[1].Trim()));
@@ -135,7 +135,7 @@ namespace OrchardCore.Localization.PortableObject
         private class DictionaryRecordBuilder
         {
             private List<string> _values;
-            private IEnumerable<string> _validValues => _values.Where(value => !string.IsNullOrEmpty(value));
+            private IEnumerable<string> _validValues => _values.Where(value => !String.IsNullOrEmpty(value));
             private PoContext _context;
 
             public string MessageId { get; private set; }
@@ -143,7 +143,7 @@ namespace OrchardCore.Localization.PortableObject
 
             public IEnumerable<string> Values => _values;
 
-            public bool IsValid => !string.IsNullOrEmpty(MessageId) && _validValues.Any();
+            public bool IsValid => !String.IsNullOrEmpty(MessageId) && _validValues.Any();
             public bool ShouldFlushRecord => IsValid && _context == PoContext.Translation;
 
             public DictionaryRecordBuilder()
@@ -159,7 +159,7 @@ namespace OrchardCore.Localization.PortableObject
                         {
                             // If the MessageId has been set to an empty string and now gets set again
                             // before flushing the values should be reset.
-                            if (string.IsNullOrEmpty(MessageId))
+                            if (String.IsNullOrEmpty(MessageId))
                             {
                                 _values.Clear();
                             }

@@ -50,15 +50,15 @@ namespace OrchardCore.DisplayManagement.Zones
                 }
 
                 int xPos, yPos;
-                var xPart = string.IsNullOrEmpty(xParts[i]) ? "before" : NormalizeKnownPartitions(xParts[i]);
-                var yPart = string.IsNullOrEmpty(yParts[i]) ? "before" : NormalizeKnownPartitions(yParts[i]);
+                var xPart = String.IsNullOrEmpty(xParts[i]) ? "before" : NormalizeKnownPartitions(xParts[i]);
+                var yPart = String.IsNullOrEmpty(yParts[i]) ? "before" : NormalizeKnownPartitions(yParts[i]);
 
-                var xIsInt = int.TryParse(xPart, out xPos);
-                var yIsInt = int.TryParse(yPart, out yPos);
+                var xIsInt = Int32.TryParse(xPart, out xPos);
+                var yIsInt = Int32.TryParse(yPart, out yPos);
 
                 if (!xIsInt && !yIsInt)
                 {
-                    return String.Compare(string.Join(".", xParts), string.Join(".", yParts), StringComparison.OrdinalIgnoreCase);
+                    return String.Compare(String.Join(".", xParts), String.Join(".", yParts), StringComparison.OrdinalIgnoreCase);
                 }
 
                 // Non-int after int or greater x pos than y pos (which is an int)
@@ -89,12 +89,12 @@ namespace OrchardCore.DisplayManagement.Zones
                 return partition;
             }
 
-            if (string.Compare(partition, "before", StringComparison.OrdinalIgnoreCase) == 0)
+            if (String.Compare(partition, "before", StringComparison.OrdinalIgnoreCase) == 0)
             {
                 return "-9999";
             }
 
-            if (string.Compare(partition, "after", StringComparison.OrdinalIgnoreCase) == 0)
+            if (String.Compare(partition, "after", StringComparison.OrdinalIgnoreCase) == 0)
             {
                 return "9999";
             }

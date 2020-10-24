@@ -42,7 +42,7 @@ namespace OrchardCore.Widgets
                         contentCardEditor.Metadata.Alternates.Add($"{ContentCardEdit}__{collectionType}__{contentType}");
 
                         //If we have Parent Content Type,
-                        if (!string.IsNullOrWhiteSpace(parentContentType))
+                        if (!String.IsNullOrWhiteSpace(parentContentType))
                         {
                             //Define edit card shape for all child  in collection per parent content type
                             //ContentCard_Edit__[ParentContentType]__[CollectionType]
@@ -59,7 +59,7 @@ namespace OrchardCore.Widgets
                             //ContentCard_Edit__LandingPage__BagPart__Service, ContentCard_Edit__Form__FlowPart__Label
                             contentCardEditor.Metadata.Alternates.Add($"{ContentCardEdit}__{parentContentType}__{collectionType}__{contentType}");
 
-                            if (!string.IsNullOrWhiteSpace(namedPart) && !(namedPart.Equals(collectionType)))
+                            if (!String.IsNullOrWhiteSpace(namedPart) && !(namedPart.Equals(collectionType)))
                             {
                                 //Define edit card shape for selected child  with specific type and partname per parent content type
                                 //ContentCard_Edit__[ParentContentType]__[PartName]

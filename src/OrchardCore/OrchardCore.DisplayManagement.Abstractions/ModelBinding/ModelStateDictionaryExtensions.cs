@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -16,7 +17,7 @@ namespace OrchardCore.Mvc.ModelBinding
         /// <param name="errorMessage">The error message.</param>
         public static void AddModelError(this ModelStateDictionary modelState, string prefix, string key, string errorMessage)
         {
-            var fullKey = string.IsNullOrEmpty(prefix) ? key : $"{prefix}.{key}";
+            var fullKey = String.IsNullOrEmpty(prefix) ? key : $"{prefix}.{key}";
             modelState.AddModelError(fullKey, errorMessage);
         }
 
@@ -32,7 +33,7 @@ namespace OrchardCore.Mvc.ModelBinding
             {
                 if (!item.MemberNames.Any())
                 {
-                    modelState.AddModelError(prefix, string.Empty, item.ErrorMessage);
+                    modelState.AddModelError(prefix, String.Empty, item.ErrorMessage);
                 }
                 else
                 {

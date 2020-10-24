@@ -36,7 +36,7 @@ namespace OrchardCore.DataProtection.Azure
         {
             var connectionString = _configuration.GetValue<string>("OrchardCore_DataProtection_Azure:ConnectionString");
 
-            if (!string.IsNullOrWhiteSpace(connectionString))
+            if (!String.IsNullOrWhiteSpace(connectionString))
             {
                 services.AddDataProtection().PersistKeysToAzureBlobStorage(GetBlobContainer(connectionString), GetBlobName());
             }

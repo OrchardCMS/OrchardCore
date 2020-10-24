@@ -1,4 +1,5 @@
-using System.Threading.Tasks;
+
+using System;using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -31,7 +32,7 @@ namespace OrchardCore.Facebook.Filters
             {
                 var site = (await _siteService.GetSiteSettingsAsync());
                 var settings = site.As<FacebookSettings>();
-                if (!string.IsNullOrWhiteSpace(settings?.AppId))
+                if (!String.IsNullOrWhiteSpace(settings?.AppId))
                 {
                     if (settings.FBInit)
                     {

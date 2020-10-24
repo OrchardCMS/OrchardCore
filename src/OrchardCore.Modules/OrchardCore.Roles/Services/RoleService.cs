@@ -21,7 +21,7 @@ namespace OrchardCore.Roles.Services
 
         public async Task<IEnumerable<Claim>> GetRoleClaimsAsync(string role, CancellationToken cancellationToken = default)
         {
-            if (string.IsNullOrEmpty(role))
+            if (String.IsNullOrEmpty(role))
             {
                 throw new ArgumentException("The role name cannot be null or empty.", nameof(role));
             }

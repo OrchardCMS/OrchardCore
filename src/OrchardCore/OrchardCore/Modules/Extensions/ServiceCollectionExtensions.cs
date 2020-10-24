@@ -244,7 +244,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
                 collection.AddRouting();
             },
-            order: int.MinValue + 100);
+            order: Int32.MinValue + 100);
         }
 
         /// <summary>
@@ -325,7 +325,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
             if (options.SameSite == SameSiteMode.None)
             {
-                if (string.IsNullOrEmpty(userAgent))
+                if (String.IsNullOrEmpty(userAgent))
                 {
                     return;
                 }

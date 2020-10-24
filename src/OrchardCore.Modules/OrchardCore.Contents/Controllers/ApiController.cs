@@ -111,7 +111,7 @@ namespace OrchardCore.Content.Controllers
                 {
                     return Problem(
                         title: S["One or more validation errors occurred."],
-                        detail: string.Join(',', result.Errors),
+                        detail: String.Join(',', result.Errors),
                         statusCode: (int)HttpStatusCode.BadRequest);
                 }
                 // We check the model state after calling all handlers because they trigger WF content events so, even they are not
@@ -142,7 +142,7 @@ namespace OrchardCore.Content.Controllers
                 {
                     return Problem(
                         title: S["One or more validation errors occurred."],
-                        detail: string.Join(',', result.Errors),
+                        detail: String.Join(',', result.Errors),
                         statusCode: (int)HttpStatusCode.BadRequest);
                 }
                 // We check the model state after calling all handlers because they trigger WF content events so, even they are not

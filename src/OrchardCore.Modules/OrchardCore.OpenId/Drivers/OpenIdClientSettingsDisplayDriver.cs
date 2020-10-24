@@ -56,7 +56,7 @@ namespace OrchardCore.OpenId.Drivers
             return Initialize<OpenIdClientSettingsViewModel>("OpenIdClientSettings_Edit", model =>
             {
                 model.DisplayName = settings.DisplayName;
-                model.Scopes = settings.Scopes != null ? string.Join(" ", settings.Scopes) : null;
+                model.Scopes = settings.Scopes != null ? String.Join(" ", settings.Scopes) : null;
                 model.Authority = settings.Authority?.AbsoluteUri;
                 model.CallbackPath = settings.CallbackPath;
                 model.ClientId = settings.ClientId;
@@ -107,11 +107,11 @@ namespace OrchardCore.OpenId.Drivers
                 var model = new OpenIdClientSettingsViewModel();
                 await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-                model.Scopes = model.Scopes ?? string.Empty;
+                model.Scopes = model.Scopes ?? String.Empty;
 
                 settings.DisplayName = model.DisplayName;
                 settings.Scopes = model.Scopes.Split(new char[] { ' ', ',' }, StringSplitOptions.RemoveEmptyEntries);
-                settings.Authority = !string.IsNullOrEmpty(model.Authority) ? new Uri(model.Authority, UriKind.Absolute) : null;
+                settings.Authority = !String.IsNullOrEmpty(model.Authority) ? new Uri(model.Authority, UriKind.Absolute) : null;
                 settings.CallbackPath = model.CallbackPath;
                 settings.ClientId = model.ClientId;
                 settings.SignedOutCallbackPath = model.SignedOutCallbackPath;
@@ -159,7 +159,7 @@ namespace OrchardCore.OpenId.Drivers
                 }
 
                 // Restore the client secret if the input is empty (i.e if it hasn't been reset).
-                if (string.IsNullOrEmpty(model.ClientSecret))
+                if (String.IsNullOrEmpty(model.ClientSecret))
                 {
                     settings.ClientSecret = previousClientSecret;
                 }
@@ -173,7 +173,7 @@ namespace OrchardCore.OpenId.Drivers
                 {
                     if (result != ValidationResult.Success)
                     {
-                        var key = result.MemberNames.FirstOrDefault() ?? string.Empty;
+                        var key = result.MemberNames.FirstOrDefault() ?? String.Empty;
                         context.Updater.ModelState.AddModelError(key, result.ErrorMessage);
                     }
                 }

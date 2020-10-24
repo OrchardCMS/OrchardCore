@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using Newtonsoft.Json;
@@ -44,7 +45,7 @@ namespace OrchardCore.ContentFields.Settings
                 {
                     settings.DefaultValue = model.DefaultValue;
                     settings.Editor = model.Editor;
-                    settings.Options = string.IsNullOrWhiteSpace(model.Options)
+                    settings.Options = String.IsNullOrWhiteSpace(model.Options)
                         ? new ListValueOption[0]
                         : JsonConvert.DeserializeObject<ListValueOption[]>(model.Options);
                 }

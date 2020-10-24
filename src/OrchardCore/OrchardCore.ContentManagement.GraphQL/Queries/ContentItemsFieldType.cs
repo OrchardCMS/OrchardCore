@@ -293,17 +293,17 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
 
                 if (values.Length == 1)
                 {
-                    if (string.Equals(values[0], "or", StringComparison.OrdinalIgnoreCase))
+                    if (String.Equals(values[0], "or", StringComparison.OrdinalIgnoreCase))
                     {
                         expression = Expression.Disjunction();
                         BuildWhereExpressions(entry.Value, (Junction)expression, tableAlias, fieldContext, indexAliases);
                     }
-                    else if (string.Equals(values[0], "and", StringComparison.OrdinalIgnoreCase))
+                    else if (String.Equals(values[0], "and", StringComparison.OrdinalIgnoreCase))
                     {
                         expression = Expression.Conjunction();
                         BuildWhereExpressions(entry.Value, (Junction)expression, tableAlias, fieldContext, indexAliases);
                     }
-                    else if (string.Equals(values[0], "not", StringComparison.OrdinalIgnoreCase))
+                    else if (String.Equals(values[0], "not", StringComparison.OrdinalIgnoreCase))
                     {
                         expression = Expression.Conjunction();
                         BuildWhereExpressions(entry.Value, (Junction)expression, tableAlias, fieldContext, indexAliases);

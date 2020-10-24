@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
@@ -34,7 +35,7 @@ namespace OrchardCore.Markdown.GraphQL
 
         private static async Task<object> ToHtml(ResolveFieldContext<MarkdownBodyPart> ctx)
         {
-            if (string.IsNullOrEmpty(ctx.Source.Markdown))
+            if (String.IsNullOrEmpty(ctx.Source.Markdown))
             {
                 return ctx.Source.Markdown;
             }
@@ -45,7 +46,7 @@ namespace OrchardCore.Markdown.GraphQL
             var contentDefinitionManager = serviceProvider.GetRequiredService<IContentDefinitionManager>();
 
             var contentTypeDefinition = contentDefinitionManager.GetTypeDefinition(ctx.Source.ContentItem.ContentType);
-            var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => string.Equals(x.PartDefinition.Name, "MarkdownBodyPart"));
+            var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => String.Equals(x.PartDefinition.Name, "MarkdownBodyPart"));
             var settings = contentTypePartDefinition.GetSettings<MarkdownBodyPartSettings>();
 
             // The default Markdown option is to entity escape html

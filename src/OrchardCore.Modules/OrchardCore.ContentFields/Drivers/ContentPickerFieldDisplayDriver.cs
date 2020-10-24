@@ -44,7 +44,7 @@ namespace OrchardCore.ContentFields.Drivers
         {
             return Initialize<EditContentPickerFieldViewModel>(GetEditorShapeType(context), async model =>
             {
-                model.ContentItemIds = string.Join(",", field.ContentItemIds);
+                model.ContentItemIds = String.Join(",", field.ContentItemIds);
 
                 model.Field = field;
                 model.Part = context.ContentPart;

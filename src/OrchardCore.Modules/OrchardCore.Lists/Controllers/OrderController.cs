@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -30,23 +31,23 @@ namespace OrchardCore.Lists.Controllers
             // Reverse pager as it represents the next page(s), rather than current page
             if (pager.Before != null && pager.After != null)
             {
-                var beforeValue = int.Parse(pager.Before);
+                var beforeValue = Int32.Parse(pager.Before);
                 beforeValue -= 1;
-                var afterValue = int.Parse(pager.After);
+                var afterValue = Int32.Parse(pager.After);
                 afterValue += 1;
                 pager.Before = afterValue.ToString();
                 pager.After = beforeValue.ToString();
             }
             else if (pager.Before != null)
             {
-                var beforeValue = int.Parse(pager.Before);
+                var beforeValue = Int32.Parse(pager.Before);
                 beforeValue -= 1;
                 pager.Before = null;
                 pager.After = beforeValue.ToString();
             }
             else if (pager.After != null)
             {
-                var afterValue = int.Parse(pager.After);
+                var afterValue = Int32.Parse(pager.After);
                 afterValue += 1;
                 pager.After = null;
                 pager.Before = afterValue.ToString();

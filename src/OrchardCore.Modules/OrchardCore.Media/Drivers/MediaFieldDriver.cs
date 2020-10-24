@@ -66,12 +66,12 @@ namespace OrchardCore.Media.Drivers
             if (await updater.TryUpdateModelAsync(model, Prefix, f => f.Paths))
             {
                 // Deserializing an empty string doesn't return an array
-                var items = string.IsNullOrWhiteSpace(model.Paths)
+                var items = String.IsNullOrWhiteSpace(model.Paths)
                     ? new List<EditMediaFieldItemInfo>()
                     : JsonConvert.DeserializeObject<EditMediaFieldItemInfo[]>(model.Paths).ToList();
 
                 // If it's an attached media field editor the files are automatically handled by _attachedMediaFieldFileService
-                if (string.Equals(context.PartFieldDefinition.Editor(), "Attached", StringComparison.OrdinalIgnoreCase))
+                if (String.Equals(context.PartFieldDefinition.Editor(), "Attached", StringComparison.OrdinalIgnoreCase))
                 {
                     try
                     {

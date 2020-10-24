@@ -17,17 +17,17 @@ else
                     <div class="card-theme-thumbnail" style="background-image:url('@Url.Content($"~/{themeEntry.Extension.Id}/Theme.png")');"></div>
                     <div class="card-body">
                         <p>@themeEntry.Extension.Manifest.Description</p>
-                        @if (!string.IsNullOrWhiteSpace(themeEntry.Extension.Manifest.Author))
+                        @if (!String.IsNullOrWhiteSpace(themeEntry.Extension.Manifest.Author))
                         {
                             <small>@T["By: {0}", themeEntry.Extension.Manifest.Author]</small><br />
                         }
-                        @if (!string.IsNullOrWhiteSpace(themeEntry.Extension.Manifest.Website))
+                        @if (!String.IsNullOrWhiteSpace(themeEntry.Extension.Manifest.Website))
                         {
                             <small><a href="@themeEntry.Extension.Manifest.Website" target="_blank">@themeEntry.Extension.Manifest.Website</a></small><br />
                         }
                         @if (themeEntry.Extension.Manifest.Tags.Any())
                         {
-                            <small>@T["Tags: {0}", string.Join(", ", themeEntry.Extension.Manifest.Tags.ToArray())]</small><br />
+                            <small>@T["Tags: {0}", String.Join(", ", themeEntry.Extension.Manifest.Tags.ToArray())]</small><br />
                         }
                         <small>@T["Version: {0}", themeEntry.Extension.Manifest.Version]</small>
                     </div>

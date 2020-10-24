@@ -111,7 +111,7 @@ namespace OrchardCore.Contents.Workflows.Activities
         protected virtual async Task<string> GetContentItemIdAsync(WorkflowExecutionContext workflowContext)
         {
             // Try to evaluate a content item id from the Content expression, if provided.
-            if (!string.IsNullOrWhiteSpace(Content.Expression))
+            if (!String.IsNullOrWhiteSpace(Content.Expression))
             {
                 var expression = new WorkflowExpression<object> { Expression = Content.Expression };
                 var contentItemIdResult = await ScriptEvaluator.EvaluateAsync(expression, workflowContext);

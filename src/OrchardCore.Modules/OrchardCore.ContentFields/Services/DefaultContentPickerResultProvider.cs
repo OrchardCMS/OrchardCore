@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -32,7 +33,7 @@ namespace OrchardCore.ContentFields.Services
             {
                 contentTypes = _contentDefinitionManager
                     .ListTypeDefinitions()
-                    .Where(x => string.IsNullOrEmpty(x.GetSettings<ContentTypeSettings>().Stereotype))
+                    .Where(x => String.IsNullOrEmpty(x.GetSettings<ContentTypeSettings>().Stereotype))
                     .Select(x => x.Name)
                     .AsEnumerable();
             }
@@ -40,7 +41,7 @@ namespace OrchardCore.ContentFields.Services
             var query = _session.Query<ContentItem, ContentItemIndex>()
                 .With<ContentItemIndex>(x => x.ContentType.IsIn(contentTypes) && x.Latest);
 
-            if (!string.IsNullOrEmpty(searchContext.Query))
+            if (!String.IsNullOrEmpty(searchContext.Query))
             {
                 query.With<ContentItemIndex>(x => x.DisplayText.Contains(searchContext.Query) || x.ContentType.Contains(searchContext.Query));
             }

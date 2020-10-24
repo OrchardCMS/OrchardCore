@@ -18,7 +18,7 @@ namespace OrchardCore.Workflows.Helpers
         public static LocalizedHtmlString GetTitleOrDefault(this IActivity activity, Func<LocalizedHtmlString> defaultTitle)
         {
             var title = activity.As<ActivityMetadata>().Title;
-            return !string.IsNullOrEmpty(title) ? new LocalizedHtmlString(title, title) : defaultTitle();
+            return !String.IsNullOrEmpty(title) ? new LocalizedHtmlString(title, title) : defaultTitle();
         }
 
         public static LocalizedHtmlString GetLocalizedStatus(this WorkflowStatus status, IHtmlLocalizer localizer)

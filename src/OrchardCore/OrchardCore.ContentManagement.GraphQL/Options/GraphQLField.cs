@@ -19,7 +19,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Options
                 throw new ArgumentNullException(nameof(fieldType));
             }
 
-            if (string.IsNullOrWhiteSpace(fieldName))
+            if (String.IsNullOrWhiteSpace(fieldName))
             {
                 throw new ArgumentNullException(nameof(fieldName));
             }

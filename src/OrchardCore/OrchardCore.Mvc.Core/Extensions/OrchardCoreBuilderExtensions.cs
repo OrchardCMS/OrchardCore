@@ -1,3 +1,4 @@
+using System;
 using Microsoft.AspNetCore.Routing;
 using OrchardCore.Mvc;
 using OrchardCore.Routing;
@@ -17,7 +18,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 collection.AddSingleton<IEndpointAddressScheme<RouteValuesAddress>, ShellRouteValuesAddressScheme>();
             },
             // Need to be registered last.
-            order: int.MaxValue - 100);
+            order: Int32.MaxValue - 100);
 
             return builder.RegisterStartup<Startup>();
         }

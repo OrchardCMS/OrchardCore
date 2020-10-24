@@ -34,7 +34,7 @@ namespace OrchardCore.ResourceManagement
 
             builder.AppendHtml(tagBuilder);
 
-            if (!string.IsNullOrEmpty(Settings.Condition))
+            if (!String.IsNullOrEmpty(Settings.Condition))
             {
                 if (Settings.Condition == NotIE)
                 {

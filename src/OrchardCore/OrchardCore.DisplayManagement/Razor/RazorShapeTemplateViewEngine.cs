@@ -78,7 +78,7 @@ namespace OrchardCore.DisplayManagement.Razor
 
             if (viewEngines.Count == 0)
             {
-                throw new InvalidOperationException(string.Format("'{0}.{1}' must not be empty. At least one '{2}' is required to locate a view for rendering.",
+                throw new InvalidOperationException(String.Format("'{0}.{1}' must not be empty. At least one '{2}' is required to locate a view for rendering.",
                     typeof(MvcViewOptions).FullName,
                     nameof(MvcViewOptions.ViewEngines),
                     typeof(IViewEngine).FullName));
@@ -138,7 +138,7 @@ namespace OrchardCore.DisplayManagement.Razor
             }
 
             var searchedLocations = getViewResult.SearchedLocations.Concat(findViewResult.SearchedLocations);
-            var errorMessage = string.Join(
+            var errorMessage = String.Join(
                 System.Environment.NewLine,
                 new[] { $"Unable to find view '{viewName}'. The following locations were searched:" }.Concat(searchedLocations)); ;
 

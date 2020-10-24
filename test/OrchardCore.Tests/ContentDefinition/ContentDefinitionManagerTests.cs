@@ -92,10 +92,10 @@
 //        {
 //            var manager = _serviceProvider.GetService<IContentDefinitionManager>();
 //            Assert.Null(manager.GetTypeDefinition("no such name"));
-//            Assert.Null(manager.GetTypeDefinition(string.Empty));
+//            Assert.Null(manager.GetTypeDefinition(String.Empty));
 //            Assert.Null(manager.GetTypeDefinition(null));
 //            Assert.Null(manager.GetPartDefinition("no such name"));
-//            Assert.Null(manager.GetPartDefinition(string.Empty));
+//            Assert.Null(manager.GetPartDefinition(String.Empty));
 //            Assert.Null(manager.GetPartDefinition(null));
 //        }
 

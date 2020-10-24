@@ -22,7 +22,7 @@ namespace OrchardCore.Google.Analytics.Recipes
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
         {
-            if (!string.Equals(context.Name, nameof(GoogleAnalyticsSettings), StringComparison.OrdinalIgnoreCase))
+            if (!String.Equals(context.Name, nameof(GoogleAnalyticsSettings), StringComparison.OrdinalIgnoreCase))
             {
                 return;
             }

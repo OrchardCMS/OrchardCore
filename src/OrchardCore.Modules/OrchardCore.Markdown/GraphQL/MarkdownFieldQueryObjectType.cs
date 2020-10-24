@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
@@ -36,7 +37,7 @@ namespace OrchardCore.Markdown.GraphQL
 
         private static async Task<object> ToHtml(ResolveFieldContext<MarkdownField> ctx)
         {
-            if (string.IsNullOrEmpty(ctx.Source.Markdown))
+            if (String.IsNullOrEmpty(ctx.Source.Markdown))
             {
                 return ctx.Source.Markdown;
             }
@@ -54,8 +55,8 @@ namespace OrchardCore.Markdown.GraphQL
             var partName = paths[0];
             var fieldName = paths[1];
             var contentTypeDefinition = contentDefinitionManager.GetTypeDefinition(ctx.Source.ContentItem.ContentType);
-            var contentPartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => string.Equals(x.Name, partName));
-            var contentPartFieldDefintion = contentPartDefinition.PartDefinition.Fields.FirstOrDefault(x => string.Equals(x.Name, fieldName));
+            var contentPartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => String.Equals(x.Name, partName));
+            var contentPartFieldDefintion = contentPartDefinition.PartDefinition.Fields.FirstOrDefault(x => String.Equals(x.Name, fieldName));
 
             var settings = contentPartFieldDefintion.GetSettings<MarkdownFieldSettings>();
 

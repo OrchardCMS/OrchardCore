@@ -60,7 +60,7 @@ namespace OrchardCore.Media.TagHelpers
 
             var imgSrc = output.Attributes["src"]?.Value.ToString() ?? Src;
 
-            if (string.IsNullOrEmpty(imgSrc))
+            if (String.IsNullOrEmpty(imgSrc))
             {
                 return;
             }

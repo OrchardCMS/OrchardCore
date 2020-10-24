@@ -77,7 +77,7 @@ namespace OrchardCore.ContentManagement
 
         public override string ToString()
         {
-            return string.IsNullOrWhiteSpace(DisplayText) ? $"{ContentType} ({ContentItemId})" : DisplayText;
+            return String.IsNullOrWhiteSpace(DisplayText) ? $"{ContentType} ({ContentItemId})" : DisplayText;
         }
     }
 }

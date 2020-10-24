@@ -44,7 +44,7 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeTemplateStrategy
             // with display and shape api calls)))
             var shapeType = leader + fileName.Replace("--", "__").Replace("-", "__").Replace('.', '_');
 
-            if (string.IsNullOrEmpty(displayType))
+            if (String.IsNullOrEmpty(displayType))
             {
                 return shapeType.ToLowerInvariant();
             }

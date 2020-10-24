@@ -41,7 +41,7 @@ namespace OrchardCore.Environment.Commands
             {
                 return attributes.Cast<CommandHelpAttribute>().Single().HelpText;
             }
-            return string.Empty;
+            return String.Empty;
         }
 
         private string[] GetCommandNames(MethodInfo methodInfo)

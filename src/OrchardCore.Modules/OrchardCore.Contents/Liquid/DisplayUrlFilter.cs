@@ -34,7 +34,7 @@ namespace OrchardCore.Contents.Liquid
                 }
                 var autoRouteOption = ((IServiceProvider)servicesValue).GetRequiredService<IOptions<AutorouteOptions>>()?.Value;
                 routeValues = new RouteValueDictionary(autoRouteOption.GlobalRouteValues);
-                if (string.IsNullOrEmpty(input.ToStringValue()))
+                if (String.IsNullOrEmpty(input.ToStringValue()))
                 {
                     throw new ArgumentException("content_item_id is empty while invoking 'display_url'");
                 }

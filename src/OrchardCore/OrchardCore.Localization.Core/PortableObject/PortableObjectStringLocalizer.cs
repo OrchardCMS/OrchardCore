@@ -58,7 +58,7 @@ namespace OrchardCore.Localization.PortableObject
             get
             {
                 var (translation, argumentsWithCount) = GetTranslation(name, arguments);
-                var formatted = string.Format(translation.Value, argumentsWithCount);
+                var formatted = String.Format(translation.Value, argumentsWithCount);
 
                 return new LocalizedString(name, formatted, translation.ResourceNotFound);
             }

@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -82,7 +83,7 @@ namespace OrchardCore.Contents.Drivers
                 var priorOwner = model.Owner;
                 await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-                if (!string.IsNullOrEmpty(part.ContentItem.Owner) && model.Owner != priorOwner)
+                if (!String.IsNullOrEmpty(part.ContentItem.Owner) && model.Owner != priorOwner)
                 {
                     var newOwner = await _userService.GetUserAsync(model.Owner);
 

@@ -4,11 +4,11 @@
 
 @{
     var formPart = ((ContentItem)Model.ContentItem).As<FormPart>();
-    string encType = formPart.Method == "POST" ? formPart.EncType : string.Empty;
+    string encType = formPart.Method == "POST" ? formPart.EncType : String.Empty;
     var formContentTypeClassName = "form-" + ((string)Model.ContentItem.ContentType).HtmlClassify();
 
     var elementId =  ((ContentItem)Model.ContentItem).As<FormElementPart>()?.Id;
-    string formId =  string.IsNullOrWhiteSpace(elementId) ?  $"form_{Model.ContentItem.ContentItemId}" : elementId;
+    string formId =  String.IsNullOrWhiteSpace(elementId) ?  $"form_{Model.ContentItem.ContentItemId}" : elementId;
 
 }
 

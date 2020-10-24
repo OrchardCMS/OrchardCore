@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -39,7 +40,7 @@ namespace OrchardCore.Recipes.Commands
             {
                 await Context.Output.WriteLineAsync(S["Recipe: {0}", recipe.Name]);
                 await Context.Output.WriteLineAsync(S["  Version:     {0}", recipe.Version]);
-                await Context.Output.WriteLineAsync(S["  Tags:        {0}", string.Join(",", recipe.Tags)]);
+                await Context.Output.WriteLineAsync(S["  Tags:        {0}", String.Join(",", recipe.Tags)]);
                 await Context.Output.WriteLineAsync(S["  Description: {0}", recipe.Description]);
                 await Context.Output.WriteLineAsync(S["  Author:      {0}", recipe.Author]);
                 await Context.Output.WriteLineAsync(S["  Website:     {0}", recipe.WebSite]);

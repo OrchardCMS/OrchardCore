@@ -12,7 +12,7 @@ namespace OrchardCore.ContentManagement.Utilities
     {
         public static string CamelFriendly(this string camel)
         {
-            if (string.IsNullOrWhiteSpace(camel))
+            if (String.IsNullOrWhiteSpace(camel))
                 return "";
 
             var sb = new StringBuilder(camel);
@@ -35,7 +35,7 @@ namespace OrchardCore.ContentManagement.Utilities
 
         public static string Ellipsize(this string text, int characterCount, string ellipsis, bool wordBoundary = false)
         {
-            if (string.IsNullOrWhiteSpace(text))
+            if (String.IsNullOrWhiteSpace(text))
                 return "";
 
             if (characterCount < 0 || text.Length <= characterCount)
@@ -66,7 +66,7 @@ namespace OrchardCore.ContentManagement.Utilities
 
         public static string HtmlClassify(this string text)
         {
-            if (string.IsNullOrWhiteSpace(text))
+            if (String.IsNullOrWhiteSpace(text))
                 return "";
 
             var friendlier = text.CamelFriendly();
@@ -99,7 +99,7 @@ namespace OrchardCore.ContentManagement.Utilities
 
         public static LocalizedString OrDefault(this string text, LocalizedString defaultValue)
         {
-            return string.IsNullOrEmpty(text)
+            return String.IsNullOrEmpty(text)
                 ? defaultValue
                 : new LocalizedString(null, text);
         }
@@ -181,8 +181,8 @@ namespace OrchardCore.ContentManagement.Utilities
         /// </remarks>
         public static string ToSafeName(this string name)
         {
-            if (string.IsNullOrWhiteSpace(name))
-                return string.Empty;
+            if (String.IsNullOrWhiteSpace(name))
+                return String.Empty;
 
             name = RemoveDiacritics(name);
             name = name.Strip(c =>
@@ -236,7 +236,7 @@ namespace OrchardCore.ContentManagement.Utilities
 
         public static string Strip(this string subject, params char[] stripped)
         {
-            if (stripped == null || stripped.Length == 0 || string.IsNullOrEmpty(subject))
+            if (stripped == null || stripped.Length == 0 || String.IsNullOrEmpty(subject))
             {
                 return subject;
             }
@@ -275,7 +275,7 @@ namespace OrchardCore.ContentManagement.Utilities
 
         public static bool Any(this string subject, params char[] chars)
         {
-            if (string.IsNullOrEmpty(subject) || chars == null || chars.Length == 0)
+            if (String.IsNullOrEmpty(subject) || chars == null || chars.Length == 0)
             {
                 return false;
             }
@@ -294,7 +294,7 @@ namespace OrchardCore.ContentManagement.Utilities
 
         public static bool All(this string subject, params char[] chars)
         {
-            if (string.IsNullOrEmpty(subject))
+            if (String.IsNullOrEmpty(subject))
             {
                 return true;
             }
@@ -318,7 +318,7 @@ namespace OrchardCore.ContentManagement.Utilities
 
         public static string Translate(this string subject, char[] from, char[] to)
         {
-            if (string.IsNullOrEmpty(subject))
+            if (String.IsNullOrEmpty(subject))
             {
                 return subject;
             }
@@ -359,7 +359,7 @@ namespace OrchardCore.ContentManagement.Utilities
 
         public static string ReplaceAll(this string original, IDictionary<string, string> replacements)
         {
-            var pattern = $"{string.Join("|", replacements.Keys)}";
+            var pattern = $"{String.Join("|", replacements.Keys)}";
             return Regex.Replace(original, pattern, match => replacements[match.Value]);
         }
 

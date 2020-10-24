@@ -115,7 +115,7 @@ namespace OrchardCore.Lucene
 
         public bool Exists(string indexName)
         {
-            if (string.IsNullOrWhiteSpace(indexName))
+            if (String.IsNullOrWhiteSpace(indexName))
             {
                 return false;
             }

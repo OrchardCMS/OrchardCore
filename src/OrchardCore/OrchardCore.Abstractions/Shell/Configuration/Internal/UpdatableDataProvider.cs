@@ -36,7 +36,7 @@ namespace OrchardCore.Environment.Shell.Configuration.Internal
 
         public virtual IEnumerable<string> GetChildKeys(IEnumerable<string> earlierKeys, string parentPath)
         {
-            var prefix = parentPath == null ? string.Empty : parentPath + ConfigurationPath.KeyDelimiter;
+            var prefix = parentPath == null ? String.Empty : parentPath + ConfigurationPath.KeyDelimiter;
 
             return Data
                 .Where(kv => kv.Key.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))

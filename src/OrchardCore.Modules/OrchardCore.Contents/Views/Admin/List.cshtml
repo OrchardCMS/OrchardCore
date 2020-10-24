@@ -4,7 +4,7 @@
 @{
     var contentTypeDisplayName = Model.Options.ContentTypeOptions.Find(x => x.Value == Model.Options.SelectedContentType && x.Value != null)?.Text;
     var pageTitle = T["Manage Content"];
-    if (!string.IsNullOrWhiteSpace(contentTypeDisplayName))
+    if (!String.IsNullOrWhiteSpace(contentTypeDisplayName))
     {
         pageTitle = T["Manage {0} Content", (string)contentTypeDisplayName];
     }

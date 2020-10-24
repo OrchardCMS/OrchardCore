@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,7 +15,7 @@ namespace OrchardCore.Users.ViewModels
         {
             var emailAddressValidator = validationContext.GetService<IEmailAddressValidator>();
             var S = validationContext.GetService<IStringLocalizer<ChangeEmailViewModel>>();
-            if (string.IsNullOrWhiteSpace(Email))
+            if (String.IsNullOrWhiteSpace(Email))
             {
                 yield return new ValidationResult(S["Email is required."], new[] { nameof(Email) });
             }

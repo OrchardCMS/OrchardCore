@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -85,7 +86,7 @@ namespace OrchardCore.Email.Drivers
                 await context.Updater.TryUpdateModelAsync(section, Prefix);
 
                 // Restore password if the input is empty, meaning that it has not been reset.
-                if (string.IsNullOrWhiteSpace(section.Password))
+                if (String.IsNullOrWhiteSpace(section.Password))
                 {
                     section.Password = previousPassword;
                 }

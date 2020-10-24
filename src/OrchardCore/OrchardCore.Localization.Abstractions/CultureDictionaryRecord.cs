@@ -48,12 +48,12 @@ namespace OrchardCore.Localization
         /// <returns>The resource key.</returns>
         public static string GetKey(string messageId, string context)
         {
-            if (string.IsNullOrEmpty(messageId))
+            if (String.IsNullOrEmpty(messageId))
             {
                 throw new ArgumentException("MessageId can't be empty.", nameof(messageId));
             }
 
-            if (string.IsNullOrEmpty(context))
+            if (String.IsNullOrEmpty(context))
             {
                 return messageId;
             }

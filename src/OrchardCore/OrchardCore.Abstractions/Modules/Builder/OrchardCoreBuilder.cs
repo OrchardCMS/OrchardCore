@@ -104,7 +104,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 {
                     var service = services[index];
                     if (service.ImplementationInstance is ShellFeature feature &&
-                        string.Equals(feature.Id, id, StringComparison.OrdinalIgnoreCase))
+                        String.Equals(feature.Id, id, StringComparison.OrdinalIgnoreCase))
                     {
                         return;
                     }

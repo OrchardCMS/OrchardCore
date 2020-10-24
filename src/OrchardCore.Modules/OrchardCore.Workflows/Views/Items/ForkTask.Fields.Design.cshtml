@@ -6,7 +6,7 @@
 
 @if (Model.Activity.Forks.Any())
 {
-    <span>@T["Fork execution into <em>{0}</em>", string.Join(", ", Model.Activity.Forks)]</span>
+    <span>@T["Fork execution into <em>{0}</em>", String.Join(", ", Model.Activity.Forks)]</span>
 }
 else
 {

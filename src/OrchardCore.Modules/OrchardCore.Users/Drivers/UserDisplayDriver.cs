@@ -121,12 +121,12 @@ namespace OrchardCore.Users.Drivers
                 await Handlers.InvokeAsync((handler, context) => handler.EnabledAsync(userContext), userContext, _logger);
             }
 
-            if (string.IsNullOrWhiteSpace(model.UserName))
+            if (String.IsNullOrWhiteSpace(model.UserName))
             {
                 context.Updater.ModelState.AddModelError("UserName", S["A user name is required."]);
             }
 
-            if (string.IsNullOrWhiteSpace(model.Email))
+            if (String.IsNullOrWhiteSpace(model.Email))
             {
                 context.Updater.ModelState.AddModelError("Email", S["An email is required."]);
             }
@@ -137,13 +137,13 @@ namespace OrchardCore.Users.Drivers
                 var userWithSameNameId = await _userManager.GetUserIdAsync(userWithSameName);
                 if (userWithSameNameId != model.Id)
                 {
-                    context.Updater.ModelState.AddModelError(string.Empty, S["The user name is already used."]);
+                    context.Updater.ModelState.AddModelError(String.Empty, S["The user name is already used."]);
                 }
             }
 
             if (model.UserName != user.UserName && user.UserName == httpContext.User.Identity.Name)
             {
-                context.Updater.ModelState.AddModelError(string.Empty, S["Cannot modify user name of the currently logged in user."]);
+                context.Updater.ModelState.AddModelError(String.Empty, S["Cannot modify user name of the currently logged in user."]);
             }
 
             var userWithSameEmail = await _userManager.FindByEmailAsync(model.Email);
@@ -152,7 +152,7 @@ namespace OrchardCore.Users.Drivers
                 var userWithSameEmailId = await _userManager.GetUserIdAsync(userWithSameEmail);
                 if (userWithSameEmailId != model.Id)
                 {
-                    context.Updater.ModelState.AddModelError(string.Empty, S["The email is already used."]);
+                    context.Updater.ModelState.AddModelError(String.Empty, S["The email is already used."]);
                 }
             }
 

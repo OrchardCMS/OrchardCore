@@ -39,7 +39,7 @@ namespace OrchardCore.DisplayManagement.Implementation
 
         public Task<IHtmlContent> InvokeAsync(string name, INamedEnumerable<object> parameters)
         {
-            if (!string.IsNullOrEmpty(name))
+            if (!String.IsNullOrEmpty(name))
             {
                 return ShapeTypeExecuteAsync(name, parameters);
             }

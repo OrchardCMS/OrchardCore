@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,12 +18,12 @@ namespace OrchardCore.Users.ViewModels
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
             var S = validationContext.GetService<IStringLocalizer<LoginViewModel>>();
-            if (string.IsNullOrWhiteSpace(UserName))
+            if (String.IsNullOrWhiteSpace(UserName))
             {
                 yield return new ValidationResult(S["Username is required."], new[] { "UserName" });
             }
 
-            if (string.IsNullOrWhiteSpace(Password))
+            if (String.IsNullOrWhiteSpace(Password))
             {
                 yield return new ValidationResult(S["Password is required."], new[] { "Password" });
             }

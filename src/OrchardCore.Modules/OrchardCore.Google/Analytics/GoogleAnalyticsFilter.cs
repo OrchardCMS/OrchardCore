@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc;
@@ -36,7 +37,7 @@ namespace OrchardCore.Google.Analytics
                 {
                     var settings = (await _siteService.GetSiteSettingsAsync()).As<GoogleAnalyticsSettings>();
 
-                    if (!string.IsNullOrWhiteSpace(settings?.TrackingID))
+                    if (!String.IsNullOrWhiteSpace(settings?.TrackingID))
                     {
                         _scriptsCache = new HtmlString($"<script async src=\"https://www.googletagmanager.com/gtag/js?id={settings.TrackingID}\"></script>\n<script>window.dataLayer = window.dataLayer || [];function gtag() {{ dataLayer.push(arguments); }}gtag('js', new Date());gtag('config', '{settings.TrackingID}')</script>");
                     }

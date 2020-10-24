@@ -122,7 +122,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
             var validationContext = new ValidationContext(model);
             var localizerMock = new Mock<IStringLocalizer<CreateOpenIdApplicationViewModel>>();
             localizerMock.Setup(x => x[It.IsAny<string>(), It.IsAny<object[]>()])
-                .Returns((string name, object[] args) => new LocalizedString(name, string.Format(name, args)));
+                .Returns((string name, object[] args) => new LocalizedString(name, String.Format(name, args)));
             validationContext.InitializeServiceProvider((t) => localizerMock.Object);
 
             foreach (var validation in model.Validate(validationContext))

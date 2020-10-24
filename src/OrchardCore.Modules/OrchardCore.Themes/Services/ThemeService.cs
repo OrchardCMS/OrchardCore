@@ -45,7 +45,7 @@ namespace OrchardCore.Themes.Services
                     break;
                 themes.Enqueue(themeName);
 
-                themeName = !string.IsNullOrWhiteSpace(theme.Manifest.Name)
+                themeName = !String.IsNullOrWhiteSpace(theme.Manifest.Name)
                     ? theme.Manifest.Name
                     : null;
             }
@@ -75,7 +75,7 @@ namespace OrchardCore.Themes.Services
 
                 var extensionInfo = _extensionManager.GetExtension(themeName);
                 var theme = new ThemeExtensionInfo(extensionInfo);
-                themeName = !string.IsNullOrWhiteSpace(theme.BaseTheme)
+                themeName = !String.IsNullOrWhiteSpace(theme.BaseTheme)
                     ? theme.BaseTheme
                     : null;
             }

@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
@@ -45,14 +46,14 @@ namespace OrchardCore.GitHub.Drivers
             return Initialize<GitHubAuthenticationSettingsViewModel>("GitHubAuthenticationSettings_Edit", model =>
             {
                 model.ClientID = settings.ClientID;
-                if (!string.IsNullOrWhiteSpace(settings.ClientSecret))
+                if (!String.IsNullOrWhiteSpace(settings.ClientSecret))
                 {
                     var protector = _dataProtectionProvider.CreateProtector(GitHubConstants.Features.GitHubAuthentication);
                     model.ClientSecret = protector.Unprotect(settings.ClientSecret);
                 }
                 else
                 {
-                    model.ClientSecret = string.Empty;
+                    model.ClientSecret = String.Empty;
                 }
                 if (settings.CallbackPath.HasValue)
                 {

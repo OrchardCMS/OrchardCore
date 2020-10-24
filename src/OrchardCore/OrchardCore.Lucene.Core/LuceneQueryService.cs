@@ -125,7 +125,7 @@ namespace OrchardCore.Lucene
 
         public static List<string> Tokenize(string fieldName, string text, Analyzer analyzer)
         {
-            if (string.IsNullOrEmpty(text))
+            if (String.IsNullOrEmpty(text))
             {
                 return new List<string>();
             }

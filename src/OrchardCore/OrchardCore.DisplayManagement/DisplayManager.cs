@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -34,7 +35,7 @@ namespace OrchardCore.DisplayManagement
         {
             var actualShapeType = typeof(TModel).Name;
 
-            var actualDisplayType = string.IsNullOrEmpty(displayType) ? "Detail" : displayType;
+            var actualDisplayType = String.IsNullOrEmpty(displayType) ? "Detail" : displayType;
 
             // _[DisplayType] is only added for the ones different than Detail
             if (actualDisplayType != "Detail")

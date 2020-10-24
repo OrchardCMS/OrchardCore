@@ -51,7 +51,7 @@ namespace OrchardCore.OpenId.Controllers
 
             // Ensure the access token represents a user and not an application.
             var type = principal.FindFirst(OpenIdConstants.Claims.EntityType)?.Value;
-            if (!string.Equals(type, OpenIdConstants.EntityTypes.User))
+            if (!String.Equals(type, OpenIdConstants.EntityTypes.User))
             {
                 return Forbid(new AuthenticationProperties(new Dictionary<string, string>
                 {
@@ -66,45 +66,45 @@ namespace OrchardCore.OpenId.Controllers
             if (principal.HasScope(Scopes.Profile))
             {
                 var preferredUsername = principal.FindFirst(Claims.PreferredUsername)?.Value;
-                if (!string.IsNullOrEmpty(preferredUsername))
+                if (!String.IsNullOrEmpty(preferredUsername))
                 {
                     claims[Claims.PreferredUsername] = preferredUsername;
                 }
 
                 var name = principal.FindFirst(Claims.Name)?.Value ?? principal.FindFirst(ClaimTypes.Name)?.Value;
-                if (!string.IsNullOrEmpty(name))
+                if (!String.IsNullOrEmpty(name))
                 {
                     claims[Claims.Name] = name;
                 }
 
                 var familyName = principal.FindFirst(Claims.FamilyName)?.Value ?? principal.FindFirst(ClaimTypes.Surname)?.Value;
-                if (!string.IsNullOrEmpty(familyName))
+                if (!String.IsNullOrEmpty(familyName))
                 {
                     claims[Claims.FamilyName] = familyName;
                 }
 
                 var givenName = principal.FindFirst(Claims.GivenName)?.Value ?? principal.FindFirst(ClaimTypes.GivenName)?.Value;
-                if (!string.IsNullOrEmpty(givenName))
+                if (!String.IsNullOrEmpty(givenName))
                 {
                     claims[Claims.GivenName] = givenName;
                 }
 
                 var middleName = principal.FindFirst(Claims.MiddleName)?.Value;
-                if (!string.IsNullOrEmpty(middleName))
+                if (!String.IsNullOrEmpty(middleName))
                 {
                     claims[Claims.MiddleName] = middleName;
                 }
 
                 var picture = principal.FindFirst(Claims.Picture)?.Value;
-                if (!string.IsNullOrEmpty(picture))
+                if (!String.IsNullOrEmpty(picture))
                 {
                     claims[Claims.Picture] = picture;
                 }
 
                 var updatedAtClaimValue = principal.FindFirst(Claims.UpdatedAt)?.Value;
-                if (!string.IsNullOrEmpty(updatedAtClaimValue))
+                if (!String.IsNullOrEmpty(updatedAtClaimValue))
                 {
-                    claims[Claims.UpdatedAt] = long.Parse(updatedAtClaimValue, CultureInfo.InvariantCulture);
+                    claims[Claims.UpdatedAt] = Int64.Parse(updatedAtClaimValue, CultureInfo.InvariantCulture);
                 }
             }
 
@@ -115,12 +115,12 @@ namespace OrchardCore.OpenId.Controllers
             {
                 var address = principal.FindFirst(Claims.Email)?.Value ?? principal.FindFirst(ClaimTypes.Email)?.Value;
 
-                if (!string.IsNullOrEmpty(address))
+                if (!String.IsNullOrEmpty(address))
                 {
                     claims[Claims.Email] = address;
 
                     var status = principal.FindFirst(Claims.EmailVerified)?.Value;
-                    if (!string.IsNullOrEmpty(status))
+                    if (!String.IsNullOrEmpty(status))
                     {
                         claims[Claims.EmailVerified] = bool.Parse(status);
                     }
@@ -134,12 +134,12 @@ namespace OrchardCore.OpenId.Controllers
                             principal.FindFirst(ClaimTypes.HomePhone)?.Value ??
                             principal.FindFirst(ClaimTypes.OtherPhone)?.Value;
 
-                if (!string.IsNullOrEmpty(phone))
+                if (!String.IsNullOrEmpty(phone))
                 {
                     claims[Claims.PhoneNumber] = phone;
 
                     var status = principal.FindFirst(Claims.PhoneNumberVerified)?.Value;
-                    if (!string.IsNullOrEmpty(status))
+                    if (!String.IsNullOrEmpty(status))
                     {
                         claims[Claims.PhoneNumberVerified] = bool.Parse(status);
                     }

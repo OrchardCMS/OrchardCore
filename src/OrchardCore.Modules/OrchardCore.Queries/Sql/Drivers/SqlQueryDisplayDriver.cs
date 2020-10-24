@@ -39,7 +39,7 @@ namespace OrchardCore.Queries.Sql.Drivers
                 model.ReturnDocuments = query.ReturnDocuments;
 
                 // Extract query from the query string if we come from the main query editor
-                if (string.IsNullOrEmpty(query.Template))
+                if (String.IsNullOrEmpty(query.Template))
                 {
                     updater.TryUpdateModelAsync(model, "", m => m.Query);
                 }

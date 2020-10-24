@@ -63,7 +63,7 @@ namespace OrchardCore.AdminMenu.Controllers
 
             var adminMenuList = (await _adminMenuService.GetAdminMenuListAsync()).AdminMenu;
 
-            if (!string.IsNullOrWhiteSpace(options.Search))
+            if (!String.IsNullOrWhiteSpace(options.Search))
             {
                 adminMenuList = adminMenuList.Where(dp => dp.Name.Contains(options.Search)).ToList();
             }

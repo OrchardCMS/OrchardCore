@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Linq;
@@ -52,7 +53,7 @@ namespace OrchardCore.Microsoft.Authentication.Configuration
 
         public void Configure(string name, AzureADOptions options)
         {
-            if (!string.Equals(name, AzureADDefaults.AuthenticationScheme))
+            if (!String.Equals(name, AzureADDefaults.AuthenticationScheme))
             {
                 return;
             }
@@ -75,7 +76,7 @@ namespace OrchardCore.Microsoft.Authentication.Configuration
 
         public void Configure(string name, PolicySchemeOptions options)
         {
-            if (!string.Equals(name, AzureADDefaults.AuthenticationScheme))
+            if (!String.Equals(name, AzureADDefaults.AuthenticationScheme))
             {
                 return;
             }

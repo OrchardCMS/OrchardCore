@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -55,7 +56,7 @@ namespace OrchardCore.ContentLocalization.Drivers
                     model.RouteValues.TryAdd("Localization.ShowLocalizedContentTypes", viewModel.ShowLocalizedContentTypes);
                 }
 
-                if (!string.IsNullOrEmpty(viewModel.SelectedCulture))
+                if (!String.IsNullOrEmpty(viewModel.SelectedCulture))
                 {
                     model.RouteValues.TryAdd("Localization.SelectedCulture", viewModel.SelectedCulture);
                 }

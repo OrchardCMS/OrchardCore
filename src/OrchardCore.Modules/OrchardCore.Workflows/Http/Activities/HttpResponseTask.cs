@@ -83,12 +83,12 @@ namespace OrchardCore.Workflows.Http.Activities
                 response.Headers.Add(header);
             }
 
-            if (!string.IsNullOrWhiteSpace(contentType))
+            if (!String.IsNullOrWhiteSpace(contentType))
             {
                 response.ContentType = contentType;
             }
 
-            if (!string.IsNullOrWhiteSpace(content))
+            if (!String.IsNullOrWhiteSpace(content))
             {
                 await response.WriteAsync(content);
             }
@@ -99,7 +99,7 @@ namespace OrchardCore.Workflows.Http.Activities
 
         private IEnumerable<KeyValuePair<string, StringValues>> ParseHeaders(string text)
         {
-            if (string.IsNullOrWhiteSpace(text))
+            if (String.IsNullOrWhiteSpace(text))
                 return Enumerable.Empty<KeyValuePair<string, StringValues>>();
 
             return

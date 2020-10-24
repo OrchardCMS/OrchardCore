@@ -8,7 +8,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Options
     {
         public GraphQLContentTypeOption(string contentType)
         {
-            if (string.IsNullOrEmpty(contentType))
+            if (String.IsNullOrEmpty(contentType))
             {
                 throw new ArgumentNullException(nameof(contentType));
             }

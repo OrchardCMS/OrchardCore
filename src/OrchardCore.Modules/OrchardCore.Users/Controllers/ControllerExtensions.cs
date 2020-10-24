@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.Encodings.Web;
@@ -26,7 +27,7 @@ namespace OrchardCore.Users.Controllers
             var smtpService = controller.HttpContext.RequestServices.GetRequiredService<ISmtpService>();
             var displayHelper = controller.HttpContext.RequestServices.GetRequiredService<IDisplayHelper>();
             var htmlEncoder = controller.HttpContext.RequestServices.GetRequiredService<HtmlEncoder>();
-            var body = string.Empty;
+            var body = String.Empty;
 
             using (var sw = new StringWriter())
             {

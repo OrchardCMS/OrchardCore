@@ -38,7 +38,7 @@ namespace OrchardCore.Templates.Controllers
             _authorizationService = authorizationService;
             _siteService = siteService;
             _updateModelAccessor = updateModelAccessor;
-            _homeUrl = ('/' + (shellSettings.RequestUrlPrefix ?? string.Empty)).TrimEnd('/') + '/';
+            _homeUrl = ('/' + (shellSettings.RequestUrlPrefix ?? String.Empty)).TrimEnd('/') + '/';
         }
 
         public IActionResult Index()
@@ -60,7 +60,7 @@ namespace OrchardCore.Templates.Controllers
             var name = Request.Form["Name"];
             var content = Request.Form["Content"];
 
-            if (!string.IsNullOrEmpty(name) && !string.IsNullOrEmpty(content))
+            if (!String.IsNullOrEmpty(name) && !String.IsNullOrEmpty(content))
             {
                 HttpContext.Items["OrchardCore.PreviewTemplate"] = new TemplateViewModel { Name = name, Content = content };
             }
@@ -69,7 +69,7 @@ namespace OrchardCore.Templates.Controllers
 
             string contentItemId;
 
-            if (string.IsNullOrEmpty(handle) || handle == _homeUrl)
+            if (String.IsNullOrEmpty(handle) || handle == _homeUrl)
             {
                 var homeRoute = (await _siteService.GetSiteSettingsAsync()).HomeRoute;
                 contentItemId = homeRoute["contentItemId"]?.ToString();
@@ -81,7 +81,7 @@ namespace OrchardCore.Templates.Controllers
                 contentItemId = await _contentHandleManager.GetContentItemIdAsync("slug:" + handle);
             }
 
-            if (string.IsNullOrEmpty(contentItemId))
+            if (String.IsNullOrEmpty(contentItemId))
             {
                 return NotFound();
             }

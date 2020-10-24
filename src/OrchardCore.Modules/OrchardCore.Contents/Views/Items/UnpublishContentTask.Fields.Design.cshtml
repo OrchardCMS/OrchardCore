@@ -4,7 +4,7 @@
     <h4><i class="fa fa-cloud-download"></i>@Model.Activity.GetTitleOrDefault(() => T["Unpublish Content"])</h4>
 </header>
 
-@if (string.IsNullOrWhiteSpace(Model.Activity.Content?.Expression))
+@if (String.IsNullOrWhiteSpace(Model.Activity.Content?.Expression))
 {
     <span>@T["Unpublish content provided via the <em>ContentItem</em> input argument"]</span>
 }

@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.IO.Compression;
 using System.Net.Http;
@@ -116,7 +117,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
                 System.IO.File.Delete(archiveFileName);
             }
 
-            if (!string.IsNullOrEmpty(returnUrl))
+            if (!String.IsNullOrEmpty(returnUrl))
             {
                 return LocalRedirect(returnUrl);
             }

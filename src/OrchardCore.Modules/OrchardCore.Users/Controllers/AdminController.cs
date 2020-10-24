@@ -97,7 +97,7 @@ namespace OrchardCore.Users.Controllers
                     break;
             }
 
-            if (!string.IsNullOrWhiteSpace(options.Search))
+            if (!String.IsNullOrWhiteSpace(options.Search))
             {
                 var normalizedSearchUserName = _userManager.NormalizeName(options.Search);
                 var normalizedSearchEMail = _userManager.NormalizeEmail(options.Search);
@@ -325,7 +325,7 @@ namespace OrchardCore.Users.Controllers
 
             foreach (var error in result.Errors)
             {
-                ModelState.AddModelError(string.Empty, error.Description);
+                ModelState.AddModelError(String.Empty, error.Description);
             }
 
             if (!ModelState.IsValid)

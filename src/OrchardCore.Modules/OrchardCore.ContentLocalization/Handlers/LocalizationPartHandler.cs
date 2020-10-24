@@ -73,7 +73,7 @@ namespace OrchardCore.ContentLocalization.Handlers
         public override Task CloningAsync(CloneContentContext context, LocalizationPart part)
         {
             var clonedPart = context.CloneContentItem.As<LocalizationPart>();
-            clonedPart.LocalizationSet = string.Empty;
+            clonedPart.LocalizationSet = String.Empty;
             clonedPart.Apply();
             return Task.CompletedTask;
         }

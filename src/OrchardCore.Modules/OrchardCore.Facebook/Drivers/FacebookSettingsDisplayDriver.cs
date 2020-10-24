@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
@@ -51,7 +52,7 @@ namespace OrchardCore.Facebook.Drivers
                 model.FBInitParams = settings.FBInitParams;
                 model.Version = settings.Version;
                 model.SdkJs = settings.SdkJs;
-                if (!string.IsNullOrWhiteSpace(settings.AppSecret))
+                if (!String.IsNullOrWhiteSpace(settings.AppSecret))
                 {
                     model.AppSecret = protector.Unprotect(settings.AppSecret);
                 }
@@ -79,7 +80,7 @@ namespace OrchardCore.Facebook.Drivers
                     settings.AppSecret = protector.Protect(model.AppSecret);
                     settings.FBInit = model.FBInit;
                     settings.SdkJs = model.SdkJs;
-                    if (!string.IsNullOrWhiteSpace(model.FBInitParams))
+                    if (!String.IsNullOrWhiteSpace(model.FBInitParams))
                         settings.FBInitParams = model.FBInitParams;
                     settings.Version = model.Version;
 

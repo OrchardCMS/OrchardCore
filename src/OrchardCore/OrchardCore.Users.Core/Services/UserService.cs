@@ -33,13 +33,13 @@ namespace OrchardCore.Users.Services
 
         public async Task<IUser> AuthenticateAsync(string userName, string password, Action<string, string> reportError)
         {
-            if (string.IsNullOrWhiteSpace(userName))
+            if (String.IsNullOrWhiteSpace(userName))
             {
                 reportError("UserName", S["A user name is required."]);
                 return null;
             }
 
-            if (string.IsNullOrWhiteSpace(password))
+            if (String.IsNullOrWhiteSpace(password))
             {
                 reportError("Password", S["A password is required."]);
                 return null;
@@ -48,30 +48,30 @@ namespace OrchardCore.Users.Services
             var user = await _userManager.FindByNameAsync(userName);
             if (user == null)
             {
-                reportError(string.Empty, S["The specified username/password couple is invalid."]);
+                reportError(String.Empty, S["The specified username/password couple is invalid."]);
                 return null;
             }
 
             var result = await _signInManager.CheckPasswordSignInAsync(user, password, lockoutOnFailure: true);
             if (result.IsNotAllowed)
             {
-                reportError(string.Empty, S["The specified user is not allowed to sign in."]);
+                reportError(String.Empty, S["The specified user is not allowed to sign in."]);
                 return null;
             }
             else if (result.RequiresTwoFactor)
             {
-                reportError(string.Empty, S["The specified user is not allowed to sign in using password authentication."]);
+                reportError(String.Empty, S["The specified user is not allowed to sign in using password authentication."]);
                 return null;
             }
             else if (!result.Succeeded)
             {
-                reportError(string.Empty, S["The specified username/password couple is invalid."]);
+                reportError(String.Empty, S["The specified username/password couple is invalid."]);
                 return null;
             }
 
             if (!(user as User).IsEnabled)
             {
-                reportError(string.Empty, S["The specified user is not allowed to sign in."]);
+                reportError(String.Empty, S["The specified user is not allowed to sign in."]);
 
                 return null;
             }
@@ -136,7 +136,7 @@ namespace OrchardCore.Users.Services
 
         public async Task<IUser> GetForgotPasswordUserAsync(string userIdentifier)
         {
-            if (string.IsNullOrWhiteSpace(userIdentifier))
+            if (String.IsNullOrWhiteSpace(userIdentifier))
             {
                 return await Task.FromResult<IUser>(null);
             }
@@ -156,19 +156,19 @@ namespace OrchardCore.Users.Services
         public async Task<bool> ResetPasswordAsync(string userIdentifier, string resetToken, string newPassword, Action<string, string> reportError)
         {
             var result = true;
-            if (string.IsNullOrWhiteSpace(userIdentifier))
+            if (String.IsNullOrWhiteSpace(userIdentifier))
             {
                 reportError("UserName", S["A user name or email is required."]);
                 result = false;
             }
 
-            if (string.IsNullOrWhiteSpace(newPassword))
+            if (String.IsNullOrWhiteSpace(newPassword))
             {
                 reportError("Password", S["A password is required."]);
                 result = false;
             }
 
-            if (string.IsNullOrWhiteSpace(resetToken))
+            if (String.IsNullOrWhiteSpace(resetToken))
             {
                 reportError("Token", S["A token is required."]);
                 result = false;
@@ -265,7 +265,7 @@ namespace OrchardCore.Users.Services
                         reportError("Email", S["Email '{0}' is invalid.", user.Email]);
                         break;
                     default:
-                        reportError(string.Empty, S["Unexpected error: '{0}'.", error.Code]);
+                        reportError(String.Empty, S["Unexpected error: '{0}'.", error.Code]);
                         break;
                 }
             }

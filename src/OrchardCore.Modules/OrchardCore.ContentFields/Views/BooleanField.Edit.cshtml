@@ -8,7 +8,7 @@
     <div class="custom-control custom-checkbox">
         <input asp-for="Value" type="checkbox" class="custom-control-input content-preview-select" checked="@Model.Value" />
         <label class="custom-control-label" asp-for="Value">
-            @(string.IsNullOrEmpty(settings.Label) ? Model.PartFieldDefinition.DisplayName() : settings.Label)
+            @(String.IsNullOrEmpty(settings.Label) ? Model.PartFieldDefinition.DisplayName() : settings.Label)
             @if (!String.IsNullOrEmpty(settings.Hint))
             {
                 <span class="hint">— @settings.Hint</span>

@@ -91,12 +91,12 @@ namespace OrchardCore.Roles.Controllers
 
                 if (model.RoleName.Contains('/'))
                 {
-                    ModelState.AddModelError(string.Empty, S["Invalid role name."]);
+                    ModelState.AddModelError(String.Empty, S["Invalid role name."]);
                 }
 
                 if (await _roleManager.FindByNameAsync(_roleManager.NormalizeKey(model.RoleName)) != null)
                 {
-                    ModelState.AddModelError(string.Empty, S["The role is already used."]);
+                    ModelState.AddModelError(String.Empty, S["The role is already used."]);
                 }
             }
 
@@ -114,7 +114,7 @@ namespace OrchardCore.Roles.Controllers
 
                 foreach (var error in result.Errors)
                 {
-                    ModelState.AddModelError(string.Empty, error.Description);
+                    ModelState.AddModelError(String.Empty, error.Description);
                 }
             }
 

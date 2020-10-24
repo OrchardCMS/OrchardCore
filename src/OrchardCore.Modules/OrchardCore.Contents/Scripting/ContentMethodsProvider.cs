@@ -44,7 +44,7 @@ namespace OrchardCore.Contents.Scripting
                     }
                     else
                     {
-                        throw new ValidationException(string.Join(", ", result.Errors));
+                        throw new ValidationException(String.Join(", ", result.Errors));
                     }
                 })
             };
@@ -60,7 +60,7 @@ namespace OrchardCore.Contents.Scripting
                     var result = contentManager.ValidateAsync(contentItem).GetAwaiter().GetResult();
                     if (!result.Succeeded)
                     {
-                        throw new ValidationException(string.Join(", ", result.Errors));
+                        throw new ValidationException(String.Join(", ", result.Errors));
                     }
                 })
             };

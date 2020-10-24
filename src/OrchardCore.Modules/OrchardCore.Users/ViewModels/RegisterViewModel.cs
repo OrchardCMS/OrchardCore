@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,12 +22,12 @@ namespace OrchardCore.Users.ViewModels
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
             var S = validationContext.GetService<IStringLocalizer<ChangePasswordViewModel>>();
-            if (string.IsNullOrWhiteSpace(UserName))
+            if (String.IsNullOrWhiteSpace(UserName))
             {
                 yield return new ValidationResult(S["Username is required."], new[] { nameof(UserName) });
             }
 
-            if (string.IsNullOrWhiteSpace(Email))
+            if (String.IsNullOrWhiteSpace(Email))
             {
                 yield return new ValidationResult(S["Email is required."], new[] { nameof(Email) });
             }
@@ -35,7 +36,7 @@ namespace OrchardCore.Users.ViewModels
                 yield return new ValidationResult(S["Invalid Email."], new[] { nameof(Email) });
             }
 
-            if (string.IsNullOrWhiteSpace(Password))
+            if (String.IsNullOrWhiteSpace(Password))
             {
                 yield return new ValidationResult(S["Password is required."], new[] { nameof(Password) });
             }

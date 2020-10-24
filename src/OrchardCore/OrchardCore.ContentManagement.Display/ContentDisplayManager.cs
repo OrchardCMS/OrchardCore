@@ -67,7 +67,7 @@ namespace OrchardCore.ContentManagement.Display
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
 
             var stereotype = contentTypeDefinition.GetSettings<ContentTypeSettings>().Stereotype;
-            var actualDisplayType = string.IsNullOrEmpty(displayType) ? "Detail" : displayType;
+            var actualDisplayType = String.IsNullOrEmpty(displayType) ? "Detail" : displayType;
             var actualShapeType = stereotype ?? "Content";
 
             // _[DisplayType] is only added for the ones different than Detail

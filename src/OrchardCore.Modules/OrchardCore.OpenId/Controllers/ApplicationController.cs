@@ -123,18 +123,18 @@ namespace OrchardCore.OpenId.Controllers
                 return Forbid();
             }
 
-            if (!string.IsNullOrEmpty(model.ClientSecret) &&
-                 string.Equals(model.Type, OpenIddictConstants.ClientTypes.Public, StringComparison.OrdinalIgnoreCase))
+            if (!String.IsNullOrEmpty(model.ClientSecret) &&
+                 String.Equals(model.Type, OpenIddictConstants.ClientTypes.Public, StringComparison.OrdinalIgnoreCase))
             {
                 ModelState.AddModelError(nameof(model.ClientSecret), S["No client secret can be set for public applications."]);
             }
-            else if (string.IsNullOrEmpty(model.ClientSecret) &&
-                     string.Equals(model.Type, OpenIddictConstants.ClientTypes.Confidential, StringComparison.OrdinalIgnoreCase))
+            else if (String.IsNullOrEmpty(model.ClientSecret) &&
+                     String.Equals(model.Type, OpenIddictConstants.ClientTypes.Confidential, StringComparison.OrdinalIgnoreCase))
             {
                 ModelState.AddModelError(nameof(model.ClientSecret), S["The client secret is required for confidential applications."]);
             }
 
-            if (!string.IsNullOrEmpty(model.ClientId) && await _applicationManager.FindByClientIdAsync(model.ClientId) != null)
+            if (!String.IsNullOrEmpty(model.ClientId) && await _applicationManager.FindByClientIdAsync(model.ClientId) != null)
             {
                 ModelState.AddModelError(nameof(model.ClientId), S["The client identifier is already taken by another application."]);
             }
@@ -203,7 +203,7 @@ namespace OrchardCore.OpenId.Controllers
 
             await _applicationManager.CreateAsync(descriptor);
 
-            if (string.IsNullOrEmpty(returnUrl))
+            if (String.IsNullOrEmpty(returnUrl))
             {
                 return RedirectToAction("Index");
             }
@@ -238,8 +238,8 @@ namespace OrchardCore.OpenId.Controllers
                 ConsentType = await _applicationManager.GetConsentTypeAsync(application),
                 DisplayName = await _applicationManager.GetDisplayNameAsync(application),
                 Id = await _applicationManager.GetPhysicalIdAsync(application),
-                PostLogoutRedirectUris = string.Join(" ", await _applicationManager.GetPostLogoutRedirectUrisAsync(application)),
-                RedirectUris = string.Join(" ", await _applicationManager.GetRedirectUrisAsync(application)),
+                PostLogoutRedirectUris = String.Join(" ", await _applicationManager.GetPostLogoutRedirectUrisAsync(application)),
+                RedirectUris = String.Join(" ", await _applicationManager.GetRedirectUrisAsync(application)),
                 Type = await _applicationManager.GetClientTypeAsync(application)
             };
 
@@ -282,15 +282,15 @@ namespace OrchardCore.OpenId.Controllers
             }
 
             // If the application was a public client and is now a confidential client, ensure a client secret was provided.
-            if (string.IsNullOrEmpty(model.ClientSecret) &&
-               !string.Equals(model.Type, OpenIddictConstants.ClientTypes.Public, StringComparison.OrdinalIgnoreCase) &&
+            if (String.IsNullOrEmpty(model.ClientSecret) &&
+               !String.Equals(model.Type, OpenIddictConstants.ClientTypes.Public, StringComparison.OrdinalIgnoreCase) &&
                 await _applicationManager.HasClientTypeAsync(application, OpenIddictConstants.ClientTypes.Public))
             {
                 ModelState.AddModelError(nameof(model.ClientSecret), S["Setting a new client secret is required."]);
             }
 
-            if (!string.IsNullOrEmpty(model.ClientSecret) &&
-                 string.Equals(model.Type, OpenIddictConstants.ClientTypes.Public, StringComparison.OrdinalIgnoreCase))
+            if (!String.IsNullOrEmpty(model.ClientSecret) &&
+                 String.Equals(model.Type, OpenIddictConstants.ClientTypes.Public, StringComparison.OrdinalIgnoreCase))
             {
                 ModelState.AddModelError(nameof(model.ClientSecret), S["No client secret can be set for public applications."]);
             }
@@ -298,7 +298,7 @@ namespace OrchardCore.OpenId.Controllers
             if (ModelState.IsValid)
             {
                 var other = await _applicationManager.FindByClientIdAsync(model.ClientId);
-                if (other != null && !string.Equals(
+                if (other != null && !String.Equals(
                     await _applicationManager.GetIdAsync(other),
                     await _applicationManager.GetIdAsync(application), StringComparison.Ordinal))
                 {
@@ -321,12 +321,12 @@ namespace OrchardCore.OpenId.Controllers
             descriptor.DisplayName = model.DisplayName;
             descriptor.Type = model.Type;
 
-            if (!string.IsNullOrEmpty(model.ClientSecret))
+            if (!String.IsNullOrEmpty(model.ClientSecret))
             {
                 descriptor.ClientSecret = model.ClientSecret;
             }
 
-            if (string.Equals(descriptor.Type, OpenIddictConstants.ClientTypes.Public, StringComparison.OrdinalIgnoreCase))
+            if (String.Equals(descriptor.Type, OpenIddictConstants.ClientTypes.Public, StringComparison.OrdinalIgnoreCase))
             {
                 descriptor.ClientSecret = null;
             }
@@ -431,7 +431,7 @@ namespace OrchardCore.OpenId.Controllers
 
             await _applicationManager.UpdateAsync(application, descriptor);
 
-            if (string.IsNullOrEmpty(returnUrl))
+            if (String.IsNullOrEmpty(returnUrl))
             {
                 return RedirectToAction("Index");
             }

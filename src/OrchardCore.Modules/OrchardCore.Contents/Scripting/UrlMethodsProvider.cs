@@ -21,17 +21,17 @@ namespace OrchardCore.Contents.Scripting
 
                      var shellSettings = serviceProvider.GetRequiredService<ShellSettings>();
 
-                     if (!string.IsNullOrWhiteSpace(shellSettings.RequestUrlPrefix))
+                     if (!String.IsNullOrWhiteSpace(shellSettings.RequestUrlPrefix))
                          ret = shellSettings.RequestUrlPrefix.Trim('/');
                      else
-                         ret = string.Empty;
+                         ret = String.Empty;
 
-                     if (!string.IsNullOrWhiteSpace(path))
+                     if (!String.IsNullOrWhiteSpace(path))
                      {
-                         ret = string.Concat(ret, '/', path.Trim('/')).Trim('/');
+                         ret = String.Concat(ret, '/', path.Trim('/')).Trim('/');
                      }
 
-                     return string.Concat('/', ret);
+                     return String.Concat('/', ret);
                  })
             };
         }

@@ -39,7 +39,7 @@ namespace OrchardCore.Environment.Commands.Builtin
         [CommandHelp("help <command>", "\tDisplay help text for <command>")]
         public async Task SingleCommandAsync(string[] commandNameStrings)
         {
-            string command = string.Join(" ", commandNameStrings);
+            string command = String.Join(" ", commandNameStrings);
             var descriptors = GetCommandDescriptors()
                 .Where(t => t.Names.Any(x => x.StartsWith(command, StringComparison.OrdinalIgnoreCase)))
                 .OrderBy(d => d.Names);
@@ -65,7 +65,7 @@ namespace OrchardCore.Environment.Commands.Builtin
 
         private LocalizedString GetHelpText(CommandDescriptor descriptor)
         {
-            if (string.IsNullOrEmpty(descriptor.HelpText))
+            if (String.IsNullOrEmpty(descriptor.HelpText))
             {
                 return S["{0}.{1}: no help text", descriptor.MethodInfo.DeclaringType?.FullName, descriptor.MethodInfo.Name];
             }

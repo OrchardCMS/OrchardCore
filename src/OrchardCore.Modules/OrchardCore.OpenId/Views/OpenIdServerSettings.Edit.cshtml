@@ -131,13 +131,13 @@
                 var selectedCertificate = Model.EncryptionCertificateThumbprint == certificate.ThumbPrint
                                             && Model.EncryptionCertificateStoreLocation.HasValue && Model.EncryptionCertificateStoreLocation.Value == certificate.StoreLocation
                                             && Model.EncryptionCertificateStoreName.HasValue && Model.EncryptionCertificateStoreName == certificate.StoreName;
-                if (string.IsNullOrWhiteSpace(certificate.ThumbPrint))
+                if (String.IsNullOrWhiteSpace(certificate.ThumbPrint))
                 {
                     <option value="" data-StoreLocation="@certificate.StoreLocation" data-StoreName="@certificate.StoreName" selected="@(selectedCertificate)"></option>
                     continue;
                 }
                 var friendlyName = certificate.FriendlyName;
-                if (string.IsNullOrWhiteSpace(friendlyName) && !string.IsNullOrWhiteSpace(certificate.ThumbPrint))
+                if (String.IsNullOrWhiteSpace(friendlyName) && !String.IsNullOrWhiteSpace(certificate.ThumbPrint))
                 {
                     friendlyName = "No Friendly Name";
                 }
@@ -195,13 +195,13 @@
                 var selectedCertificate = Model.SigningCertificateThumbprint == certificate.ThumbPrint
                                             && Model.SigningCertificateStoreLocation.HasValue && Model.SigningCertificateStoreLocation.Value == certificate.StoreLocation
                                             && Model.SigningCertificateStoreName.HasValue && Model.SigningCertificateStoreName == certificate.StoreName;
-                if (string.IsNullOrWhiteSpace(certificate.ThumbPrint))
+                if (String.IsNullOrWhiteSpace(certificate.ThumbPrint))
                 {
                     <option value="" data-StoreLocation="@certificate.StoreLocation" data-StoreName="@certificate.StoreName" selected="@(selectedCertificate)"></option>
                     continue;
                 }
                 var friendlyName = certificate.FriendlyName;
-                if (string.IsNullOrWhiteSpace(friendlyName) && !string.IsNullOrWhiteSpace(certificate.ThumbPrint))
+                if (String.IsNullOrWhiteSpace(friendlyName) && !String.IsNullOrWhiteSpace(certificate.ThumbPrint))
                 {
                     friendlyName = "No Friendly Name";
                 }

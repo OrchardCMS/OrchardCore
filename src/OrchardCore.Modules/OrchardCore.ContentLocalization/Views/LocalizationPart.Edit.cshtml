@@ -23,12 +23,12 @@
                 }
                 else
                 {
-                    @if (!string.IsNullOrEmpty(Model.LocalizationSet))
+                    @if (!String.IsNullOrEmpty(Model.LocalizationSet))
                     {
                         <div class="list-group">
                             @foreach (var culture in Model.ContentItemCultures)
                             {
-                                if (!string.IsNullOrEmpty(culture.ContentItemId))
+                                if (!String.IsNullOrEmpty(culture.ContentItemId))
                                 {
                                     <a class="list-group-item list-group-item-action" asp-action="Edit" asp-controller="Admin" asp-route-area="OrchardCore.Contents" asp-route-contentItemId="@culture.ContentItemId" title=@T["Edit {0}", culture.Culture.DisplayName]><i class="fa fa-edit"></i> @culture.Culture.DisplayName | @culture.Culture.Name </a>
                                 }

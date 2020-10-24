@@ -16,7 +16,7 @@ namespace OrchardCore.Tests.Modules
         {
             // Arrange
             string key = "X-Powered-By", value = "OrchardCore";
-            var headersArray = new Dictionary<string, StringValues>() { { key, string.Empty } };
+            var headersArray = new Dictionary<string, StringValues>() { { key, String.Empty } };
             var headersDic = new HeaderDictionary(headersArray);
             var httpResponseMock = new Mock<HttpResponse>();
             httpResponseMock.SetupGet(r => r.Headers).Returns(headersDic);

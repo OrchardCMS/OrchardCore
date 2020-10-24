@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Routing;
@@ -29,7 +30,7 @@ namespace OrchardCore.Autoroute.Routing
                     [_options.ContentItemIdKey] = entry.ContentItemId
                 };
 
-                if (!string.IsNullOrEmpty(entry.JsonPath))
+                if (!String.IsNullOrEmpty(entry.JsonPath))
                 {
                     routeValues[_options.JsonPathKey] = entry.JsonPath;
                 }

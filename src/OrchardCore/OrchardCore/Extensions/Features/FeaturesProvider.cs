@@ -39,7 +39,7 @@ namespace OrchardCore.Environment.Extensions.Features
                     var featureDependencyIds = feature.Dependencies
                         .Select(e => e.Trim()).ToArray();
 
-                    if (!int.TryParse(feature.Priority ?? manifestInfo.ModuleInfo.Priority, out int featurePriority))
+                    if (!Int32.TryParse(feature.Priority ?? manifestInfo.ModuleInfo.Priority, out int featurePriority))
                     {
                         featurePriority = 0;
                     }
@@ -96,7 +96,7 @@ namespace OrchardCore.Environment.Extensions.Features
                 var featureDependencyIds = manifestInfo.ModuleInfo.Dependencies
                     .Select(e => e.Trim()).ToArray();
 
-                if (!int.TryParse(manifestInfo.ModuleInfo.Priority, out int featurePriority))
+                if (!Int32.TryParse(manifestInfo.ModuleInfo.Priority, out int featurePriority))
                 {
                     featurePriority = 0;
                 }

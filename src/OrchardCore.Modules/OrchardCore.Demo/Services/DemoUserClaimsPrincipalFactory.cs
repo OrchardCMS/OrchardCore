@@ -30,19 +30,19 @@ namespace OrchardCore.Demo.Services
             claims.AddClaim(new Claim("preferred_username", user.UserName));
 
             var name = "";
-            if (!string.IsNullOrEmpty(profile.FirstName))
+            if (!String.IsNullOrEmpty(profile.FirstName))
             {
                 claims.AddClaim(new Claim("given_name", profile.FirstName));
                 name += profile.FirstName;
             }
 
-            if (!string.IsNullOrEmpty(profile.LastName))
+            if (!String.IsNullOrEmpty(profile.LastName))
             {
                 claims.AddClaim(new Claim("family_name", profile.LastName));
                 name += $" {profile.LastName}";
             }
 
-            if (!string.IsNullOrEmpty(name))
+            if (!String.IsNullOrEmpty(name))
             {
                 claims.AddClaim(new Claim("name", name));
             }

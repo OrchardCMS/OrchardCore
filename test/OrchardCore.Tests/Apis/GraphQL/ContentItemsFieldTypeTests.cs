@@ -256,7 +256,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
 
                 var type = new ContentItemsFieldType("Animal", new Schema(), Options.Create(new GraphQLContentOptions()), Options.Create(new GraphQLSettings { DefaultNumberOfResults = 10 }));
 
-                context.Arguments["where"] = JObject.Parse(string.Concat("{ ", fieldName, ": { name: \"doug\" } }"));
+                context.Arguments["where"] = JObject.Parse(String.Concat("{ ", fieldName, ": { name: \"doug\" } }"));
                 var dogs = await ((LockedAsyncFieldResolver<IEnumerable<ContentItem>>)type.Resolver).Resolve(context);
 
                 Assert.Single(dogs);

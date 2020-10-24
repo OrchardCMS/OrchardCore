@@ -74,7 +74,7 @@ namespace OrchardCore.Environment.Commands
             object[] invokeParameters = GetInvokeParametersForMethod(context.CommandDescriptor.MethodInfo, arguments);
             if (invokeParameters == null)
             {
-                throw new InvalidOperationException(S["Command arguments \"{0}\" don't match command definition", string.Join(" ", arguments)]);
+                throw new InvalidOperationException(S["Command arguments \"{0}\" don't match command definition", String.Join(" ", arguments)]);
             }
 
             this.Context = context;

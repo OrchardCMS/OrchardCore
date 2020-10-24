@@ -30,14 +30,14 @@
 
         var pathString = originalPathBase;
 
-        if (!string.IsNullOrEmpty(shellSettings.RequestUrlPrefix))
+        if (!String.IsNullOrEmpty(shellSettings.RequestUrlPrefix))
         {
             pathString = pathString.Add('/' + shellSettings.RequestUrlPrefix);
         }
 
         QueryString queryString;
 
-        if (!string.IsNullOrEmpty(shellSettingsEntry.Token))
+        if (!String.IsNullOrEmpty(shellSettingsEntry.Token))
         {
             queryString = QueryString.Create("token", shellSettingsEntry.Token);
         }
@@ -61,7 +61,7 @@
 
         var pathString = originalPathBase;
 
-        if (!string.IsNullOrEmpty(shellSettings.RequestUrlPrefix))
+        if (!String.IsNullOrEmpty(shellSettings.RequestUrlPrefix))
         {
             pathString = pathString.Add('/' + shellSettings.RequestUrlPrefix);
         }
@@ -161,7 +161,7 @@
                         </div>
                         <a href="@GetEncodedUrl(entry, originalPathBase)">@entry.Name</a>
                         <code class="hint">@GetDisplayUrl(entry, originalPathBase)</code>
-                        @if (!string.IsNullOrEmpty(entry.Description))
+                        @if (!String.IsNullOrEmpty(entry.Description))
                         {
                             <p class="mb-0"><small class="text-muted">@entry.Description</small></p>
                         }

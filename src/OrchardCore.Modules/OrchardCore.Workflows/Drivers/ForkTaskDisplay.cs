@@ -10,7 +10,7 @@ namespace OrchardCore.Workflows.Drivers
     {
         protected override void EditActivity(ForkTask activity, ForkTaskViewModel model)
         {
-            model.Forks = string.Join(", ", activity.Forks);
+            model.Forks = String.Join(", ", activity.Forks);
         }
 
         protected override void UpdateActivity(ForkTaskViewModel model, ForkTask activity)

@@ -1,3 +1,4 @@
+using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
@@ -50,12 +51,12 @@ namespace OrchardCore.Google.Authentication.Configuration
 
         public void Configure(string name, GoogleOptions options)
         {
-            if (!string.Equals(name, GoogleDefaults.AuthenticationScheme))
+            if (!String.Equals(name, GoogleDefaults.AuthenticationScheme))
             {
                 return;
             }
             var settings = GetGoogleAuthenticationSettingsAsync().GetAwaiter().GetResult();
-            options.ClientId = settings?.ClientID ?? string.Empty;
+            options.ClientId = settings?.ClientID ?? String.Empty;
             try
             {
                 options.ClientSecret = _dataProtectionProvider.CreateProtector(GoogleConstants.Features.GoogleAuthentication).Unprotect(settings.ClientSecret);

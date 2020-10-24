@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using OrchardCore.DisplayManagement.Manifest;
 using OrchardCore.Environment.Extensions;
@@ -34,7 +35,7 @@ namespace OrchardCore.DisplayManagement.Extensions
 
         public bool HasBaseTheme()
         {
-            return !string.IsNullOrWhiteSpace(BaseTheme);
+            return !String.IsNullOrWhiteSpace(BaseTheme);
         }
 
         public bool IsBaseThemeFeature(string featureId)

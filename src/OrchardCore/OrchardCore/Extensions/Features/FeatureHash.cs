@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
@@ -39,7 +40,7 @@ namespace OrchardCore.Environment.Extensions.Features
 
         public async Task<int> GetFeatureHashAsync(string featureId)
         {
-            var cacheKey = string.Format("{0}:{1}", FeatureHashCacheKey, featureId);
+            var cacheKey = String.Format("{0}:{1}", FeatureHashCacheKey, featureId);
 
             if (!_memoryCache.TryGetValue<bool>(cacheKey, out var enabled))
             {

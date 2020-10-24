@@ -143,10 +143,10 @@ namespace OrchardCore.Workflows.Http.Activities
 
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            var outcomes = !string.IsNullOrWhiteSpace(HttpResponseCodes)
+            var outcomes = !String.IsNullOrWhiteSpace(HttpResponseCodes)
                 ? HttpResponseCodes.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(x =>
                 {
-                    var status = int.Parse(x.Trim());
+                    var status = Int32.Parse(x.Trim());
 
                     var description = HttpStatusCodeDictionary.TryGetValue(status, out var text)
                         ? $"{status} {text}"
@@ -199,7 +199,7 @@ namespace OrchardCore.Workflows.Http.Activities
 
         private IEnumerable<KeyValuePair<string, string>> ParseHeaders(string text)
         {
-            if (string.IsNullOrWhiteSpace(text))
+            if (String.IsNullOrWhiteSpace(text))
                 return Enumerable.Empty<KeyValuePair<string, string>>();
 
             return
@@ -213,7 +213,7 @@ namespace OrchardCore.Workflows.Http.Activities
         {
             return
                 from code in text.Split(',', StringSplitOptions.RemoveEmptyEntries)
-                select int.Parse(code);
+                select Int32.Parse(code);
         }
     }
 }

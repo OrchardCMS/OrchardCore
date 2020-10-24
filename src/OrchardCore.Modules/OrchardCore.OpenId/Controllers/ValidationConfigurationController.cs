@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
@@ -81,7 +82,7 @@ namespace OrchardCore.OpenId.Controllers
             {
                 if (result != ValidationResult.Success)
                 {
-                    var key = result.MemberNames.FirstOrDefault() ?? string.Empty;
+                    var key = result.MemberNames.FirstOrDefault() ?? String.Empty;
                     ModelState.AddModelError(key, result.ErrorMessage);
                 }
             }

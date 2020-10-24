@@ -83,7 +83,7 @@ namespace OrchardCore.Email.Services
 
             mimeMessage.From.Add(MailboxAddress.Parse(message.From));
 
-            if (!string.IsNullOrWhiteSpace(message.To))
+            if (!String.IsNullOrWhiteSpace(message.To))
             {
                 foreach (var address in message.To.Split(EmailsSeparator, StringSplitOptions.RemoveEmptyEntries))
                 {
@@ -91,7 +91,7 @@ namespace OrchardCore.Email.Services
                 }
             }
 
-            if (!string.IsNullOrWhiteSpace(message.Cc))
+            if (!String.IsNullOrWhiteSpace(message.Cc))
             {
                 foreach (var address in message.Cc.Split(EmailsSeparator, StringSplitOptions.RemoveEmptyEntries))
                 {
@@ -99,7 +99,7 @@ namespace OrchardCore.Email.Services
                 }
             }
 
-            if (!string.IsNullOrWhiteSpace(message.Bcc))
+            if (!String.IsNullOrWhiteSpace(message.Bcc))
             {
                 foreach (var address in message.Bcc.Split(EmailsSeparator, StringSplitOptions.RemoveEmptyEntries))
                 {
@@ -107,7 +107,7 @@ namespace OrchardCore.Email.Services
                 }
             }
 
-            if (!string.IsNullOrWhiteSpace(message.ReplyTo))
+            if (!String.IsNullOrWhiteSpace(message.ReplyTo))
             {
                 foreach (var address in message.ReplyTo.Split(EmailsSeparator, StringSplitOptions.RemoveEmptyEntries))
                 {
@@ -138,7 +138,7 @@ namespace OrchardCore.Email.Services
             if (sslPolicyErrors == SslPolicyErrors.None)
                 return true;
 
-            _logger.LogError(string.Concat("SMTP Server's certificate {CertificateSubject} issued by {CertificateIssuer} ",
+            _logger.LogError(String.Concat("SMTP Server's certificate {CertificateSubject} issued by {CertificateIssuer} ",
                 "with thumbprint {CertificateThumbprint} and expiration date {CertificateExpirationDate} ",
                 "is considered invalid with {SslPolicyErrors} policy errors"),
                 certificate.Subject, certificate.Issuer, certificate.GetCertHashString(),

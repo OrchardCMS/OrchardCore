@@ -30,7 +30,7 @@ namespace OrchardCore.ReCaptcha.Services
         /// <returns>A boolean indicating if the token is valid</returns>
         public async Task<bool> VerifyAsync(string responseToken, string secretKey)
         {
-            if (string.IsNullOrWhiteSpace(responseToken))
+            if (String.IsNullOrWhiteSpace(responseToken))
             {
                 return false;
             }

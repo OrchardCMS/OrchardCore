@@ -55,7 +55,7 @@ namespace OrchardCore.OpenId.Drivers
 
             await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-            settings.Authority = !string.IsNullOrEmpty(model.Authority) ? new Uri(model.Authority, UriKind.Absolute) : null;
+            settings.Authority = !String.IsNullOrEmpty(model.Authority) ? new Uri(model.Authority, UriKind.Absolute) : null;
             settings.Audience = model.Audience?.Trim();
             settings.DisableTokenTypeValidation = model.DisableTokenTypeValidation;
             settings.Tenant = model.Tenant;

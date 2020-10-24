@@ -1,3 +1,4 @@
+using System;
 using System.Globalization;
 using System.Text;
 
@@ -7,7 +8,7 @@ namespace OrchardCore.Liquid.Services
     {
         public string Slugify(string text)
         {
-            if (string.IsNullOrEmpty(text))
+            if (String.IsNullOrEmpty(text))
             {
                 return text;
             }

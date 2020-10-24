@@ -71,7 +71,7 @@ namespace OrchardCore.OpenId.Drivers
             await context.Updater.TryUpdateModelAsync(model, Prefix);
 
             settings.AccessTokenFormat = model.AccessTokenFormat;
-            settings.Authority = !string.IsNullOrEmpty(model.Authority) ? new Uri(model.Authority, UriKind.Absolute) : null;
+            settings.Authority = !String.IsNullOrEmpty(model.Authority) ? new Uri(model.Authority, UriKind.Absolute) : null;
 
             settings.EncryptionCertificateStoreLocation = model.EncryptionCertificateStoreLocation;
             settings.EncryptionCertificateStoreName = model.EncryptionCertificateStoreName;

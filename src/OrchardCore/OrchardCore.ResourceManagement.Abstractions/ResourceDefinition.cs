@@ -355,9 +355,9 @@ namespace OrchardCore.ResourceManagement
             }
 
             var that = (ResourceDefinition)obj;
-            return string.Equals(that.Name, Name) &&
-                string.Equals(that.Type, Type) &&
-                string.Equals(that.Version, Version);
+            return String.Equals(that.Name, Name) &&
+                String.Equals(that.Type, Type) &&
+                String.Equals(that.Version, Version);
         }
 
         public override int GetHashCode()

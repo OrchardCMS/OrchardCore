@@ -31,8 +31,8 @@ namespace OrchardCore.Environment.Commands
             }
             else
             {
-                var commandMatch = string.Join(" ", parameters.Arguments.ToArray());
-                var commandList = string.Join(",", GetCommandDescriptors().SelectMany(d => d.Names).ToArray());
+                var commandMatch = String.Join(" ", parameters.Arguments.ToArray());
+                var commandList = String.Join(",", GetCommandDescriptors().SelectMany(d => d.Names).ToArray());
                 if (matches.Any())
                 {
                     throw new Exception(S["Multiple commands found matching arguments \"{0}\". Commands available: {1}.",
@@ -67,7 +67,7 @@ namespace OrchardCore.Environment.Commands
                     // We check here number of arguments a command can recieve against
                     // arguments provided for the command to identify the correct command
                     // and avoid matching multiple commands.
-                    if (name == string.Join(" ", parameters.Arguments.Take(namesCount)) && commandDescriptor.MethodInfo.GetParameters().Length == argCount - namesCount)
+                    if (name == String.Join(" ", parameters.Arguments.Take(namesCount)) && commandDescriptor.MethodInfo.GetParameters().Length == argCount - namesCount)
                     {
                         names = parameters.Arguments.ToArray();
                     }
@@ -79,7 +79,7 @@ namespace OrchardCore.Environment.Commands
                             Context = new CommandContext
                             {
                                 Arguments = parameters.Arguments.Skip(name.Split(' ').Count()),
-                                Command = string.Join(" ", names),
+                                Command = String.Join(" ", names),
                                 CommandDescriptor = commandDescriptor,
                                 Input = parameters.Input,
                                 Output = parameters.Output,

@@ -22,7 +22,7 @@ namespace OrchardCore.OpenId.Recipes
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
         {
-            if (!string.Equals(context.Name, "OpenIdScope", StringComparison.OrdinalIgnoreCase))
+            if (!String.Equals(context.Name, "OpenIdScope", StringComparison.OrdinalIgnoreCase))
             {
                 return;
             }
@@ -35,7 +35,7 @@ namespace OrchardCore.OpenId.Recipes
                 DisplayName = model.DisplayName
             };
 
-            if (!string.IsNullOrEmpty(model.Resources))
+            if (!String.IsNullOrEmpty(model.Resources))
             {
                 descriptor.Resources.UnionWith(model.Resources.Split(new[] { " " }, StringSplitOptions.RemoveEmptyEntries));
             }

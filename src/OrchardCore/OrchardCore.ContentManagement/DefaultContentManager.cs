@@ -485,10 +485,10 @@ namespace OrchardCore.ContentManagement
                         {
                             if (_logger.IsEnabled(LogLevel.Error))
                             {
-                                _logger.LogError("Error importing content item version id '{ContentItemVersionId}' : '{Errors}'", importingItem?.ContentItemVersionId, string.Join(", ", result.Errors));
+                                _logger.LogError("Error importing content item version id '{ContentItemVersionId}' : '{Errors}'", importingItem?.ContentItemVersionId, String.Join(", ", result.Errors));
                             }
 
-                            throw new ValidationException(string.Join(", ", result.Errors));
+                            throw new ValidationException(String.Join(", ", result.Errors));
                         }
 
                         // Imported handlers will only be fired if the validation has been successful.
@@ -536,10 +536,10 @@ namespace OrchardCore.ContentManagement
                         {
                             if (_logger.IsEnabled(LogLevel.Error))
                             {
-                                _logger.LogError("Error importing content item version id '{ContentItemVersionId}' : '{Errors}'", importingItem.ContentItemVersionId, string.Join(", ", result.Errors));
+                                _logger.LogError("Error importing content item version id '{ContentItemVersionId}' : '{Errors}'", importingItem.ContentItemVersionId, String.Join(", ", result.Errors));
                             }
 
-                            throw new ValidationException(string.Join(", ", result.Errors));
+                            throw new ValidationException(String.Join(", ", result.Errors));
                         }
 
                         // Imported handlers will only be fired if the validation has been successful.

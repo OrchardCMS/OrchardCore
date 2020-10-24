@@ -64,7 +64,7 @@ namespace OrchardCore.Contents.Services
             var canListAllContent = await _authorizationService.AuthorizeAsync(user, Permissions.ListContent);
 
             // Filter the creatable types.
-            if (!string.IsNullOrEmpty(model.SelectedContentType))
+            if (!String.IsNullOrEmpty(model.SelectedContentType))
             {
                 var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(model.SelectedContentType);
                 if (contentTypeDefinition != null)

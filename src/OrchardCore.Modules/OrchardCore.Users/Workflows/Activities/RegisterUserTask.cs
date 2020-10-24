@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
@@ -93,14 +94,14 @@ namespace OrchardCore.Users.Workflows.Activities
             {
                 form = _httpContextAccessor.HttpContext.Request.Form;
                 email = form["Email"];
-                isValid = !string.IsNullOrWhiteSpace(email);
+                isValid = !String.IsNullOrWhiteSpace(email);
             }
             var outcome = isValid ? "Valid" : "Invalid";
 
             if (isValid)
             {
                 var userName = form["UserName"];
-                if (string.IsNullOrWhiteSpace(userName))
+                if (String.IsNullOrWhiteSpace(userName))
                     userName = email;
 
                 var errors = new Dictionary<string, string>();

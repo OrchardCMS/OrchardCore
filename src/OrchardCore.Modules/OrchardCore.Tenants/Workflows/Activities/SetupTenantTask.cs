@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -97,7 +98,7 @@ namespace OrchardCore.Tenants.Workflows.Activities
 
             var tenantName = (await ExpressionEvaluator.EvaluateAsync(TenantName, workflowContext, null))?.Trim();
 
-            if (string.IsNullOrWhiteSpace(tenantName))
+            if (String.IsNullOrWhiteSpace(tenantName))
             {
                 return Outcomes("Failed");
             }
@@ -127,22 +128,22 @@ namespace OrchardCore.Tenants.Workflows.Activities
             var databaseTablePrefix = (await ExpressionEvaluator.EvaluateAsync(DatabaseTablePrefix, workflowContext, null))?.Trim();
             var recipeName = (await ExpressionEvaluator.EvaluateAsync(RecipeName, workflowContext, null))?.Trim();
 
-            if (string.IsNullOrEmpty(databaseProvider))
+            if (String.IsNullOrEmpty(databaseProvider))
             {
                 databaseProvider = shellSettings["DatabaseProvider"];
             }
 
-            if (string.IsNullOrEmpty(databaseConnectionString))
+            if (String.IsNullOrEmpty(databaseConnectionString))
             {
                 databaseConnectionString = shellSettings["ConnectionString"];
             }
 
-            if (string.IsNullOrEmpty(databaseTablePrefix))
+            if (String.IsNullOrEmpty(databaseTablePrefix))
             {
                 databaseTablePrefix = shellSettings["TablePrefix"];
             }
 
-            if (string.IsNullOrEmpty(recipeName))
+            if (String.IsNullOrEmpty(recipeName))
             {
                 recipeName = shellSettings["RecipeName"];
             }

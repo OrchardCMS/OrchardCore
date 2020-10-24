@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -40,7 +41,7 @@ namespace OrchardCore.ContentFields.Controllers
         [HttpGet]
         public async Task<IActionResult> SearchLocalizationSets(string part, string field, string query)
         {
-            if (string.IsNullOrWhiteSpace(part) || string.IsNullOrWhiteSpace(field))
+            if (String.IsNullOrWhiteSpace(part) || String.IsNullOrWhiteSpace(field))
             {
                 return BadRequest("Part and field are required parameters");
             }
@@ -57,7 +58,7 @@ namespace OrchardCore.ContentFields.Controllers
             var dbQuery = _session.Query<ContentItem, ContentItemIndex>()
               .With<ContentItemIndex>(x => x.ContentType.IsIn(fieldSettings.DisplayedContentTypes) && x.Latest);
 
-            if (!string.IsNullOrEmpty(query))
+            if (!String.IsNullOrEmpty(query))
             {
                 dbQuery.With<ContentItemIndex>(x => x.DisplayText.Contains(query) || x.ContentType.Contains(query));
             }

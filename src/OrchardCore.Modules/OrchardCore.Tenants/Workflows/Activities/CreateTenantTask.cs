@@ -92,7 +92,7 @@ namespace OrchardCore.Tenants.Workflows.Activities
 
             var tenantName = (await ExpressionEvaluator.EvaluateAsync(TenantName, workflowContext, null))?.Trim();
 
-            if (string.IsNullOrEmpty(tenantName))
+            if (String.IsNullOrEmpty(tenantName))
             {
                 return Outcomes("Failed");
             }
@@ -114,34 +114,34 @@ namespace OrchardCore.Tenants.Workflows.Activities
 
             shellSettings.Name = tenantName;
 
-            if (!string.IsNullOrEmpty(requestUrlHost))
+            if (!String.IsNullOrEmpty(requestUrlHost))
             {
                 shellSettings.RequestUrlHost = requestUrlHost;
             }
 
-            if (!string.IsNullOrEmpty(requestUrlPrefix))
+            if (!String.IsNullOrEmpty(requestUrlPrefix))
             {
                 shellSettings.RequestUrlPrefix = requestUrlPrefix;
             }
 
             shellSettings.State = TenantState.Uninitialized;
 
-            if (!string.IsNullOrEmpty(connectionString))
+            if (!String.IsNullOrEmpty(connectionString))
             {
                 shellSettings["ConnectionString"] = connectionString;
             }
 
-            if (!string.IsNullOrEmpty(tablePrefix))
+            if (!String.IsNullOrEmpty(tablePrefix))
             {
                 shellSettings["TablePrefix"] = tablePrefix;
             }
 
-            if (!string.IsNullOrEmpty(databaseProvider))
+            if (!String.IsNullOrEmpty(databaseProvider))
             {
                 shellSettings["DatabaseProvider"] = databaseProvider;
             }
 
-            if (!string.IsNullOrEmpty(recipeName))
+            if (!String.IsNullOrEmpty(recipeName))
             {
                 shellSettings["RecipeName"] = recipeName;
             }

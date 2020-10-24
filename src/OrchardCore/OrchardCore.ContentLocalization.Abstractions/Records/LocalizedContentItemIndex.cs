@@ -1,3 +1,4 @@
+using System;
 using OrchardCore.ContentLocalization.Models;
 using OrchardCore.ContentManagement;
 using YesSql.Indexes;
@@ -26,7 +27,7 @@ namespace OrchardCore.ContentLocalization.Records
 
                     var localizationPart = contentItem.As<LocalizationPart>();
 
-                    if (string.IsNullOrEmpty(localizationPart?.LocalizationSet) || localizationPart?.Culture == null)
+                    if (String.IsNullOrEmpty(localizationPart?.LocalizationSet) || localizationPart?.Culture == null)
                     {
                         return null;
                     }

@@ -259,7 +259,7 @@ namespace OrchardCore.ResourceManagement
             if (!Version.TryParse(minimumVersion, out var version))
             {
                 // Is is a single number?
-                if (int.TryParse(minimumVersion, out var major))
+                if (Int32.TryParse(minimumVersion, out var major))
                 {
                     return new Version(major + 1, 0, 0);
                 }
@@ -287,7 +287,7 @@ namespace OrchardCore.ResourceManagement
             if (!Version.TryParse(minimumVersion, out var version))
             {
                 // Is is a single number?
-                if (int.TryParse(minimumVersion, out var major))
+                if (Int32.TryParse(minimumVersion, out var major))
                 {
                     return new Version(major, 0, 0);
                 }
@@ -722,7 +722,7 @@ namespace OrchardCore.ResourceManagement
 
         private string GetResourceKey(string releasePath, string debugPath)
         {
-            if (_options.DebugMode && !string.IsNullOrWhiteSpace(debugPath))
+            if (_options.DebugMode && !String.IsNullOrWhiteSpace(debugPath))
             {
                 return debugPath;
             }

@@ -43,7 +43,7 @@ namespace OrchardCore.Workflows.Expressions
                 scope => scope.SetValue("Workflow", workflowContext)
                 );
 
-            return string.IsNullOrWhiteSpace(result) ? default(T) : (T)Convert.ChangeType(result, typeof(T));
+            return String.IsNullOrWhiteSpace(result) ? default(T) : (T)Convert.ChangeType(result, typeof(T));
         }
 
         private TemplateContext CreateTemplateContext(WorkflowExecutionContext workflowContext)

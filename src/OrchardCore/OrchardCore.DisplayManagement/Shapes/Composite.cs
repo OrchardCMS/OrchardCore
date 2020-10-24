@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
@@ -54,7 +55,7 @@ namespace OrchardCore.DisplayManagement.Shapes
             {
                 if (binder.Name == "ToString")
                 {
-                    result = string.Empty;
+                    result = String.Empty;
                     return true;
                 }
 
@@ -235,7 +236,7 @@ namespace OrchardCore.DisplayManagement.Shapes
 
         public override string ToString()
         {
-            return string.Empty;
+            return String.Empty;
         }
     }
 }

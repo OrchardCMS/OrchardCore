@@ -83,7 +83,7 @@ namespace OrchardCore.Deployment.Controllers
 
             var deploymentPlans = _session.Query<DeploymentPlan, DeploymentPlanIndex>();
 
-            if (!string.IsNullOrWhiteSpace(options.Search))
+            if (!String.IsNullOrWhiteSpace(options.Search))
             {
                 deploymentPlans = deploymentPlans.Where(dp => dp.Name.Contains(options.Search));
             }

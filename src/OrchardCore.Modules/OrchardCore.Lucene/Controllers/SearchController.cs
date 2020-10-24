@@ -111,7 +111,7 @@ namespace OrchardCore.Lucene.Controllers
                 return BadRequest($"Search index ({searchSettings.SearchIndex}) is not configured.");
             }
 
-            if (string.IsNullOrWhiteSpace(viewModel.Terms))
+            if (String.IsNullOrWhiteSpace(viewModel.Terms))
             {
                 return View(new SearchIndexViewModel
                 {

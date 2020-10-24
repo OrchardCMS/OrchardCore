@@ -76,17 +76,17 @@ namespace OrchardCore.Workflows.Activities
 
         public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            if (!double.TryParse(From.Expression, out var from))
+            if (!Double.TryParse(From.Expression, out var from))
             {
                 from = await _scriptEvaluator.EvaluateAsync(From, workflowContext);
             }
 
-            if (!double.TryParse(To.Expression, out var to))
+            if (!Double.TryParse(To.Expression, out var to))
             {
                 to = await _scriptEvaluator.EvaluateAsync(To, workflowContext);
             }
 
-            if (!double.TryParse(Step.Expression, out var step))
+            if (!Double.TryParse(Step.Expression, out var step))
             {
                 step = await _scriptEvaluator.EvaluateAsync(Step, workflowContext);
             }

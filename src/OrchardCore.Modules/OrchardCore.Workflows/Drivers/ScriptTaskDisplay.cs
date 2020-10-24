@@ -11,7 +11,7 @@ namespace OrchardCore.Workflows.Drivers
     {
         protected override void EditActivity(ScriptTask source, ScriptTaskViewModel model)
         {
-            model.AvailableOutcomes = string.Join(", ", source.AvailableOutcomes);
+            model.AvailableOutcomes = String.Join(", ", source.AvailableOutcomes);
             model.Script = source.Script.Expression;
         }
 

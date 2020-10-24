@@ -20,7 +20,7 @@ namespace OrchardCore.Modules
 
         public Module(string name, bool isApplication = false)
         {
-            if (!string.IsNullOrWhiteSpace(name))
+            if (!String.IsNullOrWhiteSpace(name))
             {
                 Assembly = Assembly.Load(new AssemblyName(name));
 
@@ -92,7 +92,7 @@ namespace OrchardCore.Modules
             _baseNamespace = Name + '.';
             _lastModified = DateTimeOffset.UtcNow;
 
-            if (!string.IsNullOrEmpty(Assembly?.Location))
+            if (!String.IsNullOrEmpty(Assembly?.Location))
             {
                 try
                 {

@@ -121,7 +121,7 @@ namespace OrchardCore.Setup.Services
 
             var shellSettings = new ShellSettings(context.ShellSettings);
 
-            if (string.IsNullOrEmpty(shellSettings["DatabaseProvider"]))
+            if (String.IsNullOrEmpty(shellSettings["DatabaseProvider"]))
             {
                 shellSettings["DatabaseProvider"] = context.DatabaseProvider;
                 shellSettings["ConnectionString"] = context.DatabaseConnectionString;

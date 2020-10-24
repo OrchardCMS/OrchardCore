@@ -66,7 +66,7 @@ namespace OrchardCore.Contents
 
                     var contentItemId = await handleManager.GetContentItemIdAsync(handle);
 
-                    if (string.IsNullOrEmpty(contentItemId))
+                    if (String.IsNullOrEmpty(contentItemId))
                     {
                         return;
                     }

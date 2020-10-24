@@ -149,7 +149,7 @@ namespace OrchardCore.Users.Controllers
                 // Require that the users have a confirmed email before they can log on.
                 if (!await _userManager.IsEmailConfirmedAsync(user))
                 {
-                    ModelState.AddModelError(string.Empty, S["You must confirm your email."]);
+                    ModelState.AddModelError(String.Empty, S["You must confirm your email."]);
                     return true;
                 }
             }
@@ -211,7 +211,7 @@ namespace OrchardCore.Users.Controllers
                             }
                         }
                     }
-                    ModelState.AddModelError(string.Empty, S["Invalid login attempt."]);
+                    ModelState.AddModelError(String.Empty, S["Invalid login attempt."]);
                     await _accountEvents.InvokeAsync((e, model) => e.LoggingInFailedAsync(model.UserName), model, _logger);
                 }
             }
@@ -261,7 +261,7 @@ namespace OrchardCore.Users.Controllers
         {
             foreach (var error in result.Errors)
             {
-                ModelState.AddModelError(string.Empty, error.Description);
+                ModelState.AddModelError(String.Empty, error.Description);
             }
         }
 
@@ -400,7 +400,7 @@ namespace OrchardCore.Users.Controllers
                     }
                     else
                     {
-                        ModelState.AddModelError(string.Empty, S["Invalid login attempt."]);
+                        ModelState.AddModelError(String.Empty, S["Invalid login attempt."]);
                     }
                 }
             }
@@ -408,7 +408,7 @@ namespace OrchardCore.Users.Controllers
             {
                 var email = info.Principal.FindFirstValue(ClaimTypes.Email) ?? info.Principal.FindFirstValue("email");
 
-                if (!string.IsNullOrWhiteSpace(email))
+                if (!String.IsNullOrWhiteSpace(email))
                     user = await _userManager.FindByEmailAsync(email);
 
                 ViewData["ReturnUrl"] = returnUrl;
@@ -476,7 +476,7 @@ namespace OrchardCore.Users.Controllers
                                     }
                                     else
                                     {
-                                        ModelState.AddModelError(string.Empty, S["Invalid login attempt."]);
+                                        ModelState.AddModelError(String.Empty, S["Invalid login attempt."]);
                                         return View(nameof(Login));
                                     }
                                 }
@@ -542,7 +542,7 @@ namespace OrchardCore.Users.Controllers
                 user = await this.RegisterUser(new RegisterViewModel() { UserName = model.UserName, Email = model.Email, Password = model.Password, ConfirmPassword = model.ConfirmPassword }, S["Confirm your account"], _logger);
                 if (user is null)
                 {
-                    ModelState.AddModelError(string.Empty, "Registration Failed.");
+                    ModelState.AddModelError(String.Empty, "Registration Failed.");
                 }
                 else
                 {
@@ -596,7 +596,7 @@ namespace OrchardCore.Users.Controllers
             if (!signInResult.Succeeded)
             {
                 user = null;
-                ModelState.AddModelError(string.Empty, S["Invalid login attempt."]);
+                ModelState.AddModelError(String.Empty, S["Invalid login attempt."]);
             }
             else
             {
@@ -715,7 +715,7 @@ namespace OrchardCore.Users.Controllers
         private async Task<string> GenerateUsername(ExternalLoginInfo info)
         {
             var now = new TimeSpan(_clock.UtcNow.Ticks) - new TimeSpan(DateTime.UnixEpoch.Ticks);
-            var ret = string.Concat("u" + Convert.ToInt32(now.TotalSeconds).ToString());
+            var ret = String.Concat("u" + Convert.ToInt32(now.TotalSeconds).ToString());
 
             var registrationSettings = (await _siteService.GetSiteSettingsAsync()).As<RegistrationSettings>();
 
@@ -723,7 +723,7 @@ namespace OrchardCore.Users.Controllers
 
             if (registrationSettings.UseScriptToGenerateUsername)
             {
-                var context = new { userName = string.Empty, loginProvider = info?.LoginProvider, externalClaims };
+                var context = new { userName = String.Empty, loginProvider = info?.LoginProvider, externalClaims };
                 var jsonSerializerSettings = new JsonSerializerSettings()
                 {
                     ContractResolver = new CamelCasePropertyNamesContractResolver()
@@ -749,7 +749,7 @@ namespace OrchardCore.Users.Controllers
                     try
                     {
                         var userName = await item.GenerateUserName(info.LoginProvider, externalClaims.ToArray());
-                        if (!string.IsNullOrWhiteSpace(userName))
+                        if (!String.IsNullOrWhiteSpace(userName))
                         {
                             if (userNames.Count == 0)
                             {

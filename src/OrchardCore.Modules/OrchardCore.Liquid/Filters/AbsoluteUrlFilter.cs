@@ -13,7 +13,7 @@ namespace OrchardCore.Liquid.Filters
         {
             var relativePath = input.ToStringValue();
 
-            if (string.IsNullOrWhiteSpace(relativePath))
+            if (String.IsNullOrWhiteSpace(relativePath))
             {
                 return new ValueTask<FluidValue>(input);
             }

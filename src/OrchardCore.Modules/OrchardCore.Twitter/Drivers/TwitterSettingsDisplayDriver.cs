@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
@@ -45,24 +46,24 @@ namespace OrchardCore.Twitter.Drivers
             return Initialize<TwitterSettingsViewModel>("TwitterSettings_Edit", model =>
             {
                 model.APIKey = settings.ConsumerKey;
-                if (!string.IsNullOrWhiteSpace(settings.ConsumerSecret))
+                if (!String.IsNullOrWhiteSpace(settings.ConsumerSecret))
                 {
                     var protector = _dataProtectionProvider.CreateProtector(TwitterConstants.Features.Twitter);
                     model.APISecretKey = protector.Unprotect(settings.ConsumerSecret);
                 }
                 else
                 {
-                    model.APISecretKey = string.Empty;
+                    model.APISecretKey = String.Empty;
                 }
                 model.AccessToken = settings.AccessToken;
-                if (!string.IsNullOrWhiteSpace(settings.AccessTokenSecret))
+                if (!String.IsNullOrWhiteSpace(settings.AccessTokenSecret))
                 {
                     var protector = _dataProtectionProvider.CreateProtector(TwitterConstants.Features.Twitter);
                     model.AccessTokenSecret = protector.Unprotect(settings.AccessTokenSecret);
                 }
                 else
                 {
-                    model.AccessTokenSecret = string.Empty;
+                    model.AccessTokenSecret = String.Empty;
                 }
             }).Location("Content:5").OnGroup(TwitterConstants.Features.Twitter);
         }

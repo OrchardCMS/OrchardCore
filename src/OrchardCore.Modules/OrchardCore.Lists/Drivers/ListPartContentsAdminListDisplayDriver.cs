@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using OrchardCore.Contents.ViewModels;
 using OrchardCore.DisplayManagement.Handlers;
@@ -30,7 +31,7 @@ namespace OrchardCore.Lists.Drivers
                     model.RouteValues.TryAdd("ListPart.ShowListContentTypes", viewModel.ShowListContentTypes);
                 }
 
-                if (!string.IsNullOrEmpty(viewModel.ListContentItemId))
+                if (!String.IsNullOrEmpty(viewModel.ListContentItemId))
                 {
                     model.RouteValues.TryAdd("ListPart.ListContentItemId", viewModel.ListContentItemId);
                 }

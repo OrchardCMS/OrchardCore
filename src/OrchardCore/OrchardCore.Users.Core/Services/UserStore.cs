@@ -111,7 +111,7 @@ namespace OrchardCore.Users.Services
         public async Task<IUser> FindByIdAsync(string userId, CancellationToken cancellationToken = default(CancellationToken))
         {
             int id;
-            if (!int.TryParse(userId, out id))
+            if (!Int32.TryParse(userId, out id))
             {
                 return null;
             }
@@ -343,7 +343,7 @@ namespace OrchardCore.Users.Services
             var roleNames = await _roleService.GetRoleNamesAsync();
             var roleName = roleNames?.FirstOrDefault(r => NormalizeKey(r) == normalizedRoleName);
 
-            if (string.IsNullOrWhiteSpace(roleName))
+            if (String.IsNullOrWhiteSpace(roleName))
             {
                 throw new InvalidOperationException($"Role {normalizedRoleName} does not exist.");
             }
@@ -361,7 +361,7 @@ namespace OrchardCore.Users.Services
             var roleNames = await _roleService.GetRoleNamesAsync();
             var roleName = roleNames?.FirstOrDefault(r => NormalizeKey(r) == normalizedRoleName);
 
-            if (string.IsNullOrWhiteSpace(roleName))
+            if (String.IsNullOrWhiteSpace(roleName))
             {
                 throw new InvalidOperationException($"Role {normalizedRoleName} does not exist.");
             }
@@ -386,7 +386,7 @@ namespace OrchardCore.Users.Services
                 throw new ArgumentNullException(nameof(user));
             }
 
-            if (string.IsNullOrWhiteSpace(normalizedRoleName))
+            if (String.IsNullOrWhiteSpace(normalizedRoleName))
             {
                 throw new ArgumentException("Value cannot be null or empty.", nameof(normalizedRoleName));
             }
@@ -396,7 +396,7 @@ namespace OrchardCore.Users.Services
 
         public async Task<IList<IUser>> GetUsersInRoleAsync(string normalizedRoleName, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrEmpty(normalizedRoleName))
+            if (String.IsNullOrEmpty(normalizedRoleName))
             {
                 throw new ArgumentNullException(nameof(normalizedRoleName));
             }
@@ -546,12 +546,12 @@ namespace OrchardCore.Users.Services
                 throw new ArgumentNullException(nameof(user));
             }
 
-            if (string.IsNullOrEmpty(loginProvider))
+            if (String.IsNullOrEmpty(loginProvider))
             {
                 throw new ArgumentException("The login provider cannot be null or empty.", nameof(loginProvider));
             }
 
-            if (string.IsNullOrEmpty(name))
+            if (String.IsNullOrEmpty(name))
             {
                 throw new ArgumentException("The name cannot be null or empty.", nameof(name));
             }
@@ -573,12 +573,12 @@ namespace OrchardCore.Users.Services
                 throw new ArgumentNullException(nameof(user));
             }
 
-            if (string.IsNullOrEmpty(loginProvider))
+            if (String.IsNullOrEmpty(loginProvider))
             {
                 throw new ArgumentException("The login provider cannot be null or empty.", nameof(loginProvider));
             }
 
-            if (string.IsNullOrEmpty(name))
+            if (String.IsNullOrEmpty(name))
             {
                 throw new ArgumentException("The name cannot be null or empty.", nameof(name));
             }
@@ -599,17 +599,17 @@ namespace OrchardCore.Users.Services
                 throw new ArgumentNullException(nameof(user));
             }
 
-            if (string.IsNullOrEmpty(loginProvider))
+            if (String.IsNullOrEmpty(loginProvider))
             {
                 throw new ArgumentException("The login provider cannot be null or empty.", nameof(loginProvider));
             }
 
-            if (string.IsNullOrEmpty(name))
+            if (String.IsNullOrEmpty(name))
             {
                 throw new ArgumentException("The name cannot be null or empty.", nameof(name));
             }
 
-            if (string.IsNullOrEmpty(value))
+            if (String.IsNullOrEmpty(value))
             {
                 throw new ArgumentException("The value cannot be null or empty.", nameof(value));
             }

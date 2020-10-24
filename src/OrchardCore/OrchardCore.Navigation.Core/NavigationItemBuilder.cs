@@ -146,11 +146,11 @@ namespace OrchardCore.Navigation
         public NavigationItemBuilder Action(string actionName, string controllerName, string areaName, RouteValueDictionary values)
         {
             _item.RouteValues = new RouteValueDictionary(values);
-            if (!string.IsNullOrEmpty(actionName))
+            if (!String.IsNullOrEmpty(actionName))
                 _item.RouteValues["action"] = actionName;
-            if (!string.IsNullOrEmpty(controllerName))
+            if (!String.IsNullOrEmpty(controllerName))
                 _item.RouteValues["controller"] = controllerName;
-            if (!string.IsNullOrEmpty(areaName))
+            if (!String.IsNullOrEmpty(areaName))
                 _item.RouteValues["area"] = areaName;
             return this;
         }

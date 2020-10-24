@@ -1,3 +1,4 @@
+using System;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Metadata.Settings;
@@ -22,7 +23,7 @@ namespace OrchardCore.Templates.Settings
             {
                 var stereotype = contentTypeDefinition.GetSettings<ContentTypeSettings>().Stereotype;
 
-                if (string.IsNullOrWhiteSpace(stereotype))
+                if (String.IsNullOrWhiteSpace(stereotype))
                 {
                     stereotype = "Content";
                 }

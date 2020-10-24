@@ -62,7 +62,7 @@ namespace OrchardCore.ContentFields.Drivers
 
                 field.Value = null;
 
-                if (string.IsNullOrWhiteSpace(viewModel.Value))
+                if (String.IsNullOrWhiteSpace(viewModel.Value))
                 {
                     if (settings.Required)
                     {

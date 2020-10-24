@@ -21,7 +21,7 @@ namespace OrchardCore.OpenId.Recipes
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
         {
-            if (!string.Equals(context.Name, "OpenIdClientSettings", StringComparison.OrdinalIgnoreCase))
+            if (!String.Equals(context.Name, "OpenIdClientSettings", StringComparison.OrdinalIgnoreCase))
             {
                 return;
             }
@@ -30,7 +30,7 @@ namespace OrchardCore.OpenId.Recipes
 
             var settings = await _clientService.GetSettingsAsync();
             settings.Scopes = model.Scopes.Split(' ', ',');
-            settings.Authority = !string.IsNullOrEmpty(model.Authority) ? new Uri(model.Authority, UriKind.Absolute) : null;
+            settings.Authority = !String.IsNullOrEmpty(model.Authority) ? new Uri(model.Authority, UriKind.Absolute) : null;
             settings.CallbackPath = model.CallbackPath;
             settings.ClientId = model.ClientId;
             settings.ClientSecret = model.ClientSecret;

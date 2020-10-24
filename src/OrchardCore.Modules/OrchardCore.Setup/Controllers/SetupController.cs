@@ -53,9 +53,9 @@ namespace OrchardCore.Setup.Controllers
             var recipes = await _setupService.GetSetupRecipesAsync();
             var defaultRecipe = recipes.FirstOrDefault(x => x.Tags.Contains("default")) ?? recipes.FirstOrDefault();
 
-            if (!string.IsNullOrWhiteSpace(_shellSettings["Secret"]))
+            if (!String.IsNullOrWhiteSpace(_shellSettings["Secret"]))
             {
-                if (string.IsNullOrEmpty(token) || !await IsTokenValid(token))
+                if (String.IsNullOrEmpty(token) || !await IsTokenValid(token))
                 {
                     _logger.LogWarning("An attempt to access '{TenantName}' without providing a secret was made", _shellSettings.Name);
                     return StatusCode(404);
@@ -84,9 +84,9 @@ namespace OrchardCore.Setup.Controllers
         [HttpPost, ActionName("Index")]
         public async Task<ActionResult> IndexPOST(SetupViewModel model)
         {
-            if (!string.IsNullOrWhiteSpace(_shellSettings["Secret"]))
+            if (!String.IsNullOrWhiteSpace(_shellSettings["Secret"]))
             {
-                if (string.IsNullOrEmpty(model.Secret) || !await IsTokenValid(model.Secret))
+                if (String.IsNullOrEmpty(model.Secret) || !await IsTokenValid(model.Secret))
                 {
                     _logger.LogWarning("An attempt to access '{TenantName}' without providing a valid secret was made", _shellSettings.Name);
                     return StatusCode(404);
@@ -117,7 +117,7 @@ namespace OrchardCore.Setup.Controllers
             }
 
             RecipeDescriptor selectedRecipe = null;
-            if (!string.IsNullOrEmpty(_shellSettings["RecipeName"]))
+            if (!String.IsNullOrEmpty(_shellSettings["RecipeName"]))
             {
                 selectedRecipe = model.Recipes.FirstOrDefault(x => x.Name == _shellSettings["RecipeName"]);
                 if (selectedRecipe == null)
@@ -154,7 +154,7 @@ namespace OrchardCore.Setup.Controllers
                 SiteTimeZone = model.SiteTimeZone
             };
 
-            if (!string.IsNullOrEmpty(_shellSettings["ConnectionString"]))
+            if (!String.IsNullOrEmpty(_shellSettings["ConnectionString"]))
             {
                 setupContext.DatabaseProvider = _shellSettings["DatabaseProvider"];
                 setupContext.DatabaseConnectionString = _shellSettings["ConnectionString"];

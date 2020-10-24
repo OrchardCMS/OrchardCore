@@ -5,7 +5,7 @@
 
 @{
     var orderedFields = Model.PartDefinition.Fields
-        .Select(field => new { Field = field, Order = int.Parse(field.GetSettings<ContentPartFieldSettings>().Position ?? "0") })
+        .Select(field => new { Field = field, Order = Int32.Parse(field.GetSettings<ContentPartFieldSettings>().Position ?? "0") })
         .OrderBy(x => x.Order)
         .Select(x => x.Field);
 }

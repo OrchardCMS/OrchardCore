@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
@@ -18,7 +19,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
             {
                 var arguments = (FilterArguments)(await new ArgumentsExpression(args).EvaluateAsync(context)).ToObjectValue();
                 var propName = arguments["property"].Or(arguments.At(0)).ToStringValue();
-                if (!string.IsNullOrEmpty(propName))
+                if (!String.IsNullOrEmpty(propName))
                 {
                     shape.Properties.Remove(propName.ToPascalCaseUnderscore());
                 }

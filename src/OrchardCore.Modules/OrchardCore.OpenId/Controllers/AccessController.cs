@@ -114,7 +114,7 @@ namespace OrchardCore.OpenId.Controllers
                     // Note: while ASP.NET Core Identity uses the legacy WS-Federation claims (exposed by the ClaimTypes class),
                     // OpenIddict uses the newer JWT claims defined by the OpenID Connect specification. To ensure the mandatory
                     // subject claim is correctly populated (and avoid an InvalidOperationException), it's manually added here.
-                    if (string.IsNullOrEmpty(result.Principal.FindFirst(Claims.Subject)?.Value))
+                    if (String.IsNullOrEmpty(result.Principal.FindFirst(Claims.Subject)?.Value))
                     {
                         identity.AddClaim(new Claim(Claims.Subject, result.Principal.GetUserIdentifier()));
                     }
@@ -249,7 +249,7 @@ namespace OrchardCore.OpenId.Controllers
                     // Note: while ASP.NET Core Identity uses the legacy WS-Federation claims (exposed by the ClaimTypes class),
                     // OpenIddict uses the newer JWT claims defined by the OpenID Connect specification. To ensure the mandatory
                     // subject claim is correctly populated (and avoid an InvalidOperationException), it's manually added here.
-                    if (string.IsNullOrEmpty(User.FindFirst(Claims.Subject)?.Value))
+                    if (String.IsNullOrEmpty(User.FindFirst(Claims.Subject)?.Value))
                     {
                         identity.AddClaim(new Claim(Claims.Subject, User.GetUserIdentifier()));
                     }
@@ -323,7 +323,7 @@ namespace OrchardCore.OpenId.Controllers
                 return NotFound();
             }
 
-            if (!string.IsNullOrEmpty(request.PostLogoutRedirectUri))
+            if (!String.IsNullOrEmpty(request.PostLogoutRedirectUri))
             {
                 // If the user is not logged in, allow redirecting the user agent back to the
                 // specified post_logout_redirect_uri without rendering a confirmation form.
@@ -369,7 +369,7 @@ namespace OrchardCore.OpenId.Controllers
 
             // If no post_logout_redirect_uri was specified, redirect the user agent
             // to the root page, that should correspond to the home page in most cases.
-            if (string.IsNullOrEmpty(request.PostLogoutRedirectUri))
+            if (String.IsNullOrEmpty(request.PostLogoutRedirectUri))
             {
                 return Redirect("~/");
             }
@@ -538,7 +538,7 @@ namespace OrchardCore.OpenId.Controllers
             // Note: while ASP.NET Core Identity uses the legacy WS-Federation claims (exposed by the ClaimTypes class),
             // OpenIddict uses the newer JWT claims defined by the OpenID Connect specification. To ensure the mandatory
             // subject claim is correctly populated (and avoid an InvalidOperationException), it's manually added here.
-            if (string.IsNullOrEmpty(principal.FindFirst(Claims.Subject)?.Value))
+            if (String.IsNullOrEmpty(principal.FindFirst(Claims.Subject)?.Value))
             {
                 identity.AddClaim(new Claim(Claims.Subject, principal.GetUserIdentifier()));
             }
@@ -581,7 +581,7 @@ namespace OrchardCore.OpenId.Controllers
             if (request.IsRefreshTokenGrantType())
             {
                 var type = info.Principal.FindFirst(OpenIdConstants.Claims.EntityType)?.Value;
-                if (!string.Equals(type, OpenIdConstants.EntityTypes.User))
+                if (!String.Equals(type, OpenIdConstants.EntityTypes.User))
                 {
                     return Forbid(new AuthenticationProperties(new Dictionary<string, string>
                     {
@@ -616,7 +616,7 @@ namespace OrchardCore.OpenId.Controllers
             // Note: while ASP.NET Core Identity uses the legacy WS-Federation claims (exposed by the ClaimTypes class),
             // OpenIddict uses the newer JWT claims defined by the OpenID Connect specification. To ensure the mandatory
             // subject claim is correctly populated (and avoid an InvalidOperationException), it's manually added here.
-            if (string.IsNullOrEmpty(principal.FindFirst(Claims.Subject)?.Value))
+            if (String.IsNullOrEmpty(principal.FindFirst(Claims.Subject)?.Value))
             {
                 identity.AddClaim(new Claim(Claims.Subject, principal.GetUserIdentifier()));
             }

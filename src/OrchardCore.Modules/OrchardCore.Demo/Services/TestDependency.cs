@@ -1,3 +1,4 @@
+using System;
 using OrchardCore.Environment.Shell;
 
 namespace OrchardCore.Demo.Services
@@ -17,7 +18,7 @@ namespace OrchardCore.Demo.Services
 
         public string SayHi(string line)
         {
-            return string.Format("Hi from tenant {0} - {1}", _shellSettings.Name, line);
+            return String.Format("Hi from tenant {0} - {1}", _shellSettings.Name, line);
         }
     }
 }

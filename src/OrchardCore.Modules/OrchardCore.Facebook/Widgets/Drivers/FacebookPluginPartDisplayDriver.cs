@@ -58,7 +58,7 @@ namespace OrchardCore.Facebook.Widgets.Drivers
             {
                 model.Settings = GetFacebookPluginPartSettings(part);
                 model.FacebookPluginPart = part;
-                model.Liquid = string.IsNullOrWhiteSpace(part.Liquid) ? model.Settings.Liquid : part.Liquid;
+                model.Liquid = String.IsNullOrWhiteSpace(part.Liquid) ? model.Settings.Liquid : part.Liquid;
             });
         }
 
@@ -80,9 +80,9 @@ namespace OrchardCore.Facebook.Widgets.Drivers
 
             if (await updater.TryUpdateModelAsync(viewModel, Prefix, t => t.Liquid))
             {
-                if (!string.IsNullOrEmpty(viewModel.Liquid) && !_liquidTemplatemanager.Validate(viewModel.Liquid, out var errors))
+                if (!String.IsNullOrEmpty(viewModel.Liquid) && !_liquidTemplatemanager.Validate(viewModel.Liquid, out var errors))
                 {
-                    updater.ModelState.AddModelError(nameof(model.Liquid), S["The FaceBook Body doesn't contain a valid Liquid expression. Details: {0}", string.Join(" ", errors)]);
+                    updater.ModelState.AddModelError(nameof(model.Liquid), S["The FaceBook Body doesn't contain a valid Liquid expression. Details: {0}", String.Join(" ", errors)]);
                 }
                 else
                 {

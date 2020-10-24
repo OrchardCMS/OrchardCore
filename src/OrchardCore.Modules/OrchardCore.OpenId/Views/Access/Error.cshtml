@@ -8,12 +8,12 @@
 <div class="jumbotron">
     <h2>@T["Ooooops, something went really bad! :("]</h2>
     <p class="lead text-left">
-        @if (!string.IsNullOrEmpty(Model.Error))
+        @if (!String.IsNullOrEmpty(Model.Error))
         {
             <strong>@Model.Error</strong>
         }
 
-        @if (!string.IsNullOrEmpty(Model.ErrorDescription))
+        @if (!String.IsNullOrEmpty(Model.ErrorDescription))
         {
             <small>@Model.ErrorDescription</small>
         }

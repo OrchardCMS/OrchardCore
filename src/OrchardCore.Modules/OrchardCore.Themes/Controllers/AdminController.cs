@@ -72,7 +72,7 @@ namespace OrchardCore.Themes.Controllers
             var themes = _extensionManager.GetExtensions().OfType<IThemeExtensionInfo>().Where(extensionDescriptor =>
             {
                 var tags = extensionDescriptor.Manifest.Tags.ToArray();
-                var isHidden = tags.Any(x => string.Equals(x, "hidden", StringComparison.OrdinalIgnoreCase));
+                var isHidden = tags.Any(x => String.Equals(x, "hidden", StringComparison.OrdinalIgnoreCase));
 
                 // Is the theme allowed for this tenant?
                 // allowed = _shellSettings.Themes.Length == 0 || _shellSettings.Themes.Contains(extensionDescriptor.Id);
@@ -243,7 +243,7 @@ namespace OrchardCore.Themes.Controllers
 
         private bool IsAdminTheme(IManifestInfo manifest)
         {
-            return manifest.Tags.Any(x => string.Equals(x, ManifestConstants.AdminTag, StringComparison.OrdinalIgnoreCase));
+            return manifest.Tags.Any(x => String.Equals(x, ManifestConstants.AdminTag, StringComparison.OrdinalIgnoreCase));
         }
     }
 }

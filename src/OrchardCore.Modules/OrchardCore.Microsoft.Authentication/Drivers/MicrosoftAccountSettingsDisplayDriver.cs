@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
@@ -45,14 +46,14 @@ namespace OrchardCore.Microsoft.Authentication.Drivers
             return Initialize<MicrosoftAccountSettingsViewModel>("MicrosoftAccountSettings_Edit", model =>
             {
                 model.AppId = settings.AppId;
-                if (!string.IsNullOrWhiteSpace(settings.AppSecret))
+                if (!String.IsNullOrWhiteSpace(settings.AppSecret))
                 {
                     var protector = _dataProtectionProvider.CreateProtector(MicrosoftAuthenticationConstants.Features.MicrosoftAccount);
                     model.AppSecret = protector.Unprotect(settings.AppSecret);
                 }
                 else
                 {
-                    model.AppSecret = string.Empty;
+                    model.AppSecret = String.Empty;
                 }
                 if (settings.CallbackPath.HasValue)
                 {

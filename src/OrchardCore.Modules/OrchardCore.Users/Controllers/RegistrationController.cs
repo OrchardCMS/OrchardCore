@@ -74,7 +74,7 @@ namespace OrchardCore.Users.Controllers
                 return NotFound();
             }
 
-            if (!string.IsNullOrEmpty(model.Email) && !_emailAddressValidator.Validate(model.Email))
+            if (!String.IsNullOrEmpty(model.Email) && !_emailAddressValidator.Validate(model.Email))
             {
                 ModelState.AddModelError("Email", S["Invalid email."]);
 

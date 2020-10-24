@@ -1,6 +1,6 @@
 @model LocalizationPartViewModel
 
-@if (!string.IsNullOrEmpty(Model.LocalizationSet) && Model.ContentItemCultures.Any())
+@if (!String.IsNullOrEmpty(Model.LocalizationSet) && Model.ContentItemCultures.Any())
 {
     <div class="btn-group">
         <button type="button" class="btn btn-info btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -9,7 +9,7 @@
         <div class="dropdown-menu dropdown-menu-right">
             @foreach (var culture in Model.ContentItemCultures)
             {
-                if (!string.IsNullOrEmpty(culture.ContentItemId))
+                if (!String.IsNullOrEmpty(culture.ContentItemId))
                 {
                     <a class="dropdown-item btn-sm" asp-action="Edit" asp-controller="Admin" asp-route-area="OrchardCore.Contents" asp-route-contentItemId="@culture.ContentItemId" itemprop="UnsafeUrl" title=@T["Edit {0}", culture.Culture.DisplayName]><i class="fa fa-edit"></i> @culture.Culture.DisplayName | @culture.Culture.Name </a>
                 }

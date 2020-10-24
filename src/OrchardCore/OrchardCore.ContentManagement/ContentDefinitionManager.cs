@@ -40,7 +40,7 @@ namespace OrchardCore.ContentManagement
 
         public ContentTypeDefinition LoadTypeDefinition(string name)
         {
-            if (string.IsNullOrEmpty(name))
+            if (String.IsNullOrEmpty(name))
             {
                 throw new ArgumentException("Argument cannot be null or empty", nameof(name));
             }
@@ -59,7 +59,7 @@ namespace OrchardCore.ContentManagement
 
         public ContentTypeDefinition GetTypeDefinition(string name)
         {
-            if (string.IsNullOrEmpty(name))
+            if (String.IsNullOrEmpty(name))
             {
                 throw new ArgumentException("Argument cannot be null or empty", nameof(name));
             }

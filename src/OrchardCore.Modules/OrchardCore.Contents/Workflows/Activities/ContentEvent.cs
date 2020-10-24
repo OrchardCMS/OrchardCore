@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -30,7 +31,7 @@ namespace OrchardCore.Contents.Workflows.Activities
                 return false;
             }
 
-            var contentTypes = ContentTypeFilter.Where(x => !string.IsNullOrWhiteSpace(x)).ToList();
+            var contentTypes = ContentTypeFilter.Where(x => !String.IsNullOrWhiteSpace(x)).ToList();
 
             // "" means 'any'.
             return !contentTypes.Any() || contentTypes.Any(contentType => content.ContentItem.ContentType == contentType);

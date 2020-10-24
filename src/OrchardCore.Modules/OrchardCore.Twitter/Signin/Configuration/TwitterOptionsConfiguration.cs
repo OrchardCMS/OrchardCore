@@ -57,12 +57,12 @@ namespace OrchardCore.Twitter.Signin.Configuration
 
         public void Configure(string name, TwitterOptions options)
         {
-            if (!string.Equals(name, TwitterDefaults.AuthenticationScheme))
+            if (!String.Equals(name, TwitterDefaults.AuthenticationScheme))
             {
                 return;
             }
             var settings = GetSettingsAsync().GetAwaiter().GetResult();
-            options.ConsumerKey = settings.Item1?.ConsumerKey ?? string.Empty;
+            options.ConsumerKey = settings.Item1?.ConsumerKey ?? String.Empty;
             try
             {
                 options.ConsumerSecret = _dataProtectionProvider.CreateProtector(TwitterConstants.Features.Twitter).Unprotect(settings.Item1.ConsumerSecret);

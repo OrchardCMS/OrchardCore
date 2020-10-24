@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.Extensions.DependencyInjection;
@@ -29,7 +30,7 @@ namespace OrchardCore.Users.ViewModels
             var emailAddressValidator = validationContext.GetService<IEmailAddressValidator>();
             var S = validationContext.GetService<IStringLocalizer<RegisterExternalLoginViewModel>>();
 
-            if (string.IsNullOrWhiteSpace(Email))
+            if (String.IsNullOrWhiteSpace(Email))
             {
                 if (!NoEmail)
                 {
@@ -41,12 +42,12 @@ namespace OrchardCore.Users.ViewModels
                 yield return new ValidationResult(S["Invalid Email."], new[] { "Email" });
             }
 
-            if (string.IsNullOrWhiteSpace(UserName) && !NoUsername)
+            if (String.IsNullOrWhiteSpace(UserName) && !NoUsername)
             {
                 yield return new ValidationResult(S["Username is required!"], new[] { "UserName" });
             }
 
-            if (string.IsNullOrWhiteSpace(Password) && !NoPassword)
+            if (String.IsNullOrWhiteSpace(Password) && !NoPassword)
             {
                 yield return new ValidationResult(S["Password is required!"], new[] { "Password" });
             }
@@ -58,7 +59,7 @@ namespace OrchardCore.Users.ViewModels
 
             if (Password != null && (Password.Length < 6 || Password.Length > 100))
             {
-                yield return new ValidationResult(string.Format(S["Password must be between {0} and {1} characters"], 6, 100), new[] { "Password" });
+                yield return new ValidationResult(String.Format(S["Password must be between {0} and {1} characters"], 6, 100), new[] { "Password" });
             }
         }
     }

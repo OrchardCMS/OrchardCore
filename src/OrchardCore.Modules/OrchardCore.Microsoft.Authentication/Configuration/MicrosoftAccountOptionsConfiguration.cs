@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Linq;
@@ -54,14 +55,14 @@ namespace OrchardCore.Microsoft.Authentication.Configuration
         public void Configure(string name, MicrosoftAccountOptions options)
         {
             // Ignore OpenID Connect client handler instances that don't correspond to the instance managed by the OpenID module.
-            if (!string.Equals(name, MicrosoftAccountDefaults.AuthenticationScheme))
+            if (!String.Equals(name, MicrosoftAccountDefaults.AuthenticationScheme))
             {
                 return;
             }
 
             var loginSettings = GetMicrosoftAccountSettingsAsync().GetAwaiter().GetResult();
 
-            options.ClientId = loginSettings?.AppId ?? string.Empty;
+            options.ClientId = loginSettings?.AppId ?? String.Empty;
 
             try
             {

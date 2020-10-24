@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -40,7 +41,7 @@ namespace OrchardCore.ContentManagement.Metadata.Models
         /// <returns></returns>
         public override string ToString()
         {
-            return string.IsNullOrEmpty(DisplayName)
+            return String.IsNullOrEmpty(DisplayName)
                 ? Name
                 : DisplayName;
         }

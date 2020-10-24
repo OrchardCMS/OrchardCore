@@ -20,7 +20,7 @@ namespace OrchardCore.Environment.Cache.CacheContextProviders
 
         public async Task PopulateContextEntriesAsync(IEnumerable<string> contexts, List<CacheContextEntry> entries)
         {
-            if (contexts.Any(ctx => string.Equals(ctx, "features", StringComparison.OrdinalIgnoreCase)))
+            if (contexts.Any(ctx => String.Equals(ctx, "features", StringComparison.OrdinalIgnoreCase)))
             {
                 // Add a hash of the enabled features
                 var hash = await _featureHash.GetFeatureHashAsync();

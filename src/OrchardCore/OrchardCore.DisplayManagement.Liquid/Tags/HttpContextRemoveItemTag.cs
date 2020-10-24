@@ -28,7 +28,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
             {
                 var arguments = (FilterArguments)(await new ArgumentsExpression(args).EvaluateAsync(context)).ToObjectValue();
                 var itemKey = arguments["item"].Or(arguments.At(0)).ToStringValue();
-                if (!string.IsNullOrEmpty(itemKey))
+                if (!String.IsNullOrEmpty(itemKey))
                 {
                     httpContext.Items.Remove(itemKey);
                 }

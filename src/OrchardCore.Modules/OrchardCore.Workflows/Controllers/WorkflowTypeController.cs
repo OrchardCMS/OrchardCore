@@ -106,7 +106,7 @@ namespace OrchardCore.Workflows.Controllers
                     break;
             }
 
-            if (!string.IsNullOrWhiteSpace(options.Search))
+            if (!String.IsNullOrWhiteSpace(options.Search))
             {
                 query = query.Where(w => w.Name.Contains(options.Search));
             }
@@ -343,7 +343,7 @@ namespace OrchardCore.Workflows.Controllers
                 return Forbid();
             }
 
-            var newLocalId = string.IsNullOrWhiteSpace(localId) ? Guid.NewGuid().ToString() : localId;
+            var newLocalId = String.IsNullOrWhiteSpace(localId) ? Guid.NewGuid().ToString() : localId;
             var availableActivities = _activityLibrary.ListActivities();
             var workflowType = await _session.GetAsync<WorkflowType>(id);
 
@@ -399,7 +399,7 @@ namespace OrchardCore.Workflows.Controllers
                 ActivityDesignShapes = activityDesignShapes,
                 ActivityCategories = _activityLibrary.ListCategories().ToList(),
                 LocalId = newLocalId,
-                LoadLocalState = !string.IsNullOrWhiteSpace(localId),
+                LoadLocalState = !String.IsNullOrWhiteSpace(localId),
                 WorkflowCount = workflowCount
             };
             return View(viewModel);

@@ -86,7 +86,7 @@ namespace Microsoft.Extensions.DependencyInjection
                             throw new ArgumentException("Unknown database provider: " + shellSettings["DatabaseProvider"]);
                     }
 
-                    if (!string.IsNullOrWhiteSpace(shellSettings["TablePrefix"]))
+                    if (!String.IsNullOrWhiteSpace(shellSettings["TablePrefix"]))
                     {
                         storeConfiguration = storeConfiguration.SetTablePrefix(shellSettings["TablePrefix"] + "_");
                     }

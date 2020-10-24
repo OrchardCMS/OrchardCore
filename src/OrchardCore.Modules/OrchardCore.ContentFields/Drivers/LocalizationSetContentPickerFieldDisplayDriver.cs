@@ -50,7 +50,7 @@ namespace OrchardCore.ContentFields.Drivers
         {
             return Initialize<EditLocalizationSetContentPickerFieldViewModel>(GetEditorShapeType(context), async model =>
             {
-                model.LocalizationSets = string.Join(",", field.LocalizationSets);
+                model.LocalizationSets = String.Join(",", field.LocalizationSets);
 
                 model.Field = field;
                 model.Part = context.ContentPart;

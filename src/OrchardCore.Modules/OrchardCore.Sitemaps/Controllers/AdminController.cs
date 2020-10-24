@@ -79,7 +79,7 @@ namespace OrchardCore.Sitemaps.Controllers
             var sitemaps = (await _sitemapManager.GetSitemapsAsync())
                 .OfType<Sitemap>();
 
-            if (!string.IsNullOrWhiteSpace(options.Search))
+            if (!String.IsNullOrWhiteSpace(options.Search))
             {
                 sitemaps = sitemaps.Where(smp => smp.Name.Contains(options.Search));
             }

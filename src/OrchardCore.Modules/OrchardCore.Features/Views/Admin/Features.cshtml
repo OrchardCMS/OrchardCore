@@ -45,7 +45,7 @@
                 continue;
             }
             var categoryName = featureGroup.First().Descriptor.Category ?? T["Uncategorized"].Value;
-            var categoryClassName = string.Format("category {0}", Html.Encode(categoryName.ToString()));
+            var categoryClassName = String.Format("category {0}", Html.Encode(categoryName.ToString()));
             if (featureGroup == featureGroups.First())
             {
                 categoryClassName += " first";
@@ -106,7 +106,7 @@
                                                 @foreach (var d in dependencies)
                                                 {
                                                     <span class="badge badge-info">
-                                                        @(string.IsNullOrEmpty(d.Descriptor.Name) ? d.Descriptor.Id : d.Descriptor.Name)
+                                                        @(String.IsNullOrEmpty(d.Descriptor.Name) ? d.Descriptor.Id : d.Descriptor.Name)
                                                     </span>
                                                 }
                                                 @foreach (var d in missingDependencies)

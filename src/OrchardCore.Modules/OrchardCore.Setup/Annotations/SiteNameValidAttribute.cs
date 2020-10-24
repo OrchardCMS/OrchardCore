@@ -1,3 +1,4 @@
+using System;
 namespace OrchardCore.Setup.Annotations
 {
     public class SiteNameValidAttribute : System.ComponentModel.DataAnnotations.RangeAttribute
@@ -17,7 +18,7 @@ namespace OrchardCore.Setup.Annotations
 
         public override string FormatErrorMessage(string name)
         {
-            if (string.IsNullOrWhiteSpace(_value))
+            if (String.IsNullOrWhiteSpace(_value))
                 return "Site name is required.";
 
             return $"Site name can be no longer than {Maximum} characters.";

@@ -17,7 +17,7 @@ namespace OrchardCore.Mvc.HelloWorld
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            if (string.IsNullOrEmpty(_configuration["Sample"]))
+            if (String.IsNullOrEmpty(_configuration["Sample"]))
             {
                 throw new Exception(":(");
             }

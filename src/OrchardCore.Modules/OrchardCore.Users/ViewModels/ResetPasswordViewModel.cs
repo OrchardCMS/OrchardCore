@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,7 +22,7 @@ namespace OrchardCore.Users.ViewModels
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
             var S = validationContext.GetService<IStringLocalizer<ResetPasswordViewModel>>();
-            if (string.IsNullOrWhiteSpace(Email))
+            if (String.IsNullOrWhiteSpace(Email))
             {
                 yield return new ValidationResult(S["Email is required."], new[] { nameof(Email) });
             }
@@ -30,7 +31,7 @@ namespace OrchardCore.Users.ViewModels
                 yield return new ValidationResult(S["Invalid Email."], new[] { nameof(Email) });
             }
 
-            if (string.IsNullOrWhiteSpace(NewPassword))
+            if (String.IsNullOrWhiteSpace(NewPassword))
             {
                 yield return new ValidationResult(S["New password is required."], new[] { nameof(NewPassword) });
             }

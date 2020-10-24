@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Linq;
@@ -53,14 +54,14 @@ namespace OrchardCore.GitHub.Configuration
         public void Configure(string name, GitHubOptions options)
         {
             // Ignore OpenID Connect client handler instances that don't correspond to the instance managed by the OpenID module.
-            if (!string.Equals(name, GitHubDefaults.AuthenticationScheme))
+            if (!String.Equals(name, GitHubDefaults.AuthenticationScheme))
             {
                 return;
             }
 
             var loginSettings = GetGitHubAuthenticationSettingsAsync().GetAwaiter().GetResult();
 
-            options.ClientId = loginSettings?.ClientID ?? string.Empty;
+            options.ClientId = loginSettings?.ClientID ?? String.Empty;
 
             try
             {

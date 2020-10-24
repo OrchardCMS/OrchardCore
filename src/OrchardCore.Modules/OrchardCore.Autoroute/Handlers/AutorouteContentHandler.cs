@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Routing;
 using OrchardCore.ContentManagement;
@@ -22,7 +23,7 @@ namespace OrchardCore.Autoroute.Handlers
                 // When a content item is contained we provide different route values when generating urls.
                 (var found, var entry) = await _autorouteEntries.TryGetEntryByContentItemIdAsync(context.ContentItem.ContentItemId);
 
-                if (found && !string.IsNullOrEmpty(entry.ContainedContentItemId))
+                if (found && !String.IsNullOrEmpty(entry.ContainedContentItemId))
                 {
                     metadata.DisplayRouteValues = new RouteValueDictionary {
                         { "Area", "OrchardCore.Contents" },

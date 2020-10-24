@@ -285,7 +285,7 @@ namespace OrchardCore.ContentTypes.Services
             if (_contentDefinitionManager.LoadPartDefinition(name) != null)
                 throw new Exception(S["Cannot add part named '{0}'. It already exists.", name]);
 
-            if (!string.IsNullOrEmpty(name))
+            if (!String.IsNullOrEmpty(name))
             {
                 _contentDefinitionManager.AlterPartDefinition(name, builder => builder.Attachable());
                 var partDefinition = _contentDefinitionManager.LoadPartDefinition(name);
@@ -479,18 +479,18 @@ namespace OrchardCore.ContentTypes.Services
             int version;
             var nameParts = name.Split('-', StringSplitOptions.RemoveEmptyEntries);
 
-            if (nameParts.Length > 1 && int.TryParse(nameParts.Last(), out version))
+            if (nameParts.Length > 1 && Int32.TryParse(nameParts.Last(), out version))
             {
                 version = version > 0 ? ++version : 2;
                 //this could unintentionally chomp something that looks like a version
-                name = string.Join("-", nameParts.Take(nameParts.Length - 1));
+                name = String.Join("-", nameParts.Take(nameParts.Length - 1));
             }
             else
             {
                 version = 2;
             }
 
-            return string.Format("{0}-{1}", name, version);
+            return String.Format("{0}-{1}", name, version);
         }
     }
 }

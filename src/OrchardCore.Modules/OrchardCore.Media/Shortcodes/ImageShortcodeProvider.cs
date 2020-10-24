@@ -71,8 +71,8 @@ namespace OrchardCore.Media.Shortcodes
                     content = _mediaFileStore.MapPathToPublicUrl(content);
                 }
             }
-            var className = string.Empty;
-            var altText = string.Empty;
+            var className = String.Empty;
+            var altText = String.Empty;
             if (arguments.Any())
             {
                 var queryStringParams = new Dictionary<string, string>();

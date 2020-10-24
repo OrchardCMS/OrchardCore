@@ -11,7 +11,7 @@
 
 <div class="form-group" id="@Html.IdFor(m => m)" data-for="@Html.IdFor(m => m.Paths)">
     <label asp-for="Paths">@Model.PartFieldDefinition.DisplayName()</label>
-    @if (!string.IsNullOrWhiteSpace(settings.Hint))
+    @if (!String.IsNullOrWhiteSpace(settings.Hint))
     {
         <span class="hint">@settings.Hint</span>
     }

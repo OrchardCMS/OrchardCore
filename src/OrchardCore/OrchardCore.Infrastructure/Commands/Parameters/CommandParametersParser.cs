@@ -19,11 +19,11 @@ namespace OrchardCore.Environment.Commands.Parameters
                 {
                     int index = arg.IndexOf(':');
                     var switchName = (index < 0 ? arg.Substring(1) : arg.Substring(1, index - 1));
-                    var switchValue = (index < 0 || index >= arg.Length ? string.Empty : arg.Substring(index + 1));
+                    var switchValue = (index < 0 || index >= arg.Length ? String.Empty : arg.Substring(index + 1));
 
-                    if (string.IsNullOrEmpty(switchName))
+                    if (String.IsNullOrEmpty(switchName))
                     {
-                        throw new ArgumentException(string.Format("Invalid switch syntax: \"{0}\". Valid syntax is /<switchName>[:<switchValue>].", arg));
+                        throw new ArgumentException(String.Format("Invalid switch syntax: \"{0}\". Valid syntax is /<switchName>[:<switchValue>].", arg));
                     }
 
                     switches.Add(switchName, switchValue);

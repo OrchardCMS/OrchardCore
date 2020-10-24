@@ -11,13 +11,13 @@
         .Select(part =>
         {
             var defaultPosition = ContentDefinitionManager.GetPartDefinition(part.PartDefinition.Name)?.DefaultPosition() ?? "5";
-            return new { Part = part, Order = int.Parse(part.GetSettings<ContentTypePartSettings>().Position ?? defaultPosition) };
+            return new { Part = part, Order = Int32.Parse(part.GetSettings<ContentTypePartSettings>().Position ?? defaultPosition) };
         })
         .OrderBy(x => x.Order)
         .Select(x => x.Part);
 
     var orderedFields = typePart == null ? Enumerable.Empty<ContentPartFieldDefinition>() : typePart.PartDefinition.Fields
-        .Select(field => new { Field = field, Order = int.Parse(field.GetSettings<ContentPartFieldSettings>().Position ?? "0") })
+        .Select(field => new { Field = field, Order = Int32.Parse(field.GetSettings<ContentPartFieldSettings>().Position ?? "0") })
         .OrderBy(x => x.Order)
         .Select(x => x.Field);
 }

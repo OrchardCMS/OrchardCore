@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.Extensions.DependencyInjection;
@@ -33,7 +34,7 @@ namespace OrchardCore.Users.ViewModels
             var emailAddressValidator = validationContext.GetService<IEmailAddressValidator>();
             var S = validationContext.GetService<IStringLocalizer<EditUserViewModel>>();
 
-            if (!string.IsNullOrEmpty(Email) && !emailAddressValidator.Validate(Email))
+            if (!String.IsNullOrEmpty(Email) && !emailAddressValidator.Validate(Email))
             {
                 yield return new ValidationResult(S["Invalid Email."], new[] { "Email" });
             }

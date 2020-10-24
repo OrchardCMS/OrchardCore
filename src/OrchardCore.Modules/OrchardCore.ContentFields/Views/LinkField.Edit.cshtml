@@ -16,12 +16,12 @@
         <label asp-for="Url">@Model.PartFieldDefinition.DisplayName()</label>
     </div>
     <div class="form-group col-md-6" asp-validation-class-for="Url">
-        @if (string.IsNullOrEmpty(settings.UrlPlaceholder))
+        @if (String.IsNullOrEmpty(settings.UrlPlaceholder))
         {
             <label asp-for="Url" class="@urlClass">@T["Url"]</label>
         }
         <input asp-for="Url" class="form-control content-preview-text" placeholder="@settings.UrlPlaceholder" required="@isRequired" />
-        @if (!string.IsNullOrWhiteSpace(settings.Hint))
+        @if (!String.IsNullOrWhiteSpace(settings.Hint))
         {
             <span class="hint">@settings.Hint</span>
         }
@@ -29,12 +29,12 @@
     @if (settings.LinkTextMode == LinkTextMode.Optional || settings.LinkTextMode == LinkTextMode.Required)
     {
         <div class="form-group col-md-6" asp-validation-class-for="Text">
-            @if (string.IsNullOrEmpty(settings.TextPlaceholder))
+            @if (String.IsNullOrEmpty(settings.TextPlaceholder))
             {
                 <label asp-for="Text" class="@textClass">@T["Link text"]</label>
             }
             <input asp-for="Text" type="text" class="form-control content-preview-text" placeholder="@settings.TextPlaceholder" required="@isTextRequired" />
-            @if (!string.IsNullOrWhiteSpace(settings.HintLinkText))
+            @if (!String.IsNullOrWhiteSpace(settings.HintLinkText))
             {
                 <span class="hint">@settings.HintLinkText</span>
             }
