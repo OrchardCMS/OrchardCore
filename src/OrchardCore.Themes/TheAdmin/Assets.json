@@ -5,7 +5,7 @@
     "inputs": [
       "Assets/scss/admin.scss"
     ],
-    "output": "wwwroot/Styles/admin.css"
+    "output": "wwwroot/Styles/TheAdmin.css"
   },
   {
     "generateSourceMaps": false,
@@ -13,7 +13,7 @@
     "inputs": [
       "Assets/scss/admin-dark.scss"
     ],
-    "output": "wwwroot/Styles/admin-dark.css"
+    "output": "wwwroot/Styles/TheAdmin-dark.css"
   },
   {
     "generateSourceMaps": false,

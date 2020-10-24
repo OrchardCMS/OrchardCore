@@ -7264,17 +7264,17 @@ function isNumber(str) {
 }
 var darkmode = darkmode === undefined ? false : darkmode;
 $(function () {
-  if ($('body').hasClass('darkmode')) {
-    $('#admin-css').attr('href', $('#admin-css').attr('href').replace('/admin', '/admin-dark'));
+  if ($('body').hasClass('darkmode') || darkmode) {
+    $('#admin-css').attr('href', $('#admin-css').attr('href').replace('/TheAdmin.css', '/TheAdmin-dark.css'));
   }
 
   $("#btn-darkmode").click(function () {
     if (darkmode) {
+      $('#admin-css').attr('href', $('#admin-css').attr('href').replace('/TheAdmin-dark.css', '/TheAdmin.css'));
       darkmode = false;
-      $('#admin-css').attr('href', $('#admin-css').attr('href').replace('/admin-dark', '/admin'));
     } else {
+      $('#admin-css').attr('href', $('#admin-css').attr('href').replace('/TheAdmin.css', '/TheAdmin-dark.css'));
       darkmode = true;
-      $('#admin-css').attr('href', $('#admin-css').attr('href').replace('/admin', '/admin-dark'));
     }
 
     persistAdminPreferences();
