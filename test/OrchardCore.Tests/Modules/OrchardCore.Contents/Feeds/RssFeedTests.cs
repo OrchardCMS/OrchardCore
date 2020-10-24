@@ -84,7 +84,7 @@ namespace OrchardCore.Tests.Modules.Contents.Feeds
             // Assert
             var title = feedContext.Response.Items[0].Element.Element("title").ToString();
 
-            Assert.NotEqual("<title>It&amp;#39;s a great title &amp;amp; so much &amp;gt; than anybody&amp;#39;s!</title>", title);
+            // Test to ensure that double encoding of title does not occur and complies with XML requirements
             Assert.Equal("<title>It's a great title &amp; so much &gt; than anybody's!</title>", title);
         }
 
