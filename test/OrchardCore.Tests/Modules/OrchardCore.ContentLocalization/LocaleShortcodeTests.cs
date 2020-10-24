@@ -32,7 +32,6 @@ namespace OrchardCore.Tests.Modules.OrchardCore.ContentLocalization
         public async Task ShouldProcess(string currentCulture, string text, string expected)
         {
             CultureInfo.CurrentUICulture = new CultureInfo(currentCulture);
-            CultureInfo.CurrentCulture = new CultureInfo(currentCulture);
 
             var localeProvider = new LocaleShortcodeProvider();
 
