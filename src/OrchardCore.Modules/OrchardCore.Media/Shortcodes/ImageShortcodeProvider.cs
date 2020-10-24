@@ -37,7 +37,7 @@ namespace OrchardCore.Media.Shortcodes
             _options = options.Value;
         }
 
-        public ValueTask<string> EvaluateAsync(string identifier, Arguments arguments, string content)
+        public ValueTask<string> EvaluateAsync(string identifier, Arguments arguments, string content, Context context)
         {
             if (!Shortcodes.Contains(identifier))
             {
@@ -71,7 +71,8 @@ namespace OrchardCore.Media.Shortcodes
                     content = _mediaFileStore.MapPathToPublicUrl(content);
                 }
             }
-
+            var className = string.Empty;
+            var altText = string.Empty;
             if (arguments.Any())
             {
                 var queryStringParams = new Dictionary<string, string>();
@@ -79,6 +80,10 @@ namespace OrchardCore.Media.Shortcodes
                 var width = arguments.Named("width");
                 var height = arguments.Named("height");
                 var mode = arguments.Named("mode");
+                var quality = arguments.Named("quality");
+                var format = arguments.Named("format");
+                className = arguments.Named("class");
+                altText = arguments.Named("alt");
 
                 if (width != null)
                 {
@@ -95,10 +100,30 @@ namespace OrchardCore.Media.Shortcodes
                     queryStringParams.Add("rmode", mode);
                 }
 
+                if (quality != null)
+                {
+                    queryStringParams.Add("quality", quality);
+                }
+
+                if (format != null)
+                {
+                    queryStringParams.Add("format", format);
+                }
+
+                if (className != null)
+                {
+                    className = "class=\"" + className + "\" ";
+                }
+
+                if (altText != null)
+                {
+                    altText = "alt=\"" + altText + "\" ";
+                }
+
                 content = QueryHelpers.AddQueryString(content, queryStringParams);
             }
 
-            content = "<img src=\"" + content + "\">";
+            content = "<img " + altText + className + "src=\"" + content + "\">";
             content = _htmlSanitizerService.Sanitize(content);
 
             return new ValueTask<string>(content);

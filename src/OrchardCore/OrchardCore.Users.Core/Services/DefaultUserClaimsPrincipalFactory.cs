@@ -1,3 +1,4 @@
+using System;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
@@ -7,7 +8,7 @@ using OrchardCore.Security;
 namespace OrchardCore.Users.Services
 {
     /// <summary>
-    /// Custom implementation of  <see cref="IUserClaimsPrincipalFactory"/> adding email claims.
+    /// Custom implementation of <see cref="IUserClaimsPrincipalFactory{TUser}"/> adding email claims.
     /// </summary>
     public class DefaultUserClaimsPrincipalFactory : UserClaimsPrincipalFactory<IUser, IRole>
     {
@@ -22,8 +23,12 @@ namespace OrchardCore.Users.Services
         {
             var claims = await base.GenerateClaimsAsync(user);
 
+            // Todo: In a future version the base implementation will generate the email claim if the user store is an 'IUserEmailStore',
+            // so we will not have to add it here, and everywhere we are using the hardcoded "email" claim type, we will have to use the
+            // new 'IdentityOptions.ClaimsIdentity.EmailClaimType' or at least its default value which is 'ClaimTypes.Email'.
+
             var email = await UserManager.GetEmailAsync(user);
-            if (email != null)
+            if (!String.IsNullOrEmpty(email))
             {
                 claims.AddClaim(new Claim("email", email));
 

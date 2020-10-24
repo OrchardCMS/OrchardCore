@@ -69,7 +69,7 @@ namespace OrchardCore.Contents.Deployment.AddToDeploymentPlan
 
             // Export permission is required as the overriding permission.
             // Requesting EditContent would allow custom permissions to deny access to this content item.
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContent, contentItem))
+            if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.EditContent, contentItem))
             {
                 return Forbid();
             }
@@ -114,7 +114,7 @@ namespace OrchardCore.Contents.Deployment.AddToDeploymentPlan
             {
                 // Export permission is required as the overriding permission.
                 // Requesting EditContent would allow custom permissions to deny access to this content item.
-                if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContent, item))
+                if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.EditContent, item))
                 {
                     _notifier.Warning(H["Couldn't add selected content to deployment plan."]);
 

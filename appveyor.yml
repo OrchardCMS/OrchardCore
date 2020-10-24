@@ -16,6 +16,7 @@ skip_commits:
     - src/docs/**/*
 
 environment:
+  nodejs_version: "12"
   global:
     DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
     DOTNET_CLI_TELEMETRY_OPTOUT: 1
@@ -28,7 +29,7 @@ environment:
     NUGET_API_KEY:
         secure: nhxlp80FeVXTBsSsLok7RVUPbSa+DKEwbhqa4EJrf8vzK+vD9Jff1v+eA6HUP402
 
-stack: node 9, docker
+stack: node 12, docker
 
 # build cache to preserve files/folders between builds
 cache:
@@ -37,6 +38,7 @@ cache:
 
 # Install scripts. (runs after repo cloning)
 install:
+  - ps: Install-Product node $env:nodejs_version
   - ps: $env:BuildNumber= $env:APPVEYOR_BUILD_NUMBER
   - ps: $IsMasterBranch = ($env:APPVEYOR_REPO_BRANCH -eq "master" -And -not $env:APPVEYOR_PULL_REQUEST_NUMBER)
   - ps: $IsDevBranch = ($env:APPVEYOR_REPO_BRANCH -eq "dev" -And -not $env:APPVEYOR_PULL_REQUEST_NUMBER)
@@ -45,7 +47,7 @@ install:
 
 # Uncomment to download a specific version of dotnet
 #  - ps: Invoke-WebRequest "https://raw.githubusercontent.com/dotnet/cli/master/scripts/obtain/dotnet-install.ps1" -OutFile "dotnet-install.ps1" 
-# - ps: .\dotnet-install.ps1 --Version 3.1.302
+# - ps: .\dotnet-install.ps1 --Version 3.1.403
 
 build_script:
   - dotnet build -c Release
@@ -53,11 +55,11 @@ build_script:
 
 init:
   - dotnet --version
-  - node --version
-  - npm --version
   - git config --global core.autocrlf true
 
 test_script:
+  - node --version
+  - npm --version
   - dotnet test -c Release --no-build .\test\OrchardCore.Tests\OrchardCore.Tests.csproj
   - cd .\test\Functional
   - test-setup.cmd

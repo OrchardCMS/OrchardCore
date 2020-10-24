@@ -1,17 +1,3 @@
-// todo: move these rules to theAdmin and check their effect on the different modules.
-// The lack of a height:100% attribute on these tags makes difficult for children to fill all of their parent's available space
-// Maybe not needed anymore when theAdmin implements flexbox.
-html, body, .ta-wrapper {
-    height: 100%;
-    margin-bottom: 0px;
-    overflow: auto;
-}
-
-.ta-content {
-    height: calc(100% - 59px);
-    margin-bottom: 0px;
-}
-
 .fade-in-pager {
     opacity: 0.001;
     transition: opacity 0.2s 0.2s;

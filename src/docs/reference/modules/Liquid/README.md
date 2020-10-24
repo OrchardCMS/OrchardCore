@@ -175,6 +175,17 @@ Output
 <h3>Services</h3>
 ```
 
+### `sanitize_html`
+
+Sanitizes some HTML content.
+
+```liquid
+{% capture output %}
+  <span class="text-primary">{{ Content }}</span>
+{% endcapture %}
+{{ output | sanitize_html | raw }}
+```
+
 ## Json Filters
 
 ### `json`
@@ -281,6 +292,14 @@ The following properties are available on the `User` object.
 | `Identity.Name` | `admin` | The name of the authenticated user. |
 | `Identity.Claims` |  | The claims of the authenticated user. |
 
+##### user_email filter
+
+Returns the user's email.
+
+```liquid
+{{ User | user_email }}
+```
+
 #### User has_permission filter
 
 Checks if the User has permission clearance, optionally on a resource
@@ -348,6 +367,7 @@ The following properties are available on the `Request` object.
 | `IsHttps` | `true` | True if the scheme of the request is `https`. |
 | `Scheme` | `https` | The scheme of the request. |
 | `Method` | `GET` | The HTTP method. |
+| `Route` | Usage: `Request.Route.controller` | The route values for this request. |
 
 ### Culture
 

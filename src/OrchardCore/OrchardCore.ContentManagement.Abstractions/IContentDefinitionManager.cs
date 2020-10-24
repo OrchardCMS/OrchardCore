@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Primitives;
 using OrchardCore.ContentManagement.Metadata.Builders;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Utilities;
@@ -32,15 +31,9 @@ namespace OrchardCore.ContentManagement.Metadata
         void StorePartDefinition(ContentPartDefinition contentPartDefinition);
 
         /// <summary>
-        /// Returns a serial number representing the list of types and settings for the current tenant.
+        /// Returns an unique identifier that is updated when content definitions have changed.
         /// </summary>
-        /// <returns>
-        /// An <see cref="int"/> value that changes every time the list of types changes.
-        /// The implementation is efficient in order to be called frequently.
-        /// </returns>
-        Task<int> GetTypesHashAsync();
-
-        IChangeToken ChangeToken { get; }
+        Task<string> GetIdentifierAsync();
     }
 
     public static class ContentDefinitionManagerExtensions
@@ -52,11 +45,28 @@ namespace OrchardCore.ContentManagement.Metadata
             alteration(builder);
             manager.StoreTypeDefinition(builder.Build());
         }
+
+        public static async Task AlterTypeDefinitionAsync(this IContentDefinitionManager manager, string name, Func<ContentTypeDefinitionBuilder, Task> alterationAsync)
+        {
+            var typeDefinition = manager.LoadTypeDefinition(name) ?? new ContentTypeDefinition(name, name.CamelFriendly());
+            var builder = new ContentTypeDefinitionBuilder(typeDefinition);
+            await alterationAsync(builder);
+            manager.StoreTypeDefinition(builder.Build());
+        }
+
         public static void AlterPartDefinition(this IContentDefinitionManager manager, string name, Action<ContentPartDefinitionBuilder> alteration)
         {
             var partDefinition = manager.LoadPartDefinition(name) ?? new ContentPartDefinition(name);
             var builder = new ContentPartDefinitionBuilder(partDefinition);
             alteration(builder);
+            manager.StorePartDefinition(builder.Build());
+        }
+
+        public static async Task AlterPartDefinitionAsync(this IContentDefinitionManager manager, string name, Func<ContentPartDefinitionBuilder, Task> alterationAsync)
+        {
+            var partDefinition = manager.LoadPartDefinition(name) ?? new ContentPartDefinition(name);
+            var builder = new ContentPartDefinitionBuilder(partDefinition);
+            await alterationAsync(builder);
             manager.StorePartDefinition(builder.Build());
         }
 

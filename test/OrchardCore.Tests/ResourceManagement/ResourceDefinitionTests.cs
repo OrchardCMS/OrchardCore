@@ -29,7 +29,6 @@ namespace OrchardCore.Tests.ResourceManagement
             var tagBuilder = resourceDefinition.GetTagBuilder(requireSettings, basePath, StubFileVersionProvider.Instance);
 
             Assert.Equal("script", tagBuilder.TagName);
-            Assert.Equal("text/javascript", tagBuilder.Attributes["type"]);
             Assert.Equal($"{basePath}/foo.js", tagBuilder.Attributes["src"]);
         }
 
@@ -44,7 +43,6 @@ namespace OrchardCore.Tests.ResourceManagement
             var tagBuilder = resourceDefinition.GetTagBuilder(requireSettings, basePath, StubFileVersionProvider.Instance);
 
             Assert.Equal("script", tagBuilder.TagName);
-            Assert.Equal("text/javascript", tagBuilder.Attributes["type"]);
             Assert.Equal($"{basePath}/foo.debug.js", tagBuilder.Attributes["src"]);
         }
 
@@ -59,7 +57,6 @@ namespace OrchardCore.Tests.ResourceManagement
             var tagBuilder = resourceDefinition.GetTagBuilder(requireSettings, basePath, StubFileVersionProvider.Instance);
 
             Assert.Equal("script", tagBuilder.TagName);
-            Assert.Equal("text/javascript", tagBuilder.Attributes["type"]);
             Assert.Equal("https://cdn.tld/foo.js", tagBuilder.Attributes["src"]);
         }
 
@@ -74,7 +71,6 @@ namespace OrchardCore.Tests.ResourceManagement
             var tagBuilder = resourceDefinition.GetTagBuilder(requireSettings, basePath, StubFileVersionProvider.Instance);
 
             Assert.Equal("script", tagBuilder.TagName);
-            Assert.Equal("text/javascript", tagBuilder.Attributes["type"]);
             Assert.Equal("https://cdn.tld/foo.debug.js", tagBuilder.Attributes["src"]);
         }
 
@@ -88,7 +84,6 @@ namespace OrchardCore.Tests.ResourceManagement
             var tagBuilder = resourceDefinition.GetTagBuilder(requireSettings, basePath, StubFileVersionProvider.Instance);
 
             Assert.Equal("script", tagBuilder.TagName);
-            Assert.Equal("text/javascript", tagBuilder.Attributes["type"]);
             Assert.Equal("console.log('foo');", ReadIHtmlContent(tagBuilder.InnerHtml));
         }
 

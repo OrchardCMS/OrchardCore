@@ -22,7 +22,7 @@
     </div>
 </form>
 
-<script at="Foot" type="text/javascript">
+<script at="Foot">
 //<![CDATA[
     $(function(){
         var $name = $("#@Html.IdFor(m => m.Name)");
@@ -35,7 +35,7 @@
 
         var compute = function() {
             // stop processing automatically if altered by the user
-            if(nameAltered) {
+            if (nameAltered) {
                 return true;
             }
 

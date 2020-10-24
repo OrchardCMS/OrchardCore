@@ -6,13 +6,14 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Apis.GraphQL;
 using OrchardCore.ContentManagement.Metadata;
-using OrchardCore.Shortcodes.Services;
 using OrchardCore.Infrastructure.Html;
 using OrchardCore.Liquid;
 using OrchardCore.Markdown.Models;
 using OrchardCore.Markdown.Services;
 using OrchardCore.Markdown.Settings;
 using OrchardCore.Markdown.ViewModels;
+using OrchardCore.Shortcodes.Services;
+using Shortcodes;
 
 namespace OrchardCore.Markdown.GraphQL
 {
@@ -56,7 +57,6 @@ namespace OrchardCore.Markdown.GraphQL
             {
                 var liquidTemplateManager = serviceProvider.GetService<ILiquidTemplateManager>();
                 var htmlEncoder = serviceProvider.GetService<HtmlEncoder>();
-
                 var model = new MarkdownBodyPartViewModel()
                 {
                     Markdown = ctx.Source.Markdown,
@@ -69,7 +69,12 @@ namespace OrchardCore.Markdown.GraphQL
                     scope => scope.SetValue("ContentItem", model.ContentItem));
             }
 
-            html = await shortcodeService.ProcessAsync(html);
+            html = await shortcodeService.ProcessAsync(html,
+                new Context
+                {
+                    ["ContentItem"] = ctx.Source.ContentItem,
+                    ["PartFieldDefinition"] = contentTypePartDefinition
+                });
 
             if (settings.SanitizeHtml)
             {

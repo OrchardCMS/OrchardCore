@@ -6,7 +6,6 @@ using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Shortcodes.Services;
 using OrchardCore.Infrastructure.Html;
 using OrchardCore.Liquid;
 using OrchardCore.Markdown.Fields;
@@ -14,6 +13,8 @@ using OrchardCore.Markdown.Services;
 using OrchardCore.Markdown.Settings;
 using OrchardCore.Markdown.ViewModels;
 using OrchardCore.Mvc.ModelBinding;
+using OrchardCore.Shortcodes.Services;
+using Shortcodes;
 
 namespace OrchardCore.Markdown.Drivers
 {
@@ -63,7 +64,12 @@ namespace OrchardCore.Markdown.Drivers
                         scope => scope.SetValue("ContentItem", field.ContentItem));
                 }
 
-                model.Html = await _shortcodeService.ProcessAsync(model.Html ?? "");
+                model.Html = await _shortcodeService.ProcessAsync(model.Html,
+                    new Context
+                    {
+                        ["ContentItem"] = field.ContentItem,
+                        ["PartFieldDefinition"] = context.PartFieldDefinition
+                    });
 
                 if (settings.SanitizeHtml)
                 {

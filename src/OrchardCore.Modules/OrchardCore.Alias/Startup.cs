@@ -31,7 +31,7 @@ namespace OrchardCore.Alias
         {
             services.AddSingleton<IIndexProvider, AliasPartIndexProvider>();
             services.AddScoped<IDataMigration, Migrations>();
-            services.AddScoped<IContentAliasProvider, AliasPartContentAliasProvider>();
+            services.AddScoped<IContentHandleProvider, AliasPartContentHandleProvider>();
 
             // Identity Part
             services.AddContentPart<AliasPart>()

@@ -117,9 +117,9 @@
             <div class="hint">
                 @T["The consent type affects the way authorization requests are handled."]
                 <ul>
-                    <li>@T["When the consent is explicit, the authorization request must be approved by the end user. <strong>This is the recommended option.</strong></li>"]
-                    <li>@T["When the consent is implicit, the authorization request is assumed to be pre-approved and no consent form is displayed.</li>"]
-                    <li>@T["When the consent is external, the authorization request is rejected unless a pre-existing authorization (granted programmatically) already exists.</li>"]
+                    <li>@T["When the consent is explicit, the authorization request must be approved by the end user. <strong>This is the recommended option.</strong>"]</li>
+                    <li>@T["When the consent is implicit, the authorization request is assumed to be pre-approved and no consent form is displayed."]</li>
+                    <li>@T["When the consent is external, the authorization request is rejected unless a pre-existing authorization (granted programmatically) already exists."]</li>
                 </ul>
             </div>
         </div>
@@ -142,7 +142,7 @@
         <a class="btn btn-secondary" asp-route-action="Index">@T["Cancel"]</a>
     </div>
 </form>
-<script at="Foot" type="text/javascript">
+<script at="Foot">
     //<![CDATA[
     window.onload = function () {
         refreshForbiddenFlows();

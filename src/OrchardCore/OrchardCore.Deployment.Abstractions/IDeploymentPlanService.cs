@@ -10,6 +10,6 @@ namespace OrchardCore.Deployment
         Task<IEnumerable<string>> GetAllDeploymentPlanNamesAsync();
         Task<IEnumerable<DeploymentPlan>> GetAllDeploymentPlansAsync();
         Task<IEnumerable<DeploymentPlan>> GetDeploymentPlansAsync(params string[] deploymentPlanNames);
-        void CreateOrUpdateDeploymentPlans(IEnumerable<DeploymentPlan> deploymentPlans);
+        Task CreateOrUpdateDeploymentPlansAsync(IEnumerable<DeploymentPlan> deploymentPlans);
     }
 }

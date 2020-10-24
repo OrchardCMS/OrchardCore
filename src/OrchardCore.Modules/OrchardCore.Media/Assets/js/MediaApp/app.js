@@ -1,16 +1,10 @@
 var initialized;
 var mediaApp;
 
-var root = {
-    name: 'Media Library',
-    path: '',
-    folder: '',
-    isDirectory: true
-}
-
 var bus = new Vue();
 
 function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl, pathBase) {
+
     if (initialized) {
         return;
     }
@@ -28,11 +22,18 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
             $('.ta-content').append(content);
 
             $(document).trigger('mediaapplication:ready');
+            
+            var root = {
+                name:  $('#t-mediaLibrary').text(),
+                path: '',
+                folder: '',
+                isDirectory: true
+            };
 
             mediaApp = new Vue({
                 el: '#mediaApp',
                 data: {
-                    selectedFolder: root,
+                    selectedFolder: {},
                     mediaItems: [],
                     selectedMedias: [],
                     errors: [],
@@ -118,6 +119,11 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                         self.selectedMedias = [];
                     });                                                          
 
+                    if (!localStorage.getItem('mediaApplicationPrefs')) {
+                        self.selectedFolder = root;
+                        return;
+                    }
+
                     self.currentPrefs = JSON.parse(localStorage.getItem('mediaApplicationPrefs'));
                 },
                 computed: {
@@ -183,7 +189,7 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                                 smallThumbs: this.smallThumbs,
                                 selectedFolder: this.selectedFolder,
                                 gridView: this.gridView
-                            }
+                            };
                         },
                         set: function (newPrefs) {
                             if (!newPrefs) {
@@ -271,7 +277,7 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                         return result;
                     },
                     deleteFolder: function () {
-                        var folder = this.selectedFolder
+                        var folder = this.selectedFolder;
                         var self = this;
                         // The root folder can't be deleted
                         if (folder == this.root.model) {
@@ -334,7 +340,7 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                                     },
                                     success: function (data) {
                                         for (var i = 0; i < self.selectedMedias.length; i++) {
-                                            var index = self.mediaItems && self.mediaItems.indexOf(self.selectedMedias[i])
+                                            var index = self.mediaItems && self.mediaItems.indexOf(self.selectedMedias[i]);
                                             if (index > -1) {
                                                 self.mediaItems.splice(index, 1);
                                                 bus.$emit('mediaDeleted', self.selectedMedias[i]);
@@ -366,7 +372,7 @@ function initializeMediaApplication(displayMediaApplication, mediaApplicationUrl
                                     success: function (data) {
                                         var index = self.mediaItems && self.mediaItems.indexOf(media)
                                         if (index > -1) {
-                                            self.mediaItems.splice(index, 1)
+                                            self.mediaItems.splice(index, 1);
                                             bus.$emit('mediaDeleted', media);
                                         }
                                         //self.selectedMedia = null;
