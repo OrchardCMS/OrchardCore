@@ -55,7 +55,7 @@ namespace OrchardCore.Tests.Modules.Contents.Feeds
         [Theory]
         [InlineData("rss")]
         [InlineData("non rss")]
-        public async Task AvoidDoubleEncodeStrings(string format)
+        public async Task ShouldOnlyHtmlEntityEscapeFeedTitle(string format)
         {
             // Arrange
             var contentManagerMock = new Mock<IContentManager>();
