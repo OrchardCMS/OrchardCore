@@ -128,6 +128,23 @@ namespace OrchardCore.Email.Services
                 body.TextBody = message.Body;
             }
 
+            if (message.Attachments != null)
+            {
+                foreach (var attachment in message.Attachments)
+                {
+                    if (attachment.Stream == null)
+                    {
+                        // Gets the file from the File System. The filename must be the system path to the file. "App_Data/tenants.json" works.
+                        body.Attachments.Add(attachment.Filename);
+                    }
+                    else
+                    {
+                        // Gets the file from the Stream
+                        body.Attachments.Add(attachment.Filename, attachment.Stream);
+                    }
+                }
+            }
+
             mimeMessage.Body = body.ToMessageBody();
 
             return mimeMessage;
