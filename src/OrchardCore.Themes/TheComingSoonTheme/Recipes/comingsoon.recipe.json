@@ -104,8 +104,7 @@
           "ModifiedUtc": "[js: variables('now')]",
           "PublishedUtc": "[js: variables('now')]",
           "CreatedUtc": "[js: variables('now')]",
-          "Owner": "[js: parameters('AdminUsername')]",
-          "OwnerId": "[js: parameters('AdminUserId')]",
+          "Owner": "[js: parameters('AdminUserId')]",
           "Author": "[js: parameters('AdminUsername')]",
           "ComingSoon": {},
           "AutoroutePart": {

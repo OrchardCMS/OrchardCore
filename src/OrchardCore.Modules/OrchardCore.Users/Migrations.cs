@@ -1,10 +1,7 @@
-using System.Linq;
-using System.Threading.Tasks;
 using OrchardCore.Data.Migration;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Users.Indexes;
-using OrchardCore.Users.Models;
 using YesSql;
 using YesSql.Sql;
 
@@ -115,27 +112,6 @@ namespace OrchardCore.Users
             );
 
             return 5;
-        }
-
-        // UserId Enable upgrade feature migration.
-
-        public async Task<int> UpdateFrom5Async()
-        {
-            // This migration checks to see if there are any users without a UserID.
-            // If there is it enables the migration feature.
-            // This then includes a resource filter which will provide a notification
-            // to the site that an upgrade is required.
-            var unmigratedUsers =  await _session.Query<User>()
-                    .With<UserIndex>(x => x.UserId == null)
-                    .CountAsync();
-
-            if (unmigratedUsers > 0)
-            {
-                var features = _extensionManager.GetFeatures().Where(x => x.Id == "OrchardCore.Upgrade.UserId");
-                await _shellFeatureManager.EnableFeaturesAsync(features);
-            }
-
-            return 6;
         }
     }
 }

@@ -74,7 +74,7 @@ namespace OrchardCore.ContentLocalization.Security
                 return false;
             }
 
-            return user.FindFirstValue(ClaimTypes.NameIdentifier) == content.OwnerId;
+            return user.FindFirstValue(ClaimTypes.NameIdentifier) == content.Owner;
         }
 
         private static bool OwnerVariationExists(Permission permission)

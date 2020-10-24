@@ -60,11 +60,6 @@ namespace OrchardCore.ContentManagement
         public DateTime? CreatedUtc { get; set; }
 
         /// <summary>
-        /// The unique id of the user who first created this content item version.
-        /// </summary>
-        public string OwnerId { get; set; }
-
-        /// <summary>
         /// The name of the user who first created this content item version.
         /// Stored for historical reasons only.
         /// </summary>

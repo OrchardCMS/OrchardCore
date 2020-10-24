@@ -21,7 +21,6 @@ namespace OrchardCore.ContentManagement
             o.Add(new JProperty(nameof(ContentItem.ModifiedUtc), contentItem.ModifiedUtc));
             o.Add(new JProperty(nameof(ContentItem.PublishedUtc), contentItem.PublishedUtc));
             o.Add(new JProperty(nameof(ContentItem.CreatedUtc), contentItem.CreatedUtc));
-            o.Add(new JProperty(nameof(ContentItem.OwnerId), contentItem.OwnerId));
             o.Add(new JProperty(nameof(ContentItem.Owner), contentItem.Owner));
             o.Add(new JProperty(nameof(ContentItem.Author), contentItem.Author));
 
@@ -86,9 +85,6 @@ namespace OrchardCore.ContentManagement
                         break;
                     case nameof(ContentItem.Owner):
                         contentItem.Owner = reader.ReadAsString();
-                        break;
-                    case nameof(ContentItem.OwnerId):
-                        contentItem.OwnerId = reader.ReadAsString();
                         break;
                     default:
                         var customProperty = JProperty.Load(reader);

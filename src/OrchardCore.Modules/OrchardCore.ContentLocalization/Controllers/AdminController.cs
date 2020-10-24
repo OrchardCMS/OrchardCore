@@ -54,7 +54,7 @@ namespace OrchardCore.ContentLocalization.Controllers
             var checkContentItem = await _contentManager.NewAsync(contentItem.ContentType);
 
             // Set the current user as the owner to check for ownership permissions on creation
-            checkContentItem.OwnerId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            checkContentItem.Owner = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.EditContent, checkContentItem))
             {

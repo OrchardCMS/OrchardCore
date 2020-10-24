@@ -157,14 +157,5 @@ namespace OrchardCore.ContentManagement.Records
 
             return 5;
         }
-
-        public int UpdateFrom5()
-        {
-            SchemaBuilder.AlterTable(nameof(ContentItemIndex), table => table
-                .AddColumn<string>("OwnerId", c => c.WithLength(26))
-            );
-
-            return 6;
-        }
     }
 }

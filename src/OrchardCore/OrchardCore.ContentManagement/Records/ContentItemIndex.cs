@@ -22,7 +22,6 @@ namespace OrchardCore.ContentManagement.Records
         public DateTime? PublishedUtc { get; set; }
         public DateTime? CreatedUtc { get; set; }
         public string Owner { get; set; }
-        public string OwnerId { get; set; }
         public string Author { get; set; }
         public string DisplayText { get; set; }
     }
@@ -45,7 +44,6 @@ namespace OrchardCore.ContentManagement.Records
                         PublishedUtc = contentItem.PublishedUtc,
                         CreatedUtc = contentItem.CreatedUtc,
                         Owner = contentItem.Owner,
-                        OwnerId = contentItem.OwnerId,
                         Author = contentItem.Author,
                         DisplayText = contentItem.DisplayText
                     };

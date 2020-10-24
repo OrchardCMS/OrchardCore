@@ -965,8 +965,7 @@
         {
           "ContentType": "Menu",
           "ContentItemId": "[js: variables('menuContentItemId')]",
-          "Owner": "[js: parameters('AdminUsername')]",
-          "OwnerId": "[js: parameters('AdminUserId')]",
+          "Owner": "[js: parameters('AdminUserId')]",
           "Author": "[js: parameters('AdminUsername')]",
           "DisplayText": "Main Menu",
           "Latest": true,
@@ -1001,8 +1000,7 @@
         },
         {
           "ContentItemId": "[js: variables('tagsContentItemId')]",
-          "Owner": "[js: parameters('AdminUsername')]",
-          "OwnerId": "[js: parameters('AdminUserId')]",
+          "Owner": "[js: parameters('AdminUserId')]",
           "Author": "[js: parameters('AdminUsername')]",
           "ContentType": "Taxonomy",
           "DisplayText": "Tags",
@@ -1068,8 +1066,7 @@
         },
         {
           "ContentItemId": "[js: variables('categoriesContentItemId')]",
-          "Owner": "[js: parameters('AdminUsername')]",
-          "OwnerId": "[js: parameters('AdminUserId')]",
+          "Owner": "[js: parameters('AdminUserId')]",
           "Author": "[js: parameters('AdminUsername')]",
           "ContentType": "Taxonomy",
           "DisplayText": "Categories",
@@ -1116,8 +1113,7 @@
           "DisplayText": "Blog",
           "Latest": true,
           "Published": true,
-          "Owner": "[js: parameters('AdminUsername')]",
-          "OwnerId": "[js: parameters('AdminUserId')]",
+          "Owner": "[js: parameters('AdminUserId')]",
           "Author": "[js: parameters('AdminUsername')]",
           "TitlePart": {
             "Title": "Blog"
@@ -1143,8 +1139,7 @@
           "DisplayText": "Man must explore, and this is exploration at its greatest",
           "Latest": true,
           "Published": true,
-          "Owner": "[js: parameters('AdminUsername')]",
-          "OwnerId": "[js: parameters('AdminUserId')]",
+          "Owner": "[js: parameters('AdminUserId')]",
           "Author": "[js: parameters('AdminUsername')]",
           "TitlePart": {
             "Title": "Man must explore, and this is exploration at its greatest"
@@ -1195,8 +1190,7 @@
           "DisplayText": "About",
           "Latest": true,
           "Published": true,
-          "Owner": "[js: parameters('AdminUsername')]",
-          "OwnerId": "[js: parameters('AdminUserId')]",
+          "Owner": "[js: parameters('AdminUserId')]",
           "Author": "[js: parameters('AdminUsername')]",
           "AutoroutePart": {
             "Path": "about",
@@ -1225,8 +1219,7 @@
           "Displaytext": "Footer",
           "Latest": true,
           "Published": true,
-          "Owner": "[js: parameters('AdminUsername')]",
-          "OwnerId": "[js: parameters('AdminUserId')]",
+          "Owner": "[js: parameters('AdminUserId')]",
           "Author": "[js: parameters('AdminUsername')]",
           "LayerMetadata": {
             "Layer": "Always",

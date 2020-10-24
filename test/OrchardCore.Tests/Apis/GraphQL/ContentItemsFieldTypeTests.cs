@@ -86,7 +86,6 @@ namespace OrchardCore.Tests.Apis.GraphQL
                     .Column<DateTime>("ModifiedUtc", column => column.Nullable())
                     .Column<DateTime>("PublishedUtc", column => column.Nullable())
                     .Column<DateTime>("CreatedUtc", column => column.Nullable())
-                    .Column<string>("OwnerId", c => c.WithLength(26))
                     .Column<string>("Owner", column => column.Nullable().WithLength(ContentItemIndex.MaxOwnerSize))
                     .Column<string>("Author", column => column.Nullable().WithLength(ContentItemIndex.MaxAuthorSize))
                     .Column<string>("DisplayText", column => column.Nullable().WithLength(ContentItemIndex.MaxDisplayTextSize))

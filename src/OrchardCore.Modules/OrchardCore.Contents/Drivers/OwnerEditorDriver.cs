@@ -46,9 +46,9 @@ namespace OrchardCore.Contents.Drivers
             {
                 return Initialize<OwnerEditorViewModel>("CommonPart_Edit__Owner", async model =>
                 {
-                    if (part.ContentItem.OwnerId != null)
+                    if (part.ContentItem.Owner != null)
                     {
-                        var user = await _userService.GetUserByUniqueIdAsync(part.ContentItem.OwnerId);
+                        var user = await _userService.GetUserByUniqueIdAsync(part.ContentItem.Owner);
                         model.Owner = user.UserName;
                     }
                 });
@@ -70,13 +70,9 @@ namespace OrchardCore.Contents.Drivers
 
             if (!settings.DisplayOwnerEditor)
             {
-                if (part.ContentItem.OwnerId == null)
-                {
-                    part.ContentItem.OwnerId = currentUser.FindFirstValue(ClaimTypes.NameIdentifier);
-                }
                 if (part.ContentItem.Owner == null)
                 {
-                    part.ContentItem.Owner = currentUser.Identity.Name;
+                    part.ContentItem.Owner = currentUser.FindFirstValue(ClaimTypes.NameIdentifier);
                 }
             }
             else
@@ -85,15 +81,17 @@ namespace OrchardCore.Contents.Drivers
 
                 if (part.ContentItem.Owner != null)
                 {
-                    var user = await _userService.GetUserByUniqueIdAsync(part.ContentItem.OwnerId);
+                    var user = await _userService.GetUserByUniqueIdAsync(part.ContentItem.Owner);
                     model.Owner = user.UserName;
                 }
 
                 var priorOwner = model.Owner;
                 await context.Updater.TryUpdateModelAsync(model, Prefix);
 
+                // Here probably isn't.
                 if (!string.IsNullOrEmpty(part.ContentItem.Owner) && model.Owner != priorOwner)
                 {
+                    // TODO Check this is corrent.
                     var newOwner = await _userService.GetUserAsync(model.Owner);
 
                     if (newOwner == null)
@@ -102,8 +100,7 @@ namespace OrchardCore.Contents.Drivers
                     }
                     else
                     {
-                        part.ContentItem.Owner = newOwner.UserName;
-                        part.ContentItem.OwnerId = newOwner.UserId;
+                        part.ContentItem.Owner = newOwner.UserId;
                     }
                 }
             }

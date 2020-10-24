@@ -27,7 +27,6 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Types
             AddFilterField<DateTimeGraphType>("createdUtc", "the date and time of creation");
             AddFilterField<DateTimeGraphType>("modifiedUtc", "the date and time of modification");
             AddFilterField<DateTimeGraphType>("publishedUtc", "the date and time of publication");
-            AddFilterField<StringGraphType>("ownerId", "the owner id of the content item");
             AddFilterField<StringGraphType>("owner", "the owner of the content item");
             AddFilterField<StringGraphType>("author", "the author of the content item");
 

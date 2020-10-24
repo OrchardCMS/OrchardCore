@@ -82,7 +82,7 @@ namespace OrchardCore.Contents.Services
                     {
                         // We want to list the content item if the user can edit their own items at least. It might display content items the user won't be able to edit though.
                         var contentItem = await _contentManager.NewAsync(ctd.Name);
-                        contentItem.OwnerId = userNameIdentifier;
+                        contentItem.Owner = userNameIdentifier;
 
                         var authorized = await _authorizationService.AuthorizeAsync(user, CommonPermissions.EditContent, contentItem);
                         if (authorized)
@@ -100,13 +100,13 @@ namespace OrchardCore.Contents.Services
             // we bypass the corresponding ContentsStatus by owned content filtering
             if (!await _authorizationService.AuthorizeAsync(user, Permissions.ListContent))
             {
-                query.With<ContentItemIndex>(x => x.OwnerId == userNameIdentifier);
+                query.With<ContentItemIndex>(x => x.Owner == userNameIdentifier);
             }
             else
             {
                 if (model.ContentsStatus == ContentsStatus.Owner)
                 {
-                    query.With<ContentItemIndex>(x => x.OwnerId == userNameIdentifier);
+                    query.With<ContentItemIndex>(x => x.Owner == userNameIdentifier);
                 }
             }
 

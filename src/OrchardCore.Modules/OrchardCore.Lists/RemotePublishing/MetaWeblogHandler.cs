@@ -277,8 +277,7 @@ namespace OrchardCore.Lists.RemotePublishing
             var postType = GetContainedContentTypes(list).FirstOrDefault();
             var contentItem = await _contentManager.NewAsync(postType.Name);
 
-            contentItem.Owner = userName;
-            contentItem.OwnerId = user.FindFirstValue(ClaimTypes.NameIdentifier);
+            contentItem.Owner = user.FindFirstValue(ClaimTypes.NameIdentifier);
             contentItem.Alter<ContainedPart>(x => x.ListContentItemId = list.ContentItemId);
 
             foreach (var driver in _metaWeblogDrivers)

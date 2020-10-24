@@ -2,7 +2,6 @@ namespace OrchardCore.Contents.Indexing
 {
     public static class IndexingConstants
     {
-        public const string OwnerIdKey = "Content.ContentItem.OwnerId";
         public const string OwnerKey = "Content.ContentItem.Owner";
         public const string AuthorKey = "Content.ContentItem.Author";
         public const string ContentTypeKey = "Content.ContentItem.ContentType";

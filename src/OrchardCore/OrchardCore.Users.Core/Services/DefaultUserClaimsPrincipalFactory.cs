@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using OrchardCore.Security;
-using OrchardCore.Users.Models;
 
 namespace OrchardCore.Users.Services
 {
@@ -22,12 +21,6 @@ namespace OrchardCore.Users.Services
 
         protected override async Task<ClaimsIdentity> GenerateClaimsAsync(IUser user)
         {
-            // TODO. Resolve
-            // This is a short term solution to a null user id being present during a migration.
-            if (user.UserId == null)
-            {
-                ((User)user).UserId = String.Empty;
-            }
             var claims = await base.GenerateClaimsAsync(user);
 
             // Todo: In a future version the base implementation will generate the email claim if the user store is an 'IUserEmailStore',
