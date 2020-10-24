@@ -12,7 +12,7 @@ using OrchardCore.Liquid;
 
 namespace OrchardCore.Contents.Liquid
 {
-    public class FullTextAspectFilter : ILiquidFilter
+    public class FullTextFilter : ILiquidFilter
     {
         public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
         {
@@ -21,7 +21,10 @@ namespace OrchardCore.Contents.Liquid
                 throw new ArgumentException("Services missing while invoking 'full_text_aspect'");
             }
 
-            var contentManager = ((IServiceProvider)services).GetRequiredService<IContentManager>();
+            var serviceProvider = (IServiceProvider)services;
+
+            var contentManager = serviceProvider.GetRequiredService<IContentManager>();
+            var fullTextRecursionHelper = serviceProvider.GetRequiredService<FullTextRecursionHelper>();
 
             if (input.Type == FluidValues.Array)
             {
@@ -31,7 +34,10 @@ namespace OrchardCore.Contents.Liquid
                     var contentItem = GetContentItem(objValue);
                     if (contentItem != null)
                     {
-                        contentItems.Add(contentItem);
+                        if (!fullTextRecursionHelper.IsRecursive(contentItem))
+                        {
+                            contentItems.Add(contentItem);
+                        }
                     }
                 }
 
@@ -46,7 +52,7 @@ namespace OrchardCore.Contents.Liquid
                 {
                     aspects.Add(await contentManager.PopulateAspectAsync<FullTextAspect>(contentItem));
                 }
-                
+
                 // When returning segments seperate them so multiple segments are indexed individually.
                 return new ArrayValue(aspects.SelectMany(x => x.Segments).Where(x => !String.IsNullOrEmpty(x)).Select(x => new StringValue(x + ' ')));
             }
@@ -54,7 +60,7 @@ namespace OrchardCore.Contents.Liquid
             {
                 var contentItem = GetContentItem(input);
 
-                if (contentItem == null)
+                if (contentItem == null || fullTextRecursionHelper.IsRecursive(contentItem))
                 {
                     return NilValue.Instance;
                 }
@@ -77,6 +83,12 @@ namespace OrchardCore.Contents.Liquid
                 if (obj is JObject jObject)
                 {
                     contentItem = jObject.ToObject<ContentItem>();
+                    // If input is a 'JObject' but which not represents a 'ContentItem',
+                    // a 'ContentItem' is still created but with some null properties.
+                    if (contentItem?.ContentItemId == null)
+                    {
+                        return null;
+                    }
                 }
             }
 

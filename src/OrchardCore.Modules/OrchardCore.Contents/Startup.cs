@@ -138,7 +138,10 @@ namespace OrchardCore.Contents
             services.AddLiquidFilter<ContentItemFilter>("content_item_id");
             services.AddLiquidFilter<DisplayTextFilter>("display_text");
             services.AddLiquidFilter<DisplayUrlFilter>("display_url");
-            services.AddLiquidFilter<FullTextAspectFilter>("full_text_aspect");
+            services.AddLiquidFilter<FullTextFilter>("full_text");
+
+            services.AddScoped<FullTextRecursionHelper>();
+            services.AddScoped<BuildDisplayRecursionHelper>();
         }
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
