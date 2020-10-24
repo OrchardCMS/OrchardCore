@@ -50,7 +50,7 @@ install:
 # - ps: .\dotnet-install.ps1 --Version 3.1.402
 
 build_script:
-  - dotnet build -c Release /p:SourceRevisionId=$env:APPVEYOR_REPO_COMMIT /p:GitBranch=$env:APPVEYOR_REPO_BRANCH
+  - dotnet build -c Release
   - ps: if ($GeneratePackages) { dotnet pack -c Release --no-build }
 
 init:
