@@ -19,7 +19,7 @@ describe('Blog Tests', function () {
     it('Blog login should work', function(){
         cy.login(tenant);
         cy.visitAdmin(tenant);
-        cy.get('.ta-content').should('contain.text', 'Welcome to Orchard')
+        cy.get('.ta-content').should('contain.text', 'Welcome to Orchard');
     })
 
     // skipping this test for now. Will improve it with better selectors in a seperate PR
