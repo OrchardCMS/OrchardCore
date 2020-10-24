@@ -8,13 +8,20 @@ namespace OrchardCore.Contents.Liquid
     /// <summary>
     /// Prevents a content item being called by an implementation of a <see cref="ILiquidFilter"/> recursivly.
     /// </summary>
-    public abstract class BaseContentItemRecursionHelper
+    public interface IContentItemRecursionHelper<T> where T : ILiquidFilter
     {
-        private HashSet<string> _contentItemIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-
         /// <summary>
         /// Returns <see langword="True"/> when the <see cref="ContentItem"/> has already been evaluated during this request by the particular filter./>
         /// </summary>
+        bool IsRecursive(ContentItem contentItem);
+    }
+
+    /// <inheritdocs />
+    public class ContentItemRecursionHelper<T> : IContentItemRecursionHelper<T> where T : ILiquidFilter
+    {
+        private HashSet<string> _contentItemIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+        /// <inheritdocs />
         public bool IsRecursive(ContentItem contentItem)
         {
             if (_contentItemIds.Contains(contentItem.ContentItemId))

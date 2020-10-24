@@ -47,7 +47,7 @@ namespace OrchardCore.Contents.Liquid
 
             var serviceProvider = (IServiceProvider)services;
 
-            var buildDisplayRecursionHelper = serviceProvider.GetRequiredService<BuildDisplayRecursionHelper>();
+            var buildDisplayRecursionHelper = serviceProvider.GetRequiredService<IContentItemRecursionHelper<BuildDisplayFilter>>();
 
             // When {{ Model.ContentItem | shape_build_display | shape_render }} is called prevent recursion.
             if (buildDisplayRecursionHelper.IsRecursive(contentItem))

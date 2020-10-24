@@ -24,7 +24,7 @@ namespace OrchardCore.Contents.Liquid
             var serviceProvider = (IServiceProvider)services;
 
             var contentManager = serviceProvider.GetRequiredService<IContentManager>();
-            var fullTextRecursionHelper = serviceProvider.GetRequiredService<FullTextRecursionHelper>();
+            var fullTextRecursionHelper = serviceProvider.GetRequiredService<IContentItemRecursionHelper<FullTextFilter>>();
 
             if (input.Type == FluidValues.Array)
             {
