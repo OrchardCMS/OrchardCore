@@ -139,7 +139,7 @@ namespace OrchardCore.ContentManagement.Display
             return context.Shape;
         }
 
-        async Task<ValidationResult[]> ValidateAsync(string partName, object model)
+        private async Task<ValidationResult[]> ValidateAsync(string partName, object model)
         {
             var part = model as ContentPart;
             var handlers = _contentPartHandlerResolver.GetHandlers(partName);
