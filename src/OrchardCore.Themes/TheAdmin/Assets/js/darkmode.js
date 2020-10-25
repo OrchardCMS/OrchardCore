@@ -12,15 +12,15 @@ $(function () {
     // Automatically sets darkmode based on OS preferences
     if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
         if (typeof persistedDarkmode === 'undefined') {
-            $('#admin-default').attr('media', 'not all');
             $('#admin-darkmode').attr('media', 'all');
+            $('#admin-default').attr('media', 'not all');
         }
     }
     
     if (darkmode)
     {
-        $('#admin-default').attr('media', 'not all');
         $('#admin-darkmode').attr('media', 'all');
+        $('#admin-default').attr('media', 'not all');
     }
 
     $("#btn-darkmode").click(function() {
