@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using Microsoft.AspNetCore.Mvc;
@@ -63,7 +62,7 @@ namespace OrchardCore.Lists.Feeds
             if (context.Format == "rss")
             {
                 var link = new XElement("link");
-                context.Response.Element.SetElementValue("title", WebUtility.HtmlEncode(contentItem.DisplayText));
+                context.Response.Element.SetElementValue("title", contentItem.DisplayText);
                 context.Response.Element.Add(link);
 
                 context.Response.Element.Add(new XElement("description", new XCData(bodyAspect.Body?.ToString() ?? String.Empty)));
