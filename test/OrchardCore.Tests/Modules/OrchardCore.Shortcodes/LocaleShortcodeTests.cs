@@ -1,23 +1,12 @@
-using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using Moq;
-using OrchardCore.ContentLocalization.Shortcodes;
-using OrchardCore.FileStorage;
-using OrchardCore.Infrastructure.Html;
-using OrchardCore.Media.Core;
-using OrchardCore.Media.Events;
-using OrchardCore.Media.Shortcodes;
-using OrchardCore.ResourceManagement;
+using OrchardCore.Shortcodes;
 using OrchardCore.Shortcodes.Services;
 using Shortcodes;
 using Xunit;
 
-namespace OrchardCore.Tests.Modules.OrchardCore.ContentLocalization
+namespace OrchardCore.Tests.Modules.OrchardCore.Shortcodes
 {
     public class LocaleShortcodeTests
     {
