@@ -15,6 +15,7 @@ using OrchardCore.Security.Permissions;
 using OrchardCore.Shortcodes.Controllers;
 using OrchardCore.Shortcodes.Drivers;
 using OrchardCore.Shortcodes.Services;
+using OrchardCore.Shortcodes.Providers;
 using OrchardCore.Shortcodes.ViewModels;
 using Shortcodes;
 using Sc = Shortcodes;
@@ -103,7 +104,7 @@ namespace OrchardCore.Shortcodes
     }
 
     [RequireFeatures("OrchardCore.Localization")]
-    public class ShortcodesStartup : StartupBase
+    public class LocaleShortcodeProviderStartup : StartupBase
     {
         public override void ConfigureServices(IServiceCollection services)
         {

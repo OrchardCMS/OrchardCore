@@ -3,7 +3,7 @@ using System.Globalization;
 using System.Threading.Tasks;
 using Shortcodes;
 
-namespace OrchardCore.Shortcodes
+namespace OrchardCore.Shortcodes.Providers
 {
     public class LocaleShortcodeProvider : IShortcodeProvider
     {

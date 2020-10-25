@@ -1,7 +1,7 @@
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
-using OrchardCore.Shortcodes;
+using OrchardCore.Shortcodes.Providers;
 using OrchardCore.Shortcodes.Services;
 using Shortcodes;
 using Xunit;
