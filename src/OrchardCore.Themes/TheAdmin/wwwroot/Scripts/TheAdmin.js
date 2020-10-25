@@ -7262,41 +7262,18 @@ function isLetter(str) {
 function isNumber(str) {
   return str.length === 1 && str.match(/[0-9]/i);
 }
-var darkmode = darkmode === undefined ? false : darkmode;
-$(function () {
-  var adminPreferences = JSON.parse(localStorage.getItem('adminPreferences'));
-  var persistedDarkmode = adminPreferences === null || adminPreferences === void 0 ? void 0 : adminPreferences.darkmode;
-
-  if (typeof persistedDarkmode !== 'undefined') {
-    darkmode = persistedDarkmode;
-  } // Automatically sets darkmode based on OS preferences
-
-
-  if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-    if (typeof persistedDarkmode === 'undefined') {
-      $('#admin-darkmode').attr('media', 'all');
-      $('#admin-default').attr('media', 'not all');
-    }
-  }
-
-  if (darkmode) {
-    $('#admin-darkmode').attr('media', 'all');
+$("#btn-darkmode").click(function () {
+  if ($('#admin-darkmode').attr('media') == 'all') {
+    $('#admin-default').attr('media', 'all');
+    $('#admin-darkmode').attr('media', 'not all');
+    darkmode = false;
+  } else {
     $('#admin-default').attr('media', 'not all');
+    $('#admin-darkmode').attr('media', 'all');
+    darkmode = true;
   }
 
-  $("#btn-darkmode").click(function () {
-    if ($('#admin-darkmode').attr('media') == 'all') {
-      $('#admin-default').attr('media', 'all');
-      $('#admin-darkmode').attr('media', 'not all');
-      darkmode = false;
-    } else {
-      $('#admin-default').attr('media', 'not all');
-      $('#admin-darkmode').attr('media', 'all');
-      darkmode = true;
-    }
-
-    persistAdminPreferences();
-  });
+  persistAdminPreferences();
 });
 // When we load compact status from preferences we need to do some other tasks besides adding the class to the body.
 // UserPreferencesLoader has already added the needed class.
