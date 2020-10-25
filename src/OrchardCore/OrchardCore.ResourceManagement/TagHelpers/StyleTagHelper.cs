@@ -13,6 +13,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
         private const string IdAttributeName = "asp-id";
         private const string NameAttributeName = "asp-name";
         private const string SrcAttributeName = "asp-src";
+        private const string MediaAttributeName = "asp-media";
         private const string AtAttributeName = "at";
         private const string AppendVersionAttributeName = "asp-append-version";
 
@@ -24,6 +25,9 @@ namespace OrchardCore.ResourceManagement.TagHelpers
 
         [HtmlAttributeName(SrcAttributeName)]
         public string Src { get; set; }
+
+        [HtmlAttributeName(MediaAttributeName)]
+        public string Media { get; set; }
 
         [HtmlAttributeName(AppendVersionAttributeName)]
         public bool? AppendVersion { get; set; }
@@ -156,6 +160,11 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                 if (!String.IsNullOrEmpty(Id))
                 {
                     definition.SetAttribute("id", Id);
+                }
+
+                if (!String.IsNullOrEmpty(Media))
+                {
+                    definition.SetAttribute("media", Media);
                 }
 
                 if (!String.IsNullOrEmpty(Version))

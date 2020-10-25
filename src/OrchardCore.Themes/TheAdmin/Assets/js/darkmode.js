@@ -1,20 +1,39 @@
 var darkmode = (darkmode === undefined) ? false : darkmode;
 
 $(function () {
-    if ($('body').hasClass('darkmode') || darkmode)
+    
+    var adminPreferences = JSON.parse(localStorage.getItem('adminPreferences'));
+    var persistedDarkmode = adminPreferences?.darkmode;
+
+    if (typeof persistedDarkmode !== 'undefined') {
+        darkmode = persistedDarkmode;
+    }
+    
+    // Automatically sets darkmode based on OS preferences
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        if (typeof persistedDarkmode === 'undefined') {
+            $('#admin-default').attr('media', 'not all');
+            $('#admin-darkmode').attr('media', 'all');
+        }
+    }
+    
+    if (darkmode)
     {
-        $('#admin-css').attr('href', $('#admin-css').attr('href').replace('/TheAdmin.css', '/TheAdmin-darkmode.css'));
+        $('#admin-default').attr('media', 'not all');
+        $('#admin-darkmode').attr('media', 'all');
     }
 
     $("#btn-darkmode").click(function() {
-        if(darkmode)
+        if($('#admin-darkmode').attr('media') == 'all')
         {
-            $('#admin-css').attr('href', $('#admin-css').attr('href').replace('/TheAdmin-darkmode.css', '/TheAdmin.css'));
+            $('#admin-default').attr('media', 'all');
+            $('#admin-darkmode').attr('media', 'not all');
             darkmode = false;
         }
         else
         {
-            $('#admin-css').attr('href', $('#admin-css').attr('href').replace('/TheAdmin.css', '/TheAdmin-darkmode.css'));
+            $('#admin-default').attr('media', 'not all');
+            $('#admin-darkmode').attr('media', 'all');
             darkmode = true;
         }
 
