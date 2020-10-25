@@ -1,5 +1,5 @@
 .ta-navbar-top {
-    @extend .navbar, .navbar-expand-md, .navbar-light, .fixed-top;
+    @extend .navbar, .navbar-expand-md, .fixed-top;
     border-bottom: $border-content;
     z-index: calc($zindex-sticky + 1);
     padding: 0.3rem 1rem;

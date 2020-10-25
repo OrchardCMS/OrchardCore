@@ -5,6 +5,11 @@
 @import "_admin-variables.scss";
 // Navbar ======================================================================
 @import "../../admin/_navbar.scss";
+
+.ta-navbar-top {
+    @extend .navbar-light;
+}
+
 @import "../../admin/_sidebar-menu.scss";
 // Layout ======================================================================
 @import "../../_layout.scss";
@@ -216,15 +221,6 @@
 }
 
 .alert {
-    border: none;
-    color: $white;
-
-    a,
-    .alert-link {
-        color: #fff;
-        text-decoration: underline;
-    }
-
     @each $color, $value in $theme-colors {
         &-#{$color} {
             @if $enable-gradients {
