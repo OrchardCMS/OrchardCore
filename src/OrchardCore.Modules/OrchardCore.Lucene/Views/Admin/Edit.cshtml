@@ -57,12 +57,12 @@ else
         @if (Model.IsCreate)
         {
             <button class="btn btn-primary create" type="submit">@T["Create"]</button>
-            <a class="btn btn-secondary cancel" asp-route-action="Index">@T["Cancel"]</a>
+            <a class="btn btn-secondary cancel" role="button" asp-route-action="Index">@T["Cancel"]</a>
         }
         else
         {
             <button class="btn btn-primary save" type="submit">@T["Save"]</button>
-            <a class="btn btn-secondary cancel" asp-route-action="Index">@T["Cancel"]</a>
+            <a class="btn btn-secondary cancel" role="button" asp-route-action="Index">@T["Cancel"]</a>
         }
     </div>
 </form>

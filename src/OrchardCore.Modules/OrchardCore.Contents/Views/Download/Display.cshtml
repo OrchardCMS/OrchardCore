@@ -29,7 +29,7 @@
 
     @if (!String.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
     {
-        <a class="btn btn-secondary cancel" href="@returnUrl">@T["Cancel"]</a>
+        <a class="btn btn-secondary cancel" role="button" href="@returnUrl">@T["Cancel"]</a>
     }
 
 </form>

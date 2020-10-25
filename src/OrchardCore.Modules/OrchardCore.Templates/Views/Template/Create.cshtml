@@ -53,12 +53,12 @@
 
         @if (Url.IsLocalUrl(returnUrl))
         {
-            <a class="btn btn-secondary cancel" href="@returnUrl">@T["Cancel"]</a>
+            <a class="btn btn-secondary cancel" role="button" href="@returnUrl">@T["Cancel"]</a>
         }
 
         @if (!Model.AdminTemplates)
         {
-            <a class="btn btn-info" href="@Url.Action("Index", "Preview", new { area = "OrchardCore.Templates" })" target="_blank">@T["Preview"]</a>
+            <a class="btn btn-info" role="button" href="@Url.Action("Index", "Preview", new { area = "OrchardCore.Templates" })" target="_blank">@T["Preview"]</a>
         }
     </div>
 </form>

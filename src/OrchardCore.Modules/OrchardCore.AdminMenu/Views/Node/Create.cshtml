@@ -13,6 +13,7 @@
     <div class="form-group">
         <button class="btn btn-primary create" type="submit">@T["Create"]</button>
         <a class="btn btn-secondary cancel"
+           role="button"
            asp-route-controller="Node"
            asp-route-action="List"
            asp-route-id="@Model.AdminMenuId">@T["Cancel"]</a>
