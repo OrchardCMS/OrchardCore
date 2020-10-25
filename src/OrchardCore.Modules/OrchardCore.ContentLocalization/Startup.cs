@@ -14,7 +14,6 @@ using OrchardCore.ContentLocalization.Indexing;
 using OrchardCore.ContentLocalization.Liquid;
 using OrchardCore.ContentLocalization.Security;
 using OrchardCore.ContentLocalization.Services;
-using OrchardCore.ContentLocalization.Shortcodes;
 using OrchardCore.ContentLocalization.Sitemaps;
 using OrchardCore.ContentLocalization.ViewModels;
 using OrchardCore.Contents.Services;
@@ -28,7 +27,6 @@ using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
-using OrchardCore.Shortcodes;
 using OrchardCore.Sitemaps.Builders;
 
 namespace OrchardCore.ContentLocalization

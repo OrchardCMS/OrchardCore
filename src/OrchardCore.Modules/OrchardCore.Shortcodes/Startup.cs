@@ -101,6 +101,7 @@ namespace OrchardCore.Shortcodes
             );
         }
     }
+
     [RequireFeatures("OrchardCore.Localization")]
     public class ShortcodesStartup : StartupBase
     {
