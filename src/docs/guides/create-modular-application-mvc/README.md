@@ -60,15 +60,15 @@ Now listening on: http://localhost:5000
 Application started. Press Ctrl+C to shut down.
 ```
 
-There is only one route registered, and this route is registered by the module. Open a browser and navigate to <https://localhost:5001/OrchardCore.Mvc.HelloWorld/Home/Index>. It should display __Hello from OrchardCore.Mvc.HelloWorld__.
+Open a browser and navigate to <https://localhost:5001/OrchardCore.Mvc.HelloWorld/Home/Index>. It should display __Hello from OrchardCore.Mvc.HelloWorld__.
 
 > The Layout is from the main web application project, while the controller, action and view are from the module project.
 
-## Changing the registered route
+## Registering a custom route
 
-By default, all routes in modules follow the pattern `{area}/{controller}/{action}`, where `{area}` is the name of the module. We will change the registered route in the module to respond to homepage requests.
+By default, all routes in modules follow the pattern `{area}/{controller}/{action}`, where `{area}` is the name of the module. We will change the route of the view in the module to respond to homepage requests.
 
-In the `Startup.cs` file of `OrchardCore.Mvc.HelloWorld`, change the route in the `Configure()` method as follows:
+In the `Startup.cs` file of `OrchardCore.Mvc.HelloWorld`, add a custom route in the `Configure()` method.
 
 ```csharp
     routes.MapAreaControllerRoute(
@@ -79,7 +79,7 @@ In the `Startup.cs` file of `OrchardCore.Mvc.HelloWorld`, change the route in th
     );
 ```
 
-Next, change the `Index.cshtml` file in the module's `Views` -> `Home` folder so that it displays __Hello World__ similar to the [Index.cshtml](../../../OrchardCore.Modules/OrchardCore.Mvc.HelloWorld/Views/Home/Index.cshtml) file in the source code.
+You can also change the `Index.cshtml` file in the module's `Views` -> `Home` folder so that it displays __Hello World__ similar to the [Index.cshtml](../../../OrchardCore.Modules/OrchardCore.Mvc.HelloWorld/Views/Home/Index.cshtml) file in the sample code.
 
 ```html
 <h1>Hello World</h1>
