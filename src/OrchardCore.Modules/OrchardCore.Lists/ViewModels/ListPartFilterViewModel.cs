@@ -2,7 +2,7 @@ namespace OrchardCore.Lists.ViewModels
 {
     public class ListPartFilterViewModel
     {
-       public string DisplayText { get; set; }
+        public string DisplayText { get; set; }
 
         public string SelectedContentType { get; set; }
 
