@@ -15,6 +15,7 @@ using OrchardCore.Security.Permissions;
 using OrchardCore.Shortcodes.Controllers;
 using OrchardCore.Shortcodes.Drivers;
 using OrchardCore.Shortcodes.Services;
+using OrchardCore.Shortcodes.Providers;
 using OrchardCore.Shortcodes.ViewModels;
 using Shortcodes;
 using Sc = Shortcodes;
@@ -99,6 +100,28 @@ namespace OrchardCore.Shortcodes
                 pattern: _adminOptions.AdminUrlPrefix + "/Shortcodes/Edit/{name}",
                 defaults: new { controller = templateControllerName, action = nameof(AdminController.Edit) }
             );
+        }
+    }
+
+    [RequireFeatures("OrchardCore.Localization")]
+    public class LocaleShortcodeProviderStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddShortcode<LocaleShortcodeProvider>("locale", d =>
+            {
+                d.DefaultValue = "[locale {language_code}] [/locale]";
+                d.Hint = "Conditionally render content in the specified language";
+                d.Usage =
+@"[locale en]English Text[/locale][locale fr false]French Text[/locale]<br>
+<table>
+  <tr>
+    <td>Args:</td>
+    <td>lang, fallback</td>
+  </tr>
+</table>";
+                d.Categories = new string[] { "Localization" };
+            });
         }
     }
 }

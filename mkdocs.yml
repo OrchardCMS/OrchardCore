@@ -1,6 +1,7 @@
 site_name: Orchard Core Documentation
 theme:
-  name: material
+  name: material  
+  custom_dir: src/docs/theme
   logo: docs/assets/images/orchard-logo.png
   favicon: docs/assets/images/favicon-blue.png
   features:
@@ -10,7 +11,7 @@ theme:
     primary: blue
     accent: light blue
   static_templates:
-    - docs/404.html
+    - 404.html
     
 extra:
   social:
@@ -56,7 +57,8 @@ markdown_extensions:
 #  - markdown.extensions.nl2br
 
 plugins:
-  - search
+  - search  
+  - git-authors
   - git-revision-date-localized
   - exclude:
       glob:
@@ -183,6 +185,7 @@ nav:
         - Meeting: docs/resources/meeting/README.md
         - Workshops: docs/resources/workshops/README.md
         - Branding: docs/resources/branding/README.md
+        - Owners: docs/resources/owners/README.md
     - Releases: 
         - 1.0.0-rc2: docs/releases/1.0.0-rc2.md
         - 1.0.0-rc1: docs/releases/1.0.0-rc1.md
