@@ -28,9 +28,9 @@ namespace OrchardCore.Tests.Apis.Context
             ShellHost = Site.Services.GetRequiredService<IShellHost>();
         }
 
-        public override async Task InitializeAsync(PermissionsContext permissionsContext = null)
+        public override async Task InitializeAsync(string databaseProvider, string connectionString,PermissionsContext permissionsContext = null)
         {
-            await base.InitializeAsync();
+            await base.InitializeAsync(databaseProvider, connectionString);
 
             var result = await GraphQLClient
                 .Content

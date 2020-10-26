@@ -5,6 +5,7 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Tests.Apis.Context;
+using OrchardCore.Tests.Apis.Context.Attributes;
 using Xunit;
 using YesSql;
 
@@ -12,13 +13,17 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
 {
     public class BlogPostUpdateDeploymentPlanTests
     {
-        [Fact]
-        public async Task ShouldUpdateExistingContentItemVersion()
+        [Theory]
+        [SqliteData]
+        [SqlServerData]
+        [MySqlData]
+        [PostgreSqlData]
+        public async Task ShouldUpdateExistingContentItemVersion(string databaseProvider, string connectionString)
         {
             using (var context = new BlogPostDeploymentContext())
             {
                 // Setup
-                await context.InitializeAsync();
+                await context.InitializeAsync(databaseProvider, connectionString);
 
                 // Act
                 var recipe = context.GetContentStepRecipe(context.OriginalBlogPost, jItem =>
@@ -43,13 +48,17 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
             }
         }
 
-        [Fact]
-        public async Task ShouldDiscardDraftThenUpdateExistingContentItemVersion()
+        [Theory]
+        [SqliteData]
+        [SqlServerData]
+        [MySqlData]
+        [PostgreSqlData]
+        public async Task ShouldDiscardDraftThenUpdateExistingContentItemVersion(string databaseProvider, string connectionString)
         {
             using (var context = new BlogPostDeploymentContext())
             {
                 // Setup
-                await context.InitializeAsync();
+                await context.InitializeAsync(databaseProvider, connectionString);
 
                 var content = await context.Client.PostAsJsonAsync("api/content?draft=true", context.OriginalBlogPost);
                 var draftContentItemVersionId = (await content.Content.ReadAsAsync<ContentItem>()).ContentItemVersionId;
@@ -83,13 +92,17 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
             }
         }
 
-        [Fact]
-        public async Task ShouldUpdateDraftThenPublishExistingContentItemVersion()
+        [Theory]
+        [SqliteData]
+        [SqlServerData]
+        [MySqlData]
+        [PostgreSqlData]
+        public async Task ShouldUpdateDraftThenPublishExistingContentItemVersion(string databaseProvider, string connectionString)
         {
             using (var context = new BlogPostDeploymentContext())
             {
                 // Setup
-                await context.InitializeAsync();
+                await context.InitializeAsync(databaseProvider, connectionString);
 
                 var content = await context.Client.PostAsJsonAsync("api/content?draft=true", context.OriginalBlogPost);
                 var draftContentItem = (await content.Content.ReadAsAsync<ContentItem>());

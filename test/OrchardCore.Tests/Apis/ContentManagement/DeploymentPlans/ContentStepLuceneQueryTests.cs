@@ -4,19 +4,24 @@ using Newtonsoft.Json.Linq;
 using OrchardCore.Autoroute.Models;
 using OrchardCore.ContentManagement;
 using OrchardCore.Tests.Apis.Context;
+using OrchardCore.Tests.Apis.Context.Attributes;
 using Xunit;
 
 namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
 {
     public class ContentStepLuceneQueryTests
     {
-        [Fact]
-        public async Task ShouldUpdateLuceneIndexesOnImport()
+        [Theory]
+        [SqliteData]
+        [SqlServerData]
+        [MySqlData]
+        [PostgreSqlData]
+        public async Task ShouldUpdateLuceneIndexesOnImport(string databaseProvider, string connectionString)
         {
             using (var context = new BlogPostDeploymentContext())
             {
                 // Setup
-                await context.InitializeAsync();
+                await context.InitializeAsync(databaseProvider, connectionString);
 
                 // Act
                 var recipe = context.GetContentStepRecipe(context.OriginalBlogPost, jItem =>

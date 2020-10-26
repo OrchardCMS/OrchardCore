@@ -5,6 +5,7 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Tests.Apis.Context;
+using OrchardCore.Tests.Apis.Context.Attributes;
 using Xunit;
 using YesSql;
 
@@ -12,13 +13,17 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
 {
     public class BlogPostContentStepIdempotentTests
     {
-        [Fact]
-        public async Task ShouldProduceSameOutcomeForNewContentOnMultipleExecutions()
+        [Theory]
+        [SqliteData]
+        [SqlServerData]
+        [MySqlData]
+        [PostgreSqlData]
+        public async Task ShouldProduceSameOutcomeForNewContentOnMultipleExecutions(string databaseProvider, string connectionString)
         {
             using (var context = new BlogPostDeploymentContext())
             {
                 // Setup
-                await context.InitializeAsync();
+                await context.InitializeAsync(databaseProvider, connectionString);
 
                 // Act
                 var recipe = context.GetContentStepRecipe(context.OriginalBlogPost, jItem =>
@@ -31,7 +36,7 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
                 {
                     await context.PostRecipeAsync(recipe);
 
-                    // Test 
+                    // Test
                     var shellScope = await BlogPostDeploymentContext.ShellHost.GetScopeAsync(context.TenantName);
                     await shellScope.UsingAsync(async scope =>
                     {
@@ -54,13 +59,17 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
             }
         }
 
-        [Fact]
-        public async Task ShouldProduceSameOutcomeForExistingContentItemVersionOnMultipleExecutions()
+        [Theory]
+        [SqliteData]
+        [SqlServerData]
+        [MySqlData]
+        [PostgreSqlData]
+        public async Task ShouldProduceSameOutcomeForExistingContentItemVersionOnMultipleExecutions(string databaseProvider, string connectionString)
         {
             using (var context = new BlogPostDeploymentContext())
             {
                 // Setup
-                await context.InitializeAsync();
+                await context.InitializeAsync(databaseProvider, connectionString);
 
                 // Act
                 var recipe = context.GetContentStepRecipe(context.OriginalBlogPost, jItem =>

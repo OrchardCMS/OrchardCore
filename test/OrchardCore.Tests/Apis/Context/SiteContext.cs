@@ -8,6 +8,7 @@ namespace OrchardCore.Tests.Apis.Context
 {
     public class SiteContext : IDisposable
     {
+        private static readonly TablePrefixGenerator TablePrefixGenerator = new TablePrefixGenerator();
         public static OrchardTestFixture<SiteStartup> Site { get; }
         public static HttpClient DefaultTenantClient { get; }
 
@@ -21,13 +22,22 @@ namespace OrchardCore.Tests.Apis.Context
             DefaultTenantClient = Site.CreateDefaultClient();
         }
 
-        public virtual async Task InitializeAsync(PermissionsContext permissionsContext = null)
+        public virtual async Task InitializeAsync(string databaseProvider, string connectionString, PermissionsContext permissionsContext = null)
         {
-            var tenantName = Guid.NewGuid().ToString().Replace("-", "");
+            if (databaseProvider == null)
+            {
+                databaseProvider = "Sqlite";
+
+            }
+
+            var tenantName = Guid.NewGuid().ToString("n");
+            var tablePrefix = await TablePrefixGenerator.GeneratePrefixAsync();
 
             var createModel = new Tenants.ViewModels.CreateApiViewModel
             {
-                DatabaseProvider = "Sqlite",
+                DatabaseProvider = databaseProvider,
+                TablePrefix = tablePrefix,
+                ConnectionString = connectionString,
                 RecipeName = "Blog",
                 Name = tenantName,
                 RequestUrlPrefix = tenantName
@@ -44,7 +54,9 @@ namespace OrchardCore.Tests.Apis.Context
             var setupModel = new Tenants.ViewModels.SetupApiViewModel
             {
                 SiteName = "Test Site",
-                DatabaseProvider = "Sqlite",
+                DatabaseProvider = databaseProvider,
+                TablePrefix = tablePrefix,
+                ConnectionString = connectionString,
                 RecipeName = "Blog",
                 UserName = "admin",
                 Password = "Password01_",

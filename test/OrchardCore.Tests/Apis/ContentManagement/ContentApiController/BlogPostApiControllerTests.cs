@@ -11,6 +11,7 @@ using OrchardCore.Environment.Shell;
 using OrchardCore.Lists.Models;
 using OrchardCore.Taxonomies.Fields;
 using OrchardCore.Tests.Apis.Context;
+using OrchardCore.Tests.Apis.Context.Attributes;
 using Xunit;
 using YesSql;
 
@@ -18,13 +19,17 @@ namespace OrchardCore.Tests.Apis.ContentManagement.ContentApiController
 {
     public class BlogPostApiControllerTests
     {
-        [Fact]
-        public async Task ShouldCreateDraftOfExistingContentItem()
+        [Theory]
+        [SqliteData]
+        [SqlServerData]
+        [MySqlData]
+        [PostgreSqlData]
+        public async Task ShouldCreateDraftOfExistingContentItem(string databaseProvider, string connectionString)
         {
             using (var context = new BlogPostApiControllerContext())
             {
                 // Setup
-                await context.InitializeAsync();
+                await context.InitializeAsync(databaseProvider, connectionString);
 
                 context.BlogPost.Latest = false;
                 context.BlogPost.Published = true; // Deliberately set these incorrectly.
@@ -39,13 +44,17 @@ namespace OrchardCore.Tests.Apis.ContentManagement.ContentApiController
             }
         }
 
-        [Fact]
-        public async Task ShouldCreateAndPublishExistingContentItem()
+        [Theory]
+        [SqliteData]
+        [SqlServerData]
+        [MySqlData]
+        [PostgreSqlData]
+        public async Task ShouldCreateAndPublishExistingContentItem(string databaseProvider, string connectionString)
         {
             using (var context = new BlogPostApiControllerContext())
             {
                 // Setup
-                await context.InitializeAsync();
+                await context.InitializeAsync(databaseProvider, connectionString);
 
                 context.BlogPost.Latest = false;
                 context.BlogPost.Published = false; // Deliberately set these incorrectly.
@@ -60,13 +69,17 @@ namespace OrchardCore.Tests.Apis.ContentManagement.ContentApiController
             }
         }
 
-        [Fact]
-        public async Task ShouldOnlyCreateTwoContentItemRecordsForExistingContentItem()
+        [Theory]
+        [SqliteData]
+        [SqlServerData]
+        [MySqlData]
+        [PostgreSqlData]
+        public async Task ShouldOnlyCreateTwoContentItemRecordsForExistingContentItem(string databaseProvider, string connectionString)
         {
             using (var context = new BlogPostApiControllerContext())
             {
                 // Setup
-                await context.InitializeAsync();
+                await context.InitializeAsync(databaseProvider, connectionString);
 
                 context.BlogPost.Latest = false;
                 context.BlogPost.Published = false; // Deliberately set these incorrectly.
@@ -87,14 +100,18 @@ namespace OrchardCore.Tests.Apis.ContentManagement.ContentApiController
             }
         }
 
-        [Fact]
-        public async Task ShouldCreateDraftOfNewContentItem()
+        [Theory]
+        [SqliteData]
+        [SqlServerData]
+        [MySqlData]
+        [PostgreSqlData]
+        public async Task ShouldCreateDraftOfNewContentItem(string databaseProvider, string connectionString)
         {
             using (var context = new BlogPostApiControllerContext())
             {
                 // Setup
                 var displayText = "some other blog post";
-                await context.InitializeAsync();
+                await context.InitializeAsync(databaseProvider, connectionString);
 
                 var contentItem = new ContentItem
                 {
@@ -144,15 +161,19 @@ namespace OrchardCore.Tests.Apis.ContentManagement.ContentApiController
             }
         }
 
-        [Fact]
-        public async Task ShouldCreateAndPublishNewContentItem()
+        [Theory]
+        [SqliteData]
+        [SqlServerData]
+        [MySqlData]
+        [PostgreSqlData]
+        public async Task ShouldCreateAndPublishNewContentItem(string databaseProvider, string connectionString)
         {
             using (var context = new BlogPostApiControllerContext())
             {
                 // Setup
                 var displayText = "some other blog post";
                 var path = "path2";
-                await context.InitializeAsync();
+                await context.InitializeAsync(databaseProvider, connectionString);
 
                 var contentItem = new ContentItem
                 {
@@ -202,13 +223,17 @@ namespace OrchardCore.Tests.Apis.ContentManagement.ContentApiController
             }
         }
 
-        [Fact]
-        public async Task ShouldFailValidationWhenAutoroutePathIsNotUnique()
+        [Theory]
+        [SqliteData]
+        [SqlServerData]
+        [MySqlData]
+        [PostgreSqlData]
+        public async Task ShouldFailValidationWhenAutoroutePathIsNotUnique(string databaseProvider, string connectionString)
         {
             using (var context = new BlogPostApiControllerContext())
             {
                 // Setup
-                await context.InitializeAsync();
+                await context.InitializeAsync(databaseProvider, connectionString);
 
                 var contentItem = new ContentItem
                 {
@@ -265,13 +290,17 @@ namespace OrchardCore.Tests.Apis.ContentManagement.ContentApiController
             }
         }
 
-        [Fact]
-        public async Task ShouldGenerateUniqueAutoroutePath()
+        [Theory]
+        [SqliteData]
+        [SqlServerData]
+        [MySqlData]
+        [PostgreSqlData]
+        public async Task ShouldGenerateUniqueAutoroutePath(string databaseProvider, string connectionString)
         {
             using (var context = new BlogPostApiControllerContext())
             {
                 // Setup
-                await context.InitializeAsync();
+                await context.InitializeAsync(databaseProvider, connectionString);
 
                 var contentItem = new ContentItem
                 {
