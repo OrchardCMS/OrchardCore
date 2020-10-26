@@ -7,7 +7,6 @@
 <!DOCTYPE html>
 <html lang="@Orchard.CultureName()" dir="@Orchard.CultureDir()">
 <head>
-    <title>@RenderTitleSegments(Site.SiteName, "before")</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
@@ -15,7 +14,7 @@
 
     <!-- Prevents page flickering while downloading css -->
     <style>
-        .preload { 
+        .preload * { 
             display: none; 
             -webkit-transition: none !important;
             -moz-transition: none !important;
@@ -40,6 +39,7 @@
     <!-- This script can't wait to the footer -->
     <script asp-src="~/TheAdmin/Scripts/TheAdmin-header.min.js" debug-src="~/TheAdmin/Scripts/TheAdmin-header.js"></script>
     @await RenderSectionAsync("HeadMeta", required: false)
+    <title>@RenderTitleSegments(Site.SiteName, "before")</title>
 </head>
 <body class="preload">
     <div class="ta-wrapper">
