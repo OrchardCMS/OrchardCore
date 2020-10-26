@@ -183,6 +183,7 @@ nav:
         - Meeting: docs/resources/meeting/README.md
         - Workshops: docs/resources/workshops/README.md
         - Branding: docs/resources/branding/README.md
+        - Owners: docs/resources/owners/README.md
     - Releases: 
         - 1.0.0-rc2: docs/releases/1.0.0-rc2.md
         - 1.0.0-rc1: docs/releases/1.0.0-rc1.md
