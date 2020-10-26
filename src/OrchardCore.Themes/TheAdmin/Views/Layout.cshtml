@@ -22,10 +22,10 @@
     </style>
 
     <!-- Bootstrap CSS -->
-    <style asp-id="admin-default" asp-media="all" asp-name="admin" asp-src="~/TheAdmin/Styles/TheAdmin.min.css" debug-src="~/TheAdmin/Styles/TheAdmin.css" depends-on="jQuery-ui"></style>
+    <style id="admin-default" media="all" asp-name="admin" asp-src="~/TheAdmin/Styles/TheAdmin.min.css" debug-src="~/TheAdmin/Styles/TheAdmin.css" depends-on="jQuery-ui"></style>
     @if (adminSettings.DisplayDarkmode)
     {
-        <style asp-id="admin-darkmode" asp-media="not all" asp-name="admin-darkmode" asp-src="~/TheAdmin/Styles/TheAdmin-darkmode.min.css" debug-src="~/TheAdmin/Styles/TheAdmin-darkmode.css" depends-on="jQuery-ui"></style>
+        <style id="admin-darkmode" media="not all" asp-name="admin-darkmode" asp-src="~/TheAdmin/Styles/TheAdmin-darkmode.min.css" debug-src="~/TheAdmin/Styles/TheAdmin-darkmode.css" depends-on="jQuery-ui"></style>
     }
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons|Material+Icons+Outlined|Material+Icons+Two+Tone|Material+Icons+Round|Material+Icons+Sharp" rel="stylesheet">
 

@@ -10,24 +10,16 @@ namespace OrchardCore.ResourceManagement.TagHelpers
     [HtmlTargetElement("style", Attributes = AtAttributeName)]
     public class StyleTagHelper : TagHelper
     {
-        private const string IdAttributeName = "asp-id";
         private const string NameAttributeName = "asp-name";
         private const string SrcAttributeName = "asp-src";
-        private const string MediaAttributeName = "asp-media";
         private const string AtAttributeName = "at";
         private const string AppendVersionAttributeName = "asp-append-version";
-
-        [HtmlAttributeName(IdAttributeName)]
-        public string Id { get; set; }
 
         [HtmlAttributeName(NameAttributeName)]
         public string Name { get; set; }
 
         [HtmlAttributeName(SrcAttributeName)]
         public string Src { get; set; }
-
-        [HtmlAttributeName(MediaAttributeName)]
-        public string Media { get; set; }
 
         [HtmlAttributeName(AppendVersionAttributeName)]
         public bool? AppendVersion { get; set; }
@@ -61,6 +53,11 @@ namespace OrchardCore.ResourceManagement.TagHelpers
             {
                 // Include custom script
                 var setting = _resourceManager.RegisterUrl("stylesheet", Src, DebugSrc);
+                
+                foreach (var attribute in output.Attributes)
+                {
+                    setting.SetAttribute(attribute.Name, attribute.Value.ToString());
+                }
 
                 if (At != ResourceLocation.Unspecified)
                 {
@@ -96,6 +93,11 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                 // Resource required
 
                 var setting = _resourceManager.RegisterResource("stylesheet", Name);
+
+                foreach (var attribute in output.Attributes)
+                {
+                    setting.SetAttribute(attribute.Name, attribute.Value.ToString());
+                }
 
                 if (At != ResourceLocation.Unspecified)
                 {
@@ -157,14 +159,9 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                 var definition = _resourceManager.InlineManifest.DefineStyle(Name);
                 definition.SetUrl(Src, DebugSrc);
 
-                if (!String.IsNullOrEmpty(Id))
+                foreach (var attribute in output.Attributes)
                 {
-                    definition.SetAttribute("id", Id);
-                }
-
-                if (!String.IsNullOrEmpty(Media))
-                {
-                    definition.SetAttribute("media", Media);
+                    definition.SetAttribute(attribute.Name, attribute.Value.ToString());
                 }
 
                 if (!String.IsNullOrEmpty(Version))
