@@ -36,6 +36,7 @@ namespace OrchardCore.Admin.Drivers
             return Initialize<AdminSettingsViewModel>("AdminSettings_Edit", model =>
                 {
                     model.DisplayMenuFilter = settings.DisplayMenuFilter;
+                    model.DisplayDarkmode = settings.DisplayDarkmode;
                 }).Location("Content:3").OnGroup(GroupId);
         }
 
@@ -55,6 +56,7 @@ namespace OrchardCore.Admin.Drivers
                 await context.Updater.TryUpdateModelAsync(model, Prefix);
 
                 settings.DisplayMenuFilter = model.DisplayMenuFilter;
+                settings.DisplayDarkmode = model.DisplayDarkmode;
             }
 
             return await EditAsync(settings, context);
