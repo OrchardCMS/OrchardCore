@@ -19019,7 +19019,7 @@ ul.pager {
   z-index: 100 !important; }
 
 .ta-navbar-top {
-  z-index: calc($zindex-sticky + 1); }
+  z-index: calc(1000 + 1); }
 
 [dir] .ta-navbar-top {
   border-bottom: 1px solid #393e40;
