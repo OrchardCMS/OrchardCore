@@ -1,8 +1,5 @@
-@inject OrchardCore.Settings.ISiteService siteService
-@using OrchardCore.Entities
-@using OrchardCore.Admin.Models
 @{
-    var adminSettings = (await siteService.GetSiteSettingsAsync()).As<AdminSettings>();
+    var adminSettings = Site.As<AdminSettings>();
 }
 <!DOCTYPE html>
 <html lang="@Orchard.CultureName()" dir="@Orchard.CultureDir()">
@@ -37,7 +34,7 @@
     <script asp-name="admin" asp-src="~/TheAdmin/Scripts/TheAdmin.min.js" debug-src="~/TheAdmin/Scripts/TheAdmin.js" depends-on="jQuery, jQuery-ui, jQuery-ui-i18n" at="Foot"></script>
     <resources type="Header" />
 
-    <!-- This script can't wait to the footer -->
+    <!-- This script can't wait till the footer -->
     <script asp-src="~/TheAdmin/Scripts/TheAdmin-header.min.js" debug-src="~/TheAdmin/Scripts/TheAdmin-header.js"></script>
     @await RenderSectionAsync("HeadMeta", required: false)
 </head>
@@ -48,7 +45,7 @@
             <div class="mr-auto">
                 @await RenderSectionAsync("NavbarTop", required: false)
             </div>
-            @(await DisplayAsync(await New.UserMenu()))
+            @await DisplayAsync(await New.UserMenu())
             @if (adminSettings.DisplayDarkmode)
             {
                 <a id="btn-darkmode" class="btn btn-sm btn-light ml-2" title="@T["Dark mode"]"><i class="fas fa-moon"></i></a>
