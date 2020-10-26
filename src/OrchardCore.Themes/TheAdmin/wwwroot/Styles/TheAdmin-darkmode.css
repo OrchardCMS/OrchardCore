@@ -19019,7 +19019,7 @@ ul.pager {
   z-index: 100 !important; }
 
 .ta-navbar-top {
-  z-index: calc(1000 + 1); }
+  z-index: 1030; }
 
 [dir] .ta-navbar-top {
   border-bottom: 1px solid #393e40;
@@ -19087,7 +19087,7 @@ ul.pager {
     display: none; }
 
 body:not(.left-sidebar-compact) #ta-left-sidebar {
-  z-index: 7;
+  z-index: calc(1000 + 1);
   position: fixed;
   top: 52px;
   bottom: 0;
@@ -19389,7 +19389,7 @@ body:not(.left-sidebar-compact) #ta-left-sidebar {
     box-shadow: unset; }
 
 .left-sidebar-compact #ta-left-sidebar {
-  z-index: 1000;
+  z-index: calc(1000 + 1);
   position: fixed;
   top: 52px;
   bottom: 0;
@@ -19981,7 +19981,7 @@ html[dir]:not(.fontawesome-i2svg-complete) #left-nav ul.menu-admin > li > .item-
 
 .action-bar {
   top: 3.3rem;
-  z-index: 1050; }
+  z-index: 1000; }
 
 [dir] .bg-primary {
   background-color: #1b1e1f !important; }

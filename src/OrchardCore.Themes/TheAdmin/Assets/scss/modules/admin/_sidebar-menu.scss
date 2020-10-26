@@ -4,7 +4,7 @@
 body:not(.left-sidebar-compact) {
     #ta-left-sidebar {
         background-color: $admin-menu-bg-color;
-        z-index: 7;
+        z-index: calc(#{$zindex-sticky} + 1);
         position: fixed;
         top: $top-nav-height;
         bottom: 0;
@@ -336,7 +336,7 @@ body:not(.left-sidebar-compact) {
 .left-sidebar-compact {
     #ta-left-sidebar {
         background-color: $admin-menu-bg-color;
-        z-index: $zindex-sticky;
+        z-index: calc(#{$zindex-sticky} + 1);
         position: fixed;
         top: $top-nav-height;
         bottom: 0;
