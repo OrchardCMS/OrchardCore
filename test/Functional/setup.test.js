@@ -119,10 +119,11 @@ describe('Create Tenants', () => {
         
         await page.type('#Name', 'Agency');
         await page.type('#RequestUrlPrefix', 'agency');
+        
 
         await Promise.all([
             page.waitForNavigation(),
-            (await page.$x("//button[contains(text(), 'Create')]"))[0].click()
+            (await page.click(".btn.create"))
         ]);
 
         await expect(await page.url()).toBe(`${basePath}/Admin/Tenants`);
@@ -165,7 +166,7 @@ describe('Create Tenants', () => {
 
         await Promise.all([
             page.waitForNavigation(),
-            (await page.$x("//button[contains(text(), 'Create')]"))[0].click()
+            (await page.click(".btn.create"))
         ]);
 
         await expect(await page.url()).toBe(`${basePath}/Admin/Tenants`);
