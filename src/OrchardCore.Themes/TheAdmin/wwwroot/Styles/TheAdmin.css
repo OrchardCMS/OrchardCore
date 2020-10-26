@@ -14471,7 +14471,7 @@ body:not(.left-sidebar-compact) #ta-left-sidebar {
     box-shadow: unset; }
 
 .left-sidebar-compact #ta-left-sidebar {
-  z-index: 1000;
+  z-index: 1070;
   position: fixed;
   top: 52px;
   bottom: 0;
