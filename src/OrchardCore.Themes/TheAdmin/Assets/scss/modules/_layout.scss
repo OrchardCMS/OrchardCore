@@ -1,3 +1,11 @@
+.preload * { 
+    display: none;
+    -webkit-transition: none !important;
+    -moz-transition: none !important;
+    -ms-transition: none !important;
+    -o-transition: none !important;
+}
+
 body {
     margin-bottom: $footer-height;
     cursor: default;

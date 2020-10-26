@@ -19900,6 +19900,15 @@ html[dir]:not(.fontawesome-i2svg-complete) #left-nav ul.menu-admin > li > .item-
   transition-duration: 0.2s;
   transform: scale(-2, 1); }
 
+.preload * {
+  display: none;
+  -moz-transition: none !important;
+  -ms-transition: none !important;
+  -o-transition: none !important; }
+
+[dir] .preload * {
+  -webkit-transition: none !important; }
+
 [dir] body {
   margin-bottom: 40px;
   cursor: default; }
