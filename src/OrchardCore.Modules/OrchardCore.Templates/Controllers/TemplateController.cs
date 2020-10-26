@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
@@ -27,6 +28,7 @@ namespace OrchardCore.Templates.Controllers
         private readonly IStringLocalizer S;
         private readonly IHtmlLocalizer H;
         private readonly dynamic New;
+        private readonly IHttpContextAccessor _hca;
 
         public TemplateController(
             IAuthorizationService authorizationService,
@@ -36,7 +38,8 @@ namespace OrchardCore.Templates.Controllers
             ISiteService siteService,
             IStringLocalizer<TemplateController> stringLocalizer,
             IHtmlLocalizer<TemplateController> htmlLocalizer,
-            INotifier notifier)
+            INotifier notifier,
+            IHttpContextAccessor hca)
         {
             _authorizationService = authorizationService;
             _templatesManager = templatesManager;
@@ -46,15 +49,15 @@ namespace OrchardCore.Templates.Controllers
             _notifier = notifier;
             S = stringLocalizer;
             H = htmlLocalizer;
+            _hca = hca;
         }
 
         public Task<IActionResult> Admin(PagerParameters pagerParameters)
         {
-            var querystring = this.Request.QueryString.Value;
             var query = "";
-            if (querystring.Contains("displayText"))
+            if (_hca.HttpContext.Request.Query.ContainsKey("DisplayText"))
             {
-                query = querystring.Substring(querystring.IndexOf('=') + 1);
+                query = _hca.HttpContext.Request.Query["DisplayText"];
             }
 
             // Used to provide a different url such that the Admin Templates menu entry doesn't collide with the Templates ones
