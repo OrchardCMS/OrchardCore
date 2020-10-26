@@ -16,13 +16,13 @@ namespace OrchardCore.Contents.Handlers
     /// <summary>
     /// Provides the content for FullTextAspect based on FullTextAspectSettings
     /// </summary>
-    public class FullTextAspectSettingsHandler : ContentHandlerBase
+    public class FullTextAspectContentHandler : ContentHandlerBase
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly IServiceProvider _serviceProvider;
 
-        public FullTextAspectSettingsHandler(
+        public FullTextAspectContentHandler(
             IContentDefinitionManager contentDefinitionManager,
             ILiquidTemplateManager liquidTemplateManager,
             IServiceProvider serviceProvider
