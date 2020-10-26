@@ -14074,7 +14074,7 @@ html[dir], [dir] body {
   left: 0; }
 
 .ta-navbar-top {
-  z-index: calc($zindex-sticky + 1); }
+  z-index: calc(1071); }
 
 [dir] .ta-navbar-top {
   border-bottom: 1px solid #DEDEDE;
