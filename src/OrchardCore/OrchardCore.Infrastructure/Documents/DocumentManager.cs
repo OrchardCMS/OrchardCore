@@ -1,4 +1,6 @@
 using System;
+using System.IO;
+using System.IO.Compression;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Distributed;
@@ -261,6 +263,11 @@ namespace OrchardCore.Documents
                 return null;
             }
 
+            if (_isDistributed && _options.CacheCompression.Value)
+            {
+                data = Decompress(data);
+            }
+
             return Deserialize(data);
         }
 
@@ -269,6 +276,12 @@ namespace OrchardCore.Documents
             if (_isDistributed)
             {
                 var data = Serialize(document);
+
+                if (_options.CacheCompression.Value)
+                {
+                    data = Compress(data);
+                }
+
                 await _distributedCache.SetAsync(_options.CacheKey, data, _options);
             }
 
@@ -280,5 +293,29 @@ namespace OrchardCore.Documents
 
         internal static TDocument Deserialize(byte[] data) =>
             JsonConvert.DeserializeObject<TDocument>(Encoding.UTF8.GetString(data), _jsonSettings);
+
+        internal static byte[] Compress(byte[] data)
+        {
+            using var input = new MemoryStream(data);
+            using var output = new MemoryStream();
+            using (var gzip = new GZipStream(output, CompressionMode.Compress))
+            {
+                input.CopyTo(gzip);
+            }
+
+            return output.ToArray();
+        }
+
+        internal static byte[] Decompress(byte[] data)
+        {
+            using var input = new MemoryStream(data);
+            using var output = new MemoryStream();
+            using (var gzip = new GZipStream(input, CompressionMode.Decompress))
+            {
+                gzip.CopyTo(output);
+            }
+
+            return output.ToArray();
+        }
     }
 }
