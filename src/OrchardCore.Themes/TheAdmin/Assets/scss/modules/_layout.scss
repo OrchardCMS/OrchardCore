@@ -87,13 +87,6 @@ body {
 // after a few milliseconds.
 // https://css-tricks.com/transitions-only-after-page-load/
 // ------------------------------
-.preload * {
-    -webkit-transition: none !important;
-    -moz-transition: none !important;
-    -ms-transition: none !important;
-    -o-transition: none !important;
-}
-
 .disable.custom-control-input:checked ~ .custom-control-label::before {
     border-color: red;
     background-color: red;

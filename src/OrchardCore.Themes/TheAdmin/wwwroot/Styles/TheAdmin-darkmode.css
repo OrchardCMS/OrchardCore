@@ -19967,14 +19967,6 @@ html[dir]:not(.fontawesome-i2svg-complete) #left-nav ul.menu-admin > li > .item-
 [dir] .with-checkbox .list-group-item {
   padding: 0.75rem 0.5rem; }
 
-.preload * {
-  -moz-transition: none !important;
-  -ms-transition: none !important;
-  -o-transition: none !important; }
-
-[dir] .preload * {
-  -webkit-transition: none !important; }
-
 [dir] .disable.custom-control-input:checked ~ .custom-control-label::before {
   border-color: red;
   background-color: red; }
