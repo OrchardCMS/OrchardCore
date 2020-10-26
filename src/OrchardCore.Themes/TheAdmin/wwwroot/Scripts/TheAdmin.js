@@ -7097,7 +7097,8 @@ function confirmDialog(_ref) {
     callback(false);
     $("#confirmRemoveModal").modal("hide");
   });
-}
+} // Prevents page flickering while downloading css
+
 
 $(function () {
   $("body").removeClass("preload");
