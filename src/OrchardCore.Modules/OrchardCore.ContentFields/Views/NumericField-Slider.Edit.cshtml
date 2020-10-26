@@ -39,8 +39,8 @@
     }
 </div>
 <script at="Foot">
-    $('#@(id)-slider').bootstrapSlider({ tooltip: 'always' }).on('slide', function (ev) {
-        $('#@(id)').val(ev.value);
+    $('#@(id)-slider').bootstrapSlider({ tooltip: 'always' }).on('change', function (ev) {
+        $('#@(id)').val(ev.value.newValue);
     });
     $('#@(id)').change(function () {
         $('#@(id)-slider').bootstrapSlider('setValue', this.value);
