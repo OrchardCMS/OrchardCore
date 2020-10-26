@@ -118,8 +118,7 @@ describe('Create Tenants', () => {
         await page.goto(`${basePath}/Admin/Tenants/Create`);
         
         await page.type('#Name', 'Agency');
-        await page.type('#RequestUrlPrefix', 'agency');
-        
+        await page.type('#RequestUrlPrefix', 'agency');        
 
         await Promise.all([
             page.waitForNavigation(),
