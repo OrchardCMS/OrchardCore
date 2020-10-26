@@ -125,6 +125,24 @@ services.AddShortcode<ImageShortcodeProvider>("image", describe => {
 
     The Shortcode Templates feature is only available from the [Preview Feed](../../../getting-started/preview-package-source)
 
+## Available Shortcodes
+
+### `[locale]`
+
+The `locale` shortcode allows you to conditionally render content in the specified language. Output is based on the current thread culture.
+This shortcode is accessible when the `OrchardCore.Localization` module is enabled. 
+
+Example
+```
+[locale en]English Text[/locale][locale fr]French Text[/locale]
+```
+
+By default, the shortcode will render the content if the current locale is a parent of the specified language. 
+For example, if the current locale is `en-CA` and you specified this shortcode: `[locale en]English Text[/locale]` The output will be `English Text`.
+You can disable this behavior by passing `false` as the second argument of the shortcode. 
+`[locale en false]English Text[/locale]` would render nothing if the current culture is not exactly `en`.
+
+
 ## Video
 
 <iframe width="560" height="315" src="https://www.youtube.com/embed/ofPKGsW5Ftg" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

@@ -14,28 +14,33 @@
 <style asp-name="bootstrap-slider" version="11"></style>
 
 <div class="form-group">
-    <div class="row col-small">
-        <label asp-for="Value">@name</label>
-        <div class="input-group mb-2">
-            @*<div class="input-group-prepend">
-                <div class="input-group-text">@min</div>
-            </div>*@
-            <input asp-for="Value" type="number" class="form-control content-preview-select" />
-            @*<div class="input-group-append">
-                <div class="input-group-text">@max</div>
-            </div>*@
+    <div class="row">
+        <div class="col-md-6 col-lg-4">
+            <label asp-for="Value">@name</label>
+            <div class="input-group mb-2">
+                @*<div class="input-group-prepend">
+                    <div class="input-group-text">@min</div>
+                </div>*@
+                <input asp-for="Value" type="number" class="form-control content-preview-select" />
+                @*<div class="input-group-append">
+                    <div class="input-group-text">@max</div>
+                </div>*@
+            </div>
+            <div class="input-group mb-2 ml-2">            
+                @if (settings.Minimum.HasValue) {<span class="mr-3">@min</span>}
+                <input id="@(id)-slider" type="text" data-slider-min="@min" data-slider-max="@max" data-slider-step="@step" data-slider-value="@Model.Value" />            
+                @if (settings.Maximum.HasValue) {<span class="ml-1">@max</span>}
+            </div>
         </div>
-        <div class="input-group mb-2 ml-2">            
-            @if (settings.Minimum.HasValue) {<span class="mr-3">@min</span>}
-            <input id="@(id)-slider" type="text" data-slider-min="@min" data-slider-max="@max" data-slider-step="@step" data-slider-value="@Model.Value" />            
-            @if (settings.Maximum.HasValue) {<span class="ml-1">@max</span>}
-        </div>
-        <span class="hint">@settings.Hint</span>
     </div>
+    @if (!String.IsNullOrEmpty(settings.Hint))
+    {
+        <span class="hint">@settings.Hint</span>
+    }
 </div>
 <script at="Foot">
-    $('#@(id)-slider').bootstrapSlider({ tooltip: 'always' }).on('slide', function (ev) {
-        $('#@(id)').val(ev.value);
+    $('#@(id)-slider').bootstrapSlider({ tooltip: 'always' }).on('change', function (ev) {
+        $('#@(id)').val(ev.value.newValue);
     });
     $('#@(id)').change(function () {
         $('#@(id)-slider').bootstrapSlider('setValue', this.value);
