@@ -4,6 +4,6 @@ namespace OrchardCore.Admin.Models
     {
         public bool DisplayMenuFilter { get; set; }
 
-        public bool DisplayDarkmode { get; set; }
+        public bool DisplayDarkMode { get; set; }
     }
 }

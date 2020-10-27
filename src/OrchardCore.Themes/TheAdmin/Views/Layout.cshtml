@@ -22,7 +22,7 @@
 
     <!-- Bootstrap CSS -->
     <style id="admin-default" media="all" asp-name="admin" asp-src="~/TheAdmin/Styles/TheAdmin.min.css" debug-src="~/TheAdmin/Styles/TheAdmin.css" depends-on="jQuery-ui"></style>
-    @if (adminSettings.DisplayDarkmode)
+    @if (adminSettings.DisplayDarkMode)
     {
         <style id="admin-darkmode" media="not all" asp-name="admin-darkmode" asp-src="~/TheAdmin/Styles/TheAdmin-darkmode.min.css" debug-src="~/TheAdmin/Styles/TheAdmin-darkmode.css" depends-on="jQuery-ui"></style>
     }
@@ -45,7 +45,7 @@
                 @await RenderSectionAsync("NavbarTop", required: false)
             </div>
             @await DisplayAsync(await New.UserMenu())
-            @if (adminSettings.DisplayDarkmode)
+            @if (adminSettings.DisplayDarkMode)
             {
                 <a id="btn-darkmode" class="btn btn-sm btn-light ml-2" title="@T["Dark mode"]"><i class="fas fa-moon"></i></a>
             }
