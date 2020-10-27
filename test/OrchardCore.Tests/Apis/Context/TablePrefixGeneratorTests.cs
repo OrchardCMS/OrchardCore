@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -10,12 +10,12 @@ namespace OrchardCore.Tests.Apis.Context
         public async Task TenantPrefixShouldBeUnique()
         {
             var tablePrefixGenerator = new TablePrefixGenerator();
-            string previousPrefix = null;
+            var prefixes = new HashSet<string>();
             for(var i = 0; i < 200; i++)
             {
                 var prefix = await tablePrefixGenerator.GeneratePrefixAsync();
-                Assert.NotEqual(previousPrefix, prefix);
-                previousPrefix = prefix;
+                Assert.DoesNotContain(prefix, prefixes);
+                prefixes.Add(prefix);
             }
         }
     }

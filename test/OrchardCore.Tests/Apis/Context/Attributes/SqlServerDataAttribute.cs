@@ -11,7 +11,7 @@ namespace OrchardCore.Tests.Apis.Context.Attributes
     /// To enable Sql Server testing provide a valid connection string for the environment variable 'ORCHARD_TEST_SQLSERVER_CONNECTION_STRING'
     /// </summary>
     /// <example>
-    /// ORCHARD_TEST_SQLSERVER_CONNECTION_STRING='Data Source=.;Initial Catalog=talog=tempdb;User Id=;Password='
+    /// ORCHARD_TEST_SQLSERVER_CONNECTION_STRING='Data Source=.;Initial Catalog=tempdb;User Id=sa;Password=Password12!'
     /// </example>
     /// <remarks>
     /// Primarily used for CI testing.
@@ -22,7 +22,7 @@ namespace OrchardCore.Tests.Apis.Context.Attributes
 
         public SqlServerDataAttribute()
         {
-            if (String.IsNullOrEmpty(Environment))
+            if (String.IsNullOrEmpty(Environment) && String.IsNullOrEmpty(Skip))
             {
                 Skip = "Sql Server test skipped by environment";
             }

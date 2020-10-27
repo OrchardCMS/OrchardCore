@@ -10,21 +10,19 @@ namespace OrchardCore.Tests.Apis.Context.Attributes
     /// Provides a data source for a PostgreSql data theory, enabled via environment variables.
     /// To enable PostgreSql testing provide a valid connection string for the environment variable 'ORCHARD_TEST_POSTGRESQL_CONNECTION_STRING'
     /// </summary>
+    /// <example>
+    /// ORCHARD_TEST_POSTGRESQL_CONNECTION_STRING='Server=localhost;Port=5432;Database=octest;User Id=postgres;Password=Password12!;'
+    /// </example>    
     /// <remarks>
     /// Primarily used for CI testing.
     /// </remarks>
     public class PostgreSqlDataAttribute : DataAttribute
 	{
-        // TODO
-    // <example>
-    // ORCHARD_TEST_MYSQL_CONNECTION_STRING='Data Source=.;Initial Catalog=talog=tempdb;User Id=;Password='
-    // </example>
-//- SET POSTGRESQL_CONNECTION_STRING=Server=localhost;Port=5432;Database=yessql;User Id=postgres;Password=Password12!;
         private static string? Environment = System.Environment.GetEnvironmentVariable("ORCHARD_TEST_POSTGRESQL_CONNECTION_STRING");
 
         public PostgreSqlDataAttribute()
         {
-            if (String.IsNullOrEmpty(Environment))
+            if (String.IsNullOrEmpty(Environment) && String.IsNullOrEmpty(Skip))
             {
                 Skip = "PostgreSql test skipped by environment";
             }

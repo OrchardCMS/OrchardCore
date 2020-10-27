@@ -22,7 +22,7 @@ namespace OrchardCore.Tests.Apis.Context.Attributes
 
         public SqliteDataAttribute()
         {
-            if (!String.IsNullOrEmpty(Environment))
+            if (!String.IsNullOrEmpty(Environment) && String.IsNullOrEmpty(Skip))
             {
                 Skip = "Sqlite test skipped by environment";
             }

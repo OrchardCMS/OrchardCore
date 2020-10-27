@@ -1,27 +1,33 @@
 ﻿using System;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace OrchardCore.Tests.Apis.Context
 {
-    public class TablePrefixGenerator
+    /// <summary>
+    /// This is an internal table prefix generator which uses a timestamp to generate a table prefix
+    /// is unique during a test run and within the character limits of the supported sql databases.
+    /// </summary>
+    /// <remarks>
+    /// Does not guarantee uniqueness.
+    /// </remarks>
+    internal class TablePrefixGenerator
 	{
-        public async Task<string> GeneratePrefixAsync()
+        private static readonly char[] CharList = "abcdefghijklmnopqrstuvwxyz".ToCharArray();
+
+        internal async Task<string> GeneratePrefixAsync()
         {
-            // or use this Path.GetRandomFileName(). depends how long it is.
-            // TODO a short delay possibly?
             await Task.Delay(1);
-            long ticks = DateTime.Now.Ticks;
-            byte[] bytes = BitConverter.GetBytes(ticks);
-            // TODO can remove the O if we can guarantee it won't start with a number.
-            // Tables can't start with a number.
-            // But at this point we are (so far) under the Yes.Sql limits of table name / foreign key name
-            // Need O sometimes starts with a number.
-            string id = 'O' + Convert.ToBase64String(bytes)
-                                .Replace('+', '_')
-                                // .Replace('/', '-') // - not allowed in mysql. need alternative.
-                                .Replace("/", "__") // - not allowed in mysql. need alternative.
-                                .TrimEnd('=');
-            return id;
+            var ticks = DateTime.Now.Ticks;
+
+			var result = new StringBuilder();
+			while (ticks != 0)
+			{
+				result.Append(CharList[ticks % CharList.Length]);
+				ticks /= CharList.Length;
+			}
+
+			return result.ToString();
         }
     }
 }
