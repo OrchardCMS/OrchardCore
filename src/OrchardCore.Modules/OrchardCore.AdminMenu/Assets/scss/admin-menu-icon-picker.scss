@@ -12,7 +12,8 @@
         min-height: 258px;
 
         .iconpicker-item {
-            color: $body-color;
+            // Optimally this should be a different color per admin theme bootswatch
+            background-color: $body-color;
         }
     }
 }
