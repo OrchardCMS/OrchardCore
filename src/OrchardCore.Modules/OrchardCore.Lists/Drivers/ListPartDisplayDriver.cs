@@ -62,8 +62,8 @@ namespace OrchardCore.Lists.Drivers
                         model.ListPart = listPart;
                         listpartFilter.DisplayText = listpartFilterViewModel.DisplayText;
                         listpartFilter.Status = (ContentsStatus)listpartFilterViewModel.Status;
-
                         model.ListPartFilterViewModel = listpartFilterViewModel;
+
                         model.ContentItems = (await _containerService.QueryContainedItemsAsync(listPart.ContentItem.ContentItemId, settings.EnableOrdering, pager, false, listpartFilter)).ToArray();
                         model.ContainedContentTypeDefinitions = GetContainedContentTypes(context);
                         model.Context = context;

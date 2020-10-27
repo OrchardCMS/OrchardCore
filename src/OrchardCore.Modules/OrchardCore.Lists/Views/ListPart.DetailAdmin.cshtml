@@ -54,7 +54,7 @@ else
     }
     @if (Model.ContentItems.Any())
     {
-        <form method="get" asp-action="ListPartFilter">
+        <form method="get">
             <div class="form-group ">
                 <div class="input-group input-group-sm filter-options">
                     <div class="input-group-prepend">
@@ -67,8 +67,8 @@ else
                             <a class="dropdown-item" href="?Status=Owner">@T["Owned by me"]</a>
                         </div>
                     </div>
-                    
-                    <input name=@nameof(ListPartFilterViewModel.DisplayText) value=@Model.ListPartFilterViewModel?.DisplayText class="form-control" placeholder="@T["Search all List items"]" type="search" />
+                    <input name="@nameof(ListPartFilterViewModel.Status)" value="@Model.ListPartFilterViewModel?.Status" class="form-control" type="hidden" />
+                    <input name="@nameof(ListPartFilterViewModel.DisplayText)" value="@Model.ListPartFilterViewModel?.DisplayText" class="form-control" placeholder="@T["Search all List items"]" type="search" />
                 </div>
             </div>
         </form>
