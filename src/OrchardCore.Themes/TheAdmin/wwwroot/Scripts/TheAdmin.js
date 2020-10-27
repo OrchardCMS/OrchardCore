@@ -7267,11 +7267,11 @@ $("#btn-darkmode").click(function () {
   if ($('#admin-darkmode').attr('media') == 'all') {
     $('#admin-default').attr('media', 'all');
     $('#admin-darkmode').attr('media', 'not all');
-    darkmode = false;
+    darkMode = false;
   } else {
     $('#admin-default').attr('media', 'not all');
     $('#admin-darkmode').attr('media', 'all');
-    darkmode = true;
+    darkMode = true;
   }
 
   persistAdminPreferences();
@@ -8905,7 +8905,7 @@ function persistAdminPreferences() {
     var adminPreferences = {};
     adminPreferences.leftSidebarCompact = $('body').hasClass('left-sidebar-compact') ? true : false;
     adminPreferences.isCompactExplicit = isCompactExplicit;
-    adminPreferences.darkmode = darkmode;
+    adminPreferences.darkMode = darkMode;
     localStorage.setItem('adminPreferences', JSON.stringify(adminPreferences));
   }, 200);
 }

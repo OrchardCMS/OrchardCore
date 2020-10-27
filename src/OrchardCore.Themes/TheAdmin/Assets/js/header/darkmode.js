@@ -1,25 +1,25 @@
-var darkmode = (darkmode === undefined) ? false : darkmode;
+var darkMode = (darkMode === undefined) ? false : darkMode;
 
 var adminPreferences = JSON.parse(localStorage.getItem('adminPreferences'));
-var persistedDarkmode = adminPreferences?.darkmode;
+var persistedDarkMode = adminPreferences?.darkMode;
 
-if (typeof persistedDarkmode !== 'undefined') {
-    darkmode = persistedDarkmode;
+if (typeof persistedDarkMode !== 'undefined') {
+    darkMode = persistedDarkMode;
 }
 
-if(document.getElementById('admin-darkmode'))
+if(document.getElementById('admin-darkMode'))
 {
-    // Automatically sets darkmode based on OS preferences
+    // Automatically sets darkMode based on OS preferences
     if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        if (typeof persistedDarkmode === 'undefined') {
-            document.getElementById('admin-darkmode').setAttribute('media', 'all');
+        if (typeof persistedDarkMode === 'undefined') {
+            document.getElementById('admin-darkMode').setAttribute('media', 'all');
             document.getElementById('admin-default').setAttribute('media', 'not all');
         }
     }
 
-    if (darkmode)
+    if (darkMode)
     {
-        document.getElementById('admin-darkmode').setAttribute('media', 'all');
+        document.getElementById('admin-darkMode').setAttribute('media', 'all');
         document.getElementById('admin-default').setAttribute('media', 'not all');
     }
 }

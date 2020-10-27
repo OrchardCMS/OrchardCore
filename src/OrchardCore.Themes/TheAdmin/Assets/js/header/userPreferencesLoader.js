@@ -15,10 +15,10 @@ var observer = new MutationObserver(function (mutations) {
                         body.className += ' left-sidebar-compact';
                     }
                     isCompactExplicit = adminPreferences.isCompactExplicit;
-                    if(adminPreferences.darkmode == true) {
+                    if(adminPreferences.darkMode == true) {
                         body.className += ' darkmode';
                     }
-                    darkmode = adminPreferences.darkmode;
+                    darkMode = adminPreferences.darkMode;
                 } else {
                     body.className += ' no-admin-preferences';
                 }

@@ -21,11 +21,11 @@ var observer = new MutationObserver(function (mutations) {
 
           isCompactExplicit = adminPreferences.isCompactExplicit;
 
-          if (adminPreferences.darkmode == true) {
+          if (adminPreferences.darkMode == true) {
             body.className += ' darkmode';
           }
 
-          darkmode = adminPreferences.darkmode;
+          darkMode = adminPreferences.darkMode;
         } else {
           body.className += ' no-admin-preferences';
         } // we're done: 
@@ -42,24 +42,24 @@ observer.observe(document.documentElement, {
   childList: true,
   subtree: true
 });
-var darkmode = darkmode === undefined ? false : darkmode;
+var darkMode = darkMode === undefined ? false : darkMode;
 var adminPreferences = JSON.parse(localStorage.getItem('adminPreferences'));
-var persistedDarkmode = adminPreferences === null || adminPreferences === void 0 ? void 0 : adminPreferences.darkmode;
+var persistedDarkMode = adminPreferences === null || adminPreferences === void 0 ? void 0 : adminPreferences.darkMode;
 
-if (typeof persistedDarkmode !== 'undefined') {
-  darkmode = persistedDarkmode;
+if (typeof persistedDarkMode !== 'undefined') {
+  darkMode = persistedDarkMode;
 }
 
 if (document.getElementById('admin-darkmode')) {
   // Automatically sets darkmode based on OS preferences
   if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-    if (typeof persistedDarkmode === 'undefined') {
+    if (typeof persistedDarkMode === 'undefined') {
       document.getElementById('admin-darkmode').setAttribute('media', 'all');
       document.getElementById('admin-default').setAttribute('media', 'not all');
     }
   }
 
-  if (darkmode) {
+  if (darkMode) {
     document.getElementById('admin-darkmode').setAttribute('media', 'all');
     document.getElementById('admin-default').setAttribute('media', 'not all');
   }
