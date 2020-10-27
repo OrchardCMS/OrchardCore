@@ -2,10 +2,10 @@
 
 ## What you will build
 
-You will build a modular ASP.NET Core MVC web application similar to the sample "Hello World" application included with Orchard Core. It includes a web application and a module. The web application provides the layout while the module registers a route and responds to homepage requests. You can refer to the following projects in Orchard Core for more information.
+You will build a modular ASP.NET Core MVC web application similar to the sample "Hello World" application included with Orchard Core. It includes a web application and a module. The web application provides the layout while the module registers a route and responds to homepage requests. You can refer to the following projects in [Orchard Core](https://github.com/OrchardCMS/OrchardCore) for more information.
 
-- [OrchardCore.Mvc.Web](../../../OrchardCore.Mvc.Web)
-- [OrchardCore.Mvc.HelloWorld](../../../OrchardCore.Modules/OrchardCore.Mvc.HelloWorld)
+- src/OrchardCore.Mvc.Web
+- src/OrchardCore.Modules/OrchardCore.Mvc.HelloWorld
 
 ## What you will need
 
@@ -79,7 +79,7 @@ In the `Startup.cs` file of `OrchardCore.Mvc.HelloWorld`, add a custom route in 
     );
 ```
 
-You can also change the `Index.cshtml` file in the module's `Views` -> `Home` folder so that it displays __Hello World__ similar to the [Index.cshtml](../../../OrchardCore.Modules/OrchardCore.Mvc.HelloWorld/Views/Home/Index.cshtml) file in the sample code.
+You can also change the `Index.cshtml` file in the module's `Views` -> `Home` folder so that it displays __Hello World__ similar to the project in Orchard Core.
 
 ```html
 <h1>Hello World</h1>
