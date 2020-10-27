@@ -42,7 +42,7 @@ function confirmDialog({callback, ...options}) {
 }
 
 // Prevents page flickering while downloading css
-$(function () {
+$(window).on("load", function() {
     $("body").removeClass("preload");
 });
 
