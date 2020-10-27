@@ -10,16 +10,6 @@
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <link type="image/x-icon" rel="shortcut icon" href="~/TheAdmin/favicon.ico" />
 
-    <!-- Prevents page flickering while downloading css -->
-    <style>
-        .preload * { 
-            -webkit-transition: none !important;
-            -moz-transition: none !important;
-            -ms-transition: none !important;
-            -o-transition: none !important;
-        }
-    </style>
-
     <!-- Bootstrap CSS -->
     <style id="admin-default" media="all" asp-name="admin" asp-src="~/TheAdmin/Styles/TheAdmin.min.css" debug-src="~/TheAdmin/Styles/TheAdmin.css" depends-on="jQuery-ui"></style>
     @if (adminSettings.DisplayDarkMode)
