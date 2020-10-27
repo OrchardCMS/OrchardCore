@@ -3,13 +3,13 @@ $("#btn-darkmode").click(function() {
     {
         $('#admin-default').attr('media', 'all');
         $('#admin-darkmode').attr('media', 'not all');
-        darkmode = false;
+        darkMode = false;
     }
     else
     {
         $('#admin-default').attr('media', 'not all');
         $('#admin-darkmode').attr('media', 'all');
-        darkmode = true;
+        darkMode = true;
     }
 
     persistAdminPreferences();
