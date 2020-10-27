@@ -7100,7 +7100,7 @@ function confirmDialog(_ref) {
 } // Prevents page flickering while downloading css
 
 
-$(function () {
+$(window).on("load", function () {
   $("body").removeClass("preload");
 });
 $(function () {

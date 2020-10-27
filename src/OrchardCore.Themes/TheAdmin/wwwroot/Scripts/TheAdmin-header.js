@@ -51,7 +51,7 @@ if (typeof persistedDarkMode !== 'undefined') {
 }
 
 if (document.getElementById('admin-darkmode')) {
-  // Automatically sets darkmode based on OS preferences
+  // Automatically sets darkMode based on OS preferences
   if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
     if (typeof persistedDarkMode === 'undefined') {
       document.getElementById('admin-darkmode').setAttribute('media', 'all');
