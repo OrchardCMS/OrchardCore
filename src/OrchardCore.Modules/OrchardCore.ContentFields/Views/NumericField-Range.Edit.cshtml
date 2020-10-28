@@ -29,7 +29,7 @@
                     </div>
                 }
             </div>
-            <input id="@(id)-range" class="form-control-range" type="range" min="@min" max="@max" step="@step" onchange="$('#@(id)').val(value);" />
+            <input id="@(id)-range" class="form-control-range" type="range" min="@min" max="@max" step="@step" oninput="$('#@(id)').val(value);" onchange="$('#@(id)').val(value);" />
         </div>
     </div>
     @if (!String.IsNullOrEmpty(settings.Hint))
