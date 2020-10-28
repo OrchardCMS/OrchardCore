@@ -45,9 +45,19 @@ namespace OrchardCore.Contents.Liquid
                 throw new ArgumentException("Services missing while invoking 'shape_build_display'");
             }
 
+            var serviceProvider = (IServiceProvider)services;
+
+            var buildDisplayRecursionHelper = serviceProvider.GetRequiredService<IContentItemRecursionHelper<BuildDisplayFilter>>();
+
+            // When {{ Model.ContentItem | shape_build_display | shape_render }} is called prevent recursion.
+            if (buildDisplayRecursionHelper.IsRecursive(contentItem))
+            {
+                return new ValueTask<FluidValue>(NilValue.Instance);
+            }
+
             var displayType = arguments["type"].Or(arguments.At(0)).ToStringValue();
-            var displayManager = ((IServiceProvider)services).GetRequiredService<IContentItemDisplayManager>();
-            var updateModelAccessor = ((IServiceProvider)services).GetRequiredService<IUpdateModelAccessor>();
+            var displayManager = serviceProvider.GetRequiredService<IContentItemDisplayManager>();
+            var updateModelAccessor = serviceProvider.GetRequiredService<IUpdateModelAccessor>();
 
             var task = displayManager.BuildDisplayAsync(contentItem, updateModelAccessor.ModelUpdater, displayType);
             if (task.IsCompletedSuccessfully)

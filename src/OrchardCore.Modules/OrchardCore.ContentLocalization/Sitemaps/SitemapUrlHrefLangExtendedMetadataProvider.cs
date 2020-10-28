@@ -10,7 +10,7 @@ namespace OrchardCore.ContentLocalization.Sitemaps
 {
     public class SitemapUrlHrefLangExtendedMetadataProvider : ISitemapContentItemExtendedMetadataProvider
     {
-        private static readonly XNamespace ExtendedNamespace = "http://www.w3.org/TR/xhtml11/xhtml11_schema.html";
+        private static readonly XNamespace ExtendedNamespace = "http://www.w3.org/1999/xhtml";
         private static readonly XAttribute ExtendedAttribute = new XAttribute(XNamespace.Xmlns + "xhtml", ExtendedNamespace);
 
         private readonly ISitemapPartContentItemValidationProvider _sitemapPartContentItemValidationProvider;

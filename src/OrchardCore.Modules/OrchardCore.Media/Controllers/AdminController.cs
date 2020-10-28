@@ -416,7 +416,7 @@ namespace OrchardCore.Media.Controllers
             {
                 name = mediaFile.Name,
                 size = mediaFile.Length,
-                lastModify = mediaFile.LastModifiedUtc.Subtract(new DateTime(1970,1,1,0,0,0,DateTimeKind.Utc)).TotalMilliseconds,
+                lastModify = mediaFile.LastModifiedUtc.Subtract(new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalMilliseconds,
                 folder = mediaFile.DirectoryPath,
                 url = _mediaFileStore.MapPathToPublicUrl(mediaFile.Path),
                 mediaPath = mediaFile.Path,

@@ -68,7 +68,8 @@ namespace OrchardCore.Recipes.Controllers
 
             var model = recipes.Select(recipe => new RecipeViewModel
             {
-                Name = recipe.DisplayName,
+                Name = recipe.Name,
+                DisplayName = recipe.DisplayName,
                 FileName = recipe.RecipeFileInfo.Name,
                 BasePath = recipe.BasePath,
                 Tags = recipe.Tags,
@@ -124,7 +125,7 @@ namespace OrchardCore.Recipes.Controllers
 
             await _shellHost.ReleaseShellContextAsync(_shellSettings);
 
-            _notifier.Success(H["The recipe '{0}' has been run successfully", recipe.Name]);
+            _notifier.Success(H["The recipe '{0}' has been run successfully", recipe.DisplayName]);
             return RedirectToAction("Index");
         }
     }

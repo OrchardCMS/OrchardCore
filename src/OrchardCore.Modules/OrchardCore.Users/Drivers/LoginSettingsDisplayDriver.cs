@@ -43,7 +43,7 @@ namespace OrchardCore.Users.Drivers
 
         public override async Task<IDisplayResult> UpdateAsync(LoginSettings section, BuildEditorContext context)
         {
-           var user = _httpContextAccessor.HttpContext?.User;
+            var user = _httpContextAccessor.HttpContext?.User;
 
             if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageUsers))
             {

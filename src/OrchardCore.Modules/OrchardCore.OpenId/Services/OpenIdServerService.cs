@@ -542,7 +542,7 @@ namespace OrchardCore.OpenId.Services
         {
             var algorithm = GenerateRsaSecurityKey(size: 2048);
             var certificate = GenerateCertificate(X509KeyUsageFlags.DigitalSignature, algorithm, settings);
-            
+
             // Note: setting the friendly name is not supported on Unix machines (including Linux and macOS).
             // To ensure an exception is not thrown by the property setter, an OS runtime check is used here.
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))

@@ -1,7 +1,5 @@
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
-using OrchardCore.Alias.Indexes;
 using OrchardCore.Alias.Models;
 using OrchardCore.Alias.Settings;
 using OrchardCore.Alias.ViewModels;

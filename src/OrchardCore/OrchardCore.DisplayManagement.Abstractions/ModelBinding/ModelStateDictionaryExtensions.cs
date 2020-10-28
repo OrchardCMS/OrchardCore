@@ -25,8 +25,7 @@ namespace OrchardCore.Mvc.ModelBinding
         /// </summary>
         /// <param name="modelState">The model state.</param>
         /// <param name="prefix">The prefix of the key.</param>
-        /// <param name="key">The key.</param>
-        /// <param name="errorMessage">The error message.</param>
+        /// <param name="validationResults">The <see cref="ValidationResult"/>.</param>
         public static void BindValidationResults(this ModelStateDictionary modelState, string prefix, IEnumerable<ValidationResult> validationResults)
         {
             foreach (var item in validationResults)
@@ -44,6 +43,5 @@ namespace OrchardCore.Mvc.ModelBinding
                 }
             }
         }
-
     }
 }

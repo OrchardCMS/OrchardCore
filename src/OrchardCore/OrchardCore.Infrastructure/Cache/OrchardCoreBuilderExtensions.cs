@@ -50,7 +50,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 services.AddSingleton<IDistributedCache, MemoryDistributedCache>();
             });
 
-            /// Adds services to keep in sync any document type between a document store and a multi level cache.
+            // Adds services to keep in sync any document type between a document store and a multi level cache.
             return builder.AddDocumentManagement();
         }
     }
