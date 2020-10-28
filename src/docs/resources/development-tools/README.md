@@ -1,6 +1,6 @@
 # Development Tools
 
-What tools do we recommend to build your app with Orchard Core, or work on Orchard itself? In  the end, this is up to your personal preference since as long as you can edit source files and build the app you can use any tool on any platform that .NET Core supports. Below are some tips to get you going for the general editing experience as well as for other useful tools.
+What tools do we recommend to build your app with Orchard Core, or work on Orchard itself? In the end, this is up to your personal preference since as long as you can edit source files and build the app you can use any tool on any platform that .NET Core supports. Below are some tips to get you going for the general editing experience as well as for other useful tools.
 
 ## Editors and IDEs
 
