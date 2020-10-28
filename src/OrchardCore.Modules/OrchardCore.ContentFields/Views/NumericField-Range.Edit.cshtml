@@ -23,7 +23,7 @@
                         <div class="input-group-text">@min</div>
                     </div>
                 }
-                <input asp-for="Value" class="form-control content-preview-select" />
+                <input asp-for="Value" class="form-control content-preview-select" placeholder="@settings.Placeholder" required="@settings.Required" />
                 @if (settings.Maximum.HasValue)
                 {
                     <div class="input-group-append">
