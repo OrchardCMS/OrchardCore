@@ -28,7 +28,8 @@
 #menu li {
   list-style: none;
   cursor: move;
-  background-color: white; }
+  border: none;
+  padding: 0; }
 
 .card-columns {
   column-count: 1; }

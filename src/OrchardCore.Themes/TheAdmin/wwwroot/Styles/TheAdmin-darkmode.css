@@ -1587,7 +1587,7 @@ pre {
   .form-control:disabled, .form-control[readonly] {
     opacity: 1; }
   [dir] .form-control:disabled, [dir] .form-control[readonly] {
-    background-color: #ebebeb; }
+    background-color: #232628; }
 
 input[type="date"].form-control,
 input[type="time"].form-control,
@@ -3107,7 +3107,7 @@ input[type="button"].btn-block {
   font-size: 1rem;
   font-weight: 400;
   line-height: 1.5;
-  color: #2a2d2f;
+  color: #ced4da;
   white-space: nowrap; }
 
 [dir] .input-group-text {
@@ -3231,7 +3231,7 @@ input[type="button"].btn-block {
   .custom-control-input[disabled] ~ .custom-control-label, .custom-control-input:disabled ~ .custom-control-label {
     color: #888; }
     [dir] .custom-control-input[disabled] ~ .custom-control-label::before, [dir] .custom-control-input:disabled ~ .custom-control-label::before {
-      background-color: #ebebeb; }
+      background-color: #232628; }
 
 .custom-control-label {
   position: relative;
@@ -3434,7 +3434,7 @@ input[type="button"].btn-block {
     border-color: #80bdff;
     box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25); }
   [dir] .custom-file-input[disabled] ~ .custom-file-label, [dir] .custom-file-input:disabled ~ .custom-file-label {
-    background-color: #ebebeb; }
+    background-color: #232628; }
   .custom-file-input:lang(en) ~ .custom-file-label::after {
     content: "Browse"; }
   .custom-file-input ~ .custom-file-label[data-browse]::after {
