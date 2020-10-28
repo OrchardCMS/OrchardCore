@@ -25,11 +25,11 @@
         <textarea asp-for="ContentItemJson" class="form-control"></textarea>
     </div>
 
-    <button class="btn btn-success" type="submit">@T["Download"]</button>
+    <button class="btn btn-success download" type="submit">@T["Download"]</button>
 
     @if (!String.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
     {
-        <a id="button-cancel" href="@returnUrl" class="btn btn-secondary">@T["Cancel"]</a>
+        <a class="btn btn-secondary cancel" role="button" href="@returnUrl">@T["Cancel"]</a>
     }
 
 </form>

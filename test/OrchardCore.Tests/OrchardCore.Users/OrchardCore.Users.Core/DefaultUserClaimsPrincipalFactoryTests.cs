@@ -1,3 +1,7 @@
+using System;
+using System.Linq;
+using System.Security.Claims;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Moq;
@@ -5,10 +9,6 @@ using OrchardCore.Security;
 using OrchardCore.Users;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.Services;
-using System;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace OrchardCore.Tests.OrchardCore.Users.Core
@@ -35,7 +35,7 @@ namespace OrchardCore.Tests.OrchardCore.Users.Core
 
             var options = new Mock<IOptions<IdentityOptions>>();
             options.Setup(a => a.Value).Returns(new IdentityOptions());
-            
+
             var factory = new DefaultUserClaimsPrincipalFactory(userManager.Object, roleManager, options.Object);
 
             //Act
@@ -55,7 +55,7 @@ namespace OrchardCore.Tests.OrchardCore.Users.Core
             var emailVerifiedClaim = claims.FirstOrDefault(c => c.Type == "email_verified");
             Assert.NotNull(emailVerifiedClaim);
             Assert.Equal(ClaimValueTypes.Boolean, emailVerifiedClaim.ValueType);
-            Assert.Equal(emailVerified.ToString(), emailVerifiedClaim.Value); 
+            Assert.Equal(emailVerified.ToString(), emailVerifiedClaim.Value);
         }
     }
 

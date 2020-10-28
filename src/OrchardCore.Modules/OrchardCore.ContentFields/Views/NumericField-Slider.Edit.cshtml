@@ -15,33 +15,32 @@
 
 <div class="form-group">
     <div class="row">
-        <div class="col-sm-3">
+        <div class="col-md-6 col-lg-4">
             <label asp-for="Value">@name</label>
             <div class="input-group mb-2">
-                @if (settings.Minimum.HasValue)
-                {
-                <div class="input-group-prepend">
+                @*<div class="input-group-prepend">
                     <div class="input-group-text">@min</div>
-                </div>
-                }
-                <input asp-for="Value" class="form-control content-preview-select" />
-                @if (settings.Maximum.HasValue)
-                {
-                <div class="input-group-append">
+                </div>*@
+                <input asp-for="Value" type="number" class="form-control content-preview-select" />
+                @*<div class="input-group-append">
                     <div class="input-group-text">@max</div>
-                </div>
-                }
+                </div>*@
             </div>
-            <div class="input-group px-2">
-                <input id="@(id)_input_slider" type="text" data-slider-min="@min" data-slider-max="@max" data-slider-step="@step" data-slider-value="@Model.Value" />
+            <div class="input-group mb-2 ml-2">            
+                @if (settings.Minimum.HasValue) {<span class="mr-3">@min</span>}
+                <input id="@(id)-slider" type="text" data-slider-min="@min" data-slider-max="@max" data-slider-step="@step" data-slider-value="@Model.Value" />            
+                @if (settings.Maximum.HasValue) {<span class="ml-1">@max</span>}
             </div>
-            <span class="hint">@settings.Hint</span>
         </div>
     </div>
+    @if (!String.IsNullOrEmpty(settings.Hint))
+    {
+        <span class="hint">@settings.Hint</span>
+    }
 </div>
 <script at="Foot">
-    $('#@(id)_input_slider').bootstrapSlider({ tooltip: 'always', id: '@(id)_input_slider' }).on('slide', function (ev) {
-        $('#@(id)').val(ev.value);
+    $('#@(id)-slider').bootstrapSlider({ tooltip: 'always' }).on('change', function (ev) {
+        $('#@(id)').val(ev.value.newValue);
     });
 
     $('#@(id)_input_slider').addClass('w-100');

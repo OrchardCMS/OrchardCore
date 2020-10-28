@@ -9,8 +9,8 @@ using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Html.Models;
 using OrchardCore.Html.Settings;
 using OrchardCore.Html.ViewModels;
-using OrchardCore.Shortcodes.Services;
 using OrchardCore.Liquid;
+using OrchardCore.Shortcodes.Services;
 using Shortcodes;
 
 namespace OrchardCore.Html.GraphQL
@@ -58,7 +58,7 @@ namespace OrchardCore.Html.GraphQL
             return await shortcodeService.ProcessAsync(html,
                 new Context
                 {
-                    ["ContentItem"] = ctx.Source.ContentItem ,
+                    ["ContentItem"] = ctx.Source.ContentItem,
                     ["TypePartDefinition"] = contentTypePartDefinition
                 });
         }

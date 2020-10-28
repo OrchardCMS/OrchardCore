@@ -2,7 +2,7 @@ using System;
 
 namespace OrchardCore
 {
-    public class IdGenerator
+    public static class IdGenerator
     {
         // Some confusing chars are ignored: http://www.crockford.com/wrmg/base32.html
         private static readonly char[] _encode32Chars = "0123456789abcdefghjkmnpqrstvwxyz".ToCharArray();
@@ -11,7 +11,7 @@ namespace OrchardCore
         {
             var guid = Guid.NewGuid().ToByteArray();
 
-            return string.Create(26, guid, (buffer, guid) =>
+            return String.Create(26, guid, (buffer, guid) =>
             {
                 var hs = BitConverter.ToInt64(guid, 0);
                 var ls = BitConverter.ToInt64(guid, 8);

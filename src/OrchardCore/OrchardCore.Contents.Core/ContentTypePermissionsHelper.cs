@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using OrchardCore.ContentManagement.Metadata.Models;
+
 using OrchardCore.Security.Permissions;
 
 
@@ -22,6 +23,7 @@ namespace OrchardCore.Contents.Security
         private static readonly Permission ViewOwnContent = new Permission("ViewOwn_{0}", "View own {0}", new[] { ViewContent, CommonPermissions.ViewOwnContent });
         private static readonly Permission PreviewContent = new Permission("Preview_{0}", "Preview {0} by others", new[] { EditContent, CommonPermissions.PreviewContent });
         private static readonly Permission PreviewOwnContent = new Permission("PreviewOwn_{0}", "Preview own {0}", new[] { PreviewContent, CommonPermissions.PreviewOwnContent });
+        private static readonly Permission ListContent = new Permission("ListContent_{0}", "List {0} content item(s) owned by all users", new[] { CommonPermissions.ListContent });
 
         public static readonly Dictionary<string, Permission> PermissionTemplates = new Dictionary<string, Permission>
         {
@@ -34,7 +36,8 @@ namespace OrchardCore.Contents.Security
             { CommonPermissions.ViewContent.Name, ViewContent },
             { CommonPermissions.ViewOwnContent.Name, ViewOwnContent },
             { CommonPermissions.PreviewContent.Name, PreviewContent },
-            { CommonPermissions.PreviewOwnContent.Name, PreviewOwnContent }
+            { CommonPermissions.PreviewOwnContent.Name, PreviewOwnContent },
+            { CommonPermissions.ListContent.Name, ListContent }
         };
 
         /// <summary>

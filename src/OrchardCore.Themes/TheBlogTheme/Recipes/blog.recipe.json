@@ -1412,6 +1412,19 @@
           ]
         }
       ]
-    }
+    },
+    {
+      "name": "MediaProfiles",
+      "MediaProfiles": {
+        "banner": {
+          "Hint": "A banner image (1024px x 600px, cropped)",
+          "Width": 1024,
+          "Height": 600,
+          "Mode": 2,
+          "Format": 0,
+          "Quality": 100
+        }
+      }
+    }    
   ]
 }

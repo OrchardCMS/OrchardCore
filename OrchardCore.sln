@@ -350,7 +350,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Contents.Core",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Application.Cms.Core.Targets", "src\OrchardCore\OrchardCore.Application.Cms.Core.Targets\OrchardCore.Application.Cms.Core.Targets.csproj", "{AEDB2C9D-938E-484A-8DD8-7429E2BBB2A2}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Media.Core", "src\OrchardCore\OrchardCore.Media.Core\OrchardCore.Media.Core\OrchardCore.Media.Core.csproj", "{8BC282D3-B7AF-495A-A5B1-D175875EB90E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Media.Core", "src\OrchardCore\OrchardCore.Media.Core\OrchardCore.Media.Core.csproj", "{8BC282D3-B7AF-495A-A5B1-D175875EB90E}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Benchmarks", "test\OrchardCore.Benchmarks\OrchardCore.Benchmarks.csproj", "{85610AB6-07E8-45E3-9C48-34D952CC5DD2}"
 EndProject
@@ -365,6 +365,10 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.PublishLater", "src\OrchardCore.Modules\OrchardCore.PublishLater\OrchardCore.PublishLater.csproj", "{FADCA695-7A6C-40F1-B17C-8A011EBC6F10}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Shells.Azure", "src\OrchardCore\OrchardCore.Shells.Azure\OrchardCore.Shells.Azure.csproj", "{5E3FCD33-EED6-405E-B6F5-FC85E81603A5}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Redis", "src\OrchardCore.Modules\OrchardCore.Redis\OrchardCore.Redis.csproj", "{281E74DD-A758-4A97-876E-82798293DB52}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Redis.Abstractions", "src\OrchardCore\OrchardCore.Redis.Abstractions\OrchardCore.Redis.Abstractions.csproj", "{54459BDB-A7BA-4E60-BE86-BE21EF9D1262}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{E33D95DF-E864-4D14-A561-D59E8AC06811}"
 	ProjectSection(SolutionItems) = preProject
@@ -998,6 +1002,14 @@ Global
 		{5E3FCD33-EED6-405E-B6F5-FC85E81603A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5E3FCD33-EED6-405E-B6F5-FC85E81603A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5E3FCD33-EED6-405E-B6F5-FC85E81603A5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{281E74DD-A758-4A97-876E-82798293DB52}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{281E74DD-A758-4A97-876E-82798293DB52}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{281E74DD-A758-4A97-876E-82798293DB52}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{281E74DD-A758-4A97-876E-82798293DB52}.Release|Any CPU.Build.0 = Release|Any CPU
+		{54459BDB-A7BA-4E60-BE86-BE21EF9D1262}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{54459BDB-A7BA-4E60-BE86-BE21EF9D1262}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{54459BDB-A7BA-4E60-BE86-BE21EF9D1262}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{54459BDB-A7BA-4E60-BE86-BE21EF9D1262}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A37CD7CB-6B26-483A-9D5A-3E80B6CB115F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A37CD7CB-6B26-483A-9D5A-3E80B6CB115F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A37CD7CB-6B26-483A-9D5A-3E80B6CB115F}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -1194,6 +1206,8 @@ Global
 		{5283A8BC-DFF4-436D-AA9C-EE2DBFC5D51A} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
 		{FADCA695-7A6C-40F1-B17C-8A011EBC6F10} = {90030E85-0C4F-456F-B879-443E8A3F220D}
 		{5E3FCD33-EED6-405E-B6F5-FC85E81603A5} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
+		{281E74DD-A758-4A97-876E-82798293DB52} = {A066395F-6F73-45DC-B5A6-B4E306110DCE}
+		{54459BDB-A7BA-4E60-BE86-BE21EF9D1262} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
 		{A37CD7CB-6B26-483A-9D5A-3E80B6CB115F} = {E33D95DF-E864-4D14-A561-D59E8AC06811}
 		{38EE0258-F010-425B-949F-9ECCE886584B} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
 		{9EEEB83D-85C5-4025-8367-CD7D1ACBBB1A} = {90030E85-0C4F-456F-B879-443E8A3F220D}

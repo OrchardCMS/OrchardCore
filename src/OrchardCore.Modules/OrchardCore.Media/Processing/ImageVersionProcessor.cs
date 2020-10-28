@@ -1,6 +1,8 @@
 using System.Collections.Generic;
+using System.Globalization;
 using Microsoft.Extensions.Logging;
 using SixLabors.ImageSharp.Web;
+using SixLabors.ImageSharp.Web.Commands;
 using SixLabors.ImageSharp.Web.Processors;
 
 namespace OrchardCore.Media.Processing
@@ -14,7 +16,7 @@ namespace OrchardCore.Media.Processing
 
         public IEnumerable<string> Commands => VersionCommands;
 
-        public FormattedImage Process(FormattedImage image, ILogger logger, IDictionary<string, string> commands)
+        public FormattedImage Process(FormattedImage image, ILogger logger, IDictionary<string, string> commands, CommandParser parser, CultureInfo culture)
             => image;
     }
 }

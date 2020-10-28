@@ -29,6 +29,11 @@ namespace OrchardCore.Deployment.Core.Services
 
         public async Task SetFileAsync(string subpath, Stream stream)
         {
+            if (subpath.StartsWith('/'))
+            {
+                throw new InvalidOperationException("A virtual path is required");
+            }
+
             var fullname = PathExtensions.Combine(Folder, subpath);
 
             var directory = new FileInfo(fullname).Directory;

@@ -367,6 +367,7 @@ The following properties are available on the `Request` object.
 | `IsHttps` | `true` | True if the scheme of the request is `https`. |
 | `Scheme` | `https` | The scheme of the request. |
 | `Method` | `GET` | The HTTP method. |
+| `Route` | Usage: `Request.Route.controller` | The route values for this request. |
 
 ### Culture
 

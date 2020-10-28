@@ -8,7 +8,7 @@ using OrchardCore.Security;
 namespace OrchardCore.Users.Services
 {
     /// <summary>
-    /// Custom implementation of  <see cref="IUserClaimsPrincipalFactory"/> adding email claims.
+    /// Custom implementation of <see cref="IUserClaimsPrincipalFactory{TUser}"/> adding email claims.
     /// </summary>
     public class DefaultUserClaimsPrincipalFactory : UserClaimsPrincipalFactory<IUser, IRole>
     {

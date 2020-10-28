@@ -9,7 +9,7 @@
 
 <div class="form-group">
     <div class="row">
-        <div class="col-sm-3">
+        <div class="col-md-6 col-lg-4">
             <label asp-for="Value">@name</label>
             <div class="input-group">
                 @if (settings.Minimum.HasValue)
@@ -26,7 +26,10 @@
                     </div>
                 }
             </div>
-            <span class="hint">@settings.Hint</span>
         </div>
     </div>
+    @if (!String.IsNullOrEmpty(settings.Hint))
+    {
+        <span class="hint">@settings.Hint</span>
+    }
 </div>

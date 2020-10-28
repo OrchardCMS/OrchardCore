@@ -57,7 +57,7 @@ namespace OrchardCore.Sitemaps
             });
 
             services.AddSingleton<IShellRouteValuesAddressScheme, SitemapValuesAddressScheme>();
-            services.AddSingleton<SitemapsTransformer>();
+            services.AddSingleton<SitemapRouteTransformer>();
             services.AddSingleton<SitemapEntries>();
 
             services.AddScoped<ISitemapIdGenerator, SitemapIdGenerator>();
@@ -68,10 +68,10 @@ namespace OrchardCore.Sitemaps
             services.AddScoped<ISitemapBuilder, DefaultSitemapBuilder>();
             services.AddScoped<ISitemapTypeBuilder, SitemapTypeBuilder>();
             services.AddScoped<ISitemapCacheProvider, DefaultSitemapCacheProvider>();
-            services.AddScoped<ISitemapCacheManager, DefaultSitemapCacheManager>();
-            services.AddScoped<ISitemapTypeCacheManager, SitemapTypeCacheManager>();
+            services.AddScoped<ISitemapUpdateHandler, DefaultSitemapUpdateHandler>();
+            services.AddScoped<ISitemapTypeUpdateHandler, SitemapTypeUpdateHandler>();
             services.AddScoped<ISitemapTypeBuilder, SitemapIndexTypeBuilder>();
-            services.AddScoped<ISitemapTypeCacheManager, SitemapIndexTypeCacheManager>();
+            services.AddScoped<ISitemapTypeUpdateHandler, SitemapIndexTypeUpdateHandler>();
             services.AddScoped<ISitemapModifiedDateProvider, DefaultSitemapModifiedDateProvider>();
             services.AddScoped<IRouteableContentTypeCoordinator, DefaultRouteableContentTypeCoordinator>();
 
@@ -215,9 +215,7 @@ namespace OrchardCore.Sitemaps
                  defaults: new { controller = sitemapCacheController, action = nameof(SitemapCacheController.Purge) }
             );
 
-            routes.MapDynamicControllerRoute<SitemapsTransformer>("/{**sitemap}");
-            var sitemapManager = serviceProvider.GetService<ISitemapManager>();
-            sitemapManager.BuildAllSitemapRouteEntriesAsync().GetAwaiter().GetResult();
+            routes.MapDynamicControllerRoute<SitemapRouteTransformer>("/{**sitemap}");
         }
     }
 

@@ -10,7 +10,7 @@
 
 <div class="form-group">
     <div class="row">
-        <div class="col-sm-3">
+        <div class="col-md-6 col-lg-4">
             <label asp-for="Value">@name</label>
             <select asp-for="Value" class="form-control content-preview-select">
                 @if (!settings.Required)
@@ -22,7 +22,10 @@
                     <option value="@d">@d</option>
                 }
             </select>
-            <span class="hint">@settings.Hint</span>
         </div>
     </div>
+    @if (!String.IsNullOrEmpty(settings.Hint))
+    {
+        <span class="hint">@settings.Hint</span>
+    }
 </div>
