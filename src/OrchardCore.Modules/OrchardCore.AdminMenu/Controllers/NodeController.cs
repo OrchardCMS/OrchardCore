@@ -1,16 +1,20 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.Extensions.Localization;
 using OrchardCore.Admin;
 using OrchardCore.AdminMenu.Services;
 using OrchardCore.AdminMenu.ViewModels;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.Environment.Extensions;
 using OrchardCore.Navigation;
+using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.AdminMenu.Controllers
 {
@@ -23,15 +27,21 @@ namespace OrchardCore.AdminMenu.Controllers
         private readonly IAdminMenuService _adminMenuService;
         private readonly INotifier _notifier;
         private readonly IHtmlLocalizer H;
+        private readonly IStringLocalizer S;
         private readonly IUpdateModelAccessor _updateModelAccessor;
+        private readonly ITypeFeatureProvider _typeFeatureProvider;
+        private readonly IEnumerable<IPermissionProvider> _permissionProviders;
 
 
         public NodeController(
             IAuthorizationService authorizationService,
+            ITypeFeatureProvider typeFeatureProvider,
+            IEnumerable<IPermissionProvider> permissionProviders,
             IDisplayManager<MenuItem> displayManager,
             IEnumerable<IAdminNodeProviderFactory> factories,
             IAdminMenuService adminMenuService,
             IHtmlLocalizer<NodeController> htmlLocalizer,
+            IStringLocalizer<NodeController> stringLocalizer,
             INotifier notifier,
             IUpdateModelAccessor updateModelAccessor)
         {
@@ -39,9 +49,12 @@ namespace OrchardCore.AdminMenu.Controllers
             _factories = factories;
             _adminMenuService = adminMenuService;
             _authorizationService = authorizationService;
+            _typeFeatureProvider = typeFeatureProvider;
+            _permissionProviders = permissionProviders;
             _notifier = notifier;
             _updateModelAccessor = updateModelAccessor;
             H = htmlLocalizer;
+            S = stringLocalizer;
         }
 
         public async Task<IActionResult> List(string id)
@@ -343,6 +356,37 @@ namespace OrchardCore.AdminMenu.Controllers
             await _adminMenuService.SaveAsync(adminMenu);
 
             return Ok();
+        }
+
+
+        private async Task<IDictionary<string, IEnumerable<Permission>>> GetInstalledPermissionsAsync()
+        {
+            var installedPermissions = new Dictionary<string, IEnumerable<Permission>>();
+            foreach (var permissionProvider in _permissionProviders)
+            {
+                var feature = _typeFeatureProvider.GetFeatureForDependency(permissionProvider.GetType());
+                var featureName = feature.Id;
+
+                var permissions = await permissionProvider.GetPermissionsAsync();
+
+                foreach (var permission in permissions)
+                {
+                    var category = permission.Category;
+
+                    string title = String.IsNullOrWhiteSpace(category) ? S["{0} Feature", featureName] : category;
+
+                    if (installedPermissions.ContainsKey(title))
+                    {
+                        installedPermissions[title] = installedPermissions[title].Concat(new[] { permission });
+                    }
+                    else
+                    {
+                        installedPermissions.Add(title, new[] { permission });
+                    }
+                }
+            }
+
+            return installedPermissions;
         }
     }
 }
