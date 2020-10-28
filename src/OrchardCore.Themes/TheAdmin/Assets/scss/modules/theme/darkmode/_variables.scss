@@ -74,9 +74,10 @@ $table-border-color: $gray-700 !default;
 
 $input-border-color: rgb(60, 65, 68) !default;
 $input-bg: $gray-900 !default;
-$input-color: $gray-400;
-$input-group-addon-color: $gray-500 !default;
+$input-color: $gray-400 !default;
+$input-group-addon-color: $input-color !default;
 $input-group-addon-bg: $gray-700 !default;
+$input-disabled-bg: rgb(35, 38, 40) !default;
 
 $custom-file-color: $gray-500 !default;
 $custom-file-border-color: $body-bg !default;
