@@ -132,14 +132,9 @@ namespace OrchardCore.Email.Services
             {
                 foreach (var attachment in message.Attachments)
                 {
-                    if (attachment.Stream == null)
+                    // Stream must not be null, otherwise it would try to get the filesystem path
+                    if (attachment.Stream != null)
                     {
-                        // Gets the file from the File System. The filename must be the system path to the file. "App_Data/tenants.json" works.
-                        body.Attachments.Add(attachment.Filename);
-                    }
-                    else
-                    {
-                        // Gets the file from the Stream
                         body.Attachments.Add(attachment.Filename, attachment.Stream);
                     }
                 }
