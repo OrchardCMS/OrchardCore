@@ -16,11 +16,7 @@ namespace OrchardCore.Documents
     /// </summary>
     public class DocumentManager<TDocument> : IDocumentManager<TDocument> where TDocument : class, IDocument, new()
     {
-        private static readonly JsonSerializerSettings _jsonSettings = new JsonSerializerSettings
-        {
-            TypeNameHandling = TypeNameHandling.Auto,
-            DateTimeZoneHandling = DateTimeZoneHandling.Utc
-        };
+        private const int CompressMinSize = 10 * 1000;
 
         private readonly IDocumentStore _documentStore;
         private readonly IDistributedCache _distributedCache;
@@ -263,7 +259,7 @@ namespace OrchardCore.Documents
                 return null;
             }
 
-            if (_isDistributed && _options.CacheCompression.Value)
+            if (_isDistributed && IsCompressed(data))
             {
                 data = Decompress(data);
             }
@@ -277,7 +273,7 @@ namespace OrchardCore.Documents
             {
                 var data = Serialize(document);
 
-                if (_options.CacheCompression.Value)
+                if (data.Length >= CompressMinSize)
                 {
                     data = Compress(data);
                 }
@@ -288,11 +284,37 @@ namespace OrchardCore.Documents
             await _distributedCache.SetStringAsync(_options.CacheIdKey, document.Identifier ?? "NULL", _options);
         }
 
+        private static readonly JsonSerializerSettings _jsonSettings = new JsonSerializerSettings
+        {
+            TypeNameHandling = TypeNameHandling.Auto,
+            DateTimeZoneHandling = DateTimeZoneHandling.Utc
+        };
+
         internal static byte[] Serialize(TDocument document) =>
             Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(document, _jsonSettings));
 
         internal static TDocument Deserialize(byte[] data) =>
             JsonConvert.DeserializeObject<TDocument>(Encoding.UTF8.GetString(data), _jsonSettings);
+
+        private static readonly byte[] GZipHeaderBytes = { 0x1f, 0x8b };
+
+        internal static bool IsCompressed(byte[] data)
+        {
+            if (data.Length < GZipHeaderBytes.Length)
+            {
+                return false;
+            }
+
+            for (var i = 0; i < GZipHeaderBytes.Length; i++)
+            {
+                if (data[i] != GZipHeaderBytes[i])
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
 
         internal static byte[] Compress(byte[] data)
         {

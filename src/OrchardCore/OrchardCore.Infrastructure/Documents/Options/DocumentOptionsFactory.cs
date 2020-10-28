@@ -38,8 +38,6 @@ namespace OrchardCore.Documents.Options
                 options.CheckConcurrency ??= true;
                 options.CheckConsistency ??= true;
 
-                options.CacheCompression ??= typeof(ICompressibleDocument).IsAssignableFrom(documentType);
-
                 return options;
             });
         }
