@@ -107,7 +107,7 @@ namespace OrchardCore.DisplayManagement.Razor
             {
                 if (_themeLayout == null)
                 {
-                    _themeLayout = Context.Features.Get<RazorViewFeature>()?.ThemeLayout;
+                    _themeLayout = Context?.Features.Get<RazorViewFeature>()?.ThemeLayout;
                 }
 
                 return _themeLayout;
