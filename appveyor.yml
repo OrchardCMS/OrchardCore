@@ -63,11 +63,13 @@ init:
   - git config --global core.autocrlf true
 
 before_test:
-  - SET ORCHARD_TEST_SQLSERVER_CONNECTION_STRING=Server=(local)\SQL2017;Database=tempdb;User ID=sa;Password=Password12!
+  - SET ORCHARD_TEST_SQLSERVER_CONNECTION_STRING=Server=.;Database=tempdb;User ID=sa;Password=Password12!
+  - SET
 
 test_script:
   - node --version
   - npm --version
+  - SET
   - dotnet test -c Release --no-build .\test\OrchardCore.Tests\OrchardCore.Tests.csproj
   - cd .\test\Functional
   - test-setup.cmd
