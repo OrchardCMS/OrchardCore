@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using OrchardCore.ContentLocalization.Models;
 using OrchardCore.Data.Documents;
-using OrchardCore.Documents;
 
 namespace OrchardCore.ContentLocalization.Services
 {
