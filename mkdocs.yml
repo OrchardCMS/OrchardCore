@@ -182,6 +182,7 @@ nav:
             - DataProtection (Azure Storage): docs/reference/modules/DataProtection.Azure/README.md
     - Resources: 
         - Learning: docs/resources/README.md
+        - Development Tools: docs/resources/development-tools/README.md
         - Meeting: docs/resources/meeting/README.md
         - Workshops: docs/resources/workshops/README.md
         - Branding: docs/resources/branding/README.md
