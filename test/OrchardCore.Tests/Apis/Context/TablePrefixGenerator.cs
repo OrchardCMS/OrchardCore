@@ -12,7 +12,7 @@ namespace OrchardCore.Tests.Apis.Context
     /// Does not guarantee uniqueness.
     /// </remarks>
     internal class TablePrefixGenerator
-	{
+    {
         private static readonly char[] CharList = "abcdefghijklmnopqrstuvwxyz".ToCharArray();
 
         internal async Task<string> GeneratePrefixAsync()

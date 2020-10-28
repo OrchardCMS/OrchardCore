@@ -17,7 +17,7 @@ namespace OrchardCore.Tests.Apis.Context.Attributes
     /// Primarily used for CI testing.
     /// </remarks>
     public class MySqlDataAttribute : DataAttribute
-	{
+    {
         private static string? Environment = System.Environment.GetEnvironmentVariable("ORCHARD_TEST_MYSQL_CONNECTION_STRING");
 
         public MySqlDataAttribute()
@@ -28,11 +28,11 @@ namespace OrchardCore.Tests.Apis.Context.Attributes
             }
         }
 
-		public override IEnumerable<object?[]> GetData(MethodInfo testMethod)
-            =>  new object?[][]
-                {
-                    new object?[] { "MySql", Environment }
-                };
-	}
+    public override IEnumerable<object?[]> GetData(MethodInfo testMethod)
+        =>  new object?[][]
+            {
+                new object?[] { "MySql", Environment }
+            };
+    }
 }
 #nullable disable
