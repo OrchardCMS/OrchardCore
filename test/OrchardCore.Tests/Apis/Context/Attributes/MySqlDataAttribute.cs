@@ -28,11 +28,11 @@ namespace OrchardCore.Tests.Apis.Context.Attributes
             }
         }
 
-    public override IEnumerable<object?[]> GetData(MethodInfo testMethod)
-        =>  new object?[][]
-            {
-                new object?[] { "MySql", Environment }
-            };
+        public override IEnumerable<object?[]> GetData(MethodInfo testMethod)
+            =>  new object?[][]
+                {
+                    new object?[] { "MySql", Environment }
+                };
     }
 }
 #nullable disable

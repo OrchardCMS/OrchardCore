@@ -17,7 +17,7 @@ namespace OrchardCore.Tests.Apis.Context.Attributes
     /// Primarily used for CI testing.
     /// </remarks>
     public class PostgreSqlDataAttribute : DataAttribute
-	{
+    {
         private static string? Environment = System.Environment.GetEnvironmentVariable("ORCHARD_TEST_POSTGRESQL_CONNECTION_STRING");
 
         public PostgreSqlDataAttribute()
@@ -33,6 +33,6 @@ namespace OrchardCore.Tests.Apis.Context.Attributes
                 {
                     new object?[] { "Postgres", Environment }
                 };
-	}
+    }
 }
 #nullable disable

@@ -17,7 +17,7 @@ namespace OrchardCore.Tests.Apis.Context.Attributes
     /// Primarily used for CI testing.
     /// </remarks>
     public class SqlServerDataAttribute : DataAttribute
-	{
+    {
         private static string? Environment = System.Environment.GetEnvironmentVariable("ORCHARD_TEST_SQLSERVER_CONNECTION_STRING");
 
         public SqlServerDataAttribute()
@@ -28,11 +28,11 @@ namespace OrchardCore.Tests.Apis.Context.Attributes
             }
         }
 
-		public override IEnumerable<object?[]> GetData(MethodInfo testMethod)
+        public override IEnumerable<object?[]> GetData(MethodInfo testMethod)
             =>  new object?[][]
                 {
                     new object?[] { "SqlConnection", Environment }
                 };
-	}
+    }
 }
 #nullable disable

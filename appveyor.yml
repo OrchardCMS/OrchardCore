@@ -62,6 +62,9 @@ init:
   - dotnet --version
   - git config --global core.autocrlf true
 
+before_test:
+  - SET ORCHARD_TEST_SQLSERVER_CONNECTION_STRING=Server=(local)\SQL2017;Database=tempdb;User ID=sa;Password=Password12!
+
 test_script:
   - node --version
   - npm --version
