@@ -1,5 +1,5 @@
 $("#btn-darkmode").click(function() {
-    if($('#admin-darkmode').attr('media') == 'all')
+    if($('#admin-darkmode').attr('media') === 'all')
     {
         $('#admin-default').attr('media', 'all');
         $('#admin-darkmode').attr('media', 'not all');
