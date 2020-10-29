@@ -5,7 +5,7 @@
     <small>
         Authors: {% if git_info %}
   {%- for author in git_info.get('page_authors') -%}
-      {{ author.name }},&nbsp;
+      {{ author.name }}{% if not loop.last %},&nbsp;{% endif %}
   {%- endfor -%}
 {% endif %}
     </small>
