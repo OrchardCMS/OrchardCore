@@ -3702,19 +3702,18 @@ input[type="button"].btn-block {
 .tab-content > .active {
   display: block; }
 
-.navbar, .ta-navbar-top, .admin-toolbar {
+.navbar, .ta-navbar-top {
   position: relative;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between; }
 
-[dir] .navbar, [dir] .ta-navbar-top, [dir] .admin-toolbar {
+[dir] .navbar, [dir] .ta-navbar-top {
   padding: 1rem 1rem; }
-  .navbar .container, .ta-navbar-top .container, .admin-toolbar .container,
+  .navbar .container, .ta-navbar-top .container,
   .navbar .container-fluid,
-  .ta-navbar-top .container-fluid,
-  .admin-toolbar .container-fluid, .navbar .container-sm, .ta-navbar-top .container-sm, .admin-toolbar .container-sm, .navbar .container-md, .ta-navbar-top .container-md, .admin-toolbar .container-md, .navbar .container-lg, .ta-navbar-top .container-lg, .admin-toolbar .container-lg, .navbar .container-xl, .ta-navbar-top .container-xl, .admin-toolbar .container-xl {
+  .ta-navbar-top .container-fluid, .navbar .container-sm, .ta-navbar-top .container-sm, .navbar .container-md, .ta-navbar-top .container-md, .navbar .container-lg, .ta-navbar-top .container-lg, .navbar .container-xl, .ta-navbar-top .container-xl {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
@@ -3829,42 +3828,37 @@ input[type="button"].btn-block {
       display: none; } }
 
 @media (max-width: 767.98px) {
-  [dir=ltr] .navbar-expand-md > .container, [dir=ltr] .ta-navbar-top .navbar-expand-md > .container, [dir=ltr] .admin-toolbar .navbar-expand-md > .container, [dir=ltr] .navbar-expand-md .ta-navbar-top > .container, [dir=ltr] .ta-navbar-top > .container, [dir=ltr] .admin-toolbar .ta-navbar-top > .container, [dir=ltr] .navbar-expand-md .admin-toolbar > .container, [dir=ltr] .ta-navbar-top .admin-toolbar > .container, [dir=ltr] .admin-toolbar > .container, [dir=ltr] .navbar-expand-md > .container-fluid, [dir=ltr] .ta-navbar-top .navbar-expand-md > .container-fluid, [dir=ltr] .admin-toolbar .navbar-expand-md > .container-fluid, [dir=ltr] .navbar-expand-md .ta-navbar-top > .container-fluid, [dir=ltr] .ta-navbar-top > .container-fluid, [dir=ltr] .admin-toolbar .ta-navbar-top > .container-fluid, [dir=ltr] .navbar-expand-md .admin-toolbar > .container-fluid, [dir=ltr] .ta-navbar-top .admin-toolbar > .container-fluid, [dir=ltr] .admin-toolbar > .container-fluid, [dir=ltr] .navbar-expand-md > .container-sm, [dir=ltr] .ta-navbar-top .navbar-expand-md > .container-sm, [dir=ltr] .admin-toolbar .navbar-expand-md > .container-sm, [dir=ltr] .navbar-expand-md .ta-navbar-top > .container-sm, [dir=ltr] .ta-navbar-top > .container-sm, [dir=ltr] .admin-toolbar .ta-navbar-top > .container-sm, [dir=ltr] .navbar-expand-md .admin-toolbar > .container-sm, [dir=ltr] .ta-navbar-top .admin-toolbar > .container-sm, [dir=ltr] .admin-toolbar > .container-sm, [dir=ltr] .navbar-expand-md > .container-md, [dir=ltr] .ta-navbar-top .navbar-expand-md > .container-md, [dir=ltr] .admin-toolbar .navbar-expand-md > .container-md, [dir=ltr] .navbar-expand-md .ta-navbar-top > .container-md, [dir=ltr] .ta-navbar-top > .container-md, [dir=ltr] .admin-toolbar .ta-navbar-top > .container-md, [dir=ltr] .navbar-expand-md .admin-toolbar > .container-md, [dir=ltr] .ta-navbar-top .admin-toolbar > .container-md, [dir=ltr] .admin-toolbar > .container-md, [dir=ltr] .navbar-expand-md > .container-lg, [dir=ltr] .ta-navbar-top .navbar-expand-md > .container-lg, [dir=ltr] .admin-toolbar .navbar-expand-md > .container-lg, [dir=ltr] .navbar-expand-md .ta-navbar-top > .container-lg, [dir=ltr] .ta-navbar-top > .container-lg, [dir=ltr] .admin-toolbar .ta-navbar-top > .container-lg, [dir=ltr] .navbar-expand-md .admin-toolbar > .container-lg, [dir=ltr] .ta-navbar-top .admin-toolbar > .container-lg, [dir=ltr] .admin-toolbar > .container-lg, [dir=ltr] .navbar-expand-md > .container-xl, [dir=ltr] .ta-navbar-top .navbar-expand-md > .container-xl, [dir=ltr] .admin-toolbar .navbar-expand-md > .container-xl, [dir=ltr] .navbar-expand-md .ta-navbar-top > .container-xl, [dir=ltr] .ta-navbar-top > .container-xl, [dir=ltr] .admin-toolbar .ta-navbar-top > .container-xl, [dir=ltr] .navbar-expand-md .admin-toolbar > .container-xl, [dir=ltr] .ta-navbar-top .admin-toolbar > .container-xl, [dir=ltr] .admin-toolbar > .container-xl {
+  [dir=ltr] .navbar-expand-md > .container, [dir=ltr] .ta-navbar-top .navbar-expand-md > .container, [dir=ltr] .navbar-expand-md .ta-navbar-top > .container, [dir=ltr] .ta-navbar-top > .container, [dir=ltr] .navbar-expand-md > .container-fluid, [dir=ltr] .ta-navbar-top .navbar-expand-md > .container-fluid, [dir=ltr] .navbar-expand-md .ta-navbar-top > .container-fluid, [dir=ltr] .ta-navbar-top > .container-fluid, [dir=ltr] .navbar-expand-md > .container-sm, [dir=ltr] .ta-navbar-top .navbar-expand-md > .container-sm, [dir=ltr] .navbar-expand-md .ta-navbar-top > .container-sm, [dir=ltr] .ta-navbar-top > .container-sm, [dir=ltr] .navbar-expand-md > .container-md, [dir=ltr] .ta-navbar-top .navbar-expand-md > .container-md, [dir=ltr] .navbar-expand-md .ta-navbar-top > .container-md, [dir=ltr] .ta-navbar-top > .container-md, [dir=ltr] .navbar-expand-md > .container-lg, [dir=ltr] .ta-navbar-top .navbar-expand-md > .container-lg, [dir=ltr] .navbar-expand-md .ta-navbar-top > .container-lg, [dir=ltr] .ta-navbar-top > .container-lg, [dir=ltr] .navbar-expand-md > .container-xl, [dir=ltr] .ta-navbar-top .navbar-expand-md > .container-xl, [dir=ltr] .navbar-expand-md .ta-navbar-top > .container-xl, [dir=ltr] .ta-navbar-top > .container-xl {
     padding-right: 0;
     padding-left: 0; }
-  [dir=rtl] .navbar-expand-md > .container, [dir=rtl] .ta-navbar-top .navbar-expand-md > .container, [dir=rtl] .admin-toolbar .navbar-expand-md > .container, [dir=rtl] .navbar-expand-md .ta-navbar-top > .container, [dir=rtl] .ta-navbar-top > .container, [dir=rtl] .admin-toolbar .ta-navbar-top > .container, [dir=rtl] .navbar-expand-md .admin-toolbar > .container, [dir=rtl] .ta-navbar-top .admin-toolbar > .container, [dir=rtl] .admin-toolbar > .container, [dir=rtl] .navbar-expand-md > .container-fluid, [dir=rtl] .ta-navbar-top .navbar-expand-md > .container-fluid, [dir=rtl] .admin-toolbar .navbar-expand-md > .container-fluid, [dir=rtl] .navbar-expand-md .ta-navbar-top > .container-fluid, [dir=rtl] .ta-navbar-top > .container-fluid, [dir=rtl] .admin-toolbar .ta-navbar-top > .container-fluid, [dir=rtl] .navbar-expand-md .admin-toolbar > .container-fluid, [dir=rtl] .ta-navbar-top .admin-toolbar > .container-fluid, [dir=rtl] .admin-toolbar > .container-fluid, [dir=rtl] .navbar-expand-md > .container-sm, [dir=rtl] .ta-navbar-top .navbar-expand-md > .container-sm, [dir=rtl] .admin-toolbar .navbar-expand-md > .container-sm, [dir=rtl] .navbar-expand-md .ta-navbar-top > .container-sm, [dir=rtl] .ta-navbar-top > .container-sm, [dir=rtl] .admin-toolbar .ta-navbar-top > .container-sm, [dir=rtl] .navbar-expand-md .admin-toolbar > .container-sm, [dir=rtl] .ta-navbar-top .admin-toolbar > .container-sm, [dir=rtl] .admin-toolbar > .container-sm, [dir=rtl] .navbar-expand-md > .container-md, [dir=rtl] .ta-navbar-top .navbar-expand-md > .container-md, [dir=rtl] .admin-toolbar .navbar-expand-md > .container-md, [dir=rtl] .navbar-expand-md .ta-navbar-top > .container-md, [dir=rtl] .ta-navbar-top > .container-md, [dir=rtl] .admin-toolbar .ta-navbar-top > .container-md, [dir=rtl] .navbar-expand-md .admin-toolbar > .container-md, [dir=rtl] .ta-navbar-top .admin-toolbar > .container-md, [dir=rtl] .admin-toolbar > .container-md, [dir=rtl] .navbar-expand-md > .container-lg, [dir=rtl] .ta-navbar-top .navbar-expand-md > .container-lg, [dir=rtl] .admin-toolbar .navbar-expand-md > .container-lg, [dir=rtl] .navbar-expand-md .ta-navbar-top > .container-lg, [dir=rtl] .ta-navbar-top > .container-lg, [dir=rtl] .admin-toolbar .ta-navbar-top > .container-lg, [dir=rtl] .navbar-expand-md .admin-toolbar > .container-lg, [dir=rtl] .ta-navbar-top .admin-toolbar > .container-lg, [dir=rtl] .admin-toolbar > .container-lg, [dir=rtl] .navbar-expand-md > .container-xl, [dir=rtl] .ta-navbar-top .navbar-expand-md > .container-xl, [dir=rtl] .admin-toolbar .navbar-expand-md > .container-xl, [dir=rtl] .navbar-expand-md .ta-navbar-top > .container-xl, [dir=rtl] .ta-navbar-top > .container-xl, [dir=rtl] .admin-toolbar .ta-navbar-top > .container-xl, [dir=rtl] .navbar-expand-md .admin-toolbar > .container-xl, [dir=rtl] .ta-navbar-top .admin-toolbar > .container-xl, [dir=rtl] .admin-toolbar > .container-xl {
+  [dir=rtl] .navbar-expand-md > .container, [dir=rtl] .ta-navbar-top .navbar-expand-md > .container, [dir=rtl] .navbar-expand-md .ta-navbar-top > .container, [dir=rtl] .ta-navbar-top > .container, [dir=rtl] .navbar-expand-md > .container-fluid, [dir=rtl] .ta-navbar-top .navbar-expand-md > .container-fluid, [dir=rtl] .navbar-expand-md .ta-navbar-top > .container-fluid, [dir=rtl] .ta-navbar-top > .container-fluid, [dir=rtl] .navbar-expand-md > .container-sm, [dir=rtl] .ta-navbar-top .navbar-expand-md > .container-sm, [dir=rtl] .navbar-expand-md .ta-navbar-top > .container-sm, [dir=rtl] .ta-navbar-top > .container-sm, [dir=rtl] .navbar-expand-md > .container-md, [dir=rtl] .ta-navbar-top .navbar-expand-md > .container-md, [dir=rtl] .navbar-expand-md .ta-navbar-top > .container-md, [dir=rtl] .ta-navbar-top > .container-md, [dir=rtl] .navbar-expand-md > .container-lg, [dir=rtl] .ta-navbar-top .navbar-expand-md > .container-lg, [dir=rtl] .navbar-expand-md .ta-navbar-top > .container-lg, [dir=rtl] .ta-navbar-top > .container-lg, [dir=rtl] .navbar-expand-md > .container-xl, [dir=rtl] .ta-navbar-top .navbar-expand-md > .container-xl, [dir=rtl] .navbar-expand-md .ta-navbar-top > .container-xl, [dir=rtl] .ta-navbar-top > .container-xl {
     padding-left: 0;
     padding-right: 0; } }
 
 @media (min-width: 768px) {
-  .navbar-expand-md, .ta-navbar-top, .admin-toolbar {
+  .navbar-expand-md, .ta-navbar-top {
     flex-flow: row nowrap;
     justify-content: flex-start; }
-    .navbar-expand-md .navbar-nav, .ta-navbar-top .navbar-nav, .admin-toolbar .navbar-nav {
+    .navbar-expand-md .navbar-nav, .ta-navbar-top .navbar-nav {
       flex-direction: row; }
-      .navbar-expand-md .navbar-nav .dropdown-menu, .ta-navbar-top .navbar-nav .dropdown-menu, .admin-toolbar .navbar-nav .dropdown-menu {
+      .navbar-expand-md .navbar-nav .dropdown-menu, .ta-navbar-top .navbar-nav .dropdown-menu {
         position: absolute; }
-      [dir=ltr] .navbar-expand-md .navbar-nav .nav-link, [dir=ltr] .ta-navbar-top .navbar-nav .nav-link, [dir=ltr] .admin-toolbar .navbar-nav .nav-link {
+      [dir=ltr] .navbar-expand-md .navbar-nav .nav-link, [dir=ltr] .ta-navbar-top .navbar-nav .nav-link {
     padding-right: 0.5rem;
     padding-left: 0.5rem; }
-      [dir=rtl] .navbar-expand-md .navbar-nav .nav-link, [dir=rtl] .ta-navbar-top .navbar-nav .nav-link, [dir=rtl] .admin-toolbar .navbar-nav .nav-link {
+      [dir=rtl] .navbar-expand-md .navbar-nav .nav-link, [dir=rtl] .ta-navbar-top .navbar-nav .nav-link {
         padding-left: 0.5rem;
         padding-right: 0.5rem; }
-    .navbar-expand-md > .container, .ta-navbar-top .navbar-expand-md > .container, .admin-toolbar .navbar-expand-md > .container, .navbar-expand-md .ta-navbar-top > .container, .ta-navbar-top > .container, .admin-toolbar .ta-navbar-top > .container, .navbar-expand-md .admin-toolbar > .container, .ta-navbar-top .admin-toolbar > .container, .admin-toolbar > .container,
+    .navbar-expand-md > .container, .ta-navbar-top .navbar-expand-md > .container, .navbar-expand-md .ta-navbar-top > .container, .ta-navbar-top > .container,
     .navbar-expand-md > .container-fluid,
     .ta-navbar-top .navbar-expand-md > .container-fluid,
-    .admin-toolbar .navbar-expand-md > .container-fluid,
     .navbar-expand-md .ta-navbar-top > .container-fluid,
-    .ta-navbar-top > .container-fluid,
-    .admin-toolbar .ta-navbar-top > .container-fluid,
-    .navbar-expand-md .admin-toolbar > .container-fluid,
-    .ta-navbar-top .admin-toolbar > .container-fluid,
-    .admin-toolbar > .container-fluid, .navbar-expand-md > .container-sm, .ta-navbar-top .navbar-expand-md > .container-sm, .admin-toolbar .navbar-expand-md > .container-sm, .navbar-expand-md .ta-navbar-top > .container-sm, .ta-navbar-top > .container-sm, .admin-toolbar .ta-navbar-top > .container-sm, .navbar-expand-md .admin-toolbar > .container-sm, .ta-navbar-top .admin-toolbar > .container-sm, .admin-toolbar > .container-sm, .navbar-expand-md > .container-md, .ta-navbar-top .navbar-expand-md > .container-md, .admin-toolbar .navbar-expand-md > .container-md, .navbar-expand-md .ta-navbar-top > .container-md, .ta-navbar-top > .container-md, .admin-toolbar .ta-navbar-top > .container-md, .navbar-expand-md .admin-toolbar > .container-md, .ta-navbar-top .admin-toolbar > .container-md, .admin-toolbar > .container-md, .navbar-expand-md > .container-lg, .ta-navbar-top .navbar-expand-md > .container-lg, .admin-toolbar .navbar-expand-md > .container-lg, .navbar-expand-md .ta-navbar-top > .container-lg, .ta-navbar-top > .container-lg, .admin-toolbar .ta-navbar-top > .container-lg, .navbar-expand-md .admin-toolbar > .container-lg, .ta-navbar-top .admin-toolbar > .container-lg, .admin-toolbar > .container-lg, .navbar-expand-md > .container-xl, .ta-navbar-top .navbar-expand-md > .container-xl, .admin-toolbar .navbar-expand-md > .container-xl, .navbar-expand-md .ta-navbar-top > .container-xl, .ta-navbar-top > .container-xl, .admin-toolbar .ta-navbar-top > .container-xl, .navbar-expand-md .admin-toolbar > .container-xl, .ta-navbar-top .admin-toolbar > .container-xl, .admin-toolbar > .container-xl {
+    .ta-navbar-top > .container-fluid, .navbar-expand-md > .container-sm, .ta-navbar-top .navbar-expand-md > .container-sm, .navbar-expand-md .ta-navbar-top > .container-sm, .ta-navbar-top > .container-sm, .navbar-expand-md > .container-md, .ta-navbar-top .navbar-expand-md > .container-md, .navbar-expand-md .ta-navbar-top > .container-md, .ta-navbar-top > .container-md, .navbar-expand-md > .container-lg, .ta-navbar-top .navbar-expand-md > .container-lg, .navbar-expand-md .ta-navbar-top > .container-lg, .ta-navbar-top > .container-lg, .navbar-expand-md > .container-xl, .ta-navbar-top .navbar-expand-md > .container-xl, .navbar-expand-md .ta-navbar-top > .container-xl, .ta-navbar-top > .container-xl {
       flex-wrap: nowrap; }
-    .navbar-expand-md .navbar-collapse, .ta-navbar-top .navbar-collapse, .admin-toolbar .navbar-collapse {
+    .navbar-expand-md .navbar-collapse, .ta-navbar-top .navbar-collapse {
       display: flex !important;
       flex-basis: auto; }
-    .navbar-expand-md .navbar-toggler, .ta-navbar-top .navbar-toggler, .admin-toolbar .navbar-toggler {
+    .navbar-expand-md .navbar-toggler, .ta-navbar-top .navbar-toggler {
       display: none; } }
 
 @media (max-width: 991.98px) {
@@ -3957,41 +3951,38 @@ input[type="button"].btn-block {
   .navbar-expand .navbar-toggler {
     display: none; }
 
-.navbar-light .navbar-brand, .admin-toolbar .navbar-brand, .navbar-light .ta-navbar-brand, .admin-toolbar .ta-navbar-brand {
+.navbar-light .navbar-brand, .navbar-light .ta-navbar-brand {
   color: #181a1b; }
-  .navbar-light .navbar-brand:hover, .admin-toolbar .navbar-brand:hover, .navbar-light .ta-navbar-brand:hover, .admin-toolbar .ta-navbar-brand:hover, .navbar-light .navbar-brand:focus, .admin-toolbar .navbar-brand:focus, .navbar-light .ta-navbar-brand:focus, .admin-toolbar .ta-navbar-brand:focus {
+  .navbar-light .navbar-brand:hover, .navbar-light .ta-navbar-brand:hover, .navbar-light .navbar-brand:focus, .navbar-light .ta-navbar-brand:focus {
     color: #181a1b; }
 
-.navbar-light .navbar-nav .nav-link, .admin-toolbar .navbar-nav .nav-link {
+.navbar-light .navbar-nav .nav-link {
   color: rgba(248, 249, 250, 0.7); }
-  .navbar-light .navbar-nav .nav-link:hover, .admin-toolbar .navbar-nav .nav-link:hover, .navbar-light .navbar-nav .nav-link:focus, .admin-toolbar .navbar-nav .nav-link:focus {
+  .navbar-light .navbar-nav .nav-link:hover, .navbar-light .navbar-nav .nav-link:focus {
     color: #181a1b; }
-  .navbar-light .navbar-nav .nav-link.disabled, .admin-toolbar .navbar-nav .nav-link.disabled {
+  .navbar-light .navbar-nav .nav-link.disabled {
     color: rgba(0, 0, 0, 0.3); }
 
-.navbar-light .navbar-nav .show > .nav-link, .admin-toolbar .navbar-nav .show > .nav-link,
+.navbar-light .navbar-nav .show > .nav-link,
 .navbar-light .navbar-nav .active > .nav-link,
-.admin-toolbar .navbar-nav .active > .nav-link,
 .navbar-light .navbar-nav .nav-link.show,
-.admin-toolbar .navbar-nav .nav-link.show,
-.navbar-light .navbar-nav .nav-link.active,
-.admin-toolbar .navbar-nav .nav-link.active {
+.navbar-light .navbar-nav .nav-link.active {
   color: #181a1b; }
 
-.navbar-light .navbar-toggler, .admin-toolbar .navbar-toggler {
+.navbar-light .navbar-toggler {
   color: rgba(248, 249, 250, 0.7); }
 
-[dir] .navbar-light .navbar-toggler, [dir] .admin-toolbar .navbar-toggler {
+[dir] .navbar-light .navbar-toggler {
   border-color: rgba(24, 26, 27, 0.1); }
 
-[dir] .navbar-light .navbar-toggler-icon, [dir] .admin-toolbar .navbar-toggler-icon {
+[dir] .navbar-light .navbar-toggler-icon {
   background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28248, 249, 250, 0.7%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e"); }
 
-.navbar-light .navbar-text, .admin-toolbar .navbar-text {
+.navbar-light .navbar-text {
   color: rgba(248, 249, 250, 0.7); }
-  .navbar-light .navbar-text a, .admin-toolbar .navbar-text a {
+  .navbar-light .navbar-text a {
     color: #181a1b; }
-    .navbar-light .navbar-text a:hover, .admin-toolbar .navbar-text a:hover, .navbar-light .navbar-text a:focus, .admin-toolbar .navbar-text a:focus {
+    .navbar-light .navbar-text a:hover, .navbar-light .navbar-text a:focus {
       color: #181a1b; }
 
 .navbar-dark .navbar-brand, .ta-navbar-top .navbar-brand, .navbar-dark .ta-navbar-brand, .ta-navbar-top .ta-navbar-brand {
@@ -8537,7 +8528,7 @@ a.text-dark:hover, a.text-dark:focus {
     min-width: 992px !important; }
   .container {
     min-width: 992px !important; }
-  .navbar, .ta-navbar-top, .admin-toolbar {
+  .navbar, .ta-navbar-top {
     display: none; }
   [dir] .badge {
     border: 1px solid #000; }
@@ -19964,10 +19955,6 @@ html[dir]:not(.fontawesome-i2svg-complete) #left-nav ul.menu-admin > li > .item-
 
 [dir] .auth-wrapper {
   margin: auto; }
-
-[dir] .admin-toolbar {
-  margin-bottom: 1em;
-  background-color: #ebebeb; }
 
 .ui-sortable {
   min-height: 1rem; }

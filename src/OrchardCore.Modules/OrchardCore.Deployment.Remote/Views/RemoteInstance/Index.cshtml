@@ -2,13 +2,11 @@
 
 <h1>@RenderTitleSegments(T["Remote Instances"])</h1>
 
-<nav class="admin-toolbar">
-    <ul class="navbar-nav">
-        <li class="nav-item">
-            <a asp-route-action="Create" class="btn btn-primary" role="button">@T["Add Remote Instance"]</a>
-        </li>
-    </ul>
-</nav>
+<div class="card mb-3">
+    <div class="card-body bg-primary p-3">
+        <a asp-route-action="Create" class="btn btn-primary" role="button">@T["Add Remote Instance"]</a>
+    </div>
+</div>
 
 <form asp-action="Index"> @* the form is necessary to generate and antiforgery token for the delete action *@
     @if (Model.RemoteInstanceList.RemoteInstances.Any())
