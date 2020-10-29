@@ -16,8 +16,6 @@ namespace OrchardCore.Documents
     /// </summary>
     public class DocumentManager<TDocument> : IDocumentManager<TDocument> where TDocument : class, IDocument, new()
     {
-        private const int CompressMinSize = 10 * 1000;
-
         private readonly IDocumentStore _documentStore;
         private readonly IDistributedCache _distributedCache;
         private readonly IMemoryCache _memoryCache;
@@ -273,7 +271,7 @@ namespace OrchardCore.Documents
             {
                 var data = Serialize(document);
 
-                if (data.Length >= CompressMinSize)
+                if (data.Length >= _options.CompressThreshold)
                 {
                     data = Compress(data);
                 }

@@ -37,6 +37,7 @@ namespace OrchardCore.Documents.Options
                 options.CacheIdKey ??= "ID_" + fullName;
                 options.CheckConcurrency ??= true;
                 options.CheckConsistency ??= true;
+                options.CompressThreshold ??= 10_000;
 
                 return options;
             });
