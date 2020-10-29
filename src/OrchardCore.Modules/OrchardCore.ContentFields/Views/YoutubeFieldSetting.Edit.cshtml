@@ -13,22 +13,33 @@
         <span class="hint">— @T["Whether a value is required."]</span>
     </div>
 </div>
+
 <div class="form-group">
-    <div class="row col-sm-6">
-        <label asp-for="Hint">@T["Hint"]</label>
-        <textarea asp-for="Hint" rows="2" class="form-control"></textarea>
-        <span class="hint">@T["The hint text to display for this field on the editor."]</span>
+    <div class="row">
+        <div class="col-medium">
+            <label asp-for="Hint">@T["Hint"]</label>
+            <textarea asp-for="Hint" rows="2" class="form-control"></textarea>
+        </div>
     </div>
+    <span class="hint">@T["The hint text to display for this field on the editor."]</span>
 </div>
+
 <div class="form-group">
-    <div class="row col-sm-6">
-        <label asp-for="Width">@T["Width"]</label>
-        <input type="number" asp-for="Width" class="form-control" />
-        <span class="hint">@T["The width of the Videobox"]</span>
+    <div class="row">
+        <div class="col-sm-6">
+            <label asp-for="Width">@T["Width"]</label>
+            <input type="number" asp-for="Width" class="form-control" />
+        </div>
     </div>
-    <div class="row col-sm-6">
-        <label asp-for="Height">@T["Height"]</label>
-        <input type="number" asp-for="Height" class="form-control" />
-        <span class="hint">@T["The height of the Videobox"]</span>
+    <span class="hint">@T["The width of the Videobox"]</span>
+</div>
+
+<div class="form-group">
+    <div class="row">
+        <div class="col-sm-6">
+            <label asp-for="Height">@T["Height"]</label>
+            <input type="number" asp-for="Height" class="form-control" />
+        </div>
     </div>
+    <span class="hint">@T["The height of the Videobox"]</span>
 </div>

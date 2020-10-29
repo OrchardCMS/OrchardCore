@@ -17,49 +17,61 @@
 </div>
 
 <div class="form-group">
-    <div class="row col-medium">
-        <label asp-for="Hint">@T["Hint"]</label>
-        <textarea asp-for="Hint" rows="2" class="form-control"></textarea>
-        <span class="hint">@T["The hint text to display for this field on the editor."]</span>
+    <div class="row">
+        <div class="col-medium">
+            <label asp-for="Hint">@T["Hint"]</label>
+            <textarea asp-for="Hint" rows="2" class="form-control"></textarea>
+        </div>
     </div>
+    <span class="hint">@T["The hint text to display for this field on the editor."]</span>
 </div>
 
 <div class="form-group">
-    <div class="row col-medium">
-        <label for="Placeholder">@T["Watermark (placeholder)"]</label>
-        <input asp-for="Placeholder" type="text" class="form-control" />
-        <span class="hint">@T["A hint to display when the input is empty. (optional)"]</span>
+    <div class="row">
+        <div class="col-medium">
+            <label for="Placeholder">@T["Watermark (placeholder)"]</label>
+            <input asp-for="Placeholder" type="text" class="form-control" />
+        </div>
     </div>
+    <span class="hint">@T["A hint to display when the input is empty. (optional)"]</span>
 </div>
 
 <div class="form-group">
-    <div class="row col-small">
-        <label for="Scale">@T["Scale"]</label>
-        <input asp-for="Scale" class="form-control" min="0" max="5" step="1" type="number" />
-        <span class="hint">@T["The number of digits after the decimal point."]</span>
+    <div class="row">
+        <div class="col-small">
+            <label for="Scale">@T["Scale"]</label>
+            <input asp-for="Scale" class="form-control" min="0" max="5" step="1" type="number" />
+        </div>
     </div>
+    <span class="hint">@T["The number of digits after the decimal point."]</span>
 </div>
 
 <div class="form-group">
-    <div class="row col-small">
-        <label for="Minimum">@T["Minimum"]</label>
-        <input asp-for="Minimum" class="form-control" />@*step="@step" type="number"*@
-        <span class="hint">@T["The minimum value allowed. (optional)"]</span>
+    <div class="row">
+        <div class="col-small">
+            <label for="Minimum">@T["Minimum"]</label>
+            <input asp-for="Minimum" class="form-control" />@*step="@step" type="number"*@
+        </div>
     </div>
+    <span class="hint">@T["The minimum value allowed. (optional)"]</span>
 </div>
 
 <div class="form-group">
-    <div class="row col-small">
-        <label for="Maximum">@T["Maximum"]</label>
-        <input asp-for="Maximum" class="form-control" />@*step="@step" type="number"*@
-        <span class="hint">@T["The maximum value allowed. (optional)"]</span>
+    <div class="row">
+        <div class="col-small">
+            <label for="Maximum">@T["Maximum"]</label>
+            <input asp-for="Maximum" class="form-control" />@*step="@step" type="number"*@
+        </div>
     </div>
+    <span class="hint">@T["The maximum value allowed. (optional)"]</span>
 </div>
 
 <div class="form-group">
-    <div class="row col-small">
-        <label for="DefaultValue">@T["Default value"]</label>
-        <input asp-for="DefaultValue" class="form-control" min="@minimum" max="@maximum" step="@stepAttribute" type="number" />
-        <span class="hint">@T["The default value. (optional)"]</span>
+    <div class="row">
+        <div class="col-small">
+            <label for="DefaultValue">@T["Default value"]</label>
+            <input asp-for="DefaultValue" class="form-control" min="@minimum" max="@maximum" step="@stepAttribute" type="number" />
+        </div>
     </div>
+    <span class="hint">@T["The default value. (optional)"]</span>
 </div>

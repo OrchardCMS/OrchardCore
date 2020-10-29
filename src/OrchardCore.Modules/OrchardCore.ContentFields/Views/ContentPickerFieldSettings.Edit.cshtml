@@ -46,19 +46,23 @@
 </div>
 
 <div class="form-group">
-    <div class="row col-sm-6">
-        <label asp-for="Hint">@T["Hint"]</label>
-        <textarea asp-for="Hint" rows="2" class="form-control"></textarea>
-        <span class="hint">@T["The hint text to display for this field on the editor."]</span>
+    <div class="row">
+        <div class="col-medium">
+            <label asp-for="Hint">@T["Hint"]</label>
+            <textarea asp-for="Hint" rows="2" class="form-control"></textarea>
+        </div>
     </div>
+    <span class="hint">@T["The hint text to display for this field on the editor."]</span>
 </div>
 
 @*<div class="form-group">
-        <div class="row col-sm-6">
-            <label asp-for="SearchResultProvider">@T["Search Result Provider"]</label>
-            <select asp-for="SearchResultProvider" asp-items="resultProviderItems" class="form-control"></select>
-            <span class="hint">@T["The search result provider to use when selecting content items."]</span>
+        <div class="row">
+            <div class="col-sm-6">
+                <label asp-for="SearchResultProvider">@T["Search Result Provider"]</label>
+                <select asp-for="SearchResultProvider" asp-items="resultProviderItems" class="form-control"></select>
+            </div>
         </div>
+        <span class="hint">@T["The search result provider to use when selecting content items."]</span>
     </div>*@
 
 <script at="Foot" depends-on="vuejs">

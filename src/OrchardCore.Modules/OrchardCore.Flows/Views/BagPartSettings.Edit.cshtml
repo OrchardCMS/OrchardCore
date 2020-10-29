@@ -7,9 +7,11 @@
 </div>
 
 <div class="form-group">
-    <div class="row col-sm-6">
-        <label asp-for="DisplayType">@T["Display Type"]</label>
-        <input asp-for="DisplayType" placeholder="Summary" class="form-control medium" />
-        <span class="hint">@T["The display type to use when rendering the content items. Default is Summary."]</span>
+    <div class="row">
+        <div class="col-sm-6">
+            <label asp-for="DisplayType">@T["Display Type"]</label>
+            <input asp-for="DisplayType" placeholder="Summary" class="form-control medium" />
+        </div>
     </div>
+    <span class="hint">@T["The display type to use when rendering the content items. Default is Summary."]</span>
 </div>

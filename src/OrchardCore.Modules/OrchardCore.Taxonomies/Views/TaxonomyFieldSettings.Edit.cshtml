@@ -11,22 +11,26 @@
 }
 
 <div class="form-group">
-    <div class="row col-medium">
-        <label asp-for="Hint">@T["Hint"]</label>
-        <textarea asp-for="Hint" rows="2" class="form-control"></textarea>
-        <span class="hint">@T["The hint text to display for this field on the editor."]</span>
+    <div class="row">
+        <div class="col-medium">
+            <label asp-for="Hint">@T["Hint"]</label>
+            <textarea asp-for="Hint" rows="2" class="form-control"></textarea>
+        </div>
     </div>
+    <span class="hint">@T["The hint text to display for this field on the editor."]</span>
 </div>
 
-<div class="row">
-    <div class="form-group col-sm-6">
-        <label asp-for="TaxonomyContentItemId">@T["Taxonomy"]</label>
-        <select asp-for="TaxonomyContentItemId" class="form-control">
-            @foreach (var taxonomy in taxonomies)
-            {
-                <option value="@taxonomy.ContentItemId">@taxonomy</option>
-            }
-        </select>
+<div class="form-group">
+    <div class="row">
+        <div class="col-sm-6">
+            <label asp-for="TaxonomyContentItemId">@T["Taxonomy"]</label>
+            <select asp-for="TaxonomyContentItemId" class="form-control">
+                @foreach (var taxonomy in taxonomies)
+                {
+                    <option value="@taxonomy.ContentItemId">@taxonomy</option>
+                }
+            </select>
+        </div>
     </div>
 </div>
 
