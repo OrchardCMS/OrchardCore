@@ -8,6 +8,8 @@
     decimal min = settings.Minimum.HasValue ? settings.Minimum.Value : 0;
     decimal max = settings.Maximum.HasValue ? settings.Maximum.Value : 10000;
     string id = Html.IdFor(m => m.Value);
+    string javascriptDecimalSeparator = CultureInfo.InvariantCulture.NumberFormat.NumberDecimalSeparator;
+    string serverDecimalSeparator = CultureInfo.CurrentUICulture.NumberFormat.NumberDecimalSeparator;
 }
 
 <div class="form-group">
@@ -21,7 +23,7 @@
                         <div class="input-group-text">@min</div>
                     </div>
                 }
-                <input asp-for="Value" class="form-control content-preview-select" />
+                <input asp-for="Value" class="form-control content-preview-select" placeholder="@settings.Placeholder" required="@settings.Required" />
                 @if (settings.Maximum.HasValue)
                 {
                     <div class="input-group-append">
@@ -29,7 +31,7 @@
                     </div>
                 }
             </div>
-            <input id="@(id)-range" class="form-control-range" type="range" min="@min" max="@max" step="@step" oninput="$('#@(id)').val(value);" onchange="$('#@(id)').val(value);" />
+            <input id="@(id)-range" class="form-control-range" type="range" min="@min" max="@max" step="@step" oninput="numericFieldRange('@(id)', value);" onchange="numericFieldRange('@(id)', value);" />
         </div>
     </div>
     @if (!String.IsNullOrEmpty(settings.Hint))
@@ -37,3 +39,15 @@
         <span class="hint">@settings.Hint</span>
     }
 </div>
+
+<script asp-name="numericFieldRange" at="Foot">
+
+    function numericFieldRange(id, value) {
+        @if (javascriptDecimalSeparator != serverDecimalSeparator)
+        {
+            <text>value = value.replace('@(javascriptDecimalSeparator)', '@(serverDecimalSeparator)');</text>
+        }
+        $('#' + id).val(value);
+    }
+
+</script>
