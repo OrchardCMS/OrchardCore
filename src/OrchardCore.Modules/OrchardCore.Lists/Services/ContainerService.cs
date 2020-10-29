@@ -11,7 +11,6 @@ using OrchardCore.Lists.Indexes;
 using OrchardCore.Lists.Models;
 using OrchardCore.Lists.ViewModels;
 using OrchardCore.Navigation;
-using OrchardCore.Title.Models;
 using YesSql;
 using YesSql.Services;
 
@@ -26,8 +25,7 @@ namespace OrchardCore.Lists.Services
         public ContainerService(
             YesSql.ISession session,
             IContentManager contentManager,
-            IHttpContextAccessor hca
-            )
+            IHttpContextAccessor hca)
         {
             _session = session;
             _contentManager = contentManager;
@@ -153,7 +151,7 @@ namespace OrchardCore.Lists.Services
             }
         }
 
-        public async Task<IEnumerable<ContentItem>> QueryContainedItemsAsync(string contentItemId, bool enableOrdering, PagerSlim pager, bool publishedOnly, ListPartFilter listPartFilter)
+        public async Task<IEnumerable<ContentItem>> QueryContainedItemsAsync(string contentItemId, bool enableOrdering, PagerSlim pager, bool publishedOnly, ContainedItemOptions containeditemOptions)
         {
             IQuery<ContentItem> query = null;
             if (pager.Before != null)
@@ -290,13 +288,14 @@ namespace OrchardCore.Lists.Services
                     return containedItems;
                 }
 
-                if (listPartFilter.DisplayText != null)
+                if (!string.IsNullOrEmpty(containeditemOptions.DisplayText))
                 {
-                    containedItems = containedItems.Where<ContentItem>(i => i.ContentItem.As<TitlePart>().Title.Contains(listPartFilter.DisplayText)).ToList();
+                    containedItems = containedItems.Where<ContentItem>(i => i.ContentItem.DisplayText.Contains(containeditemOptions.DisplayText)).ToList();
                 }
-                if ((int)listPartFilter.Status != (int)ListPartFilterViewModel.ContentsStatus.None)
+
+                if (containeditemOptions.Status != (int)ListPartFilterViewModel.ContentsStatus.None)
                 {
-                    switch ((int)listPartFilter.Status)
+                    switch ((int)containeditemOptions.Status)
                     {
                         case (int)ListPartFilterViewModel.ContentsStatus.Draft:
                             containedItems = containedItems.Where(i => i.ContentItem.HasDraft());
@@ -310,7 +309,6 @@ namespace OrchardCore.Lists.Services
                         default:
                             break;
                     }
-
                 }
 
                 pager.Before = null;

@@ -6,6 +6,7 @@ using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.Contents.ViewModels;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Lists.Models;
@@ -43,9 +44,9 @@ namespace OrchardCore.Lists.Drivers
                     {
                         var pager = await GetPagerSlimAsync(context);
                         var settings = context.TypePartDefinition.GetSettings<ListPartSettings>();
-                        var listpartFilter = new ListPartFilter();
+                        var containeditemOptions = new ContainedItemOptions();
                         model.ListPart = listPart;
-                        model.ContentItems = (await _containerService.QueryContainedItemsAsync(listPart.ContentItem.ContentItemId, settings.EnableOrdering, pager, true, listpartFilter)).ToArray();
+                        model.ContentItems = (await _containerService.QueryContainedItemsAsync(listPart.ContentItem.ContentItemId, settings.EnableOrdering, pager, true, containeditemOptions)).ToArray();
                         model.ContainedContentTypeDefinitions = GetContainedContentTypes(context);
                         model.Context = context;
                         model.Pager = await context.New.PagerSlim(pager);
@@ -56,15 +57,15 @@ namespace OrchardCore.Lists.Drivers
                         var pager = await GetPagerSlimAsync(context);
                         var settings = context.TypePartDefinition.GetSettings<ListPartSettings>();
                         var listpartFilterViewModel = new ListPartFilterViewModel();
-                        var listpartFilter = new ListPartFilter();
+                        var containeditemOptions = new ContainedItemOptions();
 
                         await _updateModelAccessor.ModelUpdater.TryUpdateModelAsync(listpartFilterViewModel, Prefix);
                         model.ListPart = listPart;
-                        listpartFilter.DisplayText = listpartFilterViewModel.DisplayText;
-                        listpartFilter.Status = (ContentsStatus)listpartFilterViewModel.Status;
+                        containeditemOptions.DisplayText = listpartFilterViewModel.DisplayText;
+                        containeditemOptions.Status = (ContentsStatus)listpartFilterViewModel.Status;
                         model.ListPartFilterViewModel = listpartFilterViewModel;
 
-                        model.ContentItems = (await _containerService.QueryContainedItemsAsync(listPart.ContentItem.ContentItemId, settings.EnableOrdering, pager, false, listpartFilter)).ToArray();
+                        model.ContentItems = (await _containerService.QueryContainedItemsAsync(listPart.ContentItem.ContentItemId, settings.EnableOrdering, pager, false, containeditemOptions)).ToArray();
                         model.ContainedContentTypeDefinitions = GetContainedContentTypes(context);
                         model.Context = context;
                         model.EnableOrdering = settings.EnableOrdering;

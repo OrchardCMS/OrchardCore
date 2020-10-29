@@ -24,7 +24,7 @@ namespace OrchardCore.Lists.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> UpdateContentItemOrders(string containerId, int oldIndex, int newIndex, PagerSlimParameters pagerSlimParameters, int pageSize, ListPart listPart)
+        public async Task<IActionResult> UpdateContentItemOrders(string containerId, int oldIndex, int newIndex, PagerSlimParameters pagerSlimParameters, int pageSize)
         {
             var pager = new PagerSlim(pagerSlimParameters, pageSize);
             // Reverse pager as it represents the next page(s), rather than current page

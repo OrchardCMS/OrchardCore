@@ -54,14 +54,10 @@ namespace OrchardCore.Templates.Controllers
 
         public Task<IActionResult> Admin(PagerParameters pagerParameters)
         {
-            var query = "";
-            if (_hca.HttpContext.Request.Query.ContainsKey("DisplayText"))
-            {
-                query = _hca.HttpContext.Request.Query["DisplayText"];
-            }
+            var displayText = _hca.HttpContext.Request?.Query["DisplayText"];
 
             // Used to provide a different url such that the Admin Templates menu entry doesn't collide with the Templates ones
-            return Index(pagerParameters, query, true);
+            return Index(pagerParameters, displayText, true);
         }
 
         public async Task<IActionResult> Index(PagerParameters pagerParameters, string displayText, bool adminTemplates = false)
@@ -84,16 +80,19 @@ namespace OrchardCore.Templates.Controllers
                 ;
 
             var count = templatesDocument.Templates.Count;
-
-            var templates = templatesDocument.Templates.OrderBy(x => x.Key)
-                            .Skip(pager.GetStartIndex())
-                            .Take(pager.PageSize);
-            if (displayText != null)
+            var templates = templatesDocument.Templates.Take(pager.PageSize);
+            if (!string.IsNullOrEmpty(displayText))
             {
-                templates = templatesDocument.Templates.OrderBy(x => x.Key)
-               .Where(template => template.Key.Contains(displayText))
-               .Skip(pager.GetStartIndex())
-               .Take(pager.PageSize);
+                 templates = templatesDocument.Templates.OrderBy(x => x.Key)
+                    .Where(template => template.Key.Contains(displayText))
+                    .Skip(pager.GetStartIndex())
+                    .Take(pager.PageSize);
+            }
+            else
+            {
+                 templates = templatesDocument.Templates.OrderBy(x => x.Key)
+                    .Skip(pager.GetStartIndex())
+                    .Take(pager.PageSize);
             }
 
             var pagerShape = (await New.Pager(pager)).TotalItemCount(count);
