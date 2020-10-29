@@ -19986,63 +19986,6 @@ html[dir]:not(.fontawesome-i2svg-complete) #left-nav ul.menu-admin > li > .item-
 [dir] .bg-primary {
   background-color: #f8f9fa !important; }
 
-.blockquote-footer {
-  color: #6c757d; }
-
-[dir] .table-primary, [dir] .table-primary > th, [dir] .table-primary > td {
-  background-color: #007bff; }
-
-[dir] .table-secondary, [dir] .table-secondary > th, [dir] .table-secondary > td {
-  background-color: #6c757d; }
-
-[dir] .table-light, [dir] .table-light > th, [dir] .table-light > td {
-  background-color: #f8f9fa; }
-
-[dir] .table-dark, [dir] .table-dark > th, [dir] .table-dark > td {
-  background-color: #343a40; }
-
-[dir] .table-success, [dir] .table-success > th, [dir] .table-success > td {
-  background-color: #28a745; }
-
-[dir] .table-info, [dir] .table-info > th, [dir] .table-info > td {
-  background-color: #17a2b8; }
-
-[dir] .table-danger, [dir] .table-danger > th, [dir] .table-danger > td {
-  background-color: #dc3545; }
-
-[dir] .table-warning, [dir] .table-warning > th, [dir] .table-warning > td {
-  background-color: #ffc107; }
-
-[dir] .table-active, [dir] .table-active > th, [dir] .table-active > td {
-  background-color: rgba(0, 0, 0, 0.075); }
-
-[dir] .table-hover .table-primary:hover, [dir] .table-hover .table-primary:hover > th, [dir] .table-hover .table-primary:hover > td {
-  background-color: #006fe6; }
-
-[dir] .table-hover .table-secondary:hover, [dir] .table-hover .table-secondary:hover > th, [dir] .table-hover .table-secondary:hover > td {
-  background-color: #60686f; }
-
-[dir] .table-hover .table-light:hover, [dir] .table-hover .table-light:hover > th, [dir] .table-hover .table-light:hover > td {
-  background-color: #e9ecef; }
-
-[dir] .table-hover .table-dark:hover, [dir] .table-hover .table-dark:hover > th, [dir] .table-hover .table-dark:hover > td {
-  background-color: #292d32; }
-
-[dir] .table-hover .table-success:hover, [dir] .table-hover .table-success:hover > th, [dir] .table-hover .table-success:hover > td {
-  background-color: #23923d; }
-
-[dir] .table-hover .table-info:hover, [dir] .table-hover .table-info:hover > th, [dir] .table-hover .table-info:hover > td {
-  background-color: #148ea1; }
-
-[dir] .table-hover .table-danger:hover, [dir] .table-hover .table-danger:hover > th, [dir] .table-hover .table-danger:hover > td {
-  background-color: #d32535; }
-
-[dir] .table-hover .table-warning:hover, [dir] .table-hover .table-warning:hover > th, [dir] .table-hover .table-warning:hover > td {
-  background-color: #edb100; }
-
-[dir] .table-hover .table-active:hover, [dir] .table-hover .table-active:hover > th, [dir] .table-hover .table-active:hover > td {
-  background-color: rgba(0, 0, 0, 0.075); }
-
 .hint {
   overflow-wrap: break-word;
   word-wrap: break-word;
@@ -20091,29 +20034,3 @@ select[multiple] {
 input[type="password"]::-ms-reveal,
 input[type="password"]::-ms-clear {
   display: none; }
-
-.input-group-addon {
-  color: #fff; }
-
-.breadcrumb a {
-  color: #fff; }
-
-.pagination a:hover, ul.pager a:hover {
-  text-decoration: none; }
-
-.close {
-  opacity: 0.4; }
-  .close:hover, .close:focus {
-    opacity: 1; }
-
-[dir] .alert-$success {
-  background-color: #28a745; }
-
-.list-group-item-action {
-  color: #fff; }
-  .list-group-item-action:hover, .list-group-item-action:focus {
-    color: #fff; }
-  [dir] .list-group-item-action:hover, [dir] .list-group-item-action:focus {
-    background-color: #495057; }
-  .list-group-item-action .list-group-item-heading {
-    color: #fff; }
