@@ -1,3 +1,4 @@
+@using OrchardCore.Lists.ViewModels;
 @model OrchardCore.Lists.ViewModels.ListPartViewModel
 
 @inject OrchardCore.ContentManagement.Display.IContentItemDisplayManager ContentItemDisplayManager
@@ -25,7 +26,7 @@ else
                 <div class="float-right">
                     <a class="btn btn-sm btn-primary" edit-for="@Model.ListPart.ContentItem" asp-route-returnUrl="@FullRequestPath">
                         @T["Edit {0}", @Model.ListPart.ContentItem.DisplayText]
-                    </a>                
+                    </a>
                     <a class="btn btn-sm btn-success" asp-action="Create" asp-controller="Admin" asp-route-id="@contentTypeDefinition.Name" asp-route-area="OrchardCore.Contents" asp-route-ListPart.ContainerId="@Model.ListPart.ContentItem.ContentItemId" asp-route-ListPart.ContentType="@contentTypeDefinition.Name" asp-route-ListPart.EnableOrdering="@Model.EnableOrdering" asp-route-returnUrl="@FullRequestPath">
                         @T["Create {0}", contentTypeDefinition.DisplayName]
                     </a>
@@ -40,7 +41,7 @@ else
                 <div class="float-right">
                     <a class="btn btn-sm btn-primary" edit-for="@Model.ListPart.ContentItem" asp-route-returnUrl="@FullRequestPath">
                         @T["Edit {0}", @Model.ListPart.ContentItem.DisplayText]
-                    </a>    
+                    </a>
                     <a class="btn btn-sm btn-success dropdown-toggle" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         @T["Create"]
                     </a>
@@ -58,6 +59,24 @@ else
     }
     @if (Model.ContentItems.Any())
     {
+        <form>
+            <div class="form-group ">
+                <div class="input-group input-group-sm filter-options">
+                    <div class="input-group-prepend">
+                        <button class="btn btn-light btn-sm dropdown-toggle" style="border:1px solid lightgrey" type="button" data-toggle="dropdown" id="filter-dropdown" aria-haspopup="true" aria-expanded="false">
+                            @T["Filters"]
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="filter-dropdown">
+                            <a class="dropdown-item" href="?Status=Draft">@T["Only draft items"]</a>
+                            <a class="dropdown-item" href="?Status=Published">@T["Only published items"]</a>
+                            <a class="dropdown-item" href="?Status=Owner">@T["Owned by me"]</a>
+                        </div>
+                    </div>
+                    <input name="@nameof(ListPartFilterViewModel.Status)" value="@Model.ListPartFilterViewModel?.Status" class="form-control" type="hidden" />
+                    <input name="@nameof(ListPartFilterViewModel.DisplayText)" value="@Model.ListPartFilterViewModel?.DisplayText" class="form-control" placeholder="@T["Search all List items"]" type="search" />
+                </div>
+            </div>
+        </form>
         <ul class="list-group" @if (enableOrdering) { <text> id="ci-sortable" </text> }>
             @foreach (var contentItem in Model.ContentItems)
             {
