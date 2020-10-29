@@ -97,7 +97,7 @@
 
         @* toggle the eye slash icon *@
         icon = this.getElementsByClassName('icon')[0];
-        if(icon.getAttribute('data-icon')){ @* if the icon is rendered as a svg *@
+        if (icon.getAttribute('data-icon')){ @* if the icon is rendered as a svg *@
             type === 'password' ? icon.setAttribute('data-icon', 'eye') : icon.setAttribute('data-icon', 'eye-slash');
         }
         else{ @* if the icon is still a <i> element *@

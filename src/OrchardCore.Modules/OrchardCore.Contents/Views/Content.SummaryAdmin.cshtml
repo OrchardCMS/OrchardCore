@@ -1,5 +1,6 @@
+@using OrchardCore.Contents
 @using OrchardCore.ContentManagement
-
+@inject IAuthorizationService AuthorizationService
 @{
     ContentItem contentItem = Model.ContentItem;
 }
@@ -16,10 +17,23 @@
             <input type="checkbox" class="custom-control-input" value="@contentItem.Id" name="itemIds" id="itemIds-@contentItem.Id">
             <label class="custom-control-label" for="itemIds-@contentItem.Id"></label>
         </div>
-        <a admin-for="@contentItem" asp-route-returnUrl="@FullRequestPath" /> - <small class="text-muted">@contentItem.ContentType</small>
+        @if (await AuthorizationService.AuthorizeAsync(User, CommonPermissions.EditContent, contentItem))
+        {
+            <div class="d-inline">
+                <a admin-for="@contentItem" asp-route-returnUrl="@FullRequestPath" /> - <small class="text-muted">@contentItem.ContentType</small>
+            </div>
+        }
+        else
+        {
+            <div class="d-inline">
+                @contentItem - <small class="text-muted">@contentItem.ContentType</small>
+            </div>
+        }
         @if (Model.Tags != null)
         {
-            @await DisplayAsync(Model.Tags)
+            <div class="d-inline">
+                @await DisplayAsync(Model.Tags)
+            </div>
         }
         @if (Model.Header != null)
         {
@@ -32,40 +46,28 @@
         }
     </div>
 
-    @if (Model.Actions != null)
-    {
-        <div class="col-xl-6 col-sm-12 related">
-            <div class="float-right">
+    <div class="col-xl-6 col-sm-12 related">
+        <div class="float-right">
+            @if (Model.Actions != null)
+            {
                 @await DisplayAsync(Model.Actions)
-                @if (Model.ActionsMenu != null)
-                {
-                    <div class="btn-group">
-                        <button type="button" class="btn btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            @T["Actions"]
-                        </button>
-                        <div class="actions-menu dropdown-menu dropdown-menu-right">
-                            @await DisplayAsync(Model.ActionsMenu)
-                        </div>
+            }
+            @if (Model.ActionsMenu != null)
+            {
+                <div class="btn-group">
+                    <button type="button" class="btn btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        @T["Actions"]
+                    </button>
+                    <div class="actions-menu dropdown-menu dropdown-menu-right">
+                        @await DisplayAsync(Model.ActionsMenu)
                     </div>
-                }
-            </div>
+                </div>
+            }
         </div>
-    }
+    </div>
 </div>
 
 @if (Model.Content != null)
 {
     <div class="col primary">@await DisplayAsync(Model.Content)</div>
 }
-
-<script asp-name="removeEmptyActionsMenu" at="Foot">
-    $(function(){
-        
-        $(".actions-menu.dropdown-menu").each(function(i, e){
-            var count = $(e).children().length;
-            if(count == 0){
-                $(this).parent().hide();
-            }
-        });
-    });
-</script>

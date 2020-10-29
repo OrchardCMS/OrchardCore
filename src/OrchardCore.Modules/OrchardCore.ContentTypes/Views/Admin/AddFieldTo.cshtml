@@ -43,10 +43,10 @@
     </div>
 
     <div class="form-group">
-        <button class="btn btn-primary" type="submit">@T["Save"]</button>
+        <button class="btn btn-primary save" type="submit">@T["Save"]</button>
         @if (Url.IsLocalUrl(returnUrl))
         {
-            <a class="btn btn-secondary" href="@returnUrl">@T["Cancel"]</a>
+            <a class="btn btn-secondary cancel" role="button" href="@returnUrl">@T["Cancel"]</a>
         }
     </div>
 </form>
@@ -64,7 +64,7 @@
 
         var compute = function() {
             // stop processing automatically if altered by the user
-            if(nameAltered) {
+            if (nameAltered) {
                 return true;
             }
 

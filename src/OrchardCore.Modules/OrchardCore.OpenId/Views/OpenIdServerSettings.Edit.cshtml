@@ -56,6 +56,14 @@
     </div>
 </div>
 
+<div class="form-group collapse" asp-validation-class-for="AllowHybridFlow">
+    <div class="custom-control custom-checkbox">
+        <input type="checkbox" class="custom-control-input" asp-for="AllowHybridFlow">
+        <label class="custom-control-label" asp-for="AllowHybridFlow">@T["Allow Hybrid Flow"]</label>
+        <span class="hint">— @T["More info:"] <a href="http://openid.net/specs/openid-connect-core-1_0.html#HybridFlowAuth">http://openid.net/specs/openid-connect-core-1_0.html#HybridFlowAuth</a></span>
+    </div>
+</div>
+
 <div class="form-group collapse" asp-validation-class-for="AllowPasswordFlow">
     <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input" asp-for="AllowPasswordFlow">
@@ -219,11 +227,11 @@
     }
 </div>
 
-<div class="form-group" asp-validation-class-for="UseRollingRefreshTokens">
+<div class="form-group" asp-validation-class-for="DisableRollingRefreshTokens">
     <div class="custom-control custom-checkbox">
-        <input type="checkbox" class="custom-control-input" asp-for="UseRollingRefreshTokens">
-        <label class="custom-control-label" asp-for="UseRollingRefreshTokens">@T["Use Rolling Refresh Tokens"]</label>
-        <span class="hint">— @T["When this option is enabled, a new refresh token is issued for each refresh token request (and the previous one is automatically revoked)."]</span>
+        <input type="checkbox" class="custom-control-input" asp-for="DisableRollingRefreshTokens">
+        <label class="custom-control-label" asp-for="DisableRollingRefreshTokens">@T["Disable Rolling Refresh Tokens"]</label>
+        <span class="hint">— @T["When this option is enabled, refresh tokens are not marked as redeemed and can be reused until they expire."]</span>
     </div>
 </div>
 
@@ -279,7 +287,7 @@
         $("#@Html.IdFor(m => m.SigningCertificateStoreName)").change(function () {
             refreshSigningCertificates();
         });
-        $("#@Html.IdFor(m => m.EnableTokenEndpoint), #@Html.IdFor(m => m.EnableAuthorizationEndpoint), #@Html.IdFor(m => m.AllowPasswordFlow), #@Html.IdFor(m => m.AllowAuthorizationCodeFlow)").change(function () {
+        $("#@Html.IdFor(m => m.EnableTokenEndpoint), #@Html.IdFor(m => m.EnableAuthorizationEndpoint), #@Html.IdFor(m => m.AllowPasswordFlow), #@Html.IdFor(m => m.AllowAuthorizationCodeFlow), #@Html.IdFor(m => m.AllowAuthorizationCodeFlow), #@Html.IdFor(m => m.AllowHybridFlow)").change(function () {
             refreshEndpoints();
         });
         function refreshEncryptionCertificates() {
@@ -336,6 +344,7 @@
             refreshEnableTokenEndpoint();
             refreshAllowAuthorizationCodeFlowVisibility();
             refreshEnableAuthorizationEndpoint();
+            refreshAllowHybridFlowVisibility();
             refreshAllowRefreshTokenFlowVisibility();
         }
         function refreshDisableAccessTokenEncryption() {
@@ -380,10 +389,22 @@
                 allowAuthorizationCodeFlow.parent().parent().collapse("hide");
             }
         }
+        function refreshAllowHybridFlowVisibility() {
+            var allowHybridFlow = $("#@Html.IdFor(m => m.AllowHybridFlow)");
+            if ($("#@Html.IdFor(m => m.EnableTokenEndpoint)").prop("checked") && $("#@Html.IdFor(m => m.EnableAuthorizationEndpoint)").prop("checked")) {
+                allowHybridFlow.parent().parent().collapse("show");
+            }
+            else {
+                allowHybridFlow.prop("checked", false);
+                allowHybridFlow.parent().parent().collapse("hide");
+            }
+        }
         function refreshAllowRefreshTokenFlowVisibility() {
             var allowRefreshTokenFlow = $("#@Html.IdFor(m => m.AllowRefreshTokenFlow)");
             if ($("#@Html.IdFor(m => m.EnableTokenEndpoint)").prop("checked")
-                && ($("#@Html.IdFor(m => m.AllowPasswordFlow)").prop("checked") || $("#@Html.IdFor(m => m.AllowAuthorizationCodeFlow)").prop("checked"))) {
+                && ($("#@Html.IdFor(m => m.AllowPasswordFlow)").prop("checked") ||
+                    $("#@Html.IdFor(m => m.AllowAuthorizationCodeFlow)").prop("checked") ||
+                    $("#@Html.IdFor(m => m.AllowHybridFlow)").prop("checked"))) {
                 allowRefreshTokenFlow.parent().parent().collapse("show");
             }
             else {

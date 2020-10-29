@@ -33,15 +33,15 @@ namespace OrchardCore.Feeds.Rss
             return feedItem;
         }
 
-        public void AddProperty(FeedContext context, FeedItem feedItem, string name, string value)
+        public void AddProperty(FeedContext context, FeedItem feedItem, XElement element)
         {
             if (feedItem == null)
             {
-                context.Response.Element.Add(new XElement(name, value));
+                context.Response.Element.Add(element);
             }
             else
             {
-                feedItem.Element.Add(new XElement(name, value));
+                feedItem.Element.Add(element);
             }
         }
     }

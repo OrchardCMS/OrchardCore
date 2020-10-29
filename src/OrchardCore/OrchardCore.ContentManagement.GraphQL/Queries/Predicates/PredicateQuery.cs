@@ -77,7 +77,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Predicates
                         return Dialect.QuoteForTableName($"{_tablePrefix}{alias}") + "." + Dialect.QuoteForColumnName(columnName);
                     }
                 }
-                else 
+                else
                 {
                     // no property provider exists; hope sql is case-insensitive (will break postgres; property providers must be supplied for postgres)
                     // Switch the given alias in the path with the mapped alias.
