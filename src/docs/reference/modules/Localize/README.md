@@ -42,6 +42,9 @@ Add the following configurations to your `[Web Project].csproj` file to include 
   </ItemGroup>
 ```
 
+!!! note
+    Translation files can be provided by a module, in that case they are embedded automatically in the module assembly unless Visual Studio added some bad item groups in the project file.
+
 ## Recipe Step
 
 Cultures can be added during recipes using the settings step. Here is a sample step:

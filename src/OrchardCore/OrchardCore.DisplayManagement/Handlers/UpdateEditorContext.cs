@@ -17,13 +17,13 @@ namespace OrchardCore.DisplayManagement.Handlers
 
         public delegate Task<ValidationResult[]> ValidationHandler(string partName, object model);
 
-        public async Task<ValidationResult[]> ValidateAsync<T>(string partName, T model)
+        public Task<ValidationResult[]> ValidateAsync<T>(string partName, T model)
         {
             if (_validationHandler == null)
             {
                 throw new InvalidOperationException($"{nameof(ValidateAsync)} function is not set.");
             }
-            return await _validationHandler.Invoke(partName, model);
+            return _validationHandler.Invoke(partName, model);
         }
 
         public void SetValidationHandler(ValidationHandler handler)
