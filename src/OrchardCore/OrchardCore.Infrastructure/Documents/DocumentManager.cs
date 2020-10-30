@@ -16,7 +16,7 @@ namespace OrchardCore.Documents
     /// </summary>
     public class DocumentManager<TDocument> : IDocumentManager<TDocument> where TDocument : class, IDocument, new()
     {
-        private readonly IDocumentStore _documentStore;
+        protected readonly IDocumentStore _documentStore;
         private readonly IDistributedCache _distributedCache;
         private readonly IMemoryCache _memoryCache;
         private readonly DocumentOptions _options;
@@ -210,7 +210,7 @@ namespace OrchardCore.Documents
             return _scopedCache = document;
         }
 
-        private async Task SetInternalAsync(TDocument document)
+        protected async Task SetInternalAsync(TDocument document)
         {
             await UpdateDistributedCacheAsync(document);
 

@@ -20,7 +20,7 @@ namespace OrchardCore.Documents
         Task<TDocument> GetOrCreateImmutableAsync(Func<Task<TDocument>> factoryAsync = null);
 
         /// <summary>
-        /// Updates the store with the provided document and then updates the cache.
+        /// Updates the store with the provided document and then updates the cache after the session is committed.
         /// </summary>
         Task UpdateAsync(TDocument document);
     }
