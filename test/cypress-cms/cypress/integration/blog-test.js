@@ -21,29 +21,4 @@ describe('Blog Tests', function () {
         cy.visitAdmin(tenant);
         cy.get('.ta-content').should('contain.text', 'Welcome to Orchard');
     })
-
-    // skipping this test for now. Will improve it with better selectors in a seperate PR
-    it.skip('Can add blog post and it displays in the frontend', function () {
-        cy.login(tenant);
-        cy.visitAdmin(tenant);
-        cy.fixture('blog-posts').then(blogs => {
-            blogs.forEach(blog => {
-                cy.get('#adminMenu').find('.icon-class-fa-rss > .title').click();
-                // create blog post button
-                cy.get('.btn-success').contains('Create').click();
-
-                cy.get('#TitlePart_Title').type(blog.name);
-
-                cy.get('.simplemde-editor > .CodeMirror textarea').type(blog.text, { force: true });
-
-                // click publish button
-                cy.get('button.publish-button').click();
-
-                cy.visitTenantPage(tenant, `blog/${blog.name}`);
-
-                cy.get('h1').should('contain.text', blog.name);
-                cy.get(':nth-child(3) > .row > .col-lg-8 > p').should('contain.text', blog.text);
-            });
-        });
-    });
 });
