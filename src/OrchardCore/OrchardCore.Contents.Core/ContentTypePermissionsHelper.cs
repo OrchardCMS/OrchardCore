@@ -27,7 +27,6 @@ namespace OrchardCore.Contents.Security
         private static readonly Permission CloneOwnContent = new Permission("CloneOwn_{0}", "Clone own {0}", new[] { CloneContent, CommonPermissions.CloneOwnContent });
         private static readonly Permission ListContent = new Permission("ListContent_{0}", "List {0} content item(s) owned by all users", new[] { CommonPermissions.ListContent });
 
-
         public static readonly Dictionary<string, Permission> PermissionTemplates = new Dictionary<string, Permission>
         {
             { CommonPermissions.PublishContent.Name, PublishContent },
