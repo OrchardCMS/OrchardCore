@@ -54,6 +54,15 @@
         <div id="AllowImplicitFlowRecommendedHint" class="hint collapse">@T["Recommended Parameters:"] grant_type = 'id_token token', client_id, client_secret, redirect_uri ='', nonce,  scope ('openid, profile, roles')</div>
     </div>
 
+    <div id="AllowHybridFlowFieldSet" class="form-group collapse" asp-validation-class-for="AllowHybridFlow">
+        <div class="custom-control custom-checkbox">
+            <input type="checkbox" class="custom-control-input" asp-for="AllowHybridFlow" data-toggle="collapse" data-target="#AllowHybridFlowRecommendedHint" checked="@Model.AllowHybridFlow">
+            <label class="custom-control-label" asp-for="AllowHybridFlow">@T["Allow Hybrid Flow"]</label>
+            <span class="hint">— @T["More info:"] <a href="http://openid.net/specs/openid-connect-core-1_0.html#HybridFlowAuth">http://openid.net/specs/openid-connect-core-1_0.html#HybridFlowAuth</a></span>
+        </div>
+        <div id="AllowHybridFlowRecommendedHint" class="hint collapse">@T["Recommended Parameters:"] grant_type = 'code id_token', client_id, client_secret, redirect_uri ='', nonce,  scope ('openid, profile, roles')</div>
+    </div>
+
     <div id="AllowPasswordFlowFieldSet" class="form-group collapse" asp-validation-class-for="AllowPasswordFlow">
         <div class="custom-control custom-checkbox">
             <input type="checkbox" class="custom-control-input" asp-for="AllowPasswordFlow" data-toggle="collapse" data-target="#AllowPasswordFlowRecommendedHint" checked="@Model.AllowPasswordFlow">
@@ -140,8 +149,8 @@
     </div>
 
     <div class="form-group">
-        <button class="btn btn-primary" type="submit">@T["Save"]</button>
-        <a class="btn btn-secondary" asp-route-action="Index">@T["Cancel"]</a>
+        <button class="btn btn-primary save" type="submit">@T["Save"]</button>
+        <a class="btn btn-secondary cancel" role="button" asp-route-action="Index">@T["Cancel"]</a>
     </div>
 </form>
 <script at="Foot">
@@ -167,7 +176,7 @@
             }
             else
             {
-                if (settings.GrantTypes.Contains(GrantTypes.AuthorizationCode))
+                if (settings.AllowAuthorizationCodeFlow)
                 {
                     <text>$("#AllowAuthorizationCodeFlowFieldSet").collapse("show");</text>
                 }
@@ -179,7 +188,7 @@
                     </text>
                 }
 
-                if (settings.GrantTypes.Contains(GrantTypes.ClientCredentials))
+                if (settings.AllowClientCredentialsFlow)
                 {
                     <text>$("#AllowClientCredentialsFlowFieldSet").collapse("show");</text>
                 }
@@ -191,7 +200,7 @@
                     </text>
                 }
 
-                if (settings.GrantTypes.Contains(GrantTypes.Implicit))
+                if (settings.AllowImplicitFlow)
                 {
                     <text>$("#AllowImplicitFlowFieldSet").collapse("show");</text>
                 }
@@ -203,7 +212,19 @@
                     </text>
                 }
 
-                if (settings.GrantTypes.Contains(GrantTypes.Password))
+                if (settings.AllowHybridFlow)
+                {
+                    <text>$("#AllowHybridFlowFieldSet").collapse("show");</text>
+                }
+                else
+                {
+                    <text>
+                        $("#AllowHybridFlowFieldSet").collapse("hide");
+                        $("#AllowHybridFlowFlow").prop("checked", false);
+                    </text>
+                }
+
+                if (settings.AllowPasswordFlow)
                 {
                     <text>$("#AllowPasswordFlowFieldSet").collapse("show");</text>
                 }
@@ -215,7 +236,7 @@
                     </text>
                 }
 
-                if (settings.GrantTypes.Contains(GrantTypes.RefreshToken))
+                if (settings.AllowRefreshTokenFlow)
                 {
                     <text>$("#AllowRefreshTokenFlowFieldSet").collapse("show");</text>
                 }
@@ -290,7 +311,7 @@
             }
         }
 
-        $("#AllowClientCredentialsFlow, #AllowPasswordFlow, #AllowAuthorizationCodeFlow, #AllowImplicitFlow, #AllowRefreshTokenFlow").change(function () {
+        $("#AllowClientCredentialsFlow, #AllowPasswordFlow, #AllowAuthorizationCodeFlow, #AllowImplicitFlow, #AllowHybridFlow, #AllowRefreshTokenFlow").change(function () {
             refreshFlows();
         });
 
@@ -305,7 +326,9 @@
         function refreshAllowRefreshTokenFlowVisibility() {
             var allowRefreshTokenFlow = $("#AllowRefreshTokenFlow");
 
-            if ($("#AllowPasswordFlow").prop('checked') || $("#AllowAuthorizationCodeFlow").prop('checked')) {
+            if ($("#AllowPasswordFlow").prop('checked') ||
+                $("#AllowAuthorizationCodeFlow").prop('checked') ||
+                $("#AllowHybridFlow").prop('checked')) {
                 allowRefreshTokenFlow.removeAttr("disabled");
             }
             else {
@@ -320,7 +343,9 @@
             var skipConsent = $("#SkipConsent");
             var postLogoutRedirecUris = $("#postLogoutRedirectUris")
 
-            if ($("#AllowImplicitFlow").prop('checked') || $("#AllowAuthorizationCodeFlow").prop('checked')) {
+            if ($("#AllowImplicitFlow").prop('checked') ||
+                $("#AllowAuthorizationCodeFlow").prop('checked') ||
+                $("#AllowHybridFlow").prop('checked')) {
                 redirectSection.collapse("show");
                 if ($("#AllowLogoutEndpoint").prop('checked')) {
                     postLogoutRedirecUris.collapse("show");
