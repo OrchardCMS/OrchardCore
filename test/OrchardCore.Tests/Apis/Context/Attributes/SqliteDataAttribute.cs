@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Reflection;
 using Xunit.Sdk;
 
-#nullable enable
 namespace OrchardCore.Tests.Apis.Context.Attributes
 {
     /// <summary>
@@ -18,7 +17,7 @@ namespace OrchardCore.Tests.Apis.Context.Attributes
     /// </remarks>
     public class SqliteDataAttribute : DataAttribute
     {
-        private static string? Environment = System.Environment.GetEnvironmentVariable("ORCHARD_TEST_SQLITE_SKIP");
+        private static string Environment = System.Environment.GetEnvironmentVariable("ORCHARD_TEST_SQLITE_SKIP");
 
         public SqliteDataAttribute()
         {
@@ -28,11 +27,10 @@ namespace OrchardCore.Tests.Apis.Context.Attributes
             }
         }
 
-        public override IEnumerable<object?[]> GetData(MethodInfo testMethod)
-            =>  new object?[][]
+        public override IEnumerable<object[]> GetData(MethodInfo testMethod)
+            =>  new object[][]
                 {
-                    new object?[] { "Sqlite", "" }
+                    new object[] { "Sqlite", "" }
                 };
     }
 }
-#nullable disable

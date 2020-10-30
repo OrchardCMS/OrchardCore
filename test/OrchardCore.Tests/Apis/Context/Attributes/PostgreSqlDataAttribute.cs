@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Reflection;
 using Xunit.Sdk;
 
-#nullable enable
 namespace OrchardCore.Tests.Apis.Context.Attributes
 {
     /// <summary>
@@ -11,14 +10,14 @@ namespace OrchardCore.Tests.Apis.Context.Attributes
     /// To enable PostgreSql testing provide a valid connection string for the environment variable 'ORCHARD_TEST_POSTGRESQL_CONNECTION_STRING'
     /// </summary>
     /// <example>
-    /// ORCHARD_TEST_POSTGRESQL_CONNECTION_STRING='Server=localhost;Port=5432;Database=octest;User Id=postgres;Password=Password12!;'
-    /// </example>    
+    /// ORCHARD_TEST_POSTGRESQL_CONNECTION_STRING=Server=localhost;Port=5432;Database=octest;User Id=postgres;Password=Password12!;
+    /// </example>
     /// <remarks>
     /// Primarily used for CI testing.
     /// </remarks>
     public class PostgreSqlDataAttribute : DataAttribute
     {
-        private static string? Environment = System.Environment.GetEnvironmentVariable("ORCHARD_TEST_POSTGRESQL_CONNECTION_STRING");
+        private static string Environment = System.Environment.GetEnvironmentVariable("ORCHARD_TEST_POSTGRESQL_CONNECTION_STRING");
 
         public PostgreSqlDataAttribute()
         {
@@ -28,11 +27,10 @@ namespace OrchardCore.Tests.Apis.Context.Attributes
             }
         }
 
-        public override IEnumerable<object?[]> GetData(MethodInfo testMethod)
-            =>  new object?[][]
+        public override IEnumerable<object[]> GetData(MethodInfo testMethod)
+            =>  new object[][]
                 {
-                    new object?[] { "Postgres", Environment }
+                    new object[] { "Postgres", Environment }
                 };
     }
 }
-#nullable disable

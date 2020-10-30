@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Reflection;
 using Xunit.Sdk;
 
-#nullable enable
 namespace OrchardCore.Tests.Apis.Context.Attributes
 {
     /// <summary>
@@ -11,14 +10,14 @@ namespace OrchardCore.Tests.Apis.Context.Attributes
     /// To enable MySql server testing provide a valid connection string for the environment variable 'ORCHARD_TEST_MYSQL_CONNECTION_STRING'
     /// </summary>
     /// <example>
-    /// ORCHARD_TEST_MYSQL_CONNECTION_STRING='server=localhost;uid=root;pwd=Password12!;database=octest;'
-    /// </example>    
+    /// ORCHARD_TEST_MYSQL_CONNECTION_STRING=server=localhost;uid=root;pwd=Password12!;database=octest;
+    /// </example>
     /// <remarks>
     /// Primarily used for CI testing.
     /// </remarks>
     public class MySqlDataAttribute : DataAttribute
     {
-        private static string? Environment = System.Environment.GetEnvironmentVariable("ORCHARD_TEST_MYSQL_CONNECTION_STRING");
+        private static string Environment = System.Environment.GetEnvironmentVariable("ORCHARD_TEST_MYSQL_CONNECTION_STRING");
 
         public MySqlDataAttribute()
         {
@@ -28,11 +27,10 @@ namespace OrchardCore.Tests.Apis.Context.Attributes
             }
         }
 
-        public override IEnumerable<object?[]> GetData(MethodInfo testMethod)
-            =>  new object?[][]
+        public override IEnumerable<object[]> GetData(MethodInfo testMethod)
+            =>  new object[][]
                 {
-                    new object?[] { "MySql", Environment }
+                    new object[] { "MySql", Environment }
                 };
     }
 }
-#nullable disable
