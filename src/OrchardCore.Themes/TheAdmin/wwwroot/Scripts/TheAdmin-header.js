@@ -23,6 +23,7 @@ var observer = new MutationObserver(function (mutations) {
 
           if (adminPreferences.darkMode == true) {
             body.className += ' darkmode';
+            document.getElementById("btn-darkmode").children[0].classList.add('fa-sun');
           }
 
           darkMode = adminPreferences.darkMode;
