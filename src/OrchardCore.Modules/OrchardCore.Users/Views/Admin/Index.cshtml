@@ -13,21 +13,24 @@
     <input type="submit" name="submit.BulkAction" class="d-none" />
     <input asp-for="Options.BulkAction" type="hidden" />
 
-    <div class="row">
-        <div class="form-group col-xl-4 col-sm-6">
-            <div class="input-group input-group-sm filter-options">
-                <input asp-for="Options.Search" class="form-control" placeholder="@T["Search"]" type="search" autofocus />
-            </div>
-        </div>
-        <div class="form-group col-xl-8 col-sm-6">
-            <div class="btn-group float-right">
-                <a asp-route-action="Create" class="btn btn-primary float-right" role="button">@T["Add User"]</a>
+    <div class="card mb-3 position-sticky action-bar">
+        <div class="card-body bg-primary p-3">
+            <div class="form-group mb-n1">
+                <div class="input-group input-group-sm w-lg-50 d-inline-flex">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text bg-secondary text-light">@T["Filter"]</span>
+                    </div>
+                    <input asp-for="Options.Search" class="form-control" placeholder="@T["Search"]" type="search" autofocus />
+                </div>
+                <div class="btn-group float-right">
+                    <a asp-route-action="Create" class="btn btn-sm btn-secondary float-right create" role="button">@T["Add User"]</a>
+                </div>
             </div>
         </div>
     </div>
 
     <ul class="list-group with-checkbox">
-        <li class="list-group-item bg-light">
+        <li class="list-group-item bg-primary">
             <div class="row">
                 <div class="form-group col mb-n1 text-nowrap">
                     <div class="custom-control custom-checkbox mt-2 mr-n2">
@@ -52,15 +55,15 @@
                 </div>
                 <div class="form-group col mb-n1 filter"></div>
                 @*<div class="form-group col-xl-1 mb-n1 filter">
-                    <div class="float-xl-right">
-                        <select asp-for="Options.Filter" asp-items="@Model.Options.UserFilters" class="selectpicker show-tick" data-header="@T["Filter by"]" data-width="fit" data-selected-text-format="static" data-dropdown-align-right="auto" title="@T["Filter"]"></select>
+                        <div class="float-xl-right">
+                            <select asp-for="Options.Filter" asp-items="@Model.Options.UserFilters" class="selectpicker show-tick" data-header="@T["Filter by"]" data-width="fit" data-selected-text-format="static" data-dropdown-align-right="auto" title="@T["Filter"]"></select>
+                        </div>
                     </div>
-                </div>
-                <div class="form-group col-xl-1 mb-n1 filter">
-                    <div class="float-xl-right">
-                        <select asp-for="Options.Order" asp-items="@Model.Options.UserSorts" class="selectpicker show-tick" data-header="@T["Sort by"]" data-width="fit" data-selected-text-format="static" data-dropdown-align-right="auto" title="@T["Sort"]"></select>
-                    </div>
-                </div>*@
+                    <div class="form-group col-xl-1 mb-n1 filter">
+                        <div class="float-xl-right">
+                            <select asp-for="Options.Order" asp-items="@Model.Options.UserSorts" class="selectpicker show-tick" data-header="@T["Sort by"]" data-width="fit" data-selected-text-format="static" data-dropdown-align-right="auto" title="@T["Sort"]"></select>
+                        </div>
+                    </div>*@
             </div>
         </li>
         @if (Model.Users.Count > 0)

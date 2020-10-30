@@ -324,3 +324,8 @@ ul.pager {
 .form-coming-soon .validation-summary-errors {
   color: #ea912b;
 }
+
+#togglePassword {
+  width: 44px;
+  padding: 0;
+}

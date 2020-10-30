@@ -11,15 +11,17 @@
 
 <h1>@RenderTitleSegments(T["Edit Nodes for '{0}'", Model.AdminMenu.Name])</h1>
 
-<nav class="admin-toolbar">
-    <ul class="navbar-nav mr-auto">
-        <li class="nav-item">
-            <!-- Button trigger modal -->
-            <a asp-route-action="Create" class="btn btn-primary" role="button" data-toggle="modal" data-target="#modalTreeNodes">
-                @T["Add Node"]
-            </a>
-        </li>
-    </ul>
+<nav class="card mb-3">
+    <div class="card-body bg-primary p-3">
+        <div class="form-group mb-n1">
+            <div class="dropdown float-right order-md-1">
+                <!-- Button trigger modal -->
+                <a asp-route-action="Create" class="btn btn-sm btn-primary" role="button" data-toggle="modal" data-target="#modalTreeNodes">
+                    @T["Add Node"]
+                </a>
+            </div>
+        </div>
+    </div>
 </nav>
 
 <div asp-validation-summary="All"></div>
@@ -30,7 +32,7 @@
         {
             var updater = ModelUpdaterAccessor.ModelUpdater;
 
-            <ol id="menu" data-treenode-id="content-preset">
+            <ol id="menu" data-treenode-id="content-preset" class="list-group">
                 @foreach (var menuItem in Model.AdminMenu.MenuItems)
                 {
                     if (menuItem != null)
