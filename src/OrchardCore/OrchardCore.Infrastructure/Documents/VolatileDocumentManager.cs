@@ -50,14 +50,12 @@ namespace OrchardCore.Documents
                 }
 
                 using var acquiredLock = locker;
+
                 var updated = await _updateDelegateAsync();
                 updated.Identifier ??= IdGenerator.GenerateId();
                 await SetInternalAsync(updated);
 
-                if (acquiredLock != null)
-                {
-                    await acquiredLock.DisposeAsync();
-                }
+                await acquiredLock.DisposeAsync();
             });
 
             return Task.CompletedTask;
