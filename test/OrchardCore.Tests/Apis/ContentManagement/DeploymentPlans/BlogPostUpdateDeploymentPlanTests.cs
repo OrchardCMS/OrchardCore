@@ -5,7 +5,6 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Tests.Apis.Context;
-using OrchardCore.Tests.Apis.Context.Attributes;
 using Xunit;
 using YesSql;
 

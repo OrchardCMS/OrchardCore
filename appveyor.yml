@@ -77,7 +77,7 @@ before_test:
 test_script:
   - node --version
   - npm --version
-  - dotnet test -c Release -v=normal --no-build .\test\OrchardCore.Tests\OrchardCore.Tests.csproj
+  - dotnet test -c Release --no-build .\test\OrchardCore.Tests\OrchardCore.Tests.csproj
   - cd .\test\Functional
   - test-setup.cmd
   - test-run.cmd

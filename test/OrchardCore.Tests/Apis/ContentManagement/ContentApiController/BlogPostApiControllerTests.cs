@@ -11,7 +11,6 @@ using OrchardCore.Environment.Shell;
 using OrchardCore.Lists.Models;
 using OrchardCore.Taxonomies.Fields;
 using OrchardCore.Tests.Apis.Context;
-using OrchardCore.Tests.Apis.Context.Attributes;
 using Xunit;
 using YesSql;
 
@@ -19,16 +18,10 @@ namespace OrchardCore.Tests.Apis.ContentManagement.ContentApiController
 {
     public class BlogPostApiControllerTests
     {
-        [Theory]
-        [SqliteData]
-        [SqlServerData]
-        [MySqlData]
-        [PostgreSqlData]
-        public async Task ShouldCreateDraftOfExistingContentItem(string databaseProvider, string connectionString)
+        [Fact]
+        public async Task ShouldCreateDraftOfExistingContentItem()
         {
-            using var context = new BlogPostApiControllerContext()
-                .WithDatabaseProvider(databaseProvider)
-                .WithConnectionString(connectionString);
+            using var context = new BlogPostApiControllerContext();
 
             await context.InitializeAsync();
 
