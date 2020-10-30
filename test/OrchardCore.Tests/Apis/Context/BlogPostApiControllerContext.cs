@@ -20,9 +20,9 @@ namespace OrchardCore.Tests.Apis.Context
             ShellHost = Site.Services.GetRequiredService<IShellHost>();
         }
 
-        public override async Task InitializeAsync(string databaseProvider = "Sqlite", string connectionString = null, PermissionsContext permissionsContext = null)
+        public override async Task InitializeAsync()
         {
-            await base.InitializeAsync(databaseProvider, connectionString);
+            await base.InitializeAsync();
 
             var body = new ContentTypeQueryResourceBuilder("blogPost")
                     .WithField("contentItemId").Build() +

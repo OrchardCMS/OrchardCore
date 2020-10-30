@@ -12,6 +12,11 @@ namespace OrchardCore.Tests.Apis.Context
         public static OrchardTestFixture<SiteStartup> Site { get; }
         public static HttpClient DefaultTenantClient { get; }
 
+        public string RecipeName { get; set; } = "Blog";
+        public string DatabaseProvider { get; set; } = "Sqlite";
+        public string ConnectionString { get; set; }
+        public PermissionsContext PermissionsContext { get; set; }
+
         public HttpClient Client { get; private set; }
         public string TenantName { get; private set; }
         public OrchardGraphQLClient GraphQLClient { get; private set; }
@@ -22,17 +27,17 @@ namespace OrchardCore.Tests.Apis.Context
             DefaultTenantClient = Site.CreateDefaultClient();
         }
 
-        public virtual async Task InitializeAsync(string databaseProvider = "Sqlite", string connectionString = null, PermissionsContext permissionsContext = null)
+        public virtual async Task InitializeAsync()
         {
             var tenantName = Guid.NewGuid().ToString("n");
             var tablePrefix = await TablePrefixGenerator.GeneratePrefixAsync();
 
             var createModel = new Tenants.ViewModels.CreateApiViewModel
             {
-                DatabaseProvider = databaseProvider,
+                DatabaseProvider = DatabaseProvider,
                 TablePrefix = tablePrefix,
-                ConnectionString = connectionString,
-                RecipeName = "Blog",
+                ConnectionString = ConnectionString,
+                RecipeName = RecipeName,
                 Name = tenantName,
                 RequestUrlPrefix = tenantName
             };
@@ -48,10 +53,10 @@ namespace OrchardCore.Tests.Apis.Context
             var setupModel = new Tenants.ViewModels.SetupApiViewModel
             {
                 SiteName = "Test Site",
-                DatabaseProvider = databaseProvider,
+                DatabaseProvider = ConnectionString,
                 TablePrefix = tablePrefix,
-                ConnectionString = connectionString,
-                RecipeName = "Blog",
+                ConnectionString = ConnectionString,
+                RecipeName = RecipeName,
                 UserName = "admin",
                 Password = "Password01_",
                 Name = tenantName,
@@ -67,10 +72,10 @@ namespace OrchardCore.Tests.Apis.Context
                 TenantName = tenantName;
             }
 
-            if (permissionsContext != null)
+            if (PermissionsContext != null)
             {
                 var permissionContextKey = Guid.NewGuid().ToString();
-                SiteStartup.PermissionsContexts.TryAdd(permissionContextKey, permissionsContext);
+                SiteStartup.PermissionsContexts.TryAdd(permissionContextKey, PermissionsContext);
                 Client.DefaultRequestHeaders.Add("PermissionsContext", permissionContextKey);
             }
 
@@ -103,6 +108,33 @@ namespace OrchardCore.Tests.Apis.Context
         public void Dispose()
         {
             Client?.Dispose();
+        }
+    }
+
+    public static class SiteContextExtensions
+    {
+        public static T WithDatabaseProvider<T>(this T siteContext, string databaseProvider) where T : SiteContext
+        {
+            siteContext.DatabaseProvider = databaseProvider;
+            return siteContext;
+        }
+
+        public static T WithConnectionString<T>(this T siteContext, string connectionString) where T : SiteContext
+        {
+            siteContext.ConnectionString = connectionString;
+            return siteContext;
+        }
+
+        public static T WithPermissionsContext<T>(this T siteContext, PermissionsContext permissionsContext) where T : SiteContext
+        {
+            siteContext.PermissionsContext = permissionsContext;
+            return siteContext;
+        }
+
+        public static T WithRecipe<T>(this T siteContext, string recipeName) where T : SiteContext
+        {
+            siteContext.RecipeName = recipeName;
+            return siteContext;
         }
     }
 }

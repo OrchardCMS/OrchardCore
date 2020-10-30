@@ -26,22 +26,22 @@ namespace OrchardCore.Tests.Apis.ContentManagement.ContentApiController
         [PostgreSqlData]
         public async Task ShouldCreateDraftOfExistingContentItem(string databaseProvider, string connectionString)
         {
-            using (var context = new BlogPostApiControllerContext())
-            {
-                // Setup
-                await context.InitializeAsync(databaseProvider, connectionString);
+            using var context = new BlogPostApiControllerContext()
+                .WithDatabaseProvider(databaseProvider)
+                .WithConnectionString(connectionString);
 
-                context.BlogPost.Latest = false;
-                context.BlogPost.Published = true; // Deliberately set these incorrectly.
+            await context.InitializeAsync();
 
-                // Act
-                var content = await context.Client.PostAsJsonAsync("api/content?draft=true", context.BlogPost);
-                var draftContentItem = await content.Content.ReadAsAsync<ContentItem>();
+            context.BlogPost.Latest = false;
+            context.BlogPost.Published = true; // Deliberately set these incorrectly.
 
-                // Test
-                Assert.True(draftContentItem.Latest);
-                Assert.False(draftContentItem.Published);
-            }
+            // Act
+            var content = await context.Client.PostAsJsonAsync("api/content?draft=true", context.BlogPost);
+            var draftContentItem = await content.Content.ReadAsAsync<ContentItem>();
+
+            // Test
+            Assert.True(draftContentItem.Latest);
+            Assert.False(draftContentItem.Published);
         }
 
         [Fact]
