@@ -11,6 +11,7 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.FileStorage;
+using OrchardCore.Media.Fields;
 using OrchardCore.Media.Services;
 
 namespace OrchardCore.Media.Controllers
@@ -422,7 +423,7 @@ namespace OrchardCore.Media.Controllers
                 mediaPath = mediaFile.Path,
                 mime = contentType ?? "application/octet-stream",
                 mediaText = String.Empty,
-                center = Array.Empty<float[]>()
+                center = Array.Empty<Center>()
             };
         }
     }

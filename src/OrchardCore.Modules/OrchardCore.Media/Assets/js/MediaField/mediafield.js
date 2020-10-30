@@ -78,6 +78,7 @@ function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple,
                         });
                     });
 
+                    
                     signal.resolve();
                 }
             },
@@ -102,7 +103,7 @@ function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple,
                     }
                     this.smallThumbs = newPrefs.smallThumbs;
                 }
-            },
+            }
         },
         mounted: function () {
             var self = this;

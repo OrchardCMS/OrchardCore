@@ -4,22 +4,22 @@ using SixLabors.ImageSharp;
 
 namespace OrchardCore.Media.Fields
 {
-    public static class MediaFieldExtensions
+    public static class MediaFieldCenterExtensions
     {
         /// <summary>
         /// Centers are a less well known property of a media field.
         /// </summary>
-        public static float?[][] GetCenters(this MediaField mediaField)
+        public static Center[] GetCenters(this MediaField mediaField)
         {
             var centers = mediaField.Content["Centers"] as JArray;
 
-            return centers != null ? centers.ToObject<float?[][]>() : Array.Empty<float?[]>();
+            return centers != null ? centers.ToObject<Center[]>() : Array.Empty<Center>();
         }
 
         /// <summary>
         /// Tags names are a less well known property of a media field.
         /// </summary>
-        public static void SetCenters(this MediaField mediaField, float?[][] centers)
+        public static void SetCenters(this MediaField mediaField, Center[] centers)
         {
             mediaField.Content["Centers"] = JArray.FromObject(centers);
         }

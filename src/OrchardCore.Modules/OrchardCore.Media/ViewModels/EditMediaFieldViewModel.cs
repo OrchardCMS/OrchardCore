@@ -24,7 +24,7 @@ namespace OrchardCore.Media.ViewModels
 
         // Center cropping dimensions are an option that maybe applied to a media field through settings.
         public bool AllowCenterCropping { get; set; }
-        public float[][] Centers { get; set; }
+        public Center[] Centers { get; set; } = Array.Empty<Center>();
     }
 
     public class EditMediaFieldItemInfo
@@ -39,6 +39,6 @@ namespace OrchardCore.Media.ViewModels
 
         // Alt text is an option that maybe applied to a media field through settings.
         public string MediaText { get; set; } = String.Empty;
-        public float?[] Center { get; set; } = Array.Empty<float?>();
+        public Center Center { get; set; }
     }
 }

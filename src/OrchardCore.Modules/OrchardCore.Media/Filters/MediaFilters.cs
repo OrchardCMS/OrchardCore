@@ -6,7 +6,9 @@ using Fluid.Values;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json.Linq;
 using OrchardCore.Liquid;
+using OrchardCore.Media.Fields;
 using OrchardCore.Media.Services;
 
 namespace OrchardCore.Media.Filters
@@ -107,7 +109,7 @@ namespace OrchardCore.Media.Filters
             return new StringValue(resizedUrl);
         }
 
-        private static void ApplyQueryStringParams(IDictionary<string, string> queryStringParams, FluidValue width, FluidValue height, FluidValue mode, FluidValue quality, FluidValue format, FluidValue center)
+        private static void ApplyQueryStringParams(IDictionary<string, string> queryStringParams, FluidValue width, FluidValue height, FluidValue mode, FluidValue quality, FluidValue format, FluidValue centerValue)
         {
             if (!width.IsNil())
             {
@@ -134,21 +136,23 @@ namespace OrchardCore.Media.Filters
                 queryStringParams["format"] = format.ToStringValue();
             }
 
-            if (!center.IsNil() && center.Type == FluidValues.Array)
+            if (!centerValue.IsNil())
             {
-                var xy = String.Empty;
-                foreach (var value in center.Enumerate())
+                var obj = centerValue.ToObjectValue();
+
+                if (!(obj is Center center))
                 {
-                    if (value.IsNil())
+                    center = null;
+
+                    if (obj is JObject jObject)
                     {
-                        xy = String.Empty;
-                        break;
+                        center = jObject.ToObject<Center>();
                     }
-                    xy = xy + value.ToNumberValue().ToString() + ',';
                 }
-                if (!String.IsNullOrEmpty(xy))
+                if (center != null)
                 {
-                    queryStringParams["rxy"] = xy.Trim(',');
+                    // TODO check formatting
+                    queryStringParams["rxy"] = center.X.ToString() + ',' + center.Y.ToString();
                 }
             }
         }
