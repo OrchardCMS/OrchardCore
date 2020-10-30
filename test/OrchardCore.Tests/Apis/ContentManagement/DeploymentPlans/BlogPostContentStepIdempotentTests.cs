@@ -13,17 +13,13 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
 {
     public class BlogPostContentStepIdempotentTests
     {
-        [Theory]
-        [SqliteData]
-        [SqlServerData]
-        [MySqlData]
-        [PostgreSqlData]
-        public async Task ShouldProduceSameOutcomeForNewContentOnMultipleExecutions(string databaseProvider, string connectionString)
+        [Fact]
+        public async Task ShouldProduceSameOutcomeForNewContentOnMultipleExecutions()
         {
             using (var context = new BlogPostDeploymentContext())
             {
                 // Setup
-                await context.InitializeAsync(databaseProvider, connectionString);
+                await context.InitializeAsync();
 
                 // Act
                 var recipe = context.GetContentStepRecipe(context.OriginalBlogPost, jItem =>
@@ -59,17 +55,13 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
             }
         }
 
-        [Theory]
-        [SqliteData]
-        [SqlServerData]
-        [MySqlData]
-        [PostgreSqlData]
-        public async Task ShouldProduceSameOutcomeForExistingContentItemVersionOnMultipleExecutions(string databaseProvider, string connectionString)
+        [Fact]
+        public async Task ShouldProduceSameOutcomeForExistingContentItemVersionOnMultipleExecutions()
         {
             using (var context = new BlogPostDeploymentContext())
             {
                 // Setup
-                await context.InitializeAsync(databaseProvider, connectionString);
+                await context.InitializeAsync();
 
                 // Act
                 var recipe = context.GetContentStepRecipe(context.OriginalBlogPost, jItem =>

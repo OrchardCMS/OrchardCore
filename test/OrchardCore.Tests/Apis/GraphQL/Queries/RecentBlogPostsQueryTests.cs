@@ -3,23 +3,18 @@ using System.Threading.Tasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.Lists.Models;
 using OrchardCore.Tests.Apis.Context;
-using OrchardCore.Tests.Apis.Context.Attributes;
 using Xunit;
 
 namespace OrchardCore.Tests.Apis.GraphQL
 {
     public class RecentBlogPostsQueryTests
     {
-        [Theory]
-        [SqliteData]
-        [SqlServerData]
-        [MySqlData]
-        [PostgreSqlData]
-        public async Task ShouldListBlogPostWhenCallingAQuery(string databaseProvider, string connectionString)
+        [Fact]
+        public async Task ShouldListBlogPostWhenCallingAQuery()
         {
             using (var context = new BlogContext())
             {
-                await context.InitializeAsync(databaseProvider, connectionString);
+                await context.InitializeAsync();
 
                 var blogPostContentItemId = await context
                     .CreateContentItem("BlogPost", builder =>

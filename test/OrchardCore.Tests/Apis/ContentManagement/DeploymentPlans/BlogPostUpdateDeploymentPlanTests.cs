@@ -13,17 +13,13 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
 {
     public class BlogPostUpdateDeploymentPlanTests
     {
-        [Theory]
-        [SqliteData]
-        [SqlServerData]
-        [MySqlData]
-        [PostgreSqlData]
-        public async Task ShouldUpdateExistingContentItemVersion(string databaseProvider, string connectionString)
+        [Fact]
+        public async Task ShouldUpdateExistingContentItemVersion()
         {
             using (var context = new BlogPostDeploymentContext())
             {
                 // Setup
-                await context.InitializeAsync(databaseProvider, connectionString);
+                await context.InitializeAsync();
 
                 // Act
                 var recipe = context.GetContentStepRecipe(context.OriginalBlogPost, jItem =>
@@ -48,17 +44,13 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
             }
         }
 
-        [Theory]
-        [SqliteData]
-        [SqlServerData]
-        [MySqlData]
-        [PostgreSqlData]
-        public async Task ShouldDiscardDraftThenUpdateExistingContentItemVersion(string databaseProvider, string connectionString)
+        [Fact]
+        public async Task ShouldDiscardDraftThenUpdateExistingContentItemVersion()
         {
             using (var context = new BlogPostDeploymentContext())
             {
                 // Setup
-                await context.InitializeAsync(databaseProvider, connectionString);
+                await context.InitializeAsync();
 
                 var content = await context.Client.PostAsJsonAsync("api/content?draft=true", context.OriginalBlogPost);
                 var draftContentItemVersionId = (await content.Content.ReadAsAsync<ContentItem>()).ContentItemVersionId;
@@ -92,17 +84,13 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
             }
         }
 
-        [Theory]
-        [SqliteData]
-        [SqlServerData]
-        [MySqlData]
-        [PostgreSqlData]
-        public async Task ShouldUpdateDraftThenPublishExistingContentItemVersion(string databaseProvider, string connectionString)
+        [Fact]
+        public async Task ShouldUpdateDraftThenPublishExistingContentItemVersion()
         {
             using (var context = new BlogPostDeploymentContext())
             {
                 // Setup
-                await context.InitializeAsync(databaseProvider, connectionString);
+                await context.InitializeAsync();
 
                 var content = await context.Client.PostAsJsonAsync("api/content?draft=true", context.OriginalBlogPost);
                 var draftContentItem = (await content.Content.ReadAsAsync<ContentItem>());

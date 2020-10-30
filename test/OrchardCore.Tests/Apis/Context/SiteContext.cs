@@ -22,14 +22,8 @@ namespace OrchardCore.Tests.Apis.Context
             DefaultTenantClient = Site.CreateDefaultClient();
         }
 
-        public virtual async Task InitializeAsync(string databaseProvider, string connectionString, PermissionsContext permissionsContext = null)
+        public virtual async Task InitializeAsync(string databaseProvider = "Sqlite", string connectionString = null, PermissionsContext permissionsContext = null)
         {
-            if (databaseProvider == null)
-            {
-                databaseProvider = "Sqlite";
-
-            }
-
             var tenantName = Guid.NewGuid().ToString("n");
             var tablePrefix = await TablePrefixGenerator.GeneratePrefixAsync();
 

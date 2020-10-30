@@ -5,7 +5,6 @@ using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentManagement;
 using OrchardCore.Lists.Models;
 using OrchardCore.Tests.Apis.Context;
-using OrchardCore.Tests.Apis.Context.Attributes;
 using Xunit;
 using GraphQLApi = OrchardCore.Apis.GraphQL;
 
@@ -13,16 +12,12 @@ namespace OrchardCore.Tests.Apis.GraphQL
 {
     public class BlogPostTests
     {
-        [Theory]
-        [SqliteData]
-        [SqlServerData]
-        [MySqlData]
-        [PostgreSqlData]
-        public async Task ShouldListAllBlogs(string databaseProvider, string connectionString)
+        [Fact]
+        public async Task ShouldListAllBlogs()
         {
             using (var context = new BlogContext())
             {
-                await context.InitializeAsync(databaseProvider, connectionString);
+                await context.InitializeAsync();
 
                 var result = await context
                     .GraphQLClient
@@ -38,16 +33,12 @@ namespace OrchardCore.Tests.Apis.GraphQL
             }
         }
 
-        [Theory]
-        [SqliteData]
-        [SqlServerData]
-        [MySqlData]
-        [PostgreSqlData]
-        public async Task ShouldQueryByBlogPostAutoroutePart(string databaseProvider, string connectionString)
+        [Fact]
+        public async Task ShouldQueryByBlogPostAutoroutePart()
         {
             using (var context = new BlogContext())
             {
-                await context.InitializeAsync(databaseProvider, connectionString);
+                await context.InitializeAsync();
 
                 var blogPostContentItemId1 = await context
                     .CreateContentItem("BlogPost", builder =>
@@ -105,16 +96,12 @@ namespace OrchardCore.Tests.Apis.GraphQL
             }
         }
 
-        [Theory]
-        [SqliteData]
-        [SqlServerData]
-        [MySqlData]
-        [PostgreSqlData]
-        public async Task WhenThePartHasTheSameNameAsTheContentTypeShouldCollapseFieldsToContentType(string databaseProvider, string connectionString)
+        [Fact]
+        public async Task WhenThePartHasTheSameNameAsTheContentTypeShouldCollapseFieldsToContentType()
         {
             using (var context = new BlogContext())
             {
-                await context.InitializeAsync(databaseProvider, connectionString);
+                await context.InitializeAsync();
 
                 var result = await context
                     .GraphQLClient
@@ -130,16 +117,12 @@ namespace OrchardCore.Tests.Apis.GraphQL
             }
         }
 
-        [Theory]
-        [SqliteData]
-        [SqlServerData]
-        [MySqlData]
-        [PostgreSqlData]
-        public async Task WhenCreatingABlogPostShouldBeAbleToPopulateField(string databaseProvider, string connectionString)
+        [Fact]
+        public async Task WhenCreatingABlogPostShouldBeAbleToPopulateField()
         {
             using (var context = new BlogContext())
             {
-                await context.InitializeAsync(databaseProvider, connectionString);
+                await context.InitializeAsync();
 
                 var blogPostContentItemId = await context
                     .CreateContentItem("BlogPost", builder =>
@@ -186,16 +169,12 @@ namespace OrchardCore.Tests.Apis.GraphQL
             }
         }
 
-        [Theory]
-        [SqliteData]
-        [SqlServerData]
-        [MySqlData]
-        [PostgreSqlData]
-        public async Task ShouldQueryByStatus(string databaseProvider, string connectionString)
+        [Fact]
+        public async Task ShouldQueryByStatus()
         {
             using (var context = new BlogContext())
             {
-                await context.InitializeAsync(databaseProvider, connectionString);
+                await context.InitializeAsync();
 
                 var draft = await context
                     .CreateContentItem("BlogPost", builder =>
@@ -230,28 +209,20 @@ namespace OrchardCore.Tests.Apis.GraphQL
             }
         }
 
-        [Theory]
-        [SqliteData]
-        [SqlServerData]
-        [MySqlData]
-        [PostgreSqlData]
-        public async Task ShouldNotBeAbleToExecuteAnyQueriesWithoutPermission(string databaseProvider, string connectionString)
+        [Fact]
+        public async Task ShouldNotBeAbleToExecuteAnyQueriesWithoutPermission()
         {
             using (var context = new SiteContext())
             {
-                await context.InitializeAsync(databaseProvider, connectionString, new PermissionsContext { UsePermissionsContext = true });
+                await context.InitializeAsync("Sqlite", null, new PermissionsContext { UsePermissionsContext = true });
 
                 var response = await context.GraphQLClient.Client.GetAsync("api/graphql");
                 Assert.Equal(System.Net.HttpStatusCode.Unauthorized, response.StatusCode);
             }
         }
 
-        [Theory]
-        [SqliteData]
-        [SqlServerData]
-        [MySqlData]
-        [PostgreSqlData]
-        public async Task ShouldReturnBlogsWithViewBlogContentPermission(string databaseProvider, string connectionString)
+        [Fact]
+        public async Task ShouldReturnBlogsWithViewBlogContentPermission()
         {
             var permissionContext = new PermissionsContext
             {
@@ -264,7 +235,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
 
             using (var context = new SiteContext())
             {
-                await context.InitializeAsync(databaseProvider, connectionString, permissionContext);
+                await context.InitializeAsync("Sqlite", null, permissionContext);
 
                 var result = await context.GraphQLClient.Content
                     .Query("blog", builder =>
@@ -276,12 +247,8 @@ namespace OrchardCore.Tests.Apis.GraphQL
             }
         }
 
-        [Theory]
-        [SqliteData]
-        [SqlServerData]
-        [MySqlData]
-        [PostgreSqlData]
-        public async Task ShouldNotReturnBlogsWithoutViewBlogContentPermission(string databaseProvider, string connectionString)
+        [Fact]
+        public async Task ShouldNotReturnBlogsWithoutViewBlogContentPermission()
         {
             var permissionContext = new PermissionsContext
             {
@@ -293,7 +260,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
 
             using (var context = new SiteContext())
             {
-                await context.InitializeAsync(databaseProvider, connectionString, permissionContext);
+                await context.InitializeAsync("Sqlite", null, permissionContext);
 
                 var result = await context.GraphQLClient.Content
                     .Query("blog", builder =>

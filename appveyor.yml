@@ -72,7 +72,7 @@ before_test:
   - SET PGPASSWORD=Password12!
   - PATH=C:\Program Files\PostgreSQL\9.6\bin\;%PATH%
   - createdb octest
-#  - SET ORCHARD_TEST_SQLSERVER_CONNECTION_STRING=Data Source=.;Initial Catalog=tempdb;Integrated Security=True
+  - SET ORCHARD_TEST_SQLSERVER_CONNECTION_STRING=Server=(local)\SQL2017;Database=tempdb;User ID=sa;Password=Password12!
 
 test_script:
   - node --version

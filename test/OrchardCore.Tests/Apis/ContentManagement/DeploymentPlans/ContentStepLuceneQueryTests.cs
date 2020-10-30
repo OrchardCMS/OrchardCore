@@ -11,17 +11,13 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
 {
     public class ContentStepLuceneQueryTests
     {
-        [Theory]
-        [SqliteData]
-        [SqlServerData]
-        [MySqlData]
-        [PostgreSqlData]
-        public async Task ShouldUpdateLuceneIndexesOnImport(string databaseProvider, string connectionString)
+        [Fact]
+        public async Task ShouldUpdateLuceneIndexesOnImport()
         {
             using (var context = new BlogPostDeploymentContext())
             {
                 // Setup
-                await context.InitializeAsync(databaseProvider, connectionString);
+                await context.InitializeAsync();
 
                 // Act
                 var recipe = context.GetContentStepRecipe(context.OriginalBlogPost, jItem =>

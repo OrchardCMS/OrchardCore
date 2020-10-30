@@ -6,7 +6,7 @@ namespace OrchardCore.Tests.Apis.Context
     {
         public string BlogContentItemId { get; private set; }
 
-        public override async Task InitializeAsync(string databaseProvider, string connectionString, PermissionsContext permissionsContext = null)
+        public override async Task InitializeAsync(string databaseProvider = "Sqlite", string connectionString = null, PermissionsContext permissionsContext = null)
         {
             await base.InitializeAsync(databaseProvider, connectionString);
 
