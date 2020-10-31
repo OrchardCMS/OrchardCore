@@ -69,6 +69,9 @@ namespace OrchardCore.Tests.OrchardCore.Users
                     )
             );
             var mockSmtpService = Mock.Of<ISmtpService>();
+            var mockStringLocalizer = new Mock<IStringLocalizer<RegistrationController>>();
+            mockStringLocalizer.Setup(l => l[It.IsAny<string>()])
+                .Returns<string>(s => new LocalizedString(s, s));
 
             var controller = new RegistrationController(
                 mockUserManager,
@@ -78,7 +81,7 @@ namespace OrchardCore.Tests.OrchardCore.Users
                 Mock.Of<IEmailAddressValidator>(),
                 Mock.Of<ILogger<RegistrationController>>(),
                 Mock.Of<IHtmlLocalizer<RegistrationController>>(),
-                Mock.Of<IStringLocalizer<RegistrationController>>());
+                mockStringLocalizer.Object);
 
             var mockServiceProvider = new Mock<IServiceProvider>();
             mockServiceProvider
