@@ -1,7 +1,7 @@
 site_name: Orchard Core Documentation
 theme:
   name: material  
-#  custom_dir: src/docs/theme
+  custom_dir: src/docs/theme
   logo: docs/assets/images/orchard-logo.png
   favicon: docs/assets/images/favicon-blue.png
   features:
@@ -58,7 +58,7 @@ markdown_extensions:
 
 plugins:
   - search  
-#  - git-authors
+  - git-authors
   - git-revision-date-localized
   - exclude:
       glob:
