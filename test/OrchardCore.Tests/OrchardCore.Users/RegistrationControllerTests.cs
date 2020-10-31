@@ -65,7 +65,7 @@ namespace OrchardCore.Tests.OrchardCore.Users
             var controller = SetupRegistrationController();
 
             // Act
-            var result = await controller.Register(new RegisterViewModel { UserName = "SuoerAdmin", Email = "admin@orchardcore.net" });
+            var result = await controller.Register(new RegisterViewModel { UserName = "SuperAdmin", Email = "admin@orchardcore.net" });
             result = await controller.Register(new RegisterViewModel { UserName = "Admin", Email = "admin@orchardcore.net" });
 
             // Assert
