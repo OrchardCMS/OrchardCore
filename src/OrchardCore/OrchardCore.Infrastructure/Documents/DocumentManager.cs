@@ -1,11 +1,7 @@
 using System;
-using System.IO;
-using System.IO.Compression;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
-using Newtonsoft.Json;
 using OrchardCore.Data.Documents;
 using OrchardCore.Documents.Options;
 
@@ -17,6 +13,7 @@ namespace OrchardCore.Documents
     public class DocumentManager<TDocument> : IDocumentManager<TDocument> where TDocument : class, IDocument, new()
     {
         protected readonly IDocumentStore _documentStore;
+        private readonly IDocumentSerialiser<TDocument> _serializer;
         private readonly IDistributedCache _distributedCache;
         private readonly IMemoryCache _memoryCache;
         private readonly DocumentOptions _options;
@@ -28,11 +25,13 @@ namespace OrchardCore.Documents
 
         public DocumentManager(
             IDocumentStore documentStore,
+            IDocumentSerialiser<TDocument> serializer,
             IDistributedCache distributedCache,
             IMemoryCache memoryCache,
             DocumentOptions<TDocument> options)
         {
             _documentStore = documentStore;
+            _serializer = serializer;
             _distributedCache = distributedCache;
             _memoryCache = memoryCache;
             _options = options.Value;
@@ -249,7 +248,7 @@ namespace OrchardCore.Documents
             }
             else if (_memoryCache.TryGetValue<TDocument>(_options.CacheKey, out var cached))
             {
-                data = Serialize(cached);
+                data = await _serializer.SerializeAsync(cached);
             }
 
             if (data == null)
@@ -257,85 +256,18 @@ namespace OrchardCore.Documents
                 return null;
             }
 
-            if (_isDistributed && IsCompressed(data))
-            {
-                data = Decompress(data);
-            }
-
-            return Deserialize(data);
+            return await _serializer.DeserializeAsync(data);
         }
 
         private async Task UpdateDistributedCacheAsync(TDocument document)
         {
             if (_isDistributed)
             {
-                var data = Serialize(document);
-
-                if (data.Length >= _options.CompressThreshold)
-                {
-                    data = Compress(data);
-                }
-
+                var data = await _serializer.SerializeAsync(document, _options.CompressThreshold);
                 await _distributedCache.SetAsync(_options.CacheKey, data, _options);
             }
 
             await _distributedCache.SetStringAsync(_options.CacheIdKey, document.Identifier ?? "NULL", _options);
-        }
-
-        private static readonly JsonSerializerSettings _jsonSettings = new JsonSerializerSettings
-        {
-            TypeNameHandling = TypeNameHandling.Auto,
-            DateTimeZoneHandling = DateTimeZoneHandling.Utc
-        };
-
-        internal static byte[] Serialize(TDocument document) =>
-            Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(document, _jsonSettings));
-
-        internal static TDocument Deserialize(byte[] data) =>
-            JsonConvert.DeserializeObject<TDocument>(Encoding.UTF8.GetString(data), _jsonSettings);
-
-        private static readonly byte[] GZipHeaderBytes = { 0x1f, 0x8b };
-
-        internal static bool IsCompressed(byte[] data)
-        {
-            if (data.Length < GZipHeaderBytes.Length)
-            {
-                return false;
-            }
-
-            for (var i = 0; i < GZipHeaderBytes.Length; i++)
-            {
-                if (data[i] != GZipHeaderBytes[i])
-                {
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
-        internal static byte[] Compress(byte[] data)
-        {
-            using var input = new MemoryStream(data);
-            using var output = new MemoryStream();
-            using (var gzip = new GZipStream(output, CompressionMode.Compress))
-            {
-                input.CopyTo(gzip);
-            }
-
-            return output.ToArray();
-        }
-
-        internal static byte[] Decompress(byte[] data)
-        {
-            using var input = new MemoryStream(data);
-            using var output = new MemoryStream();
-            using (var gzip = new GZipStream(input, CompressionMode.Decompress))
-            {
-                gzip.CopyTo(output);
-            }
-
-            return output.ToArray();
         }
     }
 }

@@ -13,10 +13,11 @@ namespace OrchardCore.Documents
     {
         public DocumentManager(
             TDocumentStore documentStore,
+            IDocumentSerialiser<TDocument> serializer,
             IDistributedCache distributedCache,
             IMemoryCache memoryCache,
             DocumentOptions<TDocument> options)
-            : base(documentStore, distributedCache, memoryCache, options)
+            : base(documentStore, serializer, distributedCache, memoryCache, options)
         {
         }
     }

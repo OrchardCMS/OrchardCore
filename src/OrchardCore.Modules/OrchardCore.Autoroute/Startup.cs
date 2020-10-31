@@ -22,6 +22,7 @@ using OrchardCore.ContentManagement.Routing;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data;
 using OrchardCore.Data.Migration;
+using OrchardCore.Documents;
 using OrchardCore.Indexing;
 using OrchardCore.Liquid;
 using OrchardCore.Modules;
@@ -57,6 +58,7 @@ namespace OrchardCore.Autoroute
             services.AddScoped<IDataMigration, Migrations>();
 
             services.AddSingleton<IAutorouteEntries, AutorouteEntries>();
+            services.AddSingleton<IDocumentSerialiser<AutorouteDocument>, AutorouteDocumentSerializer>();
             services.AddScoped<IContentHandleProvider, AutorouteHandleProvider>();
 
             services.AddScoped<ILiquidTemplateEventHandler, ContentAutorouteLiquidTemplateEventHandler>();

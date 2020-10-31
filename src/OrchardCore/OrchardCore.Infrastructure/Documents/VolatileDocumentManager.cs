@@ -26,11 +26,12 @@ namespace OrchardCore.Documents
 
         public VolatileDocumentManager(
             IDocumentStore documentStore,
+            IDocumentSerialiser<TDocument> serializer,
             IDistributedCache distributedCache,
             IDistributedLock distributedLock,
             IMemoryCache memoryCache,
             DocumentOptions<TDocument> options)
-            : base(documentStore, distributedCache, memoryCache, options)
+            : base(documentStore, serializer, distributedCache, memoryCache, options)
         {
             _isVolatile = true;
 

@@ -15,9 +15,9 @@ using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Environment.Shell.Scope;
-using Xunit;
-using OrchardCore.Locking.Distributed;
 using OrchardCore.Locking;
+using OrchardCore.Locking.Distributed;
+using Xunit;
 
 namespace OrchardCore.Tests.Routing
 {
@@ -251,6 +251,7 @@ namespace OrchardCore.Tests.Routing
 
             services.AddSingleton<LocalLock>();
             services.AddSingleton<IDistributedLock>(sp => sp.GetRequiredService<LocalLock>());
+            services.AddSingleton<IDocumentSerialiser<AutorouteDocument>, AutorouteDocumentSerializer>();
             services.AddSingleton<IAutorouteEntries, StubAutorouteEntries>();
 
             return services.BuildServiceProvider();
