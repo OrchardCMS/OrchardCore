@@ -70,14 +70,14 @@ namespace OrchardCore.Media.Drivers
                     }
                 }
 
-                if (settings.AllowCenterCropping)
+                if (settings.AllowAnchors)
                 {
-                    var centers = field.GetCenters();
+                    var anchors = field.GetAnchors();
                     for(var i = 0; i < itemPaths.Count(); i++)
                     {
-                        if (i >= 0 && i < centers.Length)
+                        if (i >= 0 && i < anchors.Length)
                         {
-                            itemPaths[i].Center = centers[i];
+                            itemPaths[i].Anchor = anchors[i];
                         }
                     }
                 }
@@ -139,13 +139,13 @@ namespace OrchardCore.Media.Drivers
                     field.MediaTexts = Array.Empty<string>();
                 }
 
-                if (settings.AllowCenterCropping)
+                if (settings.AllowAnchors)
                 {
-                    field.SetCenters(items.Select(t => t.Center).ToArray());
+                    field.SetAnchors(items.Select(t => t.Anchor).ToArray());
                 }
-                else if (field.Content.ContainsKey("Centers")) // Less well known properties should be self healing.
+                else if (field.Content.ContainsKey("Anchors")) // Less well known properties should be self healing.
                 {
-                    field.Content.Remove("Centers");
+                    field.Content.Remove("Anchors");
                 }
 
             }

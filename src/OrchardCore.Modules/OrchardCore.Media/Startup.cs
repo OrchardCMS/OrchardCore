@@ -63,7 +63,7 @@ namespace OrchardCore.Media
         static Startup()
         {
             TemplateContext.GlobalMemberAccessStrategy.Register<DisplayMediaFieldViewModel>();
-            TemplateContext.GlobalMemberAccessStrategy.Register<Center>();
+            TemplateContext.GlobalMemberAccessStrategy.Register<Anchor>();
         }
 
         public override void ConfigureServices(IServiceCollection services)

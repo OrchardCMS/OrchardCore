@@ -565,13 +565,13 @@ ol.media-items-grid {
       z-index: -1; }
 
 @media (min-width: 992px) {
-  .media-crop-modal .modal-lg {
+  .media-anchor-modal .modal-lg {
     max-width: 1200px; } }
 
-.media-crop-modal .img-modal {
+.media-anchor-modal .img-modal {
   max-height: 70vh; }
 
-.media-crop-modal .icon-media-crop {
+.icon-media-anchor {
   position: absolute;
   line-height: 0px;
   color: #e83e8c; }

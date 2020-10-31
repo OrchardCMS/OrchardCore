@@ -78,9 +78,9 @@ namespace OrchardCore.Media.Filters
                 var mode = arguments["mode"];
                 var quality = arguments["quality"];
                 var format = arguments["format"];
-                var center = arguments["center"];
+                var anchor = arguments["anchor"];
 
-                ApplyQueryStringParams(queryStringParams, width, height, mode, quality, format, center);
+                ApplyQueryStringParams(queryStringParams, width, height, mode, quality, format, anchor);
             }
             else
             {
@@ -91,9 +91,9 @@ namespace OrchardCore.Media.Filters
                 var mode = arguments["mode"].Or(arguments.At(2));
                 var quality = arguments["quality"].Or(arguments.At(3));
                 var format = arguments["format"].Or(arguments.At(4));
-                var center = arguments["center"].Or(arguments.At(5));
+                var anchor = arguments["anchor"].Or(arguments.At(5));
 
-                ApplyQueryStringParams(queryStringParams, width, height, mode, quality, format, center);
+                ApplyQueryStringParams(queryStringParams, width, height, mode, quality, format, anchor);
             }
 
             var resizedUrl = QueryHelpers.AddQueryString(url, queryStringParams);
@@ -109,7 +109,7 @@ namespace OrchardCore.Media.Filters
             return new StringValue(resizedUrl);
         }
 
-        private static void ApplyQueryStringParams(IDictionary<string, string> queryStringParams, FluidValue width, FluidValue height, FluidValue mode, FluidValue quality, FluidValue format, FluidValue centerValue)
+        private static void ApplyQueryStringParams(IDictionary<string, string> queryStringParams, FluidValue width, FluidValue height, FluidValue mode, FluidValue quality, FluidValue format, FluidValue anchorValue)
         {
             if (!width.IsNil())
             {
@@ -136,23 +136,23 @@ namespace OrchardCore.Media.Filters
                 queryStringParams["format"] = format.ToStringValue();
             }
 
-            if (!centerValue.IsNil())
+            if (!anchorValue.IsNil())
             {
-                var obj = centerValue.ToObjectValue();
+                var obj = anchorValue.ToObjectValue();
 
-                if (!(obj is Center center))
+                if (!(obj is Anchor anchor))
                 {
-                    center = null;
+                    anchor = null;
 
                     if (obj is JObject jObject)
                     {
-                        center = jObject.ToObject<Center>();
+                        anchor = jObject.ToObject<Anchor>();
                     }
                 }
-                if (center != null)
+                if (anchor != null)
                 {
                     // TODO check formatting
-                    queryStringParams["rxy"] = center.X.ToString() + ',' + center.Y.ToString();
+                    queryStringParams["rxy"] = anchor.X.ToString() + ',' + anchor.Y.ToString();
                 }
             }
         }

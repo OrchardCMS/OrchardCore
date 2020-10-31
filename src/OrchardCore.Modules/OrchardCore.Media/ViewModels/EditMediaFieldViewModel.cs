@@ -22,9 +22,9 @@ namespace OrchardCore.Media.ViewModels
         public bool AllowMediaText { get; set; }
         public string MediaTexts { get; set; }
 
-        // Center cropping dimensions are an option that maybe applied to a media field through settings.
-        public bool AllowCenterCropping { get; set; }
-        public Center[] Centers { get; set; } = Array.Empty<Center>();
+        // Anchor points are an option that maybe applied to a media field through settings.
+        public bool AllowAnchors { get; set; }
+        public Anchor[] Anchors { get; set; } = Array.Empty<Anchor>();
     }
 
     public class EditMediaFieldItemInfo
@@ -39,6 +39,6 @@ namespace OrchardCore.Media.ViewModels
 
         // Alt text is an option that maybe applied to a media field through settings.
         public string MediaText { get; set; } = String.Empty;
-        public Center Center { get; set; }
+        public Anchor Anchor { get; set; } = new Anchor();
     }
 }

@@ -1,4 +1,4 @@
-function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple, allowMediaText, allowCenterCropping) {
+function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple, allowMediaText, allowAnchors) {
 
     var target = $(document.getElementById($(el).data('for')));
     var initialPaths = target.data("init");
@@ -17,8 +17,8 @@ function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple,
             initialized: false,
             allowMediaText: allowMediaText,
             backupMediaText: '',
-            allowCenterCropping: allowCenterCropping,
-            backupCenter: [ null, null ]
+            allowAnchors: allowAnchors,
+            backupAnchor: null
         },
         created: function () {
             var self = this;
@@ -36,7 +36,7 @@ function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple,
                         if (x.mediaPath === 'not-found') {
                             return;
                         }
-                        mediaPaths.push({ path: x.mediaPath, mediaText: x.mediaText, center: x.center });
+                        mediaPaths.push({ path: x.mediaPath, mediaText: x.mediaText, anchor: x.anchor });
                     });
                     return JSON.stringify(mediaPaths);
                 },
@@ -55,7 +55,7 @@ function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple,
                                 success: function (data) {
                                     data.vuekey = data.name + i.toString();
                                     data.mediaText = x.mediaText; // This value is not returned from the ajax call.
-                                    data.center = x.center; // This value is not returned from the ajax call.
+                                    data.anchor = x.anchor; // This value is not returned from the ajax call.
                                     items.splice(i, 1, data);
                                     if (items.length === ++length) {
                                         items.forEach(function (y) {
@@ -66,7 +66,7 @@ function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple,
                                 },
                                 error: function (error) {
                                     console.log(error);
-                                    items.splice(i, 1, { name: x.path, mime: '', mediaPath: 'not-found', mediaText: '', center: [ null, null ] });
+                                    items.splice(i, 1, { name: x.path, mime: '', mediaPath: 'not-found', mediaText: '', anchor: { x: 0, y: 0 } });
                                     if (items.length === ++length) {
                                         items.forEach(function (x) {
                                             self.mediaItems.push(x);
@@ -151,32 +151,34 @@ function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple,
                 $(this.$refs.mediaTextModal).modal('hide');
                 this.selectedMedia.mediaText = this.backupMediaText;
             },
-            showCenterCroppingModal: function (event) {
-                $(this.$refs.centerCroppingModal).modal();
+            showAnchorModal: function (event) {
+                $(this.$refs.anchoringModal).modal();
                 // Cause a refresh to recalc heights.
-                this.$set(this.selectedMedia.center, 0, this.selectedMedia.center[0]);
-                this.$set(this.selectedMedia.center, 1, this.selectedMedia.center[1]);
-                this.backupCenter = this.selectedMedia.center;
+                this.selectedMedia.anchor = {
+                  x: this.selectedMedia.anchor.x,
+                  y: this.selectedMedia.anchor.y
+                }
+                this.backupAnchor = this.selectedMedia.anchor;
             },            
-            cancelCenterCroppingModal: function (event) {
-                $(this.$refs.centerCroppingModal).modal('hide');
-                this.selectedMedia.center = this.backupCenter;
+            cancelAnchoringModal: function (event) {
+                $(this.$refs.anchoringModal).modal('hide');
+                this.selectedMedia.anchor = this.backupAnchor;
             },            
-            clearCenterCrop: function (event) {
-                this.$set(this.selectedMedia.center, 0, null);
-                this.$set(this.selectedMedia.center, 1, null);
+            resetAnchor: function (event) {
+                this.selectedMedia.anchor = { x: 0.5, y: 0.5 };
             },  
-            onCropDrop: function(event) {
-                var image = this.$refs.cropImage;
-
-                this.$set(this.selectedMedia.center, 0, event.offsetX / image.clientWidth);
-                this.$set(this.selectedMedia.center, 1, event.offsetY / image.clientHeight);
+            onAnchorDrop: function(event) {
+                var image = this.$refs.anchorImage;
+                this.selectedMedia.anchor = {
+                   x: event.offsetX / image.clientWidth,
+                   y: event.offsetY / image.clientHeight
+                }
             },
-            cropLeft: function () {
-                if (this.$refs.cropImage && this.$refs.modalBody && this.selectedMedia) {
+            anchorLeft: function () {
+                if (this.$refs.anchorImage && this.$refs.modalBody && this.selectedMedia) {
                     // When image is shrunk compare against the modal body.
-                    var offset = (this.$refs.modalBody.clientWidth - this.$refs.cropImage.clientWidth) / 2;
-                    var position = (this.selectedMedia.center[0] * this.$refs.cropImage.clientWidth) + offset;
+                    var offset = (this.$refs.modalBody.clientWidth - this.$refs.anchorImage.clientWidth) / 2;
+                    var position = (this.selectedMedia.anchor.x * this.$refs.anchorImage.clientWidth) + offset; // TODO check this
                     if (position < 17) { // Adjust so the target doesn't show outside image.
                         position = 17;
                     } else {
@@ -187,9 +189,9 @@ function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple,
                     return '0';
                 }
             },            
-            cropTop: function () {
-                if (this.$refs.cropImage && this.selectedMedia) {
-                    var position = this.selectedMedia.center[1] * this.$refs.cropImage.clientHeight;
+            anchorTop: function () {
+                if (this.$refs.anchorImage && this.selectedMedia) {
+                    var position = this.selectedMedia.anchor.y * this.$refs.anchorImage.clientHeight;
                     if (position < 15) { // Adjustment so the target doesn't show outside image.
                         position = 15;
                     } else {
@@ -200,10 +202,12 @@ function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple,
                     return '0';
                 }
             },
-            setCrop: function (event) {
-                var image = this.$refs.cropImage;
-                this.$set(this.selectedMedia.center, 0, event.offsetX / image.clientWidth);
-                this.$set(this.selectedMedia.center, 1, event.offsetY / image.clientHeight);
+            setAnchor: function (event) {
+                var image = this.$refs.anchorImage;
+                this.selectedMedia.anchor = {
+                    x: event.offsetX / image.clientWidth,
+                    y: event.offsetY / image.clientHeight
+                }
             },         
             addMediaFiles: function (files) {
                 if ((files.length > 1) && (allowMultiple === false)) {
@@ -233,8 +237,7 @@ function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple,
             selectAndDeleteMedia: function (media) {
                 var self = this;
                 self.selectedMedia = media;
-                // setTimeout because sometimes 
-                // removeSelected was called even before the media was set.
+                // setTimeout because sometimes removeSelected was called even before the media was set.
                 setTimeout(function () {
                     self.removeSelected();
                 }, 100);

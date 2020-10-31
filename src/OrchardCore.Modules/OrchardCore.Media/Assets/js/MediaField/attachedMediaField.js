@@ -1,4 +1,4 @@
-function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaItemUrl, allowMultiple, allowMediaText, allowCenterCropping, tempUploadFolder) {
+function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaItemUrl, allowMultiple, allowMediaText, allowAnchors, tempUploadFolder) {
 
     var target = $(document.getElementById($(el).data('for')));
     var initialPaths = target.data("init");
@@ -17,8 +17,8 @@ function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaI
             initialized: false,
             allowMediaText: allowMediaText,
             backupMediaText: '',
-            allowCenterCropping: allowCenterCropping,
-            backupCenter: [ null, null ]
+            allowAnchors: allowAnchors,
+            backupAnchor: null
         },
         created: function () {
             var self = this;
@@ -36,7 +36,7 @@ function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaI
                         if (x.mediaPath === 'not-found') {
                             return;
                         }
-                        mediaPaths.push({ path: x.mediaPath, isRemoved: x.isRemoved, isNew: x.isNew, mediaText: x.mediaText, center: x.center });
+                        mediaPaths.push({ path: x.mediaPath, isRemoved: x.isRemoved, isNew: x.isNew, mediaText: x.mediaText, anchor: x.anchor });
                     });
                     return JSON.stringify(mediaPaths);
                 },
@@ -47,7 +47,7 @@ function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaI
                     var items = [];
                     var length = 0;
                     mediaPaths.forEach(function (x, i) {
-                        items.push({ name: ' ' + x.path, mime: '', mediaPath: '' }); // don't remove the space. Something different is needed or it wont react when the real name arrives.
+                        items.push({ name: ' ' + x.path, mime: '', mediaPath: '', anchor: x.anchor }); // don't remove the space. Something different is needed or it wont react when the real name arrives.
                         promise = $.when(signal).done(function () {
                             $.ajax({
                                 url: mediaItemUrl + "?path=" + encodeURIComponent(x.path),
@@ -55,7 +55,7 @@ function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaI
                                 success: function (data) {
                                     data.vuekey = data.name + i.toString(); // Because a unique key is required by Vue on v-for 
                                     data.mediaText = x.mediaText; // This value is not returned from the ajax call.
-                                    data.center = x.center; // This value is not returned from the ajax call.
+                                    data.anchor = x.anchor; // This value is not returned from the ajax call.
                                     items.splice(i, 1, data);
                                     if (items.length === ++length) {
                                         items.forEach(function (x) {
@@ -66,7 +66,7 @@ function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaI
                                 },
                                 error: function (error) {
                                     console.log(JSON.stringify(error));
-                                    items.splice(i, 1, { name: x.path, mime: '', mediaPath: 'not-found', mediaText: '', center: [ null, null ]  });
+                                    items.splice(i, 1, { name: x.path, mime: '', mediaPath: 'not-found', mediaText: '', anchor: { x: 0.5, y: 0.5 } });
                                     if (items.length === ++length) {
                                         items.forEach(function (x) {
                                             self.mediaItems.push(x);
@@ -168,7 +168,7 @@ function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaI
                         alert(errormsg);
                         return;
                     }
-
+                    console.log(newMediaItems);
                     if (newMediaItems.length > 1 && allowMultiple === false) {
                         alert($('#onlyOneItemMessage').val());
                         mediaFieldApp.mediaItems.push(newMediaItems[0]);
@@ -222,36 +222,38 @@ function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaI
                 $(this.$refs.mediaTextModal).modal();
                 this.backupMediaText = this.selectedMedia.mediaText;
             },
-            showCenterCroppingModal: function (event) {
-                $(this.$refs.centerCroppingModal).modal();
-                // Cause a refresh to recalc heights.
-                this.$set(this.selectedMedia.center, 0, this.selectedMedia.center[0]);
-                this.$set(this.selectedMedia.center, 1, this.selectedMedia.center[1]);
-                this.backupCenter = this.selectedMedia.center;
-            },
             cancelMediaTextModal: function (event) {
                 $(this.$refs.mediaTextModal).modal('hide');
                 this.selectedMedia.mediaText = this.backupMediaText;
+            }, 
+            showAnchorModal: function (event) {
+                $(this.$refs.anchoringModal).modal();
+                // Cause a refresh to recalc heights.
+                this.selectedMedia.anchor = {
+                  x: this.selectedMedia.anchor.x,
+                  y: this.selectedMedia.anchor.y
+                }
+                this.backupAnchor = this.selectedMedia.anchor;
             },           
-            cancelCenterCroppingModal: function (event) {
-                $(this.$refs.centerCroppingModal).modal('hide');
-                this.selectedMedia.center = this.backupCenter;
+            cancelAnchoringModal: function (event) {
+                $(this.$refs.anchoringModal).modal('hide');
+                this.selectedMedia.anchor = this.backupAnchor;
             },            
-            clearCenterCrop: function (event) {
-                this.$set(this.selectedMedia.center, 0, null);
-                this.$set(this.selectedMedia.center, 1, null);
-            },  
-            onCropDrop: function(event) {
-                var image = this.$refs.cropImage;
-
-                this.$set(this.selectedMedia.center, 0, event.offsetX / image.clientWidth);
-                this.$set(this.selectedMedia.center, 1, event.offsetY / image.clientHeight);
+            resetAnchor: function (event) {
+                this.selectedMedia.anchor = { x: 0.5, y: 0.5 };
+            }, 
+            onAnchorDrop: function(event) {
+                var image = this.$refs.anchorImage;
+                this.selectedMedia.anchor = {
+                   x: event.offsetX / image.clientWidth,
+                   y: event.offsetY / image.clientHeight
+                }
             },
-            cropLeft: function () {
-                if (this.$refs.cropImage && this.$refs.modalBody && this.selectedMedia) {
+            anchorLeft: function () {
+                if (this.$refs.anchorImage && this.$refs.modalBody && this.selectedMedia) {
                     // When image is shrunk compare against the modal body.
-                    var offset = (this.$refs.modalBody.clientWidth - this.$refs.cropImage.clientWidth) / 2;
-                    var position = (this.selectedMedia.center[0] * this.$refs.cropImage.clientWidth) + offset;
+                    var offset = (this.$refs.modalBody.clientWidth - this.$refs.anchorImage.clientWidth) / 2;
+                    var position = (this.selectedMedia.anchor.x * this.$refs.anchorImage.clientWidth) + offset; // TODO check this
                     if (position < 17) { // Adjust so the target doesn't show outside image.
                         position = 17;
                     } else {
@@ -261,10 +263,10 @@ function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaI
                 } else {
                     return '0';
                 }
-            },            
-            cropTop: function () {
-                if (this.$refs.cropImage && this.selectedMedia) {
-                    var position = this.selectedMedia.center[1] * this.$refs.cropImage.clientHeight;
+            },           
+            anchorTop: function () {
+                if (this.$refs.anchorImage && this.selectedMedia) {
+                    var position = this.selectedMedia.anchor.y * this.$refs.anchorImage.clientHeight;
                     if (position < 15) { // Adjustment so the target doesn't show outside image.
                         position = 15;
                     } else {
@@ -275,11 +277,13 @@ function initializeAttachedMediaField(el, idOfUploadButton, uploadAction, mediaI
                     return '0';
                 }
             },
-            setCrop: function (event) {
-                var image = this.$refs.cropImage;
-                this.$set(this.selectedMedia.center, 0, event.offsetX / image.clientWidth);
-                this.$set(this.selectedMedia.center, 1, event.offsetY / image.clientHeight);
-            },          
+            setAnchor: function (event) {
+                var image = this.$refs.anchorImage;
+                this.selectedMedia.anchor = {
+                    x: event.offsetX / image.clientWidth,
+                    y: event.offsetY / image.clientHeight
+                }
+            },         
             addMediaFiles: function (files) {
                 if ((files.length > 1) && (allowMultiple === false)) {
                     alert($('#onlyOneItemMessage').val());
