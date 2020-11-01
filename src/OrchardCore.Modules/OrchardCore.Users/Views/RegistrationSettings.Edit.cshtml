@@ -43,18 +43,18 @@
         <input type="checkbox" class="custom-control-input" asp-for="UseSiteTheme" />
         <span asp-validation-for="UseSiteTheme"></span>
         <label class="custom-control-label" asp-for="UseSiteTheme">@T["Use site theme for registration page"]</label>
-        <span class="hint">— @T["Requires an active site theme."]</span>
+        <span class="hint dashed">@T["Requires an active site theme."]</span>
     </div>
 </div>
 
-<h5 class="form-group">@T["External Authentication"]<span class="hint"> — @T["Settings when registering with external authentication providers"]</span></h5>
+<h5 class="form-group">@T["External Authentication"]<span class="hint dashed">@T["Settings when registering with external authentication providers"]</span></h5>
 
 <div class="form-group" asp-validation-class-for="UseScriptToGenerateUsername">
     <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input" asp-for="UseScriptToGenerateUsername" />
         <span asp-validation-for="UseScriptToGenerateUsername"></span>
         <label class="custom-control-label" asp-for="UseScriptToGenerateUsername">@T["Use a script to generate userName based on external provider claims"]</label>
-        <span class="hint">— @T["If selected, any IExternalLoginEventHandlers defined in modules are not triggered"]</span>
+        <span class="hint dashed">@T["If selected, any IExternalLoginEventHandlers defined in modules are not triggered"]</span>
     </div>
     <pre>
 ********************************************************************************************
@@ -91,7 +91,7 @@
         <input type="checkbox" class="custom-control-input" asp-for="NoUsernameForExternalUsers" data-external-registration />
         <span asp-validation-for="NoUsernameForExternalUsers"></span>
         <label class="custom-control-label" asp-for="NoUsernameForExternalUsers">@T["Do not ask username"]</label>
-        <span class="hint">— @T["When a new user logs in with an external provider, they are not required to provide a local username. You can customize how it works by providing an IExternalLoginEventHandler or writing a script."]</span>
+        <span class="hint dashed">@T["When a new user logs in with an external provider, they are not required to provide a local username. You can customize how it works by providing an IExternalLoginEventHandler or writing a script."]</span>
     </div>
 </div>
 <div class="form-group" asp-validation-class-for="NoEmailForExternalUsers">
@@ -99,7 +99,7 @@
         <input type="checkbox" class="custom-control-input" asp-for="NoEmailForExternalUsers" data-external-registration />
         <span asp-validation-for="NoEmailForExternalUsers"></span>
         <label class="custom-control-label" asp-for="NoEmailForExternalUsers">@T["Do not ask email address"]</label>
-        <span class="hint">— @T["When a new user logs in with an external provider and the email claim is defined, they are not required to provide a local email address."]</span>
+        <span class="hint dashed">@T["When a new user logs in with an external provider and the email claim is defined, they are not required to provide a local email address."]</span>
     </div>
 </div>
 <div class="form-group" asp-validation-class-for="NoPasswordForExternalUsers">
@@ -107,7 +107,7 @@
         <input type="checkbox" class="custom-control-input" asp-for="NoPasswordForExternalUsers" data-external-registration />
         <span asp-validation-for="NoPasswordForExternalUsers"></span>
         <label class="custom-control-label" asp-for="NoPasswordForExternalUsers">@T["Do not create local password for external users"]</label>
-        <span class="hint">— @T["When a new user logs in with an external provider, they are not required to provide a local password."]</span>
+        <span class="hint dashed">@T["When a new user logs in with an external provider, they are not required to provide a local password."]</span>
     </div>
 </div>
 

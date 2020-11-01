@@ -19,21 +19,18 @@ namespace OrchardCore.Contents.Sitemaps
         private readonly IRouteableContentTypeCoordinator _routeableContentTypeCoordinator;
         private readonly IContentManager _contentManager;
         private readonly IContentItemsQueryProvider _contentItemsQueryProvider;
-        private readonly IEnumerable<ISitemapContentItemValidationProvider> _sitemapContentItemValidationProviders;
         private readonly IEnumerable<ISitemapContentItemExtendedMetadataProvider> _sitemapContentItemExtendedMetadataProviders;
 
         public ContentTypesSitemapSourceBuilder(
             IRouteableContentTypeCoordinator routeableContentTypeCoordinator,
             IContentManager contentManager,
             IContentItemsQueryProvider contentItemsQueryProvider,
-            IEnumerable<ISitemapContentItemValidationProvider> sitemapContentItemValidationProviders,
             IEnumerable<ISitemapContentItemExtendedMetadataProvider> sitemapContentItemExtendedMetadataProviders
             )
         {
             _routeableContentTypeCoordinator = routeableContentTypeCoordinator;
             _contentManager = contentManager;
             _contentItemsQueryProvider = contentItemsQueryProvider;
-            _sitemapContentItemValidationProviders = sitemapContentItemValidationProviders;
             _sitemapContentItemExtendedMetadataProviders = sitemapContentItemExtendedMetadataProviders;
         }
 
@@ -90,13 +87,8 @@ namespace OrchardCore.Contents.Sitemaps
 
         private async Task<bool> BuildUrlAsync(SitemapBuilderContext context, ContentItem contentItem, XElement url)
         {
-            var isValid = false;
-            foreach (var validationProvider in _sitemapContentItemValidationProviders)
-            {
-                isValid = await validationProvider.ValidateContentItem(contentItem);
-            }
-
-            if (!isValid)
+            var sitemapMetadataAspect = await _contentManager.PopulateAspectAsync<SitemapMetadataAspect>(contentItem);
+            if (sitemapMetadataAspect.Exclude)
             {
                 return false;
             }

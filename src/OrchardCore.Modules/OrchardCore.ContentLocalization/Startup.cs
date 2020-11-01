@@ -107,7 +107,6 @@ namespace OrchardCore.ContentLocalization
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<ISitemapContentItemValidationProvider, SitemapLocalizedContentItemValidationProvider>();
             services.AddScoped<ISitemapContentItemExtendedMetadataProvider, SitemapUrlHrefLangExtendedMetadataProvider>();
             services.Replace(ServiceDescriptor.Scoped<IContentItemsQueryProvider, LocalizedContentItemsQueryProvider>());
         }

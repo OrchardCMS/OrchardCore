@@ -4,6 +4,7 @@
     "build": "gulp build",
     "rebuild": "gulp rebuild",
     "watch": " gulp watch",
+    "install:orchardcore.adminmenu": "cd src/OrchardCore.Modules/OrchardCore.AdminMenu && npm install",
     "install:orchardcore.apis.graphql": "cd src/OrchardCore.Modules/OrchardCore.Apis.GraphQL && npm install",
     "install:orchardcore.markdown": "cd src/OrchardCore.Modules/OrchardCore.Markdown && npm install",
     "install:orchardcore.media": "cd src/OrchardCore.Modules/OrchardCore.Media && npm install",
@@ -52,6 +53,6 @@
     "path-posix": "1.0.0",
     "postcss": "7.0.35",
     "postcss-rtl": "^1.7.3",
-    "typescript": "^4.0.3"
+    "typescript": "^4.0.5"
   }
 }
