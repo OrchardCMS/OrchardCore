@@ -288,7 +288,7 @@ namespace OrchardCore.Lists.Services
                     return containedItems;
                 }
 
-                if (!string.IsNullOrEmpty(containeditemOptions.DisplayText))
+                if (!string.IsNullOrEmpty(containeditemOptions?.DisplayText))
                 {
                     containedItems = containedItems.Where<ContentItem>(i => i.ContentItem.DisplayText.Contains(containeditemOptions.DisplayText)).ToList();
                 }
@@ -304,10 +304,10 @@ namespace OrchardCore.Lists.Services
                             containedItems = containedItems.Where(i => i.ContentItem.Published);
                             break;
                         case (int)ListPartFilterViewModel.ContentsStatus.Owner:
-                            containedItems = containedItems.Where(i => i.Owner == _hca.HttpContext.User.Identity.Name);
+                            containedItems = containedItems?.Where(i => i.Owner == _hca.HttpContext.User.Identity.Name);
                             break;
                         default:
-                            break;
+                            throw new NotSupportedException("Status Filter is not ...");
                     }
                 }
 

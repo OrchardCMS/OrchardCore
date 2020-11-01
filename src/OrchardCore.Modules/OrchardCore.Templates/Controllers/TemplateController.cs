@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -6,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
+using Newtonsoft.Json.Linq;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
@@ -80,11 +82,12 @@ namespace OrchardCore.Templates.Controllers
                 ;
 
             var count = templatesDocument.Templates.Count;
-            var templates = templatesDocument.Templates.Take(pager.PageSize);
+
+            IEnumerable<KeyValuePair<string, Template>> templates;
             if (!string.IsNullOrEmpty(displayText))
             {
                  templates = templatesDocument.Templates.OrderBy(x => x.Key)
-                    .Where(template => template.Key.Contains(displayText))
+                    .Where(template => template.Key.Contains(displayText, StringComparison.InvariantCultureIgnoreCase))
                     .Skip(pager.GetStartIndex())
                     .Take(pager.PageSize);
             }
