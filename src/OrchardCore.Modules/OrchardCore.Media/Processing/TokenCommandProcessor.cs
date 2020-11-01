@@ -8,17 +8,17 @@ using SixLabors.ImageSharp.Web.Processors;
 namespace OrchardCore.Media.Processing
 {
     /// <summary>
-    /// Pass through processor which allows inclusion of a version query string in the cache key.
+    /// Pass through processor which allows inclusion of a tokenized query string.
     /// </summary>
-    public class ImageVersionProcessor : IImageWebProcessor
+    public class TokenCommandProcessor : IImageWebProcessor
     {
         /// <summary>
-        /// The command constant for a version query string.
+        /// The command constant for a tokenized query string.
         /// </summary>
-        public const string VersionCommand = "v";
+        public const string TokenCommand = "token";
 
         public IEnumerable<string> Commands
-            => new[] { VersionCommand };
+            => new[] { TokenCommand };
 
         public FormattedImage Process(FormattedImage image, ILogger logger, IDictionary<string, string> commands, CommandParser parser, CultureInfo culture)
             => image;

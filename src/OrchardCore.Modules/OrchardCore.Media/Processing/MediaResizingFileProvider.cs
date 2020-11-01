@@ -1,5 +1,4 @@
 using System;
-using System.Globalization;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
@@ -8,7 +7,6 @@ using OrchardCore.Routing;
 using SixLabors.ImageSharp.Web;
 using SixLabors.ImageSharp.Web.Commands;
 using SixLabors.ImageSharp.Web.Middleware;
-using SixLabors.ImageSharp.Web.Processors;
 using SixLabors.ImageSharp.Web.Providers;
 using SixLabors.ImageSharp.Web.Resolvers;
 
@@ -17,13 +15,7 @@ namespace OrchardCore.Media.Processing
     public class MediaResizingFileProvider : IImageProvider
     {
         private readonly IMediaFileProvider _mediaFileProvider;
-        private readonly CommandParser _commandParser;
         private readonly FormatUtilities _formatUtilities;
-        private readonly int[] _supportedSizes;
-
-        // Supported through custom ImageSharp configuration, but not supported directly by our resizing helpers,
-        // as we primarly use ImageSharp through templating which is culture invariant.
-        private readonly CultureInfo _parserCulture;
         private readonly PathString _assetsRequestPath;
 
         /// <summary>
@@ -39,11 +31,8 @@ namespace OrchardCore.Media.Processing
             )
         {
             _mediaFileProvider = mediaFileProvider;
-            _commandParser = commandParser;
             _formatUtilities = new FormatUtilities(imageSharpOptions);
-            _supportedSizes = mediaOptions.Value.SupportedSizes;
             _assetsRequestPath = mediaOptions.Value.AssetsRequestPath;
-            _parserCulture = imageSharpOptions.Value.UseInvariantParsingCulture ? CultureInfo.InvariantCulture : CultureInfo.CurrentCulture;
         }
 
         /// <inheritdoc/>
@@ -61,26 +50,6 @@ namespace OrchardCore.Media.Processing
             if (_formatUtilities.GetExtensionFromUri(context.Request.GetDisplayUrl()) == null)
             {
                 return false;
-            }
-
-            if (context.Request.Query.TryGetValue(ResizeWebProcessor.Width, out var widthString))
-            {
-                var width = _commandParser.ParseValue<int>(widthString, _parserCulture);
-
-                if (Array.BinarySearch<int>(_supportedSizes, width) < 0)
-                {
-                    return false;
-                }
-            }
-
-            if (context.Request.Query.TryGetValue(ResizeWebProcessor.Height, out var heightString))
-            {
-                var height = _commandParser.ParseValue<int>(heightString, _parserCulture);
-
-                if (Array.BinarySearch<int>(_supportedSizes, height) < 0)
-                {
-                    return false;
-                }
             }
 
             return true;
