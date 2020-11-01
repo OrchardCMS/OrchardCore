@@ -50,7 +50,7 @@ namespace OrchardCore.ContentLocalization
 
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.Configure<CulturePickerOptions>(_shellConfiguration.GetSection("OrchardCore_ContentLocalization_CulturePickerOptions"));
+            services.Configure<CulturePickerOptions>(_shellConfiguration.GetSection("OrchardCore_ContentLocalization:CulturePicker"));
 
             services.AddScoped<IContentPartIndexHandler, LocalizationPartIndexHandler>();
             services.AddSingleton<ILocalizationEntries, LocalizationEntries>();
