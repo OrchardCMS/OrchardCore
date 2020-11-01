@@ -125,7 +125,7 @@ namespace OrchardCore.Redis.Services
             }
         }
 
-        private class Locker : ILocker, IAsyncDisposable
+        private class Locker : ILocker
         {
             private readonly RedisLock _lock;
             private readonly string _key;

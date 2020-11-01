@@ -18,26 +18,15 @@ namespace OrchardCore.Autoroute.Services
 
         public async Task<byte[]> SerializeAsync(AutorouteDocument document, int compressThreshold = Int32.MaxValue)
         {
-            byte[] data;
-
-            using (var stream = new MemoryStream())
-            {
-                await SerializeAsync(stream, document);
-                data = stream.ToArray();
-            }
-
-            return data;
+            using var stream = new MemoryStream();
+            await SerializeAsync(stream, document);
+            return stream.ToArray();
         }
 
         public async Task<AutorouteDocument> DeserializeAsync(byte[] data)
         {
-            AutorouteDocument document;
-            using (var stream = new MemoryStream(data))
-            {
-                document = await DeserializeAsync(stream);
-            }
-
-            return document;
+            using var stream = new MemoryStream(data);
+            return await DeserializeAsync(stream);
         }
 
         internal static Task SerializeAsync(Stream stream, AutorouteDocument document)
