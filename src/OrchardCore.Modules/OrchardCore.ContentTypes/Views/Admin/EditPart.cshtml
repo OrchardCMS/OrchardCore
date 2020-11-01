@@ -15,11 +15,9 @@
     @Html.ValidationSummary()
 
     <div class="form-group">
-        <div class="row">
-            <div class="col-small">
-                <label asp-for="Name">@T["Technical Name"]</label>
-                <input asp-for="Name" class="form-control" readonly />
-            </div>
+        <div class="w-sm-75 w-md-50 w-lg-25">
+            <label asp-for="Name">@T["Technical Name"]</label>
+            <input asp-for="Name" class="form-control" readonly />
         </div>
         <span class="hint">@T["Technical name of the part."]</span>
     </div>
