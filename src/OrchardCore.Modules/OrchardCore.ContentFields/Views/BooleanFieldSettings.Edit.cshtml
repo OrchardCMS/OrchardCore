@@ -1,19 +1,19 @@
 @model OrchardCore.ContentFields.Settings.BooleanFieldSettings
 
 <div class="form-group">
-    <div class="row col-medium">
+    <div class="w-md-75 w-xl-50">
         <label asp-for="Hint">@T["Hint"]</label>
         <textarea asp-for="Hint" rows="2" class="form-control"></textarea>
-        <span class="hint">@T["The hint text to display for this field on the editor."]</span>
     </div>
+    <span class="hint">@T["The hint text to display for this field on the editor."]</span>
 </div>
 
 <div class="form-group">
-    <div class="row col-small">
+    <div class="w-sm-75 w-md-50 w-lg-25">
         <label asp-for="Label">@T["Label"]</label>
         <input asp-for="Label" class="form-control" />
-        <span class="hint">@T["The text associated to the checkbox."]</span>
     </div>
+    <span class="hint">@T["The text associated to the checkbox."]</span>
 </div>
 
 <div class="form-group">
