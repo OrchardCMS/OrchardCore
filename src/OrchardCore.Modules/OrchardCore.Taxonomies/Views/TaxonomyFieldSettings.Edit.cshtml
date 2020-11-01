@@ -19,16 +19,14 @@
 </div>
 
 <div class="form-group">
-    <div class="row">
-        <div class="col-sm-6">
-            <label asp-for="TaxonomyContentItemId">@T["Taxonomy"]</label>
-            <select asp-for="TaxonomyContentItemId" class="form-control">
-                @foreach (var taxonomy in taxonomies)
-                {
-                    <option value="@taxonomy.ContentItemId">@taxonomy</option>
-                }
-            </select>
-        </div>
+    <div class="w-md-50">
+        <label asp-for="TaxonomyContentItemId">@T["Taxonomy"]</label>
+        <select asp-for="TaxonomyContentItemId" class="form-control">
+            @foreach (var taxonomy in taxonomies)
+            {
+                <option value="@taxonomy.ContentItemId">@taxonomy</option>
+            }
+        </select>
     </div>
 </div>
 
