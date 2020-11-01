@@ -121,15 +121,17 @@ namespace OrchardCore.Media.Controllers
 
             if (ModelState.IsValid)
             {
+                var isCustomWidth = model.SelectedWidth != 0 && Array.BinarySearch<int>(_mediaOptions.SupportedSizes, model.SelectedWidth) < 0;
+                var isCustomHeight = model.SelectedHeight != 0 &&Array.BinarySearch<int>(_mediaOptions.SupportedSizes, model.SelectedHeight) < 0;
+
                 var mediaProfile = new MediaProfile
                 {
                     Hint = model.Hint,
-                    Width = model.SelectedWidth,
-                    Height = model.SelectedHeight,
+                    Width = isCustomWidth ? model.CustomWidth : model.SelectedWidth,
+                    Height = isCustomHeight ? model.CustomHeight : model.SelectedHeight,
                     Mode = model.SelectedMode,
                     Format = model.SelectedFormat,
                     Quality = model.Quality
-
                 };
 
                 await _mediaProfilesManager.UpdateMediaProfileAsync(model.Name, mediaProfile);
@@ -145,6 +147,8 @@ namespace OrchardCore.Media.Controllers
             }
 
             // If we got this far, something failed, redisplay form
+            BuildViewModel(model);
+
             return View(model);
         }
 
@@ -163,13 +167,18 @@ namespace OrchardCore.Media.Controllers
             }
 
             var mediaProfile = mediaProfilesDocument.MediaProfiles[name];
+            // Is a custom width if the width is not 0 and it is not in the array of supported sizes.
+            var isCustomWidth = mediaProfile.Width != 0 && Array.BinarySearch<int>(_mediaOptions.SupportedSizes, mediaProfile.Width) < 0;
+            var isCustomHeight = mediaProfile.Height != 0 && Array.BinarySearch<int>(_mediaOptions.SupportedSizes, mediaProfile.Height) < 0;
 
             var model = new MediaProfileViewModel
             {
                 Name = name,
                 Hint = mediaProfile.Hint,
-                SelectedWidth = mediaProfile.Width,
-                SelectedHeight = mediaProfile.Height,
+                SelectedWidth = isCustomWidth ? -1 : mediaProfile.Width,
+                CustomWidth = isCustomWidth ? mediaProfile.Width : 0,
+                SelectedHeight = isCustomHeight ? -1 : mediaProfile.Height,
+                CustomHeight = isCustomHeight ? mediaProfile.Height : 0,
                 SelectedMode = mediaProfile.Mode,
                 SelectedFormat = mediaProfile.Format,
                 Quality = mediaProfile.Quality
@@ -205,15 +214,17 @@ namespace OrchardCore.Media.Controllers
 
             if (ModelState.IsValid)
             {
+                var isCustomWidth = Array.BinarySearch<int>(_mediaOptions.SupportedSizes, model.SelectedWidth) < 0;
+                var isCustomHeight = Array.BinarySearch<int>(_mediaOptions.SupportedSizes, model.SelectedHeight) < 0;
+
                 var mediaProfile = new MediaProfile
                 {
                     Hint = model.Hint,
-                    Width = model.SelectedWidth,
-                    Height = model.SelectedHeight,
+                    Width = isCustomWidth ? model.CustomWidth : model.SelectedWidth,
+                    Height = isCustomHeight ? model.CustomHeight : model.SelectedHeight,
                     Mode = model.SelectedMode,
                     Format = model.SelectedFormat,
                     Quality = model.Quality
-
                 };
 
                 await _mediaProfilesManager.RemoveMediaProfileAsync(sourceName);
@@ -256,10 +267,15 @@ namespace OrchardCore.Media.Controllers
 
         private void BuildViewModel(MediaProfileViewModel model)
         {
-            model.AvailableWidths.Add(new SelectListItem() { Text = S["Default"], Value = "" });
-            model.AvailableHeights.Add(new SelectListItem() { Text = S["Default"], Value = "" });
+            model.AvailableWidths.Add(new SelectListItem() { Text = S["Default"], Value = "0" });
+            model.AvailableHeights.Add(new SelectListItem() { Text = S["Default"], Value = "0" });
             model.AvailableWidths.AddRange(_mediaOptions.SupportedSizes.Select(x => new SelectListItem() { Text = x.ToString(), Value = x.ToString() }));
             model.AvailableHeights.AddRange(_mediaOptions.SupportedSizes.Select(x => new SelectListItem() { Text = x.ToString(), Value = x.ToString() }));
+            if (_mediaOptions.UseTokenizedQueryString)
+            {
+                model.AvailableWidths.Add(new SelectListItem() { Text = S["Custom Size"], Value = "-1" });
+                model.AvailableHeights.Add(new SelectListItem() { Text = S["Custom Size"], Value = "-1" });
+            }
 
             model.AvailableResizeModes.Add(new SelectListItem() { Text = S["Default (Max)"], Value = ((int)ResizeMode.Undefined).ToString() });
             model.AvailableResizeModes.Add(new SelectListItem() { Text = S["Max"], Value = ((int)ResizeMode.Max).ToString() });
