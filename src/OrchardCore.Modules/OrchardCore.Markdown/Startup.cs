@@ -66,7 +66,7 @@ namespace OrchardCore.Markdown
             services.AddOptions<MarkdownPipelineOptions>();
             services.ConfigureMarkdownPipeline((pipeline) =>
             {
-                pipeline.Configure(markdownOptions.Features);
+                pipeline.Configure(markdownOptions.Extensions);
             });
 
             services.AddScoped<IMarkdownService, DefaultMarkdownService>();
