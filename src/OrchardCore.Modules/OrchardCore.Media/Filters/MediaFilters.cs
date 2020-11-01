@@ -151,7 +151,6 @@ namespace OrchardCore.Media.Filters
                 }
                 if (anchor != null)
                 {
-                    // TODO check formatting
                     queryStringParams["rxy"] = anchor.X.ToString() + ',' + anchor.Y.ToString();
                 }
             }

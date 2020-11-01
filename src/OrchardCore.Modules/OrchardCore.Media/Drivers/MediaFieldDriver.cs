@@ -60,12 +60,14 @@ namespace OrchardCore.Media.Drivers
                 var settings = context.PartFieldDefinition.GetSettings<MediaFieldSettings>();
                 if (settings.AllowMediaText)
                 {
-                    var mediaTexts = field.MediaTexts;
-                    for(var i = 0; i < itemPaths.Count(); i++)
+                    if (field.MediaTexts != null)
                     {
-                        if (i >= 0 && i < mediaTexts.Length)
+                        for(var i = 0; i < itemPaths.Count(); i++)
                         {
-                            itemPaths[i].MediaText = mediaTexts[i];
+                            if (i >= 0 && i < field.MediaTexts.Length)
+                            {
+                                itemPaths[i].MediaText = field.MediaTexts[i];
+                            }
                         }
                     }
                 }
@@ -73,11 +75,14 @@ namespace OrchardCore.Media.Drivers
                 if (settings.AllowAnchors)
                 {
                     var anchors = field.GetAnchors();
-                    for(var i = 0; i < itemPaths.Count(); i++)
+                    if (anchors != null)
                     {
-                        if (i >= 0 && i < anchors.Length)
+                        for(var i = 0; i < itemPaths.Count(); i++)
                         {
-                            itemPaths[i].Anchor = anchors[i];
+                            if (i >= 0 && i < anchors.Length)
+                            {
+                                itemPaths[i].Anchor = anchors[i];
+                            }
                         }
                     }
                 }

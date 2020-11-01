@@ -78,8 +78,7 @@ namespace OrchardCore.Media.Processing
 
             var query = _memoryCache.GetOrCreate(commandCacheKey, entry =>
             {
-                // TODO configurable via mediaoptions.
-                entry.SlidingExpiration = TimeSpan.FromHours(5);
+                entry.SlidingExpiration = TimeSpan.FromHours(24);
                 return processingCommands;
             });
 
@@ -90,7 +89,7 @@ namespace OrchardCore.Media.Processing
         {
             return _memoryCache.GetOrCreate(token, entry =>
             {
-                entry.SlidingExpiration = TimeSpan.FromHours(5);
+                entry.SlidingExpiration = TimeSpan.FromHours(24);
                 try
                 {
                     var json = _dataProtector.Unprotect(token);

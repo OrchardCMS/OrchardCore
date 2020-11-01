@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.WebUtilities;
+using OrchardCore.Media.Fields;
 
 namespace OrchardCore.Media.Processing
 {
@@ -27,7 +28,7 @@ namespace OrchardCore.Media.Processing
 
     internal class ImageSharpUrlFormatter
     {
-        public static string GetImageResizeUrl(string path, IDictionary<string, string> queryStringParams = null, int? width = null, int? height = null, ResizeMode resizeMode = ResizeMode.Undefined, int? quality = null, Format format = Format.Undefined, float?[] center = null)
+        public static string GetImageResizeUrl(string path, IDictionary<string, string> queryStringParams = null, int? width = null, int? height = null, ResizeMode resizeMode = ResizeMode.Undefined, int? quality = null, Format format = Format.Undefined, Anchor anchor = null)
         {
             if (string.IsNullOrEmpty(path) || (!width.HasValue && !height.HasValue && queryStringParams == null))
             {
@@ -64,9 +65,9 @@ namespace OrchardCore.Media.Processing
                 queryStringParams["format"] = format.ToString().ToLower();
             }
 
-            if (center != null && center.Length == 2)
+            if (anchor != null)
             {
-                queryStringParams["rxy"] = String.Join(',', center);
+                queryStringParams["rxy"] = anchor.X.ToString() + ',' + anchor.Y.ToString();
             }
 
             return QueryHelpers.AddQueryString(path, queryStringParams);

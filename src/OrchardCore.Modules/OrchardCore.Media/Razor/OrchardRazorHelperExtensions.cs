@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore;
 using OrchardCore.Media;
+using OrchardCore.Media.Fields;
 using OrchardCore.Media.Processing;
 using OrchardCore.Media.Services;
 
@@ -12,7 +13,7 @@ public static class OrchardRazorHelperExtensions
     /// <summary>
     /// Returns the relative URL of the specified asset path with optional resizing parameters.
     /// </summary>
-    public static string AssetUrl(this IOrchardHelper orchardHelper, string assetPath, int? width = null, int? height = null, ResizeMode resizeMode = ResizeMode.Undefined, bool appendVersion = false, int? quality = null, Format format = Format.Undefined, float?[] center = null)
+    public static string AssetUrl(this IOrchardHelper orchardHelper, string assetPath, int? width = null, int? height = null, ResizeMode resizeMode = ResizeMode.Undefined, bool appendVersion = false, int? quality = null, Format format = Format.Undefined, Anchor anchor = null)
     {
         var mediaFileStore = orchardHelper.HttpContext.RequestServices.GetService<IMediaFileStore>();
 
@@ -30,13 +31,13 @@ public static class OrchardRazorHelperExtensions
             resolvedAssetPath = fileVersionProvider.AddFileVersionToPath(orchardHelper.HttpContext.Request.PathBase, resolvedAssetPath);
         }
 
-        return orchardHelper.ImageResizeUrl(resolvedAssetPath, width, height, resizeMode, quality, format, center);
+        return orchardHelper.ImageResizeUrl(resolvedAssetPath, width, height, resizeMode, quality, format, anchor);
     }
 
     /// <summary>
     /// Returns the relative URL of the specified asset path for a media profile with optional resizing parameters.
     /// </summary>
-    public static async Task<string> AssetProfileUrlAsync(this IOrchardHelper orchardHelper, string assetPath, string imageProfile, int? width = null, int? height = null, ResizeMode resizeMode = ResizeMode.Undefined, bool appendVersion = false, int? quality = null, Format format = Format.Undefined, float?[] center = null)
+    public static async Task<string> AssetProfileUrlAsync(this IOrchardHelper orchardHelper, string assetPath, string imageProfile, int? width = null, int? height = null, ResizeMode resizeMode = ResizeMode.Undefined, bool appendVersion = false, int? quality = null, Format format = Format.Undefined, Anchor anchor = null)
     {
         var mediaFileStore = orchardHelper.HttpContext.RequestServices.GetService<IMediaFileStore>();
 
@@ -54,15 +55,15 @@ public static class OrchardRazorHelperExtensions
             resolvedAssetPath = fileVersionProvider.AddFileVersionToPath(orchardHelper.HttpContext.Request.PathBase, resolvedAssetPath);
         }
 
-        return await orchardHelper.ImageProfileResizeUrlAsync(resolvedAssetPath, imageProfile, width, height, resizeMode, quality, format, center);
+        return await orchardHelper.ImageProfileResizeUrlAsync(resolvedAssetPath, imageProfile, width, height, resizeMode, quality, format, anchor);
     }
 
     /// <summary>
     /// Returns a URL with custom resizing parameters for an existing image path.
     /// </summary>
-    public static string ImageResizeUrl(this IOrchardHelper orchardHelper, string imagePath, int? width = null, int? height = null, ResizeMode resizeMode = ResizeMode.Undefined, int? quality = null, Format format = Format.Undefined, float?[] center = null)
+    public static string ImageResizeUrl(this IOrchardHelper orchardHelper, string imagePath, int? width = null, int? height = null, ResizeMode resizeMode = ResizeMode.Undefined, int? quality = null, Format format = Format.Undefined, Anchor anchor = null)
     {
-        var resizedUrl = ImageSharpUrlFormatter.GetImageResizeUrl(imagePath, null, width, height, resizeMode, quality, format, center);
+        var resizedUrl = ImageSharpUrlFormatter.GetImageResizeUrl(imagePath, null, width, height, resizeMode, quality, format, anchor);
 
         return orchardHelper.TokenizeUrl(resizedUrl);
     }
@@ -70,12 +71,12 @@ public static class OrchardRazorHelperExtensions
     /// <summary>
     /// Returns a URL with custom resizing parameters for a media profile for an existing image path.
     /// </summary>
-    public static async Task<string> ImageProfileResizeUrlAsync(this IOrchardHelper orchardHelper, string imagePath, string imageProfile, int? width = null, int? height = null, ResizeMode resizeMode = ResizeMode.Undefined, int? quality = null, Format format = Format.Undefined, float?[] center = null)
+    public static async Task<string> ImageProfileResizeUrlAsync(this IOrchardHelper orchardHelper, string imagePath, string imageProfile, int? width = null, int? height = null, ResizeMode resizeMode = ResizeMode.Undefined, int? quality = null, Format format = Format.Undefined, Anchor anchor = null)
     {
         var mediaProfileService = orchardHelper.HttpContext.RequestServices.GetRequiredService<IMediaProfileService>();
         var queryStringParams = await mediaProfileService.GetMediaProfileCommands(imageProfile);
 
-        var resizedUrl = ImageSharpUrlFormatter.GetImageResizeUrl(imagePath, queryStringParams, width, height, resizeMode, quality, format, center);
+        var resizedUrl = ImageSharpUrlFormatter.GetImageResizeUrl(imagePath, queryStringParams, width, height, resizeMode, quality, format, anchor);
 
         return orchardHelper.TokenizeUrl(resizedUrl);
     }

@@ -8,13 +8,12 @@ using SixLabors.ImageSharp.Web.Processors;
 namespace OrchardCore.Media.Processing
 {
     /// <summary>
-    /// Pass through processor which allows inclusion of a tokenized  query string.
+    /// Pass through processor which allows inclusion of a tokenized query string.
     /// </summary>
     public class TokenCommandProcessor : IImageWebProcessor
     {
-
         /// <summary>
-        /// The command constant for a a tokenized query string.
+        /// The command constant for a tokenized query string.
         /// </summary>
         public const string TokenCommand = "token";
 

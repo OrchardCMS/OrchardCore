@@ -27,23 +27,23 @@ namespace OrchardCore.Media.Processing
             options.BrowserMaxAge = TimeSpan.FromDays(_mediaOptions.MaxBrowserCacheDays);
             options.CacheMaxAge = TimeSpan.FromDays(_mediaOptions.MaxCacheDays);
             options.CachedNameLength = 12;
-            options.OnParseCommandsAsync = commandContext =>
+            options.OnParseCommandsAsync = context =>
             {
-                if (commandContext.Commands.Count == 0)
+                if (context.Commands.Count == 0)
                 {
                     return Task.CompletedTask;
                 }
 
-                var mediaOptions = commandContext.Context.RequestServices.GetRequiredService<IOptions<MediaOptions>>().Value;
+                var mediaOptions = context.Context.RequestServices.GetRequiredService<IOptions<MediaOptions>>().Value;
                 if (mediaOptions.UseTokenizedQueryString)
                 {
-                    if (commandContext.Commands.ContainsKey(TokenCommandProcessor.TokenCommand))
+                    if (context.Commands.TryGetValue(TokenCommandProcessor.TokenCommand, out var tokenString))
                     {
-                        var mediaTokenService =  commandContext.Context.RequestServices.GetRequiredService<IMediaTokenService>();
-                        var token = commandContext.Parser.ParseValue<string>(commandContext.Commands.GetValueOrDefault(TokenCommandProcessor.TokenCommand), commandContext.Culture);
+                        var mediaTokenService =  context.Context.RequestServices.GetRequiredService<IMediaTokenService>();
+                        var token = context.Parser.ParseValue<string>(tokenString, context.Culture);
                         var commands = mediaTokenService.GetTokenizedCommands(token);
 
-                        commandContext.Commands.Clear();
+                        context.Commands.Clear();
 
                         // When token is invalid no image commands will be processed.
                         if (commands == null)
@@ -54,42 +54,60 @@ namespace OrchardCore.Media.Processing
                         // Set commands to the tokens value.
                         foreach(var command in commands)
                         {
-                            commandContext.Commands[command.Key] = command.Value;
+                            context.Commands[command.Key] = command.Value;
                         }
+
+                        // Do not check supported sizes here, as with tokenization any size is allowed.
                     }
                     else
                     {
                         // When tokenization is enabled, but a token is not present, clear the commands to no-op the image processing pipeline.
-                        commandContext.Commands.Clear();
+                        context.Commands.Clear();
                         return Task.CompletedTask;
                     }
                 }
-
-                commandContext.Commands.Remove(ResizeWebProcessor.Compand);
-                commandContext.Commands.Remove(ResizeWebProcessor.Sampler);
-                if (commandContext.Commands.ContainsKey(ResizeWebProcessor.Xy))
+                else
                 {
-                    var coordinates = commandContext.Parser.ParseValue<float[]>(commandContext.Commands.GetValueOrDefault(ResizeWebProcessor.Xy), commandContext.Culture);
+                    // The following commands are not supported without a tokenized query string.
+                    context.Commands.Remove(ResizeWebProcessor.Xy);
+                    context.Commands.Remove(ImageVersionProcessor.VersionCommand);
 
-                    if (coordinates.Length != 2)
+                    // Width and height must be part of the supported sizes array when tokenization is disabled.
+                    if (context.Commands.TryGetValue(ResizeWebProcessor.Width, out var widthString))
                     {
-                        commandContext.Commands.Remove(ResizeWebProcessor.Xy);
+                        var width = context.Parser.ParseValue<int>(widthString, context.Culture);
+
+                        if (Array.BinarySearch<int>(mediaOptions.SupportedSizes, width) < 0)
+                        {
+                            context.Commands.Remove(ResizeWebProcessor.Width);
+                        }
                     }
-                    else if (!mediaOptions.UseTokenizedQueryString)
+
+                    if (context.Commands.TryGetValue(ResizeWebProcessor.Height, out var heightString))
                     {
-                        var cropFormat = "0." + new String('#', mediaOptions.CropPrecision);
-                        var x = coordinates[0].ToString(cropFormat);
-                        var y = coordinates[1].ToString(cropFormat);
-                        commandContext.Commands[ResizeWebProcessor.Xy] = x + ',' + y;
+                        var height = context.Parser.ParseValue<int>(heightString, context.Culture);
+
+                        if (Array.BinarySearch<int>(mediaOptions.SupportedSizes, height) < 0)
+                        {
+                            context.Commands.Remove(ResizeWebProcessor.Height);
+                        }
                     }
                 }
 
-                commandContext.Commands.Remove(ResizeWebProcessor.Anchor);
-                commandContext.Commands.Remove(BackgroundColorWebProcessor.Color);
+                // The following commands are not supported by default.
+                context.Commands.Remove(ResizeWebProcessor.Compand);
+                context.Commands.Remove(ResizeWebProcessor.Sampler);
+                context.Commands.Remove(ResizeWebProcessor.Anchor);
+                context.Commands.Remove(BackgroundColorWebProcessor.Color);
 
-                if (!commandContext.Commands.ContainsKey(ResizeWebProcessor.Mode))
+                // When only a version command is applied pass on this request.
+                if (context.Commands.Count == 1 && context.Commands.ContainsKey(ImageVersionProcessor.VersionCommand))
                 {
-                    commandContext.Commands[ResizeWebProcessor.Mode] = "max";
+                    context.Commands.Clear();
+                }
+                else if (!context.Commands.ContainsKey(ResizeWebProcessor.Mode))
+                {
+                    context.Commands[ResizeWebProcessor.Mode] = "max";
                 }
 
                 return Task.CompletedTask;

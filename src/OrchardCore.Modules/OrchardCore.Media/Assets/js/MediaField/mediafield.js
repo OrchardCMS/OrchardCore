@@ -178,7 +178,7 @@ function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple,
                 if (this.$refs.anchorImage && this.$refs.modalBody && this.selectedMedia) {
                     // When image is shrunk compare against the modal body.
                     var offset = (this.$refs.modalBody.clientWidth - this.$refs.anchorImage.clientWidth) / 2;
-                    var position = (this.selectedMedia.anchor.x * this.$refs.anchorImage.clientWidth) + offset; // TODO check this
+                    var position = (this.selectedMedia.anchor.x * this.$refs.anchorImage.clientWidth) + offset;
                     if (position < 17) { // Adjust so the target doesn't show outside image.
                         position = 17;
                     } else {
