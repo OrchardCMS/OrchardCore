@@ -57,7 +57,7 @@
         <div class="custom-control custom-checkbox">
             <input type="checkbox" class="custom-control-input" asp-for="AllowHybridFlow" data-toggle="collapse" data-target="#AllowHybridFlowRecommendedHint" checked="@Model.AllowHybridFlow">
             <label class="custom-control-label" asp-for="AllowHybridFlow">@T["Allow Hybrid Flow"]</label>
-            <span class="hint">— @T["More info:"] <a href="http://openid.net/specs/openid-connect-core-1_0.html#HybridFlowAuth">http://openid.net/specs/openid-connect-core-1_0.html#HybridFlowAuth</a></span>
+            <span class="hint dashed">@T["More info:"] <a href="http://openid.net/specs/openid-connect-core-1_0.html#HybridFlowAuth">http://openid.net/specs/openid-connect-core-1_0.html#HybridFlowAuth</a></span>
         </div>
         <div id="AllowHybridFlowRecommendedHint" class="hint collapse">@T["Recommended Parameters:"] grant_type = 'code id_token', client_id, client_secret, redirect_uri ='', nonce,  scope ('openid, profile, roles')</div>
     </div>
