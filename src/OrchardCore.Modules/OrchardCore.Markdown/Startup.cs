@@ -66,15 +66,7 @@ namespace OrchardCore.Markdown
             services.AddOptions<MarkdownPipelineOptions>();
             services.ConfigureMarkdownPipeline((pipeline) =>
             {
-                if (markdownOptions.DisableHtml)
-                {
-                    pipeline.DisableHtml();
-                }
-
-                if (markdownOptions.UseAdvancedExtensions)
-                {
-                    pipeline.UseAdvancedExtensions();
-                }
+                pipeline.Configure(markdownOptions.Features);
             });
 
             services.AddScoped<IMarkdownService, DefaultMarkdownService>();
