@@ -39,7 +39,7 @@
                         <a asp-action="Edit" asp-route-name="@entry.Name">@entry.Name</a>
                         @if (!String.IsNullOrWhiteSpace(entry.MediaProfile.Hint))
                         {
-                            <span class="hint">— @entry.MediaProfile.Hint</span>
+                            <span class="hint dashed">@entry.MediaProfile.Hint</span>
                         }
                     </div>
                 </li>

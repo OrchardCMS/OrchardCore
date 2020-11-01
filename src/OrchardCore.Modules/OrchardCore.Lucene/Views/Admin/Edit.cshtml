@@ -31,7 +31,7 @@ else
 
     <div class="form-group" asp-validation-class-for="IndexedContentTypes">
         <label asp-for="IndexedContentTypes">@T["Content Types"]</label>
-        <span class="hint">— @T["The content types to index. Choose at least one."]</span>
+        <span class="hint dashed">@T["The content types to index. Choose at least one."]</span>
         @if (Model.IsCreate)
         {
             @await Component.InvokeAsync("SelectContentTypes", new { htmlName = Html.NameFor(m => m.IndexedContentTypes) })
@@ -48,7 +48,7 @@ else
         <div class="custom-control custom-checkbox">
             <input type="checkbox" asp-for="IndexLatest" class="custom-control-input">
             <label class="custom-control-label" asp-for="IndexLatest">@T["Index latest version"]</label>
-            <span class="hint">— @T["Check to index draft if it exists, otherwise only the published version is indexed."]</span>
+            <span class="hint dashed">@T["Check to index draft if it exists, otherwise only the published version is indexed."]</span>
         </div>
         <span asp-validation-for="IndexLatest" class="text-danger"></span>
     </div>

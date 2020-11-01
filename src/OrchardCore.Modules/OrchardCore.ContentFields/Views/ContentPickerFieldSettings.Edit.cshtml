@@ -18,7 +18,7 @@
     <div class="custom-control custom-checkbox">
         <input asp-for="Required" type="checkbox" class="custom-control-input">
         <label class="custom-control-label" asp-for="Required">@T["Required"]</label>
-        <span class="hint">— @T["Whether to ensure at least one element is selected."]</span>
+        <span class="hint dashed">@T["Whether to ensure at least one element is selected."]</span>
     </div>
 </div>
 
@@ -26,7 +26,7 @@
     <div class="custom-control custom-checkbox">
         <input asp-for="Multiple" type="checkbox" class="custom-control-input">
         <label class="custom-control-label" asp-for="Multiple">@T["Allow multiple"]</label>
-        <span class="hint">— @T["Whether to allow multiple elements to be selected."]</span>
+        <span class="hint dashed">@T["Whether to allow multiple elements to be selected."]</span>
     </div>
 </div>
 
@@ -37,7 +37,7 @@
     <div class="custom-control custom-checkbox">
         <input asp-for="DisplayAllContentTypes" type="checkbox" class="custom-control-input" v-model="displayAllContentTypes">
         <label class="custom-control-label" asp-for="DisplayAllContentTypes">@T["Display All Content Types"]</label>
-        <span class="hint">— @T["Whether to allow picker to display all content types."]</span>
+        <span class="hint dashed">@T["Whether to allow picker to display all content types."]</span>
     </div>
 
     <div v-show="!displayAllContentTypes">

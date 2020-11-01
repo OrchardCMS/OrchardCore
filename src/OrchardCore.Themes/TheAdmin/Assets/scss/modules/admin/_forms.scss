@@ -3,6 +3,13 @@
     @include word-wrap;
 }
 
+.hint,
+.text-muted {
+    &.dashed::before {
+        content: '\2014\00a0';
+    }
+}
+
 .validation-summary-errors {
     @extend .alert, .alert-danger;
     padding-bottom: 0;
