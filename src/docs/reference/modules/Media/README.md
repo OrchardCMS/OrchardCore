@@ -431,14 +431,14 @@ The `Anchors[]` is kept in sync with the `Paths[]` array and the index for a giv
 
 ## Query string tokens
 
-When resizing images the query string command values are, by default, encrypted, and the encrypted values are cached.
+When resizing images, the query string command values are, by default, encrypted, and the encrypted values are cached.
 
 This prevents prevent malicious clients from creating too many variations of the same image. 
 
 If the `UseTokenizedQueryString` is set to `false` the following features will be removed.
 
 - Cache busting, or query string versioning.
-- Anchors
+- Anchors.
 - The width or height must match a value from the `SupportedSizes` configuration.
 
 When the query string is tokenized it will no longer contain the plain text commands shown in the examples above, but will be an encrypted version of 
