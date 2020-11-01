@@ -11,7 +11,9 @@ namespace OrchardCore.Media.ViewModels
         public string Hint { get; set; }
 
         public int SelectedWidth { get; set; }
+        public int CustomWidth { get; set; }
         public int SelectedHeight { get; set; }
+        public int CustomHeight { get; set; }
         public ResizeMode SelectedMode { get; set; }
         public Format SelectedFormat { get; set; }
         public int Quality { get; set; } = 100;
