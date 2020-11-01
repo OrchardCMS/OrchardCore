@@ -1,10 +1,12 @@
 using Fluid;
 using Markdig;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data.Migration;
+using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Indexing;
 using OrchardCore.Liquid;
 using OrchardCore.Markdown.Drivers;
@@ -22,14 +24,27 @@ namespace OrchardCore.Markdown
 {
     public class Startup : StartupBase
     {
+        private readonly IShellConfiguration _shellConfiguration;
+
         static Startup()
         {
             TemplateContext.GlobalMemberAccessStrategy.Register<MarkdownBodyPartViewModel>();
             TemplateContext.GlobalMemberAccessStrategy.Register<MarkdownFieldViewModel>();
         }
 
+        public Startup(IShellConfiguration shellConfiguration)
+        {
+            _shellConfiguration = shellConfiguration;
+        }
+
         public override void ConfigureServices(IServiceCollection services)
         {
+            var markdownOptionsConfig = _shellConfiguration.GetSection("OrchardCore_Markdown");
+            var markdownOptions = new MarkdownOptions();
+            markdownOptionsConfig.Bind(markdownOptions);
+
+            services.Configure<MarkdownOptions>(markdownOptionsConfig);
+
             // Markdown Part
             services.AddContentPart<MarkdownBodyPart>()
                 .UseDisplayDriver<MarkdownBodyPartDisplay>()
@@ -51,8 +66,15 @@ namespace OrchardCore.Markdown
             services.AddOptions<MarkdownPipelineOptions>();
             services.ConfigureMarkdownPipeline((pipeline) =>
             {
-                pipeline.DisableHtml();
-                pipeline.UseAdvancedExtensions();
+                if (markdownOptions.DisableHtml)
+                {
+                    pipeline.DisableHtml();
+                }
+
+                if (markdownOptions.UseAdvancedExtensions)
+                {
+                    pipeline.UseAdvancedExtensions();
+                }
             });
 
             services.AddScoped<IMarkdownService, DefaultMarkdownService>();
