@@ -36,6 +36,13 @@
         <span class="hint">@T["Technical name of the field."]</span>
     </div>
 
+    @if (Model.Shape.Shortcuts != null)
+    {
+        <div class="form-group">
+            @await DisplayAsync(Model.Shape.Shortcuts)
+        </div>
+    }
+
     @if (Model.Shape.Content != null)
     {
         <div class="form-group">
