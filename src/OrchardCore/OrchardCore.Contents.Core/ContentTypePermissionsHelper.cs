@@ -23,6 +23,8 @@ namespace OrchardCore.Contents.Security
         private static readonly Permission ViewOwnContent = new Permission("ViewOwn_{0}", "View own {0}", new[] { ViewContent, CommonPermissions.ViewOwnContent });
         private static readonly Permission PreviewContent = new Permission("Preview_{0}", "Preview {0} by others", new[] { EditContent, CommonPermissions.PreviewContent });
         private static readonly Permission PreviewOwnContent = new Permission("PreviewOwn_{0}", "Preview own {0}", new[] { PreviewContent, CommonPermissions.PreviewOwnContent });
+        private static readonly Permission CloneContent = new Permission("Clone_{0}", "Clone {0} by others", new[] { EditContent, CommonPermissions.CloneContent });
+        private static readonly Permission CloneOwnContent = new Permission("CloneOwn_{0}", "Clone own {0}", new[] { CloneContent, CommonPermissions.CloneOwnContent });
         private static readonly Permission ListContent = new Permission("ListContent_{0}", "List {0} content item(s) owned by all users", new[] { CommonPermissions.ListContent });
 
         public static readonly Dictionary<string, Permission> PermissionTemplates = new Dictionary<string, Permission>
@@ -37,6 +39,8 @@ namespace OrchardCore.Contents.Security
             { CommonPermissions.ViewOwnContent.Name, ViewOwnContent },
             { CommonPermissions.PreviewContent.Name, PreviewContent },
             { CommonPermissions.PreviewOwnContent.Name, PreviewOwnContent },
+            { CommonPermissions.CloneContent.Name, CloneContent },
+            { CommonPermissions.CloneOwnContent.Name, CloneOwnContent },
             { CommonPermissions.ListContent.Name, ListContent }
         };
 

@@ -6,7 +6,7 @@ function persistAdminPreferences() {
         var adminPreferences = {};        
         adminPreferences.leftSidebarCompact = $('body').hasClass('left-sidebar-compact') ? true : false;
         adminPreferences.isCompactExplicit = isCompactExplicit;
-        adminPreferences.darkMode = darkMode;
+        adminPreferences.darkMode = $('body').hasClass('darkmode') ? true : false;
         localStorage.setItem('adminPreferences', JSON.stringify(adminPreferences));
     }, 200);
 }

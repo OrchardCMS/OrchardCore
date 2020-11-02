@@ -604,7 +604,7 @@ Input
 
 Adds properties to a shape. This can be useful to pass values from a parent shape.  
 Property names get converted to PascalCase.  
-Ex: `prop_name1` can be accessed via `Model.PropName1` in the shape template.
+Ex: `prop_name1` can be accessed via `Model.Properties["PropName1"]` or `Model.Properties.PropName1` in the shape template.
 
 Input
 
