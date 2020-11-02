@@ -14,6 +14,9 @@ var observer = new MutationObserver(function (mutations) {
     for (var j = 0; j < mutations[i].addedNodes.length; j++) {
       if (mutations[i].addedNodes[j].tagName == 'BODY') {
         var body = mutations[i].addedNodes[j];
+        var defaultCSS = document.getElementById('admin-default');
+        var darkModeCSS = document.getElementById('admin-darkmode');
+        var btnDarkMode = document.getElementById('btn-darkmode');
 
         if (adminPreferences != null) {
           if (adminPreferences.leftSidebarCompact == true) {
@@ -22,32 +25,37 @@ var observer = new MutationObserver(function (mutations) {
 
           isCompactExplicit = adminPreferences.isCompactExplicit;
 
-          if (adminPreferences.darkMode) {
-            document.getElementById('admin-darkmode').setAttribute('media', 'all');
-            document.getElementById('admin-default').setAttribute('media', 'not all');
-            body.classList.add('darkmode');
-            document.getElementById('btn-darkmode').firstChild.classList.remove('fa-moon');
-            document.getElementById('btn-darkmode').firstChild.classList.add('fa-sun');
-          } else {
-            document.getElementById('admin-darkmode').setAttribute('media', 'not all');
-            document.getElementById('admin-default').setAttribute('media', 'all');
-            body.classList.remove('darkmode');
-            document.getElementById('btn-darkmode').firstChild.classList.remove('fa-sun');
-            document.getElementById('btn-darkmode').firstChild.classList.add('fa-moon');
+          if (darkModeCSS) {
+            if (adminPreferences.darkMode) {
+              darkModeCSS.setAttribute('media', 'all');
+              defaultCSS.setAttribute('media', 'not all');
+              body.classList.add('darkmode');
+              btnDarkMode.firstChild.classList.remove('fa-moon');
+              btnDarkMode.firstChild.classList.add('fa-sun');
+            } else {
+              darkModeCSS.setAttribute('media', 'not all');
+              defaultCSS.setAttribute('media', 'all');
+              body.classList.remove('darkmode');
+              btnDarkMode.firstChild.classList.remove('fa-sun');
+              btnDarkMode.firstChild.classList.add('fa-moon');
+            }
           }
         } else {
-          body.classList.add('no-admin-preferences'); // Automatically sets darkmode based on OS preferences
+          body.classList.add('no-admin-preferences');
 
-          if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-            document.getElementById('admin-darkmode').setAttribute('media', 'all');
-            document.getElementById('admin-default').setAttribute('media', 'not all');
-            body.classList.add('darkmode');
-            document.getElementById('btn-darkmode').firstChild.classList.remove('fa-moon');
-            document.getElementById('btn-darkmode').firstChild.classList.add('fa-sun');
-          } else {
-            body.classList.remove('darkmode');
-            document.getElementById('btn-darkmode').firstChild.classList.remove('fa-sun');
-            document.getElementById('btn-darkmode').firstChild.classList.add('fa-moon');
+          if (darkModeCSS) {
+            // Automatically sets darkmode based on OS preferences
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+              darkModeCSS.setAttribute('media', 'all');
+              defaultCSS.setAttribute('media', 'not all');
+              body.classList.add('darkmode');
+              btnDarkMode.firstChild.classList.remove('fa-moon');
+              btnDarkMode.firstChild.classList.add('fa-sun');
+            } else {
+              body.classList.remove('darkmode');
+              btnDarkMode.firstChild.classList.remove('fa-sun');
+              btnDarkMode.firstChild.classList.add('fa-moon');
+            }
           }
         } // we're done: 
 
