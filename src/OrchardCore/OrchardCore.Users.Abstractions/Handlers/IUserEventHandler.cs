@@ -8,21 +8,33 @@ namespace OrchardCore.Users.Handlers
     public interface IUserEventHandler
     {
         /// <summary>
-        /// Occurs when the user created.
+        /// Occurs when a user is created.
         /// </summary>
         /// <param name="context">The <see cref="UserContext"/>.</param>
-        Task CreatedAsync(UserContext context);
+        Task CreatedAsync(UserContext context) => Task.CompletedTask;
 
         /// <summary>
-        /// Occurs when the user disabled.
+        /// Occurs when a user is deleted.
         /// </summary>
         /// <param name="context">The <see cref="UserContext"/>.</param>
-        Task DisabledAsync(UserContext context);
+        Task DeletedAsync(UserContext context) => Task.CompletedTask;
 
         /// <summary>
-        /// Occurs when the user enabled.
+        /// Occurs when a user is disabled.
         /// </summary>
         /// <param name="context">The <see cref="UserContext"/>.</param>
-        Task EnabledAsync(UserContext context);
+        Task DisabledAsync(UserContext context) => Task.CompletedTask;
+
+        /// <summary>
+        /// Occurs when a user is enabled.
+        /// </summary>
+        /// <param name="context">The <see cref="UserContext"/>.</param>
+        Task EnabledAsync(UserContext context) => Task.CompletedTask;
+
+        /// <summary>
+        /// Occurs when a user is updated.
+        /// </summary>
+        /// <param name="context">The <see cref="UserContext"/>.</param>
+        Task UpdatedAsync(UserContext context) => Task.CompletedTask;
     }
 }

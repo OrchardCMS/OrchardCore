@@ -1,9 +1,10 @@
-function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple) {
+function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple, allowMediaText, allowAnchors) {
 
     var target = $(document.getElementById($(el).data('for')));
     var initialPaths = target.data("init");
 
     var mediaFieldEditor = $(el);
+    var idprefix = mediaFieldEditor.attr("id");
     var mediaFieldApp;
 
     mediaFieldApps.push(mediaFieldApp = new Vue({
@@ -11,7 +12,13 @@ function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple)
         data: {
             mediaItems: [],
             selectedMedia: null,
-            smallThumbs: false
+            smallThumbs: false,
+            idPrefix: idprefix,
+            initialized: false,
+            allowMediaText: allowMediaText,
+            backupMediaText: '',
+            allowAnchors: allowAnchors,
+            backupAnchor: null
         },
         created: function () {
             var self = this;
@@ -22,36 +29,56 @@ function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple)
             paths: {
                 get: function () {
                     var mediaPaths = [];
+                    if (!this.initialized) {
+                        return JSON.stringify(initialPaths);
+                    }
                     this.mediaItems.forEach(function (x) {
                         if (x.mediaPath === 'not-found') {
                             return;
                         }
-                        mediaPaths.push({ Path: x.mediaPath });
+                        mediaPaths.push({ path: x.mediaPath, mediaText: x.mediaText, anchor: x.anchor });
                     });
-                    return JSON.stringify(mediaPaths);                    
+                    return JSON.stringify(mediaPaths);
                 },
                 set: function (values) {
                     var self = this;
                     var mediaPaths = values || [];
                     var signal = $.Deferred();
+                    var items = [];
+                    var length = 0;
                     mediaPaths.forEach(function (x, i) {
-                        self.mediaItems.push({ name: ' ' + x.Path, mime: '', mediaPath: '' }); // don't remove the space. Something different is needed or it wont react when the real name arrives.
+                        items.push({ name: ' ' + x.path, mime: '', mediaPath: '' }); // don't remove the space. Something different is needed or it wont react when the real name arrives.
                         promise = $.when(signal).done(function () {
                             $.ajax({
-                                url: mediaItemUrl + "?path=" + encodeURIComponent(x.Path),
+                                url: mediaItemUrl + "?path=" + encodeURIComponent(x.path),
                                 method: 'GET',
                                 success: function (data) {
                                     data.vuekey = data.name + i.toString();
-                                    self.mediaItems.splice( i, 1, data);
+                                    data.mediaText = x.mediaText; // This value is not returned from the ajax call.
+                                    data.anchor = x.anchor; // This value is not returned from the ajax call.
+                                    items.splice(i, 1, data);
+                                    if (items.length === ++length) {
+                                        items.forEach(function (y) {
+                                            self.mediaItems.push(y);
+                                        });
+                                        self.initialized = true;
+                                    }
                                 },
                                 error: function (error) {
                                     console.log(error);
-                                    self.mediaItems.splice(i, 1, { name: x.Path, mime: '', mediaPath: 'not-found' });
+                                    items.splice(i, 1, { name: x.path, mime: '', mediaPath: 'not-found', mediaText: '', anchor: { x: 0, y: 0 } });
+                                    if (items.length === ++length) {
+                                        items.forEach(function (x) {
+                                            self.mediaItems.push(x);
+                                        });
+                                        self.initialized = true;
+                                    }
                                 }
                             });
                         });
                     });
 
+                    
                     signal.resolve();
                 }
             },
@@ -77,7 +104,6 @@ function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple)
                     this.smallThumbs = newPrefs.smallThumbs;
                 }
             }
-
         },
         mounted: function () {
             var self = this;
@@ -92,8 +118,8 @@ function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple)
                 self.selectMedia(media);
             });
 
-            self.$on('filesUploaded', function (files) {                
-                self.addMediaFiles(files);                
+            self.$on('filesUploaded', function (files) {
+                self.addMediaFiles(files);
             });
         },
         methods: {
@@ -117,12 +143,80 @@ function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple)
                     });
                 }
             },
+            showMediaTextModal: function (event) {
+                $(this.$refs.mediaTextModal).modal();
+                this.backupMediaText = this.selectedMedia.mediaText;
+            },
+            cancelMediaTextModal: function (event) {
+                $(this.$refs.mediaTextModal).modal('hide');
+                this.selectedMedia.mediaText = this.backupMediaText;
+            },
+            showAnchorModal: function (event) {
+                $(this.$refs.anchoringModal).modal();
+                // Cause a refresh to recalc heights.
+                this.selectedMedia.anchor = {
+                  x: this.selectedMedia.anchor.x,
+                  y: this.selectedMedia.anchor.y
+                }
+                this.backupAnchor = this.selectedMedia.anchor;
+            },            
+            cancelAnchoringModal: function (event) {
+                $(this.$refs.anchoringModal).modal('hide');
+                this.selectedMedia.anchor = this.backupAnchor;
+            },            
+            resetAnchor: function (event) {
+                this.selectedMedia.anchor = { x: 0.5, y: 0.5 };
+            },  
+            onAnchorDrop: function(event) {
+                var image = this.$refs.anchorImage;
+                this.selectedMedia.anchor = {
+                   x: event.offsetX / image.clientWidth,
+                   y: event.offsetY / image.clientHeight
+                }
+            },
+            anchorLeft: function () {
+                if (this.$refs.anchorImage && this.$refs.modalBody && this.selectedMedia) {
+                    // When image is shrunk compare against the modal body.
+                    var offset = (this.$refs.modalBody.clientWidth - this.$refs.anchorImage.clientWidth) / 2;
+                    var position = (this.selectedMedia.anchor.x * this.$refs.anchorImage.clientWidth) + offset;
+                    if (position < 17) { // Adjust so the target doesn't show outside image.
+                        position = 17;
+                    } else {
+                        position = position - 8; // Adjust to hit the mouse pointer.
+                    }
+                    return position + 'px';
+                } else {
+                    return '0';
+                }
+            },            
+            anchorTop: function () {
+                if (this.$refs.anchorImage && this.selectedMedia) {
+                    var position = this.selectedMedia.anchor.y * this.$refs.anchorImage.clientHeight;
+                    if (position < 15) { // Adjustment so the target doesn't show outside image.
+                        position = 15;
+                    } else {
+                        position = position + 5; // Adjust to hit the mouse pointer.
+                    }
+                    return position + 'px';
+                } else {
+                    return '0';
+                }
+            },
+            setAnchor: function (event) {
+                var image = this.$refs.anchorImage;
+                this.selectedMedia.anchor = {
+                    x: event.offsetX / image.clientWidth,
+                    y: event.offsetY / image.clientHeight
+                }
+            },         
             addMediaFiles: function (files) {
                 if ((files.length > 1) && (allowMultiple === false)) {
                     alert($('#onlyOneItemMessage').val());
                     mediaFieldApp.mediaItems.push(files[0]);
+                    mediaFieldApp.initialized = true;
                 } else {
                     mediaFieldApp.mediaItems = mediaFieldApp.mediaItems.concat(files);
+                    mediaFieldApp.initialized = true;
                 }
             },
             removeSelected: function (event) {
@@ -143,18 +237,20 @@ function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple)
             selectAndDeleteMedia: function (media) {
                 var self = this;
                 self.selectedMedia = media;
-                // setTimeout because sometimes 
-                // removeSelected was called even before the media was set.
-                setTimeout(function () {                    
-                    self.removeSelected();    
+                // setTimeout because sometimes removeSelected was called even before the media was set.
+                setTimeout(function () {
+                    self.removeSelected();
                 }, 100);
             }
         },
         watch: {
-            mediaItems: function () {
-                // Trigger preview rendering
-                setTimeout(function () { $(document).trigger('contentpreview:render'); }, 100);
-            },
+            mediaItems: {
+                deep: true,
+                handler () {
+                    // Trigger preview rendering
+                    setTimeout(function () { $(document).trigger('contentpreview:render'); }, 100); 
+                }
+            },            
             currentPrefs: function (newPrefs) {
                 localStorage.setItem('mediaFieldPrefs', JSON.stringify(newPrefs));
             }

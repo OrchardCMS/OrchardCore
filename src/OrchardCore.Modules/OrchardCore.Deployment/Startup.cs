@@ -53,7 +53,7 @@ namespace OrchardCore.Deployment
             services.AddSingleton<IIndexProvider, DeploymentPlanIndexProvider>();
             services.AddTransient<IDataMigration, Migrations>();
 
-            services.AddScoped<DeploymentPlanService>();
+            services.AddScoped<IDeploymentPlanService, DeploymentPlanService>();
 
             services.AddRecipeExecutionStep<DeploymentPlansRecipeStep>();
 
@@ -102,6 +102,13 @@ namespace OrchardCore.Deployment
                 areaName: "OrchardCore.Deployment",
                 pattern: _adminOptions.AdminUrlPrefix + "/DeploymentPlan/Import/Index",
                 defaults: new { controller = typeof(ImportController).ControllerName(), action = nameof(ImportController.Index) }
+            );
+
+            routes.MapAreaControllerRoute(
+                name: "DeploymentPlanImportJson",
+                areaName: "OrchardCore.Deployment",
+                pattern: _adminOptions.AdminUrlPrefix + "/DeploymentPlan/Import/Json",
+                defaults: new { controller = typeof(ImportController).ControllerName(), action = nameof(ImportController.Json) }
             );
 
             routes.MapAreaControllerRoute(

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Web;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
@@ -24,6 +25,8 @@ using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Environment.Shell.Descriptor.Models;
 using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Localization;
+using OrchardCore.Locking;
+using OrchardCore.Locking.Distributed;
 using OrchardCore.Modules;
 using OrchardCore.Modules.FileProviders;
 using SameSiteMode = Microsoft.AspNetCore.Http.SameSiteMode;
@@ -53,7 +56,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 builder = new OrchardCoreBuilder(services);
                 services.AddSingleton(builder);
 
-                AddDefaultServices(services);
+                AddDefaultServices(builder);
                 AddShellServices(services);
                 AddExtensionServices(builder);
                 AddStaticFiles(builder);
@@ -84,8 +87,10 @@ namespace Microsoft.Extensions.DependencyInjection
             return services;
         }
 
-        private static void AddDefaultServices(IServiceCollection services)
+        private static void AddDefaultServices(OrchardCoreBuilder builder)
         {
+            var services = builder.ApplicationServices;
+
             services.AddLogging();
             services.AddOptions();
 
@@ -110,6 +115,13 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddSingleton<IPoweredByMiddlewareOptions, PoweredByMiddlewareOptions>();
 
             services.AddScoped<IOrchardHelper, DefaultOrchardHelper>();
+
+            builder.ConfigureServices(s =>
+            {
+                s.AddSingleton<LocalLock>();
+                s.AddSingleton<ILock>(sp => sp.GetRequiredService<LocalLock>());
+                s.AddSingleton<IDistributedLock>(sp => sp.GetRequiredService<LocalLock>());
+            });
         }
 
         private static void AddShellServices(IServiceCollection services)
@@ -245,15 +257,30 @@ namespace Microsoft.Extensions.DependencyInjection
             builder.ConfigureServices((services, serviceProvider) =>
             {
                 var settings = serviceProvider.GetRequiredService<ShellSettings>();
+                var environment = serviceProvider.GetRequiredService<IHostEnvironment>();
 
-                var cookieName = "orchantiforgery_" + settings.Name;
+                var cookieName = "orchantiforgery_" + HttpUtility.UrlEncode(settings.Name + environment.ContentRootPath);
 
                 // If uninitialized, we use the host services.
                 if (settings.State == TenantState.Uninitialized)
                 {
                     // And delete a cookie that may have been created by another instance.
                     var httpContextAccessor = serviceProvider.GetRequiredService<IHttpContextAccessor>();
+
+                    // Use case when creating a container without ambient context.
+                    if (httpContextAccessor.HttpContext == null)
+                    {
+                        return;
+                    }
+
+                    // Use case when creating a container in a deferred task.
+                    if (httpContextAccessor.HttpContext.Response.HasStarted)
+                    {
+                        return;
+                    }
+
                     httpContextAccessor.HttpContext.Response.Cookies.Delete(cookieName);
+
                     return;
                 }
 
@@ -370,7 +397,8 @@ namespace Microsoft.Extensions.DependencyInjection
                 var settings = serviceProvider.GetRequiredService<ShellSettings>();
                 var options = serviceProvider.GetRequiredService<IOptions<ShellOptions>>();
 
-                var directory = Directory.CreateDirectory(Path.Combine(
+                // The 'FileSystemXmlRepository' will create the directory, but only if it is not overridden.
+                var directory = new DirectoryInfo(Path.Combine(
                     options.Value.ShellsApplicationDataPath,
                     options.Value.ShellsContainerName,
                     settings.Name, "DataProtection-Keys"));

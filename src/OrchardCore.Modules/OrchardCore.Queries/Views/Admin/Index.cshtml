@@ -9,18 +9,18 @@
     <div class="row">
         <div class="form-group col-xl-4 col-sm-6">
             <div class="input-group input-group-sm filter-options">
-                <input id="search-box" asp-for="Options.Search" class="form-control" placeholder="@T["Search"]" type="search" autofocus="autofocus" />
+                <input id="search-box" asp-for="Options.Search" class="form-control" placeholder="@T["Search"]" type="search" autofocus />
             </div>
         </div>
         <div class="form-group col-xl-8 col-sm-6">
             <div class="btn-group float-right">
-                <button type="button" class="btn btn-primary float-right" role="button" data-toggle="modal" data-target="#modalAddQuery">@T["Add Query"]</button>
+                <button type="button" class="btn btn-primary float-right create" data-toggle="modal" data-target="#modalAddQuery">@T["Add Query"]</button>
             </div>
         </div>
     </div>
     @* the form is necessary to generate and antiforgery token for the delete action *@
     <ul class="list-group">
-        <li class="list-group-item bg-light">
+        <li class="list-group-item bg-primary">
             <div class="row">
                 <div class="form-group col-xl-4 mb-xl-n1">
                     <label id="items" for="select-all">@T.Plural(Model.Queries.Count, "1 item", "{0} items")<span class="text-muted" title="@T["Items {0} to {1}", startIndex, endIndex]">@T.Plural((int)Model.Pager.TotalItemCount, " / {0} item in total", " / {0} items in total")</span></label>
@@ -51,11 +51,11 @@
 @await DisplayAsync(Model.Pager)
 
 <!-- Modal -->
-<div class="modal fade" id="modalAddQuery" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div class="modal fade" id="modalAddQuery" tabindex="-1" role="dialog" aria-labelledby="available-query-types-title" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">@T["Available Query Types"]</h5>
+                <h5 class="modal-title" id="available-query-types-title">@T["Available Query Types"]</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -86,7 +86,7 @@
     </div>
 </div>
 
-<script at="Foot" type="text/javascript">
+<script at="Foot">
     $(function () {
         $(".filter-options input").on("change", function () {
             $("[name='submit.Filter']").click();

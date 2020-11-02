@@ -19,6 +19,7 @@ namespace OrchardCore.Recipes.Controllers
 {
     public class AdminController : Controller
     {
+        private readonly IShellHost _shellHost;
         private readonly ShellSettings _shellSettings;
         private readonly IExtensionManager _extensionManager;
         private readonly IAuthorizationService _authorizationService;
@@ -26,9 +27,10 @@ namespace OrchardCore.Recipes.Controllers
         private readonly INotifier _notifier;
         private readonly IRecipeExecutor _recipeExecutor;
         private readonly ISiteService _siteService;
-        private readonly IHtmlLocalizer<AdminController> H;
+        private readonly IHtmlLocalizer H;
 
         public AdminController(
+            IShellHost shellHost,
             ShellSettings shellSettings,
             ISiteService siteService,
             IExtensionManager extensionManager,
@@ -38,6 +40,7 @@ namespace OrchardCore.Recipes.Controllers
             IRecipeExecutor recipeExecutor,
             INotifier notifier)
         {
+            _shellHost = shellHost;
             _shellSettings = shellSettings;
             _siteService = siteService;
             _recipeExecutor = recipeExecutor;
@@ -64,7 +67,8 @@ namespace OrchardCore.Recipes.Controllers
 
             var model = recipes.Select(recipe => new RecipeViewModel
             {
-                Name = recipe.DisplayName,
+                Name = recipe.Name,
+                DisplayName = recipe.DisplayName,
                 FileName = recipe.RecipeFileInfo.Name,
                 BasePath = recipe.BasePath,
                 Tags = recipe.Tags,
@@ -117,7 +121,9 @@ namespace OrchardCore.Recipes.Controllers
                 _shellSettings.State = TenantState.Running;
             }
 
-            _notifier.Success(H["The recipe '{0}' has been run successfully", recipe.Name]);
+            await _shellHost.ReleaseShellContextAsync(_shellSettings);
+
+            _notifier.Success(H["The recipe '{0}' has been run successfully", recipe.DisplayName]);
             return RedirectToAction("Index");
         }
     }

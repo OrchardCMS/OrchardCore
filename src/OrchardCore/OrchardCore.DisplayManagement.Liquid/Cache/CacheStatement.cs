@@ -7,6 +7,7 @@ using Fluid;
 using Fluid.Ast;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement;
 using OrchardCore.Environment.Cache;
 using OrchardCore.Liquid.Ast;
@@ -36,6 +37,7 @@ namespace OrchardCore.DynamicCache.Liquid
             var cacheScopeManager = services.GetService<ICacheScopeManager>();
             var loggerFactory = services.GetService<ILoggerFactory>();
             var logger = loggerFactory.CreateLogger<CacheStatement>();
+            var cacheOptions = services.GetRequiredService<IOptions<CacheOptions>>().Value;
 
             if (dynamicCache == null || cacheScopeManager == null)
             {
@@ -47,9 +49,6 @@ namespace OrchardCore.DynamicCache.Liquid
 
                 return Completion.Normal;
             }
-
-            // TODO: Create a configuration setting in the UI
-            var debugMode = false;
 
             var arguments = (FilterArguments)(await _arguments.EvaluateAsync(context)).ToObjectValue();
             var cacheKey = arguments.At(0).ToStringValue();
@@ -92,9 +91,11 @@ namespace OrchardCore.DynamicCache.Liquid
                 cacheScopeManager.ExitScope();
             }
 
-            if (debugMode)
+            if (cacheOptions.DebugMode)
             {
+                // No need to optimize this code as it will be used for debugging purpose.
                 var debugContent = new StringWriter();
+                debugContent.WriteLine();
                 debugContent.WriteLine($"<!-- CACHE BLOCK: {cacheContext.CacheId} ({Guid.NewGuid()})");
                 debugContent.WriteLine($"         VARY BY: {String.Join(", ", cacheContext.Contexts)}");
                 debugContent.WriteLine($"    DEPENDENCIES: {String.Join(", ", cacheContext.Tags)}");
@@ -102,7 +103,10 @@ namespace OrchardCore.DynamicCache.Liquid
                 debugContent.WriteLine($"   EXPIRES AFTER: {cacheContext.ExpiresAfter}");
                 debugContent.WriteLine($" EXPIRES SLIDING: {cacheContext.ExpiresSliding}");
                 debugContent.WriteLine("-->");
+
                 debugContent.WriteLine(content);
+
+                debugContent.WriteLine();
                 debugContent.WriteLine($"<!-- END CACHE BLOCK: {cacheContext.CacheId} -->");
 
                 content = debugContent.ToString();

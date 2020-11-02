@@ -87,7 +87,9 @@ namespace OrchardCore.DisplayManagement.Liquid
             Factory.RegisterBlock<HelperBlock>("block");
             Factory.RegisterBlock<NamedHelperBlock>("a");
             Factory.RegisterBlock<NamedHelperBlock>("zone");
-            Factory.RegisterBlock<NamedHelperBlock>("scriptblock");            
+            Factory.RegisterBlock<NamedHelperBlock>("form");
+            Factory.RegisterBlock<NamedHelperBlock>("scriptblock");
+            Factory.RegisterBlock<NamedHelperBlock>("styleblock");
 
             // Dynamic caching
             Factory.RegisterBlock<CacheBlock>("cache");
@@ -105,7 +107,7 @@ namespace OrchardCore.DisplayManagement.Liquid
         /// <summary>
         /// Retrieve the current <see cref="LiquidTemplateContext"/> from the current shell scope.
         /// </summary>
-        public static LiquidTemplateContext Context => ShellScope.GetOrCreateFeature(() => new LiquidTemplateContext(ShellScope.Services));
+        public static LiquidTemplateContext Context => ShellScope.GetOrCreateFeature(() => new LiquidTemplateContextInternal(ShellScope.Services));
 
         internal static async Task RenderAsync(RazorPage<dynamic> page)
         {
@@ -181,15 +183,16 @@ namespace OrchardCore.DisplayManagement.Liquid
                     return shape.Items;
                 }
 
-                // Resolve Model.Content.MyType-MyField-FieldType_Display__DisplayMode
+                // Resolves Model.Content.MyType-MyField-FieldType_Display__DisplayMode
                 var namedShaped = shape.Named(n);
                 if (namedShaped != null)
                 {
                     return namedShaped;
                 }
 
-                // Resolve Model.Content.MyNamedPart
-                // Resolve Model.Content.MyType__MyField OR Resolve Model.Content.MyType-MyField
+                // Resolves Model.Content.MyNamedPart
+                // Resolves Model.Content.MyType__MyField
+                // Resolves Model.Content.MyType-MyField
                 return shape.NormalizedNamed(n.Replace("__", "-"));
             }
 
@@ -201,11 +204,12 @@ namespace OrchardCore.DisplayManagement.Liquid
     {
         public static async Task<string> RenderAsync(this LiquidViewTemplate template, TextEncoder encoder, LiquidTemplateContext context, object model, Action<Scope> scopeAction)
         {
-            var viewContext = context.Services.GetRequiredService<ViewContextAccessor>().ViewContext;
+            var viewContextAccessor = context.Services.GetRequiredService<ViewContextAccessor>();
+            var viewContext = viewContextAccessor.ViewContext;
 
             if (viewContext == null)
             {
-                viewContext = await GetViewContextAsync(context);
+                viewContext = viewContextAccessor.ViewContext = await GetViewContextAsync(context);
             }
 
             try
@@ -221,11 +225,12 @@ namespace OrchardCore.DisplayManagement.Liquid
 
         public static async Task RenderAsync(this LiquidViewTemplate template, TextWriter writer, TextEncoder encoder, LiquidTemplateContext context, object model, Action<Scope> scopeAction)
         {
-            var viewContext = context.Services.GetRequiredService<ViewContextAccessor>().ViewContext;
+            var viewContextAccessor = context.Services.GetRequiredService<ViewContextAccessor>();
+            var viewContext = viewContextAccessor.ViewContext;
 
             if (viewContext == null)
             {
-                viewContext = await GetViewContextAsync(context);
+                viewContext = viewContextAccessor.ViewContext = await GetViewContextAsync(context);
             }
 
             try
@@ -280,7 +285,7 @@ namespace OrchardCore.DisplayManagement.Liquid
 
             var tempDataProvider = services.GetService<ITempDataProvider>();
 
-            return new ViewContext(
+            var viewContext = new ViewContext(
                 actionContext,
                 viewResult.View,
                 new ViewDataDictionary(
@@ -291,6 +296,13 @@ namespace OrchardCore.DisplayManagement.Liquid
                     tempDataProvider),
                 TextWriter.Null,
                 new HtmlHelperOptions());
+
+            if (viewContext.View is RazorView razorView)
+            {
+                razorView.RazorPage.ViewContext = viewContext;
+            }
+
+            return viewContext;
         }
     }
 
@@ -298,7 +310,9 @@ namespace OrchardCore.DisplayManagement.Liquid
     {
         internal static async Task EnterScopeAsync(this LiquidTemplateContext context, ViewContext viewContext, object model, Action<Scope> scopeAction)
         {
-            if (!context.IsInitialized)
+            var contextInternal = context as LiquidTemplateContextInternal;
+
+            if (!contextInternal.IsInitialized)
             {
                 context.AmbientValues.EnsureCapacity(9);
                 context.AmbientValues.Add("Services", context.Services);
@@ -326,9 +340,11 @@ namespace OrchardCore.DisplayManagement.Liquid
                     await handler.RenderingAsync(context);
                 }
 
+                context.FileProvider = context.Services.GetRequiredService<ILiquidViewFileProviderAccessor>().FileProvider;
+
                 context.CultureInfo = CultureInfo.CurrentUICulture;
 
-                context.IsInitialized = true;
+                contextInternal.IsInitialized = true;
             }
 
             context.EnterChildScope();
@@ -345,6 +361,19 @@ namespace OrchardCore.DisplayManagement.Liquid
             if (model != null)
             {
                 context.MemberAccessStrategy.Register(model.GetType());
+            }
+
+            if (context.GetValue("Model")?.ToObjectValue() == model && model is IShape shape)
+            {
+                if (contextInternal.ShapeRecursions++ > LiquidTemplateContextInternal.MaxShapeRecursions)
+                {
+                    throw new InvalidOperationException(
+                        $"The '{shape.Metadata.Type}' shape has been called recursively more than {LiquidTemplateContextInternal.MaxShapeRecursions} times.");
+                }
+            }
+            else
+            {
+                contextInternal.ShapeRecursions = 0;
             }
 
             context.SetValue("Model", model);
@@ -365,5 +394,16 @@ namespace OrchardCore.DisplayManagement.Liquid
                 });
             }
         }
+    }
+
+    internal class LiquidTemplateContextInternal : LiquidTemplateContext
+    {
+        public const int MaxShapeRecursions = 3;
+
+        public LiquidTemplateContextInternal(IServiceProvider services) : base(services) { }
+
+        public bool IsInitialized { get; set; }
+
+        public int ShapeRecursions { get; set; }
     }
 }

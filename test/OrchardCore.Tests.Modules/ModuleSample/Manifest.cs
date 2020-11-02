@@ -2,11 +2,12 @@ using OrchardCore.Modules.Manifest;
 
 [assembly: Module(
     Name = "Module Sample",
-    Author = "Nicholas Mayne",
-    Website = "https://orchardproject.net",
-    Version = "2.0.0",
+    Author = ManifestConstants.OrchardCoreTeam,
+    Website = ManifestConstants.OrchardCoreWebsite,
+    Version = ManifestConstants.OrchardCoreVersion,
     Category = "Test"
 )]
+
 [assembly: Feature(
     Id = "Sample1",
     Name = "Sample 1",

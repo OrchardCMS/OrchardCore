@@ -60,7 +60,7 @@ namespace OrchardCore.Lucene
                 o.Analyzers.Add(new LuceneAnalyzer(LuceneSettings.StandardAnalyzer,
                     new StandardAnalyzer(LuceneSettings.DefaultVersion))));
 
-            services.AddScoped<IDisplayDriver<ISite>, LuceneSiteSettingsDisplayDriver>();
+            services.AddScoped<IDisplayDriver<ISite>, LuceneSettingsDisplayDriver>();
             services.AddScoped<IDisplayDriver<Query>, LuceneQueryDisplayDriver>();
 
             services.AddScoped<IContentHandler, LuceneIndexingContentHandler>();

@@ -192,7 +192,7 @@ namespace OrchardCore.Navigation
                 return "#";
             }
 
-            if (menuItemUrl[0] == '/' || menuItemUrl.IndexOf("://") >= 0)
+            if (menuItemUrl[0] == '/' || menuItemUrl.IndexOf("://", StringComparison.Ordinal) >= 0)
             {
                 // Return the unescaped url and let the browser generate all uri components.
                 return menuItemUrl;

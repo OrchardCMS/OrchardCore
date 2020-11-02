@@ -1,5 +1,3 @@
-// ReSharper disable ForCanBeConvertedToForeach
-
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -24,6 +22,7 @@ namespace OrchardCore.ResourceManagement
         private Dictionary<string, MetaEntry> _metas;
         private List<IHtmlContent> _headScripts;
         private List<IHtmlContent> _footScripts;
+        private List<IHtmlContent> _styles;
         private readonly HashSet<string> _localScripts;
 
         private readonly IResourceManifestState _resourceManifestState;
@@ -138,6 +137,16 @@ namespace OrchardCore.ResourceManagement
             _footScripts.Add(script);
         }
 
+        public void RegisterStyle(IHtmlContent style)
+        {
+            if (_styles == null)
+            {
+                _styles = new List<IHtmlContent>();
+            }
+
+            _styles.Add(style);
+        }
+
         public void NotRequired(string resourceType, string resourceName)
         {
             if (resourceType == null)
@@ -173,12 +182,12 @@ namespace OrchardCore.ResourceManagement
             var type = settings.Type;
 
             var stream = ResourceManifests.SelectMany(x => x.GetResources(type));
-            var resource = FindMatchingResource(stream, settings, type, name);
+            var resource = FindMatchingResource(stream, settings, name);
 
             if (resource == null && _dynamicManifest != null)
             {
                 stream = _dynamicManifest.GetResources(type);
-                resource = FindMatchingResource(stream, settings, type, name);
+                resource = FindMatchingResource(stream, settings, name);
             }
 
             if (resolveInlineDefinitions && resource == null)
@@ -198,7 +207,6 @@ namespace OrchardCore.ResourceManagement
         private ResourceDefinition FindMatchingResource(
             IEnumerable<KeyValuePair<string, IList<ResourceDefinition>>> stream,
             RequireSettings settings,
-            string type,
             string name)
         {
             Version lower = null;
@@ -349,6 +357,13 @@ namespace OrchardCore.ResourceManagement
         public List<IHtmlContent> DoGetRegisteredFootScripts()
         {
             return _footScripts ?? EmptyList<IHtmlContent>.Instance;
+        }
+
+        public IEnumerable<IHtmlContent> GetRegisteredStyles() => DoGetRegisteredStyles();
+
+        public List<IHtmlContent> DoGetRegisteredStyles()
+        {
+            return _styles ?? EmptyList<IHtmlContent>.Instance;
         }
 
         public IEnumerable<ResourceRequiredContext> GetRequiredResources(string resourceType)
@@ -566,6 +581,20 @@ namespace OrchardCore.ResourceManagement
                 first = false;
 
                 builder.AppendHtml(context.GetHtmlContent(_options.ContentBasePath));
+            }
+
+            var registeredStyles = DoGetRegisteredStyles();
+            for (var i = 0; i < registeredStyles.Count; i++)
+            {
+                var context = registeredStyles[i];
+                if (!first)
+                {
+                    builder.AppendHtml(System.Environment.NewLine);
+                }
+
+                first = false;
+
+                builder.AppendHtml(context);
             }
         }
 

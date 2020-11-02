@@ -20,6 +20,7 @@ namespace OrchardCore.Forms
             TemplateContext.GlobalMemberAccessStrategy.Register<FormInputElementPart>();
             TemplateContext.GlobalMemberAccessStrategy.Register<LabelPart>();
             TemplateContext.GlobalMemberAccessStrategy.Register<InputPart>();
+            TemplateContext.GlobalMemberAccessStrategy.Register<SelectPart>();
             TemplateContext.GlobalMemberAccessStrategy.Register<TextAreaPart>();
             TemplateContext.GlobalMemberAccessStrategy.Register<ButtonPart>();
         }
@@ -32,6 +33,8 @@ namespace OrchardCore.Forms
                 options.Filters.Add<ImportModelStateAttribute>();
                 options.Filters.Add<ImportModelStatePageFilter>();
             });
+
+            services.AddScoped<IContentDisplayDriver, FormContentDisplayDriver>();
 
             services.AddContentPart<FormPart>()
                     .UseDisplayDriver<FormPartDisplay>();
@@ -50,6 +53,9 @@ namespace OrchardCore.Forms
 
             services.AddContentPart<InputPart>()
                     .UseDisplayDriver<InputPartDisplay>();
+
+            services.AddContentPart<SelectPart>()
+                .UseDisplayDriver<SelectPartDisplayDriver>();
 
             services.AddContentPart<TextAreaPart>()
                     .UseDisplayDriver<TextAreaPartDisplay>();

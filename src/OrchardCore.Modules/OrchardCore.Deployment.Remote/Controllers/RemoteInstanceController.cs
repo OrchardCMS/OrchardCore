@@ -8,7 +8,6 @@ using OrchardCore.Admin;
 using OrchardCore.Deployment.Remote.Services;
 using OrchardCore.Deployment.Remote.ViewModels;
 using OrchardCore.DisplayManagement.Notify;
-using YesSql;
 
 namespace OrchardCore.Deployment.Remote.Controllers
 {
@@ -16,7 +15,6 @@ namespace OrchardCore.Deployment.Remote.Controllers
     public class RemoteInstanceController : Controller
     {
         private readonly IAuthorizationService _authorizationService;
-        private readonly ISession _session;
         private readonly INotifier _notifier;
         private readonly RemoteInstanceService _service;
         private readonly IStringLocalizer S;
@@ -25,13 +23,11 @@ namespace OrchardCore.Deployment.Remote.Controllers
         public RemoteInstanceController(
             RemoteInstanceService service,
             IAuthorizationService authorizationService,
-            ISession session,
             IStringLocalizer<RemoteInstanceController> stringLocalizer,
             IHtmlLocalizer<RemoteInstanceController> htmlLocalizer,
             INotifier notifier
             )
         {
-            _session = session;
             _authorizationService = authorizationService;
             S = stringLocalizer;
             H = htmlLocalizer;
@@ -127,7 +123,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
                 return Forbid();
             }
 
-            var remoteInstance = await _service.GetRemoteInstanceAsync(model.Id);
+            var remoteInstance = await _service.LoadRemoteInstanceAsync(model.Id);
 
             if (remoteInstance == null)
             {
@@ -141,7 +137,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
 
             if (ModelState.IsValid)
             {
-                await _service.TryUpdateRemoteInstance(model.Id, model.Name, model.Url, model.ClientName, model.ApiKey);
+                await _service.UpdateRemoteInstance(model.Id, model.Name, model.Url, model.ClientName, model.ApiKey);
 
                 _notifier.Success(H["Remote instance updated successfully"]);
 
@@ -160,7 +156,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
                 return Forbid();
             }
 
-            var remoteInstance = await _service.GetRemoteInstanceAsync(id);
+            var remoteInstance = await _service.LoadRemoteInstanceAsync(id);
 
             if (remoteInstance == null)
             {

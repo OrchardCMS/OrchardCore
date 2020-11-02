@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -37,6 +36,7 @@ namespace OrchardCore.Admin.Drivers
             return Initialize<AdminSettingsViewModel>("AdminSettings_Edit", model =>
                 {
                     model.DisplayMenuFilter = settings.DisplayMenuFilter;
+                    model.DisplayDarkMode = settings.DisplayDarkMode;
                 }).Location("Content:3").OnGroup(GroupId);
         }
 
@@ -56,6 +56,7 @@ namespace OrchardCore.Admin.Drivers
                 await context.Updater.TryUpdateModelAsync(model, Prefix);
 
                 settings.DisplayMenuFilter = model.DisplayMenuFilter;
+                settings.DisplayDarkMode = model.DisplayDarkMode;
             }
 
             return await EditAsync(settings, context);

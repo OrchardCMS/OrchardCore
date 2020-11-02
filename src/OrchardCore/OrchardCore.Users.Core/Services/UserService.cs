@@ -17,7 +17,7 @@ namespace OrchardCore.Users.Services
         private readonly SignInManager<IUser> _signInManager;
         private readonly UserManager<IUser> _userManager;
         private readonly IOptions<IdentityOptions> _identityOptions;
-        private readonly IStringLocalizer<UserService> S;
+        private readonly IStringLocalizer S;
 
         public UserService(
             SignInManager<IUser> signInManager,
@@ -66,6 +66,13 @@ namespace OrchardCore.Users.Services
             else if (!result.Succeeded)
             {
                 reportError(string.Empty, S["The specified username/password couple is invalid."]);
+                return null;
+            }
+
+            if (!(user as User).IsEnabled)
+            {
+                reportError(string.Empty, S["The specified user is not allowed to sign in."]);
+
                 return null;
             }
 
@@ -202,7 +209,7 @@ namespace OrchardCore.Users.Services
         /// <summary>
         /// Gets the user, if any, associated with the normalized value of the specified identifier, which can refer both to username or email
         /// </summary>
-        /// <param name="userIdentification">The username or email address to refer to</param>
+        /// <param name="userIdentifier">The username or email address to refer to</param>
         private async Task<IUser> FindByUsernameOrEmailAsync(string userIdentifier)
             => await _userManager.FindByNameAsync(userIdentifier) ??
                await _userManager.FindByEmailAsync(userIdentifier);

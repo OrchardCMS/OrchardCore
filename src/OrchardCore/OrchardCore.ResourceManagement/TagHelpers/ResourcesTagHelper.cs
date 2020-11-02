@@ -74,7 +74,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An error occured while rendering {Type} resource.", Type);
+                _logger.LogError(ex, "An error occurred while rendering {Type} resource.", Type);
             }
             finally
             {

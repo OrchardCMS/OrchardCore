@@ -8,15 +8,14 @@ using Fluid.Tags;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Liquid.Ast;
-using OrchardCore.Mvc.Utilities;
 
 namespace OrchardCore.DisplayManagement.Liquid.Tags
 {
     public class HttpContextAddItemTag : ArgumentsTag
     {
-        public override async ValueTask<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context,  FilterArgument[] args)
-        {           
-           if (!context.AmbientValues.TryGetValue("Services", out var servicesValue))
+        public override async ValueTask<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context, FilterArgument[] args)
+        {
+            if (!context.AmbientValues.TryGetValue("Services", out var servicesValue))
             {
                 throw new ArgumentException("Services missing while invoking 'helper'");
             }
@@ -24,8 +23,8 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
             var services = servicesValue as IServiceProvider;
 
             var httpContext = services.GetRequiredService<IHttpContextAccessor>()?.HttpContext;
-            
-            if(httpContext != null )
+
+            if (httpContext != null)
             {
                 var arguments = (FilterArguments)(await new ArgumentsExpression(args).EvaluateAsync(context)).ToObjectValue();
 

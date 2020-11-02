@@ -19,6 +19,7 @@ namespace OrchardCore.Users.Models
         public IList<string> RoleNames { get; set; } = new List<string>();
         public IList<UserClaim> UserClaims { get; set; } = new List<UserClaim>();
         public IList<UserLoginInfo> LoginInfos { get; set; } = new List<UserLoginInfo>();
+        public IList<UserToken> UserTokens { get; set; } = new List<UserToken>();
 
         public override string ToString()
         {

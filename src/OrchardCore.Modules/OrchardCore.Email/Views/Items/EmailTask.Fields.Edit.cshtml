@@ -12,7 +12,14 @@
     <label asp-for="SenderExpression">@T["Sender"]</label>
     <input type="text" asp-for="SenderExpression" class="form-control code" />
     <span asp-validation-for="SenderExpression"></span>
-    <span class="hint">@T["The sender's email address. Required if not the same as the From email address. With Liquid support."]</span>
+    <span class="hint">@T["The sender's email address. Required if not the same than the \"From\" email address. With Liquid support."]</span>
+</div>
+
+<div class="form-group" asp-validation-class-for="ReplyToExpression">
+    <label asp-for="SenderExpression">@T["ReplyTo"]</label>
+    <input type="text" asp-for="ReplyToExpression" class="form-control code" />
+    <span asp-validation-for="ReplyToExpression"></span>
+    <span class="hint">@T["The \"reply to\" email address. Required if you want email replies be sent to a different address than the \"From\" address. With Liquid support."]</span>
 </div>
 
 <div class="form-group" asp-validation-class-for="RecipientsExpression">
@@ -39,10 +46,11 @@
     <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input" asp-for="IsBodyHtml" />
         <label class="custom-control-label" asp-for="IsBodyHtml">@T["Does the Body contain HTML?"]</label>
-        <span class="hint">— @T["If checked, indicates the body of the email message is HTML. If unchecked, indicates the body of the email message is plain text."]</span>
+        <span class="hint dashed">@T["If checked, indicates the body of the email message is HTML. If unchecked, indicates the body of the email message is plain text."]</span>
     </div>
 </div>
 
+<style asp-name="codemirror"></style>
 <script asp-name="codemirror" depends-on="admin" at="Foot"></script>
 <script asp-name="codemirror-mode-javascript" at="Foot"></script>
 <script asp-name="codemirror-addon-mode-simple" at="Foot"></script>
