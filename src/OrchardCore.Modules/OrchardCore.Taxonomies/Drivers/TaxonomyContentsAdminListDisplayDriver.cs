@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Localization;
 using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
-using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Contents.ViewModels;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
@@ -14,7 +13,6 @@ using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Entities;
 using OrchardCore.Settings;
-using OrchardCore.Taxonomies.Fields;
 using OrchardCore.Taxonomies.Models;
 using OrchardCore.Taxonomies.Settings;
 using OrchardCore.Taxonomies.ViewModels;
@@ -27,18 +25,15 @@ namespace OrchardCore.Taxonomies.Drivers
 
         private readonly ISiteService _siteService;
         private readonly IContentManager _contentManager;
-        private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly IStringLocalizer S;
 
         public TaxonomyContentsAdminListDisplayDriver(
             ISiteService siteService,
             IContentManager contentManager,
-            IContentDefinitionManager contentDefinitionManager,
             IStringLocalizer<TaxonomyContentsAdminListDisplayDriver> stringLocalizer)
         {
             _siteService = siteService;
             _contentManager = contentManager;
-            _contentDefinitionManager = contentDefinitionManager;
             S = stringLocalizer;
         }
 
@@ -51,18 +46,8 @@ namespace OrchardCore.Taxonomies.Drivers
                 return null;
             }
 
-            var taxonomyContentItemIds = settings.TaxonomyContentItemIds;
-            if (!string.IsNullOrWhiteSpace(model.SelectedContentType))
-            {
-                var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(model.SelectedContentType);
-                var fieldDefinitions = contentTypeDefinition
-                    .Parts.SelectMany(x => x.PartDefinition.Fields.Where(f => f.FieldDefinition.Name == nameof(TaxonomyField)));
-                var fieldTaxonomyContentItemIds = fieldDefinitions.Select(x => x.GetSettings<TaxonomyFieldSettings>().TaxonomyContentItemId);
-                taxonomyContentItemIds = taxonomyContentItemIds.Intersect(fieldTaxonomyContentItemIds).ToArray();
-            }
-
             var results = new List<IDisplayResult>();
-            var taxonomies = await _contentManager.GetAsync(taxonomyContentItemIds);
+            var taxonomies = await _contentManager.GetAsync(settings.TaxonomyContentItemIds);
 
             var position = 5;
             foreach (var taxonomy in taxonomies)
