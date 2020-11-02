@@ -163,7 +163,7 @@ namespace OrchardCore.FileStorage.AzureBlob
                 if (!String.IsNullOrEmpty(_basePrefix))
                 {
                     directory = directory.Substring(_basePrefix.Length - 1);
-                }                
+                }
                 // Do not include root folder, or current path, or multiple folders in folder listing.
                 if (!String.IsNullOrEmpty(directory) && !directories.Contains(directory) && (String.IsNullOrEmpty(path) ? true : !directory.EndsWith(path)))
                 {

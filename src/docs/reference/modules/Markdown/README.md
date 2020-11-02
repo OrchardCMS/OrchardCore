@@ -61,7 +61,7 @@ When rendering content directly you can disable sanitization by passing a boolea
 The markdown pipeline is configurable using `IOptions<MarkdownPipelineOptions>` during service registration with a configuration 
 extension method `ConfigureMarkdownPipeline`.
 
-By default the pipeline disables HTML by converting any HTML found in the Markdown content to escaped HTML entities.
+By default the pipeline enables some markdown advanced features and disables HTML by converting any HTML found in the Markdown content to escaped HTML entities.
 
 You may call this extension method multiple times during the startup pipeline to alter configurations.
 
@@ -77,7 +77,7 @@ services
             }));
 ```
 
-To include other `MarkdownPipelineOptions`:
+To include other `MarkdownPipelineOptions` such as emojis and smileys we could use:
 
 ```
 services
@@ -85,7 +85,7 @@ services
     .ConfigureServices(tenantServices =>
         tenantServices.ConfigureMarkdownPipeline((pipeline) => 
         { 
-            pipeline.UseAdvancedExtensions();
+            pipeline.UseEmojiAndSmiley();
         }));
 ```
 

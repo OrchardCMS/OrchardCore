@@ -16,9 +16,9 @@ namespace OrchardCore.Email.Services
     public class SmtpService : ISmtpService
     {
         private const string EmailExtension = ".eml";
-        
+
         private static readonly char[] EmailsSeparator = new char[] { ',', ';', ' ' };
-        
+
         private readonly SmtpSettings _options;
         private readonly ILogger _logger;
         private readonly IStringLocalizer S;
@@ -126,6 +126,18 @@ namespace OrchardCore.Email.Services
             else
             {
                 body.TextBody = message.Body;
+            }
+
+            if (message.Attachments != null)
+            {
+                foreach (var attachment in message.Attachments)
+                {
+                    // Stream must not be null, otherwise it would try to get the filesystem path
+                    if (attachment.Stream != null)
+                    {
+                        body.Attachments.Add(attachment.Filename, attachment.Stream);
+                    }
+                }
             }
 
             mimeMessage.Body = body.ToMessageBody();

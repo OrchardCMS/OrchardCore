@@ -10,8 +10,8 @@ public static class LiquidRazorHelperExtensions
     /// <summary>
     /// Parses a liquid string to HTML.
     /// </summary>
+    /// <param name="orchardHelper">The <see cref="IOrchardHelper"/>.</param>
     /// <param name="liquid"></param>
-    /// <returns></returns>
     public static Task<IHtmlContent> LiquidToHtmlAsync(this IOrchardHelper orchardHelper, string liquid)
     {
         return orchardHelper.LiquidToHtmlAsync(liquid, null);
@@ -20,9 +20,9 @@ public static class LiquidRazorHelperExtensions
     /// <summary>
     /// Parses a liquid string to HTML.
     /// </summary>
+    /// <param name="orchardHelper">The <see cref="IOrchardHelper"/>.</param>
     /// <param name="liquid">The liquid to parse.</param>
     /// <param name="model">A model to bind against.</param>
-    /// <summary>
     public static async Task<IHtmlContent> LiquidToHtmlAsync(this IOrchardHelper orchardHelper, string liquid, object model)
     {
         var serviceProvider = orchardHelper.HttpContext.RequestServices;

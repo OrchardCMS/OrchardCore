@@ -11,13 +11,14 @@ namespace OrchardCore.Markdown.Settings
     {
         public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition)
         {
-            return Initialize<MarkdownFieldSettingsViewModel>("MarkdownFieldSettings_Edit", model => {
+            return Initialize<MarkdownFieldSettingsViewModel>("MarkdownFieldSettings_Edit", model =>
+            {
 
                 var settings = partFieldDefinition.GetSettings<MarkdownFieldSettings>();
 
                 model.SanitizeHtml = settings.SanitizeHtml;
                 model.Hint = settings.Hint;
-            }).Location("Content");
+            }).Location("Content:20");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)

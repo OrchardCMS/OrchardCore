@@ -108,7 +108,7 @@ namespace OrchardCore.Demo.Controllers
 
             _session.Delete(model);
 
-             return RedirectToAction("Index", "Todo");
+            return RedirectToAction("Index", "Todo");
         }
     }
 }
