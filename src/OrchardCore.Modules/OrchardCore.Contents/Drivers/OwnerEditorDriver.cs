@@ -48,8 +48,9 @@ namespace OrchardCore.Contents.Drivers
                 {
                     if (part.ContentItem.Owner != null)
                     {
+                        // TODO Move this editor to a user picker.
                         var user = await _userService.GetUserByUniqueIdAsync(part.ContentItem.Owner);
-                        model.Owner = user.UserName;
+                        model.OwnerName = user.UserName;
                     }
                 });
             }
@@ -82,21 +83,19 @@ namespace OrchardCore.Contents.Drivers
                 if (part.ContentItem.Owner != null)
                 {
                     var user = await _userService.GetUserByUniqueIdAsync(part.ContentItem.Owner);
-                    model.Owner = user.UserName;
+                    model.OwnerName = user.UserName;
                 }
 
-                var priorOwner = model.Owner;
+                var priorOwnerName = model.OwnerName;
                 await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-                // Here probably isn't.
-                if (!string.IsNullOrEmpty(part.ContentItem.Owner) && model.Owner != priorOwner)
+                if (model.OwnerName != priorOwnerName)
                 {
-                    // TODO Check this is corrent.
-                    var newOwner = await _userService.GetUserAsync(model.Owner);
+                    var newOwner = await _userService.GetUserAsync(model.OwnerName);
 
                     if (newOwner == null)
                     {
-                        context.Updater.ModelState.AddModelError("CommonPart.Owner", S["Invalid user name"]);
+                        context.Updater.ModelState.AddModelError("CommonPart.OwnerName", S["Invalid user name"]);
                     }
                     else
                     {

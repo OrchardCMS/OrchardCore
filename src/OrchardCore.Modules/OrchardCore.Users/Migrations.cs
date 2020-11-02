@@ -27,7 +27,7 @@ namespace OrchardCore.Users
                 .Column<string>("NormalizedUserName") // These should have defaults. on SQL Server they will fall at 255. Exceptions are currently thrown if you go over that.
                 .Column<string>("NormalizedEmail")
                 .Column<bool>("IsEnabled", c => c.NotNull().WithDefault(true))
-                .Column<string>("UserId", c => c.WithLength(26))
+                .Column<string>("UserId")
             );
 
             SchemaBuilder.AlterTable(nameof(UserIndex), table => table
@@ -42,14 +42,6 @@ namespace OrchardCore.Users
                 // This index will be used for lookups when logging in.
                 .CreateIndex("IDX_UserIndex_UserName", "DocumentId", "NormalizedUserName")
             );
-
-            SchemaBuilder.AlterTable(nameof(UserIndex), table => table
-                // This index will be used for lookups when logging in.
-                .CreateIndex("IDX_UserIndex_Email", "DocumentId", "NormalizedEmail")
-            );
-
-            // TODO when we do email login we might want NormalizedUserName and NormalizedEmail.
-            // Depends on the query.
 
             SchemaBuilder.CreateReduceIndexTable<UserByRoleNameIndex>(table => table
                .Column<string>("RoleName")
@@ -74,8 +66,8 @@ namespace OrchardCore.Users
                .Column<string>(nameof(UserByClaimIndex.ClaimValue)),
                 null);
 
-            // Return 6 here to skip migrations on new database schemas.
-            return 6;
+            // Return 5 here to skip migrations on new database schemas.
+            return 5;
         }
 
         public int UpdateFrom3()
@@ -95,7 +87,7 @@ namespace OrchardCore.Users
         public int UpdateFrom4()
         {
             SchemaBuilder.AlterTable(nameof(UserIndex), table => table
-                .AddColumn<string>("UserId", c => c.WithLength(26)));
+                .AddColumn<string>("UserId"));
 
             SchemaBuilder.AlterTable(nameof(UserIndex), table => table
                 .CreateIndex("IDX_UserIndex_UserId", "DocumentId", "UserId")
@@ -104,11 +96,6 @@ namespace OrchardCore.Users
             SchemaBuilder.AlterTable(nameof(UserIndex), table => table
                 // This index will be used for lookups when logging in.
                 .CreateIndex("IDX_UserIndex_UserName", "DocumentId", "NormalizedUserName")
-            );
-
-            SchemaBuilder.AlterTable(nameof(UserIndex), table => table
-                // This index will be used for lookups when logging in.
-                .CreateIndex("IDX_UserIndex_Email", "DocumentId", "NormalizedEmail")
             );
 
             return 5;
