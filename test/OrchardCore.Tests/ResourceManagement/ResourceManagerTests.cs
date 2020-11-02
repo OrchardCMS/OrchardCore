@@ -49,7 +49,8 @@ namespace OrchardCore.Tests.ResourceManagement
             Assert.NotNull(resourceDefinition);
             Assert.Equal("foo", resourceDefinition.Type);
             Assert.Equal("bar2", resourceDefinition.Name);
-            Assert.Equal("bar2", Assert.Contains("attr", (IDictionary<string, string>)resourceDefinition.Attributes));
+            Assert.Contains("bar2", ((IDictionary<string, string>)resourceDefinition.Attributes).Values);
+            Assert.Contains("attr", ((IDictionary<string, string>)resourceDefinition.Attributes).Keys);
         }
 
         [Fact]
