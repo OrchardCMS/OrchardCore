@@ -5,18 +5,18 @@ using OrchardCore.Data.Documents;
 namespace OrchardCore.Documents
 {
     /// <summary>
-    /// Serializes and deserializes <see cref="IDocument"/> into and from a sequence of bytes.
+    /// Serializes and deserializes an <see cref="IDocument"/> into and from a sequence of bytes.
     /// </summary>
-    public interface IDocumentSerialiser<TDocument> where TDocument : class, IDocument, new()
+    public interface IDocumentSerialiser
     {
         /// <summary>
-        /// Serializes en <see cref="IDocument"/> into a sequence of bytes.
+        /// Serializes an <see cref="IDocument"/> into a sequence of bytes.
         /// </summary>
-        Task<byte[]> SerializeAsync(TDocument document, int compressThreshold = Int32.MaxValue);
+        Task<byte[]> SerializeAsync<TDocument>(TDocument document, int compressThreshold = Int32.MaxValue) where TDocument : class, IDocument, new();
 
         /// <summary>
         /// Deserializes an <see cref="IDocument"/> from a sequence of bytes.
         /// </summary>
-        Task<TDocument> DeserializeAsync(byte[] data);
+        Task<TDocument> DeserializeAsync<TDocument>(byte[] data) where TDocument : class, IDocument, new();
     }
 }

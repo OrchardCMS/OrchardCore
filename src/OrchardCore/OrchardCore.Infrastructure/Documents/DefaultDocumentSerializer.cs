@@ -9,10 +9,12 @@ using OrchardCore.Data.Documents;
 namespace OrchardCore.Documents
 {
     /// <summary>
-    /// Serializes and deserializes <see cref="IDocument"/> into and from a sequence of bytes.
+    /// Serializes and deserializes an <see cref="IDocument"/> into and from a sequence of bytes.
     /// </summary>
-    public class DefaultDocumentSerializer<TDocument> : IDocumentSerialiser<TDocument> where TDocument : class, IDocument, new()
+    public class DefaultDocumentSerializer : IDocumentSerialiser
     {
+        public static DefaultDocumentSerializer Instance = new DefaultDocumentSerializer();
+
         private static readonly JsonSerializerSettings _jsonSettings = new JsonSerializerSettings
         {
             TypeNameHandling = TypeNameHandling.Auto,
@@ -23,7 +25,7 @@ namespace OrchardCore.Documents
         {
         }
 
-        public Task<byte[]> SerializeAsync(TDocument document, int compressThreshold = Int32.MaxValue)
+        public Task<byte[]> SerializeAsync<TDocument>(TDocument document, int compressThreshold = Int32.MaxValue) where TDocument : class, IDocument, new()
         {
             var data = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(document, _jsonSettings));
 
@@ -35,7 +37,7 @@ namespace OrchardCore.Documents
             return Task.FromResult(data);
         }
 
-        public Task<TDocument> DeserializeAsync(byte[] data)
+        public Task<TDocument> DeserializeAsync<TDocument>(byte[] data) where TDocument : class, IDocument, new()
         {
             if (IsCompressed(data))
             {

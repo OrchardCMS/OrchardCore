@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Options;
 using OrchardCore.Data.Documents;
 using OrchardCore.Documents.Options;
 
@@ -13,10 +14,9 @@ namespace OrchardCore.Documents
     public class DocumentManager<TDocument> : IDocumentManager<TDocument> where TDocument : class, IDocument, new()
     {
         protected readonly IDocumentStore _documentStore;
-        private readonly IDocumentSerialiser<TDocument> _serializer;
         private readonly IDistributedCache _distributedCache;
         private readonly IMemoryCache _memoryCache;
-        private readonly DocumentOptions _options;
+        protected readonly DocumentOptions _options;
 
         private TDocument _scopedCache;
         private TDocument _volatileCache;
@@ -25,16 +25,14 @@ namespace OrchardCore.Documents
 
         public DocumentManager(
             IDocumentStore documentStore,
-            IDocumentSerialiser<TDocument> serializer,
             IDistributedCache distributedCache,
             IMemoryCache memoryCache,
-            DocumentOptions<TDocument> options)
+            IOptionsSnapshot<DocumentOptions> options)
         {
             _documentStore = documentStore;
-            _serializer = serializer;
             _distributedCache = distributedCache;
             _memoryCache = memoryCache;
-            _options = options.Value;
+            _options = options.Get(typeof(TDocument).FullName);
 
             if (!(_distributedCache is MemoryDistributedCache))
             {
@@ -248,7 +246,7 @@ namespace OrchardCore.Documents
             }
             else if (_memoryCache.TryGetValue<TDocument>(_options.CacheKey, out var cached))
             {
-                data = await _serializer.SerializeAsync(cached);
+                data = await _options.Serializer.SerializeAsync(cached);
             }
 
             if (data == null)
@@ -256,14 +254,14 @@ namespace OrchardCore.Documents
                 return null;
             }
 
-            return await _serializer.DeserializeAsync(data);
+            return await _options.Serializer.DeserializeAsync<TDocument>(data);
         }
 
         private async Task UpdateDistributedCacheAsync(TDocument document)
         {
             if (_isDistributed)
             {
-                var data = await _serializer.SerializeAsync(document, _options.CompressThreshold);
+                var data = await _options.Serializer.SerializeAsync(document, _options.CompressThreshold);
                 await _distributedCache.SetAsync(_options.CacheKey, data, _options);
             }
 

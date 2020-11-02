@@ -2,9 +2,9 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Options;
 using OrchardCore.Data.Documents;
 using OrchardCore.Documents.Options;
-using OrchardCore.Locking;
 using OrchardCore.Locking.Distributed;
 
 namespace OrchardCore.Documents
@@ -26,17 +26,15 @@ namespace OrchardCore.Documents
 
         public VolatileDocumentManager(
             IDocumentStore documentStore,
-            IDocumentSerialiser<TDocument> serializer,
             IDistributedCache distributedCache,
             IDistributedLock distributedLock,
             IMemoryCache memoryCache,
-            DocumentOptions<TDocument> options)
-            : base(documentStore, serializer, distributedCache, memoryCache, options)
+            IOptionsSnapshot<DocumentOptions> options)
+            : base(documentStore, distributedCache, memoryCache, options)
         {
             _isVolatile = true;
-
             _distributedLock = distributedLock;
-            _lockKey = options.Value.CacheKey + LockKeySuffix;
+            _lockKey = _options.CacheKey + LockKeySuffix;
         }
 
         public Task UpdateAtomicAsync(Func<Task<TDocument>> updateAsync)

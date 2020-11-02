@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Options;
 using OrchardCore.Data.Documents;
 using OrchardCore.Documents.Options;
 
@@ -13,11 +14,10 @@ namespace OrchardCore.Documents
     {
         public DocumentManager(
             TDocumentStore documentStore,
-            IDocumentSerialiser<TDocument> serializer,
             IDistributedCache distributedCache,
             IMemoryCache memoryCache,
-            DocumentOptions<TDocument> options)
-            : base(documentStore, serializer, distributedCache, memoryCache, options)
+            IOptionsSnapshot<DocumentOptions> options)
+            : base(documentStore, distributedCache, memoryCache, options)
         {
         }
     }
