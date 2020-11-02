@@ -11,7 +11,7 @@
         <div class="input-group input-group-sm w-lg-50 d-inline-flex">
             @if (Model.Sitemap.Enabled)
             {
-                <a asp-action="Index" asp-controller="Sitemap" asp-area="OrchardCore.Sitemaps" asp-route-sitemapId="@Model.Sitemap.SitemapId" class="btn btn-success btn-sm" target="_blank">@T["View"]</a>
+                <a asp-action="Index" asp-controller="Sitemap" asp-area="OrchardCore.Sitemaps" asp-route-sitemapId="@Model.Sitemap.SitemapId" target="_blank" class="btn btn-success btn-sm">@T["View"]</a>
             }
         </div>
         <div class="btn-group float-right">
