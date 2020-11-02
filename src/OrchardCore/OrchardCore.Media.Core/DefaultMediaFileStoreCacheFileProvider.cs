@@ -56,9 +56,19 @@ namespace OrchardCore.Media.Core
                 Directory.CreateDirectory(directory);
             }
 
-            using (var fileStream = File.Create(cachePath))
+            // A file download may fail, so a partially downloaded file should be deleted so the next request can reprocess.
+            try
             {
-                await stream.CopyToAsync(fileStream, StreamCopyBufferSize, cancellationToken);
+                using (var fileStream = File.Create(cachePath))
+                {
+                    await stream.CopyToAsync(fileStream, StreamCopyBufferSize, cancellationToken);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error saving file {Path}", cachePath);
+                File.Delete(cachePath);
+                throw;
             }
         }
 
