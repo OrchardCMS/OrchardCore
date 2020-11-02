@@ -18,42 +18,46 @@ var observer = new MutationObserver(function (mutations) {
                     }
                     isCompactExplicit = adminPreferences.isCompactExplicit;
 
-                    if(adminPreferences.darkMode){
-                        document.getElementById('admin-darkmode').setAttribute('media', 'all');
-                        document.getElementById('admin-default').setAttribute('media', 'not all');
-                        body.classList.add('darkmode');
-                        
-                        document.getElementById('btn-darkmode').firstChild.classList.remove('fa-moon');
-                        document.getElementById('btn-darkmode').firstChild.classList.add('fa-sun');
-                    }
-                    else
-                    {
-                        document.getElementById('admin-darkmode').setAttribute('media', 'not all');
-                        document.getElementById('admin-default').setAttribute('media', 'all');
-                        body.classList.remove('darkmode');
+                    if (document.getElementById('admin-darkmode')) {
+                        if (adminPreferences.darkMode){
+                            document.getElementById('admin-darkmode').setAttribute('media', 'all');
+                            document.getElementById('admin-default').setAttribute('media', 'not all');
+                            body.classList.add('darkmode');
+                            
+                            document.getElementById('btn-darkmode').firstChild.classList.remove('fa-moon');
+                            document.getElementById('btn-darkmode').firstChild.classList.add('fa-sun');
+                        }
+                        else
+                        {
+                            document.getElementById('admin-darkmode').setAttribute('media', 'not all');
+                            document.getElementById('admin-default').setAttribute('media', 'all');
+                            body.classList.remove('darkmode');
 
-                        document.getElementById('btn-darkmode').firstChild.classList.remove('fa-sun');
-                        document.getElementById('btn-darkmode').firstChild.classList.add('fa-moon');
+                            document.getElementById('btn-darkmode').firstChild.classList.remove('fa-sun');
+                            document.getElementById('btn-darkmode').firstChild.classList.add('fa-moon');
+                        }
                     }
                 } else {
                     body.classList.add('no-admin-preferences');
 
-                    // Automatically sets darkmode based on OS preferences
-                    if(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)
-                    {
-                        document.getElementById('admin-darkmode').setAttribute('media', 'all');
-                        document.getElementById('admin-default').setAttribute('media', 'not all');
-                        body.classList.add('darkmode');
+                    if(document.getElementById('admin-darkmode')) {
+                        // Automatically sets darkmode based on OS preferences
+                        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)
+                        {
+                            document.getElementById('admin-darkmode').setAttribute('media', 'all');
+                            document.getElementById('admin-default').setAttribute('media', 'not all');
+                            body.classList.add('darkmode');
 
-                        document.getElementById('btn-darkmode').firstChild.classList.remove('fa-moon');
-                        document.getElementById('btn-darkmode').firstChild.classList.add('fa-sun');
-                    }
-                    else
-                    {
-                        body.classList.remove('darkmode');
+                            document.getElementById('btn-darkmode').firstChild.classList.remove('fa-moon');
+                            document.getElementById('btn-darkmode').firstChild.classList.add('fa-sun');
+                        }
+                        else
+                        {
+                            body.classList.remove('darkmode');
 
-                        document.getElementById('btn-darkmode').firstChild.classList.remove('fa-sun');
-                        document.getElementById('btn-darkmode').firstChild.classList.add('fa-moon');
+                            document.getElementById('btn-darkmode').firstChild.classList.remove('fa-sun');
+                            document.getElementById('btn-darkmode').firstChild.classList.add('fa-moon');
+                        }
                     }
                 }
 
