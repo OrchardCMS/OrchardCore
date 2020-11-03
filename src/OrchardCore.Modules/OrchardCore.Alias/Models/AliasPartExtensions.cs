@@ -12,14 +12,17 @@ namespace OrchardCore.Alias.Models
     {
         internal static async IAsyncEnumerable<ValidationResult> ValidateAsync(this AliasPart part, IStringLocalizer S, ISession session)
         {
-            if (part.Alias.Length > AliasPart.MaxAliasLength)
+            if (!string.IsNullOrWhiteSpace(part.Alias))
             {
-                yield return new ValidationResult(S["Your alias is too long. The alias can only be up to {0} characters.", AliasPart.MaxAliasLength], new string[] { nameof(part.Alias) });
-            }
+                if (part.Alias.Length > AliasPart.MaxAliasLength)
+                {
+                    yield return new ValidationResult(S["Your alias is too long. The alias can only be up to {0} characters.", AliasPart.MaxAliasLength], new string[] { nameof(part.Alias) });
+                }
 
-            if (!await IsAliasUniqueAsync(part, session, part.Alias))
-            {
-                yield return new ValidationResult(S["Your alias is already in use."], new[] { nameof(part.Alias) });
+                if (!await IsAliasUniqueAsync(part, session, part.Alias))
+                {
+                    yield return new ValidationResult(S["Your alias is already in use."], new[] { nameof(part.Alias) });
+                }
             }
         }
 
