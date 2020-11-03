@@ -109,7 +109,12 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
                 StringValue value;
                 using (var writer = new StringWriter())
                 {
-                    var htmlEncoder = ShellScope.Services.GetRequiredService<HtmlEncoder>();
+                    if (!context.AmbientValues.TryGetValue("Services", out var services))
+                    {
+                        throw new ArgumentException("Services missing while invoking 'LiquidView'");
+                    }
+
+                    var htmlEncoder = ((IServiceProvider)services).GetRequiredService<HtmlEncoder>();
                     task.Result.WriteTo(writer, htmlEncoder);
                     value = new StringValue(writer.ToString());
                 }
