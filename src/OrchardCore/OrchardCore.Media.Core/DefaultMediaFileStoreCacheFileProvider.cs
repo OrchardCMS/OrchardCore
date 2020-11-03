@@ -57,8 +57,13 @@ namespace OrchardCore.Media.Core
             }
 
             // A file download may fail, so a partially downloaded file should be deleted so the next request can reprocess.
+            // All exceptions here are recaught by the MediaFileStoreResolverMiddleware.
             try
             {
+                if (File.Exists(cachePath))
+                {
+                    File.Delete(cachePath);
+                }
                 using (var fileStream = File.Create(cachePath))
                 {
                     await stream.CopyToAsync(fileStream, StreamCopyBufferSize, cancellationToken);
@@ -67,7 +72,18 @@ namespace OrchardCore.Media.Core
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error saving file {Path}", cachePath);
-                File.Delete(cachePath);
+                if (File.Exists(cachePath))
+                {
+                    try
+                    {
+                        File.Delete(cachePath);
+                    }
+                    catch (Exception e)
+                    {
+                        _logger.LogError(e, "Error deleting file {Path}", cachePath);
+                        throw;
+                    }
+                }
                 throw;
             }
         }
