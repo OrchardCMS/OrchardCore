@@ -166,6 +166,48 @@ To disable sanitization:
 @await Orchard.MarkdownToHtmlAsync((string)Model.ContentItem.Content.MarkdownParagraph.Content.Markdown, false)
 ```
 
+## Markdown Settings
+
+Enabling the `OrchardCore.Markdown` module will allow the user to set the following settings:
+
+| Setting | Description |
+| --- | --- |
+| `Extensions` | The markdown extension to be enabled through `MarkdownPipelineOptions`. The extensions should be separated by plus sign. Defaults to `nohtml+advanced` |
+
+The supported extensions described as following:
+
+| Extension | Description |
+| --- | --- |
+| `advanced` | Enable advanced markdown extensions |
+| `pipetables` | Adds a pipe table |
+| `gfm-pipetables` | Adds a pipe table with using header for column count |
+| `hardlinebreak` | Uses the softline break as hardline break |
+| `footnotes` | Allows a footnotes |
+| `footers` | Adds footer block |
+| `citations` | Adds citation |
+| `attributes` |  Allows to attach HTML attributes |
+| `gridtables` | Adds grid table |
+| `abbreviations` | Stores an abbreviation object at the document level |
+| `emojis` | Supports the emojis and smileys |
+| `definitionlists` | Adds a definition list |
+| `customcontainers` | Adds a block custom container |
+| `figures` | Adds figure |
+| `mathematics` | Enable mathematics symbols |
+| `bootstrap` | Enable bootstrap classes |
+| `medialinks` | Extends image Markdown links in case a video or an audio file is linked and output proper link |
+| `smartypants` | Uses the SmartyPants |
+| `autoidentifiers` | Uses the auto-identifier |
+| `tasklists` | Adds the task list |
+| `diagrams` | Allows diagrams |
+| `nofollowlinks` | Add rel=nofollow to all links rendered to HTML |
+| `noopenerlinks` |  |
+| `noreferrerlinks` | Adds rel=nofollow to all links rendered to HTML |
+| `nohtml` | Disables html support |
+| `yaml` | Parses a YAML format into the MarkdownDocument |
+| `nonascii-noescape` | Disables URI escape with % characters for non-US-ASCII characters |
+| `autolinks` | Enable autolinks from text `http://`, `https://`, `ftp://`, `mailto:`, `www.xxx.yyy` |
+| `globalization` | Adds support for right-to-left content by adding appropriate html attribtues |
+
 ## CREDITS
 
 ### Markdig
