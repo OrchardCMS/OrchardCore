@@ -24,6 +24,8 @@ namespace OrchardCore.Markdown
 {
     public class Startup : StartupBase
     {
+        private static readonly string DefaultMarkdownOptions = "nohtml+advanced";
+
         private readonly IShellConfiguration _shellConfiguration;
 
         static Startup()
@@ -39,12 +41,6 @@ namespace OrchardCore.Markdown
 
         public override void ConfigureServices(IServiceCollection services)
         {
-            var markdownOptionsConfig = _shellConfiguration.GetSection("OrchardCore_Markdown");
-            var markdownOptions = new MarkdownOptions();
-            markdownOptionsConfig.Bind(markdownOptions);
-
-            services.Configure<MarkdownOptions>(markdownOptionsConfig);
-
             // Markdown Part
             services.AddContentPart<MarkdownBodyPart>()
                 .UseDisplayDriver<MarkdownBodyPartDisplay>()
@@ -66,7 +62,8 @@ namespace OrchardCore.Markdown
             services.AddOptions<MarkdownPipelineOptions>();
             services.ConfigureMarkdownPipeline((pipeline) =>
             {
-                pipeline.Configure(markdownOptions.Extensions);
+                var extensions = _shellConfiguration.GetValue("OrchardCore_Markdown", DefaultMarkdownOptions);
+                pipeline.Configure(extensions);
             });
 
             services.AddScoped<IMarkdownService, DefaultMarkdownService>();
