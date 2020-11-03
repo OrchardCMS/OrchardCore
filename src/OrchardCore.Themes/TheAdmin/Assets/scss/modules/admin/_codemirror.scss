@@ -19,3 +19,7 @@
 .CodeMirror-focused .CodeMirror-activeline-background {
     background: rgba(100, 100, 100, 0.1) !important;
 }
+
+.CodeMirror-sizer {
+    min-height: $input-height !important;
+}
