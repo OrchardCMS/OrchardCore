@@ -248,12 +248,8 @@ namespace OrchardCore.Tests.Routing
             services.AddScoped(typeof(IDocumentManager<>), typeof(DocumentManager<>));
             services.AddScoped(typeof(IVolatileDocumentManager<>), typeof(VolatileDocumentManager<>));
 
+            services.AddOptions();
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IConfigureOptions<DocumentOptions>, DocumentOptionsSetup>());
-
-            services.Configure<DocumentOptions>(typeof(AutorouteDocument).FullName, options =>
-            {
-                options.Serializer = AutorouteDocumentSerializer.Instance;
-            });
 
             services.AddSingleton<LocalLock>();
             services.AddSingleton<IDistributedLock>(sp => sp.GetRequiredService<LocalLock>());

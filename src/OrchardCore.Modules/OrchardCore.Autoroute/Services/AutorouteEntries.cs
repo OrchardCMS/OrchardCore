@@ -41,24 +41,18 @@ namespace OrchardCore.Autoroute.Services
             return (false, entry);
         }
 
-        public Task AddEntriesAsync(IEnumerable<AutorouteEntry> entries)
+        public async Task AddEntriesAsync(IEnumerable<AutorouteEntry> entries)
         {
-            return DocumentManager.UpdateAtomicAsync(async () =>
-            {
-                var document = await LoadDocumentAsync();
-                AddEntries(document, entries);
-                return document;
-            });
+            var document = await LoadDocumentAsync();
+            AddEntries(document, entries);
+            await DocumentManager.UpdateAsync(document);
         }
 
-        public Task RemoveEntriesAsync(IEnumerable<AutorouteEntry> entries)
+        public async Task RemoveEntriesAsync(IEnumerable<AutorouteEntry> entries)
         {
-            return DocumentManager.UpdateAtomicAsync(async () =>
-            {
-                var document = await LoadDocumentAsync();
-                RemoveEntries(document, entries);
-                return document;
-            });
+            var document = await LoadDocumentAsync();
+            RemoveEntries(document, entries);
+            await DocumentManager.UpdateAsync(document);
         }
 
         private static void AddEntries(AutorouteDocument document, IEnumerable<AutorouteEntry> entries)
