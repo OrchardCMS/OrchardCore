@@ -1,7 +1,7 @@
 {
   "devDependencies": {
     "cypress": "^5.4.0",
-    "cypress-orchardcore": "0.1.1",
+    "cypress-orchardcore": "0.1.2",
     "faker": "^5.1.0",
     "rimraf": "^3.0.2"
   },
