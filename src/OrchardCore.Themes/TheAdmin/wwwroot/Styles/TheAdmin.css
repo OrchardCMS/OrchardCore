@@ -18893,9 +18893,6 @@ ul.pager {
 [dir] .CodeMirror-focused .CodeMirror-activeline-background {
   background: rgba(100, 100, 100, 0.1) !important; }
 
-.CodeMirror-sizer {
-  min-height: calc(1.5em + 0.75rem + 2px) !important; }
-
 .switch {
   font-size: 1rem;
   position: relative; }
