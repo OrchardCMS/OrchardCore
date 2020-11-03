@@ -2,12 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.CompilerServices;
+using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc.Localization;
-using Microsoft.AspNetCore.Razor.TagHelpers;
+using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Mvc.Utilities;
 
 namespace OrchardCore.DisplayManagement.Liquid.Filters
@@ -107,7 +109,8 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
                 StringValue value;
                 using (var writer = new StringWriter())
                 {
-                    task.Result.WriteTo(writer, NullHtmlEncoder.Default);
+                    var htmlEncoder = ShellScope.Services.GetRequiredService<HtmlEncoder>();
+                    task.Result.WriteTo(writer, htmlEncoder);
                     value = new StringValue(writer.ToString());
                 }
 
