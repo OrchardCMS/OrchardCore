@@ -62,7 +62,7 @@ namespace OrchardCore.Markdown
             services.AddOptions<MarkdownPipelineOptions>();
             services.ConfigureMarkdownPipeline((pipeline) =>
             {
-                var extensions = _shellConfiguration.GetValue("OrchardCore_Markdown", DefaultMarkdownOptions);
+                var extensions = _shellConfiguration.GetValue("OrchardCore_Markdown:Extensions", DefaultMarkdownOptions);
                 pipeline.Configure(extensions);
             });
 
