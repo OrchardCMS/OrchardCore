@@ -14,7 +14,14 @@ namespace OrchardCore.ContentManagement.Handlers
         /// </summary>
         public bool Succeeded { get; set; } = true;
 
-        public void Fail(params ValidationResult[] errors)
+        public void Fail(ValidationResult error)
+        {
+            Succeeded = false;
+            _errors.Add(error);
+        }
+
+
+        public void Fail(IEnumerable<ValidationResult> errors)
         {
             Succeeded = false;
             _errors.AddRange(errors);

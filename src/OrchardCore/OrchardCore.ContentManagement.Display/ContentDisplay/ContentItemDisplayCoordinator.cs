@@ -1,11 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
-using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Metadata.Settings;
@@ -29,7 +27,6 @@ namespace OrchardCore.ContentManagement.Display
         private readonly IEnumerable<IContentPartDisplayDriver> _partDisplayDrivers;
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly ITypeActivatorFactory<ContentPart> _contentPartFactory;
-        private readonly IContentPartHandlerResolver _contentPartHandlerResolver;
         private readonly ILogger _logger;
 
         public ContentItemDisplayCoordinator(
@@ -40,7 +37,6 @@ namespace OrchardCore.ContentManagement.Display
             IEnumerable<IContentFieldDisplayDriver> fieldDisplayDrivers,
             IEnumerable<IContentPartDisplayDriver> partDisplayDrivers,
             ITypeActivatorFactory<ContentPart> contentPartFactory,
-            IContentPartHandlerResolver contentPartHandlerResolver,
             ILogger<ContentItemDisplayCoordinator> logger)
         {
             _contentPartDisplayDriverResolver = contentPartDisplayDriverResolver;
@@ -61,7 +57,6 @@ namespace OrchardCore.ContentManagement.Display
                 logger.LogWarning("The content field display driver '{ContentFieldDisplayDriver}' should not be registered in DI. Use UseDisplayDriver<T> instead.", element);
             }
 
-            _contentPartHandlerResolver = contentPartHandlerResolver;
             _logger = logger;
         }
 
@@ -321,20 +316,6 @@ namespace OrchardCore.ContentManagement.Display
             }
         }
 
-        private async Task<ValidationResult[]> ValidateAsync(string partName, object model)
-        {
-            var part = model as ContentPart;
-            var handlers = _contentPartHandlerResolver.GetHandlers(partName);
-            var validateContentContext = new ValidateContentContext(part.ContentItem);
-            await handlers.InvokeAsync((handler, validateContentContext) => handler.ValidatingAsync(validateContentContext, part), validateContentContext, _logger);
-            await handlers.InvokeAsync((handler, validateContentContext) => handler.ValidatedAsync(validateContentContext, part), validateContentContext, _logger);
-            if (!validateContentContext.ContentValidateResult.Succeeded)
-            {
-                return validateContentContext.ContentValidateResult.Errors.ToArray();
-            }
-            return Array.Empty<ValidationResult>();
-        }
-
         public async Task UpdateEditorAsync(ContentItem contentItem, UpdateEditorContext context)
         {
             var contentTypeDefinition = _contentDefinitionManager.LoadTypeDefinition(contentItem.ContentType);
@@ -386,7 +367,6 @@ namespace OrchardCore.ContentManagement.Display
                 var partDisplayDrivers = _contentPartDisplayDriverResolver.GetEditorDrivers(partTypeName, typePartDefinition.Editor());
                 await partDisplayDrivers.InvokeAsync(async (driver, part, typePartDefinition, context) =>
                 {
-                    context.SetValidationHandler(new UpdateEditorContext.ValidationHandler(ValidateAsync));
                     var result = await driver.UpdateEditorAsync(part, typePartDefinition, context);
                     if (result != null)
                     {
