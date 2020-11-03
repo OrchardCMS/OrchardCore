@@ -1,3 +1,5 @@
+using OrchardCore.Lists.Models;
+
 namespace OrchardCore.Lists.ViewModels
 {
     public class ListPartFilterViewModel
@@ -6,12 +8,6 @@ namespace OrchardCore.Lists.ViewModels
 
         public ContentsStatus Status { get; set; }
 
-        public enum ContentsStatus
-        {
-            None,
-            Draft,
-            Published,
-            Owner
-        }
+
     }
 }

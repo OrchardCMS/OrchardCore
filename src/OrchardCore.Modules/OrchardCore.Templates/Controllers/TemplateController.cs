@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
-using Newtonsoft.Json.Linq;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
@@ -30,7 +29,6 @@ namespace OrchardCore.Templates.Controllers
         private readonly IStringLocalizer S;
         private readonly IHtmlLocalizer H;
         private readonly dynamic New;
-        private readonly IHttpContextAccessor _hca;
 
         public TemplateController(
             IAuthorizationService authorizationService,
@@ -40,8 +38,7 @@ namespace OrchardCore.Templates.Controllers
             ISiteService siteService,
             IStringLocalizer<TemplateController> stringLocalizer,
             IHtmlLocalizer<TemplateController> htmlLocalizer,
-            INotifier notifier,
-            IHttpContextAccessor hca)
+            INotifier notifier)
         {
             _authorizationService = authorizationService;
             _templatesManager = templatesManager;
@@ -51,12 +48,11 @@ namespace OrchardCore.Templates.Controllers
             _notifier = notifier;
             S = stringLocalizer;
             H = htmlLocalizer;
-            _hca = hca;
         }
 
         public Task<IActionResult> Admin(PagerParameters pagerParameters)
         {
-            var displayText = _hca.HttpContext.Request?.Query["DisplayText"];
+            var displayText = HttpContext.Request?.Query["DisplayText"];
 
             // Used to provide a different url such that the Admin Templates menu entry doesn't collide with the Templates ones
             return Index(pagerParameters, displayText, true);

@@ -9,7 +9,6 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Lists.Indexes;
 using OrchardCore.Lists.Models;
-using OrchardCore.Lists.ViewModels;
 using OrchardCore.Navigation;
 using YesSql;
 using YesSql.Services;
@@ -151,7 +150,7 @@ namespace OrchardCore.Lists.Services
             }
         }
 
-        public async Task<IEnumerable<ContentItem>> QueryContainedItemsAsync(string contentItemId, bool enableOrdering, PagerSlim pager, bool publishedOnly, ContainedItemOptions containeditemOptions)
+        public async Task<IEnumerable<ContentItem>> QueryContainedItemsAsync(string contentItemId, bool enableOrdering, PagerSlim pager, ContentsStatus contentsStatus, ContainedItemOptions containeditemOptions)
         {
             IQuery<ContentItem> query = null;
             if (pager.Before != null)
@@ -162,7 +161,7 @@ namespace OrchardCore.Lists.Services
                     query = _session.Query<ContentItem>()
                         .With<ContainedPartIndex>(CreateOrderedContainedPartIndexFilter(beforeValue, null, contentItemId))
                         .OrderByDescending(x => x.Order)
-                        .With<ContentItemIndex>(CreateOrderedContentIndexFilter(publishedOnly))
+                        .With<ContentItemIndex>(CreateOrderedContentIndexFilter(containeditemOptions.Status))
                         .Take(pager.PageSize + 1);
                 }
                 else
@@ -170,10 +169,14 @@ namespace OrchardCore.Lists.Services
                     var beforeValue = new DateTime(long.Parse(pager.Before));
                     query = _session.Query<ContentItem>()
                         .With<ContainedPartIndex>(x => x.ListContentItemId == contentItemId)
-                        .With<ContentItemIndex>(CreateDefaultContentIndexFilter(beforeValue, null, publishedOnly))
+                        .With<ContentItemIndex>(CreateDefaultContentIndexFilter(beforeValue, null, containeditemOptions.Status))
                         .OrderBy(x => x.CreatedUtc)
                         .Take(pager.PageSize + 1);
                 }
+
+                if (!string.IsNullOrEmpty(containeditemOptions?.DisplayText) || containeditemOptions.Status != (int)ContentsStatus.None)
+                    query = ContentItemFilter(containeditemOptions, query);
+
                 var containedItems = await query.ListAsync();
 
                 if (containedItems.Count() == 0)
@@ -216,7 +219,7 @@ namespace OrchardCore.Lists.Services
                     query = _session.Query<ContentItem>()
                         .With<ContainedPartIndex>(CreateOrderedContainedPartIndexFilter(null, afterValue, contentItemId))
                         .OrderBy(x => x.Order)
-                        .With<ContentItemIndex>(CreateOrderedContentIndexFilter(publishedOnly))
+                        .With<ContentItemIndex>(CreateOrderedContentIndexFilter(ContentsStatus.Published))
                         .Take(pager.PageSize + 1);
                 }
                 else
@@ -224,10 +227,13 @@ namespace OrchardCore.Lists.Services
                     var afterValue = new DateTime(long.Parse(pager.After));
                     query = _session.Query<ContentItem>()
                         .With<ContainedPartIndex>(CreateOrderedContainedPartIndexFilter(null, null, contentItemId))
-                        .With<ContentItemIndex>(CreateDefaultContentIndexFilter(null, afterValue, publishedOnly))
+                        .With<ContentItemIndex>(CreateDefaultContentIndexFilter(null, afterValue, containeditemOptions.Status))
                         .OrderByDescending(x => x.CreatedUtc)
                         .Take(pager.PageSize + 1);
                 }
+
+                if (!string.IsNullOrEmpty(containeditemOptions?.DisplayText) || containeditemOptions.Status != (int)ContentsStatus.None)
+                    query = ContentItemFilter(containeditemOptions, query);
 
                 var containedItems = await query.ListAsync();
 
@@ -269,46 +275,26 @@ namespace OrchardCore.Lists.Services
                     query = _session.Query<ContentItem>()
                         .With<ContainedPartIndex>(CreateOrderedContainedPartIndexFilter(null, null, contentItemId))
                         .OrderBy(x => x.Order)
-                        .With<ContentItemIndex>(CreateOrderedContentIndexFilter(publishedOnly))
+                        .With<ContentItemIndex>(CreateOrderedContentIndexFilter(containeditemOptions.Status))
                         .Take(pager.PageSize + 1);
                 }
                 else
                 {
                     query = _session.Query<ContentItem>()
                         .With<ContainedPartIndex>(x => x.ListContentItemId == contentItemId)
-                        .With<ContentItemIndex>(CreateDefaultContentIndexFilter(null, null, publishedOnly))
+                        .With<ContentItemIndex>(CreateDefaultContentIndexFilter(null, null, ContentsStatus.None))
                         .OrderByDescending(x => x.CreatedUtc)
                         .Take(pager.PageSize + 1);
                 }
+
+                if (!string.IsNullOrEmpty(containeditemOptions?.DisplayText) || containeditemOptions.Status != (int)ContentsStatus.None)
+                    query = ContentItemFilter(containeditemOptions, query);
 
                 var containedItems = await query.ListAsync();
 
                 if (containedItems.Count() == 0)
                 {
                     return containedItems;
-                }
-
-                if (!string.IsNullOrEmpty(containeditemOptions?.DisplayText))
-                {
-                    containedItems = containedItems.Where<ContentItem>(i => i.ContentItem.DisplayText.Contains(containeditemOptions.DisplayText)).ToList();
-                }
-
-                if (containeditemOptions.Status != (int)ListPartFilterViewModel.ContentsStatus.None)
-                {
-                    switch ((int)containeditemOptions.Status)
-                    {
-                        case (int)ListPartFilterViewModel.ContentsStatus.Draft:
-                            containedItems = containedItems.Where(i => i.ContentItem.HasDraft());
-                            break;
-                        case (int)ListPartFilterViewModel.ContentsStatus.Published:
-                            containedItems = containedItems.Where(i => i.ContentItem.Published);
-                            break;
-                        case (int)ListPartFilterViewModel.ContentsStatus.Owner:
-                            containedItems = containedItems?.Where(i => i.Owner == _hca.HttpContext.User.Identity.Name);
-                            break;
-                        default:
-                            throw new NotSupportedException("Status Filter is not ...");
-                    }
                 }
 
                 pager.Before = null;
@@ -331,11 +317,11 @@ namespace OrchardCore.Lists.Services
             }
         }
 
-        private static Expression<Func<ContentItemIndex, bool>> CreateDefaultContentIndexFilter(DateTime? before, DateTime? after, bool publishedOnly)
+        private static Expression<Func<ContentItemIndex, bool>> CreateDefaultContentIndexFilter(DateTime? before, DateTime? after, ContentsStatus contentsStatus)
         {
             if (before != null)
             {
-                if (publishedOnly)
+                if (contentsStatus == ContentsStatus.Published)
                 {
                     return x => x.Published && x.CreatedUtc > before;
                 }
@@ -347,7 +333,7 @@ namespace OrchardCore.Lists.Services
 
             if (after != null)
             {
-                if (publishedOnly)
+                if (contentsStatus == ContentsStatus.Published)
                 {
                     return x => x.Published && x.CreatedUtc < after;
                 }
@@ -357,7 +343,7 @@ namespace OrchardCore.Lists.Services
                 }
             }
 
-            if (publishedOnly)
+            if (contentsStatus == ContentsStatus.Published)
             {
                 return x => x.Published;
             }
@@ -367,9 +353,36 @@ namespace OrchardCore.Lists.Services
             }
         }
 
-        private static Expression<Func<ContentItemIndex, bool>> CreateOrderedContentIndexFilter(bool publishedOnly)
+        private IQuery<ContentItem> ContentItemFilter(ContainedItemOptions containeditemOptions, IQuery<ContentItem> containedItems)
         {
-            if (publishedOnly)
+            if (!string.IsNullOrEmpty(containeditemOptions?.DisplayText))
+            {
+                containedItems.With<ContentItemIndex>().Where(i => i.DisplayText.Contains(containeditemOptions.DisplayText));
+            }
+
+            if (containeditemOptions.Status != (int)ContentsStatus.None)
+            {
+                switch ((int)containeditemOptions.Status)
+                {
+                    case (int)ContentsStatus.Draft:
+                        containedItems?.With<ContentItemIndex>().Where(i => !i.Published);
+                        break;
+                    case (int)ContentsStatus.Published:
+                        containedItems?.With<ContentItemIndex>().Where(i => i.Published);
+                        break;
+                    case (int)ContentsStatus.Owner:
+                        containedItems?.With<ContentItemIndex>().Where(i => i.Owner == _hca.HttpContext.User.Identity.Name);
+                        break;
+                    default:
+                        throw new NotSupportedException("Status Filter is not contains value");
+                }
+            }
+            return containedItems;
+        }
+
+        private static Expression<Func<ContentItemIndex, bool>> CreateOrderedContentIndexFilter(ContentsStatus contentsStatus)
+        {
+            if (contentsStatus == ContentsStatus.Published)
             {
                 return x => x.Published;
             }

@@ -12,7 +12,7 @@ namespace OrchardCore.Lists.Services
         /// <summary>
         /// Query contained items by page either order by the created utc or order value.
         /// </summary>
-        Task<IEnumerable<ContentItem>> QueryContainedItemsAsync(string contentItemId, bool enableOrdering, PagerSlim pager, bool publishedOnly, ContainedItemOptions listPartFilter);
+        Task<IEnumerable<ContentItem>> QueryContainedItemsAsync(string contentItemId, bool enableOrdering, PagerSlim pager, ContentsStatus contentsStatus, ContainedItemOptions listPartFilter);
 
         /// <summary>
         /// Update the orders of the content items.
