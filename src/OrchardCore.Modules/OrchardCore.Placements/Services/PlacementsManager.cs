@@ -8,7 +8,7 @@ using OrchardCore.Placements.Models;
 
 namespace OrchardCore.Placements.Services
 {
-    public class PlacementsManager : IPlacementsManager
+    public class PlacementsManager
     {
         private readonly IDocumentManager<PlacementsDocument> _documentManager;
 

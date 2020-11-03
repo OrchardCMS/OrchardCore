@@ -20,7 +20,7 @@ namespace OrchardCore.Placements.Controllers
     {
         private readonly ILogger _logger;
         private readonly IAuthorizationService _authorizationService;
-        private readonly IPlacementsManager _placementsManager;
+        private readonly PlacementsManager _placementsManager;
         private readonly IHtmlLocalizer H;
         private readonly IStringLocalizer S;
         private readonly INotifier _notifier;
@@ -28,7 +28,7 @@ namespace OrchardCore.Placements.Controllers
         public AdminController(
             ILogger<AdminController> logger,
             IAuthorizationService authorizationService,
-            IPlacementsManager placementsManager,
+            PlacementsManager placementsManager,
             IHtmlLocalizer<AdminController> htmlLocalizer,
             IStringLocalizer<AdminController> stringLocalizer,
             INotifier notifier)
@@ -159,7 +159,7 @@ namespace OrchardCore.Placements.Controllers
                 {
                     // Remove if empty
                     await _placementsManager.RemoveShapePlacementsAsync(viewModel.ShapeType);
-                    _notifier.Success(H["The \"{0}\" placement has been removed.", viewModel.ShapeType]);
+                    _notifier.Success(H["The \"{0}\" placement has been deleted.", viewModel.ShapeType]);
                 }
             }
             catch(JsonReaderException jsonException)
@@ -182,8 +182,8 @@ namespace OrchardCore.Placements.Controllers
             return View(viewModel);
         }
 
-        [HttpPost, ActionName("Remove")]
-        public async Task<IActionResult> Remove(string shapeType, string returnUrl = null)
+        [HttpPost, ActionName("Delete")]
+        public async Task<IActionResult> Delete(string shapeType, string returnUrl = null)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManagePlacements))
             {
@@ -191,7 +191,7 @@ namespace OrchardCore.Placements.Controllers
             }
 
             await _placementsManager.RemoveShapePlacementsAsync(shapeType);
-            _notifier.Success(H["The \"{0}\" placement has been removed.", shapeType]);
+            _notifier.Success(H["The \"{0}\" placement has been deleted.", shapeType]);
 
             return RedirectToReturnUrlOrIndex(returnUrl);
         }

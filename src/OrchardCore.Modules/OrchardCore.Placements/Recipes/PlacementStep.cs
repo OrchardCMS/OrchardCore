@@ -13,9 +13,9 @@ namespace OrchardCore.Placements.Recipes
     /// </summary>
     public class PlacementStep : IRecipeStepHandler
     {
-        private readonly IPlacementsManager _placementsManager;
+        private readonly PlacementsManager _placementsManager;
 
-        public PlacementStep(IPlacementsManager placementsManager)
+        public PlacementStep(PlacementsManager placementsManager)
         {
             _placementsManager = placementsManager;
         }

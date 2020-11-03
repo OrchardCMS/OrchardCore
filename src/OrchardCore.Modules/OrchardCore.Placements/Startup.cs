@@ -35,7 +35,7 @@ namespace OrchardCore.Placements
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<INavigationProvider, AdminMenu>();
 
-            services.AddScoped<IPlacementsManager, PlacementsManager>();
+            services.AddScoped<PlacementsManager>();
             services.AddScoped<IShapePlacementProvider, PlacementProvider>();
 
             // Shortcuts in settings
@@ -75,6 +75,13 @@ namespace OrchardCore.Placements
                 areaName: "OrchardCore.Placements",
                 pattern: _adminOptions.AdminUrlPrefix + "/Placements/Edit/{shapeType}",
                 defaults: new { controller = templateControllerName, action = nameof(AdminController.Edit) }
+            );
+
+            routes.MapAreaControllerRoute(
+                name: "Placements.Delete",
+                areaName: "OrchardCore.Placements",
+                pattern: _adminOptions.AdminUrlPrefix + "/Placements/Delete/{shapeType}",
+                defaults: new { controller = templateControllerName, action = nameof(AdminController.Delete) }
             );
         }
     }

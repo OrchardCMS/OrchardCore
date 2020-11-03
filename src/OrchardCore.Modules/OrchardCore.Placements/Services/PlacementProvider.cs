@@ -12,11 +12,11 @@ namespace OrchardCore.Placements.Services
 {
     public class PlacementProvider : IShapePlacementProvider
     {
-        private readonly IPlacementsManager _placementsManager;
+        private readonly PlacementsManager _placementsManager;
         private readonly IEnumerable<IPlacementNodeFilterProvider> _placementNodeFilterProviders;
 
         public PlacementProvider(
-            IPlacementsManager placementsManager,
+            PlacementsManager placementsManager,
             IEnumerable<IPlacementNodeFilterProvider> placementNodeFilterProviders)
         {
             _placementsManager = placementsManager;

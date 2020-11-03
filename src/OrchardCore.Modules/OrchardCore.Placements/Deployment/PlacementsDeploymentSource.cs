@@ -7,9 +7,9 @@ namespace OrchardCore.Placements.Deployment
 {
     public class PlacementsDeploymentSource : IDeploymentSource
     {
-        private readonly IPlacementsManager _placementsManager;
+        private readonly PlacementsManager _placementsManager;
 
-        public PlacementsDeploymentSource(IPlacementsManager placementsManager)
+        public PlacementsDeploymentSource(PlacementsManager placementsManager)
         {
             _placementsManager = placementsManager;
         }
