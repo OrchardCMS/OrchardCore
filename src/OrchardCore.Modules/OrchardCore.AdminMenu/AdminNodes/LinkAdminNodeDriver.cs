@@ -1,13 +1,31 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using OrchardCore.AdminMenu.ViewModels;
+using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Environment.Extensions;
 using OrchardCore.Navigation;
+using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.AdminMenu.AdminNodes
 {
     public class LinkAdminNodeDriver : DisplayDriver<MenuItem, LinkAdminNode>
     {
+
+        private readonly IEnumerable<IPermissionProvider> _permissionProviders;
+        private readonly ITypeFeatureProvider _typeFeatureProvider;
+
+        public LinkAdminNodeDriver(
+            IEnumerable<IPermissionProvider> permissionProviders,
+            ITypeFeatureProvider typeFeatureProvider)
+        {
+            _permissionProviders = permissionProviders;
+            _typeFeatureProvider = typeFeatureProvider;
+        }
         public override IDisplayResult Display(LinkAdminNode treeNode)
         {
             return Combine(
@@ -18,25 +36,68 @@ namespace OrchardCore.AdminMenu.AdminNodes
 
         public override IDisplayResult Edit(LinkAdminNode treeNode)
         {
-            return Initialize<LinkAdminNodeViewModel>("LinkAdminNode_Fields_TreeEdit", model =>
+            return Initialize<LinkAdminNodeViewModel>("LinkAdminNode_Fields_TreeEdit", async model =>
             {
                 model.LinkText = treeNode.LinkText;
                 model.LinkUrl = treeNode.LinkUrl;
                 model.IconClass = treeNode.IconClass;
+                model.SelectedItems = new List<VueMultiselectItemViewModel>();
+
+                var permissions = await GetInstalledPermissionsAsync();
+
+                model.PermissionIds = string.Join(",", treeNode.PermissionIds);
+                foreach (var permissionName in treeNode.PermissionIds)
+                {
+                    var permission = permissions.Where(p => p.Name == permissionName).FirstOrDefault();
+
+                    if (permission == null)
+                    {
+                        continue;
+                    }
+
+                    model.SelectedItems.Add(new VueMultiselectItemViewModel
+                    {
+                        Id = permissionName,
+                        DisplayText = $"{permission.Name} - {permission.Description}",
+                        HasPublished = true
+                    });
+                }
+
             }).Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(LinkAdminNode treeNode, IUpdateModel updater)
         {
             var model = new LinkAdminNodeViewModel();
-            if (await updater.TryUpdateModelAsync(model, Prefix, x => x.LinkUrl, x => x.LinkText, x => x.IconClass))
+            if (await updater.TryUpdateModelAsync(model, Prefix, x => x.LinkUrl, x => x.LinkText, x => x.IconClass, x => x.PermissionIds))
             {
                 treeNode.LinkText = model.LinkText;
                 treeNode.LinkUrl = model.LinkUrl;
                 treeNode.IconClass = model.IconClass;
+                treeNode.PermissionIds = model.PermissionIds == null
+                ? new string[0] : model.PermissionIds.Split(',', StringSplitOptions.RemoveEmptyEntries);
             };
 
             return Edit(treeNode);
+        }
+
+        private async Task<IEnumerable<Permission>> GetInstalledPermissionsAsync()
+        {
+           var installedPermissions = new List<Permission>();
+            foreach (var permissionProvider in _permissionProviders)
+            {
+                var feature = _typeFeatureProvider.GetFeatureForDependency(permissionProvider.GetType());
+                var featureName = feature.Id;
+
+                var permissions = await permissionProvider.GetPermissionsAsync();
+
+                foreach (var permission in permissions)
+                {
+                    installedPermissions.Add(permission);
+                }
+            }
+
+            return installedPermissions;
         }
     }
 }
