@@ -36,32 +36,26 @@ namespace OrchardCore.AdminMenu.AdminNodes
 
         public override IDisplayResult Edit(LinkAdminNode treeNode)
         {
-            return Initialize<LinkAdminNodeViewModel>("LinkAdminNode_Fields_TreeEdit", async model =>
+            return Initialize<LinkAdminNodeViewModel>("LinkAdminNode_Fields_TreeEdit", model =>
             {
                 model.LinkText = treeNode.LinkText;
                 model.LinkUrl = treeNode.LinkUrl;
                 model.IconClass = treeNode.IconClass;
                 model.SelectedItems = new List<VueMultiselectItemViewModel>();
 
-                var permissions = await GetInstalledPermissionsAsync();
-
-                model.PermissionIds = string.Join(",", treeNode.PermissionIds);
-                foreach (var permissionName in treeNode.PermissionIds)
+                var nameList = new List<string>();
+                foreach (var permission in treeNode.Permissions)
                 {
-                    var permission = permissions.Where(p => p.Name == permissionName).FirstOrDefault();
-
-                    if (permission == null)
-                    {
-                        continue;
-                    }
+                    nameList.Add(permission.Name); 
 
                     model.SelectedItems.Add(new VueMultiselectItemViewModel
                     {
-                        Id = permissionName,
+                        Id = permission.Name,
                         DisplayText = $"{permission.Name} - {permission.Description}",
                         HasPublished = true
                     });
                 }
+                model.PermissionIds = string.Join(",", nameList);
 
             }).Location("Content");
         }
@@ -74,8 +68,16 @@ namespace OrchardCore.AdminMenu.AdminNodes
                 treeNode.LinkText = model.LinkText;
                 treeNode.LinkUrl = model.LinkUrl;
                 treeNode.IconClass = model.IconClass;
-                treeNode.PermissionIds = model.PermissionIds == null
-                ? new string[0] : model.PermissionIds.Split(',', StringSplitOptions.RemoveEmptyEntries);
+
+                var permissions = await GetInstalledPermissionsAsync();
+
+                foreach (var permissionName in (model.PermissionIds == null? new string[0] : model.PermissionIds.Split(',', StringSplitOptions.RemoveEmptyEntries)))
+                {
+                    var perm = permissions.Where(p => p.Name == permissionName ).FirstOrDefault();
+                    
+                    if(perm != null)
+                        treeNode.Permissions.Add(perm);
+                }
             };
 
             return Edit(treeNode);
@@ -83,7 +85,7 @@ namespace OrchardCore.AdminMenu.AdminNodes
 
         private async Task<IEnumerable<Permission>> GetInstalledPermissionsAsync()
         {
-           var installedPermissions = new List<Permission>();
+            var installedPermissions = new List<Permission>();
             foreach (var permissionProvider in _permissionProviders)
             {
                 var feature = _typeFeatureProvider.GetFeatureForDependency(permissionProvider.GetType());
@@ -93,11 +95,12 @@ namespace OrchardCore.AdminMenu.AdminNodes
 
                 foreach (var permission in permissions)
                 {
-                    installedPermissions.Add(permission);
+                        installedPermissions.Add(permission);
                 }
             }
 
             return installedPermissions;
         }
+
     }
 }
