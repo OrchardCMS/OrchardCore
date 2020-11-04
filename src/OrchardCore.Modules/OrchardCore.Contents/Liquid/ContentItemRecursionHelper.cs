@@ -19,38 +19,24 @@ namespace OrchardCore.Contents.Liquid
     /// <inheritdocs />
     public class ContentItemRecursionHelper<T> : IContentItemRecursionHelper<T> where T : ILiquidFilter
     {
-        private HashSet<string> _contentItemIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-        private Dictionary<string, int> _recursions = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+        private Dictionary<ContentItem, int> _recursions = new Dictionary<ContentItem, int>();
 
         /// <inheritdocs />
         public bool IsRecursive(ContentItem contentItem, int maxRecursions = 1)
         {
-            if (_contentItemIds.Contains(contentItem.ContentItemId))
+            if (_recursions.ContainsKey(contentItem))
             {
-                if (maxRecursions > 1)
+                var counter = _recursions[contentItem];
+                if (counter == maxRecursions)
                 {
-                    if (_recursions.TryGetValue(contentItem.ContentItemId, out var counter))
-                    {
-                        if (counter == maxRecursions)
-                        {
-                            return true;
-                        }
-
-                        _recursions[contentItem.ContentItemId] = counter + 1;
-                        return false;
-                    }
-                    else
-                    {
-                        _recursions[contentItem.ContentItemId] = 1;
-                        return false;
-                    }
+                    return true;
                 }
 
-                return true;
+                _recursions[contentItem] = counter + 1;
+                return false;
             }
 
-            _contentItemIds.Add(contentItem.ContentItemId);
-
+            _recursions[contentItem] = 1;
             return false;
         }
     }

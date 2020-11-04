@@ -14,7 +14,7 @@ namespace OrchardCore.Contents.Liquid
 {
     public class BuildDisplayFilter : ILiquidFilter
     {
-        private const int MaxContentItemRecursions = 20;
+        private const int DefaultMaxContentItemRecursions = 20;
 
         public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
         {
@@ -52,7 +52,10 @@ namespace OrchardCore.Contents.Liquid
             var buildDisplayRecursionHelper = serviceProvider.GetRequiredService<IContentItemRecursionHelper<BuildDisplayFilter>>();
 
             // When {{ Model.ContentItem | shape_build_display | shape_render }} is called prevent unlimited recursions.
-            if (buildDisplayRecursionHelper.IsRecursive(contentItem, MaxContentItemRecursions))
+            // max_recursions is an optional argument to override the default limit of 20.
+            var maxRecursions = arguments["max_recursions"];
+            var recursionLimit = maxRecursions.Type == FluidValues.Number ? Convert.ToInt32(maxRecursions.ToNumberValue()) : DefaultMaxContentItemRecursions;
+            if (buildDisplayRecursionHelper.IsRecursive(contentItem, recursionLimit))
             {
                 return new ValueTask<FluidValue>(NilValue.Instance);
             }
