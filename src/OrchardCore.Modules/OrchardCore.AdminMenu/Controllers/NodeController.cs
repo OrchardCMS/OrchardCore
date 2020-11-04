@@ -359,15 +359,17 @@ namespace OrchardCore.AdminMenu.Controllers
         }
 
 
-        private async Task<IDictionary<string, IEnumerable<Permission>>> GetInstalledPermissionsAsync()
+        public async Task<IActionResult> SearchPermissions(string query)
         {
-            var installedPermissions = new Dictionary<string, IEnumerable<Permission>>();
+           var installedPermissions = new List<Permission>();
             foreach (var permissionProvider in _permissionProviders)
             {
                 var feature = _typeFeatureProvider.GetFeatureForDependency(permissionProvider.GetType());
                 var featureName = feature.Id;
 
                 var permissions = await permissionProvider.GetPermissionsAsync();
+                if(!string.IsNullOrEmpty(query))
+                    permissions = permissions.Where(p => p.Name.Contains(query));
 
                 foreach (var permission in permissions)
                 {
@@ -375,18 +377,11 @@ namespace OrchardCore.AdminMenu.Controllers
 
                     string title = String.IsNullOrWhiteSpace(category) ? S["{0} Feature", featureName] : category;
 
-                    if (installedPermissions.ContainsKey(title))
-                    {
-                        installedPermissions[title] = installedPermissions[title].Concat(new[] { permission });
-                    }
-                    else
-                    {
-                        installedPermissions.Add(title, new[] { permission });
-                    }
+                    installedPermissions.Add(permission);
                 }
             }
 
-            return installedPermissions;
+            return new ObjectResult(installedPermissions.Select(r => new VueMultiselectItemViewModel() { Id = r.Name, DisplayText = $"{r.Name} - {r.Description}", HasPublished = true }));
         }
     }
 }

@@ -82,7 +82,7 @@
     <script asp-name="vue-multiselect-wrapper" asp-src="~/OrchardCore.AdminMenu/Scripts/vue-multiselect-wrapper.js" at="Foot" depends-on="vuejs, vue-multiselect, sortable, vuedraggable"></script>
     <style asp-name="vue-multiselect-wrapper" asp-src="~/OrchardCore.AdminMenu/Styles/vue-multiselect-wrapper.min.css" debug-src="~/OrchardCore.AdminMenu/Styles/vue-multiselect-wrapper.css" depends-on="vue-multiselect"></style>
 
-    <label asp-for="ContentItemIds">@T["Permissions"]</label>
+    <label asp-for="PermissionIds">@T["Permissions"]</label>
 
     <div id="PermissionPicker" class="vue-multiselect" data-editor-type="ContentPicker" data-selected-items="@selectedItems" data-search-url="@searchUrl" data-multiple="true">
 
@@ -119,7 +119,7 @@
                         @T["No result found"]
                     </template>
                 </vue-multiselect>
-                <span class="hint">>@T["Permissions to display menu item."]</span>
+                <span class="hint">@T["Permissions to display menu item."]</span>
             </div>
         </div>
     </div>
