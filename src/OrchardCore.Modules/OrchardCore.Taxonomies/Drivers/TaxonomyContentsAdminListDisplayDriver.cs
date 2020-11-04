@@ -59,6 +59,7 @@ namespace OrchardCore.Taxonomies.Drivers
                     .Parts.SelectMany(x => x.PartDefinition.Fields.Where(f => f.FieldDefinition.Name == nameof(TaxonomyField)));
                 var fieldTaxonomyContentItemIds = fieldDefinitions.Select(x => x.GetSettings<TaxonomyFieldSettings>().TaxonomyContentItemId);
                 taxonomyContentItemIds = taxonomyContentItemIds.Intersect(fieldTaxonomyContentItemIds).ToArray();
+                if (!taxonomyContentItemIds.Any()) return null;
             }
 
             var results = new List<IDisplayResult>();
