@@ -36,7 +36,7 @@ namespace OrchardCore.AdminMenu.AdminNodes
 
         public override IDisplayResult Edit(LinkAdminNode treeNode)
         {
-            return Initialize<LinkAdminNodeViewModel>("LinkAdminNode_Fields_TreeEdit", async model =>
+            return Initialize<LinkAdminNodeViewModel>("LinkAdminNode_Fields_TreeEdit", model =>
             {
                 model.LinkText = treeNode.LinkText;
                 model.LinkUrl = treeNode.LinkUrl;
