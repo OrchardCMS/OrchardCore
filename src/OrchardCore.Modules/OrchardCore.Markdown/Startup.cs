@@ -24,7 +24,7 @@ namespace OrchardCore.Markdown
 {
     public class Startup : StartupBase
     {
-        private static readonly string DefaultMarkdownOptions = "nohtml+advanced";
+        private static readonly string DefaultMarkdownExtensions = "nohtml+advanced";
 
         private readonly IShellConfiguration _shellConfiguration;
 
@@ -62,7 +62,7 @@ namespace OrchardCore.Markdown
             services.AddOptions<MarkdownPipelineOptions>();
             services.ConfigureMarkdownPipeline((pipeline) =>
             {
-                var extensions = _shellConfiguration.GetValue("OrchardCore_Markdown:Extensions", DefaultMarkdownOptions);
+                var extensions = _shellConfiguration.GetValue("OrchardCore_Markdown:Extensions", DefaultMarkdownExtensions);
                 pipeline.Configure(extensions);
             });
 
