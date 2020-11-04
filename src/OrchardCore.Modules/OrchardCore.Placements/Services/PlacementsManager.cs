@@ -3,27 +3,25 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy;
-using OrchardCore.Documents;
-using OrchardCore.Placements.Models;
 
 namespace OrchardCore.Placements.Services
 {
     public class PlacementsManager
     {
-        private readonly IDocumentManager<PlacementsDocument> _documentManager;
+        private readonly IPlacementStore _placementStore;
 
-        public PlacementsManager(IDocumentManager<PlacementsDocument> documentManager) => _documentManager = documentManager;
+        public PlacementsManager(IPlacementStore placementStore) => _placementStore = placementStore;
 
         public async Task<IReadOnlyDictionary<string, IEnumerable<PlacementNode>>> ListShapePlacementsAsync()
         {
-            var document = await _documentManager.GetOrCreateImmutableAsync();
+            var document = await _placementStore.GetPlacementsAsync();
 
             return document.Placements.ToImmutableDictionary(kvp => kvp.Key, kvp => kvp.Value.AsEnumerable());
         }
 
         public async Task<IEnumerable<PlacementNode>> GetShapePlacementsAsync(string shapeType)
         {
-            var document = await _documentManager.GetOrCreateImmutableAsync();
+            var document = await _placementStore.GetPlacementsAsync();
 
             if (document.Placements.ContainsKey(shapeType))
             {
@@ -37,22 +35,22 @@ namespace OrchardCore.Placements.Services
 
         public async Task UpdateShapePlacementsAsync(string shapeType, IEnumerable<PlacementNode> placementNodes)
         {
-            var document = await _documentManager.GetOrCreateMutableAsync();
+            var document = await _placementStore.LoadPlacementsAsync();
 
             document.Placements[shapeType] = placementNodes.ToArray();
 
-            await _documentManager.UpdateAsync(document);
+            await _placementStore.SavePlacementsAsync(document);
         }
 
         public async Task RemoveShapePlacementsAsync(string shapeType)
         {
-            var document = await _documentManager.GetOrCreateMutableAsync();
+            var document = await _placementStore.LoadPlacementsAsync();
 
             if (document.Placements.ContainsKey(shapeType))
             {
                 document.Placements.Remove(shapeType);
 
-                await _documentManager.UpdateAsync(document);
+                await _placementStore.SavePlacementsAsync(document);
             }
         }
     }

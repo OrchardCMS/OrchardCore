@@ -2,6 +2,7 @@ using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.ContentTypes.Editors;
@@ -35,6 +36,7 @@ namespace OrchardCore.Placements
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<INavigationProvider, AdminMenu>();
 
+            services.TryAddScoped<IPlacementStore, DatabasePlacementsStore>();
             services.AddScoped<PlacementsManager>();
             services.AddScoped<IShapePlacementProvider, PlacementProvider>();
 
@@ -83,6 +85,16 @@ namespace OrchardCore.Placements
                 pattern: _adminOptions.AdminUrlPrefix + "/Placements/Delete/{shapeType}",
                 defaults: new { controller = templateControllerName, action = nameof(AdminController.Delete) }
             );
+        }
+    }
+
+    [Feature("OrchardCore.Placements.FileStorage")]
+    public class FileContentDefinitionStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.RemoveAll<IPlacementStore>();
+            services.AddScoped<IPlacementStore, FilePlacementsStore>();
         }
     }
 }

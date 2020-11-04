@@ -13,3 +13,11 @@ using OrchardCore.Modules.Manifest;
     Description = "The Placements module provides a way to define shape placement in admin UI.",
     Category = "Development"
 )]
+
+[assembly: Feature(
+    Id = "OrchardCore.Placements.FileStorage",
+    Name = "Placements file storage",
+    Description = "Stores Placements in a local file.",
+    Dependencies = new[] { "OrchardCore.Placements" },
+    Category = "Development"
+)]
