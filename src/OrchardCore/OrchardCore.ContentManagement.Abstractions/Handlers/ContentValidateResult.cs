@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 
 namespace OrchardCore.ContentManagement.Handlers
 {
@@ -20,11 +21,5 @@ namespace OrchardCore.ContentManagement.Handlers
             _errors.Add(error);
         }
 
-
-        public void Fail(IEnumerable<ValidationResult> errors)
-        {
-            Succeeded = false;
-            _errors.AddRange(errors);
-        }
     }
 }

@@ -151,7 +151,10 @@ namespace OrchardCore.Autoroute.Handlers
                 return;
             }
 
-            context.Fail(part.ValidatePathFieldValue(S));
+            foreach (var item in part.ValidatePathFieldValue(S))
+            {
+                context.Fail(item);
+            }
 
             if (!await IsAbsolutePathUniqueAsync(part.Path, part.ContentItem.ContentItemId))
             {

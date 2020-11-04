@@ -17,11 +17,6 @@ namespace OrchardCore.ContentManagement.Handlers
     public static class ValidateContentContextExtensions
     {
 
-        public static void Fail(this ValidateContentContext context, IEnumerable<ValidationResult> errors)
-        {
-            context.ContentValidateResult.Fail(errors);
-        }
-
         public static void Fail(this ValidateContentContext context, ValidationResult error)
         {
             context.ContentValidateResult.Fail(error);
