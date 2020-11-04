@@ -32,7 +32,7 @@ namespace OrchardCore.Contents.Liquid
                     maxRecursions = 1;
                 }
                 
-                if (counter == maxRecursions)
+                if (counter > maxRecursions)
                 {
                     return true;
                 }
