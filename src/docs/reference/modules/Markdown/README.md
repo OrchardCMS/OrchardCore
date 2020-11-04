@@ -56,39 +56,6 @@ You can disable this by unchecking the `Sanitize HTML` setting, or further confi
 
 When rendering content directly you can disable sanitization by passing a boolean to the helper.
 
-## Markdown Pipeline
-
-The markdown pipeline is configurable using `IOptions<MarkdownPipelineOptions>` during service registration with a configuration 
-extension method `ConfigureMarkdownPipeline`.
-
-By default the pipeline enables some markdown advanced features and disables HTML by converting any HTML found in the Markdown content to escaped HTML entities.
-
-You may call this extension method multiple times during the startup pipeline to alter configurations.
-
-To clear this configuration:
-
-```
-services
-    .AddOrchardCms()
-    .ConfigureServices(tenantServices =>
-        tenantServices.PostConfigure<MarkdownPipelineOptions>(o =>
-            {
-                o.Configure.Clear();
-            }));
-```
-
-To include other `MarkdownPipelineOptions` such as emojis and smileys we could use:
-
-```
-services
-    .AddOrchardCms()
-    .ConfigureServices(tenantServices =>
-        tenantServices.ConfigureMarkdownPipeline((pipeline) => 
-        { 
-            pipeline.UseEmojiAndSmiley();
-        }));
-```
-
 ## Editors
 
 The __Markdown Part__ editor can be different for each content type. In the __Markdown Part__ settings of a 
@@ -166,13 +133,15 @@ To disable sanitization:
 @await Orchard.MarkdownToHtmlAsync((string)Model.ContentItem.Content.MarkdownParagraph.Content.Markdown, false)
 ```
 
-## Markdown Settings
+## Markdown Configuration
 
-Enabling the `OrchardCore.Markdown` module will allow the user to set the following settings:
+The following configuration values are used by default and can be customized:
 
-| Setting | Description |
-| --- | --- |
-| `Extensions` | The markdown extension to be enabled through `MarkdownPipelineOptions`. The extensions should be separated by plus sign. Defaults to `nohtml+advanced` |
+```json
+    "OrchardCore_Markdown": {
+      "Extensions": "nohtml+advanced"
+    }
+```
 
 The supported extensions described as following:
 
@@ -207,6 +176,39 @@ The supported extensions described as following:
 | `nonascii-noescape` | Disables URI escape with % characters for non-US-ASCII characters |
 | `autolinks` | Enable autolinks from text `http://`, `https://`, `ftp://`, `mailto:`, `www.xxx.yyy` |
 | `globalization` | Adds support for right-to-left content by adding appropriate html attribtues |
+
+## Markdown Pipeline
+
+The markdown pipeline is configurable using `IOptions<MarkdownPipelineOptions>` during service registration with a configuration 
+extension method `ConfigureMarkdownPipeline`.
+
+By default the pipeline enables some markdown advanced features and disables HTML by converting any HTML found in the Markdown content to escaped HTML entities.
+
+You may call this extension method multiple times during the startup pipeline to alter configurations.
+
+To clear this configuration:
+
+```
+services
+    .AddOrchardCms()
+    .ConfigureServices(tenantServices =>
+        tenantServices.PostConfigure<MarkdownPipelineOptions>(o =>
+            {
+                o.Configure.Clear();
+            }));
+```
+
+To include other `MarkdownPipelineOptions` such as emojis and smileys we could use:
+
+```
+services
+    .AddOrchardCms()
+    .ConfigureServices(tenantServices =>
+        tenantServices.ConfigureMarkdownPipeline((pipeline) => 
+        { 
+            pipeline.UseEmojiAndSmiley();
+        }));
+```
 
 ## CREDITS
 
