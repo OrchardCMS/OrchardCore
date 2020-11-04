@@ -7097,9 +7097,10 @@ function confirmDialog(_ref) {
     callback(false);
     $("#confirmRemoveModal").modal("hide");
   });
-}
+} // Prevents page flickering while downloading css
 
-$(function () {
+
+$(window).on("load", function () {
   $("body").removeClass("preload");
 });
 $(function () {
@@ -7262,6 +7263,23 @@ function isLetter(str) {
 function isNumber(str) {
   return str.length === 1 && str.match(/[0-9]/i);
 }
+$('#btn-darkmode').click(function () {
+  if ($('#admin-darkmode').attr('media') === 'all') {
+    $('#admin-default').attr('media', 'all');
+    $('#admin-darkmode').attr('media', 'not all');
+    $(document.body).removeClass('darkmode');
+    $(this).children(':first').removeClass('fa-sun');
+    $(this).children(':first').addClass('fa-moon');
+  } else {
+    $('#admin-default').attr('media', 'not all');
+    $('#admin-darkmode').attr('media', 'all');
+    $(document.body).addClass('darkmode');
+    $(this).children(':first').removeClass('fa-moon');
+    $(this).children(':first').addClass('fa-sun');
+  }
+
+  persistAdminPreferences();
+});
 // When we load compact status from preferences we need to do some other tasks besides adding the class to the body.
 // UserPreferencesLoader has already added the needed class.
 $(function () {
@@ -8891,6 +8909,7 @@ function persistAdminPreferences() {
     var adminPreferences = {};
     adminPreferences.leftSidebarCompact = $('body').hasClass('left-sidebar-compact') ? true : false;
     adminPreferences.isCompactExplicit = isCompactExplicit;
+    adminPreferences.darkMode = $('body').hasClass('darkmode') ? true : false;
     localStorage.setItem('adminPreferences', JSON.stringify(adminPreferences));
   }, 200);
 }

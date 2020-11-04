@@ -14,5 +14,7 @@ namespace OrchardCore.AdminMenu.AdminNodes
         public string LinkUrl { get; set; }
 
         public string IconClass { get; set; }
+
+        public string[] PermissionIds { get; set; } = Array.Empty<string>();
     }
 }

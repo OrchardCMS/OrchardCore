@@ -49,7 +49,11 @@ namespace OrchardCore.Markdown
             services.AddLiquidFilter<Markdownify>("markdownify");
 
             services.AddOptions<MarkdownPipelineOptions>();
-            services.ConfigureMarkdownPipeline((pipeline) => pipeline.DisableHtml());
+            services.ConfigureMarkdownPipeline((pipeline) =>
+            {
+                pipeline.DisableHtml();
+                pipeline.UseAdvancedExtensions();
+            });
 
             services.AddScoped<IMarkdownService, DefaultMarkdownService>();
         }

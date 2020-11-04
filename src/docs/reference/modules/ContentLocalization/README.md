@@ -72,7 +72,7 @@ You should override this shape in your theme.
 
 ##### ContentCulturePickerContainer Example
 
-=== "Razor"
+=== "Liquid"
 
     ``` liquid
     <ul>
@@ -110,7 +110,7 @@ You should override this shape in your theme.
             </div>
         </li>
     </ul>
-```
+    ```
 
 ## Liquid filters
 

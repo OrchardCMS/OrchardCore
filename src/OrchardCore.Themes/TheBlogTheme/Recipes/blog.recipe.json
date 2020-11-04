@@ -685,7 +685,8 @@
                   "Template": null
                 },
                 "MediaFieldSettings": {
-                  "Multiple": false
+                  "Multiple": false,
+                  "AllowAnchors": true
                 }
               }
             }
@@ -722,7 +723,8 @@
                   "Template": null
                 },
                 "MediaFieldSettings": {
-                  "Multiple": false
+                  "Multiple": false,
+                  "AllowAnchors": true
                 }
               }  
             },              
@@ -784,7 +786,8 @@
                   "Position": "0"
                 },
                 "MediaFieldSettings": {
-                  "Multiple": false
+                  "Multiple": false,
+                  "AllowAnchors": true
                 }
               }
             }
@@ -1123,6 +1126,15 @@
             "Image": {
               "Paths": [
                 "home-bg.jpg"
+              ],
+              "MediaTexts":[
+                ""
+              ],
+              "Anchors": [
+                {
+                  "X": 0.5,
+                  "Y": 0.5
+                }
               ]
             }
           }
@@ -1155,6 +1167,15 @@
             "Image": {
               "Paths": [
                 "post-bg.jpg"
+              ],
+              "MediaTexts":[
+                ""
+              ],
+              "Anchors": [
+                {
+                  "X": 0.5,
+                  "Y": 0.5
+                }
               ]
             },
             "Tags": {
@@ -1417,8 +1438,8 @@
       "name": "MediaProfiles",
       "MediaProfiles": {
         "banner": {
-          "Hint": "A banner image (1024px x 600px, cropped)",
-          "Width": 1024,
+          "Hint": "A banner image (2048px x 600px, cropped)",
+          "Width": 2048,
           "Height": 600,
           "Mode": 2,
           "Format": 0,
