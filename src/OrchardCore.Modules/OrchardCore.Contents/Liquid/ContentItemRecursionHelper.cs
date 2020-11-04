@@ -27,6 +27,11 @@ namespace OrchardCore.Contents.Liquid
             if (_recursions.ContainsKey(contentItem))
             {
                 var counter = _recursions[contentItem];
+                if (maxRecursions < 1)
+                {
+                    maxRecursions = 1;
+                }
+                
                 if (counter == maxRecursions)
                 {
                     return true;
