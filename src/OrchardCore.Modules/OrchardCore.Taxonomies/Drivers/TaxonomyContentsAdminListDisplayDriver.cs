@@ -52,14 +52,18 @@ namespace OrchardCore.Taxonomies.Drivers
             }
 
             var taxonomyContentItemIds = settings.TaxonomyContentItemIds;
-            if (!string.IsNullOrWhiteSpace(model.SelectedContentType))
+            if (!String.IsNullOrEmpty(model.SelectedContentType))
             {
                 var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(model.SelectedContentType);
                 var fieldDefinitions = contentTypeDefinition
                     .Parts.SelectMany(x => x.PartDefinition.Fields.Where(f => f.FieldDefinition.Name == nameof(TaxonomyField)));
                 var fieldTaxonomyContentItemIds = fieldDefinitions.Select(x => x.GetSettings<TaxonomyFieldSettings>().TaxonomyContentItemId);
                 taxonomyContentItemIds = taxonomyContentItemIds.Intersect(fieldTaxonomyContentItemIds).ToArray();
-                if (!taxonomyContentItemIds.Any()) return null;
+                
+                if (!taxonomyContentItemIds.Any()) 
+                {
+                    return null;
+                }
             }
 
             var results = new List<IDisplayResult>();
@@ -104,7 +108,6 @@ namespace OrchardCore.Taxonomies.Drivers
             if (results.Any())
             {
                 return Combine(results);
-
             }
 
             return null;
