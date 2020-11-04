@@ -12,6 +12,7 @@ namespace OrchardCore.Layers.Services
         private readonly GlobalMethod _isHomepage;
         private readonly GlobalMethod _isAnonymous;
         private readonly GlobalMethod _isAuthenticated;
+        private readonly GlobalMethod _isInRole;
         private readonly GlobalMethod _url;
         private readonly GlobalMethod _culture;
 
@@ -47,6 +48,16 @@ namespace OrchardCore.Layers.Services
                 {
                     var httpContext = serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext;
                     return httpContext.User?.Identity.IsAuthenticated == true;
+                })
+            };
+
+            _isInRole = new GlobalMethod
+            {
+                Name = "isInRole",
+                Method = serviceProvider => (Func<string, bool>) (role =>
+                {
+                    var httpContext = serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext;
+                    return httpContext.User?.IsInRole(role) == true;
                 })
             };
 
@@ -88,7 +99,7 @@ namespace OrchardCore.Layers.Services
                 })
             };
 
-            _allMethods = new[] { _isAnonymous, _isAuthenticated, _isHomepage, _url, _culture };
+            _allMethods = new[] { _isAnonymous, _isAuthenticated, _isInRole, _isHomepage, _url, _culture };
         }
 
         public IEnumerable<GlobalMethod> GetMethods()
