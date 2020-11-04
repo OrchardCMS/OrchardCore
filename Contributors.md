@@ -244,7 +244,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
   </tr>
   <tr>
     <td align="center"><a href="https://www.mscoder.cn/members-daziyuan/"><img src="https://avatars3.githubusercontent.com/u/80653?v=4" width="100px;" alt=""/><br /><sub><b>代码抄写狮</b></sub></a><br /><a href="#translation-DaZiYuan" title="Translation">🌍</a></td>
-    <td align="center"><a href="https://github.com/chinasqzl"><img src="https://avatars1.githubusercontent.com/u/16968103?v=4" width="100px;" alt=""/><br /><sub><b>chinasqzl</b></sub></a><br /><a href="#translation-chinasqzl" title="Translation">🌍</a></td>
+    <td align="center"><a href="https://github.com/chinasqzl"><img src="https://avatars1.githubusercontent.com/u/16968103?v=4" width="100px;" alt=""/><br /><sub><b>chinasqzl</b></sub></a><br /><a href="#translation-chinasqzl" title="Translation">🌍</a> <a href="https://github.com/OrchardCMS/OrchardCore/commits?author=chinasqzl" title="Code">💻</a></td>
     <td align="center"><a href="https://github.com/fuxiaojun0203"><img src="https://avatars0.githubusercontent.com/u/25946521?v=4" width="100px;" alt=""/><br /><sub><b>哼本哞</b></sub></a><br /><a href="#translation-fuxiaojun0203" title="Translation">🌍</a></td>
     <td align="center"><a href="http://www.overstartup.com"><img src="https://avatars1.githubusercontent.com/u/24512878?v=4" width="100px;" alt=""/><br /><sub><b>Ahmad Aghilizadeh</b></sub></a><br /><a href="#translation-aghili371" title="Translation">🌍</a></td>
     <td align="center"><a href="https://github.com/vikriu"><img src="https://avatars3.githubusercontent.com/u/17539722?v=4" width="100px;" alt=""/><br /><sub><b>vikriu</b></sub></a><br /><a href="#translation-vikriu" title="Translation">🌍</a></td>
