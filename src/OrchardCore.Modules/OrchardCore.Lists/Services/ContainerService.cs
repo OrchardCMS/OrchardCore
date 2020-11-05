@@ -152,6 +152,11 @@ namespace OrchardCore.Lists.Services
 
         public async Task<IEnumerable<ContentItem>> QueryContainedItemsAsync(string contentItemId, bool enableOrdering, PagerSlim pager, ContentsStatus contentsStatus, ContainedItemOptions containedItemOptions)
         {
+            if (containedItemOptions == null)
+            {
+                containedItemOptions = new ContainedItemOptions();
+            }
+
             IQuery<ContentItem> query = null;
             if (pager.Before != null)
             {
@@ -232,7 +237,7 @@ namespace OrchardCore.Lists.Services
                         .Take(pager.PageSize + 1);
                 }
 
-                if (!string.IsNullOrEmpty(containedItemOptions?.DisplayText) || containedItemOptions.Status != (int)ContentsStatus.None)
+                if (!string.IsNullOrEmpty(containedItemOptions?.DisplayText) || containedItemOptions.Status != ContentsStatus.None)
                     query = ContainedItemOptionsFilter(containedItemOptions, query);
 
                 var containedItems = await query.ListAsync();

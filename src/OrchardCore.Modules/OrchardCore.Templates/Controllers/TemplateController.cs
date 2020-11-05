@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
@@ -52,8 +51,6 @@ namespace OrchardCore.Templates.Controllers
 
         public Task<IActionResult> Admin(PagerParameters pagerParameters, string displayText)
         {
-            //var displayText = HttpContext.Request?.Query["DisplayText"];
-
             // Used to provide a different url such that the Admin Templates menu entry doesn't collide with the Templates ones
             return Index(pagerParameters, displayText, true);
         }
