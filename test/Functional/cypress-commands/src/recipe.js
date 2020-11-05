@@ -1,4 +1,3 @@
-
 Cypress.Commands.add("runRecipe", ({ prefix }, recipeName) => {
   cy.visit(`${prefix}/Admin/Recipes`);
   cy.get(`#btn-run-${recipeName}`).click();
