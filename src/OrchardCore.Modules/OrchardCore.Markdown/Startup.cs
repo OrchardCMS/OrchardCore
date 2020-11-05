@@ -1,10 +1,12 @@
 using Fluid;
 using Markdig;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data.Migration;
+using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Indexing;
 using OrchardCore.Liquid;
 using OrchardCore.Markdown.Drivers;
@@ -22,10 +24,19 @@ namespace OrchardCore.Markdown
 {
     public class Startup : StartupBase
     {
+        private static readonly string DefaultMarkdownExtensions = "nohtml+advanced";
+
+        private readonly IShellConfiguration _shellConfiguration;
+
         static Startup()
         {
             TemplateContext.GlobalMemberAccessStrategy.Register<MarkdownBodyPartViewModel>();
             TemplateContext.GlobalMemberAccessStrategy.Register<MarkdownFieldViewModel>();
+        }
+
+        public Startup(IShellConfiguration shellConfiguration)
+        {
+            _shellConfiguration = shellConfiguration;
         }
 
         public override void ConfigureServices(IServiceCollection services)
@@ -51,8 +62,8 @@ namespace OrchardCore.Markdown
             services.AddOptions<MarkdownPipelineOptions>();
             services.ConfigureMarkdownPipeline((pipeline) =>
             {
-                pipeline.DisableHtml();
-                pipeline.UseAdvancedExtensions();
+                var extensions = _shellConfiguration.GetValue("OrchardCore_Markdown:Extensions", DefaultMarkdownExtensions);
+                pipeline.Configure(extensions);
             });
 
             services.AddScoped<IMarkdownService, DefaultMarkdownService>();
