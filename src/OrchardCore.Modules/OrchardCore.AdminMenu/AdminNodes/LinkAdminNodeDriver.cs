@@ -68,7 +68,6 @@ namespace OrchardCore.AdminMenu.AdminNodes
                 treeNode.LinkUrl = model.LinkUrl;
                 treeNode.IconClass = model.IconClass;
 
-                
                 var modifiedPermissions= (model.PermissionIds == null? new string[0] : model.PermissionIds.Split(',', StringSplitOptions.RemoveEmptyEntries));
                 //clear the old permissions to insert all every time
                 treeNode.Permissions.Clear();
@@ -79,10 +78,12 @@ namespace OrchardCore.AdminMenu.AdminNodes
 
                     foreach (var permissionName in modifiedPermissions)
                     {
-                        var perm = permissions.Where(p => p.Name == permissionName ).FirstOrDefault();
+                        var perm = permissions.Where(p => p.Name == permissionName).FirstOrDefault();
                         
                         if(perm != null)
+                        {
                             treeNode.Permissions.Add(perm);
+                        }
                     }
                 }
             };
@@ -102,7 +103,7 @@ namespace OrchardCore.AdminMenu.AdminNodes
 
                 foreach (var permission in permissions)
                 {
-                        installedPermissions.Add(permission);
+                    installedPermissions.Add(permission);
                 }
             }
 

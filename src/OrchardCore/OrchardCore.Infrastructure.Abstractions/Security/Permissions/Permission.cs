@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 
 namespace OrchardCore.Security.Permissions
 {
-    public class Permission : IEquatable<Permission>
+    public class Permission
     {
         public const string ClaimType = "Permission";
 
@@ -40,12 +40,6 @@ namespace OrchardCore.Security.Permissions
         public static implicit operator Claim(Permission p)
         {
             return new Claim(ClaimType, p.Name);
-        }
-
-        public bool Equals(Permission other)
-        {
-            if (other == null) return false;
-            return (this.Name.Equals(other.Name));
         }
     }
 }
