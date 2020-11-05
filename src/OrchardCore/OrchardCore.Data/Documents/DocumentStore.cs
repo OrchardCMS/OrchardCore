@@ -59,6 +59,7 @@ namespace OrchardCore.Data.Documents
             T document = null;
 
             // Querying a document on a session that is already committed may throw a 'MARS' exception.
+            // Note: This issue may happen using 'Sql Server', but doesn't happen with 'Sqlite' at all.
             if (_committed)
             {
                 // So we create a scope on the current context, but just to resolve a new session.
