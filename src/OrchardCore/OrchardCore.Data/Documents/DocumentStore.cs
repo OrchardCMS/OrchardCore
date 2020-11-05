@@ -63,7 +63,7 @@ namespace OrchardCore.Data.Documents
             if (_committed)
             {
                 // So we create a scope on the current context, but just to resolve a new session.
-                await ShellScope.Context.CreateScope().UsingServiceScopeAsync(async scope =>
+                await new ShellScope(ShellScope.Context).UsingServiceScopeAsync(async scope =>
                 {
                     var session = scope.ServiceProvider.GetRequiredService<ISession>();
                     document = await session.Query<T>().FirstOrDefaultAsync();
