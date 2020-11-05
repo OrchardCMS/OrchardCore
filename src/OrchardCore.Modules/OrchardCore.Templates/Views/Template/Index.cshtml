@@ -46,9 +46,7 @@
                         <a asp-action="Edit" asp-route-name="@entry.Name" asp-route-admintemplates="@Model.AdminTemplates" asp-route-returnUrl="@FullRequestPath">@entry.Name</a>
                         @if (!String.IsNullOrWhiteSpace(entry.Template.Description))
                         {
-                            <span class="hint">
-                                — @entry.Template.Description
-                            </span>
+                            <span class="hint dashed">@entry.Template.Description</span>
                         }
                     </div>
                 </li>

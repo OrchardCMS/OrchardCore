@@ -37,7 +37,7 @@
                             <label class="custom-control-label" asp-for="PartSelections[i].PartName">@partSelection.PartDisplayName</label>
                             @if (!String.IsNullOrEmpty(partSelection.PartDescription))
                             {
-                                <span class="hint">— @partSelection.PartDescription</span>
+                                <span class="hint dashed">@partSelection.PartDescription</span>
                             }
                         </div>
                     </li>

@@ -20044,6 +20044,11 @@ html[dir]:not(.fontawesome-i2svg-complete) #left-nav ul.menu-admin > li > .item-
   -webkit-hyphens: auto;
   hyphens: auto; }
 
+.hint.dashed::before,
+.text-muted.dashed::before,
+.dashed.hint::before {
+  content: '\2014\00a0'; }
+
 [dir] .validation-summary-errors {
   padding-bottom: 0; }
 

@@ -57,41 +57,16 @@ namespace OrchardCore.Media.Processing
                             context.Commands[command.Key] = command.Value;
                         }
 
-                        // Do not check supported sizes here, as with tokenization any size is allowed.
+                        // Do not evaluate supported sizes here, as with tokenization any size is allowed.
                     }
                     else
                     {
-                        // When tokenization is enabled, but a token is not present, clear the commands to no-op the image processing pipeline.
-                        context.Commands.Clear();
-                        return Task.CompletedTask;
+                        ValidateTokenlessCommands(context, mediaOptions);
                     }
                 }
                 else
                 {
-                    // The following commands are not supported without a tokenized query string.
-                    context.Commands.Remove(ResizeWebProcessor.Xy);
-                    context.Commands.Remove(ImageVersionProcessor.VersionCommand);
-
-                    // Width and height must be part of the supported sizes array when tokenization is disabled.
-                    if (context.Commands.TryGetValue(ResizeWebProcessor.Width, out var widthString))
-                    {
-                        var width = context.Parser.ParseValue<int>(widthString, context.Culture);
-
-                        if (Array.BinarySearch<int>(mediaOptions.SupportedSizes, width) < 0)
-                        {
-                            context.Commands.Remove(ResizeWebProcessor.Width);
-                        }
-                    }
-
-                    if (context.Commands.TryGetValue(ResizeWebProcessor.Height, out var heightString))
-                    {
-                        var height = context.Parser.ParseValue<int>(heightString, context.Culture);
-
-                        if (Array.BinarySearch<int>(mediaOptions.SupportedSizes, height) < 0)
-                        {
-                            context.Commands.Remove(ResizeWebProcessor.Height);
-                        }
-                    }
+                    ValidateTokenlessCommands(context, mediaOptions);
                 }
 
                 // The following commands are not supported by default.
@@ -112,6 +87,34 @@ namespace OrchardCore.Media.Processing
 
                 return Task.CompletedTask;
             };
+        }
+
+        private static void ValidateTokenlessCommands(ImageCommandContext context, MediaOptions mediaOptions)
+        {
+            // The following commands are not supported without a tokenized query string.
+            context.Commands.Remove(ResizeWebProcessor.Xy);
+            context.Commands.Remove(ImageVersionProcessor.VersionCommand);
+
+            // Width and height must be part of the supported sizes array when tokenization is disabled.
+            if (context.Commands.TryGetValue(ResizeWebProcessor.Width, out var widthString))
+            {
+                var width = context.Parser.ParseValue<int>(widthString, context.Culture);
+
+                if (Array.BinarySearch<int>(mediaOptions.SupportedSizes, width) < 0)
+                {
+                    context.Commands.Remove(ResizeWebProcessor.Width);
+                }
+            }
+
+            if (context.Commands.TryGetValue(ResizeWebProcessor.Height, out var heightString))
+            {
+                var height = context.Parser.ParseValue<int>(heightString, context.Culture);
+
+                if (Array.BinarySearch<int>(mediaOptions.SupportedSizes, height) < 0)
+                {
+                    context.Commands.Remove(ResizeWebProcessor.Height);
+                }
+            }
         }
     }
 }
