@@ -50,9 +50,9 @@ namespace OrchardCore.Templates.Controllers
             H = htmlLocalizer;
         }
 
-        public Task<IActionResult> Admin(PagerParameters pagerParameters)
+        public Task<IActionResult> Admin(PagerParameters pagerParameters, string displayText)
         {
-            var displayText = HttpContext.Request?.Query["DisplayText"];
+            //var displayText = HttpContext.Request?.Query["DisplayText"];
 
             // Used to provide a different url such that the Admin Templates menu entry doesn't collide with the Templates ones
             return Index(pagerParameters, displayText, true);

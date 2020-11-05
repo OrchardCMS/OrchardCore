@@ -44,10 +44,16 @@ namespace OrchardCore.Lists.Drivers
                     {
                         var pager = await GetPagerSlimAsync(context);
                         var settings = context.TypePartDefinition.GetSettings<ListPartSettings>();
-                        var containeditemOptions = new ContainedItemOptions();
+                        var containedItemOptions = new ContainedItemOptions();
                         Models.ContentsStatus published = (Models.ContentsStatus)2;
                         model.ListPart = listPart;
-                        model.ContentItems = (await _containerService.QueryContainedItemsAsync(listPart.ContentItem.ContentItemId, settings.EnableOrdering, pager, published, containeditemOptions)).ToArray();
+                        model.ContentItems = (await _containerService.QueryContainedItemsAsync(
+                            listPart.ContentItem.ContentItemId,
+                            settings.EnableOrdering,
+                            pager,
+                            published,
+                            containedItemOptions)).ToArray();
+
                         model.ContainedContentTypeDefinitions = GetContainedContentTypes(context);
                         model.Context = context;
                         model.Pager = await context.New.PagerSlim(pager);
@@ -57,16 +63,21 @@ namespace OrchardCore.Lists.Drivers
                     {
                         var pager = await GetPagerSlimAsync(context);
                         var settings = context.TypePartDefinition.GetSettings<ListPartSettings>();
-                        var listpartFilterViewModel = new ListPartFilterViewModel();
-                        var containeditemOptions = new ContainedItemOptions();
+                        var listPartFilterViewModel = new ListPartFilterViewModel();
+                        var containedItemOptions = new ContainedItemOptions();
 
-                        await _updateModelAccessor.ModelUpdater.TryUpdateModelAsync(listpartFilterViewModel, Prefix);
+                        await _updateModelAccessor.ModelUpdater.TryUpdateModelAsync(listPartFilterViewModel, Prefix);
                         model.ListPart = listPart;
-                        containeditemOptions.DisplayText = listpartFilterViewModel.DisplayText;
-                        containeditemOptions.Status = listpartFilterViewModel.Status;
-                        model.ListPartFilterViewModel = listpartFilterViewModel;
+                        containedItemOptions.DisplayText = listPartFilterViewModel.DisplayText;
+                        containedItemOptions.Status = listPartFilterViewModel.Status;
+                        model.ListPartFilterViewModel = listPartFilterViewModel;
 
-                        model.ContentItems = (await _containerService.QueryContainedItemsAsync(listPart.ContentItem.ContentItemId, settings.EnableOrdering, pager, containeditemOptions.Status, containeditemOptions)).ToArray();
+                        model.ContentItems = (await _containerService.QueryContainedItemsAsync(
+                            listPart.ContentItem.ContentItemId,
+                            settings.EnableOrdering, pager,
+                            containedItemOptions.Status,
+                            containedItemOptions)).ToArray();
+
                         model.ContainedContentTypeDefinitions = GetContainedContentTypes(context);
                         model.Context = context;
                         model.EnableOrdering = settings.EnableOrdering;
