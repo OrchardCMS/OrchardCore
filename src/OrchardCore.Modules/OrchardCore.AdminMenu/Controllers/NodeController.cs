@@ -1,11 +1,9 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
-using Microsoft.Extensions.Localization;
 using OrchardCore.Admin;
 using OrchardCore.AdminMenu.Services;
 using OrchardCore.AdminMenu.ViewModels;
@@ -27,7 +25,6 @@ namespace OrchardCore.AdminMenu.Controllers
         private readonly IAdminMenuService _adminMenuService;
         private readonly INotifier _notifier;
         private readonly IHtmlLocalizer H;
-        private readonly IStringLocalizer S;
         private readonly IUpdateModelAccessor _updateModelAccessor;
         private readonly ITypeFeatureProvider _typeFeatureProvider;
         private readonly IEnumerable<IPermissionProvider> _permissionProviders;
@@ -41,7 +38,6 @@ namespace OrchardCore.AdminMenu.Controllers
             IEnumerable<IAdminNodeProviderFactory> factories,
             IAdminMenuService adminMenuService,
             IHtmlLocalizer<NodeController> htmlLocalizer,
-            IStringLocalizer<NodeController> stringLocalizer,
             INotifier notifier,
             IUpdateModelAccessor updateModelAccessor)
         {
@@ -54,7 +50,6 @@ namespace OrchardCore.AdminMenu.Controllers
             _notifier = notifier;
             _updateModelAccessor = updateModelAccessor;
             H = htmlLocalizer;
-            S = stringLocalizer;
         }
 
         public async Task<IActionResult> List(string id)
@@ -373,10 +368,6 @@ namespace OrchardCore.AdminMenu.Controllers
 
                 foreach (var permission in permissions)
                 {
-                    var category = permission.Category;
-
-                    string title = String.IsNullOrWhiteSpace(category) ? S["{0} Feature", featureName] : category;
-
                     installedPermissions.Add(permission);
                 }
             }
