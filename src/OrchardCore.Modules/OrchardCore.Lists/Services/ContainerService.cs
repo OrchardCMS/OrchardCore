@@ -374,7 +374,7 @@ namespace OrchardCore.Lists.Services
                         containedItems?.With<ContentItemIndex>().Where(i => i.Owner == _hca.HttpContext.User.Identity.Name);
                         break;
                     default:
-                        throw new NotSupportedException("Status Filter is not contains value");
+                        throw new NotSupportedException("Unknown status filter.");
                 }
             }
             return containedItems;
