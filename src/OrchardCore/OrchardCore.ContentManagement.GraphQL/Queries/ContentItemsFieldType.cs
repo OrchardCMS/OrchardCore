@@ -111,6 +111,23 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             return contentItems;
         }
 
+        /// <summary>
+        /// Get last joined sql alias name from IQuery
+        /// </summary>
+        /// <param name="query"></param>
+        /// <param name="indexName"></param>
+        /// <returns></returns>
+        private string GetTableAlias(IQuery<ContentItem, ContentItemIndex> query,string indexName)
+        {
+            var queryFieldInfo = query.GetType().GetField("_query", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+
+            object internalQuery = queryFieldInfo.GetValue(query);
+            var queryStateFieldInfo = internalQuery.GetType().GetField("_queryState", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
+            var queryState = queryStateFieldInfo.GetValue(internalQuery);
+            var method = queryState.GetType().GetMethod("GetTableAlias");
+            return method.Invoke(queryState, new object[] { indexName }) as string;
+        }
+
         private async Task<IQuery<ContentItem>> FilterWhereArguments(
             IQuery<ContentItem, ContentItemIndex> query,
             JObject where,
@@ -123,6 +140,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                 return query;
             }
 
+            string defaultTableAlias = GetTableAlias(query,nameof(ContentItemIndex));
             var transaction = await session.DemandAsync();
 
             IPredicateQuery predicateQuery = new PredicateQuery(
@@ -132,6 +150,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
 
             // Create the default table alias
             predicateQuery.CreateAlias("", nameof(ContentItemIndex));
+            predicateQuery.CreateTableAlias(nameof(ContentItemIndex), defaultTableAlias);
 
             // Add all provided table alias to the current predicate query
             var providers = context.ServiceProvider.GetServices<IIndexAliasProvider>();
@@ -144,7 +163,6 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                 {
                     predicateQuery.CreateAlias(alias.Alias, alias.Index);
                     indexAliases.Add(alias.Alias, alias.Alias);
-
                     if (!indexes.ContainsKey(alias.Index))
                     {
                         indexes.Add(alias.Index, alias);
@@ -154,8 +172,24 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
 
             var expressions = Expression.Conjunction();
             BuildWhereExpressions(where, expressions, null, fieldContext, indexAliases);
+            expressions.SearchUsedAlias(predicateQuery);
+
+            // Add all Indexes that were used in the predicate query
+
+            IQuery<ContentItem> contentQuery = query;
+            foreach (var usedAlias in predicateQuery.GetUsedAliases())
+            {
+                if (indexes.ContainsKey(usedAlias))
+                {
+                    contentQuery = indexes[usedAlias].With(contentQuery);
+                    var tableAlias = GetTableAlias(query, indexes[usedAlias].Index);
+                    predicateQuery.CreateTableAlias(indexes[usedAlias].Index, tableAlias);
+                }
+            }
 
             var whereSqlClause = expressions.ToSqlString(predicateQuery);
+
+
             query = query.Where(whereSqlClause);
 
             // Add all parameters that were used in the predicate query
@@ -164,18 +198,9 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                 query = query.WithParameter(parameter.Key, parameter.Value);
             }
 
-            // Add all Indexes that were used in the predicate query
-            IQuery<ContentItem> contentQuery = query;
-            foreach (var usedAlias in predicateQuery.GetUsedAliases())
-            {
-                if (indexes.ContainsKey(usedAlias))
-                {
-                    contentQuery = indexes[usedAlias].With(contentQuery);
-                }
-            }
-
             return contentQuery;
         }
+
 
         private IQuery<ContentItem> PageQuery(IQuery<ContentItem> contentItemsQuery, ResolveFieldContext context, GraphQLContext graphQLContext)
         {
