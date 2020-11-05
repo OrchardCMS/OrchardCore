@@ -14,6 +14,6 @@ module.exports = {
             });
         }
 
-        fs.writeFileSync('./cypress/fixtures/blog-posts.json', JSON.stringify(data, null, 4));
+        fs.writeFileSync('./cms-tests/cypress/fixtures/blog-posts.json', JSON.stringify(data, null, 4));
     }
 };

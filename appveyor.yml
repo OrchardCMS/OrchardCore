@@ -53,8 +53,7 @@ install:
   - ps: $GeneratePackages = ($IsMasterBranch -or $IsDevBranch -or $IsReleaseBranch)
   - node --version
   - npm --version
-  - cd .\test\cypress-cms && npm ci
-  - cd .\test\cypress-mvc && npm ci
+  - cd .\test\Functional && npm ci
 
 # Uncomment to download a specific version of dotnet
 #  - ps: Invoke-WebRequest "https://raw.githubusercontent.com/dotnet/cli/master/scripts/obtain/dotnet-install.ps1" -OutFile "dotnet-install.ps1" 
@@ -81,11 +80,8 @@ before_test:
   - SET ORCHARD_TEST_SQLSERVER_CONNECTION_STRING=Server=(local)\SQL2017;Database=tempdb;User ID=sa;Password=Password12!
 
 test_script:
-  - node --version
-  - npm --version
   - dotnet test -c Release --no-build .\test\OrchardCore.Tests\OrchardCore.Tests.csproj
-  - cd .\test\cypress-cms && npm run test
-  - cd .\test\cypress-mvc && npm run test
+  - cd .\test\Functional && npm run test
 
 clone_depth: 1
 test: on
