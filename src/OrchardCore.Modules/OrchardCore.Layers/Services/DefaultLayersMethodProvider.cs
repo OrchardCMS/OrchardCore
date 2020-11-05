@@ -1,8 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using OrchardCore.Scripting;
 
 namespace OrchardCore.Layers.Services
@@ -57,7 +60,9 @@ namespace OrchardCore.Layers.Services
                 Method = serviceProvider => (Func<string, bool>) (role =>
                 {
                     var httpContext = serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext;
-                    return httpContext.User?.IsInRole(role) == true;
+                    var optionsAccessor = serviceProvider.GetRequiredService<IOptions<IdentityOptions>>();
+                    var roleClaimType = optionsAccessor.Value.ClaimsIdentity.RoleClaimType;
+                    return httpContext.User?.Claims.Any(claim => claim.Type == roleClaimType && claim.Value.Equals(role, StringComparison.OrdinalIgnoreCase)) == true; // IsInRole() & HasClaim() are case sensitive
                 })
             };
 
