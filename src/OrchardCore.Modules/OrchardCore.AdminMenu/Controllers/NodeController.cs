@@ -381,7 +381,7 @@ namespace OrchardCore.AdminMenu.Controllers
                 }
             }
 
-            return new ObjectResult(installedPermissions.Select(r => new VueMultiselectItemViewModel() { Id = r.Name, DisplayText = $"{r.Name} - {r.Description}", HasPublished = true }));
+            return new ObjectResult(installedPermissions.Select(r => new VueMultiselectItemViewModel() { Id = r.Name, DisplayText = $"{r.Name} - {r.Description}" }));
         }
     }
 }
