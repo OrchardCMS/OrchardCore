@@ -1,8 +1,0 @@
-msgid "Category"
-msgstr "Catégorie"
-
-msgid "Farm Machinery"
-msgstr "Équipement Agricole"
-
-msgid "Farm"
-msgstr "Ferme"
