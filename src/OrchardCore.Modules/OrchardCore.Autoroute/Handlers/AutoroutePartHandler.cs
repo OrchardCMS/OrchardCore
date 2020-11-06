@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Fluid;
@@ -390,12 +391,19 @@ namespace OrchardCore.Autoroute.Handlers
                     ContentItem = part.ContentItem
                 };
 
+                // We keep the current culture as a reference for later
+                var currentCulture = CultureInfo.CurrentUICulture;
+
                 _contentManager ??= _serviceProvider.GetRequiredService<IContentManager>();
                 var cultureAspect = await _contentManager.PopulateAspectAsync(part.ContentItem, new CultureAspect());
-                LiquidViewTemplate.Context.CultureInfo = cultureAspect.Culture;
+
+                CultureInfo.CurrentUICulture = cultureAspect.Culture;
 
                 part.Path = await _liquidTemplateManager.RenderAsync(pattern, NullEncoder.Default, model,
                     scope => scope.SetValue("ContentItem", model.ContentItem));
+
+                // We reassign the proper culture to the current execution flow
+                CultureInfo.CurrentUICulture = currentCulture;
 
                 part.Path = part.Path.Replace("\r", String.Empty).Replace("\n", String.Empty);
 
