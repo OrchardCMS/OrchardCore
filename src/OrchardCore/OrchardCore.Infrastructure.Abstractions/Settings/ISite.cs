@@ -8,13 +8,7 @@ namespace OrchardCore.Settings
         string SiteName { get; set; }
         string PageTitleFormat { get; set; }
         string SiteSalt { get; set; }
-
-        /// <summary>
-        /// The SuperUser property is deprecated, but not yet set obsolete.
-        /// It will be removed in a later release. <see cref="SuperUserId"/>
-        /// </summary>
         string SuperUser { get; set; }
-        string SuperUserId { get; set; }
         string Calendar { get; set; }
         string TimeZoneId { get; set; }
         ResourceDebugMode ResourceDebugMode { get; set; }

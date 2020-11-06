@@ -43,6 +43,10 @@ namespace OrchardCore.Users
                 .CreateIndex("IDX_UserIndex_UserName", "DocumentId", "NormalizedUserName")
             );
 
+            SchemaBuilder.AlterTable(nameof(UserIndex), table => table
+                .CreateIndex("IDX_UserIndex_Email", "DocumentId", "NormalizedEmail")
+            );
+
             SchemaBuilder.CreateReduceIndexTable<UserByRoleNameIndex>(table => table
                .Column<string>("RoleName")
                .Column<int>("Count")
@@ -76,8 +80,7 @@ namespace OrchardCore.Users
                 .AddColumn<bool>(nameof(UserIndex.IsEnabled), c => c.NotNull().WithDefault(true)));
 
             SchemaBuilder.AlterTable(nameof(UserIndex), table => table
-                // DocumentId added to this index, but it will already have run for most users.
-                .CreateIndex("IDX_UserIndex_IsEnabled", "DocumentId", "IsEnabled")
+                .CreateIndex("IDX_UserIndex_IsEnabled", "IsEnabled")
             );
 
             return 4;
@@ -96,6 +99,10 @@ namespace OrchardCore.Users
             SchemaBuilder.AlterTable(nameof(UserIndex), table => table
                 // This index will be used for lookups when logging in.
                 .CreateIndex("IDX_UserIndex_UserName", "DocumentId", "NormalizedUserName")
+            );
+
+            SchemaBuilder.AlterTable(nameof(UserIndex), table => table
+                .CreateIndex("IDX_UserIndex_Email", "DocumentId", "NormalizedEmail")
             );
 
             return 5;
