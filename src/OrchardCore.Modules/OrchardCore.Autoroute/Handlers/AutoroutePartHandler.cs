@@ -391,16 +391,15 @@ namespace OrchardCore.Autoroute.Handlers
                     ContentItem = part.ContentItem
                 };
 
+                _contentManager ??= _serviceProvider.GetRequiredService<IContentManager>();
+                var cultureAspect = await _contentManager.PopulateAspectAsync(part.ContentItem, new CultureAspect());
+
                 // We keep the current culture as a reference for later
                 var currentCulture = CultureInfo.CurrentUICulture;
 
+                CultureInfo.CurrentUICulture = cultureAspect.Culture;
                 try
                 {
-                    _contentManager ??= _serviceProvider.GetRequiredService<IContentManager>();
-                    var cultureAspect = await _contentManager.PopulateAspectAsync(part.ContentItem, new CultureAspect());
-
-                    CultureInfo.CurrentUICulture = cultureAspect.Culture;
-
                     part.Path = await _liquidTemplateManager.RenderAsync(pattern, NullEncoder.Default, model,
                         scope => scope.SetValue("ContentItem", model.ContentItem));
                 }
