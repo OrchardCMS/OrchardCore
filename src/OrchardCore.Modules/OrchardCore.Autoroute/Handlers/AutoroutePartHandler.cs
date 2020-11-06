@@ -21,6 +21,7 @@ using OrchardCore.ContentManagement.Routing;
 using OrchardCore.DisplayManagement.Liquid;
 using OrchardCore.Environment.Cache;
 using OrchardCore.Liquid;
+using OrchardCore.Localization;
 using OrchardCore.Settings;
 using YesSql;
 
@@ -391,19 +392,16 @@ namespace OrchardCore.Autoroute.Handlers
                     ContentItem = part.ContentItem
                 };
 
-                // We keep the current culture as a reference for later
-                var currentCulture = CultureInfo.CurrentUICulture;
+                using (var cultureScope = new CultureScope(CultureInfo.CurrentUICulture))
+                {
+                    _contentManager ??= _serviceProvider.GetRequiredService<IContentManager>();
+                    var cultureAspect = await _contentManager.PopulateAspectAsync(part.ContentItem, new CultureAspect());
 
-                _contentManager ??= _serviceProvider.GetRequiredService<IContentManager>();
-                var cultureAspect = await _contentManager.PopulateAspectAsync(part.ContentItem, new CultureAspect());
+                    CultureInfo.CurrentUICulture = cultureAspect.Culture;
 
-                CultureInfo.CurrentUICulture = cultureAspect.Culture;
-
-                part.Path = await _liquidTemplateManager.RenderAsync(pattern, NullEncoder.Default, model,
-                    scope => scope.SetValue("ContentItem", model.ContentItem));
-
-                // We reassign the proper culture to the current execution flow
-                CultureInfo.CurrentUICulture = currentCulture;
+                    part.Path = await _liquidTemplateManager.RenderAsync(pattern, NullEncoder.Default, model,
+                        scope => scope.SetValue("ContentItem", model.ContentItem));
+                }
 
                 part.Path = part.Path.Replace("\r", String.Empty).Replace("\n", String.Empty);
 
