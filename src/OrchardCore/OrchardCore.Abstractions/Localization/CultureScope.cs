@@ -35,6 +35,7 @@ namespace OrchardCore.Localization
         {
             SetCultures(_originalCulture, _originalUICulture);
         }
+
         private static void SetCultures(CultureInfo culture, CultureInfo uiCulture)
         {
             CultureInfo.CurrentCulture = culture;
