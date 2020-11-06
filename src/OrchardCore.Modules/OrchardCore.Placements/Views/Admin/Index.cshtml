@@ -35,13 +35,13 @@
     $(function () {
         var searchBox = $('#search-box');
 
-        // On each keypress filter the list of types
+        @* On each keypress filter the list of types *@
         searchBox.keyup(function (e) {
             var search = $(this).val();
 
             var elementsToFilter = $("[data-filter-value]");
 
-            // On ESC, clear the search box and display all types
+            @* On ESC, clear the search box and display all types *@
             if (e.keyCode == 27 || search == '') {
                 searchBox.val('');
                 elementsToFilter.toggle(true);
@@ -53,7 +53,7 @@
                     $(this).toggle(found);
                 });
 
-                // We display an alert if a search is not found
+                @* We display an alert if a search is not found *@
                 var visible = $('#content-types > li:visible');
                 if (visible.length == 0) {
                     $('#list-alert').removeClass("d-none");
@@ -63,7 +63,7 @@
                 }
             }
 
-            // On Enter, redirect to the edit page if the type exists or the create page with a suggestion
+            @* On Enter, redirect to the edit page if the type exists or the create page with a suggestion *@
             if (e.keyCode == 13) {
                 var visibleRows = $("[data-type-name]:visible");
                 if (visibleRows.length > 0) {

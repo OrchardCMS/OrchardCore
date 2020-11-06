@@ -45,12 +45,7 @@ namespace OrchardCore.Placements
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, PlacementContentTypePartDefinitionDriver>();
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, PlacementContentPartFieldDefinitionDisplayDriver>();
 
-            // Deployments
-            services.AddTransient<IDeploymentSource, PlacementsDeploymentSource>();
-            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<PlacementsDeploymentStep>());
-            services.AddScoped<IDisplayDriver<DeploymentStep>, PlacementsDeploymentStepDriver>();
-
-            // Recipies
+            // Recipes
             services.AddRecipeExecutionStep<PlacementStep>();
         }
 
@@ -95,6 +90,17 @@ namespace OrchardCore.Placements
         {
             services.RemoveAll<IPlacementStore>();
             services.AddScoped<IPlacementStore, FilePlacementsStore>();
+        }
+    }
+
+    [RequireFeatures("OrchardCore.Deployment")]
+    public class DeploymentStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddTransient<IDeploymentSource, PlacementsDeploymentSource>();
+            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<PlacementsDeploymentStep>());
+            services.AddScoped<IDisplayDriver<DeploymentStep>, PlacementsDeploymentStepDriver>();
         }
     }
 }
