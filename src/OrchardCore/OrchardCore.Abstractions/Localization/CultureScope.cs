@@ -5,17 +5,17 @@ namespace OrchardCore.Localization
 {
     public sealed class CultureScope : IDisposable
     {
-        private readonly CultureInfo _currentCulture;
-
         public CultureScope(CultureInfo culture)
         {
-            _currentCulture = culture;
+            Culture = culture;
             CultureInfo.CurrentUICulture = culture;
         }
 
+        public CultureInfo Culture { get; private set; }
+
         public void Dispose()
         {
-            CultureInfo.CurrentUICulture = _currentCulture;
+            CultureInfo.CurrentUICulture = Culture;
         }
     }
 }
