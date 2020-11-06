@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using OrchardCore.Autoroute.Services;
 using OrchardCore.ContentManagement.Routing;
@@ -15,6 +16,8 @@ using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Environment.Shell.Scope;
+using OrchardCore.Locking;
+using OrchardCore.Locking.Distributed;
 using Xunit;
 
 namespace OrchardCore.Tests.Routing
@@ -244,9 +247,12 @@ namespace OrchardCore.Tests.Routing
             services.AddScoped<IDocumentStore, StubDocumentstore>();
             services.AddScoped(typeof(IDocumentManager<>), typeof(DocumentManager<>));
             services.AddScoped(typeof(IVolatileDocumentManager<>), typeof(VolatileDocumentManager<>));
-            services.AddSingleton<IDocumentOptionsFactory, DocumentOptionsFactory>();
-            services.AddTransient(typeof(DocumentOptions<>));
 
+            services.AddOptions();
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<IConfigureOptions<DocumentOptions>, DocumentOptionsSetup>());
+
+            services.AddSingleton<LocalLock>();
+            services.AddSingleton<IDistributedLock>(sp => sp.GetRequiredService<LocalLock>());
             services.AddSingleton<IAutorouteEntries, StubAutorouteEntries>();
 
             return services.BuildServiceProvider();
