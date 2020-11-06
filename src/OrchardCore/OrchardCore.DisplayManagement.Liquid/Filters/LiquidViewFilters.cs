@@ -108,7 +108,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
                 using (var writer = new StringWriter())
                 {
                     task.Result.WriteTo(writer, NullHtmlEncoder.Default);
-                    value = new StringValue(writer.ToString());
+                    value = new StringValue(writer.ToString(), false);
                 }
 
                 return new ValueTask<FluidValue>(value);
