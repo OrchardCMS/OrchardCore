@@ -51,8 +51,7 @@ namespace OrchardCore.AdminMenu.AdminNodes
                     model.SelectedItems.Add(new VueMultiselectItemViewModel
                     {
                         Id = permission.Name,
-                        DisplayText = $"{permission.Name} - {permission.Description}",
-                        HasPublished = true
+                        DisplayText = $"{permission.Name} - {permission.Description}"
                     });
                 }
                 model.PermissionIds = string.Join(",", nameList);
@@ -69,14 +68,23 @@ namespace OrchardCore.AdminMenu.AdminNodes
                 treeNode.LinkUrl = model.LinkUrl;
                 treeNode.IconClass = model.IconClass;
 
-                var permissions = await GetInstalledPermissionsAsync();
-
-                foreach (var permissionName in (model.PermissionIds == null? new string[0] : model.PermissionIds.Split(',', StringSplitOptions.RemoveEmptyEntries)))
+                var modifiedPermissions= (model.PermissionIds == null? new string[0] : model.PermissionIds.Split(',', StringSplitOptions.RemoveEmptyEntries));
+                //clear the old permissions to insert all every time
+                treeNode.Permissions.Clear();
+                //change permissions only if one is inserted
+                if(modifiedPermissions.Length > 0)
                 {
-                    var perm = permissions.Where(p => p.Name == permissionName ).FirstOrDefault();
-                    
-                    if(perm != null)
-                        treeNode.Permissions.Add(perm);
+                    var permissions = await GetInstalledPermissionsAsync();
+
+                    foreach (var permissionName in modifiedPermissions)
+                    {
+                        var perm = permissions.Where(p => p.Name == permissionName).FirstOrDefault();
+                        
+                        if(perm != null)
+                        {
+                            treeNode.Permissions.Add(perm);
+                        }
+                    }
                 }
             };
 
@@ -95,7 +103,7 @@ namespace OrchardCore.AdminMenu.AdminNodes
 
                 foreach (var permission in permissions)
                 {
-                        installedPermissions.Add(permission);
+                    installedPermissions.Add(permission);
                 }
             }
 
