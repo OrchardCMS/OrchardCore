@@ -23,7 +23,7 @@ namespace OrchardCore.Tests.Localization
         }
 
         [Fact]
-        public void CultureScopeRetreivesBothCultureAndUICulture()
+        public void CultureScopeRetrievesBothCultureAndUICulture()
         {
             // Arrange
             var culture = "ar";
@@ -39,7 +39,7 @@ namespace OrchardCore.Tests.Localization
         }
 
         [Fact]
-        public void CultureScopeRetreivesTheOrginalCulturesAfterScopeEnded()
+        public void CultureScopeRetrievesTheOrginalCulturesAfterScopeEnded()
         {
             // Arrange
             var culture = CultureInfo.CurrentCulture;
@@ -57,7 +57,7 @@ namespace OrchardCore.Tests.Localization
         }
 
         [Fact]
-        public void CultureScopeRetreivesTheOrginalCulturesIfExceptionOccurs()
+        public void CultureScopeRetrievesTheOrginalCulturesIfExceptionOccurs()
         {
             // Arrange
             var culture = CultureInfo.CurrentCulture;
