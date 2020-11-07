@@ -57,7 +57,7 @@ namespace OrchardCore.Tests.Localization
         }
 
         [Fact]
-        public void CultureScopeRetreivesTheOrginalCulturesIfExceptionOccur()
+        public void CultureScopeRetreivesTheOrginalCulturesIfExceptionOccurs()
         {
             // Arrange
             var culture = CultureInfo.CurrentCulture;
