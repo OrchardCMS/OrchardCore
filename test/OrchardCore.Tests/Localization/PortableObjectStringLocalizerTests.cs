@@ -219,7 +219,7 @@ namespace OrchardCore.Tests.Localization
             using (var cultureScope = CultureScope.Create(culture))
             {
                 // using DefaultPluralRuleProvider to test it returns correct rule
-                TryGetRuleFromDefaultPluralRuleProvider(cultureScope.Culture, out var rule);
+                TryGetRuleFromDefaultPluralRuleProvider(cultureScope.UICulture, out var rule);
                 Assert.NotNull(rule);
 
                 SetupDictionary(culture, new[] { new CultureDictionaryRecord("ball", translations), }, rule);
