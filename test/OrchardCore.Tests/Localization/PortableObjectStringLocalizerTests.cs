@@ -43,7 +43,6 @@ namespace OrchardCore.Tests.Localization
             var localizer = new PortableObjectStringLocalizer(null, _localizationManager.Object, true, _logger.Object);
             using (CultureScope.Create("cs"))
             {
-
                 var translation = localizer["ball"];
 
                 Assert.Equal("míč", translation);
@@ -216,13 +215,13 @@ namespace OrchardCore.Tests.Localization
         [InlineData("zh-Hans", "球", 2, new string[] { "球" })]
         public void LocalizerReturnsCorrectTranslationForPluralIfNoPluralFormsSpecified(string culture, string expected, int count, string[] translations)
         {
-            using (var cultureScope = CultureScope.Create(culture))
+            using (CultureScope.Create(culture))
             {
                 // using DefaultPluralRuleProvider to test it returns correct rule
-                TryGetRuleFromDefaultPluralRuleProvider(cultureScope.UICulture, out var rule);
+                TryGetRuleFromDefaultPluralRuleProvider(CultureInfo.CurrentUICulture, out var rule);
                 Assert.NotNull(rule);
 
-                SetupDictionary(culture, new[] { new CultureDictionaryRecord("ball", translations), }, rule);
+                SetupDictionary(culture, new[] { new CultureDictionaryRecord("ball", translations) }, rule);
                 var localizer = new PortableObjectStringLocalizer(null, _localizationManager.Object, true, _logger.Object);
                 var translation = localizer.Plural(count, "ball", "{0} balls", count);
 
@@ -340,14 +339,16 @@ namespace OrchardCore.Tests.Localization
             SetupDictionary(culture, Array.Empty<CultureDictionaryRecord>());
 
             var localizer = new PortableObjectStringLocalizer("context", _localizationManager.Object, true, _logger.Object);
-            CultureInfo.CurrentUICulture = new CultureInfo(culture);
 
-            // Act
-            var translation = localizer["Hello"];
+            using (CultureScope.Create(culture))
+            {
+                // Act
+                var translation = localizer["Hello"];
 
-            // Assert
-            _localizationManager.Verify(lm => lm.GetDictionary(It.IsAny<CultureInfo>()), Times.Exactly(expectedCalls));
-            Assert.Equal("Hello", translation);
+                // Assert
+                _localizationManager.Verify(lm => lm.GetDictionary(It.IsAny<CultureInfo>()), Times.Exactly(expectedCalls));
+                Assert.Equal("Hello", translation);
+            }
         }
 
         private void SetupDictionary(string cultureName, IEnumerable<CultureDictionaryRecord> records)

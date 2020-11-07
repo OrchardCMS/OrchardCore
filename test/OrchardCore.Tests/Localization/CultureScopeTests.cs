@@ -14,11 +14,11 @@ namespace OrchardCore.Tests.Localization
             var culture = "ar-YE";
 
             // Act
-            using (var cultureScope = CultureScope.Create(culture))
+            using (CultureScope.Create(culture))
             {
                 // Assert
-                Assert.Equal(culture, cultureScope.Culture.Name);
-                Assert.Equal(culture, cultureScope.UICulture.Name);
+                Assert.Equal(culture, CultureInfo.CurrentCulture.Name);
+                Assert.Equal(culture, CultureInfo.CurrentUICulture.Name);
             }
         }
 
@@ -30,11 +30,11 @@ namespace OrchardCore.Tests.Localization
             var uiCulture = "ar-YE";
 
             // Act
-            using (var cultureScope = CultureScope.Create(culture, uiCulture))
+            using (CultureScope.Create(culture, uiCulture))
             {
                 // Assert
-                Assert.Equal(culture, cultureScope.Culture.Name);
-                Assert.Equal(uiCulture, cultureScope.UICulture.Name);
+                Assert.Equal(culture, CultureInfo.CurrentCulture.Name);
+                Assert.Equal(uiCulture, CultureInfo.CurrentUICulture.Name);
             }
         }
 
@@ -46,7 +46,7 @@ namespace OrchardCore.Tests.Localization
             var uiCulture = CultureInfo.CurrentUICulture;
 
             // Act
-            using (var cultureScope = CultureScope.Create("FR"))
+            using (CultureScope.Create("FR"))
             {
 
             }
@@ -66,11 +66,12 @@ namespace OrchardCore.Tests.Localization
             // Act & Assert
             Assert.ThrowsAsync<Exception>(() =>
             {
-                using (var cultureScope = CultureScope.Create("FR"))
+                using (CultureScope.Create("FR"))
                 {
                     throw new Exception("Something goes wrong!!");
                 }
             });
+
             Assert.Equal(culture, CultureInfo.CurrentCulture);
             Assert.Equal(uiCulture, CultureInfo.CurrentUICulture);
         }

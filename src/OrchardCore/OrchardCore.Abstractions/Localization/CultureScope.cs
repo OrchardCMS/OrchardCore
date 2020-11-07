@@ -10,17 +10,11 @@ namespace OrchardCore.Localization
 
         private CultureScope(CultureInfo culture, CultureInfo uiCulture)
         {
-            Culture = culture;
-            UICulture = uiCulture;
             _originalCulture = CultureInfo.CurrentCulture;
             _originalUICulture = CultureInfo.CurrentUICulture;
 
             SetCultures(culture, uiCulture);
         }
-
-        public CultureInfo Culture { get; }
-
-        public CultureInfo UICulture { get; }
 
         public static CultureScope Create(string culture) => Create(culture, culture);
 
