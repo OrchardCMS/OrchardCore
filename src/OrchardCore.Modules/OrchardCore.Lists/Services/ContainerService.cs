@@ -179,8 +179,7 @@ namespace OrchardCore.Lists.Services
                         .Take(pager.PageSize + 1);
                 }
 
-                if (!string.IsNullOrEmpty(containedItemOptions?.DisplayText) || containedItemOptions.Status != (int)ContentsStatus.None)
-                    query = ContainedItemOptionsFilter(containedItemOptions, query);
+                query = ContainedItemOptionsFilter(containedItemOptions, query);
 
                 var containedItems = await query.ListAsync();
 
@@ -237,8 +236,7 @@ namespace OrchardCore.Lists.Services
                         .Take(pager.PageSize + 1);
                 }
 
-                if (!string.IsNullOrEmpty(containedItemOptions?.DisplayText) || containedItemOptions.Status != ContentsStatus.None)
-                    query = ContainedItemOptionsFilter(containedItemOptions, query);
+                query = ContainedItemOptionsFilter(containedItemOptions, query);
 
                 var containedItems = await query.ListAsync();
 
@@ -292,8 +290,7 @@ namespace OrchardCore.Lists.Services
                         .Take(pager.PageSize + 1);
                 }
 
-                if (!string.IsNullOrEmpty(containedItemOptions?.DisplayText) || containedItemOptions.Status != (int)ContentsStatus.None)
-                    query = ContainedItemOptionsFilter(containedItemOptions, query);
+                query = ContainedItemOptionsFilter(containedItemOptions, query);
 
                 var containedItems = await query.ListAsync();
 
@@ -358,28 +355,35 @@ namespace OrchardCore.Lists.Services
             }
         }
 
-        private IQuery<ContentItem> ContainedItemOptionsFilter(ContainedItemOptions containeditemOptions, IQuery<ContentItem> containedItems)
+        private IQuery<ContentItem> ContainedItemOptionsFilter(ContainedItemOptions containedItemOptions, IQuery<ContentItem> containedItems)
         {
-            if (!string.IsNullOrEmpty(containeditemOptions?.DisplayText))
+            if (!string.IsNullOrEmpty(containedItemOptions?.DisplayText) || containedItemOptions.Status != ContentsStatus.None)
             {
-                containedItems.With<ContentItemIndex>().Where(i => i.DisplayText.Contains(containeditemOptions.DisplayText));
-            }
-
-            if (containeditemOptions.Status != ContentsStatus.None)
-            {
-                switch (containeditemOptions.Status)
+                if (!string.IsNullOrEmpty(containedItemOptions?.DisplayText))
                 {
-                    case ContentsStatus.Draft:
-                        containedItems?.With<ContentItemIndex>().Where(i => !i.Published);
-                        break;
-                    case ContentsStatus.Published:
-                        containedItems?.With<ContentItemIndex>().Where(i => i.Published);
-                        break;
-                    case ContentsStatus.Owner:
-                        containedItems?.With<ContentItemIndex>().Where(i => i.Owner == _hca.HttpContext.User.Identity.Name);
-                        break;
-                    default:
-                        throw new NotSupportedException("Unknown status filter.");
+                    containedItems.With<ContentItemIndex>().Where(i => i.DisplayText.Contains(containedItemOptions.DisplayText));
+                }
+
+                if (containedItemOptions.Status != ContentsStatus.None)
+                {
+                    switch (containedItemOptions.Status)
+                    {
+                        case ContentsStatus.Draft:
+                            containedItems?.With<ContentItemIndex>().Where(i => !i.Published);
+                            break;
+                        case ContentsStatus.Published:
+                            containedItems?.With<ContentItemIndex>().Where(i => i.Published);
+                            break;
+                        case ContentsStatus.Owner:
+                           /* if (_hca.HttpContext != null && _hca.HttpContext.User != null)
+                            {
+                               _hca.GetType().GetProperties().GetPropertyValue()
+                            }*/
+                            containedItems?.With<ContentItemIndex>().Where(i => i.Owner == _hca.HttpContext.User.Identity.Name);
+                            break;
+                        default:
+                            throw new NotSupportedException("Unknown status filter.");
+                    }
                 }
             }
             return containedItems;

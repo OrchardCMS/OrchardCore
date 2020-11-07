@@ -78,18 +78,14 @@ namespace OrchardCore.Templates.Controllers
 
             IEnumerable<KeyValuePair<string, Template>> templates;
             if (!string.IsNullOrEmpty(displayText))
-            {
-                 templates = templatesDocument.Templates.OrderBy(x => x.Key)
-                    .Where(template => template.Key.Contains(displayText, StringComparison.InvariantCultureIgnoreCase))
-                    .Skip(pager.GetStartIndex())
-                    .Take(pager.PageSize);
-            }
+                 templates = templatesDocument.Templates.Where(template => template.Key.Contains(displayText, StringComparison.InvariantCultureIgnoreCase));
             else
-            {
-                 templates = templatesDocument.Templates.OrderBy(x => x.Key)
-                    .Skip(pager.GetStartIndex())
-                    .Take(pager.PageSize);
-            }
+                templates = templatesDocument.Templates;
+
+             templates
+                 .OrderBy(x => x.Key)
+                 .Skip(pager.GetStartIndex())
+                 .Take(pager.PageSize);
 
             var pagerShape = (await New.Pager(pager)).TotalItemCount(count);
 
