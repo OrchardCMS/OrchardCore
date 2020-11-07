@@ -32,9 +32,7 @@ const shortcodeWrapperTemplate = `
 
 const shortcodeBtnTemplate = `
 <button type="button" class="shortcode-modal-btn btn btn-sm">
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-    <path d="M16 4.2v1.5h2.5v12.5H16v1.5h4V4.2h-4zM4.2 19.8h4v-1.5H5.8V5.8h2.5V4.2h-4l-.1 15.6zm5.1-3.1l1.4.6 4-10-1.4-.6-4 10z"></path>
-</svg>
+    <span class="icon-shortcode"></span>
 </button>
 `;
 
@@ -57,7 +55,7 @@ $(function () {
 var shortcodesApp;
 
 function initializeShortcodesApp(element) {
-    if (element) {
+    if (element && !shortcodesApp) {
         var elementId = element.id;
 
         shortcodesApp = new Vue({
@@ -117,8 +115,8 @@ function initializeShortcodesApp(element) {
                 isVisible(name) {
                     return this.filteredShortcodes.some(s => s.name === name);
                 },
-                insertShortcode(defaultValue) {
-                    this.defaultValue = defaultValue;
+                insertShortcode(event) {
+                    this.defaultValue =  event.target.dataset.defaultValue;
                     $(this.$el).modal('hide');
                     this.onClose(this.defaultValue);
                 }

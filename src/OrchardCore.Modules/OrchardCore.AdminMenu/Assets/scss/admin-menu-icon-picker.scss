@@ -1,3 +1,6 @@
+@import "../../node_modules/bootstrap/scss/functions";
+@import "../../node_modules/bootstrap/scss/variables";
+
 #iconPickerModal {
 
     .iconpicker-popover.popover {
@@ -7,6 +10,11 @@
 
     .iconpicker-items {
         min-height: 258px;
+
+        .iconpicker-item {
+            // Optimally this should be a different color per admin theme bootswatch
+            background-color: $body-color;
+        }
     }
 }
 

@@ -1,14 +1,14 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Localization;
-using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.ContentLocalization.ViewModels;
 using OrchardCore.Contents.ViewModels;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Localization;
-using OrchardCore.ContentLocalization.ViewModels;
 
 namespace OrchardCore.ContentLocalization.Drivers
 {

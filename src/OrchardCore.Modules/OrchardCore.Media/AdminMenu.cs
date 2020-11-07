@@ -25,10 +25,18 @@ namespace OrchardCore.Media
                 .Add(S["Content"], content => content
                     .AddClass("media").Id("media")
                     .Add(S["Media Library"], S["Media Library"].PrefixPosition(), layers => layers
-                        .Permission(Permissions.ManageOwnMedia)
+                        .Permission(Permissions.ManageMedia)
                         .Action("Index", "Admin", new { area = "OrchardCore.Media" })
                         .LocalNav()
                     ));
+
+            builder.Add(S["Configuration"], configuration => configuration
+                .Add(S["Media"], S["Media"].PrefixPosition(), media => media
+                    .Add(S["Media Profiles"], S["Media Profiles"].PrefixPosition(), mediaProfiles => mediaProfiles
+                        .Action("Index", "MediaProfiles", new { area = "OrchardCore.Media" })
+                        .Permission(Permissions.ManageMediaProfiles)
+                        .LocalNav())
+            ));
 
             return Task.CompletedTask;
         }
@@ -37,7 +45,7 @@ namespace OrchardCore.Media
     public class MediaCacheAdminMenu : INavigationProvider
     {
         private readonly IStringLocalizer S;
-        
+
         public MediaCacheAdminMenu(IStringLocalizer<AdminMenu> localizer)
         {
             S = localizer;

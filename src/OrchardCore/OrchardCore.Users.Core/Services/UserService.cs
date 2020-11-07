@@ -72,7 +72,7 @@ namespace OrchardCore.Users.Services
             if (!(user as User).IsEnabled)
             {
                 reportError(string.Empty, S["The specified user is not allowed to sign in."]);
-                
+
                 return null;
             }
 
@@ -209,7 +209,7 @@ namespace OrchardCore.Users.Services
         /// <summary>
         /// Gets the user, if any, associated with the normalized value of the specified identifier, which can refer both to username or email
         /// </summary>
-        /// <param name="userIdentification">The username or email address to refer to</param>
+        /// <param name="userIdentifier">The username or email address to refer to</param>
         private async Task<IUser> FindByUsernameOrEmailAsync(string userIdentifier)
             => await _userManager.FindByNameAsync(userIdentifier) ??
                await _userManager.FindByEmailAsync(userIdentifier);

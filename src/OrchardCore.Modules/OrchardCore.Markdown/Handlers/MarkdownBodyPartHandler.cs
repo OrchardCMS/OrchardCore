@@ -6,13 +6,13 @@ using Microsoft.AspNetCore.Html;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Models;
-using OrchardCore.Shortcodes.Services;
 using OrchardCore.Infrastructure.Html;
 using OrchardCore.Liquid;
 using OrchardCore.Markdown.Models;
 using OrchardCore.Markdown.Services;
 using OrchardCore.Markdown.Settings;
 using OrchardCore.Markdown.ViewModels;
+using OrchardCore.Shortcodes.Services;
 using Shortcodes;
 
 namespace OrchardCore.Markdown.Handlers
@@ -25,8 +25,6 @@ namespace OrchardCore.Markdown.Handlers
         private readonly IHtmlSanitizerService _htmlSanitizerService;
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly HtmlEncoder _htmlEncoder;
-        private HtmlString _bodyAspect;
-        private int _contentItemId;
 
         public MarkdownBodyPartHandler(IContentDefinitionManager contentDefinitionManager,
             IShortcodeService shortcodeService,
@@ -47,13 +45,6 @@ namespace OrchardCore.Markdown.Handlers
         {
             return context.ForAsync<BodyAspect>(async bodyAspect =>
             {
-                if (bodyAspect != null && part.ContentItem.Id == _contentItemId)
-                {
-                    bodyAspect.Body = _bodyAspect;
-
-                    return;
-                }
-
                 try
                 {
                     var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(part.ContentItem.ContentType);
@@ -91,13 +82,11 @@ namespace OrchardCore.Markdown.Handlers
                         html = _htmlSanitizerService.Sanitize(html);
                     }
 
-                    bodyAspect.Body = _bodyAspect = new HtmlString(html);
-                    _contentItemId = part.ContentItem.Id;
+                    bodyAspect.Body = new HtmlString(html);
                 }
                 catch
                 {
                     bodyAspect.Body = HtmlString.Empty;
-                    _contentItemId = default;
                 }
             });
         }

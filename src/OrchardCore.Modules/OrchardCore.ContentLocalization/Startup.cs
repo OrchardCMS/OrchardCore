@@ -1,6 +1,5 @@
 using System;
 using System.Globalization;
-using System.Linq;
 using Fluid;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -13,8 +12,6 @@ using OrchardCore.ContentLocalization.Controllers;
 using OrchardCore.ContentLocalization.Drivers;
 using OrchardCore.ContentLocalization.Indexing;
 using OrchardCore.ContentLocalization.Liquid;
-using OrchardCore.ContentLocalization.Models;
-using OrchardCore.ContentLocalization.Records;
 using OrchardCore.ContentLocalization.Security;
 using OrchardCore.ContentLocalization.Services;
 using OrchardCore.ContentLocalization.Sitemaps;
@@ -22,6 +19,7 @@ using OrchardCore.ContentLocalization.ViewModels;
 using OrchardCore.Contents.Services;
 using OrchardCore.Contents.ViewModels;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Indexing;
 using OrchardCore.Liquid;
 using OrchardCore.Modules;
@@ -30,13 +28,13 @@ using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
 using OrchardCore.Sitemaps.Builders;
-using YesSql;
 
 namespace OrchardCore.ContentLocalization
 {
     public class Startup : StartupBase
     {
         private readonly AdminOptions _adminOptions;
+        private readonly IShellConfiguration _shellConfiguration;
 
         static Startup()
         {
@@ -44,13 +42,16 @@ namespace OrchardCore.ContentLocalization
             TemplateContext.GlobalMemberAccessStrategy.Register<CultureInfo>();
         }
 
-        public Startup(IOptions<AdminOptions> adminOptions)
+        public Startup(IShellConfiguration shellConfiguration, IOptions<AdminOptions> adminOptions)
         {
+            _shellConfiguration = shellConfiguration;
             _adminOptions = adminOptions.Value;
         }
 
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<CulturePickerOptions>(_shellConfiguration.GetSection("OrchardCore_ContentLocalization_CulturePickerOptions"));
+
             services.AddScoped<IContentPartIndexHandler, LocalizationPartIndexHandler>();
             services.AddSingleton<ILocalizationEntries, LocalizationEntries>();
             services.AddContentLocalization();
@@ -98,19 +99,6 @@ namespace OrchardCore.ContentLocalization
                pattern: "RedirectToLocalizedContent",
                defaults: new { controller = "ContentCulturePicker", action = "RedirectToLocalizedContent" }
            );
-
-            var session = serviceProvider.GetRequiredService<ISession>();
-            var entries = serviceProvider.GetRequiredService<ILocalizationEntries>();
-
-            var indexes = session.QueryIndex<LocalizedContentItemIndex>(i => i.Published)
-                .ListAsync().GetAwaiter().GetResult();
-
-            entries.AddEntries(indexes.Select(i => new LocalizationEntry
-            {
-                ContentItemId = i.ContentItemId,
-                LocalizationSet = i.LocalizationSet,
-                Culture = i.Culture.ToLowerInvariant()
-            }));
         }
     }
 
@@ -119,7 +107,6 @@ namespace OrchardCore.ContentLocalization
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<ISitemapContentItemValidationProvider, SitemapLocalizedContentItemValidationProvider>();
             services.AddScoped<ISitemapContentItemExtendedMetadataProvider, SitemapUrlHrefLangExtendedMetadataProvider>();
             services.Replace(ServiceDescriptor.Scoped<IContentItemsQueryProvider, LocalizedContentItemsQueryProvider>());
         }

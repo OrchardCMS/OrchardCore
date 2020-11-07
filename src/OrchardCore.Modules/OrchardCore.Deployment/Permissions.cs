@@ -7,7 +7,7 @@ namespace OrchardCore.Deployment
 {
     public class Permissions : IPermissionProvider
     {
-        public static readonly Permission ManageDeploymentPlan =  CommonPermissions.ManageDeploymentPlan;
+        public static readonly Permission ManageDeploymentPlan = CommonPermissions.ManageDeploymentPlan;
         public static readonly Permission Export = CommonPermissions.Export;
         public static readonly Permission Import = CommonPermissions.Import;
 

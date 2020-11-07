@@ -155,7 +155,7 @@ namespace OrchardCore.OpenId.Services.Managers
             else
             {
                 var properties = await Store.GetPropertiesAsync(application, cancellationToken);
-                properties = properties.Add(OpenIdConstants.Properties.Roles, JsonSerializer.Deserialize<JsonElement>(
+                properties = properties.SetItem(OpenIdConstants.Properties.Roles, JsonSerializer.Deserialize<JsonElement>(
                     JsonSerializer.Serialize(roles, new JsonSerializerOptions
                     {
                         Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
@@ -189,7 +189,7 @@ namespace OrchardCore.OpenId.Services.Managers
                 else
                 {
                     var properties = await Store.GetPropertiesAsync(application, cancellationToken);
-                    properties = properties.Add(OpenIdConstants.Properties.Roles, JsonSerializer.Deserialize<JsonElement>(
+                    properties = properties.SetItem(OpenIdConstants.Properties.Roles, JsonSerializer.Deserialize<JsonElement>(
                         JsonSerializer.Serialize(model.Roles, new JsonSerializerOptions
                         {
                             Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
@@ -265,6 +265,6 @@ namespace OrchardCore.OpenId.Services.Managers
             => ListInRoleAsync(role, cancellationToken);
 
         ValueTask IOpenIdApplicationManager.SetRolesAsync(object application, ImmutableArray<string> roles, CancellationToken cancellationToken)
-            => SetRolesAsync((TApplication) application, roles, cancellationToken);
+            => SetRolesAsync((TApplication)application, roles, cancellationToken);
     }
 }

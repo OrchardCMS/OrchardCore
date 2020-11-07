@@ -292,6 +292,14 @@ The following properties are available on the `User` object.
 | `Identity.Name` | `admin` | The name of the authenticated user. |
 | `Identity.Claims` |  | The claims of the authenticated user. |
 
+##### user_email filter
+
+Returns the user's email.
+
+```liquid
+{{ User | user_email }}
+```
+
 #### User has_permission filter
 
 Checks if the User has permission clearance, optionally on a resource
@@ -359,6 +367,7 @@ The following properties are available on the `Request` object.
 | `IsHttps` | `true` | True if the scheme of the request is `https`. |
 | `Scheme` | `https` | The scheme of the request. |
 | `Method` | `GET` | The HTTP method. |
+| `Route` | Usage: `Request.Route.controller` | The route values for this request. |
 
 ### Culture
 
@@ -595,7 +604,7 @@ Input
 
 Adds properties to a shape. This can be useful to pass values from a parent shape.  
 Property names get converted to PascalCase.  
-Ex: `prop_name1` can be accessed via `Model.PropName1` in the shape template.
+Ex: `prop_name1` can be accessed via `Model.Properties["PropName1"]` or `Model.Properties.PropName1` in the shape template.
 
 Input
 

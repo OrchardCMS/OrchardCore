@@ -1,4 +1,3 @@
-using Markdig;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore.Infrastructure.Html;
@@ -14,6 +13,7 @@ namespace OrchardCore.Tests.Html
         [InlineData("<script>alert('xss')</script><div onload=\"alert('xss')\">Test<img src=\"test.gif\" style=\"background-image: url(javascript:alert('xss')); margin: 10px\"></div>", "<div>Test<img src=\"test.gif\" style=\"margin: 10px\"></div>")]
         [InlineData("<IMG SRC=javascript:alert(\"XSS\")>", @"<img>")]
         [InlineData("<a href=\"javascript: alert('xss')\">Click me</a>", @"<a>Click me</a>")]
+        [InlineData("<a href=\"[locale 'en']javascript: alert('xss')[/locale]\">Click me</a>", @"<a>Click me</a>")]
         public void ShouldSanitizeHTML(string html, string sanitized)
         {
             // Setup
@@ -54,7 +54,8 @@ namespace OrchardCore.Tests.Html
             });
 
             // Act. Reconfigure to remove defaults.
-            services.Configure<HtmlSanitizerOptions>(o => {
+            services.Configure<HtmlSanitizerOptions>(o =>
+            {
                 o.Configure.Clear();
             });
 

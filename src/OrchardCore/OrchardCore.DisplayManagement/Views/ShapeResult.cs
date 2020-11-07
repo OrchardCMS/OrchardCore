@@ -24,6 +24,7 @@ namespace OrchardCore.DisplayManagement.Views
         private Action<CacheContext> _cache;
         private string _groupId;
         private Action<ShapeDisplayContext> _displaying;
+        private Func<Task<bool>> _renderPredicateAsync;
 
         public ShapeResult(string shapeType, Func<IBuildShapeContext, ValueTask<IShape>> shapeBuilder)
             : this(shapeType, shapeBuilder, null)
@@ -58,7 +59,7 @@ namespace OrchardCore.DisplayManagement.Views
                 _defaultLocation = context.DefaultZone;
             }
 
-            // Look into specific implementations of placements (like placement.json files)
+            // Look into specific implementations of placements (like placement.json files and IShapePlacementProviders)
             var placement = context.FindPlacement(_shapeType, _differentiator, displayType, context);
 
             // Look for mapped display type locations
@@ -100,6 +101,12 @@ namespace OrchardCore.DisplayManagement.Views
 
             // If the shape's group doesn't match the currently rendered one, return
             if (!String.Equals(context.GroupId ?? "", _groupId ?? "", StringComparison.OrdinalIgnoreCase))
+            {
+                return;
+            }
+
+            // If a condition has been applied to this result evaluate it only if the shape has been placed.
+            if (_renderPredicateAsync != null && !(await _renderPredicateAsync()))
             {
                 return;
             }
@@ -285,6 +292,16 @@ namespace OrchardCore.DisplayManagement.Views
         {
             _cacheId = cacheId;
             _cache = cache;
+            return this;
+        }
+
+        /// <summary>
+        /// Sets a condition that must return true for the shape to render.
+        /// The condition is only evaluated if the shape has been placed.
+        /// </summary>
+        public ShapeResult RenderWhen(Func<Task<bool>> renderPredicateAsync)
+        {
+            _renderPredicateAsync = renderPredicateAsync;
             return this;
         }
 

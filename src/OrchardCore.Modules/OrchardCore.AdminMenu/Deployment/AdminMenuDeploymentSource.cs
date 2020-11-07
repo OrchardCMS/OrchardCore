@@ -9,9 +9,9 @@ namespace OrchardCore.AdminMenu.Deployment
     {
         private readonly IAdminMenuService _adminMenuService;
 
-        public AdminMenuDeploymentSource(IAdminMenuService adminMenuervice)
+        public AdminMenuDeploymentSource(IAdminMenuService adminMenuService)
         {
-            _adminMenuService = adminMenuervice;
+            _adminMenuService = adminMenuService;
         }
 
         public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
