@@ -1,6 +1,6 @@
 # Core Features
 
-Features available as Core components
+Features available as Core components.
 
 ## Site Setup
 
@@ -13,26 +13,6 @@ Provides a way to manage tenants from the admin.
 ## Document database
 
 ### SQL Provider independent
-
-## Security
-
-### Users Change Email
-
-The Change email feature allows users to change their email address.
-
-### User registration
-
-The registration feature allows external users to sign up to the site and ask to confirm their email.
-
-### Email verification
-
-### Password reset
-
-The reset password feature allows users to reset their password.
-
-## Authentication
-
-## Open Id
 
 ## HTTPS redirection
 
@@ -60,27 +40,7 @@ Allows to enable the gzip compression.
 
 Provides dynamic sitemap generation services.
 
-## Localization
-
-Provides support for UI localization.
-
-### Cultures
-
-### Content Localization
-
-Provides a part that allows to localize content items.
-
-### Content Culture Picker
-
-Provides a culture picker shape for the frontend.
-
-### Localized Content Item Sitemaps
-
-Provides support for localized content item sitemaps.
-
-## Localization packages
-
-### User time zone
+## User time zone
 
 Provides a way to set the time zone per user.
 

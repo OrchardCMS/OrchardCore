@@ -1,3 +1,3 @@
 # Features
 
-Features available in Orchard Core
+Features available in Orchard Core.
