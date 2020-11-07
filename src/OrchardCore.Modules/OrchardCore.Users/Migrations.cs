@@ -104,14 +104,15 @@ namespace OrchardCore.Users
             return 5;
         }
 
-        // UserId column is added. This initializes the UserId property to the NormalizedUserName for existing users.
+        // UserId column is added. This initializes the UserId property to the UserName for existing users.
+        // The UserName property rather than the NormalizedUserName is used as the ContentItem.Owner property matches the UserName.
         // New users will be created with a generated Id.
         public async Task<int> UpdateFrom5Async()
         {
             var users = await _session.Query<User, UserIndex>().ListAsync();
             foreach(var user in users)
             {
-                user.UserId = user.NormalizedUserName;
+                user.UserId = user.UserName;
                 _session.Save(user);
             }
 
