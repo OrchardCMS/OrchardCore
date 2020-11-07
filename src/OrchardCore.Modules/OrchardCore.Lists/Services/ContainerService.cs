@@ -375,11 +375,11 @@ namespace OrchardCore.Lists.Services
                             containedItems?.With<ContentItemIndex>().Where(i => i.Published);
                             break;
                         case ContentsStatus.Owner:
-                           /* if (_hca.HttpContext != null && _hca.HttpContext.User != null)
+                            if (_hca.HttpContext != null && _hca.HttpContext.User != null && _hca.HttpContext.User.Identity != null &&
+                                _hca.HttpContext.User.Identity.Name != null)
                             {
-                               _hca.GetType().GetProperties().GetPropertyValue()
-                            }*/
-                            containedItems?.With<ContentItemIndex>().Where(i => i.Owner == _hca.HttpContext.User.Identity.Name);
+                                containedItems?.With<ContentItemIndex>().Where(i => i.Owner == _hca.HttpContext.User.Identity.Name);
+                            }
                             break;
                         default:
                             throw new NotSupportedException("Unknown status filter.");
