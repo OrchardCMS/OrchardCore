@@ -77,13 +77,27 @@ namespace OrchardCore.Users.Services
 
             if (String.IsNullOrEmpty(newUser.UserId))
             {
-                newUser.UserId = _userIdGenerator.GenerateUniqueId(user);
+                // Due to database collation we normalize the userId to lower invariant.
+                newUser.UserId = _userIdGenerator.GenerateUniqueId(user).ToLowerInvariant();
             }
-
-            _session.Save(user);
 
             try
             {
+                var unique = false;
+                do
+                {
+                    if (await _session.QueryIndex<UserIndex>(x => x.UserId == newUser.UserId).CountAsync() == 0)
+                    {
+                        unique = true;
+                    }
+                    else
+                    {
+                        newUser.UserId = _userIdGenerator.GenerateUniqueId(user).ToLowerInvariant();
+                    }
+                } while (!unique);
+
+                _session.Save(user);
+
                 await _session.CommitAsync();
 
                 var context = new UserContext(user);
@@ -123,8 +137,7 @@ namespace OrchardCore.Users.Services
 
         public async Task<IUser> FindByIdAsync(string userId, CancellationToken cancellationToken = default(CancellationToken))
         {
-            // For backwards compatability we check also check the UserId against the NormalizedUserName.
-            return await _session.Query<User, UserIndex>(u => u.UserId == userId || u.NormalizedUserName == userId).FirstOrDefaultAsync();
+            return await _session.Query<User, UserIndex>(u => u.UserId == userId).FirstOrDefaultAsync();
         }
 
         public async Task<IUser> FindByNameAsync(string normalizedUserName, CancellationToken cancellationToken = default(CancellationToken))

@@ -1,7 +1,7 @@
+using System.Threading.Tasks;
 using OrchardCore.Data.Migration;
-using OrchardCore.Environment.Extensions;
-using OrchardCore.Environment.Shell;
 using OrchardCore.Users.Indexes;
+using OrchardCore.Users.Models;
 using YesSql;
 using YesSql.Sql;
 
@@ -10,21 +10,17 @@ namespace OrchardCore.Users
     public class Migrations : DataMigration
     {
         private readonly ISession _session;
-        private readonly IShellFeaturesManager _shellFeatureManager;
-        private readonly IExtensionManager _extensionManager;
 
-        public Migrations(ISession session, IShellFeaturesManager shellFeaturesManager, IExtensionManager extensionManager)
+        public Migrations(ISession session)
         {
             _session = session;
-            _shellFeatureManager = shellFeaturesManager;
-            _extensionManager = extensionManager;
         }
 
-        // This is a sequenced migration which on new schemas is complete after UpdateFrom2.
+        // This is a sequenced migration. On a new schemas this is complete after UpdateFrom2.
         public int Create()
         {
             SchemaBuilder.CreateMapIndexTable<UserIndex>(table => table
-                .Column<string>("NormalizedUserName") // These should have defaults. on SQL Server they will fall at 255. Exceptions are currently thrown if you go over that.
+                .Column<string>("NormalizedUserName") // TODO These should have defaults. on SQL Server they will fall at 255. Exceptions are currently thrown if you go over that.
                 .Column<string>("NormalizedEmail")
                 .Column<bool>("IsEnabled", c => c.NotNull().WithDefault(true))
                 .Column<string>("UserId")
@@ -70,8 +66,8 @@ namespace OrchardCore.Users
                .Column<string>(nameof(UserByClaimIndex.ClaimValue)),
                 null);
 
-            // Return 5 here to skip migrations on new database schemas.
-            return 5;
+            // Return 6 here to skip migrations on new database schemas.
+            return 6;
         }
 
         public int UpdateFrom3()
@@ -106,6 +102,20 @@ namespace OrchardCore.Users
             );
 
             return 5;
+        }
+
+        // UserId column is added. This initializes the UserId property to the NormalizedUserName for existing users.
+        // New users will be created with a generated Id.
+        public async Task<int> UpdateFrom5Async()
+        {
+            var users = await _session.Query<User, UserIndex>().ListAsync();
+            foreach(var user in users)
+            {
+                user.UserId = user.NormalizedUserName;
+                _session.Save(user);
+            }
+
+            return 6;
         }
     }
 }
