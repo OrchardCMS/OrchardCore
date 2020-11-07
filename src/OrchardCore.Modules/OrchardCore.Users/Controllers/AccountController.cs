@@ -288,7 +288,7 @@ namespace OrchardCore.Users.Controllers
                 input["Roles"] = ((User)user).RoleNames;
                 input["Provider"] = info?.LoginProvider;
                 await workflowManager.TriggerEventAsync(nameof(Workflows.Activities.UserLoggedInEvent),
-                    input: input, correlationId: ((User)user).Id.ToString());
+                    input: input, correlationId: ((User)user).UserId);
             }
 
             return RedirectToLocal(returnUrl);

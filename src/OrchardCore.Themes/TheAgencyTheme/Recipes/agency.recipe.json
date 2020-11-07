@@ -947,7 +947,7 @@
           "DisplayText": "Footer",
           "Latest": true,
           "Published": true,
-          "Owner": "[js: parameters('AdminUsername')]",
+          "Owner": "[js: parameters('AdminUserId')]",
           "Author": "[js: parameters('AdminUsername')]",
           "LayerMetadata": {
             "Layer": "Always",
@@ -1061,7 +1061,7 @@
           "DisplayText": "Main Menu",
           "Latest": true,
           "Published": true,
-          "Owner": "[js: parameters('AdminUsername')]",
+          "Owner": "[js: parameters('AdminUserId')]",
           "Author": "[js: parameters('AdminUsername')]",
           "MenuPart": {},
           "TitlePart": {
@@ -1122,7 +1122,7 @@
           "DisplayText": "[js: parameters('SiteName')]",
           "Latest": true,
           "Published": true,
-          "Owner": "[js: parameters('AdminUsername')]",
+          "Owner": "[js: parameters('AdminUserId')]",
           "Author": "[js: parameters('AdminUsername')]",
           "LandingPage": {},
           "AutoroutePart": {

@@ -14,7 +14,7 @@ namespace OrchardCore.Users.ViewModels
     public class UserEntry
     {
         public dynamic Shape { get; set; }
-        public int Id { get; set; }
+        public string UserId { get; set; }
     }
 
     public class UserIndexOptions
