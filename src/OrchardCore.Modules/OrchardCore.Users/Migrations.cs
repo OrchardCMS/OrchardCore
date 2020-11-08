@@ -109,7 +109,7 @@ namespace OrchardCore.Users
         // New users will be created with a generated Id.
         public async Task<int> UpdateFrom5Async()
         {
-            var users = await _session.Query<User, UserIndex>().ListAsync();
+            var users = await _session.Query<User>().ListAsync();
             foreach(var user in users)
             {
                 user.UserId = user.UserName;
