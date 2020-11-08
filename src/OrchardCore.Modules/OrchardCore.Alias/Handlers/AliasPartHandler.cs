@@ -73,13 +73,13 @@ namespace OrchardCore.Alias.Handlers
                 };
 
                 part.Alias = await _liquidTemplateManager.RenderAsync(pattern, NullEncoder.Default, model,
-                    scope => scope.SetValue("ContentItem", model.ContentItem));
+                    scope => scope.SetValue(nameof(ContentItem), model.ContentItem));
 
                 part.Alias = part.Alias.Replace("\r", String.Empty).Replace("\n", String.Empty);
 
-                if (part.Alias?.Length > AliasPart.MaxAliasLength)
+                if (part.Alias?.Length > Startup.MaxAliasLength)
                 {
-                    part.Alias = part.Alias.Substring(0, AliasPart.MaxAliasLength);
+                    part.Alias = part.Alias.Substring(0, Startup.MaxAliasLength);
                 }
 
                 if (!await part.IsAliasUniqueAsync(_session, part.Alias))
@@ -125,7 +125,7 @@ namespace OrchardCore.Alias.Handlers
         private string GetPattern(AliasPart part)
         {
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(part.ContentItem.ContentType);
-            var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => String.Equals(x.PartDefinition.Name, "AliasPart"));
+            var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => String.Equals(x.PartDefinition.Name, nameof(AliasPart)));
             var pattern = contentTypePartDefinition.GetSettings<AliasPartSettings>().Pattern;
 
             return pattern;
@@ -146,7 +146,7 @@ namespace OrchardCore.Alias.Handlers
             while (true)
             {
                 // Unversioned length + separator char + version length.
-                var quantityCharactersToTrim = unversionedAlias.Length + 1 + version.ToString().Length - AliasPart.MaxAliasLength;
+                var quantityCharactersToTrim = unversionedAlias.Length + 1 + version.ToString().Length - Startup.MaxAliasLength;
                 if (quantityCharactersToTrim > 0)
                 {
                     unversionedAlias = unversionedAlias.Substring(0, unversionedAlias.Length - quantityCharactersToTrim);

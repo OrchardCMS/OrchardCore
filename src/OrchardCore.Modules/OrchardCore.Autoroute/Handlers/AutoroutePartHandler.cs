@@ -341,7 +341,7 @@ namespace OrchardCore.Autoroute.Handlers
             while (true)
             {
                 // Unversioned length + separator char + version length.
-                var quantityCharactersToTrim = unversionedPath.Length + 1 + version.ToString().Length - AutoroutePart.MaxPathLength;
+                var quantityCharactersToTrim = unversionedPath.Length + 1 + version.ToString().Length - Startup.MaxPathLength;
                 if (quantityCharactersToTrim > 0)
                 {
                     unversionedPath = unversionedPath.Substring(0, unversionedPath.Length - quantityCharactersToTrim);
@@ -378,13 +378,13 @@ namespace OrchardCore.Autoroute.Handlers
                 };
 
                 part.Path = await _liquidTemplateManager.RenderAsync(pattern, NullEncoder.Default, model,
-                    scope => scope.SetValue("ContentItem", model.ContentItem));
+                    scope => scope.SetValue(nameof(ContentItem), model.ContentItem));
 
                 part.Path = part.Path.Replace("\r", String.Empty).Replace("\n", String.Empty);
 
-                if (part.Path?.Length > AutoroutePart.MaxPathLength)
+                if (part.Path?.Length > Startup.MaxPathLength)
                 {
-                    part.Path = part.Path.Substring(0, AutoroutePart.MaxPathLength);
+                    part.Path = part.Path.Substring(0, Startup.MaxPathLength);
                 }
 
                 if (!await IsAbsolutePathUniqueAsync(part.Path, part.ContentItem.ContentItemId))
@@ -402,7 +402,7 @@ namespace OrchardCore.Autoroute.Handlers
         private string GetPattern(AutoroutePart part)
         {
             var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(part.ContentItem.ContentType);
-            var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => String.Equals(x.PartDefinition.Name, "AutoroutePart"));
+            var contentTypePartDefinition = contentTypeDefinition.Parts.FirstOrDefault(x => String.Equals(x.PartDefinition.Name, nameof(AutoroutePart)));
             var pattern = contentTypePartDefinition.GetSettings<AutoroutePartSettings>().Pattern;
 
             return pattern;
@@ -422,7 +422,7 @@ namespace OrchardCore.Autoroute.Handlers
             while (true)
             {
                 // Unversioned length + separator char + version length.
-                var quantityCharactersToTrim = unversionedPath.Length + 1 + version.ToString().Length - AutoroutePart.MaxPathLength;
+                var quantityCharactersToTrim = unversionedPath.Length + 1 + version.ToString().Length - Startup.MaxPathLength;
                 if (quantityCharactersToTrim > 0)
                 {
                     unversionedPath = unversionedPath.Substring(0, unversionedPath.Length - quantityCharactersToTrim);

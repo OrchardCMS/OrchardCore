@@ -8,15 +8,15 @@ using YesSql;
 
 namespace OrchardCore.Alias.Models
 {
-    internal static class AliasPartExtensions
+    public static class AliasPartExtensions
     {
-        internal static async IAsyncEnumerable<ValidationResult> ValidateAsync(this AliasPart part, IStringLocalizer S, ISession session)
+        public static async IAsyncEnumerable<ValidationResult> ValidateAsync(this AliasPart part, IStringLocalizer S, ISession session)
         {
             if (!string.IsNullOrWhiteSpace(part.Alias))
             {
-                if (part.Alias.Length > AliasPart.MaxAliasLength)
+                if (part.Alias.Length > Startup.MaxAliasLength)
                 {
-                    yield return new ValidationResult(S["Your alias is too long. The alias can only be up to {0} characters.", AliasPart.MaxAliasLength], new string[] { nameof(part.Alias) });
+                    yield return new ValidationResult(S["Your alias is too long. The alias can only be up to {0} characters.", Startup.MaxAliasLength], new string[] { nameof(part.Alias) });
                 }
 
                 if (!await IsAliasUniqueAsync(part, session, part.Alias))
@@ -26,7 +26,7 @@ namespace OrchardCore.Alias.Models
             }
         }
 
-        internal static async Task<bool> IsAliasUniqueAsync(this AliasPart context, ISession session, string alias)
+        public static async Task<bool> IsAliasUniqueAsync(this AliasPart context, ISession session, string alias)
         {
             return (await session.QueryIndex<AliasPartIndex>(o => o.Alias == alias && o.ContentItemId != context.ContentItem.ContentItemId).CountAsync()) == 0;
         }

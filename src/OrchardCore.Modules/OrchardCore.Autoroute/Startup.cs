@@ -33,6 +33,9 @@ namespace OrchardCore.Autoroute
 {
     public class Startup : StartupBase
     {
+        public static char[] InvalidCharactersForPath = ":?#[]@!$&'()*+,.;=<>\\|%".ToCharArray();
+        public const int MaxPathLength = 1024;
+
         public override int ConfigureOrder => -100;
 
         static Startup()

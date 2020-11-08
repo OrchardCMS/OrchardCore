@@ -4,9 +4,6 @@ namespace OrchardCore.Autoroute.Models
 {
     public class AutoroutePart : ContentPart
     {
-        public static char[] InvalidCharactersForPath = ":?#[]@!$&'()*+,.;=<>\\|%".ToCharArray();
-        public const int MaxPathLength = 1024;
-
         public string Path { get; set; }
 
         /// <summary>
