@@ -77,10 +77,14 @@ namespace OrchardCore.Templates.Controllers
             var count = templatesDocument.Templates.Count;
 
             IEnumerable<KeyValuePair<string, Template>> templates = templatesDocument.Templates;
+
             if (!string.IsNullOrEmpty(displayText))
-               templates = templates.Where(template =>
-                    template.Key.Contains(displayText, StringComparison.InvariantCultureIgnoreCase));
-            templates
+            {
+                templates = templates.Where(template =>
+                     template.Key.Contains(displayText, StringComparison.InvariantCultureIgnoreCase));
+            }
+
+            templates = templates
               .OrderBy(x => x.Key)
               .Skip(pager.GetStartIndex())
               .Take(pager.PageSize);
