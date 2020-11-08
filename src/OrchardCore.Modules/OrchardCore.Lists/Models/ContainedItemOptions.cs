@@ -7,6 +7,7 @@ namespace OrchardCore.Lists.Models
         Published,
         Owner
     }
+
     public class ContainedItemOptions
     {
         public string DisplayText { get; set; }

@@ -43,13 +43,11 @@ namespace OrchardCore.Lists.Drivers
                     {
                         var pager = await GetPagerSlimAsync(context);
                         var settings = context.TypePartDefinition.GetSettings<ListPartSettings>();
-                        var containedItemOptions = new ContainedItemOptions();
                         model.ContentItems = (await _containerService.QueryContainedItemsAsync(
                             listPart.ContentItem.ContentItemId,
                             settings.EnableOrdering,
                             pager,
-                            Models.ContentsStatus.Published,
-                            containedItemOptions)).ToArray();
+                            null)).ToArray();
 
                         model.ContainedContentTypeDefinitions = GetContainedContentTypes(context);
                         model.Context = context;
@@ -71,8 +69,8 @@ namespace OrchardCore.Lists.Drivers
 
                         model.ContentItems = (await _containerService.QueryContainedItemsAsync(
                             listPart.ContentItem.ContentItemId,
-                            settings.EnableOrdering, pager,
-                            Models.ContentsStatus.None,
+                            settings.EnableOrdering,
+                            pager,
                             containedItemOptions)).ToArray();
 
                         model.ContainedContentTypeDefinitions = GetContainedContentTypes(context);

@@ -53,7 +53,7 @@ namespace OrchardCore.Lists.Controllers
             }
 
             // Include draft items.
-            var pageOfContentItems = (await _containerService.QueryContainedItemsAsync(containerId, true, pager, ContentsStatus.None, null)).ToList();
+            var pageOfContentItems = (await _containerService.QueryContainedItemsAsync(containerId, true, pager, null)).ToList();
             if (pageOfContentItems == null || !pageOfContentItems.Any())
             {
                 return NotFound();

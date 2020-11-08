@@ -150,7 +150,7 @@ namespace OrchardCore.Lists.Services
             }
         }
 
-        public async Task<IEnumerable<ContentItem>> QueryContainedItemsAsync(string contentItemId, bool enableOrdering, PagerSlim pager, ContentsStatus contentsStatus, ContainedItemOptions containedItemOptions)
+        public async Task<IEnumerable<ContentItem>> QueryContainedItemsAsync(string contentItemId, bool enableOrdering, PagerSlim pager, ContainedItemOptions containedItemOptions)
         {
             if (containedItemOptions == null)
             {
@@ -183,7 +183,7 @@ namespace OrchardCore.Lists.Services
 
                 var containedItems = await query.ListAsync();
 
-                if (containedItems.Count() == 0)
+                if (!containedItems.Any())
                 {
                     return containedItems;
                 }
@@ -240,7 +240,7 @@ namespace OrchardCore.Lists.Services
 
                 var containedItems = await query.ListAsync();
 
-                if (containedItems.Count() == 0)
+                if (!containedItems.Any())
                 {
                     return containedItems;
                 }
@@ -294,7 +294,7 @@ namespace OrchardCore.Lists.Services
 
                 var containedItems = await query.ListAsync();
 
-                if (containedItems.Count() == 0)
+                if (!containedItems.Any())
                 {
                     return containedItems;
                 }
@@ -357,31 +357,30 @@ namespace OrchardCore.Lists.Services
 
         private IQuery<ContentItem> ContainedItemOptionsFilter(ContainedItemOptions containedItemOptions, IQuery<ContentItem> containedItems)
         {
-            if (!string.IsNullOrEmpty(containedItemOptions?.DisplayText) || containedItemOptions.Status != ContentsStatus.None)
+            if (!string.IsNullOrEmpty(containedItemOptions.DisplayText))
             {
-                if (!string.IsNullOrEmpty(containedItemOptions?.DisplayText))
-                {
-                    containedItems.With<ContentItemIndex>().Where(i => i.DisplayText.Contains(containedItemOptions.DisplayText));
-                }
+                containedItems.With<ContentItemIndex>().Where(i => i.DisplayText.Contains(containedItemOptions.DisplayText));
+            }
 
-                if (containedItemOptions.Status != ContentsStatus.None)
+            if (containedItemOptions.Status != ContentsStatus.None)
+            {
+                switch (containedItemOptions.Status)
                 {
-                    switch (containedItemOptions.Status)
-                    {
-                        case ContentsStatus.Draft:
-                            containedItems?.With<ContentItemIndex>().Where(i => !i.Published);
-                            break;
-                        case ContentsStatus.Published:
-                            containedItems?.With<ContentItemIndex>().Where(i => i.Published);
-                            break;
-                        case ContentsStatus.Owner:
-                            var loggedUser = _hca.HttpContext.User.Identity.Name;
-                            if (loggedUser != null)
-                                containedItems?.With<ContentItemIndex>().Where(i => i.Owner == loggedUser);
-                            break;
-                        default:
-                            throw new NotSupportedException("Unknown status filter.");
-                    }
+                    case ContentsStatus.Draft:
+                        containedItems?.With<ContentItemIndex>().Where(i => !i.Published);
+                        break;
+                    case ContentsStatus.Published:
+                        containedItems?.With<ContentItemIndex>().Where(i => i.Published);
+                        break;
+                    case ContentsStatus.Owner:
+                        string currentUserName = _hca.HttpContext?.User?.Identity?.Name;
+                        if (currentUserName != null)
+                        {
+                            containedItems?.With<ContentItemIndex>().Where(i => i.Owner == currentUserName);
+                        }
+                        break;
+                    default:
+                        throw new NotSupportedException("Unknown status filter.");
                 }
             }
             return containedItems;
