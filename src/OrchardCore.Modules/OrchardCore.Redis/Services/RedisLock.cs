@@ -63,7 +63,11 @@ namespace OrchardCore.Redis.Services
                         await Task.Delay(GetDelay(++retries), cts.Token);
                     }
 
-                    catch (TaskCanceledException) { }
+                    catch (TaskCanceledException)
+                    {
+                        _logger.LogError("Fails to acquire the named lock '{LockName}' after the given timeout of '{Timeout}'.",
+                            _prefix + key, timeout.ToString());
+                    }
                 }
             }
 
@@ -84,7 +88,7 @@ namespace OrchardCore.Redis.Services
 
             catch (Exception e)
             {
-                _logger.LogError(e, "'Fails to acquire the named lock {LockName}'.", _prefix + key);
+                _logger.LogError(e, "Fails to acquire the named lock '{LockName}'.", _prefix + key);
             }
 
             return false;
@@ -104,7 +108,7 @@ namespace OrchardCore.Redis.Services
 
             catch (Exception e)
             {
-                _logger.LogError(e, "'Fails to release the named lock {LockName}'.", _prefix + key);
+                _logger.LogError(e, "Fails to release the named lock '{LockName}'.", _prefix + key);
             }
         }
 
@@ -117,11 +121,11 @@ namespace OrchardCore.Redis.Services
 
             catch (Exception e)
             {
-                _logger.LogError(e, "'Fails to release the named lock {LockName}'.", _prefix + key);
+                _logger.LogError(e, "Fails to release the named lock '{LockName}'.", _prefix + key);
             }
         }
 
-        private class Locker : ILocker, IAsyncDisposable
+        private class Locker : ILocker
         {
             private readonly RedisLock _lock;
             private readonly string _key;

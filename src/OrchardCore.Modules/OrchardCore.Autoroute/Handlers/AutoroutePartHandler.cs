@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Fluid;
@@ -11,13 +12,16 @@ using Newtonsoft.Json.Linq;
 using OrchardCore.Autoroute.Drivers;
 using OrchardCore.Autoroute.Models;
 using OrchardCore.Autoroute.ViewModels;
+using OrchardCore.ContentLocalization;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.ContentManagement.Routing;
+using OrchardCore.DisplayManagement.Liquid;
 using OrchardCore.Environment.Cache;
 using OrchardCore.Liquid;
+using OrchardCore.Localization;
 using OrchardCore.Settings;
 using YesSql;
 
@@ -388,8 +392,14 @@ namespace OrchardCore.Autoroute.Handlers
                     ContentItem = part.ContentItem
                 };
 
-                part.Path = await _liquidTemplateManager.RenderAsync(pattern, NullEncoder.Default, model,
-                    scope => scope.SetValue("ContentItem", model.ContentItem));
+                _contentManager ??= _serviceProvider.GetRequiredService<IContentManager>();
+
+                var cultureAspect = await _contentManager.PopulateAspectAsync(part.ContentItem, new CultureAspect());
+                using (CultureScope.Create(cultureAspect.Culture))
+                {
+                    part.Path = await _liquidTemplateManager.RenderAsync(pattern, NullEncoder.Default, model,
+                        scope => scope.SetValue("ContentItem", model.ContentItem));
+                }
 
                 part.Path = part.Path.Replace("\r", String.Empty).Replace("\n", String.Empty);
 

@@ -142,7 +142,7 @@ namespace OrchardCore.Users.Controllers
             {
                 userEntries.Add(new UserEntry
                 {
-                    Id = user.Id,
+                    UserId = user.UserId,
                     Shape = await _userDisplayManager.BuildDisplayAsync(user, updater: _updateModelAccessor.ModelUpdater, displayType: "SummaryAdmin")
                 }
                 );
@@ -192,11 +192,11 @@ namespace OrchardCore.Users.Controllers
 
         [HttpPost, ActionName("Index")]
         [FormValueRequired("submit.BulkAction")]
-        public async Task<ActionResult> IndexPOST(UserIndexOptions options, IEnumerable<int> itemIds)
+        public async Task<ActionResult> IndexPOST(UserIndexOptions options, IEnumerable<string> itemIds)
         {
             if (itemIds?.Count() > 0)
             {
-                var checkedContentItems = await _session.Query<User, UserIndex>().Where(x => x.DocumentId.IsIn(itemIds)).ListAsync();
+                var checkedContentItems = await _session.Query<User, UserIndex>().Where(x => x.UserId.IsIn(itemIds)).ListAsync();
                 switch (options.BulkAction)
                 {
                     case UsersBulkAction.None:

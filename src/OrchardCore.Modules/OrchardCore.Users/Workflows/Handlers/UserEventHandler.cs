@@ -44,7 +44,7 @@ namespace OrchardCore.Users.Workflows.Handlers
         {
             return _workflowManager.TriggerEventAsync(name,
                 input: new { User = user },
-                correlationId: user.Id.ToString()
+                correlationId: user.UserId
             );
         }
     }

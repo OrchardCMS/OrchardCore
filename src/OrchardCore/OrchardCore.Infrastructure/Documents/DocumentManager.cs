@@ -1,9 +1,8 @@
 using System;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
-using Newtonsoft.Json;
+using Microsoft.Extensions.Options;
 using OrchardCore.Data.Documents;
 using OrchardCore.Documents.Options;
 
@@ -14,16 +13,10 @@ namespace OrchardCore.Documents
     /// </summary>
     public class DocumentManager<TDocument> : IDocumentManager<TDocument> where TDocument : class, IDocument, new()
     {
-        private static readonly JsonSerializerSettings _jsonSettings = new JsonSerializerSettings
-        {
-            TypeNameHandling = TypeNameHandling.Auto,
-            DateTimeZoneHandling = DateTimeZoneHandling.Utc
-        };
-
-        private readonly IDocumentStore _documentStore;
+        protected readonly IDocumentStore _documentStore;
         private readonly IDistributedCache _distributedCache;
         private readonly IMemoryCache _memoryCache;
-        private readonly DocumentOptions _options;
+        protected readonly DocumentOptions _options;
 
         private TDocument _scopedCache;
         private TDocument _volatileCache;
@@ -34,12 +27,12 @@ namespace OrchardCore.Documents
             IDocumentStore documentStore,
             IDistributedCache distributedCache,
             IMemoryCache memoryCache,
-            DocumentOptions<TDocument> options)
+            IOptionsSnapshot<DocumentOptions> options)
         {
             _documentStore = documentStore;
             _distributedCache = distributedCache;
             _memoryCache = memoryCache;
-            _options = options.Value;
+            _options = options.Get(typeof(TDocument).FullName);
 
             if (!(_distributedCache is MemoryDistributedCache))
             {
@@ -214,7 +207,7 @@ namespace OrchardCore.Documents
             return _scopedCache = document;
         }
 
-        private async Task SetInternalAsync(TDocument document)
+        protected async Task SetInternalAsync(TDocument document)
         {
             await UpdateDistributedCacheAsync(document);
 
@@ -253,7 +246,7 @@ namespace OrchardCore.Documents
             }
             else if (_memoryCache.TryGetValue<TDocument>(_options.CacheKey, out var cached))
             {
-                data = Serialize(cached);
+                data = await _options.Serializer.SerializeAsync(cached);
             }
 
             if (data == null)
@@ -261,24 +254,18 @@ namespace OrchardCore.Documents
                 return null;
             }
 
-            return Deserialize(data);
+            return await _options.Serializer.DeserializeAsync<TDocument>(data);
         }
 
         private async Task UpdateDistributedCacheAsync(TDocument document)
         {
             if (_isDistributed)
             {
-                var data = Serialize(document);
+                var data = await _options.Serializer.SerializeAsync(document, _options.CompressThreshold);
                 await _distributedCache.SetAsync(_options.CacheKey, data, _options);
             }
 
             await _distributedCache.SetStringAsync(_options.CacheIdKey, document.Identifier ?? "NULL", _options);
         }
-
-        internal static byte[] Serialize(TDocument document) =>
-            Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(document, _jsonSettings));
-
-        internal static TDocument Deserialize(byte[] data) =>
-            JsonConvert.DeserializeObject<TDocument>(Encoding.UTF8.GetString(data), _jsonSettings);
     }
 }

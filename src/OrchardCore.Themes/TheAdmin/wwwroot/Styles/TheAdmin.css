@@ -18869,6 +18869,30 @@ ul.pager {
 .auth-form label {
   display: block; }
 
+.CodeMirror {
+  height: auto; }
+
+[dir] .CodeMirror {
+  border: 1px solid #ddd; }
+
+.CodeMirror-fullscreen {
+  z-index: 1000; }
+
+.CodeMirror pre {
+  line-height: 1.25; }
+
+[dir=ltr] .CodeMirror pre {
+  padding-left: 7px; }
+
+[dir=rtl] .CodeMirror pre {
+  padding-right: 7px; }
+
+[dir] .CodeMirror-activeline-background {
+  background: transparent !important; }
+
+[dir] .CodeMirror-focused .CodeMirror-activeline-background {
+  background: rgba(100, 100, 100, 0.1) !important; }
+
 .switch {
   font-size: 1rem;
   position: relative; }
@@ -18981,30 +19005,6 @@ ul.pager {
   margin-left: 1rem; }
   [dir=rtl] .switch + .switch {
     margin-right: 1rem; }
-
-.CodeMirror {
-  height: auto; }
-
-[dir] .CodeMirror {
-  border: 1px solid #ddd; }
-
-.CodeMirror-fullscreen {
-  z-index: 1000; }
-
-.CodeMirror pre {
-  line-height: 1.25; }
-
-[dir=ltr] .CodeMirror pre {
-  padding-left: 7px; }
-
-[dir=rtl] .CodeMirror pre {
-  padding-right: 7px; }
-
-[dir] .CodeMirror-activeline-background {
-  background: transparent !important; }
-
-[dir] .CodeMirror-focused .CodeMirror-activeline-background {
-  background: rgba(100, 100, 100, 0.1) !important; }
 
 #ui-datepicker-div {
   z-index: 100 !important; }

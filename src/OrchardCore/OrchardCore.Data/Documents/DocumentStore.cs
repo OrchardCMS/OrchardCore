@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Environment.Shell.Scope;
 using YesSql;
 
 namespace OrchardCore.Data.Documents
@@ -21,6 +23,7 @@ namespace OrchardCore.Data.Documents
         private DocumentStoreCommitFailureDelegate _afterCommitFailure;
 
         private bool _canceled;
+        private bool _committed;
 
         public DocumentStore(ISession session)
         {
@@ -53,11 +56,31 @@ namespace OrchardCore.Data.Documents
                 return (false, loaded as T);
             }
 
-            var document = await _session.Query<T>().FirstOrDefaultAsync();
+            T document = null;
+
+            // Querying a document just after the session was committed may throw a 'MARS' exception.
+            // Note: This issue may happen with 'Sql Server' but doesn't happen with 'Sqlite' at all.
+            if (_committed)
+            {
+                // So we create a scope on the current context, but just to resolve a new session.
+                await new ShellScope(ShellScope.Context).UsingServiceScopeAsync(scope =>
+                {
+                    var session = scope.ServiceProvider.GetRequiredService<ISession>();
+                    return session.Query<T>().FirstOrDefaultAsync();
+                });
+            }
+            else
+            {
+                document = await _session.Query<T>().FirstOrDefaultAsync();
+            }
 
             if (document != null)
             {
-                _session.Detach(document);
+                if (!_committed)
+                {
+                    _session.Detach(document);
+                }
+
                 return (true, document);
             }
 
@@ -123,6 +146,7 @@ namespace OrchardCore.Data.Documents
             {
                 await _session.CommitAsync();
 
+                _committed = true;
                 _loaded.Clear();
 
                 if (!_canceled && _afterCommitSuccess != null)

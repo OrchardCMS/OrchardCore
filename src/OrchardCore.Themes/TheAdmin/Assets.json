@@ -27,8 +27,7 @@
   {
     "generateSourceMaps": false,
     "inputs": [
-      "Assets/js/header/userPreferencesLoader.js",
-      "Assets/js/header/darkmode.js"
+      "Assets/js/header/userPreferencesLoader.js"
     ],
     "output": "wwwroot/Scripts/TheAdmin-header.js"
   }
