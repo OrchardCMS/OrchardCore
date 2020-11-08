@@ -20,7 +20,15 @@ namespace OrchardCore.Users.Liquid
         {
             var user = _httpContextAccessor.HttpContext.User;
 
-            context.MemberAccessStrategy.Register<User>();
+            // Only register safe properties for access through liquid.
+            context.MemberAccessStrategy.Register<User>
+            (
+                nameof(User.UserName),
+                nameof(User.Email),
+                nameof(User.IsEnabled),
+                nameof(User.RoleNames)
+            );
+
             context.MemberAccessStrategy.Register<ClaimsPrincipal>();
             context.MemberAccessStrategy.Register<ClaimsIdentity>();
             context.SetValue("User", user);

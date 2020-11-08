@@ -1,0 +1,32 @@
+@model OrchardCore.ContentFields.ViewModels.DisplayUserPickerFieldViewModel
+@using OrchardCore.Mvc.Utilities
+@using OrchardCore.Users.Models
+@using OrchardCore.Users.Indexes
+@using YesSql.Services;
+@using YesSql;
+
+@inject YesSql.ISession Session
+
+@{
+    var name = (Model.PartFieldDefinition.PartDefinition.Name + "-" + Model.PartFieldDefinition.Name).HtmlClassify();
+    var users = await Session.Query<User, UserIndex>().Where(x => x.UserId.IsIn(Model.UserIds)).ListAsync();
+}
+
+<div class="field field-type-userpickerfield field-name-@name">
+    <span class="name">@Model.PartFieldDefinition.DisplayName():</span>
+    @if (users.Any())
+    {
+        foreach (var user in users)
+        {
+            <span class="value">@user.UserName</span>
+            if (user != users.Last())
+            {
+                <span>,</span>
+            }
+        }
+    }
+    else
+    {
+        <span class="value">@T["No users."]</span>
+    }
+</div>
