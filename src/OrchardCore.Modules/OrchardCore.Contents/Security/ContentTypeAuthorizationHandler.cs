@@ -116,7 +116,7 @@ namespace OrchardCore.Contents.Security
                 return false;
             }
 
-            return user.Identity.Name == content.Owner;
+            return user.FindFirstValue(ClaimTypes.NameIdentifier) == content.Owner;
         }
 
         private static bool OwnerVariationExists(Permission permission)

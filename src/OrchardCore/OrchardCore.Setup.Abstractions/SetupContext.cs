@@ -24,6 +24,12 @@ namespace OrchardCore.Setup.Services
         /// </summary>
         public string AdminUsername { get; set; }
 
+
+        /// <summary>
+        /// Gets or sets the administrator user id.
+        /// </summary>
+        public string AdminUserId { get; set; }
+
         /// <summary>
         /// Gets or sets the administrator email.
         /// </summary>

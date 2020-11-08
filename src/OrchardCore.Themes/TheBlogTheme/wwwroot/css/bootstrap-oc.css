@@ -316,3 +316,8 @@ ul.pager {
   padding-left: 0;
   list-style: none;
 }
+
+#togglePassword {
+  width: 44px;
+  padding: 0;
+}

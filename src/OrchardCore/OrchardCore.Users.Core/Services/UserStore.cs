@@ -30,12 +30,14 @@ namespace OrchardCore.Users.Services
         private readonly ISession _session;
         private readonly IRoleService _roleService;
         private readonly ILookupNormalizer _keyNormalizer;
+        private readonly IUserIdGenerator _userIdGenerator;
         private readonly ILogger _logger;
         private readonly IDataProtectionProvider _dataProtectionProvider;
 
         public UserStore(ISession session,
             IRoleService roleService,
             ILookupNormalizer keyNormalizer,
+            IUserIdGenerator userIdGenerator,
             ILogger<UserStore> logger,
             IEnumerable<IUserEventHandler> handlers,
             IDataProtectionProvider dataProtectionProvider)
@@ -43,6 +45,7 @@ namespace OrchardCore.Users.Services
             _session = session;
             _roleService = roleService;
             _keyNormalizer = keyNormalizer;
+            _userIdGenerator = userIdGenerator;
             _logger = logger;
             _dataProtectionProvider = dataProtectionProvider;
             Handlers = handlers;
@@ -67,10 +70,34 @@ namespace OrchardCore.Users.Services
                 throw new ArgumentNullException(nameof(user));
             }
 
-            _session.Save(user);
+            if (!(user is User newUser))
+            {
+                throw new ArgumentException("Expected a User instance.", nameof(user));
+            }
+
+            if (String.IsNullOrEmpty(newUser.UserId))
+            {
+                // Due to database collation we normalize the userId to lower invariant.
+                newUser.UserId = _userIdGenerator.GenerateUniqueId(user).ToLowerInvariant();
+            }
 
             try
             {
+                var unique = false;
+                do
+                {
+                    if (await _session.QueryIndex<UserIndex>(x => x.UserId == newUser.UserId).CountAsync() == 0)
+                    {
+                        unique = true;
+                    }
+                    else
+                    {
+                        newUser.UserId = _userIdGenerator.GenerateUniqueId(user).ToLowerInvariant();
+                    }
+                } while (!unique);
+
+                _session.Save(user);
+
                 await _session.CommitAsync();
 
                 var context = new UserContext(user);
@@ -110,13 +137,7 @@ namespace OrchardCore.Users.Services
 
         public async Task<IUser> FindByIdAsync(string userId, CancellationToken cancellationToken = default(CancellationToken))
         {
-            int id;
-            if (!int.TryParse(userId, out id))
-            {
-                return null;
-            }
-
-            return await _session.GetAsync<User>(id);
+            return await _session.Query<User, UserIndex>(u => u.UserId == userId).FirstOrDefaultAsync();
         }
 
         public async Task<IUser> FindByNameAsync(string normalizedUserName, CancellationToken cancellationToken = default(CancellationToken))
@@ -141,7 +162,7 @@ namespace OrchardCore.Users.Services
                 throw new ArgumentNullException(nameof(user));
             }
 
-            return Task.FromResult(((User)user).Id.ToString(System.Globalization.CultureInfo.InvariantCulture));
+            return Task.FromResult(((User)user).UserId);
         }
 
         public Task<string> GetUserNameAsync(IUser user, CancellationToken cancellationToken = default(CancellationToken))

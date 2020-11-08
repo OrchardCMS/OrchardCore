@@ -1,7 +1,7 @@
 # Contributors ✨
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-203-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-204-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
@@ -229,7 +229,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
   <tr>
     <td align="center"><a href="https://github.com/mrampazo"><img src="https://avatars0.githubusercontent.com/u/66479240?v=4" width="100px;" alt=""/><br /><sub><b>mrampazo</b></sub></a><br /><a href="#translation-mrampazo" title="Translation">🌍</a></td>
     <td align="center"><a href="https://github.com/vlatkost"><img src="https://avatars0.githubusercontent.com/u/15385514?v=4" width="100px;" alt=""/><br /><sub><b>Vlatko Stojanovski</b></sub></a><br /><a href="#translation-vlatkost" title="Translation">🌍</a></td>
-    <td align="center"><a href="https://github.com/mariojsnunes"><img src="https://avatars1.githubusercontent.com/u/8073622?v=4" width="100px;" alt=""/><br /><sub><b>mariojsnunes</b></sub></a><br /><a href="#translation-mariojsnunes" title="Translation">🌍</a></td>
+    <td align="center"><a href="https://github.com/mariojsnunes"><img src="https://avatars1.githubusercontent.com/u/8073622?v=4" width="100px;" alt=""/><br /><sub><b>mariojsnunes</b></sub></a><br /><a href="#translation-mariojsnunes" title="Translation">🌍</a> <a href="https://github.com/OrchardCMS/OrchardCore/commits?author=mariojsnunes" title="Code">💻</a></td>
     <td align="center"><a href="http://marcelobarsotti.com"><img src="https://avatars2.githubusercontent.com/u/16526496?v=4" width="100px;" alt=""/><br /><sub><b>Marcelo Barsotti</b></sub></a><br /><a href="#translation-mbarsott" title="Translation">🌍</a></td>
     <td align="center"><a href="https://github.com/Craiqser"><img src="https://avatars3.githubusercontent.com/u/1695820?v=4" width="100px;" alt=""/><br /><sub><b>Craiqser</b></sub></a><br /><a href="#translation-Craiqser" title="Translation">🌍</a></td>
     <td align="center"><a href="https://github.com/pgrimaud"><img src="https://avatars1.githubusercontent.com/u/1866496?v=4" width="100px;" alt=""/><br /><sub><b>Pierre Grimaud</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=pgrimaud" title="Documentation">📖</a></td>
@@ -244,7 +244,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
   </tr>
   <tr>
     <td align="center"><a href="https://www.mscoder.cn/members-daziyuan/"><img src="https://avatars3.githubusercontent.com/u/80653?v=4" width="100px;" alt=""/><br /><sub><b>代码抄写狮</b></sub></a><br /><a href="#translation-DaZiYuan" title="Translation">🌍</a></td>
-    <td align="center"><a href="https://github.com/chinasqzl"><img src="https://avatars1.githubusercontent.com/u/16968103?v=4" width="100px;" alt=""/><br /><sub><b>chinasqzl</b></sub></a><br /><a href="#translation-chinasqzl" title="Translation">🌍</a></td>
+    <td align="center"><a href="https://github.com/chinasqzl"><img src="https://avatars1.githubusercontent.com/u/16968103?v=4" width="100px;" alt=""/><br /><sub><b>chinasqzl</b></sub></a><br /><a href="#translation-chinasqzl" title="Translation">🌍</a> <a href="https://github.com/OrchardCMS/OrchardCore/commits?author=chinasqzl" title="Code">💻</a></td>
     <td align="center"><a href="https://github.com/fuxiaojun0203"><img src="https://avatars0.githubusercontent.com/u/25946521?v=4" width="100px;" alt=""/><br /><sub><b>哼本哞</b></sub></a><br /><a href="#translation-fuxiaojun0203" title="Translation">🌍</a></td>
     <td align="center"><a href="http://www.overstartup.com"><img src="https://avatars1.githubusercontent.com/u/24512878?v=4" width="100px;" alt=""/><br /><sub><b>Ahmad Aghilizadeh</b></sub></a><br /><a href="#translation-aghili371" title="Translation">🌍</a></td>
     <td align="center"><a href="https://github.com/vikriu"><img src="https://avatars3.githubusercontent.com/u/17539722?v=4" width="100px;" alt=""/><br /><sub><b>vikriu</b></sub></a><br /><a href="#translation-vikriu" title="Translation">🌍</a></td>
@@ -280,6 +280,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <td align="center"><a href="https://github.com/lomholdt"><img src="https://avatars0.githubusercontent.com/u/1733744?v=4" width="100px;" alt=""/><br /><sub><b>Jonas Lomholdt</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=lomholdt" title="Documentation">📖</a></td>
     <td align="center"><a href="https://github.com/scriptmaster"><img src="https://avatars1.githubusercontent.com/u/544175?v=4" width="100px;" alt=""/><br /><sub><b>ScriptMaster</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=scriptmaster" title="Code">💻</a></td>
     <td align="center"><a href="https://github.com/jagbarcelo"><img src="https://avatars2.githubusercontent.com/u/6704109?v=4" width="100px;" alt=""/><br /><sub><b>jagbarcelo</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=jagbarcelo" title="Code">💻</a></td>
+    <td align="center"><a href="https://github.com/MikeKry"><img src="https://avatars3.githubusercontent.com/u/52829889?v=4" width="100px;" alt=""/><br /><sub><b>MikeKry</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=MikeKry" title="Code">💻</a></td>
   </tr>
 </table>
 

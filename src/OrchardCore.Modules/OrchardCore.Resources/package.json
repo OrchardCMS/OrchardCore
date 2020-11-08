@@ -16,6 +16,6 @@
     "trumbowyg": "2.21.0",
     "vue": "^2.6.12",
     "vue-multiselect": "^2.1.6",
-    "vuedraggable": "^2.24.2"
+    "vuedraggable": "^2.24.3"
   }
 }

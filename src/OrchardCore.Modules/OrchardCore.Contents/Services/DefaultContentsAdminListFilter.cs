@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -39,6 +40,7 @@ namespace OrchardCore.Contents.Services
         public async Task FilterAsync(ContentOptionsViewModel model, IQuery<ContentItem> query, IUpdateModel updater)
         {
             var user = _httpContextAccessor.HttpContext.User;
+            var userNameIdentifier = user.FindFirstValue(ClaimTypes.NameIdentifier);
 
             if (!String.IsNullOrEmpty(model.DisplayText))
             {
@@ -72,7 +74,7 @@ namespace OrchardCore.Contents.Services
                     // We display a specific type even if it's not listable so that admin pages
                     // can reuse the Content list page for specific types.
                     var contentItem = await _contentManager.NewAsync(contentTypeDefinition.Name);
-                    contentItem.Owner = user.Identity.Name;
+                    contentItem.Owner = userNameIdentifier;
 
                     var hasContentListPermission = await _authorizationService.AuthorizeAsync(user, ContentTypePermissionsHelper.CreateDynamicPermission(ContentTypePermissionsHelper.PermissionTemplates[CommonPermissions.ListContent.Name], contentTypeDefinition), contentItem);
                     if (hasContentListPermission)
@@ -81,7 +83,7 @@ namespace OrchardCore.Contents.Services
                     }
                     else
                     {
-                        query.With<ContentItemIndex>(x => x.ContentType == model.SelectedContentType && x.Owner == user.Identity.Name);
+                        query.With<ContentItemIndex>(x => x.ContentType == model.SelectedContentType && x.Owner == userNameIdentifier);
                     }
                 }
             }
@@ -98,7 +100,7 @@ namespace OrchardCore.Contents.Services
                         // We want to list the content item if the user can edit their own items at least.
                         // It might display content items the user won't be able to edit though.
                         var contentItem = await _contentManager.NewAsync(ctd.Name);
-                        contentItem.Owner = user.Identity.Name;
+                        contentItem.Owner = userNameIdentifier;
 
                         var hasEditPermission = await _authorizationService.AuthorizeAsync(user, CommonPermissions.EditContent, contentItem);
                         if (hasEditPermission)
@@ -123,7 +125,7 @@ namespace OrchardCore.Contents.Services
 
                 if (authorizedContentTypes.Any() && !canListAllContent)
                 {
-                    query.With<ContentItemIndex>().Where(x => (x.ContentType.IsIn(authorizedContentTypes.Select(t => t.Name).ToArray())) || (x.ContentType.IsIn(unauthorizedContentTypes.Select(t => t.Name).ToArray()) && x.Owner == user.Identity.Name));
+                    query.With<ContentItemIndex>().Where(x => (x.ContentType.IsIn(authorizedContentTypes.Select(t => t.Name).ToArray())) || (x.ContentType.IsIn(unauthorizedContentTypes.Select(t => t.Name).ToArray()) && x.Owner == userNameIdentifier));
                 }
                 else
                 {
@@ -134,13 +136,13 @@ namespace OrchardCore.Contents.Services
                     // we bypass the corresponding ContentsStatus by owned content filtering
                     if (!canListAllContent)
                     {
-                        query.With<ContentItemIndex>(x => x.Owner == user.Identity.Name);
+                        query.With<ContentItemIndex>(x => x.Owner == userNameIdentifier);
                     }
                     else
                     {
                         if (model.ContentsStatus == ContentsStatus.Owner)
                         {
-                            query.With<ContentItemIndex>(x => x.Owner == user.Identity.Name);
+                            query.With<ContentItemIndex>(x => x.Owner == userNameIdentifier);
                         }
                     }
                 }

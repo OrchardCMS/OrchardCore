@@ -1,3 +1,5 @@
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 using OrchardCore.Data.Documents;
 using OrchardCore.Documents;
 using OrchardCore.Documents.Options;
@@ -17,8 +19,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 services.AddScoped(typeof(IVolatileDocumentManager<>), typeof(VolatileDocumentManager<>));
                 services.AddScoped(typeof(IDocumentManager<,>), typeof(DocumentManager<,>));
 
-                services.AddSingleton<IDocumentOptionsFactory, DocumentOptionsFactory>();
-                services.AddTransient(typeof(DocumentOptions<>));
+                services.TryAddEnumerable(ServiceDescriptor.Singleton<IConfigureOptions<DocumentOptions>, DocumentOptionsSetup>());
 
                 services.AddScoped(typeof(IDocumentEntityManager<>), typeof(DocumentEntityManager<>));
                 services.AddScoped(typeof(IVolatileDocumentEntityManager<>), typeof(VolatileDocumentEntityManager<>));
