@@ -58,8 +58,8 @@ namespace OrchardCore.Data.Documents
 
             T document = null;
 
-            // Querying a document on a session that is already committed may throw a 'MARS' exception.
-            // Note: This issue may happen using 'Sql Server', but doesn't happen with 'Sqlite' at all.
+            // Querying a document just after the session was committed may throw a 'MARS' exception.
+            // Note: This issue may happen with 'Sql Server' but doesn't happen with 'Sqlite' at all.
             if (_committed)
             {
                 // So we create a scope on the current context, but just to resolve a new session.
@@ -68,20 +68,19 @@ namespace OrchardCore.Data.Documents
                     var session = scope.ServiceProvider.GetRequiredService<ISession>();
                     document = await session.Query<T>().FirstOrDefaultAsync();
                 });
-
-                if (document != null)
-                {
-                    return (true, document);
-                }
-
-                return (true, await (factoryAsync?.Invoke() ?? Task.FromResult((T)null)) ?? new T());
             }
-
-            document = await _session.Query<T>().FirstOrDefaultAsync();
+            else
+            {
+                document = await _session.Query<T>().FirstOrDefaultAsync();
+            }
 
             if (document != null)
             {
-                _session.Detach(document);
+                if (!_committed)
+                {
+                    _session.Detach(document);
+                }
+
                 return (true, document);
             }
 
