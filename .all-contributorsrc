@@ -1916,6 +1916,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "parasparmar",
+      "name": "Paras Parmar",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/2953468?v=4",
+      "profile": "https://www.parasparmar.com",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "skipCi": true
