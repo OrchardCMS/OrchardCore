@@ -1,7 +1,7 @@
 # Contributors ✨
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-205-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-206-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
@@ -284,6 +284,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
   </tr>
   <tr>
     <td align="center"><a href="https://www.parasparmar.com"><img src="https://avatars3.githubusercontent.com/u/2953468?v=4" width="100px;" alt=""/><br /><sub><b>Paras Parmar</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=parasparmar" title="Documentation">📖</a></td>
+    <td align="center"><a href="https://www.linoa.com"><img src="https://avatars1.githubusercontent.com/u/17902415?v=4" width="100px;" alt=""/><br /><sub><b>Julien Chomarat</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=juchom" title="Documentation">📖</a></td>
   </tr>
 </table>
 

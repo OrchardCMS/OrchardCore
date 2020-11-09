@@ -1925,6 +1925,15 @@
       "contributions": [
         "doc"
       ]
+    },
+    {
+      "login": "juchom",
+      "name": "Julien Chomarat",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/17902415?v=4",
+      "profile": "https://www.linoa.com",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "skipCi": true
