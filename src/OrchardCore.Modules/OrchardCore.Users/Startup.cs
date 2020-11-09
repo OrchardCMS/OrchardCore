@@ -382,4 +382,13 @@ namespace OrchardCore.Users
             services.AddSingleton<IDeploymentStepFactory>(new SiteSettingsPropertyDeploymentStepFactory<ResetPasswordSettings>());
         }
     }
+
+    [Feature("OrchardCore.Users.CustomUserSettings")]
+    public class CustomUserSettingsStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddScoped<IDisplayDriver<User>, CustomUserSettingsDisplayDriver>();
+        }
+    }
 }
