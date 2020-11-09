@@ -52,8 +52,9 @@ namespace OrchardCore.Lists.Controllers
                 pager.Before = afterValue.ToString();
             }
 
+            ContainedItemOptions containedItemOptions = new ContainedItemOptions();
             // Include draft items.
-            var pageOfContentItems = (await _containerService.QueryContainedItemsAsync(containerId, true, pager, null)).ToList();
+            var pageOfContentItems = (await _containerService.QueryContainedItemsAsync(containerId, true, pager, containedItemOptions)).ToList();
             if (pageOfContentItems == null || !pageOfContentItems.Any())
             {
                 return NotFound();
