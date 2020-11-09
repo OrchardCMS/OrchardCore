@@ -31,30 +31,33 @@ namespace OrchardCore.Users.Drivers
             _contentManager = contentManager;
         }
 
-        public override async Task<IDisplayResult> EditAsync(User user, BuildEditorContext context)
+        public override Task<IDisplayResult> EditAsync(User user, BuildEditorContext context)
         {
-            var results = new List<IDisplayResult>();
-
-            foreach(var contentTypeDefinition in GetContentTypeDefinitions())
+            var contentTypeDefinitions = GetContentTypeDefinitions();
+            if (!contentTypeDefinitions.Any())
             {
-                var isNew = false;
-                var contentItem = await GetUserSettingsAsync(user, contentTypeDefinition, () => isNew = true);
-                // this is going to need a prefix.
-
-                var shape = Initialize<CustomUserSettingsEditViewModel>("CustomUserSettings", async model =>
-                {
-                    model.ContentItem = contentItem;
-                    model.Editor = await _contentItemDisplayManager.BuildEditorAsync(contentItem, context.Updater, isNew);
-                }).Location($"Content:3");//#{contentTypeDefinition.Name}
-                results.Add(shape);
+                return Task.FromResult<IDisplayResult>(null);
             }
 
-            return Combine(results.ToArray());
+            var results = new List<IDisplayResult>();
+
+            foreach(var contentTypeDefinition in contentTypeDefinitions)
+            {
+                results.Add(Initialize<CustomUserSettingsEditViewModel>("CustomUserSettings", async model =>
+                    {
+                        var isNew = false;
+                        var contentItem = await GetUserSettingsAsync(user, contentTypeDefinition, () => isNew = true);
+                        model.Editor = await _contentItemDisplayManager.BuildEditorAsync(contentItem, context.Updater, isNew);
+                    })
+                    .Location($"Content:10#{contentTypeDefinition.DisplayName}")
+                    .Differentiator($"CustomUserSettings-{contentTypeDefinition.Name}"));
+            }
+
+            return Task.FromResult<IDisplayResult>(Combine(results.ToArray()));
         }
 
         public override async Task<IDisplayResult> UpdateAsync(User user, UpdateEditorContext context)
         {
-
             foreach(var contentTypeDefinition in GetContentTypeDefinitions())
             {
                 var isNew = false;
