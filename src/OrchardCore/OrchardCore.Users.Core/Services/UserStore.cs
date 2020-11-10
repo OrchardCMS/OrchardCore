@@ -75,26 +75,27 @@ namespace OrchardCore.Users.Services
                 throw new ArgumentException("Expected a User instance.", nameof(user));
             }
 
-            if (String.IsNullOrEmpty(newUser.UserId))
+            var newUserId = newUser.UserId;
+
+            if (String.IsNullOrEmpty(newUserId))
             {
                 // Due to database collation we normalize the userId to lower invariant.
-                newUser.UserId = _userIdGenerator.GenerateUniqueId(user).ToLowerInvariant();
+                newUserId = _userIdGenerator.GenerateUniqueId(user).ToLowerInvariant();
             }
 
             try
             {
-                var unique = false;
-                do
+                var attempts = 10;
+
+                while (await _session.QueryIndex<UserIndex>(x => x.UserId == newUserId).CountAsync() != 0)
                 {
-                    if (await _session.QueryIndex<UserIndex>(x => x.UserId == newUser.UserId).CountAsync() == 0)
+                    if (attempts-- == 0)
                     {
-                        unique = true;
+                        throw new ApplicationException("Couldn't generate a unique user id. Too many attempts.");
                     }
-                    else
-                    {
-                        newUser.UserId = _userIdGenerator.GenerateUniqueId(user).ToLowerInvariant();
-                    }
-                } while (!unique);
+
+                    newUserId = _userIdGenerator.GenerateUniqueId(user).ToLowerInvariant();
+                }
 
                 _session.Save(user);
 
@@ -103,8 +104,10 @@ namespace OrchardCore.Users.Services
                 var context = new UserContext(user);
                 await Handlers.InvokeAsync((handler, context) => handler.CreatedAsync(context), context, _logger);
             }
-            catch
+            catch (Exception e)
             {
+                _logger.LogError(e, "Unexpected error while creating a new user.");
+
                 return IdentityResult.Failed();
             }
 
