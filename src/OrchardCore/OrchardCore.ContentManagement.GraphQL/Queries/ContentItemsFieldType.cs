@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using System.Threading.Tasks;
 using GraphQL.Types;
 using Microsoft.Extensions.DependencyInjection;
@@ -111,23 +113,6 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             return contentItems;
         }
 
-        /// <summary>
-        /// Get last joined sql alias name from IQuery
-        /// </summary>
-        /// <param name="query"></param>
-        /// <param name="indexName"></param>
-        /// <returns></returns>
-        private string GetTableAlias(IQuery<ContentItem, ContentItemIndex> query,string indexName)
-        {
-            var queryFieldInfo = query.GetType().GetField("_query", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
-
-            object internalQuery = queryFieldInfo.GetValue(query);
-            var queryStateFieldInfo = internalQuery.GetType().GetField("_queryState", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
-            var queryState = queryStateFieldInfo.GetValue(internalQuery);
-            var method = queryState.GetType().GetMethod("GetTableAlias");
-            return method.Invoke(queryState, new object[] { indexName }) as string;
-        }
-
         private async Task<IQuery<ContentItem>> FilterWhereArguments(
             IQuery<ContentItem, ContentItemIndex> query,
             JObject where,
@@ -140,7 +125,8 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                 return query;
             }
 
-            string defaultTableAlias = GetTableAlias(query,nameof(ContentItemIndex));
+            string defaultTableAlias = query.GetTypeAlias(typeof(ContentItemIndex));
+
             var transaction = await session.DemandAsync();
 
             IPredicateQuery predicateQuery = new PredicateQuery(
@@ -181,8 +167,8 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             {
                 if (indexes.ContainsKey(usedAlias))
                 {
-                    contentQuery = indexes[usedAlias].With(contentQuery);
-                    var tableAlias = GetTableAlias(query, indexes[usedAlias].Index);
+                    Join(contentQuery, indexes[usedAlias].IndexType);
+                    var tableAlias = query.GetTypeAlias(indexes[usedAlias].IndexType);
                     predicateQuery.CreateTableAlias(indexes[usedAlias].Index, tableAlias);
                 }
             }
@@ -201,6 +187,20 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             return contentQuery;
         }
 
+        private static ImmutableDictionary<Type, MethodInfo> _withMethods = ImmutableDictionary<Type, MethodInfo>.Empty;
+        private static MethodInfo _withMethodInfo = ((MethodCallExpression)((Expression<Action<IQuery<ContentItem>>>)((IQuery<ContentItem> v) => v.With<ContentItemIndex>())).Body).Method.GetGenericMethodDefinition();
+
+        private void Join(IQuery<ContentItem> query, Type indexType)
+        {
+            // TODO: Remove once IQuery<T>.With(Type t) is available
+            if (!_withMethods.TryGetValue(indexType, out var withMethod))
+            {
+                withMethod = _withMethodInfo.MakeGenericMethod(indexType);
+                _withMethods = _withMethods.Add(indexType, withMethod);
+            }
+
+            withMethod.Invoke(query, null);
+        }
 
         private IQuery<ContentItem> PageQuery(IQuery<ContentItem> contentItemsQuery, ResolveFieldContext context, GraphQLContext graphQLContext)
         {

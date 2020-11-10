@@ -594,19 +594,19 @@ namespace OrchardCore.Tests.Apis.GraphQL
             {
                 Alias = "cats",
                 Index = nameof(AnimalIndex),
-                With = q => q.With<AnimalIndex>()
+                IndexType = typeof(AnimalIndex)
             },
             new IndexAlias
             {
                 Alias = "dogs",
                 Index = nameof(AnimalIndex),
-                With = q => q.With<AnimalIndex>()
+                IndexType = typeof(AnimalIndex)
             },
             new IndexAlias
             {
                 Alias = nameof(AnimalPart),
                 Index = nameof(AnimalIndex),
-                With = q => q.With<AnimalIndex>()
+                IndexType = typeof(AnimalIndex)
             }
         };
 
@@ -624,19 +624,19 @@ namespace OrchardCore.Tests.Apis.GraphQL
             {
                 Alias = "animals.name",
                 Index = $"Name",
-                With = q => q.With<AnimalIndex>()
+                IndexType = typeof(AnimalIndex)
             },
             new IndexAlias
             {
                 Alias = "animals.isHappy",
                 Index = $"IsHappy",
-                With = q => q.With<AnimalTraitsIndex>()
+                IndexType = typeof(AnimalTraitsIndex)
             },
             new IndexAlias
             {
                 Alias = "animals.isScary",
                 Index = $"IsScary",
-                With = q => q.With<AnimalTraitsIndex>()
+                IndexType = typeof(AnimalTraitsIndex)
             }
         };
 
