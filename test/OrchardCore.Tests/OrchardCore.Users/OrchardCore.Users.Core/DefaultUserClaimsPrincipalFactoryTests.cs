@@ -22,8 +22,8 @@ namespace OrchardCore.Tests.OrchardCore.Users.Core
         {
             //Arrange
             var userManager = UsersMockHelper.MockUserManager<IUser>();
-            var user = new User { Id = new Random().Next(), UserName = "Foo", Email = "foo@foo.com" };
-            userManager.Setup(m => m.GetUserIdAsync(user)).ReturnsAsync(user.Id.ToString());
+            var user = new User { UserId = Guid.NewGuid().ToString("n"), UserName = "Foo", Email = "foo@foo.com" };
+            userManager.Setup(m => m.GetUserIdAsync(user)).ReturnsAsync(user.UserId);
             userManager.Setup(m => m.GetUserNameAsync(user)).ReturnsAsync(user.UserName);
             userManager.Setup(m => m.GetEmailAsync(user)).ReturnsAsync(user.Email);
             if (emailVerified)

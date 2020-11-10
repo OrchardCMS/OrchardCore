@@ -8,6 +8,8 @@ namespace OrchardCore.Media
     {
         /// <summary>
         /// The accepted sizes for custom width and height.
+        /// When <see cref="UseTokenizedQueryString"/> is enabled all sizes are valid
+        /// and this range acts as a helper for media profiles.
         /// </summary>
         // Setting a default value will make the IShellConfiguration add to the default values, rather than replace.
         public int[] SupportedSizes { get; set; }
@@ -50,8 +52,16 @@ namespace OrchardCore.Media
         public string AssetsPath { get; set; }
 
         /// <summary>
+        /// Encrypts the image processing query string to prevent disc filling.
+        /// Defaults to <see langword="True"/>.
+        /// </summary>
+        public bool UseTokenizedQueryString { get; set; }
+
+        /// <summary>
         /// The static file options used to serve non resized media.
         /// </summary>
         public StaticFileOptions StaticFileOptions { get; set; }
+
+        public const string EncryptedCommandCacheKeyPrefix = "MediaCommands:";
     }
 }

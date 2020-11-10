@@ -79,30 +79,30 @@
     <input type="submit" name="submit.BulkAction" class="d-none" />
     <input name="BulkAction" type="hidden" />
 
-    <div class="row">
-        <div class="form-group col-xl-4 col-sm-6">
-            <div class="input-group input-group-sm filter-options">
-                <div class="input-group-prepend">
-                    <button class="btn btn-light btn-sm dropdown-toggle" style="border:1px solid lightgrey" type="button" data-toggle="dropdown" id="filter-dropdown" aria-haspopup="true" aria-expanded="false">
-                        @T["Filters"]
-                    </button>
-                    <div class="dropdown-menu" aria-labelledby="filter-dropdown">
-                        <a class="dropdown-item" href="?Options.Filter=Running">@T["Only running tenants"]</a>
-                        <a class="dropdown-item" href="?Options.Filter=Disabled">@T["Only disabled tenants"]</a>
-                        <a class="dropdown-item" href="?Options.Filter=Uninitialized">@T["Only uninitialized tenants"]</a>
+    <div class="card mb-3 position-sticky action-bar">
+        <div class="card-body bg-primary p-3">
+            <div class="form-group mb-n1">
+                <div class="input-group input-group-sm w-lg-50 d-inline-flex">
+                    <div class="input-group-prepend">
+                        <button class="btn btn-secondary btn-sm dropdown-toggle" style="border:1px solid lightgrey" type="button" data-toggle="dropdown" id="filter-dropdown" aria-haspopup="true" aria-expanded="false">
+                            @T["Filters"]
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="filter-dropdown">
+                            <a class="dropdown-item" href="?Options.Filter=Running">@T["Only running tenants"]</a>
+                            <a class="dropdown-item" href="?Options.Filter=Disabled">@T["Only disabled tenants"]</a>
+                            <a class="dropdown-item" href="?Options.Filter=Uninitialized">@T["Only uninitialized tenants"]</a>
+                        </div>
                     </div>
+                    <input id="search-box" asp-for="Options.Search" class="form-control" placeholder="@T["Search"]" type="search" autofocus />
                 </div>
-                <input id="search-box" asp-for="Options.Search" class="form-control" placeholder="@T["Search"]" type="search" autofocus />
-            </div>
-        </div>
-        <div class="form-group col-xl-8 col-sm-6">
-            <div class="btn-group float-right">
-                <a asp-route-action="Create" class="btn btn-sm btn-primary float-rights" role="button">@T["Add Tenant"]</a>
+                <div class="dropdown float-right order-md-1">
+                    <a asp-route-action="Create" class="btn btn-sm btn-secondary float-right create" role="button">@T["Add Tenant"]</a>
+                </div>
             </div>
         </div>
     </div>
     <ul class="list-group with-checkbox">
-        <li class="list-group-item bg-light">
+        <li class="list-group-item bg-primary">
             <div class="row">
                 <div class="form-group col mb-n1 text-nowrap">
                     <div class="custom-control custom-checkbox mt-2 mr-n2">
