@@ -375,7 +375,7 @@ namespace OrchardCore.Lists.Services
                     case ContentsStatus.Owner:
                         string currentUserName = _hca.HttpContext?.User?.Identity?.Name;
 
-                        if (!String.IsNullOrEmpty(currentUserName))
+                        if (!string.IsNullOrEmpty(currentUserName))
                         {
                             containedItems?.With<ContentItemIndex>().Where(i => i.Owner == currentUserName);
                         }
@@ -385,6 +385,7 @@ namespace OrchardCore.Lists.Services
                         throw new NotSupportedException("Unknown status filter.");
                 }
             }
+
             return containedItems;
         }
 
