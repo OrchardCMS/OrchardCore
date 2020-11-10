@@ -15,6 +15,11 @@ skip_commits:
     - mkdocs.yml
     - src/docs/**/*
 
+services:
+  - mssql2017
+  - mysql
+  - postgresql96
+
 environment:
   nodejs_version: "12"
   global:
@@ -35,6 +40,8 @@ stack: node 12, docker
 cache:
   - node_modules -> **\package.json # local npm modules
   - '%LocalAppData%\NuGet\v3-cache -> **\*.props' # NuGet v3
+  - '%AppData%\npm'
+  - '%USERPROFILE%\AppData\Local\Cypress\Cache'
 
 # Install scripts. (runs after repo cloning)
 install:
@@ -44,6 +51,9 @@ install:
   - ps: $IsDevBranch = ($env:APPVEYOR_REPO_BRANCH -eq "dev" -And -not $env:APPVEYOR_PULL_REQUEST_NUMBER)
   - ps: $IsReleaseBranch = ($env:APPVEYOR_REPO_BRANCH -eq "release/rc2" -And -not $env:APPVEYOR_PULL_REQUEST_NUMBER)
   - ps: $GeneratePackages = ($IsMasterBranch -or $IsDevBranch -or $IsReleaseBranch)
+  - node --version
+  - npm --version
+  - cd .\test\Functional && npm ci
 
 # Uncomment to download a specific version of dotnet
   - ps: Invoke-WebRequest "https://dot.net/v1/dotnet-install.ps1" -OutFile "dotnet-install.ps1" 
@@ -57,13 +67,21 @@ init:
   - dotnet --version
   - git config --global core.autocrlf true
 
+before_test:
+  - SET ORCHARD_TEST_MYSQL_CONNECTION_STRING=server=localhost;uid=root;pwd=Password12!;database=octest;  
+  - SET MYSQL_PWD=Password12!
+  - PATH=C:\Program Files\MySQL\MySQL Server 5.7\bin;%PATH%
+  - mysql -e "create database octest;" --user=root
+  - SET ORCHARD_TEST_POSTGRESQL_CONNECTION_STRING=Server=localhost;Port=5432;Database=octest;User Id=postgres;Password=Password12!;
+  - SET PGUSER=postgres
+  - SET PGPASSWORD=Password12!
+  - PATH=C:\Program Files\PostgreSQL\9.6\bin\;%PATH%
+  - createdb octest
+  - SET ORCHARD_TEST_SQLSERVER_CONNECTION_STRING=Server=(local)\SQL2017;Database=tempdb;User ID=sa;Password=Password12!
+
 test_script:
-  - node --version
-  - npm --version
   - dotnet test -c Release --no-build .\test\OrchardCore.Tests\OrchardCore.Tests.csproj
-  - cd .\test\Functional
-  - test-setup.cmd
-  - test-run.cmd
+  - cd .\test\Functional && npm run test
 
 clone_depth: 1
 test: on

@@ -19,7 +19,7 @@ namespace OrchardCore.Templates.Cms.Module.Settings
 
             return Initialize<MyTestPartSettingsViewModel>("MyTestPartSettings_Edit", model =>
             {
-                var settings = contentPartDefinition.GetSettings<MyTestPartSettings>();
+                var settings = contentTypePartDefinition.GetSettings<MyTestPartSettings>();
 
                 model.MySetting = settings.MySetting;
                 model.MyTestPartSettings = settings;
@@ -40,7 +40,7 @@ namespace OrchardCore.Templates.Cms.Module.Settings
                 context.Builder.WithSettings(new MyTestPartSettings { MySetting = model.MySetting });
             }
 
-            return Edit(contentPartDefinition, context.Updater);
+            return Edit(contentTypePartDefinition, context.Updater);
         }
     }
 }

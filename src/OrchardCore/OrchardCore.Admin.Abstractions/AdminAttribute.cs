@@ -5,11 +5,11 @@ using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace OrchardCore.Admin
 {
-    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = false, Inherited = true)]
     /// <summary>
     /// When applied to an action or a controller or a page model, intercepts any request to check whether it applies to the admin site.
     /// If so it marks the request as such and ensures the user has the right to access it.
     /// </summary>
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = false, Inherited = true)]
     public class AdminAttribute : Attribute, IAsyncResourceFilter
     {
         public AdminAttribute()

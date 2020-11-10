@@ -74,7 +74,7 @@ namespace OrchardCore.Themes.Controllers
                 var tags = extensionDescriptor.Manifest.Tags.ToArray();
                 var isHidden = tags.Any(x => string.Equals(x, "hidden", StringComparison.OrdinalIgnoreCase));
 
-                /// is the theme allowed for this tenant ?
+                // Is the theme allowed for this tenant?
                 // allowed = _shellSettings.Themes.Length == 0 || _shellSettings.Themes.Contains(extensionDescriptor.Id);
 
                 return !isHidden;
