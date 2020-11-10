@@ -24,7 +24,7 @@ function clean(dir) {
 
 // Host the dotnet application, does not rebuild
 function host(dir, assembly) {
-  if (fs.existsSync(path.join(dir, "bin/Release/netcoreapp3.1/", assembly))) {
+  if (fs.existsSync(path.join(dir, "bin/Release/net5.0/", assembly))) {
     global.log("Application already built, skipping build");
   } else {
     build(dir);
@@ -32,7 +32,7 @@ function host(dir, assembly) {
   global.log("Starting application ...");
   let server = child_process.spawn(
     "dotnet",
-    ["bin/Release/netcoreapp3.1/" + assembly],
+    ["bin/Release/net5.0/" + assembly],
     { cwd: dir }
   );
 
@@ -59,7 +59,7 @@ function e2e(dir, assembly, performClean = false, rebuild = false) {
     build(dir);
   }
 
-  if (fs.existsSync(path.join(dir, "bin/Release/netcoreapp3.1/", assembly))) {
+  if (fs.existsSync(path.join(dir, "bin/Release/net5.0/", assembly))) {
     global.log("Application already built, skipping build");
   } else {
     build(dir);
