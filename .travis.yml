@@ -26,7 +26,7 @@ os:
   - osx
 osx_image: xcode10.1
 script:
-  - curl https://dot.net/v1/dotnet-install.ps1 | bash /dev/stdin --version 5.0.0-rc.2
+  - curl https://dot.net/v1/dotnet-install.ps1 | bash /dev/stdin --version 5.0.0
   - if test "$TRAVIS_OS_NAME" == "linux"; then export PATH="/home/travis/.dotnet":"$PATH"; fi
   - if test "$TRAVIS_OS_NAME" == "osx"; then export PATH="/Users/travis/.dotnet":"$PATH"; fi
   - dotnet --info
