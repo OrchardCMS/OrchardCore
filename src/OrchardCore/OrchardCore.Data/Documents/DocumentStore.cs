@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.Environment.Shell.Scope;
 using YesSql;
 
 namespace OrchardCore.Data.Documents
@@ -58,16 +56,12 @@ namespace OrchardCore.Data.Documents
 
             T document = null;
 
-            // Querying a document just after the session was committed may throw a 'MARS' exception.
-            // Note: This issue may happen with 'Sql Server' but doesn't happen with 'Sqlite' at all.
+            // For consistency checking a document may be queried after 'CommitAsync()'.
             if (_committed)
             {
-                // So we create a scope on the current context, but just to resolve a new session.
-                await new ShellScope(ShellScope.Context).UsingServiceScopeAsync(scope =>
-                {
-                    var session = scope.ServiceProvider.GetRequiredService<ISession>();
-                    return session.Query<T>().FirstOrDefaultAsync();
-                });
+                // So we create a new session to not get a cached version from 'YesSql'.
+                using var session = _session.Store.CreateSession();
+                document = await session.Query<T>().FirstOrDefaultAsync();
             }
             else
             {
@@ -151,14 +145,20 @@ namespace OrchardCore.Data.Documents
 
                 if (!_canceled && _afterCommitSuccess != null)
                 {
-                    await _afterCommitSuccess();
+                    foreach (var d in _afterCommitSuccess.GetInvocationList())
+                    {
+                        await ((DocumentStoreCommitSuccessDelegate)d)();
+                    }
                 }
             }
             catch (ConcurrencyException exception)
             {
                 if (_afterCommitFailure != null)
                 {
-                    await _afterCommitFailure(exception);
+                    foreach (var d in _afterCommitFailure.GetInvocationList())
+                    {
+                        await ((DocumentStoreCommitFailureDelegate)d)(exception);
+                    }
                 }
                 else
                 {

@@ -164,7 +164,10 @@ namespace OrchardCore.Environment.Shell
         {
             if (ReloadingAsync != null && eventSource && settings.State != TenantState.Initializing)
             {
-                await ReloadingAsync(settings.Name);
+                foreach (var d in ReloadingAsync.GetInvocationList())
+                {
+                    await ((ShellEvent)d)(settings.Name);
+                }
             }
 
             // A disabled shell still in use will be released by its last scope.
@@ -236,7 +239,10 @@ namespace OrchardCore.Environment.Shell
         {
             if (ReleasingAsync != null && eventSource && settings.State != TenantState.Initializing)
             {
-                await ReleasingAsync(settings.Name);
+                foreach (var d in ReleasingAsync.GetInvocationList())
+                {
+                    await ((ShellEvent)d)(settings.Name);
+                }
             }
 
             // A disabled shell still in use will be released by its last scope.
@@ -290,7 +296,10 @@ namespace OrchardCore.Environment.Shell
 
             if (LoadingAsync != null)
             {
-                await LoadingAsync();
+                foreach (var d in LoadingAsync.GetInvocationList())
+                {
+                    await ((ShellsEvent)d)();
+                }
             }
 
             // Is there any tenant right now?
