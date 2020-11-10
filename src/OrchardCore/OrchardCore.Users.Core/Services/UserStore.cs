@@ -97,6 +97,8 @@ namespace OrchardCore.Users.Services
                     newUserId = _userIdGenerator.GenerateUniqueId(user).ToLowerInvariant();
                 }
 
+                newUser.UserId = newUserId;
+
                 _session.Save(user);
 
                 await _session.CommitAsync();
