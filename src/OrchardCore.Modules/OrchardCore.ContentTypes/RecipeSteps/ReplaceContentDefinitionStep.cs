@@ -33,7 +33,7 @@ namespace OrchardCore.ContentTypes.RecipeSteps
             {
                 var newType = _contentDefinitionManager.LoadTypeDefinition(contentType.Name);
                 if (newType != null)
-                {   
+                {
                     ReplaceContentType(newType, contentType, true);
                 }
                 else
@@ -47,7 +47,7 @@ namespace OrchardCore.ContentTypes.RecipeSteps
                 var newPart = _contentDefinitionManager.LoadPartDefinition(contentPart.Name);
                 if (newPart != null)
                 {
-                    ReplaceContentPart(newPart, contentPart, true);    
+                    ReplaceContentPart(newPart, contentPart, true);
                 }
                 else
                 {

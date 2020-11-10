@@ -11,7 +11,8 @@ namespace OrchardCore.Markdown.Settings
     {
         public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition)
         {
-            return Initialize<MarkdownFieldSettingsViewModel>("MarkdownFieldSettings_Edit", model => {
+            return Initialize<MarkdownFieldSettingsViewModel>("MarkdownFieldSettings_Edit", model =>
+            {
 
                 var settings = partFieldDefinition.GetSettings<MarkdownFieldSettings>();
 

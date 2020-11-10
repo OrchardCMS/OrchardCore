@@ -47,7 +47,7 @@ namespace OrchardCore.OpenId.Services.Managers
         /// <summary>
         /// Retrieves the physical identifier associated with an authorization.
         /// </summary>
-        /// <param name="authorization">The authorization.</param>
+        /// <param name="scope">The scope.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
         /// <returns>
         /// A <see cref="ValueTask{TResult}"/> that can be used to monitor the asynchronous operation,

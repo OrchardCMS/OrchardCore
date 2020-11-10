@@ -5,7 +5,7 @@ namespace OrchardCore.Users.Indexes
 {
     public class UserIndex : MapIndex
     {
-        public string DocumentId { get; set; }
+        public int DocumentId { get; set; }
         public string UserId { get; set; }
         public string NormalizedUserName { get; set; }
         public string NormalizedEmail { get; set; }

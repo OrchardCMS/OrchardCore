@@ -14,31 +14,32 @@
     <PackageManagement Include="Irony.Core" Version="1.0.7" />
     <PackageManagement Include="Fluid.Core" Version="1.0.0-beta-9693" />
     <PackageManagement Include="GraphQL" Version="2.4.0" />
-    <PackageManagement Include="Jint" Version="3.0.0-beta-1632" />
-    <PackageManagement Include="HtmlSanitizer" Version="5.0.353" />
+    <PackageManagement Include="Jint" Version="3.0.0-beta-1914" />
+    <PackageManagement Include="HtmlSanitizer" Version="5.0.355" />
     <PackageManagement Include="Lucene.Net" Version="4.8.0-beta00012" />
     <PackageManagement Include="Lucene.Net.Analysis.Common" Version="4.8.0-beta00012" />
     <PackageManagement Include="Lucene.Net.QueryParser" Version="4.8.0-beta00012" />
     <PackageManagement Include="MailKit" Version="2.9.0" />
-    <PackageManagement Include="Markdig" Version="0.21.1" />
+    <PackageManagement Include="Markdig" Version="0.22.0" />
     <PackageManagement Include="MessagePack" Version="2.2.60" />
     <PackageManagement Include="Microsoft.NET.Test.Sdk" Version="16.2.0" />
     <PackageManagement Include="MimeKit" Version="2.9.2" />
     <PackageManagement Include="MiniProfiler.AspNetCore.Mvc" Version="4.2.1" />
-    <PackageManagement Include="Moq" Version="4.14.6" />
+    <PackageManagement Include="Moq" Version="4.14.7" />
     <PackageManagement Include="ncrontab" Version="3.3.1" />
     <PackageManagement Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageManagement Include="NLog.Web.AspNetCore" Version="4.9.3" />
-    <PackageManagement Include="NodaTime" Version="3.0.0" />
-    <PackageManagement Include="OpenIddict.AspNetCore" Version="[3.0.0-beta5.20503.76]" />
-    <PackageManagement Include="OpenIddict.Core" Version="[3.0.0-beta5.20503.76]" />
+    <PackageManagement Include="NodaTime" Version="3.0.3" />
+    <PackageManagement Include="OpenIddict.AspNetCore" Version="[3.0.0-beta6.20527.75]" />
+    <PackageManagement Include="OpenIddict.Core" Version="[3.0.0-beta6.20527.75]" />
     <PackageManagement Include="OrchardCore.Translations.All" Version="1.0.0-rc2-108003" />
     <PackageManagement Include="Serilog.AspNetCore" Version="3.4.0" />
     <PackageManagement Include="Shortcodes" Version="1.0.0-beta-175913881" />
     <PackageManagement Include="SixLabors.ImageSharp.Web" Version="1.0.0" />
     <PackageManagement Include="xunit.analyzers" Version="0.10.0" />
-    <PackageManagement Include="xunit" Version="2.4.1" />
-    <PackageManagement Include="xunit.runner.visualstudio" Version="2.4.1" />
+    <!-- xunit downgraded due to Theory Skip bug c.f. https://github.com/xunit/xunit/issues/1782 -->
+    <PackageManagement Include="xunit" Version="2.3.1" />
+    <PackageManagement Include="xunit.runner.visualstudio" Version="2.3.1" />
     <PackageManagement Include="YesSql.Abstractions" Version="2.0.0-beta-1514" />
     <PackageManagement Include="YesSql.Core" Version="2.0.0-beta-1514" />
     <PackageManagement Include="YesSql.Provider.MySql" Version="1.0.0-beta-1514" />

@@ -152,6 +152,24 @@ namespace OrchardCore.Tests.ResourceManagement
         }
 
         [Fact]
+        public void GetStyleResourceWithAttributes()
+        {
+            var resourceDefinition = _resourceManifest.DefineStyle("foo")
+                .SetUrl("~/foo.css", "~/foo.debug.css")
+                .SetAttribute("id", "foo")
+                .SetAttribute("media", "all");
+
+            var requireSettings = new RequireSettings { DebugMode = false, CdnMode = false };
+            var tagBuilder = resourceDefinition.GetTagBuilder(requireSettings, basePath, StubFileVersionProvider.Instance);
+
+            Assert.Equal("link", tagBuilder.TagName);
+            Assert.Equal("text/css", tagBuilder.Attributes["type"]);
+            Assert.Equal("stylesheet", tagBuilder.Attributes["rel"]);
+            Assert.Equal("foo", tagBuilder.Attributes["id"]);
+            Assert.Equal("all", tagBuilder.Attributes["media"]);
+        }
+
+        [Fact]
         public void GetStyleResourceWithInlineContent()
         {
             var resourceDefinition = _resourceManifest.DefineStyle("foo")

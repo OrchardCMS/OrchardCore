@@ -25,15 +25,16 @@ namespace OrchardCore.Contents.Deployment.Download
             var context = _httpContextAccessor.HttpContext;
 
             return Shape("Download_SummaryAdmin__Button__Actions", new ContentItemViewModel(contentItem)).Location("SummaryAdmin", "ActionsMenu:20")
-                    .RenderWhen(async () => {
-                         var hasEditPermission = await _authorizationService.AuthorizeAsync(context.User, OrchardCore.Deployment.CommonPermissions.Export, contentItem);
+                    .RenderWhen(async () =>
+                    {
+                        var hasEditPermission = await _authorizationService.AuthorizeAsync(context.User, OrchardCore.Deployment.CommonPermissions.Export, contentItem);
 
-                         if (hasEditPermission)
-                         {
-                             return true;
-                         }
+                        if (hasEditPermission)
+                        {
+                            return true;
+                        }
 
-                         return false;
+                        return false;
                     });
         }
     }

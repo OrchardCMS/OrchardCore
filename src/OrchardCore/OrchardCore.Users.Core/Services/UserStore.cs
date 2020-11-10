@@ -75,19 +75,41 @@ namespace OrchardCore.Users.Services
                 throw new ArgumentException("Expected a User instance.", nameof(user));
             }
 
-            newUser.UserId = _userIdGenerator.GenerateUniqueId(user);
+            var newUserId = newUser.UserId;
 
-            _session.Save(user);
+            if (String.IsNullOrEmpty(newUserId))
+            {
+                // Due to database collation we normalize the userId to lower invariant.
+                newUserId = _userIdGenerator.GenerateUniqueId(user).ToLowerInvariant();
+            }
 
             try
             {
+                var attempts = 10;
+
+                while (await _session.QueryIndex<UserIndex>(x => x.UserId == newUserId).CountAsync() != 0)
+                {
+                    if (attempts-- == 0)
+                    {
+                        throw new ApplicationException("Couldn't generate a unique user id. Too many attempts.");
+                    }
+
+                    newUserId = _userIdGenerator.GenerateUniqueId(user).ToLowerInvariant();
+                }
+
+                newUser.UserId = newUserId;
+
+                _session.Save(user);
+
                 await _session.CommitAsync();
 
                 var context = new UserContext(user);
                 await Handlers.InvokeAsync((handler, context) => handler.CreatedAsync(context), context, _logger);
             }
-            catch
+            catch (Exception e)
             {
+                _logger.LogError(e, "Unexpected error while creating a new user.");
+
                 return IdentityResult.Failed();
             }
 
@@ -120,8 +142,7 @@ namespace OrchardCore.Users.Services
 
         public async Task<IUser> FindByIdAsync(string userId, CancellationToken cancellationToken = default(CancellationToken))
         {
-            // For backwards compatability we check also check the UserId against the NormalizedUserName.
-            return await _session.Query<User, UserIndex>(u => u.UserId == userId || u.NormalizedUserName == userId).FirstOrDefaultAsync();
+            return await _session.Query<User, UserIndex>(u => u.UserId == userId).FirstOrDefaultAsync();
         }
 
         public async Task<IUser> FindByNameAsync(string normalizedUserName, CancellationToken cancellationToken = default(CancellationToken))
