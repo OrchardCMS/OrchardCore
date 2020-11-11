@@ -1,0 +1,31 @@
+name: Build and Test
+on: 
+ # pull_request:
+  push:
+    branches:
+   #   - 'dev'
+    #  - 'master'
+      - 'jptissot/github_actions'
+jobs:
+  build:
+    env:
+      DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+      DOTNET_CLI_TELEMETRY_OPTOUT: 1
+    name: Build and Test
+    runs-on: ubuntu-latest
+    container:
+      image: cypress/browsers:node12.13.0-chrome78-ff70
+    steps:
+    - uses: actions/checkout@v1
+    - name: Setup .NET Core SDK
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 3.1.402
+    - name: Dotnet build
+      run: | 
+           dotnet build --configuration Release
+    - name: Test
+      run: |
+           cd test/Functional
+           npm install
+           npm run test
