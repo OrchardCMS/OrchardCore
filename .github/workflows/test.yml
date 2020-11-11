@@ -46,6 +46,10 @@ jobs:
         cd test/Functional
         npm install
         npm run mvc:test
+    - name: Upload screenshots
+      uses: actions/upload-artifact@v2
+      with:
+      path: test/Functional/mvc-tests/cypress/screenshots
   test_functional_cms_sqlite:
     env:
       DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
@@ -64,6 +68,10 @@ jobs:
         cd test/Functional
         npm install
         npm run cms:test
+    - name: Upload screenshots
+      uses: actions/upload-artifact@v2
+      with:
+      path: test/Functional/cms-tests/cypress/screenshots
   test_functional_cms_postgresql:
     env:
       DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
@@ -73,7 +81,7 @@ jobs:
       postgres:
         image: postgres:11
         env:
-          POSTGRES_PASSWORD: postgres
+          POSTGRES_PASSWORD: test123
         # Set health checks to wait until postgres has started
         options: >-
           --health-cmd pg_isready
@@ -90,11 +98,15 @@ jobs:
         dotnet-version: 3.1.404
     - name: Functional test
       run: |
-        export OrchardCore__ConnectionString="User ID=postgres;Password=postgres;Host=postgres;Port=5432;Database=postgres;"
+        export OrchardCore__ConnectionString="User ID=postgres;Password=test123;Host=postgres;Port=5432;Database=postgres;"
         export OrchardCore__DatabaseProvider="Postgres"
         cd test/Functional
         npm install
         npm run cms:test
+    - name: Upload screenshots
+      uses: actions/upload-artifact@v2
+      with:
+      path: test/Functional/cms-tests/cypress/screenshots
   test_functional_cms_mysql:
     env:
       DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
@@ -124,3 +136,7 @@ jobs:
         cd test/Functional
         npm install
         npm run cms:test
+    - name: Upload screenshots
+      uses: actions/upload-artifact@v2
+      with:
+      path: test/Functional/cms-tests/cypress/screenshots
