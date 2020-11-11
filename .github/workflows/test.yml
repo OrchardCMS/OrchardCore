@@ -28,7 +28,7 @@ jobs:
       run: |
         dotnet build --configuration Release
         dotnet test -c Release --no-build ./test/OrchardCore.Tests/OrchardCore.Tests.csproj
-  test_functional_sqlite:
+  test_functional_mvc:
     env:
       DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
       DOTNET_CLI_TELEMETRY_OPTOUT: 1
@@ -45,8 +45,26 @@ jobs:
       run: |
         cd test/Functional
         npm install
-        npm run ci:test
-  test_functional_postgresql:
+        npm run mvc:test
+  test_functional_cms_sqlite:
+    env:
+      DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+      DOTNET_CLI_TELEMETRY_OPTOUT: 1
+    runs-on: ubuntu-latest
+    container:
+      image: cypress/browsers:node12.13.0-chrome78-ff70
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 3.1.404
+    - name: Functional test
+      run: |
+        cd test/Functional
+        npm install
+        npm run cms:test
+  test_functional_cms_postgresql:
     env:
       DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
       DOTNET_CLI_TELEMETRY_OPTOUT: 1
@@ -72,12 +90,12 @@ jobs:
         dotnet-version: 3.1.404
     - name: Functional test
       run: |
-        export OrchardCore__ConnectionString="User ID=postgres;Password=postgres;Host=localhost;Port=5432;Database=postgres;"
+        export OrchardCore__ConnectionString="User ID=postgres;Password=postgres;Host=postgres;Port=5432;Database=postgres;"
         export OrchardCore__DatabaseProvider="Postgres"
         cd test/Functional
         npm install
-        npm run ci:test
-  test_functional_mysql:
+        npm run cms:test
+  test_functional_cms_mysql:
     env:
       DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
       DOTNET_CLI_TELEMETRY_OPTOUT: 1
@@ -101,8 +119,8 @@ jobs:
         dotnet-version: 3.1.404
     - name: Functional test
       run: |
-        export OrchardCore__ConnectionString="server=localhost;uid=root;pwd=test123;database=test"
+        export OrchardCore__ConnectionString="server=mariadb;uid=root;pwd=test123;database=test"
         export OrchardCore__DatabaseProvider="Mysql"
         cd test/Functional
         npm install
-        npm run ci:test
+        npm run cms:test

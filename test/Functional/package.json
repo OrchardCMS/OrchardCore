@@ -11,10 +11,8 @@
     "cms:build": "node -e \"require('cypress-orchardcore/dist/test-runner').build('../../src/OrchardCore.Cms.Web')\"",
     "cms:setup": "node -e \"require('cypress-orchardcore/dist/test-runner').setup('../../src/OrchardCore.Cms.Web', 'SaaSTenantFiles')\"",
     "cms:host": "node -e \"require('cypress-orchardcore/dist/test-runner').host('../../src/OrchardCore.Cms.Web', 'OrchardCore.Cms.Web.dll')\"",
+    "cms:test": "npm run cms:setup && cd cms-tests && node -e \"require('cypress-orchardcore/dist/test-runner').e2e('../../../src/OrchardCore.Cms.Web', 'OrchardCore.Cms.Web.dll')\"",
     "cms:cypress": "cd cms-tests && cypress open",
-    "ci:test": "npm run cms:setup && npm run ci:cms-test && npm run ci:mvc-test",
-    "ci:cms-test": "npm run cms:setup && cd cms-tests && node -e \"require('cypress-orchardcore/dist/test-runner').e2e('../../../src/OrchardCore.Cms.Web', 'OrchardCore.Cms.Web.dll')\"",
-    "ci:mvc-test": "cd mvc-tests && node -e \"require('cypress-orchardcore/dist/test-runner').e2e('../../../src/OrchardCore.Cms.Web', 'OrchardCore.Mvc.Web.dll')\"",
     "gen:blog": "node -e \"require('./test_generator').generateBlogData()\""
   }
 }
