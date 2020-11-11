@@ -47,6 +47,7 @@ jobs:
         npm install
         npm run mvc:test
     - uses: actions/upload-artifact@v2
+      if: failure()
       with:
         name: functional-mvc-screenshots
         path: test/Functional/mvc-tests/cypress/screenshots
@@ -70,6 +71,7 @@ jobs:
         npm install
         npm run cms:test
     - uses: actions/upload-artifact@v2
+      if: failure()
       with:
         name: functional-cms-sqlite-screenshots
         path: test/Functional/cms-tests/cypress/screenshots
@@ -79,19 +81,21 @@ jobs:
       DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
       DOTNET_CLI_TELEMETRY_OPTOUT: 1
     runs-on: ubuntu-latest
+    container:
+      image: cypress/browsers:node12.13.0-chrome78-ff70
     services:
       postgres:
         image: postgres:11
         env:
-          POSTGRES_PASSWORD: test123
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: admin
+          POSTGRES_DB: app
         # Set health checks to wait until postgres has started
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
-    container:
-      image: cypress/browsers:node12.13.0-chrome78-ff70
     steps:
     - uses: actions/checkout@v2
     - name: Setup .NET Core
@@ -100,12 +104,13 @@ jobs:
         dotnet-version: 3.1.404
     - name: Functional test
       run: |
-        export OrchardCore__ConnectionString="User ID=postgres;Password=test123;Host=postgres;Port=5432;Database=postgres;"
+        export OrchardCore__ConnectionString="User ID=postgres;Password=admin;Host=postgres;Port=5432;Database=app;"
         export OrchardCore__DatabaseProvider="Postgres"
         cd test/Functional
         npm install
         npm run cms:test
     - uses: actions/upload-artifact@v2
+      if: failure()
       with:
         name: functional-cms-postgresql-screenshots
         path: test/Functional/cms-tests/cypress/screenshots
@@ -115,6 +120,8 @@ jobs:
       DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
       DOTNET_CLI_TELEMETRY_OPTOUT: 1
     runs-on: ubuntu-latest
+    container:
+      image: cypress/browsers:node12.13.0-chrome78-ff70
     services:
       mariadb:
         image: mariadb:latest
@@ -124,8 +131,6 @@ jobs:
           MYSQL_DATABASE: test
           MYSQL_ROOT_PASSWORD: test123
         options: --health-cmd="mysqladmin ping" --health-interval=5s --health-timeout=2s --health-retries=3
-    container:
-      image: cypress/browsers:node12.13.0-chrome78-ff70
     steps:
     - uses: actions/checkout@v2
     - name: Setup .NET Core
@@ -140,6 +145,7 @@ jobs:
         npm install
         npm run cms:test
     - uses: actions/upload-artifact@v2
+      if: failure()
       with:
         name: functional-cms-mysql-screenshots
         path: test/Functional/cms-tests/cypress/screenshots
