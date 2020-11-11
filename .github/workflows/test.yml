@@ -1,0 +1,52 @@
+name: Test on many OS
+on: 
+ # pull_request:
+  push:
+    branches:
+   #   - 'dev'
+    #  - 'master'
+      - 'jptissot/github_actions'
+jobs:
+  test:
+    env:
+      DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+      DOTNET_CLI_TELEMETRY_OPTOUT: 1
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+          dotnet: ['3.1.404']
+        os: [ubuntu-latest, windows-latest, macos-latest]
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET Core ${{ matrix.dotnet }} on ${{ matrix.os }}
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: ${{ matrix.dotnet }}
+    - name: Build with dotnet
+      run: |
+        dotnet build --configuration Release
+        dotnet test -c Release --no-build ./test/OrchardCore.Tests/OrchardCore.Tests.csproj
+  test_functional:
+    env:
+      DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+      DOTNET_CLI_TELEMETRY_OPTOUT: 1
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+          dotnet: ['3.1.404']
+        os: [ubuntu-latest, windows-latest, macos-latest]
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET Core ${{ matrix.dotnet }} on ${{ matrix.os }}
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: ${{ matrix.dotnet }}
+    - name: Build with dotnet
+      run: |
+        cd test/Functional
+        npm install
+        npm run test
