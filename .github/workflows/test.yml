@@ -15,7 +15,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-          dotnet: ['3.1.404']
+        dotnet: ['3.1.404']
         os: [ubuntu-latest, windows-latest, macos-latest]
 
     steps:
@@ -36,7 +36,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-          dotnet: ['3.1.404']
+        dotnet: ['3.1.404']
         os: [ubuntu-latest, windows-latest, macos-latest]
 
     steps:
