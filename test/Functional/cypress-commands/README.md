@@ -92,4 +92,7 @@ describe("VueForm Tests", function() {
 
 ## Available Commands
 
-TODO
+
+$env:OrchardCore__ConnectionString="User ID=postgres;Password=dev123;Host=localhost;Port=5432;Database=postgres;"
+$env:OrchardCore__ConnectionString="server=localhost;uid=root;database=db;password=my-secret-pw;"
+$env:OrchardCore__DatabaseProvider="MySql"

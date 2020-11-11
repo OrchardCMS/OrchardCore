@@ -3,19 +3,18 @@
     "cypress": "^5.5.0",
     "cypress-orchardcore": "file:cypress-commands",
     "faker": "^5.1.0",
-    "rimraf": "^3.0.2"
+    "fs-extra": "^9.0.1"
   },
   "scripts": {
     "mvc:test": "cd mvc-tests && node -e \"require('cypress-orchardcore/dist/test-runner').e2e('../../../src/OrchardCore.Mvc.Web', 'OrchardCore.Mvc.Web.dll')\"",
     "mvc:cypress": "cd mvc-tests && cypress open",
     "cms:build": "node -e \"require('cypress-orchardcore/dist/test-runner').build('../../src/OrchardCore.Cms.Web')\"",
-    "cms:clean": "node -e \"require('cypress-orchardcore/dist/test-runner').clean('../../src/OrchardCore.Cms.Web')\"",
+    "cms:setup": "node -e \"require('cypress-orchardcore/dist/test-runner').setup('../../src/OrchardCore.Cms.Web', 'SaaSTenantFiles')\"",
     "cms:host": "node -e \"require('cypress-orchardcore/dist/test-runner').host('../../src/OrchardCore.Cms.Web', 'OrchardCore.Cms.Web.dll')\"",
-    "cms:test": "cd cms-tests && node -e \"require('cypress-orchardcore/dist/test-runner').e2e('../../../src/OrchardCore.Cms.Web', 'OrchardCore.Cms.Web.dll')\"",
-    "cms:test-clean": "cd cms-tests && node -e \"require('cypress-orchardcore/dist/test-runner').e2e('../../../src/OrchardCore.Cms.Web', 'OrchardCore.Cms.Web.dll', true)\"",
-    "cms:test-build-clean": "cd cms-tests && node -e \"require('cypress-orchardcore/dist/test-runner').e2e('../../../src/OrchardCore.Cms.Web', 'OrchardCore.Cms.Web.dll', true, true)\"",
     "cms:cypress": "cd cms-tests && cypress open",
-    "test": "npm run cms:test && npm run mvc:test",
+    "ci:test": "npm run cms:setup && npm run ci:cms-test && npm run ci:mvc-test",
+    "ci:cms-test": "npm run cms:setup && cd cms-tests && node -e \"require('cypress-orchardcore/dist/test-runner').e2e('../../../src/OrchardCore.Cms.Web', 'OrchardCore.Cms.Web.dll')\"",
+    "ci:mvc-test": "cd mvc-tests && node -e \"require('cypress-orchardcore/dist/test-runner').e2e('../../../src/OrchardCore.Cms.Web', 'OrchardCore.Mvc.Web.dll')\"",
     "gen:blog": "node -e \"require('./test_generator').generateBlogData()\""
   }
 }
