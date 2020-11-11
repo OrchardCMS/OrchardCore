@@ -92,7 +92,8 @@ namespace OrchardCore.Templates.Controllers
             {
                 AdminTemplates = adminTemplates,
                 Templates = templates.Select(x => new TemplateEntry { Name = x.Key, Template = x.Value }).ToList(),
-                Pager = pagerShape
+                Pager = pagerShape,
+                DisplayText = displayText
             };
 
             return View("Index", model);

@@ -8,6 +8,7 @@ namespace OrchardCore.Templates.ViewModels
         public bool AdminTemplates { get; set; }
         public IList<TemplateEntry> Templates { get; set; }
         public dynamic Pager { get; set; }
+        public string DisplayText { get; set; }
     }
 
     public class TemplateEntry
