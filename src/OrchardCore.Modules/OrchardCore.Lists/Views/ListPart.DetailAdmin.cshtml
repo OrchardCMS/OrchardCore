@@ -60,20 +60,22 @@ else
     @if (Model.ContentItems.Any())
     {
         <form>
-            <div class="form-group ">
-                <div class="input-group input-group-sm filter-options">
-                    <div class="input-group-prepend">
-                        <button class="btn btn-light btn-sm dropdown-toggle" style="border:1px solid lightgrey" type="button" data-toggle="dropdown" id="filter-dropdown" aria-haspopup="true" aria-expanded="false">
-                            @T["Filters"]
-                        </button>
-                        <div class="dropdown-menu" aria-labelledby="filter-dropdown">
-                            <a class="dropdown-item" href="?Status=Draft">@T["Only draft items"]</a>
-                            <a class="dropdown-item" href="?Status=Published">@T["Only published items"]</a>
-                            <a class="dropdown-item" href="?Status=Owner">@T["Owned by me"]</a>
+            <div class="row">
+                <div class="form-group col-xl-4 col-sm-6">
+                    <div class="input-group input-group-sm filter-options">
+                        <div class="input-group-prepend">
+                            <button class="btn btn-light btn-sm dropdown-toggle" style="border:1px solid lightgrey" type="button" data-toggle="dropdown" id="filter-dropdown" aria-haspopup="true" aria-expanded="false">
+                                @T["Filters"]
+                            </button>
+                            <div class="dropdown-menu" aria-labelledby="filter-dropdown">
+                                <a class="dropdown-item" href="?Status=Draft">@T["Only draft items"]</a>
+                                <a class="dropdown-item" href="?Status=Published">@T["Only published items"]</a>
+                                <a class="dropdown-item" href="?Status=Owner">@T["Owned by me"]</a>
+                            </div>
                         </div>
+                        <input name="@nameof(ListPartFilterViewModel.Status)" value="@Model.ListPartFilterViewModel?.Status" class="form-control" type="hidden" />
+                        <input name="@nameof(ListPartFilterViewModel.DisplayText)" value="@Model.ListPartFilterViewModel?.DisplayText" class="form-control" placeholder="@T["Search all List items"]" type="search" />
                     </div>
-                    <input name="@nameof(ListPartFilterViewModel.Status)" value="@Model.ListPartFilterViewModel?.Status" class="form-control" type="hidden" />
-                    <input name="@nameof(ListPartFilterViewModel.DisplayText)" value="@Model.ListPartFilterViewModel?.DisplayText" class="form-control" placeholder="@T["Search all List items"]" type="search" />
                 </div>
             </div>
         </form>
