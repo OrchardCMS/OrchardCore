@@ -117,6 +117,12 @@ namespace OrchardCore.Users
                 pattern: _adminOptions.AdminUrlPrefix + "/Users/EditPassword/{id}",
                 defaults: new { controller = adminControllerName, action = nameof(AdminController.EditPassword) }
             );
+            routes.MapAreaControllerRoute(
+                name: "UsersEditOwn",
+                areaName: "OrchardCore.Users",
+                pattern: _adminOptions.AdminUrlPrefix + "/Users/EditOwnUser",
+                defaults: new { controller = adminControllerName, action = nameof(AdminController.EditOwnUser) }
+            );
 
             builder.UseAuthorization();
         }
@@ -191,6 +197,7 @@ namespace OrchardCore.Users
 
             services.AddScoped<IDisplayManager<User>, DisplayManager<User>>();
             services.AddScoped<IDisplayDriver<User>, UserDisplayDriver>();
+            services.AddScoped<IDisplayDriver<User>, UserInformationDisplayDriver>();
             services.AddScoped<IDisplayDriver<User>, UserButtonsDisplayDriver>();
 
             services.AddScoped<IThemeSelector, UsersThemeSelector>();

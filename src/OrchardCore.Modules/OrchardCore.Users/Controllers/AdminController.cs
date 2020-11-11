@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -309,6 +310,65 @@ namespace OrchardCore.Users.Controllers
             }
 
             var user = await _userManager.FindByIdAsync(id) as User;
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            var shape = await _userDisplayManager.UpdateEditorAsync(user, updater: _updateModelAccessor.ModelUpdater, isNew: false);
+
+            if (!ModelState.IsValid)
+            {
+                return View(shape);
+            }
+
+            var result = await _userManager.UpdateAsync(user);
+
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError(string.Empty, error.Description);
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return View(shape);
+            }
+
+            _notifier.Success(H["User updated successfully"]);
+
+            return RedirectToAction(nameof(Index));
+        }
+
+
+        public async Task<IActionResult> EditOwnUser()
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditOwnUserInformation))
+            {
+                return Forbid();
+            }
+
+            var user = await _userManager.FindByIdAsync(User.FindFirstValue(ClaimTypes.NameIdentifier)) as User;
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            var shape = await _userDisplayManager.BuildEditorAsync(user, updater: _updateModelAccessor.ModelUpdater, isNew: false);
+
+            return View(shape);
+        }        
+
+
+        [HttpPost]
+        [ActionName(nameof(EditOwnUser))]
+        public async Task<IActionResult> EditOwnUserPost()
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditOwnUserInformation))
+            {
+                return Forbid();
+            }
+
+            var user = await _userManager.FindByIdAsync(User.FindFirstValue(ClaimTypes.NameIdentifier)) as User;
             if (user == null)
             {
                 return NotFound();
