@@ -29,7 +29,7 @@ namespace OrchardCore.Lucene.QueryProviders
                     return boolQuery;
                 case JTokenType.Object:
                     var obj = (JObject)first.Value;
-                    var value = obj.Property("query")?.Value.Value<string>();
+                    var value = obj.Property("value")?.Value.Value<string>();
 
                     if (obj.TryGetValue("boost", out var boost))
                     {
