@@ -84,10 +84,7 @@ namespace OrchardCore.Templates.Controllers
                      template.Key.Contains(displayText, StringComparison.InvariantCultureIgnoreCase));
             }
 
-            templates = templates
-              .OrderBy(x => x.Key)
-              .Skip(pager.GetStartIndex())
-              .Take(pager.PageSize);
+            templates = templates.OrderBy(x => x.Key).Skip(pager.GetStartIndex()).Take(pager.PageSize);
 
             var pagerShape = (await New.Pager(pager)).TotalItemCount(count);
 
