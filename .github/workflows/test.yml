@@ -46,10 +46,11 @@ jobs:
         cd test/Functional
         npm install
         npm run mvc:test
-    - name: Upload screenshots
-      uses: actions/upload-artifact@v2
+    - uses: actions/upload-artifact@v2
       with:
-      path: test/Functional/mvc-tests/cypress/screenshots
+        name: functional-mvc-screenshots
+        path: test/Functional/mvc-tests/cypress/screenshots
+        retention-days: 3
   test_functional_cms_sqlite:
     env:
       DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
@@ -68,10 +69,11 @@ jobs:
         cd test/Functional
         npm install
         npm run cms:test
-    - name: Upload screenshots
-      uses: actions/upload-artifact@v2
+    - uses: actions/upload-artifact@v2
       with:
-      path: test/Functional/cms-tests/cypress/screenshots
+        name: functional-cms-sqlite-screenshots
+        path: test/Functional/cms-tests/cypress/screenshots
+        retention-days: 3
   test_functional_cms_postgresql:
     env:
       DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
@@ -103,10 +105,11 @@ jobs:
         cd test/Functional
         npm install
         npm run cms:test
-    - name: Upload screenshots
-      uses: actions/upload-artifact@v2
+    - uses: actions/upload-artifact@v2
       with:
-      path: test/Functional/cms-tests/cypress/screenshots
+        name: functional-cms-postgresql-screenshots
+        path: test/Functional/cms-tests/cypress/screenshots
+        retention-days: 3
   test_functional_cms_mysql:
     env:
       DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
@@ -136,7 +139,8 @@ jobs:
         cd test/Functional
         npm install
         npm run cms:test
-    - name: Upload screenshots
-      uses: actions/upload-artifact@v2
+    - uses: actions/upload-artifact@v2
       with:
-      path: test/Functional/cms-tests/cypress/screenshots
+        name: functional-cms-mysql-screenshots
+        path: test/Functional/cms-tests/cypress/screenshots
+        retention-days: 3
