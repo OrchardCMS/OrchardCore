@@ -57,8 +57,7 @@ Cypress.Commands.add("createTenant", ({ name, prefix, setupRecipe, description})
         //set the tablePrefix to the name.
         const prefix = $body.find("#TablePrefix");
         if(prefix.length > 0){
-            //TODO: better uuid. Table names cannot be longer than 64 char for PGSQL
-            prefix.val(name.substring(0,6));
+            prefix.val(name);
         }
     }
   });
