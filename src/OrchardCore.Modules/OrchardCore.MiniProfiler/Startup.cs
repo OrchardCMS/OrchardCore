@@ -32,17 +32,16 @@ namespace OrchardCore.MiniProfiler
 
             var store = serviceProvider.GetService<IStore>();
 
+            // Wrap the current factory with MiniProfilerConnectionFactory
             var factory = store.Configuration.ConnectionFactory;
             var profilerFactory = new MiniProfilerConnectionFactory(factory);
             store.Configuration.ConnectionFactory = profilerFactory;
+
             var dialect = SqlDialectFactory.For(factory.DbConnectionType);
             SqlDialectFactory.Register(profilerFactory.DbConnectionType, dialect);
 
-            using (var connection = factory.CreateConnection())
-            {
-                var interpreter = CommandInterpreterFactory.For(connection);
-                CommandInterpreterFactory.Register(profilerFactory.DbConnectionType, d => interpreter);
-            }
+            var interpreter = CommandInterpreterFactory.For(factory.DbConnectionType);
+            CommandInterpreterFactory.Register(profilerFactory.DbConnectionType, d => interpreter);
         }
     }
 }

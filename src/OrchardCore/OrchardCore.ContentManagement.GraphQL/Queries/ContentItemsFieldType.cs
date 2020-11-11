@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
 using System.Threading.Tasks;
 using GraphQL.Types;
 using Microsoft.Extensions.DependencyInjection;
@@ -167,7 +165,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             {
                 if (indexes.ContainsKey(usedAlias))
                 {
-                    Join(contentQuery, indexes[usedAlias].IndexType);
+                    contentQuery = contentQuery.With(indexes[usedAlias].IndexType);
                     var tableAlias = query.GetTypeAlias(indexes[usedAlias].IndexType);
                     predicateQuery.CreateTableAlias(indexes[usedAlias].Index, tableAlias);
                 }
@@ -185,21 +183,6 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
             }
 
             return contentQuery;
-        }
-
-        private static ImmutableDictionary<Type, MethodInfo> _withMethods = ImmutableDictionary<Type, MethodInfo>.Empty;
-        private static MethodInfo _withMethodInfo = ((MethodCallExpression)((Expression<Action<IQuery<ContentItem>>>)((IQuery<ContentItem> v) => v.With<ContentItemIndex>())).Body).Method.GetGenericMethodDefinition();
-
-        private void Join(IQuery<ContentItem> query, Type indexType)
-        {
-            // TODO: Remove once IQuery<T>.With(Type t) is available
-            if (!_withMethods.TryGetValue(indexType, out var withMethod))
-            {
-                withMethod = _withMethodInfo.MakeGenericMethod(indexType);
-                _withMethods = _withMethods.Add(indexType, withMethod);
-            }
-
-            withMethod.Invoke(query, null);
         }
 
         private IQuery<ContentItem> PageQuery(IQuery<ContentItem> contentItemsQuery, ResolveFieldContext context, GraphQLContext graphQLContext)
