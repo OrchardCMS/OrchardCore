@@ -17,7 +17,7 @@ on:
 env:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
   DOTNET_CLI_TELEMETRY_OPTOUT: true
-  BuildNumber: ${{ github.run_id }}
+  BuildNumber: ${{ github.run_number + 15471 }}
 #  IsReleaseBranch: ${{github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/heads/release') }}
 jobs:
   test:
