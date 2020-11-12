@@ -138,7 +138,7 @@ jobs:
         retention-days: 3
   
   test_functional_cms_mysql:
-    name: Functional test - CMS Mysql
+    name: Functional test - CMS MySql
     runs-on: ubuntu-latest
     container:
       image: cypress/browsers:node12.13.0-chrome78-ff70
