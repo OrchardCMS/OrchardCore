@@ -159,7 +159,7 @@
                             }
                             <a asp-action="Reload" asp-route-id="@entry.Name" class="btn btn-secondary btn-sm" itemprop="UnsafeUrl">@T["Reload"]</a>
                         </div>
-                        <a href="@GetEncodedUrl(entry, originalPathBase)">@entry.Name</a>
+                        <a href="@GetEncodedUrl(entry, originalPathBase)" target="_blank">@entry.Name</a>
                         <code class="hint">@GetDisplayUrl(entry, originalPathBase)</code>
                         @if (!string.IsNullOrEmpty(entry.Description))
                         {

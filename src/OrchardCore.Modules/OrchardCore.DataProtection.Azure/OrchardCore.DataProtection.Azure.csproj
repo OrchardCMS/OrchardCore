@@ -9,7 +9,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.DataProtection.AzureStorage" />
+    <PackageReference Include="Azure.Extensions.AspNetCore.DataProtection.Blobs" />
   </ItemGroup>
 
   <ItemGroup>

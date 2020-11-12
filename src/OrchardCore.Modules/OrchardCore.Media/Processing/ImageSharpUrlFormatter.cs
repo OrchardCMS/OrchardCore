@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using Microsoft.AspNetCore.WebUtilities;
 using OrchardCore.Media.Fields;
 
@@ -67,7 +68,7 @@ namespace OrchardCore.Media.Processing
 
             if (anchor != null)
             {
-                queryStringParams["rxy"] = anchor.X.ToString() + ',' + anchor.Y.ToString();
+                queryStringParams["rxy"] = anchor.X.ToString(CultureInfo.InvariantCulture) + ',' + anchor.Y.ToString(CultureInfo.InvariantCulture);
             }
 
             return QueryHelpers.AddQueryString(path, queryStringParams);
