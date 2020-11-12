@@ -169,19 +169,24 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
+    - uses: actions/cache@v2
       with:
-        ref: ${{ github.head_ref }}
+        path: ~/.npm
+        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+        ${{ runner.os }}-node-
     - name: Rebuild packages
       run: |
         npm install
-        npm run build
+        npm run rebuild
     - name: Check if there are changes
       id: changes
       uses: UnicornGlobal/has-changes-action@v1.0.11
     - name: Notify of changes
       if: steps.changes.outputs.changed == 1
       run: | 
-        echo "Changes deted in assets. Please build them and push."
+        echo "Changes detected after building assets. Please make sure to build them properly before pushing"
+        git status
         exit -1
   deploy_cloudsmith:
     if: github.ref == 'refs/heads/dev'
