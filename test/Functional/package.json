@@ -12,6 +12,7 @@
     "cms:setup": "node -e \"require('cypress-orchardcore/dist/test-runner').setup('../../src/OrchardCore.Cms.Web', 'SaaSTenantFiles')\"",
     "cms:host": "node -e \"require('cypress-orchardcore/dist/test-runner').host('../../src/OrchardCore.Cms.Web', 'OrchardCore.Cms.Web.dll')\"",
     "cms:test": "npm run cms:setup && cd cms-tests && node -e \"require('cypress-orchardcore/dist/test-runner').e2e('../../../src/OrchardCore.Cms.Web', 'OrchardCore.Cms.Web.dll')\"",
+    "cms:test-release": "cd cms-tests && node -e \"require('cypress-orchardcore/dist/test-runner').e2e('../../../build/release', 'OrchardCore.Cms.Web.dll')\"",
     "cms:cypress": "cd cms-tests && cypress open",
     "gen:blog": "node -e \"require('./test_generator').generateBlogData()\""
   }

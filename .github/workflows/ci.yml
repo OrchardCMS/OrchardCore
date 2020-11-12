@@ -21,13 +21,45 @@ env:
   DOTNET_CLI_TELEMETRY_OPTOUT: true
   BuildNumber: ${{ github.run_id }}
 jobs:
+  build_test_ubuntu:
+    runs-on: ubuntu-latest
+    name: Linux Unit Tests
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET Core 
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version:3.1.404
+    - name: Build and test
+      run: |
+        dotnet build --configuration Release
+        dotnet test -c Release --no-build ./test/OrchardCore.Tests/OrchardCore.Tests.csproj
+    - name: Pack
+      if: github.ref == 'refs/heads/dev'
+      run: dotnet pack -c Release --no-restore --no-build --include-symbols -o pack-output
+    - name: Upload Artifact
+      if: matrix.os == 'ubuntu-latest' && github.ref == 'refs/heads/dev'
+      uses: actions/upload-artifact@v2
+      with:
+        name: nupkg
+        path: ./pack-output/*.nupkg
+        retention-days: 5
+    - name: Build publish
+      run: |
+        rm -rf ./src/OrchardCore.Cms.Web/App_Data
+        dotnet publish -c Release --no-restore --no-build -o ./.build/release
+    - name: Upload Artifact
+      with:
+        name: release
+        path: ./.build/release/
+        retention-days: 1
   test:
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
         dotnet: ['3.1.404']
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        os: [windows-latest, macos-latest]
     name: Unit Tests
     steps:
     - uses: actions/checkout@v2
@@ -39,28 +71,6 @@ jobs:
       run: |
         dotnet build --configuration Release
         dotnet test -c Release --no-build ./test/OrchardCore.Tests/OrchardCore.Tests.csproj
-    - name: Pack
-      if: matrix.os == 'ubuntu-latest' && github.ref == 'refs/heads/dev'
-      run: dotnet pack -c Release --no-restore --no-build --include-symbols -o pack-output
-    - name: Upload Artifact
-      if: matrix.os == 'ubuntu-latest'
-      uses: actions/upload-artifact@v2
-      with:
-        name: nupkg
-        path: ./pack-output/*.nupkg
-        retention-days: 5
-    - name: Build publish
-      if: matrix.os == 'ubuntu-latest' && github.ref == 'refs/heads/dev'
-      run: |
-        rm -rf ./src/OrchardCore.Cms.Web/App_Data
-        dotnet publish -c Release --no-restore --no-build -o ./.build/release
-    - name: Upload Artifact
-      if: matrix.os == 'ubuntu-latest'
-      uses: actions/upload-artifact@v2
-      with:
-        name: release
-        path: ./.build/release/
-        retention-days: 1
   test_functional_mvc:
     name: Functional test - MVC
     runs-on: ubuntu-latest
@@ -85,6 +95,7 @@ jobs:
         retention-days: 3
   test_functional_cms_sqlite:
     name: Functional test - CMS Sqlite
+    needs: [build_test_ubuntu]
     runs-on: ubuntu-latest
     container:
       image: cypress/browsers:node12.13.0-chrome78-ff70
@@ -94,11 +105,16 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 3.1.404
+     - name: Download Artifact
+      uses: actions/download-artifact@v2
+      with:
+        name: release
+        path: build/release
     - name: Functional test
       run: |
         cd test/Functional
         npm install
-        npm run cms:test
+        npm run cms:test-release
     - uses: actions/upload-artifact@v2
       if: failure()
       with:
@@ -107,6 +123,7 @@ jobs:
         retention-days: 3
   test_functional_cms_postgresql:
     name: Functional test - CMS Postgres
+    needs: [build_test_ubuntu]
     runs-on: ubuntu-latest
     container:
       image: cypress/browsers:node12.13.0-chrome78-ff70
@@ -132,11 +149,16 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 3.1.404
+    - name: Download Artifact
+      uses: actions/download-artifact@v2
+      with:
+        name: release
+        path: build/release
     - name: Functional test
       run: |
         cd test/Functional
         npm install
-        npm run cms:test
+        npm run cms:test-release
     - uses: actions/upload-artifact@v2
       if: failure()
       with:
@@ -145,6 +167,7 @@ jobs:
         retention-days: 3
   test_functional_cms_mysql:
     name: Functional test - CMS Mysql
+    needs: [build_test_ubuntu]
     runs-on: ubuntu-latest
     container:
       image: cypress/browsers:node12.13.0-chrome78-ff70
@@ -166,11 +189,16 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 3.1.404
+    - name: Download Artifact
+      uses: actions/download-artifact@v2
+      with:
+        name: release
+        path: build/release
     - name: Functional test
       run: |
         cd test/Functional
         npm install
-        npm run cms:test
+        npm run cms:test-release
     - uses: actions/upload-artifact@v2
       if: failure()
       with:
@@ -179,7 +207,7 @@ jobs:
         retention-days: 3
   deploy_cloudsmith:
     if: github.ref == 'refs/heads/dev'
-    needs: [test,test_functional_mvc,test_functional_cms_sqlite,test_functional_cms_postgresql,test_functional_cms_mysql]
+    needs: [build_test_ubuntu,test,test_functional_mvc,test_functional_cms_sqlite,test_functional_cms_postgresql,test_functional_cms_mysql]
     runs-on: ubuntu-latest
     name: Deploy preview nuget packages
     steps:
@@ -192,7 +220,7 @@ jobs:
  
   deploy_docker:
     if: github.ref == 'refs/heads/dev'
-    needs: [test,test_functional_mvc,test_functional_cms_sqlite,test_functional_cms_postgresql,test_functional_cms_mysql]
+    needs: [build_test_ubuntu,test,test_functional_mvc,test_functional_cms_sqlite,test_functional_cms_postgresql,test_functional_cms_mysql]
     runs-on: ubuntu-latest
     name: Deploy preview (dev) docker image
     steps:
