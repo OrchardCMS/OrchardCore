@@ -1,4 +1,4 @@
-name: Build, Test and push
+name: Build, Test and push (dev)
 on: 
   pull_request:
     paths-ignore:
@@ -18,7 +18,7 @@ env:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
   DOTNET_CLI_TELEMETRY_OPTOUT: true
   BuildNumber: ${{ github.run_id }}
-  IsReleaseBranch: ${{github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/heads/release') }}
+#  IsReleaseBranch: ${{github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/heads/release') }}
 jobs:
   test:
     runs-on: ${{ matrix.os }}
@@ -39,10 +39,10 @@ jobs:
         dotnet build --configuration Release
         dotnet test -c Release --no-restore --no-build ./test/OrchardCore.Tests/OrchardCore.Tests.csproj
     - name: Pack
-      if: matrix.os == 'ubuntu-latest' && env.IsReleaseBranch
+      if: matrix.os == 'ubuntu-latest' && github.ref == 'refs/heads/dev'
       run: dotnet pack -c Release --no-restore --no-build --include-symbols
     - name: Upload Artifact
-      if: matrix.os == 'ubuntu-latest' && env.IsReleaseBranch
+      if: matrix.os == 'ubuntu-latest' && github.ref == 'refs/heads/dev'
       uses: actions/upload-artifact@v2
       with:
         name: nupkg
@@ -237,7 +237,7 @@ jobs:
         exit -1
 
   deploy_nuget:
-    if: env.IsReleaseBranch
+    if: github.ref == 'refs/heads/dev'
     needs: [test,test_functional_mvc,test_functional_cms_sqlite,test_functional_cms_postgresql,test_functional_cms_mysql,test_functional_cms_mssql]
     runs-on: ubuntu-latest
     name: Deploy preview nuget packages
@@ -249,13 +249,9 @@ jobs:
     - name: Publish to Cloudsmith
       if: github.ref == 'refs/heads/dev'
       run: dotnet nuget push './nupkg/**/*.nupkg' -k ${{secrets.CLOUDSMITH_API_KEY}} -n true -s https://nuget.cloudsmith.io/orchardcore/preview/v3/index.json --skip-duplicate
-# TODO: Maybe use a github release to push this one ? Maybe rebuild with a different number
-    - name: Publish to Nuget
-      if: github.ref == 'refs/heads/master'
-      run: dotnet nuget push './nupkg/**/*.nupkg' -k ${{secrets.NUGET_API_KEY}} -n true -s https://api.nuget.org/v3/index.json --skip-duplicate
 
   deploy_docker_linux:
-    if: env.IsReleaseBranch
+    if: github.ref == 'refs/heads/dev'
     needs: [test,test_functional_mvc,test_functional_cms_sqlite,test_functional_cms_postgresql,test_functional_cms_mysql,test_functional_cms_mssql]
     runs-on: ubuntu-latest
     name: Deploy preview (dev) docker image for linux
@@ -275,19 +271,13 @@ jobs:
         rm -rf ./src/OrchardCore.Cms.Web/App_Data
         dotnet publish -c Release -o ./.build/release
     - name: Docker build and push (dev)
-      if: github.ref == 'refs/heads/dev'
+      if: 
       run: |
         docker build -t orchardproject/orchardcore-cms-linux:dev .
         docker push orchardproject/orchardcore-cms-linux
-# TODO: maybe use a github release for this one...
-    - name: Docker build and push (master)
-      if: github.ref == 'refs/heads/master'
-      run: |
-        docker build -t orchardproject/orchardcore-cms-linux:1.0.0-rc2 .
-        docker push orchardproject/orchardcore-cms-linux
 
   deploy_docker_windows:
-    if: env.IsReleaseBranch
+    if: github.ref == 'refs/heads/dev'
     needs: [test,test_functional_mvc,test_functional_cms_sqlite,test_functional_cms_postgresql,test_functional_cms_mysql,test_functional_cms_mssql]
     runs-on: windows-latest
     name: Deploy preview (dev) docker image for windows
@@ -302,18 +292,11 @@ jobs:
       with:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_PASSWORD }}
-    - name: Docker Build and Push
+    - name: Dotnet Build
       run: |
         rm -rf ./src/OrchardCore.Cms.Web/App_Data
         dotnet publish -c Release -o ./.build/release
     - name: Docker build and push (dev)
-      if: github.ref == 'refs/heads/dev'
       run: |
         docker build -t orchardproject/orchardcore-cms-windows:dev .
-        docker push orchardproject/orchardcore-cms-linux
-# TODO: maybe use a github release for this one...
-    - name: Docker build and push (master)
-      if: github.ref == 'refs/heads/master'
-      run: |
-        docker build -t orchardproject/orchardcore-cms-windows:1.0.0-rc2 .
-        docker push orchardproject/orchardcore-cms-linux
+        docker push orchardproject/orchardcore-cms-windows
