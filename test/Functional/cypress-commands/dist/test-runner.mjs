@@ -1,8 +1,7 @@
 // This module was originally build by the OrchardCore team
 const child_process = require("child_process");
-const fs = require("fs");
+const fs = require("fs-extra");
 const path = require("path");
-const rimraf = require("rimraf");
 
 global.log = function(msg) {
   let now = new Date().toLocaleTimeString();
@@ -17,23 +16,40 @@ function build(dir) {
 
 // destructive action that deletes the App_Data folder
 function clean(dir) {
-  rimraf(path.join(dir, "App_Data"), function() {
-    global.log("App_Data deleted");
-  });
+  const appdataPath = path.join(dir, "App_Data");
+  fs.removeSync(appdataPath);
+  global.log(`${appdataPath} deleted`);
+}
+// clean and copy some files 
+function setup(dir, copyDir) {
+    clean(dir);
+    const appdataPath = path.join(dir, "App_Data");
+    fs.ensureDirSync(appdataPath);
+    fs.copySync(copyDir, appdataPath);
+    global.log(`Copied SaaS tenant to ${appdataPath}`);
 }
 
 // Host the dotnet application, does not rebuild
 function host(dir, assembly) {
-  if (fs.existsSync(path.join(dir, "bin/Release/net5.0/", assembly))) {
+  if (fs.existsSync(path.join(dir, "bin/Release/netcoreapp3.1/", assembly))) {
     global.log("Application already built, skipping build");
   } else {
     build(dir);
   }
-  global.log("Starting application ...");
+  global.log("Starting application ..."); 
+  
+  const ocEnv = {};
+
+  Object.keys(process.env).forEach((v) => {
+    if(v.startsWith('OrchardCore__')){
+        ocEnv[v] = process.env[v];
+    }
+  });
+  console.log(`Environment variables:`, ocEnv);
   let server = child_process.spawn(
     "dotnet",
-    ["bin/Release/net5.0/" + assembly],
-    { cwd: dir }
+    ["bin/Release/netcoreapp3.1/" + assembly],
+    { cwd: dir, env: process.env }
   );
 
   server.stdout.on("data", data => {
@@ -51,19 +67,7 @@ function host(dir, assembly) {
 }
 
 // combines the functions above, useful when triggering tests from CI
-function e2e(dir, assembly, performClean = false, rebuild = false) {
-  if (performClean === true) {
-    clean(dir);
-  }
-  if (rebuild === true) {
-    build(dir);
-  }
-
-  if (fs.existsSync(path.join(dir, "bin/Release/net5.0/", assembly))) {
-    global.log("Application already built, skipping build");
-  } else {
-    build(dir);
-  }
+function e2e(dir, assembly) {
 
   var server = host(dir, assembly);
 
@@ -83,4 +87,4 @@ function e2e(dir, assembly, performClean = false, rebuild = false) {
   });
 }
 
-export { build, clean, e2e, host };
+export { build, clean, e2e, host, setup };
