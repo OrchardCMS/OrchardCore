@@ -32,9 +32,13 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 3.1.404
+    - name: Set build number 
+      if: matrix.os == 'ubuntu-latest' # && github.ref == 'refs/heads/dev'
+      run: |
+        sum=$(( ${{ github.run_number }} + 15471 ))
+        export BuildNumber=$sum
     - name: Build and test
       run: |
-        export BuildNumber=$((${{ github.run_number }} + 15471 ))
         dotnet build --configuration Release
         dotnet test -c Release --no-restore --no-build ./test/OrchardCore.Tests/OrchardCore.Tests.csproj
     - name: Pack
