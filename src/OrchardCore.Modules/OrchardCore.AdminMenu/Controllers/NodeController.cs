@@ -10,7 +10,6 @@ using OrchardCore.AdminMenu.ViewModels;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
-using OrchardCore.Environment.Extensions;
 using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
 
@@ -26,13 +25,10 @@ namespace OrchardCore.AdminMenu.Controllers
         private readonly INotifier _notifier;
         private readonly IHtmlLocalizer H;
         private readonly IUpdateModelAccessor _updateModelAccessor;
-        private readonly ITypeFeatureProvider _typeFeatureProvider;
-        private readonly IEnumerable<IPermissionProvider> _permissionProviders;
 
 
         public NodeController(
             IAuthorizationService authorizationService,
-            ITypeFeatureProvider typeFeatureProvider,
             IEnumerable<IPermissionProvider> permissionProviders,
             IDisplayManager<MenuItem> displayManager,
             IEnumerable<IAdminNodeProviderFactory> factories,
@@ -45,8 +41,6 @@ namespace OrchardCore.AdminMenu.Controllers
             _factories = factories;
             _adminMenuService = adminMenuService;
             _authorizationService = authorizationService;
-            _typeFeatureProvider = typeFeatureProvider;
-            _permissionProviders = permissionProviders;
             _notifier = notifier;
             _updateModelAccessor = updateModelAccessor;
             H = htmlLocalizer;
@@ -351,28 +345,6 @@ namespace OrchardCore.AdminMenu.Controllers
             await _adminMenuService.SaveAsync(adminMenu);
 
             return Ok();
-        }
-
-
-        public async Task<IActionResult> SearchPermissions(string query)
-        {
-           var installedPermissions = new List<Permission>();
-            foreach (var permissionProvider in _permissionProviders)
-            {
-                var feature = _typeFeatureProvider.GetFeatureForDependency(permissionProvider.GetType());
-                var featureName = feature.Id;
-
-                var permissions = await permissionProvider.GetPermissionsAsync();
-                if(!string.IsNullOrEmpty(query))
-                    permissions = permissions.Where(p => p.Name.Contains(query));
-
-                foreach (var permission in permissions)
-                {
-                    installedPermissions.Add(permission);
-                }
-            }
-
-            return new ObjectResult(installedPermissions.Select(r => new VueMultiselectItemViewModel() { Id = r.Name, DisplayText = $"{r.Name} - {r.Description}" }));
         }
     }
 }

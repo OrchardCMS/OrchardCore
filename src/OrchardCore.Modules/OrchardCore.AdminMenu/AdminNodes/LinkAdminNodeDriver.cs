@@ -3,28 +3,23 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.AdminMenu.ViewModels;
-using OrchardCore.ContentManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Environment.Extensions;
 using OrchardCore.Navigation;
-using OrchardCore.Security.Permissions;
+using OrchardCore.Security.Services;
 
 namespace OrchardCore.AdminMenu.AdminNodes
 {
     public class LinkAdminNodeDriver : DisplayDriver<MenuItem, LinkAdminNode>
     {
 
-        private readonly IEnumerable<IPermissionProvider> _permissionProviders;
-        private readonly ITypeFeatureProvider _typeFeatureProvider;
+        private readonly IPermissionsService _permissionService;
 
         public LinkAdminNodeDriver(
-            IEnumerable<IPermissionProvider> permissionProviders,
-            ITypeFeatureProvider typeFeatureProvider)
+            IPermissionsService permissionService)
         {
-            _permissionProviders = permissionProviders;
-            _typeFeatureProvider = typeFeatureProvider;
+            _permissionService = permissionService;
         }
         public override IDisplayResult Display(LinkAdminNode treeNode)
         {
@@ -42,6 +37,7 @@ namespace OrchardCore.AdminMenu.AdminNodes
                 model.LinkUrl = treeNode.LinkUrl;
                 model.IconClass = treeNode.IconClass;
                 model.SelectedItems = new List<VueMultiselectItemViewModel>();
+                model.AllItems = new List<VueMultiselectItemViewModel>();
 
                 var nameList = new List<string>();
                 foreach (var permission in treeNode.Permissions)
@@ -55,6 +51,15 @@ namespace OrchardCore.AdminMenu.AdminNodes
                     });
                 }
                 model.PermissionIds = string.Join(",", nameList);
+                
+                foreach (var permission in _permissionService.GetInstalledPermissionsAsync().Result)
+                {
+                    model.AllItems.Add(new VueMultiselectItemViewModel
+                    {
+                        Id = permission.Name,
+                        DisplayText = $"{permission.Name} - {permission.Description}"
+                    });
+                }
 
             }).Location("Content");
         }
@@ -74,7 +79,7 @@ namespace OrchardCore.AdminMenu.AdminNodes
                 //change permissions only if one is inserted
                 if(modifiedPermissions.Length > 0)
                 {
-                    var permissions = await GetInstalledPermissionsAsync();
+                    var permissions = await _permissionService.GetInstalledPermissionsAsync();
 
                     foreach (var permissionName in modifiedPermissions)
                     {
@@ -89,25 +94,6 @@ namespace OrchardCore.AdminMenu.AdminNodes
             };
 
             return Edit(treeNode);
-        }
-
-        private async Task<IEnumerable<Permission>> GetInstalledPermissionsAsync()
-        {
-            var installedPermissions = new List<Permission>();
-            foreach (var permissionProvider in _permissionProviders)
-            {
-                var feature = _typeFeatureProvider.GetFeatureForDependency(permissionProvider.GetType());
-                var featureName = feature.Id;
-
-                var permissions = await permissionProvider.GetPermissionsAsync();
-
-                foreach (var permission in permissions)
-                {
-                    installedPermissions.Add(permission);
-                }
-            }
-
-            return installedPermissions;
         }
     }
 }
