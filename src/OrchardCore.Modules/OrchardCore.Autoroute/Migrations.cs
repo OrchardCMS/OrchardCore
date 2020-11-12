@@ -27,7 +27,7 @@ namespace OrchardCore.Autoroute
                 .Column<string>("ContentItemId", c => c.WithLength(26))
                 .Column<string>("ContainedContentItemId", c => c.WithLength(26))
                 .Column<string>("JsonPath", c => c.Unlimited())
-                .Column<string>("Path", col => col.WithLength(Startup.MaxPathLength))
+                .Column<string>("Path", col => col.WithLength(AutoroutePart.MaxPathLength))
                 .Column<bool>("Published")
                 .Column<bool>("Latest")
             );

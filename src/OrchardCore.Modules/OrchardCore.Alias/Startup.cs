@@ -22,8 +22,6 @@ namespace OrchardCore.Alias
 {
     public class Startup : StartupBase
     {
-        // Maximum length that MySql can support in an index under utf8 collation.
-        public const int MaxAliasLength = 767;
 
         static Startup()
         {

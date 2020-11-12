@@ -14,9 +14,9 @@ namespace OrchardCore.Alias.Models
         {
             if (!string.IsNullOrWhiteSpace(part.Alias))
             {
-                if (part.Alias.Length > Startup.MaxAliasLength)
+                if (part.Alias.Length > AliasPart.MaxAliasLength)
                 {
-                    yield return new ValidationResult(S["Your alias is too long. The alias can only be up to {0} characters.", Startup.MaxAliasLength], new string[] { nameof(part.Alias) });
+                    yield return new ValidationResult(S["Your alias is too long. The alias can only be up to {0} characters.", AliasPart.MaxAliasLength], new string[] { nameof(part.Alias) });
                 }
 
                 if (!await IsAliasUniqueAsync(part, session, part.Alias))

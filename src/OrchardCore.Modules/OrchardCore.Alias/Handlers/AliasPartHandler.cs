@@ -77,9 +77,9 @@ namespace OrchardCore.Alias.Handlers
 
                 part.Alias = part.Alias.Replace("\r", String.Empty).Replace("\n", String.Empty);
 
-                if (part.Alias?.Length > Startup.MaxAliasLength)
+                if (part.Alias?.Length > AliasPart.MaxAliasLength)
                 {
-                    part.Alias = part.Alias.Substring(0, Startup.MaxAliasLength);
+                    part.Alias = part.Alias.Substring(0, AliasPart.MaxAliasLength);
                 }
 
                 if (!await part.IsAliasUniqueAsync(_session, part.Alias))
@@ -146,7 +146,7 @@ namespace OrchardCore.Alias.Handlers
             while (true)
             {
                 // Unversioned length + separator char + version length.
-                var quantityCharactersToTrim = unversionedAlias.Length + 1 + version.ToString().Length - Startup.MaxAliasLength;
+                var quantityCharactersToTrim = unversionedAlias.Length + 1 + version.ToString().Length - AliasPart.MaxAliasLength;
                 if (quantityCharactersToTrim > 0)
                 {
                     unversionedAlias = unversionedAlias.Substring(0, unversionedAlias.Length - quantityCharactersToTrim);

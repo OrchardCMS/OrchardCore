@@ -345,7 +345,7 @@ namespace OrchardCore.Autoroute.Handlers
             while (true)
             {
                 // Unversioned length + separator char + version length.
-                var quantityCharactersToTrim = unversionedPath.Length + 1 + version.ToString().Length - Startup.MaxPathLength;
+                var quantityCharactersToTrim = unversionedPath.Length + 1 + version.ToString().Length - AutoroutePart.MaxPathLength;
                 if (quantityCharactersToTrim > 0)
                 {
                     unversionedPath = unversionedPath.Substring(0, unversionedPath.Length - quantityCharactersToTrim);
@@ -392,9 +392,9 @@ namespace OrchardCore.Autoroute.Handlers
 
                 part.Path = part.Path.Replace("\r", String.Empty).Replace("\n", String.Empty);
 
-                if (part.Path?.Length > Startup.MaxPathLength)
+                if (part.Path?.Length > AutoroutePart.MaxPathLength)
                 {
-                    part.Path = part.Path.Substring(0, Startup.MaxPathLength);
+                    part.Path = part.Path.Substring(0, AutoroutePart.MaxPathLength);
                 }
 
                 if (!await IsAbsolutePathUniqueAsync(part.Path, part.ContentItem.ContentItemId))
@@ -432,7 +432,7 @@ namespace OrchardCore.Autoroute.Handlers
             while (true)
             {
                 // Unversioned length + separator char + version length.
-                var quantityCharactersToTrim = unversionedPath.Length + 1 + version.ToString().Length - Startup.MaxPathLength;
+                var quantityCharactersToTrim = unversionedPath.Length + 1 + version.ToString().Length - AutoroutePart.MaxPathLength;
                 if (quantityCharactersToTrim > 0)
                 {
                     unversionedPath = unversionedPath.Substring(0, unversionedPath.Length - quantityCharactersToTrim);
