@@ -38,7 +38,7 @@ jobs:
       if: github.ref == 'refs/heads/dev'
       run: dotnet pack -c Release --no-restore --no-build --include-symbols -o pack-output
     - name: Upload Artifact
-      if: matrix.os == 'ubuntu-latest' && github.ref == 'refs/heads/dev'
+      if: github.ref == 'refs/heads/dev'
       uses: actions/upload-artifact@v2
       with:
         name: nupkg
