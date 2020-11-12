@@ -36,16 +36,16 @@ jobs:
     - name: Build and test
       run: |
         dotnet build --configuration Release
-        dotnet test -c Release --no-build ./test/OrchardCore.Tests/OrchardCore.Tests.csproj
+        dotnet test -c Release --no-restore --no-build ./test/OrchardCore.Tests/OrchardCore.Tests.csproj
     - name: Pack
-      if: matrix.os == 'ubuntu-latest' && github.ref == 'refs/heads/dev'
-      run: dotnet pack -c Release --no-restore --no-build --include-symbols -o pack-output
+      if: matrix.os == 'ubuntu-latest' 
+      run: dotnet pack -c Release --no-restore --no-build --include-symbols
     - name: Upload Artifact
-      if: matrix.os == 'ubuntu-latest' && github.ref == 'refs/heads/dev'
+      if: matrix.os == 'ubuntu-latest' 
       uses: actions/upload-artifact@v2
       with:
         name: nupkg
-        path: ./pack-output/*.nupkg
+        path: ./src/**/*.nupkg
         retention-days: 5
   
   test_functional_mvc:
@@ -188,14 +188,14 @@ jobs:
       run: |
         npm install
         npm run rebuild
-    - name: Check if there are changes
+    - name: Check if git has changes
       id: changes
       uses: UnicornGlobal/has-changes-action@v1.0.11
-    - name: Notify of changes
+    - name: Changes detected after building assets
       if: steps.changes.outputs.changed == 1
       run: | 
-        echo "Changes detected after building assets. Please make sure to build them properly before pushing"
         git status
+        echo "Please make sure to build them properly before pushing"
         exit -1
   
   deploy_cloudsmith:
@@ -209,7 +209,7 @@ jobs:
       with:
         name: nupkg
     - name: Publish nuget
-      run: dotnet nuget push './nupkg/*.nupkg' -k ${{secrets.CLOUDSMITH_API_KEY}} -n true -s https://nuget.cloudsmith.io/orchardcore/preview/v3/index.json --skip-duplicate
+      run: dotnet nuget push './nupkg/**/*.nupkg' -k ${{secrets.CLOUDSMITH_API_KEY}} -n true -s https://nuget.cloudsmith.io/orchardcore/preview/v3/index.json --skip-duplicate
   
   deploy_docker:
     if: github.ref == 'refs/heads/dev'
