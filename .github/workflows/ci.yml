@@ -165,6 +165,24 @@ jobs:
         name: functional-cms-mysql-screenshots
         path: test/Functional/cms-tests/cypress/screenshots
         retention-days: 3
+  test-npm-build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        ref: ${{ github.head_ref }}
+    - name: Rebuild packages
+      run: |
+        npm install
+        npm run build
+    - name: Check if there are changes
+      id: changes
+      uses: UnicornGlobal/has-changes-action@v1.0.11
+    - name: Notify of changes
+      if: steps.changes.outputs.changed == 1
+      run: | 
+        echo "Changes deted in assets. Please build them and push."
+        exit -1
   deploy_cloudsmith:
     if: github.ref == 'refs/heads/dev'
     needs: [test,test_functional_mvc,test_functional_cms_sqlite,test_functional_cms_postgresql,test_functional_cms_mysql]
