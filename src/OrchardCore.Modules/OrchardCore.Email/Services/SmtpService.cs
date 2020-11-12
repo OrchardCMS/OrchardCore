@@ -81,7 +81,13 @@ namespace OrchardCore.Email.Services
                 Sender = MailboxAddress.Parse(senderAddress)
             };
 
-            mimeMessage.From.Add(MailboxAddress.Parse(message.From));
+            if (!string.IsNullOrWhiteSpace(message.From))
+            {
+                foreach (var address in message.From.Split(EmailsSeparator, StringSplitOptions.RemoveEmptyEntries))
+                {
+                    mimeMessage.From.Add(MailboxAddress.Parse(address));
+                }
+            }
 
             if (!string.IsNullOrWhiteSpace(message.To))
             {
