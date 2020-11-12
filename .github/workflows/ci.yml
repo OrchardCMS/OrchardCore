@@ -156,7 +156,7 @@ jobs:
     if: github.ref == 'refs/heads/jptissot/github_actions'
     needs: [test,test_functional_mvc,test_functional_cms_sqlite,test_functional_cms_postgresql,test_functional_cms_mysql]
     runs-on: ubuntu-latest
-    name: Deploy nuget packages
+    name: Deploy preview nuget packages
     steps:
     - name: Download Artifact
       uses: actions/download-artifact@v1
@@ -169,7 +169,7 @@ jobs:
     if: github.ref == 'refs/heads/jptissot/github_actions'
     needs: [test,test_functional_mvc,test_functional_cms_sqlite,test_functional_cms_postgresql,test_functional_cms_mysql]
     runs-on: ubuntu-latest
-    name: Deploy nuget packages
+    name: Deploy preview (dev) docker image
     steps:
     - uses: actions/checkout@v2
     - name: Setup .NET Core
