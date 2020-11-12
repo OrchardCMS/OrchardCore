@@ -5,11 +5,13 @@
 @using Microsoft.AspNetCore.Html
 @using Microsoft.Extensions.Options
 @using Microsoft.Extensions.Primitives
+@using OrchardCore.Setup
 @inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer T
 @inject Microsoft.Extensions.Options.IOptions<IdentityOptions> IdentityOptions
 @inject IOptions<RequestLocalizationOptions> LocOptions
 @inject OrchardCore.IOrchardHelper Orchard
 @inject OrchardCore.Modules.IClock Clock
+@inject IOptions<SetupOptions> SetupOptions
 @model OrchardCore.Setup.ViewModels.SetupViewModel
 
 @{
@@ -21,6 +23,7 @@
     var passwordOptions = new HtmlContentBuilder();
     IHtmlContent separator = HtmlString.Empty;
     string passwordRegex = "";
+    var setupOptions = SetupOptions.Value;
 
     if (options.Password.RequireNonAlphanumeric)
     {
@@ -153,15 +156,18 @@
             <span asp-validation-for="SiteTimeZone"></span>
             <span class="text-muted form-text small">@T["Determines the default time zone used when displaying and editing dates and times."]</span>
         </div>
-        <div class="form-group col-md-6" asp-validation-class-for="UseCdn">
-            <label asp-for="UseCdn">@T["Content Delivery Network (CDN)"]</label>
-            <select asp-for="UseCdn" class="form-control">
-                <option value="true" selected>@T["Enabled - Serve common scripts from their public CDN"]</option>
-                <option value="false">@T["Disabled - Serve common scripts directly from this site"]</option>
-            </select>
-            <span asp-validation-for="UseCdn"></span>
-            <span class="text-muted form-text small">@T["Change this option if your users can't access public CDNs."]</span>
-        </div>
+        @if (setupOptions.DisplayCdnOptions)
+        {
+            <div class="form-group col-md-6" asp-validation-class-for="UseCdn">
+                <label asp-for="UseCdn">@T["Content Delivery Network (CDN)"]</label>
+                <select asp-for="UseCdn" class="form-control">
+                    <option value="true" selected>@T["Enabled - Serve common scripts from their public CDN"]</option>
+                    <option value="false">@T["Disabled - Serve common scripts directly from this site"]</option>
+                </select>
+                <span asp-validation-for="UseCdn"></span>
+                <span class="text-muted form-text small">@T["Change this option if your users can't access public CDNs."]</span>
+            </div>
+        }
     </div>
     @if (!Model.DatabaseConfigurationPreset)
     {

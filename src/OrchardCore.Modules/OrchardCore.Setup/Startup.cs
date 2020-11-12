@@ -17,6 +17,7 @@ namespace OrchardCore.Setup
     public class Startup : StartupBase
     {
         private readonly string _defaultCulture = CultureInfo.InstalledUICulture.Name;
+        private readonly bool _displayCdnOptions;
 
         private string[] _supportedCultures = new string[] {
             "ar", "cs", "de", "el", "en", "es", "fa", "fr", "it", "ja", "pl", "pt-BR", "ru", "sv", "tr", "vi", "zh-CN", "zh-TW"
@@ -28,12 +29,15 @@ namespace OrchardCore.Setup
 
             _defaultCulture = configurationSection["DefaultCulture"] ?? _defaultCulture;
             _supportedCultures = configurationSection.GetSection("SupportedCultures").Get<List<string>>()?.ToArray() ?? _supportedCultures;
+            _displayCdnOptions = configurationSection.GetSection("DisplayCdnOptions").Get<bool>();
         }
 
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddPortableObjectLocalization(options => options.ResourcesPath = "Localization");
             services.Replace(ServiceDescriptor.Singleton<ILocalizationFileLocationProvider, ModularPoFileLocationProvider>());
+
+            services.Configure<SetupOptions>(options => options.DisplayCdnOptions = _displayCdnOptions);
 
             services.AddSetup();
         }
