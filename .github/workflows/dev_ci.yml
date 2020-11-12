@@ -39,7 +39,7 @@ jobs:
         dotnet build --configuration Release
         dotnet test -c Release --no-restore --no-build ./test/OrchardCore.Tests/OrchardCore.Tests.csproj
     - name: Pack
-      if: matrix.os == 'ubuntu-latest' #&& github.ref == 'refs/heads/dev'
+      if: matrix.os == 'ubuntu-latest' && github.ref == 'refs/heads/dev'
       run: dotnet pack -c Release --no-restore --no-build --include-symbols
     - name: Upload Artifact
       if: matrix.os == 'ubuntu-latest' && github.ref == 'refs/heads/dev'
