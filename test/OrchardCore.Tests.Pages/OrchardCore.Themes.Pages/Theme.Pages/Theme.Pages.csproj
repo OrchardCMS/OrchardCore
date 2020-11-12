@@ -3,11 +3,11 @@
   <PropertyGroup>
     <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
+    <IsPackable>false</IsPackable>
   </PropertyGroup>
 
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
-    <IsPackable>false</IsPackable>
   </ItemGroup>
 
   <ItemGroup>
