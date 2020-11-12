@@ -1,0 +1,12 @@
+name: Workflow2
+on:
+  workflow_run:
+    workflows: ["Workflow1"]
+    types: 
+      - completed
+jobs:
+  job1:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
