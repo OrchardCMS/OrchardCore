@@ -212,6 +212,7 @@ jobs:
         retention-days: 3
   
   test-npm-build:
+    name: Test building assets
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -233,7 +234,6 @@ jobs:
       run: | 
         git status
         echo "Please make sure to build them properly before pushing"
-        exit -1
 
   deploy_nuget:
     if: github.ref == 'refs/heads/dev'
