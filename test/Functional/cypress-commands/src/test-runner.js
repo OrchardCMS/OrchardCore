@@ -31,7 +31,7 @@ export function setup(dir, copyDir) {
 
 // Host the dotnet application, does not rebuild
 export function host(dir, assembly) {
-  if (fs.existsSync(path.join(dir, "bin/Release/netcoreapp3.1/", assembly))) {
+  if (fs.existsSync(path.join(dir, "bin/Release/net5.0/", assembly))) {
     global.log("Application already built, skipping build");
   } else {
     build(dir);
@@ -48,7 +48,7 @@ export function host(dir, assembly) {
   console.log(`Environment variables:`, ocEnv)
   let server = child_process.spawn(
     "dotnet",
-    ["bin/Release/netcoreapp3.1/" + assembly],
+    ["bin/Release/net5.0/" + assembly],
     { cwd: dir, env: process.env }
   );
 
