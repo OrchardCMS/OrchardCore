@@ -37,7 +37,7 @@ Cypress.Commands.add('newTenant', function(tenantInfo) {
   cy.siteSetup(tenantInfo);
 });
 
-Cypress.Commands.add("createTenant", ({ name, prefix, setupRecipe, description}) => {
+Cypress.Commands.add("createTenant", ({ name, prefix, setupRecipe, description }) => {
   // We create tenants on the SaaS tenant
   cy.visit("/Admin/Tenants");
   cy.btnCreateClick();
