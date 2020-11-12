@@ -1,4 +1,4 @@
-name: Build and Test
+name: Build, Test and push
 on: 
  # pull_request:
   push:
@@ -33,7 +33,7 @@ jobs:
         dotnet test -c Release --no-build ./test/OrchardCore.Tests/OrchardCore.Tests.csproj
     - name: Pack
       if: matrix.os == 'ubuntu-latest'
-      run: dotnet pack -v normal -c Release --no-restore --include-symbols -o pack-output
+      run: dotnet pack -c Release --no-restore --include-symbols -o pack-output
     - name: Upload Artifact
       if: matrix.os == 'ubuntu-latest'
       uses: actions/upload-artifact@v2
@@ -152,3 +152,38 @@ jobs:
         name: functional-cms-mysql-screenshots
         path: test/Functional/cms-tests/cypress/screenshots
         retention-days: 3
+  deploy_cloudsmith:
+    if: github.ref == 'refs/heads/jptissot/github_actions'
+    needs: [test,test_functional_mvc,test_functional_cms_sqlite,test_functional_cms_postgresql,test_functional_cms_mysql]
+    runs-on: ubuntu-latest
+    name: Deploy nuget packages
+    steps:
+    - name: Download Artifact
+      uses: actions/download-artifact@v1
+      with:
+        name: nupkg
+# - name: Publish nuget
+#   run: dotnet nuget push './nupkg/*.nupkg' -k ${{secrets.CLOUDSMITH_API_KEY}} -n true -s https://nuget.cloudsmith.io/orchardcore/preview/v3/index.json --skip-duplicate
+ 
+  deploy_docker:
+    if: github.ref == 'refs/heads/jptissot/github_actions'
+    needs: [test,test_functional_mvc,test_functional_cms_sqlite,test_functional_cms_postgresql,test_functional_cms_mysql]
+    runs-on: ubuntu-latest
+    name: Deploy nuget packages
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 3.1.404
+    - name: Login to DockerHub
+      uses: docker/login-action@v1
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_PASSWORD }}
+     - name: Docker Build and Push
+      run: |
+        rm -rf ./src/OrchardCore.Cms.Web/App_Data
+        dotnet publish -c Release -o ./.build/release
+        docker build -t orchardproject/orchardcore-cms-linux:dev .
+# docker push orchardproject/orchardcore-cms-linux
