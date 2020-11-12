@@ -189,7 +189,7 @@ jobs:
           MSSQL_SA_PASSWORD: Password12!
         options: --health-cmd="/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P ${{MSSQL_SA_PASSWORD}} -Q "SELECT 1" || exit 1" --health-interval=5s --health-timeout=2s --health-retries=3
     env:
-      OrchardCore__ConnectionString: "Server=localhost;Database=tempdb;User Id=sa;Password=Password12!"
+      OrchardCore__ConnectionString: "Server=mssql;Database=tempdb;User Id=sa;Password=Password12!"
       OrchardCore__DatabaseProvider: "SqlConnection"
     steps:
     - uses: actions/checkout@v2
@@ -237,7 +237,7 @@ jobs:
   
   deploy_cloudsmith:
     if: github.ref == 'refs/heads/dev'
-    needs: [test,test_functional_mvc,test_functional_cms_sqlite,test_functional_cms_postgresql,test_functional_cms_mysql]
+    needs: [test,test_functional_mvc,test_functional_cms_sqlite,test_functional_cms_postgresql,test_functional_cms_mysql,test_functional_cms_mssql]
     runs-on: ubuntu-latest
     name: Deploy preview nuget packages
     steps:
@@ -250,7 +250,7 @@ jobs:
   
   deploy_docker:
     if: github.ref == 'refs/heads/dev'
-    needs: [test,test_functional_mvc,test_functional_cms_sqlite,test_functional_cms_postgresql,test_functional_cms_mysql]
+    needs: [test,test_functional_mvc,test_functional_cms_sqlite,test_functional_cms_postgresql,test_functional_cms_mysql,test_functional_cms_mssql]
     runs-on: ubuntu-latest
     name: Deploy preview (dev) docker image
     steps:
