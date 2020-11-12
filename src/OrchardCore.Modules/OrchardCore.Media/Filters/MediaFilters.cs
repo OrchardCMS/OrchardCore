@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
@@ -151,7 +152,7 @@ namespace OrchardCore.Media.Filters
                 }
                 if (anchor != null)
                 {
-                    queryStringParams["rxy"] = anchor.X.ToString() + ',' + anchor.Y.ToString();
+                    queryStringParams["rxy"] = anchor.X.ToString(CultureInfo.InvariantCulture) + ',' + anchor.Y.ToString(CultureInfo.InvariantCulture);
                 }
             }
         }
