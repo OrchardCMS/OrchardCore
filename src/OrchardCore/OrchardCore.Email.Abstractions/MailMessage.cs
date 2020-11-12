@@ -56,8 +56,8 @@ namespace OrchardCore.Email
         public bool IsBodyHtml { get; set; }
 
         /// <summary>
-        /// Gets or sets the message attachments.
+        /// The collection of message attachments.
         /// </summary>
-        public IEnumerable<MailMessageAttachment> Attachments { get; set; }
+        public List<MailMessageAttachment> Attachments { get; } = new List<MailMessageAttachment>();
     }
 }
