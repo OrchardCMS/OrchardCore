@@ -15,9 +15,7 @@ on:
     branches:
       - 'dev'
 env:
-  # Stop wasting time caching packages
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
-  # Disable sending usage data to Microsoft
   DOTNET_CLI_TELEMETRY_OPTOUT: true
   BuildNumber: ${{ github.run_id }}
 jobs:
@@ -49,6 +47,7 @@ jobs:
         name: nupkg
         path: ./pack-output/*.nupkg
         retention-days: 5
+  
   test_functional_mvc:
     name: Functional test - MVC
     runs-on: ubuntu-latest
@@ -71,6 +70,7 @@ jobs:
         name: functional-mvc-screenshots
         path: test/Functional/mvc-tests/cypress/screenshots
         retention-days: 3
+  
   test_functional_cms_sqlite:
     name: Functional test - CMS Sqlite
     runs-on: ubuntu-latest
@@ -90,9 +90,12 @@ jobs:
     - uses: actions/upload-artifact@v2
       if: failure()
       with:
-        name: functional-cms-sqlite-screenshots
-        path: test/Functional/cms-tests/cypress/screenshots
+        name: functional-cms-sqlite-failure
+        path: |
+          test/Functional/cms-tests/cypress/screenshots
+          src/OrchardCore.Cms.Web/App_Data/logs
         retention-days: 3
+  
   test_functional_cms_postgresql:
     name: Functional test - CMS Postgres
     runs-on: ubuntu-latest
@@ -128,9 +131,12 @@ jobs:
     - uses: actions/upload-artifact@v2
       if: failure()
       with:
-        name: functional-cms-postgresql-screenshots
-        path: test/Functional/cms-tests/cypress/screenshots
+        name: functional-cms-postgresql-failure
+        path: |
+          test/Functional/cms-tests/cypress/screenshots
+          src/OrchardCore.Cms.Web/App_Data/logs
         retention-days: 3
+  
   test_functional_cms_mysql:
     name: Functional test - CMS Mysql
     runs-on: ubuntu-latest
@@ -162,9 +168,12 @@ jobs:
     - uses: actions/upload-artifact@v2
       if: failure()
       with:
-        name: functional-cms-mysql-screenshots
-        path: test/Functional/cms-tests/cypress/screenshots
+        name: functional-cms-mysql-failure
+        path: |
+          test/Functional/cms-tests/cypress/screenshots
+          src/OrchardCore.Cms.Web/App_Data/logs
         retention-days: 3
+  
   test-npm-build:
     runs-on: ubuntu-latest
     steps:
@@ -174,7 +183,7 @@ jobs:
         path: ~/.npm
         key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
         restore-keys: |
-        ${{ runner.os }}-node-
+          ${{ runner.os }}-node-
     - name: Rebuild packages
       run: |
         npm install
@@ -188,6 +197,7 @@ jobs:
         echo "Changes detected after building assets. Please make sure to build them properly before pushing"
         git status
         exit -1
+  
   deploy_cloudsmith:
     if: github.ref == 'refs/heads/dev'
     needs: [test,test_functional_mvc,test_functional_cms_sqlite,test_functional_cms_postgresql,test_functional_cms_mysql]
@@ -200,7 +210,7 @@ jobs:
         name: nupkg
     - name: Publish nuget
       run: dotnet nuget push './nupkg/*.nupkg' -k ${{secrets.CLOUDSMITH_API_KEY}} -n true -s https://nuget.cloudsmith.io/orchardcore/preview/v3/index.json --skip-duplicate
- 
+  
   deploy_docker:
     if: github.ref == 'refs/heads/dev'
     needs: [test,test_functional_mvc,test_functional_cms_sqlite,test_functional_cms_postgresql,test_functional_cms_mysql]
