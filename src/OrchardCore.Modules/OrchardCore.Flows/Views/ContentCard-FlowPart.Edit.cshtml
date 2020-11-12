@@ -1,11 +1,12 @@
-@using OrchardCore.ContentManagement.Metadata.Settings;
+@using OrchardCore.ContentManagement.Metadata.Models
+
 @inject OrchardCore.ContentManagement.Metadata.IContentDefinitionManager ContentDefinitionManager
 
 @{
     var contentItem = (IContent)Model.ContentItem;
     var contentTypeDisplayText = ContentDefinitionManager.GetTypeDefinition((string)Model.ContentItem.ContentType).DisplayName;
     var contentItemDisplayText = contentItem.ContentItem.DisplayText;
-    var widgetContentTypes = ContentDefinitionManager.ListTypeDefinitions().Where(t => t.GetSettings<ContentTypeSettings>().Stereotype == "Widget");
+    var widgetContentTypes = (IEnumerable<ContentTypeDefinition>)Model.ContainedContentTypes;
 
     var editorId = "contentEditor_" + Model.PrefixValue;
 }
@@ -29,7 +30,8 @@
                 {
                     <div class="btn-group">
                         <button class="toggleAll btn btn-secondary btn-sm" onclick="toggleWidgets(); return false;" title="@T["Toggle all widgets"]">
-                            <i class="fa fa-angle-double-up" aria-hidden="true"></i></button>
+                            <i class="fa fa-angle-double-up" aria-hidden="true"></i>
+                        </button>
                         <button type="button" title="@T["Insert Widget"]" class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <i class="fa fa-plus" aria-hidden="true"></i>
                         </button>

@@ -13,7 +13,6 @@ using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Navigation;
 using OrchardCore.Routing;
 using OrchardCore.Settings;
-using OrchardCore.Sitemaps.Cache;
 using OrchardCore.Sitemaps.Models;
 using OrchardCore.Sitemaps.Services;
 using OrchardCore.Sitemaps.ViewModels;
@@ -30,7 +29,6 @@ namespace OrchardCore.Sitemaps.Controllers
         private readonly ISitemapManager _sitemapManager;
         private readonly ISitemapIdGenerator _sitemapIdGenerator;
         private readonly ISiteService _siteService;
-        private readonly ISitemapCacheProvider _sitemapCacheProvider;
         private readonly IUpdateModelAccessor _updateModelAccessor;
         private readonly INotifier _notifier;
         private readonly IHtmlLocalizer H;
@@ -44,7 +42,6 @@ namespace OrchardCore.Sitemaps.Controllers
             ISitemapManager sitemapManager,
             ISitemapIdGenerator sitemapIdGenerator,
             ISiteService siteService,
-            ISitemapCacheProvider sitemapCacheProvider,
             IUpdateModelAccessor updateModelAccessor,
             INotifier notifier,
             IShapeFactory shapeFactory,
@@ -57,7 +54,6 @@ namespace OrchardCore.Sitemaps.Controllers
             _sitemapManager = sitemapManager;
             _sitemapIdGenerator = sitemapIdGenerator;
             _siteService = siteService;
-            _sitemapCacheProvider = sitemapCacheProvider;
             _updateModelAccessor = updateModelAccessor;
             _notifier = notifier;
             H = htmlLocalizer;
@@ -80,7 +76,7 @@ namespace OrchardCore.Sitemaps.Controllers
                 options = new SitemapListOptions();
             }
 
-            var sitemaps = (await _sitemapManager.ListSitemapsAsync())
+            var sitemaps = (await _sitemapManager.GetSitemapsAsync())
                 .OfType<Sitemap>();
 
             if (!string.IsNullOrWhiteSpace(options.Search))
@@ -204,7 +200,7 @@ namespace OrchardCore.Sitemaps.Controllers
                     Enabled = model.Enabled
                 };
 
-                await _sitemapManager.SaveSitemapAsync(sitemap.SitemapId, sitemap);
+                await _sitemapManager.UpdateSitemapAsync(sitemap);
 
                 return RedirectToAction(nameof(List));
             }
@@ -269,7 +265,7 @@ namespace OrchardCore.Sitemaps.Controllers
                 sitemap.Enabled = model.Enabled;
                 sitemap.Path = model.Path;
 
-                await _sitemapManager.SaveSitemapAsync(sitemap.SitemapId, sitemap);
+                await _sitemapManager.UpdateSitemapAsync(sitemap);
 
                 _notifier.Success(H["Sitemap updated successfully"]);
 
@@ -295,9 +291,6 @@ namespace OrchardCore.Sitemaps.Controllers
                 return NotFound();
             }
 
-            // Clear sitemap cache when deleted.
-            await _sitemapCacheProvider.ClearSitemapCacheAsync(sitemap.Path);
-
             await _sitemapManager.DeleteSitemapAsync(sitemapId);
 
             _notifier.Success(H["Sitemap deleted successfully"]);
@@ -322,9 +315,7 @@ namespace OrchardCore.Sitemaps.Controllers
 
             sitemap.Enabled = !sitemap.Enabled;
 
-            await _sitemapManager.SaveSitemapAsync(sitemap.SitemapId, sitemap);
-
-            await _sitemapCacheProvider.ClearSitemapCacheAsync(sitemap.Path);
+            await _sitemapManager.UpdateSitemapAsync(sitemap);
 
             _notifier.Success(H["Sitemap toggled successfully"]);
 

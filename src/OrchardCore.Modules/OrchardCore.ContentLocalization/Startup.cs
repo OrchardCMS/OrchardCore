@@ -1,6 +1,5 @@
 using System;
 using System.Globalization;
-using System.Linq;
 using Fluid;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -13,8 +12,6 @@ using OrchardCore.ContentLocalization.Controllers;
 using OrchardCore.ContentLocalization.Drivers;
 using OrchardCore.ContentLocalization.Indexing;
 using OrchardCore.ContentLocalization.Liquid;
-using OrchardCore.ContentLocalization.Models;
-using OrchardCore.ContentLocalization.Records;
 using OrchardCore.ContentLocalization.Security;
 using OrchardCore.ContentLocalization.Services;
 using OrchardCore.ContentLocalization.Sitemaps;
@@ -31,7 +28,6 @@ using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
 using OrchardCore.Sitemaps.Builders;
-using YesSql;
 
 namespace OrchardCore.ContentLocalization
 {
@@ -103,19 +99,6 @@ namespace OrchardCore.ContentLocalization
                pattern: "RedirectToLocalizedContent",
                defaults: new { controller = "ContentCulturePicker", action = "RedirectToLocalizedContent" }
            );
-
-            var session = serviceProvider.GetRequiredService<ISession>();
-            var entries = serviceProvider.GetRequiredService<ILocalizationEntries>();
-
-            var indexes = session.QueryIndex<LocalizedContentItemIndex>(i => i.Published)
-                .ListAsync().GetAwaiter().GetResult();
-
-            entries.AddEntries(indexes.Select(i => new LocalizationEntry
-            {
-                ContentItemId = i.ContentItemId,
-                LocalizationSet = i.LocalizationSet,
-                Culture = i.Culture.ToLowerInvariant()
-            }));
         }
     }
 
@@ -124,7 +107,6 @@ namespace OrchardCore.ContentLocalization
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<ISitemapContentItemValidationProvider, SitemapLocalizedContentItemValidationProvider>();
             services.AddScoped<ISitemapContentItemExtendedMetadataProvider, SitemapUrlHrefLangExtendedMetadataProvider>();
             services.Replace(ServiceDescriptor.Scoped<IContentItemsQueryProvider, LocalizedContentItemsQueryProvider>());
         }

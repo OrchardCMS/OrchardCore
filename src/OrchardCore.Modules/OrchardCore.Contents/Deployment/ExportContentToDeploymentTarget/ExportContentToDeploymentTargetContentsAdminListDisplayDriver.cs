@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
+using OrchardCore.Contents.ViewModels;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.Contents.ViewModels;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Entities;
 using OrchardCore.Settings;

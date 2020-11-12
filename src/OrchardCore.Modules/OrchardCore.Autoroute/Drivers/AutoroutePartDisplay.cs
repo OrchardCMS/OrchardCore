@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -9,13 +8,11 @@ using OrchardCore.Autoroute.Models;
 using OrchardCore.Autoroute.ViewModels;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
-using OrchardCore.ContentManagement.Records;
 using OrchardCore.ContentManagement.Routing;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Settings;
-using YesSql;
 
 namespace OrchardCore.Autoroute.Drivers
 {
@@ -113,48 +110,12 @@ namespace OrchardCore.Autoroute.Drivers
                     await updater.TryUpdateModelAsync(model, Prefix, t => t.SetHomepage);
                 }
 
-                await ValidateAsync(model, updater, settings);
+                var errors = await context.ValidateAsync(model);
+                updater.ModelState.BindValidationResults(Prefix, errors);
             }
 
             return Edit(model, context);
         }
 
-        private async Task ValidateAsync(AutoroutePart autoroute, IUpdateModel updater, AutoroutePartSettings settings)
-        {
-            if (autoroute.Path == "/")
-            {
-                updater.ModelState.AddModelError(Prefix, nameof(autoroute.Path), S["Your permalink can't be set to the homepage, please use the homepage option instead."]);
-            }
-
-            if (autoroute.Path?.IndexOfAny(InvalidCharactersForPath) > -1 || autoroute.Path?.IndexOf(' ') > -1 || autoroute.Path?.IndexOf("//") > -1)
-            {
-                var invalidCharactersForMessage = string.Join(", ", InvalidCharactersForPath.Select(c => $"\"{c}\""));
-                updater.ModelState.AddModelError(Prefix, nameof(autoroute.Path), S["Please do not use any of the following characters in your permalink: {0}. No spaces, or consecutive slashes, are allowed (please use dashes or underscores instead).", invalidCharactersForMessage]);
-            }
-
-            if (autoroute.Path?.Length > MaxPathLength)
-            {
-                updater.ModelState.AddModelError(Prefix, nameof(autoroute.Path), S["Your permalink is too long. The permalink can only be up to {0} characters.", MaxPathLength]);
-            }
-
-            // This can only validate the path if the Autoroute is not managing content item routes or the path is absolute.
-            if (!String.IsNullOrEmpty(autoroute.Path) && (!settings.ManageContainedItemRoutes || (settings.ManageContainedItemRoutes && autoroute.Absolute)))
-            {
-                var possibleConflicts = await _session.QueryIndex<AutoroutePartIndex>(o => o.Path == autoroute.Path).ListAsync();
-                if (possibleConflicts.Any())
-                {
-                    var hasConflict = false;
-                    if (possibleConflicts.Any(x => x.ContentItemId != autoroute.ContentItem.ContentItemId) ||
-                        possibleConflicts.Any(x => !string.IsNullOrEmpty(x.ContainedContentItemId) && x.ContainedContentItemId != autoroute.ContentItem.ContentItemId))
-                    {
-                        hasConflict = true;
-                    }
-                    if (hasConflict)
-                    {
-                        updater.ModelState.AddModelError(Prefix, nameof(autoroute.Path), S["Your permalink is already in use."]);
-                    }
-                }
-            }
-        }
     }
 }

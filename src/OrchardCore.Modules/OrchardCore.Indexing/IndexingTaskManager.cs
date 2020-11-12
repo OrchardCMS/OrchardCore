@@ -6,8 +6,8 @@ using Dapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using OrchardCore.ContentPreview;
 using OrchardCore.ContentManagement;
+using OrchardCore.ContentPreview;
 using OrchardCore.Data;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Scope;
@@ -196,7 +196,7 @@ namespace OrchardCore.Indexing.Services
                         sqlBuilder.Take(count.ToString());
                     }
 
-                    sqlBuilder.WhereAlso($"{dialect.QuoteForColumnName("Id")} > @Id");
+                    sqlBuilder.WhereAnd($"{dialect.QuoteForColumnName("Id")} > @Id");
 
                     return await connection.QueryAsync<IndexingTask>(sqlBuilder.ToSqlString(), new { Id = afterTaskId });
                 }

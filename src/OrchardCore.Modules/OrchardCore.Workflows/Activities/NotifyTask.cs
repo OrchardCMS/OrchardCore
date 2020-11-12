@@ -18,8 +18,8 @@ namespace OrchardCore.Workflows.Activities
         private readonly HtmlEncoder _htmlEncoder;
 
         public NotifyTask(
-            INotifier notifier, 
-            IWorkflowExpressionEvaluator expressionvaluator, 
+            INotifier notifier,
+            IWorkflowExpressionEvaluator expressionvaluator,
             IStringLocalizer<NotifyTask> localizer,
             HtmlEncoder htmlEncoder)
         {

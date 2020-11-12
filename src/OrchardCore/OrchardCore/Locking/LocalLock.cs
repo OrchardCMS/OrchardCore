@@ -53,6 +53,12 @@ namespace OrchardCore.Locking
                 _semaphore = semaphore;
             }
 
+            public ValueTask DisposeAsync()
+            {
+                Dispose();
+                return default;
+            }
+
             public void Dispose()
             {
                 if (_disposed)

@@ -235,6 +235,17 @@ namespace OrchardCore.OpenId.YesSql.Stores
             => throw new NotSupportedException();
 
         /// <inheritdoc/>
+        public virtual ValueTask<DateTimeOffset?> GetCreationDateAsync(TAuthorization authorization, CancellationToken cancellationToken)
+        {
+            if (authorization == null)
+            {
+                throw new ArgumentNullException(nameof(authorization));
+            }
+
+            return new ValueTask<DateTimeOffset?>(authorization.CreationDate);
+        }
+
+        /// <inheritdoc/>
         public virtual ValueTask<string> GetIdAsync(TAuthorization authorization, CancellationToken cancellationToken)
         {
             if (authorization == null)
@@ -346,7 +357,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
             => throw new NotSupportedException();
 
         /// <inheritdoc/>
-        public virtual async ValueTask PruneAsync(CancellationToken cancellationToken)
+        public virtual async ValueTask PruneAsync(DateTimeOffset threshold, CancellationToken cancellationToken)
         {
             // Note: YesSql doesn't support set-based deletes, which prevents removing entities
             // in a single command without having to retrieve and materialize them first.
@@ -359,12 +370,12 @@ namespace OrchardCore.OpenId.YesSql.Stores
                 cancellationToken.ThrowIfCancellationRequested();
 
                 var authorizations = await _session.Query<TAuthorization, OpenIdAuthorizationIndex>(
-                    authorization => authorization.Status != OpenIddictConstants.Statuses.Valid ||
-                   (authorization.Type == OpenIddictConstants.AuthorizationTypes.AdHoc &&
-                    authorization.AuthorizationId.IsNotIn<OpenIdTokenIndex>(
-                        token => token.AuthorizationId,
-                        token => token.Status == OpenIddictConstants.Statuses.Valid &&
-                                 token.ExpirationDate > DateTimeOffset.UtcNow))).Skip(offset).Take(1_000).ListAsync();
+                    authorization => authorization.CreationDate < threshold &&
+                                    (authorization.Status != OpenIddictConstants.Statuses.Valid ||
+                                    (authorization.Type == OpenIddictConstants.AuthorizationTypes.AdHoc &&
+                                     authorization.AuthorizationId.IsNotIn<OpenIdTokenIndex>(
+                                         token => token.AuthorizationId,
+                                         token => token.Id != 0)))).Skip(offset).Take(1_000).ListAsync();
 
                 foreach (var authorization in authorizations)
                 {
@@ -409,6 +420,18 @@ namespace OrchardCore.OpenId.YesSql.Stores
             {
                 authorization.ApplicationId = identifier;
             }
+
+            return default;
+        }
+
+        public ValueTask SetCreationDateAsync(TAuthorization authorization, DateTimeOffset? date, CancellationToken cancellationToken)
+        {
+            if (authorization == null)
+            {
+                throw new ArgumentNullException(nameof(authorization));
+            }
+
+            authorization.CreationDate = date;
 
             return default;
         }

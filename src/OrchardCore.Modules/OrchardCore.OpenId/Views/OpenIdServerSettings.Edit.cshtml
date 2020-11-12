@@ -10,7 +10,7 @@
     <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input" asp-for="EnableTokenEndpoint">
         <label class="custom-control-label" asp-for="EnableTokenEndpoint">@T["Enable Token Endpoint"]</label>
-        <span class="hint">— @T["Enables action"] /connect/token</span>
+        <span class="hint dashed">@T["Enables action"] /connect/token</span>
     </div>
 </div>
 
@@ -18,7 +18,7 @@
     <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input" asp-for="EnableAuthorizationEndpoint">
         <label class="custom-control-label" asp-for="EnableAuthorizationEndpoint">@T["Enable Authorization Endpoint"]</label>
-        <span class="hint">— @T["Enables action"] /connect/authorize</span>
+        <span class="hint dashed">@T["Enables action"] /connect/authorize</span>
     </div>
 </div>
 
@@ -26,7 +26,7 @@
     <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input" asp-for="EnableLogoutEndpoint">
         <label class="custom-control-label" asp-for="EnableLogoutEndpoint">@T["Enable Logout Endpoint"]</label>
-        <span class="hint">— @T["Enables action"] /connect/logout</span>
+        <span class="hint dashed">@T["Enables action"] /connect/logout</span>
     </div>
 </div>
 
@@ -34,7 +34,7 @@
     <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input" asp-for="EnableUserInfoEndpoint">
         <label class="custom-control-label" asp-for="EnableUserInfoEndpoint">@T["Enable User Info Endpoint"]</label>
-        <span class="hint">— @T["Enables action"] /connect/userinfo</span>
+        <span class="hint dashed">@T["Enables action"] /connect/userinfo</span>
     </div>
 </div>
 
@@ -44,7 +44,7 @@
     <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input" asp-for="AllowAuthorizationCodeFlow">
         <label class="custom-control-label" asp-for="AllowAuthorizationCodeFlow">@T["Allow Authorization Code Flow"]</label>
-        <span class="hint">— @T["More info:"] <a href="http://openid.net/specs/openid-connect-core-1_0.html#CodeFlowAuth">http://openid.net/specs/openid-connect-core-1_0.html#CodeFlowAuth</a></span>
+        <span class="hint dashed">@T["More info:"] <a href="http://openid.net/specs/openid-connect-core-1_0.html#CodeFlowAuth">http://openid.net/specs/openid-connect-core-1_0.html#CodeFlowAuth</a></span>
     </div>
 </div>
 
@@ -52,7 +52,15 @@
     <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input" asp-for="AllowImplicitFlow">
         <label class="custom-control-label" asp-for="AllowImplicitFlow">@T["Allow Implicit Flow"]</label>
-        <span class="hint">— @T["More info:"] <a href="http://openid.net/specs/openid-connect-core-1_0.html#ImplicitFlowAuth">http://openid.net/specs/openid-connect-core-1_0.html#ImplicitFlowAuth</a></span>
+        <span class="hint dashed">@T["More info:"] <a href="http://openid.net/specs/openid-connect-core-1_0.html#ImplicitFlowAuth">http://openid.net/specs/openid-connect-core-1_0.html#ImplicitFlowAuth</a></span>
+    </div>
+</div>
+
+<div class="form-group collapse" asp-validation-class-for="AllowHybridFlow">
+    <div class="custom-control custom-checkbox">
+        <input type="checkbox" class="custom-control-input" asp-for="AllowHybridFlow">
+        <label class="custom-control-label" asp-for="AllowHybridFlow">@T["Allow Hybrid Flow"]</label>
+        <span class="hint dashed">@T["More info:"] <a href="http://openid.net/specs/openid-connect-core-1_0.html#HybridFlowAuth">http://openid.net/specs/openid-connect-core-1_0.html#HybridFlowAuth</a></span>
     </div>
 </div>
 
@@ -60,7 +68,7 @@
     <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input" asp-for="AllowPasswordFlow">
         <label class="custom-control-label" asp-for="AllowPasswordFlow">@T["Allow Password Flow"]</label>
-        <span class="hint">— @T["More info:"] <a href="https://tools.ietf.org/html/rfc6749#section-1.3.3">https://tools.ietf.org/html/rfc6749#section-1.3.3</a></span>
+        <span class="hint dashed">@T["More info:"] <a href="https://tools.ietf.org/html/rfc6749#section-1.3.3">https://tools.ietf.org/html/rfc6749#section-1.3.3</a></span>
     </div>
 </div>
 
@@ -68,7 +76,7 @@
     <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input" asp-for="AllowRefreshTokenFlow">
         <label class="custom-control-label" asp-for="AllowRefreshTokenFlow">@T["Allow Refresh Token Flow"]</label>
-        <span class="hint">— @T["More info:"] <a href="http://openid.net/specs/openid-connect-core-1_0.html#RefreshTokens">http://openid.net/specs/openid-connect-core-1_0.html#RefreshTokens</a></span>
+        <span class="hint dashed">@T["More info:"] <a href="http://openid.net/specs/openid-connect-core-1_0.html#RefreshTokens">http://openid.net/specs/openid-connect-core-1_0.html#RefreshTokens</a></span>
     </div>
 </div>
 
@@ -76,7 +84,7 @@
     <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input" asp-for="AllowClientCredentialsFlow">
         <label class="custom-control-label" asp-for="AllowClientCredentialsFlow">@T["Allow Client Credentials Flow"]</label>
-        <span class="hint">— @T["More info:"] <a href="https://tools.ietf.org/html/rfc6749#section-1.3.4">https://tools.ietf.org/html/rfc6749#section-1.3.4</a></span>
+        <span class="hint dashed">@T["More info:"] <a href="https://tools.ietf.org/html/rfc6749#section-1.3.4">https://tools.ietf.org/html/rfc6749#section-1.3.4</a></span>
     </div>
 </div>
 
@@ -219,11 +227,11 @@
     }
 </div>
 
-<div class="form-group" asp-validation-class-for="UseRollingRefreshTokens">
+<div class="form-group" asp-validation-class-for="DisableRollingRefreshTokens">
     <div class="custom-control custom-checkbox">
-        <input type="checkbox" class="custom-control-input" asp-for="UseRollingRefreshTokens">
-        <label class="custom-control-label" asp-for="UseRollingRefreshTokens">@T["Use Rolling Refresh Tokens"]</label>
-        <span class="hint">— @T["When this option is enabled, a new refresh token is issued for each refresh token request (and the previous one is automatically revoked)."]</span>
+        <input type="checkbox" class="custom-control-input" asp-for="DisableRollingRefreshTokens">
+        <label class="custom-control-label" asp-for="DisableRollingRefreshTokens">@T["Disable Rolling Refresh Tokens"]</label>
+        <span class="hint dashed">@T["When this option is enabled, refresh tokens are not marked as redeemed and can be reused until they expire."]</span>
     </div>
 </div>
 
@@ -244,7 +252,7 @@
     <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input" asp-for="DisableAccessTokenEncryption">
         <label class="custom-control-label" asp-for="DisableAccessTokenEncryption">@T["Disable Access Token Encryption (only for JWT tokens)"]</label>
-        <span class="hint">— @T["When this option is enabled, the JWT access token tokens are not encrypted."]</span>
+        <span class="hint dashed">@T["When this option is enabled, the JWT access token tokens are not encrypted."]</span>
     </div>
 </div>
 
@@ -252,11 +260,11 @@
     <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input" asp-for="UseReferenceAccessTokens">
         <label class="custom-control-label" asp-for="UseReferenceAccessTokens">@T["Use Reference Access Tokens"]</label>
-        <span class="hint">— @T["When this option is enabled, the access token are stored in the database and fixed size tokens are returned to the client, which can be useful when storing a very large number of claims. Important: this option cannot be currently enabled when other tenants are configured to use this server."]</span>
+        <span class="hint dashed">@T["When this option is enabled, the access token are stored in the database and fixed size tokens are returned to the client, which can be useful when storing a very large number of claims. Important: this option cannot be currently enabled when other tenants are configured to use this server."]</span>
     </div>
 </div>
 
-<script at="Foot" type="text/javascript">
+<script at="Foot">
 ////<![CDATA[
     window.onload = function () {
         refreshEncryptionCertificates();
@@ -279,7 +287,7 @@
         $("#@Html.IdFor(m => m.SigningCertificateStoreName)").change(function () {
             refreshSigningCertificates();
         });
-        $("#@Html.IdFor(m => m.EnableTokenEndpoint), #@Html.IdFor(m => m.EnableAuthorizationEndpoint), #@Html.IdFor(m => m.AllowPasswordFlow), #@Html.IdFor(m => m.AllowAuthorizationCodeFlow)").change(function () {
+        $("#@Html.IdFor(m => m.EnableTokenEndpoint), #@Html.IdFor(m => m.EnableAuthorizationEndpoint), #@Html.IdFor(m => m.AllowPasswordFlow), #@Html.IdFor(m => m.AllowAuthorizationCodeFlow), #@Html.IdFor(m => m.AllowAuthorizationCodeFlow), #@Html.IdFor(m => m.AllowHybridFlow)").change(function () {
             refreshEndpoints();
         });
         function refreshEncryptionCertificates() {
@@ -336,6 +344,7 @@
             refreshEnableTokenEndpoint();
             refreshAllowAuthorizationCodeFlowVisibility();
             refreshEnableAuthorizationEndpoint();
+            refreshAllowHybridFlowVisibility();
             refreshAllowRefreshTokenFlowVisibility();
         }
         function refreshDisableAccessTokenEncryption() {
@@ -380,10 +389,22 @@
                 allowAuthorizationCodeFlow.parent().parent().collapse("hide");
             }
         }
+        function refreshAllowHybridFlowVisibility() {
+            var allowHybridFlow = $("#@Html.IdFor(m => m.AllowHybridFlow)");
+            if ($("#@Html.IdFor(m => m.EnableTokenEndpoint)").prop("checked") && $("#@Html.IdFor(m => m.EnableAuthorizationEndpoint)").prop("checked")) {
+                allowHybridFlow.parent().parent().collapse("show");
+            }
+            else {
+                allowHybridFlow.prop("checked", false);
+                allowHybridFlow.parent().parent().collapse("hide");
+            }
+        }
         function refreshAllowRefreshTokenFlowVisibility() {
             var allowRefreshTokenFlow = $("#@Html.IdFor(m => m.AllowRefreshTokenFlow)");
             if ($("#@Html.IdFor(m => m.EnableTokenEndpoint)").prop("checked")
-                && ($("#@Html.IdFor(m => m.AllowPasswordFlow)").prop("checked") || $("#@Html.IdFor(m => m.AllowAuthorizationCodeFlow)").prop("checked"))) {
+                && ($("#@Html.IdFor(m => m.AllowPasswordFlow)").prop("checked") ||
+                    $("#@Html.IdFor(m => m.AllowAuthorizationCodeFlow)").prop("checked") ||
+                    $("#@Html.IdFor(m => m.AllowHybridFlow)").prop("checked"))) {
                 allowRefreshTokenFlow.parent().parent().collapse("show");
             }
             else {
