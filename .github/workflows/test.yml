@@ -1,4 +1,4 @@
-name: Build and Test on multiple OS
+name: Build and Test
 on: 
  # pull_request:
   push:
