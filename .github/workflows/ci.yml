@@ -41,6 +41,7 @@ jobs:
         name: nupkg
         path: ./pack-output/*.nupkg
   test_functional_mvc:
+    name: Functional test - MVC
     runs-on: ubuntu-latest
     container:
       image: cypress/browsers:node12.13.0-chrome78-ff70
@@ -62,6 +63,7 @@ jobs:
         path: test/Functional/mvc-tests/cypress/screenshots
         retention-days: 3
   test_functional_cms_sqlite:
+    name: Functional test - CMS Sqlite
     runs-on: ubuntu-latest
     container:
       image: cypress/browsers:node12.13.0-chrome78-ff70
@@ -83,6 +85,7 @@ jobs:
         path: test/Functional/cms-tests/cypress/screenshots
         retention-days: 3
   test_functional_cms_postgresql:
+    name: Functional test - CMS Postgres
     runs-on: ubuntu-latest
     container:
       image: cypress/browsers:node12.13.0-chrome78-ff70
@@ -120,6 +123,7 @@ jobs:
         path: test/Functional/cms-tests/cypress/screenshots
         retention-days: 3
   test_functional_cms_mysql:
+    name: Functional test - CMS Mysql
     runs-on: ubuntu-latest
     container:
       image: cypress/browsers:node12.13.0-chrome78-ff70
