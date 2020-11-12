@@ -69,6 +69,7 @@ switch (context.loginProvider) {
     default:
         log("Warning", "Provider {loginProvider} was not handled", context.loginProvider);
     break;
+}
 ```
 
 also check the settings to disable asking user info on first registration

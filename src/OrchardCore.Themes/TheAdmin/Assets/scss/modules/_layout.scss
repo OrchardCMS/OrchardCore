@@ -62,14 +62,6 @@ body {
 
 // END OF LAYOUT
 
-// Toolbar
-// ------------------------------
-.admin-toolbar {
-    @extend .navbar, .navbar-expand-md, .navbar-light;
-    margin-bottom: 1em;
-    background-color: $gray-200;
-}
-
 // Sortable
 // ------------------------------
 .ui-sortable {
