@@ -37,6 +37,7 @@ jobs:
       run: |
         sum=$(( ${{ github.run_number }} + 15471 ))
         export BuildNumber=$sum
+        set
     - name: Build and test
       run: |
         dotnet build --configuration Release
