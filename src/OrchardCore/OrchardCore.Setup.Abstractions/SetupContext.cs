@@ -61,6 +61,11 @@ namespace OrchardCore.Setup.Services
         public string SiteTimeZone { get; set; }
 
         /// <summary>
+        /// Gets or sets whether to use the Content Network Delivery (CDN). Defaults to <c>true</c>.
+        /// </summary>
+        public bool UseCdn { get; set; }
+
+        /// <summary>
         /// Gets or sets the features that will be enable when the set up finished.
         /// </summary>
         public IEnumerable<string> EnabledFeatures { get; set; }

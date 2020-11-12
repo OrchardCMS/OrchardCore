@@ -153,6 +153,15 @@
             <span asp-validation-for="SiteTimeZone"></span>
             <span class="text-muted form-text small">@T["Determines the default time zone used when displaying and editing dates and times."]</span>
         </div>
+        <div class="form-group col-md-6" asp-validation-class-for="UseCdn">
+            <label asp-for="UseCdn">@T["Content Delivery Network (CDN)"]</label>
+            <select asp-for="UseCdn" class="form-control">
+                <option value="true" selected>@T["Enabled - Serve common scripts from their public CDN"]</option>
+                <option value="false">@T["Disabled - Serve common scripts directly from this site"]</option>
+            </select>
+            <span asp-validation-for="UseCdn"></span>
+            <span class="text-muted form-text small">@T["Change this option if your users can't access public CDNs."]</span>
+        </div>
     </div>
     @if (!Model.DatabaseConfigurationPreset)
     {

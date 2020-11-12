@@ -229,6 +229,7 @@ namespace OrchardCore.Setup.Services
                     context.DatabaseConnectionString,
                     context.DatabaseTablePrefix,
                     context.SiteTimeZone,
+                    context.UseCdn,
                     reportError
                 ), context, logger);
             });
