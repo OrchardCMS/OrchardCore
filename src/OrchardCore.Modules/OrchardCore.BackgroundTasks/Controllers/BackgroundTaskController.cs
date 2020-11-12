@@ -22,7 +22,7 @@ namespace OrchardCore.BackgroundTasks.Controllers
         private readonly IAuthorizationService _authorizationService;
         private readonly IEnumerable<IBackgroundTask> _backgroundTasks;
         private readonly BackgroundTaskManager _backgroundTaskManager;
-        private readonly ISiteService _siteService;        
+        private readonly ISiteService _siteService;
         private readonly IStringLocalizer S;
         private readonly dynamic New;
 
@@ -40,7 +40,7 @@ namespace OrchardCore.BackgroundTasks.Controllers
             _backgroundTasks = backgroundTasks;
             _backgroundTaskManager = backgroundTaskManager;
             New = shapeFactory;
-            _siteService = siteService;            
+            _siteService = siteService;
             S = stringLocalizer;
         }
 

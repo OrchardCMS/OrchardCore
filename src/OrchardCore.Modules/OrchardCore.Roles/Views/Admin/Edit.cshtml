@@ -25,10 +25,10 @@
     <h5>@T["Role permissions"]</h5>
 
     <div class="properties ml-2">
-        @T["Allow"] <span class="hint">— @T["Permission is granted explicitly."]</span>
+        @T["Allow"] <span class="hint dashed">@T["Permission is granted explicitly."]</span>
     </div>
     <div class="properties ml-2">
-        @T["Effective"] <span class="hint">— @T["Permission is implied by a higher level permission, or explicitly granted."]</span>
+        @T["Effective"] <span class="hint dashed">@T["Permission is implied by a higher level permission, or explicitly granted."]</span>
     </div>
     <hr>
 
@@ -77,12 +77,12 @@
     }
 
     <div class="form-group">
-        <button class="btn btn-primary" type="submit">@T["Save"]</button>
-        <a class="btn btn-secondary" asp-route-action="Index">@T["Cancel"]</a>
+        <button class="btn btn-primary save" type="submit">@T["Save"]</button>
+        <a class="btn btn-secondary cancel" role="button" asp-route-action="Index">@T["Cancel"]</a>
     </div>
 </form>
 
-<script at="Foot" type="text/javascript">
+<script at="Foot">
     $(function () {
         var searchBox = $('#search-box');
         $('[data-toggle="tooltip"]').tooltip();

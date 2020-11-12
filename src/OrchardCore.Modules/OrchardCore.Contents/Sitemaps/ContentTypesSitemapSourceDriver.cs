@@ -117,7 +117,8 @@ namespace OrchardCore.Contents.Sitemaps
                     sitemap.LimitedContentType.Priority = limitedEntry.Priority;
                     sitemap.LimitedContentType.Skip = limitedEntry.Skip;
                     sitemap.LimitedContentType.Take = limitedEntry.Take;
-                } else
+                }
+                else
                 {
                     sitemap.LimitedContentType = new LimitedContentTypeSitemapEntry();
                 }

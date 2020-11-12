@@ -8,7 +8,9 @@ We follow [Semantic Versioning 2.0.0](https://semver.org/).
 
 ## Release checklist
 
-You can copy the following checklist to a GitHub issue and tick everything as you progress. While the checklist is in a recommended order not every step depends strictly on the previous ones. "<version name>" should be replaced with the current version, e.g. "1.0.0" or "rc2".
+You can copy the following checklist to a GitHub issue and tick everything as you progress.  
+While the checklist is in a recommended order not every step depends strictly on the previous ones.  
+`<version name>` should be replaced with the current version, e.g. "1.0.0" or "rc2".
 
 ```
 ### Prepare the project

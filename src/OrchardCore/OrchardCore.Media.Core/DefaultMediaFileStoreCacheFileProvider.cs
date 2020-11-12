@@ -56,9 +56,35 @@ namespace OrchardCore.Media.Core
                 Directory.CreateDirectory(directory);
             }
 
-            using (var fileStream = File.Create(cachePath))
+            // A file download may fail, so a partially downloaded file should be deleted so the next request can reprocess.
+            // All exceptions here are recaught by the MediaFileStoreResolverMiddleware.
+            try
             {
-                await stream.CopyToAsync(fileStream, StreamCopyBufferSize, cancellationToken);
+                if (File.Exists(cachePath))
+                {
+                    File.Delete(cachePath);
+                }
+                using (var fileStream = File.Create(cachePath))
+                {
+                    await stream.CopyToAsync(fileStream, StreamCopyBufferSize, cancellationToken);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error saving file {Path}", cachePath);
+                if (File.Exists(cachePath))
+                {
+                    try
+                    {
+                        File.Delete(cachePath);
+                    }
+                    catch (Exception e)
+                    {
+                        _logger.LogError(e, "Error deleting file {Path}", cachePath);
+                        throw;
+                    }
+                }
+                throw;
             }
         }
 
