@@ -1,7 +1,7 @@
 site_name: Orchard Core Documentation
 theme:
   name: material  
-  custom_dir: src/docs/theme
+  custom_dir: src/docs/themezzz
   logo: docs/assets/images/orchard-logo.png
   favicon: docs/assets/images/favicon-blue.png
   features:
