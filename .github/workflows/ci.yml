@@ -1,9 +1,17 @@
 name: Build, Test and push
 on: 
   pull_request:
+    paths-ignore:
+    - '**/*.md'
+    - mkdocs.yml
+    - src/docs/**/*
     branches:
       - dev
   push:
+    paths-ignore:
+    - '**/*.md'
+    - mkdocs.yml
+    - src/docs/**/*
     branches:
       - 'dev'
 env:
