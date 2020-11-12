@@ -6,7 +6,6 @@
 
   <PropertyGroup>
     <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
-    <IsPackable>false</IsPackable>
   </PropertyGroup>
 
   <ItemGroup>

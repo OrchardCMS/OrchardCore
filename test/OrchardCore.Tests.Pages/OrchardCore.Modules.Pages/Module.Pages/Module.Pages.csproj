@@ -3,7 +3,6 @@
   <PropertyGroup>
     <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
-    <IsPackable>false</IsPackable>
   </PropertyGroup>
 
   <ItemGroup>
