@@ -181,7 +181,7 @@ jobs:
       with:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_PASSWORD }}
-     - name: Docker Build and Push
+    - name: Docker Build and Push
       run: |
         rm -rf ./src/OrchardCore.Cms.Web/App_Data
         dotnet publish -c Release -o ./.build/release
