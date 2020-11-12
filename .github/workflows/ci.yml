@@ -1,11 +1,11 @@
 name: Build, Test and push
 on: 
- # pull_request:
+  pull_request:
+    branches:
+      - dev
   push:
     branches:
-   #   - 'dev'
-    #  - 'master'
-      - 'jptissot/github_actions'
+      - 'dev'
 env:
   # Stop wasting time caching packages
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
@@ -153,7 +153,7 @@ jobs:
         path: test/Functional/cms-tests/cypress/screenshots
         retention-days: 3
   deploy_cloudsmith:
-    if: github.ref == 'refs/heads/jptissot/github_actions'
+    if: github.ref == 'refs/heads/dev'
     needs: [test,test_functional_mvc,test_functional_cms_sqlite,test_functional_cms_postgresql,test_functional_cms_mysql]
     runs-on: ubuntu-latest
     name: Deploy preview nuget packages
@@ -162,11 +162,11 @@ jobs:
       uses: actions/download-artifact@v1
       with:
         name: nupkg
-# - name: Publish nuget
-#   run: dotnet nuget push './nupkg/*.nupkg' -k ${{secrets.CLOUDSMITH_API_KEY}} -n true -s https://nuget.cloudsmith.io/orchardcore/preview/v3/index.json --skip-duplicate
+    - name: Publish nuget
+      run: dotnet nuget push './nupkg/*.nupkg' -k ${{secrets.CLOUDSMITH_API_KEY}} -n true -s https://nuget.cloudsmith.io/orchardcore/preview/v3/index.json --skip-duplicate
  
   deploy_docker:
-    if: github.ref == 'refs/heads/jptissot/github_actions'
+    if: github.ref == 'refs/heads/dev'
     needs: [test,test_functional_mvc,test_functional_cms_sqlite,test_functional_cms_postgresql,test_functional_cms_mysql]
     runs-on: ubuntu-latest
     name: Deploy preview (dev) docker image
@@ -186,4 +186,4 @@ jobs:
         rm -rf ./src/OrchardCore.Cms.Web/App_Data
         dotnet publish -c Release -o ./.build/release
         docker build -t orchardproject/orchardcore-cms-linux:dev .
-# docker push orchardproject/orchardcore-cms-linux
+        docker push orchardproject/orchardcore-cms-linux
