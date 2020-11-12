@@ -1,4 +1,4 @@
-name: Build, Test and push (dev)
+name: CI
 on: 
   pull_request:
     paths-ignore:
@@ -25,15 +25,14 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        dotnet: ['3.1.404']
         os: [ubuntu-latest, windows-latest, macos-latest]
     name: Unit Tests
     steps:
     - uses: actions/checkout@v2
-    - name: Setup .NET Core ${{ matrix.dotnet }} on ${{ matrix.os }}
+    - name: Setup .NET Core on ${{ matrix.os }}
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: ${{ matrix.dotnet }}
+        dotnet-version: 3.1.404
     - name: Build and test
       run: |
         dotnet build --configuration Release
