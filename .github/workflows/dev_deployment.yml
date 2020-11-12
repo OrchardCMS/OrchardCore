@@ -1,16 +1,18 @@
-name: Dev deployment on cloudsmith and docker
+name: Dev release
 on:
   workflow_run:
     workflows: ["Build and Test"]
-    branches: [jptissot/github_actions]
+    branches: ["jptissot/github_actions"]
     types: 
       - completed
+env:
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+  BuildNumber: ${{ github.run_id }}
 jobs:
   deploy_cloudsmith:
     env:
-      DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
-      DOTNET_CLI_TELEMETRY_OPTOUT: 1
-      BuildNumber: ${{ github.run_id }}
+
     runs-on: ubuntu-latest
     name: Unit Tests
     steps:
@@ -22,8 +24,6 @@ jobs:
     - name: Build, pack and push nuget packages
       run: |
         dotnet build --configuration Release
-    - name: Pack
-      run: dotnet pack -c Release -o pack-output --no-build
     # - name: Publish nuget
     #   run: dotnet nuget push './pack-output/*.nupkg' -k ${{secrets.CLOUDSMITH_API_KEY}} -n true -s https://nuget.cloudsmith.io/orchardcore/preview/v3/index.json --skip-duplicate
   # deploy_docker:
