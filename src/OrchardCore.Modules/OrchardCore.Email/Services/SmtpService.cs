@@ -107,7 +107,14 @@ namespace OrchardCore.Email.Services
                 }
             }
 
-            if (!string.IsNullOrWhiteSpace(message.ReplyTo))
+            if (string.IsNullOrWhiteSpace(message.ReplyTo))
+            {
+                foreach (var address in mimeMessage.From)
+                {
+                    mimeMessage.ReplyTo.Add(address);
+                }
+            }
+            else
             {
                 foreach (var address in message.ReplyTo.Split(EmailsSeparator, StringSplitOptions.RemoveEmptyEntries))
                 {
