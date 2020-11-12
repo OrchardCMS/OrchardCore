@@ -38,10 +38,10 @@ jobs:
         dotnet build --configuration Release
         dotnet test -c Release --no-restore --no-build ./test/OrchardCore.Tests/OrchardCore.Tests.csproj
     - name: Pack
-      if: matrix.os == 'ubuntu-latest' 
+      if: matrix.os == 'ubuntu-latest' && github.ref == 'refs/heads/dev' 
       run: dotnet pack -c Release --no-restore --no-build --include-symbols
     - name: Upload Artifact
-      if: matrix.os == 'ubuntu-latest' 
+      if: matrix.os == 'ubuntu-latest' && github.ref == 'refs/heads/dev'  
       uses: actions/upload-artifact@v2
       with:
         name: nupkg
@@ -169,6 +169,43 @@ jobs:
       if: failure()
       with:
         name: functional-cms-mysql-failure
+        path: |
+          test/Functional/cms-tests/cypress/screenshots
+          src/OrchardCore.Cms.Web/App_Data/logs
+        retention-days: 3
+
+  test_functional_cms_mssql:
+    name: Functional test - CMS SqlServer 2019
+    runs-on: ubuntu-latest
+    container:
+      image: cypress/browsers:node12.13.0-chrome78-ff70
+    services:
+      mssql:
+        image: mcr.microsoft.com/mssql/server:2019-latest
+        ports:
+          - 1433
+        env:
+          ACCEPT_EULA: Y
+          MSSQL_SA_PASSWORD: Password12!
+        options: --health-cmd="/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P ${{MSSQL_SA_PASSWORD}} -Q "SELECT 1" || exit 1" --health-interval=5s --health-timeout=2s --health-retries=3
+    env:
+      OrchardCore__ConnectionString: "Server=localhost;Database=tempdb;User Id=sa;Password=Password12!"
+      OrchardCore__DatabaseProvider: "SqlConnection"
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 3.1.404
+    - name: Functional test
+      run: |
+        cd test/Functional
+        npm install
+        npm run cms:test
+    - uses: actions/upload-artifact@v2
+      if: failure()
+      with:
+        name: functional-cms-mssql-failure
         path: |
           test/Functional/cms-tests/cypress/screenshots
           src/OrchardCore.Cms.Web/App_Data/logs
