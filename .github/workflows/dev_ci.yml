@@ -34,7 +34,7 @@ jobs:
         dotnet-version: 3.1.404
     - name: Build and test
       run: |
-        export BuildNumber=${{ github.run_number }}+ 15471
+        export BuildNumber=$((${{ github.run_number }} + 15471 ))
         dotnet build --configuration Release
         dotnet test -c Release --no-restore --no-build ./test/OrchardCore.Tests/OrchardCore.Tests.csproj
     - name: Pack
