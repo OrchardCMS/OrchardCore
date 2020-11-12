@@ -185,9 +185,9 @@ jobs:
         ports:
           - 1433
         env:
-          ACCEPT_EULA: 'Y'
-          MSSQL_SA_PASSWORD: 'Password12!'
-        options: --health-cmd="/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P ${{MSSQL_SA_PASSWORD}} -Q "SELECT 1" || exit 1" --health-interval=5s --health-timeout=2s --health-retries=3
+          ACCEPT_EULA: Y
+          MSSQL_SA_PASSWORD: Password12!
+        options: --health-cmd="/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P ${{env.MSSQL_SA_PASSWORD}} -Q "SELECT 1" || exit 1" --health-interval=5s --health-timeout=2s --health-retries=3
     env:
       OrchardCore__ConnectionString: "Server=mssql;Database=tempdb;User Id=sa;Password=Password12!"
       OrchardCore__DatabaseProvider: "SqlConnection"
