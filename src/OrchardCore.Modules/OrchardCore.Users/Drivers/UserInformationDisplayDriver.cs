@@ -69,7 +69,7 @@ namespace OrchardCore.Users.Drivers
         public override async Task<IDisplayResult> UpdateAsync(User user, UpdateEditorContext context)
         {
             var model = new EditUserInformationViewModel();
-            var httpContext = _httpContextAccessor.HttpContext;
+            // var httpContext = _httpContextAccessor.HttpContext;
 
             if (!await context.Updater.TryUpdateModelAsync(model, Prefix))
             {
@@ -93,22 +93,22 @@ namespace OrchardCore.Users.Drivers
             if (userWithSameName != null)
             {
                 var userWithSameNameId = await _userManager.GetUserIdAsync(userWithSameName);
-                if (userWithSameNameId != model.Id)
+                if (userWithSameNameId != user.UserId)
                 {
                     context.Updater.ModelState.AddModelError(string.Empty, S["The user name is already used."]);
                 }
             }
 
-            if (model.UserName != user.UserName && user.UserName == httpContext.User.Identity.Name)
-            {
-                context.Updater.ModelState.AddModelError(string.Empty, S["Cannot modify user name of the currently logged in user."]);
-            }
+            // if (model.UserName != user.UserName && user.UserName == httpContext.User.Identity.Name)
+            // {
+            //     context.Updater.ModelState.AddModelError(string.Empty, S["Cannot modify user name of the currently logged in user."]);
+            // }
 
             var userWithSameEmail = await _userManager.FindByEmailAsync(model.Email);
             if (userWithSameEmail != null)
             {
                 var userWithSameEmailId = await _userManager.GetUserIdAsync(userWithSameEmail);
-                if (userWithSameEmailId != model.Id)
+                if (userWithSameEmailId != user.UserId)
                 {
                     context.Updater.ModelState.AddModelError(string.Empty, S["The email is already used."]);
                 }
@@ -116,9 +116,16 @@ namespace OrchardCore.Users.Drivers
 
             if (context.Updater.ModelState.IsValid)
             {
-                await _userManager.SetUserNameAsync(user, model.UserName);
-                await _userManager.SetEmailAsync(user, model.Email);
+                user.UserName = model.UserName;
+                user.Email = model.Email;
             }
+
+            // TODO check here, we maybe able to do this through a deferred task.
+            // otherwise what's the point of having a profile the user can edit when they can't change their name?
+            // if (user.UserName == httpContext.User.Identity.Name)
+            // {
+            //     await _userManager.UpdateSecurityStampAsync(user);
+            // }
 
             return await EditAsync(user, context);
         }

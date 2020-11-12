@@ -8,8 +8,6 @@ namespace OrchardCore.Users.ViewModels
 {
     public class EditUserInformationViewModel : IValidatableObject
     {
-        public string Id { get; set; }
-
         [Required]
         public string UserName { get; set; }
 

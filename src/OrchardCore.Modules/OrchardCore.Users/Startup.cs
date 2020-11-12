@@ -108,21 +108,21 @@ namespace OrchardCore.Users
             routes.MapAreaControllerRoute(
                 name: "UsersEdit",
                 areaName: "OrchardCore.Users",
-                pattern: _adminOptions.AdminUrlPrefix + "/Users/Edit/{id}",
+                pattern: _adminOptions.AdminUrlPrefix + "/Users/Edit/{id?}",
                 defaults: new { controller = adminControllerName, action = nameof(AdminController.Edit) }
             );
-            routes.MapAreaControllerRoute(
-                name: "UsersEditPassword",
-                areaName: "OrchardCore.Users",
-                pattern: _adminOptions.AdminUrlPrefix + "/Users/EditPassword/{id}",
-                defaults: new { controller = adminControllerName, action = nameof(AdminController.EditPassword) }
-            );
-            routes.MapAreaControllerRoute(
-                name: "UsersEditOwn",
-                areaName: "OrchardCore.Users",
-                pattern: _adminOptions.AdminUrlPrefix + "/Users/EditOwnUser",
-                defaults: new { controller = adminControllerName, action = nameof(AdminController.EditOwnUser) }
-            );
+            // routes.MapAreaControllerRoute(
+            //     name: "UsersEditPassword",
+            //     areaName: "OrchardCore.Users",
+            //     pattern: _adminOptions.AdminUrlPrefix + "/Users/EditPassword/{id}",
+            //     defaults: new { controller = adminControllerName, action = nameof(AdminController.EditPassword) }
+            // );
+            // routes.MapAreaControllerRoute(
+            //     name: "UsersEditOwn",
+            //     areaName: "OrchardCore.Users",
+            //     pattern: _adminOptions.AdminUrlPrefix + "/Users/EditOwnUser",
+            //     defaults: new { controller = adminControllerName, action = nameof(AdminController.EditOwnUser) }
+            // );
 
             builder.UseAuthorization();
         }

@@ -282,11 +282,23 @@ namespace OrchardCore.Users.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        public async Task<IActionResult> Edit(string id)
+        public async Task<IActionResult> Edit(string id = null)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers))
+            // When no id is provided we assume the user is trying to edit their own profile.
+            if (String.IsNullOrEmpty(id))
             {
-                return Forbid();
+                id = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditOwnUserInformation))
+                {
+                    return Forbid();
+                }                
+            }
+            else 
+            {
+                if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers))
+                {
+                    return Forbid();
+                }
             }
 
             var user = await _userManager.FindByIdAsync(id) as User;
@@ -302,73 +314,26 @@ namespace OrchardCore.Users.Controllers
 
         [HttpPost]
         [ActionName(nameof(Edit))]
-        public async Task<IActionResult> EditPost(string id)
+        public async Task<IActionResult> EditPost(string id = null)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers))
+            // When no id is provided we assume the user is trying to edit their own profile.
+            if (String.IsNullOrEmpty(id))
             {
-                return Forbid();
+                id = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditOwnUserInformation))
+                {
+                    return Forbid();
+                }
+            } 
+            else
+            {    
+                if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers))
+                {
+                    return Forbid();
+                }
             }
 
             var user = await _userManager.FindByIdAsync(id) as User;
-            if (user == null)
-            {
-                return NotFound();
-            }
-
-            var shape = await _userDisplayManager.UpdateEditorAsync(user, updater: _updateModelAccessor.ModelUpdater, isNew: false);
-
-            if (!ModelState.IsValid)
-            {
-                return View(shape);
-            }
-
-            var result = await _userManager.UpdateAsync(user);
-
-            foreach (var error in result.Errors)
-            {
-                ModelState.AddModelError(string.Empty, error.Description);
-            }
-
-            if (!ModelState.IsValid)
-            {
-                return View(shape);
-            }
-
-            _notifier.Success(H["User updated successfully"]);
-
-            return RedirectToAction(nameof(Index));
-        }
-
-
-        public async Task<IActionResult> EditOwnUser()
-        {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditOwnUserInformation))
-            {
-                return Forbid();
-            }
-
-            var user = await _userManager.FindByIdAsync(User.FindFirstValue(ClaimTypes.NameIdentifier)) as User;
-            if (user == null)
-            {
-                return NotFound();
-            }
-
-            var shape = await _userDisplayManager.BuildEditorAsync(user, updater: _updateModelAccessor.ModelUpdater, isNew: false);
-
-            return View(shape);
-        }        
-
-
-        [HttpPost]
-        [ActionName(nameof(EditOwnUser))]
-        public async Task<IActionResult> EditOwnUserPost()
-        {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditOwnUserInformation))
-            {
-                return Forbid();
-            }
-
-            var user = await _userManager.FindByIdAsync(User.FindFirstValue(ClaimTypes.NameIdentifier)) as User;
             if (user == null)
             {
                 return NotFound();
