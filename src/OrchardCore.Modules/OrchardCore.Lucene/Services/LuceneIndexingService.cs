@@ -116,7 +116,6 @@ namespace OrchardCore.Lucene
 
                     var contentManager = scope.ServiceProvider.GetRequiredService<IContentManager>();
                     var indexHandlers = scope.ServiceProvider.GetServices<IContentItemIndexHandler>();
-                    var orchardHelper = scope.ServiceProvider.GetService<IOrchardHelper>();
 
                     // Pre-load all content items to prevent SELECT N+1
                     var updatedContentItemIds = batch
@@ -188,8 +187,9 @@ namespace OrchardCore.Lucene
                                     continue;
                                 }
 
-                                var culture = await orchardHelper.GetContentCultureAsync(context.ContentItem);
-                                var ignoreIndexedCulture = settings.Culture == "any" ? false : culture?.Name != settings.Culture;
+                                var cultureAspect = await contentManager.PopulateAspectAsync<CultureAspect>(context.ContentItem);
+                                var culture = cultureAspect.HasCulture ? cultureAspect.Culture.Name : null;
+                                var ignoreIndexedCulture = settings.Culture == "any" ? false : culture != settings.Culture;
 
                                 // Ignore if the content item content type or culture is not indexed in this index
                                 if (!settings.IndexedContentTypes.Contains(context.ContentItem.ContentType) || ignoreIndexedCulture)
