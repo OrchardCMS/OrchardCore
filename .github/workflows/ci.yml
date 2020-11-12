@@ -40,8 +40,8 @@ jobs:
         dotnet build --configuration Release
         dotnet test -c Release --no-build ./test/OrchardCore.Tests/OrchardCore.Tests.csproj
     - name: Pack
-      if: matrix.os == 'ubuntu-latest'
-      run: dotnet pack -c Release --no-restore --include-symbols -o pack-output
+      if: matrix.os == 'ubuntu-latest' && github.ref == 'refs/heads/dev'
+      run: dotnet pack -c Release --no-restore --no-build --include-symbols -o pack-output
     - name: Upload Artifact
       if: matrix.os == 'ubuntu-latest'
       uses: actions/upload-artifact@v2
@@ -49,6 +49,18 @@ jobs:
         name: nupkg
         path: ./pack-output/*.nupkg
         retention-days: 5
+    - name: Build publish
+      if: matrix.os == 'ubuntu-latest' && github.ref == 'refs/heads/dev'
+      run: |
+        rm -rf ./src/OrchardCore.Cms.Web/App_Data
+        dotnet publish -c Release --no-restore --no-build -o ./.build/release
+    - name: Upload Artifact
+      if: matrix.os == 'ubuntu-latest'
+      uses: actions/upload-artifact@v2
+      with:
+        name: release
+        path: ./.build/release/
+        retention-days: 1
   test_functional_mvc:
     name: Functional test - MVC
     runs-on: ubuntu-latest
@@ -172,7 +184,7 @@ jobs:
     name: Deploy preview nuget packages
     steps:
     - name: Download Artifact
-      uses: actions/download-artifact@v1
+      uses: actions/download-artifact@v2
       with:
         name: nupkg
     - name: Publish nuget
@@ -184,11 +196,11 @@ jobs:
     runs-on: ubuntu-latest
     name: Deploy preview (dev) docker image
     steps:
-    - uses: actions/checkout@v2
-    - name: Setup .NET Core
-      uses: actions/setup-dotnet@v1
+    - name: Download Artifact
+      uses: actions/download-artifact@v2
       with:
-        dotnet-version: 3.1.404
+        name: release
+        path: build/release
     - name: Login to DockerHub
       uses: docker/login-action@v1
       with:
@@ -196,7 +208,5 @@ jobs:
         password: ${{ secrets.DOCKERHUB_PASSWORD }}
     - name: Docker Build and Push
       run: |
-        rm -rf ./src/OrchardCore.Cms.Web/App_Data
-        dotnet publish -c Release -o ./.build/release
         docker build -t orchardproject/orchardcore-cms-linux:dev .
         docker push orchardproject/orchardcore-cms-linux
