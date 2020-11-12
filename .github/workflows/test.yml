@@ -120,9 +120,6 @@ jobs:
         path: test/Functional/cms-tests/cypress/screenshots
         retention-days: 3
   test_functional_cms_mysql:
-    env:
-      DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
-      DOTNET_CLI_TELEMETRY_OPTOUT: 1
     runs-on: ubuntu-latest
     container:
       image: cypress/browsers:node12.13.0-chrome78-ff70
