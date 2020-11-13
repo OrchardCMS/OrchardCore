@@ -179,7 +179,7 @@ namespace OrchardCore.Users.Services
                 return result;
             }
 
-            var user = await FindByUsernameOrEmailAsync(userIdentifier) as User;
+            var user = await FindByEmailAsync(userIdentifier) as User;
 
             if (user == null)
             {
