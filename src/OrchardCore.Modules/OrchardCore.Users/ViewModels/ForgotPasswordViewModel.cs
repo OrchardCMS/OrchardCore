@@ -5,6 +5,6 @@ namespace OrchardCore.Users.ViewModels
     public class ForgotPasswordViewModel
     {
         [Required]
-        public string UserIdentifier { get; set; }
+        public string Email { get; set; }
     }
 }

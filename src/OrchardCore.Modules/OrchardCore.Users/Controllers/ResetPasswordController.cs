@@ -69,7 +69,7 @@ namespace OrchardCore.Users.Controllers
 
             if (ModelState.IsValid)
             {
-                var user = await _userService.GetForgotPasswordUserAsync(model.UserIdentifier) as User;
+                var user = await _userService.GetForgotPasswordUserAsync(model.Email) as User;
                 if (user == null || (
                         (await _siteService.GetSiteSettingsAsync()).As<RegistrationSettings>().UsersMustValidateEmail
                         && !await _userManager.IsEmailConfirmedAsync(user))
