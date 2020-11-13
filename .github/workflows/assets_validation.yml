@@ -1,5 +1,6 @@
 name: Assets build validation
-on: 
+on:
+# manual trigger
   workflow_dispatch:
 jobs:
   test-npm-build:

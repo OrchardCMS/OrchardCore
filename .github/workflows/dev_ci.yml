@@ -13,7 +13,7 @@ env:
 jobs:
   test:
     runs-on: ubuntu-latest
-    name: Unit Tests
+    name: Build, Test, Deploy
     steps:
     - uses: actions/checkout@v2
     - name: Setup .NET Core
@@ -68,7 +68,7 @@ jobs:
         dotnet-version: 3.1.404
     - name: Dotnet Build
       run: |
-        rm -rf ./src/OrchardCore.Cms.Web/App_Data
+        rm -r ./src/OrchardCore.Cms.Web/App_Data
         dotnet publish -c Release -o ./.build/release
     - name: Docker build and push (dev)
       run: |
