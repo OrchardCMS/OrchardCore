@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -134,7 +135,7 @@ namespace OrchardCore.Contents.Controllers
                     foreach (var contentTypeDefinition in contentTypeDefinitions)
                     {
                         var contentItem = await _contentManager.NewAsync(contentTypeDefinition.Name);
-                        contentItem.Owner = context.User.Identity.Name;
+                        contentItem.Owner = context.User.FindFirstValue(ClaimTypes.NameIdentifier);
 
                         if (await _authorizationService.AuthorizeAsync(context.User, CommonPermissions.EditContent, contentItem))
                         {
@@ -183,7 +184,7 @@ namespace OrchardCore.Contents.Controllers
                     if (ctd.GetSettings<ContentTypeSettings>().Listable)
                     {
                         var contentItem = await _contentManager.NewAsync(ctd.Name);
-                        contentItem.Owner = context.User.Identity.Name;
+                        contentItem.Owner = context.User.FindFirstValue(ClaimTypes.NameIdentifier);
                         var authorized = await _authorizationService.AuthorizeAsync(User, CommonPermissions.EditContent, contentItem);
 
                         if (authorized)
@@ -338,7 +339,7 @@ namespace OrchardCore.Contents.Controllers
             var contentItem = await _contentManager.NewAsync(id);
 
             // Set the current user as the owner to check for ownership permissions on creation
-            contentItem.Owner = User.Identity.Name;
+            contentItem.Owner = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.EditContent, contentItem))
             {
@@ -376,7 +377,7 @@ namespace OrchardCore.Contents.Controllers
             var dummyContent = await _contentManager.NewAsync(id);
 
             // Set the current user as the owner to check for ownership permissions on creation
-            dummyContent.Owner = User.Identity.Name;
+            dummyContent.Owner = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.PublishContent, dummyContent))
             {
@@ -400,7 +401,7 @@ namespace OrchardCore.Contents.Controllers
             var contentItem = await _contentManager.NewAsync(id);
 
             // Set the current user as the owner to check for ownership permissions on creation
-            contentItem.Owner = User.Identity.Name;
+            contentItem.Owner = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.EditContent, contentItem))
             {

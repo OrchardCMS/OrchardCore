@@ -1,25 +1,22 @@
 /// <reference types="Cypress" />
-
 import { generateTenantInfo } from 'cypress-orchardcore/dist/utils';
 
-describe('Agency Tests', function () {
+describe('SaaS Recipe test', function () {
     let tenant;
 
     before(() => {
-        tenant = generateTenantInfo("Agency")
+        tenant = generateTenantInfo("SaaS")
         cy.newTenant(tenant);
     })
 
-    it('Displays the home page of the Agency theme', function(){
+    it('Displays the home page of the SaaS theme', function(){
         cy.visit(`${tenant.prefix}`);
-        cy.get('#services').should('contain.text', 'Lorem ipsum dolor sit amet consectetur');
+        cy.get('h4').should('contain.text', 'Welcome to the Orchard Framework, your site has been successfully set up.');
     })
 
-    it('Agency admin login should work', function(){
+    it('SaaS admin login should work', function(){
         cy.login(tenant);
         cy.visit(`${tenant.prefix}/Admin`);
         cy.get('.ta-content').should('contain.text', 'Welcome to Orchard')
     })
-
-
 });
