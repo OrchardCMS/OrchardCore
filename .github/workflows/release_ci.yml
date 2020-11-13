@@ -1,4 +1,4 @@
-name: Dev - CI
+name: Release - CI
 on:
   push:
     paths-ignore:
