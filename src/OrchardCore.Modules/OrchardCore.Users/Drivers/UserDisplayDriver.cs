@@ -32,7 +32,7 @@ namespace OrchardCore.Users.Drivers
         private readonly ILogger _logger;
         private readonly IStringLocalizer S;
         private readonly IHtmlLocalizer H;
-        
+
 
         public UserDisplayDriver(
             UserManager<IUser> userManager,
@@ -84,10 +84,14 @@ namespace OrchardCore.Users.Drivers
             .RenderWhen(async () => await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.ManageUsers)));
         }
 
-
         public override async Task<IDisplayResult> UpdateAsync(User user, UpdateEditorContext context)
         {
-            // permission check.
+            if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.ManageUsers))
+            {
+                // When the user is only editing their profile never update this part of the user.
+                return await EditAsync(user, context);
+            }
+
             var model = new EditUserViewModel();
             var httpContext = _httpContextAccessor.HttpContext;
 
@@ -123,13 +127,6 @@ namespace OrchardCore.Users.Drivers
                 var userContext = new UserContext(user);
                 await Handlers.InvokeAsync((handler, context) => handler.EnabledAsync(userContext), userContext, _logger);
             }
-
-            // TODO why can't we do this? and perhaps reset the cookie. i.e. login again.
-            // if (model.UserName != user.UserName && user.UserName == httpContext.User.Identity.Name)
-            // {
-            //     context.Updater.ModelState.AddModelError(string.Empty, S["Cannot modify user name of the currently logged in user."]);
-            // }
-
 
             if (context.Updater.ModelState.IsValid)
             {

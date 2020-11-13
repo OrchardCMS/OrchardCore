@@ -28,6 +28,7 @@ namespace OrchardCore.Users.Controllers
     public class AdminController : Controller
     {
         private readonly UserManager<IUser> _userManager;
+        private readonly SignInManager<IUser> _signInManager;
         private readonly ISession _session;
         private readonly IAuthorizationService _authorizationService;
         private readonly ISiteService _siteService;
@@ -42,6 +43,7 @@ namespace OrchardCore.Users.Controllers
 
         public AdminController(
             IDisplayManager<User> userDisplayManager,
+            SignInManager<IUser> signInManager,
             IAuthorizationService authorizationService,
             ISession session,
             UserManager<IUser> userManager,
@@ -54,6 +56,7 @@ namespace OrchardCore.Users.Controllers
             IUpdateModelAccessor updateModelAccessor)
         {
             _userDisplayManager = userDisplayManager;
+            _signInManager = signInManager;
             _authorizationService = authorizationService;
             _session = session;
             _userManager = userManager;
@@ -282,7 +285,7 @@ namespace OrchardCore.Users.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        public async Task<IActionResult> Edit(string id = null)
+        public async Task<IActionResult> Edit(string id, string returnUrl)
         {
             // When no id is provided we assume the user is trying to edit their own profile.
             if (String.IsNullOrEmpty(id))
@@ -291,9 +294,9 @@ namespace OrchardCore.Users.Controllers
                 if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditOwnUserInformation))
                 {
                     return Forbid();
-                }                
+                }
             }
-            else 
+            else
             {
                 if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers))
                 {
@@ -309,28 +312,29 @@ namespace OrchardCore.Users.Controllers
 
             var shape = await _userDisplayManager.BuildEditorAsync(user, updater: _updateModelAccessor.ModelUpdater, isNew: false);
 
+            ViewData["ReturnUrl"] = returnUrl;
+
             return View(shape);
         }
 
         [HttpPost]
         [ActionName(nameof(Edit))]
-        public async Task<IActionResult> EditPost(string id = null)
+        public async Task<IActionResult> EditPost(string id, string returnUrl)
         {
             // When no id is provided we assume the user is trying to edit their own profile.
+            var editingOwnUser = false;
             if (String.IsNullOrEmpty(id))
             {
+                editingOwnUser = true;
                 id = User.FindFirstValue(ClaimTypes.NameIdentifier);
                 if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditOwnUserInformation))
                 {
                     return Forbid();
                 }
-            } 
-            else
-            {    
-                if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers))
-                {
-                    return Forbid();
-                }
+            }
+            else if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers))
+            {
+                return Forbid();
             }
 
             var user = await _userManager.FindByIdAsync(id) as User;
@@ -358,9 +362,26 @@ namespace OrchardCore.Users.Controllers
                 return View(shape);
             }
 
+            if (String.Equals(User.FindFirstValue(ClaimTypes.NameIdentifier), user.UserId, StringComparison.OrdinalIgnoreCase))
+            {
+                await _signInManager.RefreshSignInAsync(user);
+            }
+
             _notifier.Success(H["User updated successfully"]);
 
-            return RedirectToAction(nameof(Index));
+            if (editingOwnUser)
+            {
+                if (!String.IsNullOrEmpty(returnUrl))
+                {
+                    return LocalRedirect(returnUrl);
+                }
+
+                return RedirectToAction(nameof(Edit));
+            }
+            else
+            {
+                return RedirectToAction(nameof(Index));
+            }
         }
 
         [HttpPost]

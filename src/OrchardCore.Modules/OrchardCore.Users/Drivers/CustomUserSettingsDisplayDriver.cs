@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
@@ -12,6 +13,7 @@ using OrchardCore.Users.ViewModels;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Users.Models;
+using Microsoft.AspNetCore.Http;
 
 namespace OrchardCore.Users.Drivers
 {
@@ -20,15 +22,20 @@ namespace OrchardCore.Users.Drivers
         private readonly IContentItemDisplayManager _contentItemDisplayManager;
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly IContentManager _contentManager;
-
+        private readonly IAuthorizationService _authorizationService;
+        private readonly IHttpContextAccessor _httpContextAccessor;
         public CustomUserSettingsDisplayDriver(
             IContentItemDisplayManager contentItemDisplayManager,
             IContentDefinitionManager contentDefinitionManager,
-            IContentManager contentManager)
+            IContentManager contentManager,
+            IAuthorizationService authorizationService,
+            IHttpContextAccessor httpContextAccessor)
         {
             _contentItemDisplayManager = contentItemDisplayManager;
             _contentDefinitionManager = contentDefinitionManager;
             _contentManager = contentManager;
+            _authorizationService = authorizationService;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public override Task<IDisplayResult> EditAsync(User user, BuildEditorContext context)
@@ -40,6 +47,7 @@ namespace OrchardCore.Users.Drivers
             }
 
             var results = new List<IDisplayResult>();
+            var userClaim = _httpContextAccessor.HttpContext.User;
 
             foreach(var contentTypeDefinition in contentTypeDefinitions)
             {
@@ -50,7 +58,8 @@ namespace OrchardCore.Users.Drivers
                         model.Editor = await _contentItemDisplayManager.BuildEditorAsync(contentItem, context.Updater, isNew);
                     })
                     .Location($"Content:10#{contentTypeDefinition.DisplayName}")
-                    .Differentiator($"CustomUserSettings-{contentTypeDefinition.Name}"));
+                    .Differentiator($"CustomUserSettings-{contentTypeDefinition.Name}")
+                    .RenderWhen(async () => await _authorizationService.AuthorizeAsync(userClaim, CustomUserSettingsPermissions.CreatePermissionForType(contentTypeDefinition))));
             }
 
             return Task.FromResult<IDisplayResult>(Combine(results.ToArray()));
@@ -58,8 +67,14 @@ namespace OrchardCore.Users.Drivers
 
         public override async Task<IDisplayResult> UpdateAsync(User user, UpdateEditorContext context)
         {
+            var userClaim = _httpContextAccessor.HttpContext.User;
             foreach(var contentTypeDefinition in GetContentTypeDefinitions())
             {
+                if (!await _authorizationService.AuthorizeAsync(userClaim, CustomUserSettingsPermissions.CreatePermissionForType(contentTypeDefinition)))
+                {
+                    continue;
+                }
+
                 var isNew = false;
                 var contentItem = await GetUserSettingsAsync(user, contentTypeDefinition, () => isNew = true);
                 await _contentItemDisplayManager.UpdateEditorAsync(contentItem, context.Updater, isNew);
@@ -74,15 +89,18 @@ namespace OrchardCore.Users.Drivers
                 .ListTypeDefinitions()
                 .Where(x => x.GetSettings<ContentTypeSettings>().Stereotype == "CustomUserSettings");
 
-        public async Task<ContentItem> GetUserSettingsAsync(User user, ContentTypeDefinition settingsType, Action isNew = null)
+        private async Task<ContentItem> GetUserSettingsAsync(User user, ContentTypeDefinition settingsType, Action isNew = null)
         {
             JToken property;
             ContentItem contentItem;
 
             if (user.Properties.TryGetValue(settingsType.Name, out property))
             {
-                // Create existing content item
-                contentItem = property.ToObject<ContentItem>();
+                var existing = property.ToObject<ContentItem>();
+
+                // Create a new item to take into account the current type definition.
+                contentItem = await _contentManager.NewAsync(existing.ContentType);
+                contentItem.Merge(existing);
             }
             else
             {

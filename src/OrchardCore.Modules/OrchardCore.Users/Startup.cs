@@ -396,6 +396,7 @@ namespace OrchardCore.Users
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<IDisplayDriver<User>, CustomUserSettingsDisplayDriver>();
+            services.AddScoped<IPermissionProvider, CustomUserSettingsPermissions>();
         }
     }
 }

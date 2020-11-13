@@ -58,7 +58,6 @@ namespace OrchardCore.Users.Drivers
         {
             return Task.FromResult<IDisplayResult>(Initialize<EditUserInformationViewModel>("UserInformationFields_Edit", model =>
             {
-                model.UserName = user.UserId;
                 model.UserName = user.UserName;
                 model.Email = user.Email;
             })
@@ -69,7 +68,6 @@ namespace OrchardCore.Users.Drivers
         public override async Task<IDisplayResult> UpdateAsync(User user, UpdateEditorContext context)
         {
             var model = new EditUserInformationViewModel();
-            // var httpContext = _httpContextAccessor.HttpContext;
 
             if (!await context.Updater.TryUpdateModelAsync(model, Prefix))
             {
@@ -99,11 +97,6 @@ namespace OrchardCore.Users.Drivers
                 }
             }
 
-            // if (model.UserName != user.UserName && user.UserName == httpContext.User.Identity.Name)
-            // {
-            //     context.Updater.ModelState.AddModelError(string.Empty, S["Cannot modify user name of the currently logged in user."]);
-            // }
-
             var userWithSameEmail = await _userManager.FindByEmailAsync(model.Email);
             if (userWithSameEmail != null)
             {
@@ -119,13 +112,6 @@ namespace OrchardCore.Users.Drivers
                 user.UserName = model.UserName;
                 user.Email = model.Email;
             }
-
-            // TODO check here, we maybe able to do this through a deferred task.
-            // otherwise what's the point of having a profile the user can edit when they can't change their name?
-            // if (user.UserName == httpContext.User.Identity.Name)
-            // {
-            //     await _userManager.UpdateSecurityStampAsync(user);
-            // }
 
             return await EditAsync(user, context);
         }
