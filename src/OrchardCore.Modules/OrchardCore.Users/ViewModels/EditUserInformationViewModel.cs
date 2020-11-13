@@ -14,11 +14,10 @@ namespace OrchardCore.Users.ViewModels
         [Required]
         public string Email { get; set; }
 
-
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
             var emailAddressValidator = validationContext.GetService<IEmailAddressValidator>();
-            var S = validationContext.GetService<IStringLocalizer<EditUserViewModel>>();
+            var S = validationContext.GetService<IStringLocalizer<EditUserInformationViewModel>>();
 
             if (!string.IsNullOrEmpty(Email) && !emailAddressValidator.Validate(Email))
             {
