@@ -19,4 +19,3 @@ jobs:
       run: |
         dotnet build --configuration Release
         dotnet test -c Release --no-restore --no-build ./test/OrchardCore.Tests/OrchardCore.Tests.csproj
-  
