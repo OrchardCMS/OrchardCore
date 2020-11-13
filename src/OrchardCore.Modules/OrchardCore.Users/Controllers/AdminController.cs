@@ -291,7 +291,7 @@ namespace OrchardCore.Users.Controllers
             if (String.IsNullOrEmpty(id))
             {
                 id = User.FindFirstValue(ClaimTypes.NameIdentifier);
-                if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditOwnUserInformation))
+                if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageOwnUserInformation))
                 {
                     return Forbid();
                 }
@@ -327,7 +327,7 @@ namespace OrchardCore.Users.Controllers
             {
                 editingOwnUser = true;
                 id = User.FindFirstValue(ClaimTypes.NameIdentifier);
-                if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditOwnUserInformation))
+                if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageOwnUserInformation))
                 {
                     return Forbid();
                 }

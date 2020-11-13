@@ -8,13 +8,13 @@ namespace OrchardCore.Users
     public class Permissions : IPermissionProvider
     {
         public static readonly Permission ManageUsers = new Permission("ManageUsers", "Managing Users");
-        public static readonly Permission EditOwnUserInformation = new Permission("EditOwnUserInformation", "Edit own user information", new Permission[] { ManageUsers });
+        public static readonly Permission ManageOwnUserInformation = new Permission("ManageOwnUserInformation", "Manage own user information", new Permission[] { ManageUsers });
         public Task<IEnumerable<Permission>> GetPermissionsAsync()
         {
             return Task.FromResult(new[]
             {
                 ManageUsers,
-                EditOwnUserInformation
+                ManageOwnUserInformation
             }
             .AsEnumerable());
         }
@@ -28,19 +28,19 @@ namespace OrchardCore.Users
                 },
                 new PermissionStereotype {
                     Name = "Editor",
-                    Permissions = new[] { EditOwnUserInformation }
+                    Permissions = new[] { ManageOwnUserInformation }
                 },
                 new PermissionStereotype {
                     Name = "Moderator",
-                    Permissions = new[] { EditOwnUserInformation }
+                    Permissions = new[] { ManageOwnUserInformation }
                 },
                 new PermissionStereotype {
                     Name = "Contributor",
-                    Permissions = new[] { EditOwnUserInformation }
+                    Permissions = new[] { ManageOwnUserInformation }
                 },
                 new PermissionStereotype {
                     Name = "Author",
-                    Permissions = new[] { EditOwnUserInformation }
+                    Permissions = new[] { ManageOwnUserInformation }
                 }
             };
         }

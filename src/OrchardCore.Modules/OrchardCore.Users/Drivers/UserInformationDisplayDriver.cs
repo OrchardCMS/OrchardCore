@@ -62,7 +62,7 @@ namespace OrchardCore.Users.Drivers
                 model.Email = user.Email;
             })
             .Location("Content:1")
-            .RenderWhen(async () => await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.EditOwnUserInformation)));
+            .RenderWhen(async () => await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.ManageOwnUserInformation)));
         }
 
         public override async Task<IDisplayResult> UpdateAsync(User user, UpdateEditorContext context)
