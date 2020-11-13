@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.ContentManagement.Metadata;
@@ -19,19 +18,16 @@ namespace OrchardCore.Lists.Drivers
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly IContainerService _containerService;
-        private readonly IHttpContextAccessor _hca;
         private readonly IUpdateModelAccessor _updateModelAccessor;
 
         public ListPartDisplayDriver(
             IContentDefinitionManager contentDefinitionManager,
             IContainerService containerService,
-            IHttpContextAccessor hca,
             IUpdateModelAccessor updateModelAccessor
             )
         {
             _contentDefinitionManager = contentDefinitionManager;
             _containerService = containerService;
-            _hca = hca;
             _updateModelAccessor = updateModelAccessor;
         }
 
