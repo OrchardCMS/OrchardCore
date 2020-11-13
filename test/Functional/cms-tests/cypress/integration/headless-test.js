@@ -1,25 +1,22 @@
 /// <reference types="Cypress" />
-
 import { generateTenantInfo } from 'cypress-orchardcore/dist/utils';
 
-describe('Agency Tests', function () {
+describe('Headless Recipe test', function () {
     let tenant;
 
     before(() => {
-        tenant = generateTenantInfo("Agency")
+        tenant = generateTenantInfo("Headless")
         cy.newTenant(tenant);
     })
 
-    it('Displays the home page of the Agency theme', function(){
+    it('Displays the login screen when accessing the root of the Headless theme', function(){
         cy.visit(`${tenant.prefix}`);
-        cy.get('#services').should('contain.text', 'Lorem ipsum dolor sit amet consectetur');
-    })
+        cy.get('h4').should('contain.text', 'Use a local account to log in.');
+     })
 
-    it('Agency admin login should work', function(){
+    it('Headless admin login should work', function(){
         cy.login(tenant);
         cy.visit(`${tenant.prefix}/Admin`);
         cy.get('.ta-content').should('contain.text', 'Welcome to Orchard')
     })
-
-
 });

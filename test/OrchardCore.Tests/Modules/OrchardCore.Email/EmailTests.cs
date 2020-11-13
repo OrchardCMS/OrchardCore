@@ -94,7 +94,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Email
         {
             var message = new MailMessage
             {
-                To = "info@oc.com",
+                To = "Hisham Bin Ateya <hishamco_2007@hotmail.com>",
                 Subject = "Test",
                 Body = "Test Message",
                 From = "sebastienros@gmail.com",
