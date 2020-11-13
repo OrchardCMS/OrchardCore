@@ -1,4 +1,4 @@
-name: CI
+name: PR - CI
 on: 
   pull_request:
     paths-ignore:
@@ -36,6 +36,7 @@ jobs:
         cd test/Functional
         npm install
         npm run cms:test
+        npm run mvc:test
     - uses: actions/upload-artifact@v2
       if: matrix.os == 'ubuntu-latest' && failure()
       with:
