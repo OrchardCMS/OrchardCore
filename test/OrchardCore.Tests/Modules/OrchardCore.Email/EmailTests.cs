@@ -58,7 +58,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Email
         }
 
         [Fact]
-        public async Task SendEmail_UsesCustomAutherAndSender()
+        public async Task SendEmail_UsesCustomAuthorAndSender()
         {
             var message = new MailMessage
             {
@@ -78,7 +78,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Email
         {
             var message = new MailMessage
             {
-                To = "info@oc.com",
+                To = "Hisham Bin Ateya <hishamco_2007@hotmail.com>",
                 Subject = "Test",
                 Body = "Test Message",
                 From = "Hisham Bin Ateya <hishamco_2007@hotmail.com>",
