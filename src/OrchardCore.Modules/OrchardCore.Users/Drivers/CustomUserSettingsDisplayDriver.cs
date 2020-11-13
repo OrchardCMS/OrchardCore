@@ -24,6 +24,7 @@ namespace OrchardCore.Users.Drivers
         private readonly IContentManager _contentManager;
         private readonly IAuthorizationService _authorizationService;
         private readonly IHttpContextAccessor _httpContextAccessor;
+
         public CustomUserSettingsDisplayDriver(
             IContentItemDisplayManager contentItemDisplayManager,
             IContentDefinitionManager contentDefinitionManager,

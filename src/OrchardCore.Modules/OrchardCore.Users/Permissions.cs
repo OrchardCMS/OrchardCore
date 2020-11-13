@@ -7,7 +7,7 @@ namespace OrchardCore.Users
 {
     public class Permissions : IPermissionProvider
     {
-        public static readonly Permission ManageUsers = new Permission("ManageUsers", "Managing Users");
+        public static readonly Permission ManageUsers = CommonPermissions.ManageUsers;
         public static readonly Permission ManageOwnUserInformation = new Permission("ManageOwnUserInformation", "Manage own user information", new Permission[] { ManageUsers });
         public Task<IEnumerable<Permission>> GetPermissionsAsync()
         {

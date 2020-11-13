@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -13,7 +9,6 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Security.Services;
-using OrchardCore.Users.Handlers;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.ViewModels;
 
@@ -52,7 +47,6 @@ namespace OrchardCore.Users.Drivers
             H = htmlLocalizer;
             S = stringLocalizer;
         }
-
 
          public override Task<IDisplayResult> EditAsync(User user, BuildEditorContext context)
         {
