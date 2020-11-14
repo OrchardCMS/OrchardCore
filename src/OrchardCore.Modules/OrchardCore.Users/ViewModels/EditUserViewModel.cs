@@ -33,9 +33,13 @@ namespace OrchardCore.Users.ViewModels
             var emailAddressValidator = validationContext.GetService<IEmailAddressValidator>();
             var S = validationContext.GetService<IStringLocalizer<EditUserViewModel>>();
 
-            if (!string.IsNullOrEmpty(Email) && !emailAddressValidator.Validate(Email))
+            if (string.IsNullOrWhiteSpace(Email))
             {
-                yield return new ValidationResult(S["Invalid Email."], new[] { "Email" });
+                yield return new ValidationResult(S["Email is required."], new[] { nameof(Email) });
+            }
+            else if (!emailAddressValidator.Validate(Email))
+            {
+                yield return new ValidationResult(S["Invalid Email."], new[] { nameof(Email) });
             }
         }
     }
