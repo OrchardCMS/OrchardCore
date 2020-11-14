@@ -1,5 +1,12 @@
-#ignore all files
-*/*
+#ignore all
+**
 
-#except release
-!/.build/release/*
+#except src for build
+!./src/*
+
+#ignore any App_Data folder
+**/App_Data/
+
+#ignore all prebuild
+**/[b|B]in/
+**/[O|o]bj/
