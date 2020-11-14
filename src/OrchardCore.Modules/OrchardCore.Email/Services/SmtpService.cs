@@ -81,7 +81,13 @@ namespace OrchardCore.Email.Services
                 Sender = MailboxAddress.Parse(senderAddress)
             };
 
-            mimeMessage.From.Add(MailboxAddress.Parse(message.From));
+            if (!string.IsNullOrWhiteSpace(message.From))
+            {
+                foreach (var address in message.From.Split(EmailsSeparator, StringSplitOptions.RemoveEmptyEntries))
+                {
+                    mimeMessage.From.Add(MailboxAddress.Parse(address));
+                }
+            }
 
             if (!string.IsNullOrWhiteSpace(message.To))
             {
@@ -107,7 +113,14 @@ namespace OrchardCore.Email.Services
                 }
             }
 
-            if (!string.IsNullOrWhiteSpace(message.ReplyTo))
+            if (string.IsNullOrWhiteSpace(message.ReplyTo))
+            {
+                foreach (var address in mimeMessage.From)
+                {
+                    mimeMessage.ReplyTo.Add(address);
+                }
+            }
+            else
             {
                 foreach (var address in message.ReplyTo.Split(EmailsSeparator, StringSplitOptions.RemoveEmptyEntries))
                 {
