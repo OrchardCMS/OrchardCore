@@ -57,7 +57,7 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
         {
             using (var context = new BlogPostDeploymentContext())
             {
-                // Setup 
+                // Setup
                 await context.InitializeAsync();
 
                 var content = await context.Client.PostAsJsonAsync("api/content?draft=true", context.OriginalBlogPost);
@@ -149,7 +149,7 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
         {
             using (var context = new BlogPostDeploymentContext())
             {
-                // Setup 
+                // Setup
                 await context.InitializeAsync();
 
                 // Act

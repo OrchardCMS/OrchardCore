@@ -269,7 +269,8 @@ namespace OrchardCore.ResourceManagement
                     else
                     {
                         // Stylesheet resource
-                        tagBuilder = new TagBuilder("link") {
+                        tagBuilder = new TagBuilder("link")
+                        {
                             TagRenderMode = TagRenderMode.SelfClosing,
                             Attributes = {
                                 { "type", "text/css" },

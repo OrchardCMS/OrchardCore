@@ -31,7 +31,7 @@ namespace OrchardCore.Tests.Apis.ContentManagement.DeploymentPlans
                 {
                     await context.PostRecipeAsync(recipe);
 
-                    // Test 
+                    // Test
                     var shellScope = await BlogPostDeploymentContext.ShellHost.GetScopeAsync(context.TenantName);
                     await shellScope.UsingAsync(async scope =>
                     {

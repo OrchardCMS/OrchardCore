@@ -38,7 +38,7 @@ namespace OrchardCore.Workflows.Expressions
 
             // Set WorkflowContext as a local scope property.
             var result = await _liquidTemplateManager.RenderAsync(
-                expression.Expression, 
+                expression.Expression,
                 encoder ?? NullEncoder.Default,
                 scope => scope.SetValue("Workflow", workflowContext)
                 );

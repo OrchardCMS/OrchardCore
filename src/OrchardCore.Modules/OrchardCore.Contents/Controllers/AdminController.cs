@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -16,7 +17,6 @@ using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.ContentManagement.Records;
-using OrchardCore.Contents.Security;
 using OrchardCore.Contents.Services;
 using OrchardCore.Contents.ViewModels;
 using OrchardCore.DisplayManagement;
@@ -135,7 +135,7 @@ namespace OrchardCore.Contents.Controllers
                     foreach (var contentTypeDefinition in contentTypeDefinitions)
                     {
                         var contentItem = await _contentManager.NewAsync(contentTypeDefinition.Name);
-                        contentItem.Owner = context.User.Identity.Name;
+                        contentItem.Owner = context.User.FindFirstValue(ClaimTypes.NameIdentifier);
 
                         if (await _authorizationService.AuthorizeAsync(context.User, CommonPermissions.EditContent, contentItem))
                         {
@@ -176,8 +176,7 @@ namespace OrchardCore.Contents.Controllers
                 new SelectListItem() { Text = S["Delete"], Value = nameof(ContentsBulkAction.Remove) }
             };
 
-            // When using the AdminMenus ContentTypes Feature and specifying a Content Type hide the 'Content Type' filter.
-            if (String.IsNullOrEmpty(contentTypeId) && model.Options.ContentTypeOptions == null)
+            if ((String.IsNullOrEmpty(model.Options.SelectedContentType) || String.IsNullOrEmpty(contentTypeId)) && model.Options.ContentTypeOptions == null)
             {
                 var listableTypes = new List<ContentTypeDefinition>();
                 foreach (var ctd in _contentDefinitionManager.ListTypeDefinitions())
@@ -185,9 +184,9 @@ namespace OrchardCore.Contents.Controllers
                     if (ctd.GetSettings<ContentTypeSettings>().Listable)
                     {
                         var contentItem = await _contentManager.NewAsync(ctd.Name);
-                        contentItem.Owner = context.User.Identity.Name;
+                        contentItem.Owner = context.User.FindFirstValue(ClaimTypes.NameIdentifier);
                         var authorized = await _authorizationService.AuthorizeAsync(User, CommonPermissions.EditContent, contentItem);
-                        
+
                         if (authorized)
                         {
                             listableTypes.Add(ctd);
@@ -203,13 +202,14 @@ namespace OrchardCore.Contents.Controllers
                 {
                     new SelectListItem() { Text = S["All content types"], Value = "" }
                 };
+
                 foreach (var option in contentTypeOptions)
                 {
-                    model.Options.ContentTypeOptions.Add(new SelectListItem() { Text = option.Value, Value = option.Key });
+                    model.Options.ContentTypeOptions.Add(new SelectListItem() { Text = option.Value, Value = option.Key, Selected = (option.Value == model.Options.SelectedContentType) });
                 }
             }
 
-            //if ContentTypeOptions is not initialized by query string or by the code above, initialize it
+            // If ContentTypeOptions is not initialized by query string or by the code above, initialize it
             if (model.Options.ContentTypeOptions == null)
             {
                 model.Options.ContentTypeOptions = new List<SelectListItem>();
@@ -339,7 +339,7 @@ namespace OrchardCore.Contents.Controllers
             var contentItem = await _contentManager.NewAsync(id);
 
             // Set the current user as the owner to check for ownership permissions on creation
-            contentItem.Owner = User.Identity.Name;
+            contentItem.Owner = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.EditContent, contentItem))
             {
@@ -377,7 +377,7 @@ namespace OrchardCore.Contents.Controllers
             var dummyContent = await _contentManager.NewAsync(id);
 
             // Set the current user as the owner to check for ownership permissions on creation
-            dummyContent.Owner = User.Identity.Name;
+            dummyContent.Owner = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.PublishContent, dummyContent))
             {
@@ -401,7 +401,7 @@ namespace OrchardCore.Contents.Controllers
             var contentItem = await _contentManager.NewAsync(id);
 
             // Set the current user as the owner to check for ownership permissions on creation
-            contentItem.Owner = User.Identity.Name;
+            contentItem.Owner = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.EditContent, contentItem))
             {

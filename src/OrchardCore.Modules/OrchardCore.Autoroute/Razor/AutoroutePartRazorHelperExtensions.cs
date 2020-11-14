@@ -10,6 +10,7 @@ public static class AutoroutePartRazorHelperExtensions
     /// <summary>
     /// Returns a content item id by its slug.
     /// </summary>
+    /// <param name="orchardHelper">The <see cref="IOrchardHelper"/>.</param>
     /// <param name="slug">The slug.</param>
     /// <example>GetContentItemIdBySlugAsync("myblog/my-blog-post")</example>
     /// <returns>A content item id or <c>null</c> if it was not found.</returns>
@@ -46,6 +47,7 @@ public static class AutoroutePartRazorHelperExtensions
     /// <summary>
     /// Loads a content item by its slug.
     /// </summary>
+    /// <param name="orchardHelper">The <see cref="IOrchardHelper"/>.</param>
     /// <param name="slug">The slug to load.</param>
     /// <param name="latest">Whether a draft should be loaded if available. <c>false</c> by default.</param>
     /// <example>GetContentItemBySlugAsync("myblog/my-blog-post")</example>

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
-using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Taxonomies.Fields;
 using OrchardCore.Taxonomies.ViewModels;
 
@@ -14,6 +13,7 @@ namespace OrchardCore.Taxonomies.Drivers
         /// <summary>
         /// Populates a list of <see cref="TermEntry"/> with the hierarchy of terms.
         /// The list is ordered so that roots appear right before their child terms.
+        /// </summary>
         public static void PopulateTermEntries(List<TermEntry> termEntries, TaxonomyField field, IEnumerable<ContentItem> contentItems, int level)
         {
             foreach (var contentItem in contentItems)

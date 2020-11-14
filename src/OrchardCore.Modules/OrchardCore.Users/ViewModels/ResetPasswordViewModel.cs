@@ -20,7 +20,7 @@ namespace OrchardCore.Users.ViewModels
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
-            var S = validationContext.GetService<IStringLocalizer<ChangePasswordViewModel>>();
+            var S = validationContext.GetService<IStringLocalizer<ResetPasswordViewModel>>();
             if (string.IsNullOrWhiteSpace(Email))
             {
                 yield return new ValidationResult(S["Email is required."], new[] { nameof(Email) });

@@ -11,14 +11,12 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Predicates
         private readonly IEnumerable<IIndexPropertyProvider> _propertyProviders;
         private readonly HashSet<string> _usedAliases = new HashSet<string>();
         private readonly Dictionary<string, string> _aliases = new Dictionary<string, string>();
-        private readonly string _tablePrefix;
+        private readonly Dictionary<string, string> _tableAliases = new Dictionary<string, string>();
 
         public PredicateQuery(ISqlDialect dialect, ShellSettings shellSettings, IEnumerable<IIndexPropertyProvider> propertyProviders)
         {
             Dialect = dialect;
             _propertyProviders = propertyProviders;
-            var tablePrefix = shellSettings["TablePrefix"];
-            _tablePrefix = string.IsNullOrEmpty(tablePrefix) ? String.Empty : $"{tablePrefix}_";
         }
 
         public ISqlDialect Dialect { get; set; }
@@ -43,8 +41,16 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Predicates
 
             _aliases[path] = alias;
         }
+        public void CreateTableAlias(string path, string tableAlias)
+        {
+            if (path == null) throw new ArgumentNullException(nameof(path));
+            if (tableAlias == null) throw new ArgumentNullException(nameof(tableAlias));
 
-        public string GetColumnName(string propertyPath)
+            _tableAliases[path] = tableAlias;
+        }
+
+
+        public void SearchUsedAlias(string propertyPath)
         {
             if (propertyPath == null) throw new ArgumentNullException(nameof(propertyPath));
 
@@ -53,7 +59,7 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Predicates
             if (_aliases.TryGetValue(propertyPath, out string alias))
             {
                 _usedAliases.Add(alias);
-                return Dialect.QuoteForColumnName(alias);
+                return;
             }
 
             var values = propertyPath.Split('.', 2);
@@ -72,18 +78,58 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Predicates
                     if (propertyProvider.TryGetValue(values.Last(), out var columnName))
                     {
                         _usedAliases.Add(alias);
-                        // Switch the given alias in the path with the mapped alias.
-                        // aliasPart.alias -> AliasPartIndex.Alias
-                        return Dialect.QuoteForTableName($"{_tablePrefix}{alias}") + "." + Dialect.QuoteForColumnName(columnName);
+                        return;
                     }
                 }
-                else 
+                else
+                {
+                    _usedAliases.Add(alias);
+                    return;
+                }
+            }
+
+            // No aliases registered for this path, return the formatted path.
+            return;
+        }
+
+        public string GetColumnName(string propertyPath)
+        {
+            if (propertyPath == null) throw new ArgumentNullException(nameof(propertyPath));
+
+            // Check if there's an alias for the full path
+            // aliasPart.Alias -> AliasFieldIndex.Alias
+            if (_aliases.TryGetValue(propertyPath, out string alias))
+            {
+                return Dialect.QuoteForColumnName(alias);
+            }
+
+            var values = propertyPath.Split('.', 2);
+
+            // if empty prefix, use default (empty alias)
+            var aliasPath = values.Length == 1 ? string.Empty : values[0];
+
+            // get the actual index from the alias
+            if (_aliases.TryGetValue(aliasPath, out alias))
+            {
+                string tableAlias = _tableAliases[alias];
+                // get the index property provider fore the alias
+                var propertyProvider = _propertyProviders.FirstOrDefault(x => x.IndexName.Equals(alias, StringComparison.OrdinalIgnoreCase));
+
+                if (propertyProvider != null)
+                {
+                    if (propertyProvider.TryGetValue(values.Last(), out var columnName))
+                    {
+                        // Switch the given alias in the path with the mapped alias.
+                        // aliasPart.alias -> AliasPartIndex.Alias
+                        return Dialect.QuoteForTableName($"{tableAlias}") + "." + Dialect.QuoteForColumnName(columnName);
+                    }
+                }
+                else
                 {
                     // no property provider exists; hope sql is case-insensitive (will break postgres; property providers must be supplied for postgres)
                     // Switch the given alias in the path with the mapped alias.
                     // aliasPart.Alias -> AliasPartIndex.alias
-                    _usedAliases.Add(alias);
-                    return Dialect.QuoteForTableName($"{_tablePrefix}{alias}") + "." + Dialect.QuoteForColumnName(values[1]);
+                    return Dialect.QuoteForTableName($"{tableAlias}") + "." + Dialect.QuoteForColumnName(values[1]);
                 }
             }
 

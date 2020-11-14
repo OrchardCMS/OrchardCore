@@ -7231,3 +7231,7 @@ ul.pager li.disabled .page-link {
 
 ul.pager {
   margin-top: 1rem; }
+
+#togglePassword {
+  width: 44px;
+  padding: 0; }

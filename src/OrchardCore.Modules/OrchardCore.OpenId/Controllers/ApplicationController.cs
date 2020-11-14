@@ -189,6 +189,31 @@ namespace OrchardCore.OpenId.Controllers
                 descriptor.Permissions.Add(OpenIddictConstants.Permissions.Endpoints.Token);
             }
 
+            if (model.AllowAuthorizationCodeFlow)
+            {
+                descriptor.Permissions.Add(OpenIddictConstants.Permissions.ResponseTypes.Code);
+            }
+            if (model.AllowImplicitFlow)
+            {
+                descriptor.Permissions.Add(OpenIddictConstants.Permissions.ResponseTypes.IdToken);
+
+                if (string.Equals(model.Type, OpenIddictConstants.ClientTypes.Public, StringComparison.OrdinalIgnoreCase))
+                {
+                    descriptor.Permissions.Add(OpenIddictConstants.Permissions.ResponseTypes.IdTokenToken);
+                    descriptor.Permissions.Add(OpenIddictConstants.Permissions.ResponseTypes.Token);
+                }
+            }
+            if (model.AllowHybridFlow)
+            {
+                descriptor.Permissions.Add(OpenIddictConstants.Permissions.ResponseTypes.CodeIdToken);
+
+                if (string.Equals(model.Type, OpenIddictConstants.ClientTypes.Public, StringComparison.OrdinalIgnoreCase))
+                {
+                    descriptor.Permissions.Add(OpenIddictConstants.Permissions.ResponseTypes.CodeIdTokenToken);
+                    descriptor.Permissions.Add(OpenIddictConstants.Permissions.ResponseTypes.CodeToken);
+                }
+            }
+
             descriptor.PostLogoutRedirectUris.UnionWith(
                 from uri in model.PostLogoutRedirectUris?.Split(new[] { " ", "," }, StringSplitOptions.RemoveEmptyEntries) ?? Array.Empty<string>()
                 select new Uri(uri, UriKind.Absolute));
@@ -402,6 +427,58 @@ namespace OrchardCore.OpenId.Controllers
             else
             {
                 descriptor.Permissions.Remove(OpenIddictConstants.Permissions.Endpoints.Token);
+            }
+
+            if (model.AllowAuthorizationCodeFlow)
+            {
+                descriptor.Permissions.Add(OpenIddictConstants.Permissions.ResponseTypes.Code);
+            }
+            else
+            {
+                descriptor.Permissions.Remove(OpenIddictConstants.Permissions.ResponseTypes.Code);
+            }
+
+            if (model.AllowImplicitFlow)
+            {
+                descriptor.Permissions.Add(OpenIddictConstants.Permissions.ResponseTypes.IdToken);
+
+                if (string.Equals(model.Type, OpenIddictConstants.ClientTypes.Public, StringComparison.OrdinalIgnoreCase))
+                {
+                    descriptor.Permissions.Add(OpenIddictConstants.Permissions.ResponseTypes.IdTokenToken);
+                    descriptor.Permissions.Add(OpenIddictConstants.Permissions.ResponseTypes.Token);
+                }
+                else
+                {
+                    descriptor.Permissions.Remove(OpenIddictConstants.Permissions.ResponseTypes.IdTokenToken);
+                    descriptor.Permissions.Remove(OpenIddictConstants.Permissions.ResponseTypes.Token);
+                }
+            }
+            else
+            {
+                descriptor.Permissions.Remove(OpenIddictConstants.Permissions.ResponseTypes.IdToken);
+                descriptor.Permissions.Remove(OpenIddictConstants.Permissions.ResponseTypes.IdTokenToken);
+                descriptor.Permissions.Remove(OpenIddictConstants.Permissions.ResponseTypes.Token);
+            }
+            if (model.AllowHybridFlow)
+            {
+                descriptor.Permissions.Add(OpenIddictConstants.Permissions.ResponseTypes.CodeIdToken);
+
+                if (string.Equals(model.Type, OpenIddictConstants.ClientTypes.Public, StringComparison.OrdinalIgnoreCase))
+                {
+                    descriptor.Permissions.Add(OpenIddictConstants.Permissions.ResponseTypes.CodeIdTokenToken);
+                    descriptor.Permissions.Add(OpenIddictConstants.Permissions.ResponseTypes.CodeToken);
+                }
+                else
+                {
+                    descriptor.Permissions.Remove(OpenIddictConstants.Permissions.ResponseTypes.CodeIdTokenToken);
+                    descriptor.Permissions.Remove(OpenIddictConstants.Permissions.ResponseTypes.CodeToken);
+                }
+            }
+            else
+            {
+                descriptor.Permissions.Remove(OpenIddictConstants.Permissions.ResponseTypes.CodeIdToken);
+                descriptor.Permissions.Remove(OpenIddictConstants.Permissions.ResponseTypes.CodeIdTokenToken);
+                descriptor.Permissions.Remove(OpenIddictConstants.Permissions.ResponseTypes.CodeToken);
             }
 
             descriptor.Roles.Clear();

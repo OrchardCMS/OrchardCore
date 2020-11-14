@@ -12,7 +12,7 @@ namespace OrchardCore.Sitemaps.Builders
     public class SitemapIndexTypeBuilder : SitemapTypeBuilderBase<SitemapIndex>
     {
         private static readonly XNamespace Namespace = "http://www.sitemaps.org/schemas/sitemap/0.9";
-        private static readonly XNamespace SchemaInstance = "http://wwww.w3.org/2001/XMLSchema-instance";
+        private static readonly XNamespace SchemaInstance = "http://www.w3.org/2001/XMLSchema-instance";
         private static readonly XNamespace SchemaLocation = "http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/siteindex.xsd";
 
         private readonly ISitemapManager _sitemapManager;
