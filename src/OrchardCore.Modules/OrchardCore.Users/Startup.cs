@@ -157,6 +157,7 @@ namespace OrchardCore.Users
                 // tenant prefix but may also start by a path related e.g to a virtual folder.
 
                 options.LoginPath = "/" + userOptions.Value.LoginPath;
+                options.LogoutPath = "/" + userOptions.Value.LogoffPath;
                 options.AccessDeniedPath = "/Error/403";
             });
 
