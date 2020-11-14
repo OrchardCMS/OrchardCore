@@ -67,7 +67,7 @@ namespace OrchardCore.Users.Controllers
 
             await _passwordRecoveryFormEvents.InvokeAsync((e, modelState) => e.RecoveringPasswordAsync((key, message) => modelState.AddModelError(key, message)), ModelState, _logger);
 
-            if (ModelState.IsValid)
+            if (TryValidateModel(model) && ModelState.IsValid)
             {
                 var user = await _userService.GetForgotPasswordUserAsync(model.Email) as User;
                 if (user == null || (
