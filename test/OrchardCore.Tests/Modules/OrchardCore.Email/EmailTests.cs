@@ -74,6 +74,22 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Email
         }
 
         [Fact]
+        public async Task SendEmail_UsesMultipleAuthors()
+        {
+            var message = new MailMessage
+            {
+                To = "info@oc.com",
+                Subject = "Test",
+                Body = "Test Message",
+                From = "sebastienros@gmail.com,hishamco_2007@hotmail.com"
+            };
+            var content = await SendEmailAsync("Hisham Bin Ateya <hishamco_2007@hotmail.com>", message);
+
+            Assert.Contains("From: sebastienros@gmail.com, hishamco_2007@hotmail.com", content);
+            Assert.Contains("Sender: Hisham Bin Ateya <hishamco_2007@hotmail.com>", content);
+        }
+
+        [Fact]
         public async Task SendEmail_UsesReplyTo()
         {
             var message = new MailMessage
