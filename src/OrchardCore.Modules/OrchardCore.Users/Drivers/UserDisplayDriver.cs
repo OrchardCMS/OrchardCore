@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Localization;
@@ -21,15 +22,17 @@ namespace OrchardCore.Users.Drivers
 {
     public class UserDisplayDriver : DisplayDriver<User>
     {
+        private const string AdministratorRole = "Administrator";
         private readonly UserManager<IUser> _userManager;
         private readonly IRoleService _roleService;
         private readonly IUserRoleStore<IUser> _userRoleStore;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly INotifier _notifier;
+        private readonly IAuthorizationService _authorizationService;
         private readonly ILogger _logger;
         private readonly IStringLocalizer S;
         private readonly IHtmlLocalizer H;
-        private static readonly string _administratorRole = "Administrator";
+
 
         public UserDisplayDriver(
             UserManager<IUser> userManager,
@@ -39,6 +42,7 @@ namespace OrchardCore.Users.Drivers
             INotifier notifier,
             ILogger<UserDisplayDriver> logger,
             IEnumerable<IUserEventHandler> handlers,
+            IAuthorizationService authorizationService,
             IHtmlLocalizer<UserDisplayDriver> htmlLocalizer,
             IStringLocalizer<UserDisplayDriver> stringLocalizer)
         {
@@ -47,6 +51,7 @@ namespace OrchardCore.Users.Drivers
             _userRoleStore = userRoleStore;
             _httpContextAccessor = httpContextAccessor;
             _notifier = notifier;
+            _authorizationService = authorizationService;
             _logger = logger;
             Handlers = handlers;
             H = htmlLocalizer;
@@ -71,17 +76,22 @@ namespace OrchardCore.Users.Drivers
                 var userRoleNames = await _userManager.GetRolesAsync(user);
                 var roles = roleNames.Select(x => new RoleViewModel { Role = x, IsSelected = userRoleNames.Contains(x, StringComparer.OrdinalIgnoreCase) }).ToArray();
 
-                model.Id = await _userManager.GetUserIdAsync(user);
-                model.UserName = await _userManager.GetUserNameAsync(user);
-                model.Email = await _userManager.GetEmailAsync(user);
                 model.Roles = roles;
                 model.EmailConfirmed = user.EmailConfirmed;
                 model.IsEnabled = user.IsEnabled;
-            }).Location("Content:1"));
+            })
+            .Location("Content:1.5")
+            .RenderWhen(async () => await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.ManageUsers)));
         }
 
         public override async Task<IDisplayResult> UpdateAsync(User user, UpdateEditorContext context)
         {
+            if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.ManageUsers))
+            {
+                // When the user is only editing their profile never update this part of the user.
+                return await EditAsync(user, context);
+            }
+
             var model = new EditUserViewModel();
             var httpContext = _httpContextAccessor.HttpContext;
 
@@ -90,10 +100,7 @@ namespace OrchardCore.Users.Drivers
                 return await EditAsync(user, context);
             }
 
-            model.UserName = model.UserName?.Trim();
-            model.Email = model.Email?.Trim();
-
-            var usersOfAdminRole = await _userManager.GetUsersInRoleAsync(_administratorRole);
+            var usersOfAdminRole = await _userManager.GetUsersInRoleAsync(AdministratorRole);
             if (!model.IsEnabled && user.IsEnabled)
             {
                 if (usersOfAdminRole.Count == 1 && usersOfAdminRole.First().UserName == user.UserName)
@@ -121,46 +128,8 @@ namespace OrchardCore.Users.Drivers
                 await Handlers.InvokeAsync((handler, context) => handler.EnabledAsync(userContext), userContext, _logger);
             }
 
-            if (string.IsNullOrWhiteSpace(model.UserName))
-            {
-                context.Updater.ModelState.AddModelError("UserName", S["A user name is required."]);
-            }
-
-            if (string.IsNullOrWhiteSpace(model.Email))
-            {
-                context.Updater.ModelState.AddModelError("Email", S["An email is required."]);
-            }
-
-            var userWithSameName = await _userManager.FindByNameAsync(model.UserName);
-            if (userWithSameName != null)
-            {
-                var userWithSameNameId = await _userManager.GetUserIdAsync(userWithSameName);
-                if (userWithSameNameId != model.Id)
-                {
-                    context.Updater.ModelState.AddModelError(string.Empty, S["The user name is already used."]);
-                }
-            }
-
-            if (model.UserName != user.UserName && user.UserName == httpContext.User.Identity.Name)
-            {
-                context.Updater.ModelState.AddModelError(string.Empty, S["Cannot modify user name of the currently logged in user."]);
-            }
-
-            var userWithSameEmail = await _userManager.FindByEmailAsync(model.Email);
-            if (userWithSameEmail != null)
-            {
-                var userWithSameEmailId = await _userManager.GetUserIdAsync(userWithSameEmail);
-                if (userWithSameEmailId != model.Id)
-                {
-                    context.Updater.ModelState.AddModelError(string.Empty, S["The email is already used."]);
-                }
-            }
-
             if (context.Updater.ModelState.IsValid)
             {
-                await _userManager.SetUserNameAsync(user, model.UserName);
-                await _userManager.SetEmailAsync(user, model.Email);
-
                 if (model.EmailConfirmed)
                 {
                     var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
@@ -192,7 +161,7 @@ namespace OrchardCore.Users.Drivers
                     foreach (var role in rolesToRemove)
                     {
                         // Make sure we always have at least one administrator account
-                        if (usersOfAdminRole.Count == 1 && usersOfAdminRole.First().UserName == user.UserName && role == _administratorRole)
+                        if (usersOfAdminRole.Count == 1 && usersOfAdminRole.First().UserName == user.UserName && role == AdministratorRole)
                         {
                             _notifier.Warning(H["Cannot remove administrator role from the only administrator."]);
                             continue;
