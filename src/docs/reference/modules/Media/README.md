@@ -409,7 +409,7 @@ The anchor value provided can be used to specify the center point of a crop or p
 
 When the setting is enabled the template must read and provide the value to the resizing helpers or filters.
 
-The `Anchors[]` is a less well known property of a `MediaField` and can be accessed via the `GetCenters()` extension, or directly.
+The `Anchors[]` is a less well known property of a `MediaField` and can be accessed via the `GetAnchors()` extension, or directly.
 
 === "Liquid"
 

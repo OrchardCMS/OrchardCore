@@ -1,8 +1,7 @@
 // This module was originally build by the OrchardCore team
 const child_process = require("child_process");
-const fs = require("fs");
+const fs = require("fs-extra");
 const path = require("path");
-const rimraf = require("rimraf");
 
 global.log = function(msg) {
   let now = new Date().toLocaleTimeString();
@@ -17,9 +16,17 @@ export function build(dir) {
 
 // destructive action that deletes the App_Data folder
 export function clean(dir) {
-  rimraf(path.join(dir, "App_Data"), function() {
-    global.log("App_Data deleted");
-  });
+  const appdataPath = path.join(dir, "App_Data");
+  fs.removeSync(appdataPath);
+  global.log(`${appdataPath} deleted`);
+}
+// clean and copy some files 
+export function setup(dir, copyDir) {
+    clean(dir);
+    const appdataPath = path.join(dir, "App_Data");
+    fs.ensureDirSync(appdataPath);
+    fs.copySync(copyDir, appdataPath);
+    global.log(`Copied SaaS tenant to ${appdataPath}`);
 }
 
 // Host the dotnet application, does not rebuild
@@ -29,11 +36,20 @@ export function host(dir, assembly) {
   } else {
     build(dir);
   }
-  global.log("Starting application ...");
+  global.log("Starting application ..."); 
+  
+  const ocEnv = {};
+
+  Object.keys(process.env).forEach((v) => {
+    if(v.startsWith('OrchardCore__')){
+        ocEnv[v] = process.env[v];
+    }
+  });
+  console.log(`Environment variables:`, ocEnv)
   let server = child_process.spawn(
     "dotnet",
     ["bin/Release/netcoreapp3.1/" + assembly],
-    { cwd: dir }
+    { cwd: dir, env: process.env }
   );
 
   server.stdout.on("data", data => {
@@ -51,19 +67,7 @@ export function host(dir, assembly) {
 }
 
 // combines the functions above, useful when triggering tests from CI
-export function e2e(dir, assembly, performClean = false, rebuild = false) {
-  if (performClean === true) {
-    clean(dir);
-  }
-  if (rebuild === true) {
-    build(dir);
-  }
-
-  if (fs.existsSync(path.join(dir, "bin/Release/netcoreapp3.1/", assembly))) {
-    global.log("Application already built, skipping build");
-  } else {
-    build(dir);
-  }
+export function e2e(dir, assembly) {
 
   var server = host(dir, assembly);
 

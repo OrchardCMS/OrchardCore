@@ -75,7 +75,7 @@ namespace OrchardCore.FileStorage.AzureBlob
 
         public async Task<IFileStoreEntry> GetDirectoryInfoAsync(string path)
         {
-            if (path == string.Empty)
+            if (path == String.Empty)
             {
                 return new BlobDirectory(path, _clock.UtcNow);
             }
