@@ -167,7 +167,7 @@ See :
 
 [Autosetup feature PR](https://github.com/OrchardCMS/OrchardCore/pull/4567)
 
-## How can I run Docker containers over HTTPS?
+## How can I run my Orchard Core Docker containers over HTTPS?
 
 [Hosting ASP.NET Core Images with Docker over HTTPS](https://github.com/dotnet/dotnet-docker/blob/master/samples/host-aspnetcore-https.md)
 
