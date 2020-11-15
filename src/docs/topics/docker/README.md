@@ -1,6 +1,6 @@
 # Using Docker with Orchard Core
 
-Our source code repository includes already a `Dockerfile` which will allow you to create your own Docker images and containers. It can be quite usefull for example for Orchard Core developpers when needing to test PR's. It allows them to deploy locally quickly some testing environments. Here my examples will be shown for that context. Of course Docker can also be used for more complex usage but this documentation doesn't aim to explain that. For more advanced examples I strongly suggest reading `docker` and `docker-compose` documentation.
+Our source code repository includes a `Dockerfile` which will allow you to create your own Docker images and containers. It can be quite usefull for example for Orchard Core developpers when needing to test PR's. It allows them to deploy locally quickly some testing environments. Here my examples will be shown for that context. Of course Docker can also be used for more complex usage but this documentation doesn't aim to explain that. For more advanced examples I strongly suggest reading `docker` and `docker-compose` documentation.
 
 ## Docker
 
@@ -94,3 +94,9 @@ docker-compose up
 ```
 
 I've added some commands examples to prune intermediary images because our `Dockerfile` uses an intermediary image to do a `dotnet publish` of our source code. If you don't prune your intermediary images ; over time it can certainly take some disk space. We label those intermediary images with `stage=build-env` so that they can be removed easily.
+
+## Create tenants automatically (Autosetup feature)
+
+TODO
+
+See PR https://github.com/OrchardCMS/OrchardCore/pull/4567
