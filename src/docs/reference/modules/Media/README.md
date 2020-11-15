@@ -144,6 +144,20 @@ The anchor of the new image.
 
 `<img src="~/media/animals/kittens.jpg?width=100&height=240&rmode=crop&rxy=0.5,0.5" />`
 
+### `bgcolor` (or seventh argument)
+
+The background color of the new image when `mode` is `pad` or `boxpad`. Examples of valid values: `white`, `ffff00`, `ffff0080`, `128,64,32` and `128,64,32,16`.
+
+#### bgcolor Input
+
+```
+{{ 'animals/kittens.jpg' | asset_url | resize_url: width:100, height:240, mode:'pad', bgcolor: 'white' }}
+```
+
+#### bgcolor Output
+
+`<img src="~/media/animals/kittens.jpg?width=100&height=240&rmode=pad&bgcolor=white" />`
+
 ### `profile` (named argument)
 
 A [Media Profile](#media-profiles) can be specified as a named argument to provide preset formatting commands.
@@ -182,6 +196,10 @@ To obtain the correct URL for a resized asset use `AssetUrl` with the optional w
 
 `@Orchard.AssetUrl(Model.Paths[0], width: 100 , height: 240, resizeMode: ResizeMode.Crop, quality: 50, format: Format.Jpg)`
 
+To obtain the correct URL for a resized asset use `AssetUrl` with the optional width, height, resizeMode and bgcolor, e.g.:
+
+`@Orchard.AssetUrl(Model.Paths[0], width: 100 , height: 240, resizeMode: ResizeMode.Pad, bgcolor: 'white')`
+
 To append a version hash for an asset use `AssetUrl` with the append version parameter, e.g.:
 
 `@Orchard.AssetUrl(Model.Paths[0], appendVersion: true)`
@@ -209,6 +227,10 @@ To use the image tag helpers add `@addTagHelper *, OrchardCore.Media` to `_ViewI
 Alternatively the Asset Url can be resolved independently and the `src` attribute used:
 
 `<img src="@Orchard.AssetUrl(Model.Paths[0])" alt="..." img-width="100" img-height="240" img-resize-mode="Crop" img-quality="50" img-format="Jpg" />`
+
+When resize mode is `pad` or `boxpad`, the background color can be set using `img-bgcolor`, e.g.:
+
+`<img asset-src="Model.Paths[0]" alt="..." img-width="100" img-height="240" img-resize-mode="Pad" img-bgcolor="white" />`
 
 To use a [Media Profile](#media-profiles) set the `asset-src` property and the `img-profile` attribute.
 

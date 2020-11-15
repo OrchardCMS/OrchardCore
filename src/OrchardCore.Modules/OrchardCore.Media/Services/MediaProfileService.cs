@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using OrchardCore.Media.Processing;
@@ -43,6 +44,11 @@ namespace OrchardCore.Media.Services
                 if (mediaProfile.Format != Format.Undefined)
                 {
                     commands["format"] = mediaProfile.Format.ToString().ToLower();
+                }
+
+                if (!String.IsNullOrEmpty(mediaProfile.BackgroundColor))
+                {
+                    commands["bgcolor"] = mediaProfile.BackgroundColor;
                 }
 
                 return commands;
