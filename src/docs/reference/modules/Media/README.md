@@ -137,7 +137,7 @@ The anchor of the new image.
 
 ```
 {% assign anchor = Model.ContentItem.Content.Blog.Image.Anchors.first %}
-{{ 'animals/kittens.jpg' | asset_url | resize_url: width:100, height:240, mode:'crop', anchor: anchor }}
+{{ 'animals/kittens.jpg' | asset_url | resize_url: width:100, height:240, mode:'crop', anchor:anchor }}
 ```
 
 #### anchor Output
@@ -151,7 +151,7 @@ The background color of the new image when `mode` is `pad` or `boxpad`. Examples
 #### bgcolor Input
 
 ```
-{{ 'animals/kittens.jpg' | asset_url | resize_url: width:100, height:240, mode:'pad', bgcolor: 'white' }}
+{{ 'animals/kittens.jpg' | asset_url | resize_url: width:100, height:240, mode:'pad', bgcolor:'white' }}
 ```
 
 #### bgcolor Output
