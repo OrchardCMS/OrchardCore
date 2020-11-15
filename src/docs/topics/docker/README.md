@@ -15,6 +15,29 @@ For Ubuntu/Linux users : https://docs.docker.com/engine/install/ubuntu/
 
 You will build Docker images and containers from command shell using `docker` and `docker-compose` commands. Images are built from Orchard Core source code targetting a specific OS. Then we can deploy "containers" from them. This allow to be able to see how Orchard Core respond in different environments or also deploy Orchard Core on a production server eventually.
 
+## Dockerfile
+
+The Dockerfile that is provided in the Orchard Core source code is using an intermediate image to build Orchard Core in a specific environment which contains the .net core SDK. Then we create the "real" image by using only the .net core runtime.
+
+```dockerfile
+# Create an intermediate image using .net Core SDK
+FROM mcr.microsoft.com/dotnet/core/sdk:3.1 AS build-env
+LABEL stage=build-env
+WORKDIR /app
+
+# Copy and build in the intermediate image
+COPY ./src /app
+RUN dotnet publish /app/OrchardCore.Cms.Web -c Release -o ./build/release
+
+# Build runtime image
+FROM mcr.microsoft.com/dotnet/core/aspnet:3.1
+EXPOSE 80
+ENV ASPNETCORE_URLS http://+:80
+WORKDIR /app
+COPY --from=build-env /app/build/release .
+ENTRYPOINT ["dotnet", "OrchardCore.Cms.Web.dll"]
+```
+
 ## Docker
 
 First example is a simple one. Use Docker to build an image and run it (inside a container). 
@@ -45,7 +68,7 @@ docker image prune -f --filter label=stage=build-env
 docker run -p 80:80 oc
 ```
 
-Using these commands should get you a fully functional docker container running on port 80 so that you can access it with your browser by simply going to http://localhost. Though we assume that this will only allow you to use SQLite. For avoiding needing to install anything directly on your Docker host computer you will need to use `docker-compose`.
+Using these commands should get you a fully functional docker container running on port 80 so that you can access it with your browser by simply going to http://localhost. Though we assume that this will only allow you to use SQLite. For avoiding needing to install anything directly on your Docker host computer and getting everything running quickly you should use `docker-compose`.
 
 ## Docker compose
 
