@@ -10,7 +10,6 @@ on:
 env:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
   DOTNET_CLI_TELEMETRY_OPTOUT: true
-  DOCKER_BUILDKIT: 1
 jobs:
   build_test:
     runs-on: ${{ matrix.os }}
@@ -31,10 +30,8 @@ jobs:
     - name: Deploy preview docker image for linux
       if: matrix.os == 'ubuntu-latest'
       run: |
-        rm -rf ./src/OrchardCore.Cms.Web/App_Data
         docker build -t orchardproject/orchardcore-cms-linux:dev .
     - name: Deploy preview docker image for windows
       if: matrix.os == 'windows-latest'
       run: |
-        Get-ChildItem ./src/OrchardCore.Cms.Web/App_Data -Recurse | Remove-Item
         docker build -t orchardproject/orchardcore-cms-windows:dev .
