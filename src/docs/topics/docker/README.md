@@ -2,6 +2,8 @@
 
 Our source code repository includes a `Dockerfile` which will allow you to create your own Docker images and containers. It can be quite usefull for example for Orchard Core developpers when needing to test PR's. It allows them to deploy locally quickly some testing environments. Here my examples will be shown for that context. Docker can also be used for more complex usage (ex: production deployment) but this documentation doesn't aim to explain that in detail. For more advanced examples I strongly suggest reading `docker` and `docker-compose` documentation.
 
+*Alternately for those using Nuget package solutions. You can copy directly the Dockerfile and .dockerignore file from the source code to do the same kind of thing with your solution. Though, it might be tricky depending if you did not use the same kind of folder structure than the source code solution.*
+
 ## Docker
 
 ```cmd
@@ -99,4 +101,7 @@ I've added some commands examples to prune intermediary images because our `Dock
 
 TODO
 
-See PR https://github.com/OrchardCMS/OrchardCore/pull/4567
+See :
+
+https://docs.orchardcore.net/en/dev/docs/reference/core/Shells/#enable-database-shells-configuration
+https://github.com/OrchardCMS/OrchardCore/pull/4567
