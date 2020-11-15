@@ -122,6 +122,11 @@ namespace OrchardCore.OpenId.Controllers
                 ModelState.AddModelError(nameof(model.Name), S["The name is already taken by another scope."]);
             }
 
+            if(model.Name.Contains(' '))
+            {
+                ModelState.AddModelError(nameof(model.Name), S["The scope name cannot contain spaces."]);
+            }
+
             if (!ModelState.IsValid)
             {
                 ViewData["ReturnUrl"] = returnUrl;
@@ -210,6 +215,12 @@ namespace OrchardCore.OpenId.Controllers
             {
                 return NotFound();
             }
+
+            if (model.Name.Contains(' '))
+            {
+                ModelState.AddModelError(nameof(model.Name), S["The scope name cannot contain spaces."]);
+            }
+
 
             if (ModelState.IsValid)
             {
