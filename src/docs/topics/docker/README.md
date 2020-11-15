@@ -5,6 +5,10 @@ Our source code repository includes already a Dockerfile which will allow you to
 ## Docker
 
 ```cmd
+REM Folder where the Dockerfile stands
+cd /orchardcore/ 
+
+REM Build image from Dockerfile
 docker build -t oc .
 docker run -p 80:80 oc
 ```
@@ -21,7 +25,7 @@ docker run -p 80:80 oc
 
 ## Docker compose
 
-Docker Compose will allow you to deploy everything by doing simply `docker-compose up` command in the root folder of our repository. Of course it requires that you have a docker-compose.yml file standing in that folder first.
+Docker Compose will allow you to deploy everything by doing simply `docker-compose up` command in the root folder of Orchard Core source code. Of course it requires that you have a docker-compose.yml file standing in that folder first.
 
 docker-compose.yml file example :  
 
@@ -41,7 +45,7 @@ services:
     sqlserver:
         image: "mcr.microsoft.com/mssql/server"
         environment:
-            SA_PASSWORD: "pEKoU!8n123&"
+            SA_PASSWORD: "P@ssw0rd!123456"
             ACCEPT_EULA: "Y"
     mysql:
         image: mysql:latest
@@ -77,8 +81,13 @@ volumes:
 ### When using `docker-compose` command : 
 
 ```cmd
+REM Build images if they are not already
 docker-compose build
+
+REM Prune intermediary remaining images
 docker image prune -f --filter label=stage=build-env
+
+REM Start all containers
 docker-compose up
 ```
 
