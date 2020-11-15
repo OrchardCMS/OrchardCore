@@ -21,7 +21,7 @@ namespace OrchardCore.Documents
         private readonly IDistributedLock _distributedLock;
         private readonly string _lockKey;
 
-        private delegate Task<TDocument> UpdateDelegate();
+        private delegate Task UpdateDelegate(TDocument document);
         private UpdateDelegate _updateDelegateAsync;
 
         public VolatileDocumentManager(
@@ -37,14 +37,14 @@ namespace OrchardCore.Documents
             _lockKey = _options.CacheKey + LockKeySuffix;
         }
 
-        public Task UpdateAtomicAsync(Func<Task<TDocument>> updateAsync)
+        public Task UpdateAtomicAsync(Func<TDocument, Task> updateAsync, Func<Task<TDocument>> factoryAsync = null)
         {
             if (updateAsync == null)
             {
                 return Task.CompletedTask;
             }
 
-            _updateDelegateAsync += () => updateAsync();
+            _updateDelegateAsync += document => updateAsync(document);
 
             _documentStore.AfterCommitSuccess<TDocument>(async () =>
             {
@@ -55,9 +55,15 @@ namespace OrchardCore.Documents
                 }
 
                 await using var acquiredLock = locker;
-                var updated = await _updateDelegateAsync();
-                updated.Identifier ??= IdGenerator.GenerateId();
-                await SetInternalAsync(updated);
+                var document = await GetOrCreateMutableAsync(factoryAsync);
+                document.Identifier ??= IdGenerator.GenerateId();
+
+                foreach (var d in _updateDelegateAsync.GetInvocationList())
+                {
+                    await ((UpdateDelegate)d)(document);
+                }
+
+                await SetInternalAsync(document);
             });
 
             return Task.CompletedTask;

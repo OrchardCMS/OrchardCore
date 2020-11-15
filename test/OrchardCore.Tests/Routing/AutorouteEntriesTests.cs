@@ -260,7 +260,7 @@ namespace OrchardCore.Tests.Routing
 
         private class StubAutorouteEntries : AutorouteEntries
         {
-            protected override Task<AutorouteDocument> CreateDocumentAsync() => Task.FromResult(new AutorouteDocument());
+            protected override Task InitializeEntriesAsync() => Task.CompletedTask;
         }
 
         private class StubDocumentstore : IDocumentStore
