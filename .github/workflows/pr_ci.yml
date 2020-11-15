@@ -27,19 +27,21 @@ jobs:
     - name: Build
       run: |
         dotnet build --configuration Release
-    - name: Deploy preview docker image for linux
+    - name: Unit Tests
+      run: |
+        dotnet test -c Release --no-restore --no-build ./test/OrchardCore.Tests/OrchardCore.Tests.csproj 
+    - name: Functional Tests
       if: matrix.os == 'ubuntu-latest'
-      # Buildkit Only working in linux
-      env: 
-        DOCKER_BUILDKIT: 1
       run: |
-        rm -rf ./src/OrchardCore.Cms.Web/App_Data
-        dotnet publish -c Release -o ./.build/release --no-build --no-restore
-        docker build -f Dockerfile-CI -t orchardproject/orchardcore-cms-linux:dev .
-    - name: Deploy preview docker image for windows
-      if: matrix.os == 'windows-latest'
-      run: |
-        Get-ChildItem ./src/OrchardCore.Cms.Web/App_Data -Recurse | Remove-Item
-        dotnet publish -c Release -o ./.build/release --no-build --no-restore
-        docker build -f Dockerfile-CI -t orchardproject/orchardcore-cms-windows:dev .
+        cd test/Functional
+        npm install
+        npm run cms:test
+        npm run mvc:test
+    - uses: actions/upload-artifact@v2
+      if: matrix.os == 'ubuntu-latest' && failure()
+      with:
+        name: functional-test-failure
+        path: |
+          test/Functional/cms-tests/cypress/screenshots
+          src/OrchardCore.Cms.Web/App_Data/logs
   
