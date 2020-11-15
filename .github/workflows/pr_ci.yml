@@ -56,4 +56,3 @@ jobs:
         Get-ChildItem ./src/OrchardCore.Cms.Web/App_Data -Recurse | Remove-Item
         dotnet publish -c Release -o ./.build/release --no-build --no-restore
         docker build -f Dockerfile-CI -t orchardproject/orchardcore-cms-windows:dev .
-        echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u="${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
