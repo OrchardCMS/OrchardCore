@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.OpenId.Abstractions.Descriptors;
 using OrchardCore.OpenId.Abstractions.Managers;
@@ -27,7 +28,8 @@ namespace OrchardCore.OpenId.Recipes
                 return;
             }
 
-            var model = context.Step.ToObject<OpenIdScopeStepViewModel>();
+            var model = context.Step.ToObject<OpenIdScopeStepModel>();
+
             var descriptor = new OpenIdScopeDescriptor
             {
                 Description = model.Description,
@@ -35,12 +37,20 @@ namespace OrchardCore.OpenId.Recipes
                 DisplayName = model.DisplayName
             };
 
-            if (!string.IsNullOrEmpty(model.Resources))
+            if (model.Resources.Any())
             {
-                descriptor.Resources.UnionWith(model.Resources.Split(new[] { " " }, StringSplitOptions.RemoveEmptyEntries));
+                descriptor.Resources.UnionWith(model.Resources);
             }
 
-            await _scopeManager.CreateAsync(descriptor);
+            var scope = await _scopeManager.FindByNameAsync(model.ScopeName);
+            if (scope != null)
+            {
+                await _scopeManager.UpdateAsync(scope, descriptor);
+            }
+            else
+            {
+                await _scopeManager.CreateAsync(descriptor);
+            }  
         }
     }
 }

@@ -29,7 +29,7 @@ namespace OrchardCore.OpenId.Recipes
                 return;
             }
 
-            var model = context.Step.ToObject<CreateOpenIdApplicationViewModel>();
+            var model = context.Step.ToObject<OpenIdApplicationStepModel>();
 
             var descriptor = new OpenIdApplicationDescriptor
             {
@@ -40,6 +40,17 @@ namespace OrchardCore.OpenId.Recipes
                 Type = model.Type
             };
 
+            if (model.AllowLogoutEndpoint)
+            {
+                descriptor.Permissions.Add(OpenIddictConstants.Permissions.Endpoints.Logout);
+
+                if (model.PostLogoutRedirectUris.Any())
+                {
+                    descriptor.PostLogoutRedirectUris.UnionWith(
+                        from uri in model.PostLogoutRedirectUris
+                        select new Uri(uri, UriKind.Absolute));
+                }
+            }
             if (model.AllowAuthorizationCodeFlow)
             {
                 descriptor.Permissions.Add(OpenIddictConstants.Permissions.GrantTypes.AuthorizationCode);
@@ -47,6 +58,11 @@ namespace OrchardCore.OpenId.Recipes
             if (model.AllowClientCredentialsFlow)
             {
                 descriptor.Permissions.Add(OpenIddictConstants.Permissions.GrantTypes.ClientCredentials);
+
+                if (model.Roles.Any())
+                {
+                    descriptor.Roles.UnionWith(model.Roles);
+                }
             }
             if (model.AllowImplicitFlow)
             {
@@ -64,29 +80,56 @@ namespace OrchardCore.OpenId.Recipes
             {
                 descriptor.Permissions.Add(OpenIddictConstants.Permissions.Endpoints.Authorization);
             }
-            if (model.AllowLogoutEndpoint)
-            {
-                descriptor.Permissions.Add(OpenIddictConstants.Permissions.Endpoints.Logout);
-            }
             if (model.AllowAuthorizationCodeFlow || model.AllowClientCredentialsFlow ||
                 model.AllowPasswordFlow || model.AllowRefreshTokenFlow)
             {
                 descriptor.Permissions.Add(OpenIddictConstants.Permissions.Endpoints.Token);
             }
 
-            descriptor.PostLogoutRedirectUris.UnionWith(
-                from uri in model.PostLogoutRedirectUris?.Split(' ', StringSplitOptions.RemoveEmptyEntries) ?? Array.Empty<string>()
-                select new Uri(uri, UriKind.Absolute));
+            if (model.AllowAuthorizationCodeFlow)
+            {
+                descriptor.Permissions.Add(OpenIddictConstants.Permissions.ResponseTypes.Code);
+            }
+            if (model.AllowImplicitFlow)
+            {
+                descriptor.Permissions.Add(OpenIddictConstants.Permissions.ResponseTypes.IdToken);
 
-            descriptor.RedirectUris.UnionWith(
-                from uri in model.RedirectUris?.Split(' ', StringSplitOptions.RemoveEmptyEntries) ?? Array.Empty<string>()
-                select new Uri(uri, UriKind.Absolute));
+                if (string.Equals(model.Type, OpenIddictConstants.ClientTypes.Public, StringComparison.OrdinalIgnoreCase))
+                {
+                    descriptor.Permissions.Add(OpenIddictConstants.Permissions.ResponseTypes.IdTokenToken);
+                    descriptor.Permissions.Add(OpenIddictConstants.Permissions.ResponseTypes.Token);
+                }
+            }
+            if (model.AllowHybridFlow)
+            {
+                descriptor.Permissions.Add(OpenIddictConstants.Permissions.ResponseTypes.CodeIdToken);
 
-            descriptor.Roles.UnionWith(model.RoleEntries
-                .Where(role => role.Selected)
-                .Select(role => role.Name));
+                if (string.Equals(model.Type, OpenIddictConstants.ClientTypes.Public, StringComparison.OrdinalIgnoreCase))
+                {
+                    descriptor.Permissions.Add(OpenIddictConstants.Permissions.ResponseTypes.CodeIdTokenToken);
+                    descriptor.Permissions.Add(OpenIddictConstants.Permissions.ResponseTypes.CodeToken);
+                }
+            }
 
-            await _applicationManager.CreateAsync(descriptor);
+            if (model.AllowAuthorizationCodeFlow || model.AllowHybridFlow || model.AllowImplicitFlow)
+            {
+                if (model.RedirectUris.Any())
+                {
+                    descriptor.RedirectUris.UnionWith(
+                    from uri in model.RedirectUris
+                    select new Uri(uri, UriKind.Absolute));
+                }
+            }
+
+            var application = await _applicationManager.FindByClientIdAsync(descriptor.ClientId);
+            if (application != null)
+            {
+                await _applicationManager.UpdateAsync(application, descriptor);
+            }
+            else
+            {
+                await _applicationManager.CreateAsync(descriptor);
+            }
         }
     }
 }
