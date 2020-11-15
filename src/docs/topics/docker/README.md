@@ -1,6 +1,6 @@
 # Using Docker with Orchard Core
 
-Our source code repository includes already a `Dockerfile` which will allow you to create your own Docker images and containers. It can be quite usefull for example for Orchard Core developpers when needing to test PR's. It allows them to deploy locally quickly some testing environments.
+Our source code repository includes already a `Dockerfile` which will allow you to create your own Docker images and containers. It can be quite usefull for example for Orchard Core developpers when needing to test PR's. It allows them to deploy locally quickly some testing environments. Here my examples will be shown for that context. Of course Docker can also be used for more complex usage but this documentation doesn't aim to explain that. For more advanced examples I strongly suggest reading `docker` and `docker-compose` documentation.
 
 ## Docker
 
@@ -13,7 +13,7 @@ docker build -t oc .
 docker run -p 80:80 oc
 ```
 
-## Prune intermediary containers
+## Prune intermediary images
 
 ### When using `docker` command : 
 
@@ -23,9 +23,11 @@ docker image prune -f --filter label=stage=build-env
 docker run -p 80:80 oc
 ```
 
+Using these commands should get you a fully functional docker container running on port 80 so that you can access it with your browser by simply going to http://localhost. Though we assume that this will only allow you to use SQLite. For avoiding needing to install anything directly on your Docker host computer you will need to use `docker-compose`.
+
 ## Docker compose
 
-Docker Compose will allow you to deploy everything by doing simply `docker-compose up` command in the root folder of Orchard Core source code. Of course it requires that you have a docker-compose.yml file standing in that folder first.
+Docker Compose will allow you to deploy everything by doing simply `docker-compose up` command in the root folder of Orchard Core source code. Of course it requires that you have a docker-compose.yml file standing in that folder first. In the example shown below, we will create services for each of the database providers Orchard Core "supports officially".
 
 docker-compose.yml file example :  
 
@@ -76,7 +78,7 @@ volumes:
     postgresql-data:
 
 ```
-## Prune intermediary containers
+## Prune intermediary images
 
 ### When using `docker-compose` command : 
 
@@ -91,5 +93,4 @@ REM Start all containers
 docker-compose up
 ```
 
-
-
+I've added some commands examples to prune intermediary images because our `Dockerfile` uses an intermediary image to do a `dotnet publish` of our source code. If you don't prune your intermediary images ; over time it can certainly take some disk space. We label those intermediary images with `stage=build-env` so that they can be removed easily.
