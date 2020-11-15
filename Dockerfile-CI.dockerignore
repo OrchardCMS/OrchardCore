@@ -1,0 +1,7 @@
+# Buildkit Only working on linux
+
+# Ignore all
+**
+
+# Except precompiled files
+!/.build/release/*

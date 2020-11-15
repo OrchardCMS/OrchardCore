@@ -60,7 +60,8 @@ jobs:
         password: ${{ secrets.DOCKERHUB_PASSWORD }}
     - name: Deploy preview docker image for linux
       if: matrix.os == 'ubuntu-latest'
-      env: DOCKER_BUILDKIT: 1 # Buildkit Only working on linux
+      # Buildkit Only working on linux
+      env: DOCKER_BUILDKIT: 1
       run: |
         rm -rf ./src/OrchardCore.Cms.Web/App_Data
         dotnet publish -c Release -o ./.build/release --no-build --no-restore
