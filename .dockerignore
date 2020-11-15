@@ -1,7 +1,7 @@
 # ignore all
 **
 
-# Except src for building or build/release for precompiled
+# Except src for building
 !./src/*
 # TODO : Remove this line when Docker Buildkit works in Windows
 !/.build/release/*
