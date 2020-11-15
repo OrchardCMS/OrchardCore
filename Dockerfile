@@ -3,8 +3,8 @@ LABEL stage=build-env
 WORKDIR /app
 
 # Copy and build
-COPY . /app
-RUN dotnet publish ./src/OrchardCore.Cms.Web -c Release -o ./build/release
+COPY ./src /app
+RUN dotnet publish /app/OrchardCore.Cms.Web -c Release -o ./build/release
 
 # Build runtime image
 FROM mcr.microsoft.com/dotnet/core/aspnet:3.1
