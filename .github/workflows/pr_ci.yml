@@ -10,6 +10,7 @@ on:
 env:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
   DOTNET_CLI_TELEMETRY_OPTOUT: true
+  DOCKER_BUILDKIT: 1
 jobs:
   build_test:
     runs-on: ${{ matrix.os }}

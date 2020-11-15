@@ -7,6 +7,6 @@ EXPOSE 80
 ENV ASPNETCORE_URLS http://+:80
 
 WORKDIR /app
-COPY /home/runner/work/OrchardCore/OrchardCore/.build/release/ .
+COPY .build/release .
 
 ENTRYPOINT ["dotnet", "OrchardCore.Cms.Web.dll"]

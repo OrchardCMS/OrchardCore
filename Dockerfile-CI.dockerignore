@@ -2,4 +2,4 @@
 **
 
 #except release
-!/home/runner/work/OrchardCore/OrchardCore/.build/release/*
+!/.build/release/*
