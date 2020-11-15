@@ -1,16 +1,19 @@
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Identity;
 using Moq;
+using OrchardCore.Email;
+using OrchardCore.Users;
+using OrchardCore.Users.Services;
 
 namespace OrchardCore.Tests.OrchardCore.Users
 {
     public static class UsersMockHelper
     {
-        public static Mock<UserManager<TUser>> MockUserManager<TUser>() where TUser : class
+        public static Mock<UserManager<TUser>> MockUserManager<TUser>() where TUser : class, IUser
         {
             var store = new Mock<IUserStore<TUser>>();
             var mgr = new Mock<UserManager<TUser>>(store.Object, null, null, null, null, null, null, null, null);
-            mgr.Object.UserValidators.Add(new UserValidator<TUser>());
+            mgr.Object.UserValidators.Add(new UserAccountValidator<TUser>(new IdentityErrorDescriber(), new EmailAddressValidator()));
             mgr.Object.PasswordValidators.Add(new PasswordValidator<TUser>());
 
             return mgr;
