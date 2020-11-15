@@ -2,7 +2,7 @@
 
 Our source code repository includes a `Dockerfile` which will allow you to create your own Docker images and containers. It can be quite usefull for example for Orchard Core developpers when needing to test PR's. It allows them to deploy locally quickly some testing environments. Here my examples will be shown for that context. Docker can also be used for more complex usage (ex: production deployment) but this documentation doesn't aim to explain that in detail. For more advanced examples I strongly suggest reading `docker` and `docker-compose` documentation.
 
-*Alternately for those using Nuget package solutions. You can copy directly the Dockerfile and .dockerignore file from the source code to do the same kind of thing with your solution. Though, it might be tricky depending if you did not use the same kind of folder structure than the source code solution.*
+*Alternately, for those using a Nuget package solution ; you can copy directly the Dockerfile and .dockerignore file from the source code to the root folder of your solution to do the same kind of thing. Though, it might get tricky depending if you did not use the same folder structure than the source code solution.*
 
 ## Docker
 
@@ -95,7 +95,7 @@ REM Start all containers
 docker-compose up
 ```
 
-I've added some commands examples to prune intermediary images because our `Dockerfile` uses an intermediary image to do a `dotnet publish` of our source code. If you don't prune your intermediary images ; over time it can certainly take some disk space. We label those intermediary images with `stage=build-env` so that they can be removed easily.
+I've added some commands examples to prune intermediary images because our `Dockerfile` uses an intermediary image to do a `dotnet publish` of our source code. If you don't prune your intermediary images ; over time it can certainly take some considerable disk space. We label those intermediary images with `stage=build-env` so that they can be removed easily.
 
 ## Create tenants automatically (Autosetup feature)
 
