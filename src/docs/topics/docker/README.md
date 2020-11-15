@@ -1,6 +1,6 @@
 # Using Docker with Orchard Core
 
-Our source code repository includes a `Dockerfile` which will allow you to create your own Docker images and containers. It can be quite usefull for Orchard Core developpers when needing to test PR's. It allows them to deploy locally quickly some testing environments. Here my examples will be shown for that context. Docker can also be used for more complex usage (ex: production deployment) but this documentation doesn't aim to explain that in detail. For more advanced examples I strongly suggest reading `docker` and `docker-compose` documentation.
+Our source code repository includes a `Dockerfile` which will allow you to create your own Docker images and containers. It can be quite useful for Orchard Core developers when needing to test PR's. It allows them to deploy locally quickly some testing environments. Here my examples will be shown for that context. Docker can also be used for more complex usage (ex: production deployment) but this documentation doesn't aim to explain that in detail. For more advanced examples I strongly suggest reading `docker` and `docker-compose` documentation.
 
 *Alternately, for those using a Nuget package solution ; you can copy directly the Dockerfile and .dockerignore file from the source code to the root folder of your solution to do the same kind of thing. Though, it might get tricky depending if you did not use the same folder structure than the source code solution.*
 
@@ -13,7 +13,7 @@ For Ubuntu/Linux users : https://docs.docker.com/engine/install/ubuntu/
 
 ## What you will build
 
-You will build Docker images and containers from command shell using `docker` and `docker-compose` commands. Images are built from Orchard Core source code targetting a specific OS. Then we can deploy "containers" from them. This allow to be able to see how Orchard Core respond in different environments or also deploy Orchard Core on a production server eventually.
+You will build Docker images and containers from command shell using `docker` and `docker-compose` commands. Images are built from Orchard Core source code targetting a specific OS. Then we can deploy "containers" from them. This allow you to see how Orchard Core respond in different environments or also deploy Orchard Core on a production server eventually.
 
 ## Dockerfile
 
@@ -89,7 +89,7 @@ Using these commands should get you a fully functional docker container running 
 
 ## Docker compose
 
-Docker Compose will allow you to deploy everything by doing simply `docker-compose up` command in the root folder of Orchard Core source code. Of course it requires that you have a docker-compose.yml file standing in that folder first. In the example shown below, we will create services for each of the database providers Orchard Core "supports officially".
+Docker Compose will allow you to deploy everything by doing simply `docker-compose up` command in the root folder of Orchard Core source code. Of course it requires that you have a docker-compose.yml file standing in that folder first. In the example shown below, we will create services for each of the database providers Orchard Core "officially supports".
 
 docker-compose.yml file example :  
 
@@ -155,7 +155,7 @@ REM Start all containers
 docker-compose up
 ```
 
-I've added some commands examples to prune intermediary images because our `Dockerfile` uses an intermediary image to do a `dotnet publish` of our source code. If you don't prune your intermediary images ; over time it can certainly take some considerable disk space. We label those intermediary images with `stage=build-env` so that they can be removed easily.
+We added some commands examples to prune intermediary images because our `Dockerfile` uses an intermediary image to do a `dotnet publish` of our source code. If you don't prune your intermediary images ; over time it can certainly take some considerable disk space. We label those intermediary images with `stage=build-env` so that they can be removed easily.
 
 ## Create tenants automatically (Autosetup feature)
 
@@ -163,5 +163,6 @@ TODO
 
 See :
 
-https://docs.orchardcore.net/en/dev/docs/reference/core/Shells/#enable-database-shells-configuration
+[Database shell configurations](../../reference/modules/ContentParts/README.md)
+/reference/core/Shells/#enable-database-shells-configuration
 https://github.com/OrchardCMS/OrchardCore/pull/4567
