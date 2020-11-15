@@ -3,11 +3,8 @@
 
 FROM mcr.microsoft.com/dotnet/core/aspnet:3.1
 
-# Copy
-COPY .build/release /app
-
 EXPOSE 80
 ENV ASPNETCORE_URLS http://+:80
 WORKDIR /app
-COPY --from=build-env /app/build/release .
+COPY .build/release /app
 ENTRYPOINT ["dotnet", "OrchardCore.Cms.Web.dll"]
