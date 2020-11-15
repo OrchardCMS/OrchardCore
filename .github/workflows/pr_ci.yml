@@ -29,7 +29,7 @@ jobs:
         dotnet build --configuration Release
     - name: Deploy preview docker image for linux
       if: matrix.os == 'ubuntu-latest'
-      # Buildkit Only working on linux
+      # Buildkit Only working in linux
       env: 
         DOCKER_BUILDKIT: 1
       run: |
