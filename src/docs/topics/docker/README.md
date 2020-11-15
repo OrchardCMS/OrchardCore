@@ -165,4 +165,4 @@ See :
 
 [Database shell configurations](../../reference/core/Shells/README.md#database-shells-configuration-provider)
 
-https://github.com/OrchardCMS/OrchardCore/pull/4567
+[Autosetup feature PR](https://github.com/OrchardCMS/OrchardCore/pull/4567)
