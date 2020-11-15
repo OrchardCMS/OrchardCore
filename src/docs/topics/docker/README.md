@@ -175,5 +175,5 @@ https://github.com/dotnet/dotnet-docker/blob/master/samples/host-aspnetcore-http
 
 Here you can find a list of different environments with Dockerfile example for each of them.
 
-[.NET Core SDK](https://hub.docker.com/_/microsoft-dotnet-sdk/)
-[ASP.NET Core Runtime](https://hub.docker.com/_/microsoft-dotnet-aspnet/)
+[.NET Core SDK](https://hub.docker.com/_/microsoft-dotnet-sdk/)  
+[ASP.NET Core Runtime](https://hub.docker.com/_/microsoft-dotnet-aspnet/)  
