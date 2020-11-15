@@ -12,6 +12,6 @@ namespace OrchardCore.Documents
         /// <summary>
         /// Executes the provided delegate and updates the cache, the whole being done atomically and after the session is committed.
         /// </summary>
-        Task UpdateAtomicAsync(Func<TDocument, Task> updateAsync, Func<Task<TDocument>> factoryAsync = null);
+        Task UpdateAtomicAsync(Func<Task<TDocument>> updateAsync);
     }
 }

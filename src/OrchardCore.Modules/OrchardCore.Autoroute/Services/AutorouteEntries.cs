@@ -84,8 +84,10 @@ namespace OrchardCore.Autoroute.Services
                 await InitializeAsync();
             }
 
-            await DocumentManager.UpdateAtomicAsync(async events =>
+            await DocumentManager.UpdateAtomicAsync(async () =>
             {
+                var events = await GetEventsAsync();
+
                 events.Identifier = IdGenerator.GenerateId();
                 events.List.Add(new AutorouteEvent()
                 {
@@ -101,6 +103,7 @@ namespace OrchardCore.Autoroute.Services
                 }
 
                 await HandleEventsAsync(events);
+                return events;
             });
         }
 
@@ -111,8 +114,10 @@ namespace OrchardCore.Autoroute.Services
                 await InitializeAsync();
             }
 
-            await DocumentManager.UpdateAtomicAsync(async events =>
+            await DocumentManager.UpdateAtomicAsync(async () =>
             {
+                var events = await GetEventsAsync();
+
                 events.Identifier = IdGenerator.GenerateId();
                 events.List.Add(new AutorouteEvent()
                 {
@@ -128,6 +133,7 @@ namespace OrchardCore.Autoroute.Services
                 }
 
                 await HandleEventsAsync(events);
+                return events;
             });
         }
 
@@ -177,7 +183,8 @@ namespace OrchardCore.Autoroute.Services
                 if (!lastEventIdExists && events.List.Count == MaxEventsCount)
                 {
                     // Re-init the local entries, as we don't know how many commands we may have lost.
-                    await InitializeEntriesAsync();
+                    _initialized = false;
+                    await InitializeAsync();
                     return;
                 }
 
