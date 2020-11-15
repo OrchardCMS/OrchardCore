@@ -17,10 +17,10 @@ You will build Docker images and containers from command shell using `docker` an
 
 ## Dockerfile
 
-The Dockerfile that is provided in the Orchard Core source code is using an intermediate image to build Orchard Core in a specific environment which contains the .net core SDK. Then we create the "real" image by using only the .net core runtime.
+The Dockerfile that is provided in the Orchard Core source code is using an intermediate image to build Orchard Core in a specific environment which contains the .NET core SDK. Then we create the "real" image by using only the .NET core runtime.
 
 ```dockerfile
-# Create an intermediate image using .net Core SDK
+# Create an intermediate image using .NET Core SDK
 FROM mcr.microsoft.com/dotnet/core/sdk:3.1 AS build-env
 LABEL stage=build-env
 WORKDIR /app
@@ -66,26 +66,26 @@ cd /orchardcore
 REM Build image from Dockerfile
 docker build -t oc .
 
-REM Creates a container, runs it and expose it's service on port 80
+REM Creates a container, runs it and expose its service on port 80
 docker run -p 80:80 oc
 ```
 
-## Prune intermediary images
+## Prune intermediate images
 
 ### When using `docker` command : 
 
 ```cmd
-REM Prunes intermediary containers created while building by using --rm
+REM Prunes intermediate containers created while building by using --rm
 docker build -t oc --rm .
 
-REM Prunes all intermediary images
+REM Prunes all intermediate images
 docker image prune -f --filter label=stage=build-env
 
-REM Creates a container, runs it and expose it's service on port 80
+REM Creates a container, runs it and expose its service on port 80
 docker run -p 80:80 oc
 ```
 
-Using these commands should get you a fully functional docker container running on port 80 so that you can access it with your browser by simply going to http://localhost. Though we assume that this will only allow you to use SQLite. For avoiding needing to install anything directly on your Docker host computer and getting everything running quickly you should use `docker-compose`.
+Using these commands should get you a fully functional docker container running on port 80 so that you can access it with your browser by simply going to http://localhost. Though we assume that this will only allow you to use SQLite. In order to avoid the need of installing anything directly on your Docker host computer and getting everything running quickly you should use `docker-compose`.
 
 ## Docker compose
 
@@ -140,22 +140,22 @@ volumes:
     postgresql-data:
 
 ```
-## Prune intermediary images
+## Prune intermediate images
 
 ### When using `docker-compose` command : 
 
 ```cmd
-REM Build images if they are not already
+REM Builds images if they are not already built
 docker-compose build
 
-REM Prune intermediary remaining images
+REM Prune intermediate remaining images
 docker image prune -f --filter label=stage=build-env
 
 REM Start all containers
 docker-compose up
 ```
 
-We added some commands examples to prune intermediary images because our `Dockerfile` uses an intermediary image to do a `dotnet publish` of our source code. If you don't prune your intermediary images ; over time it can certainly take some considerable disk space. We label those intermediary images with `stage=build-env` so that they can be removed easily.
+We added some commands examples to prune intermediate images because our `Dockerfile` uses an intermediate image to do a `dotnet publish` of our source code. If you don't prune your intermediate images ; over time it can certainly take some significant amount of disk space. We label those intermediate images with `stage=build-env` so that they can be removed easily.
 
 ## Create tenants automatically (Autosetup feature)
 
