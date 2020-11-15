@@ -163,6 +163,6 @@ TODO
 
 See :
 
-[Database shell configurations](../../reference/core/Shells/README.md#enable-database-shells-configuration)
+[Database shell configurations](../../reference/core/Shells/README.md#database-shells-configuration-provider)
 
 https://github.com/OrchardCMS/OrchardCore/pull/4567
