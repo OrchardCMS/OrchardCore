@@ -20,13 +20,6 @@ jobs:
     name: Build & Test
     steps:
     - uses: actions/checkout@v2
-    - name: Setup .NET Core on ${{ matrix.os }}
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 3.1.404
-    - name: Build
-      run: |
-        dotnet build --configuration Release
     - name: Deploy preview docker image for linux
       if: matrix.os == 'ubuntu-latest'
       run: |
