@@ -1,6 +1,6 @@
 # Using Docker with Orchard Core
 
-Our source code repository includes a `Dockerfile` which will allow you to create your own Docker images and containers. It can be quite usefull for example for Orchard Core developpers when needing to test PR's. It allows them to deploy locally quickly some testing environments. Here my examples will be shown for that context. Docker can also be used for more complex usage (ex: production deployment) but this documentation doesn't aim to explain that in detail. For more advanced examples I strongly suggest reading `docker` and `docker-compose` documentation.
+Our source code repository includes a `Dockerfile` which will allow you to create your own Docker images and containers. It can be quite usefull for Orchard Core developpers when needing to test PR's. It allows them to deploy locally quickly some testing environments. Here my examples will be shown for that context. Docker can also be used for more complex usage (ex: production deployment) but this documentation doesn't aim to explain that in detail. For more advanced examples I strongly suggest reading `docker` and `docker-compose` documentation.
 
 *Alternately, for those using a Nuget package solution ; you can copy directly the Dockerfile and .dockerignore file from the source code to the root folder of your solution to do the same kind of thing. Though, it might get tricky depending if you did not use the same folder structure than the source code solution.*
 
@@ -81,7 +81,7 @@ docker build -t oc --rm .
 REM Prunes all intermediary images
 docker image prune -f --filter label=stage=build-env
 
-
+REM Creates a container, runs it and expose it's service on port 80
 docker run -p 80:80 oc
 ```
 
