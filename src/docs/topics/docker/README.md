@@ -38,6 +38,23 @@ COPY --from=build-env /app/build/release .
 ENTRYPOINT ["dotnet", "OrchardCore.Cms.Web.dll"]
 ```
 
+## Dockerignore file ".dockerignore"
+
+```yml
+# ignore all
+**
+
+# Except src for building
+!./src/*
+
+# Ignore any App_Data folder
+**/App_Data/
+
+# Ignore all prebuild
+**/[b|B]in/
+**/[O|o]bj/
+```
+
 ## Docker
 
 First example is a simple one. Use Docker to build an image and run it (inside a container). 
