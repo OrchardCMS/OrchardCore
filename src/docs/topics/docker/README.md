@@ -177,3 +177,18 @@ Here you can find a list of different environments with a Dockerfile example for
 
 [.NET Core SDK](https://hub.docker.com/_/microsoft-dotnet-sdk/)  
 [ASP.NET Core Runtime](https://hub.docker.com/_/microsoft-dotnet-aspnet/)  
+
+## Why does Orchard Core source code uses a different Dockerfile?
+
+### Dockerfile-CI, Dockerfile-CI.gitignore
+
+For building and testing Orchard Core we use Github Actions (CI). Github Actions allows us to create Docker images and containers but the execution time on them are slower than on the actual CI. So for that matter we don't use an intermediate image for building Orchard Core on the CI. Though it perfectly makes sense to do this locally for yourself as performance will not be limited by any means.
+
+## Can I use different Dockerfiles for myself?
+
+You need to use at least Docker version 19.03 to be able to use Docker Buildkit so that it can parse your different .dockerignore files.
+
+See : 
+
+[Build images with BuildKit](https://docs.docker.com/develop/develop-images/build_enhancements/)  
+[What is Docker BuildKit and What can I use it for?](https://brianchristner.io/what-is-docker-buildkit/#:~:text=Docker%20BuildKit%20is%20a%20little,and%20increase%20productivity%20for%20free.)  
