@@ -4,7 +4,20 @@ Our source code repository includes a `Dockerfile` which will allow you to creat
 
 *Alternately, for those using a Nuget package solution ; you can copy directly the Dockerfile and .dockerignore file from the source code to the root folder of your solution to do the same kind of thing. Though, it might get tricky depending if you did not use the same folder structure than the source code solution.*
 
+## What you will need
+
+For Windows users : 
+https://docs.microsoft.com/en-us/windows/wsl/tutorials/wsl-containers
+
+For Ubuntu/Linux users : https://docs.docker.com/engine/install/ubuntu/
+
+## What you will build
+
+You will build Docker images and containers from command shell using `docker` and `docker-compose` commands. Images are built from Orchard Core source code targetting a specific OS. Then we can deploy "containers" from them. This allow to be able to see how Orchard Core respond in different environments or also deploy Orchard Core on a production server eventually.
+
 ## Docker
+
+First example is a simple one. Use Docker to build an image and run it (inside a container). 
 
 ```cmd
 REM Folder where the Dockerfile stands
@@ -12,6 +25,8 @@ cd /orchardcore/
 
 REM Build image from Dockerfile
 docker build -t oc .
+
+REM Creates a container, runs it and expose it's service on port 80
 docker run -p 80:80 oc
 ```
 
