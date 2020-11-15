@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.OpenId.Abstractions.Descriptors;
 using OrchardCore.OpenId.Abstractions.Managers;
-using OrchardCore.OpenId.ViewModels;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 
@@ -29,20 +28,24 @@ namespace OrchardCore.OpenId.Recipes
             }
 
             var model = context.Step.ToObject<OpenIdScopeStepModel>();
+            var descriptor = new OpenIdScopeDescriptor();
 
-            var descriptor = new OpenIdScopeDescriptor
+            var scope = await _scopeManager.FindByNameAsync(model.ScopeName);
+            if (scope != null)
             {
-                Description = model.Description,
-                Name = model.ScopeName,
-                DisplayName = model.DisplayName
-            };
+                await _scopeManager.PopulateAsync(scope, descriptor);
+                descriptor.Resources.Clear();
+            }
+
+            descriptor.Description = model.Description;
+            descriptor.Name = model.ScopeName;
+            descriptor.DisplayName = model.DisplayName;
 
             if (model.Resources.Any())
             {
                 descriptor.Resources.UnionWith(model.Resources);
             }
 
-            var scope = await _scopeManager.FindByNameAsync(model.ScopeName);
             if (scope != null)
             {
                 await _scopeManager.UpdateAsync(scope, descriptor);

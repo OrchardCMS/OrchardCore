@@ -30,15 +30,40 @@ namespace OrchardCore.OpenId.Recipes
             }
 
             var model = context.Step.ToObject<OpenIdApplicationStepModel>();
+            var application = await _applicationManager.FindByClientIdAsync(model.ClientId);
 
-            var descriptor = new OpenIdApplicationDescriptor
+            var descriptor = new OpenIdApplicationDescriptor();
+            if (application!=null)
             {
-                ClientId = model.ClientId,
-                ClientSecret = model.ClientSecret,
-                ConsentType = model.ConsentType,
-                DisplayName = model.DisplayName,
-                Type = model.Type
-            };
+                await _applicationManager.PopulateAsync(application, descriptor);
+
+                descriptor.Permissions.Remove(OpenIddictConstants.Permissions.GrantTypes.ClientCredentials);
+                descriptor.Permissions.Remove(OpenIddictConstants.Permissions.GrantTypes.AuthorizationCode);
+                descriptor.Permissions.Remove(OpenIddictConstants.Permissions.GrantTypes.Implicit);
+                descriptor.Permissions.Remove(OpenIddictConstants.Permissions.GrantTypes.Password);
+                descriptor.Permissions.Remove(OpenIddictConstants.Permissions.GrantTypes.RefreshToken);
+
+                descriptor.Permissions.Remove(OpenIddictConstants.Permissions.Endpoints.Token);
+                descriptor.Permissions.Remove(OpenIddictConstants.Permissions.Endpoints.Logout);
+                descriptor.Permissions.Remove(OpenIddictConstants.Permissions.Endpoints.Authorization);
+
+                descriptor.Permissions.Remove(OpenIddictConstants.Permissions.ResponseTypes.Code);
+                descriptor.Permissions.Remove(OpenIddictConstants.Permissions.ResponseTypes.CodeIdToken);
+                descriptor.Permissions.Remove(OpenIddictConstants.Permissions.ResponseTypes.CodeToken);
+                descriptor.Permissions.Remove(OpenIddictConstants.Permissions.ResponseTypes.IdToken);
+                descriptor.Permissions.Remove(OpenIddictConstants.Permissions.ResponseTypes.IdTokenToken);
+                descriptor.Permissions.Remove(OpenIddictConstants.Permissions.ResponseTypes.Token);
+
+                descriptor.RedirectUris.Clear();
+                descriptor.PostLogoutRedirectUris.Clear();
+                descriptor.Roles.Clear();
+            }
+
+            descriptor.ClientId = model.ClientId;
+            descriptor.ClientSecret = model.ClientSecret;
+            descriptor.ConsentType = model.ConsentType;
+            descriptor.DisplayName = model.DisplayName;
+            descriptor.Type = model.Type;
 
             if (model.AllowLogoutEndpoint)
             {
@@ -121,7 +146,6 @@ namespace OrchardCore.OpenId.Recipes
                 }
             }
 
-            var application = await _applicationManager.FindByClientIdAsync(descriptor.ClientId);
             if (application != null)
             {
                 await _applicationManager.UpdateAsync(application, descriptor);
