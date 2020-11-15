@@ -61,7 +61,8 @@ jobs:
     - name: Deploy preview docker image for linux
       if: matrix.os == 'ubuntu-latest'
       # Buildkit Only working on linux
-      env: DOCKER_BUILDKIT: 1
+      env:
+        DOCKER_BUILDKIT: 1
       run: |
         rm -rf ./src/OrchardCore.Cms.Web/App_Data
         dotnet publish -c Release -o ./.build/release --no-build --no-restore
