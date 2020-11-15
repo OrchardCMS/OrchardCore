@@ -29,7 +29,6 @@ jobs:
         dotnet build --configuration Release
     - name: Deploy preview docker image for linux
       if: matrix.os == 'ubuntu-latest'
-      # Buildkit Only working in linux
       env: 
         DOCKER_BUILDKIT: 1
       run: |
@@ -38,6 +37,8 @@ jobs:
         docker build -f Dockerfile-CI -t orchardproject/orchardcore-cms-linux:dev .
     - name: Deploy preview docker image for windows
       if: matrix.os == 'windows-latest'
+      env: 
+        DOCKER_BUILDKIT: 1
       run: |
         Get-ChildItem ./src/OrchardCore.Cms.Web/App_Data -Recurse | Remove-Item
         dotnet publish -c Release -o ./.build/release --no-build --no-restore

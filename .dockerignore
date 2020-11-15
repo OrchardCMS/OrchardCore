@@ -3,7 +3,6 @@
 
 # Except src for building or build/release for precompiled
 !./src/*
-!/.build/release/* # TODO : remove this line when Docker Buildkit will work when building Windows Docker image in Github Actions
 
 # Ignore any App_Data folder
 **/App_Data/
