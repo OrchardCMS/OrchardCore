@@ -1,8 +1,9 @@
 #ignore all
 **
 
-#except src for build
+#except src for building or build/release for precompiled
 !./src/*
+!/.build/release/*
 
 #ignore any App_Data folder
 **/App_Data/
