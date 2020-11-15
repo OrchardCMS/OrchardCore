@@ -166,3 +166,14 @@ See :
 [Database shell configurations](../../reference/core/Shells/README.md#database-shells-configuration-provider)
 
 [Autosetup feature PR](https://github.com/OrchardCMS/OrchardCore/pull/4567)
+
+## How can I run Docker containers over HTTPS?
+
+https://github.com/dotnet/dotnet-docker/blob/master/samples/host-aspnetcore-https.md
+
+## How can I target my Docker images against a specific environment?
+
+Here you can find a list of different environments with Dockerfile example for each of them.
+
+[.NET Core SDK](https://hub.docker.com/_/microsoft-dotnet-sdk/)
+[ASP.NET Core Runtime](https://hub.docker.com/_/microsoft-dotnet-aspnet/)
