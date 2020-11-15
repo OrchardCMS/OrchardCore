@@ -149,7 +149,9 @@ nav:
                 - Twitter: docs/reference/modules/Twitter/README.md
                 - GitHub: docs/reference/modules/GitHub/README.md
                 - Google: docs/reference/modules/Google/README.md
-            - Users: docs/reference/modules/Users/README.md
+            - Users: 
+                - Configuration: docs/reference/modules/Users/Configuration/README.md
+                - Custom User Settings: docs/reference/modules/Users/CustomUserSettings/README.md
         - Core Modules: 
     #        - How to use Core Modules: docs/reference/core/README.md
             - Features: docs/reference/modules/Features/README.md
