@@ -1,6 +1,6 @@
 # Using Docker with Orchard Core
 
-Our source code repository includes a `Dockerfile` which will allow you to create your own Docker images and containers. It can be quite usefull for example for Orchard Core developpers when needing to test PR's. It allows them to deploy locally quickly some testing environments. Here my examples will be shown for that context. Of course Docker can also be used for more complex usage but this documentation doesn't aim to explain that. For more advanced examples I strongly suggest reading `docker` and `docker-compose` documentation.
+Our source code repository includes a `Dockerfile` which will allow you to create your own Docker images and containers. It can be quite usefull for example for Orchard Core developpers when needing to test PR's. It allows them to deploy locally quickly some testing environments. Here my examples will be shown for that context. Docker can also be used for more complex usage (ex: production deployment) but this documentation doesn't aim to explain that in detail. For more advanced examples I strongly suggest reading `docker` and `docker-compose` documentation.
 
 ## Docker
 
