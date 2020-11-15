@@ -173,7 +173,7 @@ See :
 
 ## How can I target my Docker images against a specific environment?
 
-Here you can find a list of different environments with Dockerfile example for each of them.
+Here you can find a list of different environments with a Dockerfile example for each of them.
 
 [.NET Core SDK](https://hub.docker.com/_/microsoft-dotnet-sdk/)  
 [ASP.NET Core Runtime](https://hub.docker.com/_/microsoft-dotnet-aspnet/)  
