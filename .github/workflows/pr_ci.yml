@@ -20,11 +20,28 @@ jobs:
     name: Build & Test
     steps:
     - uses: actions/checkout@v2
-    - name: Deploy preview docker image for linux
+    - name: Setup .NET Core on ${{ matrix.os }}
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 3.1.404
+    - name: Build
+      run: |
+        dotnet build --configuration Release
+    - name: Unit Tests
+      run: |
+        dotnet test -c Release --no-restore --no-build ./test/OrchardCore.Tests/OrchardCore.Tests.csproj 
+    - name: Functional Tests
       if: matrix.os == 'ubuntu-latest'
       run: |
-        docker build -t orchardproject/orchardcore-cms-linux:dev .
-    - name: Deploy preview docker image for windows
-      if: matrix.os == 'windows-latest'
-      run: |
-        docker build -t orchardproject/orchardcore-cms-windows:dev .
+        cd test/Functional
+        npm install
+        npm run cms:test
+        npm run mvc:test
+    - uses: actions/upload-artifact@v2
+      if: matrix.os == 'ubuntu-latest' && failure()
+      with:
+        name: functional-test-failure
+        path: |
+          test/Functional/cms-tests/cypress/screenshots
+          src/OrchardCore.Cms.Web/App_Data/logs
+  
