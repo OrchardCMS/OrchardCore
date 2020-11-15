@@ -169,7 +169,7 @@ See :
 
 ## How can I run Docker containers over HTTPS?
 
-https://github.com/dotnet/dotnet-docker/blob/master/samples/host-aspnetcore-https.md
+[Hosting ASP.NET Core Images with Docker over HTTPS](https://github.com/dotnet/dotnet-docker/blob/master/samples/host-aspnetcore-https.md)
 
 ## How can I target my Docker images against a specific environment?
 
