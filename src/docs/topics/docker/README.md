@@ -21,7 +21,7 @@ First example is a simple one. Use Docker to build an image and run it (inside a
 
 ```cmd
 REM Folder where the Dockerfile stands
-cd /orchardcore/ 
+cd /orchardcore
 
 REM Build image from Dockerfile
 docker build -t oc .
@@ -35,8 +35,13 @@ docker run -p 80:80 oc
 ### When using `docker` command : 
 
 ```cmd
+REM Prunes intermediary containers created while building by using --rm
 docker build -t oc --rm .
+
+REM Prunes all intermediary images
 docker image prune -f --filter label=stage=build-env
+
+
 docker run -p 80:80 oc
 ```
 
