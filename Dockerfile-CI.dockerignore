@@ -2,4 +2,4 @@
 **
 
 #except release
-!/.build/release/*
+!/build/release/*
