@@ -10,6 +10,7 @@ on:
 env:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
   DOTNET_CLI_TELEMETRY_OPTOUT: true
+  DOCKER_BUILDKIT: 1
 jobs:
   build_test:
     runs-on: ${{ matrix.os }}
@@ -24,24 +25,17 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 3.1.404
-    - name: Build
-      run: |
-        dotnet build --configuration Release
-    - name: Unit Tests
-      run: |
-        dotnet test -c Release --no-restore --no-build ./test/OrchardCore.Tests/OrchardCore.Tests.csproj 
-    - name: Functional Tests
+    - name: Deploy preview docker image for linux
       if: matrix.os == 'ubuntu-latest'
       run: |
-        cd test/Functional
-        npm install
-        npm run cms:test
-        npm run mvc:test
-    - uses: actions/upload-artifact@v2
-      if: matrix.os == 'ubuntu-latest' && failure()
-      with:
-        name: functional-test-failure
-        path: |
-          test/Functional/cms-tests/cypress/screenshots
-          src/OrchardCore.Cms.Web/App_Data/logs
+        rm -rf ./src/OrchardCore.Cms.Web/App_Data
+        dotnet publish -c Release -o ./.build/release --no-build --no-restore
+        docker build -f Dockerfile-CI -t orchardproject/orchardcore-cms-linux:dev .
+    - name: Deploy preview docker image for windows
+      if: matrix.os == 'windows-latest'
+      run: |
+        Get-ChildItem ./src/OrchardCore.Cms.Web/App_Data -Recurse | Remove-Item
+        dotnet publish -c Release -o ./.build/release --no-build --no-restore
+        docker build -f Dockerfile-CI -t orchardproject/orchardcore-cms-windows:dev .
+        echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u="${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
   
