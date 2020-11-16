@@ -85,11 +85,13 @@ REM Creates a container, runs it and expose its service on port 80
 docker run -p 80:80 oc
 ```
 
-Using these commands should get you a fully functional docker container running on port 80 so that you can access it with your browser by simply going to http://localhost. Though, we assume that this will only allow you to use SQLite. In order to avoid needing to install anything directly on your Docker host computer and to get everything running quickly you should use `docker-compose`.
+Using these commands should get you a fully functional Docker container running on port 80 so that you can access it with your browser by simply going to http://localhost. Though, we assume that this will only allow you to use SQLite. In order to avoid needing to install anything directly on your Docker host computer and to get everything running quickly you should use `docker-compose`.
 
 ## Docker compose
 
 Docker Compose will allow you to generate multiple containers locally by doing simply `docker-compose up` command in the root folder of Orchard Core source code. Of course it requires that you have a docker-compose.yml file standing in that folder first. In the example shown below, we will create services for each of the database providers Orchard Core "officially supports".
+
+[Docker Compose documentation](https://docs.docker.com/compose/)
 
 docker-compose.yml file example :  
 
