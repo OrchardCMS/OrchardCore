@@ -192,3 +192,5 @@ See :
 
 [Build images with BuildKit](https://docs.docker.com/develop/develop-images/build_enhancements/)  
 [What is Docker BuildKit and What can I use it for?](https://brianchristner.io/what-is-docker-buildkit/#:~:text=Docker%20BuildKit%20is%20a%20little,and%20increase%20productivity%20for%20free.)  
+
+Github Actions currently supports Buildkit under Linux only. See https://github.com/docker/setup-buildx-action
