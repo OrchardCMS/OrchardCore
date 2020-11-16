@@ -31,14 +31,14 @@ namespace OrchardCore.Autoroute.Services
         }
 
         /// <summary>
-        /// Loads the autoroute commands document for updating and that should not be cached.
+        /// Loads the autoroute last commands document for updating and that should not be cached.
         /// </summary>
-        private Task<AutorouteCommandsDocument> LoadCommandsDocumentAsync() => DocumentManager.GetOrCreateMutableAsync();
+        private Task<AutorouteLastCommandsDocument> LoadLastCommandsDocumentAsync() => DocumentManager.GetOrCreateMutableAsync();
 
         /// <summary>
-        /// Gets the autoroute commands document for sharing and that should not be updated.
+        /// Gets the autoroute last commands document for sharing and that should not be updated.
         /// </summary>
-        private Task<AutorouteCommandsDocument> GetCommandsDocumentAsync() => DocumentManager.GetOrCreateImmutableAsync();
+        private Task<AutorouteLastCommandsDocument> GetLastCommandsDocumentAsync() => DocumentManager.GetOrCreateImmutableAsync();
 
         public async Task<(bool, AutorouteEntry)> TryGetEntryByPathAsync(string path)
         {
@@ -70,7 +70,7 @@ namespace OrchardCore.Autoroute.Services
 
             await DocumentManager.UpdateAtomicAsync(async () =>
             {
-                var document = await LoadCommandsDocumentAsync();
+                var document = await LoadLastCommandsDocumentAsync();
                 document.AddCommand(AutorouteCommand.AddEntries, entries);
                 await UpdateLocalEntriesAsync(document);
                 return document;
@@ -83,7 +83,7 @@ namespace OrchardCore.Autoroute.Services
 
             await DocumentManager.UpdateAtomicAsync(async () =>
             {
-                var document = await LoadCommandsDocumentAsync();
+                var document = await LoadLastCommandsDocumentAsync();
                 document.AddCommand(AutorouteCommand.RemoveEntries, entries);
                 await UpdateLocalEntriesAsync(document);
                 return document;
@@ -92,7 +92,7 @@ namespace OrchardCore.Autoroute.Services
 
         private async Task EnsureInitializedAsync()
         {
-            var document = await GetCommandsDocumentAsync();
+            var document = await GetLastCommandsDocumentAsync();
 
             if (!_initialized)
             {
@@ -117,7 +117,7 @@ namespace OrchardCore.Autoroute.Services
             {
                 if (!_initialized)
                 {
-                    var document = await GetCommandsDocumentAsync();
+                    var document = await GetLastCommandsDocumentAsync();
                     await InitializeLocalEntriesAsync();
                     _lastCommandId = document.Identifier;
                     _initialized = true;
@@ -130,7 +130,7 @@ namespace OrchardCore.Autoroute.Services
             }
         }
 
-        private async Task UpdateLocalEntriesAsync(AutorouteCommandsDocument document)
+        private async Task UpdateLocalEntriesAsync(AutorouteLastCommandsDocument document)
         {
             if (_lastCommandId == document.Identifier)
             {
@@ -142,14 +142,14 @@ namespace OrchardCore.Autoroute.Services
             {
                 if (_lastCommandId != document.Identifier)
                 {
-                    if (!document.TryGetNewCommands(_lastCommandId, out var newCommands))
+                    if (!document.TryGetLastCommands(_lastCommandId, out var lastCommands))
                     {
                         await InitializeLocalEntriesAsync();
                         _lastCommandId = document.Identifier;
                         return;
                     }
 
-                    foreach (var command in newCommands)
+                    foreach (var command in lastCommands)
                     {
                         if (command.Name == AutorouteCommand.AddEntries)
                         {
@@ -263,7 +263,7 @@ namespace OrchardCore.Autoroute.Services
 
         private static ISession Session => ShellScope.Services.GetRequiredService<ISession>();
 
-        private static IVolatileDocumentManager<AutorouteCommandsDocument> DocumentManager
-            => ShellScope.Services.GetRequiredService<IVolatileDocumentManager<AutorouteCommandsDocument>>();
+        private static IVolatileDocumentManager<AutorouteLastCommandsDocument> DocumentManager
+            => ShellScope.Services.GetRequiredService<IVolatileDocumentManager<AutorouteLastCommandsDocument>>();
     }
 }

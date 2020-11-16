@@ -5,7 +5,7 @@ using OrchardCore.Data.Documents;
 
 namespace OrchardCore.Autoroute.Services
 {
-    public class AutorouteCommandsDocument : Document
+    public class AutorouteLastCommandsDocument : Document
     {
         public const int MaxCommandsCount = 100;
 
@@ -27,19 +27,19 @@ namespace OrchardCore.Autoroute.Services
             }
         }
 
-        public bool TryGetNewCommands(string lastCommandId, out IEnumerable<AutorouteCommand> commands)
+        public bool TryGetLastCommands(string lastCommandId, out IEnumerable<AutorouteCommand> commands)
         {
             var index = Commands.FindLastIndex(x => x.Id == lastCommandId);
             if (index != -1)
             {
                 if (Commands.Count == index + 1)
                 {
-                    // Return no new command, we are up to date.
+                    // Nothing to return, we are up to date.
                     commands = Enumerable.Empty<AutorouteCommand>();
                     return true;
                 }
 
-                // Return the commands that are not yet processed.
+                // Return the last commands that are not yet processed.
                 commands = Commands.Skip(index + 1);
                 return true;
             }
