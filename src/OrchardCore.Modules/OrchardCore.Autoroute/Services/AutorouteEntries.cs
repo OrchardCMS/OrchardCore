@@ -15,17 +15,15 @@ namespace OrchardCore.Autoroute.Services
 {
     public class AutorouteEntries : IAutorouteEntries
     {
-        private const int MaxEventsCount = 100;
-
         private ImmutableDictionary<string, AutorouteEntry> _paths;
         public ImmutableDictionary<string, AutorouteEntry> _contentItemIds;
 
-        private readonly SemaphoreSlim _updateSemaphore = new SemaphoreSlim(1);
+        private readonly SemaphoreSlim _entriesSemaphore = new SemaphoreSlim(1);
         private readonly SemaphoreSlim _initializeSemaphore = new SemaphoreSlim(1);
         private readonly SemaphoreSlim _eventsSemaphore = new SemaphoreSlim(1);
 
-        private volatile string _lastEventId;
-        private volatile bool _initialized;
+        private string _lastEventId;
+        private bool _initialized;
 
         public AutorouteEntries()
         {
@@ -35,17 +33,7 @@ namespace OrchardCore.Autoroute.Services
 
         public async Task<(bool, AutorouteEntry)> TryGetEntryByPathAsync(string path)
         {
-            if (!_initialized)
-            {
-                await InitializeAsync();
-            }
-
-            var events = await GetEventsAsync();
-
-            if (_lastEventId != events.Identifier)
-            {
-                await HandleEventsAsync(events);
-            }
+            await EnsureInitializedAsync();
 
             if (_contentItemIds.TryGetValue(path, out var entry))
             {
@@ -57,17 +45,7 @@ namespace OrchardCore.Autoroute.Services
 
         public async Task<(bool, AutorouteEntry)> TryGetEntryByContentItemIdAsync(string contentItemId)
         {
-            if (!_initialized)
-            {
-                await InitializeAsync();
-            }
-
-            var events = await GetEventsAsync();
-
-            if (_lastEventId != events.Identifier)
-            {
-                await HandleEventsAsync(events);
-            }
+            await EnsureInitializedAsync();
 
             if (_paths.TryGetValue(contentItemId, out var entry))
             {
@@ -79,28 +57,19 @@ namespace OrchardCore.Autoroute.Services
 
         public async Task AddEntriesAsync(IEnumerable<AutorouteEntry> entries)
         {
-            if (!_initialized)
-            {
-                await InitializeAsync();
-            }
+            await EnsureInitializedAsync();
 
             await DocumentManager.UpdateAtomicAsync(async () =>
             {
-                var events = await GetEventsAsync();
+                var events = await LoadEventsAsync();
 
                 events.Identifier = IdGenerator.GenerateId();
-                events.List.Add(new AutorouteEvent()
+                events.AddEvent(new AutorouteEvent()
                 {
                     Name = "AddEntries",
                     Id = events.Identifier,
                     Entries = new List<AutorouteEntry>(entries)
                 });
-
-                var count = events.List.Count;
-                if (count > MaxEventsCount)
-                {
-                    events.List = events.List.Skip(count - MaxEventsCount).ToList();
-                }
 
                 await HandleEventsAsync(events);
                 return events;
@@ -109,32 +78,35 @@ namespace OrchardCore.Autoroute.Services
 
         public async Task RemoveEntriesAsync(IEnumerable<AutorouteEntry> entries)
         {
-            if (!_initialized)
-            {
-                await InitializeAsync();
-            }
+            await EnsureInitializedAsync();
 
             await DocumentManager.UpdateAtomicAsync(async () =>
             {
-                var events = await GetEventsAsync();
+                var events = await LoadEventsAsync();
 
                 events.Identifier = IdGenerator.GenerateId();
-                events.List.Add(new AutorouteEvent()
+                events.AddEvent(new AutorouteEvent()
                 {
                     Name = "RemoveEntries",
                     Id = events.Identifier,
                     Entries = new List<AutorouteEntry>(entries)
                 });
 
-                var count = events.List.Count;
-                if (count > MaxEventsCount)
-                {
-                    events.List = events.List.Skip(count - MaxEventsCount).ToList();
-                }
-
                 await HandleEventsAsync(events);
                 return events;
             });
+        }
+
+        private async Task EnsureInitializedAsync()
+        {
+            var events = await GetEventsAsync();
+            if (_initialized && _lastEventId == events.Identifier)
+            {
+                return;
+            }
+
+            await InitializeAsync();
+            await HandleEventsAsync(events);
         }
 
         private async Task InitializeAsync()
@@ -153,8 +125,10 @@ namespace OrchardCore.Autoroute.Services
                 }
 
                 var events = await GetEventsAsync();
+
                 await InitializeEntriesAsync();
                 _lastEventId = events.Identifier;
+
                 _initialized = true;
             }
             finally
@@ -178,35 +152,20 @@ namespace OrchardCore.Autoroute.Services
                     return;
                 }
 
-                // If there is no event we may have handled and if the commands max count was reached.
-                var lastEventIdExists = events.List.Any(x => x.Id == _lastEventId);
-                if (!lastEventIdExists && events.List.Count == MaxEventsCount)
+                var newEvents = events.GetNewEvents(_lastEventId);
+                if (newEvents == null)
                 {
-                    // Re-init the local entries, as we don't know how many commands we may have lost.
-                    _initialized = false;
-                    await InitializeAsync();
+                    await InitializeEntriesAsync();
+                    _lastEventId = events.Identifier;
+
                     return;
                 }
 
-                var lastEventIdFound = false;
-
-                foreach (var @event in events.List)
+                foreach (var @event in newEvents)
                 {
-                    if (@event.Id == _lastEventId)
-                    {
-                        lastEventIdFound = true;
-                        continue;
-                    }
-
-                    if (lastEventIdExists && !lastEventIdFound)
-                    {
-                        continue;
-                    }
-
                     if (@event.Name == "AddEntries")
                     {
                         await AddEntriesInternalAsync(@event.Entries);
-                        continue;
                     }
 
                     if (@event.Name == "RemoveEntries")
@@ -225,7 +184,7 @@ namespace OrchardCore.Autoroute.Services
 
         private async Task AddEntriesInternalAsync(IEnumerable<AutorouteEntry> entries)
         {
-            await _updateSemaphore.WaitAsync();
+            await _entriesSemaphore.WaitAsync();
             try
             {
                 // Evict all entries related to a container item from autoroute entries.
@@ -270,14 +229,14 @@ namespace OrchardCore.Autoroute.Services
             }
             finally
             {
-                _updateSemaphore.Release();
+                _entriesSemaphore.Release();
             }
 
         }
 
         private async Task RemoveEntriesInternalAsync(IEnumerable<AutorouteEntry> entries)
         {
-            await _updateSemaphore.WaitAsync();
+            await _entriesSemaphore.WaitAsync();
             try
             {
                 foreach (var entry in entries)
@@ -296,10 +255,9 @@ namespace OrchardCore.Autoroute.Services
             }
             finally
             {
-                _updateSemaphore.Release();
+                _entriesSemaphore.Release();
             }
         }
-
         /// <summary>
         /// Loads the autoroute events document for updating and that should not be cached.
         /// </summary>
