@@ -60,6 +60,9 @@ Convert the input URL to create a resized image with the specified size argument
 Refer [Query string tokens](#query-string-tokens) to understand the valid values for a width or height command,
 and how the query string will differ from the examples provided.
 
+!!! note
+    You cannot mix named and indexed arguments. If any of the arguments is named, all arguments must be named.
+
 #### `width` (or first argument)
 
 The width of the new image. One of the allowed values.
@@ -198,7 +201,7 @@ To obtain the correct URL for a resized asset use `AssetUrl` with the optional w
 
 To obtain the correct URL for a resized asset use `AssetUrl` with the optional width, height, resizeMode and bgcolor, e.g.:
 
-`@Orchard.AssetUrl(Model.Paths[0], width: 100 , height: 240, resizeMode: ResizeMode.Pad, bgcolor: 'white')`
+`@Orchard.AssetUrl(Model.Paths[0], width: 100 , height: 240, resizeMode: ResizeMode.Pad, bgcolor: "white")`
 
 To append a version hash for an asset use `AssetUrl` with the append version parameter, e.g.:
 

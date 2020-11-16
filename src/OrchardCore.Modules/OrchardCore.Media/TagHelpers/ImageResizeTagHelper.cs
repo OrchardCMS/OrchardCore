@@ -53,7 +53,7 @@ namespace OrchardCore.Media.TagHelpers
         public Anchor ImageAnchor { get; set; }
 
         [HtmlAttributeName(ImageBackgroundColorAttributeName)]
-        public string  ImageBackgroundColor { get; set; }
+        public string ImageBackgroundColor { get; set; }
 
         [HtmlAttributeName("src")]
         public string Src { get; set; }
