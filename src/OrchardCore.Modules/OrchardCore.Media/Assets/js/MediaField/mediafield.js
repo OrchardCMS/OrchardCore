@@ -179,7 +179,7 @@ function initializeMediaField(el, modalBodyElement, mediaItemUrl, allowMultiple,
                     // When image is shrunk compare against the modal body.
                     var offset = (this.$refs.modalBody.clientWidth - this.$refs.anchorImage.clientWidth) / 2;
                     var position = (this.selectedMedia.anchor.x * this.$refs.anchorImage.clientWidth) + offset;
-                    var anchorIcon = this.$refs.modalBody.querySelector('.icon-media-anchor').clientWidth;
+                    var anchorIcon = Math.round(this.$refs.modalBody.querySelector('.icon-media-anchor').clientWidth);
                     if(Number.isInteger(anchorIcon))
                     {
                         position = position - anchorIcon/2;
