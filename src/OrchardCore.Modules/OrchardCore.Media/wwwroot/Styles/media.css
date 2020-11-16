@@ -576,12 +576,6 @@ ol.media-items-grid {
   line-height: 0px;
   color: #fff;
   font-size: 1.875rem; }
-
-[dir=ltr] .icon-media-anchor {
-  transform: translate(-25%, -25%); }
-
-[dir=rtl] .icon-media-anchor {
-  transform: translate(25%, -25%); }
   .icon-media-anchor path {
     stroke: #000;
     stroke-width: 10; }
