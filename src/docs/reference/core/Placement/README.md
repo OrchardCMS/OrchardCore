@@ -66,6 +66,14 @@ Placement information consists of:
 }
 ```
 
+### Placement precedence
+
+The placement info chosen for a shape is based on the following order:
+
+1. The main startup project (This can act as a super theme)
+2. Active theme (This will be the active front end theme if you're viewing the front end, or the active admin theme if you're viewing the admin)
+3. Modules (Ordered by dependencies)
+
 ### Placing Fields
 
 Fields have a custom differentiator as their shape is used in many places.  

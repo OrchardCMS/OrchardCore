@@ -58,7 +58,7 @@ Convert the input URL to create a resized image with the specified size argument
 #### Arguments
 
 Refer [Query string tokens](#query-string-tokens) to understand the valid values for a width or height command,
-and how the query string will defer from the examples provided.
+and how the query string will differ from the examples provided.
 
 #### `width` (or first argument)
 
@@ -403,13 +403,13 @@ The `MediaText[]` is kept in sync with the `Paths[]` array and the index for a g
 
 Image anchors are an optional setting, off by default, on the `MediaField`.
 
-When enabled they allow a media field to provide an anchor x or y value for use when cropping, or padding the image.
+When enabled they allow a media field to provide an anchor point, or x and y value for use when cropping, or padding the image.
 
-The anchor value provided can be used to specify the center of a crop or pad.
+The anchor value provided can be used to specify the center point of a crop or pad.
 
 When the setting is enabled the template must read and provide the value to the resizing helpers or filters.
 
-The `Anchors[]` is a less well known property of a `MediaField` and can be accessed via the `GetCenters()` extension, or directly.
+The `Anchors[]` is a less well known property of a `MediaField` and can be accessed via the `GetAnchors()` extension, or directly.
 
 === "Liquid"
 
@@ -450,9 +450,11 @@ those commands. e.g.
     Tokens are only available from the [Preview Feed](../../../getting-started/preview-package-source)
     Prior to this the width or height values are limited to `16`, `32`, `50`, `100`, `160`, `240`, `480`, `600`, `1024`, `2048`.
 
-## Video
+## Videos
 
 <iframe width="560" height="315" src="https://www.youtube.com/embed/BQHUlvPFRR4" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/K0_i4vj00yM" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 ## CREDITS
 
