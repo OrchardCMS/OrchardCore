@@ -27,9 +27,6 @@ namespace OrchardCore.Autoroute.Services
             }
         }
 
-        public void AddEntriesCommand(IEnumerable<AutorouteEntry> entries) => AddCommand(AutorouteCommand.AddEntries, entries);
-        public void RemoveEntriesCommand(IEnumerable<AutorouteEntry> entries) => AddCommand(AutorouteCommand.RemoveEntries, entries);
-
         public bool TryGetNewCommands(string lastCommandId, out IEnumerable<AutorouteCommand> commands)
         {
             var index = Commands.FindLastIndex(x => x.Id == lastCommandId);

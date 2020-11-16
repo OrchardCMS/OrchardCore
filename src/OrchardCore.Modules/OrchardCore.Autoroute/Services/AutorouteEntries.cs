@@ -15,8 +15,8 @@ namespace OrchardCore.Autoroute.Services
 {
     public class AutorouteEntries : IAutorouteEntries
     {
-        private ImmutableDictionary<string, AutorouteEntry> _paths;
-        public ImmutableDictionary<string, AutorouteEntry> _contentItemIds;
+        private ImmutableDictionary<string, AutorouteEntry> _paths = ImmutableDictionary<string, AutorouteEntry>.Empty;
+        public ImmutableDictionary<string, AutorouteEntry> _contentItemIds = ImmutableDictionary<string, AutorouteEntry>.Empty;
 
         private readonly SemaphoreSlim _entriesSemaphore = new SemaphoreSlim(1);
         private readonly SemaphoreSlim _initializeSemaphore = new SemaphoreSlim(1);
@@ -27,9 +27,18 @@ namespace OrchardCore.Autoroute.Services
 
         public AutorouteEntries()
         {
-            _paths = ImmutableDictionary<string, AutorouteEntry>.Empty;
-            _contentItemIds = ImmutableDictionary<string, AutorouteEntry>.Empty.WithComparers(StringComparer.OrdinalIgnoreCase);
+            _contentItemIds = _contentItemIds.WithComparers(StringComparer.OrdinalIgnoreCase);
         }
+
+        /// <summary>
+        /// Loads the autoroute commands document for updating and that should not be cached.
+        /// </summary>
+        private Task<AutorouteCommandsDocument> LoadCommandsDocumentAsync() => DocumentManager.GetOrCreateMutableAsync();
+
+        /// <summary>
+        /// Gets the autoroute commands document for sharing and that should not be updated.
+        /// </summary>
+        private Task<AutorouteCommandsDocument> GetCommandsDocumentAsync() => DocumentManager.GetOrCreateImmutableAsync();
 
         public async Task<(bool, AutorouteEntry)> TryGetEntryByPathAsync(string path)
         {
@@ -62,8 +71,8 @@ namespace OrchardCore.Autoroute.Services
             await DocumentManager.UpdateAtomicAsync(async () =>
             {
                 var document = await LoadCommandsDocumentAsync();
-                document.AddEntriesCommand(entries);
-                await ExecuteCommandsAsync(document);
+                document.AddCommand(AutorouteCommand.AddEntries, entries);
+                await UpdateLocalEntriesAsync(document);
                 return document;
             });
         }
@@ -75,22 +84,25 @@ namespace OrchardCore.Autoroute.Services
             await DocumentManager.UpdateAtomicAsync(async () =>
             {
                 var document = await LoadCommandsDocumentAsync();
-                document.RemoveEntriesCommand(entries);
-                await ExecuteCommandsAsync(document);
+                document.AddCommand(AutorouteCommand.RemoveEntries, entries);
+                await UpdateLocalEntriesAsync(document);
                 return document;
             });
         }
 
         private async Task EnsureInitializedAsync()
         {
-            var document = await GetCommandsDocumentsAsync();
-            if (_initialized && _lastCommandId == document.Identifier)
+            var document = await GetCommandsDocumentAsync();
+
+            if (!_initialized)
             {
-                return;
+                await InitializeAsync();
             }
 
-            await InitializeAsync();
-            await ExecuteCommandsAsync(document);
+            if (_lastCommandId != document.Identifier)
+            {
+                await UpdateLocalEntriesAsync(document);
+            }
         }
 
         private async Task InitializeAsync()
@@ -105,8 +117,8 @@ namespace OrchardCore.Autoroute.Services
             {
                 if (!_initialized)
                 {
-                    var document = await GetCommandsDocumentsAsync();
-                    await InitializeEntriesAsync();
+                    var document = await GetCommandsDocumentAsync();
+                    await InitializeLocalEntriesAsync();
                     _lastCommandId = document.Identifier;
                     _initialized = true;
                 }
@@ -118,7 +130,7 @@ namespace OrchardCore.Autoroute.Services
             }
         }
 
-        private async Task ExecuteCommandsAsync(AutorouteCommandsDocument document)
+        private async Task UpdateLocalEntriesAsync(AutorouteCommandsDocument document)
         {
             if (_lastCommandId == document.Identifier)
             {
@@ -132,7 +144,7 @@ namespace OrchardCore.Autoroute.Services
                 {
                     if (!document.TryGetNewCommands(_lastCommandId, out var newCommands))
                     {
-                        await InitializeEntriesAsync();
+                        await InitializeLocalEntriesAsync();
                         _lastCommandId = document.Identifier;
                         return;
                     }
@@ -141,12 +153,12 @@ namespace OrchardCore.Autoroute.Services
                     {
                         if (command.Name == AutorouteCommand.AddEntries)
                         {
-                            await AddEntriesInternalAsync(command.Entries);
+                            await AddLocalEntriesAsync(command.Entries);
                         }
 
                         if (command.Name == AutorouteCommand.RemoveEntries)
                         {
-                            await RemoveEntriesInternalAsync(command.Entries);
+                            await RemoveLocalEntriesAsync(command.Entries);
                         }
                     }
 
@@ -159,15 +171,15 @@ namespace OrchardCore.Autoroute.Services
             }
         }
 
-        private async Task AddEntriesInternalAsync(IEnumerable<AutorouteEntry> entries, bool init = false)
+        private async Task AddLocalEntriesAsync(IEnumerable<AutorouteEntry> entries, bool clear = false)
         {
             await _entriesSemaphore.WaitAsync();
             try
             {
-                if (init)
+                if (clear)
                 {
-                    _paths.Clear();
-                    _contentItemIds.Clear();
+                    _paths = _paths.Clear();
+                    _contentItemIds = _contentItemIds.Clear();
                 }
 
                 // Evict all entries related to a container item from autoroute entries.
@@ -217,7 +229,7 @@ namespace OrchardCore.Autoroute.Services
 
         }
 
-        private async Task RemoveEntriesInternalAsync(IEnumerable<AutorouteEntry> entries)
+        private async Task RemoveLocalEntriesAsync(IEnumerable<AutorouteEntry> entries)
         {
             await _entriesSemaphore.WaitAsync();
             try
@@ -241,21 +253,12 @@ namespace OrchardCore.Autoroute.Services
                 _entriesSemaphore.Release();
             }
         }
-        /// <summary>
-        /// Loads the autoroute commands document for updating and that should not be cached.
-        /// </summary>
-        private Task<AutorouteCommandsDocument> LoadCommandsDocumentAsync() => DocumentManager.GetOrCreateMutableAsync();
 
-        /// <summary>
-        /// Gets the autoroute commands document for sharing and that should not be updated.
-        /// </summary>
-        private Task<AutorouteCommandsDocument> GetCommandsDocumentsAsync() => DocumentManager.GetOrCreateImmutableAsync();
-
-        protected virtual async Task InitializeEntriesAsync()
+        protected virtual async Task InitializeLocalEntriesAsync()
         {
             var indexes = await Session.QueryIndex<AutoroutePartIndex>(i => i.Published).ListAsync();
             var entries = indexes.Select(i => new AutorouteEntry(i.ContentItemId, i.Path, i.ContainedContentItemId, i.JsonPath));
-            await AddEntriesInternalAsync(entries, init: true);
+            await AddLocalEntriesAsync(entries, clear: true);
         }
 
         private static ISession Session => ShellScope.Services.GetRequiredService<ISession>();
