@@ -1,54 +1,11 @@
-name: CI
-on: 
-  pull_request:
-    paths-ignore:
-      - '**/*.md'
-      - 'mkdocs.yml'
-      - 'src/docs/**/*'
-    branches:
-      - dev
-  push:
-    paths-ignore:
-      - '**/*.md'
-      - 'mkdocs.yml'
-      - 'src/docs/**/*'
-    branches:
-      - 'dev'
+name: Functional Tests - all Databases
+on:
+# manual trigger
+  workflow_dispatch:
 env:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
   DOTNET_CLI_TELEMETRY_OPTOUT: true
 jobs:
-  test:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
-    name: Unit Tests
-    steps:
-    - uses: actions/checkout@v2
-    - name: Setup .NET Core on ${{ matrix.os }}
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 3.1.404
-    - name: Set build number 
-      if: matrix.os == 'ubuntu-latest'
-      run: echo "BuildNumber=$(( $GITHUB_RUN_NUMBER + 15471 ))" >> $GITHUB_ENV
-    - name: Build and test
-      run: |
-        dotnet build --configuration Release
-        dotnet test -c Release --no-restore --no-build ./test/OrchardCore.Tests/OrchardCore.Tests.csproj
-    - name: Pack
-      if: matrix.os == 'ubuntu-latest' && github.ref == 'refs/heads/dev'
-      run: dotnet pack -c Release --no-restore --no-build --include-symbols
-    - name: Upload Artifact
-      if: matrix.os == 'ubuntu-latest' && github.ref == 'refs/heads/dev'
-      uses: actions/upload-artifact@v2
-      with:
-        name: nupkg
-        path: ./src/**/*.nupkg
-        retention-days: 5
-  
   test_functional_mvc:
     name: Functional Tests - MVC
     runs-on: ubuntu-latest
@@ -210,92 +167,3 @@ jobs:
           test/Functional/cms-tests/cypress/screenshots
           src/OrchardCore.Cms.Web/App_Data/logs
         retention-days: 3
-  
-  test-npm-build:
-    name: Test building assets
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v2
-    - uses: actions/cache@v2
-      with:
-        path: ~/.npm
-        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-        restore-keys: |
-          ${{ runner.os }}-node-
-    - name: Rebuild packages
-      run: |
-        npm install
-        npm run rebuild
-    - name: Check if git has changes
-      id: changes
-      uses: UnicornGlobal/has-changes-action@v1.0.11
-    - name: Changes detected after building assets
-      if: steps.changes.outputs.changed == 1
-      run: | 
-        git status
-        echo "Please make sure to build them properly before pushing"
-
-  deploy_nuget:
-    if: github.ref == 'refs/heads/dev'
-    needs: [test,test_functional_mvc,test_functional_cms_sqlite,test_functional_cms_postgresql,test_functional_cms_mysql,test_functional_cms_mssql]
-    runs-on: ubuntu-latest
-    name: Deploy preview (dev) nuget packages
-    steps:
-    - name: Download Artifact
-      uses: actions/download-artifact@v2
-      with:
-        name: nupkg
-    - name: Publish to Cloudsmith
-      if: github.ref == 'refs/heads/dev'
-      run: dotnet nuget push './nupkg/**/*.nupkg' -k ${{secrets.CLOUDSMITH_API_KEY}} -n true -s https://nuget.cloudsmith.io/orchardcore/preview/v3/index.json --skip-duplicate
-
-  deploy_docker_linux:
-    if: github.ref == 'refs/heads/dev'
-    needs: [test,test_functional_mvc,test_functional_cms_sqlite,test_functional_cms_postgresql,test_functional_cms_mysql,test_functional_cms_mssql]
-    runs-on: ubuntu-latest
-    name: Deploy preview (dev) docker image for linux
-    steps:
-    - uses: actions/checkout@v2
-    - name: Setup .NET Core
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 3.1.404
-    - name: Login to DockerHub
-      uses: docker/login-action@v1
-      with:
-        username: ${{ secrets.DOCKERHUB_USERNAME }}
-        password: ${{ secrets.DOCKERHUB_PASSWORD }}
-    - name: Dotnet build
-      run: |
-        rm -rf ./src/OrchardCore.Cms.Web/App_Data
-        dotnet publish -c Release -o ./.build/release
-    - name: Docker build and push (dev)
-      if: 
-      run: |
-        docker build -t orchardproject/orchardcore-cms-linux:dev .
-        docker push orchardproject/orchardcore-cms-linux
-
-  deploy_docker_windows:
-    if: github.ref == 'refs/heads/dev'
-    needs: [test,test_functional_mvc,test_functional_cms_sqlite,test_functional_cms_postgresql,test_functional_cms_mysql,test_functional_cms_mssql]
-    runs-on: windows-latest
-    name: Deploy preview (dev) docker image for windows
-    steps:
-    - uses: actions/checkout@v2
-    - name: Setup .NET Core
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 3.1.404
-    - name: Login to DockerHub
-      uses: docker/login-action@v1
-      with:
-        username: ${{ secrets.DOCKERHUB_USERNAME }}
-        password: ${{ secrets.DOCKERHUB_PASSWORD }}
-    - name: Dotnet Build
-      run: |
-        rm -rf ./src/OrchardCore.Cms.Web/App_Data
-        dotnet publish -c Release -o ./.build/release
-    - name: Docker build and push (dev)
-      run: |
-        docker build -t orchardproject/orchardcore-cms-windows:dev .
-        docker push orchardproject/orchardcore-cms-windows
