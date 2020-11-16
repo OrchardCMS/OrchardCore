@@ -178,11 +178,17 @@ namespace OrchardCore.Autoroute.Services
             }
         }
 
-        private async Task AddEntriesInternalAsync(IEnumerable<AutorouteEntry> entries)
+        private async Task AddEntriesInternalAsync(IEnumerable<AutorouteEntry> entries, bool init = false)
         {
             await _entriesSemaphore.WaitAsync();
             try
             {
+                if (init)
+                {
+                    _paths.Clear();
+                    _contentItemIds.Clear();
+                }
+
                 // Evict all entries related to a container item from autoroute entries.
                 // This is necessary to account for deletions, disabling of an item, or disabling routing of contained items.
                 foreach (var entry in entries.Where(x => String.IsNullOrEmpty(x.ContainedContentItemId)))
@@ -268,7 +274,7 @@ namespace OrchardCore.Autoroute.Services
         {
             var indexes = await Session.QueryIndex<AutoroutePartIndex>(i => i.Published).ListAsync();
             var entries = indexes.Select(i => new AutorouteEntry(i.ContentItemId, i.Path, i.ContainedContentItemId, i.JsonPath));
-            await AddEntriesInternalAsync(entries);
+            await AddEntriesInternalAsync(entries, init: true);
         }
 
         private static ISession Session => ShellScope.Services.GetRequiredService<ISession>();

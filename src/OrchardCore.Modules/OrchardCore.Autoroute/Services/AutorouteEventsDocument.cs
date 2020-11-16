@@ -15,7 +15,7 @@ namespace OrchardCore.Autoroute.Services
         {
             Events.Add(@event);
 
-            // Limit the events list count.
+            // Limit the events list length.
             if (Events.Count > MaxEventsCount)
             {
                 Events = Events.Skip(Events.Count - MaxEventsCount).ToList();
@@ -29,17 +29,22 @@ namespace OrchardCore.Autoroute.Services
             {
                 if (Events.Count == index + 1)
                 {
+                    // Return no new events, we are up to date.
                     return Enumerable.Empty<AutorouteEvent>();
                 }
 
+                // Return the events that are not yet processed.
                 return Events.Skip(index + 1);
             }
 
             if (Events.Count >= MaxEventsCount)
             {
+                // The last event was not found and the max count was reached,
+                // so we may have missed some events.
                 return null;
             }
 
+            // Otherwise return the full list.
             return Events;
         }
     }
