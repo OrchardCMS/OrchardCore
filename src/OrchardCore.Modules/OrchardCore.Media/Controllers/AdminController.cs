@@ -377,7 +377,7 @@ namespace OrchardCore.Media.Controllers
                 path = "";
             }
 
-            var newPath = _mediaFileStore.Combine(path, name);
+            var newPath = _mediaFileStore.Combine(path, name.Trim());
 
             if (!await authorizationService.AuthorizeAsync(User, Permissions.ManageMedia)
                 || !await authorizationService.AuthorizeAsync(User, Permissions.ManageAttachedMediaFieldsFolder, (object)newPath))
