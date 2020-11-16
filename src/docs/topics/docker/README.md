@@ -89,7 +89,7 @@ Using these commands should get you a fully functional docker container running 
 
 ## Docker compose
 
-Docker Compose will allow you to deploy everything by doing simply `docker-compose up` command in the root folder of Orchard Core source code. Of course it requires that you have a docker-compose.yml file standing in that folder first. In the example shown below, we will create services for each of the database providers Orchard Core "officially supports".
+Docker Compose will allow you to generate multiple containers locally by doing simply `docker-compose up` command in the root folder of Orchard Core source code. Of course it requires that you have a docker-compose.yml file standing in that folder first. In the example shown below, we will create services for each of the database providers Orchard Core "officially supports".
 
 docker-compose.yml file example :  
 
