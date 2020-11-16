@@ -264,6 +264,12 @@ namespace OrchardCore.Users.Services
                     case "InvalidEmail":
                         reportError("Email", S["Email '{0}' is invalid.", user.Email]);
                         break;
+
+                    case "EmailAndUserNameMatches":
+                        reportError("UserName", S["When the user name '{0}' is an email address it must match the supplied email address.", user.UserName]);
+                        reportError("Email", S["When the user name is an email address it must match the supplied email address {0}.", user.Email]);
+                        break;
+
                     default:
                         reportError(string.Empty, S["Unexpected error: '{0}'.", error.Code]);
                         break;

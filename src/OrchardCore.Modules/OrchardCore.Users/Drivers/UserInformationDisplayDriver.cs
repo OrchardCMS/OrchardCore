@@ -1,14 +1,8 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc.Localization;
-using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Logging;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Security.Services;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.ViewModels;
 
@@ -27,7 +21,7 @@ namespace OrchardCore.Users.Drivers
             _authorizationService = authorizationService;
         }
 
-         public override Task<IDisplayResult> EditAsync(User user, BuildEditorContext context)
+        public override Task<IDisplayResult> EditAsync(User user, BuildEditorContext context)
         {
             return Task.FromResult<IDisplayResult>(Initialize<EditUserInformationViewModel>("UserInformationFields_Edit", model =>
             {

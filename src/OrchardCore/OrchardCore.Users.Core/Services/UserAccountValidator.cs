@@ -13,15 +13,14 @@ namespace OrchardCore.Users.Services
     /// <typeparam name="TUser">The type encapsulating a user.</typeparam>
     public class UserAccountValidator<TUser> : IUserValidator<TUser> where TUser : class, IUser
     {
-        private readonly IdentityErrorDescriber Describer;
+        private readonly IdentityErrorDescriber _identityErrorDescriber;
         private readonly IEmailAddressValidator _emailAddressValidator;
 
         public UserAccountValidator(IdentityErrorDescriber identityErrorDescriber, IEmailAddressValidator emailAddressValidator)
         {
-            Describer = identityErrorDescriber;
+            _identityErrorDescriber = identityErrorDescriber;
             _emailAddressValidator = emailAddressValidator;
         }
-
 
         /// <summary>
         /// Validates the specified <paramref name="user"/> as an asynchronous operation.
@@ -52,14 +51,14 @@ namespace OrchardCore.Users.Services
             var userName = await manager.GetUserNameAsync(user);
             if (String.IsNullOrWhiteSpace(userName))
             {
-                errors.Add(Describer.InvalidUserName(userName));
+                errors.Add(_identityErrorDescriber.InvalidUserName(userName));
                 return;
             }
 
             if (!String.IsNullOrEmpty(manager.Options.User.AllowedUserNameCharacters) &&
                 userName.Any(c => !manager.Options.User.AllowedUserNameCharacters.Contains(c)))
             {
-                errors.Add(Describer.InvalidUserName(userName));
+                errors.Add(_identityErrorDescriber.InvalidUserName(userName));
                 return;
             }
 
@@ -67,7 +66,7 @@ namespace OrchardCore.Users.Services
             var other = await manager.FindByNameAsync(userName);
             if (other != null && !String.Equals(await manager.GetUserIdAsync(other), await manager.GetUserIdAsync(user), StringComparison.OrdinalIgnoreCase))
             {
-                errors.Add(Describer.DuplicateUserName(userName));
+                errors.Add(_identityErrorDescriber.DuplicateUserName(userName));
                 return;
             }
 
@@ -75,21 +74,28 @@ namespace OrchardCore.Users.Services
             var email = await manager.GetEmailAsync(user);
             if (String.IsNullOrWhiteSpace(email))
             {
-                errors.Add(Describer.InvalidEmail(email));
+                errors.Add(_identityErrorDescriber.InvalidEmail(email));
                 return;
             }
 
             if (!_emailAddressValidator.Validate(email))
             {
-                errors.Add(Describer.InvalidEmail(email));
+                errors.Add(_identityErrorDescriber.InvalidEmail(email));
                 return;
+            }
+
+            // Validate that if the user name is an email address, that it matches the email address.
+            if (_emailAddressValidator.Validate(userName) && !String.Equals(userName, email, StringComparison.OrdinalIgnoreCase))
+            {
+                errors.Add(new IdentityError { Code = "EmailAndUserNameMatches", Description = "When the user name is an email address it must match the email address"});
+                return ;
             }
 
             // Validate that the email address is unique when compared against other email addresses.
             other = await manager.FindByEmailAsync(email);
             if (other != null && !String.Equals(await manager.GetUserIdAsync(other), await manager.GetUserIdAsync(user), StringComparison.OrdinalIgnoreCase))
             {
-                errors.Add(Describer.DuplicateEmail(email));
+                errors.Add(_identityErrorDescriber.DuplicateEmail(email));
                 return;
             }
 
@@ -97,16 +103,16 @@ namespace OrchardCore.Users.Services
             other = await manager.FindByNameAsync(email);
             if (other != null && !String.Equals(await manager.GetUserIdAsync(other), await manager.GetUserIdAsync(user), StringComparison.OrdinalIgnoreCase))
             {
-                errors.Add(Describer.DuplicateEmail(email));
+                errors.Add(_identityErrorDescriber.DuplicateEmail(email));
                 return;
             }
 
             // Validate that the user name does not match an existing email address.
-            other = await manager.FindByEmailAsync(userName);
-            if (other != null && !String.Equals(await manager.GetUserIdAsync(other), await manager.GetUserIdAsync(user), StringComparison.OrdinalIgnoreCase))
-            {
-                errors.Add(Describer.DuplicateUserName(userName));
-            }
+            // other = await manager.FindByEmailAsync(userName);
+            // if (other != null && !String.Equals(await manager.GetUserIdAsync(other), await manager.GetUserIdAsync(user), StringComparison.OrdinalIgnoreCase))
+            // {
+            //     errors.Add(_identityErrorDescriber.DuplicateUserName(userName));
+            // }
         }
     }
 }
