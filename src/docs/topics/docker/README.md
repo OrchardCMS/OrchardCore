@@ -155,7 +155,7 @@ REM Start all containers
 docker-compose up
 ```
 
-We added some commands examples to prune intermediate images because our `Dockerfile` uses an intermediate image to do a `dotnet publish` of our source code. If you don't prune your intermediate images ; over time it can certainly take some significant amount of disk space. We label those intermediate images with `stage=build-env` so that they can be removed easily.
+We added some commands examples to prune intermediate images because our `Dockerfile` uses an intermediate image to do a `dotnet publish` of our source code. If you don't prune your intermediate images ; over time it can certainly take some significant amount of disk space. We label those intermediate images with `stage=build-env` so that they can be pruned easily.
 
 ## Create tenants automatically (Autosetup feature)
 
