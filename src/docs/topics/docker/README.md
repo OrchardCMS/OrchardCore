@@ -85,7 +85,7 @@ REM Creates a container, runs it and expose its service on port 80
 docker run -p 80:80 oc
 ```
 
-Using these commands should get you a fully functional docker container running on port 80 so that you can access it with your browser by simply going to http://localhost. Though we assume that this will only allow you to use SQLite. In order to avoid needing to install anything directly on your Docker host computer and to get everything running quickly you should use `docker-compose`.
+Using these commands should get you a fully functional docker container running on port 80 so that you can access it with your browser by simply going to http://localhost. Though, we assume that this will only allow you to use SQLite. In order to avoid needing to install anything directly on your Docker host computer and to get everything running quickly you should use `docker-compose`.
 
 ## Docker compose
 
