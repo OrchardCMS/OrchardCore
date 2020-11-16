@@ -67,7 +67,7 @@ namespace OrchardCore.Documents
                 }
             }
 
-            document.Identifier = null;
+            document.Identifier = IdGenerator.GenerateId();
 
             return document;
         }

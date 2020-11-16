@@ -62,8 +62,6 @@ namespace OrchardCore.Autoroute.Services
             await DocumentManager.UpdateAtomicAsync(async () =>
             {
                 var events = await LoadEventsAsync();
-
-                events.Identifier = IdGenerator.GenerateId();
                 events.AddEvent(new AutorouteEvent()
                 {
                     Name = "AddEntries",
@@ -83,8 +81,6 @@ namespace OrchardCore.Autoroute.Services
             await DocumentManager.UpdateAtomicAsync(async () =>
             {
                 var events = await LoadEventsAsync();
-
-                events.Identifier = IdGenerator.GenerateId();
                 events.AddEvent(new AutorouteEvent()
                 {
                     Name = "RemoveEntries",
