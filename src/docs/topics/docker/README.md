@@ -182,7 +182,7 @@ Here you can find a list of different environments with a Dockerfile example for
 
 ### Dockerfile-CI, Dockerfile-CI.gitignore
 
-Github Actions is the Continuous Integration tool to build and test the different branches that we have in our repository. It can allow us to create Docker images and containers but the execution time would be slower than on the actual CI. So for that matter we don't use an intermediate image for building Orchard Core on the CI. Though it perfectly makes sense to do this locally for yourself as performance should not be limited at all.
+Github Actions is the Continuous Integration tool we use to build and test the different branches we have in our repository. It can allow us to create Docker images and containers but the execution time would be slower than on the actual CI. So for that matter we don't use an intermediate image for building Orchard Core on the CI. Though it perfectly makes sense to do this locally for yourself as performance should not be limited at all.
 
 ## Can I use different Dockerfiles for myself?
 
