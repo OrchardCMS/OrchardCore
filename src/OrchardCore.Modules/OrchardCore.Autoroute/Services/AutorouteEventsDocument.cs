@@ -11,9 +11,14 @@ namespace OrchardCore.Autoroute.Services
 
         public List<AutorouteEvent> Events { get; set; } = new List<AutorouteEvent>();
 
-        public void AddEvent(AutorouteEvent @event)
+        public void AddEvent(string name, IEnumerable<AutorouteEntry> entries)
         {
-            Events.Add(@event);
+            Events.Add(new AutorouteEvent()
+            {
+                Name = name,
+                Id = Identifier,
+                Entries = new List<AutorouteEntry>(entries)
+            });
 
             // Limit the events list length.
             if (Events.Count > MaxEventsCount)
@@ -22,7 +27,10 @@ namespace OrchardCore.Autoroute.Services
             }
         }
 
-        public IEnumerable<AutorouteEvent> GetNewEvents(string lastEventId)
+        public void AddEntriesEvent(IEnumerable<AutorouteEntry> entries) => AddEvent(AutorouteEvent.AddEntries, entries);
+        public void RemoveEntriesEvent(IEnumerable<AutorouteEntry> entries) => AddEvent(AutorouteEvent.RemoveEntries, entries);
+
+        public bool TryGetNewEvents(string lastEventId, out IEnumerable<AutorouteEvent> events)
         {
             var index = Events.FindLastIndex(x => x.Id == lastEventId);
             if (index != -1)
@@ -30,27 +38,34 @@ namespace OrchardCore.Autoroute.Services
                 if (Events.Count == index + 1)
                 {
                     // Return no new events, we are up to date.
-                    return Enumerable.Empty<AutorouteEvent>();
+                    events = Enumerable.Empty<AutorouteEvent>();
+                    return true;
                 }
 
                 // Return the events that are not yet processed.
-                return Events.Skip(index + 1);
+                events = Events.Skip(index + 1);
+                return true;
             }
 
             if (Events.Count >= MaxEventsCount)
             {
                 // The last event was not found and the max count was reached,
                 // so we may have missed some events.
-                return null;
+                events = null;
+                return false;
             }
 
             // Otherwise return the full list.
-            return Events;
+            events = Events;
+            return true;
         }
     }
 
     public class AutorouteEvent
     {
+        public const string AddEntries = nameof(AddEntries);
+        public const string RemoveEntries = nameof(RemoveEntries);
+
         public string Id { get; set; }
         public string Name { get; set; }
         public List<AutorouteEntry> Entries { get; set; }

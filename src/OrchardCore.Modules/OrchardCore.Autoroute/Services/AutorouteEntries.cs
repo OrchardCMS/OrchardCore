@@ -62,13 +62,7 @@ namespace OrchardCore.Autoroute.Services
             await DocumentManager.UpdateAtomicAsync(async () =>
             {
                 var document = await LoadEventsDocumentAsync();
-                document.AddEvent(new AutorouteEvent()
-                {
-                    Name = "AddEntries",
-                    Id = document.Identifier,
-                    Entries = new List<AutorouteEntry>(entries)
-                });
-
+                document.AddEntriesEvent(entries);
                 await HandleEventsAsync(document);
                 return document;
             });
@@ -81,13 +75,7 @@ namespace OrchardCore.Autoroute.Services
             await DocumentManager.UpdateAtomicAsync(async () =>
             {
                 var document = await LoadEventsDocumentAsync();
-                document.AddEvent(new AutorouteEvent()
-                {
-                    Name = "RemoveEntries",
-                    Id = document.Identifier,
-                    Entries = new List<AutorouteEntry>(entries)
-                });
-
+                document.RemoveEntriesEvent(entries);
                 await HandleEventsAsync(document);
                 return document;
             });
@@ -115,17 +103,14 @@ namespace OrchardCore.Autoroute.Services
             await _initializeSemaphore.WaitAsync();
             try
             {
-                if (_initialized)
+                if (!_initialized)
                 {
-                    return;
+                    var document = await GetEventsDocumentsAsync();
+                    await InitializeEntriesAsync();
+                    _lastEventId = document.Identifier;
+                    _initialized = true;
                 }
 
-                var document = await GetEventsDocumentsAsync();
-
-                await InitializeEntriesAsync();
-                _lastEventId = document.Identifier;
-
-                _initialized = true;
             }
             finally
             {
@@ -143,34 +128,30 @@ namespace OrchardCore.Autoroute.Services
             await _eventsSemaphore.WaitAsync();
             try
             {
-                if (_lastEventId == document.Identifier)
+                if (_lastEventId != document.Identifier)
                 {
-                    return;
-                }
+                    if (!document.TryGetNewEvents(_lastEventId, out var newEvents))
+                    {
+                        await InitializeEntriesAsync();
+                        _lastEventId = document.Identifier;
+                        return;
+                    }
 
-                var newEvents = document.GetNewEvents(_lastEventId);
-                if (newEvents == null)
-                {
-                    await InitializeEntriesAsync();
+                    foreach (var @event in newEvents)
+                    {
+                        if (@event.Name == AutorouteEvent.AddEntries)
+                        {
+                            await AddEntriesInternalAsync(@event.Entries);
+                        }
+
+                        if (@event.Name == AutorouteEvent.RemoveEntries)
+                        {
+                            await RemoveEntriesInternalAsync(@event.Entries);
+                        }
+                    }
+
                     _lastEventId = document.Identifier;
-
-                    return;
                 }
-
-                foreach (var @event in newEvents)
-                {
-                    if (@event.Name == "AddEntries")
-                    {
-                        await AddEntriesInternalAsync(@event.Entries);
-                    }
-
-                    if (@event.Name == "RemoveEntries")
-                    {
-                        await RemoveEntriesInternalAsync(@event.Entries);
-                    }
-                }
-
-                _lastEventId = document.Identifier;
             }
             finally
             {
