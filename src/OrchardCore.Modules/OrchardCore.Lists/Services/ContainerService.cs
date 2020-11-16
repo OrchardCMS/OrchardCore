@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.ContentManagement;
@@ -18,7 +19,7 @@ namespace OrchardCore.Lists.Services
     {
         private readonly YesSql.ISession _session;
         private readonly IContentManager _contentManager;
-        private readonly IHttpContextAccessor _hca;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
         public ContainerService(
             YesSql.ISession session,
@@ -27,7 +28,7 @@ namespace OrchardCore.Lists.Services
         {
             _session = session;
             _contentManager = contentManager;
-            _hca = hca;
+            _httpContextAccessor = hca;
         }
 
         public async Task<int> GetNextOrderNumberAsync(string contentItemId)
@@ -366,17 +367,17 @@ namespace OrchardCore.Lists.Services
                 switch (containedItemOptions.Status)
                 {
                     case ContentsStatus.Draft:
-                        containedItems?.With<ContentItemIndex>().Where(i => !i.Published);
+                        containedItems.With<ContentItemIndex>(i => !i.Published);
                         break;
                     case ContentsStatus.Published:
-                        containedItems?.With<ContentItemIndex>().Where(i => i.Published);
+                        containedItems.With<ContentItemIndex>(i => i.Published);
                         break;
                     case ContentsStatus.Owner:
-                        string currentUserName = _hca.HttpContext?.User?.Identity?.Name;
+                        var currentUserName = _httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier);
 
-                        if (!string.IsNullOrEmpty(currentUserName))
+                        if (currentUserName != null)
                         {
-                            containedItems?.With<ContentItemIndex>().Where(i => i.Owner == currentUserName);
+                            containedItems?.With<ContentItemIndex>(i => i.Owner == currentUserName.ToString());
                         }
 
                         break;
