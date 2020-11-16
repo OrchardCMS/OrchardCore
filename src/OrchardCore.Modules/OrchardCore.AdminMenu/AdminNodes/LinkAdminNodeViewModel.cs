@@ -20,5 +20,8 @@ namespace OrchardCore.AdminMenu.AdminNodes
 
         [BindNever]
         public IList<VueMultiselectItemViewModel> SelectedItems { get; set; }
+
+        [BindNever]
+        public IList<VueMultiselectItemViewModel> AllItems { get; set; }
     }
 }

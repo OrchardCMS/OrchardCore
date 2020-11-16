@@ -76,7 +76,7 @@
 <div class="form-group">
     @{
         var selectedItems = JsonConvert.SerializeObject(Model.SelectedItems, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() });
-        var searchUrl = Url.RouteUrl(new { area = "OrchardCore.AdminMenu", controller = "Node", action = "SearchPermissions" });
+        var allItems = JsonConvert.SerializeObject(Model.AllItems, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() });
     }
 
     <script asp-name="vue-multiselect-wrapper" asp-src="~/OrchardCore.AdminMenu/Scripts/vue-multiselect-wrapper.js" at="Foot" depends-on="vuejs, vue-multiselect, sortable, vuedraggable"></script>
@@ -84,7 +84,7 @@
 
     <label asp-for="PermissionIds">@T["Permissions"]</label>
 
-    <div id="PermissionPicker" class="vue-multiselect" data-editor-type="ContentPicker" data-selected-items="@selectedItems" data-search-url="@searchUrl" data-multiple="true">
+    <div id="PermissionPicker" class="vue-multiselect" data-editor-type="ContentPicker" data-selected-items="@selectedItems" data-all-items="@allItems" data-multiple="true">
 
         <div class="form-group">
             <ul class="list-group w-xl-50 content-picker-default__list" v-show="arrayOfItems.length" v-cloak>

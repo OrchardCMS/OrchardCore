@@ -28,22 +28,18 @@ function initVueMultiselect(element) {
   if (element) {
     var elementId = element.id;
     var selectedItems = JSON.parse(element.dataset.selectedItems || "[]");
-    var searchUrl = element.dataset.searchUrl;
+    var allItems = JSON.parse(element.dataset.allItems || "[]");
     var multiple = JSON.parse(element.dataset.multiple);
     var debouncedSearch = debounce(function (vm, query) {
       vm.isLoading = true;
-      var searchFullUrl = searchUrl;
-
-      if (query) {
-        searchFullUrl += '&query=' + query;
-      }
-
-      fetch(searchFullUrl).then(function (res) {
-        res.json().then(function (json) {
-          vm.options = json;
-          vm.isLoading = false;
-        });
+      vm.options = allItems.filter(function (el) {
+        if (query) {
+          return el.id.includes(query);
+        } else {
+          return el;
+        }
       });
+      vm.isLoading = false;
     }, 250);
     var vueMultiselect = Vue.component('vue-multiselect', window.VueMultiselect["default"]);
     var vm = new Vue({
