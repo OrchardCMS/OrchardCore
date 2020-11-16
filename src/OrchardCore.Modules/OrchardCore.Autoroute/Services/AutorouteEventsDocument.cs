@@ -40,7 +40,7 @@ namespace OrchardCore.Autoroute.Services
                 return null;
             }
 
-            return Enumerable.Empty<AutorouteEvent>();
+            return Events;
         }
     }
 

@@ -61,16 +61,16 @@ namespace OrchardCore.Autoroute.Services
 
             await DocumentManager.UpdateAtomicAsync(async () =>
             {
-                var events = await LoadEventsAsync();
-                events.AddEvent(new AutorouteEvent()
+                var document = await LoadEventsDocumentAsync();
+                document.AddEvent(new AutorouteEvent()
                 {
                     Name = "AddEntries",
-                    Id = events.Identifier,
+                    Id = document.Identifier,
                     Entries = new List<AutorouteEntry>(entries)
                 });
 
-                await HandleEventsAsync(events);
-                return events;
+                await HandleEventsAsync(document);
+                return document;
             });
         }
 
@@ -80,29 +80,29 @@ namespace OrchardCore.Autoroute.Services
 
             await DocumentManager.UpdateAtomicAsync(async () =>
             {
-                var events = await LoadEventsAsync();
-                events.AddEvent(new AutorouteEvent()
+                var document = await LoadEventsDocumentAsync();
+                document.AddEvent(new AutorouteEvent()
                 {
                     Name = "RemoveEntries",
-                    Id = events.Identifier,
+                    Id = document.Identifier,
                     Entries = new List<AutorouteEntry>(entries)
                 });
 
-                await HandleEventsAsync(events);
-                return events;
+                await HandleEventsAsync(document);
+                return document;
             });
         }
 
         private async Task EnsureInitializedAsync()
         {
-            var events = await GetEventsAsync();
-            if (_initialized && _lastEventId == events.Identifier)
+            var document = await GetEventsDocumentsAsync();
+            if (_initialized && _lastEventId == document.Identifier)
             {
                 return;
             }
 
             await InitializeAsync();
-            await HandleEventsAsync(events);
+            await HandleEventsAsync(document);
         }
 
         private async Task InitializeAsync()
@@ -120,10 +120,10 @@ namespace OrchardCore.Autoroute.Services
                     return;
                 }
 
-                var events = await GetEventsAsync();
+                var document = await GetEventsDocumentsAsync();
 
                 await InitializeEntriesAsync();
-                _lastEventId = events.Identifier;
+                _lastEventId = document.Identifier;
 
                 _initialized = true;
             }
@@ -133,9 +133,9 @@ namespace OrchardCore.Autoroute.Services
             }
         }
 
-        private async Task HandleEventsAsync(AutorouteEventsDocument events)
+        private async Task HandleEventsAsync(AutorouteEventsDocument document)
         {
-            if (_lastEventId == events.Identifier)
+            if (_lastEventId == document.Identifier)
             {
                 return;
             }
@@ -143,16 +143,16 @@ namespace OrchardCore.Autoroute.Services
             await _eventsSemaphore.WaitAsync();
             try
             {
-                if (_lastEventId == events.Identifier)
+                if (_lastEventId == document.Identifier)
                 {
                     return;
                 }
 
-                var newEvents = events.GetNewEvents(_lastEventId);
+                var newEvents = document.GetNewEvents(_lastEventId);
                 if (newEvents == null)
                 {
                     await InitializeEntriesAsync();
-                    _lastEventId = events.Identifier;
+                    _lastEventId = document.Identifier;
 
                     return;
                 }
@@ -170,7 +170,7 @@ namespace OrchardCore.Autoroute.Services
                     }
                 }
 
-                _lastEventId = events.Identifier;
+                _lastEventId = document.Identifier;
             }
             finally
             {
@@ -257,12 +257,12 @@ namespace OrchardCore.Autoroute.Services
         /// <summary>
         /// Loads the autoroute events document for updating and that should not be cached.
         /// </summary>
-        private Task<AutorouteEventsDocument> LoadEventsAsync() => DocumentManager.GetOrCreateMutableAsync();
+        private Task<AutorouteEventsDocument> LoadEventsDocumentAsync() => DocumentManager.GetOrCreateMutableAsync();
 
         /// <summary>
         /// Gets the autoroute events document for sharing and that should not be updated.
         /// </summary>
-        private Task<AutorouteEventsDocument> GetEventsAsync() => DocumentManager.GetOrCreateImmutableAsync();
+        private Task<AutorouteEventsDocument> GetEventsDocumentsAsync() => DocumentManager.GetOrCreateImmutableAsync();
 
         protected virtual async Task InitializeEntriesAsync()
         {
