@@ -28,20 +28,30 @@ namespace OrchardCore.Mvc.ModelBinding
         /// <param name="validationResults">The <see cref="ValidationResult"/>.</param>
         public static void BindValidationResults(this ModelStateDictionary modelState, string prefix, IEnumerable<ValidationResult> validationResults)
         {
-            foreach (var item in validationResults)
+            if (validationResults != null)
             {
-                if (!item.MemberNames.Any())
+                foreach (var item in validationResults)
                 {
-                    modelState.AddModelError(prefix, string.Empty, item.ErrorMessage);
+                    modelState.BindValidationResult(prefix, item);
                 }
-                else
+            }
+        }
+
+        public static void BindValidationResult(this ModelStateDictionary modelState, string prefix, ValidationResult item)
+        {
+            if (!item.MemberNames.Any())
+            {
+                modelState.AddModelError(prefix, string.Empty, item.ErrorMessage);
+            }
+            else
+            {
+                foreach (var memberName in item.MemberNames)
                 {
-                    foreach (var memberName in item.MemberNames)
-                    {
-                        modelState.AddModelError(prefix, memberName, item.ErrorMessage);
-                    }
+                    modelState.AddModelError(prefix, memberName, item.ErrorMessage);
                 }
             }
         }
     }
 }
+
+

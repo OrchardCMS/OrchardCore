@@ -33,6 +33,7 @@ namespace OrchardCore.Autoroute
 {
     public class Startup : StartupBase
     {
+
         public override int ConfigureOrder => -100;
 
         static Startup()
