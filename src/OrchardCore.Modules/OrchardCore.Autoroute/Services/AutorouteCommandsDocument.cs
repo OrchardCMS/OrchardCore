@@ -32,7 +32,7 @@ namespace OrchardCore.Autoroute.Services
                 }
             }
 
-            // Remove obsolete commands but still keep their 'Id' for history.
+            // Remove obsolete commands but still keep their 'Id' string for history.
             while (true)
             {
                 var index = Commands.FindLastIndex(o => o is AutorouteCommand c && c.Entries == null);
