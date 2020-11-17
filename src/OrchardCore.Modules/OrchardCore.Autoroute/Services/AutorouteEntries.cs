@@ -151,11 +151,6 @@ namespace OrchardCore.Autoroute.Services
 
                     foreach (var command in lastCommands)
                     {
-                        if (command.Name == AutorouteCommand.Obsolete)
-                        {
-                            continue;
-                        }
-
                         if (command.Name == AutorouteCommand.AddEntries)
                         {
                             await AddLocalEntriesAsync(command.Entries);
