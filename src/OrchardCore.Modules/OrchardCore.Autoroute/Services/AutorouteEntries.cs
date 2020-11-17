@@ -31,14 +31,14 @@ namespace OrchardCore.Autoroute.Services
         }
 
         /// <summary>
-        /// Loads the autoroute last commands document for updating and that should not be cached.
+        /// Loads the autoroute commands document for updating and that should not be cached.
         /// </summary>
-        private Task<AutorouteLastCommandsDocument> LoadLastCommandsDocumentAsync() => DocumentManager.GetOrCreateMutableAsync();
+        private Task<AutorouteCommandsDocument> LoadCommandsDocumentAsync() => DocumentManager.GetOrCreateMutableAsync();
 
         /// <summary>
-        /// Gets the autoroute last commands document for sharing and that should not be updated.
+        /// Gets the autoroute commands document for sharing and that should not be updated.
         /// </summary>
-        private Task<AutorouteLastCommandsDocument> GetLastCommandsDocumentAsync() => DocumentManager.GetOrCreateImmutableAsync();
+        private Task<AutorouteCommandsDocument> GetCommandsDocumentAsync() => DocumentManager.GetOrCreateImmutableAsync();
 
         public async Task<(bool, AutorouteEntry)> TryGetEntryByPathAsync(string path)
         {
@@ -70,7 +70,7 @@ namespace OrchardCore.Autoroute.Services
 
             await DocumentManager.UpdateAtomicAsync(async () =>
             {
-                var document = await LoadLastCommandsDocumentAsync();
+                var document = await LoadCommandsDocumentAsync();
                 document.AddCommand(AutorouteCommand.AddEntries, entries);
                 await UpdateLocalEntriesAsync(document);
                 return document;
@@ -83,7 +83,7 @@ namespace OrchardCore.Autoroute.Services
 
             await DocumentManager.UpdateAtomicAsync(async () =>
             {
-                var document = await LoadLastCommandsDocumentAsync();
+                var document = await LoadCommandsDocumentAsync();
                 document.AddCommand(AutorouteCommand.RemoveEntries, entries);
                 await UpdateLocalEntriesAsync(document);
                 return document;
@@ -92,7 +92,7 @@ namespace OrchardCore.Autoroute.Services
 
         private async Task EnsureInitializedAsync()
         {
-            var document = await GetLastCommandsDocumentAsync();
+            var document = await GetCommandsDocumentAsync();
 
             if (!_initialized)
             {
@@ -117,7 +117,7 @@ namespace OrchardCore.Autoroute.Services
             {
                 if (!_initialized)
                 {
-                    var document = await GetLastCommandsDocumentAsync();
+                    var document = await GetCommandsDocumentAsync();
                     await InitializeLocalEntriesAsync();
                     _lastCommandId = document.Identifier;
                     _initialized = true;
@@ -130,7 +130,7 @@ namespace OrchardCore.Autoroute.Services
             }
         }
 
-        private async Task UpdateLocalEntriesAsync(AutorouteLastCommandsDocument document)
+        private async Task UpdateLocalEntriesAsync(AutorouteCommandsDocument document)
         {
             if (_lastCommandId == document.Identifier)
             {
@@ -263,7 +263,7 @@ namespace OrchardCore.Autoroute.Services
 
         private static ISession Session => ShellScope.Services.GetRequiredService<ISession>();
 
-        private static IVolatileDocumentManager<AutorouteLastCommandsDocument> DocumentManager
-            => ShellScope.Services.GetRequiredService<IVolatileDocumentManager<AutorouteLastCommandsDocument>>();
+        private static IVolatileDocumentManager<AutorouteCommandsDocument> DocumentManager
+            => ShellScope.Services.GetRequiredService<IVolatileDocumentManager<AutorouteCommandsDocument>>();
     }
 }

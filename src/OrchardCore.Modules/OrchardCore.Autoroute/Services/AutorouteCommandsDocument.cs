@@ -5,14 +5,30 @@ using OrchardCore.Data.Documents;
 
 namespace OrchardCore.Autoroute.Services
 {
-    public class AutorouteLastCommandsDocument : Document
+    public class AutorouteCommandsDocument : Document
     {
-        public const int MaxCommandsCount = 100;
+        public const int MaxCommandsCount = 1_000;
 
         public List<AutorouteCommand> Commands { get; set; } = new List<AutorouteCommand>();
 
         public void AddCommand(string name, IEnumerable<AutorouteEntry> entries)
         {
+            // Remove obsolete commands.
+            foreach (var entry in entries)
+            {
+                foreach (var command in Commands)
+                {
+                    if (command.Name == name)
+                    {
+                        command.Entries.RemoveAll(e =>
+                            e.ContentItemId == entry.ContentItemId &&
+                            e.ContainedContentItemId == entry.ContainedContentItemId);
+                    }
+                }
+            }
+
+            Commands.RemoveAll(c => c.Entries.Count == 0);
+
             Commands.Add(new AutorouteCommand()
             {
                 Name = name,
