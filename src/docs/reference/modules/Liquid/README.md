@@ -325,13 +325,13 @@ Checks if the user has a claim of the specified type
 {{ User | has_claim:"Permission","ManageSettings" }}
 ```
 
-#### User user_properties filter
+#### User user_settings filter
 
 Get's the User.Properties object
 
 ```liquid
-{% assign userProperties = User | user_properties %}
-{{ userProperties.UserProfile.UserProfile.FirstName.Text }}
+{% assign userSettings = User | user_settings  %}
+{{ userSettings.UserProfile.UserProfile.FirstName.Text }}
 ```
 
 ### Site

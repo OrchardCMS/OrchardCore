@@ -8,11 +8,11 @@ using OrchardCore.Users.Models;
 
 namespace OrchardCore.Users.Liquid
 {
-    public class UserPropertiesFilter : ILiquidFilter
+    public class UserSettingsFilter : ILiquidFilter
     {
         private readonly UserManager<IUser> _userManager;
 
-        public UserPropertiesFilter(UserManager<IUser> userManager)
+        public UserSettingsFilter(UserManager<IUser> userManager)
         {
             _userManager = userManager;
         }
