@@ -128,35 +128,6 @@ namespace OrchardCore.Tests.OrchardCore.Users
         }
 
         [Fact]
-        public async Task ShouldRequireUserNameAndEmailUnicityWhenUserNameMatchesExistingEmail()
-        {
-            // Arrange
-            var describer = new IdentityErrorDescriber();
-            var userManager = UsersMockHelper.MockUserManager<IUser>();
-            var existingUser = new User { UserId = Guid.NewGuid().ToString("n"), UserName = "Bar", Email = "bar@bar.com" };
-            userManager.Setup(m => m.GetUserIdAsync(existingUser)).ReturnsAsync(existingUser.UserId);
-            userManager.Setup(m => m.GetUserNameAsync(existingUser)).ReturnsAsync(existingUser.UserName);
-            userManager.Setup(m => m.GetEmailAsync(existingUser)).ReturnsAsync(existingUser.Email);
-            userManager.Setup(m => m.FindByEmailAsync(existingUser.Email)).ReturnsAsync(existingUser);
-            userManager.Setup(m => m.FindByNameAsync(existingUser.UserName)).ReturnsAsync(existingUser);
-
-            var user = new User { UserId = Guid.NewGuid().ToString("n"), UserName = "bar@bar.com", Email = "baz@baz.com" };
-            userManager.Setup(m => m.GetUserIdAsync(user)).ReturnsAsync(user.UserId);
-            userManager.Setup(m => m.GetUserNameAsync(user)).ReturnsAsync(user.UserName);
-            userManager.Setup(m => m.GetEmailAsync(user)).ReturnsAsync(user.Email);
-
-            // Act
-            var validator = userManager.Object.UserValidators.FirstOrDefault();
-            var result = await validator.ValidateAsync(userManager.Object, user);
-
-            // Test
-            Assert.False(result.Succeeded);
-            // hmm interesting, this works, but no longer requires a lookup against the two
-            // because the username does not equal the email. and it is a valid email address.
-            // Assert.Equal(describer.DuplicateUserName(user.UserName).Code, result.Errors.First().Code);
-        }
-
-        [Fact]
         public async Task ShouldRequireUniqueUserName()
         {
             // Arrange
@@ -187,14 +158,7 @@ namespace OrchardCore.Tests.OrchardCore.Users
         public async Task ShouldRequireUserNameEqualsEmailWhenUserNameIsValidEmail()
         {
             // Arrange
-            var describer = new IdentityErrorDescriber();
             var userManager = UsersMockHelper.MockUserManager<IUser>();
-            // var existingUser = new User { UserId = Guid.NewGuid().ToString("n"), UserName = "Foo", Email = "bar@bar.com" };
-            // userManager.Setup(m => m.GetUserIdAsync(existingUser)).ReturnsAsync(existingUser.UserId);
-            // userManager.Setup(m => m.GetUserNameAsync(existingUser)).ReturnsAsync(existingUser.UserName);
-            // userManager.Setup(m => m.GetEmailAsync(existingUser)).ReturnsAsync(existingUser.Email);
-            // userManager.Setup(m => m.FindByEmailAsync(existingUser.Email)).ReturnsAsync(existingUser);
-            // userManager.Setup(m => m.FindByNameAsync(existingUser.UserName)).ReturnsAsync(existingUser);
 
             var user = new User { UserId = Guid.NewGuid().ToString("n"), UserName = "bar@bar.com", Email = "foo@foo.com" };
             userManager.Setup(m => m.GetUserIdAsync(user)).ReturnsAsync(user.UserId);
@@ -207,8 +171,36 @@ namespace OrchardCore.Tests.OrchardCore.Users
 
             // Test
             Assert.False(result.Succeeded);
-            // Assert.Equal(describer.DuplicateUserName(user.UserName).Code, result.Errors.First().Code);
+            Assert.Equal("EmailAndUserNameShouldMatch", result.Errors.First().Code);
         }
 
+        // This test is proved by 'ShouldRequireUserNameEqualsEmailWhenUserNameIsValidEmail'
+        // but provides visible proof that a user names unicity is maintained.
+
+        [Fact]
+        public async Task ShouldRequireUserNameAndEmailUnicityWhenUserNameMatchesExistingEmail()
+        {
+            // Arrange
+            var userManager = UsersMockHelper.MockUserManager<IUser>();
+            var existingUser = new User { UserId = Guid.NewGuid().ToString("n"), UserName = "Bar", Email = "bar@bar.com" };
+            userManager.Setup(m => m.GetUserIdAsync(existingUser)).ReturnsAsync(existingUser.UserId);
+            userManager.Setup(m => m.GetUserNameAsync(existingUser)).ReturnsAsync(existingUser.UserName);
+            userManager.Setup(m => m.GetEmailAsync(existingUser)).ReturnsAsync(existingUser.Email);
+            userManager.Setup(m => m.FindByEmailAsync(existingUser.Email)).ReturnsAsync(existingUser);
+            userManager.Setup(m => m.FindByNameAsync(existingUser.UserName)).ReturnsAsync(existingUser);
+
+            var user = new User { UserId = Guid.NewGuid().ToString("n"), UserName = "bar@bar.com", Email = "baz@baz.com" };
+            userManager.Setup(m => m.GetUserIdAsync(user)).ReturnsAsync(user.UserId);
+            userManager.Setup(m => m.GetUserNameAsync(user)).ReturnsAsync(user.UserName);
+            userManager.Setup(m => m.GetEmailAsync(user)).ReturnsAsync(user.Email);
+
+            // Act
+            var validator = userManager.Object.UserValidators.FirstOrDefault();
+            var result = await validator.ValidateAsync(userManager.Object, user);
+
+            // Test
+            Assert.False(result.Succeeded);
+            Assert.Equal("EmailAndUserNameShouldMatch", result.Errors.First().Code);
+        }
     }
 }

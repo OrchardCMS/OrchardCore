@@ -84,10 +84,10 @@ namespace OrchardCore.Users.Services
                 return;
             }
 
-            // Validate that if the user name is an email address, that it matches the email address.
+            // Validate that if the user name is an email address, that it should match the email address.
             if (_emailAddressValidator.Validate(userName) && !String.Equals(userName, email, StringComparison.OrdinalIgnoreCase))
             {
-                errors.Add(new IdentityError { Code = "EmailAndUserNameMatches", Description = "When the user name is an email address it must match the email address"});
+                errors.Add(new IdentityError { Code = "EmailAndUserNameShouldMatch", Description = "When the user name is an email address it should match the email address"});
                 return ;
             }
 
@@ -106,6 +106,8 @@ namespace OrchardCore.Users.Services
                 errors.Add(_identityErrorDescriber.DuplicateEmail(email));
                 return;
             }
+
+            // TODO Remove. This validation is no longer required as the 'EmailAndUserNameShouldMatch' validation removes the possibility of user hijacking.
 
             // Validate that the user name does not match an existing email address.
             // other = await manager.FindByEmailAsync(userName);
