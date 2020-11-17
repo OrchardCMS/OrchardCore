@@ -199,5 +199,5 @@ Github Actions currently supports Buildkit under Linux only.
 
 See : 
 
-https://github.com/docker/setup-buildx-action#limitation
-https://github.com/OrchardCMS/OrchardCore/issues/7651
+https://github.com/docker/setup-buildx-action#limitation  
+https://github.com/OrchardCMS/OrchardCore/issues/7651  
