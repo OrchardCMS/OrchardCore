@@ -57,7 +57,7 @@ namespace OrchardCore.Documents
             {
                 if (_volatileCache != null)
                 {
-                    return _volatileCache;
+                    document = _volatileCache;
                 }
                 else
                 {
