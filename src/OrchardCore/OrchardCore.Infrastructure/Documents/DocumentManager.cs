@@ -59,13 +59,15 @@ namespace OrchardCore.Documents
                 {
                     return _volatileCache;
                 }
-
-                _volatileCache = document = await GetFromDistributedCacheAsync()
-                    ?? await (factoryAsync?.Invoke() ?? Task.FromResult((TDocument)null))
-                    ?? new TDocument();
+                else
+                {
+                    document = _volatileCache = await GetFromDistributedCacheAsync()
+                        ?? await (factoryAsync?.Invoke() ?? Task.FromResult((TDocument)null))
+                        ?? new TDocument();
+                }
             }
 
-            document.Identifier = null;
+            document.Identifier = IdGenerator.GenerateId();
 
             return document;
         }
