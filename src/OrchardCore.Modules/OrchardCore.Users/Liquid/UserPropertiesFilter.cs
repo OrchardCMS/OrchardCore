@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Identity;
 using OrchardCore.Liquid;
 using OrchardCore.Users.Models;
 
-namespace OrchardCore.Users.Filters
+namespace OrchardCore.Users.Liquid
 {
     public class UserPropertiesFilter : ILiquidFilter
     {
