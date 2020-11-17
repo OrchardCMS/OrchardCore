@@ -87,7 +87,7 @@ namespace OrchardCore.Users.Services
             // Validate that if the user name is an email address, that it should match the email address.
             if (_emailAddressValidator.Validate(userName) && !String.Equals(userName, email, StringComparison.OrdinalIgnoreCase))
             {
-                errors.Add(new IdentityError { Code = "EmailAndUserNameShouldMatch", Description = "When the user name is an email address it should match the email address"});
+                errors.Add(new IdentityError { Code = "EmailAndUserNameShouldMatch", Description = "When the user name is an email address, it should match the email address"});
                 return ;
             }
 
