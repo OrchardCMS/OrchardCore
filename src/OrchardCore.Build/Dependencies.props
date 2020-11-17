@@ -17,9 +17,9 @@
     <PackageManagement Include="GraphQL" Version="2.4.0" />
     <PackageManagement Include="Jint" Version="3.0.0-beta-1914" />
     <PackageManagement Include="HtmlSanitizer" Version="5.0.355" />
-    <PackageManagement Include="Lucene.Net" Version="4.8.0-beta00012" />
-    <PackageManagement Include="Lucene.Net.Analysis.Common" Version="4.8.0-beta00012" />
-    <PackageManagement Include="Lucene.Net.QueryParser" Version="4.8.0-beta00012" />
+    <PackageManagement Include="Lucene.Net" Version="4.8.0-beta00013" />
+    <PackageManagement Include="Lucene.Net.Analysis.Common" Version="4.8.0-beta00013" />
+    <PackageManagement Include="Lucene.Net.QueryParser" Version="4.8.0-beta00013" />
     <PackageManagement Include="MailKit" Version="2.9.0" />
     <PackageManagement Include="Markdig" Version="0.22.0" />
     <PackageManagement Include="MessagePack" Version="2.2.60" />
@@ -36,7 +36,7 @@
     <PackageManagement Include="OrchardCore.Translations.All" Version="1.0.0-rc2-108003" />
     <PackageManagement Include="Serilog.AspNetCore" Version="3.4.0" />
     <PackageManagement Include="Shortcodes" Version="1.0.0-beta-175913881" />
-    <PackageManagement Include="SixLabors.ImageSharp.Web" Version="1.0.0" />
+    <PackageManagement Include="SixLabors.ImageSharp.Web" Version="1.0.1" />
     <PackageManagement Include="xunit.analyzers" Version="0.10.0" />
     <!-- xunit downgraded due to Theory Skip bug c.f. https://github.com/xunit/xunit/issues/1782 -->
     <PackageManagement Include="xunit" Version="2.3.1" />

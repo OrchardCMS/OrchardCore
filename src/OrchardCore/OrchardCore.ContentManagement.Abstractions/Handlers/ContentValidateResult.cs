@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 
 namespace OrchardCore.ContentManagement.Handlers
 {
@@ -14,10 +15,11 @@ namespace OrchardCore.ContentManagement.Handlers
         /// </summary>
         public bool Succeeded { get; set; } = true;
 
-        public void Fail(params ValidationResult[] errors)
+        public void Fail(ValidationResult error)
         {
             Succeeded = false;
-            _errors.AddRange(errors);
+            _errors.Add(error);
         }
+
     }
 }
