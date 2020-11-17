@@ -43,6 +43,13 @@ namespace OrchardCore.Media.Processing
             var pathParts = path.Split('?');
 
             var parsed = QueryHelpers.ParseQuery(pathParts.Length > 1 ? pathParts[1] : string.Empty);
+
+            // If no commands or only a version command don't bother tokenizing.
+            if (parsed.Count == 0 || parsed.Count == 1 && parsed.ContainsKey(ImageVersionProcessor.VersionCommand))
+            {
+               return path;
+            }
+
             var processingCommands = new Dictionary<string, string>();
             var otherCommands = new Dictionary<string, string>();
 
