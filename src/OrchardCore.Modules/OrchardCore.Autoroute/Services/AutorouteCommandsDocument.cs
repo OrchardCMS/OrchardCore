@@ -13,13 +13,16 @@ namespace OrchardCore.Autoroute.Services
 
         public void AddCommand(string name, IEnumerable<AutorouteEntry> entries)
         {
-            // Remove obsolete commands.
+            // We don't remove an obsolete command as we need to hold its 'Id',
+            // but we can remove its obsolete autoroute entries.
             foreach (var entry in entries)
             {
                 foreach (var command in Commands)
                 {
                     if (command.Name == name)
                     {
+                        command.Name = AutorouteCommand.Obsolete;
+
                         command.Entries.RemoveAll(e =>
                             e.ContentItemId == entry.ContentItemId &&
                             e.ContainedContentItemId == entry.ContainedContentItemId);
@@ -27,8 +30,7 @@ namespace OrchardCore.Autoroute.Services
                 }
             }
 
-            Commands.RemoveAll(c => c.Entries.Count == 0);
-
+            // Add the new command to process.
             Commands.Add(new AutorouteCommand()
             {
                 Name = name,
@@ -78,6 +80,7 @@ namespace OrchardCore.Autoroute.Services
     {
         public const string AddEntries = nameof(AddEntries);
         public const string RemoveEntries = nameof(RemoveEntries);
+        public const string Obsolete = nameof(Obsolete);
 
         public string Id { get; set; }
         public string Name { get; set; }
