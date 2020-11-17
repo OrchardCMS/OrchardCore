@@ -17,10 +17,15 @@ Once created, open the Setting menu item and each of these sections should appea
 
 ### Liquid
 
-The Custom User Settings are available on the `{{ User.Properties }}` object.  
+The Custom User Settings are available by loading the `User.Properties` object using the `user_properties` liquid filter.
+
+``` liquid
+{% assign userProperties = User | user_properties %}
+```
+
 Each section is made available using its name.
 
-For instance for a custom settings section named `UserProfile`, with a `TextField` named `FirstName` would be accessible using `{{ User.Properties.UserProfile.Content.UserProfile.FirstName.Text }}`.
+For instance for a custom settings section named `UserProfile`, with a `TextField` named `FirstName` would be accessible using `{{ userProperties.UserProfile.UserProfile.FirstName.Text }}`.
 
 ### Placement
 
