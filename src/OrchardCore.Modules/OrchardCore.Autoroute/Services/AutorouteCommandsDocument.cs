@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using OrchardCore.ContentManagement.Routing;
@@ -21,11 +22,14 @@ namespace OrchardCore.Autoroute.Services
                 {
                     if (command.Name == name)
                     {
-                        command.Name = AutorouteCommand.Obsolete;
-
                         command.Entries.RemoveAll(e =>
                             e.ContentItemId == entry.ContentItemId &&
                             e.ContainedContentItemId == entry.ContainedContentItemId);
+
+                        if (command.Entries.Count == 0)
+                        {
+                            command.Name = AutorouteCommand.Obsolete;
+                        }
                     }
                 }
             }
@@ -80,7 +84,7 @@ namespace OrchardCore.Autoroute.Services
     {
         public const string AddEntries = nameof(AddEntries);
         public const string RemoveEntries = nameof(RemoveEntries);
-        public const string Obsolete = nameof(Obsolete);
+        public static string Obsolete = String.Empty;
 
         public string Id { get; set; }
         public string Name { get; set; }
