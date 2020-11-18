@@ -26,13 +26,14 @@ namespace OrchardCore.Autoroute.Services
 
                         if (command.Entries.Count == 0)
                         {
+                            command.Name = null;
                             command.Entries = null;
                         }
                     }
                 }
             }
 
-            // Remove obsolete commands but still keep their 'Id' string for history.
+            // Remove obsolete commands but still keep 'Id' strings for history.
             while (true)
             {
                 var index = Commands.FindLastIndex(o => o is AutorouteCommand c && c.Entries == null);
@@ -52,7 +53,7 @@ namespace OrchardCore.Autoroute.Services
                 Entries = new List<AutorouteEntry>(entries)
             });
 
-            // Limit the commands list length, the ids strings having a lower weigth.
+            // Limit the commands list length, 'Id' strings having a lower weigth.
             var idsCount = Commands.OfType<string>().Count();
             var count = Commands.Count - (9 * idsCount / 10);
             if (count > MaxCommandsCount)
