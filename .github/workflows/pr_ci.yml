@@ -31,6 +31,8 @@ jobs:
       run: |
         dotnet test -c Release --no-restore --no-build ./test/OrchardCore.Tests/OrchardCore.Tests.csproj 
     - name: Functional Tests
+      container:
+        image: cypress/browsers:node12.13.0-chrome78-ff70
       if: matrix.os == 'ubuntu-latest'
       run: |
         cd test/Functional
