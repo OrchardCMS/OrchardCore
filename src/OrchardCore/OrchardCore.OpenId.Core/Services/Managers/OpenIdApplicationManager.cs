@@ -7,7 +7,6 @@ using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OpenIddict.Abstractions;
@@ -23,11 +22,10 @@ namespace OrchardCore.OpenId.Services.Managers
     {
         public OpenIdApplicationManager(
             IOpenIddictApplicationCache<TApplication> cache,
-            IStringLocalizer<OpenIddictResources> localizer,
             ILogger<OpenIdApplicationManager<TApplication>> logger,
             IOptionsMonitor<OpenIddictCoreOptions> options,
             IOpenIddictApplicationStoreResolver resolver)
-            : base(cache, localizer, logger, options, resolver)
+            : base(cache, logger, options, resolver)
         {
         }
 
