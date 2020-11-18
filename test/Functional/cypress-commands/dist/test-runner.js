@@ -75,7 +75,7 @@ function e2e(dir, assembly) {
 
   var server = host(dir, assembly);
 
-  let test = child_process.exec("npx cypress run");
+  let test = child_process.exec("npx cypress run --browser chrome");
   test.stdout.on("data", data => {
     console.log(data);
   });
