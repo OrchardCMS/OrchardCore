@@ -235,9 +235,13 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
             {
                 var updateEditorContext = new UpdatePartEditorContext(typePartDefinition, context);
 
+                _typePartDefinition = typePartDefinition;
+
                 var result = await UpdateAsync(part, context.Updater, updateEditorContext);
 
                 part.ContentItem.Apply(typePartDefinition.Name, part);
+
+                _typePartDefinition = null;
 
                 return result;
             }

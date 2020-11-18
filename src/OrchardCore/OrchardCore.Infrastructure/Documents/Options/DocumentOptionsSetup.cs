@@ -30,6 +30,7 @@ namespace OrchardCore.Documents.Options
                 options.CacheIdKey ??= "ID_" + name;
                 options.CheckConcurrency ??= true;
                 options.CheckConsistency ??= true;
+                options.SynchronizationLatency ??= TimeSpan.FromSeconds(1);
 
                 options.Serializer = DefaultDocumentSerializer.Instance;
 

@@ -1,7 +1,6 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OpenIddict.Abstractions;
@@ -15,11 +14,10 @@ namespace OrchardCore.OpenId.Services.Managers
     {
         public OpenIdScopeManager(
             IOpenIddictScopeCache<TScope> cache,
-            IStringLocalizer<OpenIddictResources> localizer,
             ILogger<OpenIddictScopeManager<TScope>> logger,
             IOptionsMonitor<OpenIddictCoreOptions> options,
             IOpenIddictScopeStoreResolver resolver)
-            : base(cache, localizer, logger, options, resolver)
+            : base(cache, logger, options, resolver)
         {
         }
 
