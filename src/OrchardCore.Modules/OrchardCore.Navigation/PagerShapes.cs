@@ -134,10 +134,7 @@ namespace OrchardCore.Navigation
             builder.Describe("Pager_Links")
                 .OnDisplaying(displaying =>
                 {
-                    dynamic shape = displaying.Shape;
-                    var pager = shape.Pager;
-                    string pagerId = pager.PagerId;
-                    if (!String.IsNullOrEmpty(pagerId))
+                    if (displaying.Shape.Properties.TryGetValue("PagerId", out var value) && value is string pagerId)
                     {
                         displaying.Shape.Metadata.Alternates.Add("Pager_Links__" + EncodeAlternateElement(pagerId));
                     }
