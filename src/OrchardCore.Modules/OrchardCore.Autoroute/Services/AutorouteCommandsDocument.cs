@@ -13,7 +13,7 @@ namespace OrchardCore.Autoroute.Services
 
         public void AddCommand(string name, IEnumerable<AutorouteEntry> entries)
         {
-            // Remove obsolete autoroute entries.
+            // Remove obsolete entries.
             foreach (var entry in entries)
             {
                 foreach (var commandObj in Commands)
@@ -33,7 +33,7 @@ namespace OrchardCore.Autoroute.Services
                 }
             }
 
-            // Remove obsolete commands but still keep 'Id' strings for history.
+            // Remove obsolete commands but keep 'Id' strings for history.
             while (true)
             {
                 var index = Commands.FindLastIndex(o => o is AutorouteCommand c && c.Entries == null);
@@ -54,8 +54,7 @@ namespace OrchardCore.Autoroute.Services
             });
 
             // Limit the commands list length, 'Id' strings having a lower weigth.
-            var idsCount = Commands.OfType<string>().Count();
-            var count = Commands.Count - (9 * idsCount / 10);
+            var count = Commands.Count - (9 * Commands.OfType<string>().Count() / 10);
             if (count > MaxCommandsCount)
             {
                 Commands = Commands.Skip(count - MaxCommandsCount).ToList();

@@ -145,20 +145,20 @@ namespace OrchardCore.Autoroute.Services
                     if (!document.TryGetLastCommands(_lastCommandId, out var lastCommands))
                     {
                         await InitializeLocalEntriesAsync();
-                        _lastCommandId = document.Identifier;
-                        return;
                     }
-
-                    foreach (var command in lastCommands)
+                    else
                     {
-                        if (command.Name == AutorouteCommand.AddEntries)
+                        foreach (var command in lastCommands)
                         {
-                            await AddLocalEntriesAsync(command.Entries);
-                        }
+                            if (command.Name == AutorouteCommand.AddEntries)
+                            {
+                                await AddLocalEntriesAsync(command.Entries);
+                            }
 
-                        if (command.Name == AutorouteCommand.RemoveEntries)
-                        {
-                            await RemoveLocalEntriesAsync(command.Entries);
+                            if (command.Name == AutorouteCommand.RemoveEntries)
+                            {
+                                await RemoveLocalEntriesAsync(command.Entries);
+                            }
                         }
                     }
 
