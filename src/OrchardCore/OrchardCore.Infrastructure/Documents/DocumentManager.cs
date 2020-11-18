@@ -140,10 +140,10 @@ namespace OrchardCore.Documents
             string id;
             if (_isDistributed)
             {
-                // Cache the id locally for one second to prevent network contention.
+                // Cache the id locally for the synchronization latency time.
                 id = await _memoryCache.GetOrCreateAsync(_options.CacheIdKey, entry =>
                 {
-                    entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(1);
+                    entry.AbsoluteExpirationRelativeToNow = _options.SynchronizationLatency;
                     return _distributedCache.GetStringAsync(_options.CacheIdKey);
                 });
             }
