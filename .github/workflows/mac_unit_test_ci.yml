@@ -17,5 +17,4 @@ jobs:
         dotnet-version: 5.0.100
     - name: Build and test
       run: |
-        dotnet build --configuration Release
-        dotnet test -c Release --no-restore --no-build ./test/OrchardCore.Tests/OrchardCore.Tests.csproj
+        dotnet test -c Release ./test/OrchardCore.Tests/OrchardCore.Tests.csproj
