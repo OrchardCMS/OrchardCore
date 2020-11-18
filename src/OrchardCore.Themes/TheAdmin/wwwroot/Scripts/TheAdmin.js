@@ -8912,8 +8912,7 @@ function persistAdminPreferences() {
     adminPreferences.darkMode = $('body').hasClass('darkmode') ? true : false;
     localStorage.setItem('adminPreferences', JSON.stringify(adminPreferences));
     Cookies.set('adminPreferences', JSON.stringify(adminPreferences), {
-      expires: 360,
-      domain: window.location.hostname
+      expires: 360
     });
   }, 200);
 }
