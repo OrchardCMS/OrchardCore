@@ -30,7 +30,7 @@ namespace OrchardCore.AdminMenu.AdminNodes
 
         public override IDisplayResult Edit(PlaceholderAdminNode treeNode)
         {
-            return Initialize<PlaceholderAdminNodeViewModel>("PlaceholderAdminNode_Fields_TreeEdit", model =>
+            return Initialize<PlaceholderAdminNodeViewModel>("PlaceholderAdminNode_Fields_TreeEdit", async model =>
             {
                 model.LinkText = treeNode.LinkText;
                 model.IconClass = treeNode.IconClass;
@@ -40,7 +40,7 @@ namespace OrchardCore.AdminMenu.AdminNodes
                 var nameList = new List<string>();
                 foreach (var permission in treeNode.Permissions)
                 {
-                    nameList.Add(permission.Name); 
+                    nameList.Add(permission.Name);
 
                     model.SelectedItems.Add(new VueMultiselectItemViewModel
                     {
@@ -48,9 +48,9 @@ namespace OrchardCore.AdminMenu.AdminNodes
                         DisplayText = $"{permission.Name} - {permission.Description}"
                     });
                 }
-                model.PermissionIds = string.Join(",", nameList);
-                
-                foreach (var permission in _permissionService.GetInstalledPermissionsAsync().Result)
+                model.PermissionIds = String.Join(",", nameList);
+
+                foreach (var permission in await _permissionService.GetInstalledPermissionsAsync())
                 {
                     model.AllItems.Add(new VueMultiselectItemViewModel
                     {
@@ -80,7 +80,7 @@ namespace OrchardCore.AdminMenu.AdminNodes
                     foreach (var permissionName in modifiedPermissions)
                     {
                         var perm = permissions.Where(p => p.Name == permissionName).FirstOrDefault();
-                        
+
                         if(perm != null)
                         {
                             treeNode.Permissions.Add(perm);
