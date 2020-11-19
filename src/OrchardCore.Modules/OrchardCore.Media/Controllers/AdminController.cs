@@ -377,7 +377,11 @@ namespace OrchardCore.Media.Controllers
                 path = "";
             }
 
-            name = name.Replace('\\', '-').Replace('/', '-'); // Don't create nested folders
+            var invalidFolderNameCharacters = new char[] { '\\', '/' };
+            if (invalidFolderNameCharacters.Any(invalidChar => name.Contains(invalidChar)))
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, S["Cannot create folder because the folder name contains invalid characters"]);
+            }
 
             var newPath = _mediaFileStore.Combine(path, name);
 
