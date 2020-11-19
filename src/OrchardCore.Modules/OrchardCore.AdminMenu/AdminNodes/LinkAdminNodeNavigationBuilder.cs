@@ -35,7 +35,8 @@ namespace OrchardCore.AdminMenu.AdminNodes
                 itemBuilder.Url(node.LinkUrl);
                 itemBuilder.Priority(node.Priority);
                 itemBuilder.Position(node.Position);
-                foreach(var permission in node.Permissions)
+
+                foreach (var permission in node.Permissions)
                 {
                     itemBuilder.Permission(permission);
                 }

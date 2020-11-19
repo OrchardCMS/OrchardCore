@@ -1,6 +1,6 @@
 using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.AdminMenu.ViewModels;
 using OrchardCore.DisplayManagement.Handlers;
@@ -38,6 +38,7 @@ namespace OrchardCore.AdminMenu.AdminNodes
                 model.AllItems = new List<VueMultiselectItemViewModel>();
 
                 var nameList = new List<string>();
+
                 foreach (var permission in treeNode.Permissions)
                 {
                     nameList.Add(permission.Name);
@@ -48,6 +49,7 @@ namespace OrchardCore.AdminMenu.AdminNodes
                         DisplayText = $"{permission.Name} - {permission.Description}"
                     });
                 }
+
                 model.PermissionIds = String.Join(",", nameList);
 
                 foreach (var permission in await _permissionService.GetInstalledPermissionsAsync())
@@ -69,11 +71,12 @@ namespace OrchardCore.AdminMenu.AdminNodes
                 treeNode.LinkText = model.LinkText;
                 treeNode.IconClass = model.IconClass;
 
-                var modifiedPermissions= (model.PermissionIds == null? new string[0] : model.PermissionIds.Split(',', StringSplitOptions.RemoveEmptyEntries));
+                var modifiedPermissions = (model.PermissionIds == null ? new string[0] : model.PermissionIds.Split(',', StringSplitOptions.RemoveEmptyEntries));
                 //clear the old permissions to insert all every time
                 treeNode.Permissions.Clear();
+
                 //change permissions only if one is inserted
-                if(modifiedPermissions.Length > 0)
+                if (modifiedPermissions.Length > 0)
                 {
                     var permissions = await _permissionService.GetInstalledPermissionsAsync();
 
@@ -81,7 +84,7 @@ namespace OrchardCore.AdminMenu.AdminNodes
                     {
                         var perm = permissions.Where(p => p.Name == permissionName).FirstOrDefault();
 
-                        if(perm != null)
+                        if (perm != null)
                         {
                             treeNode.Permissions.Add(perm);
                         }
