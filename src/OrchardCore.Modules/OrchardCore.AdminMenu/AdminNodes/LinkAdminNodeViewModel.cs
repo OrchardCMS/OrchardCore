@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using OrchardCore.AdminMenu.ViewModels;
-using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.AdminMenu.AdminNodes
 {

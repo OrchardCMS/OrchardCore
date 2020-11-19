@@ -106,12 +106,12 @@
             <div class="w-xl-50">
                 <input asp-for="PermissionIds" type="hidden" v-model="selectedIds" />
                 <vue-multiselect v-model="value" :options="options" track-by="id"
-                                label="displayText" placeholder="@T["Type to search"]"
-                                @@search-change="asyncFind" @@select="onSelect"
-                                :searchable="true" :close-on-select="true" :reset-after="true"
-                                :show-labels="true" :hide-selected="false"
-                                :disabled="isDisabled"
-                                select-label="@T["Select"]" deselect-label="@T["Remove"]">
+                                 label="displayText" placeholder="@T["Type to search"]"
+                                 @@search-change="asyncFind" @@select="onSelect"
+                                 :searchable="true" :close-on-select="true" :reset-after="true"
+                                 :show-labels="true" :hide-selected="false"
+                                 :disabled="isDisabled"
+                                 select-label="@T["Select"]" deselect-label="@T["Remove"]">
                     <template slot="option" slot-scope="props">
                         <div v-cloak><span>{{ props.option.displayText }}</span></div>
                     </template>
