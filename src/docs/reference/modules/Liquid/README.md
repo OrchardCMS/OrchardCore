@@ -327,7 +327,7 @@ Checks if the user has a claim of the specified type
 
 #### User user_settings filter
 
-Get's the User.Properties object
+Gets the User.Properties object:
 
 ```liquid
 {% assign userSettings = User | user_settings  %}
