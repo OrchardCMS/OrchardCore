@@ -1,0 +1,21 @@
+Autoroutes
+----------
+
+Initialization
+--------------
+(x) 'InitializeLocalEntriesAsync()'
+(x) 'AutoroutePartIndexLastId' and 'ContentItemIndexLastId'
+(x) Init 'AutorouteStateDocument'
+
+Update
+------
+Add / Remove entries => update 'AutorouteStateDocument'
+Update immediately local entries OR read index tables to build them
+The last way allow to update the index tables cursors!!!
+
+If 'AutorouteStateDocument' has changed
+---------------------------------------
+ContentItemIndex (id > lastId) => Remove entries of all deleted content items (latest = published = false)
+AutoroutePartIndex (id > lastId) => Build and add new related autoroute entries
+
+See duplicate code in part handler / part index, in handler only keep set home route

@@ -16,29 +16,22 @@ namespace OrchardCore.Autoroute.Services
     public class AutorouteEntries : IAutorouteEntries
     {
         private ImmutableDictionary<string, AutorouteEntry> _paths = ImmutableDictionary<string, AutorouteEntry>.Empty;
-        public ImmutableDictionary<string, AutorouteEntry> _contentItemIds = ImmutableDictionary<string, AutorouteEntry>.Empty;
+        private ImmutableDictionary<string, AutorouteEntry> _contentItemIds = ImmutableDictionary<string, AutorouteEntry>.Empty;
 
         private readonly SemaphoreSlim _entriesSemaphore = new SemaphoreSlim(1);
         private readonly SemaphoreSlim _initializeSemaphore = new SemaphoreSlim(1);
-        private readonly SemaphoreSlim _commandsSemaphore = new SemaphoreSlim(1);
+        private readonly SemaphoreSlim _updateSemaphore = new SemaphoreSlim(1);
 
-        private string _lastCommandId;
+        private AutorouteStateDocument _state = new AutorouteStateDocument();
+
+        private int _autoroutePartIndexLastId;
+        private int _contentItemIndexLastId;
         private bool _initialized;
 
         public AutorouteEntries()
         {
             _contentItemIds = _contentItemIds.WithComparers(StringComparer.OrdinalIgnoreCase);
         }
-
-        /// <summary>
-        /// Loads the autoroute commands document for updating and that should not be cached.
-        /// </summary>
-        private Task<AutorouteCommandsDocument> LoadCommandsDocumentAsync() => DocumentManager.GetOrCreateMutableAsync();
-
-        /// <summary>
-        /// Gets the autoroute commands document for sharing and that should not be updated.
-        /// </summary>
-        private Task<AutorouteCommandsDocument> GetCommandsDocumentAsync() => DocumentManager.GetOrCreateImmutableAsync();
 
         public async Task<(bool, AutorouteEntry)> TryGetEntryByPathAsync(string path)
         {
@@ -68,12 +61,11 @@ namespace OrchardCore.Autoroute.Services
         {
             await EnsureInitializedAsync();
 
-            await DocumentManager.UpdateAtomicAsync(async () =>
+            await AutorouteStateManager.UpdateAtomicAsync(async () =>
             {
-                var document = await LoadCommandsDocumentAsync();
-                document.AddCommand(AutorouteCommand.AddEntries, entries);
-                await UpdateLocalEntriesAsync(document);
-                return document;
+                await RefreshLocalEntriesAsync();
+                await AddLocalEntriesAsync(entries);
+                return _state = new AutorouteStateDocument();
             });
         }
 
@@ -81,27 +73,27 @@ namespace OrchardCore.Autoroute.Services
         {
             await EnsureInitializedAsync();
 
-            await DocumentManager.UpdateAtomicAsync(async () =>
+            await AutorouteStateManager.UpdateAtomicAsync(async () =>
             {
-                var document = await LoadCommandsDocumentAsync();
-                document.AddCommand(AutorouteCommand.RemoveEntries, entries);
-                await UpdateLocalEntriesAsync(document);
-                return document;
+                await RefreshLocalEntriesAsync();
+                await RemoveLocalEntriesAsync(entries);
+                return _state = new AutorouteStateDocument();
             });
         }
 
         private async Task EnsureInitializedAsync()
         {
-            var document = await GetCommandsDocumentAsync();
+            var document = await GetStateDocumentAsync();
 
             if (!_initialized)
             {
                 await InitializeAsync();
+                return;
             }
 
-            if (_lastCommandId != document.Identifier)
+            if (_state.Identifier != document.Identifier)
             {
-                await UpdateLocalEntriesAsync(document);
+                await RefreshLocalEntriesAsync();
             }
         }
 
@@ -117,9 +109,7 @@ namespace OrchardCore.Autoroute.Services
             {
                 if (!_initialized)
                 {
-                    var document = await GetCommandsDocumentAsync();
                     await InitializeLocalEntriesAsync();
-                    _lastCommandId = document.Identifier;
                     _initialized = true;
                 }
 
@@ -130,58 +120,11 @@ namespace OrchardCore.Autoroute.Services
             }
         }
 
-        private async Task UpdateLocalEntriesAsync(AutorouteCommandsDocument document)
-        {
-            if (_lastCommandId == document.Identifier)
-            {
-                return;
-            }
-
-            await _commandsSemaphore.WaitAsync();
-            try
-            {
-                if (_lastCommandId != document.Identifier)
-                {
-                    if (!document.TryGetLastCommands(_lastCommandId, out var lastCommands))
-                    {
-                        await InitializeLocalEntriesAsync();
-                    }
-                    else
-                    {
-                        foreach (var command in lastCommands)
-                        {
-                            if (command.Name == AutorouteCommand.AddEntries)
-                            {
-                                await AddLocalEntriesAsync(command.Entries);
-                            }
-
-                            if (command.Name == AutorouteCommand.RemoveEntries)
-                            {
-                                await RemoveLocalEntriesAsync(command.Entries);
-                            }
-                        }
-                    }
-
-                    _lastCommandId = document.Identifier;
-                }
-            }
-            finally
-            {
-                _commandsSemaphore.Release();
-            }
-        }
-
-        private async Task AddLocalEntriesAsync(IEnumerable<AutorouteEntry> entries, bool clear = false)
+        private async Task AddLocalEntriesAsync(IEnumerable<AutorouteEntry> entries)
         {
             await _entriesSemaphore.WaitAsync();
             try
             {
-                if (clear)
-                {
-                    _paths = _paths.Clear();
-                    _contentItemIds = _contentItemIds.Clear();
-                }
-
                 // Evict all entries related to a container item from autoroute entries.
                 // This is necessary to account for deletions, disabling of an item, or disabling routing of contained items.
                 foreach (var entry in entries.Where(x => String.IsNullOrEmpty(x.ContainedContentItemId)))
@@ -254,16 +197,77 @@ namespace OrchardCore.Autoroute.Services
             }
         }
 
+        protected virtual async Task RefreshLocalEntriesAsync()
+        {
+            var document = await LoadStateDocumentAsync();
+
+            if (_state.Identifier == document.Identifier)
+            {
+                return;
+            }
+
+            await _updateSemaphore.WaitAsync();
+            try
+            {
+                if (_state.Identifier != document.Identifier)
+                {
+                    _state = document;
+
+                    var autorouteIndexes = await Session.QueryIndex<AutoroutePartIndex>(
+                        i => i.Id > _autoroutePartIndexLastId && i.Published)
+                        .ListAsync();
+
+                    var itemIndexes = await Session.QueryIndex<ContentItemIndex>(
+                        i => i.Id > _contentItemIndexLastId)
+                        .ListAsync();
+
+                    _autoroutePartIndexLastId = autorouteIndexes.LastOrDefault()?.Id ?? 0;
+                    _contentItemIndexLastId = itemIndexes.LastOrDefault()?.Id ?? 0;
+
+                    var valideIds = itemIndexes.Where(i => i.Published || i.Latest).Select(i => i.ContentItemId);
+                    var removedIds = itemIndexes.Where(i => !valideIds.Contains(i.ContentItemId)).Select(i => i.ContentItemId).Distinct();
+
+                    var entriesToRemove = new List<AutorouteEntry>();
+                    foreach (var contentItemId in removedIds)
+                    {
+                        entriesToRemove.AddRange(
+                            _paths.Values.Where(entry => entry.ContentItemId == contentItemId ||
+                                entry.ContainedContentItemId == contentItemId));
+                    }
+
+                    var entriesToAdd = autorouteIndexes.Select(i => new AutorouteEntry(i.ContentItemId, i.Path, i.ContainedContentItemId, i.JsonPath));
+
+                    await RemoveLocalEntriesAsync(entriesToRemove);
+                    await AddLocalEntriesAsync(entriesToAdd);
+                }
+            }
+            finally
+            {
+                _updateSemaphore.Release();
+            }
+        }
+
         protected virtual async Task InitializeLocalEntriesAsync()
         {
-            var indexes = await Session.QueryIndex<AutoroutePartIndex>(i => i.Published).ListAsync();
-            var entries = indexes.Select(i => new AutorouteEntry(i.ContentItemId, i.Path, i.ContainedContentItemId, i.JsonPath));
-            await AddLocalEntriesAsync(entries, clear: true);
+            _state = await LoadStateDocumentAsync();
+
+            var autorouteIndexes = await Session.QueryIndex<AutoroutePartIndex>(i => i.Published).ListAsync();
+            var itemLastIndex = await Session.QueryIndex<ContentItemIndex>().OrderByDescending(i => i.Id).FirstOrDefaultAsync();
+
+            _autoroutePartIndexLastId = autorouteIndexes.LastOrDefault()?.Id ?? 0;
+            _contentItemIndexLastId = itemLastIndex?.Id ?? 0;
+
+            var entries = autorouteIndexes.Select(i => new AutorouteEntry(i.ContentItemId, i.Path, i.ContainedContentItemId, i.JsonPath));
+            await AddLocalEntriesAsync(entries);
         }
+
+        private static Task<AutorouteStateDocument> LoadStateDocumentAsync() => AutorouteStateManager.GetOrCreateMutableAsync();
+
+        private static Task<AutorouteStateDocument> GetStateDocumentAsync() => AutorouteStateManager.GetOrCreateImmutableAsync();
 
         private static ISession Session => ShellScope.Services.GetRequiredService<ISession>();
 
-        private static IVolatileDocumentManager<AutorouteCommandsDocument> DocumentManager
-            => ShellScope.Services.GetRequiredService<IVolatileDocumentManager<AutorouteCommandsDocument>>();
+        private static IVolatileDocumentManager<AutorouteStateDocument> AutorouteStateManager
+            => ShellScope.Services.GetRequiredService<IVolatileDocumentManager<AutorouteStateDocument>>();
     }
 }

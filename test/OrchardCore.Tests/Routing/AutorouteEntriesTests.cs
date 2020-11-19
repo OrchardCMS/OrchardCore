@@ -260,6 +260,7 @@ namespace OrchardCore.Tests.Routing
 
         private class StubAutorouteEntries : AutorouteEntries
         {
+            protected override Task RefreshLocalEntriesAsync() => Task.CompletedTask;
             protected override Task InitializeLocalEntriesAsync() => Task.CompletedTask;
         }
 
