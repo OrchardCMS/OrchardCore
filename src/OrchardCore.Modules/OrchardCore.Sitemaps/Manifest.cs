@@ -14,7 +14,6 @@ using OrchardCore.Modules.Manifest;
     Dependencies = new[]
     {
         "OrchardCore.Contents",
-        "OrchardCore.Liquid"
     },
     Category = "Content Management"
 )]

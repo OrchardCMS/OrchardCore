@@ -53,7 +53,7 @@ namespace OrchardCore.Deployment
             services.AddSingleton<IIndexProvider, DeploymentPlanIndexProvider>();
             services.AddTransient<IDataMigration, Migrations>();
 
-            services.AddScoped<DeploymentPlanService>();
+            services.AddScoped<IDeploymentPlanService, DeploymentPlanService>();
 
             services.AddRecipeExecutionStep<DeploymentPlansRecipeStep>();
 

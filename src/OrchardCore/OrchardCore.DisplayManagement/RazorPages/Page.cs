@@ -226,6 +226,61 @@ namespace OrchardCore.DisplayManagement.RazorPages
             return Shape.GetTagBuilder(shape, tag);
         }
 
+        /// <summary>
+        /// Check if a zone is defined in the layout or it has items.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public bool IsSectionDefined(string name)
+        {
+            // We can replace the base implementation as it can't be called on a view that is not an actual MVC Layout.
+
+            if (name == null)
+            {
+                throw new ArgumentNullException(nameof(name));
+            }
+
+            var zone = ThemeLayout[name];
+
+            return zone != null;
+        }
+
+        /// <summary>
+        /// Renders a zone from the RazorPages.
+        /// </summary>
+        /// <param name="name">The name of the zone to render.</param>
+        public Task<IHtmlContent> RenderSectionAsync(string name)
+        {
+            if (name == null)
+            {
+                throw new ArgumentNullException(nameof(name));
+            }
+
+            return RenderSectionAsync(name, required: true);
+        }
+
+        /// <summary>
+        /// Renders a zone from the RazorPages.
+        /// </summary>
+        /// <param name="name">The name of the zone to render.</param>
+        /// <param name="required">Whether the zone is required or not.</param>
+        public Task<IHtmlContent> RenderSectionAsync(string name, bool required)
+        {
+            if (name == null)
+            {
+                throw new ArgumentNullException(nameof(name));
+            }
+
+            var zone = ThemeLayout[name];
+
+            if (required && zone != null && zone is Shape && zone.Items.Count == 0)
+            {
+                throw new InvalidOperationException("Zone not found: " + name);
+            }
+
+            return DisplayAsync(zone);
+        }
+
         public object OrDefault(object text, object other)
         {
             if (text == null || Convert.ToString(text) == "")

@@ -15,7 +15,11 @@ $background: #ecf0f1;
 $z-index-fullscreen: 1200;
 
 $toolbar-height-fullscreen: 39px;
+
 .simplemde-editor {
+    .icon-shortcode {
+        margin-top: 7px;
+    }
     .CodeMirror {
         height: auto;
         min-height: 300px;

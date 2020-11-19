@@ -175,6 +175,17 @@ Output
 <h3>Services</h3>
 ```
 
+### `sanitize_html`
+
+Sanitizes some HTML content.
+
+```liquid
+{% capture output %}
+  <span class="text-primary">{{ Content }}</span>
+{% endcapture %}
+{{ output | sanitize_html | raw }}
+```
+
 ## Json Filters
 
 ### `json`
@@ -281,6 +292,14 @@ The following properties are available on the `User` object.
 | `Identity.Name` | `admin` | The name of the authenticated user. |
 | `Identity.Claims` |  | The claims of the authenticated user. |
 
+##### user_email filter
+
+Returns the user's email.
+
+```liquid
+{{ User | user_email }}
+```
+
 #### User has_permission filter
 
 Checks if the User has permission clearance, optionally on a resource
@@ -319,7 +338,7 @@ Gives access to the current site settings, e.g `Site.SiteName`.
 | `MaxPageSize` | `100` | The maximum page size that can be set by a user. | 
 | `PageSize` | `10` | The default page size of lists. | 
 | `SiteName` | `My Site` | The friendly name of the site. | 
-| `SuperUser` | `admin` | The user name of the site's super user. | 
+| `SuperUser` | `4kxfgfrxqmdpnt5n508cqvpvca` | The user id of the site's super user. | 
 | `TimeZoneId` | `America/Los_Angeles` | The site's time zone id as per the tz database, c.f., https://en.wikipedia.org/wiki/List_of_tz_database_time_zones | 
 | `UseCdn` | `false` | Enable/disable the use of a CDN. | 
 | `ResourceDebugMode` | `Disabled` | Provides options for whether src or debug-src is used for loading scripts and stylesheets | 
@@ -348,6 +367,7 @@ The following properties are available on the `Request` object.
 | `IsHttps` | `true` | True if the scheme of the request is `https`. |
 | `Scheme` | `https` | The scheme of the request. |
 | `Method` | `GET` | The HTTP method. |
+| `Route` | Usage: `Request.Route.controller` | The route values for this request. |
 
 ### Culture
 
@@ -584,7 +604,7 @@ Input
 
 Adds properties to a shape. This can be useful to pass values from a parent shape.  
 Property names get converted to PascalCase.  
-Ex: `prop_name1` can be accessed via `Model.PropName1` in the shape template.
+Ex: `prop_name1` can be accessed via `Model.Properties["PropName1"]` or `Model.Properties.PropName1` in the shape template.
 
 Input
 
@@ -772,7 +792,7 @@ Using `helper` invokes the `validation_for` tag helper of ASP.NET Core with `spa
 
 ### `link`
 
-Invokes the `link` tag helper from the `Orchard.ResourceManagement` package.
+Invokes the `link` tag helper from the `Orchard.ResourceManagement` package. [see this section](../Resources/README.md#link-tag)
 
 ### `meta`
 

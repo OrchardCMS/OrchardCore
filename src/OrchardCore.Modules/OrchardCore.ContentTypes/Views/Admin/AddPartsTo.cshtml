@@ -16,7 +16,7 @@
                     <div class="custom-control custom-checkbox">
                         <input type="checkbox" class="custom-control-input" asp-for="PartSelections[i].IsSelected">
                         <label class="custom-control-label" asp-for="PartSelections[i].IsSelected">@partSelection.PartDisplayName</label>
-                        <span class="hint">— @partSelection.PartDescription</span>
+                        <span class="hint dashed">@partSelection.PartDescription</span>
                     </div>
                     <input asp-for="PartSelections[i].IsSelected" type="hidden" />
                     <input asp-for="PartSelections[i].PartName" type="hidden" />
@@ -26,7 +26,7 @@
         </ul>
     </div>
     <div class="form-group">
-        <button class="btn btn-primary" type="submit">@T["Save"]</button>
-        <a asp-route-action="Edit" asp-route-id="@Model.Type.Name" class="btn btn-secondary">@T["Cancel"]</a>
+        <button class="btn btn-primary save" type="submit">@T["Save"]</button>
+        <a class="btn btn-secondary cancel" role="button" asp-route-action="Edit" asp-route-id="@Model.Type.Name">@T["Cancel"]</a>
     </div>
 </form>

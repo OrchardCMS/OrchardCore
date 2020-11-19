@@ -10,8 +10,8 @@ using OrchardCore.Apis;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Handlers;
-using OrchardCore.Contents.ViewModels;
 using OrchardCore.Contents.Services;
+using OrchardCore.Contents.ViewModels;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data;
 using OrchardCore.Data.Migration;
@@ -91,6 +91,10 @@ namespace OrchardCore.Taxonomies
             services.AddContentPart<TermPart>();
             services.AddScoped<IContentHandler, TermPartContentHandler>();
             services.AddScoped<IContentDisplayDriver, TermPartContentDriver>();
+
+            // Liquid
+            services.AddLiquidFilter<TaxonomyTermsFilter>("taxonomy_terms");
+            services.AddLiquidFilter<InheritedTermsFilter>("inherited_terms");
         }
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
@@ -153,16 +157,6 @@ namespace OrchardCore.Taxonomies
                 return new SiteSettingsPropertyDeploymentStepDriver<TaxonomyContentsAdminListSettings>(S["Taxonomy Filters settings"], S["Exports the Taxonomy filters settings."]);
             });
             services.AddSingleton<IDeploymentStepFactory>(new SiteSettingsPropertyDeploymentStepFactory<TaxonomyContentsAdminListSettings>());
-        }
-    }
-
-    [RequireFeatures("OrchardCore.Liquid")]
-    public class LiquidStartup : StartupBase
-    {
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddLiquidFilter<TaxonomyTermsFilter>("taxonomy_terms");
-            services.AddLiquidFilter<InheritedTermsFilter>("inherited_terms");
         }
     }
 

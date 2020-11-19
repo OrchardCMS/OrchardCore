@@ -120,6 +120,7 @@ namespace OrchardCore.FileStorage
         /// <summary>
         /// Combines multiple path parts using the path delimiter semantics of the abstract virtual file store.
         /// </summary>
+        /// <param name="fileStore">The <see cref="IFileStore"/>.</param>
         /// <param name="paths">The path parts to combine.</param>
         /// <returns>The full combined path.</returns>
         public static string Combine(this IFileStore fileStore, params string[] paths)

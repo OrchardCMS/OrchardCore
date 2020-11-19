@@ -6,13 +6,15 @@ using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Shortcodes.Services;
 using OrchardCore.Infrastructure.Html;
 using OrchardCore.Liquid;
 using OrchardCore.Markdown.Fields;
 using OrchardCore.Markdown.Services;
 using OrchardCore.Markdown.Settings;
 using OrchardCore.Markdown.ViewModels;
+using OrchardCore.Mvc.ModelBinding;
+using OrchardCore.Shortcodes.Services;
+using Shortcodes;
 
 namespace OrchardCore.Markdown.Drivers
 {
@@ -62,7 +64,12 @@ namespace OrchardCore.Markdown.Drivers
                         scope => scope.SetValue("ContentItem", field.ContentItem));
                 }
 
-                model.Html = await _shortcodeService.ProcessAsync(model.Html ?? "");
+                model.Html = await _shortcodeService.ProcessAsync(model.Html,
+                    new Context
+                    {
+                        ["ContentItem"] = field.ContentItem,
+                        ["PartFieldDefinition"] = context.PartFieldDefinition
+                    });
 
                 if (settings.SanitizeHtml)
                 {
@@ -88,12 +95,12 @@ namespace OrchardCore.Markdown.Drivers
         {
             var viewModel = new EditMarkdownFieldViewModel();
 
-            if (await updater.TryUpdateModelAsync(viewModel, Prefix, f => f.Markdown))
+            if (await updater.TryUpdateModelAsync(viewModel, Prefix, vm => vm.Markdown))
             {
                 if (!string.IsNullOrEmpty(viewModel.Markdown) && !_liquidTemplateManager.Validate(viewModel.Markdown, out var errors))
                 {
                     var fieldName = context.PartFieldDefinition.DisplayName();
-                    context.Updater.ModelState.AddModelError(nameof(field.Markdown), S["{0} field doesn't contain a valid Liquid expression. Details: {1}", fieldName, string.Join(" ", errors)]);
+                    updater.ModelState.AddModelError(Prefix, nameof(viewModel.Markdown), S["{0} field doesn't contain a valid Liquid expression. Details: {1}", fieldName, string.Join(" ", errors)]);
                 }
                 else
                 {

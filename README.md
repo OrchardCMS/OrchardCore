@@ -6,7 +6,7 @@ Orchard Core consists of two distinct projects:
 - __Orchard Core CMS__: A Web Content Management System (CMS) built on top of the Orchard Core Framework.
 
 [![Join the chat at https://gitter.im/OrchardCMS/OrchardCore](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/OrchardCMS/OrchardCore?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-[![BSD-3-Clause License](https://img.shields.io/badge/license-BSD--3--Clause-blue.svg)](LICENSE.txt)
+[![BSD-3-Clause License](https://img.shields.io/badge/license-BSD--3--Clause-blue.svg)](LICENSE)
 [![Documentation](https://readthedocs.org/projects/orchardcore/badge/)](https://docs.orchardcore.net/)
 [![Crowdin](https://badges.crowdin.net/orchard-core/localized.svg)](https://crowdin.com/project/orchard-core)
 
@@ -51,9 +51,10 @@ Here is a more detailed [roadmap](https://github.com/OrchardCMS/OrchardCore/wiki
 
 ### Docker
 
-- Run `docker run --name orchardcms orchardproject/orchardcore-cms-linux:latest`
+- Run `docker run --name orchardcms -p 8080:80 orchardproject/orchardcore-cms-linux:latest`
 
-Docker images and parameters can be found at <https://hub.docker.com/u/orchardproject/>
+Docker images and parameters can be found at <https://hub.docker.com/u/orchardproject/>  
+See [Docker documentation](https://docs.docker.com/engine/reference/commandline/run/#publish-or-expose-port--p---expose) to expose different port.
 
 ### Documentation
 

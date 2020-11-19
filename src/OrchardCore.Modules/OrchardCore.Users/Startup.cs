@@ -15,6 +15,7 @@ using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Theming;
+using OrchardCore.Entities;
 using OrchardCore.Environment.Commands;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Configuration;
@@ -173,6 +174,8 @@ namespace OrchardCore.Users
 
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IUserClaimsPrincipalFactory<IUser>, DefaultUserClaimsPrincipalFactory>();
+            services.AddIdGeneration();
+            services.AddSingleton<IUserIdGenerator, DefaultUserIdGenerator>();
 
             services.AddScoped<IMembershipService, MembershipService>();
             services.AddScoped<ISetupEventHandler, SetupEventHandler>();
@@ -203,6 +206,7 @@ namespace OrchardCore.Users
             services.AddLiquidFilter<HasPermissionFilter>("has_permission");
             services.AddLiquidFilter<HasClaimFilter>("has_claim");
             services.AddLiquidFilter<IsInRoleFilter>("is_in_role");
+            services.AddLiquidFilter<UserEmailFilter>("user_email");
         }
     }
 

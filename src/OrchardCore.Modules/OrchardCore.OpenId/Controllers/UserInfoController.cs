@@ -7,6 +7,7 @@ using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
+using OpenIddict.Abstractions;
 using OpenIddict.Server.AspNetCore;
 using OrchardCore.Modules;
 using static OpenIddict.Abstractions.OpenIddictConstants;
@@ -62,58 +63,45 @@ namespace OrchardCore.OpenId.Controllers
 
             var claims = new Dictionary<string, object>();
 
-            if (principal.HasClaim(Claims.Scope, Scopes.Profile))
+            if (principal.HasScope(Scopes.Profile))
             {
-                var preferredUsername = principal.FindFirst(Claims.PreferredUsername)
-                                                 ?.Value;
+                var preferredUsername = principal.FindFirst(Claims.PreferredUsername)?.Value;
                 if (!string.IsNullOrEmpty(preferredUsername))
                 {
                     claims[Claims.PreferredUsername] = preferredUsername;
                 }
 
-                var name = principal.FindFirst(Claims.Name)?.Value ??
-                              principal.FindFirst(ClaimTypes.Name)?.Value;
-
+                var name = principal.FindFirst(Claims.Name)?.Value ?? principal.FindFirst(ClaimTypes.Name)?.Value;
                 if (!string.IsNullOrEmpty(name))
                 {
                     claims[Claims.Name] = name;
                 }
 
-                var familyName = principal.FindFirst(Claims.FamilyName)?.Value ??
-                           principal.FindFirst(ClaimTypes.Surname)?.Value;
-
+                var familyName = principal.FindFirst(Claims.FamilyName)?.Value ?? principal.FindFirst(ClaimTypes.Surname)?.Value;
                 if (!string.IsNullOrEmpty(familyName))
                 {
                     claims[Claims.FamilyName] = familyName;
                 }
 
-                var givenName = principal.FindFirst(Claims.GivenName)?.Value ??
-                           principal.FindFirst(ClaimTypes.GivenName)?.Value;
-
+                var givenName = principal.FindFirst(Claims.GivenName)?.Value ?? principal.FindFirst(ClaimTypes.GivenName)?.Value;
                 if (!string.IsNullOrEmpty(givenName))
                 {
                     claims[Claims.GivenName] = givenName;
                 }
 
-                var middleName = principal.FindFirst(Claims.MiddleName)
-                                          ?.Value;
-
+                var middleName = principal.FindFirst(Claims.MiddleName)?.Value;
                 if (!string.IsNullOrEmpty(middleName))
                 {
                     claims[Claims.MiddleName] = middleName;
                 }
 
-                var picture = principal.FindFirst(Claims.Picture)
-                                       ?.Value;
-
+                var picture = principal.FindFirst(Claims.Picture)?.Value;
                 if (!string.IsNullOrEmpty(picture))
                 {
                     claims[Claims.Picture] = picture;
                 }
 
-                var updatedAtClaimValue = principal.FindFirst(Claims.UpdatedAt)
-                                       ?.Value;
-
+                var updatedAtClaimValue = principal.FindFirst(Claims.UpdatedAt)?.Value;
                 if (!string.IsNullOrEmpty(updatedAtClaimValue))
                 {
                     claims[Claims.UpdatedAt] = long.Parse(updatedAtClaimValue, CultureInfo.InvariantCulture);
@@ -123,7 +111,7 @@ namespace OrchardCore.OpenId.Controllers
             // Note: the "sub" claim is a mandatory claim and must be included in the JSON response.
             claims[Claims.Subject] = principal.GetUserIdentifier();
 
-            if (principal.HasClaim(Claims.Scope, Scopes.Email))
+            if (principal.HasScope(Scopes.Email))
             {
                 var address = principal.FindFirst(Claims.Email)?.Value ?? principal.FindFirst(ClaimTypes.Email)?.Value;
 
@@ -139,7 +127,7 @@ namespace OrchardCore.OpenId.Controllers
                 }
             }
 
-            if (principal.HasClaim(Claims.Scope, Scopes.Phone))
+            if (principal.HasScope(Scopes.Phone))
             {
                 var phone = principal.FindFirst(Claims.PhoneNumber)?.Value ??
                             principal.FindFirst(ClaimTypes.MobilePhone)?.Value ??
@@ -158,7 +146,7 @@ namespace OrchardCore.OpenId.Controllers
                 }
             }
 
-            if (principal.HasClaim(Claims.Scope, Scopes.Roles))
+            if (principal.HasScope(Scopes.Roles))
             {
                 var roles = principal.FindAll(Claims.Role)
                                      .Concat(principal.FindAll(ClaimTypes.Role))

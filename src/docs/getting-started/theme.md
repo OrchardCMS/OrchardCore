@@ -11,7 +11,7 @@ In this article, we are going to create an Orchard Core Theme by adding it to an
 - In Visual Studio Code or CLI, execute the command `dotnet sln add MyTheme.OrchardCore.csproj` to add project to solution. Then, go to `OrchardCore.Cms.Web` folder and execute the command `dotnet add OrchardCore.Cms.Web.csproj reference ../OrchardCore.Themes/MyTheme.OrchardCore.csproj`
 - Set the main Orchard Core CMS Web application as the startup project.
 
-A thumbnail can also be created by adding a `Theme.png` in the `wwwwroot` folder.
+A thumbnail can also be created by adding a `Theme.png` in the `wwwroot` folder.
 
 ![image](assets/MyTheme.png)
 
