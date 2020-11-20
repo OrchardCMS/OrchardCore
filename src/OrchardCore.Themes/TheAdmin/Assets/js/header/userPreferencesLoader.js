@@ -10,6 +10,7 @@ var observer = new MutationObserver(function (mutations) {
             
             if (mutations[i].addedNodes[j].tagName == 'BODY') {
 
+                var html = document.querySelector("html");
                 var body = mutations[i].addedNodes[j];
                 var defaultCSS = document.getElementById('admin-default');
                 var darkModeCSS = document.getElementById('admin-darkmode');
@@ -25,7 +26,7 @@ var observer = new MutationObserver(function (mutations) {
                         if (adminPreferences.darkMode){
                             darkModeCSS.setAttribute('media', 'all');
                             defaultCSS.setAttribute('media', 'not all');
-                            body.classList.add('darkmode');
+                            html.setAttribute('data-theme', 'darkmode');
                             
                             btnDarkMode.firstChild.classList.remove('fa-moon');
                             btnDarkMode.firstChild.classList.add('fa-sun');
@@ -34,7 +35,7 @@ var observer = new MutationObserver(function (mutations) {
                         {
                             darkModeCSS.setAttribute('media', 'not all');
                             defaultCSS.setAttribute('media', 'all');
-                            body.classList.remove('darkmode');
+                            html.setAttribute('data-theme', 'default');
 
                             btnDarkMode.firstChild.classList.remove('fa-sun');
                             btnDarkMode.firstChild.classList.add('fa-moon');
@@ -49,14 +50,14 @@ var observer = new MutationObserver(function (mutations) {
                         {
                             darkModeCSS.setAttribute('media', 'all');
                             defaultCSS.setAttribute('media', 'not all');
-                            body.classList.add('darkmode');
+                            html.setAttribute('data-theme', 'darkmode');
 
                             btnDarkMode.firstChild.classList.remove('fa-moon');
                             btnDarkMode.firstChild.classList.add('fa-sun');
                         }
                         else
                         {
-                            body.classList.remove('darkmode');
+                            html.setAttribute('data-theme', 'default');
 
                             btnDarkMode.firstChild.classList.remove('fa-sun');
                             btnDarkMode.firstChild.classList.add('fa-moon');

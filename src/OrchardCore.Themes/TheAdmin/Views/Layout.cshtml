@@ -1,8 +1,10 @@
+@inject DarkModeService DarkModeService;
 @{
     var adminSettings = Site.As<AdminSettings>();
+
 }
 <!DOCTYPE html>
-<html lang="@Orchard.CultureName()" dir="@Orchard.CultureDir()">
+<html lang="@Orchard.CultureName()" dir="@Orchard.CultureDir()" data-theme="default">
 <head>
     <title>@RenderTitleSegments(Site.SiteName, "before")</title>
     <meta charset="utf-8">
