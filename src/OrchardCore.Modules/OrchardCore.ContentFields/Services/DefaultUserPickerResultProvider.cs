@@ -40,19 +40,13 @@ namespace OrchardCore.ContentFields.Services
 
         public async Task<IEnumerable<UserPickerResult>> Search(UserPickerSearchContext searchContext)
         {
-            var roles = searchContext.Roles;
-            if (searchContext.DisplayAllUsers)
+            var query = _session.Query<User>();
+
+            if (!searchContext.DisplayAllUsers)
             {
-                roles = (await _roleService.GetRoleNamesAsync())
-                    .Except(new[] { "Anonymous", "Authenticated" }, StringComparer.OrdinalIgnoreCase)
-                    .AsEnumerable();
+                var roles = searchContext.Roles.Select(x => _roleManager.NormalizeKey(x));
+                query.With<UserByRoleNameIndex>(x => x.RoleName.IsIn(roles));
             }
-
-            roles = roles.Select(x => _roleManager.NormalizeKey(x));
-
-            var query = _session.Query<User>()
-                .With<UserByRoleNameIndex>()
-                .Where(x => x.RoleName.IsIn(roles));
 
             if (!string.IsNullOrEmpty(searchContext.Query))
             {

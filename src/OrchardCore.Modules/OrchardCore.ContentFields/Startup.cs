@@ -190,6 +190,16 @@ namespace OrchardCore.ContentFields
     {
         private readonly AdminOptions _adminOptions;
 
+        static UserPickerStartup()
+        {
+            // Registering both field types and shape types are necessary as they can
+            // be accessed from inner properties.
+
+            TemplateContext.GlobalMemberAccessStrategy.Register<UserPickerField>();
+            TemplateContext.GlobalMemberAccessStrategy.Register<DisplayUserPickerFieldViewModel>();
+            TemplateContext.GlobalMemberAccessStrategy.Register<DisplayUserPickerFieldUserNamesViewModel>();
+        }
+
         public UserPickerStartup(IOptions<AdminOptions> adminOptions)
         {
             _adminOptions = adminOptions.Value;
@@ -198,7 +208,9 @@ namespace OrchardCore.ContentFields
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddContentField<UserPickerField>()
-                .UseDisplayDriver<UserPickerFieldDisplayDriver>();
+                .UseDisplayDriver<UserPickerFieldDisplayDriver>(d => !String.Equals(d, "UserNames", StringComparison.OrdinalIgnoreCase))
+                .UseDisplayDriver<UserPickerFieldUserNamesDisplayDriver>(d => String.Equals(d, "UserNames", StringComparison.OrdinalIgnoreCase));
+
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, UserPickerFieldSettingsDriver>();
             services.AddScoped<IContentFieldIndexHandler, UserPickerFieldIndexHandler>();
             services.AddScoped<IUserPickerResultProvider, DefaultUserPickerResultProvider>();

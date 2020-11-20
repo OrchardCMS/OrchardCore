@@ -1,19 +1,18 @@
-@model OrchardCore.ContentFields.ViewModels.DisplayUserPickerFieldViewModel
+@model OrchardCore.ContentFields.ViewModels.DisplayUserPickerFieldUserNamesViewModel
 @using OrchardCore.Mvc.Utilities
 
 @{
     var name = (Model.PartFieldDefinition.PartDefinition.Name + "-" + Model.PartFieldDefinition.Name).HtmlClassify();
-    var users = await @Orchard.GetUsersByIdsAsync(Model.UserIds);
 }
 
 <div class="field field-type-userpickerfield field-name-@name">
     <span class="name">@Model.PartFieldDefinition.DisplayName():</span>
-    @if (users.Any())
+    @if (Model.UserNames.Any())
     {
-        foreach (var user in users)
+        foreach (var userName in Model.UserNames)
         {
-            <span class="value">@user.UserName</span>
-            if (user != users.Last())
+            <span class="value">@userName</span>
+            if (userName != Model.UserNames.Last())
             {
                 <span>,</span>
             }

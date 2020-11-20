@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentFields.Fields;
@@ -87,6 +88,9 @@ namespace OrchardCore.ContentFields.Drivers
                 {
                     updater.ModelState.AddModelError(Prefix, nameof(field.UserIds), S["The {0} field cannot contain multiple items.", context.PartFieldDefinition.DisplayName()]);
                 }
+
+                var users = await _session.Query<User, UserIndex>().Where(x => x.UserId.IsIn(field.UserIds)).ListAsync();
+                field.SetUserNames(users.Select(t => t.UserName).ToArray());
             }
 
             return Edit(field, context);

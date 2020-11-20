@@ -19,6 +19,15 @@ namespace OrchardCore.ContentFields.Indexing
                         context.DocumentIndex.Set(key, userId, options);
                     }
                 }
+
+                var userNames = field.GetUserNames();
+                foreach(var userName in userNames)
+                {
+                    foreach (var key in context.Keys)
+                    {
+                        context.DocumentIndex.Set(key, userName, options);
+                    }
+                }
             }
             else
             {
