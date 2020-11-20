@@ -62,31 +62,8 @@ namespace OrchardCore.Autoroute.Handlers
 
         public override async Task PublishedAsync(PublishContentContext context, AutoroutePart part)
         {
-            // Remove entry if part is disabled.
-            if (part.Disabled)
-            {
-                await _entries.RemoveEntryAsync(part.ContentItem.ContentItemId, part.Path);
-            }
-
-            // Add parent content item path, and children, only if parent has a valid path.
-            if (!String.IsNullOrWhiteSpace(part.Path) && !part.Disabled)
-            {
-                var entriesToAdd = new List<AutorouteEntry>
-                {
-                    new AutorouteEntry(part.ContentItem.ContentItemId, part.Path)
-                };
-
-                if (part.RouteContainedItems)
-                {
-                    _contentManager ??= _serviceProvider.GetRequiredService<IContentManager>();
-
-                    var containedAspect = await _contentManager.PopulateAspectAsync<ContainedContentItemsAspect>(context.PublishingItem);
-
-                    await PopulateContainedContentItemRoutes(entriesToAdd, part.ContentItem.ContentItemId, containedAspect, context.PublishingItem.Content as JObject, part.Path, true);
-                }
-
-                await _entries.AddEntriesAsync(entriesToAdd);
-            }
+            // Update entries from the index table after the session is committed.
+            await _entries.UpdateEntriesAsync();
 
             if (!String.IsNullOrWhiteSpace(part.Path) && !part.Disabled && part.SetHomepage)
             {
@@ -126,7 +103,8 @@ namespace OrchardCore.Autoroute.Handlers
         {
             if (!String.IsNullOrWhiteSpace(part.Path))
             {
-                await _entries.RemoveEntryAsync(part.ContentItem.ContentItemId, part.Path);
+                // Update entries from the index table after the session is committed.
+                await _entries.UpdateEntriesAsync();
 
                 // Evict any dependent item from cache
                 await RemoveTagAsync(part);
@@ -137,7 +115,11 @@ namespace OrchardCore.Autoroute.Handlers
         {
             if (!String.IsNullOrWhiteSpace(part.Path) && context.NoActiveVersionLeft)
             {
-                await _entries.RemoveEntryAsync(part.ContentItem.ContentItemId, part.Path);
+                // Update entries from the index table after the session is committed.
+                await _entries.UpdateEntriesAsync();
+
+                // Indicate to the index provider that the related content item was removed.
+                part.Removed = true;
 
                 // Evict any dependent item from cache
                 await RemoveTagAsync(part);
@@ -446,7 +428,7 @@ namespace OrchardCore.Autoroute.Handlers
         private async Task<bool> IsAbsolutePathUniqueAsync(string path, string contentItemId)
         {
             var isUnique = true;
-            var possibleConflicts = await _session.QueryIndex<AutoroutePartIndex>(o => o.Path == path).ListAsync();
+            var possibleConflicts = await _session.QueryIndex<AutoroutePartIndex>(o => (o.Published || o.Latest) && o.Path == path).ListAsync();
             if (possibleConflicts.Any())
             {
                 if (possibleConflicts.Any(x => x.ContentItemId != contentItemId) ||

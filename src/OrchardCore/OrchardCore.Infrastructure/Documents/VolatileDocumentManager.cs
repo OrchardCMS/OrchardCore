@@ -15,8 +15,8 @@ namespace OrchardCore.Documents
     public class VolatileDocumentManager<TDocument> : DocumentManager<TDocument>, IVolatileDocumentManager<TDocument> where TDocument : class, IDocument, new()
     {
         private const string LockKeySuffix = "_LOCK";
-        private static readonly TimeSpan LockTimeout = TimeSpan.FromMilliseconds(100);
-        private static readonly TimeSpan LockExpiration = TimeSpan.FromSeconds(1);
+        private static readonly TimeSpan LockTimeout = TimeSpan.FromSeconds(3);
+        private static readonly TimeSpan LockExpiration = TimeSpan.FromSeconds(3);
 
         private readonly IDistributedLock _distributedLock;
         private readonly string _lockKey;

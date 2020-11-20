@@ -66,8 +66,8 @@ namespace OrchardCore.ContentManagement.Records
                         return null;
                     }
 
-                    var path = part?.Path;
-                    if (String.IsNullOrEmpty(path) || part.Disabled || !(contentItem.Published || contentItem.Latest))
+                    // Also check that the related content item was not removed.
+                    if (!contentItem.Published && !contentItem.Latest && !part.Removed)
                     {
                         return null;
                     }
@@ -77,14 +77,16 @@ namespace OrchardCore.ContentManagement.Records
                         new AutoroutePartIndex
                         {
                             ContentItemId = contentItem.ContentItemId,
-                            Path = path,
+                            Path = !part.Disabled && !String.IsNullOrEmpty(part.Path) ? part.Path : null,
                             Published = contentItem.Published,
                             Latest = contentItem.Latest
                         }
                     };
 
-                    if (!part.RouteContainedItems)
+                    if (!part.RouteContainedItems || String.IsNullOrEmpty(part.Path) || part.Disabled || part.Removed)
                     {
+                        // Don't persist the part as removed.
+                        part.Removed = false;
                         return results;
                     }
 
