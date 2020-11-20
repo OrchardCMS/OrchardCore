@@ -7,7 +7,7 @@ namespace OrchardCore.Media.Azure
 {
     public class Permissions : IPermissionProvider
     {
-        public static readonly Permission ViewAzureMediaOptions = new Permission("ViewAzureMediaOptions", "View Azure Media Options");
+        public static readonly Permission ViewAzureMediaOptions = new Permission(nameof(ViewAzureMediaOptions), "View Azure Media Options");
 
         public Task<IEnumerable<Permission>> GetPermissionsAsync()
         {
