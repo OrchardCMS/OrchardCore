@@ -2,15 +2,15 @@
   {
     "generateSourceMaps": false,
     "inputs": [
-      "Assets/scss/vue-multiselect-wrapper.scss"
+      "Assets/scss/vue-multiselect-permission-picker.scss"
     ],
-    "output": "wwwroot/Styles/vue-multiselect-wrapper.css"
+    "output": "wwwroot/Styles/vue-multiselect-permission-picker.css"
   },
   {
     "inputs": [
-      "Assets/js/vue-multiselect-wrapper.js"
+      "Assets/js/vue-multiselect-permission-picker.js"
     ],
-    "output": "wwwroot/Scripts/vue-multiselect-wrapper.js"
+    "output": "wwwroot/Scripts/vue-multiselect-permission-picker.js"
   },
   {
     "generateSourceMaps": false,

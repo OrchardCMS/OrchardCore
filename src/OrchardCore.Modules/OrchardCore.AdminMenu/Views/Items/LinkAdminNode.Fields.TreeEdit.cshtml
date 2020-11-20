@@ -79,8 +79,8 @@
         var allItems = JsonConvert.SerializeObject(Model.AllItems, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() });
     }
 
-    <script asp-name="vue-multiselect-wrapper" asp-src="~/OrchardCore.AdminMenu/Scripts/vue-multiselect-wrapper.js" at="Foot" depends-on="vuejs, vue-multiselect, sortable, vuedraggable"></script>
-    <style asp-name="vue-multiselect-wrapper" asp-src="~/OrchardCore.AdminMenu/Styles/vue-multiselect-wrapper.min.css" debug-src="~/OrchardCore.AdminMenu/Styles/vue-multiselect-wrapper.css" depends-on="vue-multiselect"></style>
+    <script asp-name="vue-multiselect-permission-picker" asp-src="~/OrchardCore.AdminMenu/Scripts/vue-multiselect-permission-picker.js" at="Foot" depends-on="vuejs, vue-multiselect, sortable, vuedraggable"></script>
+    <style asp-name="vue-multiselect-permission-picker" asp-src="~/OrchardCore.AdminMenu/Styles/vue-multiselect-permission-picker.min.css" debug-src="~/OrchardCore.AdminMenu/Styles/vue-multiselect-permission-picker.css" depends-on="vue-multiselect"></style>
 
     <label asp-for="PermissionIds">@T["Permissions"]</label>
 
@@ -123,7 +123,7 @@
             </div>
         </div>
     </div>
-    <script at="Foot" depends-on="vue-multiselect-wrapper">initVueMultiselect(document.querySelector("#PermissionPicker"))</script>
+    <script at="Foot" depends-on="vue-multiselect-permission-picker">initVueMultiselect(document.querySelector("#PermissionPicker"))</script>
 </div>
 
 <script at="Foot">
