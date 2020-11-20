@@ -57,15 +57,17 @@ namespace OrchardCore.Documents
             {
                 if (_volatileCache != null)
                 {
-                    return _volatileCache;
+                    document = _volatileCache;
                 }
-
-                _volatileCache = document = await GetFromDistributedCacheAsync()
-                    ?? await (factoryAsync?.Invoke() ?? Task.FromResult((TDocument)null))
-                    ?? new TDocument();
+                else
+                {
+                    document = _volatileCache = await GetFromDistributedCacheAsync()
+                        ?? await (factoryAsync?.Invoke() ?? Task.FromResult((TDocument)null))
+                        ?? new TDocument();
+                }
             }
 
-            document.Identifier = null;
+            document.Identifier = IdGenerator.GenerateId();
 
             return document;
         }
@@ -138,10 +140,10 @@ namespace OrchardCore.Documents
             string id;
             if (_isDistributed)
             {
-                // Cache the id locally for one second to prevent network contention.
+                // Cache the id locally for the synchronization latency time.
                 id = await _memoryCache.GetOrCreateAsync(_options.CacheIdKey, entry =>
                 {
-                    entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(1);
+                    entry.AbsoluteExpirationRelativeToNow = _options.SynchronizationLatency;
                     return _distributedCache.GetStringAsync(_options.CacheIdKey);
                 });
             }

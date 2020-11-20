@@ -55,9 +55,16 @@ namespace OrchardCore.Documents
                 }
 
                 await using var acquiredLock = locker;
-                var updated = await _updateDelegateAsync();
-                updated.Identifier ??= IdGenerator.GenerateId();
-                await SetInternalAsync(updated);
+
+                TDocument document = null;
+                foreach (var d in _updateDelegateAsync.GetInvocationList())
+                {
+                    document = await ((UpdateDelegate)d)();
+                }
+
+                document.Identifier ??= IdGenerator.GenerateId();
+
+                await SetInternalAsync(document);
             });
 
             return Task.CompletedTask;

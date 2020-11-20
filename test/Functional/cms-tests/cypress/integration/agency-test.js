@@ -15,7 +15,7 @@ describe('Agency Tests', function () {
         cy.get('#services').should('contain.text', 'Lorem ipsum dolor sit amet consectetur');
     })
 
-    it('Agency login should work', function(){
+    it('Agency admin login should work', function(){
         cy.login(tenant);
         cy.visit(`${tenant.prefix}/Admin`);
         cy.get('.ta-content').should('contain.text', 'Welcome to Orchard')

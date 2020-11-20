@@ -131,7 +131,8 @@ namespace OrchardCore.Media.Controllers
                     Height = isCustomHeight ? model.CustomHeight : model.SelectedHeight,
                     Mode = model.SelectedMode,
                     Format = model.SelectedFormat,
-                    Quality = model.Quality
+                    Quality = model.Quality,
+                    BackgroundColor = model.BackgroundColor
                 };
 
                 await _mediaProfilesManager.UpdateMediaProfileAsync(model.Name, mediaProfile);
@@ -181,7 +182,8 @@ namespace OrchardCore.Media.Controllers
                 CustomHeight = isCustomHeight ? mediaProfile.Height : 0,
                 SelectedMode = mediaProfile.Mode,
                 SelectedFormat = mediaProfile.Format,
-                Quality = mediaProfile.Quality
+                Quality = mediaProfile.Quality,
+                BackgroundColor = mediaProfile.BackgroundColor
             };
 
             BuildViewModel(model);
@@ -224,7 +226,8 @@ namespace OrchardCore.Media.Controllers
                     Height = isCustomHeight ? model.CustomHeight : model.SelectedHeight,
                     Mode = model.SelectedMode,
                     Format = model.SelectedFormat,
-                    Quality = model.Quality
+                    Quality = model.Quality,
+                    BackgroundColor = model.BackgroundColor
                 };
 
                 await _mediaProfilesManager.RemoveMediaProfileAsync(sourceName);
