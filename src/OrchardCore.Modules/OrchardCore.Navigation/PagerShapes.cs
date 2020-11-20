@@ -470,11 +470,6 @@ namespace OrchardCore.Navigation
             var parentTag = (TagBuilder)shape.Properties["Tag"];
             parentTag.AddCssClass("active");
 
-            if (!shape.Attributes.ContainsKey("rel"))
-            {
-                shape.Attributes["rel"] = "canonical";
-            }
-
             return DisplayAsync(shape);
         }
 
