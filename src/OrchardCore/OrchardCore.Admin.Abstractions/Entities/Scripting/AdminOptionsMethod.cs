@@ -9,7 +9,7 @@ namespace OrchardCore.Entities.Scripting
 {
     public class AdminOptionsMethod : IGlobalMethodProvider
     {
-        private static readonly GlobalMethod AdminOptions = new GlobalMethod
+        private static readonly GlobalMethod AdminUrlPrefix = new GlobalMethod
         {
             Name = "adminurlprefix",
             Method = serviceProvider => (Func<string>)(() =>
@@ -21,7 +21,7 @@ namespace OrchardCore.Entities.Scripting
 
         public IEnumerable<GlobalMethod> GetMethods()
         {
-            yield return AdminOptions;
+            yield return AdminUrlPrefix;
         }
     }
 }
