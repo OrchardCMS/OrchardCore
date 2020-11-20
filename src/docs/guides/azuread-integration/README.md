@@ -38,11 +38,11 @@ Navigate to Token configuration and add the groups token as shown below.
 
 ![image](assets/add-groups-claim.jpg)
 
-On the same screen click on Add optional claim, select ID and check email as shown below and then click Add.
+On the same screen, click on `Add optional claim`, select `ID`, check `email` as shown below and then click Add:
 
 ![image](assets/add-email-optional-claim.jpg)
 
-A popup may appear to authorize call to the Graph API, check Turn on as shown below and then click Add.
+A popup may appear to authorize the call to the Graph API. Check `Turn on the Microsoft Graph email permission` as shown below and then click Add:
 
 ![image](assets/add-email-optional-claim-popup.jpg)
 
