@@ -57,7 +57,8 @@ namespace OrchardCore.Contents.Drivers
                 results.Add(contentsMetadataShape);
                 results.Add(Shape("ContentsButtonEdit_SummaryAdmin", new ContentItemViewModel(contentItem)).Location("SummaryAdmin", "Actions:10"));
                 results.Add(Shape("ContentsButtonActions_SummaryAdmin", new ContentItemViewModel(contentItem)).Location("SummaryAdmin", "ActionsMenu:10")
-                    .RenderWhen(async () => {
+                    .RenderWhen(async () =>
+                    {
                         var hasPublishPermission = await _authorizationService.AuthorizeAsync(context.User, CommonPermissions.PublishContent, contentItem);
                         var hasDeletePermission = await _authorizationService.AuthorizeAsync(context.User, CommonPermissions.DeleteContent, contentItem);
                         var hasPreviewPermission = await _authorizationService.AuthorizeAsync(context.User, CommonPermissions.PreviewContent, contentItem);
@@ -91,7 +92,8 @@ namespace OrchardCore.Contents.Drivers
             }
 
             results.Add(Dynamic("Content_PublishButton").Location("Actions:10")
-                .RenderWhen(async () => {
+                .RenderWhen(async () =>
+                {
                     if (await _authorizationService.AuthorizeAsync(context.User, CommonPermissions.PublishContent, contentItem))
                     {
                         return true;
@@ -102,7 +104,8 @@ namespace OrchardCore.Contents.Drivers
             );
 
             results.Add(Dynamic("Content_SaveDraftButton").Location("Actions:20")
-                .RenderWhen(async () => {
+                .RenderWhen(async () =>
+                {
                     if (contentTypeDefinition.GetSettings<ContentTypeSettings>().Draftable)
                     {
                         if (await _authorizationService.AuthorizeAsync(context.User, CommonPermissions.EditContent, contentItem))

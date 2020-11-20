@@ -44,6 +44,7 @@ using OrchardCore.Navigation;
 using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Shortcodes;
+using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Web.DependencyInjection;
 using SixLabors.ImageSharp.Web.Middleware;
 using SixLabors.ImageSharp.Web.Providers;
@@ -62,6 +63,7 @@ namespace OrchardCore.Media
         static Startup()
         {
             TemplateContext.GlobalMemberAccessStrategy.Register<DisplayMediaFieldViewModel>();
+            TemplateContext.GlobalMemberAccessStrategy.Register<Anchor>();
         }
 
         public override void ConfigureServices(IServiceCollection services)
@@ -128,7 +130,10 @@ namespace OrchardCore.Media
             services.AddImageSharp()
                 .RemoveProvider<PhysicalFileSystemProvider>()
                 .AddProvider<MediaResizingFileProvider>()
-                .AddProcessor<ImageVersionProcessor>();
+                .AddProcessor<ImageVersionProcessor>()
+                .AddProcessor<TokenCommandProcessor>();
+
+            services.AddSingleton<IMediaTokenService, MediaTokenService>();
 
             // Media Field
             services.AddContentField<MediaField>()
@@ -342,7 +347,7 @@ namespace OrchardCore.Media
 
             services.AddTransient<IDeploymentSource, AllMediaProfilesDeploymentSource>();
             services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AllMediaProfilesDeploymentStep>());
-            services.AddScoped<IDisplayDriver<DeploymentStep>, AllMediaProfilesDeploymentStepDriver>();            
+            services.AddScoped<IDisplayDriver<DeploymentStep>, AllMediaProfilesDeploymentStepDriver>();
         }
     }
 

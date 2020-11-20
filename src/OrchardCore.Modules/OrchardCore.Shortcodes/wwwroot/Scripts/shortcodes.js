@@ -110,8 +110,8 @@ function initializeShortcodesApp(element) {
             return s.name === name;
           });
         },
-        insertShortcode: function insertShortcode(defaultValue) {
-          this.defaultValue = defaultValue;
+        insertShortcode: function insertShortcode(event) {
+          this.defaultValue = event.target.dataset.defaultValue;
           $(this.$el).modal('hide');
           this.onClose(this.defaultValue);
         }

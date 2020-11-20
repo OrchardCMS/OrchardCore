@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block disqus %}
+    <div class="md-source-date">
+    <small>
+        Authors: {% if git_info %}
+  {%- for author in git_info.get('page_authors') -%}
+      {{ author.name }}{% if not loop.last %},&nbsp;{% endif %}
+  {%- endfor -%}
+{% endif %}
+    </small>
+  </div>
+    {% include "partials/integrations/disqus.html" %}
+{% endblock %}

@@ -22,10 +22,10 @@ namespace OrchardCore.Shortcodes.Services
             // This allows the templates feature to override code based shortcodes.
             var reversedShortcodeDescriptorProviders = _shortcodeDescriptorProviders.Reverse();
 
-            foreach(var provider in reversedShortcodeDescriptorProviders)
+            foreach (var provider in reversedShortcodeDescriptorProviders)
             {
                 var descriptors = await provider.DiscoverAsync();
-                foreach(var descriptor in descriptors)
+                foreach (var descriptor in descriptors)
                 {
                     // Overwrite existing descriptors if they have been replaced.
                     result[descriptor.Name] = descriptor;

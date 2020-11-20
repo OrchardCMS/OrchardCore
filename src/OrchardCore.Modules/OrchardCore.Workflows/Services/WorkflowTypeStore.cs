@@ -70,8 +70,6 @@ namespace OrchardCore.Workflows.Services
 
         public async Task DeleteAsync(WorkflowType workflowType)
         {
-            // TODO: Remove this when versioning is implemented.
-
             // Delete workflows first.
             var workflows = await _session.Query<Workflow, WorkflowIndex>(x => x.WorkflowTypeId == workflowType.WorkflowTypeId).ListAsync();
 
