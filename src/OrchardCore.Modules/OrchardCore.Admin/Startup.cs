@@ -13,6 +13,7 @@ using OrchardCore.Admin.Models;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Theming;
+using OrchardCore.Entities;
 using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Modules;
@@ -59,6 +60,7 @@ namespace OrchardCore.Admin
             services.AddSingleton<IPageRouteModelProvider, AdminPageRouteModelProvider>();
 
             services.Configure<AdminOptions>(_configuration.GetSection("OrchardCore_Admin"));
+            services.AddAdminOptions();
         }
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
