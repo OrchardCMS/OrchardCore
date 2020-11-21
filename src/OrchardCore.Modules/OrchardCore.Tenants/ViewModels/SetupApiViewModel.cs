@@ -28,7 +28,7 @@ namespace OrchardCore.Tenants.ViewModels
 
         public string RecipeName { get; set; }
         public IFormFile Recipe { get; set; }
-
         public string SiteTimeZone { get; set; }
+        public bool UseCdn { get; set; } 
     }
 }

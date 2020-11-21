@@ -71,6 +71,11 @@ namespace OrchardCore.Setup.Services
         public RecipeDescriptor Recipe { get; set; }
 
         /// <summary>
+        /// Gets or sets cdn for the site.
+        /// </summary>
+        public bool UseCdn { get; set; }
+
+        /// <summary>
         /// Gets or sets the errors during set up if there is.
         /// </summary>
         public IDictionary<string, string> Errors { get; set; }
