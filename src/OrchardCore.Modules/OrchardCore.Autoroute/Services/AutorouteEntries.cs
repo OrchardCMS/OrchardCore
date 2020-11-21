@@ -17,14 +17,12 @@ namespace OrchardCore.Autoroute.Services
     {
         private ImmutableDictionary<string, AutorouteEntry> _paths = ImmutableDictionary<string, AutorouteEntry>.Empty;
         private ImmutableDictionary<string, AutorouteEntry> _contentItemIds = ImmutableDictionary<string, AutorouteEntry>.Empty;
-        private AutorouteStateDocument _state = new AutorouteStateDocument();
 
-        private readonly SemaphoreSlim _entriesSemaphore = new SemaphoreSlim(1);
-        private readonly SemaphoreSlim _initializeSemaphore = new SemaphoreSlim(1);
-        private readonly SemaphoreSlim _updateSemaphore = new SemaphoreSlim(1);
+        private AutorouteStateDocument _state = new AutorouteStateDocument();
+        private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1);
 
         private bool _initialized;
-        private int _indexLastId;
+        private int _lastIndexId;
 
         public AutorouteEntries()
         {
@@ -61,76 +59,59 @@ namespace OrchardCore.Autoroute.Services
 
             await AutorouteStateManager.UpdateAtomicAsync(async () =>
             {
-                await UpdateLocalEntriesAsync();
-
-                return _state = new AutorouteStateDocument();
+                var document = await LoadStateDocumentAsync();
+                await RefreshAsync(document);
+                return document;
             });
         }
 
-        public async Task AddLocalEntriesAsync(IEnumerable<AutorouteEntry> entries)
+        public void AddEntries(IEnumerable<AutorouteEntry> entries)
         {
-            await _entriesSemaphore.WaitAsync();
-            try
+            // Evict all entries related to a container item from autoroute entries.
+            // This is necessary to account for deletions, disabling of an item, or disabling routing of contained items.
+            foreach (var entry in entries.Where(x => String.IsNullOrEmpty(x.ContainedContentItemId)))
             {
-                // Evict all entries related to a container item from autoroute entries.
-                // This is necessary to account for deletions, disabling of an item, or disabling routing of contained items.
-                foreach (var entry in entries.Where(x => String.IsNullOrEmpty(x.ContainedContentItemId)))
-                {
-                    var entriesToRemove = _paths.Values.Where(x => x.ContentItemId == entry.ContentItemId && !String.IsNullOrEmpty(x.ContainedContentItemId));
-                    _paths = _paths.RemoveRange(entriesToRemove.Select(x => x.ContainedContentItemId));
-                    _contentItemIds = _contentItemIds.RemoveRange(entriesToRemove.Select(x => x.Path));
-                }
-
-                foreach (var entry in entries)
-                {
-                    if (_paths.TryGetValue(entry.ContentItemId, out var previousContainerEntry) && String.IsNullOrEmpty(entry.ContainedContentItemId))
-                    {
-                        _contentItemIds = _contentItemIds.Remove(previousContainerEntry.Path);
-                    }
-
-                    if (!String.IsNullOrEmpty(entry.ContainedContentItemId) && _paths.TryGetValue(entry.ContainedContentItemId, out var previousContainedEntry))
-                    {
-                        _contentItemIds = _contentItemIds.Remove(previousContainedEntry.Path);
-                    }
-
-                    _contentItemIds = _contentItemIds.SetItem(entry.Path, entry);
-
-                    if (!String.IsNullOrEmpty(entry.ContainedContentItemId))
-                    {
-                        _paths = _paths.SetItem(entry.ContainedContentItemId, entry);
-                    }
-                    else
-                    {
-                        _paths = _paths.SetItem(entry.ContentItemId, entry);
-                    }
-                }
-            }
-            finally
-            {
-                _entriesSemaphore.Release();
+                var entriesToRemove = _paths.Values.Where(x => x.ContentItemId == entry.ContentItemId && !String.IsNullOrEmpty(x.ContainedContentItemId));
+                _paths = _paths.RemoveRange(entriesToRemove.Select(x => x.ContainedContentItemId));
+                _contentItemIds = _contentItemIds.RemoveRange(entriesToRemove.Select(x => x.Path));
             }
 
+            foreach (var entry in entries)
+            {
+                if (_paths.TryGetValue(entry.ContentItemId, out var previousContainerEntry) && String.IsNullOrEmpty(entry.ContainedContentItemId))
+                {
+                    _contentItemIds = _contentItemIds.Remove(previousContainerEntry.Path);
+                }
+
+                if (!String.IsNullOrEmpty(entry.ContainedContentItemId) && _paths.TryGetValue(entry.ContainedContentItemId, out var previousContainedEntry))
+                {
+                    _contentItemIds = _contentItemIds.Remove(previousContainedEntry.Path);
+                }
+
+                _contentItemIds = _contentItemIds.SetItem(entry.Path, entry);
+
+                if (!String.IsNullOrEmpty(entry.ContainedContentItemId))
+                {
+                    _paths = _paths.SetItem(entry.ContainedContentItemId, entry);
+                }
+                else
+                {
+                    _paths = _paths.SetItem(entry.ContentItemId, entry);
+                }
+            }
         }
 
-        public async Task RemoveLocalEntriesAsync(IEnumerable<AutorouteEntry> entries)
+        public void RemoveEntries(IEnumerable<AutorouteEntry> entries)
         {
-            await _entriesSemaphore.WaitAsync();
-            try
+            foreach (var entry in entries)
             {
-                foreach (var entry in entries)
-                {
-                    // Evict all entries related to a container item from autoroute entries.
-                    var entriesToRemove = _paths.Values.Where(x => x.ContentItemId == entry.ContentItemId && !String.IsNullOrEmpty(x.ContainedContentItemId));
-                    _paths = _paths.RemoveRange(entriesToRemove.Select(x => x.ContainedContentItemId));
-                    _contentItemIds = _contentItemIds.RemoveRange(entriesToRemove.Select(x => x.Path));
+                // Evict all entries related to a container item from autoroute entries.
+                var entriesToRemove = _paths.Values.Where(x => x.ContentItemId == entry.ContentItemId && !String.IsNullOrEmpty(x.ContainedContentItemId));
+                _paths = _paths.RemoveRange(entriesToRemove.Select(x => x.ContainedContentItemId));
+                _contentItemIds = _contentItemIds.RemoveRange(entriesToRemove.Select(x => x.Path));
 
-                    _paths = _paths.Remove(entry.ContentItemId);
-                    _contentItemIds = _contentItemIds.Remove(entry.Path);
-                }
-            }
-            finally
-            {
-                _entriesSemaphore.Release();
+                _paths = _paths.Remove(entry.ContentItemId);
+                _contentItemIds = _contentItemIds.Remove(entry.Path);
             }
         }
 
@@ -145,50 +126,24 @@ namespace OrchardCore.Autoroute.Services
             var document = await GetStateDocumentAsync();
             if (_state.Identifier != document.Identifier)
             {
-                await UpdateLocalEntriesAsync();
+                await RefreshAsync(document);
             }
         }
 
-        private async Task InitializeAsync()
+        private async Task RefreshAsync(AutorouteStateDocument document)
         {
-            if (_initialized)
-            {
-                return;
-            }
-
-            await _initializeSemaphore.WaitAsync();
-            try
-            {
-                if (!_initialized)
-                {
-                    await InitializeLocalEntriesAsync();
-                    _initialized = true;
-                }
-
-            }
-            finally
-            {
-                _initializeSemaphore.Release();
-            }
-        }
-
-        private async Task UpdateLocalEntriesAsync()
-        {
-            var document = await LoadStateDocumentAsync();
-
             if (_state.Identifier == document.Identifier)
             {
                 return;
             }
 
-            await _updateSemaphore.WaitAsync();
+            await _semaphore.WaitAsync();
             try
             {
                 if (_state.Identifier != document.Identifier)
                 {
-                    _state = document;
-                    var indexes = await Session.QueryIndex<AutoroutePartIndex>(i => i.Id > _indexLastId).ListAsync();
-                    _indexLastId = indexes.LastOrDefault()?.Id ?? 0;
+                    var indexes = await Session.QueryIndex<AutoroutePartIndex>(i => i.Id > _lastIndexId).ListAsync();
+                    _lastIndexId = indexes.LastOrDefault()?.Id ?? 0;
 
                     var entriesToRemove = new List<AutorouteEntry>();
                     var removedIds = indexes.Where(i => !i.Published || i.Path == null).Select(i => i.ContentItemId).Distinct();
@@ -202,24 +157,46 @@ namespace OrchardCore.Autoroute.Services
                         i.ContentItemId, i.Path, i.ContainedContentItemId, i.JsonPath
                     ));
 
-                    await RemoveLocalEntriesAsync(entriesToRemove);
-                    await AddLocalEntriesAsync(entriesToAdd);
+                    RemoveEntries(entriesToRemove);
+                    AddEntries(entriesToAdd);
+
+                    _state = document;
                 }
             }
             finally
             {
-                _updateSemaphore.Release();
+                _semaphore.Release();
             }
         }
 
-        protected virtual async Task InitializeLocalEntriesAsync()
+        protected virtual async Task InitializeAsync()
         {
-            _state = await GetStateDocumentAsync();
-            var indexes = await Session.QueryIndex<AutoroutePartIndex>(i => i.Published && i.Path != null).ListAsync();
-            _indexLastId = indexes.LastOrDefault()?.Id ?? 0;
+            if (_initialized)
+            {
+                return;
+            }
 
-            var entries = indexes.Select(i => new AutorouteEntry(i.ContentItemId, i.Path, i.ContainedContentItemId, i.JsonPath));
-            await AddLocalEntriesAsync(entries);
+            await _semaphore.WaitAsync();
+            try
+            {
+                if (!_initialized)
+                {
+                    _state = await GetStateDocumentAsync();
+
+                    var indexes = await Session.QueryIndex<AutoroutePartIndex>(i => i.Published && i.Path != null).ListAsync();
+                    _lastIndexId = indexes.LastOrDefault()?.Id ?? 0;
+
+                    var entries = indexes.Select(i => new AutorouteEntry(i.ContentItemId, i.Path, i.ContainedContentItemId, i.JsonPath));
+                    AddEntries(entries);
+
+                    _initialized = true;
+                }
+
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
         }
 
         private static ISession Session => ShellScope.Services.GetRequiredService<ISession>();
