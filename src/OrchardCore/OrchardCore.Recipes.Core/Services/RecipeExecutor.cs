@@ -66,7 +66,7 @@ namespace OrchardCore.Recipes.Services
 
                             var variables = await JObject.LoadAsync(reader);
 
-                            methodProviders.Add(new VariablesMethodProvider(variables));
+                            methodProviders.Add(new VariablesMethodProvider(variables, methodProviders));
                         }
 
                         if (reader.Path == "steps" && reader.TokenType == JsonToken.StartArray)
