@@ -227,12 +227,16 @@ namespace OrchardCore.Navigation
                 }
                 else
                 {
+                    //evaluate permissions in AND way
+                    var canSeeItem = true;
                     foreach (var permission in item.Permissions)
                     {
-                        if (await _authorizationService.AuthorizeAsync(user, permission, item.Resource))
-                        {
-                            filtered.Add(item);
-                        }
+                        canSeeItem = canSeeItem && (await _authorizationService.AuthorizeAsync(user, permission, item.Resource));
+                    }
+
+                    if (canSeeItem)
+                    {
+                        filtered.Add(item);
                     }
                 }
 
