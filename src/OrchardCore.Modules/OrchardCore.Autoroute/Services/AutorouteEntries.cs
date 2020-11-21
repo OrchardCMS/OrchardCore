@@ -57,12 +57,13 @@ namespace OrchardCore.Autoroute.Services
         {
             await EnsureInitializedAsync();
 
-            await AutorouteStateManager.UpdateAtomicAsync(async () =>
-            {
-                var document = await LoadStateDocumentAsync();
-                await RefreshAsync(document);
-                return document;
-            });
+            // A new state, with a new ID, will be set in the shared cache after the session is committed,
+            // then the local entries will be refreshed, as it would be done through a subsequent request.
+            await DocumentManager.UpdateAsync
+            (
+                updatingAsync: () => Task.FromResult(new AutorouteStateDocument()),
+                updatedAsync: document => RefreshEntriesAsync(document)
+            );
         }
 
         public void AddEntries(IEnumerable<AutorouteEntry> entries)
@@ -126,11 +127,11 @@ namespace OrchardCore.Autoroute.Services
             var document = await GetStateDocumentAsync();
             if (_state.Identifier != document.Identifier)
             {
-                await RefreshAsync(document);
+                await RefreshEntriesAsync(document);
             }
         }
 
-        private async Task RefreshAsync(AutorouteStateDocument document)
+        private async Task RefreshEntriesAsync(AutorouteStateDocument document)
         {
             if (_state.Identifier == document.Identifier)
             {
@@ -201,10 +202,9 @@ namespace OrchardCore.Autoroute.Services
 
         private static ISession Session => ShellScope.Services.GetRequiredService<ISession>();
 
-        private static Task<AutorouteStateDocument> LoadStateDocumentAsync() => AutorouteStateManager.GetOrCreateMutableAsync();
-        private static Task<AutorouteStateDocument> GetStateDocumentAsync() => AutorouteStateManager.GetOrCreateImmutableAsync();
+        private static Task<AutorouteStateDocument> GetStateDocumentAsync() => DocumentManager.GetOrCreateImmutableAsync();
 
-        private static IVolatileDocumentManager<AutorouteStateDocument> AutorouteStateManager
+        private static IVolatileDocumentManager<AutorouteStateDocument> DocumentManager
             => ShellScope.Services.GetRequiredService<IVolatileDocumentManager<AutorouteStateDocument>>();
     }
 }

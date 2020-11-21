@@ -10,8 +10,13 @@ namespace OrchardCore.Documents
     public interface IVolatileDocumentManager<TDocument> : IDocumentManager<TDocument> where TDocument : class, IDocument, new()
     {
         /// <summary>
-        /// Executes the provided delegate and updates the cache, the whole being done atomically and after the session is committed.
+        /// Executes the provided delegates around updating the cache, the whole being done after the session is committed.
         /// </summary>
-        Task UpdateAtomicAsync(Func<Task<TDocument>> updateAsync);
+        Task UpdateAsync(Func<Task<TDocument>> updatingAsync, Func<TDocument, Task> updatedAsync = null);
+
+        /// <summary>
+        /// Executes the provided delegates around updating the cache, the whole being done atomically and after the session is committed.
+        /// </summary>
+        Task UpdateAtomicAsync(Func<Task<TDocument>> updatingAsync, Func<TDocument, Task> updatedAsync = null);
     }
 }
