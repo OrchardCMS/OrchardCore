@@ -1311,7 +1311,7 @@
             {
               "$type": "OrchardCore.AdminMenu.AdminNodes.LinkAdminNode, OrchardCore.AdminMenu",
               "LinkText": "Blog",
-              "LinkUrl": "[js: adminurlprefix() + '/Contents/ContentItems/' +  variables('blogContentItemId') + '/Display']",
+              "LinkUrl": "[js: 'Admin/Contents/ContentItems/' +  variables('blogContentItemId') + '/Display']",
               "IconClass": "fas fa-rss",
               "UniqueId": "7b293d57056a4eebb3713f07f12c65d8",
               "Enabled": true,
@@ -1332,7 +1332,7 @@
             {
               "$type": "OrchardCore.AdminMenu.AdminNodes.LinkAdminNode, OrchardCore.AdminMenu",
               "LinkText": "Main Menu",
-              "LinkUrl": "[js: adminurlprefix() + '/Contents/ContentItems/' +  variables('menuContentItemId') + '/Edit']",
+              "LinkUrl": "[js: 'Admin/Contents/ContentItems/' +  variables('menuContentItemId') + '/Edit']",
               "IconClass": "fas fa-sitemap",
               "UniqueId": "5118cecfde834dacb26ac08980f1b5a7",
               "Enabled": true,
@@ -1369,7 +1369,7 @@
                 {
                   "$type": "OrchardCore.AdminMenu.AdminNodes.LinkAdminNode, OrchardCore.AdminMenu",
                   "LinkText": "Content Items",
-                  "LinkUrl": "[js: adminurlprefix() + '/Contents/ContentItems/']",
+                  "LinkUrl": "Admin/Contents/ContentItems/",
                   "IconClass": null,
                   "UniqueId": "7b293d57056a4eebb3713f07f12c65d9",
                   "Enabled": true,
