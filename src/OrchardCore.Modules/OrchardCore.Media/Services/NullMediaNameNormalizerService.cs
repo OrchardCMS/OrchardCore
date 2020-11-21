@@ -1,6 +1,6 @@
 namespace OrchardCore.Media.Services
 {
-    public class DefaultMediaNameNormalizerService : IMediaNameNormalizerService
+    public class NullMediaNameNormalizerService : IMediaNameNormalizerService
     {
         public string NormalizeFolderName(string folderName) => folderName;
 

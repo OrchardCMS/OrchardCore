@@ -159,7 +159,7 @@ namespace OrchardCore.Media
             services.AddRecipeExecutionStep<MediaProfileStep>();
 
             // Media Name Normalizer
-            services.AddScoped<IMediaNameNormalizerService, DefaultMediaNameNormalizerService>();
+            services.AddScoped<IMediaNameNormalizerService, NullMediaNameNormalizerService>();
         }
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
