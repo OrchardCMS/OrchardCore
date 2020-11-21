@@ -4,12 +4,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
-using OrchardCore.ContentManagement.Metadata.Models;
-using OrchardCore.ContentManagement.Metadata.Settings;
-using OrchardCore.ContentManagement.Metadata;
-using OrchardCore.Settings;
 using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Metadata;
+using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.ContentManagement.Metadata.Settings;
+using OrchardCore.Settings;
 
 namespace OrchardCore.CustomSettings.Services
 {
@@ -104,8 +104,11 @@ namespace OrchardCore.CustomSettings.Services
 
             if (site.Properties.TryGetValue(settingsType.Name, out property))
             {
-                // Create existing content item
-                contentItem = property.ToObject<ContentItem>();
+                var existing = property.ToObject<ContentItem>();
+
+                // Create a new item to take into account the current type definition.
+                contentItem = await _contentManager.NewAsync(existing.ContentType);
+                contentItem.Merge(existing);
             }
             else
             {

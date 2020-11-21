@@ -21,7 +21,7 @@ namespace OrchardCore.ContentLocalization.Handlers
         {
             return context.ForAsync<CultureAspect>(cultureAspect =>
             {
-                if(part.Culture != null)
+                if (part.Culture != null)
                 {
                     cultureAspect.Culture = CultureInfo.GetCultureInfo(part.Culture);
                 }
@@ -34,7 +34,7 @@ namespace OrchardCore.ContentLocalization.Handlers
         {
             if (!String.IsNullOrWhiteSpace(part.LocalizationSet))
             {
-                _entries.AddEntry(new LocalizationEntry()
+                return _entries.AddEntryAsync(new LocalizationEntry()
                 {
                     ContentItemId = part.ContentItem.ContentItemId,
                     LocalizationSet = part.LocalizationSet,
@@ -47,24 +47,25 @@ namespace OrchardCore.ContentLocalization.Handlers
 
         public override Task UnpublishedAsync(PublishContentContext context, LocalizationPart part)
         {
-            _entries.RemoveEntry(new LocalizationEntry()
+            return _entries.RemoveEntryAsync(new LocalizationEntry()
             {
                 ContentItemId = part.ContentItem.ContentItemId,
                 LocalizationSet = part.LocalizationSet,
                 Culture = part.Culture.ToLowerInvariant()
             });
-
-            return Task.CompletedTask;
         }
 
         public override Task RemovedAsync(RemoveContentContext context, LocalizationPart part)
         {
-            _entries.RemoveEntry(new LocalizationEntry()
+            if (context.NoActiveVersionLeft)
             {
-                ContentItemId = part.ContentItem.ContentItemId,
-                LocalizationSet = part.LocalizationSet,
-                Culture = part.Culture.ToLowerInvariant()
-            });
+                return _entries.RemoveEntryAsync(new LocalizationEntry()
+                {
+                    ContentItemId = part.ContentItem.ContentItemId,
+                    LocalizationSet = part.LocalizationSet,
+                    Culture = part.Culture.ToLowerInvariant()
+                });
+            }
 
             return Task.CompletedTask;
         }

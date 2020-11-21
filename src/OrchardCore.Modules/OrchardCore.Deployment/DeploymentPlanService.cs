@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -5,10 +6,11 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.Deployment.Indexes;
 using YesSql;
+using YesSql.Services;
 
 namespace OrchardCore.Deployment
 {
-    public class DeploymentPlanService
+    public class DeploymentPlanService : IDeploymentPlanService
     {
         private readonly YesSql.ISession _session;
         private readonly IHttpContextAccessor _httpContextAccessor;
@@ -47,6 +49,15 @@ namespace OrchardCore.Deployment
             return result;
         }
 
+        public async Task<bool> DoesUserHaveExportPermissionAsync()
+        {
+            var user = _httpContextAccessor.HttpContext.User;
+
+            var result = await _authorizationService.AuthorizeAsync(user, Permissions.Export);
+
+            return result;
+        }
+
         public async Task<IEnumerable<string>> GetAllDeploymentPlanNamesAsync()
         {
             var deploymentPlans = await GetDeploymentPlans();
@@ -79,11 +90,28 @@ namespace OrchardCore.Deployment
             }
         }
 
-        public void CreateOrUpdateDeploymentPlans(IEnumerable<DeploymentPlan> deploymentPlans)
+        public async Task CreateOrUpdateDeploymentPlansAsync(IEnumerable<DeploymentPlan> deploymentPlans)
         {
+            var names = deploymentPlans.Select(x => x.Name);
+
+            var existingDeploymentPlans = (await _session.Query<DeploymentPlan, DeploymentPlanIndex>(x => x.Name.IsIn(names))
+                .ListAsync())
+                .ToDictionary(x => x.Name, StringComparer.OrdinalIgnoreCase);
+
             foreach (var deploymentPlan in deploymentPlans)
             {
-                _session.Save(deploymentPlan);
+                if (existingDeploymentPlans.TryGetValue(deploymentPlan.Name, out var existingDeploymentPlan))
+                {
+                    existingDeploymentPlan.Name = deploymentPlan.Name;
+                    existingDeploymentPlan.DeploymentSteps.Clear();
+                    existingDeploymentPlan.DeploymentSteps.AddRange(deploymentPlan.DeploymentSteps);
+
+                    _session.Save(existingDeploymentPlan);
+                }
+                else
+                {
+                    _session.Save(deploymentPlan);
+                }
             }
         }
     }

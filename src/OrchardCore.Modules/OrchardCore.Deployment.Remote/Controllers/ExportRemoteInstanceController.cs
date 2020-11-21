@@ -12,6 +12,7 @@ using OrchardCore.Deployment.Remote.ViewModels;
 using OrchardCore.Deployment.Services;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Mvc.Utilities;
+using OrchardCore.Recipes.Models;
 using YesSql;
 
 namespace OrchardCore.Deployment.Remote.Controllers
@@ -26,6 +27,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
         private readonly ISession _session;
         private readonly RemoteInstanceService _service;
         private readonly INotifier _notifier;
+        private readonly IHtmlLocalizer H;
 
         public ExportRemoteInstanceController(
             IAuthorizationService authorizationService,
@@ -33,20 +35,18 @@ namespace OrchardCore.Deployment.Remote.Controllers
             RemoteInstanceService service,
             IDeploymentManager deploymentManager,
             INotifier notifier,
-            IHtmlLocalizer<ExportRemoteInstanceController> h)
+            IHtmlLocalizer<ExportRemoteInstanceController> localizer)
         {
             _authorizationService = authorizationService;
             _deploymentManager = deploymentManager;
             _session = session;
             _service = service;
             _notifier = notifier;
-            H = h;
+            H = localizer;
         }
 
-        public IHtmlLocalizer H { get; }
-
         [HttpPost]
-        public async Task<IActionResult> Execute(int id, string remoteInstanceId)
+        public async Task<IActionResult> Execute(int id, string remoteInstanceId, string returnUrl)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.Export))
             {
@@ -74,7 +74,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
             {
                 archiveFileName = PathExtensions.Combine(Path.GetTempPath(), filename);
 
-                var deploymentPlanResult = new DeploymentPlanResult(fileBuilder);
+                var deploymentPlanResult = new DeploymentPlanResult(fileBuilder, new RecipeDescriptor());
                 await _deploymentManager.ExecuteDeploymentPlanAsync(deploymentPlan, deploymentPlanResult);
 
                 if (System.IO.File.Exists(archiveFileName))
@@ -114,6 +114,11 @@ namespace OrchardCore.Deployment.Remote.Controllers
             finally
             {
                 System.IO.File.Delete(archiveFileName);
+            }
+
+            if (!string.IsNullOrEmpty(returnUrl))
+            {
+                return LocalRedirect(returnUrl);
             }
 
             return RedirectToAction("Display", "DeploymentPlan", new { area = "OrchardCore.Deployment", id });

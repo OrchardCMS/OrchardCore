@@ -1,4 +1,4 @@
-# Data Protection (Azure Storage) (OrchardCore.DataProtection.Azure)
+# Data Protection (Azure Storage) (`OrchardCore.DataProtection.Azure`)
 
 ## Purpose
 
@@ -14,8 +14,9 @@ These settings need to be available to the `IShellConfiguration` implementation.
 ```json
 {
   "OrchardCore": {
-    "OrchardCore.DataProtection.Azure": {
+    "OrchardCore_DataProtection_Azure": {
       "ConnectionString": "DefaultEndpointsProtocol=https;AccountName=<myaccountname>;AccountKey=<myaccountkey>;EndpointSuffix=core.windows.net",
+      // Set to the Azure Blob container name. A container name must be a valid DNS name and conform to Azure container naming rules eg. lowercase only.
       "ContainerName": "dataprotection",
       "BlobName": "",
       "CreateContainer": true
@@ -38,13 +39,17 @@ The `ShellSettings` property is made available to the liquid template.
 The `ContainerName` property and the `BlobName` property are the only templatable properties.
 If not supplied the `BlobName` will automatically default to a folder per tenant configuration, i.e. `Sites/tenant_name/DataProtectionKeys.xml`
 
+!!! note
+When templating the `ContainerName`  using  `{{ ShellSettings.Name }}`, the tenant's name will be automatically lowercased, however, you must also make sure the `ContainerName` conforms to other Azure Blob naming conventions as set out in Azure's documentation.
+
 ### Configuring a container per tenant.
 
 ```json
 {
   "OrchardCore": {
-    "OrchardCore.DataProtection.Azure": {
+    "OrchardCore_DataProtection_Azure": {
       "ConnectionString": "DefaultEndpointsProtocol=https;AccountName=<myaccountname>;AccountKey=<myaccountkey>;EndpointSuffix=core.windows.net",
+      // Optionally configure with liquid. A container name must be a valid DNS name and conform to Azure container naming rules eg. lowercase only.
       "ContainerName": "{{ ShellSettings.Name }}-dataprotection",
       "BlobName": "{{ ShellSettings.Name }}DataProtectionKeys.xml",
       "CreateContainer": true

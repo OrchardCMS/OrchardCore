@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.ContentFields.Controllers;
+using OrchardCore.ContentFields.Drivers;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentFields.Indexing;
 using OrchardCore.ContentFields.Indexing.SQL;
@@ -28,7 +29,7 @@ namespace OrchardCore.ContentFields
         private readonly AdminOptions _adminOptions;
         static Startup()
         {
-            // Registering both field types and shape types are necessary as they can 
+            // Registering both field types and shape types are necessary as they can
             // be accessed from inner properties.
 
             TemplateContext.GlobalMemberAccessStrategy.Register<BooleanField>();

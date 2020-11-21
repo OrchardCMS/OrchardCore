@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using GraphQL.Resolvers;
 using GraphQL.Types;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -42,10 +41,10 @@ namespace OrchardCore.Tests.Apis.GraphQL
             var connectionStringTemplate = @"Data Source={0};Cache=Shared";
 
             _tempFilename = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-            _store = await StoreFactory.CreateAsync(new Configuration().UseSqLite(String.Format(connectionStringTemplate, _tempFilename)));
+            _store = await StoreFactory.CreateAndInitializeAsync(new Configuration().UseSqLite(String.Format(connectionStringTemplate, _tempFilename)));
 
             _prefix = "tp";
-            _prefixedStore = await StoreFactory.CreateAsync(new Configuration().UseSqLite(String.Format(connectionStringTemplate, _tempFilename + _prefix)).SetTablePrefix(_prefix + "_"));
+            _prefixedStore = await StoreFactory.CreateAndInitializeAsync(new Configuration().UseSqLite(String.Format(connectionStringTemplate, _tempFilename + _prefix)).SetTablePrefix(_prefix + "_"));
 
             await CreateTablesAsync(_store);
             await CreateTablesAsync(_prefixedStore);
@@ -78,7 +77,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
             {
                 var builder = new SchemaBuilder(store.Configuration, await session.DemandAsync());
 
-                builder.CreateMapIndexTable(nameof(ContentItemIndex), table => table
+                builder.CreateMapIndexTable<ContentItemIndex>(table => table
                     .Column<string>("ContentItemId", c => c.WithLength(26))
                     .Column<string>("ContentItemVersionId", c => c.WithLength(26))
                     .Column<bool>("Latest")
@@ -92,11 +91,11 @@ namespace OrchardCore.Tests.Apis.GraphQL
                     .Column<string>("DisplayText", column => column.Nullable().WithLength(ContentItemIndex.MaxDisplayTextSize))
                 );
 
-                builder.CreateMapIndexTable(nameof(AnimalIndex), column => column
+                builder.CreateMapIndexTable<AnimalIndex>(table => table
                     .Column<string>(nameof(AnimalIndex.Name))
                 );
 
-                builder.CreateMapIndexTable(nameof(AnimalTraitsIndex), column => column
+                builder.CreateMapIndexTable<AnimalTraitsIndex>(table => table
                     .Column<bool>(nameof(AnimalTraitsIndex.IsHappy))
                     .Column<bool>(nameof(AnimalTraitsIndex.IsScary))
                 );
@@ -116,6 +115,8 @@ namespace OrchardCore.Tests.Apis.GraphQL
                 services.Populate(new ServiceCollection());
                 services.Services.AddScoped(x => _store.CreateSession());
                 services.Services.AddScoped(x => new ShellSettings());
+                services.Services.AddSingleton<IIndexPropertyProvider, IndexPropertyProvider<ContentItemIndex>>();
+                services.Services.AddSingleton<IIndexPropertyProvider, IndexPropertyProvider<AnimalIndex>>();
                 services.Build();
 
                 var returnType = new ListGraphType<StringGraphType>();
@@ -142,7 +143,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
                 session.Save(ci);
                 await session.CommitAsync();
 
-                var type = new ContentItemsFieldType("Animal", new Schema(), Options.Create(new GraphQLContentOptions()), Options.Create(new GraphQLSettings { DefaultNumberOfResults = 10 } ));
+                var type = new ContentItemsFieldType("Animal", new Schema(), Options.Create(new GraphQLContentOptions()), Options.Create(new GraphQLSettings { DefaultNumberOfResults = 10 }));
 
                 context.Arguments["where"] = JObject.Parse("{ contentItemId: \"1\" }");
                 var dogs = await ((LockedAsyncFieldResolver<IEnumerable<ContentItem>>)type.Resolver).Resolve(context);
@@ -162,6 +163,9 @@ namespace OrchardCore.Tests.Apis.GraphQL
             {
                 services.Populate(new ServiceCollection());
                 services.Services.AddScoped(x => _prefixedStore.CreateSession());
+                services.Services.AddSingleton<IIndexPropertyProvider, IndexPropertyProvider<ContentItemIndex>>();
+                services.Services.AddSingleton<IIndexPropertyProvider, IndexPropertyProvider<AnimalIndex>>();
+                services.Services.AddSingleton<IIndexPropertyProvider, IndexPropertyProvider<AnimalTraitsIndex>>();
 
                 var shellSettings = new ShellSettings();
                 shellSettings["TablePrefix"] = _prefix;
@@ -204,6 +208,62 @@ namespace OrchardCore.Tests.Apis.GraphQL
         }
 
 
+        [Theory]
+        [InlineData("animal")]
+        [InlineData("ANIMAL")]
+        [InlineData("Animal")]
+        public async Task ShouldFilterByAliasIndexRegardlessOfInputFieldCase(string fieldName)
+        {
+            await _initializeTask;
+            _store.RegisterIndexes<AnimalIndexProvider>();
+
+            using (var services = new FakeServiceCollection())
+            {
+                services.Populate(new ServiceCollection());
+                services.Services.AddScoped(x => _store.CreateSession());
+                services.Services.AddScoped(x => new ShellSettings());
+                services.Services.AddScoped<IIndexProvider, AnimalIndexProvider>();
+                services.Services.AddScoped<IIndexAliasProvider, MultipleAliasIndexProvider>();
+                services.Services.AddSingleton<IIndexPropertyProvider, IndexPropertyProvider<AnimalIndex>>();
+                services.Build();
+
+                var returnType = new ListGraphType<StringGraphType>
+                {
+                    ResolvedType = new StringGraphType() { Name = "Animal" }
+                };
+
+                // setup the whereinput fieldname with the test data
+                var animalWhereInput = new AnimalPartWhereInput(fieldName);
+                var inputs = new FieldType { Name = "Inputs", Arguments = new QueryArguments { new QueryArgument<WhereInputObjectGraphType> { Name = "where", Description = "filters the animals", ResolvedType = animalWhereInput } } };
+
+                var context = new ResolveFieldContext
+                {
+                    Arguments = new Dictionary<string, object>(),
+                    UserContext = new GraphQLContext
+                    {
+                        ServiceProvider = services
+                    },
+                    ReturnType = returnType,
+                    FieldDefinition = inputs
+                };
+
+                var ci = new ContentItem { ContentType = "Animal", Published = true, ContentItemId = "1", ContentItemVersionId = "1" };
+                ci.Weld(new AnimalPart { Name = "doug" });
+
+                var session = ((GraphQLContext)context.UserContext).ServiceProvider.GetService<ISession>();
+                session.Save(ci);
+                await session.CommitAsync();
+
+                var type = new ContentItemsFieldType("Animal", new Schema(), Options.Create(new GraphQLContentOptions()), Options.Create(new GraphQLSettings { DefaultNumberOfResults = 10 }));
+
+                context.Arguments["where"] = JObject.Parse(string.Concat("{ ", fieldName, ": { name: \"doug\" } }"));
+                var dogs = await ((LockedAsyncFieldResolver<IEnumerable<ContentItem>>)type.Resolver).Resolve(context);
+
+                Assert.Single(dogs);
+                Assert.Equal("doug", dogs.First().As<AnimalPart>().Name);
+            }
+        }
+
         [Fact]
         public async Task ShouldBeAbleToUseTheSameIndexForMultipleAliases()
         {
@@ -218,6 +278,8 @@ namespace OrchardCore.Tests.Apis.GraphQL
                 services.Services.AddScoped<IIndexProvider, ContentItemIndexProvider>();
                 services.Services.AddScoped<IIndexProvider, AnimalIndexProvider>();
                 services.Services.AddScoped<IIndexAliasProvider, MultipleAliasIndexProvider>();
+                services.Services.AddSingleton<IIndexPropertyProvider, IndexPropertyProvider<AnimalIndex>>();
+
                 services.Build();
 
                 var retrunType = new ListGraphType<StringGraphType>();
@@ -248,7 +310,6 @@ namespace OrchardCore.Tests.Apis.GraphQL
                 Assert.Single(cats);
                 Assert.Equal("doug", cats.First().As<Animal>().Name);
 
-
                 context.Arguments["where"] = JObject.Parse("{ dogs: { name: \"doug\" } }");
                 var dogs = await ((LockedAsyncFieldResolver<IEnumerable<ContentItem>>)type.Resolver).Resolve(context);
 
@@ -273,6 +334,9 @@ namespace OrchardCore.Tests.Apis.GraphQL
                 services.Services.AddScoped<IIndexProvider, AnimalIndexProvider>();
                 services.Services.AddScoped<IIndexProvider, AnimalTraitsIndexProvider>();
                 services.Services.AddScoped<IIndexAliasProvider, MultipleIndexesIndexProvider>();
+
+                services.Services.AddSingleton<IIndexPropertyProvider, IndexPropertyProvider<AnimalIndex>>();
+                services.Services.AddSingleton<IIndexPropertyProvider, IndexPropertyProvider<AnimalTraitsIndex>>();
                 services.Build();
 
                 var retrunType = new ListGraphType<StringGraphType>();
@@ -296,7 +360,6 @@ namespace OrchardCore.Tests.Apis.GraphQL
 
                 var ci2 = new ContentItem { ContentType = "Animal", Published = true, ContentItemId = "3", ContentItemVersionId = "3" };
                 ci2.Weld(new Animal { Name = "tommy", IsHappy = false, IsScary = true });
-
 
                 var session = ((GraphQLContext)context.UserContext).ServiceProvider.GetService<ISession>();
                 session.Save(ci);
@@ -330,6 +393,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
                 services.Services.AddScoped<IIndexProvider, ContentItemIndexProvider>();
                 services.Services.AddScoped<IIndexProvider, AnimalIndexProvider>();
                 services.Services.AddScoped<IIndexAliasProvider, MultipleAliasIndexProvider>();
+                services.Services.AddSingleton<IIndexPropertyProvider, IndexPropertyProvider<AnimalIndex>>();
                 services.Build();
 
                 var returnType = new ListGraphType<StringGraphType>();
@@ -380,6 +444,7 @@ namespace OrchardCore.Tests.Apis.GraphQL
                 services.Services.AddScoped<IIndexProvider, ContentItemIndexProvider>();
                 services.Services.AddScoped<IIndexProvider, AnimalIndexProvider>();
                 services.Services.AddScoped<IIndexAliasProvider, MultipleAliasIndexProvider>();
+                services.Services.AddSingleton<IIndexPropertyProvider, IndexPropertyProvider<AnimalIndex>>();
                 services.Build();
 
                 var returnType = new ListGraphType<StringGraphType>();
@@ -435,6 +500,13 @@ namespace OrchardCore.Tests.Apis.GraphQL
             Name = "Test";
             Description = "Foo";
             AddField(new FieldType { Name = "Animal", Type = typeof(StringGraphType), Metadata = new Dictionary<string, object> { { "PartName", "AnimalPart" } } });
+        }
+
+        public AnimalPartWhereInput(string fieldName)
+        {
+            Name = "Test";
+            Description = "Foo";
+            AddField(new FieldType { Name = fieldName, Type = typeof(StringGraphType), Metadata = new Dictionary<string, object> { { "PartName", "AnimalPart" } } });
         }
     }
 
@@ -514,7 +586,6 @@ namespace OrchardCore.Tests.Apis.GraphQL
         }
     }
 
-
     public class MultipleAliasIndexProvider : IIndexAliasProvider
     {
         private static readonly IndexAlias[] _aliases = new[]
@@ -523,19 +594,19 @@ namespace OrchardCore.Tests.Apis.GraphQL
             {
                 Alias = "cats",
                 Index = nameof(AnimalIndex),
-                With = q => q.With<AnimalIndex>()
+                IndexType = typeof(AnimalIndex)
             },
             new IndexAlias
             {
                 Alias = "dogs",
                 Index = nameof(AnimalIndex),
-                With = q => q.With<AnimalIndex>()
+                IndexType = typeof(AnimalIndex)
             },
             new IndexAlias
             {
                 Alias = nameof(AnimalPart),
                 Index = nameof(AnimalIndex),
-                With = q => q.With<AnimalIndex>()
+                IndexType = typeof(AnimalIndex)
             }
         };
 
@@ -553,19 +624,19 @@ namespace OrchardCore.Tests.Apis.GraphQL
             {
                 Alias = "animals.name",
                 Index = $"Name",
-                With = q => q.With<AnimalIndex>()
+                IndexType = typeof(AnimalIndex)
             },
             new IndexAlias
             {
                 Alias = "animals.isHappy",
                 Index = $"IsHappy",
-                With = q => q.With<AnimalTraitsIndex>()
+                IndexType = typeof(AnimalTraitsIndex)
             },
             new IndexAlias
             {
                 Alias = "animals.isScary",
                 Index = $"IsScary",
-                With = q => q.With<AnimalTraitsIndex>()
+                IndexType = typeof(AnimalTraitsIndex)
             }
         };
 

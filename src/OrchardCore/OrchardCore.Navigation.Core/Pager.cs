@@ -1,4 +1,4 @@
-﻿namespace OrchardCore.Navigation
+namespace OrchardCore.Navigation
 {
     public class Pager
     {
@@ -10,8 +10,8 @@
         /// <summary>
         /// Constructs a new pager.
         /// </summary>
-        /// <param name="site">The site settings.</param>
         /// <param name="pagerParameters">The pager parameters.</param>
+        /// <param name="defaultPageSize">The default page size.</param>
         public Pager(PagerParameters pagerParameters, int defaultPageSize)
             : this(pagerParameters.Page, pagerParameters.PageSize, defaultPageSize)
         {
@@ -20,9 +20,9 @@
         /// <summary>
         /// Constructs a new pager.
         /// </summary>
-        /// <param name="site">The site settings.</param>
         /// <param name="page">The page parameter.</param>
         /// <param name="pageSize">The page size parameter.</param>
+        /// <param name="defaultPageSize">The default page size.</param>
         public Pager(int? page, int? pageSize, int defaultPageSize)
         {
             Page = (int)(page != null ? (page > 0 ? page : PageDefault) : PageDefault);

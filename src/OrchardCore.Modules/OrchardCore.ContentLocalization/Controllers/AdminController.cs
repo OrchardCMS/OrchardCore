@@ -1,4 +1,5 @@
 using System;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -6,7 +7,6 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using OrchardCore.ContentLocalization.Models;
 using OrchardCore.ContentManagement;
 using OrchardCore.Contents;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 
 namespace OrchardCore.ContentLocalization.Controllers
@@ -17,7 +17,7 @@ namespace OrchardCore.ContentLocalization.Controllers
         private readonly IContentLocalizationManager _contentLocalizationManager;
         private readonly INotifier _notifier;
         private readonly IAuthorizationService _authorizationService;
-        private readonly IHtmlLocalizer<AdminController> H;
+        private readonly IHtmlLocalizer H;
 
         public AdminController(
             IContentManager contentManager,
@@ -54,7 +54,7 @@ namespace OrchardCore.ContentLocalization.Controllers
             var checkContentItem = await _contentManager.NewAsync(contentItem.ContentType);
 
             // Set the current user as the owner to check for ownership permissions on creation
-            checkContentItem.Owner = User.Identity.Name;
+            checkContentItem.Owner = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.EditContent, checkContentItem))
             {

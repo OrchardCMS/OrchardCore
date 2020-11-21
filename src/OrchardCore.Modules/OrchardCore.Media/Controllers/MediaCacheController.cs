@@ -18,7 +18,7 @@ namespace OrchardCore.Media.Controllers
         private readonly IAuthorizationService _authorizationService;
         private readonly IMediaFileStoreCache _mediaFileStoreCache;
         private readonly INotifier _notifier;
-        private readonly IHtmlLocalizer<MediaCacheController> H;
+        private readonly IHtmlLocalizer H;
 
         public MediaCacheController(
             IAuthorizationService authorizationService,
@@ -74,6 +74,5 @@ namespace OrchardCore.Media.Controllers
 
             return RedirectToAction("Index");
         }
-
     }
 }

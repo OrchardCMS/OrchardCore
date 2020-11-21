@@ -1,15 +1,15 @@
 using System;
 using System.Threading.Tasks;
+using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Metadata.Records;
-using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 
 namespace OrchardCore.ContentTypes.RecipeSteps
 {
     /// <summary>
-    /// This recipe step creates custom content definition.
+    /// This recipe step creates content definitions.
     /// </summary>
     public class ContentDefinitionStep : IRecipeStepHandler
     {

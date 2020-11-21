@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using OrchardCore.Mvc.Utilities;
-using YesSql;
 
 namespace OrchardCore.Lucene.Controllers
 {
@@ -15,16 +14,13 @@ namespace OrchardCore.Lucene.Controllers
     {
         private readonly IAuthorizationService _authorizationService;
         private readonly LuceneQuerySource _luceneQuerySource;
-        private readonly ISession _session;
 
         public ApiController(
             IAuthorizationService authorizationService,
-            LuceneQuerySource luceneQuerySource,
-            ISession session)
+            LuceneQuerySource luceneQuerySource)
         {
             _authorizationService = authorizationService;
             _luceneQuerySource = luceneQuerySource;
-            _session = session;
         }
 
         [HttpPost, HttpGet]
@@ -36,7 +32,7 @@ namespace OrchardCore.Lucene.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.QueryLuceneApi))
             {
-                return this.ChallengeOrForbid();
+                return this.ChallengeOrForbid("Api");
             }
 
             var luceneQuery = new LuceneQuery
@@ -64,7 +60,7 @@ namespace OrchardCore.Lucene.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.QueryLuceneApi))
             {
-                return this.ChallengeOrForbid();
+                return this.ChallengeOrForbid("Api");
             }
 
             var luceneQuery = new LuceneQuery

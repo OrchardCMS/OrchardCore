@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
-using Microsoft.Extensions.Localization;
 using OrchardCore.Admin;
 using OrchardCore.AdminMenu.Services;
 using OrchardCore.AdminMenu.ViewModels;
@@ -25,14 +24,13 @@ namespace OrchardCore.AdminMenu.Controllers
         private readonly INotifier _notifier;
         private readonly IHtmlLocalizer H;
         private readonly IUpdateModelAccessor _updateModelAccessor;
-        private readonly dynamic New;
+
 
         public NodeController(
             IAuthorizationService authorizationService,
             IDisplayManager<MenuItem> displayManager,
             IEnumerable<IAdminNodeProviderFactory> factories,
             IAdminMenuService adminMenuService,
-            IShapeFactory shapeFactory,
             IHtmlLocalizer<NodeController> htmlLocalizer,
             INotifier notifier,
             IUpdateModelAccessor updateModelAccessor)
@@ -41,7 +39,6 @@ namespace OrchardCore.AdminMenu.Controllers
             _factories = factories;
             _adminMenuService = adminMenuService;
             _authorizationService = authorizationService;
-            New = shapeFactory;
             _notifier = notifier;
             _updateModelAccessor = updateModelAccessor;
             H = htmlLocalizer;
@@ -324,7 +321,6 @@ namespace OrchardCore.AdminMenu.Controllers
             {
                 return NotFound();
             }
-
 
             var nodeToMove = adminMenu.GetMenuItemById(nodeToMoveId);
             if (nodeToMove == null)

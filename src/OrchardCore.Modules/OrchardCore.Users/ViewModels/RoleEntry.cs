@@ -1,4 +1,3 @@
-﻿using System;
 namespace OrchardCore.Users.ViewModels
 {
     public class RoleViewModel

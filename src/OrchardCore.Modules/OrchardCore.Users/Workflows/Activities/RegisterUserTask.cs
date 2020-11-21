@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -25,7 +26,8 @@ namespace OrchardCore.Users.Workflows.Activities
         private readonly LinkGenerator _linkGenerator;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IUpdateModelAccessor _updateModelAccessor;
-        private readonly IStringLocalizer<RegisterUserTask> S;
+        private readonly IStringLocalizer S;
+        private readonly HtmlEncoder _htmlEncoder;
 
         public RegisterUserTask(
             IUserService userService,
@@ -34,7 +36,8 @@ namespace OrchardCore.Users.Workflows.Activities
             LinkGenerator linkGenerator,
             IHttpContextAccessor httpContextAccessor,
             IUpdateModelAccessor updateModelAccessor,
-            IStringLocalizer<RegisterUserTask> localizer)
+            IStringLocalizer<RegisterUserTask> localizer,
+            HtmlEncoder htmlEncoder)
         {
             _userService = userService;
             _userManager = userManager;
@@ -43,11 +46,12 @@ namespace OrchardCore.Users.Workflows.Activities
             _httpContextAccessor = httpContextAccessor;
             _updateModelAccessor = updateModelAccessor;
             S = localizer;
+            _htmlEncoder = htmlEncoder;
         }
 
         // The technical name of the activity. Activities on a workflow definition reference this name.
         public override string Name => nameof(RegisterUserTask);
-        
+
         public override LocalizedString DisplayText => S["Register User Task"];
 
         // The category to which this activity belongs. The activity picker groups activities by this category.
@@ -65,7 +69,6 @@ namespace OrchardCore.Users.Workflows.Activities
             get => GetProperty(() => new WorkflowExpression<string>());
             set => SetProperty(value);
         }
-
 
         // The message to display.
         public WorkflowExpression<string> ConfirmationEmailTemplate
@@ -94,7 +97,6 @@ namespace OrchardCore.Users.Workflows.Activities
             }
             var outcome = isValid ? "Valid" : "Invalid";
 
-
             if (isValid)
             {
                 var userName = form["UserName"];
@@ -120,14 +122,14 @@ namespace OrchardCore.Users.Workflows.Activities
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
 
                     var uri = _linkGenerator.GetUriByAction(_httpContextAccessor.HttpContext, "ConfirmEmail",
-                        "Registration", new { area = "OrchardCore.Users", userId = user.Id, code });
+                        "Registration", new { area = "OrchardCore.Users", userId = user.UserId, code });
 
                     workflowContext.Properties["EmailConfirmationUrl"] = uri;
 
-                    var subject = await _expressionEvaluator.EvaluateAsync(ConfirmationEmailSubject, workflowContext);
+                    var subject = await _expressionEvaluator.EvaluateAsync(ConfirmationEmailSubject, workflowContext, null);
                     var localizedSubject = new LocalizedString(nameof(RegisterUserTask), subject);
 
-                    var body = await _expressionEvaluator.EvaluateAsync(ConfirmationEmailTemplate, workflowContext);
+                    var body = await _expressionEvaluator.EvaluateAsync(ConfirmationEmailTemplate, workflowContext, _htmlEncoder);
                     var localizedBody = new LocalizedHtmlString(nameof(RegisterUserTask), body);
                     var message = new MailMessage()
                     {

@@ -1,7 +1,7 @@
 @inject OrchardCore.ContentManagement.Display.IContentItemDisplayManager ContentItemDisplayManager
 
 @{
-    //Set Model (Current Shape) as Child content of Outher Frame, Later this Model is used to render other shapes
+    //Set Model (Current Shape) as Child content of Outer Frame, Later this Model is used to render other shapes
     dynamic contentCardFrame = await New.ContentCard_Frame();
 
     var contentItem = Model.ContentItem;
@@ -13,11 +13,17 @@
     if (Model.BuildEditor == true)
     {
         //Assign prefix
-        var prefix = Guid.NewGuid().ToString("n");
-        Model.PrefixValue = prefix;
+        if (String.IsNullOrEmpty(Model.PrefixValue))
+        {
+            Model.PrefixValue = Guid.NewGuid().ToString("n");
+            Model.PrefixesId =  Model.PrefixValue + "_" + Model.PrefixesId;
+            Model.ContentTypesId =  Model.PrefixValue + "_" + Model.ContentTypesId;
+        }
 
         //Build Editor for Content Item
-        dynamic contentItemEditor = await ContentItemDisplayManager.BuildEditorAsync(contentItem, updater, false, "", prefix);
+        // AJAX request is new request and will not have CollectionShape.
+        var isNew = Model.CollectionShape == null ? true : false ;
+        dynamic contentItemEditor = await ContentItemDisplayManager.BuildEditorAsync(contentItem, updater, isNew, "", Model.PrefixValue);
 
         //We don't show Actions and Side bar the parent editor has its own buttons.
         contentItemEditor.Actions = null;
@@ -35,7 +41,7 @@
 
         contentCardFrame.ChildContent = Model;
 
-        contentCardFrame.ColumnSize = Model.ColumnSize;       
+        contentCardFrame.ColumnSize = Model.ColumnSize;
     }
     else
     {

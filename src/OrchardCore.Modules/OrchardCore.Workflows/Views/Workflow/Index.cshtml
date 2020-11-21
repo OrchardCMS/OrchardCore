@@ -27,7 +27,7 @@
 
     <div class="form-group">
         <ul class="list-group with-checkbox">
-            <li class="list-group-item bg-light">
+            <li class="list-group-item bg-primary">
                 <div class="row">
                     <div class="form-group col mb-n1 text-nowrap">
                         <div class="custom-control custom-checkbox mt-2 mr-n2">
@@ -129,7 +129,7 @@
     <a class="btn btn-secondary" href="@Model.ReturnUrl">@T["Back"]</a>
 </div>
 
-<script at="Foot" type="text/javascript">
+<script at="Foot">
     $(function () {
         $('.selectpicker').selectpicker();
 
@@ -143,12 +143,14 @@
         $(".filter-options input").on("change", function () {
             $("[name='submit.Filter']").click();
         });
-        
+
         $('.selectpicker').on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
             $("[name='submit.Filter']").click();
         });
 
-        $(".dropdown-menu .dropdown-item").on("click", function () {
+        $(".dropdown-menu .dropdown-item").filter(function() {
+            return $(this).data("action");
+        }).on("click", function () {
             if ($(":checkbox[name='itemIds']:checked").length > 1) {
                 var $this = $(this);
                 confirmDialog({title: $this.data('title'), message: $this.data('message'), callback: function(r) {
@@ -182,7 +184,13 @@
         });
 
         itemsCheckboxes.on("click", function () {
-            selectedItems.text($(":checkbox[name='itemIds']:checked").length + ' @T["selected"]');
+            var itemsCount = $(":checkbox[name='itemIds']").length;
+            var selectedItemsCount = $(":checkbox[name='itemIds']:checked").length;
+
+            selectAllCtrl.prop("checked", selectedItemsCount == itemsCount);
+            selectAllCtrl.prop("indeterminate", selectedItemsCount > 0 && selectedItemsCount < itemsCount);
+
+            selectedItems.text(selectedItemsCount + ' @T["selected"]');
             displayActionsOrFilters();
         });
     });

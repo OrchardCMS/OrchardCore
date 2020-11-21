@@ -11,8 +11,7 @@
     var avaParts = allParts.Where(x => !allTypes.Any(y => y.Name == x.Name));
 }
 
-
-<h5>@T["Content Definitions"]</h5>
+<h5>@T["Update Content Definitions"]</h5>
 
 <div class="form-group mt-4 mb-5">
     <div class="row">
@@ -24,7 +23,6 @@
         </div>
     </div>
 </div>
-
 
 <div class="cdsel form-group mt-4 mb-5 @(Model.IncludeAll ? "collapse" : "show")">
     <div class="row mb-3">
@@ -53,7 +51,6 @@
                             <label class="custom-control-label" for="@(Html.IdFor(m => m.ContentTypes) + "_" + ctypename)">@contentTypeDefinition.DisplayName</label>
                         </div>
 
-
                         <ul class="list-group @(checkd??false ? "" : "collapse")" id="sub_@ctypename">
                             @foreach (var part in contentTypeDefinition.Parts.Where(x => x.Name != ctypename))
                             {
@@ -74,12 +71,9 @@
                                             }
                                         </label>
                                     </div>
-
-
                                 </li>
                             }
                         </ul>
-
                     </li>
                 }
             </ul>
@@ -147,4 +141,3 @@
         });
     });
 </script>
-

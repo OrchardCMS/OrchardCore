@@ -10,7 +10,7 @@ Attach this part to a content type to manage multiple localized versions of a co
 
 ## ContentCulturePicker Feature
 
-The ContentCulturePicker feature helps you manage cultures for the frontend.
+The `ContentCulturePicker` feature helps you manage cultures for the frontend.
 
 Enabling this module results in
 
@@ -18,7 +18,7 @@ Enabling this module results in
     This Provider will set the thread culture based on the ContentItem that matches the current url.
 - 2 shapes (described below) are available to the frontend theme.
 
-The ContentculturePicker selects the url to redirect using the following rules
+The `ContentCulturePicker` selects the url to redirect using the following rules
 
 - If the `ContentItem` has a related ContentItem for the selected culture, it redirects to that Item.
 - OR If a HomePage is specified, attempts to find a Localization of the Homepage `ContentItem` for the current culture.
@@ -26,7 +26,7 @@ The ContentculturePicker selects the url to redirect using the following rules
 
 ### Localization Cookie
 
-By default, the ContentCulturePicker sets a cookie for the `CookieRequestCultureProvider`. This can be disabled in the  `Configuration/Settings/ContentCulturePicker` settings page.
+By default, the `ContentCulturePicker` sets a cookie for the `CookieRequestCultureProvider`. This can be disabled in the  `Configuration/Settings/ContentCulturePicker` settings page.
 
 #### Recipe Step
 
@@ -45,12 +45,24 @@ The cookie can be set during recipes using the settings step. Here is a sample s
 
 #### `ContentCulturePicker`
 
-The `ContentCulturePicker` shape loads data for the ContentCulturePickerContainer shape. 
-You should always render this shape in your theme. `{% shape "ContentCulturePicker" %}`
+The `ContentCulturePicker` shape loads data for the `ContentCulturePickerContainer` shape.  
+You should always render this shape in your theme:
+
+=== "Liquid"
+
+    ``` liquid
+    {% shape "ContentCulturePicker" %}
+    ```
+
+=== "Razor"
+
+    ``` html
+    <shape type="ContentCulturePicker" />
+    ```
 
 #### `ContentCulturePickerContainer`
 
-The `ContentCulturePickerContainer` shape is used to render the CulturePicker. 
+The `ContentCulturePickerContainer` shape is used to render the CulturePicker.
 You should override this shape in your theme.
 
 | Property                  | Description                                                 |
@@ -60,42 +72,45 @@ You should override this shape in your theme.
 
 ##### ContentCulturePickerContainer Example
 
-``` liquid tab="Liquid"
-<ul>
-    <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" id="oc-culture-picker" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{Model.CurrentCulture.DisplayName}}</a>
-        <div class="dropdown-menu" aria-labelledby="oc-culture-picker">
-        {% for culture in Model.SupportedCultures %}
-            {% if culture.Name != Model.CurrentCulture.Name  %}
-            <a class="dropdown-item" href="{{culture.Name | switch_culture_url }}">{{culture.DisplayName}}</a>
-            {% endif %}
-        {% endfor %}
-        </div>
-    </li>
-</ul>
+=== "Liquid"
 
-```
+    ``` liquid
+    <ul>
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="oc-culture-picker" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{Model.CurrentCulture.DisplayName}}</a>
+            <div class="dropdown-menu" aria-labelledby="oc-culture-picker">
+            {% for culture in Model.SupportedCultures %}
+                {% if culture.Name != Model.CurrentCulture.Name  %}
+                <a class="dropdown-item" href="{{culture.Name | switch_culture_url }}">{{culture.DisplayName}}</a>
+                {% endif %}
+            {% endfor %}
+            </div>
+        </li>
+    </ul>
+    ```
 
-``` html tab="Razor"
-<ul>
-    <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" id="oc-culture-picker" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">@Model.CurrentCulture.DisplayName</a>
-        <div class="dropdown-menu" aria-labelledby="oc-culture-picker">
-            @foreach (var culture in Model.SupportedCultures)
-            {
-                if (!string.Equals((string)culture.Name, (string)Model.CurrentCulture.Name, StringComparison.OrdinalIgnoreCase))
+=== "Razor"
+
+    ``` html
+    <ul>
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="oc-culture-picker" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">@Model.CurrentCulture.DisplayName</a>
+            <div class="dropdown-menu" aria-labelledby="oc-culture-picker">
+                @foreach (var culture in Model.SupportedCultures)
                 {
-                    <a asp-route="RedirectToLocalizedContent"
-                       asp-route-area="OrchardCore.ContentLocalization"
-                       asp-route-targetculture="@culture.Name"
-                       asp-route-contentItemUrl="@Context.Request.Path"
-                       class="dropdown-item">@culture.DisplayName</a>
+                    if (!string.Equals((string)culture.Name, (string)Model.CurrentCulture.Name, StringComparison.OrdinalIgnoreCase))
+                    {
+                        <a asp-route="RedirectToLocalizedContent"
+                        asp-route-area="OrchardCore.ContentLocalization"
+                        asp-route-targetculture="@culture.Name"
+                        asp-route-contentItemUrl="@Context.Request.Path"
+                        class="dropdown-item">@culture.DisplayName</a>
+                    }
                 }
-            }
-        </div>
-    </li>
-</ul>
-```
+            </div>
+        </li>
+    </ul>
+    ```
 
 ## Liquid filters
 

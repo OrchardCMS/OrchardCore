@@ -16,6 +16,7 @@ using OrchardCore.Lucene.Controllers;
 using OrchardCore.Lucene.Deployment;
 using OrchardCore.Lucene.Drivers;
 using OrchardCore.Lucene.Handlers;
+using OrchardCore.Lucene.Model;
 using OrchardCore.Lucene.Recipes;
 using OrchardCore.Lucene.Services;
 using OrchardCore.Lucene.Settings;
@@ -26,7 +27,6 @@ using OrchardCore.Queries;
 using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
-using OrchardCore.Lucene.Model;
 
 namespace OrchardCore.Lucene
 {
@@ -60,7 +60,7 @@ namespace OrchardCore.Lucene
                 o.Analyzers.Add(new LuceneAnalyzer(LuceneSettings.StandardAnalyzer,
                     new StandardAnalyzer(LuceneSettings.DefaultVersion))));
 
-            services.AddScoped<IDisplayDriver<ISite>, LuceneSiteSettingsDisplayDriver>();
+            services.AddScoped<IDisplayDriver<ISite>, LuceneSettingsDisplayDriver>();
             services.AddScoped<IDisplayDriver<Query>, LuceneQueryDisplayDriver>();
 
             services.AddScoped<IContentHandler, LuceneIndexingContentHandler>();

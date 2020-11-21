@@ -8,9 +8,7 @@ using OrchardCore.OpenId.YesSql.Stores;
 
 namespace OrchardCore.OpenId.YesSql.Resolvers
 {
-    /// <summary>
-    /// Exposes a method allowing to resolve an authorization store.
-    /// </summary>
+    /// <inheritdoc/>
     public class OpenIdAuthorizationStoreResolver : IOpenIddictAuthorizationStoreResolver
     {
         private readonly TypeResolutionCache _cache;
@@ -22,12 +20,7 @@ namespace OrchardCore.OpenId.YesSql.Resolvers
             _provider = provider;
         }
 
-        /// <summary>
-        /// Returns an authorization store compatible with the specified authorization type or throws an
-        /// <see cref="InvalidOperationException"/> if no store can be built using the specified type.
-        /// </summary>
-        /// <typeparam name="TAuthorization">The type of the Authorization entity.</typeparam>
-        /// <returns>An <see cref="IOpenIddictAuthorizationStore{TAuthorization}"/>.</returns>
+        /// <inheritdoc/>
         public IOpenIddictAuthorizationStore<TAuthorization> Get<TAuthorization>() where TAuthorization : class
         {
             var store = _provider.GetService<IOpenIddictAuthorizationStore<TAuthorization>>();
@@ -51,7 +44,7 @@ namespace OrchardCore.OpenId.YesSql.Resolvers
                 return typeof(OpenIdAuthorizationStore<>).MakeGenericType(key);
             });
 
-            return (IOpenIddictAuthorizationStore<TAuthorization>) _provider.GetRequiredService(type);
+            return (IOpenIddictAuthorizationStore<TAuthorization>)_provider.GetRequiredService(type);
         }
 
         // Note: OrchardCore YesSql resolvers are registered as scoped dependencies as their inner

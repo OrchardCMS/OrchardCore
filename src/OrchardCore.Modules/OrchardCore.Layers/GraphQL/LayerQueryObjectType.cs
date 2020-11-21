@@ -27,10 +27,11 @@ namespace OrchardCore.Layers.GraphQL
                 .Name("widgets")
                 .Description("The widgets for this layer.")
                 .Argument<PublicationStatusGraphType, PublicationStatusEnum>("status", "publication status of the widgets")
-                .ResolveLockedAsync(async ctx => {
+                .ResolveLockedAsync(async ctx =>
+                {
                     var context = (GraphQLContext)ctx.UserContext;
                     var layerService = context.ServiceProvider.GetService<ILayerService>();
-                    
+
                     var filter = GetVersionFilter(ctx.GetArgument<PublicationStatusEnum>("status"));
                     var widgets = await layerService.GetLayerWidgetsAsync(filter);
 

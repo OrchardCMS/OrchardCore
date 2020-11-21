@@ -4,14 +4,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Admin;
 using OrchardCore.BackgroundTasks.Services;
 using OrchardCore.BackgroundTasks.ViewModels;
 using OrchardCore.DisplayManagement;
-using OrchardCore.DisplayManagement.ModelBinding;
-using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Navigation;
 using OrchardCore.Settings;
@@ -26,7 +23,6 @@ namespace OrchardCore.BackgroundTasks.Controllers
         private readonly IEnumerable<IBackgroundTask> _backgroundTasks;
         private readonly BackgroundTaskManager _backgroundTaskManager;
         private readonly ISiteService _siteService;
-        private readonly INotifier _notifier;
         private readonly IStringLocalizer S;
         private readonly dynamic New;
 
@@ -37,8 +33,7 @@ namespace OrchardCore.BackgroundTasks.Controllers
             BackgroundTaskManager backgroundTaskManager,
             IShapeFactory shapeFactory,
             ISiteService siteService,
-            IStringLocalizer<BackgroundTaskController> stringLocalizer,
-            INotifier notifier)
+            IStringLocalizer<BackgroundTaskController> stringLocalizer)
         {
             _tenant = shellSettings.Name;
             _authorizationService = authorizationService;
@@ -46,7 +41,6 @@ namespace OrchardCore.BackgroundTasks.Controllers
             _backgroundTaskManager = backgroundTaskManager;
             New = shapeFactory;
             _siteService = siteService;
-            _notifier = notifier;
             S = stringLocalizer;
         }
 

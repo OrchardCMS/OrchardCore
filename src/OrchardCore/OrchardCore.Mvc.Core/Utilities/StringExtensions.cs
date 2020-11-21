@@ -5,8 +5,8 @@ using System.Globalization;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
-
 using Microsoft.Extensions.Localization;
+using Newtonsoft.Json.Linq;
 
 namespace OrchardCore.Mvc.Utilities
 {
@@ -15,11 +15,13 @@ namespace OrchardCore.Mvc.Utilities
         public static string CamelFriendly(this string camel)
         {
             if (string.IsNullOrWhiteSpace(camel))
+            {
                 return "";
+            }
 
             var sb = new StringBuilder(camel);
 
-            for (int i = camel.Length - 1; i > 0; i--)
+            for (var i = camel.Length - 1; i > 0; i--)
             {
                 if (char.IsUpper(sb[i]))
                 {
@@ -38,7 +40,9 @@ namespace OrchardCore.Mvc.Utilities
         public static string Ellipsize(this string text, int characterCount, string ellipsis, bool wordBoundary = false)
         {
             if (string.IsNullOrWhiteSpace(text))
+            {
                 return "";
+            }
 
             if (characterCount < 0 || text.Length <= characterCount)
                 return text;
@@ -69,7 +73,9 @@ namespace OrchardCore.Mvc.Utilities
         public static string HtmlClassify(this string text)
         {
             if (string.IsNullOrWhiteSpace(text))
+            {
                 return "";
+            }
 
             var friendlier = text.CamelFriendly();
 
@@ -184,7 +190,9 @@ namespace OrchardCore.Mvc.Utilities
         public static string ToSafeName(this string name)
         {
             if (string.IsNullOrWhiteSpace(name))
+            {
                 return string.Empty;
+            }
 
             name = RemoveDiacritics(name);
             name = name.Strip(c =>
@@ -221,12 +229,12 @@ namespace OrchardCore.Mvc.Utilities
 
         public static string RemoveDiacritics(this string name)
         {
-            string stFormD = name.Normalize(NormalizationForm.FormD);
+            var stFormD = name.Normalize(NormalizationForm.FormD);
             var sb = new StringBuilder();
 
-            foreach (char t in stFormD)
+            foreach (var t in stFormD)
             {
-                UnicodeCategory uc = CharUnicodeInfo.GetUnicodeCategory(t);
+                var uc = CharUnicodeInfo.GetUnicodeCategory(t);
                 if (uc != UnicodeCategory.NonSpacingMark)
                 {
                     sb.Append(t);
@@ -243,13 +251,11 @@ namespace OrchardCore.Mvc.Utilities
         /// <returns></returns>
         public static string ReplaceDiacritics(this string s)
         {
-            string normalizedString = null;
-            StringBuilder stringBuilder = new StringBuilder();
-            normalizedString = s.Normalize(NormalizationForm.FormD);
-            int i = 0;
-            char c = '\0';
+            var stringBuilder = new StringBuilder();
+            var normalizedString = s.Normalize(NormalizationForm.FormD);
+            var c = '\0';
 
-            for (i = 0; i <= normalizedString.Length - 1; i++)
+            for (var i = 0; i <= normalizedString.Length - 1; i++)
             {
                 c = normalizedString[i];
                 if (CharUnicodeInfo.GetUnicodeCategory(c) != UnicodeCategory.NonSpacingMark)
@@ -273,7 +279,7 @@ namespace OrchardCore.Mvc.Utilities
             var cursor = 0;
             for (var i = 0; i < subject.Length; i++)
             {
-                char current = subject[i];
+                var current = subject[i];
                 if (Array.IndexOf(stripped, current) < 0)
                 {
                     result[cursor++] = current;
@@ -290,7 +296,7 @@ namespace OrchardCore.Mvc.Utilities
             var cursor = 0;
             for (var i = 0; i < subject.Length; i++)
             {
-                char current = subject[i];
+                var current = subject[i];
                 if (!predicate(current))
                 {
                     result[cursor++] = current;
@@ -309,7 +315,7 @@ namespace OrchardCore.Mvc.Utilities
 
             for (var i = 0; i < subject.Length; i++)
             {
-                char current = subject[i];
+                var current = subject[i];
                 if (Array.IndexOf(chars, current) >= 0)
                 {
                     return true;
@@ -333,7 +339,7 @@ namespace OrchardCore.Mvc.Utilities
 
             for (var i = 0; i < subject.Length; i++)
             {
-                char current = subject[i];
+                var current = subject[i];
                 if (Array.IndexOf(chars, current) < 0)
                 {
                     return false;
@@ -402,7 +408,7 @@ namespace OrchardCore.Mvc.Utilities
 
         public static string ReplaceLastOccurrence(this string source, string find, string replace)
         {
-            int place = source.LastIndexOf(find);
+            var place = source.LastIndexOf(find, StringComparison.Ordinal);
             return source.Remove(place, find.Length).Insert(place, replace);
         }
 
@@ -445,6 +451,7 @@ namespace OrchardCore.Mvc.Utilities
             var nextIsUpper = true;
             attribute = attribute.Trim();
             var result = new StringBuilder(attribute.Length);
+
             foreach (var c in attribute)
             {
                 if (c == upperAfterDelimiter)
@@ -466,6 +473,22 @@ namespace OrchardCore.Mvc.Utilities
             }
 
             return result.ToString();
+        }
+
+        /// <summary>
+        /// Tests if a string is valid json.
+        /// </summary>
+        public static bool IsJson(this string json)
+        {
+            try
+            {
+                JToken.Parse(json);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
     }
 }

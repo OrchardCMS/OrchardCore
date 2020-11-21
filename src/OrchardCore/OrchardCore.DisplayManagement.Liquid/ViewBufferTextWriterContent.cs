@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Html;
 
 namespace OrchardCore.DisplayManagement.Liquid
 {
-
     /// <summary>
     /// An <see cref="IHtmlContent"/> implementation that inherits from <see cref="TextWriter"/> to write to the ASP.NET ViewBufferTextWriter
     /// in an optimal way. The ViewBufferTextWriter implementation in ASP.NET won't allocate if Write(object) is invoked with instances of
@@ -20,7 +19,7 @@ namespace OrchardCore.DisplayManagement.Liquid
 
         private readonly List<IHtmlContent> _fragments = new List<IHtmlContent>();
 
-        static HtmlString[] InitInternedChars()
+        private static HtmlString[] InitInternedChars()
         {
             // Memoize all ASCII chars to prevent allocations
             var internedChars = new HtmlString[_internedCharsLength];
@@ -80,7 +79,7 @@ namespace OrchardCore.DisplayManagement.Liquid
         }
 
         /// <summary>
-        /// An <see cref="IHtmlContent"/> implementation that wraps an HTML encoded <see cref="char[]"/>.
+        /// An <see cref="IHtmlContent"/> implementation that wraps an HTML encoded <see langword="char[]"/>.
         /// </summary>
         private class CharrArrayHtmlContent : IHtmlContent
         {
@@ -110,7 +109,7 @@ namespace OrchardCore.DisplayManagement.Liquid
         }
 
         /// <summary>
-        /// An <see cref="IHtmlContent"/> implementation that wraps an HTML encoded <see cref="char[]"/>.
+        /// An <see cref="IHtmlContent"/> implementation that wraps an HTML encoded <see langword="char[]"/>.
         /// </summary>
         private class CharrArrayFragmentHtmlContent : IHtmlContent
         {

@@ -29,8 +29,8 @@ namespace OrchardCore.Localization
         /// </summary>
         /// <param name="extensionsManager">The <see cref="IExtensionManager"/>.</param>
         /// <param name="hostingEnvironment">The <see cref="IHostEnvironment"/>.</param>
-        /// <param name="shellOptions">The <see cref="IOptions"/> for the <see cref="ShellOptions"/>.</param>
-        /// <param name="localizationOptions">The <see cref="IOptions"/> for the <see cref="LocalizationOptions"/>.</param>
+        /// <param name="shellOptions">The <see cref="ShellOptions"/>.</param>
+        /// <param name="localizationOptions">The <see cref="LocalizationOptions"/>.</param>
         /// <param name="shellSettings">The <see cref="ShellSettings"/>.</param>
         public ModularPoFileLocationProvider(
             IExtensionManager extensionsManager,
@@ -66,7 +66,7 @@ namespace OrchardCore.Localization
             // Load tenant-specific .po file from /App_Data/Sites/[Tenant]/Localization
             yield return new PhysicalFileInfo(new FileInfo(PathExtensions.Combine(_shellDataContainer, _resourcesContainer, poFileName)));
 
-            // Load each modules .po file for extending localization when using Orchard Core as a Nuget package
+            // Load each modules .po file for extending localization when using Orchard Core as a NuGet package
             foreach (var extension in extensions)
             {
                 // \src\OrchardCore.Cms.Web\Localization\OrchardCore.Cms.Web\fr-CA.po

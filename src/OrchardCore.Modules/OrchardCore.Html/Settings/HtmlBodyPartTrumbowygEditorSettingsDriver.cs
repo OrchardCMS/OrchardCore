@@ -1,19 +1,19 @@
 using System;
 using System.Threading.Tasks;
-using OrchardCore.Html.Models;
+using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Html.Models;
 using OrchardCore.Html.ViewModels;
-using Newtonsoft.Json.Linq;
-using Microsoft.Extensions.Localization;
+using OrchardCore.Mvc.Utilities;
 
 namespace OrchardCore.Html.Settings
 {
     public class HtmlBodyPartTrumbowygEditorSettingsDriver : ContentTypePartDefinitionDisplayDriver
     {
-        private readonly IStringLocalizer<HtmlBodyPartTrumbowygEditorSettingsDriver> S;
+        private readonly IStringLocalizer S;
 
         public HtmlBodyPartTrumbowygEditorSettingsDriver(IStringLocalizer<HtmlBodyPartTrumbowygEditorSettingsDriver> localizer)
         {
@@ -51,20 +51,16 @@ namespace OrchardCore.Html.Settings
 
                 await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-                settings.InsertMediaWithUrl = model.InsertMediaWithUrl;
-
-                try
+                if (!model.Options.IsJson())
                 {
+                    context.Updater.ModelState.AddModelError(Prefix + "." + nameof(TrumbowygSettingsViewModel.Options), S["The options are written in an incorrect format."]);
+                }
+                else
+                {
+                    settings.InsertMediaWithUrl = model.InsertMediaWithUrl;
                     settings.Options = model.Options;
-                    JObject.Parse(settings.Options);
+                    context.Builder.WithSettings(settings);
                 }
-                catch
-                {
-                    context.Updater.ModelState.AddModelError(Prefix, S["The options are written in an incorrect format."]);
-                    return Edit(contentTypePartDefinition, context.Updater);
-                }
-
-                context.Builder.WithSettings(settings);
             }
 
             return Edit(contentTypePartDefinition, context.Updater);

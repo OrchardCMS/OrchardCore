@@ -1,7 +1,6 @@
 using System.Linq;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using OrchardCore.ContentManagement.Metadata;
-using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.Contents.Workflows.Activities;
 using OrchardCore.Contents.Workflows.ViewModels;
 using OrchardCore.Workflows.Models;

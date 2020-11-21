@@ -25,7 +25,7 @@ namespace OrchardCore.ContentManagement
             // TODO: This code can be removed in a future release as the recommended way is to use ContentOptions.
             foreach (var contentPart in contentParts)
             {
-                var activatorType =  typeof(GenericTypeActivator<,>).MakeGenericType(contentPart.GetType(), typeof(ContentPart));
+                var activatorType = typeof(GenericTypeActivator<,>).MakeGenericType(contentPart.GetType(), typeof(ContentPart));
                 var activator = (ITypeActivator<ContentPart>)Activator.CreateInstance(activatorType);
                 _contentPartActivators.Add(contentPart.GetType().Name, activator);
             }
@@ -33,7 +33,7 @@ namespace OrchardCore.ContentManagement
             // Check content options for configured parts.
             foreach (var partOption in contentOptions.Value.ContentPartOptions)
             {
-                var activatorType =  typeof(GenericTypeActivator<,>).MakeGenericType(partOption.Type, typeof(ContentPart));
+                var activatorType = typeof(GenericTypeActivator<,>).MakeGenericType(partOption.Type, typeof(ContentPart));
                 var activator = (ITypeActivator<ContentPart>)Activator.CreateInstance(activatorType);
                 _contentPartActivators.Add(partOption.Type.Name, activator);
             }

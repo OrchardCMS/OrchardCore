@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 
 namespace OrchardCore.FileStorage.AzureBlob
 {
@@ -14,7 +13,7 @@ namespace OrchardCore.FileStorage.AzureBlob
         {
             _path = path;
             _lastModifiedUtc = lastModifiedUtc;
-            // Use GetFileName rather than GetDirectoryName as GetDirectoryName requires a delimeter
+            // Use GetFileName rather than GetDirectoryName as GetDirectoryName requires a delimiter
             _name = System.IO.Path.GetFileName(path);
             _directoryPath = _path.Length > _name.Length ? _path.Substring(0, _path.Length - _name.Length - 1) : "";
         }

@@ -13,24 +13,12 @@ namespace OrchardCore.Recipes.RecipeSteps
     public class RecipesStep : IRecipeStepHandler
     {
         private readonly IEnumerable<IRecipeHarvester> _recipeHarvesters;
-        private readonly IRecipeExecutor _recipeManager;
 
-        public RecipesStep(
-            IEnumerable<IRecipeHarvester> recipeHarvesters,
-            IRecipeExecutor recipeManager)
+        public RecipesStep(IEnumerable<IRecipeHarvester> recipeHarvesters)
         {
             _recipeHarvesters = recipeHarvesters;
-            _recipeManager = recipeManager;
         }
 
-        /*
-         {
-            "name": "recipes",
-            "Values": [
-                { "executionid": "OrchardCore.Setup", name="Core" }
-            ]
-         }
-        */
         public async Task ExecuteAsync(RecipeExecutionContext context)
         {
             if (!String.Equals(context.Name, "Recipes", StringComparison.OrdinalIgnoreCase))

@@ -2,11 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using GraphQL.Resolvers;
 using GraphQL.Types;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Primitives;
 using OrchardCore.Apis.GraphQL;
 using OrchardCore.Apis.GraphQL.Resolvers;
 
@@ -28,8 +26,10 @@ namespace OrchardCore.Localization.GraphQL
             S = localizer;
         }
 
+        public Task<string> GetIdentifierAsync() => Task.FromResult(String.Empty);
+
         /// <inheritdocs/>
-        public Task<IChangeToken> BuildAsync(ISchema schema)
+        public Task BuildAsync(ISchema schema)
         {
             var field = new FieldType
             {
@@ -41,7 +41,7 @@ namespace OrchardCore.Localization.GraphQL
 
             schema.Query.AddField(field);
 
-            return Task.FromResult<IChangeToken>(null);
+            return Task.CompletedTask;
         }
 
         private async Task<IEnumerable<SiteCulture>> ResolveAsync(ResolveFieldContext resolveContext)
@@ -51,12 +51,13 @@ namespace OrchardCore.Localization.GraphQL
             var defaultCulture = await localizationService.GetDefaultCultureAsync();
             var supportedCultures = await localizationService.GetSupportedCulturesAsync();
 
-             var cultures = supportedCultures.Select(culture =>
-                new SiteCulture {
-                    Culture = culture,
-                    IsDefault = string.Equals(defaultCulture, culture, StringComparison.OrdinalIgnoreCase)
-                }
-            );
+            var cultures = supportedCultures.Select(culture =>
+               new SiteCulture
+               {
+                   Culture = culture,
+                   IsDefault = string.Equals(defaultCulture, culture, StringComparison.OrdinalIgnoreCase)
+               }
+           );
 
             return cultures;
         }

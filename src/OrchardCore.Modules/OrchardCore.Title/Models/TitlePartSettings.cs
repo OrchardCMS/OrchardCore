@@ -9,6 +9,7 @@ namespace OrchardCore.Title.Models
         GeneratedHidden,
         EditableRequired
     }
+
     public class TitlePartSettings
     {
         /// <summary>
@@ -21,5 +22,11 @@ namespace OrchardCore.Title.Models
         /// The pattern used to build the Title.
         /// </summary>
         public string Pattern { get; set; }
+
+        /// <summary>
+        /// Gets or sets whether to render the title in display views.
+        /// </summary>
+        [DefaultValue(true)]
+        public bool RenderTitle { get; set; } = true;
     }
 }

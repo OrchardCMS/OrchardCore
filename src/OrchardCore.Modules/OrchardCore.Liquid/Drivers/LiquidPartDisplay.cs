@@ -1,18 +1,18 @@
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
-using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Liquid.Models;
 using OrchardCore.Liquid.ViewModels;
+using OrchardCore.Mvc.ModelBinding;
 
 namespace OrchardCore.Liquid.Drivers
 {
     public class LiquidPartDisplay : ContentPartDisplayDriver<LiquidPart>
     {
         private readonly ILiquidTemplateManager _liquidTemplatemanager;
-        private readonly IStringLocalizer<LiquidPartDisplay> S;
+        private readonly IStringLocalizer S;
 
         public LiquidPartDisplay(ILiquidTemplateManager liquidTemplatemanager, IStringLocalizer<LiquidPartDisplay> localizer)
         {
@@ -43,7 +43,7 @@ namespace OrchardCore.Liquid.Drivers
             {
                 if (!string.IsNullOrEmpty(viewModel.Liquid) && !_liquidTemplatemanager.Validate(viewModel.Liquid, out var errors))
                 {
-                    updater.ModelState.AddModelError(nameof(model.Liquid), S["The Liquid Body doesn't contain a valid Liquid expression. Details: {0}", string.Join(" ", errors)]);
+                    updater.ModelState.AddModelError(Prefix, nameof(viewModel.Liquid), S["The Liquid Body doesn't contain a valid Liquid expression. Details: {0}", string.Join(" ", errors)]);
                 }
                 else
                 {

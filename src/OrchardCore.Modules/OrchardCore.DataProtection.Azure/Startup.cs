@@ -1,8 +1,8 @@
 using System;
+using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Models;
 using Fluid;
 using Microsoft.AspNetCore.DataProtection;
-using Microsoft.Azure.Storage;
-using Microsoft.Azure.Storage.Blob;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -18,7 +18,7 @@ namespace OrchardCore.DataProtection.Azure
         private readonly IShellConfiguration _configuration;
         private readonly ShellOptions _shellOptions;
         private readonly ShellSettings _shellSettings;
-        private readonly ILogger<Startup> _logger;
+        private readonly ILogger _logger;
 
         public Startup(
             IShellConfiguration configuration,
@@ -34,10 +34,11 @@ namespace OrchardCore.DataProtection.Azure
 
         public override void ConfigureServices(IServiceCollection services)
         {
-            var connectionString = _configuration.GetValue<string>("OrchardCore.DataProtection.Azure:ConnectionString");
+            var connectionString = _configuration.GetValue<string>("OrchardCore_DataProtection_Azure:ConnectionString");
+
             if (!string.IsNullOrWhiteSpace(connectionString))
             {
-                services.AddDataProtection().PersistKeysToAzureBlobStorage(GetBlobContainer(connectionString), GetBlobName());
+                services.AddDataProtection().PersistKeysToAzureBlobStorage(connectionString, GetBlobContainerName(connectionString), GetBlobName());
             }
             else
             {
@@ -45,9 +46,9 @@ namespace OrchardCore.DataProtection.Azure
             }
         }
 
-        private CloudBlobContainer GetBlobContainer(string connectionString)
+        private string GetBlobContainerName(string connectionString)
         {
-            var containerName = _configuration.GetValue<string>("OrchardCore.DataProtection.Azure:ContainerName") ?? "dataprotection";
+            var containerName = _configuration.GetValue("OrchardCore_DataProtection_Azure:ContainerName", "dataprotection");
 
             // Use Fluid directly as the service provider has not been built.
             try
@@ -58,7 +59,8 @@ namespace OrchardCore.DataProtection.Azure
 
                 var template = FluidTemplate.Parse(containerName);
 
-                containerName = template.Render(templateContext, NullEncoder.Default);
+                // container name must be lowercase
+                containerName = template.Render(templateContext, NullEncoder.Default).ToLower();
                 containerName.Replace("\r", String.Empty).Replace("\n", String.Empty);
             }
             catch (Exception e)
@@ -67,34 +69,30 @@ namespace OrchardCore.DataProtection.Azure
                 throw e;
             }
 
-            try
-            {
-                var storageAccount = CloudStorageAccount.Parse(connectionString);
-                var blobClient = storageAccount.CreateCloudBlobClient();
-
-                var blobContainer = blobClient.GetContainerReference(containerName);
-
-                var createContainer = _configuration.GetValue("OrchardCore.DataProtection.Azure:CreateContainer", true);
-                if (createContainer)
-                {
+            var createContainer = _configuration.GetValue("OrchardCore_DataProtection_Azure:CreateContainer", true);
+            if (createContainer)
+            {                
+                try
+                {      
                     _logger.LogDebug("Testing data protection container {ContainerName} existence", containerName);
-                    var result = blobContainer.CreateIfNotExistsAsync(BlobContainerPublicAccessType.Off, new BlobRequestOptions(), new OperationContext()).GetAwaiter().GetResult();
-                    _logger.LogDebug("Data protection container {ContainerName} created: {Result}.", containerName, result);
+                    var _blobContainer = new BlobContainerClient(connectionString, containerName);
+                    var response =  _blobContainer.CreateIfNotExistsAsync(PublicAccessType.None).GetAwaiter().GetResult();   
+                    _logger.LogDebug("Data protection container {ContainerName} created.", containerName);
                 }
+                catch (Exception)
+                {
+                    _logger.LogCritical("Unable to connect to Azure Storage to configure data protection storage. Ensure that an application setting containing a valid Azure Storage connection string is available at `Modules:OrchardCore.DataProtection.Azure:ConnectionString`.");
 
-                return blobContainer;
+                    throw;
+                }
             }
-            catch (Exception)
-            {
-                _logger.LogCritical("Unable to connect to Azure Storage to configure data protection storage. Ensure that an application setting containing a valid Azure Storage connection string is available at `Modules:OrchardCore.DataProtection.Azure:ConnectionString`.");
 
-                throw;
-            }
+            return containerName;
         }
 
         private string GetBlobName()
         {
-            var blobName = _configuration.GetValue<string>("OrchardCore.DataProtection.Azure:BlobName");
+            var blobName = _configuration.GetValue<string>("OrchardCore_DataProtection_Azure:BlobName");
 
             if (String.IsNullOrEmpty(blobName))
             {

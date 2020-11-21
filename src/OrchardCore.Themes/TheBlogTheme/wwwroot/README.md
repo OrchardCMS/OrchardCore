@@ -1,28 +1,29 @@
-# [Start Bootstrap - Clean Blog](https://startbootstrap.com/template-overviews/clean-blog/)
+# [Start Bootstrap - Clean Blog](https://startbootstrap.com/theme/clean-blog/)
 
-[Clean Blog](https://startbootstrap.com/template-overviews/clean-blog/) is a stylish, responsive blog theme for [Bootstrap](https://getbootstrap.com/) created by [Start Bootstrap](https://startbootstrap.com/). This theme features a blog homepage, about page, contact page, and an example post page along with a working PHP contact form.
+[Clean Blog](https://startbootstrap.com/theme/clean-blog/) is a stylish, responsive blog theme for [Bootstrap](https://getbootstrap.com/) created by [Start Bootstrap](https://startbootstrap.com/). This theme features a blog homepage, about page, contact page, and an example post page along with a working PHP contact form.
 
 ## Preview
 
-[![Clean Blog Preview](https://startbootstrap.com/assets/img/screenshots/themes/clean-blog.png)](https://blackrockdigital.github.io/startbootstrap-clean-blog/)
+[![Clean Blog Preview](https://assets.startbootstrap.com/img/screenshots/themes/clean-blog.png)](https://startbootstrap.github.io/startbootstrap-clean-blog/)
 
-**[View Live Preview](https://blackrockdigital.github.io/startbootstrap-clean-blog/)**
+**[View Live Preview](https://startbootstrap.github.io/startbootstrap-clean-blog/)**
 
 ## Status
 
-[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/BlackrockDigital/startbootstrap-clean-blog/master/LICENSE)
+[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/StartBootstrap/startbootstrap-clean-blog/master/LICENSE)
 [![npm version](https://img.shields.io/npm/v/startbootstrap-clean-blog.svg)](https://www.npmjs.com/package/startbootstrap-clean-blog)
-[![Build Status](https://travis-ci.org/BlackrockDigital/startbootstrap-clean-blog.svg?branch=master)](https://travis-ci.org/BlackrockDigital/startbootstrap-clean-blog)
-[![dependencies Status](https://david-dm.org/BlackrockDigital/startbootstrap-clean-blog/status.svg)](https://david-dm.org/BlackrockDigital/startbootstrap-clean-blog)
-[![devDependencies Status](https://david-dm.org/BlackrockDigital/startbootstrap-clean-blog/dev-status.svg)](https://david-dm.org/BlackrockDigital/startbootstrap-clean-blog?type=dev)
+[![Build Status](https://travis-ci.org/StartBootstrap/startbootstrap-clean-blog.svg?branch=master)](https://travis-ci.org/StartBootstrap/startbootstrap-clean-blog)
+[![dependencies Status](https://david-dm.org/StartBootstrap/startbootstrap-clean-blog/status.svg)](https://david-dm.org/StartBootstrap/startbootstrap-clean-blog)
+[![devDependencies Status](https://david-dm.org/StartBootstrap/startbootstrap-clean-blog/dev-status.svg)](https://david-dm.org/StartBootstrap/startbootstrap-clean-blog?type=dev)
 
 ## Download and Installation
 
 To begin using this template, choose one of the following options to get started:
-* [Download the latest release on Start Bootstrap](https://startbootstrap.com/template-overviews/clean-blog/)
+
+* [Download the latest release on Start Bootstrap](https://startbootstrap.com/theme/clean-blog/)
 * Install via npm: `npm i startbootstrap-clean-blog`
-* Clone the repo: `git clone https://github.com/BlackrockDigital/startbootstrap-clean-blog.git`
-* [Fork, Clone, or Download on GitHub](https://github.com/BlackrockDigital/startbootstrap-clean-blog)
+* Clone the repo: `git clone https://github.com/StartBootstrap/startbootstrap-clean-blog.git`
+* [Fork, Clone, or Download on GitHub](https://github.com/StartBootstrap/startbootstrap-clean-blog)
 
 ## Usage
 
@@ -36,33 +37,33 @@ After installation, run `npm install` and then run `npm start` which will open u
 
 #### Gulp Tasks
 
-- `gulp` the default task that builds everything
-- `gulp watch` browserSync opens the project in your default browser and live reloads when changes are made
-- `gulp css` compiles SCSS files into CSS and minifies the compiled CSS
-- `gulp js` minifies the themes JS file
-- `gulp vendor` copies dependencies from node_modules to the vendor directory
+* `gulp` the default task that builds everything
+* `gulp watch` browserSync opens the project in your default browser and live reloads when changes are made
+* `gulp css` compiles SCSS files into CSS and minifies the compiled CSS
+* `gulp js` minifies the themes JS file
+* `gulp vendor` copies dependencies from node_modules to the vendor directory
 
 You must have npm installed globally in order to use this build environment.
 
 ## Bugs and Issues
 
-Have a bug or an issue with this template? [Open a new issue](https://github.com/BlackrockDigital/startbootstrap-clean-blog/issues) here on GitHub or leave a comment on the [template overview page at Start Bootstrap](https://startbootstrap.com/themes/clean-blog/).
+Have a bug or an issue with this template? [Open a new issue](https://github.com/StartBootstrap/startbootstrap-clean-blog/issues) here on GitHub or leave a comment on the [template overview page at Start Bootstrap](https://startbootstrap.com/theme/clean-blog/).
 
 ## About
 
 Start Bootstrap is an open source library of free Bootstrap templates and themes. All of the free templates and themes on Start Bootstrap are released under the MIT license, which means you can use them for any purpose, even for commercial projects.
 
-* https://startbootstrap.com
-* https://twitter.com/SBootstrap
+* <https://startbootstrap.com>
+* <https://twitter.com/SBootstrap>
 
-Start Bootstrap was created by and is maintained by **[David Miller](http://davidmiller.io/)**, Owner of [Blackrock Digital](https://blackrockdigital.io/).
+Start Bootstrap was created by and is maintained by **[David Miller](https://davidmiller.io/)**, Owner of [Blackrock Digital](https://startbootstrap.io/).
 
-* http://davidmiller.io
-* https://twitter.com/davidmillerskt
-* https://github.com/davidtmiller
+* <https://davidmiller.io>
+* <https://twitter.com/davidmillerhere>
+* <https://github.com/davidtmiller>
 
 Start Bootstrap is based on the [Bootstrap](https://getbootstrap.com/) framework created by [Mark Otto](https://twitter.com/mdo) and [Jacob Thorton](https://twitter.com/fat).
 
 ## Copyright and License
 
-Copyright 2013-2019 Blackrock Digital LLC. Code released under the [MIT](https://github.com/BlackrockDigital/startbootstrap-clean-blog/blob/gh-pages/LICENSE) license.
+Copyright 2013-2020 Start Bootstrap LLC. Code released under the [MIT](https://github.com/StartBootstrap/startbootstrap-clean-blog/blob/gh-pages/LICENSE) license.

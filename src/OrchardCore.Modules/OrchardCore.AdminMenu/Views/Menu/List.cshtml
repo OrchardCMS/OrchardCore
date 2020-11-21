@@ -9,19 +9,19 @@
     </div>
     <div class="form-group col mb-n1">
         <div class="dropdown float-right order-md-1">
-            <a asp-route-action="Create" class="btn btn-primary float-right" role="button">@T["Add Admin Menu"]</a>
+            <a asp-route-action="Create" class="btn btn-primary float-right create" role="button">@T["Add Admin Menu"]</a>
         </div>
     </div>
 </div>
 
 <form asp-action="List" method="get">
     <div class="card mb-3">
-        <div class="card-body bg-light p-3">
+        <div class="card-body bg-primary p-3">
             <div class="input-group input-group-sm w-lg-50">
                 <div class="input-group-prepend">
                     <span class="input-group-text bg-secondary text-light">@T["Filter"]</span>
                 </div>
-                <input id="search-box" asp-for="Options.Search" class="form-control" placeholder="@T["Search"]" autofocus="autofocus" />
+                <input id="search-box" asp-for="Options.Search" class="form-control" placeholder="@T["Search"]" type="search" autofocus />
                 <div class="input-group-append">
                     <button type="submit" class="btn btn-sm btn-secondary">@T["Search"]</button>
                 </div>
@@ -49,7 +49,7 @@
                             <button type="button" class="btn btn-danger dropdown-toggle dropdown-toggle-split" data-reference="parent" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <span class="sr-only">@T["Toggle Dropdown"]</span>
                             </button>
-                            <div class="dropdown-menu">
+                            <div class="dropdown-menu dropdown-menu-right">
                                 <a asp-action="Toggle"
                                    asp-route-id="@entry.AdminMenu.Id"
                                    class="dropdown-item btn-sm" itemprop="UnsafeUrl">@(entry.AdminMenu.Enabled ? T["Disable"] : T["Enable"])</a>

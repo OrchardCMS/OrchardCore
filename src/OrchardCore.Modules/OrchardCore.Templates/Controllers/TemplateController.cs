@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Navigation;
 using OrchardCore.Settings;
@@ -105,7 +104,7 @@ namespace OrchardCore.Templates.Controllers
             }
 
             ViewData["ReturnUrl"] = returnUrl;
-            return View(new TemplateViewModel() { AdminTemplates = adminTemplates} );
+            return View(new TemplateViewModel() { AdminTemplates = adminTemplates });
         }
 
         [HttpPost, ActionName("Create")]
@@ -129,6 +128,10 @@ namespace OrchardCore.Templates.Controllers
                 {
                     ModelState.AddModelError(nameof(TemplateViewModel.Name), S["The name is mandatory."]);
                 }
+                else if (String.IsNullOrWhiteSpace(model.Content))
+                {
+                    ModelState.AddModelError(nameof(TemplateViewModel.Content), S["The content is mandatory."]);
+                }
                 else
                 {
                     var templatesDocument = model.AdminTemplates
@@ -151,6 +154,8 @@ namespace OrchardCore.Templates.Controllers
                     ? _adminTemplatesManager.UpdateTemplateAsync(model.Name, template)
                     : _templatesManager.UpdateTemplateAsync(model.Name, template)
                     );
+
+                _notifier.Success(H["The \"{0}\" template has been created.", model.Name]);
 
                 if (submit == "SaveAndContinue")
                 {
@@ -226,9 +231,13 @@ namespace OrchardCore.Templates.Controllers
                 {
                     ModelState.AddModelError(nameof(TemplateViewModel.Name), S["The name is mandatory."]);
                 }
-                else if(!model.Name.Equals(sourceName, StringComparison.OrdinalIgnoreCase) && templatesDocument.Templates.ContainsKey(model.Name))
+                else if (!model.Name.Equals(sourceName, StringComparison.OrdinalIgnoreCase) && templatesDocument.Templates.ContainsKey(model.Name))
                 {
                     ModelState.AddModelError(nameof(TemplateViewModel.Name), S["A template with the same name already exists."]);
+                }
+                else if (String.IsNullOrWhiteSpace(model.Content))
+                {
+                    ModelState.AddModelError(nameof(TemplateViewModel.Content), S["The content is mandatory."]);
                 }
             }
 

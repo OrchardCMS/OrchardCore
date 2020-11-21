@@ -1,7 +1,7 @@
-using Microsoft.Extensions.Localization;
-using OrchardCore.Navigation;
 using System;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Localization;
+using OrchardCore.Navigation;
 
 namespace OrchardCore.Templates
 {
