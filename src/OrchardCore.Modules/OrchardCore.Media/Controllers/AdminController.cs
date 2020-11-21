@@ -18,6 +18,8 @@ namespace OrchardCore.Media.Controllers
 {
     public class AdminController : Controller
     {
+        private static readonly char[] _invalidFolderNameCharacters = new char[] { '\\', '/' };
+        
         private readonly HashSet<string> _allowedFileExtensions;
         private readonly IMediaFileStore _mediaFileStore;
         private readonly IAuthorizationService _authorizationService;
@@ -375,6 +377,11 @@ namespace OrchardCore.Media.Controllers
             if (string.IsNullOrEmpty(path))
             {
                 path = "";
+            }
+
+            if (_invalidFolderNameCharacters.Any(invalidChar => name.Contains(invalidChar)))
+            {
+                return StatusCode(StatusCodes.Status400BadRequest, S["Cannot create folder because the folder name contains invalid characters"]);
             }
 
             var newPath = _mediaFileStore.Combine(path, name);

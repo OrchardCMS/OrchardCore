@@ -5005,9 +5005,12 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
   }
 
   function ensureFocus(cm) {
-    if (!cm.state.focused) {
+    if (!cm.hasFocus()) {
       cm.display.input.focus();
-      onFocus(cm);
+
+      if (!cm.state.focused) {
+        onFocus(cm);
+      }
     }
   }
 
@@ -5016,13 +5019,16 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     setTimeout(function () {
       if (cm.state.delayingBlurEvent) {
         cm.state.delayingBlurEvent = false;
-        onBlur(cm);
+
+        if (cm.state.focused) {
+          onBlur(cm);
+        }
       }
     }, 100);
   }
 
   function onFocus(cm, e) {
-    if (cm.state.delayingBlurEvent) {
+    if (cm.state.delayingBlurEvent && !cm.state.draggingText) {
       cm.state.delayingBlurEvent = false;
     }
 
@@ -8473,7 +8479,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       if (widget.insertAt == null) {
         widgets.push(widget);
       } else {
-        widgets.splice(Math.min(widgets.length - 1, Math.max(0, widget.insertAt)), 0, widget);
+        widgets.splice(Math.min(widgets.length, Math.max(0, widget.insertAt)), 0, widget);
       }
 
       widget.line = line;
@@ -11134,6 +11140,15 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       }
 
       cm.state.draggingText = false;
+
+      if (cm.state.delayingBlurEvent) {
+        if (cm.hasFocus()) {
+          cm.state.delayingBlurEvent = false;
+        } else {
+          delayBlurEvent(cm);
+        }
+      }
+
       off(display.wrapper.ownerDocument, "mouseup", dragEnd);
       off(display.wrapper.ownerDocument, "mousemove", mouseMove);
       off(display.scroller, "dragstart", dragStart);
@@ -11174,20 +11189,19 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     }
 
     cm.state.draggingText = dragEnd;
-    dragEnd.copy = !behavior.moveOnDrag; // IE's approach to draggable
-
-    if (display.scroller.dragDrop) {
-      display.scroller.dragDrop();
-    }
-
+    dragEnd.copy = !behavior.moveOnDrag;
     on(display.wrapper.ownerDocument, "mouseup", dragEnd);
     on(display.wrapper.ownerDocument, "mousemove", mouseMove);
     on(display.scroller, "dragstart", dragStart);
     on(display.scroller, "drop", dragEnd);
-    delayBlurEvent(cm);
+    cm.state.delayingBlurEvent = true;
     setTimeout(function () {
       return display.input.focus();
-    }, 20);
+    }, 20); // IE's approach to draggable
+
+    if (display.scroller.dragDrop) {
+      display.scroller.dragDrop();
+    }
   }
 
   function rangeForUnit(cm, pos, unit) {
@@ -11209,6 +11223,10 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
 
   function leftButtonSelect(cm, event, start, behavior) {
+    if (ie) {
+      delayBlurEvent(cm);
+    }
+
     var display = cm.display,
         doc = cm.doc;
     e_preventDefault(event);
@@ -14631,6 +14649,6 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
   CodeMirror.fromTextArea = fromTextArea;
   addLegacyProps(CodeMirror);
-  CodeMirror.version = "5.58.2";
+  CodeMirror.version = "5.58.3";
   return CodeMirror;
 });

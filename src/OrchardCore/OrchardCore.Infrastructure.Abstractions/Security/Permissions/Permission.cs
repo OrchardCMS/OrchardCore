@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Security.Claims;
+using Newtonsoft.Json;
 
 namespace OrchardCore.Security.Permissions
 {
@@ -8,6 +9,7 @@ namespace OrchardCore.Security.Permissions
     {
         public const string ClaimType = "Permission";
 
+        [JsonConstructor]
         public Permission(string name)
         {
             if (name == null)
