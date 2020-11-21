@@ -29,7 +29,7 @@ using OrchardCore.Modules.Manifest;
 [assembly: Feature(
     Id = "OrchardCore.Media.Slugify",
     Name = "Media Slugify",
-    Description = "The media slugify module slugifies all folders and files to make them SEO-friendly.",
+    Description = "The media slugify module slugifies new folders and files to make them SEO-friendly.",
     Dependencies = new[]
     {
         "OrchardCore.Media"
