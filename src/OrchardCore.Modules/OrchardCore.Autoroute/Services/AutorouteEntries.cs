@@ -61,7 +61,23 @@ namespace OrchardCore.Autoroute.Services
             await DocumentManager.UpdateAsync(new AutorouteStateDocument(), afterUpdateAsync: RefreshEntriesAsync);
         }
 
-        public void AddEntries(IEnumerable<AutorouteEntry> entries)
+        private async Task EnsureInitializedAsync()
+        {
+            if (!_initialized)
+            {
+                await InitializeEntriesAsync();
+            }
+            else
+            {
+                var document = await GetStateDocumentAsync();
+                if (_state.Identifier != document.Identifier)
+                {
+                    await RefreshEntriesAsync(document);
+                }
+            }
+        }
+
+        protected void AddEntries(IEnumerable<AutorouteEntry> entries)
         {
             // Evict all entries related to a container item from autoroute entries.
             // This is necessary to account for deletions, disabling of an item, or disabling routing of contained items.
@@ -97,7 +113,7 @@ namespace OrchardCore.Autoroute.Services
             }
         }
 
-        public void RemoveEntries(IEnumerable<AutorouteEntry> entries)
+        protected void RemoveEntries(IEnumerable<AutorouteEntry> entries)
         {
             foreach (var entry in entries)
             {
@@ -108,21 +124,6 @@ namespace OrchardCore.Autoroute.Services
 
                 _paths = _paths.Remove(entry.ContentItemId);
                 _contentItemIds = _contentItemIds.Remove(entry.Path);
-            }
-        }
-
-        private async Task EnsureInitializedAsync()
-        {
-            if (!_initialized)
-            {
-                await InitializeEntriesAsync();
-                return;
-            }
-
-            var document = await GetStateDocumentAsync();
-            if (_state.Identifier != document.Identifier)
-            {
-                await RefreshEntriesAsync(document);
             }
         }
 
