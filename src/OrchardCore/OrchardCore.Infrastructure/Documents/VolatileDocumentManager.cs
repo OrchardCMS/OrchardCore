@@ -21,10 +21,11 @@ namespace OrchardCore.Documents
         private readonly IDistributedLock _distributedLock;
         private readonly string _lockKey;
 
-        private delegate Task<TDocument> UpdatingDelegate();
-        private delegate Task UpdatedDelegate(TDocument document);
-        private UpdatingDelegate _updatingDelegateAsync;
-        private UpdatedDelegate _updatedDelegateAsync;
+        private delegate Task<TDocument> UpdateDelegate();
+        private UpdateDelegate _updateDelegateAsync;
+
+        private delegate Task AfterUpdateDelegate(TDocument document);
+        private AfterUpdateDelegate _afterUpdateDelegateAsync;
 
         public VolatileDocumentManager(
             IDocumentStore documentStore,
@@ -39,56 +40,18 @@ namespace OrchardCore.Documents
             _lockKey = _options.CacheKey + LockKeySuffix;
         }
 
-        public Task UpdateAsync(Func<Task<TDocument>> updatingAsync, Func<TDocument, Task> updatedAsync = null)
+        public Task UpdateAtomicAsync(Func<Task<TDocument>> updateAsync, Func<TDocument, Task> afterUpdateAsync = null)
         {
-            if (updatingAsync == null)
+            if (updateAsync == null)
             {
                 return Task.CompletedTask;
             }
 
-            _updatingDelegateAsync += () => updatingAsync();
+            _updateDelegateAsync += () => updateAsync();
 
-            if (updatedAsync != null)
+            if (afterUpdateAsync != null)
             {
-                _updatedDelegateAsync += document => updatedAsync(document);
-            }
-
-            _documentStore.AfterCommitSuccess<TDocument>(async () =>
-            {
-                TDocument document = null;
-                foreach (var d in _updatingDelegateAsync.GetInvocationList())
-                {
-                    document = await ((UpdatingDelegate)d)();
-                }
-
-                document.Identifier ??= IdGenerator.GenerateId();
-
-                await SetInternalAsync(document);
-
-                if (_updatedDelegateAsync != null)
-                {
-                    foreach (var d in _updatedDelegateAsync.GetInvocationList())
-                    {
-                        await ((UpdatedDelegate)d)(document);
-                    }
-                }
-            });
-
-            return Task.CompletedTask;
-        }
-
-        public Task UpdateAtomicAsync(Func<Task<TDocument>> updatingAsync, Func<TDocument, Task> updatedAsync = null)
-        {
-            if (updatingAsync == null)
-            {
-                return Task.CompletedTask;
-            }
-
-            _updatingDelegateAsync += () => updatingAsync();
-
-            if (updatedAsync != null)
-            {
-                _updatedDelegateAsync += document => updatedAsync(document);
+                _afterUpdateDelegateAsync += document => afterUpdateAsync(document);
             }
 
             _documentStore.AfterCommitSuccess<TDocument>(async () =>
@@ -102,20 +65,20 @@ namespace OrchardCore.Documents
                 await using var acquiredLock = locker;
 
                 TDocument document = null;
-                foreach (var d in _updatingDelegateAsync.GetInvocationList())
+                foreach (var d in _updateDelegateAsync.GetInvocationList())
                 {
-                    document = await ((UpdatingDelegate)d)();
+                    document = await ((UpdateDelegate)d)();
                 }
 
                 document.Identifier ??= IdGenerator.GenerateId();
 
                 await SetInternalAsync(document);
 
-                if (_updatedDelegateAsync != null)
+                if (_afterUpdateDelegateAsync != null)
                 {
-                    foreach (var d in _updatedDelegateAsync.GetInvocationList())
+                    foreach (var d in _afterUpdateDelegateAsync.GetInvocationList())
                     {
-                        await ((UpdatedDelegate)d)(document);
+                        await ((AfterUpdateDelegate)d)(document);
                     }
                 }
             });

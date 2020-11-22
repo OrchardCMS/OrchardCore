@@ -246,7 +246,7 @@ namespace OrchardCore.Tests.Routing
 
         private class StubAutorouteEntries : AutorouteEntries
         {
-            protected override Task InitializeAsync() => Task.CompletedTask;
+            protected override Task InitializeEntriesAsync() => Task.CompletedTask;
         }
     }
 }

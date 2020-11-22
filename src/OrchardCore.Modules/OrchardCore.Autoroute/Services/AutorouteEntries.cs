@@ -57,13 +57,8 @@ namespace OrchardCore.Autoroute.Services
         {
             await EnsureInitializedAsync();
 
-            // A new state, with a new ID, will be set in the shared cache after the session is committed,
-            // then the local entries will be refreshed, as it would be done through a subsequent request.
-            await DocumentManager.UpdateAsync
-            (
-                updatingAsync: () => Task.FromResult(new AutorouteStateDocument()),
-                updatedAsync: document => RefreshEntriesAsync(document)
-            );
+            // Update the cache with a new state and then refresh entries as it would be done on a next request.
+            await DocumentManager.UpdateAsync(new AutorouteStateDocument(), afterUpdateAsync: RefreshEntriesAsync);
         }
 
         public void AddEntries(IEnumerable<AutorouteEntry> entries)
@@ -120,7 +115,7 @@ namespace OrchardCore.Autoroute.Services
         {
             if (!_initialized)
             {
-                await InitializeAsync();
+                await InitializeEntriesAsync();
                 return;
             }
 
@@ -144,11 +139,14 @@ namespace OrchardCore.Autoroute.Services
                 if (_state.Identifier != document.Identifier)
                 {
                     var indexes = await Session.QueryIndex<AutoroutePartIndex>(i => i.Id > _lastIndexId).ListAsync();
-                    _lastIndexId = indexes.LastOrDefault()?.Id ?? 0;
+
+                    var contentItemIdsToRemove = indexes
+                        .Where(i => !i.Published || i.Path == null)
+                        .Select(i => i.ContentItemId)
+                        .Distinct();
 
                     var entriesToRemove = new List<AutorouteEntry>();
-                    var removedIds = indexes.Where(i => !i.Published || i.Path == null).Select(i => i.ContentItemId).Distinct();
-                    foreach (var id in removedIds)
+                    foreach (var id in contentItemIdsToRemove)
                     {
                         entriesToRemove.AddRange(_paths.Values.Where(e => e.ContentItemId == id || e.ContainedContentItemId == id));
                     }
@@ -161,6 +159,7 @@ namespace OrchardCore.Autoroute.Services
                     RemoveEntries(entriesToRemove);
                     AddEntries(entriesToAdd);
 
+                    _lastIndexId = indexes.LastOrDefault()?.Id ?? 0;
                     _state = document;
                 }
             }
@@ -170,7 +169,7 @@ namespace OrchardCore.Autoroute.Services
             }
         }
 
-        protected virtual async Task InitializeAsync()
+        protected virtual async Task InitializeEntriesAsync()
         {
             if (_initialized)
             {
@@ -182,13 +181,15 @@ namespace OrchardCore.Autoroute.Services
             {
                 if (!_initialized)
                 {
-                    _state = await GetStateDocumentAsync();
+                    var document = await GetStateDocumentAsync();
 
                     var indexes = await Session.QueryIndex<AutoroutePartIndex>(i => i.Published && i.Path != null).ListAsync();
-                    _lastIndexId = indexes.LastOrDefault()?.Id ?? 0;
-
                     var entries = indexes.Select(i => new AutorouteEntry(i.ContentItemId, i.Path, i.ContainedContentItemId, i.JsonPath));
+
                     AddEntries(entries);
+
+                    _lastIndexId = indexes.LastOrDefault()?.Id ?? 0;
+                    _state = document;
 
                     _initialized = true;
                 }
