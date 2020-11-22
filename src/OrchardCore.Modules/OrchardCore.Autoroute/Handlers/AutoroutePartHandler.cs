@@ -119,7 +119,7 @@ namespace OrchardCore.Autoroute.Handlers
                 await _entries.UpdateEntriesAsync();
 
                 // Indicate to the index provider that the related content item was removed.
-                part.Removed = true;
+                part.ContentItemRemoved = true;
 
                 // Evict any dependent item from cache
                 await RemoveTagAsync(part);

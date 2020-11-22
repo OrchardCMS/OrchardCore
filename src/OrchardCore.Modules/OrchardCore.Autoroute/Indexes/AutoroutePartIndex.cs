@@ -66,8 +66,8 @@ namespace OrchardCore.ContentManagement.Records
                         return null;
                     }
 
-                    // Also check that the related content item was not removed.
-                    if (!contentItem.Published && !contentItem.Latest && !part.Removed)
+                    // Also check if the related content item was removed, if so it is still indexed.
+                    if (!contentItem.Published && !contentItem.Latest && !part.ContentItemRemoved)
                     {
                         return null;
                     }
@@ -83,10 +83,10 @@ namespace OrchardCore.ContentManagement.Records
                         }
                     };
 
-                    if (!part.RouteContainedItems || String.IsNullOrEmpty(part.Path) || part.Disabled || part.Removed)
+                    if (!part.RouteContainedItems || String.IsNullOrEmpty(part.Path) || part.Disabled || part.ContentItemRemoved)
                     {
-                        // Don't persist the part as removed.
-                        part.Removed = false;
+                        // Don't persist this property as true.
+                        part.ContentItemRemoved = false;
                         return results;
                     }
 
