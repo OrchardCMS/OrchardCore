@@ -24,6 +24,8 @@ namespace OrchardCore.Themes.Services
 
         public string MediaDark { get; set; } = "not all";
 
+        public string CurrentTheme { get; set; } = "default";
+
         public async Task<bool> IsDarkModeAsync()
         {
             var result = false;
@@ -43,6 +45,7 @@ namespace OrchardCore.Themes.Services
             {
                 MediaDefault = "not all";
                 MediaDark = "all";
+                CurrentTheme = "darkmode";
             }
 
             return result;
