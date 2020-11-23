@@ -15,9 +15,6 @@ namespace OrchardCore.Documents
     public class VolatileDocumentManager<TDocument> : DocumentManager<TDocument>, IVolatileDocumentManager<TDocument> where TDocument : class, IDocument, new()
     {
         private const string LockKeySuffix = "_LOCK";
-        private static readonly TimeSpan LockTimeout = TimeSpan.FromSeconds(3);
-        private static readonly TimeSpan LockExpiration = TimeSpan.FromSeconds(3);
-
         private readonly IDistributedLock _distributedLock;
         private readonly string _lockKey;
 
@@ -40,7 +37,8 @@ namespace OrchardCore.Documents
             _lockKey = _options.CacheKey + LockKeySuffix;
         }
 
-        public Task UpdateAtomicAsync(Func<Task<TDocument>> updateAsync, Func<TDocument, Task> afterUpdateAsync = null)
+        public Task UpdateAtomicAsync(Func<Task<TDocument>> updateAsync, Func<TDocument, Task> afterUpdateAsync = null,
+            TimeSpan? lockAcquireTimeout = null, TimeSpan? lockExpirationTime = null)
         {
             if (updateAsync == null)
             {
@@ -56,7 +54,10 @@ namespace OrchardCore.Documents
 
             _documentStore.AfterCommitSuccess<TDocument>(async () =>
             {
-                (var locker, var locked) = await _distributedLock.TryAcquireLockAsync(_lockKey, LockTimeout, LockExpiration);
+                (var locker, var locked) = await _distributedLock.TryAcquireLockAsync(_lockKey,
+                    lockAcquireTimeout ?? TimeSpan.FromSeconds(1),
+                    lockExpirationTime ?? TimeSpan.FromSeconds(1));
+
                 if (!locked)
                 {
                     return;
