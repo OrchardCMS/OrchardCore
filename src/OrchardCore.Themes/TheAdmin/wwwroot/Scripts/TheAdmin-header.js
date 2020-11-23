@@ -14,8 +14,7 @@ var observer = new MutationObserver(function (mutations) {
     for (var j = 0; j < mutations[i].addedNodes.length; j++) {
       if (mutations[i].addedNodes[j].tagName == 'BODY') {
         var html = document.querySelector("html");
-        var body = mutations[i].addedNodes[j];
-        var btnDarkMode = document.getElementById('btn-darkmode');
+        var body = mutations[i].addedNodes[j]; //var btnDarkMode = document.getElementById('btn-darkmode');
 
         if (adminPreferences != null) {
           if (adminPreferences.leftSidebarCompact == true) {
@@ -25,25 +24,21 @@ var observer = new MutationObserver(function (mutations) {
           isCompactExplicit = adminPreferences.isCompactExplicit;
 
           if (adminPreferences.darkMode) {
-            html.setAttribute('data-theme', 'darkmode');
-            btnDarkMode.firstChild.classList.remove('fa-moon');
-            btnDarkMode.firstChild.classList.add('fa-sun');
+            html.setAttribute('data-theme', 'darkmode'); //btnDarkMode.firstChild.classList.remove('fa-moon');
+            //btnDarkMode.firstChild.classList.add('fa-sun');
           } else {
-            html.setAttribute('data-theme', 'default');
-            btnDarkMode.firstChild.classList.remove('fa-sun');
-            btnDarkMode.firstChild.classList.add('fa-moon');
+            html.setAttribute('data-theme', 'default'); //btnDarkMode.firstChild.classList.remove('fa-sun');
+            //btnDarkMode.firstChild.classList.add('fa-moon');
           }
         } else {
           body.classList.add('no-admin-preferences'); // Automatically sets darkmode based on OS preferences
 
           if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-            html.setAttribute('data-theme', 'darkmode');
-            btnDarkMode.firstChild.classList.remove('fa-moon');
-            btnDarkMode.firstChild.classList.add('fa-sun');
+            html.setAttribute('data-theme', 'darkmode'); //btnDarkMode.firstChild.classList.remove('fa-moon');
+            //btnDarkMode.firstChild.classList.add('fa-sun');
           } else {
-            html.setAttribute('data-theme', 'default');
-            btnDarkMode.firstChild.classList.remove('fa-sun');
-            btnDarkMode.firstChild.classList.add('fa-moon');
+            html.setAttribute('data-theme', 'default'); //btnDarkMode.firstChild.classList.remove('fa-sun');
+            //btnDarkMode.firstChild.classList.add('fa-moon');
           }
         } // we're done: 
 
