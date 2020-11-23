@@ -1,3 +1,4 @@
+using System;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.Admin.Models;
 using OrchardCore.Entities;
@@ -29,11 +30,14 @@ namespace OrchardCore.Themes.Services
 
             if(adminSettings.DisplayDarkMode)
             {
-                var adminPreferences = JsonDocument.Parse(_httpContextAccessor.HttpContext.Request.Cookies["adminPreferences"]);
-
-                if (adminPreferences.RootElement.TryGetProperty("darkMode", out var darkMode))
+                if(!String.IsNullOrWhiteSpace(_httpContextAccessor.HttpContext.Request.Cookies["adminPreferences"]))
                 {
-                    result = darkMode.GetBoolean();
+                    var adminPreferences = JsonDocument.Parse(_httpContextAccessor.HttpContext.Request.Cookies["adminPreferences"]);
+
+                    if (adminPreferences.RootElement.TryGetProperty("darkMode", out var darkMode))
+                    {
+                        result = darkMode.GetBoolean();
+                    }
                 }
             }
 
