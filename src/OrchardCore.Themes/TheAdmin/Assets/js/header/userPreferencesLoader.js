@@ -3,7 +3,7 @@
 // We need to apply the classes BEFORE the page is rendered. 
 // That is why we use a MutationObserver instead of document.Ready().
 var observer = new MutationObserver(function (mutations) {
-    var adminPreferences = JSON.parse(localStorage.getItem('adminPreferences')) ?? JSON.parse(Cookies.get('adminPreferences'));
+    var adminPreferences = JSON.parse(localStorage.getItem('adminPreferences'));
 
     for (var i = 0; i < mutations.length; i++) {
         for (var j = 0; j < mutations[i].addedNodes.length; j++) {
@@ -12,8 +12,6 @@ var observer = new MutationObserver(function (mutations) {
 
                 var html = document.querySelector("html");
                 var body = mutations[i].addedNodes[j];
-                var defaultCSS = document.getElementById('admin-default');
-                var darkModeCSS = document.getElementById('admin-darkmode');
                 var btnDarkMode = document.getElementById('btn-darkmode');
 
                 if (adminPreferences != null) {
@@ -24,8 +22,6 @@ var observer = new MutationObserver(function (mutations) {
 
                     if (darkModeCSS) {
                         if (adminPreferences.darkMode){
-                            darkModeCSS.setAttribute('media', 'all');
-                            defaultCSS.setAttribute('media', 'not all');
                             html.setAttribute('data-theme', 'darkmode');
                             
                             btnDarkMode.firstChild.classList.remove('fa-moon');
@@ -33,8 +29,6 @@ var observer = new MutationObserver(function (mutations) {
                         }
                         else
                         {
-                            darkModeCSS.setAttribute('media', 'not all');
-                            defaultCSS.setAttribute('media', 'all');
                             html.setAttribute('data-theme', 'default');
 
                             btnDarkMode.firstChild.classList.remove('fa-sun');
@@ -48,8 +42,6 @@ var observer = new MutationObserver(function (mutations) {
                         // Automatically sets darkmode based on OS preferences
                         if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)
                         {
-                            darkModeCSS.setAttribute('media', 'all');
-                            defaultCSS.setAttribute('media', 'not all');
                             html.setAttribute('data-theme', 'darkmode');
 
                             btnDarkMode.firstChild.classList.remove('fa-moon');

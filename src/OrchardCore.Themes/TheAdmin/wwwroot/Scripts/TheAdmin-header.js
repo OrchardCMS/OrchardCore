@@ -8,17 +8,13 @@
 // We need to apply the classes BEFORE the page is rendered. 
 // That is why we use a MutationObserver instead of document.Ready().
 var observer = new MutationObserver(function (mutations) {
-  var _JSON$parse;
-
-  var adminPreferences = (_JSON$parse = JSON.parse(localStorage.getItem('adminPreferences'))) !== null && _JSON$parse !== void 0 ? _JSON$parse : JSON.parse(Cookies.get('adminPreferences'));
+  var adminPreferences = JSON.parse(localStorage.getItem('adminPreferences'));
 
   for (var i = 0; i < mutations.length; i++) {
     for (var j = 0; j < mutations[i].addedNodes.length; j++) {
       if (mutations[i].addedNodes[j].tagName == 'BODY') {
         var html = document.querySelector("html");
         var body = mutations[i].addedNodes[j];
-        var defaultCSS = document.getElementById('admin-default');
-        var darkModeCSS = document.getElementById('admin-darkmode');
         var btnDarkMode = document.getElementById('btn-darkmode');
 
         if (adminPreferences != null) {
@@ -30,14 +26,10 @@ var observer = new MutationObserver(function (mutations) {
 
           if (darkModeCSS) {
             if (adminPreferences.darkMode) {
-              darkModeCSS.setAttribute('media', 'all');
-              defaultCSS.setAttribute('media', 'not all');
               html.setAttribute('data-theme', 'darkmode');
               btnDarkMode.firstChild.classList.remove('fa-moon');
               btnDarkMode.firstChild.classList.add('fa-sun');
             } else {
-              darkModeCSS.setAttribute('media', 'not all');
-              defaultCSS.setAttribute('media', 'all');
               html.setAttribute('data-theme', 'default');
               btnDarkMode.firstChild.classList.remove('fa-sun');
               btnDarkMode.firstChild.classList.add('fa-moon');
@@ -49,8 +41,6 @@ var observer = new MutationObserver(function (mutations) {
           if (darkModeCSS) {
             // Automatically sets darkmode based on OS preferences
             if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-              darkModeCSS.setAttribute('media', 'all');
-              defaultCSS.setAttribute('media', 'not all');
               html.setAttribute('data-theme', 'darkmode');
               btnDarkMode.firstChild.classList.remove('fa-moon');
               btnDarkMode.firstChild.classList.add('fa-sun');
