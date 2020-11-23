@@ -1,10 +1,6 @@
 name: PR - CI
 on: 
   pull_request:
-    paths-ignore:
-      - '**/*.md'
-      - 'mkdocs.yml'
-      - 'src/docs/**/*'
     branches:
       - dev
 env:
@@ -20,10 +16,14 @@ jobs:
     name: Build & Test
     steps:
     - uses: actions/checkout@v2
-    - name: Setup .NET Core on ${{ matrix.os }}
+    - name: Setup .NET Core 3.1 on ${{ matrix.os }}
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 3.1.404
+    - name: Setup .NET Core 5.0 on ${{ matrix.os }}
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 5.0.100
     - name: Build
       run: |
         dotnet build --configuration Release

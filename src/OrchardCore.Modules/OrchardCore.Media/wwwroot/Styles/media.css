@@ -574,7 +574,11 @@ ol.media-items-grid {
 .icon-media-anchor {
   position: absolute;
   line-height: 0px;
-  color: #e83e8c; }
+  color: #fff;
+  font-size: 1.875rem; }
+  .icon-media-anchor path {
+    stroke: #000;
+    stroke-width: 10; }
 
 .media-modal.modal-dialog,
 .media-modal .modal-content {

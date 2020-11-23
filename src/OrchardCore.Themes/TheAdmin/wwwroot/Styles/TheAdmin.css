@@ -18876,7 +18876,8 @@ ul.pager {
   border: 1px solid #ddd; }
 
 .CodeMirror-fullscreen {
-  z-index: 1000; }
+  z-index: 1000;
+  top: 0px !important; }
 
 .CodeMirror pre {
   line-height: 1.25; }
@@ -19084,7 +19085,7 @@ body:not(.left-sidebar-compact) #ta-left-sidebar {
   bottom: 0;
   width: 260px;
   color: #343a40;
-  font-family: "Segoe UI VSS (Regular)", "Segoe UI", "-apple-system", BlinkMacSystemFont, Roboto, "Helvetica Neue", Helvetica, Ubuntu, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"; }
+  font-family: "Segoe UI VSS (Regular)", "Segoe UI", "-apple-system", BlinkMacSystemFont, Roboto, "Helvetica Neue", Helvetica, Ubuntu, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"; }
 
 [dir] body:not(.left-sidebar-compact) #ta-left-sidebar {
   background-color: #eaeaea; }
@@ -19386,7 +19387,7 @@ body:not(.left-sidebar-compact) #ta-left-sidebar {
   bottom: 0;
   width: 48px;
   color: #343a40;
-  font-family: "Segoe UI VSS (Regular)", "Segoe UI", "-apple-system", BlinkMacSystemFont, Roboto, "Helvetica Neue", Helvetica, Ubuntu, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"; }
+  font-family: "Segoe UI VSS (Regular)", "Segoe UI", "-apple-system", BlinkMacSystemFont, Roboto, "Helvetica Neue", Helvetica, Ubuntu, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"; }
 
 [dir] .left-sidebar-compact #ta-left-sidebar {
   background-color: #eaeaea; }

@@ -17,6 +17,7 @@ namespace OrchardCore.Media.ViewModels
         public ResizeMode SelectedMode { get; set; }
         public Format SelectedFormat { get; set; }
         public int Quality { get; set; } = 100;
+        public string BackgroundColor { get; set; }
 
         [BindNever]
         public List<SelectListItem> AvailableWidths { get; set; } = new List<SelectListItem>();

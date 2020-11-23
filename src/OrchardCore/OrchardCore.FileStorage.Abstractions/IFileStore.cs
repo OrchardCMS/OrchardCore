@@ -155,7 +155,7 @@ namespace OrchardCore.FileStorage
             if (path == null)
                 return null;
 
-            return path.Replace('\\', '/').Trim('/');
+            return path.Replace('\\', '/').Trim('/', ' ');
         }
     }
 }
