@@ -16,6 +16,7 @@ var observer = new MutationObserver(function (mutations) {
         var html = document.querySelector("html");
         var body = mutations[i].addedNodes[j];
         var btnDarkMode = document.getElementById('btn-darkmode');
+        var isDarkMode = html.getAttribute('data-theme') === 'darkmode';
 
         if (adminPreferences != null) {
           if (adminPreferences.leftSidebarCompact == true) {
@@ -24,7 +25,7 @@ var observer = new MutationObserver(function (mutations) {
 
           isCompactExplicit = adminPreferences.isCompactExplicit;
 
-          if (darkModeCSS) {
+          if (isDarkMode) {
             if (adminPreferences.darkMode) {
               html.setAttribute('data-theme', 'darkmode');
               btnDarkMode.firstChild.classList.remove('fa-moon');
@@ -38,7 +39,7 @@ var observer = new MutationObserver(function (mutations) {
         } else {
           body.classList.add('no-admin-preferences');
 
-          if (darkModeCSS) {
+          if (isDarkMode) {
             // Automatically sets darkmode based on OS preferences
             if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
               html.setAttribute('data-theme', 'darkmode');
