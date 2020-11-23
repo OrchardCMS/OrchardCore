@@ -13,7 +13,6 @@ var observer = new MutationObserver(function (mutations) {
                 var html = document.querySelector("html");
                 var body = mutations[i].addedNodes[j];
                 var btnDarkMode = document.getElementById('btn-darkmode');
-                var isDarkMode = html.getAttribute('data-theme') === 'darkmode';
 
                 if (adminPreferences != null) {
                     if (adminPreferences.leftSidebarCompact == true) {
@@ -21,40 +20,38 @@ var observer = new MutationObserver(function (mutations) {
                     }
                     isCompactExplicit = adminPreferences.isCompactExplicit;
 
-                    if (isDarkMode) {
-                        if (adminPreferences.darkMode){
-                            html.setAttribute('data-theme', 'darkmode');
-                            
-                            btnDarkMode.firstChild.classList.remove('fa-moon');
-                            btnDarkMode.firstChild.classList.add('fa-sun');
-                        }
-                        else
-                        {
-                            html.setAttribute('data-theme', 'default');
-
-                            btnDarkMode.firstChild.classList.remove('fa-sun');
-                            btnDarkMode.firstChild.classList.add('fa-moon');
-                        }
+                    if (adminPreferences.darkMode){
+                        html.setAttribute('data-theme', 'darkmode');
+                        
+                        btnDarkMode.firstChild.classList.remove('fa-moon');
+                        btnDarkMode.firstChild.classList.add('fa-sun');
                     }
-                } else {
+                    else
+                    {
+                        html.setAttribute('data-theme', 'default');
+
+                        btnDarkMode.firstChild.classList.remove('fa-sun');
+                        btnDarkMode.firstChild.classList.add('fa-moon');
+                    }
+                } 
+                else 
+                {
                     body.classList.add('no-admin-preferences');
 
-                    if(isDarkMode) {
-                        // Automatically sets darkmode based on OS preferences
-                        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)
-                        {
-                            html.setAttribute('data-theme', 'darkmode');
+                    // Automatically sets darkmode based on OS preferences
+                    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)
+                    {
+                        html.setAttribute('data-theme', 'darkmode');
 
-                            btnDarkMode.firstChild.classList.remove('fa-moon');
-                            btnDarkMode.firstChild.classList.add('fa-sun');
-                        }
-                        else
-                        {
-                            html.setAttribute('data-theme', 'default');
+                        btnDarkMode.firstChild.classList.remove('fa-moon');
+                        btnDarkMode.firstChild.classList.add('fa-sun');
+                    }
+                    else
+                    {
+                        html.setAttribute('data-theme', 'default');
 
-                            btnDarkMode.firstChild.classList.remove('fa-sun');
-                            btnDarkMode.firstChild.classList.add('fa-moon');
-                        }
+                        btnDarkMode.firstChild.classList.remove('fa-sun');
+                        btnDarkMode.firstChild.classList.add('fa-moon');
                     }
                 }
 
