@@ -7264,13 +7264,11 @@ function isNumber(str) {
   return str.length === 1 && str.match(/[0-9]/i);
 }
 $('#btn-darkmode').click(function () {
-  if ($('html').data('theme') === 'darkmode') {
-    $('html').data('theme', 'default');
+  if ($('html').attr('data-theme') === 'darkmode') {
     $('html').attr('data-theme', 'default');
     $(this).children(':first').removeClass('fa-sun');
     $(this).children(':first').addClass('fa-moon');
   } else {
-    $('html').data('theme', 'darkmode');
     $('html').attr('data-theme', 'darkmode');
     $(this).children(':first').removeClass('fa-moon');
     $(this).children(':first').addClass('fa-sun');
@@ -7282,9 +7280,6 @@ $('#btn-darkmode').click(function () {
 if ($('html').attr('data-theme') === 'darkmode') {
   $('#btn-darkmode').children(':first').removeClass('fa-moon');
   $('#btn-darkmode').children(':first').addClass('fa-sun');
-} else if ($('html').attr('data-theme') === 'default') {
-  $(this).children(':first').removeClass('fa-sun');
-  $(this).children(':first').addClass('fa-moon');
 }
 // When we load compact status from preferences we need to do some other tasks besides adding the class to the body.
 // UserPreferencesLoader has already added the needed class.
@@ -8915,7 +8910,7 @@ function persistAdminPreferences() {
     var adminPreferences = {};
     adminPreferences.leftSidebarCompact = $('body').hasClass('left-sidebar-compact') ? true : false;
     adminPreferences.isCompactExplicit = isCompactExplicit;
-    adminPreferences.darkMode = $('html').data('theme') === 'darkmode' ? true : false;
+    adminPreferences.darkMode = $('html').attr('data-theme') === 'darkmode' ? true : false;
     localStorage.setItem('adminPreferences', JSON.stringify(adminPreferences));
     Cookies.set('adminPreferences', JSON.stringify(adminPreferences), {
       expires: 360

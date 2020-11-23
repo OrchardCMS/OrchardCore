@@ -12,7 +12,6 @@ var observer = new MutationObserver(function (mutations) {
 
                 var html = document.querySelector("html");
                 var body = mutations[i].addedNodes[j];
-                //var btnDarkMode = document.getElementById('btn-darkmode');
 
                 if (adminPreferences != null) {
                     if (adminPreferences.leftSidebarCompact == true) {
@@ -22,16 +21,10 @@ var observer = new MutationObserver(function (mutations) {
 
                     if (adminPreferences.darkMode){
                         html.setAttribute('data-theme', 'darkmode');
-                        
-                        //btnDarkMode.firstChild.classList.remove('fa-moon');
-                        //btnDarkMode.firstChild.classList.add('fa-sun');
                     }
                     else
                     {
                         html.setAttribute('data-theme', 'default');
-
-                        //btnDarkMode.firstChild.classList.remove('fa-sun');
-                        //btnDarkMode.firstChild.classList.add('fa-moon');
                     }
                 } 
                 else 
@@ -42,16 +35,10 @@ var observer = new MutationObserver(function (mutations) {
                     if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)
                     {
                         html.setAttribute('data-theme', 'darkmode');
-
-                        //btnDarkMode.firstChild.classList.remove('fa-moon');
-                        //btnDarkMode.firstChild.classList.add('fa-sun');
                     }
                     else
                     {
                         html.setAttribute('data-theme', 'default');
-
-                        //btnDarkMode.firstChild.classList.remove('fa-sun');
-                        //btnDarkMode.firstChild.classList.add('fa-moon');
                     }
                 }
 

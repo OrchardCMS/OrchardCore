@@ -5,6 +5,5 @@
     "username":"admin",
     "email": "admin@orchard.com",
     "password": "Orchard1!"
-  },
-  "chromeWebSecurity": false
+  }
 }
