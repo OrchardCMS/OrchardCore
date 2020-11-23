@@ -6,7 +6,7 @@ The Media Slugify feature enables _slugifying_ assets in the Media Library.
 
 By default the Media Library does not restrict the naming of folders and files. For example having a file `The team (2020).jpg` in folder `Images & docs` is allowed. The URL of this asset would be `/media/Images%20&%20docs/The%20team%20(2020).jpg`.
 
-This obviously is not a very SEO-friendly URL.
+This is obviously not a very SEO-friendly URL.
 
 Folders and files can be _slugified_ automatically by enabling the Media Slugify feature. Doing this will rename the example above to `the-team-2020.jpg` in folder `images-docs`. The URL would be `/media/images-docs/the-team-2020.jpg`.
 
