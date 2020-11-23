@@ -14,9 +14,15 @@ namespace OrchardCore.Themes.Services
 
         public bool IsDarkMode()
         {
-            dynamic adminPreferences = JsonDocument.Parse(_httpContextAccessor.HttpContext.Request.Cookies["adminPreferences"]);
-            var darkMode = adminPreferences.DarkMode;
-            return false;
+            var adminPreferences = JsonDocument.Parse(_httpContextAccessor.HttpContext.Request.Cookies["adminPreferences"]);
+            var result = false;
+
+            if(adminPreferences.RootElement.TryGetProperty("darkMode", out var darkMode))
+            {
+                result = darkMode.GetBoolean();
+            }
+
+            return result;
         }
     }
 }
