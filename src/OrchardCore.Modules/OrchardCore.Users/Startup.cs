@@ -182,7 +182,6 @@ namespace OrchardCore.Users
 
             services.AddScoped<IDisplayDriver<ISite>, LoginSettingsDisplayDriver>();
 
-
             services.AddScoped<IDisplayManager<User>, DisplayManager<User>>();
             services.AddScoped<IDisplayDriver<User>, UserDisplayDriver>();
             services.AddScoped<IDisplayDriver<User>, UserInformationDisplayDriver>();
