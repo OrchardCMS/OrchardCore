@@ -15853,6 +15853,8 @@
     display: none; }
   [dir]:root[data-theme='default'] .list-group-item + .list-group-item {
     border-top-width: 0px; }
+  :root[data-theme='default'] svg {
+    vertical-align: -.125em; }
 
 :root[data-theme='darkmode'] {
   /*!
@@ -31764,3 +31766,5 @@
       color: #fff; }
   [dir]:root[data-theme='darkmode'] .list-group-item + .list-group-item {
     border-top-width: 0px; }
+  :root[data-theme='darkmode'] svg {
+    vertical-align: -.125em; }
