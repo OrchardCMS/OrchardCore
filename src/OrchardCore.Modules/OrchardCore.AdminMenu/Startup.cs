@@ -2,6 +2,7 @@ using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.AdminMenu.AdminNodes;
@@ -9,7 +10,6 @@ using OrchardCore.AdminMenu.Controllers;
 using OrchardCore.AdminMenu.Deployment;
 using OrchardCore.AdminMenu.Recipes;
 using OrchardCore.AdminMenu.Services;
-using OrchardCore.Data.Migration;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
@@ -18,6 +18,7 @@ using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
+using OrchardCore.Security.Services;
 
 namespace OrchardCore.AdminMenu
 {
@@ -34,6 +35,7 @@ namespace OrchardCore.AdminMenu
         {
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<INavigationProvider, AdminMenu>();
+            services.TryAddScoped<IPermissionsService, DefaultPermissionsService>();
 
             services.AddScoped<IAdminMenuService, AdminMenuService>();
             services.AddScoped<AdminMenuNavigationProvidersCoordinator, AdminMenuNavigationProvidersCoordinator>();

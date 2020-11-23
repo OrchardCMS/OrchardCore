@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -21,9 +23,6 @@ namespace OrchardCore.Autoroute.Drivers
 {
     public class AutoroutePartDisplay : ContentPartDisplayDriver<AutoroutePart>
     {
-        public static char[] InvalidCharactersForPath = ":?#[]@!$&'()*+,.;=<>\\|%".ToCharArray();
-        public const int MaxPathLength = 1024;
-
         private readonly AutorouteOptions _options;
         private readonly ISiteService _siteService;
         private readonly IAuthorizationService _authorizationService;
@@ -113,48 +112,29 @@ namespace OrchardCore.Autoroute.Drivers
                     await updater.TryUpdateModelAsync(model, Prefix, t => t.SetHomepage);
                 }
 
-                await ValidateAsync(model, updater, settings);
-            }
+                updater.ModelState.BindValidationResults(Prefix, model.ValidatePathFieldValue(S));
 
-            return Edit(model, context);
-        }
-
-        private async Task ValidateAsync(AutoroutePart autoroute, IUpdateModel updater, AutoroutePartSettings settings)
-        {
-            if (autoroute.Path == "/")
-            {
-                updater.ModelState.AddModelError(Prefix, nameof(autoroute.Path), S["Your permalink can't be set to the homepage, please use the homepage option instead."]);
-            }
-
-            if (autoroute.Path?.IndexOfAny(InvalidCharactersForPath) > -1 || autoroute.Path?.IndexOf(' ') > -1 || autoroute.Path?.IndexOf("//") > -1)
-            {
-                var invalidCharactersForMessage = string.Join(", ", InvalidCharactersForPath.Select(c => $"\"{c}\""));
-                updater.ModelState.AddModelError(Prefix, nameof(autoroute.Path), S["Please do not use any of the following characters in your permalink: {0}. No spaces, or consecutive slashes, are allowed (please use dashes or underscores instead).", invalidCharactersForMessage]);
-            }
-
-            if (autoroute.Path?.Length > MaxPathLength)
-            {
-                updater.ModelState.AddModelError(Prefix, nameof(autoroute.Path), S["Your permalink is too long. The permalink can only be up to {0} characters.", MaxPathLength]);
-            }
-
-            // This can only validate the path if the Autoroute is not managing content item routes or the path is absolute.
-            if (!String.IsNullOrEmpty(autoroute.Path) && (!settings.ManageContainedItemRoutes || (settings.ManageContainedItemRoutes && autoroute.Absolute)))
-            {
-                var possibleConflicts = await _session.QueryIndex<AutoroutePartIndex>(o => o.Path == autoroute.Path).ListAsync();
-                if (possibleConflicts.Any())
+                // This can only validate the path if the Autoroute is not managing content item routes or the path is absolute.
+                if (!String.IsNullOrEmpty(model.Path) && (!settings.ManageContainedItemRoutes || (settings.ManageContainedItemRoutes && model.Absolute)))
                 {
-                    var hasConflict = false;
-                    if (possibleConflicts.Any(x => x.ContentItemId != autoroute.ContentItem.ContentItemId) ||
-                        possibleConflicts.Any(x => !string.IsNullOrEmpty(x.ContainedContentItemId) && x.ContainedContentItemId != autoroute.ContentItem.ContentItemId))
+                    var possibleConflicts = await _session.QueryIndex<AutoroutePartIndex>(o => o.Path == model.Path).ListAsync();
+                    if (possibleConflicts.Any())
                     {
-                        hasConflict = true;
-                    }
-                    if (hasConflict)
-                    {
-                        updater.ModelState.AddModelError(Prefix, nameof(autoroute.Path), S["Your permalink is already in use."]);
+                        var hasConflict = false;
+                        if (possibleConflicts.Any(x => x.ContentItemId != model.ContentItem.ContentItemId) ||
+                            possibleConflicts.Any(x => !string.IsNullOrEmpty(x.ContainedContentItemId) && x.ContainedContentItemId != model.ContentItem.ContentItemId))
+                        {
+                            hasConflict = true;
+                        }
+                        if (hasConflict)
+                        {
+                            updater.ModelState.AddModelError(Prefix, nameof(model.Path), S["Your permalink is already in use."]);
+                        }
                     }
                 }
             }
+
+            return Edit(model, context);
         }
     }
 }

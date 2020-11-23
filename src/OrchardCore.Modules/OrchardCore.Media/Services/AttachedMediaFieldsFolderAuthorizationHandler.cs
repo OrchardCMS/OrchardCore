@@ -61,8 +61,7 @@ namespace OrchardCore.Media.Services
 
             // Lazy load to prevent circular dependencies
             var authorizationService = _serviceProvider.GetService<IAuthorizationService>();
-
-            if (await authorizationService.AuthorizeAsync(context.User, Permissions.ManageOwnMedia))
+            if (await authorizationService.AuthorizeAsync(context.User, Permissions.ManageMedia))
             {
                 context.Succeed(requirement);
             }

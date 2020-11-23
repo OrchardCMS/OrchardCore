@@ -118,7 +118,8 @@ namespace Microsoft.Extensions.DependencyInjection
 
             builder.ConfigureServices(s =>
             {
-                s.AddSingleton<ILock, LocalLock>();
+                s.AddSingleton<LocalLock>();
+                s.AddSingleton<ILock>(sp => sp.GetRequiredService<LocalLock>());
                 s.AddSingleton<IDistributedLock>(sp => sp.GetRequiredService<LocalLock>());
             });
         }
@@ -266,11 +267,19 @@ namespace Microsoft.Extensions.DependencyInjection
                     // And delete a cookie that may have been created by another instance.
                     var httpContextAccessor = serviceProvider.GetRequiredService<IHttpContextAccessor>();
 
-                    // Use case when creating a container in a deferred task.
-                    if (!httpContextAccessor.HttpContext.Response.HasStarted)
+                    // Use case when creating a container without ambient context.
+                    if (httpContextAccessor.HttpContext == null)
                     {
-                        httpContextAccessor.HttpContext.Response.Cookies.Delete(cookieName);
+                        return;
                     }
+
+                    // Use case when creating a container in a deferred task.
+                    if (httpContextAccessor.HttpContext.Response.HasStarted)
+                    {
+                        return;
+                    }
+
+                    httpContextAccessor.HttpContext.Response.Cookies.Delete(cookieName);
 
                     return;
                 }

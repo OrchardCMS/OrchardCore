@@ -222,7 +222,7 @@ namespace OrchardCore.Shortcodes.Controllers
 
                 await _shortcodeTemplatesManager.RemoveShortcodeTemplateAsync(sourceName);
 
-                await  _shortcodeTemplatesManager.UpdateShortcodeTemplateAsync(model.Name, template);
+                await _shortcodeTemplatesManager.UpdateShortcodeTemplateAsync(model.Name, template);
 
                 if (submit != "SaveAndContinue")
                 {

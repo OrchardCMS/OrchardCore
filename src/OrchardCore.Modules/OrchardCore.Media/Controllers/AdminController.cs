@@ -11,14 +11,18 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.FileStorage;
+using OrchardCore.Media.Fields;
 using OrchardCore.Media.Services;
 
 namespace OrchardCore.Media.Controllers
 {
     public class AdminController : Controller
     {
+        private static readonly char[] _invalidFolderNameCharacters = new char[] { '\\', '/' };
+        
         private readonly HashSet<string> _allowedFileExtensions;
         private readonly IMediaFileStore _mediaFileStore;
+        private readonly IMediaNameNormalizerService _mediaNameNormalizerService;
         private readonly IAuthorizationService _authorizationService;
         private readonly IContentTypeProvider _contentTypeProvider;
         private readonly ILogger _logger;
@@ -26,6 +30,7 @@ namespace OrchardCore.Media.Controllers
 
         public AdminController(
             IMediaFileStore mediaFileStore,
+            IMediaNameNormalizerService mediaNameNormalizerService,
             IAuthorizationService authorizationService,
             IContentTypeProvider contentTypeProvider,
             IOptions<MediaOptions> options,
@@ -34,6 +39,7 @@ namespace OrchardCore.Media.Controllers
             )
         {
             _mediaFileStore = mediaFileStore;
+            _mediaNameNormalizerService = mediaNameNormalizerService;
             _authorizationService = authorizationService;
             _contentTypeProvider = contentTypeProvider;
             _allowedFileExtensions = options.Value.AllowedFileExtensions;
@@ -43,7 +49,7 @@ namespace OrchardCore.Media.Controllers
 
         public async Task<IActionResult> Index()
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageOwnMedia))
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMedia))
             {
                 return Forbid();
             }
@@ -53,7 +59,7 @@ namespace OrchardCore.Media.Controllers
 
         public async Task<ActionResult<IEnumerable<IFileStoreEntry>>> GetFolders(string path)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageOwnMedia))
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMedia))
             {
                 return Forbid();
             }
@@ -90,7 +96,7 @@ namespace OrchardCore.Media.Controllers
                 path = "";
             }
 
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageOwnMedia)
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMedia)
                 || !await _authorizationService.AuthorizeAsync(User, Permissions.ManageAttachedMediaFieldsFolder, (object)path))
             {
                 return Forbid();
@@ -117,7 +123,7 @@ namespace OrchardCore.Media.Controllers
 
         public async Task<ActionResult<object>> GetMediaItem(string path)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageOwnMedia))
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMedia))
             {
                 return Forbid();
             }
@@ -144,7 +150,7 @@ namespace OrchardCore.Media.Controllers
             string contentType,
             ICollection<IFormFile> files)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageOwnMedia))
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMedia))
             {
                 return Forbid();
             }
@@ -176,10 +182,12 @@ namespace OrchardCore.Media.Controllers
                     continue;
                 }
 
+                var fileName = _mediaNameNormalizerService.NormalizeFileName(file.FileName);
+
                 Stream stream = null;
                 try
                 {
-                    var mediaFilePath = _mediaFileStore.Combine(path, file.FileName);
+                    var mediaFilePath = _mediaFileStore.Combine(path, fileName);
                     stream = file.OpenReadStream();
                     mediaFilePath = await _mediaFileStore.CreateFileFromStreamAsync(mediaFilePath, stream);
 
@@ -193,7 +201,7 @@ namespace OrchardCore.Media.Controllers
 
                     result.Add(new
                     {
-                        name = file.FileName,
+                        name = fileName,
                         size = file.Length,
                         folder = path,
                         error = ex.Message
@@ -211,7 +219,7 @@ namespace OrchardCore.Media.Controllers
         [HttpPost]
         public async Task<IActionResult> DeleteFolder(string path)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageOwnMedia)
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMedia)
                 || !await _authorizationService.AuthorizeAsync(User, Permissions.ManageAttachedMediaFieldsFolder, (object)path))
             {
                 return Forbid();
@@ -239,7 +247,7 @@ namespace OrchardCore.Media.Controllers
         [HttpPost]
         public async Task<IActionResult> DeleteMedia(string path)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageOwnMedia)
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMedia)
                 || !await _authorizationService.AuthorizeAsync(User, Permissions.ManageAttachedMediaFieldsFolder, (object)path))
             {
                 return Forbid();
@@ -259,7 +267,7 @@ namespace OrchardCore.Media.Controllers
         [HttpPost]
         public async Task<IActionResult> MoveMedia(string oldPath, string newPath)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageOwnMedia)
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMedia)
                 || !await _authorizationService.AuthorizeAsync(User, Permissions.ManageAttachedMediaFieldsFolder, (object)oldPath))
             {
                 return Forbid();
@@ -293,7 +301,7 @@ namespace OrchardCore.Media.Controllers
         [HttpPost]
         public async Task<IActionResult> DeleteMediaList(string[] paths)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageOwnMedia))
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMedia))
             {
                 return Forbid();
             }
@@ -323,7 +331,7 @@ namespace OrchardCore.Media.Controllers
         [HttpPost]
         public async Task<IActionResult> MoveMediaList(string[] mediaNames, string sourceFolder, string targetFolder)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageOwnMedia)
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMedia)
                 || !await _authorizationService.AuthorizeAsync(User, Permissions.ManageAttachedMediaFieldsFolder, (object)sourceFolder)
                 || !await _authorizationService.AuthorizeAsync(User, Permissions.ManageAttachedMediaFieldsFolder, (object)targetFolder))
             {
@@ -376,9 +384,16 @@ namespace OrchardCore.Media.Controllers
                 path = "";
             }
 
+            name = _mediaNameNormalizerService.NormalizeFolderName(name);
+
+            if (_invalidFolderNameCharacters.Any(invalidChar => name.Contains(invalidChar)))
+            {
+                return StatusCode(StatusCodes.Status400BadRequest, S["Cannot create folder because the folder name contains invalid characters"]);
+            }
+
             var newPath = _mediaFileStore.Combine(path, name);
 
-            if (!await authorizationService.AuthorizeAsync(User, Permissions.ManageOwnMedia)
+            if (!await authorizationService.AuthorizeAsync(User, Permissions.ManageMedia)
                 || !await authorizationService.AuthorizeAsync(User, Permissions.ManageAttachedMediaFieldsFolder, (object)newPath))
             {
                 return Forbid();
@@ -416,11 +431,13 @@ namespace OrchardCore.Media.Controllers
             {
                 name = mediaFile.Name,
                 size = mediaFile.Length,
-                lastModify = mediaFile.LastModifiedUtc.Subtract(new DateTime(1970,1,1,0,0,0,DateTimeKind.Utc)).TotalMilliseconds,
+                lastModify = mediaFile.LastModifiedUtc.Subtract(new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalMilliseconds,
                 folder = mediaFile.DirectoryPath,
                 url = _mediaFileStore.MapPathToPublicUrl(mediaFile.Path),
                 mediaPath = mediaFile.Path,
-                mime = contentType ?? "application/octet-stream"
+                mime = contentType ?? "application/octet-stream",
+                mediaText = String.Empty,
+                anchor = new { x = 0.5f, y = 0.5f }
             };
         }
     }

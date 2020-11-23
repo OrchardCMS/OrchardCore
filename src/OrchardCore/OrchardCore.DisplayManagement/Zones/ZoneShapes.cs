@@ -3,9 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
-using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement.Descriptors;
-using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Utilities;
@@ -56,8 +54,10 @@ namespace OrchardCore.DisplayManagement.Zones
             // Process Tabs first, then Cards, then Columns.
             if (groupings.Count > 1)
             {
-                 var orderedGroupings = groupings.OrderBy(grouping => {
-                    var firstGroupWithModifier = grouping.FirstOrDefault(group => {
+                var orderedGroupings = groupings.OrderBy(grouping =>
+                {
+                    var firstGroupWithModifier = grouping.FirstOrDefault(group =>
+                    {
                         var key = (string)group.Metadata.Tab;
                         if (!String.IsNullOrEmpty(key))
                         {
@@ -86,7 +86,7 @@ namespace OrchardCore.DisplayManagement.Zones
                         ContentItem = Shape.ContentItem,
                         Grouping = orderedGroupings
                     }));
-                foreach(var orderedGrouping in orderedGroupings)
+                foreach (var orderedGrouping in orderedGroupings)
                 {
                     Shape groupingShape = (Shape)await ShapeFactory.CreateAsync("Tab", Arguments.From(
                         new
@@ -94,7 +94,7 @@ namespace OrchardCore.DisplayManagement.Zones
                             Grouping = orderedGrouping,
                             ContentItem = Shape.ContentItem
                         }));
-                    foreach(var item in orderedGrouping)
+                    foreach (var item in orderedGrouping)
                     {
                         groupingShape.Add(item);
                     }
@@ -112,7 +112,7 @@ namespace OrchardCore.DisplayManagement.Zones
                         Grouping = groupings[0],
                         ContentItem = Shape.ContentItem
                     }));
-                    
+
                 htmlContentBuilder.AppendHtml(await DisplayAsync(cardGrouping));
             }
 
@@ -146,8 +146,10 @@ namespace OrchardCore.DisplayManagement.Zones
 
             if (groupings.Count > 1)
             {
-                 var orderedGroupings = groupings.OrderBy(grouping => {
-                    var firstGroupWithModifier = grouping.FirstOrDefault(group => {
+                var orderedGroupings = groupings.OrderBy(grouping =>
+                {
+                    var firstGroupWithModifier = grouping.FirstOrDefault(group =>
+                    {
                         var key = (string)group.Metadata.Card;
                         if (!String.IsNullOrEmpty(key))
                         {
@@ -175,7 +177,7 @@ namespace OrchardCore.DisplayManagement.Zones
                     {
                         ContentItem = Shape.ContentItem
                     }));
-                foreach(var orderedGrouping in orderedGroupings)
+                foreach (var orderedGrouping in orderedGroupings)
                 {
                     Shape groupingShape = (Shape)await ShapeFactory.CreateAsync("Card", Arguments.From(
                         new
@@ -183,7 +185,7 @@ namespace OrchardCore.DisplayManagement.Zones
                             Grouping = orderedGrouping,
                             ContentItem = Shape.ContentItem
                         }));
-                    foreach(var item in orderedGrouping)
+                    foreach (var item in orderedGrouping)
                     {
                         groupingShape.Add(item);
                     }
@@ -214,7 +216,8 @@ namespace OrchardCore.DisplayManagement.Zones
             var htmlContentBuilder = new HtmlContentBuilder();
             IGrouping<string, dynamic> grouping = Shape.Grouping;
 
-            var groupings = grouping.GroupBy(x => {
+            var groupings = grouping.GroupBy(x =>
+            {
                 // By convention all placement delimiters default to the name 'Content' when not specified during placement.
                 var key = (string)x.Metadata.Column;
                 if (String.IsNullOrEmpty(key))
@@ -243,7 +246,8 @@ namespace OrchardCore.DisplayManagement.Zones
             {
                 var positionModifiers = GetColumnPositions(groupings);
 
-                var orderedGroupings = groupings.OrderBy(grouping => {
+                var orderedGroupings = groupings.OrderBy(grouping =>
+                {
                     if (positionModifiers.TryGetValue(grouping.Key, out var position))
                     {
                         return new PositionalGrouping { Position = position };
@@ -261,7 +265,7 @@ namespace OrchardCore.DisplayManagement.Zones
                     {
                         ContentItem = Shape.ContentItem
                     }));
-                foreach(var orderedGrouping in orderedGroupings)
+                foreach (var orderedGrouping in orderedGroupings)
                 {
                     Shape groupingShape = (Shape)await ShapeFactory.CreateAsync("Column", Arguments.From(
                         new
@@ -289,7 +293,7 @@ namespace OrchardCore.DisplayManagement.Zones
 
                     groupingShape.Classes.Add(columnClasses);
 
-                    foreach(var item in orderedGrouping)
+                    foreach (var item in orderedGrouping)
                     {
                         groupingShape.Add(item);
                     }
@@ -311,7 +315,7 @@ namespace OrchardCore.DisplayManagement.Zones
         private static Dictionary<string, string> GetColumnPositions(IList<IGrouping<string, dynamic>> groupings)
         {
             var positionModifiers = new Dictionary<string, string>();
-            foreach(var grouping in groupings)
+            foreach (var grouping in groupings)
             {
                 var firstGroupWithModifier = FirstGroupingWithModifierOrDefault(grouping, ';');
                 if (firstGroupWithModifier != null)
@@ -346,7 +350,7 @@ namespace OrchardCore.DisplayManagement.Zones
         private static Dictionary<string, string> GetColumnModifiers(IList<IGrouping<string, dynamic>> groupings)
         {
             var columnModifiers = new Dictionary<string, string>();
-            foreach(var grouping in groupings)
+            foreach (var grouping in groupings)
             {
                 var firstGroupWithModifier = FirstGroupingWithModifierOrDefault(grouping, '_');
                 if (firstGroupWithModifier != null)

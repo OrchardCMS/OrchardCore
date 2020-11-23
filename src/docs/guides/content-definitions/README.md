@@ -18,7 +18,7 @@ To migrate your `ContentDefinition.json` file to the database use the following 
 - Name your Deployment Plan: 'Content Definitions'
 - Select the 'Content Definitions' Deployment Plan
 - Select _Add Step_
-- Choose the _Content Definitions_ Step
+- Choose the _Update Content Definitions_ Step
 - Check the _Include all content types and parts definitions._ checkbox
 - Execute your Deployment Plan, and select the _File Download Target_
 
