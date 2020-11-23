@@ -1,12 +1,11 @@
-@import "mixins/_cursors.scss";
-@import "mixins/_word-wrap.scss";
-
 :root[data-theme='default'] {
     @import "modules/theme/default/_variables.scss";
     @import "../../node_modules/bootstrap/scss/bootstrap";
 
     @import "mixins/_grid.scss";
     @import "mixins/_sizes.scss";
+    @import "mixins/_cursors.scss";
+    @import "mixins/_word-wrap.scss";
 
     @import "modules/admin/_messages.scss";
     @import "modules/admin/_pager.scss";
@@ -26,6 +25,8 @@
     
     @import "mixins/_grid.scss";
     @import "mixins/_sizes.scss";
+    @import "mixins/_cursors.scss";
+    @import "mixins/_word-wrap.scss";
 
     @import "modules/admin/_messages.scss";
     @import "modules/admin/_pager.scss";
@@ -38,4 +39,3 @@
 
     @import "modules/theme/darkmode/_bootswatch.scss";
 }
-    
