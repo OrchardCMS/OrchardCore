@@ -31,15 +31,13 @@ var observer = new MutationObserver(function (mutations) {
           if (darkModeCSS) {
             if (adminPreferences.darkMode) {
               darkModeCSS.setAttribute('media', 'all');
-              defaultCSS.setAttribute('media', 'not all'); //body.classList.add('darkmode');
-
+              defaultCSS.setAttribute('media', 'not all');
               html.setAttribute('data-theme', 'darkmode');
               btnDarkMode.firstChild.classList.remove('fa-moon');
               btnDarkMode.firstChild.classList.add('fa-sun');
             } else {
               darkModeCSS.setAttribute('media', 'not all');
-              defaultCSS.setAttribute('media', 'all'); //body.classList.remove('darkmode');
-
+              defaultCSS.setAttribute('media', 'all');
               html.setAttribute('data-theme', 'default');
               btnDarkMode.firstChild.classList.remove('fa-sun');
               btnDarkMode.firstChild.classList.add('fa-moon');
@@ -52,13 +50,11 @@ var observer = new MutationObserver(function (mutations) {
             // Automatically sets darkmode based on OS preferences
             if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
               darkModeCSS.setAttribute('media', 'all');
-              defaultCSS.setAttribute('media', 'not all'); //body.classList.add('darkmode');
-
+              defaultCSS.setAttribute('media', 'not all');
               html.setAttribute('data-theme', 'darkmode');
               btnDarkMode.firstChild.classList.remove('fa-moon');
               btnDarkMode.firstChild.classList.add('fa-sun');
             } else {
-              //body.classList.remove('darkmode');
               html.setAttribute('data-theme', 'default');
               btnDarkMode.firstChild.classList.remove('fa-sun');
               btnDarkMode.firstChild.classList.add('fa-moon');

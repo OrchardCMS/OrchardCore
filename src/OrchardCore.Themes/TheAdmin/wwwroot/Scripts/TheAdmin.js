@@ -7264,15 +7264,13 @@ function isNumber(str) {
   return str.length === 1 && str.match(/[0-9]/i);
 }
 $('#btn-darkmode').click(function () {
-  if ($('#admin-darkmode').attr('media') === 'all') {
-    $('#admin-default').attr('media', 'all');
-    $('#admin-darkmode').attr('media', 'not all');
+  if ($('html').data('theme') === 'darkmode') {
+    $('html').data('theme', 'default');
     $('html').attr('data-theme', 'default');
     $(this).children(':first').removeClass('fa-sun');
     $(this).children(':first').addClass('fa-moon');
   } else {
-    $('#admin-default').attr('media', 'not all');
-    $('#admin-darkmode').attr('media', 'all');
+    $('html').data('theme', 'darkmode');
     $('html').attr('data-theme', 'darkmode');
     $(this).children(':first').removeClass('fa-moon');
     $(this).children(':first').addClass('fa-sun');
@@ -8909,7 +8907,7 @@ function persistAdminPreferences() {
     var adminPreferences = {};
     adminPreferences.leftSidebarCompact = $('body').hasClass('left-sidebar-compact') ? true : false;
     adminPreferences.isCompactExplicit = isCompactExplicit;
-    adminPreferences.darkMode = $('html').data('theme') == 'darkmode' ? true : false;
+    adminPreferences.darkMode = $('html').data('theme') === 'darkmode' ? true : false;
     localStorage.setItem('adminPreferences', JSON.stringify(adminPreferences));
     Cookies.set('adminPreferences', JSON.stringify(adminPreferences), {
       expires: 360

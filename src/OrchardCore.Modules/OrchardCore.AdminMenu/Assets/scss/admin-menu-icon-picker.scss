@@ -11,16 +11,14 @@
     .iconpicker-items {
         min-height: 258px;
     }
-}
 
-.remove-icon, .sample-icon {
-    width: 40px;
-}
-
-[data-theme='darkmode'] {
     #iconPickerModal {
         .iconpicker-item {
             background-color: $body-color;
         }
     }
+}
+
+.remove-icon, .sample-icon {
+    width: 40px;
 }

@@ -322,8 +322,8 @@
 #iconPickerModal .iconpicker-items {
   min-height: 258px; }
 
+#iconPickerModal #iconPickerModal .iconpicker-item {
+  background-color: #212529; }
+
 .remove-icon, .sample-icon {
   width: 40px; }
-
-[data-theme='darkmode'] #iconPickerModal .iconpicker-item {
-  background-color: #212529; }
