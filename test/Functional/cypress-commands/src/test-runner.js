@@ -22,7 +22,7 @@ export function deleteDirectory(dir) {
 }
 
 // Host the dotnet application, does not rebuild
-export function host(dir, assembly, appDataLocation=undefined) {
+export function host(dir, assembly, appDataLocation='./App_Data') {
   if (fs.existsSync(path.join(dir, "bin/Release/netcoreapp3.1/", assembly))) {
     global.log("Application already built, skipping build");
   } else {
@@ -37,10 +37,9 @@ export function host(dir, assembly, appDataLocation=undefined) {
         ocEnv[v] = process.env[v];
     }
   });
-  if(appDataLocation != undefined)
-  {
-      ocEnv["ORCHARD_APP_DATA"] = path.join(appDataLocation);
-  }
+
+  ocEnv["ORCHARD_APP_DATA"] = appDataLocation;
+  
   console.log(`Environment variables:`, ocEnv)
   let server = child_process.spawn(
     "dotnet",
