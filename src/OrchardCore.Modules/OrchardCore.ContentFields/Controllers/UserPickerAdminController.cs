@@ -1,8 +1,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OrchardCore.Admin;
+using OrchardCore.Contents;
 using OrchardCore.ContentFields.Settings;
 using OrchardCore.ContentFields.Services;
 using OrchardCore.ContentFields.ViewModels;
@@ -10,6 +12,7 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.Modules;
+using System.Security.Claims;
 
 namespace OrchardCore.ContentFields.Controllers
 {
@@ -18,23 +21,37 @@ namespace OrchardCore.ContentFields.Controllers
     public class UserPickerAdminController : Controller
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
+        private readonly IContentManager _contentManager;
+        private readonly IAuthorizationService _authorizationService;
         private readonly IEnumerable<IUserPickerResultProvider> _resultProviders;
 
         public UserPickerAdminController(
             IContentDefinitionManager contentDefinitionManager,
+            IContentManager contentManager,
+            IAuthorizationService authorizationService,
             IEnumerable<IUserPickerResultProvider> resultProviders
             )
         {
             _contentDefinitionManager = contentDefinitionManager;
+            _contentManager = contentManager;
+            _authorizationService = authorizationService;
             _resultProviders = resultProviders;
         }
 
-        public async Task<IActionResult> SearchUsers(string part, string field, string query)
+        public async Task<IActionResult> SearchUsers(string part, string field, string contentType, string query)
         {
-            if (string.IsNullOrWhiteSpace(part) || string.IsNullOrWhiteSpace(field))
+            if (string.IsNullOrWhiteSpace(part) || string.IsNullOrWhiteSpace(field) || string.IsNullOrWhiteSpace(contentType))
             {
-                return BadRequest("Part and field are required parameters");
+                return BadRequest("Part, field and contentType are required parameters");
             }
+            
+            var contentItem = await _contentManager.NewAsync(contentType);
+            contentItem.Owner = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.EditContent, contentItem))
+            {
+                return Forbid();
+            }            
 
             var partFieldDefinition = _contentDefinitionManager.GetPartDefinition(part)?.Fields
                 .FirstOrDefault(f => f.Name == field);

@@ -12,7 +12,7 @@ using YesSql.Services;
 
 namespace OrchardCore.Users.Liquid
 {
-    public class UserFilter : ILiquidFilter
+    public class UsersFilter : ILiquidFilter
     {
         public async ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
         {

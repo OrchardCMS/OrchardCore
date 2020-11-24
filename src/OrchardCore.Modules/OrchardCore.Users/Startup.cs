@@ -201,8 +201,8 @@ namespace OrchardCore.Users
             services.AddLiquidFilter<HasClaimFilter>("has_claim");
             services.AddLiquidFilter<IsInRoleFilter>("is_in_role");
             services.AddLiquidFilter<UserEmailFilter>("user_email");
-            services.AddLiquidFilter<UserIdClaimFilter>("user_id_claim");
-            services.AddLiquidFilter<UserFilter>("user_id");
+            services.AddLiquidFilter<UserIdFilter>("user_id");
+            services.AddLiquidFilter<OrchardCore.Users.Liquid.UsersFilter>("users");
         }
     }
 

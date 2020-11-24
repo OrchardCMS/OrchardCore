@@ -5,9 +5,10 @@
 @{
     var settings = Model.PartFieldDefinition.GetSettings<UserPickerFieldSettings>();
     var selectedUsers = JsonConvert.SerializeObject(Model.SelectedUsers, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() });
-    var partName = Model.PartFieldDefinition.PartDefinition.Name;
+    var partName = Model.PartFieldDefinition.PartDefinition.Name;    
     var fieldName = Model.PartFieldDefinition.Name;
-    var searchUrl = Url.RouteUrl(new { area = "OrchardCore.ContentFields", controller = "UserPickerAdmin", action = "SearchUsers", part = partName, field = fieldName });
+    var contentTypeName = Model.TypePartDefinition.Name;
+    var searchUrl = Url.RouteUrl(new { area = "OrchardCore.ContentFields", controller = "UserPickerAdmin", action = "SearchUsers", part = partName, field = fieldName, contentType = contentTypeName });
     var vueElementId = $"UserPicker_{partName}_{fieldName}_{Guid.NewGuid().ToString("n")}";
     var multiple = settings.Multiple.ToString().ToLowerInvariant();
 }
@@ -17,7 +18,7 @@
 
 <label asp-for="UserIds">@Model.PartFieldDefinition.DisplayName()</label>
 
-<div id="@vueElementId" class="vue-multiselect" data-part="@partName" data-field="@fieldName" data-editor-type="UserPicker" data-selected-users="@selectedUsers" data-search-url="@searchUrl" data-multiple="@multiple">
+<div id="@vueElementId" class="vue-multiselect" data-part="@partName" data-field="@fieldName" data-content-type="@contentTypeName" data-editor-type="UserPicker" data-selected-users="@selectedUsers" data-search-url="@searchUrl" data-multiple="@multiple">
 
     <div class="form-group">
         <ul class="list-group w-xl-50 user-picker-default__list" v-show="arrayOfUsers.length" v-cloak>

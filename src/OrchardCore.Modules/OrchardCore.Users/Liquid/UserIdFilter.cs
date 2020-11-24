@@ -6,7 +6,7 @@ using OrchardCore.Liquid;
 
 namespace OrchardCore.Users.Liquid
 {
-    public class UserIdClaimFilter : ILiquidFilter
+    public class UserIdFilter : ILiquidFilter
     {
         public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments args, TemplateContext context)
         {
