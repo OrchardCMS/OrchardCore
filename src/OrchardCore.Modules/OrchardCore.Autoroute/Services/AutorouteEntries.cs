@@ -17,10 +17,9 @@ namespace OrchardCore.Autoroute.Services
     {
         private ImmutableDictionary<string, AutorouteEntry> _paths = ImmutableDictionary<string, AutorouteEntry>.Empty;
         private ImmutableDictionary<string, AutorouteEntry> _contentItemIds = ImmutableDictionary<string, AutorouteEntry>.Empty;
-
-        private AutorouteStateDocument _state = new AutorouteStateDocument();
         private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1);
 
+        private string _identifier;
         private uint _lastIndexId;
         private bool _initialized;
 
@@ -70,7 +69,7 @@ namespace OrchardCore.Autoroute.Services
             else
             {
                 var document = await DocumentManager.GetOrCreateImmutableAsync();
-                if (_state.Identifier != document.Identifier)
+                if (_identifier != document.Identifier)
                 {
                     await RefreshEntriesAsync(document);
                 }
@@ -129,7 +128,7 @@ namespace OrchardCore.Autoroute.Services
 
         private async Task RefreshEntriesAsync(AutorouteStateDocument document)
         {
-            if (_state.Identifier == document.Identifier)
+            if (_identifier == document.Identifier)
             {
                 return;
             }
@@ -137,7 +136,7 @@ namespace OrchardCore.Autoroute.Services
             await _semaphore.WaitAsync();
             try
             {
-                if (_state.Identifier != document.Identifier)
+                if (_identifier != document.Identifier)
                 {
                     var indexes = await Session.QueryIndex<AutoroutePartIndex>(i => (uint)i.Id > _lastIndexId).ListAsync();
 
@@ -161,7 +160,7 @@ namespace OrchardCore.Autoroute.Services
                     AddEntries(entriesToAdd);
 
                     _lastIndexId = (uint)(indexes.LastOrDefault()?.Id ?? 0);
-                    _state = document;
+                    _identifier = document.Identifier;
                 }
             }
             finally
@@ -190,7 +189,7 @@ namespace OrchardCore.Autoroute.Services
                     AddEntries(entries);
 
                     _lastIndexId = (uint)(indexes.LastOrDefault()?.Id ?? 0);
-                    _state = document;
+                    _identifier = document.Identifier;
 
                     _initialized = true;
                 }
