@@ -55,6 +55,17 @@ Here is a more detailed [roadmap](https://github.com/OrchardCMS/OrchardCore/wiki
 Docker images and parameters can be found at <https://hub.docker.com/u/orchardproject/>  
 See [Docker documentation](https://docs.docker.com/engine/reference/commandline/run/#publish-or-expose-port--p---expose) to expose different port.
 
+### SQL Server for Linux on Docker container
+
+- You can use SQL Server for Linux with Docker Linux container.
+- To lanuch a SQL Server instance, 
+    - Create `sa_password.secret` file at root level of the project
+    - Put your SA password in the file and make sure it uses LF line feed.
+    - Run `docker compose up`
+    - Connect to the database server with `localhost, 1433`, SQL Server Authentication as `SA` and  your SA password.
+    - Create a new empty database and use it for setting up OrchardCore website.
+    - To remove the server instance and its volumes, run `docker-compose down --volumes`
+
 ### Documentation
 
 The documentation can be accessed here: <https://docs.orchardcore.net/>

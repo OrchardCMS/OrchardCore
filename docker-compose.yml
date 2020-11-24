@@ -1,0 +1,41 @@
+version: "3.8"
+services:
+  db:
+    image: microsoft/mssql-server-linux:latest
+    container_name: orchard-core-db-server
+    ports:
+      - 1433:1433
+    volumes:
+      # Map external volumes to container volumes
+      - mssql_data:/var/opt/mssql/data
+      - mssql_log:/var/opt/mssql/log
+      - mssql_backup:/var/opt/mssql/backup
+    # https://docs.docker.com/compose/compose-file/#environment
+    environment:
+      # SQL Server environment variables
+      # https://docs.microsoft.com/en-us/sql/linux/sql-server-linux-configure-environment-variables?view=sql-server-ver15#environment-variables
+      - ACCEPT_EULA=Y
+      - MSSQL_PID=Developer
+      - MSSQL_SA_PASSWORD_FILE=/run/secrets/sa_password
+      - MSSQL_DATA_DIR=/var/opt/mssql/data
+      - MSSQL_LOG_DIR=/var/opt/mssql/log
+      - MSSQL_BACKUP_DIR=/var/opt/mssql/backup
+    # Usage of secret file for 'db' service
+    secrets:
+      - sa_password
+
+# Create external volumes to not lose data after remove a container.
+# https://docs.docker.com/compose/compose-file/#external
+volumes:
+  mssql_data:
+  mssql_log:
+  mssql_backup:
+
+# Define a secret file at top level.
+# Create your sa_password.secret file with LF line feed in the root folder of the project.
+# FYI, external secrets are not available to containers created by docker-compose. (external: true and created by "docker secret create" command) 
+# https://docs.docker.com/compose/compose-file/#secrets 
+secrets:
+  sa_password:
+    file: ./sa_password.secret
+

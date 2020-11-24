@@ -207,3 +207,5 @@ src/Templates/**/content/**/[Oo]bj/
 # BenchmarkDotNet artifacts
 BenchmarkDotNet.Artifacts
 
+# Ignore .secret file which is useful for storing a password, e.g. SA password for SQL Server container.
+*.secret
