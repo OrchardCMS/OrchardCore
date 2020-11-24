@@ -115,10 +115,10 @@ The `QueryAsync` and `ContentQueryAsync` Orchard Helper extension methods (in th
 
 You can use the `DisplayAsync` extension method (also in `OrchardCore.ContentManagement`) to display the content items returned from `ContentQueryAsync`.
 
-For example, to run a query called `LatestBlogPosts`, and display the results:
+For example, to run a query called `RecentBlogPosts`, and display the results:
 
 ```liquid
-@foreach (var contentItem in await Orchard.ContentQueryAsync("LatestBlogPosts"))
+@foreach (var contentItem in await Orchard.ContentQueryAsync("RecentBlogPosts"))
 {
     @await Orchard.DisplayAsync(contentItem)
 }
