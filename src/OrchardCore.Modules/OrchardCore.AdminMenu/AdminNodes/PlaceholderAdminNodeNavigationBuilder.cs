@@ -24,7 +24,7 @@ namespace OrchardCore.AdminMenu.AdminNodes
         {
             var node = menuItem as PlaceholderAdminNode;
 
-            if (node == null || string.IsNullOrEmpty(node.LinkText) || !node.Enabled)
+            if (node == null || String.IsNullOrEmpty(node.LinkText) || !node.Enabled)
             {
                 return Task.CompletedTask;
             }
@@ -33,6 +33,10 @@ namespace OrchardCore.AdminMenu.AdminNodes
             {
                 itemBuilder.Priority(node.Priority);
                 itemBuilder.Position(node.Position);
+                foreach (var permission in node.Permissions)
+                {
+                    itemBuilder.Permission(permission);
+                }
 
                 // Add adminNode's IconClass property values to menuItem.Classes.
                 // Add them with a prefix so that later the shape template can extract them to use them on a <i> tag.

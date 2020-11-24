@@ -46,6 +46,7 @@ namespace OrchardCore.Documents.Options
             options.CacheIdKey = config.CacheIdKey;
             options.CheckConcurrency = config.CheckConcurrency;
             options.CheckConsistency = config.CheckConsistency;
+            options.SynchronizationLatency = config.SynchronizationLatency;
             options.Serializer = config.Serializer;
             options.CompressThreshold = config.CompressThreshold;
         }
