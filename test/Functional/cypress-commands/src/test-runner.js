@@ -16,14 +16,13 @@ export function build(dir) {
 
 // destructive action that deletes the App_Data folder
 export function deleteDirectory(dir) {
-  //const appdataPath = path.join(dir, "App_Data");
   fs.removeSync(dir);
   global.log(`${dir} deleted`);
 }
 
 // Host the dotnet application, does not rebuild
-export function host(dir, assembly, appDataLocation='./App_Data') {
-  if (fs.existsSync(path.join(dir, "bin/Release/netcoreapp3.1/", assembly))) {
+export function host(dir, assembly, { appDataLocation='./App_Data', dotnetVersion='netcoreapp3.1' }={}) {
+  if (fs.existsSync(path.join(dir, `bin/Release/${dotnetVersion}/`, assembly))) {
     global.log("Application already built, skipping build");
   } else {
     build(dir);
@@ -31,20 +30,12 @@ export function host(dir, assembly, appDataLocation='./App_Data') {
   global.log("Starting application ..."); 
   
   const ocEnv = {};
-
-  Object.keys(process.env).forEach((v) => {
-    if(v.startsWith('OrchardCore__')){
-        ocEnv[v] = process.env[v];
-    }
-  });
-
   ocEnv["ORCHARD_APP_DATA"] = appDataLocation;
   
-  console.log(`Environment variables:`, ocEnv)
   let server = child_process.spawn(
     "dotnet",
-    ["bin/Release/netcoreapp3.1/" + assembly],
-    { cwd: dir, env: ocEnv }
+    [`bin/Release/${dotnetVersion}/` + assembly],
+    { cwd: dir, env: {...process.env, ...ocEnv} }
   );
 
   server.stdout.on("data", data => {
@@ -62,9 +53,9 @@ export function host(dir, assembly, appDataLocation='./App_Data') {
 }
 
 // combines the functions above, useful when triggering tests from CI
-export function e2e(dir, assembly) {
+export function e2e(dir, assembly, { appDataLocation='./App_Data', dotnetVersion='netcoreapp3.1' }={}) {
   deleteDirectory(path.join(dir, "App_Data_Tests"));
-  var server = host(dir, assembly, "./App_Data_Tests");
+  var server = host(dir, assembly, { appDataLocation, dotnetVersion });
 
   let test = child_process.exec("npx cypress run");
   test.stdout.on("data", data => {
