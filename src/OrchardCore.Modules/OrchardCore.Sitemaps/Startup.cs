@@ -8,7 +8,6 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.Data.Migration;
 using OrchardCore.DisplayManagement;
-using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Entities;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
@@ -80,13 +79,6 @@ namespace OrchardCore.Sitemaps
             services.AddContentPart<SitemapPart>()
                 .UseDisplayDriver<SitemapPartDisplay>()
                 .AddHandler<SitemapPartHandler>();
-
-            //custom url in sitemap
-            services.AddScoped<ISitemapSourceBuilder, CustomUrlsSitemapSourceBuilder>();
-            services.AddScoped<ISitemapSourceUpdateHandler, CustomUrlsSitemapSourceUpdateHandler>();
-            services.AddScoped<ISitemapSourceModifiedDateProvider, CustomUrlsSitemapSourceModifiedDateProvider>();
-            services.AddScoped<IDisplayDriver<SitemapSource>, CustomUrlsSitemapSourceDriver>();
-            services.AddScoped<ISitemapSourceFactory, SitemapSourceFactory<CustomUrlSitemapSource>>();
         }
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
