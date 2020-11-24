@@ -58,11 +58,11 @@ See [Docker documentation](https://docs.docker.com/engine/reference/commandline/
 ### SQL Server for Linux on Docker container
 
 - You can use SQL Server for Linux with Docker Linux container.
-- To lanuch a SQL Server instance, 
+- To launch a SQL Server instance, 
     - Create `sa_password.secret` file at root level of the project
     - Put your SA password in the file and make sure it uses LF line feed.
     - Run `docker compose up`
-    - Connect to the database server with `localhost, 1433`, SQL Server Authentication as `SA` and  your SA password.
+    - Connect to the database server with `localhost, 1433`, SQL Server Authentication as `SA` and your SA password.
     - Create a new empty database and use it for setting up OrchardCore website.
     - To remove the server instance and its volumes, run `docker-compose down --volumes`
 
