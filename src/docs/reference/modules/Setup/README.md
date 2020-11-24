@@ -36,14 +36,14 @@ For example to provide a key for a tenant
 
 Other configuration keys can also be used, i.e. from the hosts `appsettings.json` 
 
-`[js: configuration('OrchardCore_Admin:AdminUrlPrefix', '/Admin')]`
+`[js: configuration('OrchardCore_Admin:AdminUrlPrefix', 'Admin')]`
 
 In this example we also provide a default value, which will be used if the key is not found.
 
 ```json
     {
         "OrchardCore_Admin" : {
-            "AdminUrlPrefix" : "/MyAdmin"
+            "AdminUrlPrefix" : "MyAdmin"
         }
     }
 ```

@@ -104,6 +104,7 @@ nav:
         - Workflows: docs/topics/workflows/README.md
         - Contributing to the docs: docs/topics/docs-contributions/README.md
         - Publishing a new release: docs/topics/publishing-releases/README.md
+        - Using Docker: docs/topics/docker/README.md
     - Reference: 
         - CMS Modules: 
             - Content Types: docs/reference/modules/ContentTypes/README.md
@@ -131,8 +132,10 @@ nav:
             - SQL: docs/reference/modules/SQL/README.md
             - Lucene: docs/reference/modules/Lucene/README.md
             - Queries: docs/reference/modules/Queries/README.md
-            - Media: docs/reference/modules/Media/README.md
-            - Media Azure: docs/reference/modules/Media.Azure/README.md
+            - Media:
+                - Media: docs/reference/modules/Media/README.md
+                - Media Slugify: docs/reference/modules/Media.Slugify/README.md
+                - Media Azure: docs/reference/modules/Media.Azure/README.md
             - ReCaptcha: docs/reference/modules/ReCaptcha/README.md
             - Resources: docs/reference/modules/Resources/README.md
             - Shortcodes: docs/reference/modules/Shortcodes/README.md
