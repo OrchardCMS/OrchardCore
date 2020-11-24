@@ -118,7 +118,7 @@ You can use the `DisplayAsync` extension method (also in `OrchardCore.ContentMan
 For example, to run a query called `LatestBlogPosts`, and display the results:
 
 ```liquid
-@foreach (var contentItem in await Orchard.ContentQueryAsync("AllContent"))
+@foreach (var contentItem in await Orchard.ContentQueryAsync("LatestBlogPosts"))
 {
     @await Orchard.DisplayAsync(contentItem)
 }
