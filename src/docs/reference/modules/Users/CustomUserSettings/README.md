@@ -24,7 +24,7 @@ The Custom User Settings are available when loading the user from the database.
 ```
 Each section is made available using its name.
 
-For instance for a custom settings section named `UserProfile`, with a `TextField` named `FirstName` would be accessible using `{{ user.Properties.UserProfile.Content.UserProfile.FirstName.Text }}`.
+For instance for a custom settings section named `UserProfile`, with a `TextField` named `FirstName` would be accessible using `{{ user.Properties.UserProfile.UserProfile.FirstName.Text }}`.
 
 ### Placement
 
