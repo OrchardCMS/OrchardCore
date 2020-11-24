@@ -15808,6 +15808,10 @@
   :root[data-theme='default'] .action-bar {
     top: 3.3rem;
     z-index: 1000; }
+  [dir]:root[data-theme='default'] .list-group-item + .list-group-item {
+    border-top-width: 0px; }
+  :root[data-theme='default'] svg {
+    vertical-align: -.125em; }
   [dir]:root[data-theme='default'] .bg-primary {
     background-color: #f8f9fa !important; }
   :root[data-theme='default'] .hint {
@@ -15851,10 +15855,6 @@
   :root[data-theme='default'] input[type="password"]::-ms-reveal,
   :root[data-theme='default'] input[type="password"]::-ms-clear {
     display: none; }
-  [dir]:root[data-theme='default'] .list-group-item + .list-group-item {
-    border-top-width: 0px; }
-  :root[data-theme='default'] svg {
-    vertical-align: -.125em; }
 
 :root[data-theme='darkmode'] {
   /*!
@@ -31661,6 +31661,10 @@
   :root[data-theme='darkmode'] .action-bar {
     top: 3.3rem;
     z-index: 1000; }
+  [dir]:root[data-theme='darkmode'] .list-group-item + .list-group-item {
+    border-top-width: 0px; }
+  :root[data-theme='darkmode'] svg {
+    vertical-align: -.125em; }
   [dir]:root[data-theme='darkmode'] .bg-primary {
     background-color: #1b1e1f !important; }
   [dir]:root[data-theme='darkmode'] #mediaApp {
@@ -31764,7 +31768,3 @@
       background-color: rgba(140, 130, 115, 0.13); }
     :root[data-theme='darkmode'] .list-group-item-action .list-group-item-heading {
       color: #fff; }
-  [dir]:root[data-theme='darkmode'] .list-group-item + .list-group-item {
-    border-top-width: 0px; }
-  :root[data-theme='darkmode'] svg {
-    vertical-align: -.125em; }
