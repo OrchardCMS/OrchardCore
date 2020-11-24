@@ -6,6 +6,7 @@ using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.FileStorage;
 using OrchardCore.Media.ViewModels;
 
 namespace OrchardCore.Media.Deployment
@@ -62,9 +63,14 @@ namespace OrchardCore.Media.Deployment
 
         private async Task<IList<MediaStoreEntryViewModel>> GetMediaStoreEntries(string path = null, MediaStoreEntryViewModel parent = null)
         {
-            var fileStoreEntries = (await _mediaFileStore.GetDirectoryContentAsync(path)).ToArray();
+            var fileStoreEntries = new List<IFileStoreEntry>();
+            
+            await foreach(var fileStoreEntry in _mediaFileStore.GetDirectoryContentAsync(path))
+            {
+                fileStoreEntries.Add(fileStoreEntry);
+            }
 
-            var mediaStoreEntries = new List<MediaStoreEntryViewModel>(fileStoreEntries.Length);
+            var mediaStoreEntries = new List<MediaStoreEntryViewModel>(fileStoreEntries.Count);
 
             foreach (var fileStoreEntry in fileStoreEntries)
             {

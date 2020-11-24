@@ -69,12 +69,16 @@ namespace OrchardCore.Media.Controllers
                 return NotFound();
             }
 
-            var content = (await _mediaFileStore.GetDirectoryContentAsync(path)).Where(x => x.IsDirectory);
+            // var content = (await _mediaFileStore.GetDirectoryContentAsync(path)).Where(x => x.IsDirectory);
 
             var allowed = new List<IFileStoreEntry>();
 
-            foreach (var entry in content)
+            await foreach (var entry in _mediaFileStore.GetDirectoryContentAsync(path))
             {
+                if (entry.IsDirectory)
+                {
+                    continue;
+                }
                 if ((await _authorizationService.AuthorizeAsync(User, Permissions.ManageAttachedMediaFieldsFolder, (object)entry.Path)))
                 {
                     allowed.Add(entry);
@@ -102,11 +106,16 @@ namespace OrchardCore.Media.Controllers
                 return NotFound();
             }
 
-            var files = (await _mediaFileStore.GetDirectoryContentAsync(path)).Where(x => !x.IsDirectory);
+            // var allowed = new List<IFileStoreEntry>();
+            // var files = (await _mediaFileStore.GetDirectoryContentAsync(path)).Where(x => !x.IsDirectory);
 
             var allowed = new List<IFileStoreEntry>();
-            foreach (var entry in files)
+            await foreach (var entry in _mediaFileStore.GetDirectoryContentAsync(path))
             {
+                if (entry.IsDirectory)
+                {
+                    continue;
+                }
                 if ((await _authorizationService.AuthorizeAsync(User, Permissions.ManageAttachedMediaFieldsFolder, (object)entry.Path)))
                 {
                     allowed.Add(entry);

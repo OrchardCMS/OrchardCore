@@ -23,18 +23,20 @@ namespace OrchardCore.Media.Deployment
                 return;
             }
 
-            List<string> paths;
+            List<string> paths = new List<string>();
 
             if (mediaStep.IncludeAll)
             {
-                var fileStoreEntries = await _mediaFileStore.GetDirectoryContentAsync(null, true);
+                // var fileStoreEntries = await _mediaFileStore.GetDirectoryContentAsync(null, true);
 
-                paths =
-                (
-                    from fileStoreEntry in fileStoreEntries
-                    where !fileStoreEntry.IsDirectory
-                    select fileStoreEntry.Path
-                ).ToList();
+                await foreach(var entry in _mediaFileStore.GetDirectoryContentAsync(null, true))
+                {
+                    if (entry.IsDirectory)
+                    {
+                        continue;
+                    }              
+                    paths.Add(entry.Path);
+                }
             }
             else
             {
@@ -42,12 +44,14 @@ namespace OrchardCore.Media.Deployment
 
                 foreach (var directoryPath in mediaStep.DirectoryPaths ?? Array.Empty<string>())
                 {
-                    var fileStoreEntries = await _mediaFileStore.GetDirectoryContentAsync(directoryPath, true);
-
-                    paths.AddRange(
-                        from fileStoreEntry in fileStoreEntries
-                        where !fileStoreEntry.IsDirectory
-                        select fileStoreEntry.Path);
+                    await foreach(var entry in _mediaFileStore.GetDirectoryContentAsync(directoryPath, true))
+                    {
+                        if (entry.IsDirectory)
+                        {
+                            continue;
+                        }
+                        paths.Add(entry.Path);
+                    }
                 }
 
                 paths.Sort();

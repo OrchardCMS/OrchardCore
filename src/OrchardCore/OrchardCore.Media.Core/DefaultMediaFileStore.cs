@@ -50,7 +50,7 @@ namespace OrchardCore.Media.Core
             return _fileStore.GetDirectoryInfoAsync(path);
         }
 
-        public Task<IEnumerable<IFileStoreEntry>> GetDirectoryContentAsync(string path = null, bool includeSubDirectories = false)
+        public IAsyncEnumerable<IFileStoreEntry> GetDirectoryContentAsync(string path = null, bool includeSubDirectories = false)
         {
             return _fileStore.GetDirectoryContentAsync(path, includeSubDirectories);
         }

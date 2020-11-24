@@ -90,7 +90,7 @@ namespace OrchardCore.FileStorage.AzureBlob
             return null;
         }
 
-        public Task<IEnumerable<IFileStoreEntry>> GetDirectoryContentAsync(string path = null, bool includeSubDirectories = false)
+        public IAsyncEnumerable<IFileStoreEntry> GetDirectoryContentAsync(string path = null, bool includeSubDirectories = false)
         {
             if (includeSubDirectories)
             {
@@ -102,9 +102,9 @@ namespace OrchardCore.FileStorage.AzureBlob
             }
         }
 
-        private async Task<IEnumerable<IFileStoreEntry>> GetDirectoryContentByHierarchyAsync(string path = null)
+        private async IAsyncEnumerable<IFileStoreEntry> GetDirectoryContentByHierarchyAsync(string path = null)
         {
-            var results = new List<IFileStoreEntry>();
+            // var results = new List<IFileStoreEntry>();
 
             var prefix = this.Combine(_basePrefix, path);
             prefix = NormalizePrefix(prefix);
@@ -121,7 +121,8 @@ namespace OrchardCore.FileStorage.AzureBlob
                     }
 
                     folderPath = folderPath.Trim('/');
-                    results.Add(new BlobDirectory(folderPath, _clock.UtcNow));
+                    yield return new BlobDirectory(folderPath, _clock.UtcNow);
+                    // results.Add(new BlobDirectory(folderPath, _clock.UtcNow));
                 }
                 else
                 {
@@ -130,19 +131,20 @@ namespace OrchardCore.FileStorage.AzureBlob
                     if (itemName != _directoryMarkerFileName)
                     {
                         var itemPath = this.Combine(path?.Trim('/'), itemName);
-                        results.Add(new BlobFile(itemPath, blob.Blob.Properties.ContentLength, blob.Blob.Properties.LastModified));
+                        yield return new BlobFile(itemPath, blob.Blob.Properties.ContentLength, blob.Blob.Properties.LastModified);
+                        // results.Add(new BlobFile(itemPath, blob.Blob.Properties.ContentLength, blob.Blob.Properties.LastModified));
                     }
                 }
             }
 
-            return results
-                    .OrderByDescending(x => x.IsDirectory)
-                    .ToArray();
+            // return results
+            //         .OrderByDescending(x => x.IsDirectory)
+            //         .ToArray();
         }
 
-        private async Task<IEnumerable<IFileStoreEntry>> GetDirectoryContentFlatAsync(string path = null)
+        private async IAsyncEnumerable<IFileStoreEntry> GetDirectoryContentFlatAsync(string path = null)
         {
-            var results = new List<IFileStoreEntry>();
+            // var results = new List<IFileStoreEntry>();
 
             // Folders are considered case sensitive in blob storage.
             var directories = new HashSet<string>();
@@ -168,8 +170,9 @@ namespace OrchardCore.FileStorage.AzureBlob
                 if (!String.IsNullOrEmpty(directory) && !directories.Contains(directory) && (String.IsNullOrEmpty(path) ? true : !directory.EndsWith(path)))
                 {
                     directories.Add(directory);
+                    yield return new BlobDirectory(directory, _clock.UtcNow);
 
-                    results.Add(new BlobDirectory(directory, _clock.UtcNow));
+                    // results.Add(new BlobDirectory(directory, _clock.UtcNow));
                 }
 
                 // Ignore directory marker files.
@@ -179,13 +182,14 @@ namespace OrchardCore.FileStorage.AzureBlob
                     {
                         name = name.Substring(_basePrefix.Length - 1);
                     }
-                    results.Add(new BlobFile(name.Trim('/'), blob.Properties.ContentLength, blob.Properties.LastModified));
+                    yield return new BlobFile(name.Trim('/'), blob.Properties.ContentLength, blob.Properties.LastModified);
+                    // results.Add(new BlobFile(name.Trim('/'), blob.Properties.ContentLength, blob.Properties.LastModified));
                 }
             }
 
-            return results
-                    .OrderByDescending(x => x.IsDirectory)
-                    .ToArray();
+            // return results
+            //         .OrderByDescending(x => x.IsDirectory)
+            //         .ToArray();
         }
 
 
