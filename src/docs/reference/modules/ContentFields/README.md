@@ -183,7 +183,13 @@ per set based on the request culture, if no culture is specified.
 
 ### `UserPicker Field`
 
-TODO
+The User Picker field allows you to relate users to a content item.
+
+When adding the field to a content type, use the settings to specify whether to 
+
+- List all users, 
+- List users from specific roles.
+
 
 #### UserPicker Field Example
 
