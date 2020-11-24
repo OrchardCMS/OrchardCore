@@ -8,17 +8,17 @@ namespace OrchardCore.Sitemaps.Models
     public class CustomUrlSitemapSource : SitemapSource
     {
         /// <summary>
-        /// Gets and sets the custom url.
+        /// the custom url.
         /// </summary>
         public string Url { get; set; }
 
         /// <summary>
-        /// Gets and sets last update date time. Updated automatically by te system.
+        /// last update. Updated automatically by te system.
         /// </summary>
         public DateTime? LastUpdate { get; set; } = DateTime.Now;
 
         /// <summary>
-        /// Gets and sets the frequency to apply to sitemap entries.
+        /// Change frequency to apply to sitemap entries.
         /// </summary>
         public ChangeFrequency ChangeFrequency { get; set; }
 
