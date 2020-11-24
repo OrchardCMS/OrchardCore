@@ -202,7 +202,7 @@ namespace OrchardCore.Users
             services.AddLiquidFilter<IsInRoleFilter>("is_in_role");
             services.AddLiquidFilter<UserEmailFilter>("user_email");
             services.AddLiquidFilter<UserIdFilter>("user_id");
-            services.AddLiquidFilter<OrchardCore.Users.Liquid.UsersFilter>("users");
+            services.AddLiquidFilter<Liquid.GetUsersFilter>("get_users");
         }
     }
 
