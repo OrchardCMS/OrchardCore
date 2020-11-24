@@ -145,16 +145,12 @@ namespace OrchardCore.Autoroute.Services
                         .Select(i => i.ContentItemId)
                         .Distinct();
 
-                    var entriesToRemove = new List<AutorouteEntry>();
-                    foreach (var id in contentItemIdsToRemove)
-                    {
-                        entriesToRemove.AddRange(_paths.Values.Where(e => e.ContentItemId == id || e.ContainedContentItemId == id));
-                    }
+                    var entriesToRemove = contentItemIdsToRemove.SelectMany(id => _paths.Values
+                        .Where(e => e.ContentItemId == id || e.ContainedContentItemId == id));
 
-                    var entriesToAdd = indexes.Where(i => i.Published && i.Path != null).Select(i => new AutorouteEntry
-                    (
-                        i.ContentItemId, i.Path, i.ContainedContentItemId, i.JsonPath
-                    ));
+                    var entriesToAdd = indexes
+                        .Where(i => i.Published && i.Path != null)
+                        .Select(i => new AutorouteEntry(i.ContentItemId, i.Path, i.ContainedContentItemId, i.JsonPath));
 
                     RemoveEntries(entriesToRemove);
                     AddEntries(entriesToAdd);
