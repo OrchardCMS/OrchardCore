@@ -1,4 +1,4 @@
-function debounce(func, wait, immediate) {
+function debounceSearchPermission(func, wait, immediate) {
     var timeout;
     return function () {
         var context = this, args = arguments;
@@ -12,7 +12,7 @@ function debounce(func, wait, immediate) {
         if (callNow) func.apply(context, args);
     };
 };
-function initVueMultiselect(element) {
+function initPermissionsPicker(element) {
     // only run script if element exists
     if (element) {
         var elementId = element.id;
@@ -20,7 +20,7 @@ function initVueMultiselect(element) {
         var allItems = JSON.parse(element.dataset.allItems || "[]");
         var multiple = JSON.parse(element.dataset.multiple);
 
-        var debouncedSearch = debounce(function (vm, query) {
+        var debouncedSearch = debounceSearchPermission(function (vm, query) {
             vm.isLoading = true;
             vm.options = allItems.filter(function(el){
                 if (query) {
@@ -85,7 +85,7 @@ function initVueMultiselect(element) {
         })
         
         /*Hook for other scripts that might want to have access to the view model*/
-        var event = new CustomEvent("vue-multiselect-created", { detail: { vm: vm } });
+        var event = new CustomEvent("vue-multiselect-permission-picker-created", { detail: { vm: vm } });
         document.querySelector("body").dispatchEvent(event);
     }
 }

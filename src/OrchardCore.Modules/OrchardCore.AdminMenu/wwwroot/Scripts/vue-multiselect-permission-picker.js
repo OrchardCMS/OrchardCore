@@ -3,7 +3,7 @@
 ** Any changes made directly to this file will be overwritten next time its asset group is processed by Gulp.
 */
 
-function debounce(func, wait, immediate) {
+function debounceSearchPermission(func, wait, immediate) {
   var timeout;
   return function () {
     var context = this,
@@ -23,14 +23,14 @@ function debounce(func, wait, immediate) {
 
 ;
 
-function initVueMultiselect(element) {
+function initPermissionsPicker(element) {
   // only run script if element exists
   if (element) {
     var elementId = element.id;
     var selectedItems = JSON.parse(element.dataset.selectedItems || "[]");
     var allItems = JSON.parse(element.dataset.allItems || "[]");
     var multiple = JSON.parse(element.dataset.multiple);
-    var debouncedSearch = debounce(function (vm, query) {
+    var debouncedSearch = debounceSearchPermission(function (vm, query) {
       vm.isLoading = true;
       vm.options = allItems.filter(function (el) {
         if (query) {
@@ -98,7 +98,7 @@ function initVueMultiselect(element) {
     });
     /*Hook for other scripts that might want to have access to the view model*/
 
-    var event = new CustomEvent("vue-multiselect-created", {
+    var event = new CustomEvent("vue-multiselect-permission-picker-created", {
       detail: {
         vm: vm
       }
