@@ -77,20 +77,6 @@ namespace OrchardCore.ContentManagement.Records
                         return null;
                     }
 
-                    if (part.ContentItemRemoved)
-                    {
-                        // Don't persist this property as true.
-                        part.ContentItemRemoved = false;
-
-                        return new List<AutoroutePartIndex>
-                        {
-                            new AutoroutePartIndex
-                            {
-                                ContentItemId = contentItem.ContentItemId
-                            }
-                        };
-                    }
-
                     var results = new List<AutoroutePartIndex>
                     {
                         new AutoroutePartIndex
@@ -102,7 +88,7 @@ namespace OrchardCore.ContentManagement.Records
                         }
                     };
 
-                    if (!part.RouteContainedItems || part.Disabled)
+                    if (!part.RouteContainedItems || part.Disabled || part.ContentItemRemoved)
                     {
                         // Don't persist this property as true.
                         part.ContentItemRemoved = false;
