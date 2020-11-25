@@ -19,7 +19,7 @@ Once created, open the Setting menu item and each of these sections should appea
 
 The Custom User Settings are available when loading the user from the database. 
 ```liquid 
-{% assign user = User | user_id | get_users %}
+{% assign user = User | user_id | users_by_id %}
 {{user.Properties}}
 ```
 Each section is made available using its name.

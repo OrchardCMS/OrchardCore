@@ -308,7 +308,7 @@ Returns the user's unique identifier.
 {{ User | user_id }}
 ```
 
-##### get_users filter
+##### users_by_id filter
 
 Loads a single or multiple user objects from the database by id(s).
 
@@ -328,7 +328,7 @@ The resulting object has access to the following properties:
 
 You can use this filter to load the user information of the current authenticated user like this.
 ```liquid
-{% assign user = User | user_id | get_users %}
+{% assign user = User | user_id | users_by_id %}
 
 {{ user.UserName }} - {{ user.Email }}
 
@@ -337,7 +337,7 @@ You can use this filter to load the user information of the current authenticate
 You can use this filter with the UserPicker field to load the picked user's information.
 
 ```liquid
-{% assign users = Model.ContentItem.Content.SomeType.UserPicker.UserIds | get_users %}
+{% assign users = Model.ContentItem.Content.SomeType.UserPicker.UserIds | users_by_id %}
 
 {% for user in users %}
   {{ user.UserName }} - {{ user.Email }}
