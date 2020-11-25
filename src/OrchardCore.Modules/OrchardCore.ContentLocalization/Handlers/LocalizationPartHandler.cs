@@ -30,41 +30,27 @@ namespace OrchardCore.ContentLocalization.Handlers
             });
         }
 
-        public override Task PublishedAsync(PublishContentContext context, LocalizationPart part)
+        public override async Task PublishedAsync(PublishContentContext context, LocalizationPart part)
         {
-            if (!String.IsNullOrWhiteSpace(part.LocalizationSet))
-            {
-                return _entries.AddEntryAsync(new LocalizationEntry()
-                {
-                    ContentItemId = part.ContentItem.ContentItemId,
-                    LocalizationSet = part.LocalizationSet,
-                    Culture = part.Culture.ToLowerInvariant()
-                });
-            }
-
-            return Task.CompletedTask;
+            // Update entries from the index table after the session is committed.
+            await _entries.UpdateEntriesAsync();
         }
 
         public override Task UnpublishedAsync(PublishContentContext context, LocalizationPart part)
         {
-            return _entries.RemoveEntryAsync(new LocalizationEntry()
-            {
-                ContentItemId = part.ContentItem.ContentItemId,
-                LocalizationSet = part.LocalizationSet,
-                Culture = part.Culture.ToLowerInvariant()
-            });
+            // Update entries from the index table after the session is committed.
+            return _entries.UpdateEntriesAsync();
         }
 
         public override Task RemovedAsync(RemoveContentContext context, LocalizationPart part)
         {
             if (context.NoActiveVersionLeft)
             {
-                return _entries.RemoveEntryAsync(new LocalizationEntry()
-                {
-                    ContentItemId = part.ContentItem.ContentItemId,
-                    LocalizationSet = part.LocalizationSet,
-                    Culture = part.Culture.ToLowerInvariant()
-                });
+                // Indicate to the index provider that the related content item was removed.
+                part.ContentItemRemoved = true;
+
+                // Update entries from the index table after the session is committed.
+                return _entries.UpdateEntriesAsync();
             }
 
             return Task.CompletedTask;
@@ -73,7 +59,7 @@ namespace OrchardCore.ContentLocalization.Handlers
         public override Task CloningAsync(CloneContentContext context, LocalizationPart part)
         {
             var clonedPart = context.CloneContentItem.As<LocalizationPart>();
-            clonedPart.LocalizationSet = string.Empty;
+            clonedPart.LocalizationSet = String.Empty;
             clonedPart.Apply();
             return Task.CompletedTask;
         }

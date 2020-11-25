@@ -1,3 +1,4 @@
+using System;
 using OrchardCore.ContentLocalization.Models;
 using OrchardCore.ContentManagement;
 using YesSql.Indexes;
@@ -19,22 +20,39 @@ namespace OrchardCore.ContentLocalization.Records
             context.For<LocalizedContentItemIndex>()
                 .Map(contentItem =>
                 {
-                    if (!contentItem.Latest)
+                    var part = contentItem.As<LocalizationPart>();
+
+                    if (part == null)
                     {
                         return null;
                     }
 
-                    var localizationPart = contentItem.As<LocalizationPart>();
-
-                    if (string.IsNullOrEmpty(localizationPart?.LocalizationSet) || localizationPart?.Culture == null)
+                    // Also check if the related content item was removed, if so it is still indexed.
+                    if (!contentItem.Published && !contentItem.Latest && !part.ContentItemRemoved)
                     {
                         return null;
+                    }
+
+                    if (String.IsNullOrEmpty(part.LocalizationSet) || part.Culture == null)
+                    {
+                        return null;
+                    }
+
+                    if (part.ContentItemRemoved)
+                    {
+                        // Don't persist this property as true.
+                        part.ContentItemRemoved = false;
+
+                        return new LocalizedContentItemIndex
+                        {
+                            ContentItemId = contentItem.ContentItemId
+                        };
                     }
 
                     return new LocalizedContentItemIndex
                     {
-                        Culture = localizationPart.Culture.ToLowerInvariant(),
-                        LocalizationSet = localizationPart.LocalizationSet,
+                        Culture = part.Culture.ToLowerInvariant(),
+                        LocalizationSet = part.LocalizationSet,
                         ContentItemId = contentItem.ContentItemId,
                         Published = contentItem.Published
                     };
