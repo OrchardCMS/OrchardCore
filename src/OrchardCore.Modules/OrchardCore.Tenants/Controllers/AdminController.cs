@@ -391,7 +391,7 @@ namespace OrchardCore.Tenants.Controllers
                 model.TablePrefix = shellSettings["TablePrefix"];
                 model.ConnectionString = shellSettings["ConnectionString"];
                 model.RecipeName = shellSettings["RecipeName"];
-                model.CanSetDatabasePresets = true;
+                model.CanEditDatabasePresets = true;
                 SetConfigurationShellValues(model);
             }
 
@@ -456,7 +456,7 @@ namespace OrchardCore.Tenants.Controllers
                 model.TablePrefix = shellSettings["TablePrefix"];
                 model.ConnectionString = shellSettings["ConnectionString"];
                 model.RecipeName = shellSettings["RecipeName"];
-                model.CanSetDatabasePresets = true;
+                model.CanEditDatabasePresets = true;
                 SetConfigurationShellValues(model);
             }
 
@@ -631,8 +631,7 @@ namespace OrchardCore.Tenants.Controllers
             var configurationShellConnectionString = shellSettings["ConnectionString"];
             var configurationDatabaseProvider = shellSettings["DatabaseProvider"];
 
-            model.ConnectionStringFromConfiguration = !string.IsNullOrEmpty(configurationShellConnectionString);
-            model.DatabaseProviderFromConfiguration = !string.IsNullOrEmpty(configurationDatabaseProvider);
+            model.DatabaseConfigurationPreset = !string.IsNullOrEmpty(configurationShellConnectionString) || !string.IsNullOrEmpty(configurationDatabaseProvider);
 
             if(!string.IsNullOrEmpty(configurationShellConnectionString))
             {
