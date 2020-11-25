@@ -212,6 +212,18 @@ namespace OrchardCore.Recipes.Services
                     // Evaluate the expression while the result is another expression
                     while (value.StartsWith('[') && value.EndsWith(']'))
                     {
+                        var arr = value.ToCharArray();
+                        var idx = 1;
+                        var c = arr[idx];
+                        while (char.IsLetter(c) && idx < arr.Length)
+                        {
+                            idx++;
+                            c = arr[idx];
+                        }
+                        if(c != ':')
+                        {
+                            break;
+                        }
                         value = value.Trim('[', ']');
 
                         value = (scriptingManager.Evaluate(
