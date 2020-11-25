@@ -30,21 +30,31 @@ namespace OrchardCore.ContentLocalization.Handlers
             });
         }
 
-        public override async Task PublishedAsync(PublishContentContext context, LocalizationPart part)
+        public override Task PublishedAsync(PublishContentContext context, LocalizationPart part)
         {
-            // Update entries from the index table after the session is committed.
-            await _entries.UpdateEntriesAsync();
+            if (!String.IsNullOrWhiteSpace(part.LocalizationSet) && part.Culture != null)
+            {
+                // Update entries from the index table after the session is committed.
+                return _entries.UpdateEntriesAsync();
+            }
+
+            return Task.CompletedTask;
         }
 
         public override Task UnpublishedAsync(PublishContentContext context, LocalizationPart part)
         {
-            // Update entries from the index table after the session is committed.
-            return _entries.UpdateEntriesAsync();
+            if (!String.IsNullOrWhiteSpace(part.LocalizationSet) && part.Culture != null)
+            {
+                // Update entries from the index table after the session is committed.
+                return _entries.UpdateEntriesAsync();
+            }
+
+            return Task.CompletedTask;
         }
 
         public override Task RemovedAsync(RemoveContentContext context, LocalizationPart part)
         {
-            if (context.NoActiveVersionLeft)
+            if (!String.IsNullOrWhiteSpace(part.LocalizationSet) && part.Culture != null && context.NoActiveVersionLeft)
             {
                 // Indicate to the index provider that the related content item was removed.
                 part.ContentItemRemoved = true;
