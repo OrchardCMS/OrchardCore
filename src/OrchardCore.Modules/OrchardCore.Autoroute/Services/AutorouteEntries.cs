@@ -82,19 +82,23 @@ namespace OrchardCore.Autoroute.Services
             // This is necessary to account for deletions, disabling of an item, or disabling routing of contained items.
             foreach (var entry in entries.Where(x => String.IsNullOrEmpty(x.ContainedContentItemId)))
             {
-                var entriesToRemove = _paths.Values.Where(x => x.ContentItemId == entry.ContentItemId && !String.IsNullOrEmpty(x.ContainedContentItemId));
+                var entriesToRemove = _paths.Values.Where(x => x.ContentItemId == entry.ContentItemId &&
+                    !String.IsNullOrEmpty(x.ContainedContentItemId));
+
                 _paths = _paths.RemoveRange(entriesToRemove.Select(x => x.ContainedContentItemId));
                 _contentItemIds = _contentItemIds.RemoveRange(entriesToRemove.Select(x => x.Path));
             }
 
             foreach (var entry in entries)
             {
-                if (_paths.TryGetValue(entry.ContentItemId, out var previousContainerEntry) && String.IsNullOrEmpty(entry.ContainedContentItemId))
+                if (_paths.TryGetValue(entry.ContentItemId, out var previousContainerEntry) &&
+                    String.IsNullOrEmpty(entry.ContainedContentItemId))
                 {
                     _contentItemIds = _contentItemIds.Remove(previousContainerEntry.Path);
                 }
 
-                if (!String.IsNullOrEmpty(entry.ContainedContentItemId) && _paths.TryGetValue(entry.ContainedContentItemId, out var previousContainedEntry))
+                if (!String.IsNullOrEmpty(entry.ContainedContentItemId) &&
+                    _paths.TryGetValue(entry.ContainedContentItemId, out var previousContainedEntry))
                 {
                     _contentItemIds = _contentItemIds.Remove(previousContainedEntry.Path);
                 }
@@ -117,7 +121,9 @@ namespace OrchardCore.Autoroute.Services
             foreach (var entry in entries)
             {
                 // Evict all entries related to a container item from autoroute entries.
-                var entriesToRemove = _paths.Values.Where(x => x.ContentItemId == entry.ContentItemId && !String.IsNullOrEmpty(x.ContainedContentItemId));
+                var entriesToRemove = _paths.Values.Where(x => x.ContentItemId == entry.ContentItemId &&
+                    !String.IsNullOrEmpty(x.ContainedContentItemId));
+
                 _paths = _paths.RemoveRange(entriesToRemove.Select(x => x.ContainedContentItemId));
                 _contentItemIds = _contentItemIds.RemoveRange(entriesToRemove.Select(x => x.Path));
 
