@@ -63,7 +63,14 @@ namespace OrchardCore.Autoroute.Handlers
         public override async Task PublishedAsync(PublishContentContext context, AutoroutePart part)
         {
             // Update entries from the index table after the session is committed.
-            await _entries.UpdateEntriesAsync();
+            if (!String.IsNullOrWhiteSpace(part.Path))
+            {
+                // Update entries from the index table after the session is committed.
+                await _entries.UpdateEntriesAsync();
+
+                // Evict any dependent item from cache
+                await RemoveTagAsync(part);
+            }
 
             if (!String.IsNullOrWhiteSpace(part.Path) && !part.Disabled && part.SetHomepage)
             {

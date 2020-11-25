@@ -72,18 +72,37 @@ namespace OrchardCore.ContentManagement.Records
                         return null;
                     }
 
+                    if (String.IsNullOrEmpty(part.Path))
+                    {
+                        return null;
+                    }
+
+                    if (part.ContentItemRemoved)
+                    {
+                        // Don't persist this property as true.
+                        part.ContentItemRemoved = false;
+
+                        return new List<AutoroutePartIndex>
+                        {
+                            new AutoroutePartIndex
+                            {
+                                ContentItemId = contentItem.ContentItemId
+                            }
+                        };
+                    }
+
                     var results = new List<AutoroutePartIndex>
                     {
                         new AutoroutePartIndex
                         {
                             ContentItemId = contentItem.ContentItemId,
-                            Path = !part.Disabled && !String.IsNullOrEmpty(part.Path) ? part.Path : null,
+                            Path = !part.Disabled ? part.Path : null,
                             Published = contentItem.Published,
                             Latest = contentItem.Latest
                         }
                     };
 
-                    if (!part.RouteContainedItems || String.IsNullOrEmpty(part.Path) || part.Disabled || part.ContentItemRemoved)
+                    if (!part.RouteContainedItems || part.Disabled)
                     {
                         // Don't persist this property as true.
                         part.ContentItemRemoved = false;
