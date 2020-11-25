@@ -3,7 +3,7 @@
 ** Any changes made directly to this file will be overwritten next time its asset group is processed by Gulp.
 */
 
-function debounceSearchPermission(func, wait, immediate) {
+function debounceUserPicker(func, wait, immediate) {
   var timeout;
   return function () {
     var context = this,
@@ -23,23 +23,27 @@ function debounceSearchPermission(func, wait, immediate) {
 
 ;
 
-function initPermissionsPicker(element) {
+function initVueMultiselectUserPicker(element) {
   // only run script if element exists
   if (element) {
     var elementId = element.id;
-    var selectedItems = JSON.parse(element.dataset.selectedItems || "[]");
-    var allItems = JSON.parse(element.dataset.allItems || "[]");
+    var selectedUsers = JSON.parse(element.dataset.selectedUsers || "[]");
+    var searchUrl = element.dataset.searchUrl;
     var multiple = JSON.parse(element.dataset.multiple);
-    var debouncedSearch = debounceSearchPermission(function (vm, query) {
+    var debouncedSearch = debounceUserPicker(function (vm, query) {
       vm.isLoading = true;
-      vm.options = allItems.filter(function (el) {
-        if (query) {
-          return el.id.includes(query);
-        } else {
-          return el;
-        }
+      var searchFullUrl = searchUrl;
+
+      if (query) {
+        searchFullUrl += '&query=' + query;
+      }
+
+      fetch(searchFullUrl).then(function (res) {
+        res.json().then(function (json) {
+          vm.options = json;
+          vm.isLoading = false;
+        });
       });
-      vm.isLoading = false;
     }, 250);
     var vueMultiselect = Vue.component('vue-multiselect', window.VueMultiselect["default"]);
     var vm = new Vue({
@@ -49,17 +53,17 @@ function initPermissionsPicker(element) {
       },
       data: {
         value: null,
-        arrayOfItems: selectedItems,
+        arrayOfUsers: selectedUsers,
         options: []
       },
       computed: {
         selectedIds: function selectedIds() {
-          return this.arrayOfItems.map(function (x) {
+          return this.arrayOfUsers.map(function (x) {
             return x.id;
           }).join(',');
         },
         isDisabled: function isDisabled() {
-          return this.arrayOfItems.length > 0 && !multiple;
+          return this.arrayOfUsers.length > 0 && !multiple;
         }
       },
       watch: {
@@ -83,22 +87,22 @@ function initPermissionsPicker(element) {
         onSelect: function onSelect(selectedOption, id) {
           var self = this;
 
-          for (i = 0; i < self.arrayOfItems.length; i++) {
-            if (self.arrayOfItems[i].id === selectedOption.id) {
+          for (i = 0; i < self.arrayOfUsers.length; i++) {
+            if (self.arrayOfUsers[i].id === selectedOption.id) {
               return;
             }
           }
 
-          self.arrayOfItems.push(selectedOption);
+          self.arrayOfUsers.push(selectedOption);
         },
-        remove: function remove(item) {
-          this.arrayOfItems.splice(this.arrayOfItems.indexOf(item), 1);
+        remove: function remove(user) {
+          this.arrayOfUsers.splice(this.arrayOfUsers.indexOf(user), 1);
         }
       }
     });
     /*Hook for other scripts that might want to have access to the view model*/
 
-    var event = new CustomEvent("vue-multiselect-permission-picker-created", {
+    var event = new CustomEvent("vue-multiselect-userpicker-created", {
       detail: {
         vm: vm
       }

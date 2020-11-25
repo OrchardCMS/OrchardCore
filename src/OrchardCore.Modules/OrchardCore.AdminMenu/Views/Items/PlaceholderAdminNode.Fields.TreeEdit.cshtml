@@ -77,18 +77,18 @@
 
     <label asp-for="PermissionIds">@T["Permissions"]</label>
 
-    <div id="PermissionPicker" class="vue-multiselect" data-editor-type="ContentPicker" data-selected-items="@selectedItems" data-all-items="@allItems" data-multiple="true">
+    <div id="PermissionPicker" class="vue-multiselect" data-editor-type="PermissionPicker" data-selected-items="@selectedItems" data-all-items="@allItems" data-multiple="true">
 
         <div class="form-group">
-            <ul class="list-group w-xl-50 content-picker-default__list" v-show="arrayOfItems.length" v-cloak>
+            <ul class="list-group w-xl-50 permission-picker-default__list" v-show="arrayOfItems.length" v-cloak>
                 <draggable v-model="arrayOfItems">
                     <li v-for="(item, i) in arrayOfItems"
-                        class="cursor-move list-group-item content-picker-default__list-item d-flex align-items-start justify-content-between"
+                        class="cursor-move list-group-item permission-picker-default__list-item d-flex align-items-start justify-content-between"
                         :key="item.id">
                         <div class="align-items-center align-self-center"><span>{{ item.displayText }}</span></div>
 
                         <div class="btn-group btn-group-sm align-items-center" role="group">
-                            <button v-on:click="remove(item)" type="button" class="btn btn-secondary content-picker-default__list-item__delete"><i class="fa fa-trash fa-sm" aria-hidden="true"></i></button>
+                            <button v-on:click="remove(item)" type="button" class="btn btn-secondary permission-picker-default__list-item__delete"><i class="fa fa-trash fa-sm" aria-hidden="true"></i></button>
                         </div>
                     </li>
                 </draggable>
@@ -116,7 +116,7 @@
             </div>
         </div>
     </div>
-    <script at="Foot" depends-on="vue-multiselect-permission-picker">initVueMultiselect(document.querySelector("#PermissionPicker"))</script>
+    <script at="Foot" depends-on="vue-multiselect-permission-picker">initPermissionsPicker(document.querySelector("#PermissionPicker"))</script>
 </div>
 
 <script at="Foot">
