@@ -291,11 +291,10 @@ namespace OrchardCore.Tenants.Controllers
                 Recipes = recipes,
                 RequestUrlHost = shellSettings.RequestUrlHost,
                 RequestUrlPrefix = shellSettings.RequestUrlPrefix,
-                DatabaseProvider = shellSettings["DatabaseProvider"],
                 TablePrefix = shellSettings["TablePrefix"],
-                ConnectionString = shellSettings["ConnectionString"],
                 RecipeName = shellSettings["RecipeName"]
             };
+            SetConfigurationShellValues(model);
 
             model.Recipes = recipes;
 
@@ -330,6 +329,7 @@ namespace OrchardCore.Tenants.Controllers
                 shellSettings.RequestUrlPrefix = model.RequestUrlPrefix;
                 shellSettings.State = TenantState.Uninitialized;
 
+                SetConfigurationShellValues(model);
                 shellSettings["Description"] = model.Description;
                 shellSettings["ConnectionString"] = model.ConnectionString;
                 shellSettings["TablePrefix"] = model.TablePrefix;
@@ -391,7 +391,8 @@ namespace OrchardCore.Tenants.Controllers
                 model.TablePrefix = shellSettings["TablePrefix"];
                 model.ConnectionString = shellSettings["ConnectionString"];
                 model.RecipeName = shellSettings["RecipeName"];
-                model.CanSetDatabasePresets = true;
+                model.CanEditDatabasePresets = true;
+                SetConfigurationShellValues(model);
             }
 
             return View(model);
@@ -434,6 +435,7 @@ namespace OrchardCore.Tenants.Controllers
                 // tenant has not been initialized yet
                 if (shellSettings.State == TenantState.Uninitialized)
                 {
+                    SetConfigurationShellValues(model);
                     shellSettings["DatabaseProvider"] = model.DatabaseProvider;
                     shellSettings["TablePrefix"] = model.TablePrefix;
                     shellSettings["ConnectionString"] = model.ConnectionString;
@@ -454,7 +456,8 @@ namespace OrchardCore.Tenants.Controllers
                 model.TablePrefix = shellSettings["TablePrefix"];
                 model.ConnectionString = shellSettings["ConnectionString"];
                 model.RecipeName = shellSettings["RecipeName"];
-                model.CanSetDatabasePresets = true;
+                model.CanEditDatabasePresets = true;
+                SetConfigurationShellValues(model);
             }
 
             var recipeCollections = await Task.WhenAll(_recipeHarvesters.Select(x => x.HarvestRecipesAsync()));
@@ -620,6 +623,25 @@ namespace OrchardCore.Tenants.Controllers
         private bool IsDefaultShell()
         {
             return String.Equals(_currentShellSettings.Name, ShellHelper.DefaultShellName, StringComparison.OrdinalIgnoreCase);
+        }
+
+        private void SetConfigurationShellValues(EditTenantViewModel model)
+        {
+            var shellSettings = _shellSettingsManager.CreateDefaultSettings();
+            var configurationShellConnectionString = shellSettings["ConnectionString"];
+            var configurationDatabaseProvider = shellSettings["DatabaseProvider"];
+
+            model.DatabaseConfigurationPreset = !string.IsNullOrEmpty(configurationShellConnectionString) || !string.IsNullOrEmpty(configurationDatabaseProvider);
+
+            if(!string.IsNullOrEmpty(configurationShellConnectionString))
+            {
+                model.ConnectionString = configurationShellConnectionString;
+            }
+
+            if(!string.IsNullOrEmpty(configurationDatabaseProvider))
+            {
+                model.DatabaseProvider = configurationDatabaseProvider;
+            }
         }
     }
 }
