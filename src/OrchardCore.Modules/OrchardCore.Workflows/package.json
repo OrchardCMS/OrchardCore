@@ -2,9 +2,9 @@
   "name": "orchardcore.workflows",
   "version": "1.0.0",
   "dependencies": {
-    "@types/bootstrap": "4.5.0",
-    "@types/jquery": "3.5.4",
     "bootstrap": "4.5.3",
-    "jsplumb": "2.15.0"
+    "@types/bootstrap": "4.5.0",
+    "jsplumb": "2.15.0",
+    "@types/jquery": "3.5.4"
   }
 }
