@@ -25,6 +25,8 @@ namespace OrchardCore.ContentLocalization.Records
                 .Column<string>("LocalizationSet", col => col.WithLength(26))
                 .Column<string>("Culture", col => col.WithLength(16))
                 .Column<string>("ContentItemId", c => c.WithLength(26))
+                .Column<bool>("Published")
+                .Column<bool>("Latest")
             );
 
             SchemaBuilder.AlterTable(nameof(LocalizedContentItemIndex), table => table
@@ -35,7 +37,12 @@ namespace OrchardCore.ContentLocalization.Records
                 .CreateIndex("IDX_LocalizationPartIndex_ContentItemId", "ContentItemId")
             );
 
-            return 1;
+            SchemaBuilder.AlterTable(nameof(LocalizedContentItemIndex), table => table
+                .CreateIndex("IDX_LocalizationPartIndex_State", "Published", "Latest")
+            );
+
+            // Return 3 to shortcut other migrations on new content definition schemas.
+            return 3;
         }
 
         public int UpdateFrom1()
@@ -44,6 +51,20 @@ namespace OrchardCore.ContentLocalization.Records
                 .AddColumn<bool>(nameof(LocalizedContentItemIndex.Published)));
 
             return 2;
+        }
+
+        // This code can be removed in a later version.
+        public int UpdateFrom2()
+        {
+            SchemaBuilder.AlterTable(nameof(LocalizedContentItemIndex), table => table
+                .AddColumn<bool>("Latest", c => c.WithDefault(false))
+            );
+
+            SchemaBuilder.AlterTable(nameof(LocalizedContentItemIndex), table => table
+                .CreateIndex("IDX_LocalizationPartIndex_State", "Published", "Latest")
+            );
+
+            return 3;
         }
     }
 }

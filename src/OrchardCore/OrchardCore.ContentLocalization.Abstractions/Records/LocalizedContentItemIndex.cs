@@ -11,6 +11,7 @@ namespace OrchardCore.ContentLocalization.Records
         public string LocalizationSet { get; set; }
         public string Culture { get; set; }
         public bool Published { get; set; }
+        public bool Latest { get; set; }
     }
 
     public class LocalizedContentItemIndexProvider : IndexProvider<ContentItem>
@@ -38,16 +39,8 @@ namespace OrchardCore.ContentLocalization.Records
                         return null;
                     }
 
-                    if (part.ContentItemRemoved)
-                    {
-                        // Don't persist this property as true.
-                        part.ContentItemRemoved = false;
-
-                        return new LocalizedContentItemIndex
-                        {
-                            ContentItemId = contentItem.ContentItemId
-                        };
-                    }
+                    // Don't persist this property as true.
+                    part.ContentItemRemoved = false;
 
                     return new LocalizedContentItemIndex
                     {
