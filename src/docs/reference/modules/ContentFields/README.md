@@ -196,7 +196,7 @@ When adding the field to a content type, use the settings to specify whether to
 === "Liquid"
 
     ```liquid
-    {% assign users = Model.UserIds | get_users %}
+    {% assign users = Model.UserIds | users_by_id %}
     {% for user in users %}
         {{ user.UserName }} - {{ user.Email }}
     {% endfor %}
