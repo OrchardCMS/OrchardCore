@@ -57,7 +57,7 @@ function e2e(dir, assembly, { appDataLocation='./App_Data', dotnetVersion='netco
   deleteDirectory(path.join(dir, "App_Data_Tests"));
   var server = host(dir, assembly, { appDataLocation, dotnetVersion });
 
-  let test = child_process.exec("npx cypress run --browser chrome");
+  let test = child_process.exec("npx cypress run");
   test.stdout.on("data", data => {
     console.log(data);
   });
