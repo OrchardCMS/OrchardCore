@@ -57,7 +57,7 @@ export function e2e(dir, assembly, { appDataLocation='./App_Data', dotnetVersion
   deleteDirectory(path.join(dir, "App_Data_Tests"));
   var server = host(dir, assembly, { appDataLocation, dotnetVersion });
 
-  let test = child_process.exec("npx cypress run");
+  let test = child_process.exec("npx cypress run --browser chrome");
   test.stdout.on("data", data => {
     console.log(data);
   });
