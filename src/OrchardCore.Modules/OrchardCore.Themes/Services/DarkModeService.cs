@@ -1,10 +1,10 @@
 using System;
+using System.Text.Json;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.Admin.Models;
 using OrchardCore.Entities;
 using OrchardCore.Settings;
-using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace OrchardCore.Themes.Services
 {
@@ -28,9 +28,9 @@ namespace OrchardCore.Themes.Services
             var result = false;
             var adminSettings = (await _siteService.GetSiteSettingsAsync()).As<AdminSettings>();
 
-            if(adminSettings.DisplayDarkMode)
+            if (adminSettings.DisplayDarkMode)
             {
-                if(!String.IsNullOrWhiteSpace(_httpContextAccessor.HttpContext.Request.Cookies["adminPreferences"]))
+                if (!String.IsNullOrWhiteSpace(_httpContextAccessor.HttpContext.Request.Cookies["adminPreferences"]))
                 {
                     var adminPreferences = JsonDocument.Parse(_httpContextAccessor.HttpContext.Request.Cookies["adminPreferences"]);
 
@@ -41,7 +41,7 @@ namespace OrchardCore.Themes.Services
                 }
             }
 
-            if(result)
+            if (result)
             {
                 CurrentTheme = "darkmode";
             }
