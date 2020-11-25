@@ -65,7 +65,7 @@ namespace OrchardCore.Contents.Security
             return new Permission(
                 String.Format(template.Name, typeDefinition.Name),
                 String.Format(template.Description, typeDefinition.DisplayName),
-                (template.ImpliedBy ?? new Permission[0]).Select(t => CreateDynamicPermission(t, typeDefinition))
+                (template.ImpliedBy ?? new Permission[0]).Select(t => CreateDynamicPermission(t, typeDefinition)).ToList()
             )
             {
                 Category = typeDefinition.DisplayName
@@ -80,7 +80,7 @@ namespace OrchardCore.Contents.Security
             return new Permission(
                 String.Format(template.Name, contentType),
                 String.Format(template.Description, contentType),
-                (template.ImpliedBy ?? new Permission[0]).Select(t => CreateDynamicPermission(t, contentType))
+                (template.ImpliedBy ?? new Permission[0]).Select(t => CreateDynamicPermission(t, contentType)).ToList()
             );
         }
     }

@@ -26,7 +26,7 @@ namespace OrchardCore.Security.Permissions
             IsSecurityCritical = isSecurityCritical;
         }
 
-        public Permission(string name, string description, IEnumerable<Permission> impliedBy, bool isSecurityCritical = false) : this(name, description, isSecurityCritical)
+        public Permission(string name, string description, IList<Permission> impliedBy, bool isSecurityCritical = false) : this(name, description, isSecurityCritical)
         {
             ImpliedBy = impliedBy;
         }
@@ -34,7 +34,7 @@ namespace OrchardCore.Security.Permissions
         public string Name { get; set; }
         public string Description { get; set; }
         public string Category { get; set; }
-        public IEnumerable<Permission> ImpliedBy { get; set; }
+        public IList<Permission> ImpliedBy { get; set; }
         public bool IsSecurityCritical { get; set; }
 
         public static implicit operator Claim(Permission p)
