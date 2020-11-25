@@ -32,9 +32,9 @@
     <PackageLicenseExpression>BSD-3-Clause</PackageLicenseExpression>
     
     <PackageTags>OrchardCore</PackageTags>
-    <Copyright>Orchard Core CMS Community and Contributors</Copyright>
-    <Authors>Orchard Core CMS Community and Contributors</Authors>
-    <Owners>Orchard Core CMS Community and Contributors</Owners>
+    <Copyright>Orchard Core Community and Contributors</Copyright>
+    <Authors>Orchard Core Community and Contributors</Authors>
+    <Owners>Orchard Core Community and Contributors</Owners>
   </PropertyGroup>
   <ItemGroup>
       <!--This is used for Source Link -->
