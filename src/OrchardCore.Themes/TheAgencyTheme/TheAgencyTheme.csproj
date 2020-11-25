@@ -6,7 +6,7 @@
 
     <!-- NuGet properties-->
     <Title>The Agency Theme</Title>
-    <PackageTags>$(PackageTags) TheAgency Theme</PackageTags>
+    <PackageTags>$(PackageTags) Theme</PackageTags>
     <Description>Orchard Core CMS theme adapted for agency websites.</Description>
   </PropertyGroup>
 
