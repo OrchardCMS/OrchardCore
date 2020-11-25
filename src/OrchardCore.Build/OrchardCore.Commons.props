@@ -31,7 +31,7 @@
     <PackageProjectUrl>https://www.orchardcore.net/</PackageProjectUrl>
     <PackageLicenseExpression>BSD-3-Clause</PackageLicenseExpression>
     
-    <PackageTags>OrchardCore MVC AspNetCore</PackageTags>
+    <PackageTags>OrchardCore</PackageTags>
     <Copyright>Orchard Core CMS Community and Contributors</Copyright>
     <Authors>Orchard Core CMS Community and Contributors</Authors>
     <Owners>Orchard Core CMS Community and Contributors</Owners>
