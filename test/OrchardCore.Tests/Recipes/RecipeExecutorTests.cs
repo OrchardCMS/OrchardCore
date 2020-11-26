@@ -21,8 +21,11 @@ namespace OrchardCore.Recipes
 {
     public class RecipeExecutorTests
     {
-        [Fact]
-        public async Task BracketsShouldNotBeRemovedIfNotScriptExpression()
+        [Theory]
+        [InlineData("recipe1", "[locale en]You have successfully registered![/locale][locale fr]Vous vous êtes inscrit avec succès![/locale]")]
+        [InlineData("recipe2", "[1js: valiables('now')]")]
+        [InlineData("recipe3", "js: valiables('now')")]
+        public async Task RemoveBracketsIfTheScriptExpressionProcessed(string recipeName, string expected)
         {
             // Arrange
             var shellHostMock = new Mock<IShellHost>();
@@ -38,7 +41,7 @@ namespace OrchardCore.Recipes
             var loggerMock = new Mock<ILogger<RecipeExecutor>>();
             var executor = new RecipeExecutor(shellHostMock.Object, shellSettings, recipeEventHandlers, loggerMock.Object);
             var executionId = Guid.NewGuid().ToString("n");
-            var recipe = new RecipeDescriptor { RecipeFileInfo = GetRecipeFileInfo("recipe1") };
+            var recipe = new RecipeDescriptor { RecipeFileInfo = GetRecipeFileInfo(recipeName) };
 
             // Act
             try
@@ -52,7 +55,7 @@ namespace OrchardCore.Recipes
             // Assert
             var recipeContext = (recipeEventHandlers.Single() as RecipeEventHandler).Context;
             var recipeStep = recipeContext.Step;
-            Assert.Equal("[locale en]You have successfully registered![/locale][locale fr]Vous vous êtes inscrit avec succès![/locale]", recipeStep.SelectToken("data.[0].TitlePart.Title").ToString());
+            Assert.Equal(expected, recipeStep.SelectToken("data.[0].TitlePart.Title").ToString());
         }
 
         private IFileInfo GetRecipeFileInfo(string recipeName)

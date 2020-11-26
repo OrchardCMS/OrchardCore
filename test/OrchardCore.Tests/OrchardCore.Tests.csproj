@@ -33,6 +33,8 @@
     <None Remove="Localization\PoFiles\PoeditHeader.po" />
     <None Remove="Localization\PoFiles\SimpleEntry.po" />
     <None Remove="Recipes\RecipeFiles\recipe1.recipe.json" />
+    <None Remove="Recipes\RecipeFiles\recipe2.recipe.json" />
+    <None Remove="Recipes\RecipeFiles\recipe3.recipe.json" />
   </ItemGroup>
 
   <ItemGroup>
@@ -48,6 +50,8 @@
     <EmbeddedResource Include="Localization\PoFiles\PoeditHeader.po" />
     <EmbeddedResource Include="Localization\PoFiles\SimpleEntry.po" />
     <EmbeddedResource Include="Recipes\RecipeFiles\recipe1.recipe.json" />
+    <EmbeddedResource Include="Recipes\RecipeFiles\recipe2.recipe.json" />
+    <EmbeddedResource Include="Recipes\RecipeFiles\recipe3.recipe.json" />
   </ItemGroup>
 
   <ItemGroup>
