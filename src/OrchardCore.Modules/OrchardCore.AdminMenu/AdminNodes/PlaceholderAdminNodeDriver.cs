@@ -1,24 +1,14 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using OrchardCore.AdminMenu.ViewModels;
-using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Navigation;
 using OrchardCore.Security.Services;
 
 namespace OrchardCore.AdminMenu.AdminNodes
 {
-    public class PlaceholderAdminNodeDriver : DisplayDriver<MenuItem, PlaceholderAdminNode>
+    public class PlaceholderAdminNodeDriver : AdminNodeDriver<PlaceholderAdminNode>
     {
-        private readonly IPermissionsService _permissionService;
-
-        public PlaceholderAdminNodeDriver(
-            IPermissionsService permissionService)
+        public PlaceholderAdminNodeDriver(IPermissionsService permissionService) : base(permissionService)
         {
-            _permissionService = permissionService;
         }
         public override IDisplayResult Display(PlaceholderAdminNode treeNode)
         {
@@ -34,32 +24,9 @@ namespace OrchardCore.AdminMenu.AdminNodes
             {
                 model.LinkText = treeNode.LinkText;
                 model.IconClass = treeNode.IconClass;
-                model.SelectedItems = new List<VueMultiselectItemViewModel>();
-                model.AllItems = new List<VueMultiselectItemViewModel>();
+                
+                await InitializePermissionPicker(model, treeNode);
 
-                var nameList = new List<string>();
-
-                foreach (var permission in treeNode.Permissions)
-                {
-                    nameList.Add(permission.Name);
-
-                    model.SelectedItems.Add(new VueMultiselectItemViewModel
-                    {
-                        Id = permission.Name,
-                        DisplayText = $"{permission.Name} - {permission.Description}"
-                    });
-                }
-
-                model.PermissionIds = String.Join(",", nameList);
-
-                foreach (var permission in await _permissionService.GetInstalledPermissionsAsync())
-                {
-                    model.AllItems.Add(new VueMultiselectItemViewModel
-                    {
-                        Id = permission.Name,
-                        DisplayText = $"{permission.Name} - {permission.Description}"
-                    });
-                }
             }).Location("Content");
         }
 
@@ -71,25 +38,8 @@ namespace OrchardCore.AdminMenu.AdminNodes
                 treeNode.LinkText = model.LinkText;
                 treeNode.IconClass = model.IconClass;
 
-                var modifiedPermissions = (model.PermissionIds == null ? new string[0] : model.PermissionIds.Split(',', StringSplitOptions.RemoveEmptyEntries));
-                //clear the old permissions to insert all every time
-                treeNode.Permissions.Clear();
+                await SavePermissionPicked(model, treeNode);
 
-                //change permissions only if one is inserted
-                if (modifiedPermissions.Length > 0)
-                {
-                    var permissions = await _permissionService.GetInstalledPermissionsAsync();
-
-                    foreach (var permissionName in modifiedPermissions)
-                    {
-                        var perm = permissions.Where(p => p.Name == permissionName).FirstOrDefault();
-
-                        if (perm != null)
-                        {
-                            treeNode.Permissions.Add(perm);
-                        }
-                    }
-                }
             };
 
             return Edit(treeNode);

@@ -5,7 +5,7 @@ using OrchardCore.AdminMenu.ViewModels;
 
 namespace OrchardCore.AdminMenu.AdminNodes
 {
-    public class LinkAdminNodeViewModel
+    public class LinkAdminNodeViewModel : IPermissionPickerViewModel
     {
         [Required]
         public string LinkText { get; set; }
