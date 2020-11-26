@@ -4,19 +4,19 @@ The below table lists the different code/features areas and their owners:
 
 | Owner | Area |
 |--- | --- |
-| @jtkech | Infrastructure, Build, Distributed Services |
-| @sfmskywalker | Forms, Workflows |
-| @Jetski5822 | GraphQL |
-| @carlwoodhouse | GraphQL |
-| @kevinchalet | OpenID |
-| @deanmarcussen | Azure, Media, Shortcodes, Sitemaps, Taxonomies |
-| @agriffard | Docs, Crowdin Translations, Try, Website |
-| @hishamco | Cultures, Email, Localization, RTL, Translation, UI |
-| @jptissot | Localization, Tests |
-| @larremp | Workshops |
-| @lukaskabrt | Po files extractor |
-| @matiasmolleja | Media |
-| @MichaelPetrinolis | External authentication providers |
-| @Piedone | PublishLater, Preview packages |
-| @sebastienros | YesSql, Fluid, Jint, Shortcodes |
-| @skrypt | Lucene, Indexing, Admin, UI |
+| [https://github.com/jtkech](@jtkech) | Infrastructure, Build, Distributed Services |
+| [https://github.com/sfmskywalker](@sfmskywalker) | Forms, Workflows |
+| [https://github.com/Jetski5822](@Jetski5822) | GraphQL |
+| [https://github.com/carlwoodhouse](@carlwoodhouse) | GraphQL |
+| [https://github.com/kevinchalet](@kevinchalet) | OpenID |
+| [https://github.com/deanmarcussen](@deanmarcussen) | Azure, Media, Shortcodes, Sitemaps, Taxonomies |
+| [https://github.com/agriffard](@agriffard) | Docs, Crowdin Translations, Try, Website |
+| [https://github.com/hishamco](@hishamco) | Cultures, Email, Localization, RTL, Translation, UI |
+| [https://github.com/jptissot](@jptissot) | Localization, Tests |
+| [https://github.com/larremp](@larremp) | Workshops |
+| [https://github.com/lukaskabrt](@lukaskabrt) | Po files extractor |
+| [https://github.com/matiasmolleja](@matiasmolleja) | Media |
+| [https://github.com/MichaelPetrinolis](@MichaelPetrinolis) | External authentication providers |
+| [https://github.com/Piedone](@Piedone) | PublishLater, Preview packages |
+| [https://github.com/sebastienros](@sebastienros) | YesSql, Fluid, Jint, Shortcodes |
+| [https://github.com/skrypt](@skrypt) | Lucene, Indexing, Admin, UI |
