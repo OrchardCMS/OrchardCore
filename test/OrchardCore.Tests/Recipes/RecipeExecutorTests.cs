@@ -61,7 +61,7 @@ namespace OrchardCore.Recipes
         private IFileInfo GetRecipeFileInfo(string recipeName)
         {
             var testAssembly = GetType().GetTypeInfo().Assembly;
-            var path = $"Recipes.RecipeFiles.{recipeName}.recipe.json";
+            var path = $"Recipes.RecipeFiles.{recipeName}.json";
 
             return new EmbeddedFileProvider(testAssembly).GetFileInfo(path);
         }

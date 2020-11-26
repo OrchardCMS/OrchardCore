@@ -32,9 +32,9 @@
     <None Remove="Localization\PoFiles\MultipleEntries.po" />
     <None Remove="Localization\PoFiles\PoeditHeader.po" />
     <None Remove="Localization\PoFiles\SimpleEntry.po" />
-    <None Remove="Recipes\RecipeFiles\recipe1.recipe.json" />
-    <None Remove="Recipes\RecipeFiles\recipe2.recipe.json" />
-    <None Remove="Recipes\RecipeFiles\recipe3.recipe.json" />
+    <None Remove="Recipes\RecipeFiles\recipe1.json" />
+    <None Remove="Recipes\RecipeFiles\recipe2.json" />
+    <None Remove="Recipes\RecipeFiles\recipe3.json" />
   </ItemGroup>
 
   <ItemGroup>
@@ -49,9 +49,9 @@
     <EmbeddedResource Include="Localization\PoFiles\MultipleEntries.po" />
     <EmbeddedResource Include="Localization\PoFiles\PoeditHeader.po" />
     <EmbeddedResource Include="Localization\PoFiles\SimpleEntry.po" />
-    <EmbeddedResource Include="Recipes\RecipeFiles\recipe1.recipe.json" />
-    <EmbeddedResource Include="Recipes\RecipeFiles\recipe2.recipe.json" />
-    <EmbeddedResource Include="Recipes\RecipeFiles\recipe3.recipe.json" />
+    <EmbeddedResource Include="Recipes\RecipeFiles\recipe1.json" />
+    <EmbeddedResource Include="Recipes\RecipeFiles\recipe2.json" />
+    <EmbeddedResource Include="Recipes\RecipeFiles\recipe3.json" />
   </ItemGroup>
 
   <ItemGroup>
