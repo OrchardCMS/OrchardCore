@@ -15,8 +15,13 @@ $('#btn-darkmode').click(function() {
     persistAdminPreferences();
 });
 
-if($('html').attr('data-theme') === 'darkmode')
-{
-    $('#btn-darkmode').children(':first').removeClass('fa-moon');
-    $('#btn-darkmode').children(':first').addClass('fa-sun');
-}
+$(function() {
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)
+    {
+        if($('html').attr('data-theme') === 'darkmode')
+        {
+            $('#btn-darkmode').children(':first').removeClass('fa-moon');
+            $('#btn-darkmode').children(':first').addClass('fa-sun');
+        }
+    }
+});

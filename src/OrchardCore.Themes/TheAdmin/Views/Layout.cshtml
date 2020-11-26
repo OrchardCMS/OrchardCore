@@ -37,7 +37,15 @@
             @await DisplayAsync(await New.UserMenu())
             @if (adminSettings.DisplayDarkMode)
             {
-                <a id="btn-darkmode" class="btn btn-sm btn-light ml-2" title="@T["Dark mode"]"><i class="fas fa-moon"></i></a>
+                <a id="btn-darkmode" class="btn btn-sm btn-light ml-2" title="@T["Dark mode"]">
+                    @if(darkMode){
+                        <i class="fas fa-sun"></i>
+                    }
+                    else
+                    {
+                        <i class="fas fa-moon"></i>
+                    }
+                </a>
             }
         </div>
 
