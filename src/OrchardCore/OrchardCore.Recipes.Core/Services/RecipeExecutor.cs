@@ -210,11 +210,11 @@ namespace OrchardCore.Recipes.Services
                 case JTokenType.String:
                     const char scriptSeparator = ':';
                     var value = node.Value<string>();
-                    var scriptSeparatorIndex = value.IndexOf(scriptSeparator);
 
                     // Evaluate the expression while the result is another expression
                     while (value.StartsWith('[') && value.EndsWith(']'))
                     {
+                        var scriptSeparatorIndex = value.IndexOf(scriptSeparator);
                         // Don't remove brackets if it isn't a script expression [js:xxx], so shortcodes for instance could be used here
                         if (!(scriptSeparatorIndex > -1 && value[1..scriptSeparatorIndex].All(c => Char.IsLetter(c))))
                         {
