@@ -39,14 +39,14 @@ namespace OrchardCore.Recipes
                 })));
             var recipeEventHandlers = new List<IRecipeEventHandler> { new RecipeEventHandler() };
             var loggerMock = new Mock<ILogger<RecipeExecutor>>();
-            var executor = new RecipeExecutor(shellHostMock.Object, shellSettings, recipeEventHandlers, loggerMock.Object);
+            var recipeExecutor = new RecipeExecutor(shellHostMock.Object, shellSettings, recipeEventHandlers, loggerMock.Object);
             var executionId = Guid.NewGuid().ToString("n");
-            var recipe = new RecipeDescriptor { RecipeFileInfo = GetRecipeFileInfo(recipeName) };
+            var recipeDescriptor = new RecipeDescriptor { RecipeFileInfo = GetRecipeFileInfo(recipeName) };
 
             // Act
             try
             {
-                await executor.ExecuteAsync(executionId, recipe, new object(), CancellationToken.None);
+                await recipeExecutor.ExecuteAsync(executionId, recipeDescriptor, new object(), CancellationToken.None);
             }
             catch
             {
