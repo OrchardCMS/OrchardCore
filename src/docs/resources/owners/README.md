@@ -4,19 +4,19 @@ The below table lists the different code/features areas and their owners:
 
 | Owner | Area |
 |--- | --- |
-| [https://github.com/jtkech](Jean-Thierry Kéchichian) | Infrastructure, Build, Distributed Services |
-| [https://github.com/sfmskywalker](Sipke Schoorstra) | Forms, Workflows |
-| [https://github.com/Jetski5822](Nicholas Mayne) | GraphQL |
-| [https://github.com/carlwoodhouse](Carl Woodhouse) | GraphQL |
-| [https://github.com/kevinchalet](Kévin Chalet) | OpenID |
-| [https://github.com/deanmarcussen](Dean Marcussen) | Azure, Media, Shortcodes, Sitemaps, Taxonomies |
-| [https://github.com/agriffard](Antoine Griffard) | Docs, Crowdin Translations, Try, Website |
-| [https://github.com/hishamco](Hisham Bin Ateya) | Cultures, Email, Localization, RTL, Translation, UI |
-| [https://github.com/jptissot](Jean-Philippe Tissot) | Localization, Tests |
-| [https://github.com/larremp](Larrem Panganiban) | Workshops |
-| [https://github.com/lukaskabrt](Lukas Kabrt) | Po files extractor |
-| [https://github.com/matiasmolleja](Matias Molleja) | Media |
-| [https://github.com/MichaelPetrinolis](Michael Petrinolis) | External authentication providers |
-| [https://github.com/Piedone](Zoltán Lehóczky) | PublishLater, Preview packages |
-| [https://github.com/sebastienros](Sébastien Ros) | YesSql, Fluid, Jint, Shortcodes |
-| [https://github.com/skrypt](Jasmin Savard) | Lucene, Indexing, Admin, UI |
+| [Jean-Thierry Kéchichian](https://github.com/jtkech) | Infrastructure, Build, Distributed Services |
+| [Sipke Schoorstra](https://github.com/sfmskywalker) | Forms, Workflows |
+| [Nicholas Mayne](https://github.com/Jetski5822) | GraphQL |
+| [Carl Woodhouse](https://github.com/carlwoodhouse) | GraphQL |
+| [Kévin Chalet](https://github.com/kevinchalet) | OpenID |
+| [Dean Marcussen](https://github.com/deanmarcussen) | Azure, Media, Shortcodes, Sitemaps, Taxonomies |
+| [Antoine Griffard](https://github.com/agriffard) | Docs, Crowdin Translations, Try, Website |
+| [Hisham Bin Ateya](https://github.com/hishamco) | Cultures, Email, Localization, RTL, Translation, UI |
+| [Jean-Philippe Tissot](https://github.com/jptissot) | Localization, Tests |
+| [Larrem Panganiban](https://github.com/larremp) | Workshops |
+| [Lukas Kabrt](https://github.com/lukaskabrt) | Po files extractor |
+| [Matias Molleja](https://github.com/matiasmolleja) | Media |
+| [Michael Petrinolis](https://github.com/MichaelPetrinolis) | External authentication providers |
+| [Zoltán Lehóczky](https://github.com/Piedone) | PublishLater, Preview packages |
+| [Sébastien Ros](https://github.com/sebastienros) | YesSql, Fluid, Jint, Shortcodes |
+| [Jasmin Savard](https://github.com/skrypt) | Lucene, Indexing, Admin, UI |
