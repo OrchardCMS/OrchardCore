@@ -106,15 +106,6 @@ namespace OrchardCore.Users.Services
                 errors.Add(_identityErrorDescriber.DuplicateEmail(email));
                 return;
             }
-
-            // TODO Remove. This validation is no longer required as the 'EmailAndUserNameShouldMatch' validation removes the possibility of user hijacking.
-
-            // Validate that the user name does not match an existing email address.
-            // other = await manager.FindByEmailAsync(userName);
-            // if (other != null && !String.Equals(await manager.GetUserIdAsync(other), await manager.GetUserIdAsync(user), StringComparison.OrdinalIgnoreCase))
-            // {
-            //     errors.Add(_identityErrorDescriber.DuplicateUserName(userName));
-            // }
         }
     }
 }
