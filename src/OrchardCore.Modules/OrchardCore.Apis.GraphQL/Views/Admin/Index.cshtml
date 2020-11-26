@@ -43,6 +43,18 @@
             transform: rotate(360deg);
         }
     }
+
+    :root .graphiql-container .CodeMirror {
+        height: 100% !important;
+    }
+
+    :root .graphiql-container .CodeMirror pre {
+        padding-left: unset;
+        line-height: unset;
+        margin: unset;
+        font-size: unset;
+        overflow: unset;
+    }
 </style>
 
 <div id="graphiql" data-introspection-url="@Href("~/api/graphql")">
