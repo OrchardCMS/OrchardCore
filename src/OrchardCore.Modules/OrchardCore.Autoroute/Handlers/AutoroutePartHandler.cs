@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Fluid;
@@ -9,7 +8,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
-using OrchardCore.Autoroute.Drivers;
 using OrchardCore.Autoroute.Models;
 using OrchardCore.Autoroute.ViewModels;
 using OrchardCore.ContentLocalization;
@@ -18,7 +16,6 @@ using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.ContentManagement.Routing;
-using OrchardCore.DisplayManagement.Liquid;
 using OrchardCore.Environment.Cache;
 using OrchardCore.Liquid;
 using OrchardCore.Localization;
@@ -93,7 +90,11 @@ namespace OrchardCore.Autoroute.Handlers
 
             if (!String.IsNullOrWhiteSpace(part.Path) && !part.Disabled && part.SetHomepage)
             {
-                await SetHomeRoute(part, homeRoute => homeRoute[_options.ContentItemIdKey] = context.ContentItem.ContentItemId);
+                await SetHomeRoute(part, homeRoute =>
+                {
+                    homeRoute[_options.ContentItemIdKey] = context.ContentItem.ContentItemId;
+                    homeRoute[_options.JsonPathKey] = "";
+                });
             }
 
             // Evict any dependent item from cache

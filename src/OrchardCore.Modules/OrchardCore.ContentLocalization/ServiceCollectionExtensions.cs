@@ -6,6 +6,7 @@ using OrchardCore.ContentLocalization.Models;
 using OrchardCore.ContentLocalization.Records;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
+using OrchardCore.Data;
 using OrchardCore.Data.Migration;
 using YesSql.Indexes;
 
@@ -20,7 +21,7 @@ namespace OrchardCore.ContentLocalization
                 .AddHandler<LocalizationPartHandler>();
 
             services.TryAddScoped<IContentLocalizationManager, DefaultContentLocalizationManager>();
-            services.AddSingleton<IIndexProvider, LocalizedContentItemIndexProvider>();
+            services.AddScoped<IScopedIndexProvider, LocalizedContentItemIndexProvider>();
             services.AddScoped<IDataMigration, Migrations>();
             services.AddScoped<IContentLocalizationHandler, ContentLocalizationPartHandlerCoordinator>();
 

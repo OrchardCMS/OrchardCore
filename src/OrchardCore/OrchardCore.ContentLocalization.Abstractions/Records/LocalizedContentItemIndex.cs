@@ -2,6 +2,7 @@ using System;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentLocalization.Models;
 using OrchardCore.ContentManagement;
+using OrchardCore.Data;
 using YesSql.Indexes;
 
 namespace OrchardCore.ContentLocalization.Records
@@ -15,7 +16,7 @@ namespace OrchardCore.ContentLocalization.Records
         public bool Latest { get; set; }
     }
 
-    public class LocalizedContentItemIndexProvider : IndexProvider<ContentItem>
+    public class LocalizedContentItemIndexProvider : IndexProvider<ContentItem>, IScopedIndexProvider
     {
         private readonly IServiceProvider _serviceProvider;
 
@@ -57,7 +58,8 @@ namespace OrchardCore.ContentLocalization.Records
                         Culture = part.Culture.ToLowerInvariant(),
                         LocalizationSet = part.LocalizationSet,
                         ContentItemId = contentItem.ContentItemId,
-                        Published = contentItem.Published
+                        Published = contentItem.Published,
+                        Latest = contentItem.Latest
                     };
                 });
         }
