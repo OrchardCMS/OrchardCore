@@ -46,13 +46,7 @@ namespace OrchardCore.Recipes
             var recipeDescriptor = new RecipeDescriptor { RecipeFileInfo = GetRecipeFileInfo(recipeName) };
 
             // Act
-            try
-            {
-                await recipeExecutor.ExecuteAsync(executionId, recipeDescriptor, new object(), CancellationToken.None);
-            }
-            catch
-            {
-            }
+            await recipeExecutor.ExecuteAsync(executionId, recipeDescriptor, new object(), CancellationToken.None);
 
             // Assert
             var recipeContext = (recipeEventHandlers.Single() as RecipeEventHandler).Context;
