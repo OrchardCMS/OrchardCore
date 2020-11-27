@@ -21,11 +21,6 @@ namespace OrchardCore.Autoroute.Models
         public bool Disabled { get; set; }
 
         /// <summary>
-        /// Whether the related content item was removed.
-        /// </summary>
-        public bool ContentItemRemoved { get; set; }
-
-        /// <summary>
         /// Whether to route content items contained within the content item.
         /// </summary>
         public bool RouteContainedItems { get; set; }

@@ -109,9 +109,6 @@ namespace OrchardCore.Autoroute.Handlers
                 // Update entries from the index table after the session is committed.
                 await _entries.UpdateEntriesAsync();
 
-                // Indicate to the index provider that the related content item was removed.
-                part.ContentItemRemoved = true;
-
                 // Evict any dependent item from cache
                 await RemoveTagAsync(part);
             }

@@ -48,6 +48,7 @@ namespace OrchardCore.ContentManagement.Records
         private readonly IServiceProvider _serviceProvider;
 
         private IContentManager _contentManager;
+        private IContentManagerSession _contentManagerSession;
 
         public AutoroutePartIndexProvider(IServiceProvider serviceProvider)
         {
@@ -66,8 +67,11 @@ namespace OrchardCore.ContentManagement.Records
                         return null;
                     }
 
-                    // Also check if the related content item was removed, if so it is still indexed.
-                    if (!contentItem.Published && !contentItem.Latest && !part.ContentItemRemoved)
+                    _contentManagerSession ??= _serviceProvider.GetRequiredService<IContentManagerSession>();
+                    var isRemovedContentItem = _contentManagerSession.IsRemovedContentItem(contentItem);
+
+                    // If the related content item was removed, a record is still added.
+                    if (!contentItem.Published && !contentItem.Latest && !isRemovedContentItem)
                     {
                         return null;
                     }
@@ -79,6 +83,7 @@ namespace OrchardCore.ContentManagement.Records
 
                     var results = new List<AutoroutePartIndex>
                     {
+                        // If the part is disabled, a record is still added but with a null path.
                         new AutoroutePartIndex
                         {
                             ContentItemId = contentItem.ContentItemId,
@@ -88,10 +93,8 @@ namespace OrchardCore.ContentManagement.Records
                         }
                     };
 
-                    if (!part.RouteContainedItems || part.Disabled || part.ContentItemRemoved)
+                    if (!part.RouteContainedItems || part.Disabled || isRemovedContentItem)
                     {
-                        // Don't persist this property as true.
-                        part.ContentItemRemoved = false;
                         return results;
                     }
 
