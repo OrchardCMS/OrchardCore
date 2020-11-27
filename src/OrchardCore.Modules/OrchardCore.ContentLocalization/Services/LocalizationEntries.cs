@@ -21,8 +21,8 @@ namespace OrchardCore.ContentLocalization.Services
 
         private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1);
 
-        private string _identifier;
-        private uint _lastIndexId;
+        private int _lastIndexId;
+        private string _stateIdentifier;
         private bool _initialized;
 
         public LocalizationEntries()
@@ -58,7 +58,7 @@ namespace OrchardCore.ContentLocalization.Services
             await EnsureInitializedAsync();
 
             // Update the cache with a new state and then refresh entries as it would be done on a next request.
-            await DocumentManager.UpdateAsync(new LocalizationStateDocument(), afterUpdateAsync: RefreshEntriesAsync);
+            await LocalizationStateManager.UpdateAsync(new LocalizationStateDocument(), afterUpdateAsync: RefreshEntriesAsync);
         }
 
         private async Task EnsureInitializedAsync()
@@ -69,10 +69,10 @@ namespace OrchardCore.ContentLocalization.Services
             }
             else
             {
-                var document = await DocumentManager.GetOrCreateImmutableAsync();
-                if (_identifier != document.Identifier)
+                var state = await LocalizationStateManager.GetOrCreateImmutableAsync();
+                if (_stateIdentifier != state.Identifier)
                 {
-                    await RefreshEntriesAsync(document);
+                    await RefreshEntriesAsync(state);
                 }
             }
         }
@@ -120,9 +120,9 @@ namespace OrchardCore.ContentLocalization.Services
             }
         }
 
-        private async Task RefreshEntriesAsync(LocalizationStateDocument document)
+        private async Task RefreshEntriesAsync(LocalizationStateDocument state)
         {
-            if (_identifier == document.Identifier)
+            if (_stateIdentifier == state.Identifier)
             {
                 return;
             }
@@ -130,9 +130,9 @@ namespace OrchardCore.ContentLocalization.Services
             await _semaphore.WaitAsync();
             try
             {
-                if (_identifier != document.Identifier)
+                if (_stateIdentifier != state.Identifier)
                 {
-                    var indexes = await Session.QueryIndex<LocalizedContentItemIndex>(i => (uint)i.Id > _lastIndexId).ListAsync();
+                    var indexes = await Session.QueryIndex<LocalizedContentItemIndex>(i => i.Id > _lastIndexId).ListAsync();
 
                     RemoveEntries(indexes.Where(i => !i.Published)
                         .Select(i => new LocalizationEntry
@@ -150,8 +150,8 @@ namespace OrchardCore.ContentLocalization.Services
                             Culture = i.Culture.ToLowerInvariant()
                         }));
 
-                    _lastIndexId = (uint)(indexes.LastOrDefault()?.Id ?? 0);
-                    _identifier = document.Identifier;
+                    _lastIndexId = indexes.LastOrDefault()?.Id ?? 0;
+                    _stateIdentifier = state.Identifier;
                 }
             }
             finally
@@ -172,9 +172,8 @@ namespace OrchardCore.ContentLocalization.Services
             {
                 if (!_initialized)
                 {
-                    var document = await DocumentManager.GetOrCreateImmutableAsync();
+                    var state = await LocalizationStateManager.GetOrCreateImmutableAsync();
 
-                    // Todo: check if we now need more conditions
                     var indexes = await Session.QueryIndex<LocalizedContentItemIndex>(i => i.Published).ListAsync();
 
                     AddEntries(indexes.Select(i => new LocalizationEntry
@@ -184,8 +183,8 @@ namespace OrchardCore.ContentLocalization.Services
                         Culture = i.Culture.ToLowerInvariant()
                     }));
 
-                    _lastIndexId = (uint)(indexes.LastOrDefault()?.Id ?? 0);
-                    _identifier = document.Identifier;
+                    _lastIndexId = indexes.LastOrDefault()?.Id ?? 0;
+                    _stateIdentifier = state.Identifier;
 
                     _initialized = true;
                 }
@@ -198,7 +197,7 @@ namespace OrchardCore.ContentLocalization.Services
 
         private static ISession Session => ShellScope.Services.GetRequiredService<ISession>();
 
-        private static IVolatileDocumentManager<LocalizationStateDocument> DocumentManager
+        private static IVolatileDocumentManager<LocalizationStateDocument> LocalizationStateManager
             => ShellScope.Services.GetRequiredService<IVolatileDocumentManager<LocalizationStateDocument>>();
     }
 }

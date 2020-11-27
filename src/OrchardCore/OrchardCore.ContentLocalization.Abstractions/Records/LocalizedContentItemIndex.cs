@@ -1,4 +1,5 @@
 using System;
+using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentLocalization.Models;
 using OrchardCore.ContentManagement;
 using YesSql.Indexes;
@@ -16,6 +17,15 @@ namespace OrchardCore.ContentLocalization.Records
 
     public class LocalizedContentItemIndexProvider : IndexProvider<ContentItem>
     {
+        private readonly IServiceProvider _serviceProvider;
+
+        private IContentManagerSession _contentManagerSession;
+
+        public LocalizedContentItemIndexProvider(IServiceProvider serviceProvider)
+        {
+            _serviceProvider = serviceProvider;
+        }
+
         public override void Describe(DescribeContext<ContentItem> context)
         {
             context.For<LocalizedContentItemIndex>()
@@ -28,8 +38,11 @@ namespace OrchardCore.ContentLocalization.Records
                         return null;
                     }
 
-                    // Also check if the related content item was removed, if so it is still indexed.
-                    if (!contentItem.Published && !contentItem.Latest && !part.ContentItemRemoved)
+                    _contentManagerSession ??= _serviceProvider.GetRequiredService<IContentManagerSession>();
+                    var isRemovedContentItem = _contentManagerSession.IsRemovedContentItem(contentItem);
+
+                    // If the related content item was removed, a record is still added.
+                    if (!contentItem.Published && !contentItem.Latest && !isRemovedContentItem)
                     {
                         return null;
                     }
@@ -38,9 +51,6 @@ namespace OrchardCore.ContentLocalization.Records
                     {
                         return null;
                     }
-
-                    // Don't persist this property as true.
-                    part.ContentItemRemoved = false;
 
                     return new LocalizedContentItemIndex
                     {

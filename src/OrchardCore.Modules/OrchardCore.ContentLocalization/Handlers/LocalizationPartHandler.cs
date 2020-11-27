@@ -56,9 +56,6 @@ namespace OrchardCore.ContentLocalization.Handlers
         {
             if (!String.IsNullOrWhiteSpace(part.LocalizationSet) && part.Culture != null && context.NoActiveVersionLeft)
             {
-                // Indicate to the index provider that the related content item was removed.
-                part.ContentItemRemoved = true;
-
                 // Update entries from the index table after the session is committed.
                 return _entries.UpdateEntriesAsync();
             }

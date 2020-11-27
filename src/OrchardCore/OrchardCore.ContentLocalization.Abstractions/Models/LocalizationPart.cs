@@ -5,12 +5,6 @@ namespace OrchardCore.ContentLocalization.Models
     public class LocalizationPart : ContentPart, ILocalizable
     {
         public string LocalizationSet { get; set; }
-
         public string Culture { get; set; }
-
-        /// <summary>
-        /// Whether the related content item was removed.
-        /// </summary>
-        public bool ContentItemRemoved { get; set; }
     }
 }
