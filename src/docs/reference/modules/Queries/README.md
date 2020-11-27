@@ -68,15 +68,19 @@ Verbs: **POST** and **GET**
 
 ## GraphQL
 
-When exposing queries (Lucene or SQL) through GraphQL you need to define schema of a query return type. There are two options, to return `ContentItem` or to return custom object.
+When exposing queries (Lucene or SQL) through GraphQL you need to define schema of a query return type. There are two options, to return a `ContentItem` or to return a custom object.
+
 If you want to expose `ContentItems`, e.g. of type `BlogPost` you need to check `Return Content Items` checkbox and define `Schema` like this:
+
 ```json
 {
     "type": "ContentItem/BlogPost"
 }
 
 ```
+
 However if you want to expose custom object, e.g. only DisplayText, you need to uncheck `Return Content Items` checkbox and change `Schema` to look like this:
+
 ```json
 {
     "type": "object",
@@ -88,9 +92,13 @@ However if you want to expose custom object, e.g. only DisplayText, you need to 
     }
 }
 ```
+
 Where properties can either be of `string` or `integer` type.
+
 For Lucene queries with custom object schema you are limited to elements stored in Lucene index.
+
 For SQL queries you can expose any column where property name is column alias from query.
+
 
 ## SQL Queries (`OrchardCore.Queries.Sql`)
 
