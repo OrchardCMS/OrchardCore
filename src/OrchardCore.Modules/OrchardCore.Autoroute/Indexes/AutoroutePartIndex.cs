@@ -102,7 +102,7 @@ namespace OrchardCore.ContentManagement.Records
 
                     var containedContentItemsAspect = await _contentManager.PopulateAspectAsync<ContainedContentItemsAspect>(contentItem);
 
-                    await PopulateContainedContentItemIndexes(results, contentItem, containedContentItemsAspect, contentItem.Content as JObject, part.Path);
+                    await PopulateContainedContentItemIndexes(results, contentItem, containedContentItemsAspect, contentItem.Content, part.Path);
 
                     return results;
                 });

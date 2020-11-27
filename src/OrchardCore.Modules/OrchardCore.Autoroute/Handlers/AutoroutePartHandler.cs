@@ -67,10 +67,8 @@ namespace OrchardCore.Autoroute.Handlers
                 if (part.RouteContainedItems)
                 {
                     _contentManager ??= _serviceProvider.GetRequiredService<IContentManager>();
-
                     var containedAspect = await _contentManager.PopulateAspectAsync<ContainedContentItemsAspect>(context.PublishingItem);
-
-                    await SetHomeRouteFromContainedContentItemAsync(part.ContentItem.ContentItemId, containedAspect, context.PublishingItem.Content as JObject);
+                    await CheckContainedHomeRouteAsync(part.ContentItem.ContentItemId, containedAspect, context.PublishingItem.Content);
                 }
 
                 // Update entries from the index table after the session is committed.
@@ -168,36 +166,6 @@ namespace OrchardCore.Autoroute.Handlers
             });
         }
 
-        private async Task SetHomeRouteFromContainedContentItemAsync(string containerContentItemId, ContainedContentItemsAspect containedContentItemsAspect, JObject content)
-        {
-            foreach (var accessor in containedContentItemsAspect.Accessors)
-            {
-                var jItems = accessor.Invoke(content);
-
-                foreach (JObject jItem in jItems)
-                {
-                    var contentItem = jItem.ToObject<ContentItem>();
-                    var handlerAspect = await _contentManager.PopulateAspectAsync<RouteHandlerAspect>(contentItem);
-
-                    if (!handlerAspect.Disabled)
-                    {
-                        // Only an autoroute part, not a default handler aspect can set itself as the homepage.
-                        var autoroutePart = contentItem.As<AutoroutePart>();
-                        if (autoroutePart != null && autoroutePart.SetHomepage)
-                        {
-                            await SetHomeRouteAsync(autoroutePart, homeRoute =>
-                            {
-                                homeRoute[_options.ContentItemIdKey] = containerContentItemId;
-                                homeRoute[_options.JsonPathKey] = jItem.Path;
-                            });
-
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-
         private async Task SetHomeRouteAsync(AutoroutePart part, Action<RouteValueDictionary> action)
         {
             var site = await _siteService.LoadSiteSettingsAsync();
@@ -228,6 +196,36 @@ namespace OrchardCore.Autoroute.Handlers
             return _tagCache.RemoveTagAsync($"slug:{part.Path}");
         }
 
+        private async Task CheckContainedHomeRouteAsync(string containerContentItemId, ContainedContentItemsAspect containedAspect, JObject content)
+        {
+            foreach (var accessor in containedAspect.Accessors)
+            {
+                var jItems = accessor.Invoke(content);
+
+                foreach (JObject jItem in jItems)
+                {
+                    var contentItem = jItem.ToObject<ContentItem>();
+                    var handlerAspect = await _contentManager.PopulateAspectAsync<RouteHandlerAspect>(contentItem);
+
+                    if (!handlerAspect.Disabled)
+                    {
+                        // Only an autoroute part, not a default handler aspect can set itself as the homepage.
+                        var autoroutePart = contentItem.As<AutoroutePart>();
+                        if (autoroutePart != null && autoroutePart.SetHomepage)
+                        {
+                            await SetHomeRouteAsync(autoroutePart, homeRoute =>
+                            {
+                                homeRoute[_options.ContentItemIdKey] = containerContentItemId;
+                                homeRoute[_options.JsonPathKey] = jItem.Path;
+                            });
+
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
         private async Task GenerateContainedPathsFromPatternAsync(ContentItem contentItem, AutoroutePart part)
         {
             // Validate contained content item routes if container has valid path.
@@ -237,14 +235,13 @@ namespace OrchardCore.Autoroute.Handlers
             }
 
             _contentManager ??= _serviceProvider.GetRequiredService<IContentManager>();
-
             var containedAspect = await _contentManager.PopulateAspectAsync<ContainedContentItemsAspect>(contentItem);
 
             // Build the entries for this content item to evaluate for duplicates.
             var entries = new List<AutorouteEntry>();
-            await PopulateContainedContentItemRoutesAsync(entries, part.ContentItem.ContentItemId, containedAspect, contentItem.Content as JObject, part.Path);
+            await PopulateContainedContentItemRoutesAsync(entries, part.ContentItem.ContentItemId, containedAspect, contentItem.Content, part.Path);
 
-            await ValidateContainedContentItemRoutesAsync(entries, part.ContentItem.ContentItemId, containedAspect, contentItem.Content as JObject, part.Path);
+            await ValidateContainedContentItemRoutesAsync(entries, part.ContentItem.ContentItemId, containedAspect, contentItem.Content, part.Path);
         }
 
         private async Task PopulateContainedContentItemRoutesAsync(List<AutorouteEntry> entries, string containerContentItemId, ContainedContentItemsAspect containedContentItemsAspect, JObject content, string basePath)
