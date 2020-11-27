@@ -215,7 +215,7 @@ namespace OrchardCore.Recipes.Services
                     while (value.StartsWith('[') && value.EndsWith(']'))
                     {
                         var scriptSeparatorIndex = value.IndexOf(scriptSeparator);
-                        // Don't remove brackets if it isn't a script expression [js:xxx], so shortcodes for instance could be used here
+                        // Only remove brackets if this is a valid script expression, e.g. '[js:xxx]', or '[file:xxx]'
                         if (!(scriptSeparatorIndex > -1 && value[1..scriptSeparatorIndex].All(c => Char.IsLetter(c))))
                         {
                             break;
