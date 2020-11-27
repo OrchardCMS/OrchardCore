@@ -26,6 +26,15 @@ namespace OrchardCore.Recipes
         [InlineData("recipe2", "[1js: valiables('now')]")]
         [InlineData("recipe3", "js: valiables('now')")]
         [InlineData("recipe4", "[locale en]This text contain a colon ':' symbol[/locale][locale fr]Ce texte contient un symbole du côlon ':'[/locale]")]
+        [InlineData("recipe5", "[sc text='some : text'/]")]
+        [InlineData("recipe6", @"<code>
+[
+	{
+		color: ""red"",
+		value: ""#f00""
+	}
+]
+</code>")]
         public async Task RemoveBracketsIfTheScriptExpressionProcessed(string recipeName, string expected)
         {
             // Arrange
