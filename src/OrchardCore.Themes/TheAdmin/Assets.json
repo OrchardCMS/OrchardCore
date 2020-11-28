@@ -9,14 +9,6 @@
   },
   {
     "generateSourceMaps": false,
-    "generateRTL": true,
-    "inputs": [
-      "Assets/scss/admin-darkmode.scss"
-    ],
-    "output": "wwwroot/Styles/TheAdmin-darkmode.css"
-  },
-  {
-    "generateSourceMaps": false,
     "inputs": [
       "node_modules/popper.js/dist/umd/popper.js",
       "node_modules/bootstrap/dist/js/bootstrap.js",
