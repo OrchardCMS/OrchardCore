@@ -20,3 +20,4 @@ The below table lists the different code/features areas and their owners:
 | [Zoltán Lehóczky](https://github.com/Piedone) | PublishLater, Preview packages |
 | [Sébastien Ros](https://github.com/sebastienros) | YesSql, Fluid, Jint, Shortcodes |
 | [Jasmin Savard](https://github.com/skrypt) | Lucene, Indexing, Admin, UI |
+| [Bertrand Le Roy](https://github.com/bleroy) | Commerce module |
