@@ -6,19 +6,18 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.AdminMenu.Services;
 using OrchardCore.Navigation;
-using OrchardCore.Security.Services;
 
 namespace OrchardCore.AdminMenu.AdminNodes
 {
     public class PlaceholderAdminNodeNavigationBuilder : IAdminNodeNavigationBuilder
     {
         private readonly ILogger _logger;
-        private readonly IPermissionsService _permissionService;
+        private readonly IAdminMenuPermissionService _adminMenuPermissionService;
 
-        public PlaceholderAdminNodeNavigationBuilder(ILogger<PlaceholderAdminNodeNavigationBuilder> logger, IPermissionsService permissionService)
+        public PlaceholderAdminNodeNavigationBuilder(IAdminMenuPermissionService adminMenuPermissionService, ILogger<PlaceholderAdminNodeNavigationBuilder> logger)
         {
+            _adminMenuPermissionService = adminMenuPermissionService;
             _logger = logger;
-            _permissionService = permissionService;
         }
 
         public string Name => typeof(PlaceholderAdminNode).Name;
@@ -37,15 +36,12 @@ namespace OrchardCore.AdminMenu.AdminNodes
                 itemBuilder.Priority(node.Priority);
                 itemBuilder.Position(node.Position);
 
-                var allInstalledPermissions = await _permissionService.GetInstalledPermissionsAsync();
-                //add to permissions only the ones that are existing
-                foreach (var savedPermission in node.Permissions)
+                if (node.PermissionNames.Any())
                 {
-                    var realPermission = allInstalledPermissions.Where(p => p.Name == savedPermission.Name).FirstOrDefault();
-                    if (realPermission != null)
-                    {
-                        itemBuilder.Permission(realPermission);
-                    }
+                    var permissions = await _adminMenuPermissionService.GetPermissionsAsync();
+                    // Find the actual permissions and apply them to the menu.
+                    var selectedPermissions = permissions.Where(p => node.PermissionNames.Contains(p.Name));
+                    itemBuilder.Permissions(selectedPermissions);
                 }
 
                 // Add adminNode's IconClass property values to menuItem.Classes.

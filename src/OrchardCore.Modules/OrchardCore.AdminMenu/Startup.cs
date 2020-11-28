@@ -18,7 +18,6 @@ using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
-using OrchardCore.Security.Services;
 
 namespace OrchardCore.AdminMenu
 {
@@ -35,7 +34,7 @@ namespace OrchardCore.AdminMenu
         {
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<INavigationProvider, AdminMenu>();
-            services.TryAddScoped<IPermissionsService, DefaultPermissionsService>();
+            services.AddScoped<IAdminMenuPermissionService, AdminMenuPermissionService>();
 
             services.AddScoped<IAdminMenuService, AdminMenuService>();
             services.AddScoped<AdminMenuNavigationProvidersCoordinator, AdminMenuNavigationProvidersCoordinator>();
