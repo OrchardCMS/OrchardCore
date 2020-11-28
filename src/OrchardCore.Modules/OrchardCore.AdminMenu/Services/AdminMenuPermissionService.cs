@@ -9,7 +9,7 @@ namespace OrchardCore.AdminMenu.Services
 
         private readonly IEnumerable<IPermissionProvider> _permissionProviders;
 
-        // Cached across requests.
+        // Cached per request.
         private List<Permission> _permissions;
 
         public AdminMenuPermissionService(IEnumerable<IPermissionProvider> permissionProviders)
