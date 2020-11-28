@@ -1,9 +1,10 @@
 using System;
+using System.Dynamic;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using OrchardCore.Admin.Models;
-using OrchardCore.Entities;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Themes.Services
@@ -26,17 +27,24 @@ namespace OrchardCore.Themes.Services
         public async Task<bool> IsDarkModeAsync()
         {
             var result = false;
-            var adminSettings = (await _siteService.GetSiteSettingsAsync()).As<AdminSettings>();
+            var siteSettings = (await _siteService.GetSiteSettingsAsync());
 
-            if (adminSettings.DisplayDarkMode)
+            siteSettings.Properties.TryGetValue("AdminSettings", out var value);
+
+            if (value != null)
             {
-                if (!String.IsNullOrWhiteSpace(_httpContextAccessor.HttpContext.Request.Cookies["adminPreferences"]))
-                {
-                    var adminPreferences = JsonDocument.Parse(_httpContextAccessor.HttpContext.Request.Cookies["adminPreferences"]);
+                dynamic adminSettings = JsonConvert.DeserializeObject<ExpandoObject>(value.ToString(), new ExpandoObjectConverter());
 
-                    if (adminPreferences.RootElement.TryGetProperty("darkMode", out var darkMode))
+                if (adminSettings.DisplayDarkMode)
+                {
+                    if (!String.IsNullOrWhiteSpace(_httpContextAccessor.HttpContext.Request.Cookies["adminPreferences"]))
                     {
-                        result = darkMode.GetBoolean();
+                        var adminPreferences = JsonDocument.Parse(_httpContextAccessor.HttpContext.Request.Cookies["adminPreferences"]);
+
+                        if (adminPreferences.RootElement.TryGetProperty("darkMode", out var darkMode))
+                        {
+                            result = darkMode.GetBoolean();
+                        }
                     }
                 }
             }
