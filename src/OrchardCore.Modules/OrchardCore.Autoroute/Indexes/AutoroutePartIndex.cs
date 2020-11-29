@@ -47,18 +47,13 @@ namespace OrchardCore.ContentManagement.Records
     public class AutoroutePartIndexProvider : ContentHandlerBase, IIndexProvider, IScopedIndexProvider
     {
         private readonly IServiceProvider _serviceProvider;
-
         private readonly List<ContentItem> _removed = new List<ContentItem>();
-
         private IContentManager _contentManager;
 
         public AutoroutePartIndexProvider(IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;
         }
-
-        public string CollectionName { get; set; }
-        public Type ForType() => typeof(ContentItem);
 
         public override Task RemovedAsync(RemoveContentContext context)
         {
@@ -75,6 +70,8 @@ namespace OrchardCore.ContentManagement.Records
             return Task.CompletedTask;
         }
 
+        public string CollectionName { get; set; }
+        public Type ForType() => typeof(ContentItem);
         public void Describe(IDescriptor context) => Describe((DescribeContext<ContentItem>)context);
 
         public void Describe(DescribeContext<ContentItem> context)
@@ -121,13 +118,13 @@ namespace OrchardCore.ContentManagement.Records
 
                     var containedContentItemsAspect = await _contentManager.PopulateAspectAsync<ContainedContentItemsAspect>(contentItem);
 
-                    await PopulateContainedContentItemIndexes(results, contentItem, containedContentItemsAspect, contentItem.Content, part.Path);
+                    await PopulateContainedContentItemIndexesAsync(results, contentItem, containedContentItemsAspect, contentItem.Content, part.Path);
 
                     return results;
                 });
         }
 
-        private async Task PopulateContainedContentItemIndexes(List<AutoroutePartIndex> results, ContentItem containerContentItem, ContainedContentItemsAspect containedContentItemsAspect, JObject content, string basePath)
+        private async Task PopulateContainedContentItemIndexesAsync(List<AutoroutePartIndex> results, ContentItem containerContentItem, ContainedContentItemsAspect containedContentItemsAspect, JObject content, string basePath)
         {
             foreach (var accessor in containedContentItemsAspect.Accessors)
             {
@@ -160,7 +157,7 @@ namespace OrchardCore.ContentManagement.Records
                     var itemBasePath = (basePath.EndsWith('/') ? basePath : basePath + '/') + handlerAspect.Path;
                     var childrenAspect = await _contentManager.PopulateAspectAsync<ContainedContentItemsAspect>(contentItem);
 
-                    await PopulateContainedContentItemIndexes(results, containerContentItem, childrenAspect, jItem, itemBasePath);
+                    await PopulateContainedContentItemIndexesAsync(results, containerContentItem, childrenAspect, jItem, itemBasePath);
                 }
             }
         }
