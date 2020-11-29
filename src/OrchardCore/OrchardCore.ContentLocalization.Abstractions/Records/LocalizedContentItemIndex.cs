@@ -20,12 +20,10 @@ namespace OrchardCore.ContentLocalization.Records
 
     public class LocalizedContentItemIndexProvider : ContentHandlerBase, IIndexProvider, IScopedIndexProvider
     {
-        private readonly IServiceProvider _serviceProvider;
         private readonly List<ContentItem> _removed = new List<ContentItem>();
 
-        public LocalizedContentItemIndexProvider(IServiceProvider serviceProvider)
+        public LocalizedContentItemIndexProvider()
         {
-            _serviceProvider = serviceProvider;
         }
 
         public override Task RemovedAsync(RemoveContentContext context)
