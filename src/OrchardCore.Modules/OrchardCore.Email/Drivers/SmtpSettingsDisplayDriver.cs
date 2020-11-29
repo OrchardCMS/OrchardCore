@@ -8,7 +8,6 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Email.Services;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Secrets;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Email.Drivers
@@ -19,7 +18,6 @@ namespace OrchardCore.Email.Drivers
         private readonly IDataProtectionProvider _dataProtectionProvider;
         private readonly IShellHost _shellHost;
         private readonly ShellSettings _shellSettings;
-        private readonly ISecretExpressionEvaluator _secretExpressionEvaluator;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthorizationService _authorizationService;
 
@@ -27,14 +25,12 @@ namespace OrchardCore.Email.Drivers
             IDataProtectionProvider dataProtectionProvider,
             IShellHost shellHost,
             ShellSettings shellSettings,
-            ISecretExpressionEvaluator secretExpressionEvaluator,
             IHttpContextAccessor httpContextAccessor,
             IAuthorizationService authorizationService)
         {
             _dataProtectionProvider = dataProtectionProvider;
             _shellHost = shellHost;
             _shellSettings = shellSettings;
-            _secretExpressionEvaluator = secretExpressionEvaluator;
             _httpContextAccessor = httpContextAccessor;
             _authorizationService = authorizationService;
         }
@@ -92,15 +88,6 @@ namespace OrchardCore.Email.Drivers
                 if (string.IsNullOrWhiteSpace(section.Password))
                 {
                     section.Password = previousPassword;
-                }
-                else
-                {
-                    if (!_secretExpressionEvaluator.IsSecretExpression(section.Password))
-                    {
-                        // The password is only encrypted if it is not a secret expression.
-                        var protector = _dataProtectionProvider.CreateProtector(nameof(SmtpSettingsConfiguration));
-                        section.Password = protector.Protect(section.Password);
-                    }
                 }
 
                 // Release the tenant to apply the settings

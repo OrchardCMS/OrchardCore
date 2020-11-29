@@ -14,15 +14,18 @@ namespace OrchardCore.Email.Services
     {
         private readonly ISiteService _site;
         private readonly IDataProtectionProvider _dataProtectionProvider;
+        private readonly ISecretService<TextSecret> _textSecretService;
         private readonly ILogger _logger;
 
         public SmtpSettingsConfiguration(
             ISiteService site,
             IDataProtectionProvider dataProtectionProvider,
+            ISecretService<TextSecret> textSecretService,
             ILogger<SmtpSettingsConfiguration> logger)
         {
             _site = site;
             _dataProtectionProvider = dataProtectionProvider;
+            _textSecretService = textSecretService;
             _logger = logger;
         }
 
@@ -43,26 +46,22 @@ namespace OrchardCore.Email.Services
             options.UseDefaultCredentials = settings.UseDefaultCredentials;
             options.UserName = settings.UserName;
 
-            // Decrypt the password
-            if (!String.IsNullOrWhiteSpace(settings.Password))
-            {
-                var secretExpressionEvaluator = ShellScope.Services.GetRequiredService<ISecretExpressionEvaluator>();
-                if (secretExpressionEvaluator.IsSecretExpression(settings.Password))
-                {
-                    options.Password = secretExpressionEvaluator.EvaluateAsync(settings.Password).GetAwaiter().GetResult();
 
-                }
-                else
+            if (!String.IsNullOrEmpty(settings.PasswordSecretKey))
+            {
+                options.Password = _textSecretService.GetSecretAsync(settings.PasswordSecretKey).GetAwaiter().GetResult().Text;
+            }
+            else if (!String.IsNullOrWhiteSpace(settings.Password))
+            {
+                try
                 {
-                    try
-                    {
-                        var protector = _dataProtectionProvider.CreateProtector(nameof(SmtpSettingsConfiguration));
-                        options.Password = protector.Unprotect(settings.Password);
-                    }
-                    catch
-                    {
-                        _logger.LogError("The Smtp password could not be decrypted. It may have been encrypted using a different key.");
-                    }
+                    // Decrypt the password.
+                    var protector = _dataProtectionProvider.CreateProtector(nameof(SmtpSettingsConfiguration));
+                    options.Password = protector.Unprotect(settings.Password);
+                }
+                catch
+                {
+                    _logger.LogError("The Smtp password could not be decrypted. It may have been encrypted using a different key.");
                 }
             }
         }

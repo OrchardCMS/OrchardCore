@@ -4,9 +4,9 @@ using OrchardCore.DisplayManagement.Handlers;
 
 namespace OrchardCore.Secrets.ViewModels
 {
-    public class AuthorizationSecretViewModel
+    public class TextSecretViewModel
     {
-        public string AuthenticationString { get; set; }
+        public string Text { get; set; }
         [BindNever]
         public BuildEditorContext Context { get; set; }
     }

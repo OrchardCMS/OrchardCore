@@ -17,7 +17,7 @@ namespace OrchardCore.Secrets.Drivers
     {
         private readonly IStringLocalizer S;
 
-        public RsaSecretDisplayDriver(IStringLocalizer<AuthorizationSecretDisplayDriver> stringLocalizer)
+        public RsaSecretDisplayDriver(IStringLocalizer<TestSecretDisplayDriver> stringLocalizer)
         {
             S = stringLocalizer;
         }
@@ -118,15 +118,15 @@ namespace OrchardCore.Secrets.Drivers
                 {
                     // context.Updater.ModelState.AddModelError(Prefix, nameof(model.PublicKey), S["The public key cannot be decoded"]);
                 }
-                // if (context.IsNew && String.IsNullOrEmpty(model.AuthenticationString))
+                // if (context.IsNew && String.IsNullOrEmpty(model.Text))
                 // {
-                //     context.Updater.ModelState.AddModelError(Prefix, nameof(model.AuthenticationString), S["The authentication string is required"]);
+                //     context.Updater.ModelState.AddModelError(Prefix, nameof(model.Text), S["The authentication string is required"]);
                 // }
 
                 // // The authentication string is only updated when a new value has been provided.
-                // if (!String.IsNullOrEmpty(model.AuthenticationString))
+                // if (!String.IsNullOrEmpty(model.Text))
                 // {
-                //     secret.AuthenticationString = model.AuthenticationString;
+                //     secret.Text = model.Text;
                 // }
             }
 

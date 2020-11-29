@@ -14,7 +14,6 @@ using OrchardCore.Recipes;
 using OrchardCore.Secrets.Controllers;
 using OrchardCore.Secrets.Deployment;
 using OrchardCore.Secrets.Drivers;
-using OrchardCore.Secrets.Filters;
 using OrchardCore.Secrets.Recipes;
 using OrchardCore.Secrets.Services;
 using OrchardCore.Security.Permissions;
@@ -38,15 +37,12 @@ namespace OrchardCore.Secrets
             services.AddScoped<SecretBindingsManager>();
 
             services.AddScoped<ISecretCoordinator, DefaultSecretCoordinator>();
-            services.AddScoped<ISecretExpressionEvaluator, SecretExpressionEvaluator>();
 
             services.AddScoped<IDisplayManager<Secret>, DisplayManager<Secret>>();
 
-            services.AddScoped<IDisplayDriver<Secret>, AuthorizationSecretDisplayDriver>();
-            services.AddSingleton<ISecretFactory>(new SecretFactory<AuthorizationSecret>());
-            services.AddScoped<ISecretService<AuthorizationSecret>, SecretService<AuthorizationSecret>>();
-            services.AddSecretLiquidFilter<AuthorizationSecretFilter>("auth_secret");
-
+            services.AddScoped<IDisplayDriver<Secret>, TestSecretDisplayDriver>();
+            services.AddSingleton<ISecretFactory>(new SecretFactory<TextSecret>());
+            services.AddScoped<ISecretService<TextSecret>, SecretService<TextSecret>>();
 
             services.AddScoped<IDisplayDriver<Secret>, RsaSecretDisplayDriver>();
             services.AddSingleton<ISecretFactory>(new SecretFactory<RsaSecret>());

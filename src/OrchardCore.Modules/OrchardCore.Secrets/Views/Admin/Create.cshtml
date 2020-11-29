@@ -19,16 +19,23 @@
         <span class="hint">@T["The description of the secret."]</span>
     </div>
 
-    <div class="form-group w-md-50" asp-validation-class-for="SelectedStore">
-        <label asp-for="SelectedStore">@T["Store"]</label>
-        <select class="form-control" asp-for="SelectedStore">
-            @foreach(var storeEntry in Model.StoreEntries)
-            {
-                <option value="@storeEntry.Name" selected="@(Model.SelectedStore == storeEntry.Name)" data-isReadOnly="@storeEntry.IsReadOnly">@storeEntry.DisplayName</option>
-            }
-        </select>
-        <span class="hint">@T["The store where the secret value is stored."]</span>
-    </div>
+    @if (Model.StoreEntries.Any())
+    {
+        <div class="form-group w-md-50" asp-validation-class-for="SelectedStore">
+            <label asp-for="SelectedStore">@T["Store"]</label>
+            <select class="form-control" asp-for="SelectedStore">
+                @foreach(var storeEntry in Model.StoreEntries)
+                {
+                    <option value="@storeEntry.Name" selected="@(Model.SelectedStore == storeEntry.Name)" data-isReadOnly="@storeEntry.IsReadOnly">@storeEntry.DisplayName</option>
+                }
+            </select>
+            <span class="hint">@T["The store where the secret value is stored."]</span>
+        </div>
+    }
+    else
+    {
+        <p class="alert alert-danger">@T["There are no Secret Stores enabled. Please enable a Secret store Feature."]</p>
+    }
     @* this will be a class / javascript to disable when a readonly store is selected 
     so either build the select ourselves 
     
