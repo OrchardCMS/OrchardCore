@@ -2,6 +2,7 @@
   "name": "orchardcore.adminmenu",
   "version": "1.0.0",
   "dependencies": {
-    "bootstrap": "4.5.3"
+    "bootstrap": "4.5.3",
+    "fontawesome-iconpicker": "3.2.0"
   }
 }
