@@ -58,7 +58,7 @@
           "Author": "[js: parameters('AdminUsername')]",
           "Message": {},
           "TitlePart": {
-            "Title": "[locale en]This text contain a colon ':' symbol[/locale][locale fr]Ce texte contient un symbole du côlon ':'[/locale]"
+            "Title": "[locale en]This text contains a colon ':' symbol[/locale][locale fr]Ce texte contient un deux-points ':'[/locale]"
           }
         }
       ]
