@@ -106,11 +106,6 @@ namespace OrchardCore.Recipes
         {
             public RecipeExecutionContext Context { get; private set; }
 
-            Task IRecipeEventHandler.ExecutionFailedAsync(string executionId, RecipeDescriptor descriptor) => Task.CompletedTask;
-            Task IRecipeEventHandler.RecipeExecutedAsync(string executionId, RecipeDescriptor descriptor) => Task.CompletedTask;
-            Task IRecipeEventHandler.RecipeExecutingAsync(string executionId, RecipeDescriptor descriptor) => Task.CompletedTask;
-            Task IRecipeEventHandler.RecipeStepExecutingAsync(RecipeExecutionContext context) => Task.CompletedTask;
-
             Task IRecipeEventHandler.RecipeStepExecutedAsync(RecipeExecutionContext context)
             {
                 if (String.Equals(context.Name, "Content", StringComparison.OrdinalIgnoreCase))
@@ -120,6 +115,11 @@ namespace OrchardCore.Recipes
 
                 return Task.CompletedTask;
             }
+
+            public Task ExecutionFailedAsync(string executionId, RecipeDescriptor descriptor) => Task.CompletedTask;
+            public Task RecipeExecutedAsync(string executionId, RecipeDescriptor descriptor) => Task.CompletedTask;
+            public Task RecipeExecutingAsync(string executionId, RecipeDescriptor descriptor) => Task.CompletedTask;
+            public Task RecipeStepExecutingAsync(RecipeExecutionContext context) => Task.CompletedTask;
         }
     }
 }
