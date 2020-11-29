@@ -59,7 +59,6 @@ namespace OrchardCore.Autoroute
             services.AddScoped<IContentHandler>(sp => sp.GetRequiredService<AutoroutePartIndexProvider>());
 
             services.AddScoped<IDataMigration, Migrations>();
-
             services.AddSingleton<IAutorouteEntries, AutorouteEntries>();
             services.AddScoped<IContentHandleProvider, AutorouteHandleProvider>();
 
