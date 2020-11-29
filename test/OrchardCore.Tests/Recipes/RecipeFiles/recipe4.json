@@ -7,33 +7,12 @@
   "version": "1.0.0-rc2",
   "issetuprecipe": false,
   "categories": [ "test" ],
-  "tags": [ ],
+  "tags": [],
   "variables": {
     "messageContentItemId": "[js:uuid()]",
     "now": "[js: new Date().toISOString()]"
   },
   "steps": [
-    {
-      "name": "content",
-      "data": [
-        {
-          "ContentItemId": "[js: variables('messageContentItemId')]",
-          "ContentType": "Message",
-          "DisplayText": "Message",
-          "Latest": true,
-          "Published": true,
-          "ModifiedUtc": "[js: variables('now')]",
-          "PublishedUtc": "[js: variables('now')]",
-          "CreatedUtc": "[js: variables('now')]",
-          "Owner": "[js: parameters('AdminUserId')]",
-          "Author": "[js: parameters('AdminUsername')]",
-          "Message": {},
-          "TitlePart": {
-            "Title": "[locale en]This text contain a colon ':' symbol[/locale][locale fr]Ce texte contient un symbole du côlon ':'[/locale]"
-          }
-        }
-      ]
-    },
     {
       "name": "ContentDefinition",
       "ContentTypes": [
@@ -60,6 +39,27 @@
               }
             }
           ]
+        }
+      ]
+    },
+    {
+      "name": "content",
+      "data": [
+        {
+          "ContentItemId": "[js: variables('messageContentItemId')]",
+          "ContentType": "Message",
+          "DisplayText": "Message",
+          "Latest": true,
+          "Published": true,
+          "ModifiedUtc": "[js: variables('now')]",
+          "PublishedUtc": "[js: variables('now')]",
+          "CreatedUtc": "[js: variables('now')]",
+          "Owner": "[js: parameters('AdminUserId')]",
+          "Author": "[js: parameters('AdminUsername')]",
+          "Message": {},
+          "TitlePart": {
+            "Title": "[locale en]This text contain a colon ':' symbol[/locale][locale fr]Ce texte contient un symbole du côlon ':'[/locale]"
+          }
         }
       ]
     }
