@@ -14763,6 +14763,8 @@
     top: 0px !important; }
   :root[data-theme='default'] .CodeMirror pre {
     line-height: 1.25; }
+  [dir]:root[data-theme='default'] .CodeMirror pre {
+    margin-bottom: 0; }
   [dir=ltr]:root[data-theme='default'] .CodeMirror pre {
   padding-left: 7px; }
   [dir=rtl]:root[data-theme='default'] .CodeMirror pre {
@@ -14951,7 +14953,7 @@
     bottom: 0;
     width: 260px;
     color: #343a40;
-    font-family: "Segoe UI VSS (Regular)", "Segoe UI", "-apple-system", BlinkMacSystemFont, Roboto, "Helvetica Neue", Helvetica, Ubuntu, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"; }
+    font-family: "Segoe UI VSS (Regular)", "Segoe UI", "-apple-system", BlinkMacSystemFont, Roboto, "Helvetica Neue", Helvetica, Ubuntu, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"; }
   [dir]:root[data-theme='default'] body:not(.left-sidebar-compact) #ta-left-sidebar {
     background-color: #eaeaea; }
   [dir=ltr]:root[data-theme='default'] body:not(.left-sidebar-compact) #ta-left-sidebar {
@@ -15249,7 +15251,7 @@
     bottom: 0;
     width: 48px;
     color: #343a40;
-    font-family: "Segoe UI VSS (Regular)", "Segoe UI", "-apple-system", BlinkMacSystemFont, Roboto, "Helvetica Neue", Helvetica, Ubuntu, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"; }
+    font-family: "Segoe UI VSS (Regular)", "Segoe UI", "-apple-system", BlinkMacSystemFont, Roboto, "Helvetica Neue", Helvetica, Ubuntu, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"; }
   [dir]:root[data-theme='default'] .left-sidebar-compact #ta-left-sidebar {
     background-color: #eaeaea; }
   [dir=ltr]:root[data-theme='default'] .left-sidebar-compact #ta-left-sidebar {
@@ -30616,6 +30618,8 @@
     top: 0px !important; }
   :root[data-theme='darkmode'] .CodeMirror pre {
     line-height: 1.25; }
+  [dir]:root[data-theme='darkmode'] .CodeMirror pre {
+    margin-bottom: 0; }
   [dir=ltr]:root[data-theme='darkmode'] .CodeMirror pre {
   padding-left: 7px; }
   [dir=rtl]:root[data-theme='darkmode'] .CodeMirror pre {
@@ -30804,7 +30808,7 @@
     bottom: 0;
     width: 260px;
     color: #b5afa6;
-    font-family: "Segoe UI VSS (Regular)", "Segoe UI", "-apple-system", BlinkMacSystemFont, Roboto, "Helvetica Neue", Helvetica, Ubuntu, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"; }
+    font-family: "Segoe UI VSS (Regular)", "Segoe UI", "-apple-system", BlinkMacSystemFont, Roboto, "Helvetica Neue", Helvetica, Ubuntu, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"; }
   [dir]:root[data-theme='darkmode'] body:not(.left-sidebar-compact) #ta-left-sidebar {
     background-color: #242728; }
   [dir=ltr]:root[data-theme='darkmode'] body:not(.left-sidebar-compact) #ta-left-sidebar {
@@ -31102,7 +31106,7 @@
     bottom: 0;
     width: 48px;
     color: #b5afa6;
-    font-family: "Segoe UI VSS (Regular)", "Segoe UI", "-apple-system", BlinkMacSystemFont, Roboto, "Helvetica Neue", Helvetica, Ubuntu, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"; }
+    font-family: "Segoe UI VSS (Regular)", "Segoe UI", "-apple-system", BlinkMacSystemFont, Roboto, "Helvetica Neue", Helvetica, Ubuntu, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"; }
   [dir]:root[data-theme='darkmode'] .left-sidebar-compact #ta-left-sidebar {
     background-color: #242728; }
   [dir=ltr]:root[data-theme='darkmode'] .left-sidebar-compact #ta-left-sidebar {
