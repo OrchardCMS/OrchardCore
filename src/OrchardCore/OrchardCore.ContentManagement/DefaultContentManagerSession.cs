@@ -6,7 +6,6 @@ namespace OrchardCore.ContentManagement
     {
         private readonly Dictionary<int, ContentItem> _itemByVersionId = new Dictionary<int, ContentItem>();
         private readonly Dictionary<string, ContentItem> _publishedItemsById = new Dictionary<string, ContentItem>();
-        private readonly Dictionary<string, ContentItem> _removedItemsById = new Dictionary<string, ContentItem>();
 
         private bool _hasItems;
 
@@ -49,26 +48,10 @@ namespace OrchardCore.ContentManagement
             return _publishedItemsById.TryGetValue(id, out item);
         }
 
-        public void AddRemovedContentItem(ContentItem item)
-        {
-            _removedItemsById[item.ContentItemId] = item;
-        }
-
-        public bool IsRemovedContentItem(ContentItem item)
-        {
-            if (_removedItemsById.TryGetValue(item.ContentItemId, out var removed))
-            {
-                return item == removed;
-            }
-
-            return false;
-        }
-
         public void Clear()
         {
             _itemByVersionId.Clear();
             _publishedItemsById.Clear();
-            _removedItemsById.Clear();
             _hasItems = false;
         }
     }

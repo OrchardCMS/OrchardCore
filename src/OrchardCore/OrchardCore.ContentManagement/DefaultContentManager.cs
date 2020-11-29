@@ -617,8 +617,6 @@ namespace OrchardCore.ContentManagement
                 _session.Save(version);
             }
 
-            _contentManagerSession.AddRemovedContentItem(contentItem);
-
             await ReversedHandlers.InvokeAsync((handler, context) => handler.RemovedAsync(context), context, _logger);
         }
 

@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Autoroute.Models;
+using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Routing;
 using OrchardCore.Data;
 using YesSql.Indexes;
@@ -43,19 +44,40 @@ namespace OrchardCore.ContentManagement.Records
         public string JsonPath { get; set; }
     }
 
-    public class AutoroutePartIndexProvider : IndexProvider<ContentItem>, IScopedIndexProvider
+    public class AutoroutePartIndexProvider : ContentHandlerBase, IIndexProvider, IScopedIndexProvider
     {
         private readonly IServiceProvider _serviceProvider;
 
+        private readonly List<ContentItem> _removed = new List<ContentItem>();
+
         private IContentManager _contentManager;
-        private IContentManagerSession _contentManagerSession;
 
         public AutoroutePartIndexProvider(IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;
         }
 
-        public override void Describe(DescribeContext<ContentItem> context)
+        public string CollectionName { get; set; }
+        public Type ForType() => typeof(ContentItem);
+
+        public override Task RemovedAsync(RemoveContentContext context)
+        {
+            if (context.NoActiveVersionLeft)
+            {
+                var part = context.ContentItem.As<AutoroutePart>();
+
+                if (part != null)
+                {
+                    _removed.Add(context.ContentItem);
+                }
+            }
+
+            return Task.CompletedTask;
+        }
+
+        public void Describe(IDescriptor context) => Describe((DescribeContext<ContentItem>)context);
+
+        public void Describe(DescribeContext<ContentItem> context)
         {
             context.For<AutoroutePartIndex>()
                 .Map(async contentItem =>
@@ -67,11 +89,8 @@ namespace OrchardCore.ContentManagement.Records
                         return null;
                     }
 
-                    _contentManagerSession ??= _serviceProvider.GetRequiredService<IContentManagerSession>();
-                    var isRemovedContentItem = _contentManagerSession.IsRemovedContentItem(contentItem);
-
                     // If the related content item was removed, a record is still added.
-                    if (!contentItem.Published && !contentItem.Latest && !isRemovedContentItem)
+                    if (!contentItem.Published && !contentItem.Latest && !_removed.Contains(contentItem))
                     {
                         return null;
                     }
@@ -93,7 +112,7 @@ namespace OrchardCore.ContentManagement.Records
                         }
                     };
 
-                    if (!part.RouteContainedItems || part.Disabled || isRemovedContentItem)
+                    if (!part.RouteContainedItems || part.Disabled || _removed.Contains(contentItem))
                     {
                         return results;
                     }
