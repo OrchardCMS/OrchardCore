@@ -1,7 +1,9 @@
 using System;
-using Microsoft.Extensions.DependencyInjection;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using OrchardCore.ContentLocalization.Models;
 using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.Data;
 using YesSql.Indexes;
 
@@ -16,18 +18,36 @@ namespace OrchardCore.ContentLocalization.Records
         public bool Latest { get; set; }
     }
 
-    public class LocalizedContentItemIndexProvider : IndexProvider<ContentItem>, IScopedIndexProvider
+    public class LocalizedContentItemIndexProvider : ContentHandlerBase, IIndexProvider, IScopedIndexProvider
     {
         private readonly IServiceProvider _serviceProvider;
-
-        private IContentManagerSession _contentManagerSession;
+        private readonly List<ContentItem> _removed = new List<ContentItem>();
 
         public LocalizedContentItemIndexProvider(IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;
         }
 
-        public override void Describe(DescribeContext<ContentItem> context)
+        public override Task RemovedAsync(RemoveContentContext context)
+        {
+            if (context.NoActiveVersionLeft)
+            {
+                var part = context.ContentItem.As<LocalizationPart>();
+
+                if (part != null)
+                {
+                    _removed.Add(context.ContentItem);
+                }
+            }
+
+            return Task.CompletedTask;
+        }
+
+        public string CollectionName { get; set; }
+        public Type ForType() => typeof(ContentItem);
+        public void Describe(IDescriptor context) => Describe((DescribeContext<ContentItem>)context);
+
+        public void Describe(DescribeContext<ContentItem> context)
         {
             context.For<LocalizedContentItemIndex>()
                 .Map(contentItem =>
@@ -39,11 +59,8 @@ namespace OrchardCore.ContentLocalization.Records
                         return null;
                     }
 
-                    _contentManagerSession ??= _serviceProvider.GetRequiredService<IContentManagerSession>();
-                    var isRemovedContentItem = _contentManagerSession.IsRemovedContentItem(contentItem);
-
                     // If the related content item was removed, a record is still added.
-                    if (!contentItem.Published && !contentItem.Latest && !isRemovedContentItem)
+                    if (!contentItem.Published && !contentItem.Latest && !_removed.Contains(contentItem))
                     {
                         return null;
                     }
