@@ -27,7 +27,7 @@ namespace OrchardCore.Recipes
         [InlineData("recipe1", "[locale en]You have successfully registered![/locale][locale fr]Vous vous êtes inscrit avec succès![/locale]")]
         [InlineData("recipe2", "[1js: valiables('now')]")]
         [InlineData("recipe3", "js: valiables('now')")]
-        [InlineData("recipe4", "[locale en]This text contain a colon ':' symbol[/locale][locale fr]Ce texte contient un symbole du côlon ':'[/locale]")]
+        [InlineData("recipe4", "[locale en]This text contains a colon ':' symbol[/locale][locale fr]Ce texte contient un deux-points ':'[/locale]")]
         [InlineData("recipe5", "[sc text='some : text'/]")]
         public Task ShouldTrimValidScriptExpression(string recipeName, string expected)
         {
