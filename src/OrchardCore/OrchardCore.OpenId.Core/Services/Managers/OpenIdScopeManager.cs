@@ -1,7 +1,6 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OpenIddict.Abstractions;
@@ -15,11 +14,10 @@ namespace OrchardCore.OpenId.Services.Managers
     {
         public OpenIdScopeManager(
             IOpenIddictScopeCache<TScope> cache,
-            IStringLocalizer<OpenIddictResources> localizer,
             ILogger<OpenIddictScopeManager<TScope>> logger,
             IOptionsMonitor<OpenIddictCoreOptions> options,
             IOpenIddictScopeStoreResolver resolver)
-            : base(cache, localizer, logger, options, resolver)
+            : base(cache, logger, options, resolver)
         {
         }
 
@@ -47,7 +45,7 @@ namespace OrchardCore.OpenId.Services.Managers
         /// <summary>
         /// Retrieves the physical identifier associated with an authorization.
         /// </summary>
-        /// <param name="authorization">The authorization.</param>
+        /// <param name="scope">The scope.</param>
         /// <param name="cancellationToken">The <see cref="CancellationToken"/> that can be used to abort the operation.</param>
         /// <returns>
         /// A <see cref="ValueTask{TResult}"/> that can be used to monitor the asynchronous operation,

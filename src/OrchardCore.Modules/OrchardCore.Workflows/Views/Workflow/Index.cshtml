@@ -7,7 +7,7 @@
     int endIndex = startIndex + Model.Workflows.Count - 1;
 }
 <script asp-name="bootstrap-select" depends-on="admin" at="Foot"></script>
-<style asp-name="bootstrap-select"></style>
+<style asp-name="bootstrap-select" depends-on="admin"></style>
 
 <h1>@RenderTitleSegments(T["{0} Workflows", Model.WorkflowType.Name])</h1>
 <zone name="Breadcrumbs">
@@ -27,7 +27,7 @@
 
     <div class="form-group">
         <ul class="list-group with-checkbox">
-            <li class="list-group-item bg-light">
+            <li class="list-group-item bg-primary">
                 <div class="row">
                     <div class="form-group col mb-n1 text-nowrap">
                         <div class="custom-control custom-checkbox mt-2 mr-n2">
@@ -129,7 +129,7 @@
     <a class="btn btn-secondary" href="@Model.ReturnUrl">@T["Back"]</a>
 </div>
 
-<script at="Foot" type="text/javascript">
+<script at="Foot">
     $(function () {
         $('.selectpicker').selectpicker();
 

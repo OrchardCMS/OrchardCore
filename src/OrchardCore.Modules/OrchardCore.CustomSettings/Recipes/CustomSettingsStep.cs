@@ -12,11 +12,11 @@ namespace OrchardCore.CustomSettings.Recipes
     /// </summary>
     public class CustomSettingsStep : IRecipeStepHandler
     {
-        private readonly ISiteService _siteService;        
+        private readonly ISiteService _siteService;
 
         public CustomSettingsStep(ISiteService siteService)
         {
-            _siteService = siteService;            
+            _siteService = siteService;
         }
 
         public async Task ExecuteAsync(RecipeExecutionContext context)

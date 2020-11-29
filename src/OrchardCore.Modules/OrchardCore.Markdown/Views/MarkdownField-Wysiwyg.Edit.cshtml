@@ -41,7 +41,7 @@
                 $(document).trigger('contentpreview:render');
             });
 
-            @if(culture.IsRightToLeft())
+            @if (culture.IsRightToLeft())
             {
                 <text>$('.editor-toolbar').attr('style', 'direction:rtl;text-align:right');
                 $('.CodeMirror').attr('style', 'text-align:right');</text>

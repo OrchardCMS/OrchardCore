@@ -52,7 +52,7 @@ namespace OrchardCore.Queries.Sql
             var tokenizedQuery = await _liquidTemplateManager.RenderAsync(sqlQuery.Template, NullEncoder.Default);
 
             var connection = _dbConnectionAccessor.CreateConnection();
-            var dialect = SqlDialectFactory.For(connection);
+            var dialect = _session.Store.Configuration.SqlDialect;
 
             if (!SqlParser.TryParse(tokenizedQuery, dialect, _session.Store.Configuration.TablePrefix, parameters, out var rawQuery, out var messages))
             {

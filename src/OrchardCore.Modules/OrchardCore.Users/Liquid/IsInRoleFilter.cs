@@ -1,3 +1,5 @@
+using System;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Fluid;
@@ -25,7 +27,7 @@ namespace OrchardCore.Users.Liquid
 
             if (input.ToObjectValue() is ClaimsPrincipal principal)
             {
-                ret = principal.HasClaim(_roleClaimType, claimName);
+                ret = principal.Claims.Any(claim => claim.Type == _roleClaimType && claim.Value.Equals(claimName, StringComparison.OrdinalIgnoreCase)) == true;
             }
 
             return new ValueTask<FluidValue>(ret ? BooleanValue.True : BooleanValue.False);
