@@ -19381,7 +19381,7 @@
   [dir]:root[data-theme='darkmode'] .card {
     background-color: #181a1b;
     background-clip: border-box;
-    border: 1px solid rgba(0, 0, 0, 0.125);
+    border: 1px solid rgba(140, 130, 115, 0.13);
     border-radius: 0.25rem; }
     [dir=ltr]:root[data-theme='darkmode'] .card > hr {
   margin-right: 0;
@@ -19432,13 +19432,13 @@
     padding: 0.75rem 1.25rem;
     margin-bottom: 0;
     background-color: rgba(140, 130, 115, 0.13);
-    border-bottom: 1px solid rgba(0, 0, 0, 0.125); }
+    border-bottom: 1px solid rgba(140, 130, 115, 0.13); }
     [dir]:root[data-theme='darkmode'] .card-header:first-child {
       border-radius: calc(0.25rem - 1px) calc(0.25rem - 1px) 0 0; }
   [dir]:root[data-theme='darkmode'] .card-footer {
     padding: 0.75rem 1.25rem;
     background-color: rgba(140, 130, 115, 0.13);
-    border-top: 1px solid rgba(0, 0, 0, 0.125); }
+    border-top: 1px solid rgba(140, 130, 115, 0.13); }
     [dir]:root[data-theme='darkmode'] .card-footer:last-child {
       border-radius: 0 0 calc(0.25rem - 1px) calc(0.25rem - 1px); }
   [dir]:root[data-theme='darkmode'] .card-header-tabs {
