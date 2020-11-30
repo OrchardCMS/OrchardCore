@@ -58,21 +58,15 @@ namespace OrchardCore.Recipes
             });
         }
 
-        private Task<ShellScope> GetScopeAsync() => Task.FromResult(ShellScope.Context.CreateScope());
+        private static Task<ShellScope> GetScopeAsync() => Task.FromResult(ShellScope.Context.CreateScope());
 
-        private static ShellContext CreateShellContext()
+        private static ShellContext CreateShellContext() => new ShellContext()
         {
-            var settings = new ShellSettings() { Name = ShellHelper.DefaultShellName, State = TenantState.Running };
+            Settings = new ShellSettings() { Name = ShellHelper.DefaultShellName, State = TenantState.Running },
+            ServiceProvider = CreateServiceProvider(),
+        };
 
-            return new ShellContext()
-            {
-                Settings = new ShellSettings() { Name = ShellHelper.DefaultShellName, State = TenantState.Running },
-                ServiceProvider = CreateServiceProvider(settings),
-            };
-        }
-
-        private static IServiceProvider CreateServiceProvider(ShellSettings settings)
-            => new ServiceCollection().AddScripting().BuildServiceProvider();
+        private static IServiceProvider CreateServiceProvider() => new ServiceCollection().AddScripting().BuildServiceProvider();
 
         private IFileInfo GetRecipeFileInfo(string recipeName)
         {
@@ -86,7 +80,7 @@ namespace OrchardCore.Recipes
         {
             public RecipeExecutionContext Context { get; private set; }
 
-            Task IRecipeEventHandler.RecipeStepExecutedAsync(RecipeExecutionContext context)
+            public Task RecipeStepExecutedAsync(RecipeExecutionContext context)
             {
                 if (String.Equals(context.Name, "Content", StringComparison.OrdinalIgnoreCase))
                 {
