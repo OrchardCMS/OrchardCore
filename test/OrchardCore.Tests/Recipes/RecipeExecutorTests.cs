@@ -1,13 +1,13 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using OrchardCore.Environment.Extensions;
+using Moq;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Models;
@@ -16,7 +16,6 @@ using OrchardCore.Recipes.Events;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 using OrchardCore.Scripting;
-using OrchardCore.Tests.Stubs;
 using Xunit;
 
 namespace OrchardCore.Recipes
@@ -33,7 +32,20 @@ namespace OrchardCore.Recipes
         {
             return CreateShellContext().CreateScope().UsingAsync(async scope =>
             {
-                var recipeExecutor = scope.ServiceProvider.GetRequiredService<IRecipeExecutor>();
+                // Arrange
+                var shellHostMock = new Mock<IShellHost>();
+
+                shellHostMock.Setup(h => h.GetScopeAsync(It.IsAny<ShellSettings>()))
+                    .Returns(GetScopeAsync);
+
+                var recipeEventHandlers = new List<IRecipeEventHandler> { new RecipeEventHandler() };
+                var loggerMock = new Mock<ILogger<RecipeExecutor>>();
+
+                var recipeExecutor = new RecipeExecutor(
+                    shellHostMock.Object,
+                    scope.ShellContext.Settings,
+                    recipeEventHandlers,
+                    loggerMock.Object);
 
                 // Act
                 var executionId = Guid.NewGuid().ToString("n");
@@ -41,16 +53,12 @@ namespace OrchardCore.Recipes
                 await recipeExecutor.ExecuteAsync(executionId, recipeDescriptor, new object(), CancellationToken.None);
 
                 // Assert
-                var recipeStep = scope.ServiceProvider
-                    .GetServices<IRecipeEventHandler>()
-                    .OfType<RecipeEventHandler>()
-                    .FirstOrDefault()
-                    .Context
-                    .Step;
-
+                var recipeStep = (recipeEventHandlers.Single() as RecipeEventHandler).Context.Step;
                 Assert.Equal(expected, recipeStep.SelectToken("data.[0].TitlePart.Title").ToString());
             });
         }
+
+        private Task<ShellScope> GetScopeAsync() => Task.FromResult(ShellScope.Context.CreateScope());
 
         private static ShellContext CreateShellContext()
         {
@@ -64,42 +72,14 @@ namespace OrchardCore.Recipes
         }
 
         private static IServiceProvider CreateServiceProvider(ShellSettings settings)
-        {
-            var services = new ServiceCollection();
-
-            services.AddOrchardCore();
-
-            services.AddSingleton(settings)
-                .AddSingleton<IShellHost, StubShellHost>()
-                .AddSingleton<IHostEnvironment, StubHostingEnvironment>()
-                .AddScoped<IRecipeEventHandler, RecipeEventHandler>()
-                .AddTransient<IRecipeExecutor, RecipeExecutor>()
-                .AddScripting();
-
-            return services.BuildServiceProvider();
-        }
-
-        private class StubShellHost : ShellHost
-        {
-            public StubShellHost(
-                IShellSettingsManager shellSettingsManager,
-                IShellContextFactory shellContextFactory,
-                IRunningShellTable runningShellTable,
-                IExtensionManager extensionManager,
-                ILogger<ShellHost> logger)
-                : base (shellSettingsManager, shellContextFactory, runningShellTable, extensionManager, logger)
-            {
-            }
-
-            public new Task<ShellScope> GetScopeAsync(ShellSettings _) => Task.FromResult(ShellScope.Context.CreateScope());
-        }
+            => new ServiceCollection().AddScripting().BuildServiceProvider();
 
         private IFileInfo GetRecipeFileInfo(string recipeName)
         {
-            var testAssembly = GetType().GetTypeInfo().Assembly;
+            var assembly = GetType().GetTypeInfo().Assembly;
             var path = $"Recipes.RecipeFiles.{recipeName}.json";
 
-            return new EmbeddedFileProvider(testAssembly).GetFileInfo(path);
+            return new EmbeddedFileProvider(assembly).GetFileInfo(path);
         }
 
         private class RecipeEventHandler : IRecipeEventHandler
