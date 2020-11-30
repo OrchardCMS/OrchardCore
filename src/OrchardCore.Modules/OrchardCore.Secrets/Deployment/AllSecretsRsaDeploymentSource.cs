@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Security.Cryptography;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.WebUtilities;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Deployment;
@@ -40,9 +38,12 @@ namespace OrchardCore.Secrets.Deployment
                 return;
             }
 
-            // TODO so we need to determine this from the target. Possinly. 
-            // or maybe it is simpler if it is a settings.
-            var encryptionKey = await _encryptionService.InitializeAsync("rsa");
+            if (String.IsNullOrEmpty(result.SecretName))
+            {
+                throw new InvalidOperationException("You must set an rsa secret for the deployment target before exporting secrets");
+            }
+
+            var encryptionKey = await _encryptionService.InitializeAsync(result.SecretName);
 
             var secrets = new Dictionary<string, JObject>();
             foreach(var secretBinding in secretBindings)
@@ -61,7 +62,7 @@ namespace OrchardCore.Secrets.Deployment
 
                         var encrypted = await _encryptionService.EncryptAsync(plaintext);
 
-                        //[js: decrypt('thekey', 'jiouroe48fidsdsr0543r')]
+                        // [js: decrypt('theaesencryptionkey', 'theencryptedvalue')]
                         jObject.Add("Secret", $"[js: decrypt('{encryptionKey}, {encrypted}')]");
                     }
                 }

@@ -61,26 +61,18 @@ namespace OrchardCore.Secrets.Services
                 throw new InvalidOperationException("Encryptor not initialized.");
             }
 
-            return Task.FromResult(EncryptInternal(_encryptionKeyDescriptor, protectedData));
+            return EncryptInternalAsync(_encryptionKeyDescriptor, protectedData);
         }
 
-        // TODO can be async.
-        private string EncryptInternal(EncryptionKeyDescriptor keyWrapper, string plainText)
+        private async Task<string> EncryptInternalAsync(EncryptionKeyDescriptor keyWrapper, string plainText)
         {
             byte[] encrypted;
-            using (MemoryStream msEncrypt = new MemoryStream())
-            {
-                using (CryptoStream csEncrypt = new CryptoStream(msEncrypt, keyWrapper.Encryptor, CryptoStreamMode.Write))
-                {
-                    using (StreamWriter swEncrypt = new StreamWriter(csEncrypt))
-                    {
-                        //Write all data to the stream.
-                        swEncrypt.Write(plainText);
-                    }
-                    encrypted = msEncrypt.ToArray();
-                }
-            }
-
+            using var msEncrypt = new MemoryStream();
+            using var csEncrypt = new CryptoStream(msEncrypt, keyWrapper.Encryptor, CryptoStreamMode.Write);
+            using var swEncrypt = new StreamWriter(csEncrypt);
+            await swEncrypt.WriteAsync(plainText);
+            encrypted = msEncrypt.ToArray();
+                
             return Convert.ToBase64String(encrypted);
 
         }
