@@ -9,18 +9,16 @@ namespace OrchardCore.Recipes
     public class DecryptMethodProvider : IGlobalMethodProvider
     {
         private readonly GlobalMethod _globalMethod;
-        private readonly string _encryptionKey;
 
-        public DecryptMethodProvider(string encryptionKey)
+        public DecryptMethodProvider() 
         {
-            _encryptionKey = encryptionKey;
             _globalMethod = new GlobalMethod
             {
                 Name = "decrypt",
-                Method = serviceProvider => (Func<string, object>)(protectedData =>
+                Method = serviceProvider => (Func<string, string, object>)((aesKey, protectedData) =>
                 {
                     var decryptionService = serviceProvider.GetRequiredService<IDecryptionService>();
-                    return decryptionService.DecryptAsync(encryptionKey, protectedData).GetAwaiter().GetResult();
+                    return decryptionService.DecryptAsync(aesKey, protectedData).GetAwaiter().GetResult();
                 })
             };
         }

@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Security.Cryptography;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.WebUtilities;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Deployment;
@@ -12,13 +10,16 @@ namespace OrchardCore.Secrets.Deployment
 {
     public class AllSecretsRsaDeploymentSource : IDeploymentSource
     {
+        private readonly IEncryptionService _encryptionService;
         private readonly ISecretCoordinator _secretCoordinator;
         private readonly IEnumerable<ISecretFactory> _factories;
 
         public AllSecretsRsaDeploymentSource(
+            IEncryptionService encryptionService,
             ISecretCoordinator secretCoordinator,
             IEnumerable<ISecretFactory> factories)
         {
+            _encryptionService = encryptionService;
             _secretCoordinator = secretCoordinator;
             _factories = factories;
         }
@@ -30,12 +31,20 @@ namespace OrchardCore.Secrets.Deployment
                 return;
             }
 
-            if (result.EncryptionService == null)
+            var secretBindings = await _secretCoordinator.GetSecretBindingsAsync();
+
+            if (!secretBindings.Any())
             {
                 return;
             }
 
-            var secretBindings = await _secretCoordinator.GetSecretBindingsAsync();
+            if (String.IsNullOrEmpty(result.SecretName))
+            {
+                throw new InvalidOperationException("You must set an rsa secret for the deployment target before exporting secrets");
+            }
+
+            var encryptionKey = await _encryptionService.InitializeAsync(result.SecretName);
+
             var secrets = new Dictionary<string, JObject>();
             foreach(var secretBinding in secretBindings)
             {
@@ -51,10 +60,10 @@ namespace OrchardCore.Secrets.Deployment
                     {
                         var plaintext = JsonConvert.SerializeObject(secret);
 
-                        var encrypted = await result.EncryptionService.EncryptAsync(result.SecretName, plaintext);
+                        var encrypted = await _encryptionService.EncryptAsync(plaintext);
 
-                        //[js: decrypt('jiouroe48fidsdsr0543r')]
-                        jObject.Add("Secret", $"[js: decrypt('{encrypted}')]");
+                        // [js: decrypt('theaesencryptionkey', 'theencryptedvalue')]
+                        jObject.Add("Secret", $"[js: decrypt('{encryptionKey}, {encrypted}')]");
                     }
                 }
                 secrets.Add(secretBinding.Key, jObject);

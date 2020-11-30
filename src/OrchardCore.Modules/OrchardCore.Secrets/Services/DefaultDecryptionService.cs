@@ -1,71 +1,61 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.WebUtilities;
 using Newtonsoft.Json;
 
 namespace OrchardCore.Secrets.Services
 {
     public class DefaultDecryptionService : IDecryptionService, IDisposable
     {
-        private readonly ISecretService<RsaSecret> _rsaSecretService;
-        private readonly Dictionary<string, ICryptoTransform> _decryptors = new Dictionary<string, ICryptoTransform>();
+        private readonly ISecretService<RsaKeyPair> _rsaSecretService;
+        // TODO will also have to check for RsaPublicKey - for when they are stored without the private.
+        private ICryptoTransform _decryptor;
         private bool disposedValue;
 
-        public DefaultDecryptionService(ISecretService<RsaSecret> rsaSecretService)
+        public DefaultDecryptionService(ISecretService<RsaKeyPair> rsaSecretService)
         {
             _rsaSecretService = rsaSecretService;
         }
 
         public async Task<string> DecryptAsync(string encryptionKey, string protectedData)
         {
-            if (_decryptors.TryGetValue(encryptionKey, out var cachedDecryptor))
-            {
-                return Decrypt(cachedDecryptor, protectedData);
-            }
-
-            var bytes = WebEncoders.Base64UrlDecode(encryptionKey);
+            var bytes = Convert.FromBase64String(encryptionKey);
             var decoded = Encoding.UTF8.GetString(bytes);
 
             var descriptor = JsonConvert.DeserializeObject<HybridKeyDescriptor>(decoded);
 
-            using (var rsa = RSA.Create())
+            var secret = await _rsaSecretService.GetSecretAsync(descriptor.SecretName);            
+            if (secret == null)
             {
-                rsa.KeySize = 2048;
-                var secret = await _rsaSecretService.GetSecretAsync(descriptor.SecretName);
-
-                rsa.ImportRSAPrivateKey(WebEncoders.Base64UrlDecode(secret.PrivateKey), out _);
-
-                var key = rsa.Decrypt(WebEncoders.Base64UrlDecode(descriptor.Key), RSAEncryptionPadding.Pkcs1);
-                var iv = rsa.Decrypt(WebEncoders.Base64UrlDecode(descriptor.Iv), RSAEncryptionPadding.Pkcs1);
-
-                using (var aes = Aes.Create())
-                {
-                    var decryptor = aes.CreateDecryptor(key, iv);
-                    _decryptors.Add(encryptionKey, decryptor);
-
-                    return Decrypt(decryptor, protectedData);
-                }
+                throw new InvalidOperationException($"{descriptor.SecretName} secret not found");
             }
+
+            using var rsa = RSA.Create();
+            
+            rsa.KeySize = 2048;
+
+            rsa.ImportRSAPrivateKey(Convert.FromBase64String(secret.PrivateKey), out _);
+
+            var key = rsa.Decrypt(Convert.FromBase64String(descriptor.Key), RSAEncryptionPadding.Pkcs1);
+            var iv = rsa.Decrypt(Convert.FromBase64String(descriptor.Iv), RSAEncryptionPadding.Pkcs1);
+
+            using var aes = Aes.Create();
+                
+            _decryptor = aes.CreateDecryptor(key, iv);
+
+            return await DecryptInternalAsync(_decryptor, protectedData);
         }
 
-        private string Decrypt(ICryptoTransform decryptor, string protectedData)
+        private async Task<string> DecryptInternalAsync(ICryptoTransform decryptor, string protectedData)
         {
-            var protectedBytes = WebEncoders.Base64UrlDecode(protectedData);
+            var protectedBytes = Convert.FromBase64String(protectedData);
             string plaintext = null;
-            using (MemoryStream msDecrypt = new MemoryStream(protectedBytes))
-            {
-                using (CryptoStream csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Read))
-                {
-                    using (StreamReader srDecrypt = new StreamReader(csDecrypt))
-                    {
-                        plaintext = srDecrypt.ReadToEnd();
-                    }
-                }
-            }
+            using var msDecrypt = new MemoryStream(protectedBytes);
+            using var csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Read);
+            using var srDecrypt = new StreamReader(csDecrypt);
+            plaintext = await srDecrypt.ReadToEndAsync();
 
             return plaintext;
         }
@@ -76,10 +66,7 @@ namespace OrchardCore.Secrets.Services
             {
                 if (disposing)
                 {
-                    foreach(var decryptor in _decryptors)
-                    {
-                        decryptor.Value.Dispose();
-                    }
+                    _decryptor?.Dispose();
                 }
 
                 disposedValue = true;

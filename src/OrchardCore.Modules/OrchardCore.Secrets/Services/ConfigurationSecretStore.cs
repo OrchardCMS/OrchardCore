@@ -26,6 +26,11 @@ namespace OrchardCore.Secrets.Services
 
         public Task<Secret> GetSecretAsync(string key, Type type)
         {
+            if (!typeof(Secret).IsAssignableFrom(type))
+            {
+                throw new ArgumentException("The type must implement " + nameof(Secret));
+            }    
+
             return Task.FromResult(_shellConfiguration.GetSection($"OrchardCore_Secrets:{key}").Get(type) as Secret);
         }
 
@@ -38,6 +43,5 @@ namespace OrchardCore.Secrets.Services
         {
             throw new NotSupportedException("The Configuration Secret Store is ReadOnly");
         }
-
     }
 }

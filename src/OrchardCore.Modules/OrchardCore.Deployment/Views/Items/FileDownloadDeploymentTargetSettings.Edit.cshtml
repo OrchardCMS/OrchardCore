@@ -1,0 +1,10 @@
+@model FileDownloadDeploymentTargetSettingsViewModel
+
+<div class="form-group" asp-validation-class-for="RsaSecret">
+    <div class="w-100 w-md-50">
+        <label asp-for="RsaSecret">@T["Password secret"]</label>
+        @await Component.InvokeAsync("SelectSecret", new { types = new[] { "RsaKeyPairSecret" }, selectedSecret = Model.RsaSecret, htmlName = Html.NameFor(m => m.RsaSecret) })
+        <span asp-validation-for="RsaSecret"></span>
+    </div>
+<span class="hint">@T["The name of the secret to use when encrypted exports."]</span>
+</div>

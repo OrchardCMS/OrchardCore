@@ -28,6 +28,11 @@ namespace OrchardCore.Secrets.Services
 
         public async Task<Secret> GetSecretAsync(string key, Type type)
         {
+            if (!typeof(Secret).IsAssignableFrom(type))
+            {
+                throw new ArgumentException("The type must implement " + nameof(Secret));
+            }    
+
             var secretsDocument = await _manager.GetSecretsDocumentAsync();
             if (secretsDocument.Secrets.TryGetValue(key, out var documentSecret))
             {

@@ -8,11 +8,13 @@ using Microsoft.AspNetCore.Mvc;
 using OrchardCore.Admin;
 using OrchardCore.Deployment.Core.Mvc;
 using OrchardCore.Deployment.Core.Services;
+using OrchardCore.Deployment.Models;
 using OrchardCore.Deployment.Services;
 using OrchardCore.Deployment.Steps;
+using OrchardCore.Entities;
 using OrchardCore.Mvc.Utilities;
 using OrchardCore.Recipes.Models;
-using OrchardCore.Secrets;
+using OrchardCore.Settings;
 using YesSql;
 
 namespace OrchardCore.Deployment.Controllers
@@ -23,18 +25,18 @@ namespace OrchardCore.Deployment.Controllers
         private readonly IDeploymentManager _deploymentManager;
         private readonly IAuthorizationService _authorizationService;
         private readonly ISession _session;
-        private readonly IEncryptionService _encryptionService;
+        private readonly ISiteService _siteService;
 
         public ExportFileController(
             IAuthorizationService authorizationService,
             ISession session,
             IDeploymentManager deploymentManager,
-            IEncryptionService encryptionService)
+            ISiteService siteService)
         {
             _authorizationService = authorizationService;
             _deploymentManager = deploymentManager;
             _session = session;
-            _encryptionService = encryptionService;
+            _siteService = siteService;
         }
 
         [HttpPost]
@@ -77,9 +79,9 @@ namespace OrchardCore.Deployment.Controllers
                     recipeDescriptor.Tags = (recipeFileDeploymentStep.Tags ?? "").Split(',', StringSplitOptions.RemoveEmptyEntries);
                 }
 
-                // TODO this comes from a setting.
+                var siteSettings = await _siteService.GetSiteSettingsAsync();
 
-                var deploymentPlanResult = new DeploymentPlanResult(fileBuilder, recipeDescriptor, _encryptionService, "rsa");
+                var deploymentPlanResult = new DeploymentPlanResult(fileBuilder, recipeDescriptor, siteSettings.As<FileDownloadDeploymentTargetSettings>().RsaSecret );
                 await _deploymentManager.ExecuteDeploymentPlanAsync(deploymentPlan, deploymentPlanResult);
                 ZipFile.CreateFromDirectory(fileBuilder.Folder, archiveFileName);
             }

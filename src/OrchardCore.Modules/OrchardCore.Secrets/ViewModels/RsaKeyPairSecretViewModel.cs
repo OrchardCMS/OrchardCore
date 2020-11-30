@@ -4,7 +4,7 @@ using OrchardCore.DisplayManagement.Handlers;
 
 namespace OrchardCore.Secrets.ViewModels
 {
-    public class RsaSecretViewModel
+    public class RsaKeyPairSecretViewModel
     {
         public string PublicKey { get; set; }
         public string PrivateKey { get; set; }

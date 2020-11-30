@@ -1,6 +1,6 @@
+using System;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.WebUtilities;
 using Moq;
 using OrchardCore.Secrets;
 using OrchardCore.Secrets.Services;
@@ -16,23 +16,23 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Secrets
             // This needs to be a better key.
             using (var rsa = RSA.Create())
             {
-                var rsaSecret = new RsaSecret()
+                var rsaKeyPair = new RsaKeyPair()
                 {
-                    PublicKey = WebEncoders.Base64UrlEncode(rsa.ExportSubjectPublicKeyInfo()),
-                    PrivateKey = WebEncoders.Base64UrlEncode(rsa.ExportRSAPrivateKey())
+                    PublicKey = Convert.ToBase64String(rsa.ExportSubjectPublicKeyInfo()),
+                    PrivateKey = Convert.ToBase64String(rsa.ExportRSAPrivateKey())
                 };
 
-                var secretService = Mock.Of<ISecretService<RsaSecret>>();
+                var secretService = Mock.Of<ISecretService<RsaKeyPair>>();
 
-                Mock.Get(secretService).Setup(s => s.GetSecretAsync("rsa")).ReturnsAsync(rsaSecret);
+                Mock.Get(secretService).Setup(s => s.GetSecretAsync("rsa")).ReturnsAsync(rsaKeyPair);
 
                 using (var encryptionService = new DefaultEncryptionService(secretService))
                 {
-                    var encrypted = await encryptionService.EncryptAsync("rsa", "foo");
-                    var key = encryptionService.GetKey("rsa");
+                    var aesKey = await encryptionService.InitializeAsync("rsa");
+                    var encrypted = await encryptionService.EncryptAsync("foo");
                     using (var decryptionService = new DefaultDecryptionService(secretService))
                     {
-                        var decrypted = await decryptionService.DecryptAsync(key, encrypted);
+                        var decrypted = await decryptionService.DecryptAsync(aesKey, encrypted);
                         Assert.Equal("foo", decrypted);
                     }
                 }
