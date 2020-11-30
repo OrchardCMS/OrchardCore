@@ -3,29 +3,19 @@ using Microsoft.AspNetCore.WebUtilities;
 
 namespace OrchardCore.Secrets
 {
-    public class RsaSecret : Secret
+    public class RsaKeyPair : RsaPublicKeySecret
     {
-        public string PublicKey { get; set; }
         public string PrivateKey { get; set; }
     }
 
-    public static class RsaSecretExtensions
+    public static class RsaKeyPairSecretExtensions
     {
-        public static byte[] PublicKeyAsBytes(this RsaSecret rsaSecret)
-        {
-            if (!String.IsNullOrEmpty(rsaSecret.PublicKey))
-            {
-                return WebEncoders.Base64UrlDecode(rsaSecret.PublicKey);
-            }
 
-            return Array.Empty<byte>();
-        }
-
-        public static byte[] PrivateKeyAsBytes(this RsaSecret rsaSecret)
+        public static byte[] PrivateKeyAsBytes(this RsaKeyPair rsaKeyPair)
         {
-            if (!String.IsNullOrEmpty(rsaSecret.PrivateKey))
+            if (!String.IsNullOrEmpty(rsaKeyPair.PrivateKey))
             {
-                return WebEncoders.Base64UrlDecode(rsaSecret.PrivateKey);
+                return WebEncoders.Base64UrlDecode(rsaKeyPair.PrivateKey);
             }
 
             return Array.Empty<byte>();

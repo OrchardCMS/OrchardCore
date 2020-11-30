@@ -13,23 +13,23 @@ using OrchardCore.Secrets.ViewModels;
 
 namespace OrchardCore.Secrets.Drivers
 {
-    public class RsaSecretDisplayDriver : DisplayDriver<Secret, RsaSecret>
+    public class RsaKeyPairSecretDisplayDriver : DisplayDriver<Secret, RsaKeyPair>
     {
         private readonly IStringLocalizer S;
 
-        public RsaSecretDisplayDriver(IStringLocalizer<TestSecretDisplayDriver> stringLocalizer)
+        public RsaKeyPairSecretDisplayDriver(IStringLocalizer<RsaKeyPairSecretDisplayDriver> stringLocalizer)
         {
             S = stringLocalizer;
         }
 
-        public override IDisplayResult Display(RsaSecret secret)
+        public override IDisplayResult Display(RsaKeyPair secret)
         {
-            return View("RsaSecret_Fields_Thumbnail", secret).Location("Thumbnail", "Content");
+            return View("RsaKeyPairSecret_Fields_Thumbnail", secret).Location("Thumbnail", "Content");
         }
 
-        public override Task<IDisplayResult> EditAsync(RsaSecret secret, BuildEditorContext context)
+        public override Task<IDisplayResult> EditAsync(RsaKeyPair secret, BuildEditorContext context)
         {
-            return Task.FromResult<IDisplayResult>(Initialize<RsaSecretViewModel>("RsaSecret_Fields_Edit", model =>
+            return Task.FromResult<IDisplayResult>(Initialize<RsaKeyPairSecretViewModel>("RsaKeyPairSecret_Fields_Edit", model =>
             {
                 // When this is new generate
                 if (context.IsNew)
@@ -61,7 +61,7 @@ namespace OrchardCore.Secrets.Drivers
                     model.PublicKey = secret.PublicKey;
 
                     // TODO remove here for testing
-                    model.PrivateKey = secret.PrivateKey;
+                    // model.PrivateKey = secret.PrivateKey;
                     using (var rsa = RSA.Create())
                     {
                         model.NewPublicKey = WebEncoders.Base64UrlEncode(rsa.ExportSubjectPublicKeyInfo());
@@ -73,9 +73,9 @@ namespace OrchardCore.Secrets.Drivers
             }).Location("Content"));
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(RsaSecret secret, UpdateEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(RsaKeyPair secret, UpdateEditorContext context)
         {
-            var model = new RsaSecretViewModel();
+            var model = new RsaKeyPairSecretViewModel();
 
             if (await context.Updater.TryUpdateModelAsync(model, Prefix))
             {
@@ -88,13 +88,14 @@ namespace OrchardCore.Secrets.Drivers
                 {
                     secret.PublicKey = model.PublicKey;
                     secret.PrivateKey = model.PrivateKey;
-
                 }
-                else if (model.CycleKey)
+
+                if (model.CycleKey)
                 {
                     secret.PublicKey = model.NewPublicKey;
                     secret.PrivateKey = model.NewPrivateKey;
                 }
+
                 try
                 {
                     using (var rsa = RSA.Create())
@@ -104,7 +105,14 @@ namespace OrchardCore.Secrets.Drivers
                 }
                 catch (CryptographicException)
                 {
-                    // context.Updater.ModelState.AddModelError(Prefix, nameof(model.PrivateKey), S["The private key cannot be decoded."]);
+                    if (context.IsNew)
+                    {
+                        context.Updater.ModelState.AddModelError(Prefix, nameof(model.PrivateKey), S["The private key cannot be decoded."]);
+                    }
+                    else
+                    {
+                        context.Updater.ModelState.AddModelError(Prefix, nameof(model.NewPrivateKey), S["The private key cannot be decoded."]);
+                    }
                 }
 
                 try
@@ -116,18 +124,15 @@ namespace OrchardCore.Secrets.Drivers
                 }
                 catch (CryptographicException)
                 {
-                    // context.Updater.ModelState.AddModelError(Prefix, nameof(model.PublicKey), S["The public key cannot be decoded"]);
+                    if (context.IsNew)
+                    {
+                        context.Updater.ModelState.AddModelError(Prefix, nameof(model.PublicKey), S["The public key cannot be decoded"]);
+                    }
+                    else
+                    {
+                        context.Updater.ModelState.AddModelError(Prefix, nameof(model.NewPrivateKey), S["The public key cannot be decoded"]);
+                    }
                 }
-                // if (context.IsNew && String.IsNullOrEmpty(model.Text))
-                // {
-                //     context.Updater.ModelState.AddModelError(Prefix, nameof(model.Text), S["The authentication string is required"]);
-                // }
-
-                // // The authentication string is only updated when a new value has been provided.
-                // if (!String.IsNullOrEmpty(model.Text))
-                // {
-                //     secret.Text = model.Text;
-                // }
             }
 
             return await EditAsync(secret, context);

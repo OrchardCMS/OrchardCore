@@ -11,11 +11,11 @@ namespace OrchardCore.Secrets.Services
 {
     public class DefaultDecryptionService : IDecryptionService, IDisposable
     {
-        private readonly ISecretService<RsaSecret> _rsaSecretService;
+        private readonly ISecretService<RsaKeyPair> _rsaSecretService;
         private readonly Dictionary<string, ICryptoTransform> _decryptors = new Dictionary<string, ICryptoTransform>();
         private bool disposedValue;
 
-        public DefaultDecryptionService(ISecretService<RsaSecret> rsaSecretService)
+        public DefaultDecryptionService(ISecretService<RsaKeyPair> rsaSecretService)
         {
             _rsaSecretService = rsaSecretService;
         }
