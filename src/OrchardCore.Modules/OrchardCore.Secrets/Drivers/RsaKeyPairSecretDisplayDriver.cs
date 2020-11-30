@@ -3,7 +3,6 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
@@ -38,7 +37,7 @@ namespace OrchardCore.Secrets.Drivers
                     {
                         if (String.IsNullOrEmpty(secret.PublicKey))
                         {
-                            model.PublicKey = WebEncoders.Base64UrlEncode(rsa.ExportSubjectPublicKeyInfo());
+                            model.PublicKey = Convert.ToBase64String(rsa.ExportSubjectPublicKeyInfo());
                         }
                         else
                         {
@@ -47,7 +46,7 @@ namespace OrchardCore.Secrets.Drivers
                         }
                         if (String.IsNullOrEmpty(secret.PrivateKey))
                         {
-                            model.PrivateKey = WebEncoders.Base64UrlEncode(rsa.ExportRSAPrivateKey());
+                            model.PrivateKey = Convert.ToBase64String(rsa.ExportRSAPrivateKey());
                         }
                         else
                         {
@@ -64,8 +63,8 @@ namespace OrchardCore.Secrets.Drivers
                     // model.PrivateKey = secret.PrivateKey;
                     using (var rsa = RSA.Create())
                     {
-                        model.NewPublicKey = WebEncoders.Base64UrlEncode(rsa.ExportSubjectPublicKeyInfo());
-                        model.NewPrivateKey = WebEncoders.Base64UrlEncode(rsa.ExportRSAPrivateKey());
+                        model.NewPublicKey = Convert.ToBase64String(rsa.ExportSubjectPublicKeyInfo());
+                        model.NewPrivateKey = Convert.ToBase64String(rsa.ExportRSAPrivateKey());
                     }
                 }
 

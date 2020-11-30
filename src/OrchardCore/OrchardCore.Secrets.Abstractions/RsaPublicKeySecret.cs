@@ -1,5 +1,4 @@
 using System;
-using Microsoft.AspNetCore.WebUtilities;
 
 namespace OrchardCore.Secrets
 {
@@ -14,7 +13,7 @@ namespace OrchardCore.Secrets
         {
             if (!String.IsNullOrEmpty(rsaPublickKeySecret.PublicKey))
             {
-                return WebEncoders.Base64UrlDecode(rsaPublickKeySecret.PublicKey);
+                return Convert.FromBase64String(rsaPublickKeySecret.PublicKey);
             }
 
             return Array.Empty<byte>();

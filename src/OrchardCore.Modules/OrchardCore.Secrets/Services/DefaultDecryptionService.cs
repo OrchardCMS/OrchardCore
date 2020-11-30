@@ -1,10 +1,8 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.WebUtilities;
 using Newtonsoft.Json;
 
 namespace OrchardCore.Secrets.Services
@@ -22,7 +20,7 @@ namespace OrchardCore.Secrets.Services
 
         public async Task<string> DecryptAsync(string encryptionKey, string protectedData)
         {
-            var bytes = WebEncoders.Base64UrlDecode(encryptionKey);
+            var bytes = Convert.FromBase64String(encryptionKey);
             var decoded = Encoding.UTF8.GetString(bytes);
 
             var descriptor = JsonConvert.DeserializeObject<HybridKeyDescriptor>(decoded);
@@ -32,10 +30,10 @@ namespace OrchardCore.Secrets.Services
                 rsa.KeySize = 2048;
                 var secret = await _rsaSecretService.GetSecretAsync(descriptor.SecretName);
 
-                rsa.ImportRSAPrivateKey(WebEncoders.Base64UrlDecode(secret.PrivateKey), out _);
+                rsa.ImportRSAPrivateKey(Convert.FromBase64String(secret.PrivateKey), out _);
 
-                var key = rsa.Decrypt(WebEncoders.Base64UrlDecode(descriptor.Key), RSAEncryptionPadding.Pkcs1);
-                var iv = rsa.Decrypt(WebEncoders.Base64UrlDecode(descriptor.Iv), RSAEncryptionPadding.Pkcs1);
+                var key = rsa.Decrypt(Convert.FromBase64String(descriptor.Key), RSAEncryptionPadding.Pkcs1);
+                var iv = rsa.Decrypt(Convert.FromBase64String(descriptor.Iv), RSAEncryptionPadding.Pkcs1);
 
                 using (var aes = Aes.Create())
                 {
@@ -48,7 +46,7 @@ namespace OrchardCore.Secrets.Services
 
         private string DecryptInternal(ICryptoTransform decryptor, string protectedData)
         {
-            var protectedBytes = WebEncoders.Base64UrlDecode(protectedData);
+            var protectedBytes = Convert.FromBase64String(protectedData);
             string plaintext = null;
             using (MemoryStream msDecrypt = new MemoryStream(protectedBytes))
             {

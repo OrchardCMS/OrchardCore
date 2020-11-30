@@ -1,6 +1,6 @@
+using System;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.WebUtilities;
 using Moq;
 using OrchardCore.Secrets;
 using OrchardCore.Secrets.Services;
@@ -18,8 +18,8 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Secrets
             {
                 var rsaKeyPair = new RsaKeyPair()
                 {
-                    PublicKey = WebEncoders.Base64UrlEncode(rsa.ExportSubjectPublicKeyInfo()),
-                    PrivateKey = WebEncoders.Base64UrlEncode(rsa.ExportRSAPrivateKey())
+                    PublicKey = Convert.ToBase64String(rsa.ExportSubjectPublicKeyInfo()),
+                    PrivateKey = Convert.ToBase64String(rsa.ExportRSAPrivateKey())
                 };
 
                 var secretService = Mock.Of<ISecretService<RsaKeyPair>>();

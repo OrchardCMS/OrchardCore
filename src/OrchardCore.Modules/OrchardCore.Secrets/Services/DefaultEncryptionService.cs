@@ -1,10 +1,8 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.WebUtilities;
 using Newtonsoft.Json;
 
 namespace OrchardCore.Secrets.Services
@@ -45,11 +43,11 @@ namespace OrchardCore.Secrets.Services
             var descriptor = new HybridKeyDescriptor
             {
                 SecretName = secretName,
-                Key = WebEncoders.Base64UrlEncode(key),
-                Iv = WebEncoders.Base64UrlEncode(iv)
+                Key = Convert.ToBase64String(key),
+                Iv = Convert.ToBase64String(iv)
             };
             var serialized = JsonConvert.SerializeObject(descriptor);
-            var encoded = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(serialized));
+            var encoded = Convert.ToBase64String(Encoding.UTF8.GetBytes(serialized));
 
             _encryptionKeyDescriptor = keyDescriptor;
 
@@ -83,8 +81,7 @@ namespace OrchardCore.Secrets.Services
                 }
             }
 
-            // TODO we shouldn't use weburlencoding, just base64.
-            return WebEncoders.Base64UrlEncode(encrypted);
+            return Convert.ToBase64String(encrypted);
 
         }
 
