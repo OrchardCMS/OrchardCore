@@ -102,7 +102,14 @@ namespace OrchardCore.Lucene.Controllers
             var siteSettings = await _siteService.GetSiteSettingsAsync();
             var pager = new Pager(pagerParameters, siteSettings.PageSize);
             var count = model.Indexes.Count();
-            var results = model.Indexes
+            var results = model.Indexes;
+
+            if (!string.IsNullOrWhiteSpace(model.Options.Search))
+            {
+                results = results.Where(q => q.Name.IndexOf(model.Options.Search, StringComparison.OrdinalIgnoreCase) >= 0);
+            }
+
+            results = results
                 .Skip(pager.GetStartIndex())
                 .Take(pager.PageSize).ToList();
 

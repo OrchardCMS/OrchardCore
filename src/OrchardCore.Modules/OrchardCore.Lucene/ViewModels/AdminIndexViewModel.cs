@@ -28,6 +28,8 @@ namespace OrchardCore.Lucene.ViewModels
 
         public ContentsBulkAction BulkAction { get; set; }
 
+        public string Search { get; set; }
+
         #region Lists to populate
 
         [BindNever]

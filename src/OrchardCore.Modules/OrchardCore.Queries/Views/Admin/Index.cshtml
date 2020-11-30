@@ -3,6 +3,7 @@
     int startIndex = (Model.Pager.Page - 1) * (Model.Pager.PageSize) + 1;
     int endIndex = startIndex + Model.Queries.Count - 1;
 }
+
 <h1>@RenderTitleSegments(T["Queries"])</h1>
 
 <form asp-action="Index" method="post">
@@ -15,6 +16,9 @@
                         <span class="input-group-text bg-secondary text-light">@T["Filter"]</span>
                     </div>
                     <input id="search-box" asp-for="Options.Search" class="form-control" placeholder="@T["Search"]" type="search" autofocus />
+                    <div class="input-group-append">
+                        <button type="submit" class="btn btn-sm btn-secondary">@T["Search"]</button>
+                    </div>
                 </div>
                 <div class="btn-group float-right">
                     <button type="button" class="btn btn-sm btn-secondary float-right create" role="button" data-toggle="modal" data-target="#modalAddQuery">@T["Add Query"]</button>

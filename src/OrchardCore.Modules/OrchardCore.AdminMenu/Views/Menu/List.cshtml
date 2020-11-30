@@ -3,27 +3,23 @@
 <style asp-src="~/OrchardCore.AdminMenu/Styles/admin-menu.min.css" debug-src="~/OrchardCore.AdminMenu/Styles/admin-menu.css" at="Head" depends-on="admin"></style>
 <script asp-src="~/OrchardCore.AdminMenu/Scripts/admin-menu.min.js" debug-src="~/OrchardCore.AdminMenu/Scripts/admin-menu.js" at="Foot" depends-on="admin"></script>
 
-<div class="row">
-    <div class="form-group col mb-n1">
-        <h1>@RenderTitleSegments(T["Admin Menus"])</h1>
-    </div>
-    <div class="form-group col mb-n1">
-        <div class="dropdown float-right order-md-1">
-            <a asp-route-action="Create" class="btn btn-primary float-right create" role="button">@T["Add Admin Menu"]</a>
-        </div>
-    </div>
-</div>
+<h1>@RenderTitleSegments(T["Admin Menus"])</h1>
 
 <form asp-action="List" method="get">
-    <div class="card mb-3">
+    <div class="card mb-3 position-sticky action-bar">
         <div class="card-body bg-primary p-3">
-            <div class="input-group input-group-sm w-lg-50">
-                <div class="input-group-prepend">
-                    <span class="input-group-text bg-secondary text-light">@T["Filter"]</span>
+            <div class="form-group mb-n1">
+                <div class="input-group input-group-sm w-lg-50 d-inline-flex">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text bg-secondary text-light">@T["Filter"]</span>
+                    </div>
+                    <input asp-for="Options.Search" class="form-control" placeholder="@T["Search"]" type="search" autofocus />
+                    <div class="input-group-append">
+                        <button type="submit" class="btn btn-sm btn-secondary">@T["Search"]</button>
+                    </div>
                 </div>
-                <input id="search-box" asp-for="Options.Search" class="form-control" placeholder="@T["Search"]" type="search" autofocus />
-                <div class="input-group-append">
-                    <button type="submit" class="btn btn-sm btn-secondary">@T["Search"]</button>
+                <div class="btn-group float-right">
+                    <a asp-route-action="Create" class="btn btn-sm btn-secondary float-right create" role="button">@T["Add Admin Menu"]</a>
                 </div>
             </div>
         </div>

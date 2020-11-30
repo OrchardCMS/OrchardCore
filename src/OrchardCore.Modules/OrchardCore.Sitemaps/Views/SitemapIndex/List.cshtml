@@ -10,15 +10,18 @@
 @* the form is necessary to generate the antiforgery token*@
 <form asp-action="List" method="post">
     <input type="submit" name="submit.Filter" id="submitFilter" class="d-none" />
-    <div class="row">
-        <div class="form-group col-xl-4 col-sm-6">
-            <div class="input-group input-group-sm filter-options">
-                <input asp-for="Options.Search" class="form-control" placeholder="@T["Search"]" type="search" autofocus />
-            </div>
-        </div>
-        <div class="form-group col-xl-8 col-sm-6">
-            <div class="btn-group float-right">
-                <a asp-route-action="Create" class="btn btn-primary float-right create">@T["Add Sitemap Index"]</a>
+    <div class="card mb-3 position-sticky action-bar">
+        <div class="card-body bg-primary p-3">
+            <div class="form-group mb-n1">
+                <div class="input-group input-group-sm w-lg-50 d-inline-flex">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text bg-secondary text-light">@T["Filter"]</span>
+                    </div>
+                    <input asp-for="Options.Search" class="form-control" placeholder="@T["Search"]" type="search" autofocus />
+                </div>
+                <div class="btn-group float-right">
+                    <a asp-route-action="Create" class="btn btn-sm btn-secondary float-right create" role="button">@T["Add Sitemap Index"]</a>
+                </div>
             </div>
         </div>
     </div>
@@ -43,7 +46,7 @@
                                 <button type="button" class="btn btn-danger dropdown-toggle dropdown-toggle-split" data-reference="parent" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                     <span class="sr-only">@T["Toggle Dropdown"]</span>
                                 </button>
-                                <div class="dropdown-menu">
+                                <div class="dropdown-menu dropdown-menu-right">
                                     <a asp-action="Toggle"
                                        asp-route-sitemapId="@entry.SitemapId"
                                        class="dropdown-item btn-sm" itemprop="UnsafeUrl">@(entry.Enabled ? T["Disable"] : T["Enable"])</a>
