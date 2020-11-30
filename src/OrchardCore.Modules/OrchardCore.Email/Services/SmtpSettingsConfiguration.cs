@@ -4,7 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Entities;
-using OrchardCore.Environment.Shell.Scope;
+using OrchardCore.Environment.Shell;
 using OrchardCore.Secrets;
 using OrchardCore.Settings;
 
@@ -14,18 +14,21 @@ namespace OrchardCore.Email.Services
     {
         private readonly ISiteService _site;
         private readonly IDataProtectionProvider _dataProtectionProvider;
-        private readonly ISecretService<TextSecret> _textSecretService;
+        private readonly IShellHost _shellHost;
+        private readonly ShellSettings _shellSettings;
         private readonly ILogger _logger;
 
         public SmtpSettingsConfiguration(
             ISiteService site,
             IDataProtectionProvider dataProtectionProvider,
-            ISecretService<TextSecret> textSecretService,
+            IShellHost shellHost,
+            ShellSettings shellSettings,
             ILogger<SmtpSettingsConfiguration> logger)
         {
             _site = site;
             _dataProtectionProvider = dataProtectionProvider;
-            _textSecretService = textSecretService;
+            _shellHost = shellHost;
+            _shellSettings = shellSettings;
             _logger = logger;
         }
 
@@ -46,10 +49,13 @@ namespace OrchardCore.Email.Services
             options.UseDefaultCredentials = settings.UseDefaultCredentials;
             options.UserName = settings.UserName;
 
-
-            if (!String.IsNullOrEmpty(settings.PasswordSecretKey))
+            if (!String.IsNullOrEmpty(settings.PasswordSecret))
             {
-                options.Password = _textSecretService.GetSecretAsync(settings.PasswordSecretKey).GetAwaiter().GetResult().Text;
+                var shellScope = _shellHost.GetScopeAsync(_shellSettings).GetAwaiter().GetResult();
+                shellScope.UsingAsync(async scope => {
+                    var textSecretService = scope.ServiceProvider.GetRequiredService<ISecretService<TextSecret>>();
+                    options.Password = (await textSecretService.GetSecretAsync(settings.PasswordSecret)).Text;
+                }).GetAwaiter().GetResult();
             }
             else if (!String.IsNullOrWhiteSpace(settings.Password))
             {

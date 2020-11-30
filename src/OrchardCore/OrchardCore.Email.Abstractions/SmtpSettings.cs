@@ -71,10 +71,10 @@ namespace OrchardCore.Email
         public string Password { get; set; }
 
         /// <summary>
-        /// Gets or sets the password secret key.
+        /// Gets or sets the password secret.
         /// When a secret key is provided, it overrides the <see cref="Password"/> value.
         /// </summary>
-        public string PasswordSecretKey { get; set; }
+        public string PasswordSecret { get; set; }
 
         /// <inheritdocs />
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)

@@ -59,6 +59,7 @@ namespace OrchardCore.Email.Drivers
                     model.UseDefaultCredentials = section.UseDefaultCredentials;
                     model.UserName = section.UserName;
                     model.Password = section.Password;
+                    model.PasswordSecret = section.PasswordSecret;
                 }).Location("Content:5").OnGroup(GroupId)
             };
 
@@ -88,6 +89,12 @@ namespace OrchardCore.Email.Drivers
                 if (string.IsNullOrWhiteSpace(section.Password))
                 {
                     section.Password = previousPassword;
+                }
+                else
+                {
+                    // encrypt the password
+                    var protector = _dataProtectionProvider.CreateProtector(nameof(SmtpSettingsConfiguration));
+                    section.Password = protector.Protect(section.Password);
                 }
 
                 // Release the tenant to apply the settings

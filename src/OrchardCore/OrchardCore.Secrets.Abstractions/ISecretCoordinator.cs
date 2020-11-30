@@ -11,6 +11,7 @@ namespace OrchardCore.Secrets
         Task UpdateSecretAsync(string key, SecretBinding secretBinding, Secret secret);
         Task RemoveSecretAsync(string key, string store);
         Task<Secret> GetSecretAsync(string key, Type type);
+        // TODO extension?
         Task<TSecret> GetSecretAsync<TSecret>(string key) where TSecret : Secret, new();
     }
 }
