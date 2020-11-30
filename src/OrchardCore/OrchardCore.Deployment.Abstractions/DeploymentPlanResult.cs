@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Recipes.Models;
-using OrchardCore.Secrets;
 
 namespace OrchardCore.Deployment
 {
@@ -14,10 +13,9 @@ namespace OrchardCore.Deployment
     /// </summary>
     public class DeploymentPlanResult
     {
-        public DeploymentPlanResult(IFileBuilder fileBuilder, RecipeDescriptor recipeDescriptor, IEncryptionService encryptionService = null, string secretName = null)
+        public DeploymentPlanResult(IFileBuilder fileBuilder, RecipeDescriptor recipeDescriptor,string secretName = null)
         {
             FileBuilder = fileBuilder;
-            EncryptionService = encryptionService;
             SecretName = secretName;
 
             Recipe = new JObject();
@@ -36,16 +34,9 @@ namespace OrchardCore.Deployment
         public IList<JObject> Steps { get; } = new List<JObject>();
         public IFileBuilder FileBuilder { get; }
         public string SecretName { get; }
-        public IEncryptionService EncryptionService { get; }
+
         public async Task FinalizeAsync()
         {
-            // Add the encryption key before steps.
-            // TODO add check that encryption key has been used.
-            if (!String.IsNullOrEmpty(SecretName))
-            {
-                Recipe["encryptionKey"] = EncryptionService.GetKey(SecretName);
-            }
-
             Recipe["steps"] = new JArray(Steps);
 
             // Add the recipe steps as its own file content

@@ -50,6 +50,7 @@ namespace OrchardCore.Recipes.Services
 
                 methodProviders.Add(new ParametersMethodProvider(environment));
                 methodProviders.Add(new ConfigurationMethodProvider(_shellSettings.ShellConfiguration));
+                methodProviders.Add(new DecryptMethodProvider());
 
                 var result = new RecipeResult { ExecutionId = executionId };
 
@@ -61,11 +62,11 @@ namespace OrchardCore.Recipes.Services
                     // Go to Steps, then iterate.
                     while (await reader.ReadAsync())
                     {
-                        if (reader.TokenType == JsonToken.PropertyName && (string)reader.Value == "encryptionKey")
-                        {
-                            var encryptionKey = await reader.ReadAsStringAsync();
-                            methodProviders.Add(new DecryptMethodProvider(encryptionKey));
-                        }
+                        // if (reader.TokenType == JsonToken.PropertyName && (string)reader.Value == "encryptionKey")
+                        // {
+                        //     // var encryptionKey = await reader.ReadAsStringAsync();
+                        //     methodProviders.Add(new DecryptMethodProvider());
+                        // }
 
                         if (reader.Path == "variables")
                         {

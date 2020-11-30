@@ -28,11 +28,11 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Secrets
 
                 using (var encryptionService = new DefaultEncryptionService(secretService))
                 {
-                    var encrypted = await encryptionService.EncryptAsync("rsa", "foo");
-                    var key = encryptionService.GetKey("rsa");
+                    var aesKey = await encryptionService.InitializeAsync("rsa");
+                    var encrypted = await encryptionService.EncryptAsync("foo");
                     using (var decryptionService = new DefaultDecryptionService(secretService))
                     {
-                        var decrypted = await decryptionService.DecryptAsync(key, encrypted);
+                        var decrypted = await decryptionService.DecryptAsync(aesKey, encrypted);
                         Assert.Equal("foo", decrypted);
                     }
                 }

@@ -12,13 +12,16 @@ namespace OrchardCore.Secrets.Deployment
 {
     public class AllSecretsRsaDeploymentSource : IDeploymentSource
     {
+        private readonly IEncryptionService _encryptionService;
         private readonly ISecretCoordinator _secretCoordinator;
         private readonly IEnumerable<ISecretFactory> _factories;
 
         public AllSecretsRsaDeploymentSource(
+            IEncryptionService encryptionService,
             ISecretCoordinator secretCoordinator,
             IEnumerable<ISecretFactory> factories)
         {
+            _encryptionService = encryptionService;
             _secretCoordinator = secretCoordinator;
             _factories = factories;
         }
@@ -30,12 +33,17 @@ namespace OrchardCore.Secrets.Deployment
                 return;
             }
 
-            if (result.EncryptionService == null)
+            var secretBindings = await _secretCoordinator.GetSecretBindingsAsync();
+
+            if (!secretBindings.Any())
             {
                 return;
             }
 
-            var secretBindings = await _secretCoordinator.GetSecretBindingsAsync();
+            // TODO so we need to determine this from the target. Possinly. 
+            // or maybe it is simpler if it is a settings.
+            var encryptionKey = await _encryptionService.InitializeAsync("rsa");
+
             var secrets = new Dictionary<string, JObject>();
             foreach(var secretBinding in secretBindings)
             {
@@ -51,10 +59,10 @@ namespace OrchardCore.Secrets.Deployment
                     {
                         var plaintext = JsonConvert.SerializeObject(secret);
 
-                        var encrypted = await result.EncryptionService.EncryptAsync(result.SecretName, plaintext);
+                        var encrypted = await _encryptionService.EncryptAsync(plaintext);
 
-                        //[js: decrypt('jiouroe48fidsdsr0543r')]
-                        jObject.Add("Secret", $"[js: decrypt('{encrypted}')]");
+                        //[js: decrypt('thekey', 'jiouroe48fidsdsr0543r')]
+                        jObject.Add("Secret", $"[js: decrypt('{encryptionKey}, {encrypted}')]");
                     }
                 }
                 secrets.Add(secretBinding.Key, jObject);

@@ -12,7 +12,7 @@ namespace OrchardCore.Secrets.Services
     public class DefaultEncryptionService : IEncryptionService, IDisposable
     {
         private readonly ISecretService<RsaKeyPair> _rsaSecretService;
-        private readonly Dictionary<string, EncryptionKeyDescriptor> _encryptors = new Dictionary<string, EncryptionKeyDescriptor>();
+        private EncryptionKeyDescriptor _encryptionKeyDescriptor;
         private bool _disposedValue;
 
         public DefaultEncryptionService(ISecretService<RsaKeyPair> rsaSecretService)
@@ -20,19 +20,15 @@ namespace OrchardCore.Secrets.Services
             _rsaSecretService = rsaSecretService;
         }
 
-        public async Task<string> EncryptAsync(string secretName, string protectedData)
+        public async Task<string> InitializeAsync(string secretName)
         {
-            if (_encryptors.TryGetValue(secretName, out var cachedDescriptor))
-            {
-                return Encrypt(cachedDescriptor, protectedData);
-            }
-
             var secret = await _rsaSecretService.GetSecretAsync(secretName);
             if (secret == null)
             {
                 throw new Exception("Secret not found " + secretName);
             }
 
+            // Don't assign descriptor until initialization complete.
             var keyDescriptor = new EncryptionKeyDescriptor();
             keyDescriptor.Rsa = RSA.Create();
             keyDescriptor.Rsa.KeySize = 2048;
@@ -42,34 +38,36 @@ namespace OrchardCore.Secrets.Services
             keyDescriptor.Aes = Aes.Create();
 
             // Create an encryptor to perform the stream transform.
-            keyDescriptor.Encryptor = keyDescriptor.Aes.CreateEncryptor(keyDescriptor.Aes .Key, keyDescriptor.Aes.IV);
-            _encryptors.Add(secretName, keyDescriptor);
+            keyDescriptor.Encryptor = keyDescriptor.Aes.CreateEncryptor(keyDescriptor.Aes.Key, keyDescriptor.Aes.IV);
 
-            return Encrypt(keyDescriptor, protectedData);
-
-        }
-        public string GetKey(string secretName)
-        {
-            if (_encryptors.TryGetValue(secretName, out var cachedDescriptor))
+            var key = keyDescriptor.Rsa.Encrypt(keyDescriptor.Aes.Key, RSAEncryptionPadding.Pkcs1);
+            var iv = keyDescriptor.Rsa.Encrypt(keyDescriptor.Aes.IV, RSAEncryptionPadding.Pkcs1);
+            var descriptor = new HybridKeyDescriptor
             {
-                var key = cachedDescriptor.Rsa.Encrypt(cachedDescriptor.Aes.Key, RSAEncryptionPadding.Pkcs1);
-                var iv = cachedDescriptor.Rsa.Encrypt(cachedDescriptor.Aes.IV, RSAEncryptionPadding.Pkcs1);
-                var descriptor = new HybridKeyDescriptor
-                {
-                    SecretName = secretName,
-                    Key = WebEncoders.Base64UrlEncode(key),
-                    Iv = WebEncoders.Base64UrlEncode(iv)
-                };
-                var serialized = JsonConvert.SerializeObject(descriptor);
+                SecretName = secretName,
+                Key = WebEncoders.Base64UrlEncode(key),
+                Iv = WebEncoders.Base64UrlEncode(iv)
+            };
+            var serialized = JsonConvert.SerializeObject(descriptor);
+            var encoded = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(serialized));
 
-                return WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(serialized));
+            _encryptionKeyDescriptor = keyDescriptor;
+
+            return encoded;
+        }
+
+        public Task<string> EncryptAsync(string protectedData)
+        {
+            if (_encryptionKeyDescriptor == null)
+            {
+                throw new InvalidOperationException("Encryptor not initialized.");
             }
 
-            throw new InvalidOperationException("Key not found. Encrypt some data before retriving key");
-
+            return Task.FromResult(EncryptInternal(_encryptionKeyDescriptor, protectedData));
         }
 
-        private string Encrypt(EncryptionKeyDescriptor keyWrapper, string plainText)
+        // TODO can be async.
+        private string EncryptInternal(EncryptionKeyDescriptor keyWrapper, string plainText)
         {
             byte[] encrypted;
             using (MemoryStream msEncrypt = new MemoryStream())
@@ -85,6 +83,7 @@ namespace OrchardCore.Secrets.Services
                 }
             }
 
+            // TODO we shouldn't use weburlencoding, just base64.
             return WebEncoders.Base64UrlEncode(encrypted);
 
         }
@@ -95,10 +94,7 @@ namespace OrchardCore.Secrets.Services
             {
                 if (disposing)
                 {
-                    foreach(var encryptor in _encryptors)
-                    {
-                        encryptor.Value.Dispose();
-                    }
+                    _encryptionKeyDescriptor?.Dispose();
                 }
 
                 _disposedValue = true;

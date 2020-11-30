@@ -4,7 +4,7 @@ namespace OrchardCore.Secrets
 {
     public interface IEncryptionService
     {
-        Task<string> EncryptAsync(string secretName, string plainText);
-        string GetKey(string secretName);
+        Task<string> EncryptAsync(string plainText);
+        Task<string> InitializeAsync(string secretName);
     }
 }

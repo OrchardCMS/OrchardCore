@@ -12,7 +12,7 @@ namespace OrchardCore.Secrets.Services
     public class DefaultDecryptionService : IDecryptionService, IDisposable
     {
         private readonly ISecretService<RsaKeyPair> _rsaSecretService;
-        private readonly Dictionary<string, ICryptoTransform> _decryptors = new Dictionary<string, ICryptoTransform>();
+        private ICryptoTransform _decryptor;
         private bool disposedValue;
 
         public DefaultDecryptionService(ISecretService<RsaKeyPair> rsaSecretService)
@@ -22,11 +22,6 @@ namespace OrchardCore.Secrets.Services
 
         public async Task<string> DecryptAsync(string encryptionKey, string protectedData)
         {
-            if (_decryptors.TryGetValue(encryptionKey, out var cachedDecryptor))
-            {
-                return Decrypt(cachedDecryptor, protectedData);
-            }
-
             var bytes = WebEncoders.Base64UrlDecode(encryptionKey);
             var decoded = Encoding.UTF8.GetString(bytes);
 
@@ -44,15 +39,14 @@ namespace OrchardCore.Secrets.Services
 
                 using (var aes = Aes.Create())
                 {
-                    var decryptor = aes.CreateDecryptor(key, iv);
-                    _decryptors.Add(encryptionKey, decryptor);
+                    _decryptor = aes.CreateDecryptor(key, iv);
 
-                    return Decrypt(decryptor, protectedData);
+                    return DecryptInternal(_decryptor, protectedData);
                 }
             }
         }
 
-        private string Decrypt(ICryptoTransform decryptor, string protectedData)
+        private string DecryptInternal(ICryptoTransform decryptor, string protectedData)
         {
             var protectedBytes = WebEncoders.Base64UrlDecode(protectedData);
             string plaintext = null;
@@ -76,10 +70,7 @@ namespace OrchardCore.Secrets.Services
             {
                 if (disposing)
                 {
-                    foreach(var decryptor in _decryptors)
-                    {
-                        decryptor.Value.Dispose();
-                    }
+                    _decryptor?.Dispose();
                 }
 
                 disposedValue = true;
