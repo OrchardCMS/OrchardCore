@@ -23,7 +23,7 @@
         </div>
         <div class="form-group col-xl-8 col-sm-6">
             <div class="btn-group float-right">
-                <a asp-action="EditProperties" asp-route-returnUrl="@FullRequestPath" class="btn btn-sm btn-primary" role="button">@T["Create Workflow Type"]</a>
+                <a asp-action="EditProperties" asp-route-returnUrl="@FullRequestPath" class="btn btn-sm btn-success" role="button">@T["Create Workflow"]</a>
             </div>
         </div>
     </div>
@@ -63,9 +63,9 @@
                     <div class="properties">
                         <div class="related">
                             <a asp-action="Edit" asp-route-id="@entry.WorkflowType.Id" asp-route-returnUrl="@FullRequestPath" class="btn btn-primary btn-sm">@T["Edit"]</a>
-                            <a asp-action="EditProperties" asp-route-id="@entry.WorkflowType.Id" asp-route-returnUrl="@FullRequestPath" class="btn btn-primary btn-sm">@T["Properties"]</a>
+                            <a asp-action="EditProperties" asp-route-id="@entry.WorkflowType.Id" asp-route-returnUrl="@FullRequestPath" class="btn btn-success btn-sm">@T["Properties"]</a>
                             <a asp-action="Delete" asp-route-id="@entry.WorkflowType.Id" class="btn btn-danger btn-sm" itemprop="RemoveUrl UnsafeUrl">@T["Delete"]</a>
-                            <a asp-action="Duplicate" asp-route-id="@entry.WorkflowType.Id" asp-route-returnUrl="@FullRequestPath" class="btn btn-primary btn-sm">@T["Duplicate"]</a>
+                            <a asp-action="Duplicate" asp-route-id="@entry.WorkflowType.Id" asp-route-returnUrl="@FullRequestPath" class="btn btn-warning btn-sm">@T["Duplicate"]</a>
                         </div>
 
                         <div class="custom-control custom-checkbox float-left">
@@ -91,7 +91,7 @@
         else
         {
             <li class="list-group-item">
-                <div class="alert alert-info" role="alert">
+                <div class="alert alert-info mb-1" role="alert">
                     @T["<strong>Nothing here!</strong> Your search returned no results."]
                 </div>
             </li>
