@@ -32,11 +32,11 @@ namespace OrchardCore.Autoroute
                 .Column<bool>("Latest")
             );
 
-            SchemaBuilder.AlterTable(nameof(AutoroutePartIndex), table => table
+            SchemaBuilder.AlterIndexTable<AutoroutePartIndex>(table => table
                 .CreateIndex("IDX_AutoroutePartIndex_ContentItemIds", "ContentItemId", "ContainedContentItemId")
             );
 
-            SchemaBuilder.AlterTable(nameof(AutoroutePartIndex), table => table
+            SchemaBuilder.AlterIndexTable<AutoroutePartIndex>(table => table
                 .CreateIndex("IDX_AutoroutePartIndex_State", "Published", "Latest")
             );
 
@@ -56,7 +56,7 @@ namespace OrchardCore.Autoroute
         // This code can be removed in a later version.
         public int UpdateFrom2()
         {
-            SchemaBuilder.AlterTable(nameof(AutoroutePartIndex), table => table
+            SchemaBuilder.AlterIndexTable<AutoroutePartIndex>(table => table
                 .CreateIndex("IDX_AutoroutePartIndex_Published", "Published")
             );
 
@@ -66,31 +66,31 @@ namespace OrchardCore.Autoroute
         // This code can be removed in a later version.
         public int UpdateFrom3()
         {
-            SchemaBuilder.AlterTable(nameof(AutoroutePartIndex), table => table
+            SchemaBuilder.AlterIndexTable<AutoroutePartIndex>(table => table
                 .AddColumn<string>("ContainedContentItemId", c => c.WithLength(26))
             );
 
-            SchemaBuilder.AlterTable(nameof(AutoroutePartIndex), table => table
+            SchemaBuilder.AlterIndexTable<AutoroutePartIndex>(table => table
                 .AddColumn<string>("JsonPath", c => c.Unlimited())
             );
 
-            SchemaBuilder.AlterTable(nameof(AutoroutePartIndex), table => table
+            SchemaBuilder.AlterIndexTable<AutoroutePartIndex>(table => table
                 .AddColumn<bool>("Latest", c => c.WithDefault(false))
             );
 
-            SchemaBuilder.AlterTable(nameof(AutoroutePartIndex), table => table
+            SchemaBuilder.AlterIndexTable<AutoroutePartIndex>(table => table
                 .DropIndex("IDX_AutoroutePartIndex_ContentItemId")
             );
 
-            SchemaBuilder.AlterTable(nameof(AutoroutePartIndex), table => table
+            SchemaBuilder.AlterIndexTable<AutoroutePartIndex>(table => table
                 .CreateIndex("IDX_AutoroutePartIndex_ContentItemIds", "ContentItemId", "ContainedContentItemId")
             );
 
-            SchemaBuilder.AlterTable(nameof(AutoroutePartIndex), table => table
+            SchemaBuilder.AlterIndexTable<AutoroutePartIndex>(table => table
                 .DropIndex("IDX_AutoroutePartIndex_Published")
             );
 
-            SchemaBuilder.AlterTable(nameof(AutoroutePartIndex), table => table
+            SchemaBuilder.AlterIndexTable<AutoroutePartIndex>(table => table
                 .CreateIndex("IDX_AutoroutePartIndex_State", "Published", "Latest")
             );
 
