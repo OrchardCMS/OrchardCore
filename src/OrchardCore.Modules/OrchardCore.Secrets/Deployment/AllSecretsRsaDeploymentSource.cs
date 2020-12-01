@@ -10,16 +10,16 @@ namespace OrchardCore.Secrets.Deployment
 {
     public class AllSecretsRsaDeploymentSource : IDeploymentSource
     {
-        private readonly IEncryptionService _encryptionService;
+        private readonly IEncryptionProvider _encryptionProvider;
         private readonly ISecretCoordinator _secretCoordinator;
         private readonly IEnumerable<ISecretFactory> _factories;
 
         public AllSecretsRsaDeploymentSource(
-            IEncryptionService encryptionService,
+            IEncryptionProvider encryptionProvider,
             ISecretCoordinator secretCoordinator,
             IEnumerable<ISecretFactory> factories)
         {
-            _encryptionService = encryptionService;
+            _encryptionProvider = encryptionProvider;
             _secretCoordinator = secretCoordinator;
             _factories = factories;
         }
@@ -43,7 +43,7 @@ namespace OrchardCore.Secrets.Deployment
                 throw new InvalidOperationException("You must set an rsa secret for the deployment target before exporting secrets");
             }
 
-            var encryptionKey = await _encryptionService.InitializeAsync(result.SecretName);
+            using var encryptor = await _encryptionProvider.CreateAsync(result.SecretName);
 
             var secrets = new Dictionary<string, JObject>();
             foreach(var secretBinding in secretBindings)
@@ -59,11 +59,11 @@ namespace OrchardCore.Secrets.Deployment
                     if (secret != null)
                     {
                         var plaintext = JsonConvert.SerializeObject(secret);
-
-                        var encrypted = await _encryptionService.EncryptAsync(plaintext);
+                        
+                        var encrypted = encryptor.Encrypt(plaintext);
 
                         // [js: decrypt('theaesencryptionkey', 'theencryptedvalue')]
-                        jObject.Add("Secret", $"[js: decrypt('{encryptionKey}, {encrypted}')]");
+                        jObject.Add("Secret", $"[js: decrypt('{encryptor.EncryptionKey}, {encrypted}')]");
                     }
                 }
                 secrets.Add(secretBinding.Key, jObject);

@@ -62,12 +62,6 @@ namespace OrchardCore.Recipes.Services
                     // Go to Steps, then iterate.
                     while (await reader.ReadAsync())
                     {
-                        // if (reader.TokenType == JsonToken.PropertyName && (string)reader.Value == "encryptionKey")
-                        // {
-                        //     // var encryptionKey = await reader.ReadAsStringAsync();
-                        //     methodProviders.Add(new DecryptMethodProvider());
-                        // }
-
                         if (reader.Path == "variables")
                         {
                             await reader.ReadAsync();
