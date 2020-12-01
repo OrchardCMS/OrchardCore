@@ -1,12 +1,16 @@
 @model AdminMenuListViewModel
+@{
+    int startIndex = (Model.Pager.Page - 1) * (Model.Pager.PageSize) + 1;
+    int endIndex = startIndex + Model.AdminMenu.Count - 1;
+}
 
 <style asp-src="~/OrchardCore.AdminMenu/Styles/admin-menu.min.css" debug-src="~/OrchardCore.AdminMenu/Styles/admin-menu.css" at="Head" depends-on="admin"></style>
 <script asp-src="~/OrchardCore.AdminMenu/Scripts/admin-menu.min.js" debug-src="~/OrchardCore.AdminMenu/Scripts/admin-menu.js" at="Foot" depends-on="admin"></script>
 
 <h1>@RenderTitleSegments(T["Admin Menus"])</h1>
 
-<form asp-action="List" method="get">
-    <div class="card mb-3 position-sticky action-bar">
+<form asp-action="List" method="get" class="position-sticky action-bar">
+    <div class="card mb-3">
         <div class="card-body bg-primary p-3">
             <div class="form-group mb-n1">
                 <div class="input-group input-group-sm w-lg-50 d-inline-flex">
@@ -32,6 +36,14 @@
     @if (Model.AdminMenu.Any())
     {
         <ul id="content-items-list-body" class="list-group">
+            <li class="list-group-item bg-primary">
+                <div class="row">
+                    <div class="form-group col-xl-4 mb-n1">
+                        <label id="items" for="select-all">@T.Plural(Model.AdminMenu.Count, "1 item", "{0} items")<span class="text-muted" title="@T["Items {0} to {1}", startIndex, endIndex]">@T.Plural((int)Model.Pager.TotalItemCount, " / {0} item in total", " / {0} items in total")</span></label>
+                        <label id="selected-items" class="text-muted" for="select-all"></label>
+                    </div>
+                </div>
+            </li>
             @foreach (var entry in Model.AdminMenu)
             {
                 <li class="list-group-item @(entry.AdminMenu.Enabled ? "" : "disabled-tree")">
@@ -60,11 +72,9 @@
     else
     {
         <div class="no-results alert alert-info" role="alert">
-            @T["<strong>Nothing here!</strong> Your search returned no results."]
+            @T["<strong>Nothing here!</strong> There are no menus for the moment."]
         </div>
     }
 </form>
 
-<div id="footer-pager" class="fade-in-pager">
-    @await DisplayAsync(Model.Pager)
-</div>
+@await DisplayAsync(Model.Pager)
