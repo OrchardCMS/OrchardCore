@@ -26,7 +26,7 @@ namespace OrchardCore.PublishLater
                 .Column<string>(nameof(PublishLaterPartIndex.ScheduledPublishUtc))
             );
 
-            SchemaBuilder.AlterTable(nameof(PublishLaterPartIndex), table => table
+            SchemaBuilder.AlterIndexTable<PublishLaterPartIndex>(table => table
                 .CreateIndex(
                     $"IDX_{nameof(PublishLaterPartIndex)}_{nameof(PublishLaterPartIndex.ScheduledPublishUtc)}",
                     nameof(PublishLaterPartIndex.ScheduledPublishUtc))
