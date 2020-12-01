@@ -31,40 +31,13 @@
                     '2.0': 'Très grande'
                 }
             },
-            nl: {
-                lineheight: 'Regelhoogte',
+            hu: {
+                lineheight: 'Line height',
                 lineheights: {
-                    '0.9': 'Klein',
-                    'normal': 'Normaal',
-                    '1.5': 'Groot',
-                    '2.0': 'Extra groot'
-                }
-            },
-            tr: {
-                lineheight: 'Satır yüksekliği',
-                lineheights: {
-                    '0.9': 'Küçük',
-                    'normal': 'Normal',
-                    '1.5': 'Büyük',
-                    '2.0': 'Çok Büyük'
-                }
-            },
-            zh_tw: {
-                lineheight: '文字間距',
-                lineheights: {
-                    '0.9': '小',
-                    'normal': '正常',
-                    '1.5': '大',
-                    '2.0': '特大'
-                }
-            },
-            pt_br: {
-                lineheight: 'Altura de linha',
-                lineheights: {
-                    '0.9': 'Pequena',
+                    '0.9': 'Small',
                     'normal': 'Regular',
-                    '1.5': 'Grande',
-                    '2.0': 'Extra grande'
+                    '1.5': 'Large',
+                    '2.0': 'Extra large'
                 }
             },
             it: {
@@ -83,6 +56,42 @@
                     'normal': '보통',
                     '1.5': '넓게',
                     '2.0': '아주 넓게'
+                }
+            },
+            nl: {
+                lineheight: 'Regelhoogte',
+                lineheights: {
+                    '0.9': 'Klein',
+                    'normal': 'Normaal',
+                    '1.5': 'Groot',
+                    '2.0': 'Extra groot'
+                }
+            },
+            pt_br: {
+                lineheight: 'Altura de linha',
+                lineheights: {
+                    '0.9': 'Pequena',
+                    'normal': 'Regular',
+                    '1.5': 'Grande',
+                    '2.0': 'Extra grande'
+                }
+            },
+            tr: {
+                lineheight: 'Satır yüksekliği',
+                lineheights: {
+                    '0.9': 'Küçük',
+                    'normal': 'Normal',
+                    '1.5': 'Büyük',
+                    '2.0': 'Çok Büyük'
+                }
+            },
+            zh_tw: {
+                lineheight: '文字間距',
+                lineheights: {
+                    '0.9': '小',
+                    'normal': '正常',
+                    '1.5': '大',
+                    '2.0': '特大'
                 }
             },
         }
