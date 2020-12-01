@@ -14762,7 +14762,8 @@
     z-index: 1000;
     top: 0px !important; }
   :root[data-theme='default'] .CodeMirror pre {
-    line-height: 1.25; }
+    line-height: 1.25;
+    overflow: unset; }
   [dir]:root[data-theme='default'] .CodeMirror pre {
     margin-bottom: 0; }
   [dir=ltr]:root[data-theme='default'] .CodeMirror pre {
@@ -30617,7 +30618,8 @@
     z-index: 1000;
     top: 0px !important; }
   :root[data-theme='darkmode'] .CodeMirror pre {
-    line-height: 1.25; }
+    line-height: 1.25;
+    overflow: unset; }
   [dir]:root[data-theme='darkmode'] .CodeMirror pre {
     margin-bottom: 0; }
   [dir=ltr]:root[data-theme='darkmode'] .CodeMirror pre {
