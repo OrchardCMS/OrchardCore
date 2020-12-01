@@ -1,7 +1,9 @@
 using System.Globalization;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using Microsoft.AspNetCore.Mvc;
 using OrchardCore.Sitemaps.Models;
+using OrchardCore.Mvc.Core.Utilities;
 
 namespace OrchardCore.Sitemaps.Builders
 {
@@ -37,8 +39,11 @@ namespace OrchardCore.Sitemaps.Builders
             if (string.IsNullOrEmpty(source.Url))
                 return false;
 
+            if(!(context.HostPrefix?? "").EndsWith("/") && !source.Url.StartsWith("/") && !source.Url.StartsWith("~"))
+                source.Url = "/" + source.Url;
+
             var loc = new XElement(Namespace + "loc");
-            loc.Add(source.Url);
+            loc.Add(context.UrlHelper.GetBaseUrl() + context.HostPrefix + context.UrlHelper.Content(source.Url));
             url.Add(loc);
             return true;
         }

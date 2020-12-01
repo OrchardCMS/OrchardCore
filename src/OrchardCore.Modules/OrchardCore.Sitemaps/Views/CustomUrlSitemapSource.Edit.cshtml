@@ -10,8 +10,9 @@
             <div class="card-body">
                 <div class="form-group" asp-validation-class-for="Url">
                     <label asp-for="Url">@T["Url"] </label>
-                    <input asp-for="Url" class="form-control" />
-                    <span class="hint">@T["The URL to add to the sitemap."]</span>
+                    <input asp-for="Url" class="form-control" autofocus />
+                    <span asp-validation-for="Url" class="text-danger">@T["The Url is required or have used a wrong format"]</span>
+                    <span class="hint">@T["The URL to add to the sitemap. ex. /path_to_something or ~/path/to/something"]</span>
                 </div>
                 <div class="form-group" asp-validation-class-for="ChangeFrequency">
                     <label asp-for="ChangeFrequency">@T["Change Frequency"] </label>

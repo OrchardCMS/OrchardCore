@@ -13,6 +13,7 @@ namespace OrchardCore.Sitemaps.ViewModels
         /// Gets and sets the custom url.
         /// </summary>
         [Required]
+        [RegularExpression(@"^~?\/[^?#]+(\?([^#]*))?(#(.*))?")]
         public string Url { get; set; }
 
         /// <summary>
