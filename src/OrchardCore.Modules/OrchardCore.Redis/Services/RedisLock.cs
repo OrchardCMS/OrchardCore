@@ -12,15 +12,15 @@ using StackExchange.Redis;
 namespace OrchardCore.Redis.Services
 {
     /// <summary>
-    /// This component is a tenant singleton which allows to acquire named locks for a given tenant.
-    /// This is a distributed version where locks are auto released after provided expiration times.
+    /// This component is a tenant singleton which allows to acquire distributed named locks for a given tenant.
     /// </summary>
     public class RedisLock : IDistributedLock
     {
-        private readonly string _hostName;
-        private readonly string _prefix;
         private readonly IRedisService _redis;
         private readonly ILogger _logger;
+
+        private readonly string _hostName;
+        private readonly string _prefix;
 
         public RedisLock(IRedisService redis, ShellSettings shellSettings, ILogger<RedisLock> logger)
         {
@@ -62,10 +62,9 @@ namespace OrchardCore.Redis.Services
                     {
                         await Task.Delay(GetDelay(++retries), cts.Token);
                     }
-
                     catch (TaskCanceledException)
                     {
-                        _logger.LogError("Fails to acquire the named lock '{LockName}' after the given timeout of '{Timeout}'.",
+                        _logger.LogWarning("Fails to acquire the named lock '{LockName}' after the given timeout of '{Timeout}'.",
                             _prefix + key, timeout.ToString());
                     }
                 }
@@ -85,7 +84,6 @@ namespace OrchardCore.Redis.Services
             {
                 return await _redis.Database.LockTakeAsync(_prefix + key, _hostName, expiry);
             }
-
             catch (Exception e)
             {
                 _logger.LogError(e, "Fails to acquire the named lock '{LockName}'.", _prefix + key);
@@ -105,7 +103,6 @@ namespace OrchardCore.Redis.Services
             {
                 await _redis.Database.LockReleaseAsync(_prefix + key, _hostName);
             }
-
             catch (Exception e)
             {
                 _logger.LogError(e, "Fails to release the named lock '{LockName}'.", _prefix + key);
@@ -118,7 +115,6 @@ namespace OrchardCore.Redis.Services
             {
                 _redis.Database.LockRelease(_prefix + key, _hostName, CommandFlags.FireAndForget);
             }
-
             catch (Exception e)
             {
                 _logger.LogError(e, "Fails to release the named lock '{LockName}'.", _prefix + key);
