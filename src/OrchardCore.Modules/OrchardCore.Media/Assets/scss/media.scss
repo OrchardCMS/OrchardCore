@@ -23,7 +23,7 @@
 
 :root[data-theme='darkmode'] {
     // media variables
-    @import "variables.scss";
+    @import "variables_dark.scss";
 
     // main basic layout 
     @import "main-layout.scss";
