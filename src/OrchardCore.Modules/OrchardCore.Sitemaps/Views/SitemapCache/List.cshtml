@@ -23,32 +23,38 @@
 <form asp-action="List">
     @* the form is necessary to generate and antiforgery token for the purge action *@
 
-    @if (Model.CachedFileNames.Any())
-    {
-        <ul id="cache-entries" class="list-group">
-            @for (var i = 0; i < Model.CachedFileNames.Length; i++)
-            {
-                <li class="list-group-item" data-cacheentry="@Model.CachedFileNames[i]">
-                    <div class="properties">
-                        <div class="related">
-                            <a asp-action="Purge" asp-route-cacheFileName="@Model.CachedFileNames[i]" class="btn btn-sm btn-danger float-right" data-title="@T["Purge"]" data-message="@T["Are you sure you want to purge this sitemap?"]" itemprop="RemoveUrl UnsafeUrl">@T["Purge"]</a>
+    <ul id="cache-entries" class="list-group"></ul>
+        @if (Model.CachedFileNames.Any())
+        {
+            
+                @for (var i = 0; i < Model.CachedFileNames.Length; i++)
+                {
+                    <li class="list-group-item" data-cacheentry="@Model.CachedFileNames[i]">
+                        <div class="properties">
+                            <div class="related">
+                                <a asp-action="Purge" asp-route-cacheFileName="@Model.CachedFileNames[i]" class="btn btn-sm btn-danger float-right" data-title="@T["Purge"]" data-message="@T["Are you sure you want to purge this sitemap?"]" itemprop="RemoveUrl UnsafeUrl">@T["Purge"]</a>
+                            </div>
+                            @Model.CachedFileNames[i]
                         </div>
-                        @Model.CachedFileNames[i]
-                    </div>
-                </li>
-            }
-        </ul>
-    }
-    else
-    {
-        <div id="none-alert" class="alert alert-info" role="alert">
-            @T["<strong>Nothing here!</strong> There are no sitemaps cached for the moment."]
-        </div>
-    }
+                    </li>
+                }
+            
+        }
+        else
+        {
+            <li id="none-alert" class="list-group-item">
+                <div class="alert alert-info mb-1" role="alert">
+                    @T["<strong>Nothing here!</strong> There are no sitemaps cached for the moment."]
+                </div>
+            </li>
+        }
+        <li id="search-alert" class="list-group-item d-none">
+            <div class="alert alert-info mb-1" role="alert">
+                @T["<strong>Nothing here!</strong> Your search returned no results."]
+            </div>
+        </li>
+    </ul>
 
-    <div id="search-alert" class="alert alert-info d-none" role="alert">
-        @T["<strong>Nothing here!</strong> Your search returned no results."]
-    </div>
 </form>
 
 <script at="Foot">

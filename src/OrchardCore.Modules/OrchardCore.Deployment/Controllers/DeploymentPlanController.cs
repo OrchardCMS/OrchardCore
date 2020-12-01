@@ -138,10 +138,15 @@ namespace OrchardCore.Deployment.Controllers
                     case DeploymentPlansBulkAction.Delete:
                         foreach (var item in checkedItems)
                         {
-                            _session.Delete(item);
+                            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageDeploymentPlan, item))
+                            {
+                                _notifier.Warning(H["Couldn't remove selected admin menu(s)."]);
+                                return Forbid();
+                            }
 
-                            _notifier.Success(H["Deployment plan {0} successfully deleted.", item.Name]);
+                            _session.Delete(item);
                         }
+                        _notifier.Success(H["Deployment plans successfully deleted."]);
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();
