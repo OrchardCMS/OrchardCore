@@ -71,7 +71,7 @@ Verbs: **POST** and **GET**
 When exposing queries (Lucene or SQL) through GraphQL, you need to define schema of a query return type.  
 There are two options: To return a `ContentItem` or to return a custom object.
 
-If you want to expose `ContentItems`, e.g. of type `BlogPost`, you need to check `Return Content Items` checkbox and define `Schema` like this:
+If you want to expose `ContentItems` (e.g. of type `BlogPost`), you need to check `Return Content Items` checkbox and define `Schema` like this:
 
 ```json
 {
@@ -80,7 +80,7 @@ If you want to expose `ContentItems`, e.g. of type `BlogPost`, you need to check
 
 ```
 
-However, if you want to expose a custom object (e.g. only DisplayText) you need to uncheck `Return Content Items` checkbox and change `Schema` to look like this:
+However, if you want to expose a custom object (e.g. only DisplayText), you need to uncheck `Return Content Items` checkbox and change `Schema` to look like this:
 
 ```json
 {
