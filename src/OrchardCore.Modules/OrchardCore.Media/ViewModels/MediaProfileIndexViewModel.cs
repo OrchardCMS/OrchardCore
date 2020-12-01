@@ -1,12 +1,20 @@
 using System.Collections.Generic;
 using OrchardCore.Media.Models;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace OrchardCore.Media.ViewModels
 {
     public class MediaProfileIndexViewModel
     {
+        public MediaProfileIndexViewModel()
+        {
+            Options = new ContentOptions();
+        }
+
         public IList<MediaProfileEntry> MediaProfiles { get; set; }
         public dynamic Pager { get; set; }
+        public ContentOptions Options { get; set; }
     }
 
     public class MediaProfileEntry
@@ -14,5 +22,29 @@ namespace OrchardCore.Media.ViewModels
         public string Name { get; set; }
         public MediaProfile MediaProfile { get; set; }
         public bool IsChecked { get; set; }
+    }
+
+    public class ContentOptions
+    {
+        public ContentOptions()
+        {
+            BulkAction = ViewModels.ContentsBulkAction.None;
+        }
+
+        public string Search { get; set; }
+        public ContentsBulkAction BulkAction { get; set; }
+
+        #region Lists to populate
+
+        [BindNever]
+        public List<SelectListItem> ContentsBulkAction { get; set; }
+
+        #endregion Lists to populate
+    }
+
+    public enum ContentsBulkAction
+    {
+        None,
+        Remove
     }
 }
