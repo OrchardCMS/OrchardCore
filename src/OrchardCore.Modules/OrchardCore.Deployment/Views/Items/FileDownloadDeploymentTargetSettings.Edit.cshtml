@@ -6,5 +6,5 @@
         @await Component.InvokeAsync("SelectSecret", new { types = new[] { "RsaKeyPairSecret" }, selectedSecret = Model.RsaSecret, htmlName = Html.NameFor(m => m.RsaSecret) })
         <span asp-validation-for="RsaSecret"></span>
     </div>
-<span class="hint">@T["The name of the secret to use when encrypted exports."]</span>
+<span class="hint">@T["The name of the secret to use when encrypting file exports."]</span>
 </div>

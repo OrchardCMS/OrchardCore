@@ -37,7 +37,7 @@ namespace OrchardCore.Secrets
             services.AddScoped<SecretBindingsManager>();
 
             // TODO for setup purposes, we need to mvoe some of this to a core project I suspect.
-            services.AddScoped(typeof(ISecretService<>), typeof(SecretService<>));    
+            services.AddScoped(typeof(ISecretService<>), typeof(SecretService<>));
 
             services.AddScoped<ISecretCoordinator, DefaultSecretCoordinator>();
 
@@ -46,10 +46,10 @@ namespace OrchardCore.Secrets
             services.AddScoped<IDisplayDriver<Secret>, TestSecretDisplayDriver>();
             services.AddSingleton<ISecretFactory>(new SecretFactory<TextSecret>());
 
-        
+
 
             services.AddScoped<IDisplayDriver<Secret>, RsaKeyPairSecretDisplayDriver>();
-            services.AddSingleton<ISecretFactory>(new SecretFactory<RsaKeyPair>());
+            services.AddSingleton<ISecretFactory>(new SecretFactory<RsaKeyPairSecret>());
 
             services.AddTransient<IEncryptionService, DefaultEncryptionService>();
             services.AddTransient<IDecryptionService, DefaultDecryptionService>();

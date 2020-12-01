@@ -16,13 +16,13 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Secrets
             // This needs to be a better key.
             using (var rsa = RSA.Create())
             {
-                var rsaKeyPair = new RsaKeyPair()
+                var rsaKeyPair = new RsaKeyPairSecret()
                 {
                     PublicKey = Convert.ToBase64String(rsa.ExportSubjectPublicKeyInfo()),
                     PrivateKey = Convert.ToBase64String(rsa.ExportRSAPrivateKey())
                 };
 
-                var secretService = Mock.Of<ISecretService<RsaKeyPair>>();
+                var secretService = Mock.Of<ISecretService<RsaKeyPairSecret>>();
 
                 Mock.Get(secretService).Setup(s => s.GetSecretAsync("rsa")).ReturnsAsync(rsaKeyPair);
 

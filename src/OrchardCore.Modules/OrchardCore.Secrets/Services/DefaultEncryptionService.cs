@@ -9,11 +9,11 @@ namespace OrchardCore.Secrets.Services
 {
     public class DefaultEncryptionService : IEncryptionService, IDisposable
     {
-        private readonly ISecretService<RsaKeyPair> _rsaSecretService;
+        private readonly ISecretService<RsaKeyPairSecret> _rsaSecretService;
         private EncryptionKeyDescriptor _encryptionKeyDescriptor;
         private bool _disposedValue;
 
-        public DefaultEncryptionService(ISecretService<RsaKeyPair> rsaSecretService)
+        public DefaultEncryptionService(ISecretService<RsaKeyPairSecret> rsaSecretService)
         {
             _rsaSecretService = rsaSecretService;
         }
@@ -72,7 +72,7 @@ namespace OrchardCore.Secrets.Services
             using var swEncrypt = new StreamWriter(csEncrypt);
             await swEncrypt.WriteAsync(plainText);
             encrypted = msEncrypt.ToArray();
-                
+
             return Convert.ToBase64String(encrypted);
 
         }

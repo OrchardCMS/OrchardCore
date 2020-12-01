@@ -12,7 +12,7 @@ using OrchardCore.Secrets.ViewModels;
 
 namespace OrchardCore.Secrets.Drivers
 {
-    public class RsaKeyPairSecretDisplayDriver : DisplayDriver<Secret, RsaKeyPair>
+    public class RsaKeyPairSecretDisplayDriver : DisplayDriver<Secret, RsaKeyPairSecret>
     {
         private readonly IStringLocalizer S;
 
@@ -21,12 +21,12 @@ namespace OrchardCore.Secrets.Drivers
             S = stringLocalizer;
         }
 
-        public override IDisplayResult Display(RsaKeyPair secret)
+        public override IDisplayResult Display(RsaKeyPairSecret secret)
         {
             return View("RsaKeyPairSecret_Fields_Thumbnail", secret).Location("Thumbnail", "Content");
         }
 
-        public override Task<IDisplayResult> EditAsync(RsaKeyPair secret, BuildEditorContext context)
+        public override Task<IDisplayResult> EditAsync(RsaKeyPairSecret secret, BuildEditorContext context)
         {
             return Task.FromResult<IDisplayResult>(Initialize<RsaKeyPairSecretViewModel>("RsaKeyPairSecret_Fields_Edit", model =>
             {
@@ -72,7 +72,7 @@ namespace OrchardCore.Secrets.Drivers
             }).Location("Content"));
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(RsaKeyPair secret, UpdateEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(RsaKeyPairSecret secret, UpdateEditorContext context)
         {
             var model = new RsaKeyPairSecretViewModel();
 

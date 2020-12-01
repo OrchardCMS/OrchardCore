@@ -2,7 +2,7 @@ using System;
 
 namespace OrchardCore.Secrets
 {
-    public class RsaKeyPair : RsaPublicKeySecret
+    public class RsaKeyPairSecret : RsaPublicKeySecret
     {
         public string PrivateKey { get; set; }
     }
@@ -10,11 +10,11 @@ namespace OrchardCore.Secrets
     public static class RsaKeyPairSecretExtensions
     {
 
-        public static byte[] PrivateKeyAsBytes(this RsaKeyPair rsaKeyPair)
+        public static byte[] PrivateKeyAsBytes(this RsaKeyPairSecret rsaKeyPairSecret)
         {
-            if (!String.IsNullOrEmpty(rsaKeyPair.PrivateKey))
+            if (!String.IsNullOrEmpty(rsaKeyPairSecret.PrivateKey))
             {
-                return Convert.FromBase64String(rsaKeyPair.PrivateKey);
+                return Convert.FromBase64String(rsaKeyPairSecret.PrivateKey);
             }
 
             return Array.Empty<byte>();
