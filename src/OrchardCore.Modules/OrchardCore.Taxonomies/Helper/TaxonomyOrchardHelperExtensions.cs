@@ -63,7 +63,7 @@ public static class TaxonomyOrchardHelperExtensions
         var contentManager = orchardHelper.HttpContext.RequestServices.GetService<IContentManager>();
         var session = orchardHelper.HttpContext.RequestServices.GetService<ISession>();
 
-        var contentItems = await query(session.Query<ContentItem, TaxonomyIndex>()).With<ContentItemIndex>(x => x.Published).ListAsync();
+        var contentItems = await query(session.Query<ContentItem, TaxonomyIndex>()).ListAsync();
 
         return await contentManager.LoadAsync(contentItems);
     }

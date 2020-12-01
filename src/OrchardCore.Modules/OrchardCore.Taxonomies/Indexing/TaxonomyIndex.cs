@@ -38,7 +38,7 @@ namespace OrchardCore.Taxonomies.Indexing
             context.For<TaxonomyIndex>()
                 .Map(contentItem =>
                 {
-                    if (!(contentItem.IsPublished() || contentItem.Latest))
+                    if (!contentItem.IsPublished())
                     {
                         return null;
                     }

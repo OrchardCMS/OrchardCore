@@ -77,7 +77,7 @@ namespace OrchardCore.Taxonomies
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, TaxonomyFieldSettingsDriver>();
             services.AddScoped<IContentFieldIndexHandler, TaxonomyFieldIndexHandler>();
 
-            services.AddScoped<ITaxonomyFieldService, TaxonomyFieldService>();
+            services.AddScoped<ITaxonomyService, TaxonomyService>();
 
             // Taxonomy Tags Display Mode and Editor.
             services.AddContentField<TaxonomyField>()

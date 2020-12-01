@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Navigation;
 using OrchardCore.Taxonomies.Fields;
@@ -11,16 +12,20 @@ using YesSql;
 
 namespace OrchardCore.Taxonomies.Services
 {
-    public interface ITaxonomyFieldService
+    public interface ITaxonomyService
     {
         Task<IEnumerable<ContentItem>> QueryCategorizedItemsAsync(TermPart termPart, bool enableOrdering, PagerSlim pager);
 
         Task InitializeCategorizedItemsOrderAsync(string TaxonomyContentItemId);
 
+        Task EnsureUniqueOrderValues(TaxonomyField field);
+
         Task SyncTaxonomyFieldProperties(TaxonomyField field);
 
-        void SaveCategorizedItemsOrder(IEnumerable<ContentItem> categorizedItems, string taxonomyContentItemId, int topOrderValue);
+        Task SaveCategorizedItemsOrder(IEnumerable<ContentItem> categorizedItems, string taxonomyContentItemId, int topOrderValue);
 
         int GetTaxonomyTermOrder(ContentItem categorizedItem, string termContentItemId);
+
+        (TaxonomyField field, ContentPartFieldDefinition fieldDefinition) GetTaxonomyField(ContentItem categorizedItem, string taxonomyContentItemId = null, string termContentItemId = null);
     }
 }

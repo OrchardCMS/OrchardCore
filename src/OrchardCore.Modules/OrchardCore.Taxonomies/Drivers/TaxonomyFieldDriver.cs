@@ -7,28 +7,34 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.ContentManagement.Records;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Taxonomies.Fields;
+using OrchardCore.Taxonomies.Indexing;
 using OrchardCore.Taxonomies.Models;
 using OrchardCore.Taxonomies.Services;
 using OrchardCore.Taxonomies.Settings;
 using OrchardCore.Taxonomies.ViewModels;
+using YesSql;
 
 namespace OrchardCore.Taxonomies.Drivers
 {
     public class TaxonomyFieldDisplayDriver : ContentFieldDisplayDriver<TaxonomyField>
     {
         private readonly IContentManager _contentManager;
-        private readonly ITaxonomyFieldService _taxonomyFieldService;
+        private readonly ISession _session;
+        private readonly ITaxonomyService _taxonomyFieldService;
         private readonly IStringLocalizer S;
 
         public TaxonomyFieldDisplayDriver(
             IContentManager contentManager,
-            ITaxonomyFieldService taxonomyFieldService,
+            ISession session,
+            ITaxonomyService taxonomyFieldService,
             IStringLocalizer<TaxonomyFieldDisplayDriver> localizer)
         {
             _contentManager = contentManager;
+            _session = session;
             _taxonomyFieldService = taxonomyFieldService;
             S = localizer;
         }
@@ -95,6 +101,7 @@ namespace OrchardCore.Taxonomies.Drivers
                 if (taxonomy.As<TaxonomyPart>().EnableOrdering)
                 {
                     await _taxonomyFieldService.SyncTaxonomyFieldProperties(field);
+                    await _taxonomyFieldService.EnsureUniqueOrderValues(field);
                 }
             }
 

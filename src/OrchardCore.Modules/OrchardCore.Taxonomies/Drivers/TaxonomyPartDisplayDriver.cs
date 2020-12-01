@@ -18,9 +18,9 @@ namespace OrchardCore.Taxonomies.Drivers
 {
     public class TaxonomyPartDisplayDriver : ContentPartDisplayDriver<TaxonomyPart>
     {
-        private readonly ITaxonomyFieldService _taxonomyFieldService;
+        private readonly ITaxonomyService _taxonomyFieldService;
 
-        public TaxonomyPartDisplayDriver(ITaxonomyFieldService taxonomyFieldService)
+        public TaxonomyPartDisplayDriver(ITaxonomyService taxonomyFieldService)
         {
             _taxonomyFieldService = taxonomyFieldService;
         }

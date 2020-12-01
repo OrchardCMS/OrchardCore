@@ -14,7 +14,7 @@ The display for the `Taxonomy` is then rendered by the `TaxonomyPart` shape.
 
 This uses the `TermShape` to display a hierarchy of the `Terms`
 
-It has a flag to enable drag and drop ordering of the list of content items that have been categorized by the `TaxonomyField` as part of each `Term` of the `Taxonomy`. The ordering is then done on a term by term basis. When a content item is categorized with a `Term`, it goes to the first position on that `Term`. The drag and drop list of categorized content items will show the latest version of each item and, if it is a draft, will also affect the order of the published version.
+It has a flag to enable drag and drop ordering of the list of content items that have been categorized with a `Term` of the `Taxonomy`, via the `TaxonomyField`. This option is disabled by default on any new taxonomy content item. When enabled, the ordering is then done on a term by term basis. When a content item is categorized with a `Term`, it will appear at the first position of that term's list. It is only possible to order the Published version of each content item, bfdsfsdfdsfThe drag and drop list of categorized content items will show the latest version of each item and, if it is a draft, will also affect the order of the published version.
 
 ### TermPart
 
@@ -358,7 +358,7 @@ Each record corresponds to a selected term for a field.
 | TermContentItemId | `string` | The content item id of the categorized Term |
 | Order | `int` | The order of the categorized content |
 
-For instance if a field has two selected terms, there will be two records with all identical column values except for the `TermContentItemId` and possibly the `Order`. If the Latest version of the categorized content item is not Published, there will be separate records for the Published and the Latest (draft) version (as they might be associated to different terms and/or have different order values form the same terms).
+For instance if a field has two selected terms, there will be two records with all identical column values except for the `TermContentItemId` and the `Order`.
 
 ## Tags
 
@@ -393,26 +393,25 @@ You can access the `TagNames` property directly with the following accessor:
 
 ## Manual Ordering of Categorized Content Items
 
-You can enable manual ordering of categorized content items for selected taxonomies.
+For each taxonomy item, you can enable drag&drop ordering of content items categorized with its terms.  This option is disabled by default.
 
-To enable ordering:
+#### To enable ordering:
 
-1. Edit the taxonomy.
+1. Edit the taxonomy content item.
 2. Select “Enable Ordering”.
-3. Chose an appropriate size for the pages of content items that you want to see on the ordering interface. You can tweak this value as needed, without interfering with the frontend. 
+3. On “Ordering Page Size”, define the size for the pages of content items that you want to see on the ordering interface. This value does not affect the frontend.
 4. Save (publish) the taxonomy.
 
-After categorizing an item with a term, the item will appear at the top of the list of categorized items for that term.
+#### To modify the order of categorized content items for a term:
 
-To modify the order of categorized content items for a term:
+1. Edit the taxonomy content item.
+2. Click “Order Items”, to the right of the `Term` whose categorized content items you want to order.
+3. Drag&Drop the categorized content items to the desired positions (grabbing them by the handler icon). There is no need to save. It is not possible to move one item from one page to another, so you might need to increase the “Ordering Page Size” for the term’s taxonomy.
 
-1. Edit the taxonomy.
-2. Click “Order Items”, to the right of the term.
-3. Drag&Drop the categorized content items to the desired positions (grabbing them by the handler icon). There is no need to save. You might want to change the page size, to accommodate for more distant moves.
+By default, adding a term to a content item will make it appear at the first position after publishing.
 
-On the frontend only the Published items will appear. But on the ordering interface you will also see the Draft versions, if they exist. The entries that represent the draft version of the item are decorated with an icon showing a pencil in a blue background, to the right side of the drag handle.
+Only the published version of the content item can be moved, but if the item has a draft categorized with the same `Term`, the new position will also be applied to the draft.
 
-The Published and the Latest (draft) versions of an item can be categorized with different terms, and/or can be placed in different positions for the same term. The interface allows you to position a draft before publishing the item, so that it appears on the correct position as soon as the new (or modified) item becomes visible on the frontend.
 
 ## Videos
 

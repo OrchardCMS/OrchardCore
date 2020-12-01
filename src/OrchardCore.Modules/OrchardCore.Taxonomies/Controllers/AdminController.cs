@@ -9,11 +9,13 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
+using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Navigation;
 using OrchardCore.Taxonomies.Models;
 using OrchardCore.Taxonomies.Services;
+using OrchardCore.Taxonomies.ViewModels;
 using YesSql;
 
 namespace OrchardCore.Taxonomies.Controllers
@@ -28,7 +30,8 @@ namespace OrchardCore.Taxonomies.Controllers
         private readonly IHtmlLocalizer H;
         private readonly INotifier _notifier;
         private readonly IUpdateModelAccessor _updateModelAccessor;
-        private readonly ITaxonomyFieldService _taxonomyFieldService;
+        private readonly ITaxonomyService _taxonomyFieldService;
+        private readonly dynamic New;
 
         public AdminController(
             ISession session,
@@ -39,7 +42,8 @@ namespace OrchardCore.Taxonomies.Controllers
             INotifier notifier,
             IHtmlLocalizer<AdminController> localizer,
             IUpdateModelAccessor updateModelAccessor,
-            ITaxonomyFieldService taxonomyFieldService)
+            ITaxonomyService taxonomyFieldService,
+            IShapeFactory shapeFactory)
         {
             _contentManager = contentManager;
             _authorizationService = authorizationService;
@@ -50,6 +54,7 @@ namespace OrchardCore.Taxonomies.Controllers
             _updateModelAccessor = updateModelAccessor;
             _taxonomyFieldService = taxonomyFieldService;
             H = localizer;
+            New = shapeFactory;
         }
 
         public async Task<IActionResult> Create(string id, string taxonomyContentItemId, string taxonomyItemId)
@@ -326,15 +331,20 @@ namespace OrchardCore.Taxonomies.Controllers
             var contentItem = taxonomyItem.ToObject<ContentItem>();
             contentItem.Weld<TermPart>();
             contentItem.Alter<TermPart>(t => t.TaxonomyContentItemId = taxonomyContentItemId);
-            contentItem.Alter<TermPart>(t => t.OrderingPageSize = taxonomyPart.OrderingPageSize);
-            contentItem.Alter<TermPart>(t => t.Ordering = true);
 
-            dynamic model = await _contentItemDisplayManager.BuildDisplayAsync(contentItem, _updateModelAccessor.ModelUpdater);
+            var enableOrdering = taxonomyPart.EnableOrdering;
 
-            model.Updater = _updateModelAccessor.ModelUpdater;
+            var pageSize = taxonomyPart.OrderingPageSize;
+            var pagerParameters = new PagerSlimParameters();
+            await _updateModelAccessor.ModelUpdater.TryUpdateModelAsync(pagerParameters);
+            var pager = new PagerSlim(pagerParameters, pageSize);
 
-            // Is this the best way to get the TermPartViewModel created by the TermPart driver, to emulate in OrderCategorizedContentItems.cshtm the "@model TermPartViewModel" of a "normal" View like TermPart.cshtml?
-            model.TermPartViewModel = (ViewModels.TermPartViewModel)((System.Collections.Generic.List<DisplayManagement.IPositioned>)((dynamic)model).Content.Items).Where(i => ((dynamic)i).Metadata.Type == "TermPart").First();
+            var model = new TermPartViewModel();
+            var termPart = contentItem.As<TermPart>();
+            model.TaxonomyContentItemId = termPart.TaxonomyContentItemId;
+            model.ContentItem = termPart.ContentItem;
+            model.ContentItems = (await _taxonomyFieldService.QueryCategorizedItemsAsync(termPart, enableOrdering, pager)).ToArray();
+            model.Pager = await New.PagerSlim(pager);
 
             return View(model);
         }
@@ -366,27 +376,28 @@ namespace OrchardCore.Taxonomies.Controllers
             contentItem.Weld<TermPart>();
 
             var termPart = contentItem.As<TermPart>();
-            contentItem.Alter<TermPart>(t => t.Ordering = true);
 
             var pager = new PagerSlim(pagerSlimParameters, pageSize);
 
             var categorizedContentItems = (await _taxonomyFieldService.QueryCategorizedItemsAsync(termPart, true, pager)).ToList();
 
-            var topIndex = Math.Min(newIndex, oldIndex);
+            // Find the lower and higher bounds of the affected area (between the old and new position of the moved item)
+            var lowerIndex = Math.Min(newIndex, oldIndex);
+            var higherIndex = Math.Max(newIndex, oldIndex);
 
-            // highest (first) order value on the list of items that need to be updated
-            var topOrderValue = _taxonomyFieldService.GetTaxonomyTermOrder(categorizedContentItems[topIndex], taxonomyItemId);
+            // Find the lower order value
+            var lowerOrderValue = _taxonomyFieldService.GetTaxonomyTermOrder(categorizedContentItems[higherIndex], taxonomyItemId);
 
-            // move the element
+            // Move the element to it's new position
             var categorizedContentItem = categorizedContentItems[oldIndex];
             categorizedContentItems.Remove(categorizedContentItem);
             categorizedContentItems.Insert(newIndex, categorizedContentItem);
 
-            // restrict the list to the elements whose order value needs to be updated
-            categorizedContentItems = categorizedContentItems.GetRange(topIndex, Math.Abs(newIndex - oldIndex) + 1);
+            // Restrict the list to the elements whose order value needs to be updated
+            categorizedContentItems = categorizedContentItems.GetRange(lowerIndex, higherIndex - lowerIndex + 1);
 
-            // apply and save the new order values
-            _taxonomyFieldService.SaveCategorizedItemsOrder(categorizedContentItems, taxonomyItemId, topOrderValue);
+            // Apply and save the new order values
+            await _taxonomyFieldService.SaveCategorizedItemsOrder(categorizedContentItems, taxonomyItemId, lowerOrderValue);
 
             return Ok();
         }
@@ -409,7 +420,7 @@ namespace OrchardCore.Taxonomies.Controllers
 
             foreach (JObject taxonomyItem in taxonomyItems)
             {
-                // Search in inner taxonomy items
+                // Search in inner taxonomy items.
                 result = FindTaxonomyItem(taxonomyItem, taxonomyItemId);
 
                 if (result != null)

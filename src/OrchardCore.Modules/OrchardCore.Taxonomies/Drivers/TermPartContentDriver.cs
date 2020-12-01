@@ -24,13 +24,13 @@ namespace OrchardCore.Taxonomies.Drivers
         private readonly ISession _session;
         private readonly ISiteService _siteService;
         private readonly IContentManager _contentManager;
-        private readonly ITaxonomyFieldService _taxonomyFieldService;
+        private readonly ITaxonomyService _taxonomyFieldService;
 
         public TermPartContentDriver(
             ISession session,
             ISiteService siteService,
             IContentManager contentManager,
-            ITaxonomyFieldService taxonomyFieldService)
+            ITaxonomyService taxonomyFieldService)
         {
             _session = session;
             _siteService = siteService;
@@ -46,18 +46,13 @@ namespace OrchardCore.Taxonomies.Drivers
                 return Task.FromResult<IDisplayResult>(Initialize<TermPartViewModel>("TermPart", async m =>
                 {
                     var enableOrdering = (await _contentManager.GetAsync(part.TaxonomyContentItemId, VersionOptions.Latest)).As<TaxonomyPart>().EnableOrdering;
-                    var pageSize = part.OrderingPageSize;
-                    if (part.OrderingPageSize == 0)
-                    {
-                        var siteSettings = await _siteService.GetSiteSettingsAsync();
-                        pageSize = siteSettings.PageSize;
-                    }
-                    var pager = await GetPagerAsync(context.Updater, pageSize);
+                    var siteSettings = await _siteService.GetSiteSettingsAsync();
+                    var pager = await GetPagerAsync(context.Updater, siteSettings.PageSize);
                     m.TaxonomyContentItemId = part.TaxonomyContentItemId;
                     m.ContentItem = part.ContentItem;
                     m.ContentItems = (await _taxonomyFieldService.QueryCategorizedItemsAsync(part, enableOrdering, pager)).ToArray();
                     m.Pager = await context.New.PagerSlim(pager);
-                    
+
                 })
                 .Location("Detail", "Content:5"));
             }
