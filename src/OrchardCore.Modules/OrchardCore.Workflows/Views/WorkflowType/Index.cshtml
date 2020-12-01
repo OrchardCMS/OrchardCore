@@ -28,7 +28,7 @@
                     </div>
                 </div>
                 <div class="btn-group float-right">
-                    <a asp-route-action="EditProperties" class="btn btn-sm btn-secondary float-right create" role="button">@T["Create Workflow Type"]</a>
+                    <a asp-action="EditProperties" asp-route-returnUrl="@FullRequestPath" class="btn btn-sm btn-secondary float-right create" role="button">@T["Create Workflow"]</a>
                 </div>
             </div>
         </div>
@@ -69,9 +69,9 @@
                     <div class="properties">
                         <div class="related">
                             <a asp-action="Edit" asp-route-id="@entry.WorkflowType.Id" asp-route-returnUrl="@FullRequestPath" class="btn btn-primary btn-sm">@T["Edit"]</a>
-                            <a asp-action="EditProperties" asp-route-id="@entry.WorkflowType.Id" asp-route-returnUrl="@FullRequestPath" class="btn btn-primary btn-sm">@T["Properties"]</a>
+                            <a asp-action="EditProperties" asp-route-id="@entry.WorkflowType.Id" asp-route-returnUrl="@FullRequestPath" class="btn btn-success btn-sm">@T["Properties"]</a>
                             <a asp-action="Delete" asp-route-id="@entry.WorkflowType.Id" class="btn btn-danger btn-sm" itemprop="RemoveUrl UnsafeUrl">@T["Delete"]</a>
-                            <a asp-action="Duplicate" asp-route-id="@entry.WorkflowType.Id" asp-route-returnUrl="@FullRequestPath" class="btn btn-primary btn-sm">@T["Duplicate"]</a>
+                            <a asp-action="Duplicate" asp-route-id="@entry.WorkflowType.Id" asp-route-returnUrl="@FullRequestPath" class="btn btn-warning btn-sm">@T["Duplicate"]</a>
                         </div>
 
                         <div class="custom-control custom-checkbox float-left">
