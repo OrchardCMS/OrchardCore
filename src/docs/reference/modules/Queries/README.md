@@ -68,9 +68,10 @@ Verbs: **POST** and **GET**
 
 ## GraphQL
 
-When exposing queries (Lucene or SQL) through GraphQL you need to define schema of a query return type. There are two options, to return a `ContentItem` or to return a custom object.
+When exposing queries (Lucene or SQL) through GraphQL you need to define schema of a query return type.  
+There are two options: To return a `ContentItem` or to return a custom object.
 
-If you want to expose `ContentItems`, e.g. of type `BlogPost` you need to check `Return Content Items` checkbox and define `Schema` like this:
+If you want to expose `ContentItems`, e.g. of type `BlogPost`, you need to check `Return Content Items` checkbox and define `Schema` like this:
 
 ```json
 {
@@ -79,7 +80,7 @@ If you want to expose `ContentItems`, e.g. of type `BlogPost` you need to check 
 
 ```
 
-However if you want to expose custom object, e.g. only DisplayText, you need to uncheck `Return Content Items` checkbox and change `Schema` to look like this:
+However if you want to expose a custom object, e.g. only DisplayText, you need to uncheck `Return Content Items` checkbox and change `Schema` to look like this:
 
 ```json
 {
@@ -95,14 +96,14 @@ However if you want to expose custom object, e.g. only DisplayText, you need to 
 
 Where properties can either be of `string` or `integer` type.
 
-For Lucene queries with custom object schema you are limited to elements stored in Lucene index.
+For Lucene queries with custom object schema, you are limited to elements stored in Lucene index.
 
-For SQL queries you can expose any column where property name is column alias from query.
+For SQL queries, you can expose any column where property name is a column alias from the query.
 
 
 ## SQL Queries (`OrchardCore.Queries.Sql`)
 
-This feature provide a new type of query targeting the SQL database.
+This feature provides a new type of query targeting the SQL database.
 
 ### Queries recipe step
 
@@ -119,7 +120,8 @@ Here is an example for creating a SQL query from a Queries recipe step:
 
 ## Liquid templates
 
-You can access queries from liquid views and templates by using the `Queries` property. Queries are accessed by name, for example `Queries.RecentBlogPosts`.
+You can access queries from liquid views and templates by using the `Queries` property.  
+Queries are accessed by name, for example `Queries.RecentBlogPosts`.
 
 ### query
 
