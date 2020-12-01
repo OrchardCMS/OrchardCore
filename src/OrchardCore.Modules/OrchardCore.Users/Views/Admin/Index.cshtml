@@ -4,7 +4,7 @@
     int endIndex = startIndex + Model.Users.Count - 1;
 }
 <script asp-name="bootstrap-select" depends-on="admin" at="Foot"></script>
-<style asp-name="bootstrap-select"></style>
+<style asp-name="bootstrap-select" depends-on="admin"></style>
 
 <h1>@RenderTitleSegments(T["Users"])</h1>
 
@@ -82,7 +82,7 @@
         else
         {
             <li class="list-group-item">
-                <div class="alert alert-info" role="alert">
+                <div class="alert alert-info mb-1" role="alert">
                     @T["<strong>Nothing here!</strong> Your search returned no results."]
                 </div>
             </li>

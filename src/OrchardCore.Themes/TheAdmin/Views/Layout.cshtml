@@ -1,8 +1,10 @@
+﻿@inject DarkModeService DarkModeService;
 @{
     var adminSettings = Site.As<AdminSettings>();
+    var darkMode = await DarkModeService.IsDarkModeAsync();
 }
 <!DOCTYPE html>
-<html lang="@Orchard.CultureName()" dir="@Orchard.CultureDir()">
+<html lang="@Orchard.CultureName()" dir="@Orchard.CultureDir()" data-theme="@DarkModeService.CurrentTheme">
 <head>
     <title>@RenderTitleSegments(Site.SiteName, "before")</title>
     <meta charset="utf-8">
@@ -11,15 +13,13 @@
     <link type="image/x-icon" rel="shortcut icon" href="~/TheAdmin/favicon.ico" />
 
     <!-- Bootstrap CSS -->
-    <style id="admin-default" media="all" asp-name="admin" asp-src="~/TheAdmin/Styles/TheAdmin.min.css" debug-src="~/TheAdmin/Styles/TheAdmin.css" depends-on="jQuery-ui"></style>
-    @if (adminSettings.DisplayDarkMode)
-    {
-        <style id="admin-darkmode" media="not all" asp-name="admin-darkmode" asp-src="~/TheAdmin/Styles/TheAdmin-darkmode.min.css" debug-src="~/TheAdmin/Styles/TheAdmin-darkmode.css" depends-on="jQuery-ui"></style>
-    }
+    <style media="all" asp-name="admin" asp-src="~/TheAdmin/Styles/TheAdmin.min.css" debug-src="~/TheAdmin/Styles/TheAdmin.css" depends-on="jQuery-ui"></style>
+
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons|Material+Icons+Outlined|Material+Icons+Two+Tone|Material+Icons+Round|Material+Icons+Sharp" rel="stylesheet">
 
     <script asp-name="font-awesome" at="Foot" version="5"></script>
     <script asp-name="font-awesome-v4-shims" at="Foot" version="5"></script>
+    <script asp-name="jscookie" at="Foot" version="2.1.4"></script>
     <script asp-name="admin" asp-src="~/TheAdmin/Scripts/TheAdmin.min.js" debug-src="~/TheAdmin/Scripts/TheAdmin.js" depends-on="jQuery, jQuery-ui, jQuery-ui-i18n" at="Foot"></script>
     <resources type="Header" />
 
@@ -37,7 +37,15 @@
             @await DisplayAsync(await New.UserMenu())
             @if (adminSettings.DisplayDarkMode)
             {
-                <a id="btn-darkmode" class="btn btn-sm btn-light ml-2" title="@T["Dark mode"]"><i class="fas fa-moon"></i></a>
+                <a id="btn-darkmode" class="btn btn-sm btn-light ml-2" title="@T["Dark mode"]">
+                    @if(darkMode){
+                        <i class="fas fa-sun"></i>
+                    }
+                    else
+                    {
+                        <i class="fas fa-moon"></i>
+                    }
+                </a>
             }
         </div>
 
