@@ -8,7 +8,6 @@ namespace OrchardCore.Secrets.ViewModels
     public class SelectSecretViewModel
     {
         public string HtmlName { get; set; }
-        public string SelectedSecret { get; set; }
 
         [BindNever]
         public List<SelectListItem> Secrets { get; set; } = new List<SelectListItem>();

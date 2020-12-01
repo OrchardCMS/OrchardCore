@@ -126,7 +126,7 @@
                         <div class="form-group" asp-validation-class-for="PasswordSecret">
                             <div class="w-100 w-md-50">
                                 <label asp-for="PasswordSecret">@T["Password secret"]</label>
-                                @await Component.InvokeAsync("SelectSecret", new { types = new[] { "TextSecret" }, selectedSecret = Model.PasswordSecret, htmlName = Html.NameFor(m => m.PasswordSecret) })
+                                @await Component.InvokeAsync("SelectSecret", new { types = new[] { "TextSecret" }, selectedSecret = Model.PasswordSecret, htmlName = Html.NameFor(m => m.PasswordSecret), required  = false})
                                 <span asp-validation-for="PasswordSecret"></span>
                             </div>
                             <span class="hint">@T["The name of the secret for the password. When provided will override the Password value."]</span>
