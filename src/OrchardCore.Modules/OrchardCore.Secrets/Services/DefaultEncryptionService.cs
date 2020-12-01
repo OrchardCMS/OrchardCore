@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
@@ -67,14 +68,19 @@ namespace OrchardCore.Secrets.Services
         private async Task<string> EncryptInternalAsync(EncryptionKeyDescriptor keyWrapper, string plainText)
         {
             byte[] encrypted;
-            using var msEncrypt = new MemoryStream();
-            using var csEncrypt = new CryptoStream(msEncrypt, keyWrapper.Encryptor, CryptoStreamMode.Write);
-            using var swEncrypt = new StreamWriter(csEncrypt);
-            await swEncrypt.WriteAsync(plainText);
-            encrypted = msEncrypt.ToArray();
-
+            using (var msEncrypt = new MemoryStream())
+            {
+                using (var csEncrypt = new CryptoStream(msEncrypt, keyWrapper.Encryptor, CryptoStreamMode.Write))
+                {
+                    using (var swEncrypt = new StreamWriter(csEncrypt))
+                    {
+                        await swEncrypt.WriteAsync(plainText);
+                    }
+                    encrypted = msEncrypt.ToArray();
+                }
+            }
+            
             return Convert.ToBase64String(encrypted);
-
         }
 
         protected virtual void Dispose(bool disposing)
