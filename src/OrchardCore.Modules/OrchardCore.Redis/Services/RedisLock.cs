@@ -158,29 +158,29 @@ namespace OrchardCore.Redis.Services
             }
         }
 
-        private static readonly double _baseDelay = 1000;
-        private static readonly double _maxDelay = 30000;
+        private static readonly double _baseDelay = 100;
+        private static readonly double _maxDelay = 10000;
 
-        protected internal virtual TimeSpan GetDelay(double retries)
+        private static TimeSpan GetDelay(double retries)
         {
             var delay = _baseDelay
-                * (1.0 + ((Math.Pow(1.5, retries - 1.0) - 1.0)
-                    * (0.7 + new Random().NextDouble() * 0.3)));
+                * (1.0 + ((Math.Pow(1.7, retries - 1.0) - 1.0)
+                    * (0.5 + new Random().NextDouble() * 0.5)));
 
             return TimeSpan.FromMilliseconds(Math.Min(delay, _maxDelay));
 
             // 2 examples with 10 retries
             // --------------------------
-            // 1000      1000 (start from base)
-            // 1382      1474
-            // 2217      2195
-            // 3051      2746
-            // 3933      4248
-            // 6066      6000
-            // 11340     9342
-            // 15656     13059
-            // 21885     19207
-            // 30000     30000 (max reached)
+            // 100     100 (start from base)
+            // 140     157
+            // 221     257
+            // 398     414
+            // 510     530
+            // 1056    999
+            // 2233    2003
+            // 3330    2809
+            // 6436    5104
+            // 10000   10000 (max reached)
         }
     }
 }
