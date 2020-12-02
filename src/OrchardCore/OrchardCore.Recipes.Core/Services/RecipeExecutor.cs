@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Runtime.ExceptionServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -66,7 +67,7 @@ namespace OrchardCore.Recipes.Services
 
                             var variables = await JObject.LoadAsync(reader);
 
-                            methodProviders.Add(new VariablesMethodProvider(variables));
+                            methodProviders.Add(new VariablesMethodProvider(variables, methodProviders));
                         }
 
                         if (reader.Path == "steps" && reader.TokenType == JsonToken.StartArray)
@@ -197,21 +198,29 @@ namespace OrchardCore.Recipes.Services
                     {
                         EvaluateJsonTree(scriptingManager, context, array[i]);
                     }
+
                     break;
                 case JTokenType.Object:
                     foreach (var property in (JObject)node)
                     {
                         EvaluateJsonTree(scriptingManager, context, property.Value);
                     }
+
                     break;
-
                 case JTokenType.String:
-
+                    const char scriptSeparator = ':';
                     var value = node.Value<string>();
 
                     // Evaluate the expression while the result is another expression
                     while (value.StartsWith('[') && value.EndsWith(']'))
                     {
+                        var scriptSeparatorIndex = value.IndexOf(scriptSeparator);
+                        // Only remove brackets if this is a valid script expression, e.g. '[js:xxx]', or '[file:xxx]'
+                        if (!(scriptSeparatorIndex > -1 && value[1..scriptSeparatorIndex].All(c => Char.IsLetter(c))))
+                        {
+                            break;
+                        }
+
                         value = value.Trim('[', ']');
 
                         value = (scriptingManager.Evaluate(
@@ -223,6 +232,7 @@ namespace OrchardCore.Recipes.Services
 
                         ((JValue)node).Value = value;
                     }
+
                     break;
             }
         }

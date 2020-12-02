@@ -21,8 +21,6 @@
   "steps": [
     {
       "name": "Feature",
-      "disable": [
-      ],
       "enable": [
         "OrchardCore.Admin",
         "OrchardCore.Alias",

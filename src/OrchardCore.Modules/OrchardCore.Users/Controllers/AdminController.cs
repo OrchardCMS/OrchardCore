@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -27,6 +28,7 @@ namespace OrchardCore.Users.Controllers
     public class AdminController : Controller
     {
         private readonly UserManager<IUser> _userManager;
+        private readonly SignInManager<IUser> _signInManager;
         private readonly ISession _session;
         private readonly IAuthorizationService _authorizationService;
         private readonly ISiteService _siteService;
@@ -41,6 +43,7 @@ namespace OrchardCore.Users.Controllers
 
         public AdminController(
             IDisplayManager<User> userDisplayManager,
+            SignInManager<IUser> signInManager,
             IAuthorizationService authorizationService,
             ISession session,
             UserManager<IUser> userManager,
@@ -53,6 +56,7 @@ namespace OrchardCore.Users.Controllers
             IUpdateModelAccessor updateModelAccessor)
         {
             _userDisplayManager = userDisplayManager;
+            _signInManager = signInManager;
             _authorizationService = authorizationService;
             _session = session;
             _userManager = userManager;
@@ -75,12 +79,6 @@ namespace OrchardCore.Users.Controllers
 
             var siteSettings = await _siteService.GetSiteSettingsAsync();
             var pager = new Pager(pagerParameters, siteSettings.PageSize);
-
-            // default options
-            if (options == null)
-            {
-                options = new UserIndexOptions();
-            }
 
             var users = _session.Query<User, UserIndex>();
 
@@ -194,6 +192,11 @@ namespace OrchardCore.Users.Controllers
         [FormValueRequired("submit.BulkAction")]
         public async Task<ActionResult> IndexPOST(UserIndexOptions options, IEnumerable<string> itemIds)
         {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers))
+            {
+                return Forbid();
+            }
+
             if (itemIds?.Count() > 0)
             {
                 var checkedContentItems = await _session.Query<User, UserIndex>().Where(x => x.UserId.IsIn(itemIds)).ListAsync();
@@ -281,11 +284,23 @@ namespace OrchardCore.Users.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        public async Task<IActionResult> Edit(string id)
+        public async Task<IActionResult> Edit(string id, string returnUrl)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers))
+            // When no id is provided we assume the user is trying to edit their own profile.
+            if (String.IsNullOrEmpty(id))
             {
-                return Forbid();
+                id = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageOwnUserInformation))
+                {
+                    return Forbid();
+                }
+            }
+            else
+            {
+                if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers))
+                {
+                    return Forbid();
+                }
             }
 
             var user = await _userManager.FindByIdAsync(id) as User;
@@ -296,14 +311,27 @@ namespace OrchardCore.Users.Controllers
 
             var shape = await _userDisplayManager.BuildEditorAsync(user, updater: _updateModelAccessor.ModelUpdater, isNew: false);
 
+            ViewData["ReturnUrl"] = returnUrl;
+
             return View(shape);
         }
 
         [HttpPost]
         [ActionName(nameof(Edit))]
-        public async Task<IActionResult> EditPost(string id)
+        public async Task<IActionResult> EditPost(string id, string returnUrl)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers))
+            // When no id is provided we assume the user is trying to edit their own profile.
+            var editingOwnUser = false;
+            if (String.IsNullOrEmpty(id))
+            {
+                editingOwnUser = true;
+                id = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageOwnUserInformation))
+                {
+                    return Forbid();
+                }
+            }
+            else if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers))
             {
                 return Forbid();
             }
@@ -333,9 +361,26 @@ namespace OrchardCore.Users.Controllers
                 return View(shape);
             }
 
+            if (String.Equals(User.FindFirstValue(ClaimTypes.NameIdentifier), user.UserId, StringComparison.OrdinalIgnoreCase))
+            {
+                await _signInManager.RefreshSignInAsync(user);
+            }
+
             _notifier.Success(H["User updated successfully"]);
 
-            return RedirectToAction(nameof(Index));
+            if (editingOwnUser)
+            {
+                if (!String.IsNullOrEmpty(returnUrl))
+                {
+                    return LocalRedirect(returnUrl);
+                }
+
+                return RedirectToAction(nameof(Edit));
+            }
+            else
+            {
+                return RedirectToAction(nameof(Index));
+            }
         }
 
         [HttpPost]
