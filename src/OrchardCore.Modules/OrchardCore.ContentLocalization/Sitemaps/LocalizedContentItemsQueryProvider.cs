@@ -70,7 +70,7 @@ namespace OrchardCore.ContentLocalization.Sitemaps
                     var queryResults = await _session.Query<ContentItem>()
                          .With<ContentItemIndex>(ci => ci.ContentType == source.LimitedContentType.ContentTypeName && ci.Published)
                          .OrderBy(ci => ci.CreatedUtc)
-                         .With<LocalizedContentItemIndex>(i => i.Published || i.Latest)
+                         .With<LocalizedContentItemIndex>()
                          .ListAsync();
 
                     // When limiting items Content item is valid if it is for the default culture.
