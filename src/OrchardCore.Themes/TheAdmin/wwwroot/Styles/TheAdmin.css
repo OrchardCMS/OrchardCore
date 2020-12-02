@@ -15704,6 +15704,9 @@
     height: 42px; }
     :root[data-theme='default'] .left-sidebar-compact .ta-navbar-brand span {
       display: none; }
+  :root[data-theme='default'] .action-bar {
+    top: 3.3rem;
+    z-index: 1050; }
   :root[data-theme='default'] body:not(.left-sidebar-compact) #ta-left-sidebar {
     z-index: calc(1000 + 1);
     position: fixed;
@@ -32317,6 +32320,9 @@
     height: 42px; }
     :root[data-theme='darkmode'] .left-sidebar-compact .ta-navbar-brand span {
       display: none; }
+  :root[data-theme='darkmode'] .action-bar {
+    top: 3.3rem;
+    z-index: 1050; }
   :root[data-theme='darkmode'] body:not(.left-sidebar-compact) #ta-left-sidebar {
     z-index: calc(1000 + 1);
     position: fixed;
