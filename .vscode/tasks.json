@@ -81,12 +81,12 @@
 			"windows":{
 				"command": "Remove-Item",
 				"args": [
-					"${workspaceRoot}\\build\\release\\*", "-recurse"
+					"${workspaceRoot}\\.build\\release\\*", "-recurse"
 				]
 			},
 			"args": [
 				"-rfv",
-				"${workspaceRoot}/build/release/*"
+				"${workspaceRoot}/.build/release/*"
 			]
 		},
 		{
@@ -100,7 +100,7 @@
 					"--configuration", "release",
 					"--runtime", "win-x64",
 					"--self-contained",
-					"--output", ".\\build\\release"
+					"--output", ".\\.build\\release"
 				]
 			},
 			"args": [
@@ -108,7 +108,7 @@
 				"--configuration", "release",
 				"--runtime", "linux-x64",
 				"--self-contained",
-				"--output", "./build/release"
+				"--output", "./.build/release"
 			],
 			"problemMatcher": "$msCompile"
 		},
@@ -123,7 +123,7 @@
 					"--configuration", "release",
 					"--runtime", "win-x64",
 					"--self-contained", "false",
-					"--output", ".\\build\\release"
+					"--output", ".\\.build\\release"
 				]
 			},
 			"args": [
@@ -131,7 +131,7 @@
 				"--configuration", "release",
 				"--runtime", "linux-x64",
 				"--self-contained", "false",
-				"--output", "./build/release"
+				"--output", "./.build/release"
 			],
 			"problemMatcher": "$msCompile"
 		},

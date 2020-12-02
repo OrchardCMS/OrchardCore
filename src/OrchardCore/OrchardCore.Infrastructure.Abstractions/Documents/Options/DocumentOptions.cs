@@ -1,3 +1,4 @@
+using System;
 using Microsoft.Extensions.Caching.Distributed;
 
 namespace OrchardCore.Documents.Options
@@ -8,5 +9,8 @@ namespace OrchardCore.Documents.Options
         public string CacheIdKey { get; set; }
         public bool? CheckConcurrency { get; set; }
         public bool? CheckConsistency { get; set; }
+        public TimeSpan? SynchronizationLatency { get; set; }
+        public IDocumentSerialiser Serializer { get; set; }
+        public int CompressThreshold { get; set; }
     }
 }

@@ -58,7 +58,10 @@ Convert the input URL to create a resized image with the specified size argument
 #### Arguments
 
 Refer [Query string tokens](#query-string-tokens) to understand the valid values for a width or height command,
-and how the query string will defer from the examples provided.
+and how the query string will differ from the examples provided.
+
+!!! note
+    You cannot mix named and indexed arguments. If any of the arguments is named, all arguments must be named.
 
 #### `width` (or first argument)
 
@@ -137,12 +140,26 @@ The anchor of the new image.
 
 ```
 {% assign anchor = Model.ContentItem.Content.Blog.Image.Anchors.first %}
-{{ 'animals/kittens.jpg' | asset_url | resize_url: width:100, height:240, mode:'crop', anchor: anchor }}
+{{ 'animals/kittens.jpg' | asset_url | resize_url: width:100, height:240, mode:'crop', anchor:anchor }}
 ```
 
 #### anchor Output
 
 `<img src="~/media/animals/kittens.jpg?width=100&height=240&rmode=crop&rxy=0.5,0.5" />`
+
+### `bgcolor` (or seventh argument)
+
+The background color of the new image when `mode` is `pad` or `boxpad`. Examples of valid values: `white`, `ffff00`, `ffff0080`, `128,64,32` and `128,64,32,16`.
+
+#### bgcolor Input
+
+```
+{{ 'animals/kittens.jpg' | asset_url | resize_url: width:100, height:240, mode:'pad', bgcolor:'white' }}
+```
+
+#### bgcolor Output
+
+`<img src="~/media/animals/kittens.jpg?width=100&height=240&rmode=pad&bgcolor=white" />`
 
 ### `profile` (named argument)
 
@@ -182,6 +199,10 @@ To obtain the correct URL for a resized asset use `AssetUrl` with the optional w
 
 `@Orchard.AssetUrl(Model.Paths[0], width: 100 , height: 240, resizeMode: ResizeMode.Crop, quality: 50, format: Format.Jpg)`
 
+To obtain the correct URL for a resized asset use `AssetUrl` with the optional width, height, resizeMode and bgcolor, e.g.:
+
+`@Orchard.AssetUrl(Model.Paths[0], width: 100 , height: 240, resizeMode: ResizeMode.Pad, bgcolor: "white")`
+
 To append a version hash for an asset use `AssetUrl` with the append version parameter, e.g.:
 
 `@Orchard.AssetUrl(Model.Paths[0], appendVersion: true)`
@@ -209,6 +230,10 @@ To use the image tag helpers add `@addTagHelper *, OrchardCore.Media` to `_ViewI
 Alternatively the Asset Url can be resolved independently and the `src` attribute used:
 
 `<img src="@Orchard.AssetUrl(Model.Paths[0])" alt="..." img-width="100" img-height="240" img-resize-mode="Crop" img-quality="50" img-format="Jpg" />`
+
+When resize mode is `pad` or `boxpad`, the background color can be set using `img-bgcolor`, e.g.:
+
+`<img asset-src="Model.Paths[0]" alt="..." img-width="100" img-height="240" img-resize-mode="Pad" img-bgcolor="white" />`
 
 To use a [Media Profile](#media-profiles) set the `asset-src` property and the `img-profile` attribute.
 
@@ -403,13 +428,13 @@ The `MediaText[]` is kept in sync with the `Paths[]` array and the index for a g
 
 Image anchors are an optional setting, off by default, on the `MediaField`.
 
-When enabled they allow a media field to provide an anchor x or y value for use when cropping, or padding the image.
+When enabled they allow a media field to provide an anchor point, or x and y value for use when cropping, or padding the image.
 
-The anchor value provided can be used to specify the center of a crop or pad.
+The anchor value provided can be used to specify the center point of a crop or pad.
 
 When the setting is enabled the template must read and provide the value to the resizing helpers or filters.
 
-The `Anchors[]` is a less well known property of a `MediaField` and can be accessed via the `GetCenters()` extension, or directly.
+The `Anchors[]` is a less well known property of a `MediaField` and can be accessed via the `GetAnchors()` extension, or directly.
 
 === "Liquid"
 
@@ -450,9 +475,11 @@ those commands. e.g.
     Tokens are only available from the [Preview Feed](../../../getting-started/preview-package-source)
     Prior to this the width or height values are limited to `16`, `32`, `50`, `100`, `160`, `240`, `480`, `600`, `1024`, `2048`.
 
-## Video
+## Videos
 
 <iframe width="560" height="315" src="https://www.youtube.com/embed/BQHUlvPFRR4" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/K0_i4vj00yM" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 ## CREDITS
 

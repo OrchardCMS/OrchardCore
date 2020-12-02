@@ -30,3 +30,16 @@ using OrchardCore.DisplayManagement.Manifest;
 ```
 
 The theme should be available in the `Active themes` admin page, and can be set as the default theme.
+
+## How to enable Razor templates in my theme?
+
+The themes we have in source code uses only `Liquid` files so their .csproj only reference : 
+
+`<Project Sdk="Microsoft.NET.Sdk">`
+
+If you want to use Razor templates in your theme you simply need to change this .csproj first line for :
+
+`<Project Sdk="Microsoft.NET.Sdk.Razor">`
+
+
+

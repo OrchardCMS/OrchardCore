@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.AdminMenu.Models;
+using OrchardCore.AdminMenu.Services;
 using OrchardCore.Documents;
 
 namespace OrchardCore.AdminMenu

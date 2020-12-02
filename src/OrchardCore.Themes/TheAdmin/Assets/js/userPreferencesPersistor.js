@@ -6,7 +6,8 @@ function persistAdminPreferences() {
         var adminPreferences = {};        
         adminPreferences.leftSidebarCompact = $('body').hasClass('left-sidebar-compact') ? true : false;
         adminPreferences.isCompactExplicit = isCompactExplicit;
-        adminPreferences.darkMode = $('body').hasClass('darkmode') ? true : false;
+        adminPreferences.darkMode = $('html').attr('data-theme') === 'darkmode' ? true : false;
         localStorage.setItem('adminPreferences', JSON.stringify(adminPreferences));
+        Cookies.set('adminPreferences', JSON.stringify(adminPreferences), { expires: 360 });
     }, 200);
 }
