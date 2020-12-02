@@ -37,7 +37,7 @@ namespace OrchardCore.ContentLocalization.Records
                 .CreateIndex("IDX_LocalizationPartIndex_ContentItemId", "ContentItemId")
             );
 
-            SchemaBuilder.AlterIndexTable(nameof(LocalizedContentItemIndex), table => table
+            SchemaBuilder.AlterIndexTable<LocalizedContentItemIndex>(table => table
                 .CreateIndex("IDX_LocalizationPartIndex_State", "Published", "Latest")
             );
 
@@ -56,11 +56,11 @@ namespace OrchardCore.ContentLocalization.Records
         // This code can be removed in a later version.
         public int UpdateFrom2()
         {
-            SchemaBuilder.AlterTable(nameof(LocalizedContentItemIndex), table => table
+            SchemaBuilder.AlterIndexTable<LocalizedContentItemIndex>(table => table
                 .AddColumn<bool>("Latest", c => c.WithDefault(false))
             );
 
-            SchemaBuilder.AlterTable(nameof(LocalizedContentItemIndex), table => table
+            SchemaBuilder.AlterIndexTable<LocalizedContentItemIndex>(table => table
                 .CreateIndex("IDX_LocalizationPartIndex_State", "Published", "Latest")
             );
 
