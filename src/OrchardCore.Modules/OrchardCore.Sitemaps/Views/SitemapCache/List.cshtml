@@ -26,19 +26,19 @@
     <ul id="cache-entries" class="list-group"></ul>
         @if (Model.CachedFileNames.Any())
         {
-            
-                @for (var i = 0; i < Model.CachedFileNames.Length; i++)
-                {
-                    <li class="list-group-item" data-cacheentry="@Model.CachedFileNames[i]">
-                        <div class="properties">
-                            <div class="related">
-                                <a asp-action="Purge" asp-route-cacheFileName="@Model.CachedFileNames[i]" class="btn btn-sm btn-danger float-right" data-title="@T["Purge"]" data-message="@T["Are you sure you want to purge this sitemap?"]" itemprop="RemoveUrl UnsafeUrl">@T["Purge"]</a>
-                            </div>
+            @for (var i = 0; i < Model.CachedFileNames.Length; i++)
+            {
+                <li class="list-group-item" data-cacheentry="@Model.CachedFileNames[i]">
+                    <div class="row">
+                        <div class="col">
                             @Model.CachedFileNames[i]
                         </div>
-                    </li>
-                }
-            
+                        <div class="col">
+                            <a asp-action="Purge" asp-route-cacheFileName="@Model.CachedFileNames[i]" class="btn btn-sm btn-danger float-right" data-title="@T["Purge"]" data-message="@T["Are you sure you want to purge this sitemap?"]" itemprop="RemoveUrl UnsafeUrl">@T["Purge"]</a>
+                        </div>
+                    </div>
+                </li>
+            }
         }
         else
         {
