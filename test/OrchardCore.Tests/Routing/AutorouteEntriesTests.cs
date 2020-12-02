@@ -240,6 +240,9 @@ namespace OrchardCore.Tests.Routing
         {
             var services = new ServiceCollection();
 
+            services.AddOptions();
+            services.AddLogging();
+
             services.AddSingleton<IShellConfiguration>(sp => new ShellConfiguration());
             services.AddSingleton<IDistributedCache>(sp => new MemoryDistributedCache(Options.Create(new MemoryDistributedCacheOptions())));
             services.AddSingleton<IMemoryCache>(sp => new MemoryCache(Options.Create(new MemoryCacheOptions())));
@@ -247,8 +250,6 @@ namespace OrchardCore.Tests.Routing
             services.AddScoped<IDocumentStore, StubDocumentstore>();
             services.AddScoped(typeof(IDocumentManager<>), typeof(DocumentManager<>));
             services.AddScoped(typeof(IVolatileDocumentManager<>), typeof(VolatileDocumentManager<>));
-
-            services.AddOptions();
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IConfigureOptions<DocumentOptions>, DocumentOptionsSetup>());
 
             services.AddSingleton<LocalLock>();
