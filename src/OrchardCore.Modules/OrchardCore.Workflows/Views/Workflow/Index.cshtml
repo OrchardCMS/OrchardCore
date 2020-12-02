@@ -9,13 +9,13 @@
 <script asp-name="bootstrap-select" depends-on="admin" at="Foot"></script>
 <style asp-name="bootstrap-select" depends-on="admin"></style>
 
-<h1>@RenderTitleSegments(T["{0} Workflows", Model.WorkflowType.Name])</h1>
+<h1>@RenderTitleSegments(T["{0} Instances", Model.WorkflowType.Name])</h1>
 <zone name="Breadcrumbs">
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a asp-action="Index" asp-controller="WorkflowType">@T["Workflow Types"]</a></li>
+            <li class="breadcrumb-item"><a asp-action="Index" asp-controller="WorkflowType">@T["Workflows"]</a></li>
             <li class="breadcrumb-item"><a asp-action="Edit" asp-controller="WorkflowType" asp-route-id="@Model.WorkflowType.Id">@Model.WorkflowType.Name</a></li>
-            <li class="breadcrumb-item active" aria-current="page">@T["Workflows"]</li>
+            <li class="breadcrumb-item active" aria-current="page">@T["Instances"]</li>
         </ol>
     </nav>
 </zone>

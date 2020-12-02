@@ -5,7 +5,7 @@
 <zone name="Breadcrumbs">
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a asp-action="Index">@T["Workflow Types"]</a></li>
+            <li class="breadcrumb-item"><a asp-action="Index">@T["Workflows"]</a></li>
             <li class="breadcrumb-item active" aria-current="page">@Model.WorkflowType.Name</li>
         </ol>
     </nav>
@@ -22,7 +22,7 @@
         </div>
         <div class="btn-group float-right">
             <a class="btn btn-secondary btn-sm" asp-action="EditProperties" asp-route-id="@Model.WorkflowType.Id" asp-route-returnUrl="@FullRequestPath">@T["Properties"]</a>
-            <a class="btn btn-secondary btn-sm" asp-action="Index" asp-controller="Workflow" asp-route-workflowtypeid="@Model.WorkflowType.Id" asp-route-returnUrl="@FullRequestPath">@T["Workflows"] <span class="badge badge-light">@Model.WorkflowCount</span></a>
+            <a class="btn btn-secondary btn-sm" asp-action="Index" asp-controller="Workflow" asp-route-workflowtypeid="@Model.WorkflowType.Id" asp-route-returnUrl="@FullRequestPath">@T["Instances"] <span class="badge badge-light">@Model.WorkflowCount</span></a>
         </div>
     </div>
 </div>
