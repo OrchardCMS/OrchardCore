@@ -8,7 +8,7 @@ To get a new `DbConnection` pointing to the same database as the running site, u
 
 ### Writing database provider agnostic queries
 
-Once a connection has been created, a custom `ISqlDialect` can be obtained from `SqlDialectFactory.For(connection)` from the `YesSql` namespace in the `YesSql.Abstractions` package.
+Once a connection has been created, a custom `ISqlDialect` can be obtained from `IStore` from the `YesSql` namespace in the `YesSql.Abstractions` package.
 This service provides methods to build SQL queries that can will be use the syntax of the underlying connection.
 
 ### Handling prefixed tables
@@ -29,11 +29,13 @@ using OrchardCore.Environment.Shell
 public class AdminController : Controller
 {
     private readonly IDbConnectionAccessor _dbAccessor;
+    private readonly IStore _store;
     private readonly string _tablePrefix;
 
-    public AdminController(IDbConnectionAccessor dbAccessor, ShellSettings settings)
+    public AdminController(IDbConnectionAccessor dbAccessor, IStore store, ShellSettings settings)
     {
         _dbAccessor = dbAccessor;
+        _store = store;
         _tablePrefix = settings["TablePrefix"];
     }
 
@@ -43,7 +45,7 @@ public class AdminController : Controller
        {
            using(var transaction = connection.BeginTransaction())
            {
-                var dialect = SqlDialectFactory.For(connection);
+                var dialect = _store.Configuration.SqlDialect;
                 var customTable = dialect.QuoteForTableName($"{_tablePrefix}CustomTable");
 
                 var selectCommand = $"SELECT * FROM {customTable}";

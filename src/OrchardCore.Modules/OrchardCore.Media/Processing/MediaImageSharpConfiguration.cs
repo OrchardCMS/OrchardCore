@@ -73,7 +73,6 @@ namespace OrchardCore.Media.Processing
                 context.Commands.Remove(ResizeWebProcessor.Compand);
                 context.Commands.Remove(ResizeWebProcessor.Sampler);
                 context.Commands.Remove(ResizeWebProcessor.Anchor);
-                context.Commands.Remove(BackgroundColorWebProcessor.Color);
 
                 // When only a version command is applied pass on this request.
                 if (context.Commands.Count == 1 && context.Commands.ContainsKey(ImageVersionProcessor.VersionCommand))
@@ -94,6 +93,7 @@ namespace OrchardCore.Media.Processing
             // The following commands are not supported without a tokenized query string.
             context.Commands.Remove(ResizeWebProcessor.Xy);
             context.Commands.Remove(ImageVersionProcessor.VersionCommand);
+            context.Commands.Remove(BackgroundColorWebProcessor.Color);
 
             // Width and height must be part of the supported sizes array when tokenization is disabled.
             if (context.Commands.TryGetValue(ResizeWebProcessor.Width, out var widthString))

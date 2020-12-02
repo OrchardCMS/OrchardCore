@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -8,19 +9,18 @@ using OrchardCore.Autoroute.Models;
 using OrchardCore.Autoroute.ViewModels;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
+using OrchardCore.ContentManagement.Records;
 using OrchardCore.ContentManagement.Routing;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Settings;
+using YesSql;
 
 namespace OrchardCore.Autoroute.Drivers
 {
     public class AutoroutePartDisplay : ContentPartDisplayDriver<AutoroutePart>
     {
-        public static char[] InvalidCharactersForPath = ":?#[]@!$&'()*+,.;=<>\\|%".ToCharArray();
-        public const int MaxPathLength = 1024;
-
         private readonly AutorouteOptions _options;
         private readonly ISiteService _siteService;
         private readonly IAuthorizationService _authorizationService;
@@ -110,12 +110,29 @@ namespace OrchardCore.Autoroute.Drivers
                     await updater.TryUpdateModelAsync(model, Prefix, t => t.SetHomepage);
                 }
 
-                var errors = await context.ValidateAsync(model);
-                updater.ModelState.BindValidationResults(Prefix, errors);
+                updater.ModelState.BindValidationResults(Prefix, model.ValidatePathFieldValue(S));
+
+                // This can only validate the path if the Autoroute is not managing content item routes or the path is absolute.
+                if (!String.IsNullOrEmpty(model.Path) && (!settings.ManageContainedItemRoutes || (settings.ManageContainedItemRoutes && model.Absolute)))
+                {
+                    var possibleConflicts = await _session.QueryIndex<AutoroutePartIndex>(o => (o.Published || o.Latest) && o.Path == model.Path).ListAsync();
+                    if (possibleConflicts.Any())
+                    {
+                        var hasConflict = false;
+                        if (possibleConflicts.Any(x => x.ContentItemId != model.ContentItem.ContentItemId) ||
+                            possibleConflicts.Any(x => !string.IsNullOrEmpty(x.ContainedContentItemId) && x.ContainedContentItemId != model.ContentItem.ContentItemId))
+                        {
+                            hasConflict = true;
+                        }
+                        if (hasConflict)
+                        {
+                            updater.ModelState.AddModelError(Prefix, nameof(model.Path), S["Your permalink is already in use."]);
+                        }
+                    }
+                }
             }
 
             return Edit(model, context);
         }
-
     }
 }

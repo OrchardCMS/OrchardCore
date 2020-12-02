@@ -317,7 +317,7 @@ namespace OrchardCore.Tests.Apis.ContentManagement.ContentApiController
                 {
                     var session = scope.ServiceProvider.GetRequiredService<ISession>();
                     var newAutoroutePartIndex = await session
-                        .QueryIndex<AutoroutePartIndex>(x => x.ContentItemId == publishedContentItem.ContentItemId)
+                        .QueryIndex<AutoroutePartIndex>(o => o.Published && o.ContentItemId == publishedContentItem.ContentItemId)
                         .FirstOrDefaultAsync();
 
                     // The Autoroute part was not welded on, so ContentManager.NewAsync should add it
