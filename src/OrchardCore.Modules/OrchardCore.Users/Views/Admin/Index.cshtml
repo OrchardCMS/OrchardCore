@@ -20,6 +20,9 @@
                         <span class="input-group-text bg-secondary text-light">@T["Filter"]</span>
                     </div>
                     <input asp-for="Options.Search" class="form-control" placeholder="@T["Search"]" type="search" autofocus />
+                    <div class="input-group-append">
+                        <button type="submit" class="btn btn-sm btn-secondary">@T["Search"]</button>
+                    </div>
                 </div>
                 <div class="btn-group float-right">
                     <a asp-route-action="Create" class="btn btn-sm btn-secondary float-right create" role="button">@T["Add User"]</a>

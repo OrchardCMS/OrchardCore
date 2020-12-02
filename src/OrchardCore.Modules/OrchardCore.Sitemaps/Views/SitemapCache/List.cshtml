@@ -2,30 +2,27 @@
 
 <h1>@RenderTitleSegments(T["Sitemaps Cache"])</h1>
 
-<form autocomplete="off" onsubmit="return false;">
-    <div class="card mb-3 position-sticky action-bar">
-        <div class="card-body bg-primary p-3">
-            <div class="form-group mb-n1">
-                <div class="input-group input-group-sm w-lg-50 d-inline-flex">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text bg-secondary text-light">@T["Filter"]</span>
-                    </div>
-                    <input id="search-box" class="form-control" placeholder="@T["Search"]" type="search" autofocus />
+<div class="card mb-3 position-sticky action-bar">
+    <div class="card-body bg-primary p-3">
+        <div class="form-group mb-n1">
+            <div class="input-group input-group-sm w-lg-50 d-inline-flex">
+                <div class="input-group-prepend">
+                    <span class="input-group-text bg-secondary text-light">@T["Filter"]</span>
                 </div>
-                <div class="btn-group float-right">
-                    <a asp-route-action="PurgeAll" class="btn btn-sm btn-danger float-right" data-title="@T["Purge All"]" data-message="@T["Are you sure you want to purge the entire sitemap cache?"]" itemprop="RemoveUrl UnsafeUrl">@T["Purge All"]</a>
-                </div>
+                <input id="search-box" class="form-control" placeholder="@T["Search"]" type="search" autofocus />
+            </div>
+            <div class="btn-group float-right">
+                <a asp-route-action="PurgeAll" class="btn btn-sm btn-danger float-right" data-title="@T["Purge All"]" data-message="@T["Are you sure you want to purge the entire sitemap cache?"]" itemprop="RemoveUrl UnsafeUrl">@T["Purge All"]</a>
             </div>
         </div>
     </div>
-</form>
+</div>
 
+@* the form is necessary to generate and antiforgery token for the purge action *@
 <form asp-action="List">
-    @* the form is necessary to generate and antiforgery token for the purge action *@
-
-    <ul id="cache-entries" class="list-group"></ul>
-        @if (Model.CachedFileNames.Any())
-        {
+    @if (Model.CachedFileNames.Any())
+    {
+        <ul id="cache-entries" class="list-group">
             @for (var i = 0; i < Model.CachedFileNames.Length; i++)
             {
                 <li class="list-group-item" data-cacheentry="@Model.CachedFileNames[i]">
@@ -39,22 +36,17 @@
                     </div>
                 </li>
             }
-        }
-        else
-        {
-            <li id="none-alert" class="list-group-item">
-                <div class="alert alert-info mb-1" role="alert">
-                    @T["<strong>Nothing here!</strong> There are no sitemaps cached for the moment."]
-                </div>
-            </li>
-        }
-        <li id="search-alert" class="list-group-item d-none">
-            <div class="alert alert-info mb-1" role="alert">
-                @T["<strong>Nothing here!</strong> Your search returned no results."]
-            </div>
-        </li>
-    </ul>
-
+        </ul>
+    }
+    else
+    {
+        <div id="none-alert" class="alert alert-info mb-1" role="alert">
+            @T["<strong>Nothing here!</strong> There are no sitemaps cached for the moment."]
+        </div>
+    }
+    <div id="search-alert" class="alert alert-info mb-1 d-none" role="alert">
+        @T["<strong>Nothing here!</strong> Your search returned no results."]
+    </div>
 </form>
 
 <script at="Foot">
