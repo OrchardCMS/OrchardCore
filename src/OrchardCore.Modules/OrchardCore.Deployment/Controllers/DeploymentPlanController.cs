@@ -134,7 +134,7 @@ namespace OrchardCore.Deployment.Controllers
                         {
                             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageDeploymentPlan, item))
                             {
-                                _notifier.Warning(H["Couldn't remove selected admin menu(s)."]);
+                                _notifier.Warning(H["Couldn't remove selected deployment plans."]);
                                 return Forbid();
                             }
 

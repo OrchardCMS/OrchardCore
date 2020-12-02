@@ -298,13 +298,13 @@ namespace OrchardCore.Media.Controllers
                         {
                             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMediaProfiles, item))
                             {
-                                _notifier.Warning(H["Couldn't remove selected media profile(s)."]);
+                                _notifier.Warning(H["Couldn't remove selected media profiles."]);
                                 return Forbid();
                             }
 
                             await _mediaProfilesManager.RemoveMediaProfileAsync(item.Key);
                         }
-                        _notifier.Success(H["Media profile(s) successfully removed."]);
+                        _notifier.Success(H["Media profiles successfully removed."]);
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();

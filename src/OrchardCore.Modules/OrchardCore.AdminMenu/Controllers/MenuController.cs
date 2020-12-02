@@ -244,14 +244,14 @@ namespace OrchardCore.AdminMenu.Controllers
                         {
                             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAdminMenu, item))
                             {
-                                _notifier.Warning(H["Couldn't remove selected admin menu(s)."]);
+                                _notifier.Warning(H["Couldn't remove selected admin menus."]);
                                 return Forbid();
                             }
 
                             var adminMenu = adminMenuList.FirstOrDefault(x => String.Equals(x.Id, item.Id, StringComparison.OrdinalIgnoreCase));
                             await _adminMenuService.DeleteAsync(adminMenu);
                         }
-                        _notifier.Success(H["Admin menu(s) successfully removed."]);
+                        _notifier.Success(H["Admin menus successfully removed."]);
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();
