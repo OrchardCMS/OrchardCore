@@ -19,11 +19,6 @@ namespace OrchardCore.AdminMenu.ViewModels
 
     public class ContentOptions
     {
-        public ContentOptions()
-        {
-            BulkAction = ViewModels.ContentsBulkAction.None;
-        }
-
         public string Search { get; set; }
         public ContentsBulkAction BulkAction { get; set; }
 

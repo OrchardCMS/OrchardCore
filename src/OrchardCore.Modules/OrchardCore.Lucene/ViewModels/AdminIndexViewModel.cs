@@ -16,11 +16,6 @@ namespace OrchardCore.Lucene.ViewModels
 
     public class ContentOptions
     {
-        public ContentOptions()
-        {
-            BulkAction = ViewModels.ContentsBulkAction.None;
-        }
-
         public ContentsBulkAction BulkAction { get; set; }
 
         public string Search { get; set; }

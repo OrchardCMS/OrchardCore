@@ -62,12 +62,6 @@ namespace OrchardCore.AdminMenu.Controllers
             var siteSettings = await _siteService.GetSiteSettingsAsync();
             var pager = new Pager(pagerParameters, siteSettings.PageSize);
 
-            // default options
-            if (options == null)
-            {
-                options = new ContentOptions();
-            }
-
             var adminMenuList = (await _adminMenuService.GetAdminMenuListAsync()).AdminMenu;
 
             if (!string.IsNullOrWhiteSpace(options.Search))

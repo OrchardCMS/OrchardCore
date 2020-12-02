@@ -60,7 +60,7 @@ namespace OrchardCore.Deployment.Controllers
             H = htmlLocalizer;
         }
 
-        public async Task<IActionResult> Index(DeploymentPlanIndexOptions options, PagerParameters pagerParameters)
+        public async Task<IActionResult> Index(ContentOptions options, PagerParameters pagerParameters)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageDeploymentPlan))
             {
@@ -74,12 +74,6 @@ namespace OrchardCore.Deployment.Controllers
 
             var siteSettings = await _siteService.GetSiteSettingsAsync();
             var pager = new Pager(pagerParameters, siteSettings.PageSize);
-
-            // default options
-            if (options == null)
-            {
-                options = new DeploymentPlanIndexOptions();
-            }
 
             var deploymentPlans = _session.Query<DeploymentPlan, DeploymentPlanIndex>();
 
@@ -109,7 +103,7 @@ namespace OrchardCore.Deployment.Controllers
             };
 
             model.Options.DeploymentPlansBulkAction = new List<SelectListItem>() {
-                new SelectListItem() { Text = S["Delete"], Value = nameof(DeploymentPlansBulkAction.Delete) }
+                new SelectListItem() { Text = S["Delete"], Value = nameof(ContentsBulkAction.Delete) }
             };
 
             return View(model);
@@ -126,16 +120,16 @@ namespace OrchardCore.Deployment.Controllers
 
         [HttpPost, ActionName(nameof(Index))]
         [FormValueRequired("submit.BulkAction")]
-        public async Task<ActionResult> IndexBulkActionPOST(DeploymentPlanIndexOptions options, IEnumerable<int> itemIds)
+        public async Task<ActionResult> IndexBulkActionPOST(ContentOptions options, IEnumerable<int> itemIds)
         {
             if (itemIds?.Count() > 0)
             {
                 var checkedItems = await _session.Query<DeploymentPlan, DeploymentPlanIndex>().Where(x => x.DocumentId.IsIn(itemIds)).ListAsync();
                 switch (options.BulkAction)
                 {
-                    case DeploymentPlansBulkAction.None:
+                    case ContentsBulkAction.None:
                         break;
-                    case DeploymentPlansBulkAction.Delete:
+                    case ContentsBulkAction.Delete:
                         foreach (var item in checkedItems)
                         {
                             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageDeploymentPlan, item))
