@@ -20,7 +20,12 @@ namespace OrchardCore.Secrets.Services
             var secret = await _rsaSecretService.GetSecretAsync(secretName);
             if (secret == null)
             {
-                throw new Exception("Secret not found " + secretName);
+                throw new InvalidOperationException("Secret not found " + secretName);
+            }
+
+            if (secret.KeyType != RsaSecretType.PublicPrivatePair)
+            {
+                throw new InvalidOperationException("Secret provides decryption only and cannot be used for encryption");
             }
 
             using var rsa = RSA.Create();
@@ -35,14 +40,6 @@ namespace OrchardCore.Secrets.Services
 
             var key = rsa.Encrypt(aes.Key, RSAEncryptionPadding.Pkcs1);
             var iv = rsa.Encrypt(aes.IV, RSAEncryptionPadding.Pkcs1);
-            // var descriptor = new HybridKeyDescriptor
-            // {
-            //     SecretName = secretName,
-            //     Key = Convert.ToBase64String(key),
-            //     Iv = Convert.ToBase64String(iv)
-            // };
-            // var serialized = JsonConvert.SerializeObject(descriptor);
-            // var keyDescriptor = Convert.ToBase64String(Encoding.UTF8.GetBytes(serialized));
 
             return new DefaultEncryptor(encryptor, secretName, key, iv);
         }

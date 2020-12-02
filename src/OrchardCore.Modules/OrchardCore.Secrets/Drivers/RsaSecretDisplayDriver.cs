@@ -1,8 +1,10 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
@@ -59,8 +61,6 @@ namespace OrchardCore.Secrets.Drivers
                     // The private key is never returned to the view when editing.
                     model.PublicKey = secret.PublicKey;
 
-                    // TODO remove here for testing
-                    // model.PrivateKey = secret.PrivateKey;
                     using (var rsa = RSA.Create())
                     {
                         model.NewPublicKey = Convert.ToBase64String(rsa.ExportSubjectPublicKeyInfo());
@@ -68,6 +68,12 @@ namespace OrchardCore.Secrets.Drivers
                     }
                 }
 
+                model.KeyType = secret.KeyType;
+                model.KeyTypes = new List<SelectListItem>
+                {
+                    new SelectListItem() { Text = S["Public Key"], Value = ((int)RsaSecretType.Public).ToString(), Selected = model.KeyType == RsaSecretType.Public },
+                    new SelectListItem() { Text = S["Public / Private Key Pair"], Value = ((int)RsaSecretType.PublicPrivatePair).ToString(), Selected = model.KeyType == RsaSecretType.PublicPrivatePair }
+                };
                 model.Context = context;
             }).Location("Content"));
         }
@@ -81,6 +87,7 @@ namespace OrchardCore.Secrets.Drivers
                 // transfer values, then validate.
                 // TODO we should just store this as a UTF8 string not pem.
 
+                secret.KeyType = model.KeyType;
 
                 // The view will contain the private key
                 if (context.IsNew)
@@ -89,28 +96,36 @@ namespace OrchardCore.Secrets.Drivers
                     secret.PrivateKey = model.PrivateKey;
                 }
 
-                if (model.CycleKey)
+                if (model.KeyType == RsaSecretType.Public)
+                {
+                    secret.PublicKey = model.PublicKey;
+                }
+
+                if (model.CycleKey && model.KeyType == RsaSecretType.PublicPrivatePair)
                 {
                     secret.PublicKey = model.NewPublicKey;
                     secret.PrivateKey = model.NewPrivateKey;
                 }
 
-                try
+                if (model.KeyType == RsaSecretType.PublicPrivatePair)
                 {
-                    using (var rsa = RSA.Create())
+                    try
                     {
-                        rsa.ImportRSAPrivateKey(secret.PrivateKeyAsBytes(), out _);
+                        using (var rsa = RSA.Create())
+                        {
+                            rsa.ImportRSAPrivateKey(secret.PrivateKeyAsBytes(), out _);
+                        }
                     }
-                }
-                catch (CryptographicException)
-                {
-                    if (context.IsNew)
+                    catch (CryptographicException)
                     {
-                        context.Updater.ModelState.AddModelError(Prefix, nameof(model.PrivateKey), S["The private key cannot be decoded."]);
-                    }
-                    else
-                    {
-                        context.Updater.ModelState.AddModelError(Prefix, nameof(model.NewPrivateKey), S["The private key cannot be decoded."]);
+                        if (context.IsNew)
+                        {
+                            context.Updater.ModelState.AddModelError(Prefix, nameof(model.PrivateKey), S["The private key cannot be decoded."]);
+                        }
+                        else
+                        {
+                            context.Updater.ModelState.AddModelError(Prefix, nameof(model.NewPrivateKey), S["The private key cannot be decoded."]);
+                        }
                     }
                 }
 
@@ -129,7 +144,7 @@ namespace OrchardCore.Secrets.Drivers
                     }
                     else
                     {
-                        context.Updater.ModelState.AddModelError(Prefix, nameof(model.NewPrivateKey), S["The public key cannot be decoded"]);
+                        context.Updater.ModelState.AddModelError(Prefix, nameof(model.NewPublicKey), S["The public key cannot be decoded"]);
                     }
                 }
             }

@@ -2,8 +2,15 @@ using System;
 
 namespace OrchardCore.Secrets
 {
+    public enum RsaSecretType
+    {
+        PublicPrivatePair,
+        Public
+    }
+    
     public class RsaSecret : Secret
     {
+        public RsaSecretType KeyType { get; set; }
         public string PublicKey { get; set; }
         public string PrivateKey { get; set; }
     }
