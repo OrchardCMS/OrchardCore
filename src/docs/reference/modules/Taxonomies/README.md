@@ -14,8 +14,6 @@ The display for the `Taxonomy` is then rendered by the `TaxonomyPart` shape.
 
 This uses the `TermShape` to display a hierarchy of the `Terms`
 
-It has a flag to enable drag and drop ordering of the list of content items that have been categorized with a `Term` of the `Taxonomy`, via the `TaxonomyField`. This option is disabled by default on any new taxonomy content item. When enabled, the ordering is then done on a term by term basis. When a content item is categorized with a `Term`, it will appear at the first position of that term's list. It is only possible to order the Published version of each content item, bfdsfsdfdsfThe drag and drop list of categorized content items will show the latest version of each item and, if it is a draft, will also affect the order of the published version.
-
 ### TermPart
 
 The `TermPart` is rendered when a `Term` is displayed with the `Container routing` feature of the `AutoroutePart`.
