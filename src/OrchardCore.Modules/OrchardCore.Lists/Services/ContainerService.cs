@@ -154,7 +154,7 @@ namespace OrchardCore.Lists.Services
         {
             if (containedItemOptions == null)
             {
-                containedItemOptions = new ContainedItemOptions();
+                throw new NullReferenceException();
             }
 
             IQuery<ContentItem> query = null;
@@ -359,31 +359,28 @@ namespace OrchardCore.Lists.Services
         {
             if (!string.IsNullOrEmpty(containedItemOptions.DisplayText))
             {
-                containedItems.With<ContentItemIndex>().Where(i => i.DisplayText.Contains(containedItemOptions.DisplayText));
+                containedItems.With<ContentItemIndex>(i => i.DisplayText.Contains(containedItemOptions.DisplayText));
             }
 
-            if (containedItemOptions.Status != ContentsStatus.None)
+            switch (containedItemOptions.Status)
             {
-                switch (containedItemOptions.Status)
-                {
-                    case ContentsStatus.Draft:
-                        containedItems.With<ContentItemIndex>(i => !i.Published);
-                        break;
-                    case ContentsStatus.Published:
-                        containedItems.With<ContentItemIndex>(i => i.Published);
-                        break;
-                    case ContentsStatus.Owner:
-                        var currentUserName = _httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier);
+                case ContentsStatus.Draft:
+                    containedItems.With<ContentItemIndex>(i => !i.Published && i.Latest);
+                    break;
+                case ContentsStatus.Published:
+                    containedItems.With<ContentItemIndex>(i => i.Published);
+                    break;
+                case ContentsStatus.Owner:
+                    var currentUserName = _httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier);
 
-                        if (currentUserName != null)
-                        {
-                            containedItems?.With<ContentItemIndex>(i => i.Owner == currentUserName.ToString());
-                        }
+                    if (currentUserName != null)
+                    {
+                        containedItems.With<ContentItemIndex>(i => i.Owner == currentUserName.ToString());
+                    }
 
-                        break;
-                    default:
-                        throw new NotSupportedException("Unknown status filter.");
-                }
+                    break;
+                default:
+                    throw new NotSupportedException("Unknown status filter.");
             }
 
             return containedItems;

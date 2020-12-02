@@ -2,9 +2,8 @@ namespace OrchardCore.Lists.Models
 {
     public enum ContentsStatus
     {
-        None,
-        Draft,
         Published,
+        Draft,
         Owner
     }
 
