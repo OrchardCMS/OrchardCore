@@ -1,5 +1,8 @@
+using System;
 using System.Collections.Generic;
+using System.Globalization;
 using Microsoft.AspNetCore.WebUtilities;
+using OrchardCore.Media.Fields;
 
 namespace OrchardCore.Media.Processing
 {
@@ -26,7 +29,7 @@ namespace OrchardCore.Media.Processing
 
     internal class ImageSharpUrlFormatter
     {
-        public static string GetImageResizeUrl(string path, IDictionary<string, string> queryStringParams = null, int? width = null, int? height = null, ResizeMode resizeMode = ResizeMode.Undefined, int? quality = null, Format format = Format.Undefined)
+        public static string GetImageResizeUrl(string path, IDictionary<string, string> queryStringParams = null, int? width = null, int? height = null, ResizeMode resizeMode = ResizeMode.Undefined, int? quality = null, Format format = Format.Undefined, Anchor anchor = null, string bgcolor = null)
         {
             if (string.IsNullOrEmpty(path) || (!width.HasValue && !height.HasValue && queryStringParams == null))
             {
@@ -56,12 +59,21 @@ namespace OrchardCore.Media.Processing
             if (quality.HasValue)
             {
                 queryStringParams["quality"] = quality.ToString();
-
             }
 
             if (format != Format.Undefined)
             {
                 queryStringParams["format"] = format.ToString().ToLower();
+            }
+
+            if (anchor != null)
+            {
+                queryStringParams["rxy"] = anchor.X.ToString(CultureInfo.InvariantCulture) + ',' + anchor.Y.ToString(CultureInfo.InvariantCulture);
+            }
+
+            if (!String.IsNullOrEmpty(bgcolor))
+            {
+                queryStringParams["bgcolor"] = bgcolor;
             }
 
             return QueryHelpers.AddQueryString(path, queryStringParams);

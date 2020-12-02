@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
+using OrchardCore.AdminMenu.Models;
 
-namespace OrchardCore.AdminMenu
+namespace OrchardCore.AdminMenu.Services
 {
     /// <summary>
     /// Provides services to manage the admin menus.

@@ -23,35 +23,35 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                 .Column<string>("BigText", column => column.Nullable().Unlimited())
             );
 
-            SchemaBuilder.AlterTable(nameof(TextFieldIndex), table => table
+            SchemaBuilder.AlterIndexTable<TextFieldIndex>(table => table
                 .CreateIndex("IDX_TextFieldIndex_ContentItemId", "ContentItemId")
             );
 
-            SchemaBuilder.AlterTable(nameof(TextFieldIndex), table => table
+            SchemaBuilder.AlterIndexTable<TextFieldIndex>(table => table
                 .CreateIndex("IDX_TextFieldIndex_ContentItemVersionId", "ContentItemVersionId")
             );
 
-            SchemaBuilder.AlterTable(nameof(TextFieldIndex), table => table
+            SchemaBuilder.AlterIndexTable<TextFieldIndex>(table => table
                 .CreateIndex("IDX_TextFieldIndex_ContentType", "ContentType")
             );
 
-            SchemaBuilder.AlterTable(nameof(TextFieldIndex), table => table
+            SchemaBuilder.AlterIndexTable<TextFieldIndex>(table => table
                 .CreateIndex("IDX_TextFieldIndex_ContentPart", "ContentPart")
             );
 
-            SchemaBuilder.AlterTable(nameof(TextFieldIndex), table => table
+            SchemaBuilder.AlterIndexTable<TextFieldIndex>(table => table
                 .CreateIndex("IDX_TextFieldIndex_ContentField", "ContentField")
             );
 
-            SchemaBuilder.AlterTable(nameof(TextFieldIndex), table => table
+            SchemaBuilder.AlterIndexTable<TextFieldIndex>(table => table
                 .CreateIndex("IDX_TextFieldIndex_Published", "Published")
             );
 
-            SchemaBuilder.AlterTable(nameof(TextFieldIndex), table => table
+            SchemaBuilder.AlterIndexTable<TextFieldIndex>(table => table
                 .CreateIndex("IDX_TextFieldIndex_Latest", "Latest")
             );
 
-            SchemaBuilder.AlterTable(nameof(TextFieldIndex), table => table
+            SchemaBuilder.AlterIndexTable<TextFieldIndex>(table => table
                 .CreateIndex("IDX_TextFieldIndex_Text", "Text")
             );
 
@@ -66,35 +66,35 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                 .Column<bool>("Boolean", column => column.Nullable())
             );
 
-            SchemaBuilder.AlterTable(nameof(BooleanFieldIndex), table => table
+            SchemaBuilder.AlterIndexTable<BooleanFieldIndex>(table => table
                 .CreateIndex("IDX_BooleanFieldIndex_ContentItemId", "ContentItemId")
             );
 
-            SchemaBuilder.AlterTable(nameof(BooleanFieldIndex), table => table
+            SchemaBuilder.AlterIndexTable<BooleanFieldIndex>(table => table
                 .CreateIndex("IDX_BooleanFieldIndex_ContentItemVersionId", "ContentItemVersionId")
             );
 
-            SchemaBuilder.AlterTable(nameof(BooleanFieldIndex), table => table
+            SchemaBuilder.AlterIndexTable<BooleanFieldIndex>(table => table
                 .CreateIndex("IDX_BooleanFieldIndex_ContentType", "ContentType")
             );
 
-            SchemaBuilder.AlterTable(nameof(BooleanFieldIndex), table => table
+            SchemaBuilder.AlterIndexTable<BooleanFieldIndex>(table => table
                 .CreateIndex("IDX_BooleanFieldIndex_ContentPart", "ContentPart")
             );
 
-            SchemaBuilder.AlterTable(nameof(BooleanFieldIndex), table => table
+            SchemaBuilder.AlterIndexTable<BooleanFieldIndex>(table => table
                 .CreateIndex("IDX_BooleanFieldIndex_ContentField", "ContentField")
             );
 
-            SchemaBuilder.AlterTable(nameof(BooleanFieldIndex), table => table
+            SchemaBuilder.AlterIndexTable<BooleanFieldIndex>(table => table
                 .CreateIndex("IDX_BooleanFieldIndex_Published", "Published")
             );
 
-            SchemaBuilder.AlterTable(nameof(BooleanFieldIndex), table => table
+            SchemaBuilder.AlterIndexTable<BooleanFieldIndex>(table => table
                 .CreateIndex("IDX_BooleanFieldIndex_Latest", "Latest")
             );
 
-            SchemaBuilder.AlterTable(nameof(BooleanFieldIndex), table => table
+            SchemaBuilder.AlterIndexTable<BooleanFieldIndex>(table => table
                 .CreateIndex("IDX_BooleanFieldIndex_Boolean", "Boolean")
             );
 
@@ -109,35 +109,35 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                 .Column<decimal>("Numeric", column => column.Nullable())
             );
 
-            SchemaBuilder.AlterTable(nameof(NumericFieldIndex), table => table
+            SchemaBuilder.AlterIndexTable<NumericFieldIndex>(table => table
                 .CreateIndex("IDX_NumericFieldIndex_ContentItemId", "ContentItemId")
             );
 
-            SchemaBuilder.AlterTable(nameof(NumericFieldIndex), table => table
+            SchemaBuilder.AlterIndexTable<NumericFieldIndex>(table => table
                 .CreateIndex("IDX_NumericFieldIndex_ContentItemVersionId", "ContentItemVersionId")
             );
 
-            SchemaBuilder.AlterTable(nameof(NumericFieldIndex), table => table
+            SchemaBuilder.AlterIndexTable<NumericFieldIndex>(table => table
                 .CreateIndex("IDX_NumericFieldIndex_ContentType", "ContentType")
             );
 
-            SchemaBuilder.AlterTable(nameof(NumericFieldIndex), table => table
+            SchemaBuilder.AlterIndexTable<NumericFieldIndex>(table => table
                 .CreateIndex("IDX_NumericFieldIndex_ContentPart", "ContentPart")
             );
 
-            SchemaBuilder.AlterTable(nameof(NumericFieldIndex), table => table
+            SchemaBuilder.AlterIndexTable<NumericFieldIndex>(table => table
                 .CreateIndex("IDX_NumericFieldIndex_ContentField", "ContentField")
             );
 
-            SchemaBuilder.AlterTable(nameof(NumericFieldIndex), table => table
+            SchemaBuilder.AlterIndexTable<NumericFieldIndex>(table => table
                 .CreateIndex("IDX_NumericFieldIndex_Published", "Published")
             );
 
-            SchemaBuilder.AlterTable(nameof(NumericFieldIndex), table => table
+            SchemaBuilder.AlterIndexTable<NumericFieldIndex>(table => table
                 .CreateIndex("IDX_NumericFieldIndex_Latest", "Latest")
             );
 
-            SchemaBuilder.AlterTable(nameof(NumericFieldIndex), table => table
+            SchemaBuilder.AlterIndexTable<NumericFieldIndex>(table => table
                 .CreateIndex("IDX_NumericFieldIndex_Numeric", "Numeric")
             );
 
@@ -152,35 +152,35 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                 .Column<DateTime>("DateTime", column => column.Nullable())
             );
 
-            SchemaBuilder.AlterTable(nameof(DateTimeFieldIndex), table => table
+            SchemaBuilder.AlterIndexTable<DateTimeFieldIndex>(table => table
                 .CreateIndex("IDX_DateTimeFieldIndex_ContentItemId", "ContentItemId")
             );
 
-            SchemaBuilder.AlterTable(nameof(DateTimeFieldIndex), table => table
+            SchemaBuilder.AlterIndexTable<DateTimeFieldIndex>(table => table
                 .CreateIndex("IDX_DateTimeFieldIndex_ContentItemVersionId", "ContentItemVersionId")
             );
 
-            SchemaBuilder.AlterTable(nameof(DateTimeFieldIndex), table => table
+            SchemaBuilder.AlterIndexTable<DateTimeFieldIndex>(table => table
                 .CreateIndex("IDX_DateTimeFieldIndex_ContentType", "ContentType")
             );
 
-            SchemaBuilder.AlterTable(nameof(DateTimeFieldIndex), table => table
+            SchemaBuilder.AlterIndexTable<DateTimeFieldIndex>(table => table
                 .CreateIndex("IDX_DateTimeFieldIndex_ContentPart", "ContentPart")
             );
 
-            SchemaBuilder.AlterTable(nameof(DateTimeFieldIndex), table => table
+            SchemaBuilder.AlterIndexTable<DateTimeFieldIndex>(table => table
                 .CreateIndex("IDX_DateTimeFieldIndex_ContentField", "ContentField")
             );
 
-            SchemaBuilder.AlterTable(nameof(DateTimeFieldIndex), table => table
+            SchemaBuilder.AlterIndexTable<DateTimeFieldIndex>(table => table
                 .CreateIndex("IDX_DateTimeFieldIndex_Published", "Published")
             );
 
-            SchemaBuilder.AlterTable(nameof(DateTimeFieldIndex), table => table
+            SchemaBuilder.AlterIndexTable<DateTimeFieldIndex>(table => table
                 .CreateIndex("IDX_DateTimeFieldIndex_Latest", "Latest")
             );
 
-            SchemaBuilder.AlterTable(nameof(DateTimeFieldIndex), table => table
+            SchemaBuilder.AlterIndexTable<DateTimeFieldIndex>(table => table
                 .CreateIndex("IDX_DateTimeFieldIndex_DateTime", "DateTime")
             );
 
@@ -195,35 +195,35 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                 .Column<DateTime>("Date", column => column.Nullable())
             );
 
-            SchemaBuilder.AlterTable(nameof(DateFieldIndex), table => table
+            SchemaBuilder.AlterIndexTable<DateFieldIndex>(table => table
                 .CreateIndex("IDX_DateFieldIndex_ContentItemId", "ContentItemId")
             );
 
-            SchemaBuilder.AlterTable(nameof(DateFieldIndex), table => table
+            SchemaBuilder.AlterIndexTable<DateFieldIndex>(table => table
                 .CreateIndex("IDX_DateFieldIndex_ContentItemVersionId", "ContentItemVersionId")
             );
 
-            SchemaBuilder.AlterTable(nameof(DateFieldIndex), table => table
+            SchemaBuilder.AlterIndexTable<DateFieldIndex>(table => table
                 .CreateIndex("IDX_DateFieldIndex_ContentType", "ContentType")
             );
 
-            SchemaBuilder.AlterTable(nameof(DateFieldIndex), table => table
+            SchemaBuilder.AlterIndexTable<DateFieldIndex>(table => table
                 .CreateIndex("IDX_DateFieldIndex_ContentPart", "ContentPart")
             );
 
-            SchemaBuilder.AlterTable(nameof(DateFieldIndex), table => table
+            SchemaBuilder.AlterIndexTable<DateFieldIndex>(table => table
                 .CreateIndex("IDX_DateFieldIndex_ContentField", "ContentField")
             );
 
-            SchemaBuilder.AlterTable(nameof(DateFieldIndex), table => table
+            SchemaBuilder.AlterIndexTable<DateFieldIndex>(table => table
                 .CreateIndex("IDX_DateFieldIndex_Published", "Published")
             );
 
-            SchemaBuilder.AlterTable(nameof(DateFieldIndex), table => table
+            SchemaBuilder.AlterIndexTable<DateFieldIndex>(table => table
                 .CreateIndex("IDX_DateFieldIndex_Latest", "Latest")
             );
 
-            SchemaBuilder.AlterTable(nameof(DateFieldIndex), table => table
+            SchemaBuilder.AlterIndexTable<DateFieldIndex>(table => table
                 .CreateIndex("IDX_DateFieldIndex_Date", "Date")
             );
 
@@ -238,35 +238,35 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                 .Column<string>("SelectedContentItemId", column => column.WithLength(26))
             );
 
-            SchemaBuilder.AlterTable(nameof(ContentPickerFieldIndex), table => table
+            SchemaBuilder.AlterIndexTable<ContentPickerFieldIndex>(table => table
                 .CreateIndex("IDX_ContentPickerFieldIndex_ContentItemId", "ContentItemId")
             );
 
-            SchemaBuilder.AlterTable(nameof(ContentPickerFieldIndex), table => table
+            SchemaBuilder.AlterIndexTable<ContentPickerFieldIndex>(table => table
                 .CreateIndex("IDX_ContentPickerFieldIndex_ContentItemVersionId", "ContentItemVersionId")
             );
 
-            SchemaBuilder.AlterTable(nameof(ContentPickerFieldIndex), table => table
+            SchemaBuilder.AlterIndexTable<ContentPickerFieldIndex>(table => table
                 .CreateIndex("IDX_ContentPickerFieldIndex_ContentType", "ContentType")
             );
 
-            SchemaBuilder.AlterTable(nameof(ContentPickerFieldIndex), table => table
+            SchemaBuilder.AlterIndexTable<ContentPickerFieldIndex>(table => table
                 .CreateIndex("IDX_ContentPickerFieldIndex_ContentPart", "ContentPart")
             );
 
-            SchemaBuilder.AlterTable(nameof(ContentPickerFieldIndex), table => table
+            SchemaBuilder.AlterIndexTable<ContentPickerFieldIndex>(table => table
                 .CreateIndex("IDX_ContentPickerFieldIndex_ContentField", "ContentField")
             );
 
-            SchemaBuilder.AlterTable(nameof(ContentPickerFieldIndex), table => table
+            SchemaBuilder.AlterIndexTable<ContentPickerFieldIndex>(table => table
                 .CreateIndex("IDX_ContentPickerFieldIndex_Published", "Published")
             );
 
-            SchemaBuilder.AlterTable(nameof(ContentPickerFieldIndex), table => table
+            SchemaBuilder.AlterIndexTable<ContentPickerFieldIndex>(table => table
                 .CreateIndex("IDX_ContentPickerFieldIndex_Latest", "Latest")
             );
 
-            SchemaBuilder.AlterTable(nameof(ContentPickerFieldIndex), table => table
+            SchemaBuilder.AlterIndexTable<ContentPickerFieldIndex>(table => table
                 .CreateIndex("IDX_ContentPickerFieldIndex_SelectedContentItemId", "SelectedContentItemId")
             );
 
@@ -281,35 +281,35 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                 .Column<DateTime>("Time", column => column.Nullable())
             );
 
-            SchemaBuilder.AlterTable(nameof(TimeFieldIndex), table => table
+            SchemaBuilder.AlterIndexTable<TimeFieldIndex>(table => table
                 .CreateIndex("IDX_TimeFieldIndex_ContentItemId", "ContentItemId")
             );
 
-            SchemaBuilder.AlterTable(nameof(TimeFieldIndex), table => table
+            SchemaBuilder.AlterIndexTable<TimeFieldIndex>(table => table
                 .CreateIndex("IDX_TimeFieldIndex_ContentItemVersionId", "ContentItemVersionId")
             );
 
-            SchemaBuilder.AlterTable(nameof(TimeFieldIndex), table => table
+            SchemaBuilder.AlterIndexTable<TimeFieldIndex>(table => table
                 .CreateIndex("IDX_TimeFieldIndex_ContentType", "ContentType")
             );
 
-            SchemaBuilder.AlterTable(nameof(TimeFieldIndex), table => table
+            SchemaBuilder.AlterIndexTable<TimeFieldIndex>(table => table
                 .CreateIndex("IDX_TimeFieldIndex_ContentPart", "ContentPart")
             );
 
-            SchemaBuilder.AlterTable(nameof(TimeFieldIndex), table => table
+            SchemaBuilder.AlterIndexTable<TimeFieldIndex>(table => table
                 .CreateIndex("IDX_TimeFieldIndex_ContentField", "ContentField")
             );
 
-            SchemaBuilder.AlterTable(nameof(TimeFieldIndex), table => table
+            SchemaBuilder.AlterIndexTable<TimeFieldIndex>(table => table
                 .CreateIndex("IDX_TimeFieldIndex_Published", "Published")
             );
 
-            SchemaBuilder.AlterTable(nameof(TimeFieldIndex), table => table
+            SchemaBuilder.AlterIndexTable<TimeFieldIndex>(table => table
                 .CreateIndex("IDX_TimeFieldIndex_Latest", "Latest")
             );
 
-            SchemaBuilder.AlterTable(nameof(TimeFieldIndex), table => table
+            SchemaBuilder.AlterIndexTable<TimeFieldIndex>(table => table
                 .CreateIndex("IDX_TimeFieldIndex_Time", "Time")
             );
 
@@ -330,39 +330,39 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                 .Column<string>("BigText", column => column.Nullable().Unlimited())
             );
 
-            SchemaBuilder.AlterTable(nameof(LinkFieldIndex), table => table
+            SchemaBuilder.AlterIndexTable<LinkFieldIndex>(table => table
                 .CreateIndex("IDX_LinkFieldIndex_ContentItemId", "ContentItemId")
             );
 
-            SchemaBuilder.AlterTable(nameof(LinkFieldIndex), table => table
+            SchemaBuilder.AlterIndexTable<LinkFieldIndex>(table => table
                 .CreateIndex("IDX_LinkFieldIndex_ContentItemVersionId", "ContentItemVersionId")
             );
 
-            SchemaBuilder.AlterTable(nameof(LinkFieldIndex), table => table
+            SchemaBuilder.AlterIndexTable<LinkFieldIndex>(table => table
                 .CreateIndex("IDX_LinkFieldIndex_ContentType", "ContentType")
             );
 
-            SchemaBuilder.AlterTable(nameof(LinkFieldIndex), table => table
+            SchemaBuilder.AlterIndexTable<LinkFieldIndex>(table => table
                 .CreateIndex("IDX_LinkFieldIndex_ContentPart", "ContentPart")
             );
 
-            SchemaBuilder.AlterTable(nameof(LinkFieldIndex), table => table
+            SchemaBuilder.AlterIndexTable<LinkFieldIndex>(table => table
                 .CreateIndex("IDX_LinkFieldIndex_ContentField", "ContentField")
             );
 
-            SchemaBuilder.AlterTable(nameof(LinkFieldIndex), table => table
+            SchemaBuilder.AlterIndexTable<LinkFieldIndex>(table => table
                 .CreateIndex("IDX_LinkFieldIndex_Published", "Published")
             );
 
-            SchemaBuilder.AlterTable(nameof(LinkFieldIndex), table => table
+            SchemaBuilder.AlterIndexTable<LinkFieldIndex>(table => table
                 .CreateIndex("IDX_LinkFieldIndex_Latest", "Latest")
             );
 
-            SchemaBuilder.AlterTable(nameof(LinkFieldIndex), table => table
+            SchemaBuilder.AlterIndexTable<LinkFieldIndex>(table => table
                 .CreateIndex("IDX_LinkFieldIndex_Url", "Url")
             );
 
-            SchemaBuilder.AlterTable(nameof(LinkFieldIndex), table => table
+            SchemaBuilder.AlterIndexTable<LinkFieldIndex>(table => table
                 .CreateIndex("IDX_LinkFieldIndex_Text", "Text")
             );
 
@@ -377,31 +377,31 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                 .Column<string>("Html", column => column.Nullable().Unlimited())
             );
 
-            SchemaBuilder.AlterTable(nameof(HtmlFieldIndex), table => table
+            SchemaBuilder.AlterIndexTable<HtmlFieldIndex>(table => table
                 .CreateIndex("IDX_HtmlFieldIndex_ContentItemId", "ContentItemId")
             );
 
-            SchemaBuilder.AlterTable(nameof(HtmlFieldIndex), table => table
+            SchemaBuilder.AlterIndexTable<HtmlFieldIndex>(table => table
                 .CreateIndex("IDX_HtmlFieldIndex_ContentItemVersionId", "ContentItemVersionId")
             );
 
-            SchemaBuilder.AlterTable(nameof(HtmlFieldIndex), table => table
+            SchemaBuilder.AlterIndexTable<HtmlFieldIndex>(table => table
                 .CreateIndex("IDX_HtmlFieldIndex_ContentType", "ContentType")
             );
 
-            SchemaBuilder.AlterTable(nameof(HtmlFieldIndex), table => table
+            SchemaBuilder.AlterIndexTable<HtmlFieldIndex>(table => table
                 .CreateIndex("IDX_HtmlFieldIndex_ContentPart", "ContentPart")
             );
 
-            SchemaBuilder.AlterTable(nameof(HtmlFieldIndex), table => table
+            SchemaBuilder.AlterIndexTable<HtmlFieldIndex>(table => table
                 .CreateIndex("IDX_HtmlFieldIndex_ContentField", "ContentField")
             );
 
-            SchemaBuilder.AlterTable(nameof(HtmlFieldIndex), table => table
+            SchemaBuilder.AlterIndexTable<HtmlFieldIndex>(table => table
                 .CreateIndex("IDX_HtmlFieldIndex_Published", "Published")
             );
 
-            SchemaBuilder.AlterTable(nameof(HtmlFieldIndex), table => table
+            SchemaBuilder.AlterIndexTable<HtmlFieldIndex>(table => table
                 .CreateIndex("IDX_HtmlFieldIndex_Latest", "Latest")
             );
 
@@ -411,10 +411,10 @@ namespace OrchardCore.ContentFields.Indexing.SQL
 
         public int UpdateFrom1()
         {
-            SchemaBuilder.AlterTable(nameof(LinkFieldIndex), table => table
+            SchemaBuilder.AlterIndexTable<LinkFieldIndex>(table => table
                 .AddColumn<string>("BigUrl", column => column.Nullable().Unlimited()));
 
-            SchemaBuilder.AlterTable(nameof(LinkFieldIndex), table => table
+            SchemaBuilder.AlterIndexTable<LinkFieldIndex>(table => table
                 .AddColumn<string>("BigText", column => column.Nullable().Unlimited()));
 
             return 2;

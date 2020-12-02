@@ -57,7 +57,7 @@ namespace OrchardCore.OpenId.Configuration
             options.IgnoreScopePermissions = true;
             options.Issuer = settings.Authority;
             options.DisableAccessTokenEncryption = settings.DisableAccessTokenEncryption;
-            options.UseRollingRefreshTokens = settings.UseRollingRefreshTokens;
+            options.DisableRollingRefreshTokens = settings.DisableRollingRefreshTokens;
             options.UseReferenceAccessTokens = settings.UseReferenceAccessTokens;
 
             foreach (var key in _serverService.GetEncryptionKeysAsync().GetAwaiter().GetResult())
@@ -88,7 +88,59 @@ namespace OrchardCore.OpenId.Configuration
                 options.UserinfoEndpointUris.Add(new Uri(settings.UserinfoEndpointPath.Value, UriKind.Relative));
             }
 
-            options.GrantTypes.UnionWith(settings.GrantTypes);
+            // For now, response types and response modes are not directly
+            // configurable and are inferred from the selected flows.
+            if (settings.AllowAuthorizationCodeFlow)
+            {
+                options.CodeChallengeMethods.Add(CodeChallengeMethods.Sha256);
+
+                options.GrantTypes.Add(GrantTypes.AuthorizationCode);
+
+                options.ResponseModes.Add(ResponseModes.FormPost);
+                options.ResponseModes.Add(ResponseModes.Fragment);
+                options.ResponseModes.Add(ResponseModes.Query);
+
+                options.ResponseTypes.Add(ResponseTypes.Code);
+            }
+            if (settings.AllowClientCredentialsFlow)
+            {
+                options.GrantTypes.Add(GrantTypes.ClientCredentials);
+            }
+            if (settings.AllowHybridFlow)
+            {
+                options.CodeChallengeMethods.Add(CodeChallengeMethods.Sha256);
+
+                options.GrantTypes.Add(GrantTypes.AuthorizationCode);
+                options.GrantTypes.Add(GrantTypes.Implicit);
+
+                options.ResponseModes.Add(ResponseModes.FormPost);
+                options.ResponseModes.Add(ResponseModes.Fragment);
+
+                options.ResponseTypes.Add(ResponseTypes.Code + ' ' + ResponseTypes.IdToken);
+                options.ResponseTypes.Add(ResponseTypes.Code + ' ' + ResponseTypes.IdToken + ' ' + ResponseTypes.Token);
+                options.ResponseTypes.Add(ResponseTypes.Code + ' ' + ResponseTypes.Token);
+            }
+            if (settings.AllowImplicitFlow)
+            {
+                options.GrantTypes.Add(GrantTypes.Implicit);
+
+                options.ResponseModes.Add(ResponseModes.FormPost);
+                options.ResponseModes.Add(ResponseModes.Fragment);
+
+                options.ResponseTypes.Add(ResponseTypes.IdToken);
+                options.ResponseTypes.Add(ResponseTypes.IdToken + ' ' + ResponseTypes.Token);
+                options.ResponseTypes.Add(ResponseTypes.Token);
+            }
+            if (settings.AllowPasswordFlow)
+            {
+                options.GrantTypes.Add(GrantTypes.Password);
+            }
+            if (settings.AllowRefreshTokenFlow)
+            {
+                options.GrantTypes.Add(GrantTypes.RefreshToken);
+
+                options.Scopes.Add(Scopes.OfflineAccess);
+            }
 
             options.Scopes.Add(Scopes.Email);
             options.Scopes.Add(Scopes.Phone);

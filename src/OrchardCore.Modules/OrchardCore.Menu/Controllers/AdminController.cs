@@ -209,7 +209,12 @@ namespace OrchardCore.Menu.Controllers
                 return NotFound();
             }
 
-            var contentItem = menuItem.ToObject<ContentItem>();
+            var existing = menuItem.ToObject<ContentItem>();
+
+            // Create a new item to take into account the current type definition.
+            var contentItem = await _contentManager.NewAsync(existing.ContentType);
+
+            contentItem.Merge(existing);
 
             dynamic model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, _updateModelAccessor.ModelUpdater, false);
 

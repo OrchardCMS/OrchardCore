@@ -91,7 +91,7 @@ namespace Microsoft.Extensions.DependencyInjection
                         storeConfiguration = storeConfiguration.SetTablePrefix(shellSettings["TablePrefix"] + "_");
                     }
 
-                    var store = StoreFactory.CreateAsync(storeConfiguration).GetAwaiter().GetResult();
+                    var store = StoreFactory.CreateAndInitializeAsync(storeConfiguration).GetAwaiter().GetResult();
                     var indexes = sp.GetServices<IIndexProvider>();
 
                     store.RegisterIndexes(indexes);

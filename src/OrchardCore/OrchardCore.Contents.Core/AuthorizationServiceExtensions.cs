@@ -16,22 +16,23 @@ namespace Microsoft.AspNetCore.Authorization
         /// </summary>
         public static async Task<bool> AuthorizeContentTypeDefinitionsAsync(this IAuthorizationService service, ClaimsPrincipal user, Permission requiredPermission, IEnumerable<ContentTypeDefinition> contentTypeDefinitions, IContentManager contentManager)
         {
+            var permission = GetOwnerVariation(requiredPermission);
+            var contentTypePermission = ContentTypePermissionsHelper.ConvertToDynamicPermission(permission);
+
             foreach (var contentTypeDefinition in contentTypeDefinitions)
             {
-                var permission = GetOwnerVariation(requiredPermission);
-                var contentTypePermission = ContentTypePermissionsHelper.ConvertToDynamicPermission(permission);
-                permission = ContentTypePermissionsHelper.CreateDynamicPermission(contentTypePermission, contentTypeDefinition);
+                var dynamicPermission = ContentTypePermissionsHelper.CreateDynamicPermission(contentTypePermission, contentTypeDefinition);
 
                 var contentItem = await contentManager.NewAsync(contentTypeDefinition.Name);
-                contentItem.Owner = user.Identity.Name;
+                contentItem.Owner = user.FindFirstValue(ClaimTypes.NameIdentifier);
 
-                if (await service.AuthorizeAsync(user, permission, contentItem))
+                if (await service.AuthorizeAsync(user, dynamicPermission, contentItem))
                 {
                     return true;
                 }
             }
 
-            return false;
+            return await service.AuthorizeAsync(user, permission);
         }
 
         private static Permission GetOwnerVariation(Permission permission)

@@ -47,77 +47,87 @@ namespace OrchardCore.Navigation
                     // such that views can safely add values to them.
                     created.Shape.Properties["ItemClasses"] = new List<string>();
                     created.Shape.Properties["ItemAttributes"] = new Dictionary<string, string>();
-                });
-
-            builder.Describe("Pager_Gap")
+                })
                 .OnDisplaying(displaying =>
                 {
                     if (displaying.Shape.Properties.TryGetValue("PagerId", out var value) && value is string pagerId)
                     {
                         if (!String.IsNullOrEmpty(pagerId))
                         {
-                            displaying.Shape.Metadata.Alternates.Add("Pager_Gap__" + EncodeAlternateElement(pagerId));
+                            displaying.Shape.Metadata.Alternates.Add("Pager__" + EncodeAlternateElement(pagerId));
                         }
+                    };
+                });
+
+            builder.Describe("Pager_Gap")
+                .OnDisplaying(displaying =>
+                {
+                    dynamic shape = displaying.Shape;
+                    var pager = shape.Pager;
+                    string pagerId = pager.PagerId;
+                    if (!String.IsNullOrEmpty(pagerId))
+                    {
+                        displaying.Shape.Metadata.Alternates.Add("Pager_Gap__" + EncodeAlternateElement(pagerId));
                     }
                 });
 
             builder.Describe("Pager_First")
                 .OnDisplaying(displaying =>
                 {
-                    if (displaying.Shape.Properties.TryGetValue("PagerId", out var value) && value is string pagerId)
+                    dynamic shape = displaying.Shape;
+                    var pager = shape.Pager;
+                    string pagerId = pager.PagerId;
+                    if (!String.IsNullOrEmpty(pagerId))
                     {
-                        if (!String.IsNullOrEmpty(pagerId))
-                        {
-                            displaying.Shape.Metadata.Alternates.Add("Pager_First__" + EncodeAlternateElement(pagerId));
-                        }
+                        displaying.Shape.Metadata.Alternates.Add("Pager_First__" + EncodeAlternateElement(pagerId));
                     }
                 });
 
             builder.Describe("Pager_Previous")
                 .OnDisplaying(displaying =>
                 {
-                    if (displaying.Shape.Properties.TryGetValue("PagerId", out var value) && value is string pagerId)
+                    dynamic shape = displaying.Shape;
+                    var pager = shape.Pager;
+                    string pagerId = pager.PagerId;
+                    if (!String.IsNullOrEmpty(pagerId))
                     {
-                        if (!String.IsNullOrEmpty(pagerId))
-                        {
-                            displaying.Shape.Metadata.Alternates.Add("Pager_Previous__" + EncodeAlternateElement(pagerId));
-                        }
+                        displaying.Shape.Metadata.Alternates.Add("Pager_Previous__" + EncodeAlternateElement(pagerId));
                     }
                 });
 
             builder.Describe("Pager_Next")
                 .OnDisplaying(displaying =>
                 {
-                    if (displaying.Shape.Properties.TryGetValue("PagerId", out var value) && value is string pagerId)
+                    dynamic shape = displaying.Shape;
+                    var pager = shape.Pager;
+                    string pagerId = pager.PagerId;
+                    if (!String.IsNullOrEmpty(pagerId))
                     {
-                        if (!String.IsNullOrEmpty(pagerId))
-                        {
-                            displaying.Shape.Metadata.Alternates.Add("Pager_Next__" + EncodeAlternateElement(pagerId));
-                        }
+                        displaying.Shape.Metadata.Alternates.Add("Pager_Next__" + EncodeAlternateElement(pagerId));
                     }
                 });
 
             builder.Describe("Pager_Last")
                 .OnDisplaying(displaying =>
                 {
-                    if (displaying.Shape.Properties.TryGetValue("PagerId", out var value) && value is string pagerId)
+                    dynamic shape = displaying.Shape;
+                    var pager = shape.Pager;
+                    string pagerId = pager.PagerId;
+                    if (!String.IsNullOrEmpty(pagerId))
                     {
-                        if (!String.IsNullOrEmpty(pagerId))
-                        {
-                            displaying.Shape.Metadata.Alternates.Add("Pager_Last__" + EncodeAlternateElement(pagerId));
-                        }
+                        displaying.Shape.Metadata.Alternates.Add("Pager_Last__" + EncodeAlternateElement(pagerId));
                     }
                 });
 
             builder.Describe("Pager_CurrentPage")
                 .OnDisplaying(displaying =>
                 {
-                    if (displaying.Shape.Properties.TryGetValue("PagerId", out var value) && value is string pagerId)
+                    dynamic shape = displaying.Shape;
+                    var pager = shape.Pager;
+                    string pagerId = pager.PagerId;
+                    if (!String.IsNullOrEmpty(pagerId))
                     {
-                        if (!String.IsNullOrEmpty(pagerId))
-                        {
-                            displaying.Shape.Metadata.Alternates.Add("Pager_CurrentPage__" + EncodeAlternateElement(pagerId));
-                        }
+                        displaying.Shape.Metadata.Alternates.Add("Pager_CurrentPage__" + EncodeAlternateElement(pagerId));
                     }
                 });
 
@@ -126,10 +136,7 @@ namespace OrchardCore.Navigation
                 {
                     if (displaying.Shape.Properties.TryGetValue("PagerId", out var value) && value is string pagerId)
                     {
-                        if (!String.IsNullOrEmpty(pagerId))
-                        {
-                            displaying.Shape.Metadata.Alternates.Add("Pager_Links__" + EncodeAlternateElement(pagerId));
-                        }
+                        displaying.Shape.Metadata.Alternates.Add("Pager_Links__" + EncodeAlternateElement(pagerId));
                     }
                 });
         }
@@ -366,6 +373,7 @@ namespace OrchardCore.Navigation
 
         [Shape]
         public async Task<IHtmlContent> PagerSlim(Shape shape, dynamic DisplayAsync, dynamic New, IHtmlHelper Html, DisplayContext DisplayContext,
+            string PagerId,
             object PreviousText,
             object NextText,
             string PreviousClass,
@@ -461,11 +469,6 @@ namespace OrchardCore.Navigation
             shape.Metadata.Type = "Pager_Link";
             var parentTag = (TagBuilder)shape.Properties["Tag"];
             parentTag.AddCssClass("active");
-
-            if (!shape.Attributes.ContainsKey("rel"))
-            {
-                shape.Attributes["rel"] = "canonical";
-            }
 
             return DisplayAsync(shape);
         }
