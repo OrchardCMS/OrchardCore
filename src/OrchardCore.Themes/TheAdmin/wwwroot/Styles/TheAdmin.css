@@ -20429,18 +20429,18 @@
     color: #fff; }
   [dir]:root[data-theme='darkmode'] .page-link, [dir]:root[data-theme='default'] ul.pager li [dir]:root[data-theme='darkmode'] a, [dir]:root[data-theme='darkmode'] ul.pager li a {
     padding: 0.5rem 0.75rem;
-    background-color: #28a745;
-    border: 0 solid transparent; }
+    background-color: #181a1b;
+    border: 1px solid rgba(140, 130, 115, 0.13); }
   [dir=ltr]:root[data-theme='darkmode'] .page-link, [dir=ltr]:root[data-theme='default'] ul.pager li [dir=ltr]:root[data-theme='darkmode'] a, [dir=ltr]:root[data-theme='darkmode'] ul.pager li a {
-  margin-left: 0; }
+  margin-left: -1px; }
   [dir=rtl]:root[data-theme='darkmode'] .page-link, [dir=rtl]:root[data-theme='default'] ul.pager li [dir=rtl]:root[data-theme='darkmode'] a, [dir=rtl]:root[data-theme='darkmode'] ul.pager li a {
-    margin-right: 0; }
+    margin-right: -1px; }
     :root[data-theme='darkmode'] .page-link:hover, :root[data-theme='default'] ul.pager li :root[data-theme='darkmode'] a:hover, :root[data-theme='darkmode'] ul.pager li a:hover {
       z-index: 2;
       color: #fff;
       text-decoration: none; }
     [dir]:root[data-theme='darkmode'] .page-link:hover, [dir]:root[data-theme='default'] ul.pager li [dir]:root[data-theme='darkmode'] a:hover, [dir]:root[data-theme='darkmode'] ul.pager li a:hover {
-      background-color: #34ce57;
+      background-color: #303436;
       border-color: transparent; }
     :root[data-theme='darkmode'] .page-link:focus, :root[data-theme='default'] ul.pager li :root[data-theme='darkmode'] a:focus, :root[data-theme='darkmode'] ul.pager li a:focus {
       z-index: 3;
@@ -20465,15 +20465,15 @@
     z-index: 3;
     color: #fff; }
   [dir]:root[data-theme='darkmode'] .page-item.active .page-link, [dir]:root[data-theme='default'] ul.pager [dir]:root[data-theme='darkmode'] li.active .page-link, [dir]:root[data-theme='darkmode'] ul.pager li.active .page-link, [dir]:root[data-theme='default'] ul.pager li [dir]:root[data-theme='darkmode'] .page-item.active a, [dir]:root[data-theme='default'] ul.pager [dir]:root[data-theme='darkmode'] li.active a, [dir]:root[data-theme='darkmode'] .page-item.active ul.pager li a, [dir]:root[data-theme='darkmode'] ul.pager li .page-item.active a, [dir]:root[data-theme='darkmode'] ul.pager li.active a {
-    background-color: #34ce57;
-    border-color: transparent; }
+    background-color: #007bff;
+    border-color: rgba(140, 130, 115, 0.13); }
   :root[data-theme='darkmode'] .page-item.disabled .page-link, :root[data-theme='default'] ul.pager :root[data-theme='darkmode'] li.disabled .page-link, :root[data-theme='darkmode'] ul.pager li.disabled .page-link, :root[data-theme='default'] ul.pager li :root[data-theme='darkmode'] .page-item.disabled a, :root[data-theme='default'] ul.pager :root[data-theme='darkmode'] li.disabled a, :root[data-theme='darkmode'] .page-item.disabled ul.pager li a, :root[data-theme='darkmode'] ul.pager li .page-item.disabled a, :root[data-theme='darkmode'] ul.pager li.disabled a {
     color: #fff;
     pointer-events: none; }
   [dir]:root[data-theme='darkmode'] .page-item.disabled .page-link, [dir]:root[data-theme='default'] ul.pager [dir]:root[data-theme='darkmode'] li.disabled .page-link, [dir]:root[data-theme='darkmode'] ul.pager li.disabled .page-link, [dir]:root[data-theme='default'] ul.pager li [dir]:root[data-theme='darkmode'] .page-item.disabled a, [dir]:root[data-theme='default'] ul.pager [dir]:root[data-theme='darkmode'] li.disabled a, [dir]:root[data-theme='darkmode'] .page-item.disabled ul.pager li a, [dir]:root[data-theme='darkmode'] ul.pager li .page-item.disabled a, [dir]:root[data-theme='darkmode'] ul.pager li.disabled a {
     cursor: auto;
-    background-color: #19692c;
-    border-color: transparent; }
+    background-color: #303436;
+    border-color: rgba(140, 130, 115, 0.13); }
   :root[data-theme='darkmode'] .pagination-lg .page-link, :root[data-theme='default'] ul.pager li :root[data-theme='darkmode'] .pagination-lg a, :root[data-theme='darkmode'] .pagination-lg ul.pager li a, :root[data-theme='darkmode'] ul.pager li .pagination-lg a {
     font-size: 1.25rem;
     line-height: 1.5; }
