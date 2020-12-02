@@ -122,6 +122,11 @@ namespace OrchardCore.Deployment.Controllers
         [FormValueRequired("submit.BulkAction")]
         public async Task<ActionResult> IndexBulkActionPOST(ContentOptions options, IEnumerable<int> itemIds)
         {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageDeploymentPlan))
+            {
+                return Forbid();
+            }
+
             if (itemIds?.Count() > 0)
             {
                 var checkedItems = await _session.Query<DeploymentPlan, DeploymentPlanIndex>().Where(x => x.DocumentId.IsIn(itemIds)).ListAsync();
@@ -132,12 +137,6 @@ namespace OrchardCore.Deployment.Controllers
                     case ContentsBulkAction.Delete:
                         foreach (var item in checkedItems)
                         {
-                            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageDeploymentPlan, item))
-                            {
-                                _notifier.Warning(H["Couldn't remove selected deployment plans."]);
-                                return Forbid();
-                            }
-
                             _session.Delete(item);
                         }
                         _notifier.Success(H["Deployment plans successfully deleted."]);
