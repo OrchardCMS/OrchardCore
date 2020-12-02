@@ -420,7 +420,7 @@ namespace OrchardCore.Taxonomies.Controllers
 
             foreach (JObject taxonomyItem in taxonomyItems)
             {
-                // Search in inner taxonomy items.
+                // Search in inner taxonomy items
                 result = FindTaxonomyItem(taxonomyItem, taxonomyItemId);
 
                 if (result != null)
