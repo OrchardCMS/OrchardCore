@@ -399,6 +399,11 @@ namespace OrchardCore.Lucene.Controllers
         [FormValueRequired("submit.BulkAction")]
         public async Task<ActionResult> IndexPost(ViewModels.ContentOptions options, IEnumerable<string> itemIds)
         {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageIndexes))
+            {
+                return Forbid();
+            }
+
             if (itemIds?.Count() > 0)
             {
                 var luceneIndexSettings = await _luceneIndexSettingsService.GetSettingsAsync();
@@ -410,25 +415,13 @@ namespace OrchardCore.Lucene.Controllers
                     case ContentsBulkAction.Remove:
                         foreach (var item in checkedContentItems)
                         {
-                            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageIndexes, item))
-                            {
-                                _notifier.Warning(H["Couldn't remove selected index."]);
-                                _session.Cancel();
-                                return Forbid();
-                            }
-
                             await _luceneIndexingService.DeleteIndexAsync(item.IndexName);
                         }
-                        _notifier.Success(H["Index successfully removed."]);
+                        _notifier.Success(H["Indices successfully removed."]);
                         break;
                     case ContentsBulkAction.Reset:
                         foreach (var item in checkedContentItems)
                         {
-                            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageIndexes))
-                            {
-                                return Forbid();
-                            }
-
                             if (!_luceneIndexManager.Exists(item.IndexName))
                             {
                                 return NotFound();
@@ -443,11 +436,6 @@ namespace OrchardCore.Lucene.Controllers
                     case ContentsBulkAction.Rebuild:
                         foreach (var item in checkedContentItems)
                         {
-                            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageIndexes))
-                            {
-                                return Forbid();
-                            }
-
                             if (!_luceneIndexManager.Exists(item.IndexName))
                             {
                                 return NotFound();
