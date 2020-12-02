@@ -16004,7 +16004,8 @@
       margin: 0px auto; }
     [dir]:root[data-theme='default'] body:not(.left-sidebar-compact) #ta-left-sidebar #filter, [dir]:root[data-theme='default'] body:not(.left-sidebar-compact) #ta-left-sidebar #filter:focus {
       border: none;
-      box-shadow: unset; }
+      box-shadow: unset;
+      border-radius: unset; }
   :root[data-theme='default'] .left-sidebar-compact #ta-left-sidebar {
     z-index: calc(1000 + 1);
     position: fixed;
@@ -32620,7 +32621,8 @@
       margin: 0px auto; }
     [dir]:root[data-theme='darkmode'] body:not(.left-sidebar-compact) #ta-left-sidebar #filter, [dir]:root[data-theme='darkmode'] body:not(.left-sidebar-compact) #ta-left-sidebar #filter:focus {
       border: none;
-      box-shadow: unset; }
+      box-shadow: unset;
+      border-radius: unset; }
   :root[data-theme='darkmode'] .left-sidebar-compact #ta-left-sidebar {
     z-index: calc(1000 + 1);
     position: fixed;
