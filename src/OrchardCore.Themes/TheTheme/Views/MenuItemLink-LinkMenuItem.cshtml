@@ -4,17 +4,16 @@
     ContentItem contentItem = Model.ContentItem;
     var linkMenuItemPart = contentItem.Content["LinkMenuItemPart"];
     int level = (int)Model.Level;
+
+    var name = (string)linkMenuItemPart.Name;
+    if (Model.Level == 0 && Model.HasItems)
+    {
+        name += "<b class=\"caret\"></b>";
+    }
+
+    TagBuilder tag = Tag(Model, "a");
+    tag.Attributes["href"] = (string)linkMenuItemPart.Url;
+    tag.InnerHtml.AppendHtml(name);
 }
 
-@if (level > 0)
-{ 
-    <a class="dropdown-item" href="@Url.Content((string)linkMenuItemPart.Url)">@linkMenuItemPart.Name</a>
-}
-else if ((bool)(Model.HasItems))
-{
-    <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="@Url.Content((string)linkMenuItemPart.Url)">@linkMenuItemPart.Name<b class="caret"></b></a>
-}
-else
-{
-    <a class="nav-link" href="@Url.Content((string)linkMenuItemPart.Url)">@linkMenuItemPart.Name</a>
-}
+@tag
