@@ -171,7 +171,7 @@ namespace OrchardCore.Redis.Services
 
             // 2 examples with 10 retries
             // --------------------------
-            // 100     100 (start from base delay)
+            // 100     100 (start from base)
             // 164     171
             // 256     312
             // 401     519
@@ -180,7 +180,7 @@ namespace OrchardCore.Redis.Services
             // 2950    3257
             // 4596    4966
             // 7215    8667
-            // 10000   10000 (max power reached)
+            // 10000   10000 (max reached)
         }
     }
 }
