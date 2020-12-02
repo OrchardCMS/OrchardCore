@@ -10,18 +10,18 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Secrets
 {
     public class EncryptionTests
     {
-        private static ISecretService<RsaKeyPairSecret> GetSecretServiceMock()
+        private static ISecretService<RsaSecret> GetSecretServiceMock()
         {
             using var rsa = RSA.Create();
 
-            var rsaKeyPair = new RsaKeyPairSecret()
+            var rsaSecret = new RsaSecret()
             {
                 PublicKey = Convert.ToBase64String(rsa.ExportSubjectPublicKeyInfo()),
                 PrivateKey = Convert.ToBase64String(rsa.ExportRSAPrivateKey())
             };
 
-            var secretService = Mock.Of<ISecretService<RsaKeyPairSecret>>();
-            Mock.Get(secretService).Setup(s => s.GetSecretAsync("rsa")).ReturnsAsync(rsaKeyPair);
+            var secretService = Mock.Of<ISecretService<RsaSecret>>();
+            Mock.Get(secretService).Setup(s => s.GetSecretAsync("rsa")).ReturnsAsync(rsaSecret);
 
             return secretService;
         }
@@ -35,7 +35,6 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Secrets
 
             using var encryptor = await encryptionProvider.CreateAsync("rsa");
             Assert.NotNull(encryptor);
-            Assert.True(!String.IsNullOrEmpty(encryptor.EncryptionKey));
         }
 
         [Fact]
@@ -60,7 +59,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Secrets
 
             var encrypted = encryptor.Encrypt("foo");
             var decryptionProvider = new DefaultDecryptionProvider(secretService);
-            using var decryptor = await decryptionProvider.CreateAsync(encryptor.EncryptionKey);
+            using var decryptor = await decryptionProvider.CreateAsync(encrypted);
             var decrypted = decryptor.Decrypt(encrypted);
             Assert.Equal("foo", decrypted);
         }

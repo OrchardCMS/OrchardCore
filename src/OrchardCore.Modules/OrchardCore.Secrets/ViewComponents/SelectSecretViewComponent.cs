@@ -20,10 +20,10 @@ namespace OrchardCore.Secrets.ViewComponents
             S = stringLocalizer;
         }
 
-        public async Task<IViewComponentResult> InvokeAsync(IEnumerable<string> types, string selectedSecret, string htmlName, bool required)
+        public async Task<IViewComponentResult> InvokeAsync(string secretType, string selectedSecret, string htmlName, bool required)
         {
             var secretBindings = await _secretCoordinator.GetSecretBindingsAsync();
-            var secrets = secretBindings.Where(x => types.Contains(x.Value.Type, StringComparer.OrdinalIgnoreCase))
+            var secrets = secretBindings.Where(x => String.Equals(secretType, x.Value.Type, StringComparison.OrdinalIgnoreCase))
                 .Select(x => new SelectListItem() { Text = x.Key, Value = x.Key, Selected = String.Equals(x.Key, selectedSecret, StringComparison.OrdinalIgnoreCase) })
                 .ToList();
 

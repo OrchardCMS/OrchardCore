@@ -28,8 +28,18 @@
         <span asp-validation-for="ApiKey" class="text-danger">@T["The api key is required."]</span>
     </div>
 
+    <div class="form-group" asp-validation-class-for="RsaSecret">
+        <div class="w-100 w-md-50">
+            <label asp-for="RsaSecret">@T["Rsa secret"]</label>
+            @await Component.InvokeAsync("SelectSecret", new { secretType = "RsaSecret", selectedSecret = Model.RsaSecret, htmlName = Html.NameFor(m => m.RsaSecret), required = false })
+            <span asp-validation-for="RsaSecret"></span>
+        </div>
+        <span class="hint">@T["The name of the secret to use when a deployment step encrypts data for transmission to this remote instance."]</span>
+    </div> 
+
     <div class="form-group">
         <button class="btn btn-primary create" type="submit">@T["Create"]</button>
         <a class="btn btn-secondary cancel" role="button" asp-route-action="Index">@T["Cancel"]</a>
     </div>
+   
 </form>

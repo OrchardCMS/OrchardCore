@@ -63,7 +63,7 @@ namespace OrchardCore.Secrets.Deployment
                         var encrypted = encryptor.Encrypt(plaintext);
 
                         // [js: decrypt('theaesencryptionkey', 'theencryptedvalue')]
-                        jObject.Add("Secret", $"[js: decrypt('{encryptor.EncryptionKey}, {encrypted}')]");
+                        jObject.Add("Secret", $"[js: decrypt('{encrypted}')]");
                     }
                 }
                 secrets.Add(secretBinding.Key, jObject);

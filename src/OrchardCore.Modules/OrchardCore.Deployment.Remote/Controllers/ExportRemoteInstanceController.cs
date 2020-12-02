@@ -74,7 +74,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
             {
                 archiveFileName = PathExtensions.Combine(Path.GetTempPath(), filename);
 
-                var deploymentPlanResult = new DeploymentPlanResult(fileBuilder, new RecipeDescriptor());
+                var deploymentPlanResult = new DeploymentPlanResult(fileBuilder, new RecipeDescriptor(), remoteInstance.RsaSecret);
                 await _deploymentManager.ExecuteDeploymentPlanAsync(deploymentPlan, deploymentPlanResult);
 
                 if (System.IO.File.Exists(archiveFileName))

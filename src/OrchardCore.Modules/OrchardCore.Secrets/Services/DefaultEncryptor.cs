@@ -1,24 +1,29 @@
 using System;
 using System.IO;
+using System.Text;
 using System.Security.Cryptography;
+using Newtonsoft.Json;
 
 namespace OrchardCore.Secrets.Services
 {
     public class DefaultEncryptor : IEncryptor, IDisposable
     {
-        public readonly ICryptoTransform _encryptor;
-        public readonly string _keyDescriptor;
+        private readonly ICryptoTransform _encryptor;
+        private readonly string _secretName;
+        private readonly byte[] _key;
+        private readonly byte[] _iv;
+
         private bool _disposedValue;
 
-        public DefaultEncryptor(ICryptoTransform encryptor, string keyDescriptor)
+        public DefaultEncryptor(ICryptoTransform encryptor, string secretName, byte[] key, byte[] iv)
         {
             _encryptor = encryptor;
-            _keyDescriptor = keyDescriptor;
+            _secretName = secretName;
+            _key = key;
+            _iv = iv;
         }
 
-        public string EncryptionKey => _keyDescriptor;
-
-        public string Encrypt(string protectedData)
+        public string Encrypt(string plainText)
         {
             byte[] encrypted;
 
@@ -28,13 +33,24 @@ namespace OrchardCore.Secrets.Services
                 {
                     using (var swEncrypt = new StreamWriter(csEncrypt))
                     {
-                        swEncrypt.Write(protectedData);
+                        swEncrypt.Write(plainText);
                     }
                     encrypted = msEncrypt.ToArray();
                 }
             }
-            
-            return Convert.ToBase64String(encrypted);
+
+            var descriptor = new HybridKeyDescriptor
+            {
+                SecretName = _secretName,
+                Key = Convert.ToBase64String(_key),
+                Iv = Convert.ToBase64String(_iv),
+                ProtectedData = Convert.ToBase64String(encrypted)
+            };
+
+            var serialized = JsonConvert.SerializeObject(descriptor);
+            var encodedDescriptor = Convert.ToBase64String(Encoding.UTF8.GetBytes(serialized));
+
+            return encodedDescriptor;
         }
 
         protected virtual void Dispose(bool disposing)

@@ -46,7 +46,7 @@ namespace OrchardCore.Deployment.Remote.Services
             }
         }
 
-        public async Task CreateRemoteInstanceAsync(string name, string url, string clientName, string apiKey)
+        public async Task CreateRemoteInstanceAsync(string name, string url, string clientName, string apiKey, string rsaSecret)
         {
             var remoteInstanceList = await LoadRemoteInstanceListAsync();
 
@@ -57,12 +57,13 @@ namespace OrchardCore.Deployment.Remote.Services
                 Url = url,
                 ClientName = clientName,
                 ApiKey = apiKey,
+                RsaSecret = rsaSecret
             });
 
             await _documentManager.UpdateAsync(remoteInstanceList);
         }
 
-        public async Task UpdateRemoteInstance(string id, string name, string url, string clientName, string apiKey)
+        public async Task UpdateRemoteInstance(string id, string name, string url, string clientName, string apiKey, string rsaSecret)
         {
             var remoteInstanceList = await LoadRemoteInstanceListAsync();
             var remoteInstance = FindRemoteInstance(remoteInstanceList, id);
@@ -71,6 +72,7 @@ namespace OrchardCore.Deployment.Remote.Services
             remoteInstance.Url = url;
             remoteInstance.ClientName = clientName;
             remoteInstance.ApiKey = apiKey;
+            remoteInstance.RsaSecret = rsaSecret;
 
             await _documentManager.UpdateAsync(remoteInstanceList);
         }

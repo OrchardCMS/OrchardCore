@@ -6,7 +6,7 @@ namespace OrchardCore.Secrets
     public abstract class Secret
     {
 
-        // Probably this class is bare, no identifier at all. We only care about the values.
+        // TODO Probably this class is bare, no identifier at all. We only care about the values.
         public string Id { get; set; }
         public string Name { get; set; }
     }

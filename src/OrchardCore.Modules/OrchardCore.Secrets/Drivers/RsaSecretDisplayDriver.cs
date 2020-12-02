@@ -12,23 +12,23 @@ using OrchardCore.Secrets.ViewModels;
 
 namespace OrchardCore.Secrets.Drivers
 {
-    public class RsaKeyPairSecretDisplayDriver : DisplayDriver<Secret, RsaKeyPairSecret>
+    public class RsaSecretDisplayDriver : DisplayDriver<Secret, RsaSecret>
     {
         private readonly IStringLocalizer S;
 
-        public RsaKeyPairSecretDisplayDriver(IStringLocalizer<RsaKeyPairSecretDisplayDriver> stringLocalizer)
+        public RsaSecretDisplayDriver(IStringLocalizer<RsaSecretDisplayDriver> stringLocalizer)
         {
             S = stringLocalizer;
         }
 
-        public override IDisplayResult Display(RsaKeyPairSecret secret)
+        public override IDisplayResult Display(RsaSecret secret)
         {
-            return View("RsaKeyPairSecret_Fields_Thumbnail", secret).Location("Thumbnail", "Content");
+            return View("RsaSecret_Fields_Thumbnail", secret).Location("Thumbnail", "Content");
         }
 
-        public override Task<IDisplayResult> EditAsync(RsaKeyPairSecret secret, BuildEditorContext context)
+        public override Task<IDisplayResult> EditAsync(RsaSecret secret, BuildEditorContext context)
         {
-            return Task.FromResult<IDisplayResult>(Initialize<RsaKeyPairSecretViewModel>("RsaKeyPairSecret_Fields_Edit", model =>
+            return Task.FromResult<IDisplayResult>(Initialize<RsaSecretViewModel>("RsaSecret_Fields_Edit", model =>
             {
                 // When this is new generate
                 if (context.IsNew)
@@ -72,9 +72,9 @@ namespace OrchardCore.Secrets.Drivers
             }).Location("Content"));
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(RsaKeyPairSecret secret, UpdateEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(RsaSecret secret, UpdateEditorContext context)
         {
-            var model = new RsaKeyPairSecretViewModel();
+            var model = new RsaSecretViewModel();
 
             if (await context.Updater.TryUpdateModelAsync(model, Prefix))
             {

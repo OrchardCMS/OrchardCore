@@ -79,7 +79,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
 
             if (ModelState.IsValid)
             {
-                await _service.CreateRemoteInstanceAsync(model.Name, model.Url, model.ClientName, model.ApiKey);
+                await _service.CreateRemoteInstanceAsync(model.Name, model.Url, model.ClientName, model.ApiKey, model.RsaSecret);
 
                 _notifier.Success(H["Remote instance created successfully"]);
                 return RedirectToAction(nameof(Index));
@@ -109,7 +109,8 @@ namespace OrchardCore.Deployment.Remote.Controllers
                 Name = remoteInstance.Name,
                 ClientName = remoteInstance.ClientName,
                 ApiKey = remoteInstance.ApiKey,
-                Url = remoteInstance.Url
+                Url = remoteInstance.Url,
+                RsaSecret = remoteInstance.RsaSecret
             };
 
             return View(model);
@@ -137,7 +138,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
 
             if (ModelState.IsValid)
             {
-                await _service.UpdateRemoteInstance(model.Id, model.Name, model.Url, model.ClientName, model.ApiKey);
+                await _service.UpdateRemoteInstance(model.Id, model.Name, model.Url, model.ClientName, model.ApiKey, model.RsaSecret);
 
                 _notifier.Success(H["Remote instance updated successfully"]);
 

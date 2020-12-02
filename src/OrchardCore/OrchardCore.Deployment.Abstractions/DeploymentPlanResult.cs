@@ -13,7 +13,7 @@ namespace OrchardCore.Deployment
     /// </summary>
     public class DeploymentPlanResult
     {
-        public DeploymentPlanResult(IFileBuilder fileBuilder, RecipeDescriptor recipeDescriptor, string secretName = null)
+        public DeploymentPlanResult(IFileBuilder fileBuilder, RecipeDescriptor recipeDescriptor, string secretName)
         {
             FileBuilder = fileBuilder;
             SecretName = secretName;

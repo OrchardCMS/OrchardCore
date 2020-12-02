@@ -8,17 +8,16 @@ namespace OrchardCore.Secrets.Services
 {
     public class DefaultDecryptionProvider : IDecryptionProvider
     {
-        private readonly ISecretService<RsaKeyPairSecret> _rsaSecretService;
-        // TODO will also have to check for RsaPublicKey - for when they are stored without the private.
+        private readonly ISecretService<RsaSecret> _rsaSecretService;
 
-        public DefaultDecryptionProvider(ISecretService<RsaKeyPairSecret> rsaSecretService)
+        public DefaultDecryptionProvider(ISecretService<RsaSecret> rsaSecretService)
         {
             _rsaSecretService = rsaSecretService;
         }
 
-        public async Task<IDecryptor> CreateAsync(string encryptionKey)
+        public async Task<IDecryptor> CreateAsync(string protectedData)
         {
-            var bytes = Convert.FromBase64String(encryptionKey);
+            var bytes = Convert.FromBase64String(protectedData);
             var decoded = Encoding.UTF8.GetString(bytes);
 
             var descriptor = JsonConvert.DeserializeObject<HybridKeyDescriptor>(decoded);

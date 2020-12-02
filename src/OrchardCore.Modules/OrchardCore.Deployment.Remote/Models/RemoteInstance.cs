@@ -7,5 +7,10 @@
         public string ClientName { get; set; }
         public string Url { get; set; }
         public string ApiKey { get; set; }
+
+        /// <summary>
+        /// The name of the rsa secret that can be used to encrypt exported data.
+        /// </summary>        
+        public string RsaSecret { get; set; }
     }
 }

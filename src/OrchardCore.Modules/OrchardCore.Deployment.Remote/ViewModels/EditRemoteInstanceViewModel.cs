@@ -7,5 +7,6 @@ namespace OrchardCore.Deployment.Remote.ViewModels
         public string ClientName { get; set; }
         public string ApiKey { get; set; }
         public string Url { get; set; }
+        public string RsaSecret { get; set; }
     }
 }

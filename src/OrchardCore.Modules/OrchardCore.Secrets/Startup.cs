@@ -48,8 +48,8 @@ namespace OrchardCore.Secrets
 
 
 
-            services.AddScoped<IDisplayDriver<Secret>, RsaKeyPairSecretDisplayDriver>();
-            services.AddSingleton<ISecretFactory>(new SecretFactory<RsaKeyPairSecret>());
+            services.AddScoped<IDisplayDriver<Secret>, RsaSecretDisplayDriver>();
+            services.AddSingleton<ISecretFactory>(new SecretFactory<RsaSecret>());
 
             services.AddTransient<IEncryptionProvider, DefaultEncryptionProvider>();
             services.AddTransient<IDecryptionProvider, DefaultDecryptionProvider>();

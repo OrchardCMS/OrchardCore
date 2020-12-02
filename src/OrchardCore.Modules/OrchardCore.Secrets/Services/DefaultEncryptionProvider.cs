@@ -8,9 +8,9 @@ namespace OrchardCore.Secrets.Services
 {
     public class DefaultEncryptionProvider : IEncryptionProvider
     {
-        private readonly ISecretService<RsaKeyPairSecret> _rsaSecretService;
+        private readonly ISecretService<RsaSecret> _rsaSecretService;
 
-        public DefaultEncryptionProvider(ISecretService<RsaKeyPairSecret> rsaSecretService)
+        public DefaultEncryptionProvider(ISecretService<RsaSecret> rsaSecretService)
         {
             _rsaSecretService = rsaSecretService;
         }
@@ -35,16 +35,16 @@ namespace OrchardCore.Secrets.Services
 
             var key = rsa.Encrypt(aes.Key, RSAEncryptionPadding.Pkcs1);
             var iv = rsa.Encrypt(aes.IV, RSAEncryptionPadding.Pkcs1);
-            var descriptor = new HybridKeyDescriptor
-            {
-                SecretName = secretName,
-                Key = Convert.ToBase64String(key),
-                Iv = Convert.ToBase64String(iv)
-            };
-            var serialized = JsonConvert.SerializeObject(descriptor);
-            var keyDescriptor = Convert.ToBase64String(Encoding.UTF8.GetBytes(serialized));
+            // var descriptor = new HybridKeyDescriptor
+            // {
+            //     SecretName = secretName,
+            //     Key = Convert.ToBase64String(key),
+            //     Iv = Convert.ToBase64String(iv)
+            // };
+            // var serialized = JsonConvert.SerializeObject(descriptor);
+            // var keyDescriptor = Convert.ToBase64String(Encoding.UTF8.GetBytes(serialized));
 
-            return new DefaultEncryptor(encryptor, keyDescriptor);
+            return new DefaultEncryptor(encryptor, secretName, key, iv);
         }
     }
 }
