@@ -7,7 +7,7 @@ namespace OrchardCore.Queries.ViewModels
     public class QueriesIndexViewModel
     {
         public IList<QueryEntry> Queries { get; set; }
-        public ContentOptions Options { get; set; }
+        public ContentOptions Options { get; set; } = new ContentOptions();
         public dynamic Pager { get; set; }
         public IEnumerable<string> QuerySourceNames { get; set; }
     }

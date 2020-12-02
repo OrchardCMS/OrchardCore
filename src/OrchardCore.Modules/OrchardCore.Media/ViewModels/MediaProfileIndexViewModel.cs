@@ -7,14 +7,9 @@ namespace OrchardCore.Media.ViewModels
 {
     public class MediaProfileIndexViewModel
     {
-        public MediaProfileIndexViewModel()
-        {
-            Options = new ContentOptions();
-        }
-
         public IList<MediaProfileEntry> MediaProfiles { get; set; }
         public dynamic Pager { get; set; }
-        public ContentOptions Options { get; set; }
+        public ContentOptions Options { get; set; } = new ContentOptions();
     }
 
     public class MediaProfileEntry

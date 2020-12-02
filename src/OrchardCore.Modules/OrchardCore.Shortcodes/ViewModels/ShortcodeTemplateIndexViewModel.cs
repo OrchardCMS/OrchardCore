@@ -9,7 +9,7 @@ namespace OrchardCore.Shortcodes.ViewModels
     {
         public IList<ShortcodeTemplateEntry> ShortcodeTemplates { get; set; }
         public dynamic Pager { get; set; }
-        public ContentOptions Options { get; set; }
+        public ContentOptions Options { get; set; } = new ContentOptions();
     }
 
     public class ShortcodeTemplateEntry
@@ -21,11 +21,6 @@ namespace OrchardCore.Shortcodes.ViewModels
 
     public class ContentOptions
     {
-        public ContentOptions()
-        {
-            BulkAction = ViewModels.ContentsBulkAction.None;
-        }
-
         public string Search { get; set; }
         public ContentsBulkAction BulkAction { get; set; }
 

@@ -9,7 +9,7 @@ namespace OrchardCore.Templates.ViewModels
     {
         public IList<TemplateEntry> Templates { get; set; }
         public dynamic Pager { get; set; }
-        public ContentOptions Options { get; set; }
+        public ContentOptions Options { get; set; } = new ContentOptions();
     }
 
     public class TemplateEntry
@@ -21,10 +21,6 @@ namespace OrchardCore.Templates.ViewModels
 
     public class ContentOptions
     {
-        public ContentOptions()
-        {
-            BulkAction = ViewModels.ContentsBulkAction.None;
-        }
         public bool AdminTemplates { get; set; }
         public string Search { get; set; }
         public ContentsBulkAction BulkAction { get; set; }

@@ -6,13 +6,8 @@ namespace OrchardCore.AdminMenu.ViewModels
 {
     public class AdminMenuListViewModel
     {
-        public AdminMenuListViewModel()
-        {
-            Options = new ContentOptions();
-        }
-
         public IList<AdminMenuEntry> AdminMenu { get; set; }
-        public ContentOptions Options { get; set; }
+        public ContentOptions Options { get; set; } = new ContentOptions();
         public dynamic Pager { get; set; }
     }
 

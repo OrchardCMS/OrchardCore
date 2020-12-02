@@ -6,14 +6,9 @@ namespace OrchardCore.Lucene.ViewModels
 {
     public class AdminIndexViewModel
     {
-        public AdminIndexViewModel()
-        {
-            Options = new ContentOptions();
-        }
-
         public IEnumerable<IndexViewModel> Indexes { get; set; }
 
-        public ContentOptions Options { get; set; }
+        public ContentOptions Options { get; set; } = new ContentOptions();
 
         [BindNever]
         public dynamic Pager { get; set; }

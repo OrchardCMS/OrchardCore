@@ -7,7 +7,7 @@ namespace OrchardCore.Sitemaps.ViewModels
     public class ListSitemapViewModel
     {
         public IList<SitemapListEntry> Sitemaps { get; set; }
-        public ContentOptions Options { get; set; }
+        public ContentOptions Options { get; set; } = new ContentOptions();
         public dynamic Pager { get; set; }
     }
 
@@ -20,11 +20,6 @@ namespace OrchardCore.Sitemaps.ViewModels
 
     public class ContentOptions
     {
-        public ContentOptions()
-        {
-            BulkAction = ViewModels.ContentsBulkAction.None;
-        }
-
         public string Search { get; set; }
         public ContentsBulkAction BulkAction { get; set; }
 

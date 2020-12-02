@@ -7,7 +7,7 @@ namespace OrchardCore.Sitemaps.ViewModels
     public class ListSitemapIndexViewModel
     {
         public IList<SitemapIndexListEntry> SitemapIndexes { get; set; }
-        public ContentOptions Options { get; set; }
+        public ContentOptions Options { get; set; } = new ContentOptions();
         public dynamic Pager { get; set; }
     }
 
