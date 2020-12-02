@@ -117,26 +117,12 @@ namespace OrchardCore.Resources
                 .SetVersion("4.5.3");
 
             manifest
-                .DefineStyle("bootstrap-select")
-                .SetUrl("~/OrchardCore.Resources/Styles/bootstrap-select.min.css", "~/OrchardCore.Resources/Styles/bootstrap-select.css")
-                .SetCdn("https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.18/dist/css/bootstrap-select.min.css", "https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.18/dist/css/bootstrap-select.css")
-                .SetCdnIntegrity("sha384-dTqTc7d5t+FKhTIaMmda32pZNoXY/Y0ui0hRl5GzDQp4aARfEzbP1jzX6+KRuGKg", "sha384-OlTrhEtwZzUzVXapTUO8s6QryXzpD8mFyNVA8kyAi8KMgfOKSJYvielvExM+dNPR")
-                .SetVersion("1.13.18");
-
-            manifest
                 .DefineScript("bootstrap-select")
                 .SetDependencies("jQuery")
                 .SetUrl("~/OrchardCore.Resources/Scripts/bootstrap-select.min.js", "~/OrchardCore.Resources/Scripts/bootstrap-select.js")
                 .SetCdn("https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.18/dist/js/bootstrap-select.min.js", "https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.18/dist/js/bootstrap-select.js")
                 .SetCdnIntegrity("sha384-x8fxIWvLdZnkRaCvkDXOlxd6UP+qga975FjnbRp6NRpL9jjXjY9TwF9y7z4AccxS", "sha384-6BZTOUHC4e3nWcy5gveLqAu52vwy5TX8zBIvvfZFVDzIjYDgprdXRMK/hsypxdpQ")
                 .SetVersion("1.13.18");
-
-            manifest
-                .DefineStyle("bootstrap-slider")
-                .SetUrl("~/OrchardCore.Resources/Styles/bootstrap-slider.min.css", "~/OrchardCore.Resources/Styles/bootstrap-slider.css")
-                .SetCdn("https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/11.0.2/css/bootstrap-slider.min.css", "https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/11.0.2/css/bootstrap-slider.css")
-                .SetCdnIntegrity("sha384-Ot7O5p8Ws9qngwQOA1DP7acHuGIfK63cYbVJRYzrrMXhT3syEYhEsg+uqPsPpRhZ", "sha384-x1BbAB1QrM4/ZjT+vJzuI/NdvRo4tINKqg7lTN9jCq0bWrr/nelp9KfroZWd3UJu")
-                .SetVersion("11.0.2");
 
             manifest
                 .DefineScript("bootstrap-slider")
@@ -306,22 +292,22 @@ namespace OrchardCore.Resources
                 .DefineScript("resizable-resolveconflict")
                 .SetDependencies("jQuery-ui")
                 .SetUrl("~/OrchardCore.Resources/Scripts/resizable-resolveconflict.min.js", "~/OrchardCore.Resources/Scripts/resizable-resolveconflict.js")
-                .SetVersion("2.21.0");
+                .SetVersion("2.22.0");
 
             manifest
                 .DefineStyle("trumbowyg")
                 .SetUrl("~/OrchardCore.Resources/Styles/trumbowyg.min.css", "~/OrchardCore.Resources/Styles/trumbowyg.css")
-                .SetCdn("https://cdn.jsdelivr.net/npm/trumbowyg@2.21.0/dist/ui/trumbowyg.min.css", "https://cdn.jsdelivr.net/npm/trumbowyg@2.21.0/dist/ui/trumbowyg.css")
-                .SetCdnIntegrity("sha384-/QRP5MyK1yCOLeUwO9+YXKUDNFKRuzDjVDW+U8RnsI/9I3+p538CduXmiLfzWUY4", "sha384-helPIukt/ukxd7K8G/hg2Hgi5Zt2V5khBjNiQjpRUPE/mV/7I3Cym7fVGwol5PzR")
-                .SetVersion("2.21.0");
+                .SetCdn("https://cdn.jsdelivr.net/npm/trumbowyg@2.22.0/dist/ui/trumbowyg.min.css", "https://cdn.jsdelivr.net/npm/trumbowyg@2.22.0/dist/ui/trumbowyg.css")
+                .SetCdnIntegrity("sha384-21Vo8x+QeCpmixNd1sTyIekS23FilogZJR5iRlOG5GvJMYGiuXxScEfjHqCCErky", "sha384-99h8HRZ2LQjFfMLzsbO878Nwytb6ir33wIAW6CwlUWdlBnbYHp4OWDQGty+E6ZVz")
+                .SetVersion("2.22.0");
 
             manifest
                 .DefineScript("trumbowyg")
                 .SetDependencies("jquery-resizable")
                 .SetUrl("~/OrchardCore.Resources/Scripts/trumbowyg.js", "~/OrchardCore.Resources/Scripts/trumbowyg.js")
-                .SetCdn("https://cdn.jsdelivr.net/npm/trumbowyg@2.21.0/dist/trumbowyg.min.js", "https://cdn.jsdelivr.net/npm/trumbowyg@2.21.0/dist/trumbowyg.js")
-                .SetCdnIntegrity("sha384-XrYMLffzTUgFmXcXtkSWBUpAzHQzzDOXM96+7pKkOIde9oUDWNb72Ij7K06zsLTV", "sha384-I0b1bxE3gmTi8+HE5xlvTLLehif/97lNC+tk2dGrln7dtdQ/FasdZRDbXAg3rBus")
-                .SetVersion("2.21.0");
+                .SetCdn("https://cdn.jsdelivr.net/npm/trumbowyg@2.22.0/dist/trumbowyg.min.js", "https://cdn.jsdelivr.net/npm/trumbowyg@2.22.0/dist/trumbowyg.js")
+                .SetCdnIntegrity("sha384-XdwlXfUES17QXmTgiqgiqcVgbfwtBHPYzIXMgSVGvm9bVRZS4+x0Dq7IBhFMtl24", "sha384-pur+uSFuU7DQdr9NKwSoCQycJ0ETEIwGx6dRj05PIVzWegTQbXSdaBCkP4VjWD+i")
+                .SetVersion("2.22.0");
 
             manifest
                 .DefineScript("trumbowyg-shortcodes")
@@ -333,13 +319,13 @@ namespace OrchardCore.Resources
                 .DefineStyle("trumbowyg-plugins")
                 .SetDependencies("trumbowyg")
                 .SetUrl("~/OrchardCore.Resources/Styles/trumbowyg-plugins.min.css", "~/OrchardCore.Resources/Styles/trumbowyg-plugins.css")
-                .SetVersion("2.21.0");
+                .SetVersion("2.22.0");
 
             manifest
                 .DefineScript("trumbowyg-plugins")
                 .SetDependencies("trumbowyg")
                 .SetUrl("~/OrchardCore.Resources/Scripts/trumbowyg-plugins.js", "~/OrchardCore.Resources/Scripts/trumbowyg-plugins.js")
-                .SetVersion("2.21.0");
+                .SetVersion("2.22.0");
 
             manifest
                 .DefineScript("vuejs")

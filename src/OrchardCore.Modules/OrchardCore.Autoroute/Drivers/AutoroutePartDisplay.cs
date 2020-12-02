@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -117,7 +115,7 @@ namespace OrchardCore.Autoroute.Drivers
                 // This can only validate the path if the Autoroute is not managing content item routes or the path is absolute.
                 if (!String.IsNullOrEmpty(model.Path) && (!settings.ManageContainedItemRoutes || (settings.ManageContainedItemRoutes && model.Absolute)))
                 {
-                    var possibleConflicts = await _session.QueryIndex<AutoroutePartIndex>(o => o.Path == model.Path).ListAsync();
+                    var possibleConflicts = await _session.QueryIndex<AutoroutePartIndex>(o => (o.Published || o.Latest) && o.Path == model.Path).ListAsync();
                     if (possibleConflicts.Any())
                     {
                         var hasConflict = false;

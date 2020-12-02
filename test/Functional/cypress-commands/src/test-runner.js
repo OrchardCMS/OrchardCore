@@ -53,9 +53,9 @@ export function host(dir, assembly, { appDataLocation='./App_Data', dotnetVersio
 }
 
 // combines the functions above, useful when triggering tests from CI
-export function e2e(dir, assembly, { appDataLocation='./App_Data', dotnetVersion='netcoreapp3.1' }={}) {
+export function e2e(dir, assembly, { dotnetVersion='netcoreapp3.1' }={}) {
   deleteDirectory(path.join(dir, "App_Data_Tests"));
-  var server = host(dir, assembly, { appDataLocation, dotnetVersion });
+  var server = host(dir, assembly, { appDataLocation: "./App_Data_Tests", dotnetVersion });
 
   let test = child_process.exec("npx cypress run");
   test.stdout.on("data", data => {

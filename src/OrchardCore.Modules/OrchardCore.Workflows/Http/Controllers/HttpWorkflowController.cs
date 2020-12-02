@@ -94,7 +94,7 @@ namespace OrchardCore.Workflows.Http.Controllers
             {
                 if (_logger.IsEnabled(LogLevel.Warning))
                 {
-                    _logger.LogWarning("The provided workflow type with ID '{WorkflowTypeId}' could not be found.", payload.WorkflowId);
+                    _logger.LogWarning("The provided workflow with ID '{WorkflowTypeId}' could not be found.", payload.WorkflowId);
                 }
 
                 return NotFound();
@@ -104,7 +104,7 @@ namespace OrchardCore.Workflows.Http.Controllers
             {
                 if (_logger.IsEnabled(LogLevel.Warning))
                 {
-                    _logger.LogWarning("The provided workflow type with ID '{WorkflowTypeId}' is not enabled.", payload.WorkflowId);
+                    _logger.LogWarning("The provided workflow with ID '{WorkflowTypeId}' is not enabled.", payload.WorkflowId);
                 }
 
                 return NotFound();

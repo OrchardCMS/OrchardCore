@@ -11,12 +11,6 @@
     $.extend(true, $.trumbowyg, {
         langs: {
             // jshint camelcase:false
-            de: {
-                history: {
-                    redo: 'Wiederholen',
-                    undo: 'Rückgängig'
-                }
-            },
             en: {
                 history: {
                     redo: 'Redo',
@@ -29,22 +23,22 @@
                     undo: 'Fortryd'
                 }
             },
+            de: {
+                history: {
+                    redo: 'Wiederholen',
+                    undo: 'Rückgängig'
+                }
+            },
             fr: {
                 history: {
                     redo: 'Annuler',
                     undo: 'Rétablir'
                 }
             },
-            zh_tw: {
-               history: {
-                   redo: '重做',
-                   undo: '復原'
-               }
-            },
-            pt_br: {
+            hu: {
                 history: {
-                    redo: 'Refazer',
-                    undo: 'Desfazer'
+                    redo: 'Visszállít',
+                    undo: 'Visszavon'
                 }
             },
             ko: {
@@ -52,6 +46,18 @@
                     redo: '다시 실행',
                     undo: '되돌리기'
                 }
+            },
+            pt_br: {
+                history: {
+                    redo: 'Refazer',
+                    undo: 'Desfazer'
+                }
+            },
+            zh_tw: {
+               history: {
+                   redo: '重做',
+                   undo: '復原'
+               }
             },
             // jshint camelcase:true
         },
