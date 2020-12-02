@@ -329,6 +329,11 @@ namespace OrchardCore.Sitemaps.Controllers
         [FormValueRequired("submit.BulkAction")]
         public async Task<ActionResult> ListPost(ViewModels.ContentOptions options, IEnumerable<string> itemIds)
         {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSitemaps))
+            {
+                return Forbid();
+            }
+
             if (itemIds?.Count() > 0)
             {
                 var sitemapsList = await _sitemapManager.LoadSitemapsAsync();
@@ -340,12 +345,6 @@ namespace OrchardCore.Sitemaps.Controllers
                     case ContentsBulkAction.Remove:
                         foreach (var item in checkedContentItems)
                         {
-                            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSitemaps, item))
-                            {
-                                _notifier.Warning(H["Couldn't remove selected sitemap indices."]);
-                                return Forbid();
-                            }
-
                             await _sitemapManager.DeleteSitemapAsync(item.SitemapId);
                         }
                         _notifier.Success(H["Sitemap indices successfully removed."]);

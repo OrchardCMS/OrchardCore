@@ -253,6 +253,11 @@ namespace OrchardCore.Queries.Controllers
         [FormValueRequired("submit.BulkAction")]
         public async Task<ActionResult> IndexPost(ViewModels.ContentOptions options, IEnumerable<string> itemIds)
         {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageQueries))
+            {
+                return Forbid();
+            }
+
             if (itemIds?.Count() > 0)
             {
                 var queriesList = await _queryManager.ListQueriesAsync();
@@ -264,12 +269,6 @@ namespace OrchardCore.Queries.Controllers
                     case ContentsBulkAction.Remove:
                         foreach (var item in checkedContentItems)
                         {
-                            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageQueries, item))
-                            {
-                                _notifier.Warning(H["Couldn't remove selected queries."]);
-                                return Forbid();
-                            }
-
                             await _queryManager.DeleteQueryAsync(item.Name);
                         }
                         _notifier.Success(H["Queries successfully removed."]);

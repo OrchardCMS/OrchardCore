@@ -275,6 +275,11 @@ namespace OrchardCore.Shortcodes.Controllers
         [FormValueRequired("submit.BulkAction")]
         public async Task<ActionResult> IndexPost(ViewModels.ContentOptions options, IEnumerable<string> itemIds)
         {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageShortcodeTemplates))
+            {
+                return Forbid();
+            }
+
             if (itemIds?.Count() > 0)
             {
                 var shortcodeTemplatesDocument = await _shortcodeTemplatesManager.LoadShortcodeTemplatesDocumentAsync();
@@ -286,12 +291,6 @@ namespace OrchardCore.Shortcodes.Controllers
                     case ContentsBulkAction.Remove:
                         foreach (var item in checkedContentItems)
                         {
-                            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageShortcodeTemplates, item))
-                            {
-                                _notifier.Warning(H["Couldn't remove selected shortcode templates."]);
-                                return Forbid();
-                            }
-
                             await _shortcodeTemplatesManager.RemoveShortcodeTemplateAsync(item.Key);
                         }
                         _notifier.Success(H["Shortcode templates successfully removed."]);

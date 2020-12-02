@@ -285,6 +285,11 @@ namespace OrchardCore.Media.Controllers
         [FormValueRequired("submit.BulkAction")]
         public async Task<ActionResult> IndexPost(ViewModels.ContentOptions options, IEnumerable<string> itemIds)
         {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMediaProfiles))
+            {
+                return Forbid();
+            }
+
             if (itemIds?.Count() > 0)
             {
                 var mediaProfilesDocument = await _mediaProfilesManager.LoadMediaProfilesDocumentAsync();
@@ -296,12 +301,6 @@ namespace OrchardCore.Media.Controllers
                     case ContentsBulkAction.Remove:
                         foreach (var item in checkedContentItems)
                         {
-                            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMediaProfiles, item))
-                            {
-                                _notifier.Warning(H["Couldn't remove selected media profiles."]);
-                                return Forbid();
-                            }
-
                             await _mediaProfilesManager.RemoveMediaProfileAsync(item.Key);
                         }
                         _notifier.Success(H["Media profiles successfully removed."]);

@@ -322,6 +322,11 @@ namespace OrchardCore.Templates.Controllers
         [FormValueRequired("submit.BulkAction")]
         public async Task<ActionResult> ListPost(ContentOptions options, IEnumerable<string> itemIds)
         {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTemplates))
+            {
+                return Forbid();
+            }
+
             if (itemIds?.Count() > 0)
             {
                 var templatesDocument = options.AdminTemplates
@@ -336,12 +341,6 @@ namespace OrchardCore.Templates.Controllers
                     case ContentsBulkAction.Remove:
                         foreach (var item in checkedContentItems)
                         {
-                            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTemplates, item))
-                            {
-                                _notifier.Warning(H["Couldn't remove selected templates."]);
-                                return Forbid();
-                            }
-
                             await (options.AdminTemplates
                                     ? _adminTemplatesManager.RemoveTemplateAsync(item.Key)
                                     : _templatesManager.RemoveTemplateAsync(item.Key));

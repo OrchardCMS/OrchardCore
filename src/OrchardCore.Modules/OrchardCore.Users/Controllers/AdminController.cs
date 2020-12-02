@@ -192,6 +192,11 @@ namespace OrchardCore.Users.Controllers
         [FormValueRequired("submit.BulkAction")]
         public async Task<ActionResult> IndexPOST(UserIndexOptions options, IEnumerable<string> itemIds)
         {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers))
+            {
+                return Forbid();
+            }
+
             if (itemIds?.Count() > 0)
             {
                 var checkedContentItems = await _session.Query<User, UserIndex>().Where(x => x.UserId.IsIn(itemIds)).ListAsync();

@@ -231,6 +231,11 @@ namespace OrchardCore.AdminMenu.Controllers
         [FormValueRequired("submit.BulkAction")]
         public async Task<ActionResult> IndexPost(ViewModels.ContentOptions options, IEnumerable<string> itemIds)
         {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAdminMenu))
+            {
+                return Forbid();
+            }
+
             if (itemIds?.Count() > 0)
             {
                 var adminMenuList = (await _adminMenuService.GetAdminMenuListAsync()).AdminMenu;
@@ -242,12 +247,6 @@ namespace OrchardCore.AdminMenu.Controllers
                     case ContentsBulkAction.Remove:
                         foreach (var item in checkedContentItems)
                         {
-                            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAdminMenu, item))
-                            {
-                                _notifier.Warning(H["Couldn't remove selected admin menus."]);
-                                return Forbid();
-                            }
-
                             var adminMenu = adminMenuList.FirstOrDefault(x => String.Equals(x.Id, item.Id, StringComparison.OrdinalIgnoreCase));
                             await _adminMenuService.DeleteAsync(adminMenu);
                         }
