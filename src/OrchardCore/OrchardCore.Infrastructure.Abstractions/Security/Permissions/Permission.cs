@@ -9,7 +9,6 @@ namespace OrchardCore.Security.Permissions
     {
         public const string ClaimType = "Permission";
 
-        [JsonConstructor]
         public Permission(string name)
         {
             if (name == null)
