@@ -164,23 +164,23 @@ namespace OrchardCore.Redis.Services
         private static TimeSpan GetDelay(double retries)
         {
             var delay = _baseDelay
-                * (1.0 + ((Math.Pow(1.7, retries - 1.0) - 1.0)
-                    * (0.5 + new Random().NextDouble() * 0.5)));
+                * (1.0 + ((Math.Pow(1.8, retries - 1.0) - 1.0)
+                    * (0.6 + new Random().NextDouble() * 0.4)));
 
             return TimeSpan.FromMilliseconds(Math.Min(delay, _maxDelay));
 
             // 2 examples with 10 retries
             // --------------------------
-            // 100     100 (start from base)
-            // 140     157
-            // 221     257
-            // 398     414
-            // 510     530
-            // 1056    999
-            // 2233    2003
-            // 3330    2809
-            // 6436    5104
-            // 10000   10000 (max reached)
+            // 100     100 (start from base delay)
+            // 164     171
+            // 256     312
+            // 401     519
+            // 754     766
+            // 1327    1562
+            // 2950    3257
+            // 4596    4966
+            // 7215    8667
+            // 10000   10000 (max power reached)
         }
     }
 }
