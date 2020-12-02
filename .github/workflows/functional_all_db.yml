@@ -123,7 +123,7 @@ jobs:
         options: --health-cmd="mysqladmin ping" --health-interval=5s --health-timeout=2s --health-retries=3
     env:
       OrchardCore__ConnectionString: "server=mariadb;uid=root;pwd=test123;database=test"
-      OrchardCore__DatabaseProvider: "Mysql"
+      OrchardCore__DatabaseProvider: "MySql"
     steps:
     - uses: actions/checkout@v2
     - name: Setup .NET Core 3.1
