@@ -84,7 +84,7 @@ namespace OrchardCore.OpenId.Recipes
             {
                 descriptor.Permissions.Add(OpenIddictConstants.Permissions.GrantTypes.ClientCredentials);
 
-                if (model.Roles.Any())
+                if (model.Roles!= null && model.Roles.Any())
                 {
                     descriptor.Roles.UnionWith(model.Roles);
                 }
