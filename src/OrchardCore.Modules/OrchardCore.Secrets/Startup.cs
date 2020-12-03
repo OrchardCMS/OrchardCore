@@ -36,7 +36,6 @@ namespace OrchardCore.Secrets
 
             services.AddScoped<SecretBindingsManager>();
 
-            // TODO for setup purposes, we need to mvoe some of this to a core project I suspect.
             services.AddScoped(typeof(ISecretService<>), typeof(SecretService<>));
 
             services.AddScoped<ISecretCoordinator, DefaultSecretCoordinator>();

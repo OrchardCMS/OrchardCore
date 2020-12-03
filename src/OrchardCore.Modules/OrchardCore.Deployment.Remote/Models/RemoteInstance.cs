@@ -9,6 +9,12 @@
         public string ApiKey { get; set; }
 
         /// <summary>
+        /// The name of the api key secret that will be used to authentication this remote instance.
+        /// When a secret key is provided, it overrides the <see cref="ApiKey"/> value.
+        /// </summary>
+        public string ApiKeySecret { get; set; }
+
+        /// <summary>
         /// The name of the rsa secret that can be used to encrypt exported data.
         /// </summary>        
         public string RsaSecret { get; set; }

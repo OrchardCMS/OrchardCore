@@ -84,7 +84,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
 
             if (ModelState.IsValid)
             {
-                await _service.CreateRemoteClientAsync(model.ClientName, model.ApiKey);
+                await _service.CreateRemoteClientAsync(model.ClientName, model.ApiKey, model.ApiKeySecret);
 
                 _notifier.Success(H["Remote client created successfully"]);
                 return RedirectToAction(nameof(Index));
@@ -112,8 +112,13 @@ namespace OrchardCore.Deployment.Remote.Controllers
             {
                 Id = remoteClient.Id,
                 ClientName = remoteClient.ClientName,
-                ApiKey = Encoding.UTF8.GetString(_dataProtector.Unprotect(remoteClient.ProtectedApiKey)),
+                ApiKeySecret = remoteClient.ApiKeySecret
             };
+
+            if (remoteClient.ProtectedApiKey?.Length > 0)
+            {
+                model.ApiKey = Encoding.UTF8.GetString(_dataProtector.Unprotect(remoteClient.ProtectedApiKey));
+            }
 
             return View(model);
         }
@@ -140,7 +145,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
 
             if (ModelState.IsValid)
             {
-                await _service.TryUpdateRemoteClient(model.Id, model.ClientName, model.ApiKey);
+                await _service.TryUpdateRemoteClient(model.Id, model.ClientName, model.ApiKey, model.ApiKeySecret);
 
                 _notifier.Success(H["Remote client updated successfully"]);
 
@@ -180,7 +185,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
                 ModelState.AddModelError(nameof(EditRemoteClientViewModel.ClientName), S["The client name is mandatory."]);
             }
 
-            if (String.IsNullOrWhiteSpace(model.ApiKey))
+            if (String.IsNullOrWhiteSpace(model.ApiKey) && String.IsNullOrWhiteSpace(model.ApiKeySecret))
             {
                 ModelState.AddModelError(nameof(EditRemoteClientViewModel.ApiKey), S["The api key is mandatory."]);
             }
