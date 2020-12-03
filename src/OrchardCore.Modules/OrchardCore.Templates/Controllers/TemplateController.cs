@@ -82,7 +82,7 @@ namespace OrchardCore.Templates.Controllers
 
             if (!string.IsNullOrWhiteSpace(options.Search))
             {
-                templates = templates.Where(smp => smp.Key.Contains(options.Search)).ToList();
+                templates = templates.Where(x => x.Key.Contains(options.Search)).ToList();
             }
 
             var count = templates.Count;
