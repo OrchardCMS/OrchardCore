@@ -22,6 +22,6 @@ namespace OrchardCore.Documents
         /// <summary>
         /// Updates the store with the provided document and then updates the cache after the session is committed.
         /// </summary>
-        Task UpdateAsync(TDocument document);
+        Task UpdateAsync(TDocument document, Func<TDocument, Task> afterUpdateAsync = null);
     }
 }

@@ -26,20 +26,20 @@ namespace OrchardCore.Users
                 .Column<string>("UserId")
             );
 
-            SchemaBuilder.AlterTable(nameof(UserIndex), table => table
+            SchemaBuilder.AlterIndexTable<UserIndex>(table => table
                 .CreateIndex("IDX_UserIndex_IsEnabled", "DocumentId", "IsEnabled")
             );
 
-            SchemaBuilder.AlterTable(nameof(UserIndex), table => table
+            SchemaBuilder.AlterIndexTable<UserIndex>(table => table
                 .CreateIndex("IDX_UserIndex_UserId", "DocumentId", "UserId")
             );
 
-            SchemaBuilder.AlterTable(nameof(UserIndex), table => table
+            SchemaBuilder.AlterIndexTable<UserIndex>(table => table
                 // This index will be used for lookups when logging in.
                 .CreateIndex("IDX_UserIndex_UserName", "DocumentId", "NormalizedUserName")
             );
 
-            SchemaBuilder.AlterTable(nameof(UserIndex), table => table
+            SchemaBuilder.AlterIndexTable<UserIndex>(table => table
                 .CreateIndex("IDX_UserIndex_Email", "DocumentId", "NormalizedEmail")
             );
 
@@ -72,10 +72,10 @@ namespace OrchardCore.Users
 
         public int UpdateFrom3()
         {
-            SchemaBuilder.AlterTable(nameof(UserIndex), table => table
+            SchemaBuilder.AlterIndexTable<UserIndex>(table => table
                 .AddColumn<bool>(nameof(UserIndex.IsEnabled), c => c.NotNull().WithDefault(true)));
 
-            SchemaBuilder.AlterTable(nameof(UserIndex), table => table
+            SchemaBuilder.AlterIndexTable<UserIndex>(table => table
                 .CreateIndex("IDX_UserIndex_IsEnabled", "IsEnabled")
             );
 
@@ -85,19 +85,19 @@ namespace OrchardCore.Users
         // UserId database migration.
         public int UpdateFrom4()
         {
-            SchemaBuilder.AlterTable(nameof(UserIndex), table => table
+            SchemaBuilder.AlterIndexTable<UserIndex>(table => table
                 .AddColumn<string>("UserId"));
 
-            SchemaBuilder.AlterTable(nameof(UserIndex), table => table
+            SchemaBuilder.AlterIndexTable<UserIndex>(table => table
                 .CreateIndex("IDX_UserIndex_UserId", "DocumentId", "UserId")
             );
 
-            SchemaBuilder.AlterTable(nameof(UserIndex), table => table
+            SchemaBuilder.AlterIndexTable<UserIndex>(table => table
                 // This index will be used for lookups when logging in.
                 .CreateIndex("IDX_UserIndex_UserName", "DocumentId", "NormalizedUserName")
             );
 
-            SchemaBuilder.AlterTable(nameof(UserIndex), table => table
+            SchemaBuilder.AlterIndexTable<UserIndex>(table => table
                 .CreateIndex("IDX_UserIndex_Email", "DocumentId", "NormalizedEmail")
             );
 

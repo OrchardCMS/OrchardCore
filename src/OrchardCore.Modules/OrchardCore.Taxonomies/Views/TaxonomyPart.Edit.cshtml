@@ -11,8 +11,8 @@
     The shape is created from TaxonomyPartDisplayDriver
 *@
 
-<script asp-src="~/OrchardCore.Taxonomies/Scripts/menu.js" at="Foot" depends-on="admin"></script>
-<style asp-src="~/OrchardCore.Taxonomies/Styles/menu.min.css" debug-src="~/OrchardCore.Taxonomies/Styles/menu.css"></style>
+<script asp-src="~/OrchardCore.Taxonomies/Scripts/menu.js" at="Foot" depends-on="admin, jQuery-ui"></script>
+<style asp-src="~/OrchardCore.Taxonomies/Styles/menu.min.css" debug-src="~/OrchardCore.Taxonomies/Styles/menu.css" depends-on="jQuery-ui"></style>
 
 @{
     var updater = ModelUpdaterAccessor.ModelUpdater;

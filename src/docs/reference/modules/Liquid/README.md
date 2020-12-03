@@ -300,6 +300,52 @@ Returns the user's email.
 {{ User | user_email }}
 ```
 
+##### user_id filter
+
+Returns the user's unique identifier.
+
+```liquid
+{{ User | user_id }}
+```
+
+##### users_by_id filter
+
+Loads a single or multiple user objects from the database by id(s).
+
+The resulting object has access to the following properties:
+
+| Property | Example | Description |
+| --------- | ---- |------------ |
+| `UserId` | `42z3ps88pm8d40zn9cfwbee45c ` | The id of the authenticated user. |
+| `UserName` | `admin` | The name of the authenticated user. |
+| `NormalizedUserName` | `ADMIN` | The normailzed name of the authenticated user. |
+| `Email` | `admin@gmail.com` | The email of the authenticated user. |
+| `NormailizedEmail` | `ADMIN@GMAIL>COM` | The normalized email of the authenticated user. |
+| `EmailConfirmed` | `true` | True if the user has confirmed his email or if the email confirmation is not required |
+| `IsEnabled` | `true` | True if the user is enabled |
+| `RoleNames` | `[Editor,Contributor]`  | An array of role names assigned to the user |
+| `Properties` | `UserProfile.FirstName.Text` | Holds the Custom Users Settings of the user. |
+
+You can use this filter to load the user information of the current authenticated user like this.
+```liquid
+{% assign user = User | user_id | users_by_id %}
+
+{{ user.UserName }} - {{ user.Email }}
+
+```
+
+You can use this filter with the UserPicker field to load the picked user's information.
+
+```liquid
+{% assign users = Model.ContentItem.Content.SomeType.UserPicker.UserIds | users_by_id %}
+
+{% for user in users %}
+  {{ user.UserName }} - {{ user.Email }}
+{% endfor %}
+
+```
+
+
 #### User has_permission filter
 
 Checks if the User has permission clearance, optionally on a resource
