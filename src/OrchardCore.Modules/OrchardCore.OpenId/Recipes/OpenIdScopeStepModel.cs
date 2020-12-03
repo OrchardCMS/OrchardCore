@@ -10,5 +10,6 @@ namespace OrchardCore.OpenId.Recipes
         public string DisplayName { get; set; }
         public string ScopeName { get; set; }
         public string[] Resources { get; set; }
+        public string[] TenantNames { get; set; }
     }
 }
