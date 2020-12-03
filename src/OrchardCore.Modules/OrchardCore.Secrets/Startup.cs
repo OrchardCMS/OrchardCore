@@ -45,8 +45,6 @@ namespace OrchardCore.Secrets
             services.AddScoped<IDisplayDriver<Secret>, TestSecretDisplayDriver>();
             services.AddSingleton<ISecretFactory>(new SecretFactory<TextSecret>());
 
-
-
             services.AddScoped<IDisplayDriver<Secret>, RsaSecretDisplayDriver>();
             services.AddSingleton<ISecretFactory>(new SecretFactory<RsaSecret>());
 

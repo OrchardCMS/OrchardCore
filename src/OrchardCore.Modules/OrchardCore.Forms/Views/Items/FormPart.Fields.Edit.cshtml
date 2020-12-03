@@ -33,3 +33,12 @@
         <span class="hint">@T["Check to generate an Anti Forgery Token in the form."]</span>
     </div>
 </div>
+
+<div class="form-group" asp-validation-class-for="HttpWorkflowSecret">
+    <div class="w-100 w-md-50">
+        <label asp-for="HttpWorkflowSecret">@T["Password secret"]</label>
+        @await Component.InvokeAsync("SelectSecret", new { secretType = "HttpWorkflowSecret", selectedSecret = Model.HttpWorkflowSecret, htmlName = Html.NameFor(m => m.HttpWorkflowSecret), required  = false})
+        <span asp-validation-for="HttpWorkflowSecret"></span>
+    </div>
+    <span class="hint">@T["The name of the secret for the http workflow to submit this form to. When provided will override the Action value."]</span>
+</div>
