@@ -24,8 +24,7 @@ namespace OrchardCore.Media.Azure
                 BasePath = _options.BasePath
             };
 
-            var indexPassword = _options.ConnectionString.IndexOf("password=", System.StringComparison.OrdinalIgnoreCase);
-            model.ConnectionString = (indexPassword > -1) ? _options.ConnectionString.Substring(0, indexPassword) + "&bull;&bull;&bull;" : _options.ConnectionString;
+            model.ConnectionString = _options.ConnectionString;
 
             return View(model);
         }

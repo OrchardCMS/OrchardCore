@@ -52,6 +52,8 @@ namespace OrchardCore.Media.Azure
 
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.AddScoped<IPermissionProvider, Permissions>();
+            services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddTransient<IConfigureOptions<MediaBlobStorageOptions>, MediaBlobStorageOptionsConfiguration>();
 
             // Only replace default implementation if options are valid.
@@ -126,8 +128,6 @@ namespace OrchardCore.Media.Azure
                 services.AddSingleton<IMediaEventHandler, DefaultMediaFileStoreCacheEventHandler>();
 
                 services.AddScoped<IModularTenantEvents, CreateMediaBlobContainerEvent>();
-                services.AddScoped<IPermissionProvider, Permissions>();
-                services.AddScoped<INavigationProvider, AdminMenu>();
             }
         }
 
