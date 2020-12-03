@@ -21,10 +21,9 @@ namespace OrchardCore.Media.Azure
             {
                 CreateContainer = _options.CreateContainer,
                 ContainerName = _options.ContainerName,
+                ConnectionString = _options.ConnectionString,
                 BasePath = _options.BasePath
             };
-
-            model.ConnectionString = _options.ConnectionString;
 
             return View(model);
         }
