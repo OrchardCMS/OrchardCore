@@ -6,11 +6,11 @@
 
 <h1>@RenderTitleSegments(T["Indices"])</h1>
 
+@* the form is necessary to generate and antiforgery token for the delete action *@
 <form asp-action="Index">
     <input asp-for="Options.BulkAction" type="hidden" />
     <input type="submit" name="submit.BulkAction" class="d-none" />
-    @* the form is necessary to generate and antiforgery token for the delete action *@
-
+    
     <div class="card mb-3 position-sticky action-bar">
         <div class="card-body bg-primary p-3">
             <div class="form-group mb-n1">
@@ -84,7 +84,7 @@
         else
         {
             <li class="list-group-item">
-                <div class="alert alert-info mb-1" role="alert">
+                <div class="alert alert-info mb-0" role="alert">
                     @T["<strong>Nothing here!</strong> There are no indices for the moment."]
                 </div>
             </li>

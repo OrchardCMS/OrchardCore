@@ -35,7 +35,7 @@
             </div>
         </div>
     </div>
-    <ul class="list-group with-checkboxes">
+    <ul class="list-group with-checkbox">
         @if (Model.Sitemaps.Any())
         {
             <li class="list-group-item bg-primary">
@@ -99,7 +99,7 @@
         else
         {
             <li class="list-group-item">
-                <div class="alert alert-info mb-1" role="alert">
+                <div class="alert alert-info mb-0" role="alert">
                     @T["<strong>Nothing here!</strong> There are no sitemaps for the moment."]
                 </div>
             </li>
