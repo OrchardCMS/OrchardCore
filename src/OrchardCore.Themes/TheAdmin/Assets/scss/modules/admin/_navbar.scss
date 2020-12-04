@@ -41,14 +41,8 @@
     @extend .navbar-brand;
     overflow: hidden;
     height: 42px;
-    margin-left: 11px;
-    margin-right: 24px;
-    padding-left: 36px;
+    margin-left: 5px;
     padding-top: 10px;
-    background-image: url(/TheAdmin/logo.png);
-    background-repeat: no-repeat;
-    background-position: left center;
-    background-size: 28px auto;
     white-space: nowrap;
     font-size: 14px;
     transition: width 0.2s ease-in-out;
@@ -61,6 +55,14 @@
         font-weight: bold;
         color: rgba(0, 120, 212, 1);
     }
+}
+
+.ta-navbar-logo {
+    margin-left: 10px;
+}
+
+.ta-navbar-logo img {
+    width: 28px;
 }
 
 // When left-sidebar is compact nav brand is compacted too.
