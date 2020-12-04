@@ -6,15 +6,14 @@
     routeValues[AutorouteOptions.Value.ContentItemIdKey] = menuItemPart.ContentItem.Content.ContentMenuItemPart.SelectedContentItem.ContentItemIds[0];
     var linkUrl = Url.RouteUrl(routeValues);
 
-    var name = (string)menuItemPart.Name;
-    if(Model.Level == 0 && Model.HasItems)
-    {
-        name += "<b class=\"caret\"></b>";
-    }
-
     TagBuilder tag = Tag(Model, "a");
     tag.Attributes["href"] = linkUrl;
-    tag.InnerHtml.AppendHtml(name);
+    tag.InnerHtml.Append((string)menuItemPart.Name);
+
+    if (Model.Level == 0 && Model.HasItems)
+    {
+        tag.InnerHtml.AppendHtml("<b class=\"caret\"></b>");
+    }
 }
 
 @tag
