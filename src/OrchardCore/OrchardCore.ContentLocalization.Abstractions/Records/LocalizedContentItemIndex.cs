@@ -20,7 +20,7 @@ namespace OrchardCore.ContentLocalization.Records
 
     public class LocalizedContentItemIndexProvider : ContentHandlerBase, IIndexProvider, IScopedIndexProvider
     {
-        private readonly List<ContentItem> _removed = new List<ContentItem>();
+        private readonly HashSet<ContentItem> _removed = new HashSet<ContentItem>();
 
         public LocalizedContentItemIndexProvider()
         {
