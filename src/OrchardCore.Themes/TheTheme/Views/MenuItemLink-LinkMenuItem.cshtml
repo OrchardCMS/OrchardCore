@@ -1,5 +1,4 @@
 @using OrchardCore.ContentManagement
-
 @{
     ContentItem contentItem = Model.ContentItem;
     var linkMenuItemPart = contentItem.Content["LinkMenuItemPart"];
@@ -15,5 +14,4 @@
     tag.Attributes["href"] = (string)linkMenuItemPart.Url;
     tag.InnerHtml.AppendHtml(name);
 }
-
 @tag
