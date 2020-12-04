@@ -1,4 +1,3 @@
-using OrchardCore.Autoroute.Drivers;
 using OrchardCore.Autoroute.Models;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
@@ -32,15 +31,7 @@ namespace OrchardCore.Autoroute
                 .Column<bool>("Latest")
             );
 
-            SchemaBuilder.AlterIndexTable<AutoroutePartIndex>(table => table
-                .CreateIndex("IDX_AutoroutePartIndex_ContentItemIds", "ContentItemId", "ContainedContentItemId")
-            );
-
-            SchemaBuilder.AlterIndexTable<AutoroutePartIndex>(table => table
-                .CreateIndex("IDX_AutoroutePartIndex_State", "Published", "Latest")
-            );
-
-            // Return 4 to shortcut the second migration on new content definition schemas.
+            // Return 4 to shortcut other migrations on new content definition schemas.
             return 4;
         }
 
@@ -50,16 +41,13 @@ namespace OrchardCore.Autoroute
         {
             _contentDefinitionManager.MigratePartSettings<AutoroutePart, AutoroutePartSettings>();
 
-            return 2;
+            // Return 3 to shortcut the next migration that does nothing.
+            return 3;
         }
 
         // This code can be removed in a later version.
         public int UpdateFrom2()
         {
-            SchemaBuilder.AlterIndexTable<AutoroutePartIndex>(table => table
-                .CreateIndex("IDX_AutoroutePartIndex_Published", "Published")
-            );
-
             return 3;
         }
 
@@ -76,22 +64,6 @@ namespace OrchardCore.Autoroute
 
             SchemaBuilder.AlterIndexTable<AutoroutePartIndex>(table => table
                 .AddColumn<bool>("Latest", c => c.WithDefault(false))
-            );
-
-            SchemaBuilder.AlterIndexTable<AutoroutePartIndex>(table => table
-                .DropIndex("IDX_AutoroutePartIndex_ContentItemId")
-            );
-
-            SchemaBuilder.AlterIndexTable<AutoroutePartIndex>(table => table
-                .CreateIndex("IDX_AutoroutePartIndex_ContentItemIds", "ContentItemId", "ContainedContentItemId")
-            );
-
-            SchemaBuilder.AlterIndexTable<AutoroutePartIndex>(table => table
-                .DropIndex("IDX_AutoroutePartIndex_Published")
-            );
-
-            SchemaBuilder.AlterIndexTable<AutoroutePartIndex>(table => table
-                .CreateIndex("IDX_AutoroutePartIndex_State", "Published", "Latest")
             );
 
             return 4;
