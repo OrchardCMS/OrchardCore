@@ -30,14 +30,6 @@ namespace OrchardCore.ContentLocalization.Records
             );
 
             SchemaBuilder.AlterIndexTable<LocalizedContentItemIndex>(table => table
-                .CreateIndex("IDX_LocalizationPartIndex_LocalizationSet_Culture", "LocalizationSet", "Culture")
-            );
-
-            SchemaBuilder.AlterIndexTable<LocalizedContentItemIndex>(table => table
-                .CreateIndex("IDX_LocalizationPartIndex_ContentItemId", "ContentItemId")
-            );
-
-            SchemaBuilder.AlterIndexTable<LocalizedContentItemIndex>(table => table
                 .CreateIndex("IDX_LocalizationPartIndex_DocumentId_Set_Culture_State", "DocumentId", "LocalizationSet", "Culture", "Published", "Latest")
             );
 
