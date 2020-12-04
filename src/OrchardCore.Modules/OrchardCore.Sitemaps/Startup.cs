@@ -82,11 +82,11 @@ namespace OrchardCore.Sitemaps
                 .AddHandler<SitemapPartHandler>();
 
             //custom url in sitemap
-            services.AddScoped<ISitemapSourceBuilder, CustomUrlsSitemapSourceBuilder>();
-            services.AddScoped<ISitemapSourceUpdateHandler, CustomUrlsSitemapSourceUpdateHandler>();
-            services.AddScoped<ISitemapSourceModifiedDateProvider, CustomUrlsSitemapSourceModifiedDateProvider>();
-            services.AddScoped<IDisplayDriver<SitemapSource>, CustomUrlsSitemapSourceDriver>();
-            services.AddScoped<ISitemapSourceFactory, SitemapSourceFactory<CustomUrlSitemapSource>>();
+            services.AddScoped<ISitemapSourceBuilder, CustomPathSitemapSourceBuilder>();
+            services.AddScoped<ISitemapSourceUpdateHandler, CustomPathSitemapSourceUpdateHandler>();
+            services.AddScoped<ISitemapSourceModifiedDateProvider, CustomPathSitemapSourceModifiedDateProvider>();
+            services.AddScoped<IDisplayDriver<SitemapSource>, CustomPathSitemapSourceDriver>();
+            services.AddScoped<ISitemapSourceFactory, SitemapSourceFactory<CustomPathSitemapSource>>();
         }
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

@@ -6,9 +6,9 @@ using OrchardCore.Sitemaps.Models;
 
 namespace OrchardCore.Sitemaps.Builders
 {
-    public class CustomUrlsSitemapSourceModifiedDateProvider : SitemapSourceModifiedDateProviderBase<CustomUrlSitemapSource>
+    public class CustomPathSitemapSourceModifiedDateProvider : SitemapSourceModifiedDateProviderBase<CustomPathSitemapSource>
     {
-        public override Task<DateTime?> GetLastModifiedDateAsync(CustomUrlSitemapSource source)
+        public override Task<DateTime?> GetLastModifiedDateAsync(CustomPathSitemapSource source)
         {
             return Task.FromResult(source.LastUpdate);
         }

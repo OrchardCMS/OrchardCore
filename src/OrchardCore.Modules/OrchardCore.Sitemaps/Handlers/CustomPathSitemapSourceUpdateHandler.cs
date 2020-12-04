@@ -7,11 +7,11 @@ using OrchardCore.Sitemaps.Services;
 
 namespace OrchardCore.Sitemaps.Handlers
 {
-    public class CustomUrlsSitemapSourceUpdateHandler : ISitemapSourceUpdateHandler
+    public class CustomPathSitemapSourceUpdateHandler : ISitemapSourceUpdateHandler
     {
         private readonly ISitemapManager _sitemapManager;
 
-        public CustomUrlsSitemapSourceUpdateHandler(ISitemapManager sitemapManager)
+        public CustomPathSitemapSourceUpdateHandler(ISitemapManager sitemapManager)
         {
             _sitemapManager = sitemapManager;
         }
@@ -39,7 +39,7 @@ namespace OrchardCore.Sitemaps.Handlers
             {
                 // Do not break out of this loop, as it must check each sitemap.
                 foreach (var source in sitemap.SitemapSources
-                    .Select(s => s as CustomUrlSitemapSource))
+                    .Select(s => s as CustomPathSitemapSource))
                 {
                     if (source == null)
                     {

@@ -11,21 +11,21 @@ using OrchardCore.Sitemaps.ViewModels;
 
 namespace OrchardCore.Sitemaps.Drivers
 {
-    public class CustomUrlsSitemapSourceDriver : DisplayDriver<SitemapSource, CustomUrlSitemapSource>
+    public class CustomPathSitemapSourceDriver : DisplayDriver<SitemapSource, CustomPathSitemapSource>
     {
-        public override IDisplayResult Display(CustomUrlSitemapSource sitemapSource)
+        public override IDisplayResult Display(CustomPathSitemapSource sitemapSource)
         {
             return Combine(
-                View("CustomUrlSitemapSource_SummaryAdmin", sitemapSource).Location("SummaryAdmin", "Content"),
-                View("CustomUrlSitemapSource_Thumbnail", sitemapSource).Location("Thumbnail", "Content")
+                View("CustomPathSitemapSource_SummaryAdmin", sitemapSource).Location("SummaryAdmin", "Content"),
+                View("CustomPathSitemapSource_Thumbnail", sitemapSource).Location("Thumbnail", "Content")
             );
         }
 
-        public override IDisplayResult Edit(CustomUrlSitemapSource sitemapSource, IUpdateModel updater)
+        public override IDisplayResult Edit(CustomPathSitemapSource sitemapSource, IUpdateModel updater)
         {
             
 
-            return Initialize<CustomUrlSitemapSourceViewModel>("CustomUrlSitemapSource_Edit", model =>
+            return Initialize<CustomPathSitemapSourceViewModel>("CustomPathSitemapSource_Edit", model =>
             {
                 model.Url = sitemapSource.Url;
                 model.Priority = sitemapSource.Priority;
@@ -34,9 +34,9 @@ namespace OrchardCore.Sitemaps.Drivers
             }).Location("Content");
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(CustomUrlSitemapSource sitemap, UpdateEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(CustomPathSitemapSource sitemap, UpdateEditorContext context)
         {
-            var model = new CustomUrlSitemapSourceViewModel();
+            var model = new CustomPathSitemapSourceViewModel();
 
             if (await context.Updater.TryUpdateModelAsync(model,
                     Prefix,

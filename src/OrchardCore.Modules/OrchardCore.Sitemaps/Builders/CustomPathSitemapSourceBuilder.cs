@@ -7,11 +7,11 @@ using OrchardCore.Mvc.Core.Utilities;
 
 namespace OrchardCore.Sitemaps.Builders
 {
-    public class CustomUrlsSitemapSourceBuilder : SitemapSourceBuilderBase<CustomUrlSitemapSource>
+    public class CustomPathSitemapSourceBuilder : SitemapSourceBuilderBase<CustomPathSitemapSource>
     {
         private static readonly XNamespace Namespace = "http://www.sitemaps.org/schemas/sitemap/0.9";
 
-        public override async Task BuildSourceAsync(CustomUrlSitemapSource source, SitemapBuilderContext context)
+        public override async Task BuildSourceAsync(CustomPathSitemapSource source, SitemapBuilderContext context)
         {
             var url = new XElement(Namespace + "url");
 
@@ -21,7 +21,7 @@ namespace OrchardCore.Sitemaps.Builders
             }
         }
 
-        private Task<bool> BuildUrlsetMetadataAsync(CustomUrlSitemapSource source, SitemapBuilderContext context, XElement url)
+        private Task<bool> BuildUrlsetMetadataAsync(CustomPathSitemapSource source, SitemapBuilderContext context, XElement url)
         {
             if (BuildUrl(context, source, url))
             {
@@ -34,7 +34,7 @@ namespace OrchardCore.Sitemaps.Builders
             return Task.FromResult(false);
         }
 
-        private bool BuildUrl(SitemapBuilderContext context, CustomUrlSitemapSource source, XElement url)
+        private bool BuildUrl(SitemapBuilderContext context, CustomPathSitemapSource source, XElement url)
         {
             if (string.IsNullOrEmpty(source.Url))
                 return false;
@@ -43,12 +43,12 @@ namespace OrchardCore.Sitemaps.Builders
                 source.Url = "/" + source.Url;
 
             var loc = new XElement(Namespace + "loc");
-            loc.Add(context.UrlHelper.GetBaseUrl() + context.HostPrefix + context.UrlHelper.Content(source.Url));
+            loc.Add(context.HostPrefix + context.UrlHelper.Content(source.Url));
             url.Add(loc);
             return true;
         }
 
-        private void PopulateChangeFrequencyPriority(CustomUrlSitemapSource source, XElement url)
+        private void PopulateChangeFrequencyPriority(CustomPathSitemapSource source, XElement url)
         {
             var changeFrequencyValue = source.ChangeFrequency.ToString();
             var priorityIntValue = source.Priority;
@@ -64,7 +64,7 @@ namespace OrchardCore.Sitemaps.Builders
             url.Add(priority);
         }
 
-        private void PopulateLastMod(CustomUrlSitemapSource source, XElement url)
+        private void PopulateLastMod(CustomPathSitemapSource source, XElement url)
         {
             // Last modified is not required. Do not include if content item has no modified date.
             if (source.LastUpdate.HasValue)

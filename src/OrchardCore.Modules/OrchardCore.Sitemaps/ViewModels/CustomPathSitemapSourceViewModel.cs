@@ -7,7 +7,7 @@ namespace OrchardCore.Sitemaps.ViewModels
     /// <summary>
     /// A sitemap source for managing custom url.
     /// </summary>
-    public class CustomUrlSitemapSourceViewModel
+    public class CustomPathSitemapSourceViewModel
     {
         /// <summary>
         /// Gets and sets the custom url.
