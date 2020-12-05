@@ -9,7 +9,7 @@
         .OrderBy(x => x.Order)
         .Select(x => x.Field);
 }
-<h1>@RenderTitleSegments(T["Edit Content Part - {0}", Model.DisplayName])</h1>
+<zone Name="Title"><h1>@RenderTitleSegments(T["Edit Content Part - {0}", Model.DisplayName])</h1></zone>
 
 <form asp-action="EditPart">
     @Html.ValidationSummary()
