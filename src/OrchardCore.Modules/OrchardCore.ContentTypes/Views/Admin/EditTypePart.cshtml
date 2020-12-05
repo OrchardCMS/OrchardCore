@@ -43,6 +43,13 @@
 
     @if (Model.Shape.Content != null)
     {
+        @if (Model.Shape.Shortcuts != null)
+        {
+            <div class="form-group">
+                @await DisplayAsync(Model.Shape.Shortcuts)
+            </div>
+        }
+
         <div class="form-group">
             @await DisplayAsync(Model.Shape.Content)
         </div>

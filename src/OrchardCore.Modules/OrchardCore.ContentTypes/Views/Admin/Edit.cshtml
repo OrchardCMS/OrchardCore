@@ -29,6 +29,13 @@
 
     <input type="hidden" asp-for="Name" />
 
+    @if (Model.Editor.Shortcuts != null)
+    {
+        <div class="form-group">
+            @await DisplayAsync(Model.Editor.Shortcuts)
+        </div>
+    }
+
     @await DisplayAsync(Model.Editor)
 
     <div class="form-group">
@@ -39,11 +46,11 @@
             {
                 @foreach (var field in orderedFields)
                 {
-                    <li class="list-group-item"  style="cursor: move;">
+                    <li class="list-group-item" style="cursor: move;">
                         <div class="properties">
                             <div class="related">
                                 <a asp-route-action="EditField" asp-route-id="@Model.TypeDefinition.Name" asp-route-name="@field.Name" asp-route-returnUrl="@FullRequestPath" class="btn btn-primary btn-sm" role="button">@T["Edit"]</a>
-                                <a asp-route-action="RemoveFieldFrom" asp-route-id="@Model.TypeDefinition.Name" asp-route-name="@field.Name"  class="btn btn-danger btn-sm" role="button" itemprop="UnsafeUrl RemoveUrl">@T["Remove"]</a>
+                                <a asp-route-action="RemoveFieldFrom" asp-route-id="@Model.TypeDefinition.Name" asp-route-name="@field.Name" class="btn btn-danger btn-sm" role="button" itemprop="UnsafeUrl RemoveUrl">@T["Remove"]</a>
                             </div>
                             @field.DisplayName() <span class="hint dashed">@field.FieldDefinition.Name.CamelFriendly()</span>
                         </div>
