@@ -2,6 +2,12 @@
 
   <PropertyGroup>
     <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
+    <!-- NuGet properties-->
+    <Title>OrchardCore Shells Azure</Title>
+    <Description>$(OCFrameworkDescription)
+    
+    Enables support for loading site and shell settings from Azure Blob Storage.</Description>
+    <PackageTags>$(PackageTags) OrchardCoreFramework Azure</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
