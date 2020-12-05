@@ -47,7 +47,7 @@ namespace OrchardCore.ContentManagement.Records
     public class AutoroutePartIndexProvider : ContentHandlerBase, IIndexProvider, IScopedIndexProvider
     {
         private readonly IServiceProvider _serviceProvider;
-        private readonly List<ContentItem> _removed = new List<ContentItem>();
+        private readonly HashSet<ContentItem> _removed = new HashSet<ContentItem>();
         private IContentManager _contentManager;
 
         public AutoroutePartIndexProvider(IServiceProvider serviceProvider)

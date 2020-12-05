@@ -69,7 +69,7 @@ namespace OrchardCore.Media.Controllers
 
             if (!string.IsNullOrWhiteSpace(options.Search))
             {
-                mediaProfiles = mediaProfiles.Where(dp => dp.Key.Contains(options.Search)).ToList();
+                mediaProfiles = mediaProfiles.Where(x => x.Key.Contains(options.Search)).ToList();
             }
 
             var count = mediaProfiles.Count;

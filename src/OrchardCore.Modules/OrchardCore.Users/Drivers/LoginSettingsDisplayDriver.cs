@@ -22,7 +22,7 @@ namespace OrchardCore.Users.Drivers
             _httpContextAccessor = httpContextAccessor;
             _authorizationService = authorizationService;
         }
-        public override async Task<IDisplayResult> EditAsync(LoginSettings section, BuildEditorContext context)
+        public override async Task<IDisplayResult> EditAsync(LoginSettings settings, BuildEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
 
@@ -33,11 +33,11 @@ namespace OrchardCore.Users.Drivers
 
             return Initialize<LoginSettings>("LoginSettings_Edit", model =>
             {
-                model.UseSiteTheme = section.UseSiteTheme;
-                model.UseExternalProviderIfOnlyOneDefined = section.UseExternalProviderIfOnlyOneDefined;
-                model.DisableLocalLogin = section.DisableLocalLogin;
-                model.UseScriptToSyncRoles = section.UseScriptToSyncRoles;
-                model.SyncRolesScript = section.SyncRolesScript;
+                model.UseSiteTheme = settings.UseSiteTheme;
+                model.UseExternalProviderIfOnlyOneDefined = settings.UseExternalProviderIfOnlyOneDefined;
+                model.DisableLocalLogin = settings.DisableLocalLogin;
+                model.UseScriptToSyncRoles = settings.UseScriptToSyncRoles;
+                model.SyncRolesScript = settings.SyncRolesScript;
             }).Location("Content:5").OnGroup(GroupId);
         }
 
