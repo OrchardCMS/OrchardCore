@@ -20,7 +20,7 @@
 
     <div class="form-group" asp-validation-class-for="ShapeType">
         <label asp-for="ShapeType">@T["Shape type"]</label>
-        <input asp-for="ShapeType" asp-is-disabled="!Model.Creating" class="form-control" autofocus />
+        <input asp-for="ShapeType" asp-is-disabled="!Model.Creating" class="form-control" required autofocus />
         <span asp-validation-for="ShapeType"></span>
         <span class="hint">@T["The type of the shape."]</span>
     </div>
