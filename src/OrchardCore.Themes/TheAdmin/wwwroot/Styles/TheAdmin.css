@@ -15657,6 +15657,7 @@
     padding-right: 0; }
     :root[data-theme='default'] .ta-navbar-top h1 {
       font-size: 24px;
+      font-weight: bold;
       position: absolute;
       top: 10px; }
     [dir=ltr]:root[data-theme='default'] .ta-navbar-top h1 {
@@ -32286,6 +32287,7 @@
     padding-right: 0; }
     :root[data-theme='darkmode'] .ta-navbar-top h1 {
       font-size: 24px;
+      font-weight: bold;
       position: absolute;
       top: 10px; }
     [dir=ltr]:root[data-theme='darkmode'] .ta-navbar-top h1 {
