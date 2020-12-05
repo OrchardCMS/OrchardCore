@@ -15655,6 +15655,15 @@
   padding-left: 0; }
   [dir=rtl]:root[data-theme='default'] .ta-navbar-top {
     padding-right: 0; }
+    :root[data-theme='default'] .ta-navbar-top h1 {
+      font-size: 24px;
+      font-weight: bold;
+      position: absolute;
+      top: 10px; }
+    [dir=ltr]:root[data-theme='default'] .ta-navbar-top h1 {
+  left: 275px; }
+    [dir=rtl]:root[data-theme='default'] .ta-navbar-top h1 {
+      right: 275px; }
     :root[data-theme='default'] .ta-navbar-top .nav-link {
       font-size: 14px; }
     [dir=ltr]:root[data-theme='default'] .ta-navbar-top .nav-item {
@@ -15701,6 +15710,10 @@
     height: 42px; }
     :root[data-theme='default'] .left-sidebar-compact .ta-navbar-brand span {
       display: none; }
+  [dir=ltr]:root[data-theme='default'] .left-sidebar-compact .ta-navbar-top h1 {
+  left: 63px; }
+  [dir=rtl]:root[data-theme='default'] .left-sidebar-compact .ta-navbar-top h1 {
+    right: 63px; }
   :root[data-theme='default'] .action-bar {
     top: 3.3rem;
     z-index: 1050; }
@@ -15711,8 +15724,7 @@
     bottom: 0;
     width: 260px;
     color: #343a40;
-    font-family: "Segoe UI VSS (Regular)", "Segoe UI", "-apple-system", BlinkMacSystemFont, Roboto, "Helvetica Neue",
- Helvetica, Ubuntu, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"; }
+    font-family: "Segoe UI VSS (Regular)", "Segoe UI", "-apple-system", BlinkMacSystemFont, Roboto, "Helvetica Neue", Helvetica, Ubuntu, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"; }
   [dir]:root[data-theme='default'] body:not(.left-sidebar-compact) #ta-left-sidebar {
     background-color: #eaeaea; }
   [dir=ltr]:root[data-theme='default'] body:not(.left-sidebar-compact) #ta-left-sidebar {
@@ -16011,8 +16023,7 @@
     bottom: 0;
     width: 48px;
     color: #343a40;
-    font-family: "Segoe UI VSS (Regular)", "Segoe UI", "-apple-system", BlinkMacSystemFont, Roboto, "Helvetica Neue",
- Helvetica, Ubuntu, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"; }
+    font-family: "Segoe UI VSS (Regular)", "Segoe UI", "-apple-system", BlinkMacSystemFont, Roboto, "Helvetica Neue", Helvetica, Ubuntu, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"; }
   [dir]:root[data-theme='default'] .left-sidebar-compact #ta-left-sidebar {
     background-color: #eaeaea; }
   [dir=ltr]:root[data-theme='default'] .left-sidebar-compact #ta-left-sidebar {
@@ -32271,6 +32282,15 @@
   padding-left: 0; }
   [dir=rtl]:root[data-theme='darkmode'] .ta-navbar-top {
     padding-right: 0; }
+    :root[data-theme='darkmode'] .ta-navbar-top h1 {
+      font-size: 24px;
+      font-weight: bold;
+      position: absolute;
+      top: 10px; }
+    [dir=ltr]:root[data-theme='darkmode'] .ta-navbar-top h1 {
+  left: 275px; }
+    [dir=rtl]:root[data-theme='darkmode'] .ta-navbar-top h1 {
+      right: 275px; }
     :root[data-theme='darkmode'] .ta-navbar-top .nav-link {
       font-size: 14px; }
     [dir=ltr]:root[data-theme='darkmode'] .ta-navbar-top .nav-item {
@@ -32317,6 +32337,10 @@
     height: 42px; }
     :root[data-theme='darkmode'] .left-sidebar-compact .ta-navbar-brand span {
       display: none; }
+  [dir=ltr]:root[data-theme='darkmode'] .left-sidebar-compact .ta-navbar-top h1 {
+  left: 63px; }
+  [dir=rtl]:root[data-theme='darkmode'] .left-sidebar-compact .ta-navbar-top h1 {
+    right: 63px; }
   :root[data-theme='darkmode'] .action-bar {
     top: 3.3rem;
     z-index: 1050; }
@@ -32327,8 +32351,7 @@
     bottom: 0;
     width: 260px;
     color: #b5afa6;
-    font-family: "Segoe UI VSS (Regular)", "Segoe UI", "-apple-system", BlinkMacSystemFont, Roboto, "Helvetica Neue",
- Helvetica, Ubuntu, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"; }
+    font-family: "Segoe UI VSS (Regular)", "Segoe UI", "-apple-system", BlinkMacSystemFont, Roboto, "Helvetica Neue", Helvetica, Ubuntu, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"; }
   [dir]:root[data-theme='darkmode'] body:not(.left-sidebar-compact) #ta-left-sidebar {
     background-color: #242728; }
   [dir=ltr]:root[data-theme='darkmode'] body:not(.left-sidebar-compact) #ta-left-sidebar {
@@ -32627,8 +32650,7 @@
     bottom: 0;
     width: 48px;
     color: #b5afa6;
-    font-family: "Segoe UI VSS (Regular)", "Segoe UI", "-apple-system", BlinkMacSystemFont, Roboto, "Helvetica Neue",
- Helvetica, Ubuntu, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"; }
+    font-family: "Segoe UI VSS (Regular)", "Segoe UI", "-apple-system", BlinkMacSystemFont, Roboto, "Helvetica Neue", Helvetica, Ubuntu, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"; }
   [dir]:root[data-theme='darkmode'] .left-sidebar-compact #ta-left-sidebar {
     background-color: #242728; }
   [dir=ltr]:root[data-theme='darkmode'] .left-sidebar-compact #ta-left-sidebar {
