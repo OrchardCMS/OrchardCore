@@ -5,5 +5,5 @@
     ContentItem contentItem = Model.ContentItem;
 }
 
-<titleZone><h1>@RenderTitleSegments(contentItem.DisplayText)</h1></titleZone>
+<zone Name="Title"><h1>@RenderTitleSegments(contentItem.DisplayText)</h1></zone>
 @await DisplayAsync(Model)

@@ -72,7 +72,7 @@
 
 <script asp-name="bootstrap-select" depends-on="admin" at="Foot"></script>
 
-<titleZone><h1>@RenderTitleSegments(T["Tenants"])</h1></titleZone>
+<zone Name="Title"><h1>@RenderTitleSegments(T["Tenants"])</h1></zone>
 
 <form asp-action="Index" method="post">
     <input type="submit" name="submit.Filter" id="submitFilter" class="d-none" />

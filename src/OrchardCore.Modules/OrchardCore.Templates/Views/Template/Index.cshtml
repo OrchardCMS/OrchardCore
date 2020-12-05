@@ -6,11 +6,11 @@
 
 @if (Model.Options.AdminTemplates)
 {
-    <titleZone><h1>@RenderTitleSegments(T["Admin Templates"])</h1></titleZone>
+    <zone Name="Title"><h1>@RenderTitleSegments(T["Admin Templates"])</h1></zone>
 }
 else
 {
-    <titleZone><h1>@RenderTitleSegments(T["Templates"])</h1></titleZone>
+    <zone Name="Title"><h1>@RenderTitleSegments(T["Templates"])</h1></zone>
 }
 
 @* the form is necessary to generate and antiforgery token for the delete action *@

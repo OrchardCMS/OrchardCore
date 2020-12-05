@@ -7,7 +7,7 @@
 <style asp-src="~/OrchardCore.AdminMenu/Styles/admin-menu.min.css" debug-src="~/OrchardCore.AdminMenu/Styles/admin-menu.css" at="Head" depends-on="admin, jQuery-ui"></style>
 <script asp-src="~/OrchardCore.AdminMenu/Scripts/admin-menu.min.js" debug-src="~/OrchardCore.AdminMenu/Scripts/admin-menu.js" at="Foot" depends-on="admin, jQuery-ui"></script>
 
-<titleZone><h1>@RenderTitleSegments(T["Admin Menus"])</h1></titleZone>
+<zone Name="Title"><h1>@RenderTitleSegments(T["Admin Menus"])</h1></zone>
 
 <form asp-action="List">
     <input asp-for="Options.BulkAction" type="hidden" />
