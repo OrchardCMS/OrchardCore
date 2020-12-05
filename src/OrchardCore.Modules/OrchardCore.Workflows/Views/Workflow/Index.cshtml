@@ -8,7 +8,8 @@
 }
 <script asp-name="bootstrap-select" depends-on="admin" at="Foot"></script>
 
-<h1>@RenderTitleSegments(T["{0} Instances", Model.WorkflowType.Name])</h1>
+<zone Name="Title"><h1>@RenderTitleSegments(T["{0} Instances", Model.WorkflowType.Name])</h1></zone>
+
 <zone name="Breadcrumbs">
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">

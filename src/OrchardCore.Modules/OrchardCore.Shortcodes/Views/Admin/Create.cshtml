@@ -33,7 +33,7 @@
 <style asp-src="~/OrchardCore.Shortcodes/Styles/shortcodes.min.css" debug-src="~/OrchardCore.Shortcodes/Styles/shortcodes.css" asp-name="shortcodes"></style>    
 <script asp-src="~/OrchardCore.Shortcodes/Scripts/shortcode-templates.min.js" debug-src="~/OrchardCore.Shortcodes/Scripts/shortcode-templates.js" at="Foot" depends-on="vuejs, vue-multiselect"></script>
 
-<h1>@RenderTitleSegments(T["Create Shortcode"])</h1>
+<zone Name="Title"><h1>@RenderTitleSegments(T["Create Shortcode"])</h1></zone>
 
 <div asp-validation-summary="All"></div>
 <form asp-action="Create" method="post">
