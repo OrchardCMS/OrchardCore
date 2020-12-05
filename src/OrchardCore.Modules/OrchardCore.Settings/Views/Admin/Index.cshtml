@@ -1,6 +1,6 @@
 @model AdminIndexViewModel
 
-<h1>@RenderTitleSegments(T["Settings"])</h1>
+<titleZone><h1>@RenderTitleSegments(T["Settings"])</h1></titleZone>
 
 <form asp-action="Index" asp-route-returnUrl="@Context.Request.Query["ReturnUrl"]" method="post" enctype="multipart/form-data">
       <input asp-for="GroupId" type="hidden" />

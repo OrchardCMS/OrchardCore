@@ -5,7 +5,7 @@
     int endIndex = startIndex + Model.ShortcodeTemplates.Count - 1;
 }
 
-<h1>@RenderTitleSegments(T["Shortcodes"])</h1>
+<titleZone><h1>@RenderTitleSegments(T["Shortcodes"])</h1></titleZone>
 
 @* the form is necessary to generate and antiforgery token for the delete action *@
 <form asp-action="Index">

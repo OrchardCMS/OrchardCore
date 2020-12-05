@@ -32,13 +32,17 @@
         <div class="ta-navbar-top navbar-expand-lg bg-primary">
             <a class="ta-navbar-brand" href="@Url.Content("~/")" target="_blank">@Site.SiteName</a>
             <div class="mr-auto">
+                @await RenderSectionAsync("Title", required: false)
+            </div>
+            <div id="navbar-links">
                 @await RenderSectionAsync("NavbarTop", required: false)
             </div>
             @await DisplayAsync(await New.UserMenu())
             @if (adminSettings.DisplayDarkMode)
             {
                 <a id="btn-darkmode" class="btn btn-sm btn-light ml-2" title="@T["Dark mode"]">
-                    @if(darkMode){
+                    @if (darkMode)
+                    {
                         <i class="fas fa-sun"></i>
                     }
                     else

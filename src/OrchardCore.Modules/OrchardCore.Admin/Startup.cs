@@ -10,6 +10,7 @@ using Microsoft.Extensions.Options;
 using OrchardCore.Admin.Controllers;
 using OrchardCore.Admin.Drivers;
 using OrchardCore.Admin.Models;
+using OrchardCore.Admin.TagHelpers;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Theming;
@@ -39,6 +40,8 @@ namespace OrchardCore.Admin
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddNavigation();
+
+            services.AddTagHelpers<TitleZoneTagHelper>();
 
             services.Configure<MvcOptions>((options) =>
             {
