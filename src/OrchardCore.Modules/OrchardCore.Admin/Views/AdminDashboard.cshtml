@@ -1,6 +1,28 @@
+@using OrchardCore.Mvc.Utilities
+@using OrchardCore.DisplayManagement;
+@inject OrchardCore.DisplayManagement.Theming.IThemeManager ThemeManager
+@inject OrchardCore.DisplayManagement.Descriptors.IShapeTableManager ShapeTableManager
+
+@{
+    var theme = await ThemeManager.GetThemeAsync();
+    var shapeTable = ShapeTableManager.GetShapeTable(theme?.Id);
+    var cardShapes = shapeTable.Bindings.Keys.Where(x => x.StartsWith("AdminDashboardCard_", StringComparison.OrdinalIgnoreCase));
+}
+
 <zone Name="Title"><h1>@T["Dashboard"]</h1></zone>
 
 <div class="jumbotron">
     <h2 class="display-4">@T["Welcome to your site"]</h2>
     <p class="lead">@T["Feel free to browse the menu and discover all its possibilities."]</p>
 </div>
+
+@if (cardShapes.Any())
+{
+    <div class="card-columns">
+        @foreach (var cardShape in cardShapes)
+        {
+            dynamic shape = await Factory.CreateAsync(cardShape);
+            @await DisplayAsync(shape);
+        }
+    </div>
+}

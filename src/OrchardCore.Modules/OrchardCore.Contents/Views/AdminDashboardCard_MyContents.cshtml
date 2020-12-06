@@ -1,0 +1,15 @@
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title"><i class="fa fa-user-edit"></i> @T["My content items"]</h5>
+        <p class="card-text">
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item"><a href="@(Url.Action("List", "Admin", new { area = "OrchardCore.Contents"}) + "?Options.ContentsStatus=Latest")">@T["List the latest content items."]</a></li>
+                <li class="list-group-item"><a href="@(Url.Action("List", "Admin", new { area = "OrchardCore.Contents"}) + "?Options.ContentsStatus=Draft")">@T["List the draft content items."]</a></li>
+                <li class="list-group-item"><a href="@(Url.Action("List", "Admin", new { area = "OrchardCore.Contents"}) + "?Options.ContentsStatus=Published&Options.OrderBy=Published")">@T["List the recently published items."]</a></li>
+            </ul>
+        </p>
+    </div>
+    <div class="card-footer">
+        <a class="btn btn-primary" href="@(Url.Action("List", "Admin", new { area = "OrchardCore.Contents" }) + "?Options.ContentsStatus=Owner")">@T["Manage my content items"]</a>
+    </div>
+</div>

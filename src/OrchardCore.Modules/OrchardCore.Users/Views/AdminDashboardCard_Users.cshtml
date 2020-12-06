@@ -1,0 +1,24 @@
+@using YesSql;
+@inject YesSql.ISession Session;
+@{
+    var users = Session.Query<OrchardCore.Users.Models.User, OrchardCore.Users.Indexes.UserIndex>();
+    var count = await users.CountAsync();
+}
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title"><i class="fas fa-users"></i> @T["Users"]</h5>
+        <p class="card-text">
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item d-flex justify-content-between align-items-center" ">
+                    @T["List all the users."]
+                    <span class="badge badge-primary badge-pill">@count</span>
+                </li>
+                <li class="list-group-item">@T["Create and edit user profiles."]</li>
+                <li class="list-group-item">@T["Manage the users roles."]</li>
+            </ul>
+        </p>
+    </div>
+    <div class="card-footer">
+        <a class="btn btn-primary" href="@Url.Action("Index", "Admin", new { area = "OrchardCore.Users"})">@T["Manage the users"]</a>
+    </div>
+</div>

@@ -1,0 +1,17 @@
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title"><i class="fa fa-edit"></i> @T["Content items"]</h5>
+        <p class="card-text">
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item">
+                    @T["Add and edit content items."]
+                </li>
+                <li class="list-group-item">@T["Apply actions on multiple items."]</li>
+                <li class="list-group-item">@T["Search and filter on different criteria."]</li>
+            </ul>
+        </p>
+    </div>
+    <div class="card-footer">
+        <a class="btn btn-primary" href="@Url.Action("List", "Admin", new { area = "OrchardCore.Contents"})">@T["Manage all content items"]</a>
+    </div>
+</div>
