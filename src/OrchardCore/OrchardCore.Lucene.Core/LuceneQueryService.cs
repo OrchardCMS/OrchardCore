@@ -82,7 +82,7 @@ namespace OrchardCore.Lucene
             LuceneTopDocs result = null;
             TopDocs topDocs = null;
 
-            if(size > 0)
+            if (size > 0)
             {
                 topDocs = context.IndexSearcher.Search(
                     query,
@@ -98,7 +98,7 @@ namespace OrchardCore.Lucene
                 var collector = new TotalHitCountCollector();
                 context.IndexSearcher.Search(query, collector);
 
-                result = new LuceneTopDocs(){ TopDocs = topDocs, Count = collector.TotalHits };
+                result = new LuceneTopDocs() { TopDocs = topDocs, Count = collector.TotalHits };
             }
 
             return Task.FromResult(result);

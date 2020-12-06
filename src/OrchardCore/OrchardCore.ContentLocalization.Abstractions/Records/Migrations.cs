@@ -27,11 +27,11 @@ namespace OrchardCore.ContentLocalization.Records
                 .Column<string>("ContentItemId", c => c.WithLength(26))
             );
 
-            SchemaBuilder.AlterTable(nameof(LocalizedContentItemIndex), table => table
+            SchemaBuilder.AlterIndexTable<LocalizedContentItemIndex>(table => table
                 .CreateIndex("IDX_LocalizationPartIndex_LocalizationSet_Culture", new[] { "LocalizationSet", "Culture" })
             );
 
-            SchemaBuilder.AlterTable(nameof(LocalizedContentItemIndex), table => table
+            SchemaBuilder.AlterIndexTable<LocalizedContentItemIndex>(table => table
                 .CreateIndex("IDX_LocalizationPartIndex_ContentItemId", "ContentItemId")
             );
 
@@ -40,7 +40,7 @@ namespace OrchardCore.ContentLocalization.Records
 
         public int UpdateFrom1()
         {
-            SchemaBuilder.AlterTable(nameof(LocalizedContentItemIndex), table => table
+            SchemaBuilder.AlterIndexTable<LocalizedContentItemIndex>(table => table
                 .AddColumn<bool>(nameof(LocalizedContentItemIndex.Published)));
 
             return 2;

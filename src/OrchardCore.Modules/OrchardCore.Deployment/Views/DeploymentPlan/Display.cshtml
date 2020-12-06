@@ -3,28 +3,23 @@
 @using OrchardCore.Deployment.Services
 @using Microsoft.AspNetCore.Routing
 
-<h1>@RenderTitleSegments(T["Deployment Plan"])</h1>
+<zone Name="Title"><h1>@RenderTitleSegments(T["Deployment Plan"])</h1></zone>
 
-<nav class="admin-toolbar">
-    <ul class="navbar-nav mr-auto">
-        <li class="nav-item">
-            <div class="btn-group">
-                <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#modalTargets">
-                    @T["Execute"]
-                </button>
-            </div>
-        </li>
-    </ul>
-    <ul class="navbar-nav">
-        <li class="nav-item">
+<div class="card mb-3">
+    <nav class="card-body bg-primary p-3">
+        <div class="input-group input-group-sm w-lg-50 d-inline-flex">
+            <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#modalTargets">
+                @T["Execute"]
+            </button>
+        </div>
+        <div class="btn-group float-right">
             <!-- Button trigger modal -->
             <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modalSteps">
                 @T["Add Step"]
             </button>
-        </li>
-    </ul>
-</nav>
-
+        </div>
+    </nav>
+</div>
 <form asp-action="DeploymentPlan">
     @if (Model.Items.Any())
     {
@@ -41,7 +36,7 @@
     }
     else
     {
-        <div class="alert alert-info" role="alert">
+        <div class="alert alert-info mb-0" role="alert">
             @T["<strong>Nothing here!</strong> There are no steps on this plan for the moment."]
         </div>
     }

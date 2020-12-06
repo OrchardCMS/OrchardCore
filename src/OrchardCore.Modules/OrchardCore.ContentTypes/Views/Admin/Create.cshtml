@@ -1,6 +1,6 @@
 @model CreateTypeViewModel
 
-<h1>@RenderTitleSegments(T["New Content Type"])</h1>
+<zone Name="Title"><h1>@RenderTitleSegments(T["New Content Type"])</h1></zone>
 
 <form asp-action="Create">
     @Html.ValidationSummary()
@@ -18,7 +18,7 @@
     </div>
 
     <div class="form-group">
-        <button class="btn btn-primary" type="submit">@T["Create"]</button>
+        <button class="btn btn-primary create" type="submit">@T["Create"]</button>
     </div>
 </form>
 
@@ -35,7 +35,7 @@
 
         var compute = function() {
             // stop processing automatically if altered by the user
-            if(nameAltered) {
+            if (nameAltered) {
                 return true;
             }
 

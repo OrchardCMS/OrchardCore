@@ -36,28 +36,31 @@ namespace OrchardCore.Lists.Drivers
 
             if (model.As<ContainedPart>() != null)
             {
-                return BuildShape(model.As<ContainedPart>().ListContentItemId);
+                return BuildViewModel(model.As<ContainedPart>().ListContentItemId, model.ContentType);
             }
 
             var viewModel = new EditContainedPartViewModel();
-            if (await updater.TryUpdateModelAsync(viewModel, nameof(ListPart)) && viewModel.ContainerId != null)
+            if (await updater.TryUpdateModelAsync(viewModel, nameof(ListPart)) && viewModel.ContainerId != null && viewModel.ContentType == model.ContentType)
             {
                 // We are creating a content item that needs to be added to a container
-                // so we render the container id as part of the form, and
-                // the enable ordering setting
+                // so we render the container id as part of the form, the content type,
+                // and the enable ordering setting.
+                // The content type must be included to prevent any contained items,
+                // such as widgets, from also having a ContainedPart shape built for them.
 
-                return BuildShape(viewModel.ContainerId, viewModel.EnableOrdering);
+                return BuildViewModel(viewModel.ContainerId, model.ContentType, viewModel.EnableOrdering);
             }
 
             return null;
         }
 
-        private IDisplayResult BuildShape(string containerId, bool enableOrdering = false)
+        private IDisplayResult BuildViewModel(string containerId, string contentType, bool enableOrdering = false)
         {
-            return Dynamic("ListPart_ContainerId", shape =>
+            return Initialize<EditContainedPartViewModel>("ListPart_ContainerId", m =>
             {
-                shape.ContainerId = containerId;
-                shape.EnableOrdering = enableOrdering;
+                m.ContainerId = containerId;
+                m.EnableOrdering = enableOrdering;
+                m.ContentType = contentType;
             })
             .Location("Content");
         }
@@ -66,7 +69,9 @@ namespace OrchardCore.Lists.Drivers
         {
             var viewModel = new EditContainedPartViewModel();
 
-            if (await updater.TryUpdateModelAsync(viewModel, nameof(ListPart)) && viewModel.ContainerId != null)
+            // The content type must match the value provided in the query string
+            // in order for the ContainedPart to be included on the Content Item.
+            if (await updater.TryUpdateModelAsync(viewModel, nameof(ListPart)) && viewModel.ContainerId != null && viewModel.ContentType == model.ContentType)
             {
                 model.Alter<ContainedPart>(x => x.ListContentItemId = viewModel.ContainerId);
                 // If creating get next order number so item is added to the end of the list
