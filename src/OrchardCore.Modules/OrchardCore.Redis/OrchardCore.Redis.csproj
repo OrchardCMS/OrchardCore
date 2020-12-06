@@ -9,7 +9,6 @@
     Provides Redis features for configuration, cache, bus and lock.</Description>
     <PackageTags>$(PackageTags) OrchardCoreFramework Infrastructure</PackageTags>
   </PropertyGroup>
-  </PropertyGroup>
 
   <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
