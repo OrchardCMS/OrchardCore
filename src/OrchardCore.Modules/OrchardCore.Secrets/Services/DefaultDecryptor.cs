@@ -6,14 +6,15 @@ using Newtonsoft.Json;
 
 namespace OrchardCore.Secrets.Services
 {
-    public class DefaultDecryptor : IDecryptor, IDisposable
+    public class DefaultDecryptor : IDecryptor
     {
-        public readonly ICryptoTransform _decryptor;
-        private bool _disposedValue;
+        private readonly byte[] _decryptionPrivateKey;
+        private readonly byte[] _signingPublicKey;
 
-        public DefaultDecryptor(ICryptoTransform decryptor)
+        public DefaultDecryptor(byte[] decryptionPrivateKey, byte[] signingPublicKey)
         {
-            _decryptor = decryptor;
+            _decryptionPrivateKey = decryptionPrivateKey;
+            _signingPublicKey = signingPublicKey;
         }
 
         public string Decrypt(string protectedData)
@@ -24,32 +25,32 @@ namespace OrchardCore.Secrets.Services
             var descriptor = JsonConvert.DeserializeObject<HybridKeyDescriptor>(decoded);
 
             var protectedBytes = Convert.FromBase64String(descriptor.ProtectedData);
+            var signatureBytes = Convert.FromBase64String(descriptor.Signature);
 
+            // Check signature first.
+            using var rsaSigner = RSA.Create();
+            rsaSigner.ImportSubjectPublicKeyInfo(_signingPublicKey, out _);
+            if (!rsaSigner.VerifyData(protectedBytes, signatureBytes, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1))
+            {
+                throw new CryptographicException("Could not verify signature");
+            }
+
+            // Decrypt.
+            using var rsaDecryptor = RSA.Create();
+            rsaDecryptor.ImportRSAPrivateKey(_decryptionPrivateKey, out _);
+
+            var aesKey = rsaDecryptor.Decrypt(Convert.FromBase64String(descriptor.Key), RSAEncryptionPadding.Pkcs1);
+            var aesIv = rsaDecryptor.Decrypt(Convert.FromBase64String(descriptor.Iv), RSAEncryptionPadding.Pkcs1);
+
+
+            using var aes = Aes.Create();
+            using var decryptor = aes.CreateDecryptor(aesKey, aesIv);
             using var msDecrypt = new MemoryStream(protectedBytes);
-            using var csDecrypt = new CryptoStream(msDecrypt, _decryptor, CryptoStreamMode.Read);
+            using var csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Read);
             using var srDecrypt = new StreamReader(csDecrypt);
             var plaintext = srDecrypt.ReadToEnd();
 
             return plaintext;
-        }
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!_disposedValue)
-            {
-                if (disposing)
-                {
-                    _decryptor?.Dispose();
-                }
-
-                _disposedValue = true;
-            }
-        }
-
-        public void Dispose()
-        {
-            Dispose(disposing: true);
-            GC.SuppressFinalize(this);
         }
     }
 }

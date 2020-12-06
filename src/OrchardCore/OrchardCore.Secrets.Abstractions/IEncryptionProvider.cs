@@ -4,6 +4,6 @@ namespace OrchardCore.Secrets
 {
     public interface IEncryptionProvider
     {
-        Task<IEncryptor> CreateAsync(string secretName);
+        Task<IEncryptor> CreateAsync(string encryptionSecretName, string signingSecretName);
     }
 }

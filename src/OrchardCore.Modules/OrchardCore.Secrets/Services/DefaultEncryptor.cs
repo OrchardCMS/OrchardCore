@@ -6,31 +6,30 @@ using Newtonsoft.Json;
 
 namespace OrchardCore.Secrets.Services
 {
-    public class DefaultEncryptor : IEncryptor, IDisposable
+    public class DefaultEncryptor : IEncryptor
     {
-        private readonly ICryptoTransform _encryptor;
-        private readonly string _secretName;
-        private readonly byte[] _key;
-        private readonly byte[] _iv;
+        private readonly string _encryptionSecretName;
+        private readonly byte[] _encryptionPublicKey;
+        private readonly byte[] _signingPrivateKey;
+        private readonly string _signingSecretName;
 
-        private bool _disposedValue;
-
-        public DefaultEncryptor(ICryptoTransform encryptor, string secretName, byte[] key, byte[] iv)
+        public DefaultEncryptor(byte[] encryptionPublicKey, byte[] signingPrivateKey, string encryptionSecretName, string signingSecretName)
         {
-            _encryptor = encryptor;
-            _secretName = secretName;
-            _key = key;
-            _iv = iv;
+            _encryptionPublicKey = encryptionPublicKey;
+            _signingPrivateKey = signingPrivateKey;
+            _encryptionSecretName = encryptionSecretName;
+            _signingSecretName = signingSecretName;
         }
 
         public string Encrypt(string plainText)
         {
             byte[] encrypted;
-            // byte[] hmacHash;
+            using var aes = Aes.Create();
+            var encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
 
             using (var msEncrypt = new MemoryStream())
             {
-                using (var csEncrypt = new CryptoStream(msEncrypt, _encryptor, CryptoStreamMode.Write))
+                using (var csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write))
                 {
                     using (var swEncrypt = new StreamWriter(csEncrypt))
                     {
@@ -40,57 +39,30 @@ namespace OrchardCore.Secrets.Services
                 }
             }
 
-            // using var hmac = new HMACSHA256();
-            // using (var encryptedStream = new MemoryStream())
-            // {
-            //     using (var binaryWriter = new BinaryWriter(encryptedStream))
-            //     {
-            //         //Prepend IV
-            //         binaryWriter.Write(_iv);
-            //         //Write Ciphertext
-            //         binaryWriter.Write(encrypted);
-            //         binaryWriter.Flush();
+            using var rsaEncryptor = RSA.Create();
+            rsaEncryptor.ImportSubjectPublicKeyInfo(_encryptionPublicKey, out _);
 
-            //         //Authenticate all data
-            //         var tag = hmac.ComputeHash(encryptedStream.ToArray());
-            //         //Postpend tag
-            //         binaryWriter.Write(tag);
-            //     }
-            //     hmacHash = encryptedStream.ToArray();
-            // }
+            using var rsaSigner = RSA.Create();
+            rsaSigner.ImportRSAPrivateKey(_signingPrivateKey, out _);
 
+            var rsaEncryptedAesKey = rsaEncryptor.Encrypt(aes.Key, RSAEncryptionPadding.Pkcs1);
+            var rsaEncryptedAesIv = rsaEncryptor.Encrypt(aes.IV, RSAEncryptionPadding.Pkcs1);
+            var signature = rsaSigner.SignData(encrypted, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
 
             var descriptor = new HybridKeyDescriptor
             {
-                SecretName = _secretName,
-                Key = Convert.ToBase64String(_key),
-                Iv = Convert.ToBase64String(_iv),
-                ProtectedData = Convert.ToBase64String(encrypted)
+                EncryptionSecretName = _encryptionSecretName,
+                Key = Convert.ToBase64String(rsaEncryptedAesKey),
+                Iv = Convert.ToBase64String(rsaEncryptedAesIv),
+                ProtectedData = Convert.ToBase64String(encrypted),
+                Signature = Convert.ToBase64String(signature),
+                SigningSecretName = _signingSecretName
             };
 
             var serialized = JsonConvert.SerializeObject(descriptor);
             var encodedDescriptor = Convert.ToBase64String(Encoding.UTF8.GetBytes(serialized));
 
             return encodedDescriptor;
-        }
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!_disposedValue)
-            {
-                if (disposing)
-                {
-                    _encryptor?.Dispose();
-                }
-
-                _disposedValue = true;
-            }
-        }
-
-        public void Dispose()
-        {
-            Dispose(disposing: true);
-            GC.SuppressFinalize(this);
         }
     }
 }

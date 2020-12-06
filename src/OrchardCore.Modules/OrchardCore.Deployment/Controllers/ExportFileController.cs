@@ -80,8 +80,9 @@ namespace OrchardCore.Deployment.Controllers
                 }
 
                 var siteSettings = await _siteService.GetSiteSettingsAsync();
+                var fileDownloadDeploymentTargetSettings = siteSettings.As<FileDownloadDeploymentTargetSettings>();
 
-                var deploymentPlanResult = new DeploymentPlanResult(fileBuilder, recipeDescriptor, siteSettings.As<FileDownloadDeploymentTargetSettings>().RsaSecret );
+                var deploymentPlanResult = new DeploymentPlanResult(fileBuilder, recipeDescriptor, fileDownloadDeploymentTargetSettings.RsaEncryptionSecret, fileDownloadDeploymentTargetSettings.RsaSigningSecret );
                 await _deploymentManager.ExecuteDeploymentPlanAsync(deploymentPlan, deploymentPlanResult);
                 ZipFile.CreateFromDirectory(fileBuilder.Folder, archiveFileName);
             }

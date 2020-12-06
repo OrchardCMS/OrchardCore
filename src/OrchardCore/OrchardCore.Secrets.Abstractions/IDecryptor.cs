@@ -1,8 +1,6 @@
-using System;
-
 namespace OrchardCore.Secrets
 {
-    public interface IDecryptor : IDisposable
+    public interface IDecryptor
     {
         string Decrypt(string protectedData);
     }

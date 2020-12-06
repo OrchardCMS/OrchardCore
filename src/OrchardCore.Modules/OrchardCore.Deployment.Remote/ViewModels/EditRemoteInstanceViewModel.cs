@@ -8,6 +8,7 @@ namespace OrchardCore.Deployment.Remote.ViewModels
         public string ApiKey { get; set; }
         public string ApiKeySecret { get; set; }
         public string Url { get; set; }
-        public string RsaSecret { get; set; }
+        public string RsaEncryptionSecret { get; set; }
+        public string RsaSigningSecret { get; set; }
     }
 }

@@ -10,7 +10,7 @@ namespace OrchardCore.Recipes
     {
         private readonly GlobalMethod _globalMethod;
 
-        public DecryptMethodProvider() 
+        public DecryptMethodProvider()
         {
             _globalMethod = new GlobalMethod
             {
@@ -18,7 +18,7 @@ namespace OrchardCore.Recipes
                 Method = serviceProvider => (Func<string, object>)(protectedData =>
                 {
                     var decryptionProvider = serviceProvider.GetRequiredService<IDecryptionProvider>();
-                    using var decryptor = decryptionProvider.CreateAsync(protectedData).GetAwaiter().GetResult();
+                    var decryptor = decryptionProvider.CreateAsync(protectedData).GetAwaiter().GetResult();
                     return decryptor.Decrypt(protectedData);
                 })
             };

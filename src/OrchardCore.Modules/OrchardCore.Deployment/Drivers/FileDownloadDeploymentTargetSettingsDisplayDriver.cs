@@ -35,7 +35,8 @@ namespace OrchardCore.Deployment.Drivers
 
             return Initialize<FileDownloadDeploymentTargetSettingsViewModel>("FileDownloadDeploymentTargetSettings_Edit", model =>
             {
-                model.RsaSecret = settings.RsaSecret;
+                model.RsaEncryptionSecret = settings.RsaEncryptionSecret;
+                model.RsaSigningSecret = settings.RsaSigningSecret;
             }).Location("Content:2").OnGroup(SettingsGroupId);
         }
 
@@ -47,7 +48,8 @@ namespace OrchardCore.Deployment.Drivers
 
                 await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-                settings.RsaSecret = model.RsaSecret;
+                settings.RsaEncryptionSecret = model.RsaEncryptionSecret;
+                settings.RsaSigningSecret = model.RsaSigningSecret;
             }
 
             return await EditAsync(settings, context);

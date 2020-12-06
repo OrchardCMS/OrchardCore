@@ -15,36 +15,31 @@ namespace OrchardCore.Secrets.Services
             _rsaSecretService = rsaSecretService;
         }
 
-        public async Task<IEncryptor> CreateAsync(string secretName)
+        public async Task<IEncryptor> CreateAsync(string encryptionSecretName, string signingSecretName)
         {
-            var secret = await _rsaSecretService.GetSecretAsync(secretName);
-            if (secret == null)
+            var encryptionSecret = await _rsaSecretService.GetSecretAsync(encryptionSecretName);
+            if (encryptionSecret == null)
             {
-                throw new InvalidOperationException("Secret not found " + secretName);
+                throw new InvalidOperationException("Secret not found " + encryptionSecretName);
             }
 
-            if (secret.KeyType != RsaSecretType.PublicPrivatePair)
+            var signingSecret = await _rsaSecretService.GetSecretAsync(signingSecretName);
+            if (signingSecret == null)
             {
-                throw new InvalidOperationException("Secret provides decryption only and cannot be used for encryption");
+                throw new InvalidOperationException("Secret not found " + signingSecretName);
             }
 
-            using var rsa = RSA.Create();
-            rsa.KeySize = 2048;
+            // This becomes irrelevent as we now need the private key for the signature.
 
-            rsa.ImportSubjectPublicKeyInfo(secret.PublicKeyAsBytes(), out _);
-            // TODO  compute a HMAC of the encrypted payload, append it to the resulting string and use it when decrypting the payload to ensure the ciphertext was not tampered with)
-            using var aes = Aes.Create();
+            if (signingSecret.KeyType != RsaSecretType.PublicPrivatePair)
+            {
+                throw new InvalidOperationException("Secret cannot be used for signing");
+            }
 
-            // TODO apparently we should create an inv for every encryption.
-            // with var iv = aes.GenerateId();
+            // When encrypting, you use their public key to write a message and they use their private key to read it.
+            // When signing, you use your private key to write message's signature, and they use your public key to check if it's really yours.
 
-            // Create an encryptor to perform the stream transform.
-            var encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
-
-            var key = rsa.Encrypt(aes.Key, RSAEncryptionPadding.Pkcs1);
-            var iv = rsa.Encrypt(aes.IV, RSAEncryptionPadding.Pkcs1);
-
-            return new DefaultEncryptor(encryptor, secretName, key, iv);
+            return new DefaultEncryptor(encryptionSecret.PublicKeyAsBytes(), signingSecret.PrivateKeyAsBytes(), encryptionSecretName, signingSecretName);
         }
     }
 }

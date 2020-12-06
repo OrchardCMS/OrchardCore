@@ -38,12 +38,12 @@ namespace OrchardCore.Secrets.Deployment
                 return;
             }
 
-            if (String.IsNullOrEmpty(result.SecretName))
+            if (String.IsNullOrEmpty(result.EncryptionSecretName))
             {
                 throw new InvalidOperationException("You must set an rsa secret for the deployment target before exporting secrets");
             }
 
-            using var encryptor = await _encryptionProvider.CreateAsync(result.SecretName);
+            var encryptor = await _encryptionProvider.CreateAsync(result.EncryptionSecretName, result.SigningSecretName);
 
             var secrets = new Dictionary<string, JObject>();
             foreach (var secretBinding in secretBindings)

@@ -22,24 +22,19 @@ namespace OrchardCore.Secrets.Services
 
             var descriptor = JsonConvert.DeserializeObject<HybridKeyDescriptor>(decoded);
 
-            var secret = await _rsaSecretService.GetSecretAsync(descriptor.SecretName);
-            if (secret == null)
+            var encryptionSecret = await _rsaSecretService.GetSecretAsync(descriptor.EncryptionSecretName);
+            if (encryptionSecret == null)
             {
-                throw new InvalidOperationException($"{descriptor.SecretName} secret not found");
+                throw new InvalidOperationException($"{descriptor.EncryptionSecretName} secret not found");
             }
 
-            using var rsa = RSA.Create();
+            var signingSecret = await _rsaSecretService.GetSecretAsync(descriptor.SigningSecretName);
+            if (signingSecret == null)
+            {
+                throw new InvalidOperationException("Secret not found " + descriptor.SigningSecretName);
+            }
 
-            rsa.KeySize = 2048;
-
-            rsa.ImportRSAPrivateKey(Convert.FromBase64String(secret.PrivateKey), out _);
-
-            var key = rsa.Decrypt(Convert.FromBase64String(descriptor.Key), RSAEncryptionPadding.Pkcs1);
-            var iv = rsa.Decrypt(Convert.FromBase64String(descriptor.Iv), RSAEncryptionPadding.Pkcs1);
-
-            using var aes = Aes.Create();
-
-            return new DefaultDecryptor(aes.CreateDecryptor(key, iv));
+            return new DefaultDecryptor(encryptionSecret.PrivateKeyAsBytes(), signingSecret.PublicKeyAsBytes());
         }
     }
 }
