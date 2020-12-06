@@ -30,7 +30,7 @@ namespace OrchardCore.ContentLocalization.Records
             );
 
             SchemaBuilder.AlterIndexTable<LocalizedContentItemIndex>(table => table
-                .CreateIndex("IDX_LocalizationPartIndex_DocumentId_Set_Culture_State", "DocumentId", "LocalizationSet", "Culture", "Published", "Latest")
+                .CreateIndex("IDX_LocalizationPartIndex_DocumentId_Set_Culture_State", "DocumentId", "LocalizationSet", "Culture", "Published", "Latest", "ContentItemId")
             );
 
             // Return 3 to shortcut other migrations on new content definition schemas.
@@ -53,7 +53,7 @@ namespace OrchardCore.ContentLocalization.Records
             );
 
             SchemaBuilder.AlterIndexTable<LocalizedContentItemIndex>(table => table
-                .CreateIndex("IDX_LocalizationPartIndex_DocumentId_Set_Culture_State", "DocumentId", "LocalizationSet", "Culture", "Published", "Latest")
+                .CreateIndex("IDX_LocalizationPartIndex_DocumentId_Set_Culture_State", "DocumentId", "LocalizationSet", "Culture", "Published", "Latest", "ContentItemId")
             );
 
             return 3;
