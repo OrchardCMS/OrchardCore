@@ -72,9 +72,9 @@ namespace OrchardCore.Secrets.Services
             if (!typeof(Secret).IsAssignableFrom(type))
             {
                 throw new ArgumentException("The type must implement " + nameof(Secret));
-            }            
+            }
 
-            foreach(var secretStore in _secretStores)
+            foreach (var secretStore in _secretStores)
             {
                 var secret = await secretStore.GetSecretAsync(key, type);
                 if (secret != null)
@@ -85,7 +85,7 @@ namespace OrchardCore.Secrets.Services
 
             return null;
         }
-        
+
         public IEnumerator<SecretStoreDescriptor> GetEnumerator()
         {
             return _secretStores.Select(x => new SecretStoreDescriptor { Name = x.Name, IsReadOnly = x.IsReadOnly, DisplayName = x.DisplayName }).GetEnumerator();

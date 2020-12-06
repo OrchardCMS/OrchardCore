@@ -1,37 +1,49 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Secrets;
 using OrchardCore.Workflows.Http.ViewModels;
-using OrchardCore.Workflows.Models;
+using OrchardCore.Workflows.Http.Models;
+using OrchardCore.Workflows.Services;
+using OrchardCore.Workflows.Http.Activities;
 
 namespace OrchardCore.Workflows.Http.Drivers
 {
     public class HttpRequestEventSecretDisplayDriver : DisplayDriver<Secret, HttpRequestEventSecret>
     {
+        private readonly IWorkflowTypeStore _workflowTypeStore;
         private readonly IStringLocalizer S;
 
-        public HttpRequestEventSecretDisplayDriver(IStringLocalizer<HttpRequestEventSecretDisplayDriver> stringLocalizer)
+        public HttpRequestEventSecretDisplayDriver(
+            IWorkflowTypeStore workflowTypeStore,
+            IStringLocalizer<HttpRequestEventSecretDisplayDriver> stringLocalizer)
         {
+            _workflowTypeStore = workflowTypeStore;
             S = stringLocalizer;
         }
 
         public override IDisplayResult Display(HttpRequestEventSecret secret)
         {
-            return View("HttpRequestEventSecret_Fields_Thumbnail", secret).Location("Thumbnail", "Content");
+            return Combine(
+                View("HttpRequestEventSecret_Fields_Summary", secret).Location("Summary", "Content"),
+                View("HttpRequestEventSecret_Fields_Thumbnail", secret).Location("Thumbnail", "Content"));
         }
 
         public override Task<IDisplayResult> EditAsync(HttpRequestEventSecret secret, BuildEditorContext context)
         {
-            return Task.FromResult<IDisplayResult>(Initialize<HttpRequestEventSecretViewModel>("HttpRequestEventSecret_Fields_Edit", model =>
+            return Task.FromResult<IDisplayResult>(Initialize<HttpRequestEventSecretViewModel>("HttpRequestEventSecret_Fields_Edit", async model =>
             {
                 model.WorkflowTypeId = secret.WorkflowTypeId;
-                model.ActivityId = secret.ActivityId;
                 model.TokenLifeSpan = secret.TokenLifeSpan;
-                model.Token = secret.Token;
+                model.WorkflowTypes = (await _workflowTypeStore.ListAsync())
+                    .Where(w => w.Activities.Any(a => String.Equals(a.Name, nameof(HttpRequestEvent), StringComparison.OrdinalIgnoreCase)))
+                    .Select(s => new SelectListItem() { Text = s.Name, Value = s.WorkflowTypeId }).ToList();
+
                 model.Context = context;
             }).Location("Content"));
         }
@@ -46,28 +58,32 @@ namespace OrchardCore.Workflows.Http.Drivers
                 {
                     context.Updater.ModelState.AddModelError(Prefix, nameof(model.WorkflowTypeId), S["The Workflow type id value is required"]);
                 }
+                else
+                {
+                    var workflowType = await _workflowTypeStore.GetAsync(model.WorkflowTypeId);
+                    if (workflowType == null)
+                    {
+                        context.Updater.ModelState.AddModelError(Prefix, nameof(model.WorkflowTypeId), S["The Workflow type id value is required"]);
+                    }
+                    else
+                    {
+                        var activity = workflowType.Activities.FirstOrDefault(a => String.Equals(a.Name, nameof(HttpRequestEvent), StringComparison.OrdinalIgnoreCase));
+                        if (activity == null)
+                        {
+                            context.Updater.ModelState.AddModelError(Prefix, nameof(model.WorkflowTypeId), S["The Workflow type id value is required"]);
+                        }
+                        else
+                        {
+                            secret.ActivityId = activity.ActivityId;
+                        }
+                    }
+
+                }
 
                 secret.WorkflowTypeId = model.WorkflowTypeId;
-                secret.ActivityId = model.ActivityId;
                 secret.TokenLifeSpan = model.TokenLifeSpan;
-                //TODO
-                // if (model.RegenerateToken)
-                // {
-                    // var workflowType = await _workflowTypeStore.GetAsync(workflowTypeId);
-
-                    // if (workflowType == null)
-                    // {
-                    //     return NotFound();
-                    // }
-
-                    // var token = _securityTokenService.CreateToken(new WorkflowPayload(workflowType.WorkflowTypeId, activityId), TimeSpan.FromDays(tokenLifeSpan == 0 ? NoExpiryTokenLifespan : tokenLifeSpan));
-                    // var url = Url.Action("Invoke", "HttpWorkflow", new { token = token });
-
-
-                //     // regenerate token
-                // }
             }
-                
+
             return await EditAsync(secret, context);
         }
     }

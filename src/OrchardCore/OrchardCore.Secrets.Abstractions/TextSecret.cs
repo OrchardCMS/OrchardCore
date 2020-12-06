@@ -1,5 +1,3 @@
-using System.Threading.Tasks;
-
 namespace OrchardCore.Secrets
 {
     public class TextSecret : Secret

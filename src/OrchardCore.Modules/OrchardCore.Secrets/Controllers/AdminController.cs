@@ -4,15 +4,12 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Navigation;
 using OrchardCore.Settings;
-using OrchardCore.Secrets.Models;
-using OrchardCore.Secrets.Services;
 using OrchardCore.Secrets.ViewModels;
 using System.Collections.Generic;
 using OrchardCore.DisplayManagement.ModelBinding;
@@ -83,9 +80,28 @@ namespace OrchardCore.Secrets.Controllers
                 thumbnails.Add(factory.Name, thumbnail);
             }
 
+            var bindingEntries = new List<SecretBindingEntry>();
+            foreach (var binding in bindings)
+            {
+                var secret = _factories.FirstOrDefault(x => x.Name == binding.Value.Type)?.Create();
+                secret = await _secretCoordinator.GetSecretAsync(binding.Key, secret.GetType());
+                if (secret == null)
+                {
+                    continue;
+                }
+                dynamic summary = await _displayManager.BuildDisplayAsync(secret, _updateModelAccessor.ModelUpdater, "Summary");
+                summary.Secret = secret;
+                bindingEntries.Add(new SecretBindingEntry
+                {
+                    Name = binding.Key,
+                    SecretBinding = binding.Value,
+                    Summary = summary
+                });
+            };
+
             var model = new SecretBindingIndexViewModel
             {
-                SecretBindings = bindings.Select(x => new SecretBindingEntry { Name = x.Key, SecretBinding = x.Value }).ToList(),
+                SecretBindings = bindingEntries,
                 Thumbnails = thumbnails,
                 Pager = pagerShape
             };
@@ -107,8 +123,11 @@ namespace OrchardCore.Secrets.Controllers
                 return NotFound();
             }
 
+            secret.Id = Guid.NewGuid().ToString("n");
+
             var model = new SecretBindingViewModel
             {
+                SecretId = secret.Id,
                 Secret = secret,
                 Type = type,
                 StoreEntries = _secretCoordinator.ToArray(),
@@ -160,6 +179,9 @@ namespace OrchardCore.Secrets.Controllers
             {
                 var secretBinding = new SecretBinding { Store = model.SelectedStore, Description = model.Description, Type = model.Type };
 
+                secret.Id = model.SecretId;
+                secret.Name = model.Name;
+
                 await _secretCoordinator.UpdateSecretAsync(model.Name, secretBinding, secret);
 
                 _notifier.Success(H["Secret added successfully"]);
@@ -181,8 +203,6 @@ namespace OrchardCore.Secrets.Controllers
                 return Forbid();
             }
 
-            // This logic could be wrapped into the coordinator, i.e. get secret binding.
-
             var secretBindings = await _secretCoordinator.GetSecretBindingsAsync();
 
             if (!secretBindings.ContainsKey(name))
@@ -195,13 +215,12 @@ namespace OrchardCore.Secrets.Controllers
             var secret = _factories.FirstOrDefault(x => x.Name == secretBinding.Type)?.Create();
             secret = await _secretCoordinator.GetSecretAsync(name, secret.GetType());
 
-            // The secret driver is responsible for how it displays secrets.
             var model = new SecretBindingViewModel
             {
                 Name = name,
                 SelectedStore = secretBinding.Store,
                 Description = secretBinding.Description,
-                Type = secret.GetType().Name, // don't really need type here
+                Type = secret.GetType().Name,
                 Secret = secret,
                 StoreEntries = _secretCoordinator.ToArray(),
                 Editor = await _displayManager.BuildEditorAsync(secret, updater: _updateModelAccessor.ModelUpdater, isNew: false)
@@ -241,7 +260,6 @@ namespace OrchardCore.Secrets.Controllers
 
             var secretBinding = secretBindings[sourceName];
 
-            // This one has to get by type, surely or the value will end up null.
             var secret = _factories.FirstOrDefault(x => x.Name == secretBinding.Type)?.Create();
             secret = await _secretCoordinator.GetSecretAsync(sourceName, secret.GetType());
 
@@ -254,6 +272,7 @@ namespace OrchardCore.Secrets.Controllers
                 await _secretCoordinator.RemoveSecretAsync(sourceName, secretBinding.Store);
                 secretBinding.Store = model.SelectedStore;
                 secretBinding.Description = model.Description;
+                secret.Name = model.Name;
                 await _secretCoordinator.UpdateSecretAsync(model.Name, secretBinding, secret);
 
                 return RedirectToAction(nameof(Index));
@@ -270,7 +289,6 @@ namespace OrchardCore.Secrets.Controllers
             {
                 return Forbid();
             }
-
 
             var secretBindings = await _secretCoordinator.GetSecretBindingsAsync();
 

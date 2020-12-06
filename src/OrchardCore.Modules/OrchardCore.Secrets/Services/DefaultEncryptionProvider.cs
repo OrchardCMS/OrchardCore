@@ -32,8 +32,11 @@ namespace OrchardCore.Secrets.Services
             rsa.KeySize = 2048;
 
             rsa.ImportSubjectPublicKeyInfo(secret.PublicKeyAsBytes(), out _);
-            // TODO lot of work to be done here. HMAC / Iv / Algorthim etc.
+            // TODO  compute a HMAC of the encrypted payload, append it to the resulting string and use it when decrypting the payload to ensure the ciphertext was not tampered with)
             using var aes = Aes.Create();
+
+            // TODO apparently we should create an inv for every encryption.
+            // with var iv = aes.GenerateId();
 
             // Create an encryptor to perform the stream transform.
             var encryptor = aes.CreateEncryptor(aes.Key, aes.IV);

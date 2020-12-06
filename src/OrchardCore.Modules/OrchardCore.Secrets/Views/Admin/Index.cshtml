@@ -42,10 +42,9 @@
                         <a asp-action="Edit" asp-route-name="@entry.Name">@entry.Name</a>
                         @if (!String.IsNullOrWhiteSpace(entry.SecretBinding.Description))
                         {
-                            <span class="hint">
-                                — @entry.SecretBinding.Description
-                            </span>
+                            <span class="hint dashed">@entry.SecretBinding.Description</span>
                         }
+                        @await DisplayAsync(entry.Summary)
                     </div>
                 </li>
             }
@@ -62,7 +61,6 @@
 </form>
 
 @await DisplayAsync(Model.Pager)
-
 
 <!-- Modal -->
 <div class="modal fade" id="modelSecrets" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">

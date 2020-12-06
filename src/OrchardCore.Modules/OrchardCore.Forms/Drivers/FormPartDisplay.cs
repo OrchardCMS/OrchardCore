@@ -18,7 +18,7 @@ namespace OrchardCore.Forms.Drivers
                 m.WorkflowTypeId = part.WorkflowTypeId;
                 m.EncType = part.EncType;
                 m.EnableAntiForgeryToken = part.EnableAntiForgeryToken;
-                m.HttpWorkflowSecret = part.HttpWorkflowSecret;
+                m.HttpRequestEventSecret = part.HttpRequestEventSecret;
             });
         }
 
@@ -33,7 +33,7 @@ namespace OrchardCore.Forms.Drivers
                 part.WorkflowTypeId = viewModel.WorkflowTypeId;
                 part.EncType = viewModel.EncType;
                 part.EnableAntiForgeryToken = viewModel.EnableAntiForgeryToken;
-                part.HttpWorkflowSecret = viewModel.HttpWorkflowSecret;
+                part.HttpRequestEventSecret = viewModel.HttpRequestEventSecret;
             }
 
             return Edit(part);

@@ -1,10 +1,11 @@
 @model SecretBindingViewModel
 
-<h1>@RenderTitleSegments(T["Create Secret Binding"])</h1>
+<h1>@RenderTitleSegments(T["Create Secret"])</h1>
 
 <div asp-validation-summary="All"></div>
 <form asp-action="Create" method="post">
     <input type="hidden" asp-for="Type"/>
+    <input type="hidden" asp-for="SecretId"/>
 
     <div class="form-group" asp-validation-class-for="Name">
         <label asp-for="Name">@T["Name"]</label>
@@ -36,12 +37,6 @@
     {
         <p class="alert alert-danger">@T["There are no Secret Stores enabled. Please enable a Secret store Feature."]</p>
     }
-    @* this will be a class / javascript to disable when a readonly store is selected 
-    so either build the select ourselves 
-    
-    *@
-
-
 
     @if (Model.Editor != null)
     {

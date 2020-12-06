@@ -1,13 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Security.Cryptography;
-using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Secrets.ViewModels;
@@ -25,14 +22,16 @@ namespace OrchardCore.Secrets.Drivers
 
         public override IDisplayResult Display(RsaSecret secret)
         {
-            return View("RsaSecret_Fields_Thumbnail", secret).Location("Thumbnail", "Content");
+            return Combine(
+                View("RsaSecret_Fields_Summary", secret).Location("Summary", "Content"),
+                View("RsaSecret_Fields_Thumbnail", secret).Location("Thumbnail", "Content"));
         }
 
         public override Task<IDisplayResult> EditAsync(RsaSecret secret, BuildEditorContext context)
         {
             return Task.FromResult<IDisplayResult>(Initialize<RsaSecretViewModel>("RsaSecret_Fields_Edit", model =>
             {
-                // When this is new generate
+                // Generate new keys when creating.
                 if (context.IsNew)
                 {
                     using (var rsa = RSA.Create())
@@ -84,12 +83,9 @@ namespace OrchardCore.Secrets.Drivers
 
             if (await context.Updater.TryUpdateModelAsync(model, Prefix))
             {
-                // transfer values, then validate.
-                // TODO we should just store this as a UTF8 string not pem.
-
                 secret.KeyType = model.KeyType;
 
-                // The view will contain the private key
+                // The view will contain the private key when creating.
                 if (context.IsNew)
                 {
                     secret.PublicKey = model.PublicKey;

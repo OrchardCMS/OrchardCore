@@ -23,7 +23,7 @@ namespace OrchardCore.Secrets
 
             builder
                 .Add(S["Configuration"], design => design
-                    .Add(S["Secrets"], "Secrets", import => import
+                    .Add(S["Secrets"], "Secrets".PrefixPosition(), import => import
                         .Action("Index", "Admin", new { area = "OrchardCore.Secrets" })
                         .Permission(Permissions.ManageSecrets)
                         .LocalNav()

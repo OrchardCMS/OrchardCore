@@ -46,9 +46,9 @@ namespace OrchardCore.Secrets.Deployment
             using var encryptor = await _encryptionProvider.CreateAsync(result.SecretName);
 
             var secrets = new Dictionary<string, JObject>();
-            foreach(var secretBinding in secretBindings)
+            foreach (var secretBinding in secretBindings)
             {
-                var secretDescriptor = _secretCoordinator.FirstOrDefault(x => String.Equals(x.Name,secretBinding.Value.Store, StringComparison.OrdinalIgnoreCase));
+                var secretDescriptor = _secretCoordinator.FirstOrDefault(x => String.Equals(x.Name, secretBinding.Value.Store, StringComparison.OrdinalIgnoreCase));
                 // When descriptor is readonly we ship a binding without the secret value.
                 var jObject = new JObject(new JProperty("SecretBinding", JObject.FromObject(secretBinding.Value)));
 
@@ -59,7 +59,7 @@ namespace OrchardCore.Secrets.Deployment
                     if (secret != null)
                     {
                         var plaintext = JsonConvert.SerializeObject(secret);
-                        
+
                         var encrypted = encryptor.Encrypt(plaintext);
 
                         // [js: decrypt('theaesencryptionkey', 'theencryptedvalue')]

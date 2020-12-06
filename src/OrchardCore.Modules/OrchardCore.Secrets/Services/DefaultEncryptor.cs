@@ -26,6 +26,7 @@ namespace OrchardCore.Secrets.Services
         public string Encrypt(string plainText)
         {
             byte[] encrypted;
+            // byte[] hmacHash;
 
             using (var msEncrypt = new MemoryStream())
             {
@@ -38,6 +39,26 @@ namespace OrchardCore.Secrets.Services
                     encrypted = msEncrypt.ToArray();
                 }
             }
+
+            // using var hmac = new HMACSHA256();
+            // using (var encryptedStream = new MemoryStream())
+            // {
+            //     using (var binaryWriter = new BinaryWriter(encryptedStream))
+            //     {
+            //         //Prepend IV
+            //         binaryWriter.Write(_iv);
+            //         //Write Ciphertext
+            //         binaryWriter.Write(encrypted);
+            //         binaryWriter.Flush();
+
+            //         //Authenticate all data
+            //         var tag = hmac.ComputeHash(encryptedStream.ToArray());
+            //         //Postpend tag
+            //         binaryWriter.Write(tag);
+            //     }
+            //     hmacHash = encryptedStream.ToArray();
+            // }
+
 
             var descriptor = new HybridKeyDescriptor
             {

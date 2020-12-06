@@ -5,6 +5,7 @@ namespace OrchardCore.Secrets.ViewModels
 {
     public class SecretBindingViewModel
     {
+        public string SecretId { get; set; }
         public string Name { get; set; }
         public string SelectedStore { get; set; }
         public string Description { get; set; }

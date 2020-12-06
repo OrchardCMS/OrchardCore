@@ -1,7 +1,6 @@
 using System;
 using System.IO;
 using System.Security.Cryptography;
-
 using System.Text;
 using Newtonsoft.Json;
 
@@ -25,7 +24,7 @@ namespace OrchardCore.Secrets.Services
             var descriptor = JsonConvert.DeserializeObject<HybridKeyDescriptor>(decoded);
 
             var protectedBytes = Convert.FromBase64String(descriptor.ProtectedData);
-            
+
             using var msDecrypt = new MemoryStream(protectedBytes);
             using var csDecrypt = new CryptoStream(msDecrypt, _decryptor, CryptoStreamMode.Read);
             using var srDecrypt = new StreamReader(csDecrypt);

@@ -31,16 +31,13 @@ namespace OrchardCore.Secrets.Services
             if (!typeof(Secret).IsAssignableFrom(type))
             {
                 throw new ArgumentException("The type must implement " + nameof(Secret));
-            }    
+            }
 
             var secretsDocument = await _manager.GetSecretsDocumentAsync();
             if (secretsDocument.Secrets.TryGetValue(key, out var documentSecret))
             {
-                // TODO Disabled for dev purposes.
-                // var value = _databaseSecretDataProtector.Unprotect(documentSecret.Value);
-                // var secret = JsonConvert.DeserializeObject(value, type) as Secret;
-
-                var secret = JsonConvert.DeserializeObject(documentSecret.Value, type) as Secret;
+                var value = _databaseSecretDataProtector.Unprotect(documentSecret.Value);
+                var secret = JsonConvert.DeserializeObject(value, type) as Secret;
 
                 return secret;
             }
@@ -50,10 +47,10 @@ namespace OrchardCore.Secrets.Services
 
         public Task UpdateSecretAsync(string key, Secret secret)
         {
-            var documentSecret = new DocumentSecret();
-            // TODO Disabled for dev purposes.
-            documentSecret.Value = _databaseSecretDataProtector.Protect(JsonConvert.SerializeObject(secret));
-            documentSecret.Value = JsonConvert.SerializeObject(secret);
+            var documentSecret = new DocumentSecret
+            {
+                Value = _databaseSecretDataProtector.Protect(JsonConvert.SerializeObject(secret))
+            };
 
             return _manager.UpdateSecretAsync(key, documentSecret);
         }

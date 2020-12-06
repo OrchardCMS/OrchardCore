@@ -1,10 +1,12 @@
-@inject OrchardCore.Secrets.ISecretService<HttpRequestEventSecret> HttpRequestEventSecretService
+@using Microsoft.Extensions.DependencyInjection
 @using OrchardCore.ContentManagement
 @using OrchardCore.Forms.Models
 @using OrchardCore.Mvc.Utilities
-@using OrchardCore.Workflows.Models
+@using OrchardCore.Workflows.Http.Services
 
 @{
+    @* The Forms module does not require the Workflows module so this service may not be available. *@
+    var httpRequestEventSecretService = Context.RequestServices.GetService<IHttpRequestEventSecretService>();
     var formPart = ((ContentItem)Model.ContentItem).As<FormPart>();
     string encType = formPart.Method == "POST" ? formPart.EncType : string.Empty;
     var formContentTypeClassName = "form-" + ((string)Model.ContentItem.ContentType).HtmlClassify();
@@ -12,13 +14,11 @@
     var elementId =  ((ContentItem)Model.ContentItem).As<FormElementPart>()?.Id;
     string formId =  string.IsNullOrWhiteSpace(elementId) ?  $"form_{Model.ContentItem.ContentItemId}" : elementId;
     var action = formPart.Action;
-    if (!String.IsNullOrEmpty(formPart.HttpWorkflowSecret))
+    if (!String.IsNullOrEmpty(formPart.HttpRequestEventSecret) && httpRequestEventSecretService != null)
     {
-        var secret = await HttpRequestEventSecretService.GetSecretAsync(formPart.HttpWorkflowSecret);
-        action = Url.Action("Invoke", "HttpWorkflow", new { area = "OrchardCore.Workflows", token = secret.GeneratedToken });
+        action = await httpRequestEventSecretService.GetUrlAsync(formPart.HttpRequestEventSecret);
     }
 }
-
 <form id="@formId" action="@action" method="@formPart.Method"  enctype="@encType" class="form-content @formContentTypeClassName">
     @if (formPart.EnableAntiForgeryToken)
     {

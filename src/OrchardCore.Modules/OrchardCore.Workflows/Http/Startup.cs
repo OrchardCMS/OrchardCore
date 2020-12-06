@@ -14,6 +14,7 @@ using OrchardCore.Workflows.Http.Drivers;
 using OrchardCore.Workflows.Http.Filters;
 using OrchardCore.Workflows.Http.Handlers;
 using OrchardCore.Workflows.Http.Liquid;
+using OrchardCore.Workflows.Http.Models;
 using OrchardCore.Workflows.Http.Scripting;
 using OrchardCore.Workflows.Http.Services;
 using OrchardCore.Workflows.Http.WorkflowContextProviders;
@@ -54,7 +55,8 @@ namespace OrchardCore.Workflows.Http
             services.AddLiquidFilter<SignalUrlFilter>("signal_url");
 
             services.AddScoped<IDisplayDriver<Secret>, HttpRequestEventSecretDisplayDriver>();
-            services.AddSingleton<ISecretFactory>(new SecretFactory<HttpRequestEventSecret>());            
+            services.AddSingleton<ISecretFactory>(new SecretFactory<HttpRequestEventSecret>());
+            services.AddScoped<IHttpRequestEventSecretService, HttpRequestEventSecretService>();
         }
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

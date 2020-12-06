@@ -1,9 +1,7 @@
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Secrets.ViewModels;
@@ -21,7 +19,9 @@ namespace OrchardCore.Secrets.Drivers
 
         public override IDisplayResult Display(TextSecret secret)
         {
-            return View("TextSecret_Fields_Thumbnail", secret).Location("Thumbnail", "Content");
+            return Combine(
+                View("TextSecret_Fields_Summary", secret).Location("Summary", "Content"),
+                View("TextSecret_Fields_Thumbnail", secret).Location("Thumbnail", "Content"));
         }
 
         public override Task<IDisplayResult> EditAsync(TextSecret secret, BuildEditorContext context)
