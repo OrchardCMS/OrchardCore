@@ -40,8 +40,8 @@ namespace OrchardCore.Media.Controllers
             ISiteService siteService,
             INotifier notifier,
             IShapeFactory shapeFactory,
-            IStringLocalizer<AdminController> stringLocalizer,
-            IHtmlLocalizer<AdminController> htmlLocalizer
+            IStringLocalizer<MediaProfilesController> stringLocalizer,
+            IHtmlLocalizer<MediaProfilesController> htmlLocalizer
             )
         {
             _authorizationService = authorizationService;
