@@ -124,13 +124,13 @@ namespace OrchardCore.AuditTrail.Services
             switch (orderBy)
             {
                 case AuditTrailOrderBy.CategoryAscending:
-                    query.With<AuditTrailEventIndex>().OrderBy(eventIndex => eventIndex.Category).ThenByDescending(eventIndex => eventIndex.Id);
+                    query.With<AuditTrailEventIndex>().OrderBy(eventIndex => eventIndex.Category).ThenByDescending(eventIndex => eventIndex.CreatedUtc);
                     break;
                 case AuditTrailOrderBy.EventAscending:
-                    query.With<AuditTrailEventIndex>().OrderBy(eventIndex => eventIndex.EventName).ThenByDescending(eventIndex => eventIndex.Id);
+                    query.With<AuditTrailEventIndex>().OrderBy(eventIndex => eventIndex.EventName).ThenByDescending(eventIndex => eventIndex.CreatedUtc);
                     break;
                 case AuditTrailOrderBy.DateDescending:
-                    query.With<AuditTrailEventIndex>().OrderByDescending(eventIndex => eventIndex.CreatedUtc).ThenByDescending(eventIndex => eventIndex.Id);
+                    query.With<AuditTrailEventIndex>().OrderByDescending(eventIndex => eventIndex.CreatedUtc);
                     break;
             }
 
