@@ -47,6 +47,7 @@
     <PackageManagement Include="YesSql.Provider.PostgreSql" Version="1.0.0-beta-1620" />
     <PackageManagement Include="YesSql.Provider.SqLite" Version="1.0.0-beta-1620" />
     <PackageManagement Include="YesSql.Provider.SqlServer" Version="1.0.0-beta-1620" />
+    <PackageManagement Include="Microsoft.SourceLink.GitHub" Version="1.0.0" /> 
   </ItemGroup>
 
 </Project>
