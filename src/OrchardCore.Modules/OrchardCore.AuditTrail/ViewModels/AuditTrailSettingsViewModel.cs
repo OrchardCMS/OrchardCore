@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
 namespace OrchardCore.AuditTrail.ViewModels
 {
@@ -6,12 +6,12 @@ namespace OrchardCore.AuditTrail.ViewModels
     {
         public bool EnableClientIpAddressLogging { get; set; }
         public List<AuditTrailCategorySettingsViewModel> Categories { get; set; }
-        public List<BlacklistedContentTypesViewModel> BlacklistedContentTypes { get; set; }
+        public List<IgnoredContentTypesViewModel> IgnoredContentTypes { get; set; }
 
 
         public AuditTrailSettingsViewModel()
         {
-            BlacklistedContentTypes = new List<BlacklistedContentTypesViewModel>();
+            IgnoredContentTypes = new List<IgnoredContentTypesViewModel>();
             Categories = new List<AuditTrailCategorySettingsViewModel>();
         }
     }

@@ -1,4 +1,4 @@
-﻿using OrchardCore.AuditTrail.Services.Models;
+using OrchardCore.AuditTrail.Services.Models;
 using OrchardCore.AuditTrail.Settings;
 using OrchardCore.Entities;
 using OrchardCore.Settings;
@@ -24,7 +24,7 @@ namespace OrchardCore.AuditTrail.Services
             var auditTrailSettings = siteSettings.As<AuditTrailSettings>();
             var contentType = buildingAuditTrailEventContext.ContentItem.ContentType;
 
-            if (auditTrailSettings.BlacklistedContentTypeNames.Contains(contentType))
+            if (auditTrailSettings.IgnoredContentTypeNames.Contains(contentType))
             { 
                 buildingAuditTrailEventContext.IsCanceled = true; 
             }

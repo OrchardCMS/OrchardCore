@@ -77,13 +77,13 @@ namespace OrchardCore.AuditTrail.Drivers
 
                     model.Categories = categories;
                     model.EnableClientIpAddressLogging = settings.EnableClientIpAddressLogging;
-                    model.BlacklistedContentTypes = _contentDefitinionManager.ListTypeDefinitions()
+                    model.IgnoredContentTypes = _contentDefitinionManager.ListTypeDefinitions()
                         .Select(contentTypeDefiniton =>
-                            new BlacklistedContentTypesViewModel
+                            new IgnoredContentTypesViewModel
                             {
                                 Name = contentTypeDefiniton.Name,
                                 DisplayName = contentTypeDefiniton.DisplayName,
-                                Selected = settings.BlacklistedContentTypeNames.Contains(contentTypeDefiniton.Name)
+                                Selected = settings.IgnoredContentTypeNames.Contains(contentTypeDefiniton.Name)
                             }).OrderBy(contentTypeDefinition => contentTypeDefinition.DisplayName).ToList();
                 }).Location("Content:1").OnGroup(AuditTrailSettingsGroupId);
 
@@ -114,11 +114,11 @@ namespace OrchardCore.AuditTrail.Drivers
                 }
 
                 settings.EnableClientIpAddressLogging = model.EnableClientIpAddressLogging;
-                settings.BlacklistedContentTypes = model.BlacklistedContentTypes;
+                settings.IgnoredContentTypes = model.IgnoredContentTypes;
 
-                settings.BlacklistedContentTypeNames = model.BlacklistedContentTypes
-                    .Where(blacklistedContentType => blacklistedContentType.Selected)
-                    .Select(blacklistedContentType => blacklistedContentType.Name).ToArray();
+                settings.IgnoredContentTypeNames = model.IgnoredContentTypes
+                    .Where(ignoredContentType => ignoredContentType.Selected)
+                    .Select(ignoredContentType => ignoredContentType.Name).ToArray();
 
                 settings.EventSettings = eventSettings
                     .SelectMany(categorySettings => categorySettings.Events

@@ -61,7 +61,7 @@
     </div>
 
     <button class="btn btn-primary form-group" type="button" data-toggle="modal" data-target="#contentTypesModal" aria-expanded="true">
-        @T["Set blacklisted content types"]
+        @T["Set ignored content types"]
     </button>
 </section>
 
@@ -69,23 +69,23 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="contentTypesModalLabel">@T["Blacklisted content types"]</h5>
+                <h5 class="modal-title" id="contentTypesModalLabel">@T["Ignored content types"]</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
                 <ul class="list-group mb-3">
-                    @foreach (var blacklistedContentTypes in Model.BlacklistedContentTypes)
+                    @foreach (var ignoredContentType in Model.IgnoredContentTypes)
                     {
                         <li class="list-group-item">
                             <div class="custom-control custom-checkbox">
-                                <input asp-for="BlacklistedContentTypes[contentTypesIndex].Selected" class="custom-control-input" type="checkbox">
-                                <label asp-for="BlacklistedContentTypes[contentTypesIndex].Selected" class="custom-control-label">
-                                    @blacklistedContentTypes.DisplayName
+                                <input asp-for="IgnoredContentTypes[contentTypesIndex].Selected" class="custom-control-input" type="checkbox">
+                                <label asp-for="IgnoredContentTypes[contentTypesIndex].Selected" class="custom-control-label">
+                                    @ignoredContentType.DisplayName
                                 </label>
                             </div>
-                            <input asp-for="BlacklistedContentTypes[contentTypesIndex].Name" type="hidden" />
+                            <input asp-for="IgnoredContentTypes[contentTypesIndex].Name" type="hidden" />
                         </li>
                         contentTypesIndex++;
                     }
