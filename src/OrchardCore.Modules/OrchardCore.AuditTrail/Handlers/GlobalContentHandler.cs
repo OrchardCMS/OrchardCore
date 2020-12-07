@@ -73,11 +73,6 @@ namespace OrchardCore.AuditTrail.Handlers
 
         private async Task RecordAuditTrailEventAsync(string eventName, IContent content)
         {
-            // -1 is a unique contentItem.Id that only Preview is using such that another stored document can't have
-            // the same one in the IContentManagerSession index.
-            // ToDo: use the ContentPreviewFeature from this PR. https://github.com/OrchardCMS/OrchardCore/pull/6626
-            if (content.ContentItem.Id == -1) return;
-
             var buildingAuditTrailEventContext = new BuildingAuditTrailEventContext(content.ContentItem, eventName);
 
             await _auditTrailEvents.InvokeAsync((provider, context) =>
