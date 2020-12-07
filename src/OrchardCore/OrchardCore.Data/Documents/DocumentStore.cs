@@ -21,6 +21,7 @@ namespace OrchardCore.Data.Documents
         private DocumentStoreCommitFailureDelegate _afterCommitFailure;
 
         private bool _canceled;
+        private bool _committed;
 
         public DocumentStore(ISession session)
         {
@@ -53,11 +54,27 @@ namespace OrchardCore.Data.Documents
                 return (false, loaded as T);
             }
 
-            var document = await _session.Query<T>().FirstOrDefaultAsync();
+            T document = null;
+
+            // For consistency checking a document may be queried after 'CommitAsync()'.
+            if (_committed)
+            {
+                // So we create a new session to not get a cached version from 'YesSql'.
+                using var session = _session.Store.CreateSession();
+                document = await session.Query<T>().FirstOrDefaultAsync();
+            }
+            else
+            {
+                document = await _session.Query<T>().FirstOrDefaultAsync();
+            }
 
             if (document != null)
             {
-                _session.Detach(document);
+                if (!_committed)
+                {
+                    _session.Detach(document);
+                }
+
                 return (true, document);
             }
 
@@ -123,18 +140,25 @@ namespace OrchardCore.Data.Documents
             {
                 await _session.CommitAsync();
 
+                _committed = true;
                 _loaded.Clear();
 
                 if (!_canceled && _afterCommitSuccess != null)
                 {
-                    await _afterCommitSuccess();
+                    foreach (var d in _afterCommitSuccess.GetInvocationList())
+                    {
+                        await ((DocumentStoreCommitSuccessDelegate)d)();
+                    }
                 }
             }
             catch (ConcurrencyException exception)
             {
                 if (_afterCommitFailure != null)
                 {
-                    await _afterCommitFailure(exception);
+                    foreach (var d in _afterCommitFailure.GetInvocationList())
+                    {
+                        await ((DocumentStoreCommitFailureDelegate)d)(exception);
+                    }
                 }
                 else
                 {

@@ -52,10 +52,10 @@ namespace OrchardCore.ContentManagement.GraphQL.Options
             return this;
         }
 
-        public GraphQLContentOptions IgnoreField<IGraphType>(string fieldName) where IGraphType : IObjectGraphType
+        public GraphQLContentOptions IgnoreField<TGraphType>(string fieldName) where TGraphType : IObjectGraphType
         {
             HiddenFields = HiddenFields.Union(new[] {
-                new GraphQLField<IGraphType>(fieldName),
+                new GraphQLField<TGraphType>(fieldName),
             });
 
             return this;

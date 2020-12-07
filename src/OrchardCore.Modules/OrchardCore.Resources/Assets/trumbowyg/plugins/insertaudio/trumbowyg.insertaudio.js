@@ -43,20 +43,23 @@
             fr: {
                 insertAudio: 'Insérer un son'
             },
-            ru: {
-                insertAudio: 'Вставить аудио'
+            hu: {
+                insertAudio: 'Audio beszúrás'
             },
             ja: {
                 insertAudio: '音声の挿入'
             },
-            tr: {
-                insertAudio: 'Ses Ekle'
+            ko: {
+                insertAudio: '소리 넣기'
             },
             pt_br: {
                 insertAudio: 'Inserir áudio'
             },
-            ko: {
-                insertAudio: '소리 넣기'
+            ru: {
+                insertAudio: 'Вставить аудио'
+            },
+            tr: {
+                insertAudio: 'Ses Ekle'
             },
             // jshint camelcase:true
         },

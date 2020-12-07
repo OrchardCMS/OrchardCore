@@ -1449,7 +1449,8 @@
       "avatar_url": "https://avatars3.githubusercontent.com/u/14150259?v=4",
       "profile": "https://github.com/EternityTeam",
       "contributions": [
-        "translation"
+        "translation",
+        "code"
       ]
     },
     {
@@ -1913,6 +1914,42 @@
       "name": "MikeKry",
       "avatar_url": "https://avatars3.githubusercontent.com/u/52829889?v=4",
       "profile": "https://github.com/MikeKry",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "parasparmar",
+      "name": "Paras Parmar",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/2953468?v=4",
+      "profile": "https://www.parasparmar.com",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "juchom",
+      "name": "Julien Chomarat",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/17902415?v=4",
+      "profile": "https://www.linoa.com",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "3bit",
+      "name": "Achim Gmeiner",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/1174592?v=4",
+      "profile": "https://github.com/3bit",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "tropcicstefan",
+      "name": "tropcicstefan",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/30324480?v=4",
+      "profile": "https://github.com/tropcicstefan",
       "contributions": [
         "code"
       ]

@@ -218,7 +218,7 @@ namespace OrchardCore.Environment.Shell.Scope
         /// Executes a delegate using this shell scope in an isolated async flow,
         /// while managing the shell state and invoking tenant events.
         /// </summary>
-        public async Task UsingAsync(Func<ShellScope, Task> execute)
+        public async Task UsingAsync(Func<ShellScope, Task> execute, bool activateShell = true)
         {
             if (Current == this)
             {
@@ -229,7 +229,11 @@ namespace OrchardCore.Environment.Shell.Scope
             using (this)
             {
                 StartAsyncFlow();
-                await ActivateShellInternalAsync();
+
+                if (activateShell)
+                {
+                    await ActivateShellInternalAsync();
+                }
 
                 await execute(this);
 
@@ -281,7 +285,7 @@ namespace OrchardCore.Environment.Shell.Scope
                 // The tenant gets activated here.
                 if (!ShellContext.IsActivated)
                 {
-                    await new ShellScope(ShellContext).UsingServiceScopeAsync(async scope =>
+                    await new ShellScope(ShellContext).UsingAsync(async scope =>
                     {
                         var tenantEvents = scope.ServiceProvider.GetServices<IModularTenantEvents>();
                         foreach (var tenantEvent in tenantEvents)
@@ -293,7 +297,7 @@ namespace OrchardCore.Environment.Shell.Scope
                         {
                             await tenantEvent.ActivatedAsync();
                         }
-                    });
+                    }, activateShell: false);
 
                     ShellContext.IsActivated = true;
                 }
