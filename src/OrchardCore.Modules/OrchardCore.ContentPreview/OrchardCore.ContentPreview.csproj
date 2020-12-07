@@ -7,7 +7,7 @@
     <Title>OrchardCore ContentPreview</Title>
     <Description>$(OCCMSDescription)
 
-    Provides live content edition and content preview.</Description>
+    Provides live content editing and content preview.</Description>
     <PackageTags>$(PackageTags) OrchardCoreCMS</PackageTags>
   </PropertyGroup>
 
