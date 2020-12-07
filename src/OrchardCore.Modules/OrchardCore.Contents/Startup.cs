@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
+using OrchardCore.Admin.Models;
 using OrchardCore.AdminMenu.Services;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
@@ -130,6 +131,8 @@ namespace OrchardCore.Contents
 
             services.AddScoped<IDisplayManager<ContentOptionsViewModel>, DisplayManager<ContentOptionsViewModel>>();
             services.AddScoped<IDisplayDriver<ContentOptionsViewModel>, ContentOptionsDisplayDriver>();
+
+            services.AddScoped<IDisplayDriver<AdminDashboardItem>, ContentsAdminDashboardItemDriver>();
 
             // Liquid
             services.AddScoped<ILiquidTemplateEventHandler, ContentLiquidTemplateEventHandler>();
