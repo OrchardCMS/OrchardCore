@@ -1,3 +1,7 @@
+@using Microsoft.AspNetCore.Authorization
+@inject IAuthorizationService AuthorizationService;
+@if (await AuthorizationService.AuthorizeAsync(User, OrchardCore.Media.Permissions.ManageMedia))
+{
 <div class="card">
     <div class="card-body">
         <h5 class="card-title"><i class="fa fa-image"></i> @T["Media library"]</h5>
@@ -13,3 +17,4 @@
         <a class="btn btn-primary" href="@Url.Action("Index", "Admin", new { area = "OrchardCore.Media"})">@T["Manage the media"]</a>
     </div>
 </div>
+}

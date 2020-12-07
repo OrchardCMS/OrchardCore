@@ -1,0 +1,30 @@
+@using Microsoft.AspNetCore.Authorization
+@inject IAuthorizationService AuthorizationService;
+@inject OrchardCore.Environment.Shell.IShellHost ShellHost;
+
+@if (await AuthorizationService.AuthorizeAsync(User, OrchardCore.Tenants.Permissions.ManageTenants))
+{
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title"><i class="fa fa-globe"></i> @T["Tenants"]</h5>
+        <p class="card-text">
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    @T["List all the tenants."]                    
+@{   
+
+    var shells = ShellHost.GetAllSettings();
+    var count = shells.Count();
+}
+                    <span class="badge badge-primary badge-pill">@count</span>
+                </li>
+                <li class="list-group-item">@T["Create and edit the tenants."]</li>
+                <li class="list-group-item">@T["Disable or enable the tenants."]</li>
+            </ul>
+        </p>
+    </div>
+    <div class="card-footer">
+        <a class="btn btn-primary" href="@Url.Action("Index", "Admin", new { area = "OrchardCore.Tenants" })">@T["Manage the tenants"]</a>
+    </div>
+</div>
+}

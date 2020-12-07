@@ -1,11 +1,8 @@
-@using OrchardCore.Mvc.Utilities
 @using OrchardCore.DisplayManagement;
-@inject OrchardCore.DisplayManagement.Theming.IThemeManager ThemeManager
 @inject OrchardCore.DisplayManagement.Descriptors.IShapeTableManager ShapeTableManager
 
 @{
-    var theme = await ThemeManager.GetThemeAsync();
-    var shapeTable = ShapeTableManager.GetShapeTable(theme?.Id);
+    var shapeTable = ShapeTableManager.GetShapeTable("TheAdmin");
     var cardShapes = shapeTable.Bindings.Keys.Where(x => x.StartsWith("AdminDashboardCard_", StringComparison.OrdinalIgnoreCase));
 }
 

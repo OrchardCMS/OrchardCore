@@ -1,0 +1,20 @@
+@using Microsoft.AspNetCore.Authorization
+@inject IAuthorizationService AuthorizationService;
+@if (await AuthorizationService.AuthorizeAsync(User, OrchardCore.ContentTypes.Permissions.ViewContentTypes))
+{
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title"><i class="fa fa-cogs"></i> @T["Content definitions"]</h5>
+        <p class="card-text">
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item"><a href="@Url.Action("List", "Admin", new { area = "OrchardCore.ContentTypes" })">@T["Define the content types."]</a></li>
+                <li class="list-group-item"><a href="@Url.Action("ListParts", "Admin", new { area = "OrchardCore.ContentTypes" })">@T["Define the content parts."]</a></li>
+                <li class="list-group-item">@T["Add or edit the fields and parts."]</li>
+            </ul>
+        </p>
+    </div>
+    <div class="card-footer">
+        <a class="btn btn-primary" href="@Url.Action("Index", "Admin", new { area = "OrchardCore.ContentTypes" })">@T["Manage the content types"]</a>
+    </div>
+</div>
+}
