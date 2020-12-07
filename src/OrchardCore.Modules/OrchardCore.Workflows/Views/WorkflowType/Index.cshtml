@@ -7,7 +7,7 @@
 }
 <script asp-name="bootstrap-select" depends-on="admin" at="Foot"></script>
 
-<h1>@RenderTitleSegments(T["Manage Workflows"])</h1>
+<zone Name="Title"><h1>@RenderTitleSegments(T["Manage Workflows"])</h1></zone>
 
 <form asp-action="Index" id="workflows-types-form" method="post">
     <input type="submit" name="submit.Filter" id="submitFilter" class="d-none" />
@@ -96,7 +96,7 @@
         else
         {
             <li class="list-group-item">
-                <div class="alert alert-info mb-1" role="alert">
+                <div class="alert alert-info mb-0" role="alert">
                     @T["<strong>Nothing here!</strong> There are no workflows for the moment."]
                 </div>
             </li>

@@ -4,10 +4,10 @@
     int endIndex = startIndex + Model.AdminMenu.Count - 1;
 }
 
-<style asp-src="~/OrchardCore.AdminMenu/Styles/admin-menu.min.css" debug-src="~/OrchardCore.AdminMenu/Styles/admin-menu.css" at="Head" depends-on="admin"></style>
-<script asp-src="~/OrchardCore.AdminMenu/Scripts/admin-menu.min.js" debug-src="~/OrchardCore.AdminMenu/Scripts/admin-menu.js" at="Foot" depends-on="admin"></script>
+<style asp-src="~/OrchardCore.AdminMenu/Styles/admin-menu.min.css" debug-src="~/OrchardCore.AdminMenu/Styles/admin-menu.css" at="Head" depends-on="admin, jQuery-ui"></style>
+<script asp-src="~/OrchardCore.AdminMenu/Scripts/admin-menu.min.js" debug-src="~/OrchardCore.AdminMenu/Scripts/admin-menu.js" at="Foot" depends-on="admin, jQuery-ui"></script>
 
-<h1>@RenderTitleSegments(T["Admin Menus"])</h1>
+<zone Name="Title"><h1>@RenderTitleSegments(T["Admin Menus"])</h1></zone>
 
 <form asp-action="List">
     <input asp-for="Options.BulkAction" type="hidden" />
@@ -92,7 +92,7 @@
         else
         {
             <li class="list-group-item">
-                <div class="alert alert-info mb-1" role="alert">
+                <div class="alert alert-info mb-0" role="alert">
                     @T["<strong>Nothing here!</strong> There are no menus for the moment."]
                 </div>
             </li>

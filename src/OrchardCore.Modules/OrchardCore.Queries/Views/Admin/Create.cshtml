@@ -1,6 +1,7 @@
 @model QueriesCreateViewModel
 
-<h1>@RenderTitleSegments(T["New {0} query", Model.SourceName])</h1>
+<zone Name="Title"><h1>@RenderTitleSegments(T["New {0} query", Model.SourceName])</h1></zone>
+
 <form asp-action="Create" asp-route-returnUrl="@Context.Request.Query["ReturnUrl"]" method="post" enctype="multipart/form-data">
     @Html.ValidationSummary()
     @if (Model.Editor.Content != null)

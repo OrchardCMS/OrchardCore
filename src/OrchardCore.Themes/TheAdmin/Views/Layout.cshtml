@@ -1,4 +1,4 @@
-﻿@inject DarkModeService DarkModeService;
+@inject DarkModeService DarkModeService;
 @{
     var adminSettings = Site.As<AdminSettings>();
     var darkMode = await DarkModeService.IsDarkModeAsync();
@@ -13,14 +13,14 @@
     <link type="image/x-icon" rel="shortcut icon" href="~/TheAdmin/favicon.ico" />
 
     <!-- Bootstrap CSS -->
-    <style media="all" asp-name="admin" asp-src="~/TheAdmin/Styles/TheAdmin.min.css" debug-src="~/TheAdmin/Styles/TheAdmin.css" depends-on="jQuery-ui"></style>
+    <style media="all" asp-name="admin" asp-src="~/TheAdmin/Styles/TheAdmin.min.css" debug-src="~/TheAdmin/Styles/TheAdmin.css"></style>
 
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons|Material+Icons+Outlined|Material+Icons+Two+Tone|Material+Icons+Round|Material+Icons+Sharp" rel="stylesheet">
 
     <script asp-name="font-awesome" at="Foot" version="5"></script>
     <script asp-name="font-awesome-v4-shims" at="Foot" version="5"></script>
     <script asp-name="jscookie" at="Foot" version="2.1.4"></script>
-    <script asp-name="admin" asp-src="~/TheAdmin/Scripts/TheAdmin.min.js" debug-src="~/TheAdmin/Scripts/TheAdmin.js" depends-on="jQuery, jQuery-ui, jQuery-ui-i18n" at="Foot"></script>
+    <script asp-name="admin" asp-src="~/TheAdmin/Scripts/TheAdmin.min.js" debug-src="~/TheAdmin/Scripts/TheAdmin.js" depends-on="jQuery" at="Foot"></script>
     <resources type="Header" />
 
     <!-- This script can't wait till the footer -->
@@ -32,13 +32,20 @@
         <div class="ta-navbar-top navbar-expand-lg bg-primary">
             <a class="ta-navbar-brand" href="@Url.Content("~/")" target="_blank">@Site.SiteName</a>
             <div class="mr-auto">
+                @if(adminSettings.DisplayTitlesInTopbar)
+                {
+                @await RenderSectionAsync("Title", required: false)
+                }
+            </div>
+            <div id="navbar-links">
                 @await RenderSectionAsync("NavbarTop", required: false)
             </div>
             @await DisplayAsync(await New.UserMenu())
             @if (adminSettings.DisplayDarkMode)
             {
                 <a id="btn-darkmode" class="btn btn-sm btn-light ml-2" title="@T["Dark mode"]">
-                    @if(darkMode){
+                    @if (darkMode)
+                    {
                         <i class="fas fa-sun"></i>
                     }
                     else
@@ -59,8 +66,11 @@
         <div class="ta-content">
             @await RenderSectionAsync("Header", required: false)
             @await RenderSectionAsync("Messages", required: false)
-            @await RenderSectionAsync("Breadcrumbs", required: false)
-
+            @await RenderSectionAsync("Breadcrumbs", required: false)            
+            @if(!adminSettings.DisplayTitlesInTopbar)
+            {
+            @await RenderSectionAsync("Title", required: false)
+            }
             @await RenderBodyAsync()
         </div>
     </div>

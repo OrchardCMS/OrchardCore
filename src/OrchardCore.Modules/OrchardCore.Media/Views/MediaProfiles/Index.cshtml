@@ -5,7 +5,7 @@
     int endIndex = startIndex + Model.MediaProfiles.Count - 1;
 }
 
-<h1>@RenderTitleSegments(T["Media Profiles"])</h1>
+<zone Name="Title"><h1>@RenderTitleSegments(T["Media Profiles"])</h1></zone>
 
 <form asp-action="Index">
     <input asp-for="Options.BulkAction" type="hidden" />
@@ -82,7 +82,7 @@
         else
         {
             <li class="list-group-item">
-                <div class="alert alert-info mb-1" role="alert">
+                <div class="alert alert-info mb-0" role="alert">
                     @T["<strong>Nothing here!</strong> There are no media profiles for the moment."]
                 </div>
             </li>

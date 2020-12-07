@@ -5,7 +5,7 @@
     int endIndex = startIndex + Model.ShortcodeTemplates.Count - 1;
 }
 
-<h1>@RenderTitleSegments(T["Shortcodes"])</h1>
+<zone Name="Title"><h1>@RenderTitleSegments(T["Shortcodes"])</h1></zone>
 
 @* the form is necessary to generate and antiforgery token for the delete action *@
 <form asp-action="Index">
@@ -31,7 +31,7 @@
             </div>
         </div>
     </div>
-    <ul class="list-group with-checkboxes">
+    <ul class="list-group with-checkbox">
         @if (Model.ShortcodeTemplates.Any())
         {
             <li class="list-group-item bg-primary">
@@ -83,7 +83,7 @@
         else
         {
             <li class="list-group-item">
-                <div class="alert alert-info mb-1" role="alert">
+                <div class="alert alert-info mb-0" role="alert">
                     @T["<strong>Nothing here!</strong> There are no shortcodes for the moment."]
                 </div>
             </li>
