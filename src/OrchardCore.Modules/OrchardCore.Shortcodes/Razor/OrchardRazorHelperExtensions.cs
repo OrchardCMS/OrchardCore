@@ -9,6 +9,7 @@ public static class OrchardRazorHelperExtensions
     /// <summary>
     /// Applies short codes to html.
     /// </summary>
+    /// <param name="orchardHelper">The <see cref="IOrchardHelper"/></param>
     /// <param name="html">The html to apply short codes.</param>
     public static async Task<IHtmlContent> HtmlToShortcodesAsync(this IOrchardHelper orchardHelper, string html)
     {

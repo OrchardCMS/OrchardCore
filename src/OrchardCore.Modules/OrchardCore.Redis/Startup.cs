@@ -34,7 +34,7 @@ namespace OrchardCore.Redis
         {
             try
             {
-                var configurationOptions = ConfigurationOptions.Parse(_configuration["OrchardCore.Redis:Configuration"]);
+                var configurationOptions = ConfigurationOptions.Parse(_configuration["OrchardCore_Redis:Configuration"]);
                 services.Configure<RedisOptions>(options => options.ConfigurationOptions = configurationOptions);
             }
             catch (Exception e)

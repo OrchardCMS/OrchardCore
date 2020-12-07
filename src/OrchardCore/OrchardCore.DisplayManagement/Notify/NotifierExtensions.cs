@@ -7,7 +7,8 @@ namespace OrchardCore.DisplayManagement.Notify
         /// <summary>
         /// Adds a new UI notification of type Information
         /// </summary>
-        /// <seealso cref="INotifier.Add()"/>
+        /// <seealso cref="INotifier.Add"/>
+        /// <param name="notifier">The <see cref="INotifier"/></param>
         /// <param name="message">A localized message to display</param>
         public static void Information(this INotifier notifier, LocalizedHtmlString message)
         {
@@ -17,7 +18,8 @@ namespace OrchardCore.DisplayManagement.Notify
         /// <summary>
         /// Adds a new UI notification of type Warning
         /// </summary>
-        /// <seealso cref="INotifier.Add()"/>
+        /// <seealso cref="INotifier.Add"/>
+        /// <param name="notifier">The <see cref="INotifier"/></param>
         /// <param name="message">A localized message to display</param>
         public static void Warning(this INotifier notifier, LocalizedHtmlString message)
         {
@@ -27,7 +29,8 @@ namespace OrchardCore.DisplayManagement.Notify
         /// <summary>
         /// Adds a new UI notification of type Error
         /// </summary>
-        /// <seealso cref="INotifier.Add()"/>
+        /// <seealso cref="INotifier.Add"/>
+        /// <param name="notifier">The <see cref="INotifier"/></param>
         /// <param name="message">A localized message to display</param>
         public static void Error(this INotifier notifier, LocalizedHtmlString message)
         {
@@ -37,7 +40,8 @@ namespace OrchardCore.DisplayManagement.Notify
         /// <summary>
         /// Adds a new UI notification of type Success
         /// </summary>
-        /// <seealso cref="INotifier.Add()"/>
+        /// <seealso cref="INotifier.Add"/>
+        /// <param name="notifier">The <see cref="INotifier"/></param>
         /// <param name="message">A localized message to display</param>
         public static void Success(this INotifier notifier, LocalizedHtmlString message)
         {

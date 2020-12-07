@@ -143,8 +143,9 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         replacement = head + "style";
       } else {
         var context = inner.mode.xmlCurrentContext && inner.mode.xmlCurrentContext(state);
-        if (!context || context.length && closingTagExists(cm, context, context[context.length - 1], pos)) return CodeMirror.Pass;
-        replacement = head + context[context.length - 1];
+        var top = context.length ? context[context.length - 1] : "";
+        if (!context || context.length && closingTagExists(cm, context, top, pos)) return CodeMirror.Pass;
+        replacement = head + top;
       }
 
       if (cm.getLine(pos.line).charAt(tok.end) != ">") replacement += ">";

@@ -1,15 +1,33 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using OrchardCore.Workflows.Http.Activities;
 using OrchardCore.Workflows.Http.Models;
+using OrchardCore.Workflows.Indexes;
 using OrchardCore.Workflows.Models;
 using OrchardCore.Workflows.Services;
+using YesSql;
 
 namespace OrchardCore.Workflows.Http.Services
 {
-    internal class WorkflowTypeRouteEntries : WorkflowRouteEntriesBase, IWorkflowTypeRouteEntries
+    internal class WorkflowTypeRouteEntries : WorkflowRouteEntries<WorkflowTypeRouteDocument>, IWorkflowTypeRouteEntries
     {
-        public static IEnumerable<WorkflowRoutesEntry> GetWorkflowTypeRoutesEntries(WorkflowType workflowType, IActivityLibrary activityLibrary)
+        protected override async Task<WorkflowTypeRouteDocument> CreateDocumentAsync()
+        {
+            var workflowTypeDictionary = (await Session.Query<WorkflowType, WorkflowTypeIndex>().ListAsync()).ToDictionary(x => x.WorkflowTypeId);
+
+            var workflowTypeRouteEntries =
+                from workflowType in workflowTypeDictionary.Values
+                from entry in GetWorkflowTypeRoutesEntries(workflowType, ActivityLibrary)
+                select entry;
+
+            var document = new WorkflowTypeRouteDocument();
+            AddEntries(document, workflowTypeRouteEntries);
+
+            return document;
+        }
+
+        internal static IEnumerable<WorkflowRoutesEntry> GetWorkflowTypeRoutesEntries(WorkflowType workflowType, IActivityLibrary activityLibrary)
         {
             return workflowType.Activities.Where(x => x.IsStart && x.Name == HttpRequestFilterEvent.EventName).Select(x =>
             {

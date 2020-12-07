@@ -14,6 +14,7 @@ public static class ListOrchardHelperExtensions
     /// <summary>
     /// Returns list count.
     /// </summary>
+    /// <param name="orchardHelper">The <see cref="IOrchardHelper"/>.</param>
     /// <param name="listContentItemId">The list content item id.</param>
     /// <param name="itemPredicate">The optional predicate applied to each item. By defult published items only.</param>
     /// <returns>A number of list items satisfying given predicate.</returns>
@@ -27,6 +28,7 @@ public static class ListOrchardHelperExtensions
     /// <summary>
     /// Returns list items.
     /// </summary>
+    /// <param name="orchardHelper">The <see cref="IOrchardHelper"/>.</param>
     /// <param name="listContentItemId">The list content item id.</param>
     /// <param name="itemPredicate">The optional predicate applied to each item. By defult published items only.</param>
     /// <returns>An enumerable of list items satisfying given predicate.</returns>

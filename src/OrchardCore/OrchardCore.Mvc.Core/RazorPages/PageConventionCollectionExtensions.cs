@@ -24,6 +24,7 @@ namespace Microsoft.AspNetCore.Mvc.ApplicationModels
         /// set of path based routes. Links generated for these pages will use the specified folder route.
         /// Note: Applied to all pages whose razor view file path contains an '/Admin/' segment
         /// or whose route model properties contains an 'Admin' key.
+        /// </summary>
         public static PageConventionCollection AddAdminAreaFolderRoute(this PageConventionCollection conventions,
             string areaName, string folderPath, string folderRoute)
         {

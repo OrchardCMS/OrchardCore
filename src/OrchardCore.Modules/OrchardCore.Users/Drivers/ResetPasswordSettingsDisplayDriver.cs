@@ -25,7 +25,7 @@ namespace OrchardCore.Users.Drivers
             _authorizationService = authorizationService;
         }
 
-        public override async Task<IDisplayResult> EditAsync(ResetPasswordSettings section, BuildEditorContext context)
+        public override async Task<IDisplayResult> EditAsync(ResetPasswordSettings settings, BuildEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
 
@@ -36,8 +36,8 @@ namespace OrchardCore.Users.Drivers
 
             return Initialize<ResetPasswordSettings>("ResetPasswordSettings_Edit", model =>
             {
-                model.AllowResetPassword = section.AllowResetPassword;
-                model.UseSiteTheme = section.UseSiteTheme;
+                model.AllowResetPassword = settings.AllowResetPassword;
+                model.UseSiteTheme = settings.UseSiteTheme;
             }).Location("Content:5").OnGroup(GroupId);
         }
 

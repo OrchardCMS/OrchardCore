@@ -11,7 +11,7 @@
 <script asp-name="trumbowyg-plugins" depends-on="admin" version="2" at="Foot"></script>
 <style asp-name="trumbowyg-plugins" version="2"></style>
 <script asp-name="trumbowyg-shortcodes" at="Foot"></script>
-@if(trumbowygSettings.InsertMediaWithUrl)
+@if (trumbowygSettings.InsertMediaWithUrl)
 {
 <script asp-src="~/OrchardCore.ContentFields/Scripts/trumbowyg.media.url.min.js" debug-src="~/OrchardCore.ContentFields/Scripts/trumbowyg.media.url.js" depends-on="trumbowyg" at="Foot"></script>
 }
@@ -53,8 +53,21 @@ else
     }
 }    
     $(function () {
-        var settings = @Html.Raw(trumbowygSettings.Options);
-        settings['lang'] = '@culture.TwoLetterISOLanguageName';
+        @if (!string.IsNullOrEmpty(trumbowygSettings.Options))
+        {
+            <text>
+            var settings = @Html.Raw(trumbowygSettings.Options);
+            settings['lang'] = '@culture.TwoLetterISOLanguageName';
+            </text>
+        }
+        else
+        {   
+            <text>
+            var settings = { 
+                lang: '@culture.TwoLetterISOLanguageName'
+            }
+            </text>
+        }
 
         $('#@Html.IdFor(m => m.Html)').trumbowyg(settings).on('tbwchange', function () {
             $(document).trigger('contentpreview:render');

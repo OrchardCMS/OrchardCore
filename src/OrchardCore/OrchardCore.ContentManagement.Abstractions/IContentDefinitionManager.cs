@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Primitives;
 using OrchardCore.ContentManagement.Metadata.Builders;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Utilities;
@@ -32,15 +31,9 @@ namespace OrchardCore.ContentManagement.Metadata
         void StorePartDefinition(ContentPartDefinition contentPartDefinition);
 
         /// <summary>
-        /// Returns a serial number representing the list of types and settings for the current tenant.
+        /// Returns an unique identifier that is updated when content definitions have changed.
         /// </summary>
-        /// <returns>
-        /// An <see cref="int"/> value that changes every time the list of types changes.
-        /// The implementation is efficient in order to be called frequently.
-        /// </returns>
-        Task<int> GetTypesHashAsync();
-
-        IChangeToken ChangeToken { get; }
+        Task<string> GetIdentifierAsync();
     }
 
     public static class ContentDefinitionManagerExtensions

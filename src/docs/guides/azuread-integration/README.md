@@ -38,6 +38,14 @@ Navigate to Token configuration and add the groups token as shown below.
 
 ![image](assets/add-groups-claim.jpg)
 
+On the same screen, click on `Add optional claim`, select `ID`, check `email` as shown below and then click Add:
+
+![image](assets/add-email-optional-claim.jpg)
+
+A popup may appear to authorize the call to the Graph API. Check `Turn on the Microsoft Graph email permission` as shown below and then click Add:
+
+![image](assets/add-email-optional-claim-popup.jpg)
+
 The last step is to copy Application Id and Tenant Id from Azure Portal
 
 ![image](assets/get-appid-tenantid-from-portal.jpg)
@@ -69,6 +77,7 @@ switch (context.loginProvider) {
     default:
         log("Warning", "Provider {loginProvider} was not handled", context.loginProvider);
     break;
+}
 ```
 
 also check the settings to disable asking user info on first registration

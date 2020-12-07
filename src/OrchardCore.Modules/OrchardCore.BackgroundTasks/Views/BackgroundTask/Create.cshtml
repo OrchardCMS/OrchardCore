@@ -1,6 +1,6 @@
 @model BackgroundTaskViewModel
 
-<h1>@RenderTitleSegments(T["Edit Task Settings"])</h1>
+<zone Name="Title"><h1>@RenderTitleSegments(T["Edit Task Settings"])</h1></zone>
 
 <div asp-validation-summary="ModelOnly"></div>
 <form asp-action="Create" method="post">
@@ -25,8 +25,8 @@
 
     <div class="form-group">
         <button id="use-default-schedule" class="btn btn-success">@T["Use Default"]</button>
-        <button class="btn btn-primary" type="submit">@T["Save"]</button>
-        <a class="btn btn-secondary" asp-route-action="Index">@T["Cancel"]</a>
+        <button class="btn btn-primary save" type="submit">@T["Save"]</button>
+        <a class="btn btn-secondary cancel" role="button" asp-route-action="Index">@T["Cancel"]</a>
     </div>
 </form>
 

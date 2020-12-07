@@ -1,6 +1,4 @@
 @model OrchardCore.Lists.ViewModels.ListPartViewModel
-@using OrchardCore.ContentManagement
-@using OrchardCore.ContentManagement.Metadata.Models;
 
 @inject OrchardCore.ContentManagement.Display.IContentItemDisplayManager ContentItemDisplayManager
 @{
@@ -23,26 +21,33 @@ else
     {
         var contentTypeDefinition = Model.ContainedContentTypeDefinitions.FirstOrDefault();
         <div class="row">
-            <div class="col form-group text-right">
-                <a class="btn btn-sm btn-success" asp-action="Create" asp-controller="Admin" asp-route-id="@contentTypeDefinition.Name" asp-route-area="OrchardCore.Contents" asp-route-ListPart.ContainerId="@Model.ListPart.ContentItem.ContentItemId" asp-route-ListPart.EnableOrdering="@Model.EnableOrdering" asp-route-returnUrl="@FullRequestPath">
-                    @T["Create {0}", contentTypeDefinition.DisplayName]
-                </a>
+            <div class="col form-group related">
+                <div class="float-right">
+                    <a class="btn btn-sm btn-primary" edit-for="@Model.ListPart.ContentItem" asp-route-returnUrl="@FullRequestPath">
+                        @T["Edit {0}", @Model.ListPart.ContentItem.DisplayText]
+                    </a>                
+                    <a class="btn btn-sm btn-success" asp-action="Create" asp-controller="Admin" asp-route-id="@contentTypeDefinition.Name" asp-route-area="OrchardCore.Contents" asp-route-ListPart.ContainerId="@Model.ListPart.ContentItem.ContentItemId" asp-route-ListPart.ContentType="@contentTypeDefinition.Name" asp-route-ListPart.EnableOrdering="@Model.EnableOrdering" asp-route-returnUrl="@FullRequestPath">
+                        @T["Create {0}", contentTypeDefinition.DisplayName]
+                    </a>
+                </div>
             </div>
         </div>
     }
     else
     {
         <div class="row">
-            <div class="col form-group text-right">
-                <div class="dropdown">
+            <div class="col form-group related">
+                <div class="float-right">
+                    <a class="btn btn-sm btn-primary" edit-for="@Model.ListPart.ContentItem" asp-route-returnUrl="@FullRequestPath">
+                        @T["Edit {0}", @Model.ListPart.ContentItem.DisplayText]
+                    </a>    
                     <a class="btn btn-sm btn-success dropdown-toggle" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         @T["Create"]
                     </a>
-
                     <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
                         @foreach (var containedContentTypeDefinition in Model.ContainedContentTypeDefinitions)
                         {
-                            <a class="dropdown-item" asp-action="Create" asp-controller="Admin" asp-route-id="@containedContentTypeDefinition.Name" asp-route-area="OrchardCore.Contents" asp-route-ListPart.ContainerId="@Model.ListPart.ContentItem.ContentItemId" asp-route-ListPart.EnableOrdering="@Model.EnableOrdering" asp-route-returnUrl="@FullRequestPath">
+                            <a class="dropdown-item" asp-action="Create" asp-controller="Admin" asp-route-id="@containedContentTypeDefinition.Name" asp-route-area="OrchardCore.Contents" asp-route-ListPart.ContainerId="@Model.ListPart.ContentItem.ContentItemId" asp-route-ListPart.ContentType="@containedContentTypeDefinition.Name" asp-route-ListPart.EnableOrdering="@Model.EnableOrdering" asp-route-returnUrl="@FullRequestPath">
                                 @containedContentTypeDefinition.DisplayName
                             </a>
                         }
