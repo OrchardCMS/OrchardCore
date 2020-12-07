@@ -31,8 +31,12 @@ namespace OrchardCore.Autoroute
                 .Column<bool>("Latest")
             );
 
-            // Return 4 to shortcut other migrations on new content definition schemas.
-            return 4;
+            SchemaBuilder.AlterIndexTable<AutoroutePartIndex>(table => table
+                .CreateIndex("IDX_AutoroutePartIndex_DocumentId", "DocumentId")
+            );
+
+            // Return 5 to shortcut other migrations on new content definition schemas.
+            return 5;
         }
 
         // Migrate PartSettings. This only needs to run on old content definition schemas.
@@ -41,8 +45,7 @@ namespace OrchardCore.Autoroute
         {
             _contentDefinitionManager.MigratePartSettings<AutoroutePart, AutoroutePartSettings>();
 
-            // Return 3 to shortcut the next migration that does nothing.
-            return 3;
+            return 2;
         }
 
         // This code can be removed in a later version.
@@ -67,6 +70,16 @@ namespace OrchardCore.Autoroute
             );
 
             return 4;
+        }
+
+        // This code can be removed in a later version.
+        public int UpdateFrom4()
+        {
+            SchemaBuilder.AlterIndexTable<AutoroutePartIndex>(table => table
+                .CreateIndex("IDX_AutoroutePartIndex_DocumentId", "DocumentId")
+            );
+
+            return 5;
         }
     }
 }
