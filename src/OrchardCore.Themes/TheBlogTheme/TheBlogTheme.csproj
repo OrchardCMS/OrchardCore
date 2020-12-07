@@ -3,6 +3,11 @@
   <PropertyGroup>
     <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
+
+    <!-- NuGet properties-->
+    <Title>The Blog Theme</Title>
+    <PackageTags>$(PackageTags) Theme</PackageTags>
+    <Description>Orchard Core CMS theme adapted for blogs.</Description>
   </PropertyGroup>
 
   <ItemGroup>

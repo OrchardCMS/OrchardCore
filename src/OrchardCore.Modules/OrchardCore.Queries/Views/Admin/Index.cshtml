@@ -4,7 +4,7 @@
     int endIndex = startIndex + Model.Queries.Count - 1;
 }
 
-<h1>@RenderTitleSegments(T["Queries"])</h1>
+<zone Name="Title"><h1>@RenderTitleSegments(T["Queries"])</h1></zone>
 
 <form asp-action="Index" method="post">
     <input asp-for="Options.BulkAction" type="hidden" />
@@ -73,7 +73,7 @@
         else
         {
             <li class="list-group-item">
-                <div class="alert alert-info mb-1" role="alert">
+                <div class="alert alert-info mb-0" role="alert">
                     @T["<strong>Nothing here!</strong> There are no queries for the moment."]
                 </div>
             </li>

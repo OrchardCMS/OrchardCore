@@ -66,7 +66,7 @@ namespace OrchardCore.AdminMenu.Controllers
 
             if (!string.IsNullOrWhiteSpace(options.Search))
             {
-                adminMenuList = adminMenuList.Where(dp => dp.Name.Contains(options.Search)).ToList();
+                adminMenuList = adminMenuList.Where(x => x.Name.Contains(options.Search)).ToList();
             }
 
             var count = adminMenuList.Count();
