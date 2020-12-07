@@ -47,7 +47,7 @@ using OrchardCore.Navigation;
 using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Sitemaps.Builders;
-using OrchardCore.Sitemaps.Cache;
+using OrchardCore.Sitemaps.Handlers;
 using OrchardCore.Sitemaps.Models;
 using OrchardCore.Sitemaps.Services;
 
@@ -104,11 +104,7 @@ namespace OrchardCore.Contents
 
             // FullTextAspect
             services.AddScoped<IContentTypeDefinitionDisplayDriver, FullTextAspectSettingsDisplayDriver>();
-            services.AddScoped<IContentHandler, FullTextAspectSettingsHandler>();
-
-            // Feeds
-            // TODO: Move to feature
-            services.AddScoped<IFeedItemBuilder, CommonFeedItemBuilder>();
+            services.AddScoped<IContentHandler, FullTextAspectContentHandler>();
 
             services.AddTagHelpers<ContentLinkTagHelper>();
             services.AddTagHelpers<ContentItemTagHelper>();
@@ -142,6 +138,9 @@ namespace OrchardCore.Contents
             services.AddLiquidFilter<ContentItemFilter>("content_item_id");
             services.AddLiquidFilter<DisplayTextFilter>("display_text");
             services.AddLiquidFilter<DisplayUrlFilter>("display_url");
+            services.AddLiquidFilter<FullTextFilter>("full_text");
+
+            services.AddScoped(typeof(IContentItemRecursionHelper<>), typeof(ContentItemRecursionHelper<>));
         }
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
@@ -278,12 +277,22 @@ namespace OrchardCore.Contents
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<ISitemapSourceBuilder, ContentTypesSitemapSourceBuilder>();
-            services.AddScoped<ISitemapSourceCacheManager, ContentTypesSitemapSourceCacheManager>();
+            services.AddScoped<ISitemapSourceUpdateHandler, ContentTypesSitemapSourceUpdateHandler>();
             services.AddScoped<ISitemapSourceModifiedDateProvider, ContentTypesSitemapSourceModifiedDateProvider>();
             services.AddScoped<IDisplayDriver<SitemapSource>, ContentTypesSitemapSourceDriver>();
             services.AddScoped<ISitemapSourceFactory, SitemapSourceFactory<ContentTypesSitemapSource>>();
             services.AddScoped<IContentItemsQueryProvider, DefaultContentItemsQueryProvider>();
-            services.AddScoped<IContentHandler, ContentTypesSitemapCacheHandler>();
+            services.AddScoped<IContentHandler, ContentTypesSitemapUpdateHandler>();
+        }
+    }
+
+    [RequireFeatures("OrchardCore.Feeds")]
+    public class FeedsStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            // Feeds
+            services.AddScoped<IFeedItemBuilder, CommonFeedItemBuilder>();
         }
     }
 }

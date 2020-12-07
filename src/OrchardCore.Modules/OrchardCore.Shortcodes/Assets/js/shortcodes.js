@@ -55,7 +55,7 @@ $(function () {
 var shortcodesApp;
 
 function initializeShortcodesApp(element) {
-    if (element) {
+    if (element && !shortcodesApp) {
         var elementId = element.id;
 
         shortcodesApp = new Vue({
@@ -115,8 +115,8 @@ function initializeShortcodesApp(element) {
                 isVisible(name) {
                     return this.filteredShortcodes.some(s => s.name === name);
                 },
-                insertShortcode(defaultValue) {
-                    this.defaultValue = defaultValue;
+                insertShortcode(event) {
+                    this.defaultValue =  event.target.dataset.defaultValue;
                     $(this.$el).modal('hide');
                     this.onClose(this.defaultValue);
                 }

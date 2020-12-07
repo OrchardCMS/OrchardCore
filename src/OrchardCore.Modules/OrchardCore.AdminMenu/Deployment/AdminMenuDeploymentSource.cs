@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Deployment;
+using OrchardCore.AdminMenu.Services;
 
 namespace OrchardCore.AdminMenu.Deployment
 {

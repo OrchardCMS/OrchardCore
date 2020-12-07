@@ -63,7 +63,10 @@ namespace OrchardCore.Shells.Database.Configuration
                 }
             });
 
-            builder.AddJsonStream(new MemoryStream(Encoding.UTF8.GetBytes(document.ShellsSettings.ToString(Formatting.None))));
+            if (document.ShellsSettings != null)
+            {
+                builder.AddJsonStream(new MemoryStream(Encoding.UTF8.GetBytes(document.ShellsSettings.ToString(Formatting.None))));
+            }
         }
 
         public async Task SaveAsync(string tenant, IDictionary<string, string> data)

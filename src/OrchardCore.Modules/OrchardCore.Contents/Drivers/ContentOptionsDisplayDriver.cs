@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
-using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Contents.ViewModels;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 
@@ -46,15 +46,15 @@ namespace OrchardCore.Contents.Drivers
 
         private static void BuildContentOptionsViewModel(ContentOptionsViewModel m, ContentOptionsViewModel model)
         {
-                m.ContentTypeOptions = model.ContentTypeOptions;
-                m.ContentStatuses = model.ContentStatuses;
-                m.ContentSorts = model.ContentSorts;
-                m.ContentsBulkAction = model.ContentsBulkAction;
-                m.CreatableTypes = model.CreatableTypes;
-                m.StartIndex = model.StartIndex;
-                m.EndIndex = model.EndIndex;
-                m.ContentItemsCount = model.ContentItemsCount;
-                m.TotalItemCount = model.TotalItemCount;
+            m.ContentTypeOptions = model.ContentTypeOptions;
+            m.ContentStatuses = model.ContentStatuses;
+            m.ContentSorts = model.ContentSorts;
+            m.ContentsBulkAction = model.ContentsBulkAction;
+            m.CreatableTypes = model.CreatableTypes;
+            m.StartIndex = model.StartIndex;
+            m.EndIndex = model.EndIndex;
+            m.ContentItemsCount = model.ContentItemsCount;
+            m.TotalItemCount = model.TotalItemCount;
         }
     }
 }

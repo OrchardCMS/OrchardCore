@@ -35,10 +35,10 @@ namespace OrchardCore.Lucene
                             .Permission(Permissions.ManageIndexes)
                             .LocalNav()))
                     .Add(S["Settings"], settings => settings
-                        .Add(S["Search"],S["Search"].PrefixPosition(), entry => entry
-                            .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = LuceneSettingsDisplayDriver.GroupId})
-                            .Permission(Permissions.ManageIndexes)
-                            .LocalNav()
+                        .Add(S["Search"], S["Search"].PrefixPosition(), entry => entry
+                             .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = LuceneSettingsDisplayDriver.GroupId })
+                             .Permission(Permissions.ManageIndexes)
+                             .LocalNav()
                         )));
 
             return Task.CompletedTask;

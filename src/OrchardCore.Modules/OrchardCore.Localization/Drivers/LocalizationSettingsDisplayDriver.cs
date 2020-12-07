@@ -17,9 +17,9 @@ using OrchardCore.Localization.ViewModels;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Localization.Drivers
-{
+{    
     /// <summary>
-    /// Represents a <see cref="DisplayDriver"/> for the localization settings section in the admin site.
+    /// Represents a <see cref="SectionDisplayDriver{TModel,TSection}"/> for the localization settings section in the admin site.
     /// </summary>
     public class LocalizationSettingsDisplayDriver : SectionDisplayDriver<ISite, LocalizationSettings>
     {
@@ -32,14 +32,6 @@ namespace OrchardCore.Localization.Drivers
         private readonly IHtmlLocalizer H;
         private readonly IStringLocalizer S;
 
-        /// <summary>
-        /// Creates a new instance of <see cref="LocalizationSettingsDisplayDriver"/>.
-        /// </summary>
-        /// <param name="notifier">The <see cref="INotifier"/>.</param>
-        /// <param name="shellHost">The <see cref="IShellHost"/>.</param>
-        /// <param name="shellSettings">The <see cref="ShellSettings"/>.</param>
-        /// <param name="h">The <see cref="IHtmlLocalizer"/>.</param>
-        /// <param name="s">The <see cref="IStringLocalizer"/>.</param>
         public LocalizationSettingsDisplayDriver(
             INotifier notifier,
             IShellHost shellHost,
@@ -60,7 +52,7 @@ namespace OrchardCore.Localization.Drivers
         }
 
         /// <inheritdocs />
-        public override async Task<IDisplayResult> EditAsync(LocalizationSettings section, BuildEditorContext context)
+        public override async Task<IDisplayResult> EditAsync(LocalizationSettings settings, BuildEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
 
@@ -76,9 +68,9 @@ namespace OrchardCore.Localization.Drivers
                         {
                             return new CultureEntry
                             {
-                                Supported = section.SupportedCultures.Contains(cultureInfo.Name, StringComparer.OrdinalIgnoreCase),
+                                Supported = settings.SupportedCultures.Contains(cultureInfo.Name, StringComparer.OrdinalIgnoreCase),
                                 CultureInfo = cultureInfo,
-                                IsDefault = String.Equals(section.DefaultCulture, cultureInfo.Name, StringComparison.OrdinalIgnoreCase)
+                                IsDefault = String.Equals(settings.DefaultCulture, cultureInfo.Name, StringComparison.OrdinalIgnoreCase)
                             };
                         }).ToArray();
 

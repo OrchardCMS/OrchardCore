@@ -52,6 +52,12 @@ namespace OrchardCore.Themes.Controllers
         public async Task<ActionResult> Index()
         {
             var installThemes = await _authorizationService.AuthorizeAsync(User, StandardPermissions.SiteOwner); // only site owners
+
+            if (!installThemes)
+            {
+                return Forbid();
+            }
+
             //&& _shellSettings.Name == ShellSettings.; // of the default tenant
             //&& _featureManager.GetEnabledFeatures().FirstOrDefault(f => f.Id == "PackagingServices") != null
 
@@ -68,7 +74,7 @@ namespace OrchardCore.Themes.Controllers
                 var tags = extensionDescriptor.Manifest.Tags.ToArray();
                 var isHidden = tags.Any(x => string.Equals(x, "hidden", StringComparison.OrdinalIgnoreCase));
 
-                /// is the theme allowed for this tenant ?
+                // Is the theme allowed for this tenant?
                 // allowed = _shellSettings.Themes.Length == 0 || _shellSettings.Themes.Contains(extensionDescriptor.Id);
 
                 return !isHidden;

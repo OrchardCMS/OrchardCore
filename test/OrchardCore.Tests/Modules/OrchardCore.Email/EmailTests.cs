@@ -58,7 +58,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Email
         }
 
         [Fact]
-        public async Task SendEmail_UsesCustomAutherAndSender()
+        public async Task SendEmail_UsesCustomAuthorAndSender()
         {
             var message = new MailMessage
             {
@@ -74,19 +74,52 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Email
         }
 
         [Fact]
-        public async Task SendEmail_UsesReplyTo()
+        public async Task SendEmail_UsesMultipleAuthors()
         {
             var message = new MailMessage
             {
                 To = "info@oc.com",
                 Subject = "Test",
                 Body = "Test Message",
-                From = "sebastienros@gmail.com",
-                ReplyTo = "sebastienros@gmail.com",
+                From = "sebastienros@gmail.com,hishamco_2007@hotmail.com"
+            };
+            var content = await SendEmailAsync("Hisham Bin Ateya <hishamco_2007@hotmail.com>", message);
+
+            Assert.Contains("From: sebastienros@gmail.com, hishamco_2007@hotmail.com", content);
+            Assert.Contains("Sender: Hisham Bin Ateya <hishamco_2007@hotmail.com>", content);
+        }
+
+        [Fact]
+        public async Task SendEmail_UsesReplyTo()
+        {
+            var message = new MailMessage
+            {
+                To = "Hisham Bin Ateya <hishamco_2007@hotmail.com>",
+                Subject = "Test",
+                Body = "Test Message",
+                From = "Hisham Bin Ateya <hishamco_2007@hotmail.com>",
+                ReplyTo = "Hisham Bin Ateya <hishamco_2007@yahoo.com>",
             };
             var content = await SendEmailAsync("Your Name <youraddress@host.com>", message);
 
-            Assert.Contains("From: sebastienros@gmail.com", content);
+            Assert.Contains("From: Hisham Bin Ateya <hishamco_2007@hotmail.com>", content);
+            Assert.Contains("Reply-To: Hisham Bin Ateya <hishamco_2007@yahoo.com>", content);
+        }
+
+        [Fact]
+        public async Task ReplyTo_ShouldHaveAuthors_IfNotSet()
+        {
+            var message = new MailMessage
+            {
+                To = "info@oc.com",
+                Subject = "Test",
+                Body = "Test Message",
+                From = "Sebastien Ros <sebastienros@gmail.com>"
+            };
+            var content = await SendEmailAsync("Your Name <youraddress@host.com>", message);
+
+            Assert.Contains("From: Sebastien Ros <sebastienros@gmail.com>", content);
+            Assert.Contains("Reply-To: Sebastien Ros <sebastienros@gmail.com>", content);
         }
 
         [Theory]

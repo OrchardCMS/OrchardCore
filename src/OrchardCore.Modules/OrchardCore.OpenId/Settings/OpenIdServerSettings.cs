@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
 using Microsoft.AspNetCore.Http;
 
@@ -26,9 +25,14 @@ namespace OrchardCore.OpenId.Settings
 
         public PathString UserinfoEndpointPath { get; set; }
 
-        public ISet<string> GrantTypes { get; } = new HashSet<string>(StringComparer.Ordinal);
+        public bool AllowPasswordFlow { get; set; }
+        public bool AllowClientCredentialsFlow { get; set; }
+        public bool AllowAuthorizationCodeFlow { get; set; }
+        public bool AllowRefreshTokenFlow { get; set; }
+        public bool AllowHybridFlow { get; set; }
+        public bool AllowImplicitFlow { get; set; }
 
-        public bool UseRollingRefreshTokens { get; set; }
+        public bool DisableRollingRefreshTokens { get; set; }
 
         public bool UseReferenceAccessTokens { get; set; }
 
