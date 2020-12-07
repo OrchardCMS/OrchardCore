@@ -1,6 +1,6 @@
 # Design Features
 
-Features available for Theming
+Features available for Theming.
 
 ## Theming
 
@@ -31,8 +31,6 @@ Provides a part allowing content items to render Widgets in theme zones.
 ### Layers
 
 Enables users to render Widgets across pages of the site based on conditions.
-
-### Scripting
 
 ### Zones
 

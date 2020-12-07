@@ -1,12 +1,6 @@
 # Content Features
 
-Features available for Content editing
-
-## Content Types 
-
-## File based Content Definition
-
-Stores Content Definition in a local file.
+Features available for Content editing.
 
 ## Content Types
 
@@ -18,9 +12,10 @@ Adds common content fields to be used with your custom types.
 
 ## Content Picker
 
-## Content Status
 
-## Versionable Content
+## File based Content Definition
+
+Stores Content Definition in a local file.
 
 ## Wysiwyg HTML editor
 
@@ -38,19 +33,11 @@ Allows content items to have custom logical identifier.
 
 Provides a way to set the route corresponding to the homepage of the site.
 
-## Publish Later
-
 ## Lists
 
 Introduces a preconfigured container-enabled content type.
 
-## RSS Feeds
-
-Adds feeds capabilities.
-
-## XmlRpc/MetaWeblog API
-
-The remote publishing feature enables creation of contents from client applications such as Open Live Writer.
+## Publish Later
 
 ## Taxonomies
 
@@ -63,29 +50,3 @@ Provides taxonomy filters in the contents list.
 ## Forms
 
 Provides widgets and activities to implement forms.
-
-## ReCaptcha
-
-Provides core ReCaptcha functionality.
-
-### ReCaptcha Users
-
-Provides ReCaptcha functionality to harness login, register, forgot password and forms against robots.
-
-## Indexing/Search
-
-Provides index management for content items.
-
-### Lucene
-
-Creates Lucene indexes to support search scenarios.
-
-### Full Text
-
-## Queries
-
-Provides querying capabilities.
-
-### SQL Queries
-
-Introduces a way to create custom Queries in pure SQL.

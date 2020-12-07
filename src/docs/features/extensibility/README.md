@@ -1,6 +1,6 @@
 # Extensibility Features
 
-Features available for extensibility
+Features available for extensibility.
 
 ## Code templates
 

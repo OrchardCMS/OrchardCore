@@ -12,8 +12,6 @@ Provides a way to manage tenants from the admin.
 
 ## Document database
 
-### SQL Provider independent
-
 ## HTTPS redirection
 
 This module will ensure HTTPS is used when accessing the website.
@@ -59,3 +57,19 @@ Adds the Mini Profiler widget to pages.
 ## Reverse Proxy
 
 Enables configuration of hosting scenarios with a reverse proxy.
+
+## ReCaptcha
+
+Provides core ReCaptcha functionality.
+
+### ReCaptcha Users
+
+Provides ReCaptcha functionality to harness login, register, forgot password and forms against robots.
+
+## RSS Feeds
+
+Adds feeds capabilities.
+
+## XmlRpc/MetaWeblog API
+
+The remote publishing feature enables creation of contents from client applications such as Open Live Writer.
