@@ -40,8 +40,8 @@ namespace OrchardCore.Workflows.Http.Drivers
             {
                 model.WorkflowTypeId = secret.WorkflowTypeId;
                 model.TokenLifeSpan = secret.TokenLifeSpan;
-                model.WorkflowTypes = (await _workflowTypeStore.ListAsync())
-                    .Where(w => w.Activities.Any(a => String.Equals(a.Name, nameof(HttpRequestEvent), StringComparison.OrdinalIgnoreCase)))
+
+                model.WorkflowTypes = (await _workflowTypeStore.GetByStartActivityAsync(nameof(HttpRequestEvent)))
                     .Select(s => new SelectListItem() { Text = s.Name, Value = s.WorkflowTypeId }).ToList();
 
                 model.Context = context;
