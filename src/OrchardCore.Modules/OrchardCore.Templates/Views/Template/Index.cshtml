@@ -6,11 +6,11 @@
 
 @if (Model.Options.AdminTemplates)
 {
-    <h1>@RenderTitleSegments(T["Admin Templates"])</h1>
+    <zone Name="Title"><h1>@RenderTitleSegments(T["Admin Templates"])</h1></zone>
 }
 else
 {
-    <h1>@RenderTitleSegments(T["Templates"])</h1>
+    <zone Name="Title"><h1>@RenderTitleSegments(T["Templates"])</h1></zone>
 }
 
 @* the form is necessary to generate and antiforgery token for the delete action *@
@@ -38,7 +38,7 @@ else
             </div>
         </div>
     </div>
-    <ul class="list-group with-checkboxes">
+    <ul class="list-group with-checkbox">
         @if (Model.Templates.Any())
         {
             <li class="list-group-item bg-primary">
@@ -90,7 +90,7 @@ else
         else
         {
             <li class="list-group-item">
-                <div class="alert alert-info mb-1" role="alert">
+                <div class="alert alert-info mb-0" role="alert">
                     @T["<strong>Nothing here!</strong> There are no templates for the moment."]
                 </div>
             </li>

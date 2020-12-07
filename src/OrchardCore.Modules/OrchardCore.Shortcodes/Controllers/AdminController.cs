@@ -69,7 +69,7 @@ namespace OrchardCore.Shortcodes.Controllers
 
             if (!string.IsNullOrWhiteSpace(options.Search))
             {
-                shortcodeTemplates = shortcodeTemplates.Where(smp => smp.Key.Contains(options.Search)).ToList();
+                shortcodeTemplates = shortcodeTemplates.Where(x => x.Key.Contains(options.Search)).ToList();
             }
 
             var count = shortcodeTemplates.Count;

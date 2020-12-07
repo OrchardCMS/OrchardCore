@@ -5,7 +5,7 @@
 }
 <script asp-name="bootstrap-select" depends-on="admin" at="Foot"></script>
 
-<h1>@RenderTitleSegments(T["Deployment Plans"])</h1>
+<zone Name="Title"><h1>@RenderTitleSegments(T["Deployment Plans"])</h1></zone>
 
 <form asp-action="Index" method="post">
     <input type="submit" name="submit.Filter" id="submitFilter" class="d-none" />
@@ -80,7 +80,7 @@
         else
         {
             <li class="list-group-item">
-                <div class="alert alert-info mb-1" role="alert">
+                <div class="alert alert-info mb-0" role="alert">
                     @T["<strong>Nothing here!</strong> There are no deployment plans for the moment."]
                 </div>
             </li>

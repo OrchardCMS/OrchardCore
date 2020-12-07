@@ -1,7 +1,8 @@
 @model WorkflowTypeViewModel
 @using OrchardCore.Workflows.ViewModels;
 
-<h1>@RenderTitleSegments(Model.WorkflowType.Name)</h1>
+<zone Name="Title"><h1>@RenderTitleSegments(Model.WorkflowType.Name)</h1></zone>
+
 <zone name="Breadcrumbs">
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">

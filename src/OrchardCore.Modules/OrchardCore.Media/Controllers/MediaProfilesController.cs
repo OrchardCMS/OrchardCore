@@ -40,8 +40,8 @@ namespace OrchardCore.Media.Controllers
             ISiteService siteService,
             INotifier notifier,
             IShapeFactory shapeFactory,
-            IStringLocalizer<AdminController> stringLocalizer,
-            IHtmlLocalizer<AdminController> htmlLocalizer
+            IStringLocalizer<MediaProfilesController> stringLocalizer,
+            IHtmlLocalizer<MediaProfilesController> htmlLocalizer
             )
         {
             _authorizationService = authorizationService;
@@ -69,7 +69,7 @@ namespace OrchardCore.Media.Controllers
 
             if (!string.IsNullOrWhiteSpace(options.Search))
             {
-                mediaProfiles = mediaProfiles.Where(dp => dp.Key.Contains(options.Search)).ToList();
+                mediaProfiles = mediaProfiles.Where(x => x.Key.Contains(options.Search)).ToList();
             }
 
             var count = mediaProfiles.Count;
