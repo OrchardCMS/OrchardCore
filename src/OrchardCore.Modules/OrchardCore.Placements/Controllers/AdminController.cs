@@ -176,6 +176,9 @@ namespace OrchardCore.Placements.Controllers
             {
                 IEnumerable<PlacementNode> placementNodes = JsonConvert.DeserializeObject<PlacementNode[]>(viewModel.Nodes) ?? new PlacementNode[0];
 
+                // Remove empty nodes
+                placementNodes = placementNodes.Where(node => !IsEmpty(node));
+
                 if (placementNodes.Any())
                 {
                     // Save
@@ -287,6 +290,15 @@ namespace OrchardCore.Placements.Controllers
                     (string.IsNullOrEmpty(differentiator) || node.Differentiator == differentiator));
             }
         }
+
+        private static bool IsEmpty(PlacementNode node)
+        {
+            return string.IsNullOrEmpty(node.Location)
+                && string.IsNullOrEmpty(node.ShapeType)
+                && (node.Alternates == null || node.Alternates.Length == 0)
+                && (node.Wrappers == null || node.Wrappers.Length == 0);
+        }
+
 
         private static bool FilterEquals(JToken token, string value)
         {
