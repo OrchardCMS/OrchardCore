@@ -7,7 +7,7 @@
     var eventName = eventDescriptor.LocalizedName;
 }
 
-<h1>@RenderTitleSegments(T["{0} {1} Audit Trail Event", category, eventName])</h1>
+<zone name="Title"><h1>@RenderTitleSegments(T["{0} {1} Audit Trail Event", category, eventName])</h1></zone>
 
 <div>
     @T["Event: <strong>{0}</strong>", eventName]
