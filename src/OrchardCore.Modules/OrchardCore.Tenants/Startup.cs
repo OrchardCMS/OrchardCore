@@ -6,6 +6,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
 using OrchardCore.Admin;
+using OrchardCore.Admin.Models;
+using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Distributed;
 using OrchardCore.Modules;
@@ -15,6 +17,7 @@ using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Setup;
 using OrchardCore.Tenants.Controllers;
+using OrchardCore.Tenants.Drivers;
 using OrchardCore.Tenants.Services;
 
 namespace OrchardCore.Tenants
@@ -33,6 +36,8 @@ namespace OrchardCore.Tenants
             services.AddTransient<INavigationProvider, AdminMenu>();
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddSetup();
+
+            services.AddScoped<IDisplayDriver<AdminDashboardItem>, AdminDashboardItemTenantsDriver>();
         }
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

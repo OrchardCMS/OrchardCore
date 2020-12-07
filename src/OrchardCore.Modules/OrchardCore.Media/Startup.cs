@@ -11,6 +11,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
+using OrchardCore.Admin.Models;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Handlers;
@@ -143,6 +144,8 @@ namespace OrchardCore.Media
             services.AddScoped<IContentHandler, AttachedMediaFieldContentHandler>();
             services.AddScoped<IModularTenantEvents, TempDirCleanerService>();
             services.AddScoped<IDataMigration, Migrations>();
+
+            services.AddScoped<IDisplayDriver<AdminDashboardItem>, AdminDashboardItemMediaDriver>();
 
             services.AddRecipeExecutionStep<MediaStep>();
 

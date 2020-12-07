@@ -132,7 +132,7 @@ namespace OrchardCore.Contents
             services.AddScoped<IDisplayManager<ContentOptionsViewModel>, DisplayManager<ContentOptionsViewModel>>();
             services.AddScoped<IDisplayDriver<ContentOptionsViewModel>, ContentOptionsDisplayDriver>();
 
-            services.AddScoped<IDisplayDriver<AdminDashboardItem>, ContentsAdminDashboardItemDriver>();
+            services.AddScoped<IDisplayDriver<AdminDashboardItem>, AdminDashboardItemContentsDriver>();
 
             // Liquid
             services.AddScoped<ILiquidTemplateEventHandler, ContentLiquidTemplateEventHandler>();

@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
+using OrchardCore.Admin.Models;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Handlers;
@@ -61,6 +62,8 @@ namespace OrchardCore.Layers
             services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AllLayersDeploymentStep>());
             services.AddScoped<IDisplayDriver<DeploymentStep>, AllLayersDeploymentStepDriver>();
             services.AddSingleton<IGlobalMethodProvider, DefaultLayersMethodProvider>();
+
+            services.AddScoped<IDisplayDriver<AdminDashboardItem>, AdminDashboardItemLayersDriver>();
         }
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)

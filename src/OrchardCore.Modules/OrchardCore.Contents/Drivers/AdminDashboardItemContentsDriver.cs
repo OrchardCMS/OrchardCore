@@ -4,7 +4,7 @@ using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.Contents.Drivers
 {
-    public class ContentsAdminDashboardItemDriver : DisplayDriver<AdminDashboardItem>
+    public class AdminDashboardItemContentsDriver : DisplayDriver<AdminDashboardItem>
     {
         public override IDisplayResult Display(AdminDashboardItem model)
         {

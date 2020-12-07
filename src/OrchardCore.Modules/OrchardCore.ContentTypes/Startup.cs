@@ -4,8 +4,10 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
+using OrchardCore.Admin.Models;
 using OrchardCore.ContentTypes.Controllers;
 using OrchardCore.ContentTypes.Deployment;
+using OrchardCore.ContentTypes.Drivers;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.ContentTypes.RecipeSteps;
 using OrchardCore.ContentTypes.Services;
@@ -41,6 +43,8 @@ namespace OrchardCore.ContentTypes
             services.AddScoped<IContentTypeDefinitionDisplayDriver, ContentTypeSettingsDisplayDriver>();
             services.AddScoped<IContentTypeDefinitionDisplayDriver, DefaultContentTypeDisplayDriver>();
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, ContentTypePartSettingsDisplayDriver>();
+
+            services.AddScoped<IDisplayDriver<AdminDashboardItem>, AdminDashboardItemContentTypesDriver>();
 
             // TODO: Put in its own feature to be able to execute this recipe without having to enable
             // Content Types management UI
