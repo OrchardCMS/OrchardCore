@@ -41,12 +41,8 @@ namespace OrchardCore.AuditTrail.Handlers
         }
 
 
-        public override Task UpdatedAsync(UpdateContentContext context) =>
-            // The Document.Id of the child content items will always be 0. We don't need to log the children.
-            // In this case we can prevent to log the items inside the FlowPart, BagPart, MenuItemLink, etc.
-            context.ContentItem.Id != 0 ?
-                RecordAuditTrailEventAsync(ContentAuditTrailEventProvider.Saved, context.ContentItem) :
-                Task.CompletedTask;
+        public override Task DraftSavedAsync(SaveDraftContentContext context) =>
+            RecordAuditTrailEventAsync(ContentAuditTrailEventProvider.Saved, context.ContentItem);
 
         public override Task CreatedAsync(CreateContentContext context)
         {

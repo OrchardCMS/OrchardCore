@@ -103,8 +103,7 @@ namespace OrchardCore.AuditTrail.Services
             Filters filters = null,
             AuditTrailOrderBy orderBy = AuditTrailOrderBy.DateDescending)
         {
-            var session = _session.Store.CreateSession(System.Data.IsolationLevel.ReadUncommitted);
-            var query = session.Query<AuditTrailEvent>();
+            var query = _session.Query<AuditTrailEvent>();
 
             if (filters != null)
             {

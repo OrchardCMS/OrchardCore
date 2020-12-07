@@ -127,7 +127,7 @@ namespace OrchardCore.AuditTrail.Controllers
             contentItemToRestore.Latest = true;
             await _contentManager.CreateAsync(contentItemToRestore, VersionOptions.Draft);
 
-            _notifier.Information(H["{0} has been restored.", contentItemToRestore.DisplayText]);
+            _notifier.Success(H["{0} has been restored.", contentItemToRestore.DisplayText]);
 
             return RedirectToAction(nameof(AdminController.Index), "Admin");
         }

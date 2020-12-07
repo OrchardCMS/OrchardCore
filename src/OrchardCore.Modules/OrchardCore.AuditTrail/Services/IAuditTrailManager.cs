@@ -36,8 +36,9 @@ namespace OrchardCore.AuditTrail.Services
         /// <summary>
         /// Gets a single event from the audit trail by the event filter data.
         /// </summary>
+        /// <param name="auditTrailEventId">The event ID.</param>
         /// <returns>A single event.</returns>
-        Task<AuditTrailEvent> GetAuditTrailEventAsync(string eventFilterData);
+        Task<AuditTrailEvent> GetAuditTrailEventAsync(string auditTrailEventId);
 
         /// <summary>
         /// Trims the audit trail by deleting all events older than the specified retention period.
