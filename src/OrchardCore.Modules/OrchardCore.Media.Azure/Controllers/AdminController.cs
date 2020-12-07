@@ -1,3 +1,5 @@
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using OrchardCore.Media.Azure.ViewModels;
@@ -8,15 +10,24 @@ namespace OrchardCore.Media.Azure
     [Feature("OrchardCore.Media.Azure.Storage")]
     public class AdminController : Controller
     {
+        private readonly IAuthorizationService _authorizationService;
         private readonly MediaBlobStorageOptions _options;
 
-        public AdminController(IOptions<MediaBlobStorageOptions> options)
+        public AdminController(
+            IAuthorizationService authorizationService,
+            IOptions<MediaBlobStorageOptions> options)
         {
+            _authorizationService = authorizationService;
             _options = options.Value;
         }
 
-        public IActionResult Options()
+        public async Task<IActionResult> Options()
         {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ViewAzureMediaOptions))
+            {
+                return Forbid();
+            }
+
             var model = new OptionsViewModel
             {
                 CreateContainer = _options.CreateContainer,

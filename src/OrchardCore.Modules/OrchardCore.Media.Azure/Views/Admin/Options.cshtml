@@ -36,7 +36,7 @@
 
 <div class="form-group">      
     <div class="custom-control custom-checkbox">
-        <input type="checkbox" class="custom-control-input" asp-for="CreateContainer" checked="@Model.CreateContainer" />
+        <input type="checkbox" class="custom-control-input" asp-for="CreateContainer" checked="@Model.CreateContainer" disabled />
         <label class="custom-control-label" asp-for="CreateContainer">@T["Create Container"]</label>
         <span class="hint">@T["Whether a blob container is created on startup if it does not exist."]</span>
     </div>

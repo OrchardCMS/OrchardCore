@@ -443,8 +443,13 @@ namespace OrchardCore.Media.Controllers
             return View();
         }
 
-        public IActionResult Options()
+        public async Task<IActionResult> Options()
         {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMedia))
+            {
+                return Forbid();
+            }
+
             return View(_mediaOptions);
         }
     }
