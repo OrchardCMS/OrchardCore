@@ -2,6 +2,19 @@
 
   <PropertyGroup>
     <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
+    <!-- NuGet properties-->
+    <Title>Target for Modular OrchardCore CMS Application</Title>
+    <Description>$(OCCMSDescription)
+    
+    Converts the application into a modular OrchardCore CMS application with following themes.
+    
+    - TheAdmin Theme
+    - SafeMode Theme
+    - TheAgency Theme
+    - TheBlog Theme
+    - TheComingSoon Theme
+    - TheTheme theme</Description>
+    <PackageTags>$(PackageTags) OrchardCoreCMS CMS</PackageTags>
   </PropertyGroup>
 
   <!--
