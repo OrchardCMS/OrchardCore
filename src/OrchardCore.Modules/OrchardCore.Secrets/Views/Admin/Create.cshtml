@@ -1,6 +1,6 @@
 @model SecretBindingViewModel
 
-<h1>@RenderTitleSegments(T["Create Secret"])</h1>
+<zone Name="Title">@RenderTitleSegments(T["Create Secret"])</h1></zone>
 
 <div asp-validation-summary="All"></div>
 <form asp-action="Create" method="post">

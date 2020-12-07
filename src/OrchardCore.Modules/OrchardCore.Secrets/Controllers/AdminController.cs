@@ -4,11 +4,13 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Navigation;
+using OrchardCore.Routing;
 using OrchardCore.Settings;
 using OrchardCore.Secrets.ViewModels;
 using System.Collections.Generic;
@@ -54,7 +56,7 @@ namespace OrchardCore.Secrets.Controllers
             H = htmlLocalizer;
         }
 
-        public async Task<IActionResult> Index(PagerParameters pagerParameters)
+        public async Task<IActionResult> Index(ContentOptions options, PagerParameters pagerParameters)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSecrets))
             {
@@ -63,13 +65,20 @@ namespace OrchardCore.Secrets.Controllers
 
             var siteSettings = await _siteService.GetSiteSettingsAsync();
             var pager = new Pager(pagerParameters, siteSettings.PageSize);
-            var secretBindings = await _secretCoordinator.GetSecretBindingsAsync();
+            var secretBindings = (await _secretCoordinator.GetSecretBindingsAsync()).ToList();
 
-            var bindings = secretBindings.OrderBy(x => x.Key)
+            if (!string.IsNullOrWhiteSpace(options.Search))
+            {
+                secretBindings = secretBindings.Where(x => x.Key.Contains(options.Search)).ToList();
+            }
+
+            var count = secretBindings.Count;
+
+            secretBindings = secretBindings.OrderBy(x => x.Key)
                 .Skip(pager.GetStartIndex())
-                .Take(pager.PageSize);
+                .Take(pager.PageSize).ToList();
 
-            var pagerShape = (await New.Pager(pager)).TotalItemCount(secretBindings.Count());
+            var pagerShape = (await New.Pager(pager)).TotalItemCount(count);
 
             var thumbnails = new Dictionary<string, dynamic>();
             foreach (var factory in _factories)
@@ -81,7 +90,7 @@ namespace OrchardCore.Secrets.Controllers
             }
 
             var bindingEntries = new List<SecretBindingEntry>();
-            foreach (var binding in bindings)
+            foreach (var binding in secretBindings)
             {
                 var secret = _factories.FirstOrDefault(x => x.Name == binding.Value.Type)?.Create();
                 secret = await _secretCoordinator.GetSecretAsync(binding.Key, secret.GetType());
@@ -102,11 +111,48 @@ namespace OrchardCore.Secrets.Controllers
             var model = new SecretBindingIndexViewModel
             {
                 SecretBindings = bindingEntries,
-                Thumbnails = thumbnails,
+                Thumbnails = thumbnails,                
+                Options = options,
                 Pager = pagerShape
             };
 
+            model.Options.ContentsBulkAction = new List<SelectListItem>() {
+                new SelectListItem() { Text = S["Delete"], Value = nameof(ContentsBulkAction.Remove) }
+            };
+
             return View("Index", model);
+        }
+
+        [HttpPost, ActionName("Index")]
+        [FormValueRequired("submit.BulkAction")]
+        public async Task<ActionResult> IndexPost(ContentOptions options, IEnumerable<string> itemIds)
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSecrets))
+            {
+                return Forbid();
+            }
+
+            if (itemIds?.Count() > 0)
+            {
+                var secretBindings = await _secretCoordinator.GetSecretBindingsAsync();
+                var checkedSecretBindings = secretBindings.Where(x => itemIds.Contains(x.Key));
+                switch (options.BulkAction)
+                {
+                    case ContentsBulkAction.None:
+                        break;
+                    case ContentsBulkAction.Remove:
+                        foreach (var binding in checkedSecretBindings)
+                        {
+                            await _secretCoordinator.RemoveSecretAsync(binding.Key, binding.Value.Store);
+                        }
+                        _notifier.Success(H["Secrets successfully removed."]);
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            }
+
+            return RedirectToAction("Index");
         }
 
         public async Task<IActionResult> Create(string type)
