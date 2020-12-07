@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using OrchardCore.Setup.Events;
 
@@ -26,7 +27,8 @@ namespace OrchardCore.Settings.Services
             string dbConnectionString,
             string dbTablePrefix,
             string siteTimeZone,
-            Action<string, string> reportError
+            Action<string, string> reportError,
+            IDictionary<string, string> properties
             )
         {
             // Updating site settings

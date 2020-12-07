@@ -202,7 +202,8 @@ namespace OrchardCore.Setup.Services
                     context.AdminPassword,
                     context.DatabaseProvider,
                     context.DatabaseConnectionString,
-                    context.DatabaseTablePrefix
+                    context.DatabaseTablePrefix,
+                    Properties=context.Properties
                 },
                 _applicationLifetime.ApplicationStopping);
             }
@@ -229,7 +230,8 @@ namespace OrchardCore.Setup.Services
                     context.DatabaseConnectionString,
                     context.DatabaseTablePrefix,
                     context.SiteTimeZone,
-                    reportError
+                    reportError,
+                    context.Properties
                 ), context, logger);
             });
 

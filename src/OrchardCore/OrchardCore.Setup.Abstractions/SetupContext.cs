@@ -74,5 +74,9 @@ namespace OrchardCore.Setup.Services
         /// Gets or sets the errors during set up if there is.
         /// </summary>
         public IDictionary<string, string> Errors { get; set; }
+        /// <summary>
+        /// Gets additional key/value info.
+        /// </summary>
+        public IDictionary<string, string> Properties { get; } = new Dictionary<string, string>();
     }
 }
