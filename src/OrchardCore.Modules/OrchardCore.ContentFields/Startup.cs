@@ -181,6 +181,59 @@ namespace OrchardCore.ContentFields
             services.AddScoped<IScopedIndexProvider, TimeFieldIndexProvider>();
             services.AddScoped<IScopedIndexProvider, LinkFieldIndexProvider>();
             services.AddScoped<IScopedIndexProvider, HtmlFieldIndexProvider>();
+            services.AddScoped<IScopedIndexProvider, UserPickerFieldIndexProvider>();
+        }
+    }
+
+    [RequireFeatures("OrchardCore.Users")]
+    public class UserPickerStartup : StartupBase
+    {
+        private readonly AdminOptions _adminOptions;
+
+        static UserPickerStartup()
+        {
+            // Registering both field types and shape types are necessary as they can
+            // be accessed from inner properties.
+
+            TemplateContext.GlobalMemberAccessStrategy.Register<UserPickerField>();
+            TemplateContext.GlobalMemberAccessStrategy.Register<DisplayUserPickerFieldViewModel>();
+            TemplateContext.GlobalMemberAccessStrategy.Register<DisplayUserPickerFieldUserNamesViewModel>();
+        }
+
+        public UserPickerStartup(IOptions<AdminOptions> adminOptions)
+        {
+            _adminOptions = adminOptions.Value;
+        }
+
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddContentField<UserPickerField>()
+                .UseDisplayDriver<UserPickerFieldDisplayDriver>(d => !String.Equals(d, "UserNames", StringComparison.OrdinalIgnoreCase))
+                .UseDisplayDriver<UserPickerFieldUserNamesDisplayDriver>(d => String.Equals(d, "UserNames", StringComparison.OrdinalIgnoreCase));
+
+            services.AddScoped<IContentPartFieldDefinitionDisplayDriver, UserPickerFieldSettingsDriver>();
+            services.AddScoped<IContentFieldIndexHandler, UserPickerFieldIndexHandler>();
+            services.AddScoped<IUserPickerResultProvider, DefaultUserPickerResultProvider>();
+        }
+
+        public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
+        {
+            routes.MapAreaControllerRoute(
+                name: "SearchUsers",
+                areaName: "OrchardCore.ContentFields",
+                pattern: _adminOptions.AdminUrlPrefix + "/ContentFields/SearchUsers",
+                defaults: new { controller = typeof(UserPickerAdminController).ControllerName(), action = nameof(UserPickerAdminController.SearchUsers) }
+            );
+        }
+    }
+
+    [RequireFeatures("OrchardCore.Users", "OrchardCore.ContentFields.Indexing.SQL")]
+    public class UserPickerSqlIndexingStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddScoped<IDataMigration, Indexing.SQL.UserPickerMigrations>();
+            services.AddScoped<IScopedIndexProvider, UserPickerFieldIndexProvider>();
         }
     }
 }

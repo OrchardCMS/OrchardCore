@@ -41,10 +41,10 @@ namespace OrchardCore.Tests.Apis.GraphQL
             var connectionStringTemplate = @"Data Source={0};Cache=Shared";
 
             _tempFilename = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-            _store = await StoreFactory.CreateAsync(new Configuration().UseSqLite(String.Format(connectionStringTemplate, _tempFilename)));
+            _store = await StoreFactory.CreateAndInitializeAsync(new Configuration().UseSqLite(String.Format(connectionStringTemplate, _tempFilename)));
 
             _prefix = "tp";
-            _prefixedStore = await StoreFactory.CreateAsync(new Configuration().UseSqLite(String.Format(connectionStringTemplate, _tempFilename + _prefix)).SetTablePrefix(_prefix + "_"));
+            _prefixedStore = await StoreFactory.CreateAndInitializeAsync(new Configuration().UseSqLite(String.Format(connectionStringTemplate, _tempFilename + _prefix)).SetTablePrefix(_prefix + "_"));
 
             await CreateTablesAsync(_store);
             await CreateTablesAsync(_prefixedStore);
@@ -594,19 +594,19 @@ namespace OrchardCore.Tests.Apis.GraphQL
             {
                 Alias = "cats",
                 Index = nameof(AnimalIndex),
-                With = q => q.With<AnimalIndex>()
+                IndexType = typeof(AnimalIndex)
             },
             new IndexAlias
             {
                 Alias = "dogs",
                 Index = nameof(AnimalIndex),
-                With = q => q.With<AnimalIndex>()
+                IndexType = typeof(AnimalIndex)
             },
             new IndexAlias
             {
                 Alias = nameof(AnimalPart),
                 Index = nameof(AnimalIndex),
-                With = q => q.With<AnimalIndex>()
+                IndexType = typeof(AnimalIndex)
             }
         };
 
@@ -624,19 +624,19 @@ namespace OrchardCore.Tests.Apis.GraphQL
             {
                 Alias = "animals.name",
                 Index = $"Name",
-                With = q => q.With<AnimalIndex>()
+                IndexType = typeof(AnimalIndex)
             },
             new IndexAlias
             {
                 Alias = "animals.isHappy",
                 Index = $"IsHappy",
-                With = q => q.With<AnimalTraitsIndex>()
+                IndexType = typeof(AnimalTraitsIndex)
             },
             new IndexAlias
             {
                 Alias = "animals.isScary",
                 Index = $"IsScary",
-                With = q => q.With<AnimalTraitsIndex>()
+                IndexType = typeof(AnimalTraitsIndex)
             }
         };
 

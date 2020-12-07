@@ -1,10 +1,10 @@
-# [Start Bootstrap - Coming Soon](https://startbootstrap.com/themes/coming-soon/)
+# [Start Bootstrap - Coming Soon](https://startbootstrap.com/theme/coming-soon/)
 
-[Coming Soon](https://startbootstrap.com/themes/coming-soon/) is a simple coming soon theme for [Bootstrap](https://getbootstrap.com/) created by [Start Bootstrap](https://startbootstrap.com/). This theme features a background video with a mobile background image fallback.
+[Coming Soon](https://startbootstrap.com/theme/coming-soon/) is a simple coming soon theme for [Bootstrap](https://getbootstrap.com/) created by [Start Bootstrap](https://startbootstrap.com/). This theme features a background video with a mobile background image fallback.
 
 ## Preview
 
-[![Coming Soon Preview](https://startbootstrap.com/assets/img/screenshots/themes/coming-soon.png)](https://startbootstrap.github.io/startbootstrap-coming-soon/)
+[![Coming Soon Preview](https://assets.startbootstrap.com/img/screenshots/themes/coming-soon.png)](https://startbootstrap.github.io/startbootstrap-coming-soon/)
 
 **[View Live Preview](https://startbootstrap.github.io/startbootstrap-coming-soon/)**
 
@@ -20,7 +20,7 @@
 
 To begin using this template, choose one of the following options to get started:
 
-* [Download the latest release on Start Bootstrap](https://startbootstrap.com/themes/coming-soon/)
+* [Download the latest release on Start Bootstrap](https://startbootstrap.com/theme/coming-soon/)
 * Install via npm: `npm i startbootstrap-coming-soon`
 * Clone the repo: `git clone https://github.com/StartBootstrap/startbootstrap-coming-soon.git`
 * [Fork, Clone, or Download on GitHub](https://github.com/StartBootstrap/startbootstrap-coming-soon)
@@ -47,7 +47,7 @@ You must have npm installed globally in order to use this build environment.
 
 ## Bugs and Issues
 
-Have a bug or an issue with this template? [Open a new issue](https://github.com/StartBootstrap/startbootstrap-coming-soon/issues) here on GitHub or leave a comment on the [template overview page at Start Bootstrap](https://startbootstrap.com/themes/coming-soon/).
+Have a bug or an issue with this template? [Open a new issue](https://github.com/StartBootstrap/startbootstrap-coming-soon/issues) here on GitHub or leave a comment on the [template overview page at Start Bootstrap](https://startbootstrap.com/theme/coming-soon/).
 
 ## About
 
@@ -56,10 +56,10 @@ Start Bootstrap is an open source library of free Bootstrap templates and themes
 * <https://startbootstrap.com>
 * <https://twitter.com/SBootstrap>
 
-Start Bootstrap was created by and is maintained by **[David Miller](http://davidmiller.io/)**.
+Start Bootstrap was created by and is maintained by **[David Miller](https://davidmiller.io/)**.
 
-* <http://davidmiller.io>
-* <https://twitter.com/davidmillerskt>
+* <https://davidmiller.io>
+* <https://twitter.com/davidmillerhere>
 * <https://github.com/davidtmiller>
 
 Start Bootstrap is based on the [Bootstrap](https://getbootstrap.com/) framework created by [Mark Otto](https://twitter.com/mdo) and [Jacob Thorton](https://twitter.com/fat).

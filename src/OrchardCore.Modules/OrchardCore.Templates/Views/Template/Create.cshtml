@@ -14,7 +14,7 @@
 <script asp-src="~/OrchardCore.Liquid/codemirror/liquid.js" at="Foot"></script>
 <script asp-name="templatepreview-edit" at="Foot"></script>
 
-<h1>@RenderTitleSegments(T["Create Template"])</h1>
+<zone Name="Title"><h1>@RenderTitleSegments(T["Create Template"])</h1></zone>
 
 <div asp-validation-summary="ModelOnly"></div>
 <form asp-action="Create" asp-route-returnUrl="@ViewData["returnUrl"]" method="post">
@@ -42,23 +42,23 @@
 
     <div class="form-group">
         <div class="btn-group">
-            <button type="submit" name="submit" class="btn btn-secondary">@T["Save"]</button>
-            <button type="button" class="btn btn-secondary dropdown-toggle dropdown-toggle-split" data-reference="parent" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <button type="submit" name="submit" class="btn btn-primary save">@T["Save"]</button>
+            <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-reference="parent" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <span class="sr-only">@T["Toggle Dropdown"]</span>
             </button>
             <div class="dropdown-menu">
-                <button class="dropdown-item" name="submit" type="submit" value="SaveAndContinue">@T["and continue"]</button>
+                <button class="dropdown-item save-continue" name="submit" type="submit" value="SaveAndContinue">@T["and continue"]</button>
             </div>
         </div>
 
         @if (Url.IsLocalUrl(returnUrl))
         {
-            <a class="btn btn-secondary" href="@returnUrl">@T["Cancel"]</a>
+            <a class="btn btn-secondary cancel" role="button" href="@returnUrl">@T["Cancel"]</a>
         }
 
         @if (!Model.AdminTemplates)
         {
-            <a class="btn btn-info" href="@Url.Action("Index", "Preview", new { area = "OrchardCore.Templates" })" target="_blank">@T["Preview"]</a>
+            <a class="btn btn-info" role="button" href="@Url.Action("Index", "Preview", new { area = "OrchardCore.Templates" })" target="_blank">@T["Preview"]</a>
         }
     </div>
 </form>

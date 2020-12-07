@@ -1,10 +1,12 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Descriptor;
 using OrchardCore.Environment.Shell.Descriptor.Models;
 using OrchardCore.Environment.Shell.Descriptor.Settings;
+using OrchardCore.Environment.Shell.Distributed;
 
 namespace OrchardCore.Environment.Shell
 {
@@ -29,6 +31,8 @@ namespace OrchardCore.Environment.Shell
             }
 
             services.AddSingleton<IRunningShellTable, RunningShellTable>();
+
+            services.AddSingleton<IHostedService, DistributedShellHostedService>();
 
             return services;
         }
