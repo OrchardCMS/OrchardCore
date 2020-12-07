@@ -24,7 +24,7 @@ namespace OrchardCore.Lists.Drivers
         public override async Task LocalizingAsync(LocalizationContentContext context, LocalizationPart part)
         {
             var containedPart = context.ContentItem.As<ContainedPart>();
-            // todo: remove this check and change the handler to targe t ContainedPart when issue 3890 is fixed
+            // todo: remove this check and change the handler to target ContainedPart when issue 3890 is fixed
             if (containedPart != null)
             {
                 var list = await _session.QueryIndex<LocalizedContentItemIndex>(i => (i.Published || i.Latest) && i.ContentItemId == containedPart.ListContentItemId).FirstOrDefaultAsync();
