@@ -7,7 +7,7 @@
 <section>
     <h5 class="form-group">@T["Trimming settings"]</h5>
 
-    <div class="col-xl-6 form-group">
+    <div class="col-md-6 col-lg-4 form-group">
         <div class="custom-control custom-checkbox">
             <input type="checkbox" class="custom-control-input" asp-for="Disabled" checked="@Model.Disabled" />
             <label class="custom-control-label" asp-for="Disabled">@T["Disabled"]</label>
@@ -15,13 +15,13 @@
         </div>
     </div>
 
-    <div class="col-xl-6 form-group" asp-validation-class-for="RetentionPeriodDays">
+    <div class="col-md-6 col-lg-4 form-group" asp-validation-class-for="RetentionPeriodDays">
         <label asp-for="RetentionPeriodDays">@T["Retention period"]</label>
         <input asp-for="RetentionPeriodDays" type="number" class="form-control">
         <span class="hint">@T["The number of days of audit log data to retain."]</span>
     </div>
 
-    <div class="col-xl-6 form-group" asp-validation-class-for="LastRunUtc">
+    <div class="col-md-6 col-lg-4 form-group" asp-validation-class-for="LastRunUtc">
         <label asp-for="LastRunUtc">@T["Last run"]</label>
         <h6>@(lastRunUtc.HasValue ? await DisplayAsync(await New.DateTime(Utc: lastRunUtc.Value)) : T["Never"])</h6>
         <span class="hint">@T["Indicates the last time the audit trail trimming process was run."]</span>
