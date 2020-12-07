@@ -1,29 +1,13 @@
 @using OrchardCore.DisplayManagement
 @inject IDisplayManager<AdminDashboardItem> DisplayManager
-@* @inject OrchardCore.DisplayManagement.Descriptors.IShapeTableManager ShapeTableManager *@
 @{
     var shape = await DisplayManager.BuildDisplayAsync(new AdminDashboardItem(), null, "SummaryAdmin");
 }
-@* @{
-    var shapeTable = ShapeTableManager.GetShapeTable("TheAdmin");
-    var cardShapes = shapeTable.Bindings.Keys.Where(x => x.StartsWith("AdminDashboardCard_", StringComparison.OrdinalIgnoreCase));
-} *@
 
 <div class="jumbotron">
     <h2 class="display-4">@T["Welcome to your site"]</h2>
     <p class="lead">@T["Feel free to browse the menu and discover all its possibilities."]</p>
 </div>
-
-@* @if (cardShapes.Any())
-{
-    <div class="card-columns">
-        @foreach (var cardShape in cardShapes)
-        {
-            dynamic shape = await Factory.CreateAsync(cardShape);
-            @await DisplayAsync(shape);
-        }
-    </div>
-} *@
 
 @await DisplayAsync(shape)
 

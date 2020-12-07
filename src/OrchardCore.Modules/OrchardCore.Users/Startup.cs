@@ -10,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
+using OrchardCore.Admin.Models;
 using OrchardCore.Data.Migration;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement;
@@ -186,6 +187,8 @@ namespace OrchardCore.Users
             services.AddScoped<IDisplayDriver<User>, UserDisplayDriver>();
             services.AddScoped<IDisplayDriver<User>, UserInformationDisplayDriver>();
             services.AddScoped<IDisplayDriver<User>, UserButtonsDisplayDriver>();
+
+            services.AddScoped<IDisplayDriver<AdminDashboardItem>, AdminDashboardItemUsersDriver>();
 
             services.AddScoped<IThemeSelector, UsersThemeSelector>();
         }
