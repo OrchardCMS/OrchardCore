@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using OrchardCore.AuditTrail.Permissions;
@@ -7,7 +8,6 @@ using OrchardCore.DisplayManagement.Entities;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Settings;
-using System.Threading.Tasks;
 
 namespace OrchardCore.AuditTrail.Drivers
 {
@@ -27,10 +27,9 @@ namespace OrchardCore.AuditTrail.Drivers
         public override async Task<IDisplayResult> EditAsync(AuditTrailTrimmingSettings settings, BuildEditorContext context) =>
             !await IsAuthorizedToManageAuditTrailSettingsAsync()
                 ? null
-                : Initialize<AuditTrailTrimmingSettingsViewModel>($"{nameof(AuditTrailTrimmingSettings)}_Edit", model =>
+                : Initialize<AuditTrailTrimmingSettingsViewModel>("AuditTrailTrimmingSettings_Edit", model =>
                 {
                     model.RetentionPeriodDays = settings.RetentionPeriodDays;
-                    model.MinimumRunIntervalHours = settings.MinimumRunIntervalHours;
                     model.LastRunUtc = settings.LastRunUtc;
                     model.Disabled = settings.Disabled;
                 }).Location("Content:10").OnGroup(AuditTrailSettingsDisplayDriver.AuditTrailSettingsGroupId);
@@ -45,7 +44,6 @@ namespace OrchardCore.AuditTrail.Drivers
 
                 await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-                settings.MinimumRunIntervalHours = model.MinimumRunIntervalHours;
                 settings.RetentionPeriodDays = model.RetentionPeriodDays;
                 settings.Disabled = model.Disabled;
             }

@@ -25,9 +25,7 @@ namespace OrchardCore.AuditTrail.Services
 
             try
             {
-                // We don't need to check the audit trail for events to remove every 10 minutes. 
-                // Let's stick with the hours of the minimum run interval.
-                if (!GetIsTimeToTrim(auditTrailTrimmingSettings, clock)) return;
+                if (auditTrailTrimmingSettings.Disabled) return;
 
                 logger.LogDebug("Starting Audit Trail trimming.");
                 var auditTrailManager = serviceProvider.GetService<IAuditTrailManager>();
@@ -51,17 +49,6 @@ namespace OrchardCore.AuditTrail.Services
             {
                 logger.LogDebug("Audit Trail trimming: ending sweep.");
             }
-        }
-
-
-        private bool GetIsTimeToTrim(AuditTrailTrimmingSettings auditTrailTrimmingSettings, IClock clock)
-        {
-            if (auditTrailTrimmingSettings.Disabled) return false;
-
-            var lastRun = auditTrailTrimmingSettings.LastRunUtc ?? DateTime.MinValue;
-            var now = clock.UtcNow;
-            var interval = TimeSpan.FromHours(auditTrailTrimmingSettings.MinimumRunIntervalHours);
-            return now - lastRun >= interval;
         }
     }
 }

@@ -21,14 +21,6 @@
         <span class="hint">@T["The number of days of audit log data to retain."]</span>
     </div>
 
-    <div class="col-xl-6 form-group" asp-validation-class-for="MinimumRunIntervalHours">
-        <label asp-for="MinimumRunIntervalHours">@T["Minimum run interval"]</label>
-        <input asp-for="MinimumRunIntervalHours" type="number" class="form-control">
-        <span class="hint">
-            @T["The minimum number of hours to wait between trimming process runs. Enter 0 for continuous trimming."]
-        </span>
-    </div>
-
     <div class="col-xl-6 form-group" asp-validation-class-for="LastRunUtc">
         <label asp-for="LastRunUtc">@T["Last run"]</label>
         <h6>@(lastRunUtc.HasValue ? await DisplayAsync(await New.DateTime(Utc: lastRunUtc.Value)) : T["Never"])</h6>
