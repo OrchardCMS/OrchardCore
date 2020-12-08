@@ -4,7 +4,7 @@
     int endIndex = startIndex + Model.SitemapIndexes.Count - 1;
 }
 
-<h1>@RenderTitleSegments(T["Sitemap Indexes"])</h1>
+<zone Name="Title"><h1>@RenderTitleSegments(T["Sitemap Indexes"])</h1></zone>
 
 @if (String.IsNullOrEmpty(Site.BaseUrl))
 {

@@ -1,7 +1,7 @@
 @model EditTenantViewModel
 @inject IEnumerable<OrchardCore.Data.DatabaseProvider> DatabaseProviders
 
-<h1>@RenderTitleSegments(T["Create Tenant"])</h1>
+<zone Name="Title"><h1>@RenderTitleSegments(T["Create Tenant"])</h1></zone>
 
 <div asp-validation-summary="ModelOnly"></div>
 <form asp-action="Create" method="post">

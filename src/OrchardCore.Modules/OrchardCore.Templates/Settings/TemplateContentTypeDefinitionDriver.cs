@@ -40,7 +40,7 @@ namespace OrchardCore.Templates.Settings
                         Key = $"{stereotype}_Summary__{contentTypeDefinition.Name}",
                         Description = S["Template for a {0} content item in summary views", contentTypeDefinition.DisplayName]
                     });
-            }).Location("Content");
+            }).Location("Shortcuts");
         }
     }
 }

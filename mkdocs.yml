@@ -126,6 +126,7 @@ nav:
             - Widgets: docs/reference/modules/Widgets/README.md
             - Forms: docs/reference/modules/Forms/README.md
             - Templates: docs/reference/modules/Templates/README.md
+            - Placements: docs/reference/modules/Placements/README.md
             - Themes: docs/reference/modules/Themes/README.md
             - Liquid: docs/reference/modules/Liquid/README.md
             - Indexing: docs/reference/modules/Indexing/README.md
@@ -187,12 +188,13 @@ nav:
             - DataProtection (Azure Storage): docs/reference/modules/DataProtection.Azure/README.md
     - Resources: 
         - Learning: docs/resources/README.md
+        - Tutorials: docs/resources/tutorials/README.md
         - Development Tools: docs/resources/development-tools/README.md
         - Meeting: docs/resources/meeting/README.md
-        - Workshops: docs/resources/workshops/README.md
         - Branding: docs/resources/branding/README.md
-        - Owners: docs/resources/owners/README.md
         - Libraries: docs/resources/libraries/README.md
+        - Owners: docs/resources/owners/README.md
+        - Workshops: docs/resources/workshops/README.md
     - Releases: 
         - 1.0.0-rc2: docs/releases/1.0.0-rc2.md
         - 1.0.0-rc1: docs/releases/1.0.0-rc1.md

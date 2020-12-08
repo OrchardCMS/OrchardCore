@@ -4,7 +4,7 @@
     int endIndex = startIndex + Model.Queries.Count - 1;
 }
 
-<h1>@RenderTitleSegments(T["Queries"])</h1>
+<zone Name="Title"><h1>@RenderTitleSegments(T["Queries"])</h1></zone>
 
 <form asp-action="Index" method="post">
     <input asp-for="Options.BulkAction" type="hidden" />

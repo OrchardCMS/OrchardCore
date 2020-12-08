@@ -19,11 +19,11 @@
 
 @if (Model.AdminTemplates)
 {
-    <h1>@RenderTitleSegments(T["Edit Admin Template"])</h1>
+    <zone Name="Title"><h1>@RenderTitleSegments(T["Edit Admin Template"])</h1></zone>
 }
 else
 {
-    <h1>@RenderTitleSegments(T["Edit Template"])</h1>
+    <zone Name="Title"><h1>@RenderTitleSegments(T["Edit Template"])</h1></zone>
 }
 
 <div asp-validation-summary="ModelOnly"></div>
