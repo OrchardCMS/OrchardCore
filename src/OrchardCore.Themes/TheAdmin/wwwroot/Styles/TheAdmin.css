@@ -20650,7 +20650,7 @@
   [dir]:root[data-theme='darkmode'] .jumbotron {
     padding: 2rem 1rem;
     margin-bottom: 2rem;
-    background-color: #181a1b;
+    background-color: rgba(140, 130, 115, 0.13);
     border-radius: 0.3rem; }
     @media (min-width: 576px) {
       [dir]:root[data-theme='darkmode'] .jumbotron {
