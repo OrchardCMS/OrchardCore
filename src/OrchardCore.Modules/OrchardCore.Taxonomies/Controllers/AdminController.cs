@@ -218,6 +218,7 @@ namespace OrchardCore.Taxonomies.Controllers
             // Create a new item to take into account the current type definition.
             var contentItem = await _contentManager.NewAsync(existing.ContentType);
 
+            contentItem.ContentItemId = existing.ContentItemId;
             contentItem.Merge(existing);            
             contentItem.Weld<TermPart>();
             contentItem.Alter<TermPart>(t => t.TaxonomyContentItemId = taxonomyContentItemId);

@@ -119,8 +119,7 @@ namespace OrchardCore.Autoroute.Drivers
                     if (possibleConflicts.Any())
                     {
                         var hasConflict = false;
-                        if (possibleConflicts.Any(x => x.ContentItemId != model.ContentItem.ContentItemId) ||
-                            possibleConflicts.Any(x => !string.IsNullOrEmpty(x.ContainedContentItemId) && x.ContainedContentItemId != model.ContentItem.ContentItemId))
+                        if (possibleConflicts.Any(x => x.ContentItemId != model.ContentItem.ContentItemId && (string.IsNullOrEmpty(x.ContainedContentItemId) || x.ContainedContentItemId != model.ContentItem.ContentItemId)))
                         {
                             hasConflict = true;
                         }
