@@ -39,21 +39,20 @@ namespace OrchardCore.Secrets.Services
                 }
             }
 
-            using var rsaEncryptor = RSA.Create();
-            rsaEncryptor.ImportSubjectPublicKeyInfo(_encryptionPublicKey, out _);
+            using var rsaEncryptor = RsaHelper.GenerateRsaSecurityKey(2048);
+            rsaEncryptor.ImportRSAPublicKey(_encryptionPublicKey, out _);
 
-            using var rsaSigner = RSA.Create();
+            using var rsaSigner = RsaHelper.GenerateRsaSecurityKey(2048);
             rsaSigner.ImportRSAPrivateKey(_signingPrivateKey, out _);
 
-            var rsaEncryptedAesKey = rsaEncryptor.Encrypt(aes.Key, RSAEncryptionPadding.Pkcs1);
-            var rsaEncryptedAesIv = rsaEncryptor.Encrypt(aes.IV, RSAEncryptionPadding.Pkcs1);
+            var rsaEncryptedAesKey = rsaEncryptor.Encrypt(aes.Key, RSAEncryptionPadding.Pkcs1);            
             var signature = rsaSigner.SignData(encrypted, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
 
             var descriptor = new HybridKeyDescriptor
             {
                 EncryptionSecretName = _encryptionSecretName,
                 Key = Convert.ToBase64String(rsaEncryptedAesKey),
-                Iv = Convert.ToBase64String(rsaEncryptedAesIv),
+                Iv = Convert.ToBase64String(aes.IV),
                 ProtectedData = Convert.ToBase64String(encrypted),
                 Signature = Convert.ToBase64String(signature),
                 SigningSecretName = _signingSecretName

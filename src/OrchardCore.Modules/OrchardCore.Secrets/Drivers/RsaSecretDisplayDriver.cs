@@ -7,6 +7,7 @@ using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Mvc.ModelBinding;
+using OrchardCore.Secrets.Services;
 using OrchardCore.Secrets.ViewModels;
 
 namespace OrchardCore.Secrets.Drivers
@@ -34,11 +35,11 @@ namespace OrchardCore.Secrets.Drivers
                 // Generate new keys when creating.
                 if (context.IsNew)
                 {
-                    using (var rsa = RSA.Create())
+                    using (var rsa = RsaHelper.GenerateRsaSecurityKey(2048))
                     {
                         if (String.IsNullOrEmpty(secret.PublicKey))
                         {
-                            model.PublicKey = Convert.ToBase64String(rsa.ExportSubjectPublicKeyInfo());
+                            model.PublicKey = Convert.ToBase64String(rsa.ExportRSAPublicKey());
                         }
                         else
                         {
@@ -60,9 +61,9 @@ namespace OrchardCore.Secrets.Drivers
                     // The private key is never returned to the view when editing.
                     model.PublicKey = secret.PublicKey;
 
-                    using (var rsa = RSA.Create())
+                    using (var rsa = RsaHelper.GenerateRsaSecurityKey(2048))
                     {
-                        model.NewPublicKey = Convert.ToBase64String(rsa.ExportSubjectPublicKeyInfo());
+                        model.NewPublicKey = Convert.ToBase64String(rsa.ExportRSAPublicKey());
                         model.NewPrivateKey = Convert.ToBase64String(rsa.ExportRSAPrivateKey());
                     }
                 }
@@ -107,7 +108,7 @@ namespace OrchardCore.Secrets.Drivers
                 {
                     try
                     {
-                        using (var rsa = RSA.Create())
+                        using (var rsa = RsaHelper.GenerateRsaSecurityKey(2048))
                         {
                             rsa.ImportRSAPrivateKey(secret.PrivateKeyAsBytes(), out _);
                         }
@@ -127,9 +128,9 @@ namespace OrchardCore.Secrets.Drivers
 
                 try
                 {
-                    using (var rsa = RSA.Create())
+                    using (var rsa = RsaHelper.GenerateRsaSecurityKey(2048))
                     {
-                        rsa.ImportSubjectPublicKeyInfo(secret.PublicKeyAsBytes(), out _);
+                        rsa.ImportRSAPublicKey(secret.PublicKeyAsBytes(), out _);
                     }
                 }
                 catch (CryptographicException)

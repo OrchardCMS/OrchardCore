@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using OrchardCore.Mvc.Utilities;
 
 namespace OrchardCore.Secrets.Services
 {
@@ -33,6 +34,11 @@ namespace OrchardCore.Secrets.Services
 
         public async Task UpdateSecretAsync(string key, SecretBinding secretBinding, Secret secret)
         {
+            if (!String.Equals(key, key.ToSafeName(), StringComparison.OrdinalIgnoreCase))
+            {
+                throw new InvalidOperationException("The name contains invalid characters");
+            }
+
             var secretStore = _secretStores.FirstOrDefault(x => String.Equals(x.Name, secretBinding.Store, StringComparison.OrdinalIgnoreCase));
             if (secretStore != null)
             {

@@ -28,23 +28,21 @@ namespace OrchardCore.Secrets.Services
             var signatureBytes = Convert.FromBase64String(descriptor.Signature);
 
             // Check signature first.
-            using var rsaSigner = RSA.Create();
-            rsaSigner.ImportSubjectPublicKeyInfo(_signingPublicKey, out _);
+            using var rsaSigner = RsaHelper.GenerateRsaSecurityKey(2048);
+            rsaSigner.ImportRSAPublicKey(_signingPublicKey, out _);
             if (!rsaSigner.VerifyData(protectedBytes, signatureBytes, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1))
             {
                 throw new CryptographicException("Could not verify signature");
             }
 
             // Decrypt.
-            using var rsaDecryptor = RSA.Create();
+            using var rsaDecryptor = RsaHelper.GenerateRsaSecurityKey(2048);
             rsaDecryptor.ImportRSAPrivateKey(_decryptionPrivateKey, out _);
 
             var aesKey = rsaDecryptor.Decrypt(Convert.FromBase64String(descriptor.Key), RSAEncryptionPadding.Pkcs1);
-            var aesIv = rsaDecryptor.Decrypt(Convert.FromBase64String(descriptor.Iv), RSAEncryptionPadding.Pkcs1);
-
 
             using var aes = Aes.Create();
-            using var decryptor = aes.CreateDecryptor(aesKey, aesIv);
+            using var decryptor = aes.CreateDecryptor(aesKey, Convert.FromBase64String(descriptor.Iv));
             using var msDecrypt = new MemoryStream(protectedBytes);
             using var csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Read);
             using var srDecrypt = new StreamReader(csDecrypt);

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -8,13 +9,13 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.Mvc.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Routing;
 using OrchardCore.Settings;
 using OrchardCore.Secrets.ViewModels;
-using System.Collections.Generic;
-using OrchardCore.DisplayManagement.ModelBinding;
 
 namespace OrchardCore.Secrets.Controllers
 {
@@ -111,7 +112,7 @@ namespace OrchardCore.Secrets.Controllers
             var model = new SecretBindingIndexViewModel
             {
                 SecretBindings = bindingEntries,
-                Thumbnails = thumbnails,                
+                Thumbnails = thumbnails,
                 Options = options,
                 Pager = pagerShape
             };
@@ -206,15 +207,17 @@ namespace OrchardCore.Secrets.Controllers
                 {
                     ModelState.AddModelError(nameof(SecretBindingViewModel.Name), S["The name is mandatory."]);
                 }
-                else
+                if (!String.Equals(model.Name, model.Name.ToSafeName(), StringComparison.OrdinalIgnoreCase))
                 {
-                    var secretBindings = await _secretCoordinator.LoadSecretBindingsAsync();
+                    ModelState.AddModelError(nameof(SecretBindingViewModel.Name), S["The name contains invalid characters."]);
+                }
 
-                    // Do not check the stores as a readonly store would already have the key value.
-                    if (secretBindings.ContainsKey(model.Name))
-                    {
-                        ModelState.AddModelError(nameof(SecretBindingViewModel.Name), S["A secret with the same name already exists."]);
-                    }
+                var secretBindings = await _secretCoordinator.LoadSecretBindingsAsync();
+
+                // Do not check the stores as a readonly store would already have the key value.
+                if (secretBindings.ContainsKey(model.Name))
+                {
+                    ModelState.AddModelError(nameof(SecretBindingViewModel.Name), S["A secret with the same name already exists."]);
                 }
             }
 
@@ -293,9 +296,16 @@ namespace OrchardCore.Secrets.Controllers
                 {
                     ModelState.AddModelError(nameof(SecretBindingViewModel.Name), S["The name is mandatory."]);
                 }
-                else if (!model.Name.Equals(sourceName, StringComparison.OrdinalIgnoreCase) && secretBindings.ContainsKey(model.Name))
+                if (!model.Name.Equals(sourceName, StringComparison.OrdinalIgnoreCase))
                 {
-                    ModelState.AddModelError(nameof(SecretBindingViewModel.Name), S["A secret with the same name already exists."]);
+                    if (!String.Equals(model.Name, model.Name.ToSafeName(), StringComparison.OrdinalIgnoreCase))
+                    {
+                        ModelState.AddModelError(nameof(SecretBindingViewModel.Name), S["The name contains invalid characters."]);
+                    }
+                    if (secretBindings.ContainsKey(model.Name))
+                    {
+                        ModelState.AddModelError(nameof(SecretBindingViewModel.Name), S["A secret with the same name already exists."]);
+                    }
                 }
             }
 

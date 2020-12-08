@@ -12,18 +12,18 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Secrets
     {
         private static ISecretService<RsaSecret> GetSecretServiceMock()
         {
-            using var rsaEncryptor = RSA.Create();
+            using var rsaEncryptor = RsaHelper.GenerateRsaSecurityKey(2048);
 
             var rsaEncryptionSecret = new RsaSecret()
             {
-                PublicKey = Convert.ToBase64String(rsaEncryptor.ExportSubjectPublicKeyInfo()),
+                PublicKey = Convert.ToBase64String(rsaEncryptor.ExportRSAPublicKey()),
                 PrivateKey = Convert.ToBase64String(rsaEncryptor.ExportRSAPrivateKey())
             };
 
-            using var rsaSigning = RSA.Create();
+            using var rsaSigning = RsaHelper.GenerateRsaSecurityKey(2048);
             var rsaSigningSecret = new RsaSecret()
             {
-                PublicKey = Convert.ToBase64String(rsaSigning.ExportSubjectPublicKeyInfo()),
+                PublicKey = Convert.ToBase64String(rsaSigning.ExportRSAPublicKey()),
                 PrivateKey = Convert.ToBase64String(rsaSigning.ExportRSAPrivateKey())
             };
 

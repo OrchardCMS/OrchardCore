@@ -31,7 +31,7 @@ namespace OrchardCore.Secrets.Services
                 throw new ArgumentException("The type must implement " + nameof(Secret));
             }    
 
-            return Task.FromResult(_shellConfiguration.GetSection($"OrchardCore_Secrets:{key}").Get(type) as Secret);
+            return Task.FromResult(_shellConfiguration.GetSection($"OrchardCore_Secrets_ConfigurationSecretStore:{key}").Get(type) as Secret);
         }
 
         public Task UpdateSecretAsync(string key, Secret secret)
