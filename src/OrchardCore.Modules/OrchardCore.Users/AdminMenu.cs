@@ -64,7 +64,7 @@ namespace OrchardCore.Users
             builder
                 .Add(S["Security"], security => security
                     .Add(S["Settings"], settings => settings
-                        .Add(S["Email"], S["Email"].PrefixPosition(), registration => registration
+                        .Add(S["Change email"], S["Change email"].PrefixPosition(), registration => registration
                             .Permission(Permissions.ManageUsers)
                             .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = ChangeEmailSettingsDisplayDriver.GroupId })
                             .LocalNav()
