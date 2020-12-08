@@ -10,7 +10,7 @@ Many external resources are available in order to teach you how to develop with 
 - [Branding](branding): Get some official assets and share about the project philosophy.
 - [Libraries](libraries): List of external libraries and licenses used in Orchard Core.
 - [Owners](owners): List of the main contributors and their contribution areas.
-- [Workshops](workshops): Training sessions developped by our contributors.
+- [Workshops](workshops): Training sessions developed by our contributors.
 
 ## Newsletter
 

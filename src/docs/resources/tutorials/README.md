@@ -4,7 +4,7 @@ If you want to learn or improve your knowledge about Orchard Core, you can follo
 
 ## Lombiq
 
-[Lombiq](https://lombiq.com) created a Video playlist and a Demo Orchard Core module for training purposes guiding you to become an Orchard Core developer:
+[Lombiq](https://lombiq.com) created a video playlist and a Demo Orchard Core module for training purposes guiding you to become an Orchard Core developer:
 
 - [Dojo Course 3 - the full Orchard Core tutorial](https://orcharddojo.net/orchard-training/dojo-course-3-the-full-orchard-core-tutorial)
 - [Orchard Core Training Demo module](https://github.com/Lombiq/Orchard-Training-Demo-Module)
