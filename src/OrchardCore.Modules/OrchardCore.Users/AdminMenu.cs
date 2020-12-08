@@ -32,7 +32,7 @@ namespace OrchardCore.Users
                             .LocalNav()
                          )
                         .Add(S["Settings"], settings => settings
-                            .Add(S["Login"], S["Login"].PrefixPosition(), login => login
+                            .Add(S["User Login"], S["User Login"].PrefixPosition(), login => login
                                 .Permission(Permissions.ManageUsers)
                                 .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = LoginSettingsDisplayDriver.GroupId })
                                 .LocalNav()
@@ -64,7 +64,7 @@ namespace OrchardCore.Users
             builder
                 .Add(S["Security"], security => security
                     .Add(S["Settings"], settings => settings
-                        .Add(S["Email"], S["Email"].PrefixPosition(), registration => registration
+                        .Add(S["User Change email"], S["User Change email"].PrefixPosition(), registration => registration
                             .Permission(Permissions.ManageUsers)
                             .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = ChangeEmailSettingsDisplayDriver.GroupId })
                             .LocalNav()
@@ -94,7 +94,7 @@ namespace OrchardCore.Users
             builder
                 .Add(S["Security"], security => security
                     .Add(S["Settings"], settings => settings
-                        .Add(S["Registration"], S["Registration"].PrefixPosition(), registration => registration
+                        .Add(S["User Registration"], S["User Registration"].PrefixPosition(), registration => registration
                             .Permission(Permissions.ManageUsers)
                             .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = RegistrationSettingsDisplayDriver.GroupId })
                             .LocalNav()
@@ -124,7 +124,7 @@ namespace OrchardCore.Users
             builder
                 .Add(S["Security"], security => security
                     .Add(S["Settings"], settings => settings
-                        .Add(S["Reset password"], S["Reset password"].PrefixPosition(), password => password
+                        .Add(S["User Reset password"], S["User Reset password"].PrefixPosition(), password => password
                             .Permission(Permissions.ManageUsers)
                             .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = ResetPasswordSettingsDisplayDriver.GroupId })
                             .LocalNav()
