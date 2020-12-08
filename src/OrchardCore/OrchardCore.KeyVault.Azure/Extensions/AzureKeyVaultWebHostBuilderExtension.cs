@@ -1,4 +1,6 @@
 using System;
+using Azure.Extensions.AspNetCore.Configuration.Secrets;
+using Azure.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using OrchardCore.Azure.KeyVault.Services;
@@ -20,15 +22,25 @@ namespace OrchardCore.Azure.KeyVault.Extensions
             {
                 var builtConfig = configuration.Build();
                 var keyVaultName = builtConfig["OrchardCore:OrchardCore_Azure_KeyVault:KeyVaultName"];
-                var clientId = builtConfig["OrchardCore:OrchardCore_Azure_KeyVault:AzureADApplicationId"];
-                var clientSecret = builtConfig["OrchardCore:OrchardCore_Azure_KeyVault:AzureADApplicationSecret"];
 
-                var keyVaultEndpoint = "https://" + keyVaultName + ".vault.azure.net";
+                TimeSpan? reloadInterval = null;
+                double interval;
+                if (Double.TryParse(builtConfig["OrchardCore:OrchardCore_Azure_KeyVault:ReloadInterval"], out interval))
+                {
+                    reloadInterval = TimeSpan.FromSeconds(interval);
+                }
+
+                var keyVaultEndpointUri = new Uri("https://" + keyVaultName + ".vault.azure.net");
+                var configOptions = new AzureKeyVaultConfigurationOptions()
+                {
+                    Manager = new AzureKeyVaultSecretManager(),
+                    ReloadInterval = reloadInterval
+                };
+
                 configuration.AddAzureKeyVault(
-                    keyVaultEndpoint, 
-                    clientId, 
-                    clientSecret,  
-                    new AzureKeyVaultSecretManager()
+                    keyVaultEndpointUri,
+                    new DefaultAzureCredential(includeInteractiveCredentials: true),
+                    configOptions
                 );
             });
 

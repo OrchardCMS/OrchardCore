@@ -1,11 +1,11 @@
-using Microsoft.Azure.KeyVault.Models;
-using Microsoft.Extensions.Configuration.AzureKeyVault;
+using Azure.Extensions.AspNetCore.Configuration.Secrets;
+using Azure.Security.KeyVault.Secrets;
 
 namespace OrchardCore.Azure.KeyVault.Services
 {
-    public class AzureKeyVaultSecretManager : DefaultKeyVaultSecretManager
+    public class AzureKeyVaultSecretManager : KeyVaultSecretManager
     {
-        public override string GetKey(SecretBundle secret) =>
-            secret.SecretIdentifier.Name.Replace("---", "_").Replace("--", ":");
+        public override string GetKey(KeyVaultSecret secret) =>
+            secret.Name.Replace("---", "_").Replace("--", ":");
     }
 }

@@ -1,7 +1,6 @@
 # Azure Key Vault (`OrchardCore.Azure.KeyVault`)
 
-The Azure Key Vault configuration provider adds app configuration values from the Azure Key Vault in order to safeguard your cryptographic keys and secrets used by your app. It also contains custom override of the DefaultKeyVaultManager class that retrieves secrets from Azure Key Vault and translates ---
-to an underscore (_)  and -- to a colon (:). Both underscores and colons are illegal characters in Azure KeyVault.
+The Azure Key Vault configuration provider adds app configuration values from the Azure Key Vault in order to safeguard your cryptographic keys and secrets used by your app. It also contains custom override of the DefaultKeyVaultManager class that retrieves secrets from Azure Key Vault and translates --- to an underscore (_)  and -- to a colon (:). Both underscores and colons are illegal characters in Azure KeyVault.
 
 Example:
 Key Vault Input: "OrchardCore--OrchardCore---Shells---Database--ConnectionString".
@@ -14,8 +13,7 @@ You will need to specify the name of your Azure Key Vault and [register a servic
 ```json
 "OrchardCore_Azure_KeyVault": {
     "KeyVaultName": "", // Set the name of your Azure Key Vault.
-    "AzureADApplicationId": "", // Set the Azure AD Application Id
-    "AzureADApplicationSecret": "" //Set the Azure AD Application Secret
+    "ReloadInterval": "" // 
 }
 ```
 
@@ -25,7 +23,7 @@ You will need to specify the name of your Azure Key Vault and [register a servic
 In the `Program.cs`, add `AddOrchardCoreAzureKeyVault()` to the Generic Host in `CreateHostBuilder()`.
 
 ```csharp
-using OrchardCore.KeyVault.Azure;
+using OrchardCore.Azure.KeyVault.Extensions;;
 public class Program
 {
     public static Task Main(string[] args)
