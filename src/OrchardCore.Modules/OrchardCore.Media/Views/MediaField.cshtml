@@ -9,20 +9,16 @@
 @if (paths.Any())
 {
     <div class="field field-type-mediafield field-name-@name">
-        @for (int i = 0; i < paths.Count(); i++)
+        <span class="name">@Model.PartFieldDefinition.DisplayName()</span>
+        @for (int i = 0; i < paths.Length; i++)
         {
             var path = paths[i];
             var url = Orchard.AssetUrl(path);
             var text = !string.IsNullOrEmpty(mediaTexts[i]) ? mediaTexts[i] : path;
 
-            if (Orchard.IsImageExtension(path))
+            if (Orchard.IsImageFile(path))
             {
-                <div class="card text-light">
-                    <img class="card-img" src="@url" alt="@text">
-                    <div class="card-img-overlay">
-                        <h5 class="card-title">@text</h5>
-                    </div>
-                </div>
+                <img src="@url" alt="@text">
             }
             else
             {

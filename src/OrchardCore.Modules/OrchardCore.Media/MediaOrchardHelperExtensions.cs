@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using OrchardCore;
 
@@ -6,7 +7,7 @@ using OrchardCore;
 /// </summary>
 public static class MediaOrchardHelperExtensions
 {
-    private static readonly HashSet<string> _imageExtensions = new HashSet<string>() { ".bmp", ".gif", ".jpeg", ".jpg", ".png", ".tiff", ".webp" };
+    private static readonly HashSet<string> _imageExtensions = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { ".bmp", ".gif", ".jpeg", ".jpg", ".png", ".tiff", ".webp" };
 
     /// <summary>
     /// Determines if a path is an image file.
@@ -14,8 +15,8 @@ public static class MediaOrchardHelperExtensions
     /// <param name="orchardHelper">The <see cref="IOrchardHelper"/>.</param>
     /// <param name="path">The path.</param>
     /// <returns>true if the path is an image file. Otherwise false.</returns>
-    public static bool IsImageExtension(this IOrchardHelper orchardHelper, string path)
+    public static bool IsImageFile(this IOrchardHelper orchardHelper, string path)
     {
-        return _imageExtensions.Contains(System.IO.Path.GetExtension(path).ToLower());
+        return _imageExtensions.Contains(System.IO.Path.GetExtension(path));
     }
 }
