@@ -53,7 +53,7 @@ namespace OrchardCore.Tests.Apis.Context
             var setupModel = new Tenants.ViewModels.SetupApiViewModel
             {
                 SiteName = "Test Site",
-                DatabaseProvider = ConnectionString,
+                DatabaseProvider = DatabaseProvider,
                 TablePrefix = tablePrefix,
                 ConnectionString = ConnectionString,
                 RecipeName = RecipeName,

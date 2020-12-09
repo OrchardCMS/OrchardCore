@@ -36,7 +36,7 @@ namespace OrchardCore.ContentFields.Drivers
                 model.Part = context.ContentPart;
                 model.PartFieldDefinition = context.PartFieldDefinition;
             })
-            .Location("Detail", "Content")
+            .Location("Detail", "Content:51")
             .Location("Summary", "Content");
         }
 

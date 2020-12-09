@@ -5,7 +5,7 @@
     int endIndex = startIndex + Model.MediaProfiles.Count - 1;
 }
 
-<h1>@RenderTitleSegments(T["Media Profiles"])</h1>
+<zone Name="Title"><h1>@RenderTitleSegments(T["Media Profiles"])</h1></zone>
 
 <form asp-action="Index">
     <input asp-for="Options.BulkAction" type="hidden" />

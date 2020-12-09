@@ -11,21 +11,19 @@
     var contentItems = await ContentLocalizationManager.GetItemsForSetsAsync(Model.LocalizationSets, currentCulture);
 }
 
-<div class="field field-type-localizationsetpickerfield field-name-@name">
-    <span class="name">@Model.PartFieldDefinition.DisplayName():</span>
     @if (contentItems.Any())
     {
-        foreach (var contentItem in contentItems)
+    <div class="form-group row field-type-localizationsetpickerfield field-name-@name">
+        <label class="col-xl-2">@Model.PartFieldDefinition.DisplayName()</label>
+        <div class="col-xl-10">
+        @foreach (var contentItem in contentItems)
         {
-            <span class="value"><a display-for="@contentItem">@contentItem.DisplayText</a></span>
+            <a display-for="@contentItem">@contentItem.DisplayText</a>
             if (contentItem != contentItems.Last())
             {
-                <span>,</span>
+                @T[", "]
             }
         }
-    }
-    else
-    {
-        <span class="value">@T["No content items."]</span>
-    }
-</div>
+        </div>
+    </div>
+}

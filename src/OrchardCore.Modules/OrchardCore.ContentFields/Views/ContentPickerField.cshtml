@@ -1,6 +1,6 @@
 @model OrchardCore.ContentFields.ViewModels.DisplayContentPickerFieldViewModel
-@using OrchardCore.Mvc.Utilities
 @using OrchardCore.ContentManagement.Metadata.Models
+@using OrchardCore.Mvc.Utilities
 
 @inject OrchardCore.ContentManagement.IContentManager ContentManager
 
@@ -9,21 +9,19 @@
     var contentItems = await ContentManager.GetAsync(Model.ContentItemIds);
 }
 
-<div class="field field-type-contentpickerfield field-name-@name">
-    <span class="name">@Model.PartFieldDefinition.DisplayName():</span>
-    @if (contentItems.Any())
-    {
-        foreach (var contentItem in contentItems)
-        {
-            <span class="value"><a display-for="@contentItem">@contentItem.DisplayText</a></span>
-            if (contentItem != contentItems.Last())
+@if (contentItems.Any())
+{
+    <div class="form-group row field-type-contentpickerfield field-name-@name">
+        <label class="col-xl-2">@Model.PartFieldDefinition.DisplayName()</label>
+        <div class="col-xl-10">
+            @foreach (var contentItem in contentItems)
             {
-                <span>,</span>
+                <a display-for="@contentItem">@contentItem.DisplayText</a>
+                @if (contentItem != contentItems.Last())
+                {
+                    @T[", "]
+                }
             }
-        }
-    }
-    else
-    {
-        <span class="value">@T["No content items."]</span>
-    }
-</div>
+        </div>
+    </div>
+}

@@ -14,13 +14,13 @@
         @if (await AuthorizationService.AuthorizeAsync(User, CommonPermissions.EditContent, contentItem))
         {
             <div class="d-inline">
-                <a admin-for="@contentItem" asp-route-returnUrl="@FullRequestPath" /> - <small class="text-muted">@T["Widget"]</small>
+                <a admin-for="@contentItem" asp-route-returnUrl="@FullRequestPath" /> - <small class="text-muted">@contentItem.ContentType</small>
             </div>
         }
         else
         {
             <div class="d-inline">
-                @contentItem - <small class="text-muted">@T["Widget"]</small>
+                @contentItem - <small class="text-muted">@contentItem.ContentType</small>
             </div>
         }
         @if (Model.Tags != null)

@@ -33,6 +33,13 @@
     "output": "wwwroot/Styles/optionsEditor.css"
   },
   {
+    "generateSourceMaps": false,
+    "inputs": [
+      "Assets/scss/fontawesome_iconpicker.scss"
+    ],
+    "output": "wwwroot/Styles/fontawesome-iconpicker.css"
+  },
+  {
     "inputs": [
       "Assets/js/OptionsEditor/*.js"
     ],

@@ -1,6 +1,6 @@
 @model CreateTypeViewModel
 
-<h1>@RenderTitleSegments(T["New Content Type"])</h1>
+<zone Name="Title"><h1>@RenderTitleSegments(T["New Content Type"])</h1></zone>
 
 <form asp-action="Create">
     @Html.ValidationSummary()

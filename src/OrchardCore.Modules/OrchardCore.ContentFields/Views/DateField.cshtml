@@ -7,7 +7,10 @@
 
 @if (Model.Value.HasValue)
 {
-    <div class="field field-type-datefield field-name-@name">
-        @Model.Value.Value.ToShortDateString()
+    <div class="form-group row field-type-datefield field-name-@name">
+        <label class="col-xl-2">@Model.PartFieldDefinition.DisplayName()</label>
+        <div class="col-xl-10">
+            @Model.Value.Value.ToShortDateString()
+        </div>
     </div>
 }

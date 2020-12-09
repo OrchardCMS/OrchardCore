@@ -32,6 +32,12 @@
             break;
     }
 }
-<div class="field field-type-linkfield field-name-@name">
-    <a href="@Model.Url">@text</a>
-</div>
+@if (!string.IsNullOrEmpty(Model.Url))
+{
+    <div class="form-group row field-type-linkfield field-name-@name">
+        <label class="col-xl-2">@Model.PartFieldDefinition.DisplayName()</label>
+        <div class="col-xl-10">
+            <a href="@Model.Url">@text</a>
+        </div>
+    </div>
+}
