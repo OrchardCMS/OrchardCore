@@ -1,6 +1,6 @@
 @model MediaProfileViewModel
 
-<h1>@RenderTitleSegments(T["Edit Media Profile"])</h1>
+<zone Name="Title"><h1>@RenderTitleSegments(T["Edit Media Profile"])</h1></zone>
 @* TODO Trigger preview. *@
 <div asp-validation-summary="All"></div>
 <form asp-action="Edit" method="post">
@@ -22,7 +22,7 @@
             <textarea asp-for="Hint" rows="2" class="form-control"></textarea>
             <span asp-validation-for="Hint"></span>
         </div>
-         <div class="w-100">
+        <div class="w-100">
             <span class="hint">@T["The hint for the media profile."]</span>
         </div>
     </div>
@@ -32,7 +32,7 @@
             <label asp-for="SelectedWidth">@T["Width"]</label>
             <select asp-for="SelectedWidth" asp-items="@Model.AvailableWidths" class="form-control content-preview-select" asp-validation-class-for="SelectedWidth"></select>
             <span asp-validation-for="SelectedWidth"></span>
-            <input type="number" asp-for="CustomWidth" class="form-control mt-3" style="@(Model.CustomWidth != 0 ? "" : "display: none;")"/>
+            <input type="number" asp-for="CustomWidth" class="form-control mt-3" style="@(Model.CustomWidth != 0 ? "" : "display: none;")" />
             <span asp-validation-for="CustomWidth"></span>
         </div>
         <div class="w-100">
@@ -45,7 +45,7 @@
             <label asp-for="SelectedHeight">@T["Height"]</label>
             <select asp-for="SelectedHeight" asp-items="@Model.AvailableHeights" class="form-control content-preview-select" asp-validation-class-for="SelectedHeight"></select>
             <span asp-validation-for="SelectedHeight"></span>
-            <input type="number" asp-for="CustomHeight" class="form-control mt-3" style="@(Model.CustomHeight != 0 ? "" : "display: none;")"/>
+            <input type="number" asp-for="CustomHeight" class="form-control mt-3" style="@(Model.CustomHeight != 0 ? "" : "display: none;")" />
             <span asp-validation-for="CustomHeight"></span>
         </div>
         <div class="w-100">
@@ -64,11 +64,22 @@
         </div>
     </div>
 
+    <div class="form-group" asp-validation-class-for="BackgroundColor" style="@(Model.SelectedMode == ResizeMode.Pad || Model.SelectedMode == ResizeMode.BoxPad ? "" : "display: none;")">
+        <div class="w-100 w-md-50">
+            <label asp-for="BackgroundColor">@T["Background Color"]</label>
+            <input type="text" asp-for="BackgroundColor" class="form-control" />
+            <span asp-validation-for="BackgroundColor"></span>
+        </div>
+        <div class="w-100">
+            <span class="hint">@T["Select the background color for the processed image. An empty value means a bgcolor command will not be applied. Examples of valid values: 'white', 'ffff00', 'ffff0080', '128,64,32' and '128,64,32,16'."]</span>
+        </div>
+    </div>
+
     <div class="form-group" asp-validation-class-for="SelectedFormat">
         <div class="w-100 w-md-50">
-                <label asp-for="SelectedFormat">@T["Format"]</label>
-                <select asp-for="SelectedFormat" asp-items="Model.AvailableFormats" class="form-control content-preview-select" asp-validation-class-for="SelectedFormat"></select>
-                <span asp-validation-for="SelectedFormat"></span>
+            <label asp-for="SelectedFormat">@T["Format"]</label>
+            <select asp-for="SelectedFormat" asp-items="Model.AvailableFormats" class="form-control content-preview-select" asp-validation-class-for="SelectedFormat"></select>
+            <span asp-validation-for="SelectedFormat"></span>
         </div>
         <div class="w-100">
             <span class="hint">@T["Select the format for the processed image. A default value means a format command will not be applied."]</span>
@@ -103,6 +114,14 @@
 
 <script at="Foot">
     $(function () {
+        $('#@Html.IdFor(x => x.SelectedMode)').on('change', function() {
+            if ((this.value === '@((int)ResizeMode.Pad)') || (this.value === '@((int)ResizeMode.BoxPad)')) {
+                $('#@Html.IdFor(x => x.BackgroundColor)').closest('.form-group').show();
+            } else {
+                $('#@Html.IdFor(x => x.BackgroundColor)').closest('.form-group').hide();
+                $('#@Html.IdFor(x => x.BackgroundColor)').val('');
+            }
+        });
         $('#@Html.IdFor(x => x.SelectedWidth)').on('change', function() {
             if (this.value === "-1") {
                 $('#@Html.IdFor(x => x.CustomWidth)').show();
@@ -112,7 +131,6 @@
             }
         });
         $('#@Html.IdFor(x => x.SelectedHeight)').on('change', function() {
-            console.log(this.value)
             if (this.value === "-1") {
                 $('#@Html.IdFor(x => x.CustomHeight)').show();
             } else {

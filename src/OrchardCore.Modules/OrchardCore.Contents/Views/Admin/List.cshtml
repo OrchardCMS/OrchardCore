@@ -10,7 +10,7 @@
     }
 }
 
-<h1>@RenderTitleSegments(pageTitle)</h1>
+<zone Name="Title"><h1>@RenderTitleSegments(pageTitle)</h1></zone>
     
 <form asp-action="List" asp-controller="Admin" method="post" id="items-form" autocomplete="off">
     @await DisplayAsync(Model)

@@ -141,7 +141,7 @@ namespace OrchardCore.Environment.Shell
 
         public async Task UpdateShellSettingsAsync(ShellSettings settings)
         {
-            settings.Identifier = IdGenerator.GenerateId();
+            settings.VersionId = IdGenerator.GenerateId();
             await _shellSettingsManager.SaveSettingsAsync(settings);
             await ReloadShellContextAsync(settings);
         }
@@ -212,12 +212,12 @@ namespace OrchardCore.Environment.Shell
                     return;
                 }
 
-                var currentIdentifier = settings.Identifier;
+                var currentVersionId = settings.VersionId;
 
                 settings = await _shellSettingsManager.LoadSettingsAsync(settings.Name);
 
                 // Consistency: We may have been the last to add the shell but not with the last settings.
-                if (settings.Identifier == currentIdentifier)
+                if (settings.VersionId == currentVersionId)
                 {
                     return;
                 }

@@ -4,18 +4,32 @@
     int endIndex = startIndex + Model.Indexes.Count() - 1;
 }
 
+<zone Name="Title"><h1>@RenderTitleSegments(T["Indices"])</h1></zone>
+
+@* the form is necessary to generate and antiforgery token for the delete action *@
 <form asp-action="Index">
     <input asp-for="Options.BulkAction" type="hidden" />
     <input type="submit" name="submit.BulkAction" class="d-none" />
-    @* the form is necessary to generate and antiforgery token for the delete action *@
-    <div class="row">
-        <div class="form-group col-xl-4 col-sm-6"><h1>@RenderTitleSegments(T["Indices"])</h1></div>
-        <div class="form-group col-xl-8 col-sm-6">
-            <div class="btn-group float-right">
-                <a asp-route-action="Edit" class="btn btn-primary" role="button">@T["Add Index"]</a>
+    
+    <div class="card mb-3 position-sticky action-bar">
+        <div class="card-body bg-primary p-3">
+            <div class="form-group mb-n1">
+                <div class="input-group input-group-sm w-lg-50 d-inline-flex">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text bg-secondary text-light">@T["Filter"]</span>
+                    </div>
+                    <input asp-for="Options.Search" class="form-control" placeholder="@T["Search"]" type="search" autofocus />
+                    <div class="input-group-append">
+                        <button type="submit" class="btn btn-sm btn-secondary">@T["Search"]</button>
+                    </div>
+                </div>
+                <div class="btn-group float-right">
+                    <a asp-route-action="Edit" class="btn btn-sm btn-secondary float-right create" role="button">@T["Add Index"]</a>
+                </div>
             </div>
         </div>
     </div>
+
     <ul class="list-group with-checkbox">
         @if (Model.Indexes.Any())
         {
@@ -70,7 +84,7 @@
         else
         {
             <li class="list-group-item">
-                <div class="alert alert-info" role="alert">
+                <div class="alert alert-info mb-0" role="alert">
                     @T["<strong>Nothing here!</strong> There are no indices for the moment."]
                 </div>
             </li>

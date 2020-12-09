@@ -1,6 +1,6 @@
 @model OrchardCore.Admin.ViewModels.AdminSettingsViewModel
 
-<fieldset class="form-group" asp-validation-class-for="Zones">
+<fieldset class="form-group" asp-validation-class-for="DisplayMenuFilter">
     <div class="custom-control custom-checkbox">
         <input asp-for="DisplayMenuFilter" class="custom-control-input" type="checkbox" />
         <label asp-for="DisplayMenuFilter" class="custom-control-label">@T["Enable Admin Menu filter"]</label>
@@ -8,10 +8,18 @@
     <span class="hint">@T["Whether a quick search to filter the admin menu is displayed."]</span>
 </fieldset>
 
-<fieldset class="form-group" asp-validation-class-for="Zones">
+<fieldset class="form-group" asp-validation-class-for="DisplayDarkMode">
     <div class="custom-control custom-checkbox">
         <input asp-for="DisplayDarkMode" class="custom-control-input" type="checkbox" />
         <label asp-for="DisplayDarkMode" class="custom-control-label">@T["Enable dark mode admin theme"]</label>
     </div>
     <span class="hint">@T["Whether a dark mode admin theme can be displayed."]</span>
+</fieldset>
+
+<fieldset class="form-group" asp-validation-class-for="DisplayTitlesInTopbar">
+    <div class="custom-control custom-checkbox">
+        <input asp-for="DisplayTitlesInTopbar" class="custom-control-input" type="checkbox" />
+        <label asp-for="DisplayTitlesInTopbar" class="custom-control-label">@T["Display titles in top bar"]</label>
+    </div>
+    <span class="hint">@T["Whether the titles are displayed in the top bar."]</span>
 </fieldset>

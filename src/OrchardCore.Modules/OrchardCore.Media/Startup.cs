@@ -157,6 +157,9 @@ namespace OrchardCore.Media
             services.AddScoped<MediaProfilesManager>();
             services.AddScoped<IMediaProfileService, MediaProfileService>();
             services.AddRecipeExecutionStep<MediaProfileStep>();
+
+            // Media Name Normalizer
+            services.AddScoped<IMediaNameNormalizerService, NullMediaNameNormalizerService>();
         }
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
@@ -282,6 +285,13 @@ namespace OrchardCore.Media
                 defaults: new { controller = mediaCacheControllerName, action = nameof(MediaCacheController.Purge) }
             );
 
+            routes.MapAreaControllerRoute(
+                name: "Media.Options",
+                areaName: "OrchardCore.Media",
+                pattern: _adminOptions.AdminUrlPrefix + "/Media/Options",
+                defaults: new { controller = adminControllerName, action = nameof(AdminController.Options) }
+            );
+                
             var mediaProfilesControllerName = typeof(MediaProfilesController).ControllerName();
 
             routes.MapAreaControllerRoute(
@@ -326,6 +336,16 @@ namespace OrchardCore.Media
         {
             services.AddScoped<IPermissionProvider, MediaCachePermissions>();
             services.AddScoped<INavigationProvider, MediaCacheAdminMenu>();
+        }
+    }
+
+    [Feature("OrchardCore.Media.Slugify")]
+    public class MediaSlugifyStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            // Media Name Normalizer
+            services.AddScoped<IMediaNameNormalizerService, SlugifyMediaNameNormalizerService>();
         }
     }
 

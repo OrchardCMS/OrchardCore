@@ -52,7 +52,7 @@ namespace OrchardCore.Localization.Drivers
         }
 
         /// <inheritdocs />
-        public override async Task<IDisplayResult> EditAsync(LocalizationSettings section, BuildEditorContext context)
+        public override async Task<IDisplayResult> EditAsync(LocalizationSettings settings, BuildEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
 
@@ -68,9 +68,9 @@ namespace OrchardCore.Localization.Drivers
                         {
                             return new CultureEntry
                             {
-                                Supported = section.SupportedCultures.Contains(cultureInfo.Name, StringComparer.OrdinalIgnoreCase),
+                                Supported = settings.SupportedCultures.Contains(cultureInfo.Name, StringComparer.OrdinalIgnoreCase),
                                 CultureInfo = cultureInfo,
-                                IsDefault = String.Equals(section.DefaultCulture, cultureInfo.Name, StringComparison.OrdinalIgnoreCase)
+                                IsDefault = String.Equals(settings.DefaultCulture, cultureInfo.Name, StringComparison.OrdinalIgnoreCase)
                             };
                         }).ToArray();
 

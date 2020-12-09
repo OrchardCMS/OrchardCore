@@ -1,10 +1,6 @@
 @model ListContentPartsViewModel
 
-<div class="row">
-    <div class="form-group col mb-n1">
-        <h1>@RenderTitleSegments(T["Content Parts"])</h1>
-    </div>
-</div>
+<zone Name="Title"><h1>@RenderTitleSegments(T["Content Parts"])</h1></zone>
 
 <div class="card mb-3 position-sticky action-bar">
     <div class="card-body bg-primary p-3">
