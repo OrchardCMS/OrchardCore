@@ -1,26 +1,27 @@
 @model OrchardCore.Media.ViewModels.DisplayMediaFieldViewModel
 @using OrchardCore.ContentManagement.Metadata.Models
+@using OrchardCore.Mvc.Utilities
 @using OrchardCore.Media
 @{
     var paths = Model.Paths ?? Array.Empty<string>();
     var mediaTexts = Model.Field?.MediaTexts ?? Array.Empty<string>();
+    var name = (Model.PartFieldDefinition.PartDefinition.Name + "-" + Model.PartFieldDefinition.Name).HtmlClassify();
 }
 @if (paths.Any())
 {
-    <div class="form-group row">
-        <label class="col-sm-2 col-form-label col-form-label-sm">@Model.PartFieldDefinition.DisplayName():</label>
-        <div class="col-sm-10">
+    <div class="form-group row field-type-mediafield field-name-@name">
+        <label class="col-xl-2">@Model.PartFieldDefinition.DisplayName()</label>
+        <div class="col-xl-10">
             @for (int i = 0; i < paths.Count(); i++)
             {
                 var path = paths[i];
                 var url = Orchard.AssetUrl(path);
                 var text = !string.IsNullOrEmpty(mediaTexts[i]) ? mediaTexts[i] : path;
-                var ext = System.IO.Path.GetExtension(path).Replace(".", "");
-                var displayImg = Orchard.IsImageExtension(ext);
+                var extension = System.IO.Path.GetExtension(path);
 
-                if (displayImg)
+                if (Orchard.IsImageExtension(extension))
                 {
-                    <div class="card text-white">
+                    <div class="card text-light">
                         <img class="card-img" src="@url" alt="@text">
                         <div class="card-img-overlay">
                             <h5 class="card-title">@text</h5>

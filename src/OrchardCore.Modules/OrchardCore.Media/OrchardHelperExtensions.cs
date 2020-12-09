@@ -7,7 +7,7 @@ namespace OrchardCore.Media
     /// </summary>
     public static class OrchardHelperExtensions
     {
-        private static readonly HashSet<string> _imageExtensions = new HashSet<string>() { "bmp", "gif", "jpeg", "jpg", "png", "tiff", "webp" };
+        private static readonly HashSet<string> _imageExtensions = new HashSet<string>() { ".bmp", ".gif", ".jpeg", ".jpg", ".png", ".tiff", ".webp" };
 
         /// <summary>
         /// Determines if an extension is for an image file.
