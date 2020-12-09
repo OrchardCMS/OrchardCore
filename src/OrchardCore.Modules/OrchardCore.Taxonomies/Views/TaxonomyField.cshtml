@@ -5,20 +5,10 @@
     var name = (Model.PartFieldDefinition.PartDefinition.Name + "-" + Model.PartFieldDefinition.Name).HtmlClassify();
 }
 
-@if (Model.TermContentItemIds.Any())
-{
-    <div class="form-group row field-type-taxonomyfield field-name-@name">
-        <label class="col-xl-2">@Model.PartFieldDefinition.DisplayName()</label>
-        <div class="col-xl-10">
-            @foreach (var contentItemId in Model.TermContentItemIds)
-            {
-                var term = await Orchard.GetTaxonomyTermAsync(Model.TaxonomyContentItemId, contentItemId);
-                @term
-                @if (contentItemId != Model.TermContentItemIds.Last())
-                {
-                    @T[", "]
-                }
-            }
-        </div>
-    </div>
-}
+<div class="field field-type-taxonomyfield field-name-@name">
+    @foreach (var contentItemId in Model.TermContentItemIds)
+    {
+        var term = await Orchard.GetTaxonomyTermAsync(Model.TaxonomyContentItemId, contentItemId);
+        <span class="taxonomy-term">@term</span>
+    }
+</div>
