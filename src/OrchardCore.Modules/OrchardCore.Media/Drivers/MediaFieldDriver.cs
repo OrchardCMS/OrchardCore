@@ -47,7 +47,7 @@ namespace OrchardCore.Media.Drivers
                 model.Part = context.ContentPart;
                 model.PartFieldDefinition = context.PartFieldDefinition;
             })
-            .Location("Detail", "Content")
+            .Location("Detail", "Content:70")
             .Location("Summary", "Content");
         }
 

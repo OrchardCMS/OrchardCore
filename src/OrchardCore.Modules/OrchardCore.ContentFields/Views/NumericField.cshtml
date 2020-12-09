@@ -5,6 +5,12 @@
     var name = (Model.PartFieldDefinition.PartDefinition.Name + "-" + Model.PartFieldDefinition.Name).HtmlClassify();
 }
 
-<div class="field field-type-numericfield field-name-@name">
-    @Model.Value
-</div>
+@if (Model.Value.HasValue)
+{
+    <div class="form-group row field-type-numericfield field-name-@name">
+        <label class="col-xl-2">@Model.PartFieldDefinition.DisplayName()</label>
+        <div class="col-xl-10">
+            @Model.Value
+        </div>
+    </div>
+}
