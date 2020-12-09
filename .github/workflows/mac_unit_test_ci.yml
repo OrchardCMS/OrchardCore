@@ -18,7 +18,7 @@ jobs:
     - name: Setup .NET Core 5.0
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 5.0.100
+        dotnet-version: 5.0.101
     - name: Build and test
       run: |
         dotnet build --configuration Release
