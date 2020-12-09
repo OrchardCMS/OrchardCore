@@ -7,18 +7,19 @@ Key Vault Input: "OrchardCore--OrchardCore---Shells---Database--ConnectionString
 Output: "OrchardCore:OrchardCore_Shells_Database:ConnectionString".
 See https://github.com/OrchardCMS/OrchardCore/issues/6359.
 
-## Configuration
-You will need to specify the name of your Azure Key Vault and [register a service principal](https://docs.microsoft.com/en-us/azure/key-vault/general/group-permissions-for-apps) in Active Directory for accessing your key vault using an access control policy.
+## Authenticating with Azure Key Vault
+By default, the Azure Key Vault configuration provider uses the [Azure Identity library](https://github.com/Azure/azure-sdk-for-net/blob/master/sdk/identity/Azure.Identity/README.md) for Azure Active Directory token authentication support across the Azure SDK. At this time, the OrchardCore.Azure.KeyVault only supports the DefaultAzureCredential setting, which is appropriate for most scenarios where the application is intended to be run in Azure.
 
+When debbugging or executing locally, developers have several options for authenticating with Azure Key Vault. To authenticate in Visual Studio select the Tools > Options menu to launch the Options dialog. Then navigate to the Azure Service Authentication options to sign in with your Azure Active Directory account. Developers using Visual Studio Code can use the [Azure Account Extension], to authenticate via the IDE. 
+
+## Configuration
+In addition, you will need to specify the name of your Azure Key Vault and optionally a reload interval in seconds.
 ```json
 "OrchardCore_Azure_KeyVault": {
     "KeyVaultName": "", // Set the name of your Azure Key Vault.
-    "ReloadInterval": "" // 
+    "ReloadInterval": "" // Optional, sets the timespan to wait between attempts at polling the Azure KeyVault for changes. Leave blank to disable reloading.
 }
 ```
-
-!!! note
-    You should **never check in your client secret into source control** as this defeats the purpose of using a key vault in the first place. Instead, set your client secret as an environment variable on your machine, create a separate azurekeyvault.json file and add it to your `.gitignore`, or use user secrets.
 
 In the `Program.cs`, add `AddOrchardCoreAzureKeyVault()` to the Generic Host in `CreateHostBuilder()`.
 
