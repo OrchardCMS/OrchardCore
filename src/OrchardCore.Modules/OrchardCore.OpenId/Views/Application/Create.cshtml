@@ -134,6 +134,18 @@
         </div>
     </div>
 
+    <div class="form-group" id="ScopeGroup" name="ScopeGroup">
+        <h6>@T["Allowed Scopes"]</h6>
+        @for (var i = 0; i < Model.ScopeEntries.Count; i++)
+        {
+            <div class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input" asp-for="ScopeEntries[i].Selected">
+                <input type="hidden" asp-for="ScopeEntries[i].Name">
+                <label class="custom-control-label" asp-for="ScopeEntries[i].Selected">@Model.ScopeEntries[i].Name</label>
+            </div>
+        }
+    </div>
+
     <div class="form-group collapse" id="RoleGroup" name="RoleGroup">
         <h6>@T["Client Credentials Roles"]</h6>
         @for (var i = 0; i < Model.RoleEntries.Count; i++)
