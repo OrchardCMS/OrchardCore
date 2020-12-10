@@ -33,7 +33,7 @@ namespace OrchardCore.OpenId.Recipes
             var application = await _applicationManager.FindByClientIdAsync(model.ClientId);
 
             var descriptor = new OpenIdApplicationDescriptor();
-            if (application!=null)
+            if (application != null)
             {
                 await _applicationManager.PopulateAsync(application, descriptor);
 
@@ -84,7 +84,7 @@ namespace OrchardCore.OpenId.Recipes
             {
                 descriptor.Permissions.Add(OpenIddictConstants.Permissions.GrantTypes.ClientCredentials);
 
-                if (model.Roles!= null && model.Roles.Any())
+                if (model.Roles != null && model.Roles.Any())
                 {
                     descriptor.Roles.UnionWith(model.Roles);
                 }
