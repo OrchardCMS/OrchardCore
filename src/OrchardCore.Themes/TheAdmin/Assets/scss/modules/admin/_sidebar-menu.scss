@@ -99,7 +99,7 @@ body:not(.left-sidebar-compact) {
                         content: "";
                         width: 92%;
                         height: 1px;
-                        background: rgba(0, 0, 0, 0.1);
+                        background: rgba(140, 130, 115, 0.13);
                         display: block;
                         margin: 0px auto;
                     }
@@ -319,7 +319,7 @@ body:not(.left-sidebar-compact) {
             content: "";
             width: 92%;
             height: 1px;
-            background: rgba(0, 0, 0, 0.1);
+            background: rgba(140, 130, 115, 0.13);
             display: block;
             margin: 0px auto;
         }
@@ -328,6 +328,7 @@ body:not(.left-sidebar-compact) {
         #filter:focus {
             border: none;
             box-shadow: unset;
+            border-radius: unset;
         }
     }
 }

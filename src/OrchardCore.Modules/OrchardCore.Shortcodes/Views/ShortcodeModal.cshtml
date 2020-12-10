@@ -12,6 +12,7 @@ and call @await DisplayAsync(await New.ShortcodeModal()) from the fields view
     var shortcodeDescriptors = await ShortcodeDescriptorManager.GetShortcodeDescriptors();
     var categories = shortcodeDescriptors
         .SelectMany(s => s.Categories)
+        .OrderBy(c => c, StringComparer.OrdinalIgnoreCase)
         .GroupBy(c => c, StringComparer.OrdinalIgnoreCase)
         .Select(g => g.Key);
 

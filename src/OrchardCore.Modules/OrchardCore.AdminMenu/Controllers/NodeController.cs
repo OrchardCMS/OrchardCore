@@ -11,6 +11,7 @@ using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Navigation;
+using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.AdminMenu.Controllers
 {
@@ -28,6 +29,7 @@ namespace OrchardCore.AdminMenu.Controllers
 
         public NodeController(
             IAuthorizationService authorizationService,
+            IEnumerable<IPermissionProvider> permissionProviders,
             IDisplayManager<MenuItem> displayManager,
             IEnumerable<IAdminNodeProviderFactory> factories,
             IAdminMenuService adminMenuService,
