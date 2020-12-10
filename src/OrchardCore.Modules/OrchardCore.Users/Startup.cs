@@ -130,13 +130,15 @@ namespace OrchardCore.Users
 
             // Adds the default token providers used to generate tokens for reset passwords, change email
             // and change telephone number operations, and for two factor authentication token generation.
-            services.AddIdentity<IUser, IRole>(o => {
+            services.AddIdentity<IUser, IRole>(options =>
+            {
                 // Specify OrchardCore User requirements.
-                // A user name cannot include an @ symbol, e.g. be an email address
+                // A user name cannot include an @ symbol, i.e. be an email address
                 // An email address must be provided, and be unique.
-                o.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._+";
-                o.User.RequireUniqueEmail = true;
-            }).AddDefaultTokenProviders();
+                options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._+";
+                options.User.RequireUniqueEmail = true;
+            })
+            .AddDefaultTokenProviders();
 
             // Configure the authentication options to use the application cookie scheme as the default sign-out handler.
             // This is required for security modules like the OpenID module (that uses SignOutAsync()) to work correctly.

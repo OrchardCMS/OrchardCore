@@ -102,8 +102,6 @@ namespace OrchardCore.Users.Drivers
             var usersOfAdminRole = await _userManager.GetUsersInRoleAsync(AdministratorRole);
             if (!model.IsEnabled && user.IsEnabled)
             {
-                // TODO this should all be validated by the UserAccountValidator.
-                // and the error messages supplied through the user service.
                 if (usersOfAdminRole.Count == 1 && usersOfAdminRole.First().UserName == user.UserName)
                 {
                     _notifier.Warning(H["Cannot disable the only administrator."]);
@@ -129,7 +127,7 @@ namespace OrchardCore.Users.Drivers
             {
                 user.IsEnabled = model.IsEnabled;
                 var userContext = new UserContext(user);
-                // This handler should be invoked through the or update methods.
+                // TODO This handler should be invoked through the or update methods.
                 // otherwise it will not be invoked when a workflow changes this value.
                 // or other operation.
                 await Handlers.InvokeAsync((handler, context) => handler.EnabledAsync(userContext), userContext, _logger);
@@ -170,9 +168,6 @@ namespace OrchardCore.Users.Drivers
                         // Make sure we always have at least one administrator account
                         if (usersOfAdminRole.Count == 1 && usersOfAdminRole.First().UserName == user.UserName && role == AdministratorRole)
                         {
-                            // TODO this should be validated by the UserAccountValidator.
-                            // and the error messages supplied through the user service.
-                            // Remove from roles should be allowed, but they should cause an error and be an invalid operation.
                             _notifier.Warning(H["Cannot remove administrator role from the only administrator."]);
                             continue;
                         }
