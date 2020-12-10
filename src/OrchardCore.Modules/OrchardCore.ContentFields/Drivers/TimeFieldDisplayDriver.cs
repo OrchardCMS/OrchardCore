@@ -29,8 +29,8 @@ namespace OrchardCore.ContentFields.Drivers
                 model.Part = context.ContentPart;
                 model.PartFieldDefinition = context.PartFieldDefinition;
             })
-            .Location("Detail", "Content")
-            .Location("Summary", "Content");
+            .Location("Detail", "Content:33")
+            .Location("Summary", "Content:33");
         }
 
         public override IDisplayResult Edit(TimeField field, BuildFieldEditorContext context)

@@ -19,8 +19,8 @@ namespace OrchardCore.ContentFields.Drivers
                 model.Part = context.ContentPart;
                 model.PartFieldDefinition = context.PartFieldDefinition;
             })
-            .Location("Detail", "Content")
-            .Location("Summary", "Content");
+            .Location("Detail", "Content:23")
+            .Location("Summary", "Content:23");
         }
 
         public override IDisplayResult Edit(BooleanField field, BuildFieldEditorContext context)

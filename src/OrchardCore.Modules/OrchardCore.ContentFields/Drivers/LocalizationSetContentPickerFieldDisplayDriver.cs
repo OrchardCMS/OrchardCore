@@ -42,8 +42,8 @@ namespace OrchardCore.ContentFields.Drivers
                 model.Part = context.ContentPart;
                 model.PartFieldDefinition = context.PartFieldDefinition;
             })
-            .Location("Detail", "Content")
-            .Location("Summary", "Content");
+            .Location("Detail", "Content:42")
+            .Location("Summary", "Content:42");
         }
 
         public override IDisplayResult Edit(LocalizationSetContentPickerField field, BuildFieldEditorContext context)

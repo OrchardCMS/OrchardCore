@@ -76,8 +76,8 @@ namespace OrchardCore.Markdown.Drivers
                     model.Html = _htmlSanitizerService.Sanitize(model.Html ?? "");
                 }
             })
-            .Location("Detail", "Content")
-            .Location("Summary", "Content");
+            .Location("Detail", "Content:12")
+            .Location("Summary", "Content:12");
         }
 
         public override IDisplayResult Edit(MarkdownField field, BuildFieldEditorContext context)

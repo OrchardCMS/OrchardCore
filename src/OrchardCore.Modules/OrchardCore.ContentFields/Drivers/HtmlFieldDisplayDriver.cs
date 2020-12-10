@@ -62,8 +62,8 @@ namespace OrchardCore.ContentFields.Drivers
                     });
 
             })
-            .Location("Detail", "Content")
-            .Location("Summary", "Content");
+            .Location("Detail", "Content:11")
+            .Location("Summary", "Content:11");
         }
 
         public override IDisplayResult Edit(HtmlField field, BuildFieldEditorContext context)

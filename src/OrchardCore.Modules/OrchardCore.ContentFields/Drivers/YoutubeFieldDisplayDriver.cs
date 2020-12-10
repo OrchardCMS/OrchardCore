@@ -31,8 +31,8 @@ namespace OrchardCore.ContentFields.Drivers
                 model.Part = context.ContentPart;
                 model.PartFieldDefinition = context.PartFieldDefinition;
             })
-            .Location("Detail", "Content")
-            .Location("Summary", "Content");
+            .Location("Detail", "Content:81")
+            .Location("Summary", "Content:81");
         }
 
         public override IDisplayResult Edit(YoutubeField field, BuildFieldEditorContext context)
