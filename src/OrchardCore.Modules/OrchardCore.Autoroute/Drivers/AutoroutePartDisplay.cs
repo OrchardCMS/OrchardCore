@@ -116,17 +116,10 @@ namespace OrchardCore.Autoroute.Drivers
                 if (!String.IsNullOrEmpty(model.Path) && (!settings.ManageContainedItemRoutes || (settings.ManageContainedItemRoutes && model.Absolute)))
                 {
                     var possibleConflicts = await _session.QueryIndex<AutoroutePartIndex>(o => (o.Published || o.Latest) && o.Path == model.Path).ListAsync();
-                    if (possibleConflicts.Any())
+
+                    if (possibleConflicts.Any(x => x.ContentItemId != model.ContentItem.ContentItemId && x.ContainedContentItemId != model.ContentItem.ContentItemId))
                     {
-                        var hasConflict = false;
-                        if (possibleConflicts.Any(x => x.ContentItemId != model.ContentItem.ContentItemId && (string.IsNullOrEmpty(x.ContainedContentItemId) || x.ContainedContentItemId != model.ContentItem.ContentItemId)))
-                        {
-                            hasConflict = true;
-                        }
-                        if (hasConflict)
-                        {
-                            updater.ModelState.AddModelError(Prefix, nameof(model.Path), S["Your permalink is already in use."]);
-                        }
+                        updater.ModelState.AddModelError(Prefix, nameof(model.Path), S["Your permalink is already in use."]);
                     }
                 }
             }
