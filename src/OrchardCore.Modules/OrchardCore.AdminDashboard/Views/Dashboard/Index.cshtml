@@ -1,0 +1,11 @@
+@model AdminDashboardViewModel
+@{
+}
+
+<style asp-src="~/OrchardCore.AdminDashboard/Styles/admin-dashboard.min.css" debug-src="~/OrchardCore.AdminDashboard/Styles/admin-dashboard.css" at="Head" depends-on="admin, jQuery-ui"></style>
+<script asp-src="~/OrchardCore.AdminDashboard/Scripts/admin-dashboard.min.js" debug-src="~/OrchardCore.AdminDashboard/Scripts/admin-dashboard.js" at="Foot" depends-on="admin, jQuery-ui"></script>
+
+<zone Name="Title"><h1>@RenderTitleSegments(T["Dashboard"])</h1></zone>
+<a class="btn btn-success" href="@Url.Action("Widgets")">@T["Edit widgets"]</a>
+<script at="Foot">
+</script>
