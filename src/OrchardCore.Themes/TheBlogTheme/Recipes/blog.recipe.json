@@ -11,7 +11,7 @@
 
   // The variables are evaluated the first time they are accessed, and reused across steps
   "variables": {
-    "adminUrlPrefix": "[js:configuration('OrchardCore_Admin:AdminUrlPrefix']",
+    "adminUrlPrefix": "[js: configuration('OrchardCore_Admin:AdminUrlPrefix', 'Admin']",
     "blogContentItemId": "[js:uuid()]",
     "menuContentItemId": "[js:uuid()]",
     "tagsContentItemId": "[js:uuid()]",
