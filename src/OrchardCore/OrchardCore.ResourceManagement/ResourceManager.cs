@@ -421,7 +421,7 @@ namespace OrchardCore.ResourceManagement
                 dependencies = new List<string>(resource.Dependencies);
                 if (settings.Dependencies != null)
                 {
-                    dependencies = dependencies.Concat(settings.Dependencies).ToList();
+                    dependencies.AddRange(settings.Dependencies);
                 }
             }
             else if (settings.Dependencies != null)
