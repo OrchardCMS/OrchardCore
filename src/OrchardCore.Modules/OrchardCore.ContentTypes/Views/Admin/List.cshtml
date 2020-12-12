@@ -4,10 +4,8 @@
 
 <div class="card mb-3 position-sticky action-bar">
     <div class="card-body bg-primary p-3">
-        <div class="input-group input-group-sm w-lg-50 d-inline-flex">
-            <div class="input-group-prepend">
-                <span class="input-group-text bg-secondary text-light">@T["Filter"]</span>
-            </div>
+        <div class="input-group input-group-sm w-lg-50 d-inline-flex has-search">
+            <i class="fa fa-search form-control-feedback"></i>
             <input id="search-box" class="form-control" placeholder="@T["Search"]" type="search" autofocus />
         </div>
         <a asp-route-action="Create" id="btnCreate" class="btn btn-sm btn-secondary d-inline-flex float-right create" role="button">@T["Create new type"]</a>
