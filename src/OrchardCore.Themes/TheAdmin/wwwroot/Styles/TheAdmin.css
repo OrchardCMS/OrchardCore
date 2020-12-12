@@ -15720,6 +15720,8 @@
   :root[data-theme='default'] .action-bar {
     top: 3.3rem;
     z-index: 1050; }
+  [dir]:root[data-theme='default'] .list-group li:hover {
+    background-color: #f8f9fa; }
   :root[data-theme='default'] body:not(.left-sidebar-compact) #ta-left-sidebar {
     z-index: calc(1000 + 1);
     position: fixed;
@@ -32350,6 +32352,8 @@
   :root[data-theme='darkmode'] .action-bar {
     top: 3.3rem;
     z-index: 1050; }
+  [dir]:root[data-theme='darkmode'] .list-group li:hover {
+    background-color: #1b1e1f; }
   :root[data-theme='darkmode'] body:not(.left-sidebar-compact) #ta-left-sidebar {
     z-index: calc(1000 + 1);
     position: fixed;
