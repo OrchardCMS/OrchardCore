@@ -85,6 +85,7 @@ namespace OrchardCore.Deployment.Controllers
             var count = await deploymentPlans.CountAsync();
 
             var results = await deploymentPlans
+                .OrderBy(p => p.Name)
                 .Skip(pager.GetStartIndex())
                 .Take(pager.PageSize)
                 .ListAsync();

@@ -1,69 +1,69 @@
-var simplemdeToolbar;
+var mdeToolbar;
 
 $(function () {
-    simplemdeToolbar = [
+    mdeToolbar = [
         {
             name: "guide",
-            action: "https://simplemde.com/markdown-guide",
+            action: "https://www.markdownguide.org/basic-syntax/",
             className: "fab fa-markdown fa-sm",
             title: "Markdown Guide"
         },
         "|",
         {
             name: "undo",
-            action: SimpleMDE.undo,
+            action: EasyMDE.undo,
             className: "fas fa-undo no-disable fa-sm",
             title: "Undo"
         },
         {
             name: "redo",
-            action: SimpleMDE.redo,
+            action: EasyMDE.redo,
             className: "fas fa-redo no-disable fa-sm",
             title: "Redo"
         },
         "|",
         {
             name: "bold",
-            action: SimpleMDE.toggleBold,
+            action: EasyMDE.toggleBold,
             className: "fas fa-bold fa-sm",
             title: "Bold"
         },
         {
             name: "italic",
-            action: SimpleMDE.toggleItalic,
+            action: EasyMDE.toggleItalic,
             className: "fas fa-italic fa-sm",
             title: "Italic"
         },
         {
             name: "strikethrough",
-            action: SimpleMDE.toggleStrikethrough,
+            action: EasyMDE.toggleStrikethrough,
             className: "fas fa-strikethrough fa-sm",
             title: "Strikethrough"
         },
         "|",
         {
             name: "heading",
-            action: SimpleMDE.toggleHeadingSmaller,
+            action: EasyMDE.toggleHeadingSmaller,
             className: "fas fa-heading fa-sm",
             title: "Heading"
         },
         "|",
         {
             name: "code",
-            action: SimpleMDE.toggleCodeBlock,
+            action: EasyMDE.toggleCodeBlock,
             className: "fas fa-code fa-sm",
             title: "Code"
         },
         {
             name: "quote",
-            action: SimpleMDE.toggleBlockquote,
+            action: EasyMDE.toggleBlockquote,
             className: "fas fa-quote-left fa-sm",
             title: "Quote"
         },
         "|",
         {
             name: "link",
-            action: SimpleMDE.drawLink,
+            action: EasyMDE.drawLink,
             className: "fas fa-link fa-sm",
             title: "Create Link"
         },
@@ -106,53 +106,53 @@ $(function () {
         "|",
         {
             name: "unordered-list",
-            action: SimpleMDE.toggleUnorderedList,
+            action: EasyMDE.toggleUnorderedList,
             className: "fa fa-list-ul fa-sm",
             title: "Generic List"
         },
         {
             name: "ordered-list",
-            action: SimpleMDE.toggleOrderedList,
+            action: EasyMDE.toggleOrderedList,
             className: "fa fa-list-ol fa-sm",
             title: "Numbered List"
         },
         {
             name: "table",
-            action: SimpleMDE.drawTable,
+            action: EasyMDE.drawTable,
             className: "fas fa-table fa-sm",
             title: "Insert Table"
         },
         "|",
         {
             name: "horizontal-rule",
-            action: SimpleMDE.drawHorizontalRule,
+            action: EasyMDE.drawHorizontalRule,
             className: "fas fa-minus fa-sm",
             title: "Insert Horizontal Line"
         },
         "|",
         {
             name: "preview",
-            action: SimpleMDE.togglePreview,
+            action: EasyMDE.togglePreview,
             className: "fas fa-eye no-disable fa-sm",
             title: "Toggle Preview"
         },
         {
             name: "side-by-side",
-            action: SimpleMDE.toggleSideBySide,
+            action: EasyMDE.toggleSideBySide,
             className: "fas fa-columns no-disable no-mobile fa-sm",
             title: "Toggle Side by Side"
         },
         {
             name: "fullscreen",
-            action: SimpleMDE.toggleFullScreen,
+            action: EasyMDE.toggleFullScreen,
             className: "fas fa-arrows-alt no-disable no-mobile fa-sm",
             title: "Toggle Fullscreen"
         }
     ];
 });
 
-function initializeSimpleMdeShortcodeWrapper(simpleMde) {
-    const toolbar = simpleMde.gui.toolbar;
+function initializeMdeShortcodeWrapper(mde) {
+    const toolbar = mde.gui.toolbar;
 
     $(toolbar).wrap('<div class="shortcode-modal-wrapper"></div>');
 }
