@@ -170,18 +170,6 @@ namespace OrchardCore.ResourceManagement
             return this;
         }
 
-        public ResourceDefinition SetDependencies(List<string> dependencies)
-        {
-            if (Dependencies == null)
-            {
-                Dependencies = new List<string>();
-            }
-
-            Dependencies.AddRange(dependencies);
-
-            return this;
-        }
-
         public ResourceDefinition SetInnerContent(string innerContent)
         {
             InnerContent = innerContent;
