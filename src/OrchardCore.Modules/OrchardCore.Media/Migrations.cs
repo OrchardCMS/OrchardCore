@@ -27,9 +27,12 @@ namespace OrchardCore.Media
         {
             _contentDefinitionManager.MigrateFieldSettings<MediaField, MediaFieldSettings>();
 
-            return 1;
+            // Return 2 to shortcut migrations on new installations.
+            return 2;
         }
 
+        // This migration sets a hash key for the media token service.
+        // On new installations this is performed by the MediaTokenSettingsUpdater
         public async Task<int> UpdateFrom1Async()
         {
             var siteSettings = await _siteService.LoadSiteSettingsAsync();

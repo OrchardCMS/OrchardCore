@@ -133,6 +133,7 @@ namespace OrchardCore.Media
                 .AddProcessor<ImageVersionProcessor>()
                 .AddProcessor<TokenCommandProcessor>();
 
+            services.AddScoped<IFeatureEventHandler, MediaTokenSettingsUpdater>();
             services.AddSingleton<IMediaTokenService, MediaTokenService>();
 
             // Media Field
@@ -291,7 +292,7 @@ namespace OrchardCore.Media
                 pattern: _adminOptions.AdminUrlPrefix + "/Media/Options",
                 defaults: new { controller = adminControllerName, action = nameof(AdminController.Options) }
             );
-                
+
             var mediaProfilesControllerName = typeof(MediaProfilesController).ControllerName();
 
             routes.MapAreaControllerRoute(
