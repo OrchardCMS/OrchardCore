@@ -5,10 +5,10 @@
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
     <!-- NuGet properties-->
     <Title>OrchardCore Facebook</Title>
-    <Description>$(OCFrameworkDescription)
+    <Description>$(OCCMSDescription)
     
     Provides Facebook Authentication and Social plugnin features.</Description>
-    <PackageTags>$(PackageTags) OrchardCoreFramework</PackageTags>
+    <PackageTags>$(PackageTags) OrchardCoreCMS</PackageTags>
   </PropertyGroup>
 
     <ItemGroup>
