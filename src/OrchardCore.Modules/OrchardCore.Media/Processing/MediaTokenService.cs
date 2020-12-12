@@ -109,7 +109,7 @@ namespace OrchardCore.Media.Processing
         private string GetHash(string commandValues, string queryStringTokenKey)
             =>  _memoryCache.GetOrCreate(queryStringTokenKey, entry =>
                 {
-                    entry.SlidingExpiration = TimeSpan.FromHours(12);
+                    entry.SlidingExpiration = TimeSpan.FromHours(5);
 
                     using var hmac = new HMACSHA256(_hashKey);
 
