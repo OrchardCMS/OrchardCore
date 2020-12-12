@@ -270,7 +270,7 @@ namespace OrchardCore.Sitemaps.Controllers
 
                 await _sitemapManager.UpdateSitemapAsync(sitemap);
 
-                _notifier.Success(H["Sitemap updated successfully"]);
+                _notifier.Success(H["Sitemap updated successfully."]);
 
                 return RedirectToAction(nameof(List));
             }
@@ -296,7 +296,7 @@ namespace OrchardCore.Sitemaps.Controllers
 
             await _sitemapManager.DeleteSitemapAsync(sitemapId);
 
-            _notifier.Success(H["Sitemap deleted successfully"]);
+            _notifier.Success(H["Sitemap deleted successfully."]);
 
             return RedirectToAction(nameof(List));
         }
@@ -320,7 +320,7 @@ namespace OrchardCore.Sitemaps.Controllers
 
             await _sitemapManager.UpdateSitemapAsync(sitemap);
 
-            _notifier.Success(H["Sitemap toggled successfully"]);
+            _notifier.Success(H["Sitemap toggled successfully."]);
 
             return RedirectToAction(nameof(List));
         }

@@ -266,7 +266,7 @@ namespace OrchardCore.Shortcodes.Controllers
 
             await _shortcodeTemplatesManager.RemoveShortcodeTemplateAsync(name);
 
-            _notifier.Success(H["Shortcode template deleted successfully"]);
+            _notifier.Success(H["Shortcode template deleted successfully."]);
 
             return RedirectToAction(nameof(Index));
         }

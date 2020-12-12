@@ -86,8 +86,8 @@ namespace OrchardCore.AdminMenu.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error when retrieving the list of admin menus");
-                _notifier.Error(H["Error when retrieving the list of admin menus"]);
+                _logger.LogError(ex, "Error when retrieving the list of admin menus.");
+                _notifier.Error(H["Error when retrieving the list of admin menus."]);
             }
 
             // Maintain previous route data when generating page links
@@ -188,7 +188,7 @@ namespace OrchardCore.AdminMenu.Controllers
 
                 await _adminMenuService.SaveAsync(adminMenu);
 
-                _notifier.Success(H["Admin menu updated successfully"]);
+                _notifier.Success(H["Admin menu updated successfully."]);
 
                 return RedirectToAction(nameof(List));
             }
@@ -217,7 +217,7 @@ namespace OrchardCore.AdminMenu.Controllers
 
             if (removed == 1)
             {
-                _notifier.Success(H["Admin menu deleted successfully"]);
+                _notifier.Success(H["Admin menu deleted successfully."]);
             }
             else
             {
@@ -280,7 +280,7 @@ namespace OrchardCore.AdminMenu.Controllers
 
             await _adminMenuService.SaveAsync(adminMenu);
 
-            _notifier.Success(H["Admin menu toggled successfully"]);
+            _notifier.Success(H["Admin menu toggled successfully."]);
 
             return RedirectToAction(nameof(List));
         }
