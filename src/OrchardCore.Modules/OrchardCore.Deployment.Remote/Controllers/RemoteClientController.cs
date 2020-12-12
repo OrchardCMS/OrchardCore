@@ -68,7 +68,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
 
             if (!string.IsNullOrWhiteSpace(options.Search))
             {
-                remoteClients = remoteClients.Where(x => x.ClientName.Contains(options.Search)).ToList();
+                remoteClients = remoteClients.Where(x => x.ClientName.Contains(options.Search, StringComparison.OrdinalIgnoreCase)).ToList();
             }
 
             var count = remoteClients.Count();

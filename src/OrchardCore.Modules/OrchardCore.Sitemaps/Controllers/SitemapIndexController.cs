@@ -74,7 +74,7 @@ namespace OrchardCore.Sitemaps.Controllers
 
             if (!string.IsNullOrWhiteSpace(options.Search))
             {
-                sitemaps = sitemaps.Where(x => x.Name.Contains(options.Search));
+                sitemaps = sitemaps.Where(x => x.Name.Contains(options.Search, StringComparison.OrdinalIgnoreCase));
             }
 
             var count = sitemaps.Count();

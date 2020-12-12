@@ -108,7 +108,7 @@ namespace OrchardCore.Workflows.Controllers
 
             if (!string.IsNullOrWhiteSpace(options.Search))
             {
-                query = query.Where(x => x.Name.Contains(options.Search));
+                query = query.Where(x => x.Name.Contains(options.Search, StringComparison.OrdinalIgnoreCase));
             }
 
             switch (options.Order)

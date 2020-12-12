@@ -79,7 +79,7 @@ namespace OrchardCore.Deployment.Controllers
 
             if (!string.IsNullOrWhiteSpace(options.Search))
             {
-                deploymentPlans = deploymentPlans.Where(x => x.Name.Contains(options.Search));
+                deploymentPlans = deploymentPlans.Where(x => x.Name.Contains(options.Search, StringComparison.OrdinalIgnoreCase));
             }
 
             var count = await deploymentPlans.CountAsync();
