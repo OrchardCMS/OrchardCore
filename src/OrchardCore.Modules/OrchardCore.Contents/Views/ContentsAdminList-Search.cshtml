@@ -1,6 +1,8 @@
 @model ContentOptionsViewModel
-<div class="input-group input-group-sm w-lg-50 d-inline-flex">
-    <div class="input-group-prepend">
+<div class="input-group input-group-sm w-lg-50 d-inline-flex has-search">
+    <i class="fa fa-search form-control-feedback"></i>
+    <input asp-for="DisplayText" class="form-control" placeholder="@T["Search all content items"]" type="search" autofocus />
+    <div class="input-group-apppend">
         <button class="btn btn-sm dropdown-toggle" style="border:1px solid lightgrey" type="button" data-toggle="dropdown" id="filter-dropdown" aria-haspopup="true" aria-expanded="false">
             @T["Filters"]
         </button>
@@ -10,5 +12,4 @@
             <a class="dropdown-item" href="?Options.ContentsStatus=Owner">@T["Owned by me"]</a>
         </div>
     </div>
-    <input asp-for="DisplayText" class="form-control" placeholder="@T["Search all content items"]" type="search" />
 </div>
