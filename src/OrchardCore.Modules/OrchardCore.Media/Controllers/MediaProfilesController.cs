@@ -276,7 +276,7 @@ namespace OrchardCore.Media.Controllers
 
             await _mediaProfilesManager.RemoveMediaProfileAsync(name);
 
-            _notifier.Success(H["Media profile deleted successfully"]);
+            _notifier.Success(H["Media profile deleted successfully."]);
 
             return RedirectToAction(nameof(Index));
         }

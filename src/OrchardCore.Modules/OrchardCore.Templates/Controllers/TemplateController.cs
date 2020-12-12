@@ -313,7 +313,7 @@ namespace OrchardCore.Templates.Controllers
                     ? _adminTemplatesManager.RemoveTemplateAsync(name)
                     : _templatesManager.RemoveTemplateAsync(name));
 
-            _notifier.Success(H["Template deleted successfully"]);
+            _notifier.Success(H["Template deleted successfully."]);
 
             return RedirectToReturnUrlOrIndex(returnUrl);
         }
