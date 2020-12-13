@@ -46,7 +46,7 @@
                 <select asp-for="RecipeName" class="form-control">
 
                     <option value=""></option>
-                    @foreach (var recipe in Model.Recipes.OrderBy(r => r.DisplayName))
+                    @foreach (var recipe in Model.Recipes)
                     {
                         <option value="@recipe.Name" selected="@(Model.RecipeName == recipe.Name)">
                             @recipe.DisplayName
