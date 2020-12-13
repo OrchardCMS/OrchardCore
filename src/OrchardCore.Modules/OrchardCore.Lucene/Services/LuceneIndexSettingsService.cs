@@ -1,57 +1,36 @@
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Primitives;
-using OrchardCore.Environment.Cache;
+using Microsoft.Extensions.DependencyInjection;
+using OrchardCore.Documents;
+using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Lucene.Model;
-using YesSql;
 
 namespace OrchardCore.Lucene
 {
     public class LuceneIndexSettingsService
     {
-        private const string CacheKey = nameof(LuceneIndexSettingsService);
-
-        private readonly IStore _store;
-        private readonly ISignal _signal;
-
-        private LuceneIndexSettingsDocument _document;
-        private IChangeToken _changeToken;
-
-        public LuceneIndexSettingsService(IStore store, ISignal signal)
+        public LuceneIndexSettingsService()
         {
-            _store = store;
-            _signal = signal;
         }
 
-        public IChangeToken ChangeToken => _signal.GetToken(CacheKey);
+        /// <summary>
+        /// Loads the index settings document from the store for updating and that should not be cached.
+        /// </summary>
+        public Task<LuceneIndexSettingsDocument> LoadDocumentAsync() => DocumentManager.GetOrCreateMutableAsync();
 
         /// <summary>
-        /// Returns the document from the cache or creates a new one. The result should not be updated.
+        /// Gets the index settings document from the cache for sharing and that should not be updated.
         /// </summary>
-        private async Task<LuceneIndexSettingsDocument> GetDocumentAsync()
+        public async Task<LuceneIndexSettingsDocument> GetDocumentAsync()
         {
-            if (_document == null || (_changeToken?.HasChanged ?? true))
+            var document = await DocumentManager.GetOrCreateImmutableAsync();
+
+            foreach (var name in document.LuceneIndexSettings.Keys)
             {
-                _changeToken = ChangeToken;
-
-                LuceneIndexSettingsDocument document;
-
-                using (var session = _store.CreateSession())
-                {
-                    document = await LoadDocumentAsync(session);
-                }
-
-                foreach (var name in document.LuceneIndexSettings.Keys)
-                {
-                    document.LuceneIndexSettings[name].IndexName = name;
-                    document.LuceneIndexSettings[name].IsReadonly = true;
-                }
-
-                _document = document;
+                document.LuceneIndexSettings[name].IndexName = name;
             }
 
-            return _document;
+            return document;
         }
 
         public async Task<IEnumerable<LuceneIndexSettings>> GetSettingsAsync()
@@ -83,49 +62,33 @@ namespace OrchardCore.Lucene
             return LuceneSettings.StandardAnalyzer;
         }
 
+        public async Task<string> LoadIndexAnalyzerAsync(string indexName)
+        {
+            var document = await LoadDocumentAsync();
+
+            if (document.LuceneIndexSettings.TryGetValue(indexName, out var settings))
+            {
+                return settings.AnalyzerName;
+            }
+
+            return LuceneSettings.StandardAnalyzer;
+        }
+
         public async Task UpdateIndexAsync(LuceneIndexSettings settings)
         {
-            if (settings.IsReadonly)
-            {
-                throw new ArgumentException("The object is read-only");
-            }
-
-            using (var session = _store.CreateSession())
-            {
-                var document = await LoadDocumentAsync(session);
-                document.LuceneIndexSettings[settings.IndexName] = settings;
-
-                session.Save(document);
-                await session.CommitAsync();
-            }
-
-            _signal.SignalToken(CacheKey);
+            var document = await LoadDocumentAsync();
+            document.LuceneIndexSettings[settings.IndexName] = settings;
+            await DocumentManager.UpdateAsync(document);
         }
 
         public async Task DeleteIndexAsync(string indexName)
         {
-            using (var session = _store.CreateSession())
-            {
-                var document = await LoadDocumentAsync(session);
-                document.LuceneIndexSettings.Remove(indexName);
-
-                session.Save(document);
-                await session.CommitAsync();
-            }
-
-            _signal.SignalToken(CacheKey);
+            var document = await LoadDocumentAsync();
+            document.LuceneIndexSettings.Remove(indexName);
+            await DocumentManager.UpdateAsync(document);
         }
 
-        private async Task<LuceneIndexSettingsDocument> LoadDocumentAsync(ISession session)
-        {
-            var document = await session.Query<LuceneIndexSettingsDocument>().FirstOrDefaultAsync();
-
-            if (document == null)
-            {
-                document = new LuceneIndexSettingsDocument();
-            }
-
-            return document;
-        }
+        private static IDocumentManager<LuceneIndexSettingsDocument> DocumentManager =>
+            ShellScope.Services.GetRequiredService<IDocumentManager<LuceneIndexSettingsDocument>>();
     }
 }

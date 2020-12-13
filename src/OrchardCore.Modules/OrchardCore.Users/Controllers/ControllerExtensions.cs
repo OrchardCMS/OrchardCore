@@ -23,9 +23,9 @@ namespace OrchardCore.Users.Controllers
     {
         internal static async Task<bool> SendEmailAsync(this Controller controller, string email, string subject, IShape model)
         {
-            var smtpService = controller.ControllerContext.HttpContext.RequestServices.GetRequiredService<ISmtpService>();
-            var displayHelper = controller.ControllerContext.HttpContext.RequestServices.GetRequiredService<IDisplayHelper>();
-            var htmlEncoder = controller.ControllerContext.HttpContext.RequestServices.GetRequiredService<HtmlEncoder>();
+            var smtpService = controller.HttpContext.RequestServices.GetRequiredService<ISmtpService>();
+            var displayHelper = controller.HttpContext.RequestServices.GetRequiredService<IDisplayHelper>();
+            var htmlEncoder = controller.HttpContext.RequestServices.GetRequiredService<HtmlEncoder>();
             var body = string.Empty;
 
             using (var sw = new StringWriter())
@@ -84,7 +84,7 @@ namespace OrchardCore.Users.Controllers
                             await signInManager.SignInAsync(user, isPersistent: false);
                         }
                         logger.LogInformation(3, "User created a new account with password.");
-                        registrationEvents.Invoke((e, user) => e.RegisteredAsync(user), user, logger);
+                        await registrationEvents.InvokeAsync((e, user) => e.RegisteredAsync(user), user, logger);
 
                         return user;
                     }
@@ -97,12 +97,10 @@ namespace OrchardCore.Users.Controllers
         {
             var userManager = controller.ControllerContext.HttpContext.RequestServices.GetRequiredService<UserManager<IUser>>();
             var code = await userManager.GenerateEmailConfirmationTokenAsync(user);
-            var callbackUrl = controller.Url.Action("ConfirmEmail", "Registration", new { userId = user.Id, code }, protocol: controller.HttpContext.Request.Scheme);
+            var callbackUrl = controller.Url.Action("ConfirmEmail", "Registration", new { userId = user.UserId, code }, protocol: controller.HttpContext.Request.Scheme);
             await SendEmailAsync(controller, user.Email, subject, new ConfirmEmailViewModel() { User = user, ConfirmEmailUrl = callbackUrl });
 
             return callbackUrl;
         }
-
-
     }
 }

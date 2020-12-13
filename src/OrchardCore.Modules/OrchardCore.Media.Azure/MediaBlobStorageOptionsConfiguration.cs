@@ -27,7 +27,7 @@ namespace OrchardCore.Media.Azure
 
         public void Configure(MediaBlobStorageOptions options)
         {
-            var section = _shellConfiguration.GetSection("OrchardCore.Media.Azure");
+            var section = _shellConfiguration.GetSection("OrchardCore_Media_Azure");
 
             options.BasePath = section.GetValue(nameof(options.BasePath), String.Empty);
             options.ContainerName = section.GetValue(nameof(options.ContainerName), String.Empty);
@@ -50,13 +50,14 @@ namespace OrchardCore.Media.Azure
             {
                 var template = FluidTemplate.Parse(options.ContainerName);
 
-                options.ContainerName = template.Render(templateContext, NullEncoder.Default);
-                options.ContainerName.Replace("\r", String.Empty).Replace("\n", String.Empty);
+                // container name must be lowercase
+                options.ContainerName = template.Render(templateContext, NullEncoder.Default).ToLower();
+                options.ContainerName = options.ContainerName.Replace("\r", String.Empty).Replace("\n", String.Empty);
             }
             catch (Exception e)
             {
                 _logger.LogCritical(e, "Unable to parse Azure Media Storage container name.");
-                throw e;
+                throw;
             }
         }
 
@@ -67,12 +68,12 @@ namespace OrchardCore.Media.Azure
                 var template = FluidTemplate.Parse(options.BasePath);
 
                 options.BasePath = template.Render(templateContext, NullEncoder.Default);
-                options.BasePath.Replace("\r", String.Empty).Replace("\n", String.Empty);
+                options.BasePath = options.BasePath.Replace("\r", String.Empty).Replace("\n", String.Empty);
             }
             catch (Exception e)
             {
-                _logger.LogCritical(e, "Unable to parse Azure Media Storage ase path.");
-                throw e;
+                _logger.LogCritical(e, "Unable to parse Azure Media Storage base path.");
+                throw;
             }
         }
     }

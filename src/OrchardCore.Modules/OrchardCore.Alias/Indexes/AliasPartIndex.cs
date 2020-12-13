@@ -1,7 +1,7 @@
-using OrchardCore.ContentManagement;
-using OrchardCore.Alias.Models;
-using YesSql.Indexes;
 using System;
+using OrchardCore.Alias.Models;
+using OrchardCore.ContentManagement;
+using YesSql.Indexes;
 
 namespace OrchardCore.Alias.Indexes
 {

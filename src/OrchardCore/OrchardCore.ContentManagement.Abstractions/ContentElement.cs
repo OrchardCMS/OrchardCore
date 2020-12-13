@@ -40,6 +40,6 @@ namespace OrchardCore.ContentManagement
         public bool Has(string name)
         {
             return Data.ContainsKey(name);
-        }        
+        }
     }
 }

@@ -6,14 +6,9 @@ namespace OrchardCore.Lucene.ViewModels
 {
     public class AdminIndexViewModel
     {
-        public AdminIndexViewModel()
-        {
-            Options = new ContentOptions();
-        }
-
         public IEnumerable<IndexViewModel> Indexes { get; set; }
 
-        public ContentOptions Options { get; set; }
+        public ContentOptions Options { get; set; } = new ContentOptions();
 
         [BindNever]
         public dynamic Pager { get; set; }
@@ -21,17 +16,16 @@ namespace OrchardCore.Lucene.ViewModels
 
     public class ContentOptions
     {
-        public ContentOptions()
-        {
-            BulkAction = ViewModels.ContentsBulkAction.None;
-        }
-
         public ContentsBulkAction BulkAction { get; set; }
 
+        public string Search { get; set; }
+
         #region Lists to populate
+
         [BindNever]
         public List<SelectListItem> ContentsBulkAction { get; set; }
-        #endregion
+
+        #endregion Lists to populate
     }
 
     public enum ContentsBulkAction

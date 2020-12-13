@@ -2,10 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
+using OrchardCore.ContentPreview;
 using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Indexing;
 using OrchardCore.Modules;
@@ -15,8 +17,12 @@ namespace OrchardCore.Lucene.Handlers
     public class LuceneIndexingContentHandler : ContentHandlerBase
     {
         private readonly List<ContentContextBase> _contexts = new List<ContentContextBase>();
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public LuceneIndexingContentHandler() { }
+        public LuceneIndexingContentHandler(IHttpContextAccessor httpContextAccessor)
+        {
+            _httpContextAccessor = httpContextAccessor;
+        }
 
         public override Task PublishedAsync(PublishContentContext context) => AddContextAsync(context);
         public override Task CreatedAsync(CreateContentContext context) => AddContextAsync(context);
@@ -26,9 +32,15 @@ namespace OrchardCore.Lucene.Handlers
 
         private Task AddContextAsync(ContentContextBase context)
         {
-            // A previewed content item is transient, and is marked as such with a negative id.
-            if (context.ContentItem.Id == -1)
+            // Do not index a preview content item.
+            if (_httpContextAccessor.HttpContext?.Features.Get<ContentPreviewFeature>()?.Previewing == true)
             {
+                return Task.CompletedTask;
+            }
+
+            if (context.ContentItem.Id == 0)
+            {
+                // Ignore that case, when Update is called on a content item which has not be "created" yet.
                 return Task.CompletedTask;
             }
 
@@ -70,7 +82,9 @@ namespace OrchardCore.Lucene.Handlers
 
                 foreach (var indexSettings in await luceneIndexSettingsService.GetSettingsAsync())
                 {
-                    if (indexSettings.IndexedContentTypes.Contains(context.ContentItem.ContentType))
+                    var ignoreIndexedCulture = indexSettings.Culture == "any" ? false : context.ContentItem.Content?.LocalizationPart?.Culture != indexSettings.Culture;
+
+                    if (indexSettings.IndexedContentTypes.Contains(context.ContentItem.ContentType) && !ignoreIndexedCulture)
                     {
                         if (!indexSettings.IndexLatest && !publishedLoaded)
                         {

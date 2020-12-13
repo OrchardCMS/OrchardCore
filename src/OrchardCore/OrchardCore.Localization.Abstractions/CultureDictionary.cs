@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 
 namespace OrchardCore.Localization
 {
@@ -34,16 +35,9 @@ namespace OrchardCore.Localization
         /// Gets the localized value.
         /// </summary>
         /// <param name="key">The resource key.</param>
-        /// <returns></returns>
-        public string this[string key] => this[key, null];
-
-        /// <summary>
-        /// Gets the localized value.
-        /// </summary>
-        /// <param name="key">The resource key.</param>
         /// <param name="count">The number to specify the pluralization form.</param>
         /// <returns></returns>
-        public string this[string key, int? count]
+        public string this[string key, int? count = null]
         {
             get
             {
@@ -60,7 +54,7 @@ namespace OrchardCore.Localization
                 var pluralForm = count.HasValue ? PluralRule(count.Value) : 0;
                 if (pluralForm >= translations.Length)
                 {
-                    throw new PluralFormNotFoundException($"Plural form '{pluralForm}' doesn't exist for the key '{key}' in the '{CultureName}' culture.");
+                    throw new PluralFormNotFoundException($"Plural form '{pluralForm}' doesn't exist for the key '{key}' in the '{CultureName}' culture.", new PluralForm(key, pluralForm, CultureInfo.GetCultureInfo(CultureName)));
                 }
 
                 return translations[pluralForm];
@@ -68,7 +62,7 @@ namespace OrchardCore.Localization
         }
 
         /// <summary>
-        /// Gets a list of the culture translations including the plural forms. 
+        /// Gets a list of the culture translations including the plural forms.
         /// </summary>
         public IDictionary<string, string[]> Translations { get; private set; }
 

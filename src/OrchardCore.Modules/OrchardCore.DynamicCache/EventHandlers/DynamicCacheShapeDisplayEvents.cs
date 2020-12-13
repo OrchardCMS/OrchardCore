@@ -3,6 +3,7 @@ using System.IO;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
+using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Implementation;
 using OrchardCore.Environment.Cache;
@@ -21,26 +22,25 @@ namespace OrchardCore.DynamicCache.EventHandlers
         private readonly IDynamicCacheService _dynamicCacheService;
         private readonly ICacheScopeManager _cacheScopeManager;
         private readonly HtmlEncoder _htmlEncoder;
+        private readonly CacheOptions _cacheOptions;
 
         public DynamicCacheShapeDisplayEvents(
             IDynamicCacheService dynamicCacheService,
             ICacheScopeManager cacheScopeManager,
-            HtmlEncoder htmlEncoder)
+            HtmlEncoder htmlEncoder,
+            IOptions<CacheOptions> options)
         {
             _dynamicCacheService = dynamicCacheService;
             _cacheScopeManager = cacheScopeManager;
             _htmlEncoder = htmlEncoder;
+            _cacheOptions = options.Value;
         }
 
         public async Task DisplayingAsync(ShapeDisplayContext context)
         {
-            // TODO: replace with configurable UI
-            var debugMode = false;
-
             // The shape has cache settings and no content yet
             if (context.Shape.Metadata.IsCached && context.ChildContent == null)
             {
-
                 var cacheContext = context.Shape.Metadata.Cache();
                 _cacheScopeManager.EnterScope(cacheContext);
                 _openScopes[cacheContext.CacheId] = cacheContext;
@@ -54,7 +54,7 @@ namespace OrchardCore.DynamicCache.EventHandlers
                     _cached[cacheContext.CacheId] = cacheContext;
                     context.ChildContent = new HtmlString(cachedContent);
                 }
-                else if (debugMode)
+                else if (_cacheOptions.DebugMode)
                 {
                     context.Shape.Metadata.Wrappers.Add("CachedShapeWrapper");
                 }

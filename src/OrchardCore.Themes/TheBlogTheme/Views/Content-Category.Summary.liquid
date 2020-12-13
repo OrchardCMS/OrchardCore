@@ -1,0 +1,8 @@
+<div class="post-preview">
+    {% a display_for:Model.ContentItem %}
+        <h1>
+            <i class="fas {{ Model.ContentItem.Content.Category.Icon.Text }} fa-xs"></i>
+            <span class="align-middle">{{ Model.ContentItem.DisplayText }}</span>
+        </h1>
+    {% enda %}
+</div>

@@ -5,11 +5,9 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using GraphQL;
-using GraphQL.DataLoader;
 using GraphQL.Execution;
 using GraphQL.Validation;
 using GraphQL.Validation.Complexity;
-using GraphQL.Http;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -17,8 +15,8 @@ using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Apis.GraphQL.Queries;
-using OrchardCore.Routing;
 using OrchardCore.Apis.GraphQL.ValidationRules;
+using OrchardCore.Routing;
 
 namespace OrchardCore.Apis.GraphQL
 {
@@ -179,7 +177,7 @@ namespace OrchardCore.Apis.GraphQL
                 _.Listeners.Add(dataLoaderDocumentListener);
             });
 
-            context.Response.StatusCode = (int) (result.Errors == null || result.Errors.Count == 0
+            context.Response.StatusCode = (int)(result.Errors == null || result.Errors.Count == 0
                 ? HttpStatusCode.OK
                 : result.Errors.Any(x => x.Code == RequiresPermissionValidationRule.ErrorCode)
                     ? HttpStatusCode.Unauthorized

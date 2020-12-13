@@ -2,8 +2,8 @@
 @model RetrieveContentTaskViewModel
 
 <fieldset class="form-group" asp-validation-class-for="ContentItemId">
-    <label asp-for="ContentItemId">@T["ContentItemId"]</label>
+    <label asp-for="ContentItemId">@T["Content Item ID"]</label>
     <input type="text" asp-for="ContentItemId" class="form-control code" autofocus />
     <span asp-validation-for="ContentItemId"></span>
-    <span class="hint">@T["Enter a JavaScript expression that evaluates to the Content Item's ID(ContentItemId) to be retrieved."]</span>
+    <span class="hint">@T["Enter a JavaScript expression that evaluates to the Content Item's ID (ContentItemId) to be retrieved. For example: correlationId()."]</span>
 </fieldset>

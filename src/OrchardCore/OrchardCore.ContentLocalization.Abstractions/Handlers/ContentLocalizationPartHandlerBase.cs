@@ -22,6 +22,5 @@ namespace OrchardCore.ContentLocalization.Handlers
         }
         public virtual Task LocalizingAsync(LocalizationContentContext context, TPart part) => Task.CompletedTask;
         public virtual Task LocalizedAsync(LocalizationContentContext context, TPart part) => Task.CompletedTask;
-
     }
 }

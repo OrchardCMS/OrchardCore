@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Localization;
+using OrchardCore.ContentManagement.Workflows;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Models;
@@ -9,14 +10,12 @@ namespace OrchardCore.Workflows.UserTasks.Activities
 {
     public class UserTaskEvent : EventActivity
     {
-        private readonly IStringLocalizer<UserTaskEvent> S;
+        private readonly IStringLocalizer S;
 
         public UserTaskEvent(IStringLocalizer<UserTaskEvent> localizer)
         {
             S = localizer;
         }
-
-        private IStringLocalizer T { get; }
 
         public override string Name => nameof(UserTaskEvent);
         public override LocalizedString DisplayText => S["User Task Event"];
@@ -42,7 +41,7 @@ namespace OrchardCore.Workflows.UserTasks.Activities
 
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            return Actions.Select(x => Outcome(T[x]));
+            return Actions.Select(x => Outcome(S[x]));
         }
 
         public override ActivityExecutionResult Resume(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
@@ -53,7 +52,7 @@ namespace OrchardCore.Workflows.UserTasks.Activities
 
         private string GetProvidedAction(WorkflowExecutionContext workflowContext)
         {
-            return (string)workflowContext.Input["UserAction"];
+            return (string)workflowContext.Input[ContentEventConstants.UserActionInputKey];
         }
     }
 }

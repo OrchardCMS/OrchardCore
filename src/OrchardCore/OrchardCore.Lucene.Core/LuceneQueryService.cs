@@ -79,21 +79,27 @@ namespace OrchardCore.Lucene
                 }
             }
 
-            TopDocs docs = context.IndexSearcher.Search(
-                query,
-                size + from,
-                sortField == null ? Sort.RELEVANCE : new Sort(sortFields.ToArray())
-            );
+            LuceneTopDocs result = null;
+            TopDocs topDocs = null;
 
-            if (from > 0)
+            if (size > 0)
             {
-                docs = new TopDocs(docs.TotalHits - from, docs.ScoreDocs.Skip(from).ToArray(), docs.MaxScore);
+                topDocs = context.IndexSearcher.Search(
+                    query,
+                    size + from,
+                    sortField == null ? Sort.RELEVANCE : new Sort(sortFields.ToArray())
+                );
+
+                if (from > 0)
+                {
+                    topDocs = new TopDocs(topDocs.TotalHits - from, topDocs.ScoreDocs.Skip(from).ToArray(), topDocs.MaxScore);
+                }
+
+                var collector = new TotalHitCountCollector();
+                context.IndexSearcher.Search(query, collector);
+
+                result = new LuceneTopDocs() { TopDocs = topDocs, Count = collector.TotalHits };
             }
-
-            var collector = new TotalHitCountCollector();
-            context.IndexSearcher.Search(query, collector);
-
-            var result = new LuceneTopDocs { TopDocs = docs, Count = collector.TotalHits };
 
             return Task.FromResult(result);
         }
@@ -119,7 +125,6 @@ namespace OrchardCore.Lucene
 
         public static List<string> Tokenize(string fieldName, string text, Analyzer analyzer)
         {
-
             if (string.IsNullOrEmpty(text))
             {
                 return new List<string>();

@@ -33,6 +33,12 @@ The following properties are available on `HtmlBodyPart`:
 | `Content` | The raw content of the part. |
 | `ContentItem` | The content item containing this part. |
 
+## Sanitization
+
+By default all HTML input is sanitized when the `HtmlBodyPart` is saved.
+
+You can disable this by unchecking the `Sanitize HTML` setting, or further configuring the [HTML Sanitizer](../../core/Sanitizer/README.md)
+
 ## Editors
 
 The __HtmlBody Part__ editor can be different for each content type. In the __HtmlBody Part__ settings of a 
@@ -54,8 +60,8 @@ render the actual HTML for the editor.
 
 #### Declaration
 
-To declare a new editor, create a shape named `HtmlBody_Option__{Name}` where `{Name}` is a value 
-of your choosing. This will be represented by a file named `HtmlBody-{Name}.Option.cshtml`.
+To declare a new editor, create a shape named `HtmlBodyPart_Option__{Name}` where `{Name}` is a value 
+of your choosing. This will be represented by a file named `HtmlBodyPart-{Name}.Option.cshtml`.
 
 Sample content:
 
@@ -68,7 +74,7 @@ Sample content:
 
 #### HTML Editor
 
-To define what HTML to render when the editor is selected from the settings, a shape named `HtmlBody_Editor__{Name}` corresponding to a file `Body-{Name}.Editor.cshtml` can be created.
+To define what HTML to render when the editor is selected from the settings, a shape named `HtmlBodyPart_Edit__{Name}` corresponding to a file `HtmlBodyPart-{Name}.Edit.cshtml` can be created.
 
 Sample content:
 
@@ -86,8 +92,8 @@ Sample content:
 ### Overriding the predefined editors
 
 You can override the HTML editor for the `Default` editor by creating a shape file named  
-`HtmlBody.Editor.cshtml`. The Wysiwyg editor is defined by using the file named  
-`HtmlBody-Wysiwyg.Editor.cshtml`.
+`HtmlBodyPart.Edit.cshtml`. The Wysiwyg editor is defined by using the file named  
+`HtmlBodyPart-Wysiwyg.Edit.cshtml`.
 
 ## CREDITS
 

@@ -1,5 +1,4 @@
 @using OrchardCore.ContentManagement;
-@using OrchardCore.ContentManagement.Metadata.Settings;
 @using OrchardCore.Flows.Models;
 @using OrchardCore.Flows.ViewModels;
 @using OrchardCore.Mvc.Utilities;
@@ -7,18 +6,16 @@
 @model FlowPartEditViewModel
 
 @inject IContentManager ContentManager
-@inject OrchardCore.ContentManagement.Metadata.IContentDefinitionManager ContentDefinitionManager
 @inject OrchardCore.ContentManagement.Display.IContentItemDisplayManager ContentItemDisplayManager
 
 @{
-    var widgetContentTypes = ContentDefinitionManager.ListTypeDefinitions().Where(t => t.GetSettings<ContentTypeSettings>().Stereotype == "Widget");
+    var widgetContentTypes = Model.ContainedContentTypeDefinitions;
     var widgetTemplatePlaceholderId = Html.Id("widgetTemplatePlaceholder");
     var parentContentType = Model.FlowPart.ContentItem.ContentType;
     string partName = ((dynamic)Model).Metadata.Name;
 }
 
 <script asp-name="jQuery-ui" at="Foot"></script>
-
 <div class="form-group">
     <div id="@widgetTemplatePlaceholderId" class="widget-template-placeholder widget-template-placeholder-flowpart flowpart-@partName.HtmlClassify() row mx-0" data-buildeditorurl="@Url.Action("BuildEditor", "Admin", new { area = "OrchardCore.Flows" })">
         @{ var htmlFieldPrefix = this.ViewContext.ViewData.TemplateInfo.HtmlFieldPrefix; }
@@ -36,21 +33,23 @@
                 ContentItem: widget,
                 BuildEditor: true,
                 ParentContentType: parentContentType,
+                ContainedContentTypes: Model.ContainedContentTypeDefinitions,
                 CollectionPartName: partName,
-                //FlowPart Card Specific - For Frame 
+                //FlowPart Card Specific - For Frame
                 ColumnSize: colSize,
                 //Card Specific Properties
                 TargetId: widgetTemplatePlaceholderId,
                 Inline: false,
                 CanMove: true,
                 CanDelete: true,
-                //Input hidden 
+                //Input hidden
                 //Prefixes
+                PrefixValue: widget.ContentItemId,
                 HtmlFieldPrefix: htmlFieldPrefix,
-                PrefixesId: Html.IdFor(x => x.Prefixes),
+                PrefixesId: widget.ContentItemId + "_" + Html.IdFor(x => x.Prefixes),
                 PrefixesName: Html.NameFor(x => x.Prefixes),
                 //Content Types
-                ContentTypesId: Html.IdFor(x => x.ContentTypes),
+                ContentTypesId: widget.ContentItemId + "_" + Html.IdFor(x => x.ContentTypes),
                 ContentTypesName: Html.NameFor(x => x.ContentTypes)
             );
             @await DisplayAsync(contentCard)
@@ -58,12 +57,12 @@
     </div>
     <div class="btn-widget-add-below-wrapper w-100">
         <div class="btn-widget-add-below w-100 border border-info">
-            <div class="btn-group ">
+            <div class="btn-group">
                 <button type="button" title="@T["Add Widget"]" class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     <i class="fa fa-plus" aria-hidden="true"></i>
                 </button>
                 <div class="dropdown-menu">
-                    @foreach (var type in widgetContentTypes)
+                    @foreach (var type in widgetContentTypes.OrderBy(w => w.DisplayName))
                     {
                         <a class="dropdown-item add-widget  btn-sm"
                         data-target-id="@widgetTemplatePlaceholderId"
@@ -97,7 +96,12 @@
             debug-src="~/OrchardCore.Flows/Styles/flows.edit.min.css"></style>
     }
 
-    <script at="Foot">
+<script at="Foot">
+    function toggleWidgets(){
+        $('.toggleAll > svg').toggleClass('fa-angle-double-up fa-angle-double-down');
+        $('.widget.widget-editor.card').toggleClass('collapsed');
+    }
+
     @*Only apply sortable if element is present in dom, do not call sortable on scripts for mock widgets *@
     if ($('#@widgetTemplatePlaceholderId').length == 1) {
         $("#@widgetTemplatePlaceholderId").sortable({
@@ -190,7 +194,7 @@
                 widgetItemDestId = null;
             },
             over: function (event, ui) {
-                var $self = $(this); 
+                var $self = $(this);
                 if (lastContainer[0] != this) {
                     lastContainer.toggleClass('widget-dropzone-hint');
                     lastContainer = $self;

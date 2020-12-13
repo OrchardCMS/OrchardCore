@@ -3,6 +3,7 @@ using OrchardCore.Apis;
 using OrchardCore.Autoroute.Models;
 using OrchardCore.ContentManagement.GraphQL;
 using OrchardCore.ContentManagement.GraphQL.Queries;
+using OrchardCore.ContentManagement.Records;
 using OrchardCore.Modules;
 
 namespace OrchardCore.Autoroute.GraphQL
@@ -15,6 +16,7 @@ namespace OrchardCore.Autoroute.GraphQL
             services.AddInputObjectGraphType<AutoroutePart, AutorouteInputObjectType>();
             services.AddObjectGraphType<AutoroutePart, AutorouteQueryObjectType>();
             services.AddTransient<IIndexAliasProvider, AutoroutePartIndexAliasProvider>();
+            services.AddWhereInputIndexPropertyProvider<AutoroutePartIndex>();
         }
     }
 }

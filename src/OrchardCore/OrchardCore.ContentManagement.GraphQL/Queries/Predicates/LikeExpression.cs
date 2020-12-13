@@ -1,5 +1,3 @@
-using System.Text;
-
 namespace OrchardCore.ContentManagement.GraphQL.Queries.Predicates
 {
     /// <summary>
@@ -19,6 +17,11 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Predicates
         {
             _propertyName = propertyName;
             _value = value;
+        }
+
+        public void SearchUsedAlias(IPredicateQuery predicateQuery)
+        {
+            predicateQuery.SearchUsedAlias(_propertyName);
         }
 
         public string ToSqlString(IPredicateQuery predicateQuery)

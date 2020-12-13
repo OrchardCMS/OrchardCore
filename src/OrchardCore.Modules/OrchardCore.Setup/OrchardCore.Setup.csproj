@@ -14,10 +14,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.Data\OrchardCore.Data.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.DisplayManagement\OrchardCore.DisplayManagement.csproj" />
+    <ProjectReference Include="..\..\OrchardCore\OrchardCore.Infrastructure.Abstractions\OrchardCore.Infrastructure.Abstractions.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Localization.Core\OrchardCore.Localization.Core.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Module.Targets\OrchardCore.Module.Targets.csproj" />
-    <ProjectReference Include="..\..\OrchardCore\OrchardCore.Data\OrchardCore.Data.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Recipes.Abstractions\OrchardCore.Recipes.Abstractions.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Setup.Core\OrchardCore.Setup.Core.csproj" />
   </ItemGroup>

@@ -16,6 +16,4 @@ namespace OrchardCore.ContentFields.ViewModels
         [BindNever]
         public IList<VueMultiselectItemViewModel> SelectedItems { get; set; }
     }
-
-
 }

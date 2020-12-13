@@ -22,3 +22,19 @@
 .graphiql-container .topBar {
     height: unset;
 }
+
+.graphiql-explorer-node svg{
+    margin-left: 0 !important;
+}
+
+:root .graphiql-container .CodeMirror {
+    height: 100% !important;
+}
+
+:root .graphiql-container .CodeMirror pre {
+    padding-left: unset;
+    line-height: unset;
+    margin: unset;
+    font-size: unset;
+    overflow: unset;
+}

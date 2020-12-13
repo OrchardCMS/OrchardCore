@@ -41,7 +41,8 @@ function confirmDialog({callback, ...options}) {
     });
 }
 
-$(function () {
+// Prevents page flickering while downloading css
+$(window).on("load", function() {
     $("body").removeClass("preload");
 });
 

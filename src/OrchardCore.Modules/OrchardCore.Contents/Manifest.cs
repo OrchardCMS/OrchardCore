@@ -2,9 +2,9 @@ using OrchardCore.Modules.Manifest;
 
 [assembly: Module(
     Name = "Contents",
-    Author = "The Orchard Team",
-    Website = "https://orchardproject.net",
-    Version = "2.0.0"
+    Author = ManifestConstants.OrchardCoreTeam,
+    Website = ManifestConstants.OrchardCoreWebsite,
+    Version = ManifestConstants.OrchardCoreVersion
 )]
 
 [assembly: Feature(
@@ -19,10 +19,34 @@ using OrchardCore.Modules.Manifest;
     Category = "Content Management"
 )]
 
-[assembly:Feature(
+[assembly: Feature(
     Id = "OrchardCore.Contents.FileContentDefinition",
     Name = "File Content Definition",
     Description = "Stores Content Definition in a local file.",
     Dependencies = new[] { "OrchardCore.Contents" },
+    Category = "Content Management"
+)]
+
+[assembly: Feature(
+    Id = "OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget",
+    Name = "Export Content To Deployment Target",
+    Description = "Adds an export to deployment target action to the content items list.",
+    Dependencies = new[] { "OrchardCore.Contents", "OrchardCore.Deployment" },
+    Category = "Content Management"
+)]
+
+[assembly: Feature(
+    Id = "OrchardCore.Contents.Deployment.AddToDeploymentPlan",
+    Name = "Add Content To Deployment Plan",
+    Description = "Adds an add to deployment plan action to the content items list.",
+    Dependencies = new[] { "OrchardCore.Contents", "OrchardCore.Deployment" },
+    Category = "Content Management"
+)]
+
+[assembly: Feature(
+    Id = "OrchardCore.Contents.Deployment.Download",
+    Name = "View Or Download Content As JSON",
+    Description = "View or download content as JSON from the content items list.",
+    Dependencies = new[] { "OrchardCore.Contents", "OrchardCore.Deployment" },
     Category = "Content Management"
 )]

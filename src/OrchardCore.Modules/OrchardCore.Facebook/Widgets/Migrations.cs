@@ -1,13 +1,14 @@
-using OrchardCore.Facebook.Widgets.Models;
+using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.Data.Migration;
+using OrchardCore.Facebook.Widgets.Models;
+using OrchardCore.Modules;
 using OrchardCore.Recipes.Services;
-using System.Threading.Tasks;
-using OrchardCore.Facebook.Widgets.Settings;
 
 namespace OrchardCore.Facebook.Widgets
 {
+    [Feature(FacebookConstants.Features.Widgets)]
     public class WidgetMigrations : DataMigration
     {
         private readonly IRecipeMigrator _recipeMigrator;

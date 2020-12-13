@@ -16,15 +16,15 @@ namespace OrchardCore.Queries.Deployment
 
         public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
         {
-            var allQueriesState = step as AllQueriesDeploymentStep;
+            var allQueriesStep = step as AllQueriesDeploymentStep;
 
-            if (allQueriesState == null)
+            if (allQueriesStep == null)
             {
                 return;
             }
 
             var queries = await _queryManager.ListQueriesAsync();
-            
+
             result.Steps.Add(new JObject(
                 new JProperty("name", "Queries"),
                 new JProperty("Queries", queries.Select(JObject.FromObject))

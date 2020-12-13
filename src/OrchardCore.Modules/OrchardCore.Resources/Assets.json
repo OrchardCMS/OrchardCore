@@ -15,6 +15,12 @@
   },
   {
     "inputs": [
+      "node_modules/bootstrap/dist/js/bootstrap.bundle.js"
+    ],
+    "output": "wwwroot/Scripts/bootstrap.bundle.js"
+  },
+  {
+    "inputs": [
       "node_modules/popper.js/dist/umd/popper.js"
     ],
     "output": "wwwroot/Scripts/popper.js"
@@ -50,7 +56,19 @@
     "inputs": [
       "node_modules/codemirror/lib/codemirror.css"
     ],
-    "output": "wwwroot/Scripts/codemirror/codemirror.css"
+    "output": "wwwroot/Styles/codemirror/codemirror.css"
+  },
+  {
+    "inputs": [
+      "node_modules/codemirror/addon/display/fullscreen.css"
+    ],
+    "output": "wwwroot/Styles/codemirror/addon/display/fullscreen.css"
+  },
+  {
+    "inputs": [
+      "node_modules/codemirror/addon/hint/show-hint.css"
+    ],
+    "output": "wwwroot/Styles/codemirror/addon/hint/show-hint.css"
   },
   {
     "inputs": [
@@ -60,9 +78,39 @@
   },
   {
     "inputs": [
+      "node_modules/codemirror/addon/selection/active-line.js"
+    ],
+    "output": "wwwroot/Scripts/codemirror/addon/selection/active-line.js"
+  },
+  {
+    "inputs": [
       "node_modules/codemirror/addon/display/autorefresh.js"
     ],
     "output": "wwwroot/Scripts/codemirror/addon/display/autorefresh.js"
+  },
+  {
+    "inputs": [
+      "node_modules/codemirror/addon/display/fullscreen.js"
+    ],
+    "output": "wwwroot/Scripts/codemirror/addon/display/fullscreen.js"
+  },
+  {
+    "inputs": [
+      "node_modules/codemirror/addon/edit/closetag.js"
+    ],
+    "output": "wwwroot/Scripts/codemirror/addon/edit/closetag.js"
+  },
+  {
+    "inputs": [
+      "node_modules/codemirror/addon/hint/show-hint.js"
+    ],
+    "output": "wwwroot/Scripts/codemirror/addon/hint/show-hint.js"
+  },
+  {
+    "inputs": [
+      "node_modules/codemirror/addon/hint/sql-hint.js"
+    ],
+    "output": "wwwroot/Scripts/codemirror/addon/hint/sql-hint.js"
   },
   {
     "inputs": [
@@ -75,6 +123,18 @@
       "node_modules/codemirror/addon/mode/simple.js"
     ],
     "output": "wwwroot/Scripts/codemirror/addon/mode/simple.js"
+  },
+  {
+    "inputs": [
+      "node_modules/codemirror/mode/css/css.js"
+    ],
+    "output": "wwwroot/Scripts/codemirror/mode/css/css.js"
+  },
+  {
+    "inputs": [
+      "node_modules/codemirror/mode/htmlmixed/htmlmixed.js"
+    ],
+    "output": "wwwroot/Scripts/codemirror/mode/htmlmixed/htmlmixed.js"
   },
   {
     "inputs": [
@@ -105,6 +165,12 @@
       "node_modules/jquery/dist/jquery.slim.js"
     ],
     "output": "wwwroot/Scripts/jquery.slim.js"
+  },
+  {
+    "inputs": [
+      "node_modules/jquery.easing/jquery.easing.js"
+    ],
+    "output": "wwwroot/Scripts/jquery.easing.js"
   },
   {
     "inputs": [
@@ -142,6 +208,12 @@
   },
   {
     "inputs": [
+      "Assets/trumbowyg/js/trumbowyg.shortcodes.js"
+    ],
+    "output": "wwwroot/Scripts/trumbowyg.shortcodes.js"
+  },
+  {
+    "inputs": [
       "Assets/trumbowyg/plugins/*/*.js"
     ],
     "output": "wwwroot/Scripts/trumbowyg-plugins.js"
@@ -151,5 +223,82 @@
       "Assets/trumbowyg/js/resizable-resolveconflict.js"
     ],
     "output": "wwwroot/Scripts/resizable-resolveconflict.js"
+  },
+  {
+    "copy": true,
+    "inputs": [
+      "node_modules/vue/dist/vue.js"
+    ],
+    "output": "wwwroot/Scripts/vue.js"
+  },
+  {
+    "copy": true,
+    "inputs": [
+      "node_modules/vue/dist/vue.min.js"
+    ],
+    "output": "wwwroot/Scripts/vue.min.js"
+  },
+  {
+    "copy": true,
+    "inputs": [
+      "node_modules/vue-multiselect/dist/vue-multiselect.min.js"
+    ],
+    "output": "wwwroot/Scripts/vue-multiselect.min.js"
+  },
+  {
+    "copy": true,
+    "inputs": [
+      "node_modules/vue-multiselect/dist/vue-multiselect.min.css*"
+    ],
+    "output": "wwwroot/Styles/@"
+  },
+  {
+    "copy": true,
+    "inputs": [
+      "node_modules/sortablejs/Sortable.min.js"
+    ],
+    "output": "wwwroot/Scripts/Sortable.min.js"
+  },
+  {
+    "copy": true,
+    "inputs": [
+      "node_modules/sortablejs/Sortable.js"
+    ],
+    "output": "wwwroot/Scripts/Sortable.js"
+  },
+  {
+    "copy": true,
+    "inputs": [
+      "node_modules/vuedraggable/dist/vuedraggable.umd.*"
+    ],
+    "output": "wwwroot/Scripts/@"
+  },
+  {
+    "copy": true,
+    "inputs": [
+      "node_modules/@fortawesome/fontawesome-free/css/*"
+    ],
+    "output": "wwwroot/Vendor/fontawesome-free/css/@"
+  },
+  {
+    "copy": true,
+    "inputs": [
+      "node_modules/@fortawesome/fontawesome-free/js/*"
+    ],
+    "output": "wwwroot/Vendor/fontawesome-free/js/@"
+  },
+  {
+    "copy": true,
+    "inputs": [
+      "node_modules/@fortawesome/fontawesome-free/webfonts/*"
+    ],
+    "output": "wwwroot/Vendor/fontawesome-free/webfonts/@"
+  },
+  {
+    "generateSourceMaps": false,
+    "inputs": [
+      "Assets/js/js.cookie.js"
+    ],
+    "output": "wwwroot/Scripts/js.cookie.js"
   }
 ]

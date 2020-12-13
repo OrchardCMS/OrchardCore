@@ -95,7 +95,7 @@ namespace OrchardCore.ContentManagement
                         break;
                 }
             }
-            
+
             return contentItem;
         }
 
@@ -104,5 +104,4 @@ namespace OrchardCore.ContentManagement
             return objectType == typeof(ContentItem);
         }
     }
-   
 }

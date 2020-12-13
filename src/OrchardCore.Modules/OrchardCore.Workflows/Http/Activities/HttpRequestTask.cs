@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
+using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
@@ -15,25 +16,93 @@ namespace OrchardCore.Workflows.Http.Activities
 {
     public class HttpRequestTask : TaskActivity
     {
-        private readonly IHttpContextAccessor _httpContextAccessor;
+        private static readonly Dictionary<int, string> HttpStatusCodeDictionary = new Dictionary<int, string>
+        {
+            { 100, "Continue" },
+            { 101, " Switching Protocols" },
+            { 102 , "Processing" },
+            { 200 , "OK" },
+            { 201 , "Created" },
+            { 202 , "Accepted" },
+            { 203 , "Non-authoritative Information" },
+            { 204 , "No Content" },
+            { 205 , "Reset Content" },
+            { 206 , "Partial Content" },
+            { 207 , "Multi-Status" },
+            { 208 , "Already Reported" },
+            { 226 , "IM Used" },
+            { 300 , "Multiple Choices" },
+            { 301 , "Moved Permanently" },
+            { 302 , "Found" },
+            { 303 , "See Other" },
+            { 304 , "Not Modified" },
+            { 305 , "Use Proxy" },
+            { 307 , "Temporary Redirect" },
+            { 308 , "Permanent Redirect" },
+            { 400 , "Bad Request" },
+            { 401 , "Unauthorized" },
+            { 402 , "Payment Required" },
+            { 403 , "Forbidden" },
+            { 404 , "Not Found" },
+            { 405 , "Method Not Allowed" },
+            { 406 , "Not Acceptable" },
+            { 407 , "Proxy Authentication Required" },
+            { 408 , "Request Timeout" },
+            { 409 , "Conflict" },
+            { 410 , "Gone" },
+            { 411 , "Length Required" },
+            { 412 , "Precondition Failed" },
+            { 413 , "Payload Too Large" },
+            { 414 , "Request-URI Too Long" },
+            { 415 , "Unsupported Media Type" },
+            { 416 , "Requested Range Not Satisfiable" },
+            { 417 , "Expectation Failed" },
+            { 418 , "I'm a teapot" },
+            { 421 , "Misdirected Request" },
+            { 422 , "Unprocessable Entity" },
+            { 423 , "Locked" },
+            { 424 , "Failed Dependency" },
+            { 426 , "Upgrade Required" },
+            { 428 , "Precondition Required" },
+            { 429 , "Too Many Requests" },
+            { 431 , "Request Header Fields Too Large" },
+            { 444 , "Connection Closed Without Response" },
+            { 451 , "Unavailable For Legal Reasons" },
+            { 499 , "Client Closed Request" },
+            { 500 , "Internal Server Error" },
+            { 501 , "Not Implemented" },
+            { 502 , "Bad Gateway" },
+            { 503 , "Service Unavailable" },
+            { 504 , "Gateway Timeout" },
+            { 505 , "HTTP Version Not Supported" },
+            { 506 , "Variant Also Negotiates" },
+            { 507 , "Insufficient Storage" },
+            { 508 , "Loop Detected" },
+            { 510 , "Not Extended" },
+            { 511 , "Network Authentication Required" },
+            { 599 , "Network Connect Timeout Error" }
+        };
+
+        private static readonly HttpClient _httpClient = new HttpClient();
         private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
-        private readonly IStringLocalizer<HttpRequestTask> S;
-        
+        private readonly IStringLocalizer S;
+        private readonly UrlEncoder _urlEncoder;
+
         public HttpRequestTask(
             IStringLocalizer<HttpRequestTask> localizer,
-            IHttpContextAccessor httpContextAccessor,
-            IWorkflowExpressionEvaluator expressionEvaluator
+            IWorkflowExpressionEvaluator expressionEvaluator,
+            UrlEncoder urlEncoder
         )
         {
             S = localizer;
-            _httpContextAccessor = httpContextAccessor;
             _expressionEvaluator = expressionEvaluator;
+            _urlEncoder = urlEncoder;
         }
 
         public override string Name => nameof(HttpRequestTask);
-        
+
         public override LocalizedString DisplayText => S["Http Request Task"];
-        
+
         public override LocalizedString Category => S["HTTP"];
 
         public WorkflowExpression<string> Url
@@ -74,78 +143,17 @@ namespace OrchardCore.Workflows.Http.Activities
 
         public override IEnumerable<Outcome> GetPossibleOutcomes(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            var httpStatusCodeDictionary = new Dictionary<int, string>
-            {
-                { 100, "Continue" },
-                { 101, " Switching Protocols" },
-                { 102 , "Processing" },
-                { 200 , "OK" },
-                { 201 , "Created" },
-                { 202 , "Accepted" },
-                { 203 , "Non-authoritative Information" },
-                { 204 , "No Content" },
-                { 205 , "Reset Content" },
-                { 206 , "Partial Content" },
-                { 207 , "Multi-Status" },
-                { 208 , "Already Reported" },
-                { 226 , "IM Used" },
-                { 300 , "Multiple Choices" },
-                { 301 , "Moved Permanently" },
-                { 302 , "Found" },
-                { 303 , "See Other" },
-                { 304 , "Not Modified" },
-                { 305 , "Use Proxy" },
-                { 307 , "Temporary Redirect" },
-                { 308 , "Permanent Redirect" },
-                { 400 , "Bad Request" },
-                { 401 , "Unauthorized" },
-                { 402 , "Payment Required" },
-                { 403 , "Forbidden" },
-                { 404 , "Not Found" },
-                { 405 , "Method Not Allowed" },
-                { 406 , "Not Acceptable" },
-                { 407 , "Proxy Authentication Required" },
-                { 408 , "Request Timeout" },
-                { 409 , "Conflict" },
-                { 410 , "Gone" },
-                { 411 , "Length Required" },
-                { 412 , "Precondition Failed" },
-                { 413 , "Payload Too Large" },
-                { 414 , "Request-URI Too Long" },
-                { 415 , "Unsupported Media Type" },
-                { 416 , "Requested Range Not Satisfiable" },
-                { 417 , "Expectation Failed" },
-                { 418 , "I'm a teapot" },
-                { 421 , "Misdirected Request" },
-                { 422 , "Unprocessable Entity" },
-                { 423 , "Locked" },
-                { 424 , "Failed Dependency" },
-                { 426 , "Upgrade Required" },
-                { 428 , "Precondition Required" },
-                { 429 , "Too Many Requests" },
-                { 431 , "Request Header Fields Too Large" },
-                { 444 , "Connection Closed Without Response" },
-                { 451 , "Unavailable For Legal Reasons" },
-                { 499 , "Client Closed Request" },
-                { 500 , "Internal Server Error" },
-                { 501 , "Not Implemented" },
-                { 502 , "Bad Gateway" },
-                { 503 , "Service Unavailable" },
-                { 504 , "Gateway Timeout" },
-                { 505 , "HTTP Version Not Supported" },
-                { 506 , "Variant Also Negotiates" },
-                { 507 , "Insufficient Storage" },
-                { 508 , "Loop Detected" },
-                { 510 , "Not Extended" },
-                { 511 , "Network Authentication Required" },
-                { 599 , "Network Connect Timeout Error" }
-            };
             var outcomes = !string.IsNullOrWhiteSpace(HttpResponseCodes)
                 ? HttpResponseCodes.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(x =>
                 {
                     var status = int.Parse(x.Trim());
-                    var description = httpStatusCodeDictionary.ContainsKey(status) ? $"{status} {httpStatusCodeDictionary[status]}" : status.ToString();
-                    return new Outcome(status.ToString(), S[description]);
+
+                    var description = HttpStatusCodeDictionary.TryGetValue(status, out var text)
+                        ? $"{status} {text}"
+                        : status.ToString()
+                        ;
+
+                    return new Outcome(status.ToString(), new LocalizedString(description, description));
                 }).ToList()
                 : new List<Outcome>();
             outcomes.Add(new Outcome("UnhandledHttpStatus", S["Unhandled Http Status"]));
@@ -155,44 +163,38 @@ namespace OrchardCore.Workflows.Http.Activities
 
         public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            // TODO: Refactor this to using HttpClientFactory.
-            using (var httpClient = new HttpClient())
+            var headersText = await _expressionEvaluator.EvaluateAsync(Headers, workflowContext, _urlEncoder);
+            var headers = ParseHeaders(headersText);
+
+            var httpMethod = HttpMethod;
+            var url = await _expressionEvaluator.EvaluateAsync(Url, workflowContext, _urlEncoder);
+            var request = new HttpRequestMessage(new HttpMethod(httpMethod), url);
+            foreach (var header in headers)
             {
-                var headersText = await _expressionEvaluator.EvaluateAsync(Headers, workflowContext);
-                var headers = ParseHeaders(headersText);
-
-                foreach (var header in headers)
-                {
-                    httpClient.DefaultRequestHeaders.TryAddWithoutValidation(header.Key, header.Value);
-                }
-
-                var httpMethod = HttpMethod;
-                var url = await _expressionEvaluator.EvaluateAsync(Url, workflowContext);
-                var request = new HttpRequestMessage(new HttpMethod(httpMethod), url);
-                var postMethods = new[] { HttpMethods.Patch, HttpMethods.Post, HttpMethods.Put };
-
-                if (postMethods.Any(x => string.Equals(x, httpMethod, StringComparison.OrdinalIgnoreCase)))
-                {
-                    var body = await _expressionEvaluator.EvaluateAsync(Body, workflowContext);
-                    var contentType = await _expressionEvaluator.EvaluateAsync(ContentType, workflowContext);
-                    request.Content = new StringContent(body, Encoding.UTF8, contentType);
-                }
-
-                var response = await httpClient.SendAsync(request, HttpCompletionOption.ResponseContentRead);
-                var responseCodes = ParseResponseCodes(HttpResponseCodes);
-                var outcome = responseCodes.FirstOrDefault(x => x == (int)response.StatusCode);
-
-                workflowContext.LastResult = new
-                {
-                    Body = await response.Content.ReadAsStringAsync(),
-                    Headers = response.Headers.ToDictionary(x => x.Key),
-                    StatusCode = response.StatusCode,
-                    ReasonPhrase = response.ReasonPhrase,
-                    IsSuccessStatusCode = response.IsSuccessStatusCode
-                };
-
-                return Outcomes(outcome != 0 ? outcome.ToString() : "UnhandledHttpStatus");
+                request.Headers.TryAddWithoutValidation(header.Key, header.Value);
             }
+
+            if (HttpMethods.IsPatch(httpMethod) || HttpMethods.IsPost(httpMethod) || HttpMethods.IsPut(httpMethod))
+            {
+                var body = await _expressionEvaluator.EvaluateAsync(Body, workflowContext, null);
+                var contentType = await _expressionEvaluator.EvaluateAsync(ContentType, workflowContext, _urlEncoder);
+                request.Content = new StringContent(body, Encoding.UTF8, contentType);
+            }
+
+            var response = await _httpClient.SendAsync(request, HttpCompletionOption.ResponseContentRead);
+            var responseCodes = ParseResponseCodes(HttpResponseCodes);
+            var outcome = responseCodes.FirstOrDefault(x => x == (int)response.StatusCode);
+
+            workflowContext.LastResult = new
+            {
+                Body = await response.Content.ReadAsStringAsync(),
+                Headers = response.Headers.ToDictionary(x => x.Key),
+                StatusCode = response.StatusCode,
+                ReasonPhrase = response.ReasonPhrase,
+                IsSuccessStatusCode = response.IsSuccessStatusCode
+            };
+
+            return Outcomes(outcome != 0 ? outcome.ToString() : "UnhandledHttpStatus");
         }
 
         private IEnumerable<KeyValuePair<string, string>> ParseHeaders(string text)

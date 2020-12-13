@@ -1,5 +1,4 @@
 using System.Threading.Tasks;
-using Microsoft.Extensions.Primitives;
 
 namespace OrchardCore.Settings
 {
@@ -9,23 +8,18 @@ namespace OrchardCore.Settings
     public interface ISiteService
     {
         /// <summary>
-        /// Returns the site settings for udpate.
+        /// Loads the site settings from the store for updating and that should not be cached.
         /// </summary>
         Task<ISite> LoadSiteSettingsAsync();
 
         /// <summary>
-        /// Return the site settings for the current tenant in read-only.
+        /// Gets the site settings from the cache for sharing and that should not be updated.
         /// </summary>
         Task<ISite> GetSiteSettingsAsync();
 
         /// <summary>
-        /// Persists the changes to the site settings.
+        /// Updates the store with the provided site settings and then updates the cache.
         /// </summary>
         Task UpdateSiteSettingsAsync(ISite site);
-
-        /// <summary>
-        /// Gets a change token that is set when site settings have changed.
-        /// </summary>
-        IChangeToken ChangeToken { get; }
     }
 }

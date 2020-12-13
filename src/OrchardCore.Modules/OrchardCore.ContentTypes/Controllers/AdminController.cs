@@ -6,62 +6,59 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.ContentTypes.Services;
 using OrchardCore.ContentTypes.ViewModels;
+using OrchardCore.Data.Documents;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
-using OrchardCore.Environment.Shell;
 using OrchardCore.Mvc.Utilities;
 using OrchardCore.Routing;
-using YesSql;
 
 namespace OrchardCore.ContentTypes.Controllers
 {
-    public class AdminController : Controller, IUpdateModel
+    public class AdminController : Controller
     {
         private readonly IContentDefinitionService _contentDefinitionService;
         private readonly IContentDefinitionManager _contentDefinitionManager;
-        private readonly ShellSettings _settings;
         private readonly IAuthorizationService _authorizationService;
-        private readonly ISession _session;
+        private readonly IDocumentStore _documentStore;
         private readonly IContentDefinitionDisplayManager _contentDefinitionDisplayManager;
-        private readonly IHtmlLocalizer<AdminController> H;
-        private readonly IStringLocalizer<AdminController> S;
+        private readonly IHtmlLocalizer H;
+        private readonly IStringLocalizer S;
         private readonly INotifier _notifier;
+        private readonly IUpdateModelAccessor _updateModelAccessor;
 
         public AdminController(
             IContentDefinitionDisplayManager contentDefinitionDisplayManager,
             IContentDefinitionService contentDefinitionService,
             IContentDefinitionManager contentDefinitionManager,
-            ShellSettings settings,
             IAuthorizationService authorizationService,
-            ISession session,
-            ILogger<AdminController> logger,
+            IDocumentStore documentStore,
             IHtmlLocalizer<AdminController> htmlLocalizer,
             IStringLocalizer<AdminController> stringLocalizer,
-            INotifier notifier
-            )
+            INotifier notifier,
+            IUpdateModelAccessor updateModelAccessor)
         {
             _notifier = notifier;
             _contentDefinitionDisplayManager = contentDefinitionDisplayManager;
-            _session = session;
+            _documentStore = documentStore;
             _authorizationService = authorizationService;
             _contentDefinitionService = contentDefinitionService;
             _contentDefinitionManager = contentDefinitionManager;
-            _settings = settings;
+            _updateModelAccessor = updateModelAccessor;
 
-            Logger = logger;
             H = htmlLocalizer;
             S = stringLocalizer;
         }
 
-        public ILogger Logger { get; }
-        public Task<ActionResult> Index() { return List(); }
+        public Task<ActionResult> Index()
+        {
+            return List();
+        }
 
         #region Types
 
@@ -69,7 +66,7 @@ namespace OrchardCore.ContentTypes.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ViewContentTypes))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             return View("List", new ListContentTypesViewModel
@@ -82,7 +79,7 @@ namespace OrchardCore.ContentTypes.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             return View(new CreateTypeViewModel { DisplayName = suggestion, Name = suggestion.ToSafeName() });
@@ -93,7 +90,7 @@ namespace OrchardCore.ContentTypes.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             viewModel.DisplayName = viewModel.DisplayName?.Trim() ?? String.Empty;
@@ -131,14 +128,13 @@ namespace OrchardCore.ContentTypes.Controllers
 
             if (!ModelState.IsValid)
             {
-                _session.Cancel();
+                _documentStore.Cancel();
                 return View(viewModel);
             }
 
             var contentTypeDefinition = _contentDefinitionService.AddType(viewModel.Name, viewModel.DisplayName);
 
             var typeViewModel = new EditTypeViewModel(contentTypeDefinition);
-
 
             _notifier.Success(H["The \"{0}\" content type has been created.", typeViewModel.DisplayName]);
 
@@ -149,7 +145,7 @@ namespace OrchardCore.ContentTypes.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var typeViewModel = _contentDefinitionService.GetType(id);
@@ -159,7 +155,7 @@ namespace OrchardCore.ContentTypes.Controllers
                 return NotFound();
             }
 
-            typeViewModel.Editor = await _contentDefinitionDisplayManager.BuildTypeEditorAsync(typeViewModel.TypeDefinition, this);
+            typeViewModel.Editor = await _contentDefinitionDisplayManager.BuildTypeEditorAsync(typeViewModel.TypeDefinition, _updateModelAccessor.ModelUpdater);
 
             return View(typeViewModel);
         }
@@ -170,7 +166,7 @@ namespace OrchardCore.ContentTypes.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var contentTypeDefinition = _contentDefinitionManager.LoadTypeDefinition(id);
@@ -183,11 +179,11 @@ namespace OrchardCore.ContentTypes.Controllers
             viewModel.Settings = contentTypeDefinition.Settings;
             viewModel.TypeDefinition = contentTypeDefinition;
             viewModel.DisplayName = contentTypeDefinition.DisplayName;
-            viewModel.Editor = await _contentDefinitionDisplayManager.UpdateTypeEditorAsync(contentTypeDefinition, this);
+            viewModel.Editor = await _contentDefinitionDisplayManager.UpdateTypeEditorAsync(contentTypeDefinition, _updateModelAccessor.ModelUpdater);
 
             if (!ModelState.IsValid)
             {
-                _session.Cancel();
+                _documentStore.Cancel();
 
                 return View(viewModel);
             }
@@ -211,7 +207,7 @@ namespace OrchardCore.ContentTypes.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var typeViewModel = _contentDefinitionService.LoadType(id);
@@ -232,7 +228,7 @@ namespace OrchardCore.ContentTypes.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var typeViewModel = _contentDefinitionService.GetType(id);
@@ -260,7 +256,7 @@ namespace OrchardCore.ContentTypes.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var typeViewModel = _contentDefinitionService.GetType(id);
@@ -292,7 +288,7 @@ namespace OrchardCore.ContentTypes.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var typeViewModel = _contentDefinitionService.LoadType(id);
@@ -317,7 +313,7 @@ namespace OrchardCore.ContentTypes.Controllers
 
             if (!ModelState.IsValid)
             {
-                _session.Cancel();
+                _documentStore.Cancel();
                 return await AddPartsTo(id);
             }
 
@@ -329,7 +325,7 @@ namespace OrchardCore.ContentTypes.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var typeViewModel = _contentDefinitionService.LoadType(id);
@@ -380,7 +376,7 @@ namespace OrchardCore.ContentTypes.Controllers
 
             if (!ModelState.IsValid)
             {
-                _session.Cancel();
+                _documentStore.Cancel();
                 return await AddReusablePartTo(id);
             }
 
@@ -398,7 +394,7 @@ namespace OrchardCore.ContentTypes.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var typeViewModel = _contentDefinitionService.LoadType(id);
@@ -415,7 +411,7 @@ namespace OrchardCore.ContentTypes.Controllers
             return RedirectToAction("Edit", new { id });
         }
 
-        #endregion
+        #endregion Types
 
         #region Parts
 
@@ -423,7 +419,7 @@ namespace OrchardCore.ContentTypes.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ViewContentTypes))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             return View(new ListContentPartsViewModel
@@ -437,7 +433,7 @@ namespace OrchardCore.ContentTypes.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             return View(new CreatePartViewModel { Name = suggestion.ToSafeName() });
@@ -448,7 +444,7 @@ namespace OrchardCore.ContentTypes.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             viewModel.Name = viewModel.Name ?? String.Empty;
@@ -495,7 +491,7 @@ namespace OrchardCore.ContentTypes.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var contentPartDefinition = _contentDefinitionManager.GetPartDefinition(id);
@@ -506,7 +502,7 @@ namespace OrchardCore.ContentTypes.Controllers
             }
 
             var viewModel = new EditPartViewModel(contentPartDefinition);
-            viewModel.Editor = await _contentDefinitionDisplayManager.BuildPartEditorAsync(contentPartDefinition, this);
+            viewModel.Editor = await _contentDefinitionDisplayManager.BuildPartEditorAsync(contentPartDefinition, _updateModelAccessor.ModelUpdater);
 
             return View(viewModel);
         }
@@ -517,7 +513,7 @@ namespace OrchardCore.ContentTypes.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var contentPartDefinition = _contentDefinitionManager.LoadPartDefinition(id);
@@ -528,11 +524,11 @@ namespace OrchardCore.ContentTypes.Controllers
             }
 
             var viewModel = new EditPartViewModel(contentPartDefinition);
-            viewModel.Editor = await _contentDefinitionDisplayManager.UpdatePartEditorAsync(contentPartDefinition, this);
+            viewModel.Editor = await _contentDefinitionDisplayManager.UpdatePartEditorAsync(contentPartDefinition, _updateModelAccessor.ModelUpdater);
 
             if (!ModelState.IsValid)
             {
-                _session.Cancel();
+                _documentStore.Cancel();
                 return View(viewModel);
             }
             else
@@ -550,7 +546,7 @@ namespace OrchardCore.ContentTypes.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var partViewModel = _contentDefinitionService.LoadPart(id);
@@ -571,7 +567,7 @@ namespace OrchardCore.ContentTypes.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var partViewModel = _contentDefinitionService.LoadPart(id);
@@ -596,7 +592,7 @@ namespace OrchardCore.ContentTypes.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var partViewModel = _contentDefinitionService.LoadPart(id);
@@ -646,7 +642,7 @@ namespace OrchardCore.ContentTypes.Controllers
                 viewModel.Part = partDefinition;
                 viewModel.Fields = _contentDefinitionService.GetFields().Select(x => x.Name).OrderBy(x => x).ToList();
 
-                _session.Cancel();
+                _documentStore.Cancel();
 
                 ViewData["ReturnUrl"] = returnUrl;
                 return View(viewModel);
@@ -670,7 +666,7 @@ namespace OrchardCore.ContentTypes.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var partViewModel = _contentDefinitionService.GetPart(id);
@@ -694,7 +690,7 @@ namespace OrchardCore.ContentTypes.Controllers
                 DisplayMode = partFieldDefinition.DisplayMode(),
                 DisplayName = partFieldDefinition.DisplayName(),
                 PartFieldDefinition = partFieldDefinition,
-                Shape = await _contentDefinitionDisplayManager.BuildPartFieldEditorAsync(partFieldDefinition, this)
+                Shape = await _contentDefinitionDisplayManager.BuildPartFieldEditorAsync(partFieldDefinition, _updateModelAccessor.ModelUpdater)
             };
 
             ViewData["ReturnUrl"] = returnUrl;
@@ -707,7 +703,7 @@ namespace OrchardCore.ContentTypes.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             if (viewModel == null)
@@ -749,8 +745,8 @@ namespace OrchardCore.ContentTypes.Controllers
                 if (!ModelState.IsValid)
                 {
                     // Calls update to build editor shape with the display name validation failures, and other validation errors.
-                    viewModel.Shape = await _contentDefinitionDisplayManager.UpdatePartFieldEditorAsync(field, this);
-                    _session.Cancel();
+                    viewModel.Shape = await _contentDefinitionDisplayManager.UpdatePartFieldEditorAsync(field, _updateModelAccessor.ModelUpdater);
+                    _documentStore.Cancel();
 
                     ViewData["ReturnUrl"] = returnUrl;
                     return View(viewModel);
@@ -764,11 +760,11 @@ namespace OrchardCore.ContentTypes.Controllers
             // Refresh the local field variable in case it has been altered
             field = _contentDefinitionManager.LoadPartDefinition(id).Fields.FirstOrDefault(x => x.Name == viewModel.Name);
 
-            viewModel.Shape = await _contentDefinitionDisplayManager.UpdatePartFieldEditorAsync(field, this);
+            viewModel.Shape = await _contentDefinitionDisplayManager.UpdatePartFieldEditorAsync(field, _updateModelAccessor.ModelUpdater);
 
             if (!ModelState.IsValid)
             {
-                _session.Cancel();
+                _documentStore.Cancel();
 
                 ViewData["ReturnUrl"] = returnUrl;
                 return View(viewModel);
@@ -777,7 +773,6 @@ namespace OrchardCore.ContentTypes.Controllers
             {
                 _notifier.Success(H["The \"{0}\" field settings have been saved.", field.DisplayName()]);
             }
-
 
             if (!String.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
             {
@@ -801,7 +796,7 @@ namespace OrchardCore.ContentTypes.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var partViewModel = _contentDefinitionService.LoadPart(id);
@@ -830,14 +825,15 @@ namespace OrchardCore.ContentTypes.Controllers
             return RedirectToAction("EditPart", new { id });
         }
 
-        #endregion
+        #endregion Parts
 
         #region Type Parts
+
         public async Task<ActionResult> EditTypePart(string id, string name)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             var typeDefinition = _contentDefinitionManager.GetTypeDefinition(id);
@@ -858,10 +854,11 @@ namespace OrchardCore.ContentTypes.Controllers
             {
                 Name = typePartDefinition.Name,
                 Editor = typePartDefinition.Editor(),
+                DisplayMode = typePartDefinition.DisplayMode(),
                 DisplayName = typePartDefinition.DisplayName(),
                 Description = typePartDefinition.Description(),
                 TypePartDefinition = typePartDefinition,
-                Shape = await _contentDefinitionDisplayManager.BuildTypePartEditorAsync(typePartDefinition, this)
+                Shape = await _contentDefinitionDisplayManager.BuildTypePartEditorAsync(typePartDefinition, _updateModelAccessor.ModelUpdater)
             };
 
             return View(typePartViewModel);
@@ -873,7 +870,7 @@ namespace OrchardCore.ContentTypes.Controllers
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.EditContentTypes))
             {
-                return Unauthorized();
+                return Forbid();
             }
 
             if (viewModel == null)
@@ -916,11 +913,10 @@ namespace OrchardCore.ContentTypes.Controllers
 
                     if (!ModelState.IsValid)
                     {
-                        viewModel.Shape = await _contentDefinitionDisplayManager.UpdateTypePartEditorAsync(part, this);
-                        _session.Cancel();
+                        viewModel.Shape = await _contentDefinitionDisplayManager.UpdateTypePartEditorAsync(part, _updateModelAccessor.ModelUpdater);
+                        _documentStore.Cancel();
                         return View(viewModel);
                     }
-
                 }
             }
 
@@ -929,11 +925,11 @@ namespace OrchardCore.ContentTypes.Controllers
             // Refresh the local part variable in case it has been altered
             part = _contentDefinitionManager.LoadTypeDefinition(id).Parts.FirstOrDefault(x => x.Name == viewModel.Name);
 
-            viewModel.Shape = await _contentDefinitionDisplayManager.UpdateTypePartEditorAsync(part, this);
+            viewModel.Shape = await _contentDefinitionDisplayManager.UpdateTypePartEditorAsync(part, _updateModelAccessor.ModelUpdater);
 
             if (!ModelState.IsValid)
             {
-                _session.Cancel();
+                _documentStore.Cancel();
                 return View(viewModel);
             }
             else
@@ -944,6 +940,6 @@ namespace OrchardCore.ContentTypes.Controllers
             return RedirectToAction("Edit", new { id });
         }
 
-        #endregion
+        #endregion Type Parts
     }
 }

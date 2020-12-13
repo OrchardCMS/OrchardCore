@@ -1,6 +1,6 @@
 @model SummaryAdminUserViewModel
 
-<h5 class="float-left">@Model.User.UserName<span class="hint"> — @Model.User.Email</span></h5>
+<h5 class="float-left">@Model.User.UserName <span class="hint dashed">@Model.User.Email</span></h5>
 @if (!Model.User.IsEnabled)
 {
     <span class="badge badge-danger ml-2" title="@T["Disabled"]">

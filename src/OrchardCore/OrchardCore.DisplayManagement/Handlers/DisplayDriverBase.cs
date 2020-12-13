@@ -43,13 +43,12 @@ namespace OrchardCore.DisplayManagement.Handlers
                 );
         }
 
-
         /// <summary>
         /// Creates a dynamic proxy for the specified model. Properties are copied to the new object.
         /// </summary>
         public ShapeResult Copy<TModel>(string shapeType, TModel model) where TModel : class
         {
-            return Dynamic(shapeType, ctx => ctx.ShapeFactory.CreateAsync(shapeType, model));
+            return Factory(shapeType, ctx => ctx.ShapeFactory.CreateAsync(shapeType, model));
         }
 
         /// <summary>
@@ -69,9 +68,13 @@ namespace OrchardCore.DisplayManagement.Handlers
         /// </summary>
         public ShapeResult Dynamic(string shapeType, Func<dynamic, Task> initializeAsync)
         {
-            return Factory(shapeType, ctx =>
-                ctx.ShapeFactory.CreateAsync(shapeType, initializeAsync)
-            );
+            return Factory(shapeType,
+                async ctx =>
+                {
+                    dynamic shape = await ctx.ShapeFactory.CreateAsync(shapeType);
+                    await initializeAsync(shape);
+                    return shape;
+                });
         }
 
         /// <summary>
@@ -105,7 +108,7 @@ namespace OrchardCore.DisplayManagement.Handlers
         }
 
         /// <summary>
-        /// If the shape needs to be rendered, it is created automatically from its type name and initialized with a <see param name="model" />
+        /// If the shape needs to be rendered, it is created automatically from its type name and initialized.
         /// </summary>
         public ShapeResult Shape(string shapeType, IShape shape)
         {
@@ -148,7 +151,7 @@ namespace OrchardCore.DisplayManagement.Handlers
 
         public CombinedResult Combine(IEnumerable<IDisplayResult> results)
         {
-            return new CombinedResult( results );
+            return new CombinedResult(results);
         }
     }
 }

@@ -16,13 +16,12 @@ using OrchardCore.Environment.Shell.Scope;
 namespace OrchardCore.Modules
 {
     /// <summary>
-    /// Handles a request by forwarding it to the tenant specific <see cref="IRouter"/> instance.
+    /// Handles a request by forwarding it to the tenant specific pipeline.
     /// It also initializes the middlewares for the requested tenant on the first request.
     /// </summary>
     public class ModularTenantRouterMiddleware
     {
         private readonly IFeatureCollection _features;
-        private readonly RequestDelegate _next;
         private readonly ILogger _logger;
         private readonly ConcurrentDictionary<string, SemaphoreSlim> _semaphores = new ConcurrentDictionary<string, SemaphoreSlim>();
 
@@ -32,11 +31,10 @@ namespace OrchardCore.Modules
             ILogger<ModularTenantRouterMiddleware> logger)
         {
             _features = features;
-            _next = next;
             _logger = logger;
         }
 
-        public Task Invoke(HttpContext httpContext)
+        public async Task Invoke(HttpContext httpContext)
         {
             if (_logger.IsEnabled(LogLevel.Information))
             {
@@ -59,18 +57,18 @@ namespace OrchardCore.Modules
             // Do we need to rebuild the pipeline ?
             if (shellContext.Pipeline == null)
             {
-                InitializePipeline(shellContext);
+                await InitializePipelineAsync(shellContext);
             }
 
-            return shellContext.Pipeline.Invoke(httpContext);
+            await shellContext.Pipeline.Invoke(httpContext);
         }
 
-        private void InitializePipeline(ShellContext shellContext)
+        private async Task InitializePipelineAsync(ShellContext shellContext)
         {
-            var semaphore = _semaphores.GetOrAdd(shellContext.Settings.Name, (name) => new SemaphoreSlim(1));
+            var semaphore = _semaphores.GetOrAdd(shellContext.Settings.Name, _ => new SemaphoreSlim(1));
 
             // Building a pipeline for a given shell can't be done by two requests.
-            semaphore.Wait();
+            await semaphore.WaitAsync();
 
             try
             {
@@ -79,11 +77,9 @@ namespace OrchardCore.Modules
                     shellContext.Pipeline = BuildTenantPipeline();
                 }
             }
-
             finally
             {
                 semaphore.Release();
-                _semaphores.TryRemove(shellContext.Settings.Name, out semaphore);
             }
         }
 

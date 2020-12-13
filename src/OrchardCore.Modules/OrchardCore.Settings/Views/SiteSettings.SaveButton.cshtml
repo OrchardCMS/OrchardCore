@@ -1,9 +1,10 @@
-<button class="primaryAction btn btn-primary" type="submit">@T["Save"]</button>
+<button class="primaryAction btn btn-primary save" type="submit">@T["Save"]</button>
 
 @{
     var returnUrl = Context.Request.Query["returnUrl"];
 }
 
-@if (!String.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl)) {
-    <a id="button-cancel" href="@returnUrl" class="btn btn-secondary">@T["Cancel"]</a>
+@if (!String.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
+{
+    <a href="@returnUrl" class="btn btn-secondary cancel" role="button">@T["Cancel"]</a>
 }

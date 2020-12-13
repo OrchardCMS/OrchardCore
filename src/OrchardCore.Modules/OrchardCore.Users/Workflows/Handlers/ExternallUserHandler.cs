@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using OrchardCore.Users.Handlers;
 using OrchardCore.Users.Models;
@@ -27,7 +26,7 @@ namespace OrchardCore.Users.Workflows.Handlers
         {
             return _workflowManager.TriggerEventAsync(nameof(UserLoggedInEvent),
                 input: new { context.User, context.ExternalClaims, context.UserRoles },
-                correlationId: ((User)context.User).Id.ToString()
+                correlationId: ((User)context.User).UserId
             );
         }
     }
