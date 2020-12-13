@@ -80,10 +80,10 @@
     <div class="card mb-3 position-sticky action-bar">
         <div class="card-body bg-primary p-3">
             <div class="form-group mb-n1">
-                <div class="input-group input-group-sm w-lg-50 d-inline-flex">
+                <div class="input-group input-group-sm w-lg-50 d-inline-flex has-filter">                    
                     <div class="input-group-prepend">
                         <button class="btn btn-sm dropdown-toggle" style="border:1px solid lightgrey" type="button" data-toggle="dropdown" id="filter-dropdown" aria-haspopup="true" aria-expanded="false">
-                            @T["Filters"]
+                            <i class="fa fa-filter" title="@T["Filters"]"></i>
                         </button>
                         <div class="dropdown-menu" aria-labelledby="filter-dropdown">
                             <a class="dropdown-item" href="?Options.Filter=Running">@T["Only running tenants"]</a>
@@ -91,6 +91,7 @@
                             <a class="dropdown-item" href="?Options.Filter=Uninitialized">@T["Only uninitialized tenants"]</a>
                         </div>
                     </div>
+                    <i class="fa fa-search form-control-feedback"></i>
                     <input id="search-box" asp-for="Options.Search" class="form-control" placeholder="@T["Search"]" type="search" autofocus />
                 </div>
                 <div class="dropdown float-right order-md-1">

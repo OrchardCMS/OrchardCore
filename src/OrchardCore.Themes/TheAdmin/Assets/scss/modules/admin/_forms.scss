@@ -66,11 +66,11 @@ input[type="password"]::-ms-clear {
     display: none;
 }
 
-.has-search .form-control {
+.has-filter .form-control-feedback, .has-search .form-control {
     padding-left: 2rem;
 }
 
-.has-search .form-control-feedback {
+.has-filter .form-control-feedback, .has-search .form-control-feedback {
     position: absolute;
     left: 10px;
     z-index: 4;
@@ -81,4 +81,12 @@ input[type="password"]::-ms-clear {
     text-align: center;
     pointer-events: none;
     color: #aaa;
+}
+
+.has-search .form-control-feedback {
+    left: 10px;
+}
+
+.has-filter .form-control-feedback {
+    left: 70px;
 }
