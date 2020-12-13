@@ -1,11 +1,19 @@
 #mediaApp {
     position: absolute;
-    top: 128px;
+    top: 52px;
     bottom: 0;
     right: 0;
-    left: 260px;
+    left: 259px;
     transition: left 0.2s ease-in-out, width 0.2s ease-in-out;
+    background-color: $body-bg;
+    
+    ::-webkit-scrollbar {
+        width: 4px;
+    }
 
+    ::-webkit-scrollbar-thumb {
+        background-color: #495057;
+    }
 
     #mediaContainer {
         display: flex;
@@ -20,7 +28,6 @@
         }
 
         #mediaContainerMain {
-            height: 100%;
             display: flex;
             flex-direction: column;
             flex-grow: 1;
@@ -37,7 +44,7 @@
         }
     }
     // on large screen they are side by side
-    @media only screen and ( min-width: 768px ) {
+    @media only screen and ( min-width: 923px ) {
         #mediaContainer {
             flex-direction: row;
 
@@ -54,8 +61,10 @@
         // we don't want left navigation 100% tall when on stacked over the thumbs list
         #navigationApp {
             height: 100%;
-            width: 260px;
+            width: 240px;
             overflow: auto;
+            scrollbar-width: thin;
+            scrollbar-color: #495057 #EAEAEA;
         }
     }
 

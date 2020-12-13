@@ -74,17 +74,21 @@ namespace OrchardCore.Tenants.Controllers
 
         public async Task<IActionResult> Index(TenantIndexOptions options, PagerParameters pagerParameters)
         {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTenants))
+            {
+                return Forbid();
+            }
+
+            if (!IsDefaultShell())
+            {
+                return Forbid();
+            }
+
             var allSettings = _shellHost.GetAllSettings().OrderBy(s => s.Name);
             var dataProtector = _dataProtectorProvider.CreateProtector("Tokens").ToTimeLimitedDataProtector();
 
             var siteSettings = await _siteService.GetSiteSettingsAsync();
             var pager = new Pager(pagerParameters, siteSettings.PageSize);
-
-            // default options
-            if (options == null)
-            {
-                options = new TenantIndexOptions();
-            }
 
             var entries = allSettings.Select(x =>
                 {
@@ -93,10 +97,10 @@ namespace OrchardCore.Tenants.Controllers
                         Description = x["Description"],
                         Name = x.Name,
                         ShellSettings = x,
-                        IsDefaultTenant = string.Equals(x.Name, ShellHelper.DefaultShellName, StringComparison.OrdinalIgnoreCase)
+                        IsDefaultTenant = String.Equals(x.Name, ShellHelper.DefaultShellName, StringComparison.OrdinalIgnoreCase)
                     };
 
-                    if (x.State == TenantState.Uninitialized && !string.IsNullOrEmpty(x["Secret"]))
+                    if (x.State == TenantState.Uninitialized && !String.IsNullOrEmpty(x["Secret"]))
                     {
                         entry.Token = dataProtector.Protect(x["Secret"], _clock.UtcNow.Add(new TimeSpan(24, 0, 0)));
                     }
@@ -104,7 +108,7 @@ namespace OrchardCore.Tenants.Controllers
                     return entry;
                 }).ToList();
 
-            if (!string.IsNullOrWhiteSpace(options.Search))
+            if (!String.IsNullOrWhiteSpace(options.Search))
             {
                 entries = entries.Where(t => t.Name.IndexOf(options.Search, StringComparison.OrdinalIgnoreCase) > -1 ||
                     (t.ShellSettings != null &&
@@ -195,12 +199,22 @@ namespace OrchardCore.Tenants.Controllers
         [FormValueRequired("submit.BulkAction")]
         public async Task<IActionResult> Index(BulkActionViewModel model)
         {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTenants))
+            {
+                return Forbid();
+            }
+
+            if (!IsDefaultShell())
+            {
+                return Forbid();
+            }
+
             var allSettings = _shellHost.GetAllSettings();
 
             foreach (var tenantName in model.TenantNames ?? Enumerable.Empty<string>())
             {
                 var shellSettings = allSettings
-                    .Where(x => string.Equals(x.Name, tenantName, StringComparison.OrdinalIgnoreCase))
+                    .Where(x => String.Equals(x.Name, tenantName, StringComparison.OrdinalIgnoreCase))
                     .FirstOrDefault();
 
                 if (shellSettings == null)
@@ -211,7 +225,7 @@ namespace OrchardCore.Tenants.Controllers
                 switch (model.BulkAction.ToString())
                 {
                     case "Disable":
-                        if (string.Equals(shellSettings.Name, ShellHelper.DefaultShellName, StringComparison.OrdinalIgnoreCase))
+                        if (String.Equals(shellSettings.Name, ShellHelper.DefaultShellName, StringComparison.OrdinalIgnoreCase))
                         {
                             _notifier.Warning(H["You cannot disable the default tenant."]);
                         }
@@ -271,11 +285,10 @@ namespace OrchardCore.Tenants.Controllers
                 Recipes = recipes,
                 RequestUrlHost = shellSettings.RequestUrlHost,
                 RequestUrlPrefix = shellSettings.RequestUrlPrefix,
-                DatabaseProvider = shellSettings["DatabaseProvider"],
                 TablePrefix = shellSettings["TablePrefix"],
-                ConnectionString = shellSettings["ConnectionString"],
                 RecipeName = shellSettings["RecipeName"]
             };
+            SetConfigurationShellValues(model);
 
             model.Recipes = recipes;
 
@@ -310,6 +323,7 @@ namespace OrchardCore.Tenants.Controllers
                 shellSettings.RequestUrlPrefix = model.RequestUrlPrefix;
                 shellSettings.State = TenantState.Uninitialized;
 
+                SetConfigurationShellValues(model);
                 shellSettings["Description"] = model.Description;
                 shellSettings["ConnectionString"] = model.ConnectionString;
                 shellSettings["TablePrefix"] = model.TablePrefix;
@@ -343,7 +357,7 @@ namespace OrchardCore.Tenants.Controllers
             }
 
             var shellSettings = _shellHost.GetAllSettings()
-                .Where(x => string.Equals(x.Name, id, StringComparison.OrdinalIgnoreCase))
+                .Where(x => String.Equals(x.Name, id, StringComparison.OrdinalIgnoreCase))
                 .FirstOrDefault();
 
             if (shellSettings == null)
@@ -371,7 +385,8 @@ namespace OrchardCore.Tenants.Controllers
                 model.TablePrefix = shellSettings["TablePrefix"];
                 model.ConnectionString = shellSettings["ConnectionString"];
                 model.RecipeName = shellSettings["RecipeName"];
-                model.CanSetDatabasePresets = true;
+                model.CanEditDatabasePresets = true;
+                SetConfigurationShellValues(model);
             }
 
             return View(model);
@@ -396,7 +411,7 @@ namespace OrchardCore.Tenants.Controllers
             }
 
             var shellSettings = _shellHost.GetAllSettings()
-                .Where(x => string.Equals(x.Name, model.Name, StringComparison.OrdinalIgnoreCase))
+                .Where(x => String.Equals(x.Name, model.Name, StringComparison.OrdinalIgnoreCase))
                 .FirstOrDefault();
 
             if (shellSettings == null)
@@ -414,6 +429,7 @@ namespace OrchardCore.Tenants.Controllers
                 // tenant has not been initialized yet
                 if (shellSettings.State == TenantState.Uninitialized)
                 {
+                    SetConfigurationShellValues(model);
                     shellSettings["DatabaseProvider"] = model.DatabaseProvider;
                     shellSettings["TablePrefix"] = model.TablePrefix;
                     shellSettings["ConnectionString"] = model.ConnectionString;
@@ -434,7 +450,8 @@ namespace OrchardCore.Tenants.Controllers
                 model.TablePrefix = shellSettings["TablePrefix"];
                 model.ConnectionString = shellSettings["ConnectionString"];
                 model.RecipeName = shellSettings["RecipeName"];
-                model.CanSetDatabasePresets = true;
+                model.CanEditDatabasePresets = true;
+                SetConfigurationShellValues(model);
             }
 
             var recipeCollections = await Task.WhenAll(_recipeHarvesters.Select(x => x.HarvestRecipesAsync()));
@@ -459,7 +476,7 @@ namespace OrchardCore.Tenants.Controllers
             }
 
             var shellSettings = _shellHost.GetAllSettings()
-                .Where(s => string.Equals(s.Name, id, StringComparison.OrdinalIgnoreCase))
+                .Where(s => String.Equals(s.Name, id, StringComparison.OrdinalIgnoreCase))
                 .FirstOrDefault();
 
             if (shellSettings == null)
@@ -467,7 +484,7 @@ namespace OrchardCore.Tenants.Controllers
                 return NotFound();
             }
 
-            if (string.Equals(shellSettings.Name, ShellHelper.DefaultShellName, StringComparison.OrdinalIgnoreCase))
+            if (String.Equals(shellSettings.Name, ShellHelper.DefaultShellName, StringComparison.OrdinalIgnoreCase))
             {
                 _notifier.Error(H["You cannot disable the default tenant."]);
                 return RedirectToAction(nameof(Index));
@@ -499,7 +516,7 @@ namespace OrchardCore.Tenants.Controllers
             }
 
             var shellSettings = _shellHost.GetAllSettings()
-                .Where(x => string.Equals(x.Name, id, StringComparison.OrdinalIgnoreCase))
+                .Where(x => String.Equals(x.Name, id, StringComparison.OrdinalIgnoreCase))
                 .FirstOrDefault();
 
             if (shellSettings == null)
@@ -532,8 +549,7 @@ namespace OrchardCore.Tenants.Controllers
             }
 
             var shellSettings = _shellHost.GetAllSettings()
-                .OrderBy(x => x.Name)
-                .Where(x => string.Equals(x.Name, id, StringComparison.OrdinalIgnoreCase))
+                .Where(x => String.Equals(x.Name, id, StringComparison.OrdinalIgnoreCase))
                 .FirstOrDefault();
 
             if (shellSettings == null)
@@ -561,35 +577,35 @@ namespace OrchardCore.Tenants.Controllers
                 ModelState.AddModelError(nameof(EditTenantViewModel.ConnectionString), S["The connection string is mandatory for this provider."]);
             }
 
-            if (string.IsNullOrWhiteSpace(model.Name))
+            if (String.IsNullOrWhiteSpace(model.Name))
             {
                 ModelState.AddModelError(nameof(EditTenantViewModel.Name), S["The tenant name is mandatory."]);
             }
 
             var allSettings = _shellHost.GetAllSettings();
 
-            if (newTenant && allSettings.Any(tenant => string.Equals(tenant.Name, model.Name, StringComparison.OrdinalIgnoreCase)))
+            if (newTenant && allSettings.Any(tenant => String.Equals(tenant.Name, model.Name, StringComparison.OrdinalIgnoreCase)))
             {
                 ModelState.AddModelError(nameof(EditTenantViewModel.Name), S["A tenant with the same name already exists.", model.Name]);
             }
 
-            if (!string.IsNullOrEmpty(model.Name) && !Regex.IsMatch(model.Name, @"^\w+$"))
+            if (!String.IsNullOrEmpty(model.Name) && !Regex.IsMatch(model.Name, @"^\w+$"))
             {
                 ModelState.AddModelError(nameof(EditTenantViewModel.Name), S["Invalid tenant name. Must contain characters only and no spaces."]);
             }
 
-            if (!IsDefaultShell() && string.IsNullOrWhiteSpace(model.RequestUrlHost) && string.IsNullOrWhiteSpace(model.RequestUrlPrefix))
+            if (!IsDefaultShell() && String.IsNullOrWhiteSpace(model.RequestUrlHost) && String.IsNullOrWhiteSpace(model.RequestUrlPrefix))
             {
                 ModelState.AddModelError(nameof(EditTenantViewModel.RequestUrlPrefix), S["Host and url prefix can not be empty at the same time."]);
             }
 
             var allOtherShells = allSettings.Where(tenant => !string.Equals(tenant.Name, model.Name, StringComparison.OrdinalIgnoreCase));
-            if (allOtherShells.Any(tenant => string.Equals(tenant.RequestUrlPrefix, model.RequestUrlPrefix?.Trim(), StringComparison.OrdinalIgnoreCase) && string.Equals(tenant.RequestUrlHost, model.RequestUrlHost, StringComparison.OrdinalIgnoreCase)))
+            if (allOtherShells.Any(tenant => String.Equals(tenant.RequestUrlPrefix, model.RequestUrlPrefix?.Trim(), StringComparison.OrdinalIgnoreCase) && String.Equals(tenant.RequestUrlHost, model.RequestUrlHost, StringComparison.OrdinalIgnoreCase)))
             {
                 ModelState.AddModelError(nameof(EditTenantViewModel.RequestUrlPrefix), S["A tenant with the same host and prefix already exists.", model.Name]);
             }
 
-            if (!string.IsNullOrWhiteSpace(model.RequestUrlPrefix))
+            if (!String.IsNullOrWhiteSpace(model.RequestUrlPrefix))
             {
                 if (model.RequestUrlPrefix.Contains('/'))
                 {
@@ -600,7 +616,26 @@ namespace OrchardCore.Tenants.Controllers
 
         private bool IsDefaultShell()
         {
-            return string.Equals(_currentShellSettings.Name, ShellHelper.DefaultShellName, StringComparison.OrdinalIgnoreCase);
+            return String.Equals(_currentShellSettings.Name, ShellHelper.DefaultShellName, StringComparison.OrdinalIgnoreCase);
+        }
+
+        private void SetConfigurationShellValues(EditTenantViewModel model)
+        {
+            var shellSettings = _shellSettingsManager.CreateDefaultSettings();
+            var configurationShellConnectionString = shellSettings["ConnectionString"];
+            var configurationDatabaseProvider = shellSettings["DatabaseProvider"];
+
+            model.DatabaseConfigurationPreset = !string.IsNullOrEmpty(configurationShellConnectionString) || !string.IsNullOrEmpty(configurationDatabaseProvider);
+
+            if(!string.IsNullOrEmpty(configurationShellConnectionString))
+            {
+                model.ConnectionString = configurationShellConnectionString;
+            }
+
+            if(!string.IsNullOrEmpty(configurationDatabaseProvider))
+            {
+                model.DatabaseProvider = configurationDatabaseProvider;
+            }
         }
     }
 }

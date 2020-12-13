@@ -8,12 +8,12 @@ namespace OrchardCore.Media
     public class Permissions : IPermissionProvider
     {
         public static readonly Permission ManageMedia = new Permission("ManageMediaContent", "Manage Media");
-        public static readonly Permission ManageOwnMedia = new Permission("ManageOwnMedia", "Manage Own Media", new[] { ManageMedia });
         public static readonly Permission ManageAttachedMediaFieldsFolder = new Permission("ManageAttachedMediaFieldsFolder", "Manage Attached Media Fields Folder");
+        public static readonly Permission ManageMediaProfiles = new Permission("ManageMediaProfiles", "Manage Media Profiles");
 
         public Task<IEnumerable<Permission>> GetPermissionsAsync()
         {
-            return Task.FromResult(new[] { ManageMedia, ManageOwnMedia, ManageAttachedMediaFieldsFolder }.AsEnumerable());
+            return Task.FromResult(new[] { ManageMedia, ManageAttachedMediaFieldsFolder }.AsEnumerable());
         }
 
         public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
@@ -23,7 +23,7 @@ namespace OrchardCore.Media
                 new PermissionStereotype
                 {
                     Name = "Administrator",
-                    Permissions = new[] { ManageMedia, ManageAttachedMediaFieldsFolder }
+                    Permissions = new[] { ManageMedia, ManageAttachedMediaFieldsFolder, ManageMediaProfiles }
                 },
                 new PermissionStereotype
                 {
@@ -37,12 +37,12 @@ namespace OrchardCore.Media
                 new PermissionStereotype
                 {
                     Name = "Author",
-                    Permissions = new[] { ManageOwnMedia }
+                    Permissions = new[] { ManageMedia } // Replace this by ManageOwnMedia when it's implemented
                 },
                 new PermissionStereotype
                 {
                     Name = "Contributor",
-                    Permissions = new[] { ManageOwnMedia }
+                    Permissions = new[] { ManageMedia } // Replace this by ManageOwnMedia when it's implemented
                 },
             };
         }

@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
@@ -18,7 +19,7 @@ namespace OrchardCore.Sitemaps.Services
 
         private readonly ISlugService _slugService;
         private readonly ISitemapManager _sitemapManager;
-        private readonly IStringLocalizer<SitemapHelperService> S;
+        private readonly IStringLocalizer S;
 
         public SitemapHelperService(
             ISlugService slugService,
@@ -59,13 +60,13 @@ namespace OrchardCore.Sitemaps.Services
             var routeExists = false;
             if (string.IsNullOrEmpty(sitemapId))
             {
-                routeExists = (await _sitemapManager.ListSitemapsAsync())
-                    .Any(p => p.Path == path);
+                routeExists = (await _sitemapManager.GetSitemapsAsync())
+                    .Any(p => String.Equals(p.Path, path, StringComparison.OrdinalIgnoreCase));
             }
             else
             {
-                routeExists = (await _sitemapManager.ListSitemapsAsync())
-                    .Any(p => p.SitemapId != sitemapId && p.Path == path);
+                routeExists = (await _sitemapManager.GetSitemapsAsync())
+                    .Any(p => p.SitemapId != sitemapId && String.Equals(p.Path, path, StringComparison.OrdinalIgnoreCase));
             }
 
             if (routeExists)

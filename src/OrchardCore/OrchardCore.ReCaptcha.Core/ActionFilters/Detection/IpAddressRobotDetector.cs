@@ -1,4 +1,3 @@
-using System;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
@@ -23,11 +22,11 @@ namespace OrchardCore.ReCaptcha.ActionFilters.Detection
 
         public void IsNotARobot()
         {
-            var ipAddressKey = GetIpAddressCacheKey(_httpContext);
+            var ipAddressKey = GetIpAddressCacheKey();
             _memoryCache.Remove(ipAddressKey);
         }
 
-        private string GetIpAddressCacheKey(HttpContext context)
+        private string GetIpAddressCacheKey()
         {
             return $"{IpAddressAbuseDetectorCacheKey}:{GetIpAddress()}";
         }
@@ -39,8 +38,8 @@ namespace OrchardCore.ReCaptcha.ActionFilters.Detection
 
         public RobotDetectionResult DetectRobot()
         {
-            var ipAddressKey = GetIpAddressCacheKey(_httpContext);
-            var faultyRequestCount = _memoryCache.GetOrCreate<int>(ipAddressKey, fact => 0);
+            var ipAddressKey = GetIpAddressCacheKey();
+            var faultyRequestCount = _memoryCache.GetOrCreate(ipAddressKey, fact => 0);
 
             return new RobotDetectionResult()
             {
@@ -50,10 +49,10 @@ namespace OrchardCore.ReCaptcha.ActionFilters.Detection
 
         public void FlagAsRobot()
         {
-            var ipAddressKey = GetIpAddressCacheKey(_httpContext);
+            var ipAddressKey = GetIpAddressCacheKey();
 
             // this has race conditions, but it's ok
-            var faultyRequestCount = _memoryCache.GetOrCreate<int>(ipAddressKey, fact => 0);
+            var faultyRequestCount = _memoryCache.GetOrCreate(ipAddressKey, fact => 0);
             faultyRequestCount++;
             _memoryCache.Set(ipAddressKey, faultyRequestCount);
         }

@@ -16,11 +16,11 @@ namespace OrchardCore.Email.Services
     public class SmtpService : ISmtpService
     {
         private const string EmailExtension = ".eml";
-        
-        private static readonly char[] EmailsSeparator = new char[] { ',', ';', ' ' };
-        
+
+        private static readonly char[] EmailsSeparator = new char[] { ',', ';' };
+
         private readonly SmtpSettings _options;
-        private readonly ILogger<SmtpService> _logger;
+        private readonly ILogger _logger;
         private readonly IStringLocalizer S;
 
         public SmtpService(
@@ -43,7 +43,7 @@ namespace OrchardCore.Email.Services
 
             try
             {
-                // Set the MailMessage.From, to avoid the confusion between _options.DefaultSender (Author) and submittor (Sender)
+                // Set the MailMessage.From, to avoid the confusion between _options.DefaultSender (Author) and submitter (Sender)
                 message.From = String.IsNullOrWhiteSpace(message.From)
                     ? _options.DefaultSender
                     : message.From;
@@ -81,7 +81,13 @@ namespace OrchardCore.Email.Services
                 Sender = MailboxAddress.Parse(senderAddress)
             };
 
-            mimeMessage.From.Add(MailboxAddress.Parse(message.From));
+            if (!string.IsNullOrWhiteSpace(message.From))
+            {
+                foreach (var address in message.From.Split(EmailsSeparator, StringSplitOptions.RemoveEmptyEntries))
+                {
+                    mimeMessage.From.Add(MailboxAddress.Parse(address));
+                }
+            }
 
             if (!string.IsNullOrWhiteSpace(message.To))
             {
@@ -107,7 +113,14 @@ namespace OrchardCore.Email.Services
                 }
             }
 
-            if (!string.IsNullOrWhiteSpace(message.ReplyTo))
+            if (string.IsNullOrWhiteSpace(message.ReplyTo))
+            {
+                foreach (var address in mimeMessage.From)
+                {
+                    mimeMessage.ReplyTo.Add(address);
+                }
+            }
+            else
             {
                 foreach (var address in message.ReplyTo.Split(EmailsSeparator, StringSplitOptions.RemoveEmptyEntries))
                 {
@@ -126,6 +139,15 @@ namespace OrchardCore.Email.Services
             else
             {
                 body.TextBody = message.Body;
+            }
+
+            foreach (var attachment in message.Attachments)
+            {
+                // Stream must not be null, otherwise it would try to get the filesystem path
+                if (attachment.Stream != null)
+                {
+                    body.Attachments.Add(attachment.Filename, attachment.Stream);
+                }            
             }
 
             mimeMessage.Body = body.ToMessageBody();

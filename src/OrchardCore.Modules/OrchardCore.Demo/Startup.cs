@@ -28,7 +28,6 @@ using OrchardCore.Navigation;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Users;
 using OrchardCore.Users.Models;
-using OrchardCore.Users.Services;
 
 namespace OrchardCore.Demo
 {
@@ -94,7 +93,7 @@ namespace OrchardCore.Demo
             services.AddScoped<IShapeTableProvider, DemoShapeProvider>();
             services.AddShapeAttributes<DemoShapeProvider>();
             services.AddScoped<INavigationProvider, AdminMenu>();
-            services.AddScoped<IContentDisplayDriver, TestContentElementDisplay>();
+            services.AddScoped<IContentDisplayDriver, TestContentElementDisplayDriver>();
             services.AddScoped<IDataMigration, Migrations>();
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddContentPart<TestContentPartA>();

@@ -192,7 +192,7 @@ namespace OrchardCore.Navigation
                 return "#";
             }
 
-            if (menuItemUrl[0] == '/' || menuItemUrl.IndexOf("://") >= 0)
+            if (menuItemUrl[0] == '/' || menuItemUrl.IndexOf("://", StringComparison.Ordinal) >= 0)
             {
                 // Return the unescaped url and let the browser generate all uri components.
                 return menuItemUrl;
@@ -227,19 +227,26 @@ namespace OrchardCore.Navigation
                 }
                 else
                 {
+                    // When multiple permissions are supplied all permissions must be authorized.
+                    var isAuthorized = true;
                     foreach (var permission in item.Permissions)
                     {
-                        if (await _authorizationService.AuthorizeAsync(user, permission, item.Resource))
+                        if(!(await _authorizationService.AuthorizeAsync(user, permission, item.Resource)))
                         {
-                            filtered.Add(item);
+                            isAuthorized = false;
+                            break;
                         }
+                    }
+                    if (isAuthorized)
+                    {
+                        filtered.Add(item);
                     }
                 }
 
                 // Process child items
                 var oldItems = item.Items;
 
-                item.Items = (await AuthorizeAsync(item.Items, user)).ToList();
+                item.Items = (await AuthorizeAsync(item.Items, user));
             }
 
             return filtered;

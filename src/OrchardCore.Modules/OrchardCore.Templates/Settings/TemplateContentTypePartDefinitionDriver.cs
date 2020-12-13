@@ -8,7 +8,7 @@ namespace OrchardCore.Templates.Settings
 {
     public class TemplateContentTypePartDefinitionDriver : ContentTypePartDefinitionDisplayDriver
     {
-        private readonly IStringLocalizer<TemplateContentTypePartDefinitionDriver> S;
+        private readonly IStringLocalizer S;
 
         public TemplateContentTypePartDefinitionDriver(IStringLocalizer<TemplateContentTypePartDefinitionDriver> localizer)
         {
@@ -35,7 +35,7 @@ namespace OrchardCore.Templates.Settings
                         Key = $"{contentType}_Summary__{partName}",
                         Description = S["Template for the {0} part in a {1} type in summary views", partName, contentTypePartDefinition.ContentTypeDefinition.DisplayName]
                     });
-            }).Location("Content");
+            }).Location("Shortcuts");
         }
     }
 }

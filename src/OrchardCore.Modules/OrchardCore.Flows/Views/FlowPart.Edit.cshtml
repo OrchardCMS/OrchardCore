@@ -1,5 +1,4 @@
 @using OrchardCore.ContentManagement;
-@using OrchardCore.ContentManagement.Metadata.Settings;
 @using OrchardCore.Flows.Models;
 @using OrchardCore.Flows.ViewModels;
 @using OrchardCore.Mvc.Utilities;
@@ -7,11 +6,10 @@
 @model FlowPartEditViewModel
 
 @inject IContentManager ContentManager
-@inject OrchardCore.ContentManagement.Metadata.IContentDefinitionManager ContentDefinitionManager
 @inject OrchardCore.ContentManagement.Display.IContentItemDisplayManager ContentItemDisplayManager
 
 @{
-    var widgetContentTypes = ContentDefinitionManager.ListTypeDefinitions().Where(t => t.GetSettings<ContentTypeSettings>().Stereotype == "Widget");
+    var widgetContentTypes = Model.ContainedContentTypeDefinitions;
     var widgetTemplatePlaceholderId = Html.Id("widgetTemplatePlaceholder");
     var parentContentType = Model.FlowPart.ContentItem.ContentType;
     string partName = ((dynamic)Model).Metadata.Name;
@@ -35,6 +33,7 @@
                 ContentItem: widget,
                 BuildEditor: true,
                 ParentContentType: parentContentType,
+                ContainedContentTypes: Model.ContainedContentTypeDefinitions,
                 CollectionPartName: partName,
                 //FlowPart Card Specific - For Frame
                 ColumnSize: colSize,
@@ -45,11 +44,12 @@
                 CanDelete: true,
                 //Input hidden
                 //Prefixes
+                PrefixValue: widget.ContentItemId,
                 HtmlFieldPrefix: htmlFieldPrefix,
-                PrefixesId: Html.IdFor(x => x.Prefixes),
+                PrefixesId: widget.ContentItemId + "_" + Html.IdFor(x => x.Prefixes),
                 PrefixesName: Html.NameFor(x => x.Prefixes),
                 //Content Types
-                ContentTypesId: Html.IdFor(x => x.ContentTypes),
+                ContentTypesId: widget.ContentItemId + "_" + Html.IdFor(x => x.ContentTypes),
                 ContentTypesName: Html.NameFor(x => x.ContentTypes)
             );
             @await DisplayAsync(contentCard)
@@ -98,7 +98,7 @@
 
 <script at="Foot">
     function toggleWidgets(){
-        $('.toggleAll').toggleClass('collapsed');
+        $('.toggleAll > svg').toggleClass('fa-angle-double-up fa-angle-double-down');
         $('.widget.widget-editor.card').toggleClass('collapsed');
     }
 

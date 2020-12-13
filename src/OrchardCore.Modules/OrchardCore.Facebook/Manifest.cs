@@ -1,19 +1,21 @@
-using OrchardCore.Modules.Manifest;
 using OrchardCore.Facebook;
+using OrchardCore.Modules.Manifest;
 
 [assembly: Module(
     Name = "Facebook",
-    Author = "The Orchard Team",
-    Website = "https://orchardproject.net",
-    Version = "2.0.0",
+    Author = ManifestConstants.OrchardCoreTeam,
+    Website = ManifestConstants.OrchardCoreWebsite,
+    Version = ManifestConstants.OrchardCoreVersion,
     Category = "Facebook"
 )]
+
 [assembly: Feature(
     Id = FacebookConstants.Features.Core,
     Name = "Facebook",
     Category = "Facebook",
     Description = "Registers the core components used by the Facebook features."
 )]
+
 [assembly: Feature(
     Id = FacebookConstants.Features.Login,
     Name = "Facebook Login",

@@ -5,6 +5,7 @@ using OrchardCore.Data.Migration;
 using OrchardCore.Taxonomies.Fields;
 using OrchardCore.Taxonomies.Indexing;
 using OrchardCore.Taxonomies.Settings;
+using YesSql.Sql;
 
 namespace OrchardCore.Taxonomies
 {
@@ -19,17 +20,29 @@ namespace OrchardCore.Taxonomies
 
         public int Create()
         {
-            _contentDefinitionManager.AlterTypeDefinition("Taxonomy", menu => menu
+            _contentDefinitionManager.AlterTypeDefinition("Taxonomy", taxonomy => taxonomy
                 .Draftable()
                 .Versionable()
                 .Creatable()
                 .Listable()
                 .WithPart("TitlePart", part => part.WithPosition("1"))
-                .WithPart("AliasPart", part => part.WithPosition("2").WithSettings(new AliasPartSettings { Pattern = "{{ Model.ContentItem | display_text | slugify }}" }))
-                .WithPart("TaxonomyPart", part => part.WithPosition("3"))
+                .WithPart("AliasPart", part => part
+                    .WithPosition("2")
+                    .WithSettings(new AliasPartSettings
+                    {
+                        Pattern = "{{ Model.ContentItem | display_text | slugify }}"
+                    }))
+                .WithPart("AutoroutePart", part => part
+                    .WithPosition("3")
+                    .WithSettings(new AutoroutePartSettings
+                    {
+                        Pattern = "{{ Model.ContentItem | display_text | slugify }}",
+                        AllowRouteContainedItems = true
+                    }))
+                .WithPart("TaxonomyPart", part => part.WithPosition("4"))
             );
 
-            SchemaBuilder.CreateMapIndexTable(nameof(TaxonomyIndex), table => table
+            SchemaBuilder.CreateMapIndexTable<TaxonomyIndex>(table => table
                 .Column<string>("TaxonomyContentItemId", c => c.WithLength(26))
                 .Column<string>("ContentItemId", c => c.WithLength(26))
                 .Column<string>("ContentType", column => column.WithLength(ContentItemIndex.MaxContentTypeSize))
@@ -38,16 +51,16 @@ namespace OrchardCore.Taxonomies
                 .Column<string>("TermContentItemId", column => column.WithLength(26))
             );
 
-            SchemaBuilder.AlterTable(nameof(TaxonomyIndex), table => table
+            SchemaBuilder.AlterIndexTable<TaxonomyIndex>(table => table
                 .CreateIndex("IDX_TaxonomyIndex_List", "ContentType", "ContentPart", "ContentField")
             );
 
-            SchemaBuilder.AlterTable(nameof(TaxonomyIndex), table => table
+            SchemaBuilder.AlterIndexTable<TaxonomyIndex>(table => table
                 .CreateIndex("IDX_TaxonomyIndex_Search", "TermContentItemId")
             );
 
-            // Return 2 to shortcut the second migration on new content definition schemas.
-            return 1;
+            // Return 3 to shortcut the migrations on new content definition schemas.
+            return 3;
         }
 
         // Migrate FieldSettings. This only needs to run on old content definition schemas.
@@ -57,10 +70,32 @@ namespace OrchardCore.Taxonomies
             _contentDefinitionManager.MigrateFieldSettings<TaxonomyField, TaxonomyFieldSettings>();
             return 2;
         }
+
+        public int UpdateFrom2()
+        {
+            _contentDefinitionManager.AlterTypeDefinition("Taxonomy", taxonomy => taxonomy
+                .WithPart("AutoroutePart", part => part
+                    .WithPosition("3")
+                    .WithSettings(new AutoroutePartSettings
+                    {
+                        Pattern = "{{ Model.ContentItem | display_text | slugify }}",
+                        AllowRouteContainedItems = true
+                    }))
+                .WithPart("TaxonomyPart", part => part.WithPosition("4"))
+            );
+
+            return 3;
+        }
     }
 
     internal class AliasPartSettings
     {
         public string Pattern { get; set; }
+    }
+
+    internal class AutoroutePartSettings
+    {
+        public string Pattern { get; set; }
+        public bool AllowRouteContainedItems { get; set; }
     }
 }

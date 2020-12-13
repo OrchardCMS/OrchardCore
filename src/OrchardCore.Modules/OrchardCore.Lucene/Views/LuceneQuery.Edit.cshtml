@@ -1,5 +1,6 @@
 @model LuceneQueryViewModel
 
+<style asp-name="codemirror"></style>
 <script asp-name="codemirror" depends-on="admin" at="Foot"></script>
 <script asp-name="codemirror-mode-javascript" at="Foot"></script>
 
@@ -18,7 +19,7 @@
     <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input" asp-for="ReturnContentItems" checked="@Model.ReturnContentItems" />
         <label class="custom-control-label" asp-for="ReturnContentItems">@T["Return Content Items"]</label>
-        <span class="hint">— @T["Check to return the corresponding content items."]</span>
+        <span class="hint dashed">@T["Check to return the corresponding content items."]</span>
     </div>
 </div>
 

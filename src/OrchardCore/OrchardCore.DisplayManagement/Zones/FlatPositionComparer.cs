@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using OrchardCore.DisplayManagement;
 
 namespace OrchardCore.DisplayManagement.Zones
 {
@@ -34,7 +33,7 @@ namespace OrchardCore.DisplayManagement.Zones
 
             // null == "before"; "" == "0"
             x = x == null
-                ? "before." // in order to have before < null when 'before' is explicitely defined
+                ? "before." // in order to have before < null when 'before' is explicitly defined
                 : x.Trim().Length == 0 ? "0" : x.Trim(':').TrimEnd('.'); // ':' is _sometimes_ used as a partition identifier
             y = y == null
                 ? "before."
@@ -86,12 +85,19 @@ namespace OrchardCore.DisplayManagement.Zones
         private static string NormalizeKnownPartitions(string partition)
         {
             if (partition.Length < 5) // known partitions are long
+            {
                 return partition;
+            }
 
             if (string.Compare(partition, "before", StringComparison.OrdinalIgnoreCase) == 0)
+            {
                 return "-9999";
+            }
+
             if (string.Compare(partition, "after", StringComparison.OrdinalIgnoreCase) == 0)
+            {
                 return "9999";
+            }
 
             return partition;
         }

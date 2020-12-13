@@ -3,7 +3,7 @@
 <style>
     #graphiql {
         position: absolute;
-        top: 49px;
+        top: 52px;
         bottom: 0;
         right: 0;
         left: 260px;
@@ -42,6 +42,18 @@
         100% {
             transform: rotate(360deg);
         }
+    }
+
+    :root .graphiql-container .CodeMirror {
+        height: 100% !important;
+    }
+
+    :root .graphiql-container .CodeMirror pre {
+        padding-left: unset;
+        line-height: unset;
+        margin: unset;
+        font-size: unset;
+        overflow: unset;
     }
 </style>
 

@@ -187,6 +187,16 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                 {
                     _resourceManager.RenderLocalScript(setting, output.Content);
                 }
+                else
+                {
+                    var childContent = await output.GetChildContentAsync();
+                    if (!childContent.IsEmptyOrWhiteSpace)
+                    {
+                        // Inline content definition
+                        _resourceManager.InlineManifest.DefineScript(Name)
+                            .SetInnerContent(childContent.GetContent());
+                    }
+                }
             }
             else if (!String.IsNullOrEmpty(Name) && !String.IsNullOrEmpty(Src))
             {
@@ -271,12 +281,6 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                 foreach (var attribute in output.Attributes)
                 {
                     builder.Attributes.Add(attribute.Name, attribute.Value.ToString());
-                }
-
-                // If no type was specified, define a default one
-                if (!builder.Attributes.ContainsKey("type"))
-                {
-                    builder.Attributes.Add("type", "text/javascript");
                 }
 
                 if (At == ResourceLocation.Head)

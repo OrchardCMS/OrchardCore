@@ -38,7 +38,7 @@ namespace OrchardCore.Users.Services
 
             if (routeValues["area"]?.ToString() == "OrchardCore.Users")
             {
-                bool useSiteTheme = false;
+                bool useSiteTheme;
 
                 switch (routeValues["controller"]?.ToString())
                 {
@@ -55,7 +55,7 @@ namespace OrchardCore.Users.Services
                         return null;
                 }
 
-                string adminThemeName = await _adminThemeService.GetAdminThemeNameAsync();
+                var adminThemeName = await _adminThemeService.GetAdminThemeNameAsync();
 
                 if (String.IsNullOrEmpty(adminThemeName))
                 {

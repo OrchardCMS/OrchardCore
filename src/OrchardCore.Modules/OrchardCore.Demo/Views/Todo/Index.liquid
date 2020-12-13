@@ -1,0 +1,17 @@
+<zone Name="Title"><h1>List of Todos (Liquid)</h1></zone>
+<table class="table table-bordered">
+    <tr>
+        <th>Todo</th>
+        <th>Due Date</th>
+        <th>Completed?</th>
+        <th></th>
+        {% for item in Model %}
+        <tr>
+            {{ item | shape_render }}
+        </tr>
+        {% endfor %}
+    </tr>
+</table>
+{% block "a", controller: "Todo", action: "Create", route_returnurl: Request.Path, class: "btn btn-success" %}
+    Add
+{% endblock %}

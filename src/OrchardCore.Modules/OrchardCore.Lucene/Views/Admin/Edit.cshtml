@@ -1,11 +1,11 @@
 @model LuceneIndexSettingsViewModel
 @if (Model.IsCreate)
 {
-    <h1>@RenderTitleSegments(T["Create Index"])</h1>
+    <zone Name="Title"><h1>@RenderTitleSegments(T["Create Index"])</h1></zone>
 }
 else
 {
-    <h1>@RenderTitleSegments(T["Edit Index"])</h1>
+    <zone Name="Title"><h1>@RenderTitleSegments(T["Edit Index"])</h1></zone>
 }
 <div asp-validation-summary="ModelOnly"></div>
 <form asp-action="Edit" method="post">
@@ -31,7 +31,7 @@ else
 
     <div class="form-group" asp-validation-class-for="IndexedContentTypes">
         <label asp-for="IndexedContentTypes">@T["Content Types"]</label>
-        <span class="hint">— @T["The content types to index. Choose at least one."]</span>
+        <span class="hint dashed">@T["The content types to index. Choose at least one."]</span>
         @if (Model.IsCreate)
         {
             @await Component.InvokeAsync("SelectContentTypes", new { htmlName = Html.NameFor(m => m.IndexedContentTypes) })
@@ -48,7 +48,7 @@ else
         <div class="custom-control custom-checkbox">
             <input type="checkbox" asp-for="IndexLatest" class="custom-control-input">
             <label class="custom-control-label" asp-for="IndexLatest">@T["Index latest version"]</label>
-            <span class="hint">— @T["Check to index draft if it exists, otherwise only the published version is indexed."]</span>
+            <span class="hint dashed">@T["Check to index draft if it exists, otherwise only the published version is indexed."]</span>
         </div>
         <span asp-validation-for="IndexLatest" class="text-danger"></span>
     </div>
@@ -56,13 +56,13 @@ else
     <div class="form-group">
         @if (Model.IsCreate)
         {
-            <button class="btn btn-primary" type="submit">@T["Create"]</button>
-            <a class="btn btn-secondary" asp-route-action="Index">@T["Cancel"]</a>
+            <button class="btn btn-primary create" type="submit">@T["Create"]</button>
+            <a class="btn btn-secondary cancel" role="button" asp-route-action="Index">@T["Cancel"]</a>
         }
         else
         {
-            <button class="btn btn-primary" type="submit">@T["Save"]</button>
-            <a class="btn btn-secondary" asp-route-action="Index">@T["Cancel"]</a>
+            <button class="btn btn-primary save" type="submit">@T["Save"]</button>
+            <a class="btn btn-secondary cancel" role="button" asp-route-action="Index">@T["Cancel"]</a>
         }
     </div>
 </form>

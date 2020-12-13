@@ -59,6 +59,8 @@ namespace OrchardCore.Taxonomies.Controllers
             }
 
             var contentItem = await _contentManager.NewAsync(id);
+            contentItem.Weld<TermPart>();
+            contentItem.Alter<TermPart>(t => t.TaxonomyContentItemId = taxonomyContentItemId);
 
             dynamic model = await _contentItemDisplayManager.BuildEditorAsync(contentItem, _updateModelAccessor.ModelUpdater, true);
 
@@ -96,6 +98,8 @@ namespace OrchardCore.Taxonomies.Controllers
             }
 
             var contentItem = await _contentManager.NewAsync(id);
+            contentItem.Weld<TermPart>();
+            contentItem.Alter<TermPart>(t => t.TaxonomyContentItemId = taxonomyContentItemId);
 
             dynamic model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, _updateModelAccessor.ModelUpdater, true);
 
@@ -155,13 +159,15 @@ namespace OrchardCore.Taxonomies.Controllers
             // Look for the target taxonomy item in the hierarchy
             JObject taxonomyItem = FindTaxonomyItem(taxonomy.As<TaxonomyPart>().Content, taxonomyItemId);
 
-            // Couldn't find targetted taxonomy item
+            // Couldn't find targeted taxonomy item
             if (taxonomyItem == null)
             {
                 return NotFound();
             }
 
             var contentItem = taxonomyItem.ToObject<ContentItem>();
+            contentItem.Weld<TermPart>();
+            contentItem.Alter<TermPart>(t => t.TaxonomyContentItemId = taxonomyContentItemId);
 
             dynamic model = await _contentItemDisplayManager.BuildEditorAsync(contentItem, _updateModelAccessor.ModelUpdater, false);
 
@@ -201,13 +207,20 @@ namespace OrchardCore.Taxonomies.Controllers
             // Look for the target taxonomy item in the hierarchy
             JObject taxonomyItem = FindTaxonomyItem(taxonomy.As<TaxonomyPart>().Content, taxonomyItemId);
 
-            // Couldn't find targetted taxonomy item
+            // Couldn't find targeted taxonomy item
             if (taxonomyItem == null)
             {
                 return NotFound();
             }
 
-            var contentItem = taxonomyItem.ToObject<ContentItem>();
+            var existing = taxonomyItem.ToObject<ContentItem>();
+
+            // Create a new item to take into account the current type definition.
+            var contentItem = await _contentManager.NewAsync(existing.ContentType);
+
+            contentItem.Merge(existing);            
+            contentItem.Weld<TermPart>();
+            contentItem.Alter<TermPart>(t => t.TaxonomyContentItemId = taxonomyContentItemId);
 
             dynamic model = await _contentItemDisplayManager.UpdateEditorAsync(contentItem, _updateModelAccessor.ModelUpdater, false);
 
@@ -262,7 +275,7 @@ namespace OrchardCore.Taxonomies.Controllers
             // Look for the target taxonomy item in the hierarchy
             var taxonomyItem = FindTaxonomyItem(taxonomy.As<TaxonomyPart>().Content, taxonomyItemId);
 
-            // Couldn't find targetted taxonomy item
+            // Couldn't find targeted taxonomy item
             if (taxonomyItem == null)
             {
                 return NotFound();
@@ -271,7 +284,7 @@ namespace OrchardCore.Taxonomies.Controllers
             taxonomyItem.Remove();
             _session.Save(taxonomy);
 
-            _notifier.Success(H["Taxonomy item deleted successfully"]);
+            _notifier.Success(H["Taxonomy item deleted successfully."]);
 
             return RedirectToAction("Edit", "Admin", new { area = "OrchardCore.Contents", contentItemId = taxonomyContentItemId });
         }

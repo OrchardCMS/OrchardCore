@@ -12,7 +12,7 @@ namespace OrchardCore.Microsoft.Authentication.Services
     public class AzureADService : IAzureADService
     {
         private readonly ISiteService _siteService;
-        private readonly IStringLocalizer<AzureADService> S;
+        private readonly IStringLocalizer S;
 
         public AzureADService(
             ISiteService siteService,

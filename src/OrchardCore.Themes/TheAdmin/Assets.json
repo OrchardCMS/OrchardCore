@@ -3,8 +3,7 @@
     "generateSourceMaps": false,
     "generateRTL": true,
     "inputs": [
-      "Assets/scss/TheAdmin.scss",
-      "Assets/scss/perfect-scrollbar.css"
+      "Assets/scss/admin.scss"
     ],
     "output": "wwwroot/Styles/TheAdmin.css"
   },
@@ -20,8 +19,8 @@
   {
     "generateSourceMaps": false,
     "inputs": [
-      "Assets/js/userPreferencesLoader/userPreferencesLoader.js"
+      "Assets/js/header/userPreferencesLoader.js"
     ],
-    "output": "wwwroot/Scripts/userPreferencesLoader.js"
+    "output": "wwwroot/Scripts/TheAdmin-header.js"
   }
 ]

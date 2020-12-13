@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
+using OrchardCore.Environment.Shell.Descriptor.Models;
 using OrchardCore.Modules;
 
 namespace Microsoft.Extensions.DependencyInjection
@@ -58,7 +59,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <summary>
         /// This method gets called for each tenant. Use this method to configure the request's pipeline.
         /// </summary>
-        /// <param name="configure">The action to execute when configuring the request's pipeling for a tenant.</param>
+        /// <param name="configure">The action to execute when configuring the request's pipeline for a tenant.</param>
         /// <param name="order">The order of the action to execute. Lower values will be executed first.</param>
         public OrchardCoreBuilder Configure(Action<IApplicationBuilder, IEndpointRouteBuilder, IServiceProvider> configure, int order = 0)
         {
@@ -78,7 +79,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <summary>
         /// This method gets called for each tenant. Use this method to configure the request's pipeline.
         /// </summary>
-        /// <param name="configure">The action to execute when configuring the request's pipeling for a tenant.</param>
+        /// <param name="configure">The action to execute when configuring the request's pipeline for a tenant.</param>
         /// <param name="order">The order of the action to execute. Lower values will be executed first.</param>
         public OrchardCoreBuilder Configure(Action<IApplicationBuilder, IEndpointRouteBuilder> configure, int order = 0)
         {
@@ -88,11 +89,29 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <summary>
         /// This method gets called for each tenant. Use this method to configure the request's pipeline.
         /// </summary>
-        /// <param name="configure">The action to execute when configuring the request's pipeling for a tenant.</param>
+        /// <param name="configure">The action to execute when configuring the request's pipeline for a tenant.</param>
         /// <param name="order">The order of the action to execute. Lower values will be executed first.</param>
         public OrchardCoreBuilder Configure(Action<IApplicationBuilder> configure, int order = 0)
         {
             return Configure((app, routes, sp) => configure(app), order);
+        }
+
+        public OrchardCoreBuilder EnableFeature(string id)
+        {
+            return ConfigureServices(services =>
+            {
+                for (var index = 0; index < services.Count; index++)
+                {
+                    var service = services[index];
+                    if (service.ImplementationInstance is ShellFeature feature &&
+                        string.Equals(feature.Id, id, StringComparison.OrdinalIgnoreCase))
+                    {
+                        return;
+                    }
+                }
+
+                services.AddSingleton(new ShellFeature(id, alwaysEnabled: true));
+            });
         }
     }
 }

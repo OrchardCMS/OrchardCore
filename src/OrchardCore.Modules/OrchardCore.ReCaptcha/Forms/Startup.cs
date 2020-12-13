@@ -1,4 +1,3 @@
-using System;
 using Fluid;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
@@ -19,7 +18,7 @@ namespace OrchardCore.ReCaptcha.Forms
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddContentPart<ReCaptchaPart>()
-                .UseDisplayDriver<ReCaptchaPartDisplay>();
+                .UseDisplayDriver<ReCaptchaPartDisplayDriver>();
 
             services.AddScoped<IDataMigration, Migrations>();
         }

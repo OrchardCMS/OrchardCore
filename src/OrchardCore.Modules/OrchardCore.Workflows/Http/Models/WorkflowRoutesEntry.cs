@@ -8,8 +8,7 @@ namespace OrchardCore.Workflows.Http.Models
         public string WorkflowId { get; set; }
         public string ActivityId { get; set; }
         public string HttpMethod { get; set; }
-        public RouteValueDictionary RouteValues { get; set; }
-        public string CorrelationId { get; set; }
+        public RouteValueDictionary RouteValues { get; set; } = new RouteValueDictionary();
 
         public string ControllerName => RouteValues.GetValue<string>("controller");
         public string ActionName => RouteValues.GetValue<string>("action");

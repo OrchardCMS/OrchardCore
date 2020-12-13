@@ -11,7 +11,7 @@ namespace OrchardCore.Tenants.Workflows.Activities
     public abstract class TenantActivity : Activity
     {
         protected readonly IStringLocalizer S;
-     
+
         protected TenantActivity(IShellSettingsManager shellSettingsManager, IShellHost shellHost, IWorkflowExpressionEvaluator expressionEvaluator, IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer localizer)
         {
             ShellSettingsManager = shellSettingsManager;

@@ -5,7 +5,8 @@
     {% if imagePath == nil %}
         <header class="masthead" style="background-image: url('{{ "~/TheBlogTheme/img/home-bg.jpg" | href }}')">
     {% else %}
-        <header class="masthead" style="background-image: url('{{ imagePath | asset_url }}')">
+        {% assign anchor = Model.ContentItem.Content.Blog.Image.Anchors.first %}
+        <header class="masthead" style="background-image: url('{{ imagePath | asset_url | resize_url: profile: 'banner', anchor: anchor }}')">
     {% endif %}
         <div class="overlay"></div>
         <div class="container">

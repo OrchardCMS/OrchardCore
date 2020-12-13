@@ -16,25 +16,32 @@
     var returnUrl = ViewData["returnUrl"]?.ToString();
 }
 
-<h1>@RenderTitleSegments(T["\"{0}\" settings for \"{1}\"", Model.DisplayName, Model.PartFieldDefinition.PartDefinition.DisplayName()])</h1>
+<zone Name="Title"><h1>@RenderTitleSegments(T["\"{0}\" settings for \"{1}\"", Model.DisplayName, Model.PartFieldDefinition.PartDefinition.DisplayName()])</h1></zone>
 
 <form asp-action="EditField" asp-route-returnUrl="@ViewData["returnUrl"]">
     @Html.ValidationSummary()
     <div class="form-group">
-        <div class="row col-md">
+        <div class="w-md-75 w-xl-50 pr-md-3">
             <label asp-for="DisplayName">@T["Display Name"]</label>
             <input asp-for="DisplayName" autofocus class="form-control" />
-            <span class="hint">@T["Name of the field as it will be displayed in screens."]</span>
         </div>
+        <span class="hint">@T["Name of the field as it will be displayed in screens."]</span>
     </div>
 
     <div class="form-group">
-        <div class="row col-sm">
+        <div class="w-sm-75 w-md-50 w-lg-25 pr-md-3">
             <label asp-for="Name">@T["Technical Name"]</label>
             <input asp-for="Name" class="form-control" readonly />
-            <span class="hint">@T["Technical name of the field."]</span>
         </div>
+        <span class="hint">@T["Technical name of the field."]</span>
     </div>
+
+    @if (Model.Shape.Shortcuts != null)
+    {
+        <div class="form-group">
+            @await DisplayAsync(Model.Shape.Shortcuts)
+        </div>
+    }
 
     @if (Model.Shape.Content != null)
     {
@@ -45,15 +52,17 @@
         @if (editorShapes.Any())
         {
             <div class="form-group">
-                <label asp-for="Editor">@T["What type of editor should be used?"]</label>
-                <select asp-for="Editor" class="form-control col-sm-6" id="field-editor-select">
-                    @foreach (var editorShape in editorShapes)
-                    {
-                        dynamic shape = await Factory.CreateAsync(editorShape);
-                        shape.Editor = Model.Editor;
-                        @await DisplayAsync(shape)
-                    }
-                </select>
+                <div class="w-100 w-md-50 pr-md-3">
+                    <label asp-for="Editor">@T["What type of editor should be used?"]</label>
+                    <select asp-for="Editor" class="form-control" id="field-editor-select">
+                        @foreach (var editorShape in editorShapes)
+                        {
+                            dynamic shape = await Factory.CreateAsync(editorShape);
+                            shape.Editor = Model.Editor;
+                            @await DisplayAsync(shape)
+                        }
+                    </select>
+                </div>
             </div>
         }
 
@@ -64,15 +73,17 @@
         @if (displayShapes.Any())
         {
             <div class="form-group">
-                <label asp-for="DisplayMode">@T["What type of display mode should be used?"]</label>
-                <select asp-for="DisplayMode" class="form-control col-sm-6" id="field-display-select">
-                    @foreach (var displayShape in displayShapes)
-                    {
-                        dynamic shape = await Factory.CreateAsync(displayShape);
-                        shape.DisplayMode = Model.DisplayMode;
-                        @await DisplayAsync(shape)
-                    }
-                </select>
+                <div class="w-100 w-md-50 pr-md-3">
+                    <label asp-for="DisplayMode">@T["What type of display mode should be used?"]</label>
+                    <select asp-for="DisplayMode" class="form-control" id="field-display-select">
+                        @foreach (var displayShape in displayShapes)
+                        {
+                            dynamic shape = await Factory.CreateAsync(displayShape);
+                            shape.DisplayMode = Model.DisplayMode;
+                            @await DisplayAsync(shape)
+                        }
+                    </select>
+                </div>
             </div>
         }
 
@@ -82,15 +93,15 @@
     }
 
     <div class="form-group">
-        <button class="btn btn-primary" type="submit" name="submit.Save" value="Save">@T["Save"]</button>
+        <button class="btn btn-primary save" type="submit" name="submit.Save" value="Save">@T["Save"]</button>
         @if (Url.IsLocalUrl(returnUrl))
         {
-            <a class="btn btn-secondary" href="@returnUrl">@T["Cancel"]</a>
+            <a class="btn btn-secondary cancel" role="button" href="@returnUrl">@T["Cancel"]</a>
         }
     </div>
 </form>
 
-<script at="Foot" type="text/javascript">
+<script at="Foot">
     //<![CDATA[
     $(function () {
         $('.field-editor').hide();

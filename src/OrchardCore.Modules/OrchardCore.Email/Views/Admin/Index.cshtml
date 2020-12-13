@@ -1,6 +1,6 @@
 @model OrchardCore.Email.ViewModels.SmtpSettingsViewModel
 
-<h1>@RenderTitleSegments(T["Settings"])</h1>
+<zone Name="Title"><h1>@RenderTitleSegments(T["Settings"])</h1></zone>
 
 <form asp-action="Index" asp-controller="Admin" asp-area="OrchardCore.Email" method="post">
     @Html.ValidationSummary()
@@ -17,7 +17,7 @@
             <label asp-for="Sender">@T["Sender"]</label>
             <input asp-for="Sender" class="form-control" type="text" />
             <span asp-validation-for="Sender"></span>
-            <span class="hint">@T["The sender is optional, it is useful when the email author is different than the email submittor."]</span>
+            <span class="hint">@T["The sender is optional, it is useful when the email author is different than the email submitter."]</span>
         </div>
     </div>
     <div class="form-group">

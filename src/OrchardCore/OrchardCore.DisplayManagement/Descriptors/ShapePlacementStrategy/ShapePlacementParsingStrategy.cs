@@ -14,21 +14,21 @@ using OrchardCore.Environment.Shell;
 namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
 {
     /// <summary>
-    /// This component discovers and announces the shape alterations implied by the contents of the Placement.info files
+    /// This component discovers and announces the shape alterations implied by the contents of the Placement.json files
     /// </summary>
     public class ShapePlacementParsingStrategy : IShapeTableHarvester
     {
-        private readonly IHostEnvironment _hostingEnviroment;
+        private readonly IHostEnvironment _hostingEnvironment;
         private readonly IShellFeaturesManager _shellFeaturesManager;
         private readonly IEnumerable<IPlacementNodeFilterProvider> _placementParseMatchProviders;
 
         public ShapePlacementParsingStrategy(
-            IHostEnvironment hostingEnviroment,
+            IHostEnvironment hostingEnvironment,
             IShellFeaturesManager shellFeaturesManager,
             ILogger<ShapePlacementParsingStrategy> logger,
             IEnumerable<IPlacementNodeFilterProvider> placementParseMatchProviders)
         {
-            _hostingEnviroment = hostingEnviroment;
+            _hostingEnvironment = hostingEnvironment;
             _shellFeaturesManager = shellFeaturesManager;
             _placementParseMatchProviders = placementParseMatchProviders;
         }
@@ -48,7 +48,7 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
         {
             // TODO : (ngm) Replace with configuration Provider and read from that.
             // Dont use JSON Deserializer directly.
-            var virtualFileInfo = _hostingEnviroment
+            var virtualFileInfo = _hostingEnvironment
                 .GetExtensionFileInfo(featureDescriptor.Extension, "placement.json");
 
             if (virtualFileInfo.Exists)

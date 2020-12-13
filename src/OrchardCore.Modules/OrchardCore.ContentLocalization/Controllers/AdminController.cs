@@ -1,4 +1,5 @@
 using System;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -16,7 +17,7 @@ namespace OrchardCore.ContentLocalization.Controllers
         private readonly IContentLocalizationManager _contentLocalizationManager;
         private readonly INotifier _notifier;
         private readonly IAuthorizationService _authorizationService;
-        private readonly IHtmlLocalizer<AdminController> H;
+        private readonly IHtmlLocalizer H;
 
         public AdminController(
             IContentManager contentManager,
@@ -53,7 +54,7 @@ namespace OrchardCore.ContentLocalization.Controllers
             var checkContentItem = await _contentManager.NewAsync(contentItem.ContentType);
 
             // Set the current user as the owner to check for ownership permissions on creation
-            checkContentItem.Owner = User.Identity.Name;
+            checkContentItem.Owner = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.EditContent, checkContentItem))
             {
@@ -71,19 +72,19 @@ namespace OrchardCore.ContentLocalization.Controllers
 
             if (alreadyLocalizedContent != null)
             {
-                _notifier.Warning(H["A localization already exist for '{0}'", targetCulture]);
+                _notifier.Warning(H["A localization already exists for '{0}'.", targetCulture]);
                 return RedirectToAction("Edit", "Admin", new { area = "OrchardCore.Contents", contentItemId = contentItemId });
             }
 
             try
             {
                 var newContent = await _contentLocalizationManager.LocalizeAsync(contentItem, targetCulture);
-                _notifier.Information(H["Successfully created localized version of the content."]);
+                _notifier.Information(H["Localized version of the content created successfully."]);
                 return RedirectToAction("Edit", "Admin", new { area = "OrchardCore.Contents", contentItemId = newContent.ContentItemId });
             }
             catch (InvalidOperationException)
             {
-                _notifier.Warning(H["Could not create localized version of the content item"]);
+                _notifier.Warning(H["Could not create localized version of the content item."]);
                 return RedirectToAction("Edit", "Admin", new { area = "OrchardCore.Contents", contentItemId = contentItem.ContentItemId });
             }
         }

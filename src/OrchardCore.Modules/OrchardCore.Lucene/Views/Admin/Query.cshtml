@@ -11,10 +11,11 @@
 
 }
 
+<style asp-name="codemirror"></style>
 <script asp-name="codemirror" depends-on="admin" at="Foot"></script>
 <script asp-name="codemirror-mode-javascript" at="Foot"></script>
 
-<h1>@RenderTitleSegments(T["Lucene Query"])</h1>
+<zone Name="Title"><h1>@RenderTitleSegments(T["Lucene Query"])</h1></zone>
 
 <form asp-action="Query" method="post">
     <div asp-validation-summary="All"></div>
