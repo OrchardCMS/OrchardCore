@@ -25,7 +25,7 @@
 :root[data-theme='darkmode'] {
     @import "modules/theme/darkmode/_variables.scss";
     @import "../../node_modules/bootstrap/scss/bootstrap";
-    
+
     @import "../../node_modules/bootstrap-select/sass/bootstrap-select.scss";
     @import "../../node_modules/bootstrap-slider/src/sass/bootstrap-slider.scss";
 
