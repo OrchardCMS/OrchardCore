@@ -17,7 +17,7 @@ namespace OrchardCore.Media.Processing
         private readonly ISiteService _siteService;
 
         private readonly HashSet<string> _knownCommands = new HashSet<string>();
-        private readonly byte[] _hashKey;
+        private byte[] _hashKey;
 
         public MediaTokenService(
             IMemoryCache memoryCache,
@@ -26,17 +26,13 @@ namespace OrchardCore.Media.Processing
         {
             _memoryCache = memoryCache;
             _siteService = siteService;
-            foreach (IImageWebProcessor processor in processors)
+            foreach (var processor in processors)
             {
-                foreach (string command in processor.Commands)
+                foreach (var command in processor.Commands)
                 {
                     _knownCommands.Add(command);
                 }
             }
-
-            var siteSettings = _siteService.GetSiteSettingsAsync().GetAwaiter().GetResult();
-            var mediaTokenSettings = siteSettings.As<MediaTokenSettings>();
-            _hashKey = mediaTokenSettings.HashKey;
         }
 
         public string AddTokenToPath(string path)
@@ -48,8 +44,10 @@ namespace OrchardCore.Media.Processing
             // If no commands or only a version command don't bother tokenizing.
             if (parsed.Count == 0 || parsed.Count == 1 && parsed.ContainsKey(ImageVersionProcessor.VersionCommand))
             {
-               return path;
+                return path;
             }
+
+            GetHashKey();
 
             var processingCommands = new Dictionary<string, string>();
             Dictionary<string, string> otherCommands = null;
@@ -79,7 +77,7 @@ namespace OrchardCore.Media.Processing
             // If any non-resizing paramters have been added to the path include these on the query string output.
             if (otherCommands != null)
             {
-                foreach(var command in otherCommands)
+                foreach (var command in otherCommands)
                 {
                     processingCommands.Add(command.Key, command.Value);
                 }
@@ -88,8 +86,11 @@ namespace OrchardCore.Media.Processing
             return QueryHelpers.AddQueryString(pathParts[0], processingCommands);
         }
 
+
         public bool TryValidateToken(IDictionary<string, string> commands, string token)
         {
+            GetHashKey();
+
             var commandValues = String.Concat(commands.Values);
 
             var queryStringTokenKey = TokenCacheKeyPrefix + commandValues;
@@ -107,17 +108,28 @@ namespace OrchardCore.Media.Processing
         }
 
         private string GetHash(string commandValues, string queryStringTokenKey)
-            =>  _memoryCache.GetOrCreate(queryStringTokenKey, entry =>
-                {
-                    entry.SlidingExpiration = TimeSpan.FromHours(5);
+            => _memoryCache.GetOrCreate(queryStringTokenKey, entry =>
+               {
+                   entry.SlidingExpiration = TimeSpan.FromHours(5);
 
-                    using var hmac = new HMACSHA256(_hashKey);
+                   using var hmac = new HMACSHA256(_hashKey);
 
-                    var bytes = Encoding.UTF8.GetBytes(commandValues);
+                   var bytes = Encoding.UTF8.GetBytes(commandValues);
 
-                    var hash = hmac.ComputeHash(bytes);
+                   var hash = hmac.ComputeHash(bytes);
 
-                    return Convert.ToBase64String(hash);
-                });
+                   return Convert.ToBase64String(hash);
+               });
+
+
+        private void GetHashKey()
+        {
+            if (_hashKey == null)
+            {
+                var siteSettings = _siteService.GetSiteSettingsAsync().GetAwaiter().GetResult();
+                var mediaTokenSettings = siteSettings.As<MediaTokenSettings>();
+                _hashKey = mediaTokenSettings.HashKey;
+            }
+        }
     }
 }
