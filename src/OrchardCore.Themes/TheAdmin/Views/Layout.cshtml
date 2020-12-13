@@ -39,13 +39,13 @@
                 }
                 </div>
                 @await RenderSectionAsync("NavbarTop", required: false)
-                @await DisplayAsync(await New.UserMenu())
                 <button class="navbar-toggler pull-right" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="@T["Toggle navigation"]">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse flex-grow-0" id="navbarNav">
                     <ul class="navbar-nav">
                         @await RenderSectionAsync("NavbarLinks", required: false)
+                        <li class="nav-item">@await DisplayAsync(await New.UserMenu())</li>
                         <li class="nav-item">
                             @if (adminSettings.DisplayDarkMode)
                             {
