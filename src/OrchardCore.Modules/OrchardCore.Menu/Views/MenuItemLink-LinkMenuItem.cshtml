@@ -4,7 +4,7 @@
     var linkMenuItemPart = contentItem.As<LinkMenuItemPart>();
 
     TagBuilder tag = Tag(Model, "a");
-    tag.Attributes["href"] = (string)linkMenuItemPart.Url;
-    tag.InnerHtml.Append((string)linkMenuItemPart.Name);
+    tag.Attributes["href"] = linkMenuItemPart.Url;
+    tag.InnerHtml.Append(linkMenuItemPart.Name);
 }
 @tag
