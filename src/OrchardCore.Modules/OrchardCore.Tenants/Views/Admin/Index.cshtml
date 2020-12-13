@@ -162,6 +162,7 @@
                             }
                             <a asp-action="Reload" asp-route-id="@entry.Name" class="btn btn-secondary btn-sm" itemprop="UnsafeUrl">@T["Reload"]</a>
                         </div>
+                        <a href="@GetEncodedUrl(entry, originalPathBase)" target="_blank">@entry.Name</a>
                         @switch (entry.ShellSettings.State)
                         {
                             case TenantState.Disabled:
@@ -180,7 +181,6 @@
                                 <span class="badge badge-secondary">@T["Uninitialized"]</span>
                                 break;
                         }
-                        <a href="@GetEncodedUrl(entry, originalPathBase)" target="_blank">@entry.Name</a>
                         <code class="hint">@GetDisplayUrl(entry, originalPathBase)</code>
                         <div class="metadata">
                         @if (!string.IsNullOrEmpty(entry.Description))
