@@ -122,16 +122,16 @@ namespace OrchardCore.Users
 
         public int UpdateFrom6()
         {
-            SchemaBuilder.AlterIndexTable(nameof(UserIndex), table => table
+            SchemaBuilder.AlterIndexTable<UserIndex>(table => table
                 .AddColumn<bool>(nameof(UserIndex.LockoutEnabled), c => c.NotNull().WithDefault(false)));
 
-            SchemaBuilder.AlterIndexTable(nameof(UserIndex), table => table
+            SchemaBuilder.AlterIndexTable<UserIndex>(table => table
                 .AddColumn<DateTimeOffset?>(nameof(UserIndex.LockoutEnd), c => c.Nullable()));
 
-            SchemaBuilder.AlterIndexTable(nameof(UserIndex), table => table
+            SchemaBuilder.AlterIndexTable<UserIndex>(table => table
                 .AddColumn<int>(nameof(UserIndex.AccessFailedCount), c => c.NotNull().WithDefault(0)));
 
-            SchemaBuilder.AlterIndexTable(nameof(UserIndex), table => table
+            SchemaBuilder.AlterIndexTable<UserIndex>(table => table
                 .CreateIndex("IDX_UserIndex_LockoutEnabled", "LockoutEnabled")
             );
 
