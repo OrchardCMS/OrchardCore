@@ -111,7 +111,7 @@ namespace OrchardCore.Workflows.Controllers
             workflowType.Activities.Add(activityRecord);
 
             _session.Save(workflowType);
-            _notifier.Success(H["Activity added successfully"]);
+            _notifier.Success(H["Activity added successfully."]);
 
             return Url.IsLocalUrl(model.ReturnUrl) ? (IActionResult)Redirect(model.ReturnUrl) : RedirectToAction("Edit", "WorkflowType", new { id = model.WorkflowTypeId });
         }
@@ -168,7 +168,7 @@ namespace OrchardCore.Workflows.Controllers
             activityRecord.Properties = activityContext.Activity.Properties;
 
             _session.Save(workflowType);
-            _notifier.Success(H["Activity updated successfully"]);
+            _notifier.Success(H["Activity updated successfully."]);
 
             return Url.IsLocalUrl(model.ReturnUrl)
                 ? (IActionResult)Redirect(model.ReturnUrl)

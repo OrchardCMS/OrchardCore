@@ -13,7 +13,7 @@ namespace OrchardCore.Users.Drivers
     [Feature("OrchardCore.Users.ResetPassword")]
     public class ResetPasswordSettingsDisplayDriver : SectionDisplayDriver<ISite, ResetPasswordSettings>
     {
-        public const string GroupId = "ResetPasswordSettings";
+        public const string GroupId = "userResetPassword";
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthorizationService _authorizationService;
 
