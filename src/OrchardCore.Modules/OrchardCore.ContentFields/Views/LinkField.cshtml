@@ -1,5 +1,6 @@
 @model OrchardCore.ContentFields.ViewModels.DisplayLinkFieldViewModel
-@using OrchardCore.ContentFields.Settings;
+@using OrchardCore.ContentFields.Settings
+@using OrchardCore.ContentManagement.Metadata.Models
 @using OrchardCore.Mvc.Utilities
 
 @{
@@ -33,5 +34,6 @@
     }
 }
 <div class="field field-type-linkfield field-name-@name">
-    <a href="@Model.Url">@text</a>
+    <span class="name">@Model.PartFieldDefinition.DisplayName()@T[":"]</span>
+    <a id="@name" href="@Model.Url">@text</a>
 </div>

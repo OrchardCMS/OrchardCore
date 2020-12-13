@@ -1,5 +1,6 @@
 @model OrchardCore.ContentFields.ViewModels.DisplayDateFieldViewModel
 @using OrchardCore.Mvc.Utilities;
+@using OrchardCore.ContentManagement.Metadata.Models
 
 @{
     var name = (Model.PartFieldDefinition.PartDefinition.Name + "-" + Model.PartFieldDefinition.Name).HtmlClassify();
@@ -8,6 +9,7 @@
 @if (Model.Value.HasValue)
 {
     <div class="field field-type-datefield field-name-@name">
-        @Model.Value.Value.ToShortDateString()
+        <span class="name">@Model.PartFieldDefinition.DisplayName()@T[":"]</span>
+        <span class="value">@Model.Value.Value.ToShortDateString()</span>
     </div>
 }

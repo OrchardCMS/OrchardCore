@@ -6,16 +6,12 @@
 }
 
 <div class="field field-type-userpickerfield field-name-@name">
-    <span class="name">@Model.PartFieldDefinition.DisplayName():</span>
+    <span class="name">@Model.PartFieldDefinition.DisplayName()</span>
     @if (Model.UserNames.Any())
     {
         foreach (var userName in Model.UserNames)
         {
-            <span class="value">@userName</span>
-            if (userName != Model.UserNames.Last())
-            {
-                <span>,</span>
-            }
+            <span class="value">@userName</span>if (userName != Model.UserNames.Last()){@T[","]}
         }
     }
     else

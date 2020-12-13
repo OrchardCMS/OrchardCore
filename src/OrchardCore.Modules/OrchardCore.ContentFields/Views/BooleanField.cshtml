@@ -1,10 +1,12 @@
 @model OrchardCore.ContentFields.ViewModels.DisplayBooleanFieldViewModel
-@using OrchardCore.Mvc.Utilities;
+@using OrchardCore.Mvc.Utilities
+@using OrchardCore.ContentManagement.Metadata.Models
 
 @{
     var name = (Model.PartFieldDefinition.PartDefinition.Name + "-" + Model.PartFieldDefinition.Name).HtmlClassify();
 }
 
 <div class="field field-type-booleanfield field-name-@name">
-    @Model.Value
+    <label for="@name">@Model.PartFieldDefinition.DisplayName()@T[":"]</label>
+    <input type="checkbox" id="@name" checked="@Model.Value.ToString().ToLower()" disabled />
 </div>

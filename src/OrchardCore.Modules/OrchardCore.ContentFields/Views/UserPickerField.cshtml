@@ -1,5 +1,6 @@
 @model OrchardCore.ContentFields.ViewModels.DisplayUserPickerFieldViewModel
 @using OrchardCore.Mvc.Utilities
+@using OrchardCore.ContentManagement.Metadata.Models
 
 @{
     var name = (Model.PartFieldDefinition.PartDefinition.Name + "-" + Model.PartFieldDefinition.Name).HtmlClassify();
@@ -7,16 +8,12 @@
 }
 
 <div class="field field-type-userpickerfield field-name-@name">
-    <span class="name">@Model.PartFieldDefinition.DisplayName():</span>
+    <span class="name">@Model.PartFieldDefinition.DisplayName()@T[":"]</span>
     @if (users.Any())
     {
         foreach (var user in users)
         {
-            <span class="value">@user.UserName</span>
-            if (user != users.Last())
-            {
-                <span>,</span>
-            }
+            <span class="value">@user.UserName</span>if (user != users.Last()){@T[","]}
         }
     }
     else
