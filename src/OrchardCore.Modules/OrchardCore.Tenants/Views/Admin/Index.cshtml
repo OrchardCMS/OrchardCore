@@ -85,7 +85,7 @@
                         <button class="btn btn-sm dropdown-toggle" style="border:1px solid lightgrey" type="button" data-toggle="dropdown" id="filter-dropdown" aria-haspopup="true" aria-expanded="false">
                             <i class="fa fa-filter" title="@T["Filters"]"></i>
                         </button>
-                        <div class="dropdown-menu" aria-labelledby="filter-dropdown">
+                        <div class="dropdown-menu @if(CultureInfo.CurrentUICulture.IsRightToLeft()){<text>dropdown-menu-right</text>}" aria-labelledby="filter-dropdown">
                             <a class="dropdown-item" href="?Options.Filter=Running">@T["Only running tenants"]</a>
                             <a class="dropdown-item" href="?Options.Filter=Disabled">@T["Only disabled tenants"]</a>
                             <a class="dropdown-item" href="?Options.Filter=Uninitialized">@T["Only uninitialized tenants"]</a>
