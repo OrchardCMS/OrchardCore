@@ -69,7 +69,7 @@ namespace OrchardCore.Shortcodes.Controllers
 
             if (!string.IsNullOrWhiteSpace(options.Search))
             {
-                shortcodeTemplates = shortcodeTemplates.Where(x => x.Key.Contains(options.Search)).ToList();
+                shortcodeTemplates = shortcodeTemplates.Where(x => x.Key.Contains(options.Search, StringComparison.OrdinalIgnoreCase)).ToList();
             }
 
             var count = shortcodeTemplates.Count;
@@ -266,7 +266,7 @@ namespace OrchardCore.Shortcodes.Controllers
 
             await _shortcodeTemplatesManager.RemoveShortcodeTemplateAsync(name);
 
-            _notifier.Success(H["Shortcode template deleted successfully"]);
+            _notifier.Success(H["Shortcode template deleted successfully."]);
 
             return RedirectToAction(nameof(Index));
         }
