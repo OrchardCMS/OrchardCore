@@ -17,12 +17,16 @@ using OrchardCore.Secrets.Drivers;
 using OrchardCore.Secrets.Recipes;
 using OrchardCore.Secrets.Services;
 using OrchardCore.Security.Permissions;
+using OrchardCore.Scripting;
 
 namespace OrchardCore.Secrets
 {
     public class Startup : StartupBase
     {
         private readonly AdminOptions _adminOptions;
+
+        // Registered first so it provides the first store.
+        public override int Order => -10;
 
         public Startup(IOptions<AdminOptions> adminOptions)
         {
@@ -57,6 +61,11 @@ namespace OrchardCore.Secrets
             services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AllSecretsRsaDeploymentStep>());
             services.AddScoped<IDisplayDriver<DeploymentStep>, AllSecretsRsaDeploymentStepDriver>();
 
+            // TODO we could have a feature to remove this.
+            services.AddSingleton<DatabaseSecretDataProtector>();
+
+            services.AddScoped<ISecretStore, DatabaseSecretStore>();
+            services.AddScoped<SecretsDocumentManager>();
         }
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
@@ -83,20 +92,6 @@ namespace OrchardCore.Secrets
                 pattern: _adminOptions.AdminUrlPrefix + "/Secrets/Edit/{name}",
                 defaults: new { controller = secretControllerName, action = nameof(AdminController.Edit) }
             );
-        }
-    }
-
-    [Feature("OrchardCore.Secrets.DatabaseSecretStore")]
-    public class DatabaseSecretStoreStartup : StartupBase
-    {
-        // Registered first so it is the first store.
-        public override int Order => -10;
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddSingleton<DatabaseSecretDataProtector>();
-
-            services.AddScoped<ISecretStore, DatabaseSecretStore>();
-            services.AddScoped<SecretsDocumentManager>();
         }
     }
 

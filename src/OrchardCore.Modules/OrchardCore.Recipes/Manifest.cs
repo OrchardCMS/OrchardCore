@@ -9,8 +9,7 @@ using OrchardCore.Modules.Manifest;
     Dependencies = new[]
     {
         "OrchardCore.Features",
-        "OrchardCore.Scripting",
-        "OrchardCore.Secrets"
+        "OrchardCore.Scripting"
     },
     Category = "Infrastructure",
     IsAlwaysEnabled = true

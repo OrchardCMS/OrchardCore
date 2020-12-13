@@ -4,7 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Secrets;
 using OrchardCore.Scripting;
 
-namespace OrchardCore.Recipes
+namespace OrchardCore.Secrets.Scripting
 {
     public class DecryptMethodProvider : IGlobalMethodProvider
     {

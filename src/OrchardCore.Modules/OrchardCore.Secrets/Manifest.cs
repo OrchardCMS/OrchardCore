@@ -16,14 +16,6 @@ using OrchardCore.Modules.Manifest;
 )]
 
 [assembly: Feature(
-    Id = "OrchardCore.Secrets.DatabaseSecretStore",
-    Name = "Database Secrets Store",
-    Description = "The secrets database stores encrypted secrets in the database.",
-    Category = "Configuration",
-    Dependencies = new[] { "OrchardCore.Secrets" }
-)]
-
-[assembly: Feature(
     Id = "OrchardCore.Secrets.ConfigurationSecretStore",
     Name = "Configuration Secrets Store",
     Description = "The secrets configuration store is a readonly store for secrets.",
