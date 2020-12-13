@@ -182,11 +182,11 @@
                         }
                         <a href="@GetEncodedUrl(entry, originalPathBase)" target="_blank">@entry.Name</a>
                         <code class="hint">@GetDisplayUrl(entry, originalPathBase)</code>
+                        <div class="metadata">
                         @if (!string.IsNullOrEmpty(entry.Description))
                         {
-                            <p class="mb-0"><small class="text-muted">@entry.Description</small></p>
+                            <small class="text-muted">@entry.Description</small>
                         }
-                        <div class="metadata">
                         </div>
                     </div>
                 </li>
