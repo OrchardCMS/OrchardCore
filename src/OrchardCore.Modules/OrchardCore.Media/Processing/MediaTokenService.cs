@@ -4,8 +4,7 @@ using System.Security.Cryptography;
 using System.Text;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Caching.Memory;
-using OrchardCore.Entities;
-using OrchardCore.Settings;
+using Microsoft.Extensions.Options;
 using SixLabors.ImageSharp.Web.Processors;
 
 namespace OrchardCore.Media.Processing
@@ -14,18 +13,16 @@ namespace OrchardCore.Media.Processing
     {
         private const string TokenCacheKeyPrefix = "MediaToken:";
         private readonly IMemoryCache _memoryCache;
-        private readonly ISiteService _siteService;
 
         private readonly HashSet<string> _knownCommands = new HashSet<string>();
-        private byte[] _hashKey;
+        private readonly byte[] _hashKey;
 
         public MediaTokenService(
             IMemoryCache memoryCache,
-            ISiteService siteService,
+            IOptions<MediaTokenOptions> options,
             IEnumerable<IImageWebProcessor> processors)
         {
             _memoryCache = memoryCache;
-            _siteService = siteService;
             foreach (var processor in processors)
             {
                 foreach (var command in processor.Commands)
@@ -33,6 +30,8 @@ namespace OrchardCore.Media.Processing
                     _knownCommands.Add(command);
                 }
             }
+
+            _hashKey = options.Value.HashKey;
         }
 
         public string AddTokenToPath(string path)
@@ -46,8 +45,6 @@ namespace OrchardCore.Media.Processing
             {
                 return path;
             }
-
-            GetHashKey();
 
             var processingCommands = new Dictionary<string, string>();
             Dictionary<string, string> otherCommands = null;
@@ -86,11 +83,8 @@ namespace OrchardCore.Media.Processing
             return QueryHelpers.AddQueryString(pathParts[0], processingCommands);
         }
 
-
         public bool TryValidateToken(IDictionary<string, string> commands, string token)
         {
-            GetHashKey();
-
             var commandValues = String.Concat(commands.Values);
 
             var queryStringTokenKey = TokenCacheKeyPrefix + commandValues;
@@ -120,15 +114,5 @@ namespace OrchardCore.Media.Processing
 
                    return Convert.ToBase64String(hash);
                });
-
-        private void GetHashKey()
-        {
-            if (_hashKey == null)
-            {
-                var siteSettings = _siteService.GetSiteSettingsAsync().GetAwaiter().GetResult();
-                var mediaTokenSettings = siteSettings.As<MediaTokenSettings>();
-                _hashKey = mediaTokenSettings.HashKey;
-            }
-        }
     }
 }

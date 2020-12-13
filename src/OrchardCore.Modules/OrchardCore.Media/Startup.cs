@@ -134,7 +134,8 @@ namespace OrchardCore.Media
                 .AddProcessor<TokenCommandProcessor>();
 
             services.AddScoped<IFeatureEventHandler, MediaTokenSettingsUpdater>();
-            services.AddSingleton<IMediaTokenService, MediaTokenService>();
+            services.AddScoped<IMediaTokenService, MediaTokenService>();
+            services.AddTransient<IConfigureOptions<MediaTokenOptions>, MediaTokenOptionsConfiguration>();
 
             // Media Field
             services.AddContentField<MediaField>()

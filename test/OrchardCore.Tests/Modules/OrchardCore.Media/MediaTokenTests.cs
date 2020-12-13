@@ -2,6 +2,7 @@ using System;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Moq;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Media;
@@ -77,7 +78,8 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Media
             services.AddSingleton<IImageWebProcessor, TokenCommandProcessor>();
             services.AddSingleton<IImageWebProcessor, TokenCommandProcessor>();
             services.AddSingleton<IImageWebProcessor, ResizeWebProcessor>();
-            services.AddSingleton<IMediaTokenService, MediaTokenService>();
+            services.AddScoped<IMediaTokenService, MediaTokenService>();
+            services.AddTransient<IConfigureOptions<MediaTokenOptions>, MediaTokenOptionsConfiguration>();
 
             var serviceProvider = services.BuildServiceProvider();
 
