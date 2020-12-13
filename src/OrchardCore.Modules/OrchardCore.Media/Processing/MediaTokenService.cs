@@ -121,7 +121,6 @@ namespace OrchardCore.Media.Processing
                    return Convert.ToBase64String(hash);
                });
 
-
         private void GetHashKey()
         {
             if (_hashKey == null)
