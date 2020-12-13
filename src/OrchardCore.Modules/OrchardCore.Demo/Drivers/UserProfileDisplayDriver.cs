@@ -31,7 +31,7 @@ namespace OrchardCore.Demo.Drivers
                 model.LastName = profile.LastName;
             })
             .Location("Content:2")
-            .RenderWhen(async () => await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.ManageOwnUserProfile));
+            .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.ManageOwnUserProfile));
         }
 
         public override async Task<IDisplayResult> UpdateAsync(UserProfile profile, BuildEditorContext context)
