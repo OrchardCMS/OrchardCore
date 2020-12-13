@@ -162,25 +162,25 @@
                             }
                             <a asp-action="Reload" asp-route-id="@entry.Name" class="btn btn-secondary btn-sm" itemprop="UnsafeUrl">@T["Reload"]</a>
                         </div>
-                        <a href="@GetEncodedUrl(entry, originalPathBase)" target="_blank">@entry.Name</a>
                         @switch (entry.ShellSettings.State)
                         {
                             case TenantState.Disabled:
-                                <span class="badge badge-danger">@T["Disabled"]</span>
+                                <span class="badge badge-pill badge-danger" title="@T["Disabled"]">&nbsp;</span>
                                 break;
                             case TenantState.Initializing:
-                                <span class="badge badge-info">@T["Initializing"]</span>
+                                <span class="badge badge-pill badge-info" title=@T["Initializing"]>&nbsp;</span>
                                 break;
                             case TenantState.Invalid:
-                                <span class="badge badge-warning">@T["Invalid"]</span>
+                                <span class="badge badge-pill badge-warning" title="@T["Invalid"]">&nbsp;</span>
                                 break;
                             case TenantState.Running:
-                                <span class="badge badge-success">@T["Running"]</span>
+                                <span class="badge badge-pill badge-success" title="@T["Running"]">&nbsp;</span>
                                 break;
                             case TenantState.Uninitialized:
-                                <span class="badge badge-secondary">@T["Uninitialized"]</span>
+                                <span class="badge badge-pill badge-secondary" title="@T["Uninitialized"]">&nbsp;</span>
                                 break;
                         }
+                        <a href="@GetEncodedUrl(entry, originalPathBase)" target="_blank">@entry.Name</a>
                         <code class="hint">@GetDisplayUrl(entry, originalPathBase)</code>
                         <div class="metadata">
                         @if (!string.IsNullOrEmpty(entry.Description))
