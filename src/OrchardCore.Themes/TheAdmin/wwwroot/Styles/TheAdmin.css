@@ -16632,6 +16632,9 @@
   :root[data-theme='default'] input[type="password"]::-ms-reveal,
   :root[data-theme='default'] input[type="password"]::-ms-clear {
     display: none; }
+  :root[data-theme='default'] .tenants.badge {
+    font-size: 35% !important;
+    vertical-align: middle !important; }
 
 :root[data-theme='darkmode'] {
   /*!
@@ -33302,6 +33305,9 @@
   :root[data-theme='darkmode'] input[type="password"]::-ms-reveal,
   :root[data-theme='darkmode'] input[type="password"]::-ms-clear {
     display: none; }
+  :root[data-theme='darkmode'] .tenants.badge {
+    font-size: 35% !important;
+    vertical-align: middle !important; }
   :root[data-theme='darkmode'] .input-group-addon {
     color: #fff; }
   :root[data-theme='darkmode'] .breadcrumb a {

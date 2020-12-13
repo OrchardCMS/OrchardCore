@@ -65,3 +65,8 @@ input[type="password"]::-ms-reveal,
 input[type="password"]::-ms-clear {
     display: none;
 }
+
+.tenants.badge {
+    font-size: 35% !important;
+    vertical-align: middle !important;
+}
