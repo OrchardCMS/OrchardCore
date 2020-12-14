@@ -35,7 +35,7 @@
     <PackageManagement Include="OpenIddict.Core" Version="[3.0.0-rc2.20607.88]" />
     <PackageManagement Include="OrchardCore.Translations.All" Version="1.0.0-rc2-108003" />
     <PackageManagement Include="Serilog.AspNetCore" Version="3.4.0" />
-    <PackageManagement Include="Shortcodes" Version="1.0.0" />
+    <PackageManagement Include="Shortcodes" Version="1.0.0-beta-175913881" />
     <PackageManagement Include="SixLabors.ImageSharp.Web" Version="1.0.1" />
     <PackageManagement Include="xunit.analyzers" Version="0.10.0" />
     <!-- xunit downgraded due to Theory Skip bug c.f. https://github.com/xunit/xunit/issues/1782 -->

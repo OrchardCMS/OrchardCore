@@ -24,6 +24,6 @@ The below table lists the different libraries used in Orchard Core:
 | [Noda Time](https://github.com/nodatime/nodatime) | A better date and time API for .NET. | 0.22.0 | [Apache-2.0 License](https://github.com/nodatime/nodatime/blob/master/LICENSE.txt) |
 | [OpenIddict.Core](https://github.com/openiddict/openiddict-core) | Versatile OpenID Connect stack for ASP.NET Core. | 3.0.0-rc1.20567.82 | [Apache-2.0 License](https://github.com/openiddict/openiddict-core/blob/dev/LICENSE.md)) |
 | [Serilog.AspNetCore](https://github.com/serilog/serilog-aspnetcore) | Serilog integration for ASP.NET Core. | 3.3.1 | [Apache-2.0 License](https://github.com/serilog/serilog-aspnetcore/blob/dev/LICENSE) |
-| [Shortcodes](https://github.com/sebastienros/shortcodes) | Shortcodes processor for .NET. |1.0.0 | [MIT](https://github.com/sebastienros/shortcodes/blob/dev/LICENSE) |
+| [Shortcodes](https://github.com/sebastienros/shortcodes) | Shortcodes processor for .NET. | 1.0.0-beta-175913881 | [MIT](https://github.com/sebastienros/shortcodes/blob/dev/LICENSE) |
 | [xUnit](https://github.com/xunit/xunit/blob/main/LICENSE) | Free, open source, community-focused unit testing tool for the .NET Framework. | 2.3.1 | [MIT](https://github.com/xunit/xunit/blob/main/LICENSE) |
 | [YesSql](https://github.com/sebastienros/yessql) | .NET document database working on any RDBMS. | 2.0.0-beta-1583 | [MIT](https://github.com/sebastienros/yessql/blob/dev/LICENSE) |
