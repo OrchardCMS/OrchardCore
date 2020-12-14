@@ -4,6 +4,7 @@ using OrchardCore.Entities;
 using OrchardCore.Environment.Extensions.Features;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Settings;
+using OrchardCore.Modules;
 
 namespace OrchardCore.Media.Processing
 {
@@ -11,13 +12,31 @@ namespace OrchardCore.Media.Processing
     /// Generates a random key for media token hashing.
     /// To regenerate the key disabled and enable the feature.
     /// </summary>
-    public class MediaTokenSettingsUpdater : IFeatureEventHandler
+    public class MediaTokenSettingsUpdater : ModularTenantEvents, IFeatureEventHandler
     {
         private readonly ISiteService _siteService;
 
         public MediaTokenSettingsUpdater(ISiteService siteService)
         {
             _siteService = siteService;
+        }
+
+        public override async Task ActivatedAsync()
+        {
+            var mediaTokenSettings = (await _siteService.GetSiteSettingsAsync()).As<MediaTokenSettings>();
+
+            if (mediaTokenSettings.HashKey == null)
+            {
+                var siteSettings = _siteService.LoadSiteSettingsAsync().GetAwaiter().GetResult();
+
+                var rng = RandomNumberGenerator.Create();
+
+                mediaTokenSettings.HashKey = new byte[64];
+                rng.GetBytes(mediaTokenSettings.HashKey);
+                siteSettings.Put(mediaTokenSettings);
+
+                _siteService.UpdateSiteSettingsAsync(siteSettings).GetAwaiter().GetResult();
+            }
         }
 
         Task IFeatureEventHandler.InstallingAsync(IFeatureInfo feature) => Task.CompletedTask;
