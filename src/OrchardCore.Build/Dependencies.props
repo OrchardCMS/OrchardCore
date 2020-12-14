@@ -10,6 +10,8 @@
   <ItemGroup>
     <PackageManagement Include="AngleSharp" Version="0.14.0" />
     <PackageManagement Include="Azure.Extensions.AspNetCore.DataProtection.Blobs" Version="1.0.1" />
+    <PackageManagement Include="Azure.Identity" Version="1.4.0-beta.1" />
+    <PackageManagement Include="Azure.Security.KeyVault.Secrets" Version="4.1.0" />
     <PackageManagement Include="Azure.Storage.Blobs" Version="12.7.0" />
     <PackageManagement Include="Castle.Core" Version="4.4.1" />
     <PackageManagement Include="Irony.Core" Version="1.0.7" />

@@ -80,16 +80,24 @@ namespace OrchardCore.Secrets.Services
                 throw new ArgumentException("The type must implement " + nameof(Secret));
             }
 
-            foreach (var secretStore in _secretStores)
+            // TODO this has to find the binding first, to know which store it is in.
+            var bindings = await GetSecretBindingsAsync();
+            var binding = bindings[key];
+            if (binding == null)
             {
-                var secret = await secretStore.GetSecretAsync(key, type);
-                if (secret != null)
-                {
-                    return secret;
-                }
+                return null;
             }
 
-            return null;
+            var secretStore = _secretStores.FirstOrDefault(x => String.Equals(x.Name, binding.Store, StringComparison.OrdinalIgnoreCase));
+
+            if (secretStore == null)
+            {
+                return null;
+            }
+
+            var secret = await secretStore.GetSecretAsync(key, type);
+
+            return secret;
         }
 
         public IEnumerator<SecretStoreDescriptor> GetEnumerator()

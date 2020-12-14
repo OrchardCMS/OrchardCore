@@ -14,7 +14,6 @@ using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Modules;
 using OrchardCore.Recipes.Events;
 using OrchardCore.Recipes.Models;
-using OrchardCore.Secrets;
 using OrchardCore.Scripting;
 
 namespace OrchardCore.Recipes.Services
