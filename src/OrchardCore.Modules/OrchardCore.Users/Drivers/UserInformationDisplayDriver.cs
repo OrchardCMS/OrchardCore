@@ -2,13 +2,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Logging;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.Security.Services;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.ViewModels;
 
@@ -17,38 +13,23 @@ namespace OrchardCore.Users.Drivers
     public class UserInformationDisplayDriver : DisplayDriver<User>
     {
         private readonly UserManager<IUser> _userManager;
-        private readonly IRoleService _roleService;
-        private readonly IUserRoleStore<IUser> _userRoleStore;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly INotifier _notifier;
         private readonly IAuthorizationService _authorizationService;
-        private readonly ILogger _logger;
         private readonly IStringLocalizer S;
-        private readonly IHtmlLocalizer H;
 
         public UserInformationDisplayDriver(
             UserManager<IUser> userManager,
-            IRoleService roleService,
-            IUserRoleStore<IUser> userRoleStore,
             IHttpContextAccessor httpContextAccessor,
-            INotifier notifier,
             IAuthorizationService authorizationService,
-            ILogger<UserDisplayDriver> logger,
-            IHtmlLocalizer<UserDisplayDriver> htmlLocalizer,
             IStringLocalizer<UserDisplayDriver> stringLocalizer)
         {
             _userManager = userManager;
-            _roleService = roleService;
-            _userRoleStore = userRoleStore;
             _httpContextAccessor = httpContextAccessor;
-            _notifier = notifier;
             _authorizationService = authorizationService;
-            _logger = logger;
-            H = htmlLocalizer;
             S = stringLocalizer;
         }
 
-         public override Task<IDisplayResult> EditAsync(User user, BuildEditorContext context)
+        public override Task<IDisplayResult> EditAsync(User user, BuildEditorContext context)
         {
             return Task.FromResult<IDisplayResult>(Initialize<EditUserInformationViewModel>("UserInformationFields_Edit", model =>
             {
@@ -56,7 +37,7 @@ namespace OrchardCore.Users.Drivers
                 model.Email = user.Email;
             })
             .Location("Content:1")
-            .RenderWhen(async () => await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.ManageOwnUserInformation)));
+            .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.ManageOwnUserInformation)));
         }
 
         public override async Task<IDisplayResult> UpdateAsync(User user, UpdateEditorContext context)
