@@ -52,7 +52,8 @@ namespace OrchardCore.Email.Services
             if (!String.IsNullOrEmpty(settings.PasswordSecret))
             {
                 var shellScope = _shellHost.GetScopeAsync(_shellSettings).GetAwaiter().GetResult();
-                shellScope.UsingAsync(async scope => {
+                shellScope.UsingServiceScopeAsync(async scope =>
+                {
                     var textSecretService = scope.ServiceProvider.GetRequiredService<ISecretService<TextSecret>>();
                     options.Password = (await textSecretService.GetSecretAsync(settings.PasswordSecret)).Text;
                 }).GetAwaiter().GetResult();
