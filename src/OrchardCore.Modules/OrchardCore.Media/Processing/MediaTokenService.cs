@@ -98,7 +98,6 @@ namespace OrchardCore.Media.Processing
             }
 
             return false;
-
         }
 
         private string GetHash(string commandValues, string queryStringTokenKey)
