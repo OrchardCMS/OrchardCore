@@ -9,13 +9,13 @@ namespace OrchardCore.Shortcodes.Providers
     {
         public const string ShortCodeIdentifier = "locale";
 
-        private static readonly ValueTask<string> Null = new ValueTask<string>(String.Empty);
+        private static readonly ValueTask<string> Empty = new ValueTask<string>(String.Empty);
 
         public ValueTask<string> EvaluateAsync(string identifier, Arguments arguments, string content, Context context)
         {
             if (identifier != ShortCodeIdentifier)
             {
-                return Null;
+                return Empty;
             }
 
             var language = arguments.NamedOrDefault("lang")?.ToLower();
@@ -46,7 +46,7 @@ namespace OrchardCore.Shortcodes.Providers
                 }
             }
 
-            return Null;
+            return Empty;
         }
     }
 }
