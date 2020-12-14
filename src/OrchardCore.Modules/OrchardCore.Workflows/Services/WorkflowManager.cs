@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
+using OrchardCore.Locking;
+using OrchardCore.Locking.Distributed;
 using OrchardCore.Modules;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Helpers;
@@ -15,6 +17,7 @@ namespace OrchardCore.Workflows.Services
 {
     public class WorkflowManager : IWorkflowManager
     {
+        private readonly IDistributedLock _distributedLock;
         private readonly IActivityLibrary _activityLibrary;
         private readonly IWorkflowTypeStore _workflowTypeStore;
         private readonly IWorkflowStore _workflowStore;
@@ -25,8 +28,11 @@ namespace OrchardCore.Workflows.Services
         private readonly IStringLocalizer<MissingActivity> _missingActivityLocalizer;
         private readonly IClock _clock;
 
+        private readonly HashSet<string> _scopedLockIds = new HashSet<string>();
+
         public WorkflowManager
         (
+            IDistributedLock distributedLock,
             IActivityLibrary activityLibrary,
             IWorkflowTypeStore workflowTypeRepository,
             IWorkflowStore workflowRepository,
@@ -38,6 +44,7 @@ namespace OrchardCore.Workflows.Services
             IClock clock
         )
         {
+            _distributedLock = distributedLock;
             _activityLibrary = activityLibrary;
             _workflowTypeStore = workflowTypeRepository;
             _workflowStore = workflowRepository;
@@ -127,34 +134,106 @@ namespace OrchardCore.Workflows.Services
             // Start new workflows.
             foreach (var workflowType in workflowTypesToStart)
             {
-                // If this is a singleton workflow and there's already an halted instance, then skip.
+                var startActivity = workflowType.Activities.FirstOrDefault(x => x.IsStart && String.Equals(x.Name, name, StringComparison.OrdinalIgnoreCase));
+                if (startActivity == null)
+                {
+                    continue;
+                }
+
+                // If it is not a singleton and the event is not exclusive.
+                if (!workflowType.IsSingleton && !isExclusive)
+                {
+                    // Start a new workflow instance without any locking.
+                    await StartWorkflowAsync(workflowType, startActivity, input, correlationId);
+                    continue;
+                }
+
+                (ILocker locker, var locked) = (null, false);
+
+                // Allow scope reentrance if the lock is already acquired.
+                if (!_scopedLockIds.Contains(workflowType.WorkflowTypeId))
+                {
+                    // Try to acquire a lock on the workflow type id.
+                    (locker, locked) = await _distributedLock.TryAcquireLockAsync(
+                        "WFT_" + workflowType.WorkflowTypeId + "_LOCK",
+                        TimeSpan.FromSeconds(10),
+                        TimeSpan.FromSeconds(10));
+
+                    if (!locked)
+                    {
+                        continue;
+                    }
+
+                    _scopedLockIds.Add(workflowType.WorkflowTypeId);
+                }
+
+                await using var acquiredLock = locker;
+
+                // Check if this is a workflow singleton and there's already an halted instance on any activity.
                 if (workflowType.IsSingleton && await _workflowStore.HasHaltedInstanceAsync(workflowType.WorkflowTypeId))
                 {
-                    continue;
+                    goto Continue;
                 }
 
-                // If the event is exclusive and there's already an instance halted on this activity type, then skip.
-                if (isExclusive && haltedWorkflows.Any(x => x.WorkflowTypeId == workflowType.WorkflowTypeId))
+                // Check if the event is exclusive and there's already a correlated instance halted on this activity type.
+                if (isExclusive && (await _workflowStore.ListAsync(workflowType.WorkflowTypeId, name, correlationId, isAlwaysCorrelated))
+                    .Any())
                 {
-                    continue;
+                    goto Continue;
                 }
 
-                var startActivity = workflowType.Activities.FirstOrDefault(x => x.IsStart && String.Equals(x.Name, name, StringComparison.OrdinalIgnoreCase));
+                await StartWorkflowAsync(workflowType, startActivity, input, correlationId);
 
-                if (startActivity != null)
+            Continue:
+                if (acquiredLock != null)
                 {
-                    await StartWorkflowAsync(workflowType, startActivity, input, correlationId);
+                    _scopedLockIds.Remove(workflowType.WorkflowTypeId);
                 }
             }
 
             // Resume halted workflows.
-            foreach (var workflow in haltedWorkflows)
+            foreach (var haltedWorkflow in haltedWorkflows)
             {
-                var blockingActivities = workflow.BlockingActivities.Where(x => x.Name == name).ToList();
+                (ILocker locker, var locked) = (null, false);
+
+                // Allow scope reentrance if the lock is already acquired.
+                if (!_scopedLockIds.Contains(haltedWorkflow.WorkflowId))
+                {
+                    // Try to acquire a lock on the workflow instance id.
+                    (locker, locked) = await _distributedLock.TryAcquireLockAsync(
+                        "WFI_" + haltedWorkflow.WorkflowId + "_LOCK",
+                        TimeSpan.FromSeconds(10),
+                        TimeSpan.FromSeconds(10));
+
+                    if (!locked)
+                    {
+                        continue;
+                    }
+
+                    _scopedLockIds.Add(haltedWorkflow.WorkflowId);
+                }
+
+                await using var acquiredLock = locker;
+
+                // Check if the workflow still exists and is still correlated.
+                var workflow = await _workflowStore.GetAsync(haltedWorkflow.Id);
+                if (workflow == null || (!isAlwaysCorrelated && workflow.CorrelationId != (correlationId ?? "")))
+                {
+                    goto Continue;
+                }
+
+                var blockingActivities = workflow.BlockingActivities.Where(x => x.Name == name).ToArray();
 
                 foreach (var blockingActivity in blockingActivities)
                 {
                     await ResumeWorkflowAsync(workflow, blockingActivity, input);
+                }
+
+
+            Continue:
+                if (locker != null)
+                {
+                    _scopedLockIds.Remove(haltedWorkflow.WorkflowId);
                 }
             }
         }
