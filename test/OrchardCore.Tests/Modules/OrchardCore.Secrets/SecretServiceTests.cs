@@ -21,9 +21,9 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Secrets
                 Text = "myemailpassword"
             };
 
-            var documentManager = Mock.Of<IDocumentManager<SecretBindingsDocument>>();
-
             Mock.Get(store).Setup(s => s.GetSecretAsync("email", typeof(TextSecret))).ReturnsAsync(textSecret);
+
+            var documentManager = Mock.Of<IDocumentManager<SecretBindingsDocument>>();
 
             Mock.Get(documentManager).Setup(m => m.GetOrCreateImmutableAsync(It.IsAny<Func<Task<SecretBindingsDocument>>>()))
                 .ReturnsAsync(() =>
