@@ -68,6 +68,17 @@
 
         return $"{Context.Request.Scheme}://{host + pathString.Value}";
     }
+
+    public string GetTenantStatusCssClass(TenantState TenantState)
+        => TenantState switch
+        {
+            TenantState.Disabled => "danger",
+            TenantState.Initializing => "info",
+            TenantState.Invalid => "warning",
+            TenantState.Running => "success",
+            TenantState.Uninitialized => "secondary",
+            _ => "secondary"
+        };
 }
 
 <script asp-name="bootstrap-select" depends-on="admin" at="Foot"></script>
@@ -162,32 +173,13 @@
                             }
                             <a asp-action="Reload" asp-route-id="@entry.Name" class="btn btn-secondary btn-sm" itemprop="UnsafeUrl">@T["Reload"]</a>
                         </div>
+                        <small><i class="fa fa-circle text-@(GetTenantStatusCssClass(entry.ShellSettings.State))"></i></small>
                         <a href="@GetEncodedUrl(entry, originalPathBase)" target="_blank">@entry.Name</a>
                         <code class="hint">@GetDisplayUrl(entry, originalPathBase)</code>
                         @if (!string.IsNullOrEmpty(entry.Description))
                         {
                             <p class="mb-0"><small class="text-muted">@entry.Description</small></p>
                         }
-                        <div class="metadata">
-                            @switch (entry.ShellSettings.State)
-                            {
-                                case TenantState.Disabled:
-                                    <span class="badge badge-danger">@T["Disabled"]</span>
-                                    break;
-                                case TenantState.Initializing:
-                                    <span class="badge badge-info">@T["Initializing"]</span>
-                                    break;
-                                case TenantState.Invalid:
-                                    <span class="badge badge-warning">@T["Invalid"]</span>
-                                    break;
-                                case TenantState.Running:
-                                    <span class="badge badge-success">@T["Running"]</span>
-                                    break;
-                                case TenantState.Uninitialized:
-                                    <span class="badge badge-secondary">@T["Uninitialized"]</span>
-                                    break;
-                            }
-                        </div>
                     </div>
                 </li>
             }
