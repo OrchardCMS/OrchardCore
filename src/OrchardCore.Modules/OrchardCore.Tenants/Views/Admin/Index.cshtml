@@ -68,17 +68,6 @@
 
         return $"{Context.Request.Scheme}://{host + pathString.Value}";
     }
-
-    public string GetTenantStatusCssClass(TenantState TenantState)
-        => TenantState switch
-        {
-            TenantState.Disabled => "danger",
-            TenantState.Initializing => "info",
-            TenantState.Invalid => "warning",
-            TenantState.Running => "success",
-            TenantState.Uninitialized => "secondary",
-            _ => "secondary"
-        };
 }
 
 <script asp-name="bootstrap-select" depends-on="admin" at="Foot"></script>
@@ -173,7 +162,24 @@
                             }
                             <a asp-action="Reload" asp-route-id="@entry.Name" class="btn btn-secondary btn-sm" itemprop="UnsafeUrl">@T["Reload"]</a>
                         </div>
-                        <small><i class="fa fa-xs fa-circle text-@(GetTenantStatusCssClass(entry.ShellSettings.State))"></i></small>
+                        @switch (entry.ShellSettings.State)
+                        {
+                            case TenantState.Uninitialized:
+                                <small><i class="fa fa-xs fa-circle text-secondary" title="@T["Uninitialized"]"></i></small>
+                                break;
+                            case TenantState.Initializing:
+                                <small><i class="fa fa-xs fa-circle text-info" title="@T["Initializing"]"></i></small>
+                                break;
+                            case TenantState.Running:
+                                <small><i class="fa fa-xs fa-circle text-success" title="@T["Running"]"></i></small>
+                                break;
+                            case TenantState.Disabled:
+                                <small><i class="fa fa-xs fa-circle text-danger" title="@T["Disabled"]"></i></small>
+                                break;
+                            case TenantState.Invalid:
+                                <small><i class="fa fa-xs fa-circle text-warning" title="@T["Invalid"]"></i></small>
+                                break;
+                        }
                         <a href="@GetEncodedUrl(entry, originalPathBase)" target="_blank">@entry.Name</a>
                         <code class="hint">@GetDisplayUrl(entry, originalPathBase)</code>
                         @if (!string.IsNullOrEmpty(entry.Description))
