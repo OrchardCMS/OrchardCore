@@ -11,10 +11,10 @@
     {
         foreach (var userName in Model.UserNames)
         {
-            @userName
+            <span class="value">@userName</span>
             if (userName != Model.UserNames.Last())
             {
-                @T[", "]
+                <span>,</span>
             }
         }
     }

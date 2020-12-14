@@ -69,7 +69,7 @@ namespace OrchardCore.Media.Controllers
 
             if (!string.IsNullOrWhiteSpace(options.Search))
             {
-                mediaProfiles = mediaProfiles.Where(x => x.Key.Contains(options.Search)).ToList();
+                mediaProfiles = mediaProfiles.Where(x => x.Key.Contains(options.Search, StringComparison.OrdinalIgnoreCase)).ToList();
             }
 
             var count = mediaProfiles.Count;
@@ -276,7 +276,7 @@ namespace OrchardCore.Media.Controllers
 
             await _mediaProfilesManager.RemoveMediaProfileAsync(name);
 
-            _notifier.Success(H["Media profile deleted successfully"]);
+            _notifier.Success(H["Media profile deleted successfully."]);
 
             return RedirectToAction(nameof(Index));
         }
