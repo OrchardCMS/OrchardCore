@@ -221,17 +221,6 @@
   .trumbowyg-giphy-modal .img-container img.tbw-loaded {
     opacity: 1; }
 
-[dir] .trumbowyg-highlight-form-group {
-  margin: 15px 10px; }
-  .trumbowyg-highlight-form-group .trumbowyg-highlight-form-control {
-    width: 100%;
-    font-size: 14px; }
-  [dir] .trumbowyg-highlight-form-group .trumbowyg-highlight-form-control {
-    border: 1px solid #DEDEDE;
-    padding: 7px; }
-    .trumbowyg-highlight-form-group .trumbowyg-highlight-form-control.code {
-      height: 200px; }
-
 .mathMlContainer {
   position: relative; }
   .mathMlContainer[inline="false"] {
@@ -274,36 +263,6 @@
   [dir=rtl] .trumbowyg-dropdown-mention button:after {
     left: 0;
     background-image: linear-gradient(to left, rgba(255, 255, 255, 0) 0%, #ffffff 80%, #ffffff 100%); }
-
-.trumbowyg-editor table {
-  width: 100%; }
-  [dir] .trumbowyg-editor table td {
-    border: 1px dotted #e7eaec;
-    padding: 8px; }
-
-.trumbowyg-dropdown-table table {
-  display: inline-block; }
-
-[dir] .trumbowyg-dropdown-table table {
-  margin: 10px; }
-
-.trumbowyg-dropdown-table table td {
-  display: inline-block;
-  height: 20px;
-  width: 20px; }
-
-[dir] .trumbowyg-dropdown-table table td {
-  margin: 1px;
-  padding: 0;
-  background-color: #fff;
-  box-shadow: 0 0 0 1px #cecece inset; }
-  [dir] .trumbowyg-dropdown-table table td.active {
-    background-color: #00b393;
-    box-shadow: none;
-    cursor: pointer; }
-
-[dir] .trumbowyg-dropdown-table .trumbowyg-table-size {
-  text-align: center; }
 
 .trumbowyg-symbol-\&nbsp-dropdown-button {
   display: none !important; }
@@ -354,3 +313,33 @@
   width: 22px;
   height: 22px;
   display: inline-block; }
+
+.trumbowyg-editor table {
+  width: 100%; }
+  [dir] .trumbowyg-editor table td {
+    border: 1px dotted #e7eaec;
+    padding: 8px; }
+
+.trumbowyg-dropdown-table table {
+  display: inline-block; }
+
+[dir] .trumbowyg-dropdown-table table {
+  margin: 10px; }
+
+.trumbowyg-dropdown-table table td {
+  display: inline-block;
+  height: 20px;
+  width: 20px; }
+
+[dir] .trumbowyg-dropdown-table table td {
+  margin: 1px;
+  padding: 0;
+  background-color: #fff;
+  box-shadow: 0 0 0 1px #cecece inset; }
+  [dir] .trumbowyg-dropdown-table table td.active {
+    background-color: #00b393;
+    box-shadow: none;
+    cursor: pointer; }
+
+[dir] .trumbowyg-dropdown-table .trumbowyg-table-size {
+  text-align: center; }
