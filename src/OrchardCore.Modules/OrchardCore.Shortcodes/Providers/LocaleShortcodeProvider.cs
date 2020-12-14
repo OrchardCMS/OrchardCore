@@ -9,7 +9,7 @@ namespace OrchardCore.Shortcodes.Providers
     {
         public const string ShortCodeIdentifier = "locale";
 
-        private static readonly ValueTask<string> Null = new ValueTask<string>((string)null);
+        private static readonly ValueTask<string> Null = new ValueTask<string>(String.Empty);
 
         public ValueTask<string> EvaluateAsync(string identifier, Arguments arguments, string content, Context context)
         {
@@ -21,7 +21,7 @@ namespace OrchardCore.Shortcodes.Providers
             var language = arguments.NamedOrDefault("lang")?.ToLower();
             var argFallback = arguments.NamedOrAt("fallback", 1);
             // default value of true for the fallback argument
-            var fallback = argFallback == null ? true : Convert.ToBoolean(argFallback); ;
+            var fallback = argFallback == null ? true : Convert.ToBoolean(argFallback);
             var currentCulture = CultureInfo.CurrentUICulture;
 
             if (fallback)
