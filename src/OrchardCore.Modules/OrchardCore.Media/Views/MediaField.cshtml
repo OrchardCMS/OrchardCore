@@ -14,7 +14,7 @@
         {
             var path = paths[i];
             var url = Orchard.AssetUrl(path);
-            var text = !string.IsNullOrEmpty(mediaTexts[i]) ? mediaTexts[i] : path;
+            var text = !string.IsNullOrEmpty(i < mediaTexts.Length ? mediaTexts[i] : string.Empty) ? mediaTexts[i] : path;
 
             if (Orchard.IsImageFile(path))
             {
