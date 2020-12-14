@@ -27,7 +27,7 @@ namespace OrchardCore.Media.Processing
 
             if (mediaTokenSettings.HashKey == null)
             {
-                var siteSettings = _siteService.LoadSiteSettingsAsync().GetAwaiter().GetResult();
+                var siteSettings = await _siteService.LoadSiteSettingsAsync();
 
                 var rng = RandomNumberGenerator.Create();
 
