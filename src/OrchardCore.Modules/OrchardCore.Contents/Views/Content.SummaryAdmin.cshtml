@@ -6,7 +6,7 @@
 }
 
 <div class="row">
-    <div class="col-xl-8 col-lg-6 col-md-4 title">
+    <div class="col-lg-4 col-md-6 title">
         @if (Model.Selectors != null)
         {
             <div class="selectors d-inline cursor-pointer">
@@ -17,12 +17,6 @@
             <input type="checkbox" class="custom-control-input" value="@contentItem.Id" name="itemIds" id="itemIds-@contentItem.Id">
             <label class="custom-control-label" for="itemIds-@contentItem.Id"></label>
         </div>
-        @if (Model.Tags != null)
-        {
-            <div class="d-inline">
-                @await DisplayAsync(Model.Tags)
-            </div>
-        }
         @if (await AuthorizationService.AuthorizeAsync(User, CommonPermissions.EditContent, contentItem))
         {
                 <a admin-for="@contentItem" asp-route-returnUrl="@FullRequestPath" />
@@ -31,24 +25,30 @@
         {
                 @contentItem
         }
-        <small class="text-muted"><a href="@(FullRequestPath)&Options.SelectedContentType=@contentItem.ContentType" data-toggle="tooltip" title="@T["Filter"]" class="btn btn-sm btn-filter text-info"><i class="fa fa-xs fa-filter"></i> @contentItem.ContentType</a></small>
         @if (Model.Header != null)
         {
             <div class="header">@await DisplayAsync(Model.Header)</div>
         }
     </div>
-    <div class="col-xl-2 col-lg-3 col-md-4">
+    <div class="col-lg-2 col-md-6">
+        @if (Model.Tags != null)
+        {
+            <div class="d-inline">
+                @await DisplayAsync(Model.Tags)
+            </div>
+        }
+    </div>
+    <div class="col-lg-2 col-md-4">
+        <small class="text-muted"><a href="@(FullRequestPath)&Options.SelectedContentType=@contentItem.ContentType" data-toggle="tooltip" title="@T["Filter"]" class="btn btn-sm btn-filter text-info"><i class="fa fa-xs fa-filter"></i> @contentItem.ContentType</a></small>
+    </div>
+    <div class="col-lg-2 col-md-4">
         @if (Model.Meta != null)
         {
             <div class="d-inline">@await DisplayAsync(Model.Meta)</div>
         }
     </div>
-    <div class="col-xl-2 col-lg-3 col-md-4 related">
-        <div class="float-right button-group">
-            @if (Model.Actions != null)
-            {
-                @await DisplayAsync(Model.Actions)
-            }
+    <div class="col-lg-2 col-md-4">
+        <div class="float-right">            
             @if (Model.ActionsMenu != null)
             {
                 <div class="btn-group">
@@ -59,6 +59,12 @@
                         @await DisplayAsync(Model.ActionsMenu)
                     </div>
                 </div>
+            }
+        </div>
+        <div class="float-right button-group">
+            @if (Model.Actions != null)
+            {
+                @await DisplayAsync(Model.Actions)
             }
         </div>
     </div>
