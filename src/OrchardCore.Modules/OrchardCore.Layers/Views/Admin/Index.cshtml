@@ -27,7 +27,7 @@
 </form>
 
 <div class="row">
-    <div class="col-md-9">
+    <div class="col-md-8">
         <h3>@T["Zones"]</h3>
         <form asp-action="Index">
             @if (Model.Zones == null || !Model.Zones.Any())
@@ -96,7 +96,7 @@
             }
         </form>
     </div>
-    <div class="col-md-3 col-md-pull-right">
+    <div class="col-md-4 col-md-pull-right">
         <h3>@T["Layers"]</h3>
         <p>
             <span class="hint">@T["Select a layer to reveal its associated widgets."]</span>
