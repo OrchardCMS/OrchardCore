@@ -23,8 +23,6 @@ namespace OrchardCore.Themes.Services
 
         public string CurrentTheme { get; set; } = "default";
 
-        public bool IsEnabled { get; set; } = false;
-
         public async Task<bool> IsDarkModeAsync()
         {
             var result = false;
@@ -32,8 +30,6 @@ namespace OrchardCore.Themes.Services
 
             if (adminSettings.DisplayDarkMode)
             {
-                IsEnabled = true;
-
                 if (!String.IsNullOrWhiteSpace(_httpContextAccessor.HttpContext.Request.Cookies["adminPreferences"]))
                 {
                     var adminPreferences = JsonDocument.Parse(_httpContextAccessor.HttpContext.Request.Cookies["adminPreferences"]);
