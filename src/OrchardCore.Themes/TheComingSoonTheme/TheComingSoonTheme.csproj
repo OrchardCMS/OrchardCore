@@ -5,9 +5,11 @@
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
     
     <!-- NuGet properties-->
-    <Title>The Coming Soon Theme</Title>
-    <PackageTags>$(PackageTags) Theme</PackageTags>
-    <Description>The Coming Soon Theme with Landing page for a project that is under construction</Description>
+    <Title>The Coming Soon theme</Title>
+    <Description>$(OCCMSDescription)
+    
+    The Coming Soon Theme with Landing page for a project that is under construction</Description>
+    <PackageTags>$(PackageTags) OrchardCoreCMS Theme</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
