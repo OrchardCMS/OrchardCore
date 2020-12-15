@@ -11,7 +11,9 @@
 
 <form asp-action="Index" id="workflows-types-form" method="post">
     <input type="submit" name="submit.Filter" id="submitFilter" class="d-none" />
-
+    <input type="submit" name="submit.BulkAction" class="d-none" />
+    <input asp-for="Options.BulkAction" type="hidden" />
+    
     <div class="card mb-3 position-sticky action-bar">
         <div class="card-body bg-primary p-3">
             <div class="form-group mb-n1 has-search">
@@ -25,8 +27,6 @@
             </div>
         </div>
     </div>
-    <input type="submit" name="submit.BulkAction" class="d-none" />
-    <input asp-for="Options.BulkAction" type="hidden" />
     <ul class="list-group with-checkbox">
         @if (Model.WorkflowTypes.Any())
         {
