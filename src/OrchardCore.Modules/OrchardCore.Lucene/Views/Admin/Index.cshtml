@@ -7,7 +7,11 @@
 <zone Name="Title"><h1>@RenderTitleSegments(T["Indices"])</h1></zone>
 
 @* the form is necessary to generate and antiforgery token for the delete action *@
-<form asp-action="Index">    
+<form asp-action="Index" method="post">
+    <input type="submit" name="submit.Filter" id="submitFilter" class="d-none" />
+    <input asp-for="Options.BulkAction" type="hidden" />
+    <input type="submit" name="submit.BulkAction" class="d-none" />
+
     <div class="card mb-3 position-sticky action-bar">
         <div class="card-body bg-primary p-3">
             <div class="form-group mb-n1">
@@ -21,8 +25,6 @@
             </div>
         </div>
     </div>
-    <input asp-for="Options.BulkAction" type="hidden" />
-    <input type="submit" name="submit.BulkAction" class="d-none" />
     <ul class="list-group with-checkbox">
         @if (Model.Indexes.Any())
         {
