@@ -41,6 +41,6 @@
   </PropertyGroup>
   <ItemGroup>
       <!--This is used for Source Link -->
-       <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All"/>
+       <PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="All"/>
   </ItemGroup>
 </Project>

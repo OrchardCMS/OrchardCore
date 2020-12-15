@@ -53,7 +53,7 @@ namespace OrchardCore.Liquid
             // Liquid Part
             services.AddScoped<IShapeTableProvider, LiquidShapes>();
             services.AddContentPart<LiquidPart>()
-                .UseDisplayDriver<LiquidPartDisplay>()
+                .UseDisplayDriver<LiquidPartDisplayDriver>()
                 .AddHandler<LiquidPartHandler>();
 
             services.AddScoped<IDataMigration, Migrations>();

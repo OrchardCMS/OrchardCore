@@ -291,7 +291,7 @@ namespace OrchardCore.Contents.Controllers
 
                             await _contentManager.PublishAsync(item);
                         }
-                        _notifier.Success(H["Content successfully published."]);
+                        _notifier.Success(H["Content published successfully."]);
                         break;
                     case ContentsBulkAction.Unpublish:
                         foreach (var item in checkedContentItems)
@@ -305,7 +305,7 @@ namespace OrchardCore.Contents.Controllers
 
                             await _contentManager.UnpublishAsync(item);
                         }
-                        _notifier.Success(H["Content successfully unpublished."]);
+                        _notifier.Success(H["Content unpublished successfully."]);
                         break;
                     case ContentsBulkAction.Remove:
                         foreach (var item in checkedContentItems)
@@ -319,7 +319,7 @@ namespace OrchardCore.Contents.Controllers
 
                             await _contentManager.RemoveAsync(item);
                         }
-                        _notifier.Success(H["Content successfully removed."]);
+                        _notifier.Success(H["Content removed successfully."]);
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();

@@ -214,7 +214,7 @@ namespace OrchardCore.Resources
                 .DefineScript("codemirror-addon-mode-simple")
                 .SetUrl("~/OrchardCore.Resources/Scripts/codemirror/addon/mode/simple.min.js", "~/OrchardCore.Resources/Scripts/codemirror/addon/mode/simple.js")
                 .SetCdn("https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.58.3/addon/mode/simple.min.js", "https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.58.3/addon/mode/simple.js")
-                .SetCdnIntegrity("sha384-DbFZlXwgV4md0LMM7aSVdbUaCldkPh4QXILJ/kbD9ZZiC3gQ+E9SjHG++B3PvCr1", "sha384-ntjFEzI50GYBTbLGaOVgBt97cxp74jfCqMDmZYlGWk8ZZp2leFMJYOp85T3tOeG9")
+                .SetCdnIntegrity("sha384-DwJ8HE9eQ6wimNkak2x98j7TqKi8dM55tXAf5QUrldyx53qlhY/eNuFhVoYxCbet", "sha384-ntjFEzI50GYBTbLGaOVgBt97cxp74jfCqMDmZYlGWk8ZZp2leFMJYOp85T3tOeG9")
                 .SetVersion("5.58.3");
 
             manifest

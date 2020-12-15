@@ -162,32 +162,30 @@
                             }
                             <a asp-action="Reload" asp-route-id="@entry.Name" class="btn btn-secondary btn-sm" itemprop="UnsafeUrl">@T["Reload"]</a>
                         </div>
+                        @switch (entry.ShellSettings.State)
+                        {
+                            case TenantState.Uninitialized:
+                                <small><i class="fa fa-xs fa-circle text-secondary" title="@T["Uninitialized"]"></i></small>
+                                break;
+                            case TenantState.Initializing:
+                                <small><i class="fa fa-xs fa-circle text-info" title="@T["Initializing"]"></i></small>
+                                break;
+                            case TenantState.Running:
+                                <small><i class="fa fa-xs fa-circle text-success" title="@T["Running"]"></i></small>
+                                break;
+                            case TenantState.Disabled:
+                                <small><i class="fa fa-xs fa-circle text-danger" title="@T["Disabled"]"></i></small>
+                                break;
+                            case TenantState.Invalid:
+                                <small><i class="fa fa-xs fa-circle text-warning" title="@T["Invalid"]"></i></small>
+                                break;
+                        }
                         <a href="@GetEncodedUrl(entry, originalPathBase)" target="_blank">@entry.Name</a>
                         <code class="hint">@GetDisplayUrl(entry, originalPathBase)</code>
                         @if (!string.IsNullOrEmpty(entry.Description))
                         {
                             <p class="mb-0"><small class="text-muted">@entry.Description</small></p>
                         }
-                        <div class="metadata">
-                            @switch (entry.ShellSettings.State)
-                            {
-                                case TenantState.Disabled:
-                                    <span class="badge badge-danger">@T["Disabled"]</span>
-                                    break;
-                                case TenantState.Initializing:
-                                    <span class="badge badge-info">@T["Initializing"]</span>
-                                    break;
-                                case TenantState.Invalid:
-                                    <span class="badge badge-warning">@T["Invalid"]</span>
-                                    break;
-                                case TenantState.Running:
-                                    <span class="badge badge-success">@T["Running"]</span>
-                                    break;
-                                case TenantState.Uninitialized:
-                                    <span class="badge badge-secondary">@T["Uninitialized"]</span>
-                                    break;
-                            }
-                        </div>
                     </div>
                 </li>
             }
@@ -195,7 +193,7 @@
         else
         {
             <li class="list-group-item">
-                <div class="alert alert-info">
+                <div class="alert alert-info mb-0">
                     @T["<strong>Nothing here!</strong> Your search returned no results."]
                 </div>
             </li>
