@@ -1,0 +1,74 @@
+@model ListShapePlacementsViewModel
+<zone Name="Title"><h1>@RenderTitleSegments(T["Placements"])</h1></zone>
+
+<div class="card mb-3 position-sticky action-bar">
+    <div class="card-body bg-primary p-3">
+        <div class="input-group input-group-sm w-lg-50 d-inline-flex">
+            <div class="input-group-prepend">
+                <span class="input-group-text bg-secondary text-light">@T["Filter"]</span>
+            </div>
+            <input id="search-box" class="form-control" placeholder="@T["Search"]" type="search" autofocus />
+        </div>
+        <a asp-route-action="Create" asp-route-returnUrl="@FullRequestPath" id="btnCreate" class="btn btn-sm btn-primary d-inline-flex float-right create" role="button">@T["Create new placement"]</a>
+    </div>
+</div>
+
+<ul id="content-types" class="list-group">
+    @foreach (var shapeType in Model.ShapePlacements)
+    {
+        <li class="list-group-item" data-filter-value="@shapeType.ShapeType" data-type-name="@shapeType.ShapeType">
+            @Html.DisplayFor(m => shapeType)
+        </li>
+    }
+</ul>
+<div id="list-alert" class="alert alert-info d-none" role="alert">
+    @T["<strong>Nothing here!</strong> Your search returned no results."]
+</div>
+
+<script at="Foot" type="text/javascript">
+    $(function () {
+        var searchBox = $('#search-box');
+
+        @* On each keypress filter the list of types *@
+        searchBox.keyup(function (e) {
+            var search = $(this).val();
+
+            var elementsToFilter = $("[data-filter-value]");
+
+            @* On ESC, clear the search box and display all types *@
+            if (e.keyCode == 27 || search == '') {
+                searchBox.val('');
+                elementsToFilter.toggle(true);
+            } else {
+                var searchString = search.toLowerCase();
+                elementsToFilter.each(function () {
+                    var text = $(this).data('filter-value').toLowerCase();
+                    var found = text.indexOf(searchString) > -1;
+                    $(this).toggle(found);
+                });
+
+                @* We display an alert if a search is not found *@
+                var visible = $('#content-types > li:visible');
+                if (visible.length == 0) {
+                    $('#list-alert').removeClass("d-none");
+                }
+                else {
+                    $('#list-alert').addClass("d-none");
+                }
+            }
+
+            @* On Enter, redirect to the edit page if the type exists or the create page with a suggestion *@
+            if (e.keyCode == 13) {
+                var visibleRows = $("[data-type-name]:visible");
+                if (visibleRows.length > 0) {
+                    var editLink = $(".related a.btn-primary", visibleRows[0]);
+                    location.href = editLink.attr("href");
+                } else {
+                    var primaryButton = $("#btnCreate");
+                    location.href = primaryButton.attr("href") + "&suggestion=" + search;
+                }
+                return;
+            }
+        });
+    });
+</script>

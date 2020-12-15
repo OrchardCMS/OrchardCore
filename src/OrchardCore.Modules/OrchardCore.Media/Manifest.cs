@@ -25,3 +25,14 @@ using OrchardCore.Modules.Manifest;
     },
     Category = "Content Management"
 )]
+
+[assembly: Feature(
+    Id = "OrchardCore.Media.Slugify",
+    Name = "Media Slugify",
+    Description = "The media slugify module slugifies new folders and files to make them SEO-friendly.",
+    Dependencies = new[]
+    {
+        "OrchardCore.Media"
+    },
+    Category = "Content Management"
+)]

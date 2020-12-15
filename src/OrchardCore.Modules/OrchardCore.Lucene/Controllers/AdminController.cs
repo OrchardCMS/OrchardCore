@@ -102,7 +102,14 @@ namespace OrchardCore.Lucene.Controllers
             var siteSettings = await _siteService.GetSiteSettingsAsync();
             var pager = new Pager(pagerParameters, siteSettings.PageSize);
             var count = model.Indexes.Count();
-            var results = model.Indexes
+            var results = model.Indexes;
+
+            if (!string.IsNullOrWhiteSpace(model.Options.Search))
+            {
+                results = results.Where(q => q.Name.IndexOf(model.Options.Search, StringComparison.OrdinalIgnoreCase) >= 0);
+            }
+
+            results = results
                 .Skip(pager.GetStartIndex())
                 .Take(pager.PageSize).ToList();
 
@@ -206,8 +213,8 @@ namespace OrchardCore.Lucene.Controllers
                 }
                 catch (Exception e)
                 {
-                    _notifier.Error(H["An error occurred while creating the index"]);
-                    _logger.LogError(e, "An error occurred while creating an index");
+                    _notifier.Error(H["An error occurred while creating the index."]);
+                    _logger.LogError(e, "An error occurred while creating an index.");
                     return View(model);
                 }
 
@@ -223,8 +230,8 @@ namespace OrchardCore.Lucene.Controllers
                 }
                 catch (Exception e)
                 {
-                    _notifier.Error(H["An error occurred while editing the index"]);
-                    _logger.LogError(e, "An error occurred while editing an index");
+                    _notifier.Error(H["An error occurred while editing the index."]);
+                    _logger.LogError(e, "An error occurred while editing an index.");
                     return View(model);
                 }
 
@@ -392,6 +399,11 @@ namespace OrchardCore.Lucene.Controllers
         [FormValueRequired("submit.BulkAction")]
         public async Task<ActionResult> IndexPost(ViewModels.ContentOptions options, IEnumerable<string> itemIds)
         {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageIndexes))
+            {
+                return Forbid();
+            }
+
             if (itemIds?.Count() > 0)
             {
                 var luceneIndexSettings = await _luceneIndexSettingsService.GetSettingsAsync();
@@ -403,25 +415,13 @@ namespace OrchardCore.Lucene.Controllers
                     case ContentsBulkAction.Remove:
                         foreach (var item in checkedContentItems)
                         {
-                            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageIndexes, item))
-                            {
-                                _notifier.Warning(H["Couldn't remove selected index."]);
-                                _session.Cancel();
-                                return Forbid();
-                            }
-
                             await _luceneIndexingService.DeleteIndexAsync(item.IndexName);
                         }
-                        _notifier.Success(H["Index successfully removed."]);
+                        _notifier.Success(H["Indices successfully removed."]);
                         break;
                     case ContentsBulkAction.Reset:
                         foreach (var item in checkedContentItems)
                         {
-                            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageIndexes))
-                            {
-                                return Forbid();
-                            }
-
                             if (!_luceneIndexManager.Exists(item.IndexName))
                             {
                                 return NotFound();
@@ -436,11 +436,6 @@ namespace OrchardCore.Lucene.Controllers
                     case ContentsBulkAction.Rebuild:
                         foreach (var item in checkedContentItems)
                         {
-                            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageIndexes))
-                            {
-                                return Forbid();
-                            }
-
                             if (!_luceneIndexManager.Exists(item.IndexName))
                             {
                                 return NotFound();

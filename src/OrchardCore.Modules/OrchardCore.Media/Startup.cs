@@ -44,7 +44,6 @@ using OrchardCore.Navigation;
 using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Shortcodes;
-using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Web.DependencyInjection;
 using SixLabors.ImageSharp.Web.Middleware;
 using SixLabors.ImageSharp.Web.Providers;
@@ -133,7 +132,11 @@ namespace OrchardCore.Media
                 .AddProcessor<ImageVersionProcessor>()
                 .AddProcessor<TokenCommandProcessor>();
 
-            services.AddSingleton<IMediaTokenService, MediaTokenService>();
+            services.AddScoped<MediaTokenSettingsUpdater>();
+            services.AddScoped<IMediaTokenService, MediaTokenService>();
+            services.AddTransient<IConfigureOptions<MediaTokenOptions>, MediaTokenOptionsConfiguration>();
+            services.AddScoped<IFeatureEventHandler>(sp => sp.GetRequiredService<MediaTokenSettingsUpdater>());
+            services.AddScoped<IModularTenantEvents>(sp => sp.GetRequiredService<MediaTokenSettingsUpdater>());
 
             // Media Field
             services.AddContentField<MediaField>()
@@ -157,6 +160,9 @@ namespace OrchardCore.Media
             services.AddScoped<MediaProfilesManager>();
             services.AddScoped<IMediaProfileService, MediaProfileService>();
             services.AddRecipeExecutionStep<MediaProfileStep>();
+
+            // Media Name Normalizer
+            services.AddScoped<IMediaNameNormalizerService, NullMediaNameNormalizerService>();
         }
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
@@ -282,6 +288,13 @@ namespace OrchardCore.Media
                 defaults: new { controller = mediaCacheControllerName, action = nameof(MediaCacheController.Purge) }
             );
 
+            routes.MapAreaControllerRoute(
+                name: "Media.Options",
+                areaName: "OrchardCore.Media",
+                pattern: _adminOptions.AdminUrlPrefix + "/Media/Options",
+                defaults: new { controller = adminControllerName, action = nameof(AdminController.Options) }
+            );
+
             var mediaProfilesControllerName = typeof(MediaProfilesController).ControllerName();
 
             routes.MapAreaControllerRoute(
@@ -326,6 +339,16 @@ namespace OrchardCore.Media
         {
             services.AddScoped<IPermissionProvider, MediaCachePermissions>();
             services.AddScoped<INavigationProvider, MediaCacheAdminMenu>();
+        }
+    }
+
+    [Feature("OrchardCore.Media.Slugify")]
+    public class MediaSlugifyStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            // Media Name Normalizer
+            services.AddScoped<IMediaNameNormalizerService, SlugifyMediaNameNormalizerService>();
         }
     }
 

@@ -80,12 +80,6 @@ namespace OrchardCore.Users.Controllers
             var siteSettings = await _siteService.GetSiteSettingsAsync();
             var pager = new Pager(pagerParameters, siteSettings.PageSize);
 
-            // default options
-            if (options == null)
-            {
-                options = new UserIndexOptions();
-            }
-
             var users = _session.Query<User, UserIndex>();
 
             switch (options.Filter)
@@ -198,6 +192,11 @@ namespace OrchardCore.Users.Controllers
         [FormValueRequired("submit.BulkAction")]
         public async Task<ActionResult> IndexPOST(UserIndexOptions options, IEnumerable<string> itemIds)
         {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers))
+            {
+                return Forbid();
+            }
+
             if (itemIds?.Count() > 0)
             {
                 var checkedContentItems = await _session.Query<User, UserIndex>().Where(x => x.UserId.IsIn(itemIds)).ListAsync();
@@ -280,7 +279,7 @@ namespace OrchardCore.Users.Controllers
                 return View(shape);
             }
 
-            _notifier.Success(H["User created successfully"]);
+            _notifier.Success(H["User created successfully."]);
 
             return RedirectToAction(nameof(Index));
         }
@@ -367,7 +366,7 @@ namespace OrchardCore.Users.Controllers
                 await _signInManager.RefreshSignInAsync(user);
             }
 
-            _notifier.Success(H["User updated successfully"]);
+            _notifier.Success(H["User updated successfully."]);
 
             if (editingOwnUser)
             {
@@ -403,13 +402,13 @@ namespace OrchardCore.Users.Controllers
 
             if (result.Succeeded)
             {
-                _notifier.Success(H["User deleted successfully"]);
+                _notifier.Success(H["User deleted successfully."]);
             }
             else
             {
                 _session.Cancel();
 
-                _notifier.Error(H["Could not delete the user"]);
+                _notifier.Error(H["Could not delete the user."]);
 
                 foreach (var error in result.Errors)
                 {

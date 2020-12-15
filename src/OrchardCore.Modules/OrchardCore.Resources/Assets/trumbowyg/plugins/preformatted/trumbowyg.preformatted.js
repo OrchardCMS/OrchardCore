@@ -22,29 +22,32 @@
             fr: {
                 preformatted: 'Exemple de code <pre>'
             },
+            hu: {
+                preformatted: 'Kód minta <pre>'
+            },
             it: {
                 preformatted: 'Codice <pre>'
-            },
-            zh_cn: {
-                preformatted: '代码示例 <pre>'
-            },
-            ru: {
-                preformatted: 'Пример кода <pre>'
             },
             ja: {
                 preformatted: 'コードサンプル <pre>'
             },
-            tr: {
-                preformatted: 'Kod örneği <pre>'
-            },
-            zh_tw: {
-                preformatted: '代碼範例 <pre>'
+            ko: {
+                preformatted: '코드 예제 <pre>'
             },
             pt_br: {
                 preformatted: 'Exemple de código <pre>'
             },
-            ko: {
-                preformatted: '코드 예제 <pre>'
+            ru: {
+                preformatted: 'Пример кода <pre>'
+            },
+            tr: {
+                preformatted: 'Kod örneği <pre>'
+            },
+            zh_cn: {
+                preformatted: '代码示例 <pre>'
+            },
+            zh_tw: {
+                preformatted: '代碼範例 <pre>'
             },
         },
         // jshint camelcase:true

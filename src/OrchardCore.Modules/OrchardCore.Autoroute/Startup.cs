@@ -45,7 +45,7 @@ namespace OrchardCore.Autoroute
         {
             // Autoroute Part
             services.AddContentPart<AutoroutePart>()
-                .UseDisplayDriver<AutoroutePartDisplay>()
+                .UseDisplayDriver<AutoroutePartDisplayDriver>()
                 .AddHandler<AutoroutePartHandler>();
 
             services.AddScoped<IContentHandler, DefaultRouteContentHandler>();
@@ -54,9 +54,11 @@ namespace OrchardCore.Autoroute
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, AutoroutePartSettingsDisplayDriver>();
             services.AddScoped<IContentPartIndexHandler, AutoroutePartIndexHandler>();
 
-            services.AddScoped<IScopedIndexProvider, AutoroutePartIndexProvider>();
-            services.AddScoped<IDataMigration, Migrations>();
+            services.AddScoped<AutoroutePartIndexProvider>();
+            services.AddScoped<IScopedIndexProvider>(sp => sp.GetRequiredService<AutoroutePartIndexProvider>());
+            services.AddScoped<IContentHandler>(sp => sp.GetRequiredService<AutoroutePartIndexProvider>());
 
+            services.AddScoped<IDataMigration, Migrations>();
             services.AddSingleton<IAutorouteEntries, AutorouteEntries>();
             services.AddScoped<IContentHandleProvider, AutorouteHandleProvider>();
 

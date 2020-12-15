@@ -1,6 +1,6 @@
 @model DisplaySitemapViewModel
 
-<h1>@RenderTitleSegments(T["Sitemap"])</h1>
+<zone Name="Title"><h1>@RenderTitleSegments(T["Sitemap"])</h1></zone>
 
 @if (String.IsNullOrEmpty(Site.BaseUrl))
 {
@@ -24,25 +24,30 @@
 </div>
 @* do we need antiforgery here ?*@
 <form>
-    @if (Model.Items.Any())
-    {
-        <ul class="list-group">
-            @foreach (var item in Model.Items)
-            {
-                item.SitemapPlanId = Model.Sitemap.SitemapId;
+    <div class="form-group">
+        @if (Model.Items.Any())
+        {
+            <ul class="list-group">
+                @foreach (var item in Model.Items)
+                {
+                    item.SitemapPlanId = Model.Sitemap.SitemapId;
 
-                <li class="list-group-item">
-                    @await DisplayAsync(item)
-                </li>
-            }
-        </ul>
-    }
-    else
-    {
-        <div class="alert alert-info" role="alert">
-            @T["<strong>Nothing here!</strong> There are no sources on this sitemap for the moment."]
-        </div>
-    }
+                    <li class="list-group-item">
+                        @await DisplayAsync(item)
+                    </li>
+                }
+            </ul>
+        }
+        else
+        {
+            <div class="alert alert-info mb-0" role="alert">
+                @T["<strong>Nothing here!</strong> There are no sources on this sitemap for the moment."]
+            </div>
+        }
+    </div>
+    <div class="form-group">
+        <a class="btn btn-secondary" asp-route-controller="admin" asp-route-action="List">@T["Back"]</a>
+    </div>
 </form>
 
 <!-- Modal -->

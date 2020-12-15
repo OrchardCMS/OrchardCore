@@ -13,7 +13,7 @@
     var editorShapes = shapeTable.Bindings.Keys.Where(x => x.StartsWith(Model.TypePartDefinition.PartDefinition.Name + "_Option__", StringComparison.OrdinalIgnoreCase) || x.Equals(Model.TypePartDefinition.PartDefinition.Name + "_Option", StringComparison.OrdinalIgnoreCase));
 }
 
-<h1>@RenderTitleSegments(T["Edit Part - {0}", Model.DisplayName])</h1>
+<zone Name="Title"><h1>@RenderTitleSegments(T["Edit Part - {0}", Model.DisplayName])</h1></zone>
 
 <div class="alert alert-success" role="alert">
     @T["Some part settings common to all types can also be defined at the <a href=\"{0}\">Part Definition</a> level.", Url.Action("EditPart", new { id = typePart.PartDefinition.Name })]
@@ -43,6 +43,13 @@
 
     @if (Model.Shape.Content != null)
     {
+        @if (Model.Shape.Shortcuts != null)
+        {
+            <div class="form-group">
+                @await DisplayAsync(Model.Shape.Shortcuts)
+            </div>
+        }
+
         <div class="form-group">
             @await DisplayAsync(Model.Shape.Content)
         </div>

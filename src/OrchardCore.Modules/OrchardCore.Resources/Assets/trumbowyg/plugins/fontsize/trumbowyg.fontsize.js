@@ -20,22 +20,6 @@
                     value: '48px'
                 }
             },
-            es: {
-                fontsize: 'Tamaño de Fuente',
-                fontsizes: {
-                    'x-small': 'Extra pequeña',
-                    'small': 'Pegueña',
-                    'medium': 'Regular',
-                    'large': 'Grande',
-                    'x-large': 'Extra Grande',
-                    'custom': 'Customizada'
-                },
-                fontCustomSize: {
-                    title: 'Tamaño de Fuente Customizada',
-                    label: 'Tamaño de Fuente',
-                    value: '48px'
-                }
-            },
             da: {
                 fontsize: 'Skriftstørrelse',
                 fontsizes: {
@@ -45,22 +29,6 @@
                     'large': 'Stor',
                     'x-large': 'Ekstra stor',
                     'custom': 'Brugerdefineret'
-                }
-            },
-            fr: {
-                fontsize: 'Taille de la police',
-                fontsizes: {
-                    'x-small': 'Très petit',
-                    'small': 'Petit',
-                    'medium': 'Normal',
-                    'large': 'Grand',
-                    'x-large': 'Très grand',
-                    'custom': 'Taille personnalisée'
-                },
-                fontCustomSize: {
-                    title: 'Taille de police personnalisée',
-                    label: 'Taille de la police',
-                    value: '48px'
                 }
             },
             de: {
@@ -79,57 +47,51 @@
                     value: '48px'
                 }
             },
-            nl: {
-                fontsize: 'Lettergrootte',
+            es: {
+                fontsize: 'Tamaño de Fuente',
                 fontsizes: {
-                    'x-small': 'Extra klein',
-                    'small': 'Klein',
-                    'medium': 'Normaal',
-                    'large': 'Groot',
-                    'x-large': 'Extra groot',
-                    'custom': 'Tilpasset'
-                }
-            },
-            tr: {
-                fontsize: 'Yazı Boyutu',
-                fontsizes: {
-                    'x-small': 'Çok Küçük',
-                    'small': 'Küçük',
-                    'medium': 'Normal',
-                    'large': 'Büyük',
-                    'x-large': 'Çok Büyük',
-                    'custom': 'Görenek'
-                }
-            },
-            zh_tw: {
-                fontsize: '字體大小',
-                fontsizes: {
-                    'x-small': '最小',
-                    'small': '小',
-                    'medium': '中',
-                    'large': '大',
-                    'x-large': '最大',
-                    'custom': '自訂大小',
+                    'x-small': 'Extra pequeña',
+                    'small': 'Pegueña',
+                    'medium': 'Regular',
+                    'large': 'Grande',
+                    'x-large': 'Extra Grande',
+                    'custom': 'Customizada'
                 },
                 fontCustomSize: {
-                    title: '自訂義字體大小',
-                    label: '字體大小',
+                    title: 'Tamaño de Fuente Customizada',
+                    label: 'Tamaño de Fuente',
                     value: '48px'
                 }
             },
-            pt_br: {
-                fontsize: 'Tamanho da fonte',
+            fr: {
+                fontsize: 'Taille de la police',
                 fontsizes: {
-                    'x-small': 'Extra pequeno',
-                    'small': 'Pequeno',
-                    'regular': 'Médio',
-                    'large': 'Grande',
-                    'x-large': 'Extra grande',
-                    'custom': 'Personalizado'
+                    'x-small': 'Très petit',
+                    'small': 'Petit',
+                    'medium': 'Normal',
+                    'large': 'Grand',
+                    'x-large': 'Très grand',
+                    'custom': 'Taille personnalisée'
                 },
                 fontCustomSize: {
-                    title: 'Tamanho de Fonte Personalizado',
-                    label: 'Tamanho de Fonte',
+                    title: 'Taille de police personnalisée',
+                    label: 'Taille de la police',
+                    value: '48px'
+                }
+            },
+            hu: {
+                fontsize: 'Betű méret',
+                fontsizes: {
+                    'x-small': 'Extra kicsi',
+                    'small': 'Kicsi',
+                    'medium': 'Normális',
+                    'large': 'Nagy',
+                    'x-large': 'Extra nagy',
+                    'custom': 'Egyedi'
+                },
+                fontCustomSize: {
+                    title: 'Egyedi betű méret',
+                    label: 'Betű méret',
                     value: '48px'
                 }
             },
@@ -162,6 +124,60 @@
                 fontCustomSize: {
                     title: '사용자 지정 글꼴 크기',
                     label: '글꼴 크기',
+                    value: '48px'
+                }
+            },
+            nl: {
+                fontsize: 'Lettergrootte',
+                fontsizes: {
+                    'x-small': 'Extra klein',
+                    'small': 'Klein',
+                    'medium': 'Normaal',
+                    'large': 'Groot',
+                    'x-large': 'Extra groot',
+                    'custom': 'Tilpasset'
+                }
+            },
+            pt_br: {
+                fontsize: 'Tamanho da fonte',
+                fontsizes: {
+                    'x-small': 'Extra pequeno',
+                    'small': 'Pequeno',
+                    'regular': 'Médio',
+                    'large': 'Grande',
+                    'x-large': 'Extra grande',
+                    'custom': 'Personalizado'
+                },
+                fontCustomSize: {
+                    title: 'Tamanho de Fonte Personalizado',
+                    label: 'Tamanho de Fonte',
+                    value: '48px'
+                }
+            },
+            tr: {
+                fontsize: 'Yazı Boyutu',
+                fontsizes: {
+                    'x-small': 'Çok Küçük',
+                    'small': 'Küçük',
+                    'medium': 'Normal',
+                    'large': 'Büyük',
+                    'x-large': 'Çok Büyük',
+                    'custom': 'Görenek'
+                }
+            },
+            zh_tw: {
+                fontsize: '字體大小',
+                fontsizes: {
+                    'x-small': '最小',
+                    'small': '小',
+                    'medium': '中',
+                    'large': '大',
+                    'x-large': '最大',
+                    'custom': '自訂大小',
+                },
+                fontCustomSize: {
+                    title: '自訂義字體大小',
+                    label: '字體大小',
                     value: '48px'
                 }
             },
@@ -201,16 +217,21 @@
     function setFontSize(trumbowyg, size) {
         trumbowyg.$ed.focus();
         trumbowyg.saveRange();
-        var text = trumbowyg.range.startContainer.parentElement;
-        var selectedText = trumbowyg.getRangeText();
-        if ($(text).html() === selectedText) {
-            $(text).css('font-size', size);
-        } else {
-            trumbowyg.range.deleteContents();
-            var html = '<span style="font-size: ' + size + ';">' + selectedText + '</span>';
-            var node = $(html)[0];
-            trumbowyg.range.insertNode(node);
-        }
+
+        // Temporary size
+        trumbowyg.execCmd('fontSize', '1');
+
+        // Find <font> elements that were added and change to <span> with chosen size
+        trumbowyg.$ed.find('font[size="1"]').replaceWith(function() {
+            return $('<span/>', {
+                css: { 'font-size': size },
+                html: this.innerHTML,
+            });
+        });
+
+        // Remove and leftover <span> elements
+        $(trumbowyg.range.startContainer.parentElement).find('span[style=""]').contents().unwrap();
+
         trumbowyg.restoreRange();
     }
 
