@@ -25,7 +25,7 @@ else
                     <input asp-for="Options.Search" class="form-control" placeholder="@T["Search"]" type="search" autofocus />
                 </div>
                 <div class="btn-group float-right">
-                    <a asp-route-action="Create" asp-route-admintemplates="@Model.Options.AdminTemplates" asp-route-returnUrl="@FullRequestPath" class="btn btn-sm btn-success float-right create" role="button">@T["Add Template"]</a>
+                    <a asp-route-action="Create" asp-route-admintemplates="@Model.Options.AdminTemplates" asp-route-returnUrl="@FullRequestPath" class="btn btn-sm btn-secondary float-right create" role="button">@T["Add Template"]</a>
                 </div>
             </div>
         </div>
