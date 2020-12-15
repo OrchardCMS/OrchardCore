@@ -7,7 +7,7 @@
 <input type="submit" name="submit.BulkAction" class="d-none" />
 @Html.HiddenFor(o => o.Options.BulkAction)
 
-<div class="card mb-3 position-sticky action-bar">
+<div class="card mb-3 position-sticky action-bar border-0">
     <div class="card-body bg-primary p-3">
         <div class="form-group mb-n1">
             @await DisplayAsync(Model.Header.Search)
@@ -15,7 +15,7 @@
         </div>
     </div>
 </div>
-<ul class="list-group with-checkbox">
+<ul class="list-group with-checkbox list-group-flush">
     <li class="list-group-item bg-primary">
         <div class="row">
             <div class="col">

@@ -1,3 +1,19 @@
 .list-group li:hover {
     background-color: $li-hover-bg-color;
 }
+
+.btn-filter {
+    padding: 0.1rem 0 0.4rem 0 !important;
+}
+
+.button-group {
+    display: none;
+}
+
+li:hover .button-group {
+    display: inline;
+}
+
+ul.pager li a {
+    border: 0 !important;
+}

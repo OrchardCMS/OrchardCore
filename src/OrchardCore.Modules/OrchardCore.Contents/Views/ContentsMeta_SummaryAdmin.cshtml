@@ -6,7 +6,7 @@
 
 @if (contentItem.ModifiedUtc.HasValue)
 {
-    <div>
-        <span class="hint">@T["Last modified {0} by {1}", (object)(await DisplayAsync(await New.TimeSpan(Utc: contentItem.ModifiedUtc))), contentItem.Author]</span>
-    </div>
+    <small class="text-muted">
+        <i class="fa fa-clock"></i> @await DisplayAsync(await New.TimeSpan(Utc: contentItem.ModifiedUtc)) <i class="fa fa-user"></i> @contentItem.Author
+    </small>
 }
