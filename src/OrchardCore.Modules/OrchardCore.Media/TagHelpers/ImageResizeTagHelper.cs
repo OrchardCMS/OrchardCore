@@ -93,7 +93,7 @@ namespace OrchardCore.Media.TagHelpers
 
             if (_mediaOptions.UseTokenizedQueryString)
             {
-                resizedSrc = _mediaTokenService.TokenizePath(resizedSrc);
+                resizedSrc = _mediaTokenService.AddTokenToPath(resizedSrc);
             }
 
             output.Attributes.SetAttribute("src", resizedSrc);

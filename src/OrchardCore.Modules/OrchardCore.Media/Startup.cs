@@ -44,7 +44,6 @@ using OrchardCore.Navigation;
 using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Shortcodes;
-using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Web.DependencyInjection;
 using SixLabors.ImageSharp.Web.Middleware;
 using SixLabors.ImageSharp.Web.Providers;
@@ -133,7 +132,11 @@ namespace OrchardCore.Media
                 .AddProcessor<ImageVersionProcessor>()
                 .AddProcessor<TokenCommandProcessor>();
 
-            services.AddSingleton<IMediaTokenService, MediaTokenService>();
+            services.AddScoped<MediaTokenSettingsUpdater>();
+            services.AddScoped<IMediaTokenService, MediaTokenService>();
+            services.AddTransient<IConfigureOptions<MediaTokenOptions>, MediaTokenOptionsConfiguration>();
+            services.AddScoped<IFeatureEventHandler>(sp => sp.GetRequiredService<MediaTokenSettingsUpdater>());
+            services.AddScoped<IModularTenantEvents>(sp => sp.GetRequiredService<MediaTokenSettingsUpdater>());
 
             // Media Field
             services.AddContentField<MediaField>()
@@ -291,7 +294,7 @@ namespace OrchardCore.Media
                 pattern: _adminOptions.AdminUrlPrefix + "/Media/Options",
                 defaults: new { controller = adminControllerName, action = nameof(AdminController.Options) }
             );
-                
+
             var mediaProfilesControllerName = typeof(MediaProfilesController).ControllerName();
 
             routes.MapAreaControllerRoute(
