@@ -6,15 +6,11 @@
 }
 
 <div class="row">
-    <div class="col-xl-10 col-lg-8 col-md-6 title">
+    <div class="col-xl-9 col-sm-12 title">
         <div class="custom-control custom-checkbox float-left">
             <input type="checkbox" class="custom-control-input" value="@contentItem.Id" name="itemIds" id="itemIds-@contentItem.Id">
             <label class="custom-control-label" for="itemIds-@contentItem.Id"></label>
         </div>
-        @if (Model.Tags != null)
-        {
-            @await DisplayAsync(Model.Tags)
-        }
         @if (await AuthorizationService.AuthorizeAsync(User, CommonPermissions.EditContent, contentItem))
         {
             <a admin-for="@contentItem" asp-route-returnUrl="@FullRequestPath" />
@@ -23,19 +19,21 @@
         {
             @contentItem
         }
-        <small class="text-muted"><a href="@(FullRequestPath)&Options.SelectedContentType=@contentItem.ContentType" data-toggle="tooltip" class="btn btn-sm btn-filter text-info">@contentItem.ContentType</a></small>
+        - <small class="text-muted">@contentItem.ContentType</small>
         @if (Model.Header != null)
         {
             <div class="header">@await DisplayAsync(Model.Header)</div>
         }
-    </div>    
-    @*<div class="col-xl-2 col-lg-3 col-md-4">
+        @if (Model.Tags != null)
+        {
+            @await DisplayAsync(Model.Tags)
+        }
         @if (Model.Meta != null)
         {
-            <div class="d-inline">@await DisplayAsync(Model.Meta)</div>
+        <div class="d-inline">@await DisplayAsync(Model.Meta)</div>
         }
-    </div>*@
-    <div class="col-xl-2 col-lg-4 col-md-6 related">
+    </div>
+    <div class="col-xl-3 col-sm-12">
         <div class="float-right button-group">
             @if (Model.Actions != null)
             {
