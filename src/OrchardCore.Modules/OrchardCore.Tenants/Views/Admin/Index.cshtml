@@ -78,23 +78,25 @@
     <input type="submit" name="submit.Filter" id="submitFilter" class="d-none" />
     <input type="submit" name="submit.BulkAction" class="d-none" />
     <input name="BulkAction" type="hidden" />
-    
+
     <div class="card mb-3 position-sticky action-bar">
         <div class="card-body bg-primary p-3">
             <div class="form-group mb-n1">
-                <div class="input-group input-group-sm w-lg-50 d-inline-flex has-filter">                    
+                <div class="input-group input-group-sm w-lg-50 d-inline-flex">
                     <div class="input-group-prepend">
-                        <button class="btn btn-sm dropdown-toggle" style="border:1px solid lightgrey" type="button" data-toggle="dropdown" id="filter-dropdown" aria-haspopup="true" aria-expanded="false">
-                            <i class="fa fa-filter" title="@T["Filters"]"></i>
+                        <button class="btn btn-secondary btn-sm dropdown-toggle" style="border:1px solid lightgrey" type="button" data-toggle="dropdown" id="filter-dropdown" aria-haspopup="true" aria-expanded="false">
+                            @T["Filters"]
                         </button>
-                        <div class="dropdown-menu @if(CultureInfo.CurrentUICulture.IsRightToLeft()){<text>dropdown-menu-right</text>}" aria-labelledby="filter-dropdown">
+                        <div class="dropdown-menu" aria-labelledby="filter-dropdown">
                             <a class="dropdown-item" href="?Options.Filter=Running">@T["Only running tenants"]</a>
                             <a class="dropdown-item" href="?Options.Filter=Disabled">@T["Only disabled tenants"]</a>
                             <a class="dropdown-item" href="?Options.Filter=Uninitialized">@T["Only uninitialized tenants"]</a>
                         </div>
                     </div>
-                    <i class="fa fa-search form-control-feedback"></i>
                     <input id="search-box" asp-for="Options.Search" class="form-control" placeholder="@T["Search"]" type="search" autofocus />
+                    <div class="input-group-append">
+                        <button type="submit" class="btn btn-sm btn-secondary">@T["Search"]</button>
+                    </div>
                 </div>
                 <div class="dropdown float-right order-md-1">
                     <a asp-route-action="Create" class="btn btn-sm btn-secondary float-right create" role="button">@T["Add Tenant"]</a>
@@ -145,37 +147,37 @@
                     </div>
                     <div class="properties">
                         <div class="related">
-                            <a asp-action="Edit" asp-route-id="@entry.Name" class="btn btn-primary btn-sm">@T["Edit"]</a>
+                            <a asp-action="Edit" asp-route-id="@entry.Name" class="btn text-primary btn-sm" data-toggle="tooltip" title="@T["Edit"]"><i class="fa fa-edit"></i></a>
                             @if (!entry.IsDefaultTenant && entry.ShellSettings.State == TenantState.Running)
                             {
-                                <a asp-action="Disable" asp-route-id="@entry.Name" class="btn btn-danger btn-sm" itemprop="UnsafeUrl">@T["Disable"]</a>
+                                <a asp-action="Disable" asp-route-id="@entry.Name" class="btn text-danger btn-sm" itemprop="UnsafeUrl" data-toggle="tooltip" title="@T["Disable"]"><i class="fa fa-toggle-off"></i></a>
                             }
                             @if (entry.ShellSettings.State == TenantState.Disabled)
                             {
-                                <a asp-action="Enable" asp-route-id="@entry.Name" class="btn btn-success btn-sm" itemprop="UnsafeUrl">@T["Enable"]</a>
+                                <a asp-action="Enable" asp-route-id="@entry.Name" class="btn text-success btn-sm" itemprop="UnsafeUrl" data-toggle="tooltip" title="@T["Enable"]"><i class="fa fa-toggle-on"></i></a>
                             }
                             @if (entry.ShellSettings.State == TenantState.Uninitialized)
                             {
-                                <a class="btn btn-info btn-sm" id="btn-setup-@entry.Name" href="@GetEncodedUrl(entry, originalPathBase)">@T["Setup"]</a>
+                                <a class="btn btn-info btn-sm" id="btn-setup-@entry.Name" href="@GetEncodedUrl(entry, originalPathBase)" data-toggle="tooltip" title="@T["Setup"]"><i class="fa fa-cog"></i></a>
                             }
-                            <a asp-action="Reload" asp-route-id="@entry.Name" class="btn btn-secondary btn-sm" itemprop="UnsafeUrl">@T["Reload"]</a>
+                            <a asp-action="Reload" asp-route-id="@entry.Name" class="btn text-secondary btn-sm" itemprop="UnsafeUrl" data-toggle="tooltip" title="@T["Reload"]"><i class="fa fa-redo"></i></a>
                         </div>
                         @switch (entry.ShellSettings.State)
                         {
                             case TenantState.Uninitialized:
-                                <small><i class="fa fa-xs fa-circle text-secondary" title="@T["Uninitialized"]"></i></small>
+                                <span data-toggle="tooltip" title="@T["Uninitialized"]"><i class="fa fa-circle text-secondary"></i></span>
                                 break;
                             case TenantState.Initializing:
-                                <small><i class="fa fa-xs fa-circle text-info" title="@T["Initializing"]"></i></small>
+                                <span data-toggle="tooltip" title="@T["Initializing"]"><i class="fa fa-circle text-info"></i></span>
                                 break;
                             case TenantState.Running:
-                                <small><i class="fa fa-xs fa-circle text-success" title="@T["Running"]"></i></small>
+                                <span data-toggle="tooltip" title="@T["Running"]"><i class="fa fa-circle text-success"></i></span>
                                 break;
                             case TenantState.Disabled:
-                                <small><i class="fa fa-xs fa-circle text-danger" title="@T["Disabled"]"></i></small>
+                                <span data-toggle="tooltip" title="@T["Disabled"]"><i class="fa fa-circle text-danger"></i></span>
                                 break;
                             case TenantState.Invalid:
-                                <small><i class="fa fa-xs fa-circle text-warning" title="@T["Invalid"]"></i></small>
+                                <span data-toggle="tooltip" title="@T["Invalid"]"><i class="fa fa-circle text-warning"></i></span>
                                 break;
                         }
                         <a href="@GetEncodedUrl(entry, originalPathBase)" target="_blank">@entry.Name</a>
