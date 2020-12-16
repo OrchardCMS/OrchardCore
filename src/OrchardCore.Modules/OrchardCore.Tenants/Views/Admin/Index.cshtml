@@ -159,19 +159,19 @@
                         @switch (entry.ShellSettings.State)
                         {
                             case TenantState.Uninitialized:
-                                <span class="badge badge-light"><i class="fa fa-cog text-secondary"></i> @T["Uninitialized"]</span>
+                                <span class="badge badge-light font-weight-normal"><i class="fa fa-cog text-secondary"></i> @T["Uninitialized"]</span>
                                 break;
                             case TenantState.Initializing:
-                                <span class="badge badge-light"><i class="fa fa-hourglass-start text-info"></i> @T["Initializing"]</span>
+                                <span class="badge badge-light font-weight-normal"><i class="fa fa-hourglass-start text-info"></i> @T["Initializing"]</span>
                                 break;
                             case TenantState.Running:
-                                <span class="badge badge-light"><i class="fa fa-check text-success"></i> @T["Running"]</span>
+                                <span class="badge badge-light font-weight-normal"><i class="fa fa-check text-success"></i> @T["Running"]</span>
                                 break;
                             case TenantState.Disabled:
-                                <span class="badge badge-light"><i class="fa fa-remove text-danger"></i> @T["Disabled"]</span>
+                                <span class="badge badge-light font-weight-normal"><i class="fa fa-remove text-danger"></i> @T["Disabled"]</span>
                                 break;
                             case TenantState.Invalid:
-                                <span class="badge badge-light"><i class="fa fa-exclamation-triangle text-warning"></i> @T["Invalid"]</span>
+                                <span class="badge badge-light font-weight-normal"><i class="fa fa-exclamation-triangle text-warning"></i> @T["Invalid"]</span>
                                 break;
                         }</a>
                         @if (!string.IsNullOrEmpty(entry.ShellSettings.RequestUrlHost))
