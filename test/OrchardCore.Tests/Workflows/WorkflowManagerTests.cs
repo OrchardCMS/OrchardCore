@@ -12,6 +12,8 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using Newtonsoft.Json.Linq;
 using OrchardCore.DisplayManagement;
+using OrchardCore.Locking;
+using OrchardCore.Locking.Distributed;
 using OrchardCore.Modules;
 using OrchardCore.Scripting;
 using OrchardCore.Scripting.JavaScript;
@@ -81,6 +83,9 @@ namespace OrchardCore.Tests.Workflows
             services.AddScoped(provider => new Mock<IViewLocalizer>().Object);
             services.AddScoped<IWorkflowExecutionContextHandler, DefaultWorkflowExecutionContextHandler>();
 
+            services.AddSingleton<IDistributedLock, LocalLock>()
+                .AddLogging();
+
             return services.BuildServiceProvider();
         }
 
@@ -121,6 +126,7 @@ namespace OrchardCore.Tests.Workflows
                 workflowStore.Object,
                 workflowIdGenerator.Object,
                 workflowValueSerializers,
+                serviceProvider.GetRequiredService<IDistributedLock>(),
                 workflowManagerLogger.Object,
                 missingActivityLogger.Object,
                 missingActivityLocalizer.Object,
