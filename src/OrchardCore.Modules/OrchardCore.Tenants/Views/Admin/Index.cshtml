@@ -150,30 +150,30 @@
                             }
                             <a asp-action="Reload" asp-route-id="@entry.Name" class="btn text-secondary btn-sm" itemprop="UnsafeUrl" data-toggle="tooltip" title="@T["Reload"]"><i class="fa fa-redo"></i></a>
                         </div>
-                        <a href="@FullRequestPath&Options.Filter=@entry.ShellSettings.State">
-                        @switch (entry.ShellSettings.State)
-                        {
-                            case TenantState.Uninitialized:
-                                <span class="badge badge-secondary"><i class="fa fa-cog"></i> @T["Uninitialized"]</span>
-                                break;
-                            case TenantState.Initializing:
-                                <span class="badge badge-info"><i class="fa fa-hourglass-start"></i> @T["Initializing"]</span>
-                                break;
-                            case TenantState.Running:
-                                <span class="badge badge-success"><i class="fa fa-check"></i> @T["Running"]</span>
-                                break;
-                            case TenantState.Disabled:
-                                <span class="badge badge-danger"><i class="fa fa-remove"></i> @T["Disabled"]</span>
-                                break;
-                            case TenantState.Invalid:
-                                <span class="badge badge-warning"><i class="fa fa-exclamation-triangle"></i> @T["Invalid"]</span>
-                                break;
-                        }</a>
                         <a href="@GetEncodedUrl(entry, originalPathBase)">@entry.Name</a>
                         @if (entry.ShellSettings.State == TenantState.Running)
                         {
                         <a class="text-info" href="@GetDisplayUrl(entry, originalPathBase)" target="_blank" data-toggle="tooltip" title="@GetDisplayUrl(entry, originalPathBase)"><i class="fa fa-external-link"></i></a>
                         }
+                        <a href="@FullRequestPath&Options.Filter=@entry.ShellSettings.State">
+                        @switch (entry.ShellSettings.State)
+                        {
+                            case TenantState.Uninitialized:
+                                <span class="badge badge-light"><i class="fa fa-cog text-secondary"></i> @T["Uninitialized"]</span>
+                                break;
+                            case TenantState.Initializing:
+                                <span class="badge badge-light"><i class="fa fa-hourglass-start text-info"></i> @T["Initializing"]</span>
+                                break;
+                            case TenantState.Running:
+                                <span class="badge badge-light"><i class="fa fa-check text-success"></i> @T["Running"]</span>
+                                break;
+                            case TenantState.Disabled:
+                                <span class="badge badge-light"><i class="fa fa-remove text-danger"></i> @T["Disabled"]</span>
+                                break;
+                            case TenantState.Invalid:
+                                <span class="badge badge-light"><i class="fa fa-exclamation-triangle text-warning"></i> @T["Invalid"]</span>
+                                break;
+                        }</a>
                         @if (!string.IsNullOrEmpty(entry.ShellSettings.RequestUrlHost))
                         {
                             <p><code data-toggle="tooltip" title="@T["Url host"]"><i class="fa fa-globe"></i> @entry.ShellSettings.RequestUrlHost</code></p>
