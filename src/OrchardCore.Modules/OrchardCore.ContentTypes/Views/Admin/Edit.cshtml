@@ -22,7 +22,7 @@
         .Select(x => x.Field);
 }
 
-<h1>@RenderTitleSegments(T["Edit Content Type - {0}", Model.TypeDefinition.DisplayName])</h1>
+<zone Name="Title"><h1>@RenderTitleSegments(T["Edit Content Type - {0}", Model.TypeDefinition.DisplayName])</h1></zone>
 
 <form asp-action="Edit">
     @Html.ValidationSummary()

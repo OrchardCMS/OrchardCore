@@ -7263,6 +7263,8 @@ function isLetter(str) {
 function isNumber(str) {
   return str.length === 1 && str.match(/[0-9]/i);
 }
+
+$('[data-toggle="tooltip"]').tooltip();
 $('#btn-darkmode').click(function () {
   if ($('html').attr('data-theme') === 'darkmode') {
     $('html').attr('data-theme', 'default');

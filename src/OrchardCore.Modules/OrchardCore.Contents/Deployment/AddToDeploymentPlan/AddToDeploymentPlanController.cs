@@ -79,7 +79,7 @@ namespace OrchardCore.Contents.Deployment.AddToDeploymentPlan
 
             deploymentPlan.DeploymentSteps.Add(step);
 
-            _notifier.Success(H["Content successfully added to deployment plan."]);
+            _notifier.Success(H["Content added successfully to the deployment plan."]);
 
             _session.Save(deploymentPlan);
 
@@ -126,7 +126,7 @@ namespace OrchardCore.Contents.Deployment.AddToDeploymentPlan
                 deploymentPlan.DeploymentSteps.Add(step);
             }
 
-            _notifier.Success(H["Content successfully added to deployment plan."]);
+            _notifier.Success(H["Content added successfully to the deployment plan."]);
 
             _session.Save(deploymentPlan);
 

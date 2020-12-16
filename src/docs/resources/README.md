@@ -1,15 +1,16 @@
 # Resources
 
-Many external resources are available in order to teach you how to develop with Orchard Core.
+Many external resources are available in order to teach you how to develop with Orchard Core and keep you informed with the latest news.
 
-## Demo Projects
+## Overview
 
-[Lombiq](https://lombiq.com) created a Demo Orchard Core module for training purposes guiding you to become an Orchard Core developer:
-
-- [Orchard Core Training Demo module](https://github.com/Lombiq/Orchard-Training-Demo-Module)
-
-!!! warning
-    The module assumes that you have a good understanding of basic Orchard Core concepts, and that you can get around the Orchard admin area. You should also be familiar with how to use Visual Studio and write C#, as well as the concepts of ASP.NET Core MVC. 
+- [Tutorials](tutorials): List of tutorials to discover Orchard Core.
+- [Development Tools](development-tools): List of tools that help you developing with Orchard Core.
+- [Meeting](meeting): Join us for our weekly meetings each Tuesdays and Thursdays.
+- [Branding](branding): Get some official assets and share about the project philosophy.
+- [Libraries](libraries): List of external libraries and licenses used in Orchard Core.
+- [Owners](owners): List of the main contributors and their contribution areas.
+- [Workshops](workshops): Training sessions developed by our contributors.
 
 ## Newsletter
 
