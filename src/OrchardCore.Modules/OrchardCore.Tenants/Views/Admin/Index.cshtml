@@ -184,11 +184,11 @@
                         }</a>
                         @if (!string.IsNullOrEmpty(entry.ShellSettings.RequestUrlHost))
                         {
-                            <p><code data-toggle="tooltip" title="@T["Url host"]">@entry.ShellSettings.RequestUrlHost</code></p>
+                            <p class="mx-4"><code data-toggle="tooltip" title="@T["Url host"]">@entry.ShellSettings.RequestUrlHost</code></p>
                         }
                         @if (!string.IsNullOrEmpty(entry.Description))
                         {
-                            <p class="mb-0"><small class="text-muted">@entry.Description</small></p>
+                            <p class="mb-0 mx-4"><small class="text-muted">@entry.Description</small></p>
                         }
                     </div>
                 </li>
