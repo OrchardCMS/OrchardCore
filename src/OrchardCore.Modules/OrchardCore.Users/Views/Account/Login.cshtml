@@ -67,7 +67,7 @@
     {
         <div class="col-md-6 @(disableLocalLogin ? "offset-md-3" : String.Empty)">
             <section>
-                <h4>@T["Use another service to log in."]</h4>
+                <h4>@T["Use another service to log in to {0}", Site.SiteName]</h4>
                 <hr />
                 <form asp-controller="Account" asp-action="ExternalLogin" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="form-horizontal">
                     <div>
