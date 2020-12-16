@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Admin;
+using OrchardCore.Locking.Distributed;
 using OrchardCore.Workflows.Http.Activities;
 using OrchardCore.Workflows.Http.Models;
 using OrchardCore.Workflows.Services;
@@ -22,6 +23,7 @@ namespace OrchardCore.Workflows.Http.Controllers
         private readonly IActivityLibrary _activityLibrary;
         private readonly ISecurityTokenService _securityTokenService;
         private readonly IAntiforgery _antiforgery;
+        private readonly IDistributedLock _distributedLock;
         private readonly ILogger _logger;
         public const int NoExpiryTokenLifespan = 36500;
 
@@ -33,6 +35,7 @@ namespace OrchardCore.Workflows.Http.Controllers
             IActivityLibrary activityLibrary,
             ISecurityTokenService securityTokenService,
             IAntiforgery antiforgery,
+            IDistributedLock distributedLock,
             ILogger<HttpWorkflowController> logger
         )
         {
@@ -43,6 +46,7 @@ namespace OrchardCore.Workflows.Http.Controllers
             _activityLibrary = activityLibrary;
             _securityTokenService = securityTokenService;
             _antiforgery = antiforgery;
+            _distributedLock = distributedLock;
             _logger = logger;
         }
 
@@ -174,7 +178,37 @@ namespace OrchardCore.Workflows.Http.Controllers
                             _logger.LogDebug("Resuming workflow with ID '{WorkflowId}' on activity '{ActivityId}'", workflow.WorkflowId, blockingActivity.ActivityId);
                         }
 
-                        await _workflowManager.ResumeWorkflowAsync(workflow, blockingActivity);
+                        // If not both locking times are provided.
+                        if (workflow.LockTimeoutInSeconds <= 0 || workflow.LockExpirationInSeconds <= 0)
+                        {
+                            // Resume the workflow instance without any locking.
+                            await _workflowManager.ResumeWorkflowAsync(workflow, blockingActivity);
+                            continue;
+                        }
+
+                        // Try to acquire a lock on the workflow instance id.
+                        (var locker, var locked) = await _distributedLock.TryAcquireLockAsync(
+                            "WFI_" + workflow.WorkflowId + "_LOCK",
+                            TimeSpan.FromSeconds(workflow.LockTimeoutInSeconds),
+                            TimeSpan.FromSeconds(workflow.LockExpirationInSeconds));
+
+                        if (!locked)
+                        {
+                            continue;
+                        }
+
+                        await using var acquiredLock = locker;
+
+                        // Check if the workflow still exists and halted on this activity.
+                        var haltedWorkflow = await _workflowStore.GetAsync(workflow.Id);
+                        if (haltedWorkflow != null)
+                        {
+                            blockingActivity = haltedWorkflow.BlockingActivities.FirstOrDefault(x => x.ActivityId == startActivity.ActivityId);
+                            if (blockingActivity != null)
+                            {
+                                await _workflowManager.ResumeWorkflowAsync(haltedWorkflow, blockingActivity);
+                            }
+                        }
                     }
                 }
             }

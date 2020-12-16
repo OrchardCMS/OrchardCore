@@ -11,6 +11,8 @@ namespace OrchardCore.Workflows.ViewModels
 
         public bool IsEnabled { get; set; }
         public bool IsSingleton { get; set; }
+        public int LockTimeoutInSeconds { get; set; }
+        public int LockExpirationInSeconds { get; set; }
         public bool DeleteFinishedWorkflows { get; set; }
         public string ReturnUrl { get; set; }
     }

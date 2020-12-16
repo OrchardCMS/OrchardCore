@@ -232,6 +232,8 @@ namespace OrchardCore.Workflows.Controllers
                     Name = workflowType.Name,
                     IsEnabled = workflowType.IsEnabled,
                     IsSingleton = workflowType.IsSingleton,
+                    LockTimeoutInSeconds = workflowType.LockTimeoutInSeconds,
+                    LockExpirationInSeconds = workflowType.LockExpirationInSeconds,
                     DeleteFinishedWorkflows = workflowType.DeleteFinishedWorkflows,
                     ReturnUrl = returnUrl
                 });
@@ -272,6 +274,8 @@ namespace OrchardCore.Workflows.Controllers
             workflowType.Name = viewModel.Name?.Trim();
             workflowType.IsEnabled = viewModel.IsEnabled;
             workflowType.IsSingleton = viewModel.IsSingleton;
+            workflowType.LockTimeoutInSeconds = viewModel.LockTimeoutInSeconds;
+            workflowType.LockExpirationInSeconds = viewModel.LockExpirationInSeconds;
             workflowType.DeleteFinishedWorkflows = viewModel.DeleteFinishedWorkflows;
 
             await _workflowTypeStore.SaveAsync(workflowType);
@@ -301,6 +305,8 @@ namespace OrchardCore.Workflows.Controllers
             {
                 Id = id,
                 IsSingleton = workflowType.IsSingleton,
+                LockTimeoutInSeconds = workflowType.LockTimeoutInSeconds,
+                LockExpirationInSeconds = workflowType.LockExpirationInSeconds,
                 Name = "Copy-" + workflowType.Name,
                 IsEnabled = workflowType.IsEnabled,
                 ReturnUrl = returnUrl
@@ -327,6 +333,8 @@ namespace OrchardCore.Workflows.Controllers
             workflowType.Name = viewModel.Name?.Trim();
             workflowType.IsEnabled = viewModel.IsEnabled;
             workflowType.IsSingleton = viewModel.IsSingleton;
+            workflowType.LockTimeoutInSeconds = viewModel.LockTimeoutInSeconds;
+            workflowType.LockExpirationInSeconds = viewModel.LockExpirationInSeconds;
             workflowType.DeleteFinishedWorkflows = viewModel.DeleteFinishedWorkflows;
             workflowType.Activities = existingWorkflowType.Activities;
             workflowType.Transitions = existingWorkflowType.Transitions;

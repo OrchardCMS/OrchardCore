@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
-using OrchardCore.Locking;
 using OrchardCore.Locking.Distributed;
 using OrchardCore.Modules;
 using OrchardCore.Workflows.Activities;
@@ -17,39 +16,39 @@ namespace OrchardCore.Workflows.Services
 {
     public class WorkflowManager : IWorkflowManager
     {
-        private readonly IDistributedLock _distributedLock;
         private readonly IActivityLibrary _activityLibrary;
         private readonly IWorkflowTypeStore _workflowTypeStore;
         private readonly IWorkflowStore _workflowStore;
         private readonly IWorkflowIdGenerator _workflowIdGenerator;
         private readonly Resolver<IEnumerable<IWorkflowValueSerializer>> _workflowValueSerializers;
+        private readonly IDistributedLock _distributedLock;
         private readonly ILogger _logger;
         private readonly ILogger<MissingActivity> _missingActivityLogger;
         private readonly IStringLocalizer<MissingActivity> _missingActivityLocalizer;
         private readonly IClock _clock;
 
-        private readonly HashSet<string> _scopedLockIds = new HashSet<string>();
+        private readonly HashSet<string> _workflowScopedIds = new HashSet<string>();
 
         public WorkflowManager
         (
-            IDistributedLock distributedLock,
             IActivityLibrary activityLibrary,
             IWorkflowTypeStore workflowTypeRepository,
             IWorkflowStore workflowRepository,
             IWorkflowIdGenerator workflowIdGenerator,
             Resolver<IEnumerable<IWorkflowValueSerializer>> workflowValueSerializers,
+            IDistributedLock distributedLock,
             ILogger<WorkflowManager> logger,
             ILogger<MissingActivity> missingActivityLogger,
             IStringLocalizer<MissingActivity> missingActivityLocalizer,
             IClock clock
         )
         {
-            _distributedLock = distributedLock;
             _activityLibrary = activityLibrary;
             _workflowTypeStore = workflowTypeRepository;
             _workflowStore = workflowRepository;
             _workflowIdGenerator = workflowIdGenerator;
             _workflowValueSerializers = workflowValueSerializers;
+            _distributedLock = distributedLock;
             _logger = logger;
             _missingActivityLogger = missingActivityLogger;
             _missingActivityLocalizer = missingActivityLocalizer;
@@ -67,6 +66,8 @@ namespace OrchardCore.Workflows.Services
                     ActivityStates = workflowType.Activities.Select(x => x).ToDictionary(x => x.ActivityId, x => x.Properties)
                 }),
                 CorrelationId = correlationId,
+                LockTimeoutInSeconds = workflowType.LockTimeoutInSeconds,
+                LockExpirationInSeconds = workflowType.LockExpirationInSeconds,
                 CreatedUtc = _clock.UtcNow
             };
 
@@ -134,37 +135,36 @@ namespace OrchardCore.Workflows.Services
             // Start new workflows.
             foreach (var workflowType in workflowTypesToStart)
             {
+                // Don't allow scope reentrance per workflow type id.
+                if (!_workflowScopedIds.Add(workflowType.WorkflowTypeId))
+                {
+                    continue;
+                }
+
                 var startActivity = workflowType.Activities.FirstOrDefault(x => x.IsStart && String.Equals(x.Name, name, StringComparison.OrdinalIgnoreCase));
                 if (startActivity == null)
                 {
                     continue;
                 }
 
-                // If it is not a singleton and the event is not exclusive.
-                if (!workflowType.IsSingleton && !isExclusive)
+                // If not both locking times, or if it is not a singleton and the event is not exclusive.
+                if (workflowType.LockTimeoutInSeconds <= 0 || workflowType.LockExpirationInSeconds <= 0 ||
+                    (!workflowType.IsSingleton && !isExclusive))
                 {
                     // Start a new workflow instance without any locking.
                     await StartWorkflowAsync(workflowType, startActivity, input, correlationId);
                     continue;
                 }
 
-                (ILocker locker, var locked) = (null, false);
+                // Try to acquire a lock on the workflow type id.
+                (var locker, var locked) = await _distributedLock.TryAcquireLockAsync(
+                    "WFT_" + workflowType.WorkflowTypeId + "_LOCK",
+                    TimeSpan.FromSeconds(workflowType.LockTimeoutInSeconds),
+                    TimeSpan.FromSeconds(workflowType.LockExpirationInSeconds));
 
-                // Allow scope reentrance if the lock is already acquired.
-                if (!_scopedLockIds.Contains(workflowType.WorkflowTypeId))
+                if (!locked)
                 {
-                    // Try to acquire a lock on the workflow type id.
-                    (locker, locked) = await _distributedLock.TryAcquireLockAsync(
-                        "WFT_" + workflowType.WorkflowTypeId + "_LOCK",
-                        TimeSpan.FromSeconds(10),
-                        TimeSpan.FromSeconds(10));
-
-                    if (!locked)
-                    {
-                        continue;
-                    }
-
-                    _scopedLockIds.Add(workflowType.WorkflowTypeId);
+                    continue;
                 }
 
                 await using var acquiredLock = locker;
@@ -172,69 +172,67 @@ namespace OrchardCore.Workflows.Services
                 // Check if this is a workflow singleton and there's already an halted instance on any activity.
                 if (workflowType.IsSingleton && await _workflowStore.HasHaltedInstanceAsync(workflowType.WorkflowTypeId))
                 {
-                    goto Continue;
+                    continue;
                 }
 
                 // Check if the event is exclusive and there's already a correlated instance halted on this activity type.
                 if (isExclusive && (await _workflowStore.ListAsync(workflowType.WorkflowTypeId, name, correlationId, isAlwaysCorrelated))
                     .Any())
                 {
-                    goto Continue;
+                    continue;
                 }
 
                 await StartWorkflowAsync(workflowType, startActivity, input, correlationId);
-
-            Continue:
-                if (acquiredLock != null)
-                {
-                    _scopedLockIds.Remove(workflowType.WorkflowTypeId);
-                }
             }
 
             // Resume halted workflows.
-            foreach (var haltedWorkflow in haltedWorkflows)
+            foreach (var workflow in haltedWorkflows)
             {
-                (ILocker locker, var locked) = (null, false);
-
-                // Allow scope reentrance if the lock is already acquired.
-                if (!_scopedLockIds.Contains(haltedWorkflow.WorkflowId))
+                // Don't allow scope reentrance per workflow instance id.
+                if (!_workflowScopedIds.Add(workflow.WorkflowId))
                 {
-                    // Try to acquire a lock on the workflow instance id.
-                    (locker, locked) = await _distributedLock.TryAcquireLockAsync(
-                        "WFI_" + haltedWorkflow.WorkflowId + "_LOCK",
-                        TimeSpan.FromSeconds(10),
-                        TimeSpan.FromSeconds(10));
+                    continue;
+                }
 
-                    if (!locked)
-                    {
-                        continue;
-                    }
+                // If not both locking times are provided.
+                if (workflow.LockTimeoutInSeconds <= 0 || workflow.LockExpirationInSeconds <= 0)
+                {
+                    // Resume the workflow instance without any locking.
+                    await ResumeWorkflowAsync(workflow, name, input);
+                    continue;
+                }
 
-                    _scopedLockIds.Add(haltedWorkflow.WorkflowId);
+                // Try to acquire a lock on the workflow instance id.
+                (var locker, var locked) = await _distributedLock.TryAcquireLockAsync(
+                    "WFI_" + workflow.WorkflowId + "_LOCK",
+                    TimeSpan.FromSeconds(workflow.LockTimeoutInSeconds),
+                    TimeSpan.FromSeconds(workflow.LockExpirationInSeconds));
+
+                if (!locked)
+                {
+                    continue;
                 }
 
                 await using var acquiredLock = locker;
 
                 // Check if the workflow still exists and is still correlated.
-                var workflow = await _workflowStore.GetAsync(haltedWorkflow.Id);
-                if (workflow == null || (!isAlwaysCorrelated && workflow.CorrelationId != (correlationId ?? "")))
+                var haltedWorkflow = await _workflowStore.GetAsync(workflow.Id);
+                if (haltedWorkflow == null || (!isAlwaysCorrelated && haltedWorkflow.CorrelationId != (correlationId ?? "")))
                 {
-                    goto Continue;
+                    continue;
                 }
 
-                var blockingActivities = workflow.BlockingActivities.Where(x => x.Name == name).ToArray();
+                await ResumeWorkflowAsync(haltedWorkflow, name, input);
+            }
+        }
 
-                foreach (var blockingActivity in blockingActivities)
-                {
-                    await ResumeWorkflowAsync(workflow, blockingActivity, input);
-                }
+        private async Task ResumeWorkflowAsync(Workflow workflow, string name, IDictionary<string, object> input = null)
+        {
+            var blockingActivities = workflow.BlockingActivities.Where(x => x.Name == name).ToArray();
 
-
-            Continue:
-                if (locker != null)
-                {
-                    _scopedLockIds.Remove(haltedWorkflow.WorkflowId);
-                }
+            foreach (var blockingActivity in blockingActivities)
+            {
+                await ResumeWorkflowAsync(workflow, blockingActivity, input);
             }
         }
 
