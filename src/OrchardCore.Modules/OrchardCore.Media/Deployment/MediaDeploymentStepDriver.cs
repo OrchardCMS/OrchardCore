@@ -63,30 +63,22 @@ namespace OrchardCore.Media.Deployment
 
         private async Task<IList<MediaStoreEntryViewModel>> GetMediaStoreEntries(string path = null, MediaStoreEntryViewModel parent = null)
         {
-            var fileStoreEntries = new List<IFileStoreEntry>();
-            
-            await foreach(var fileStoreEntry in _mediaFileStore.GetDirectoryContentAsync(path))
-            {
-                fileStoreEntries.Add(fileStoreEntry);
-            }
-
-            var mediaStoreEntries = new List<MediaStoreEntryViewModel>(fileStoreEntries.Count);
-
-            foreach (var fileStoreEntry in fileStoreEntries)
-            {
-                var mediaStoreEntry = new MediaStoreEntryViewModel
+            var mediaStoreEntries = await _mediaFileStore.GetDirectoryContentAsync(path)
+                .SelectAwait(async e => 
                 {
-                    Name = fileStoreEntry.Name,
-                    Path = fileStoreEntry.Path,
-                    Parent = parent
-                };
+                    var mediaStoreEntry = new MediaStoreEntryViewModel
+                    {
+                        Name = e.Name,
+                        Path = e.Path,
+                        Parent = parent
+                    };
 
-                mediaStoreEntry.Entries = fileStoreEntry.IsDirectory
-                    ? await GetMediaStoreEntries(fileStoreEntry.Path, mediaStoreEntry)
-                    : Array.Empty<MediaStoreEntryViewModel>();
+                    mediaStoreEntry.Entries = e.IsDirectory
+                        ? await GetMediaStoreEntries(e.Path, mediaStoreEntry)
+                        : Array.Empty<MediaStoreEntryViewModel>();   
 
-                mediaStoreEntries.Add(mediaStoreEntry);
-            }
+                    return mediaStoreEntry;     
+                }).ToListAsync();
 
             return mediaStoreEntries;
         }

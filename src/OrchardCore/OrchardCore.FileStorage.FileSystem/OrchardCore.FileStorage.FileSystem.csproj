@@ -12,4 +12,8 @@
     <ProjectReference Include="..\OrchardCore.FileStorage.Abstractions\OrchardCore.FileStorage.Abstractions.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="System.Linq.Async" />
+  </ItemGroup>
+
 </Project>

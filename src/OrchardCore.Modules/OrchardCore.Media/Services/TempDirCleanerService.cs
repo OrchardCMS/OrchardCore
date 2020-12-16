@@ -37,11 +37,9 @@ namespace OrchardCore.Media.Services
                         return;
                     }
 
-                    // var contents = await _fileStore.GetDirectoryContentAsync(tempDir);
-                    // var contents = new List<I
                     await foreach(var c in _fileStore.GetDirectoryContentAsync(tempDir))
                     {
-                     var result = c.IsDirectory ?
+                        var result = c.IsDirectory ?
                             await _fileStore.TryDeleteDirectoryAsync(c.Path)
                             : await _fileStore.TryDeleteFileAsync(c.Path);
 
@@ -50,18 +48,6 @@ namespace OrchardCore.Media.Services
                             _logger.LogWarning("Temporary entry {Path} could not be deleted.", c.Path);
                         }
                     }
-
-                    // foreach (var c in contents)
-                    // {
-                    //     var result = c.IsDirectory ?
-                    //         await _fileStore.TryDeleteDirectoryAsync(c.Path)
-                    //         : await _fileStore.TryDeleteFileAsync(c.Path);
-
-                    //     if (!result)
-                    //     {
-                    //         _logger.LogWarning("Temporary entry {Path} could not be deleted.", c.Path);
-                    //     }
-                    // }
                 }
                 catch (Exception e)
                 {

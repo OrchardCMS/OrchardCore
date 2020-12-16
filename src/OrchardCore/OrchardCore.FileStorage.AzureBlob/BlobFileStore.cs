@@ -90,6 +90,11 @@ namespace OrchardCore.FileStorage.AzureBlob
             return null;
         }
 
+        // public async IEnumerable<IFileStoreEntry> GetDirectoryContentAsync(string path = null, bool includeSubDirectories = false)
+        // {
+        //     return await GetDirectoryContentAsync(path, includeSubDirectories).ToListAsync();
+            
+        // }
         public IAsyncEnumerable<IFileStoreEntry> GetDirectoryContentAsync(string path = null, bool includeSubDirectories = false)
         {
             if (includeSubDirectories)
@@ -104,12 +109,11 @@ namespace OrchardCore.FileStorage.AzureBlob
 
         private async IAsyncEnumerable<IFileStoreEntry> GetDirectoryContentByHierarchyAsync(string path = null)
         {
-            // var results = new List<IFileStoreEntry>();
-
             var prefix = this.Combine(_basePrefix, path);
             prefix = NormalizePrefix(prefix);
 
             var page = _blobContainer.GetBlobsByHierarchyAsync(BlobTraits.Metadata, BlobStates.None, "/", prefix);
+
             await foreach (var blob in page)
             {
                 if (blob.IsPrefix)
@@ -122,7 +126,6 @@ namespace OrchardCore.FileStorage.AzureBlob
 
                     folderPath = folderPath.Trim('/');
                     yield return new BlobDirectory(folderPath, _clock.UtcNow);
-                    // results.Add(new BlobDirectory(folderPath, _clock.UtcNow));
                 }
                 else
                 {
@@ -132,20 +135,13 @@ namespace OrchardCore.FileStorage.AzureBlob
                     {
                         var itemPath = this.Combine(path?.Trim('/'), itemName);
                         yield return new BlobFile(itemPath, blob.Blob.Properties.ContentLength, blob.Blob.Properties.LastModified);
-                        // results.Add(new BlobFile(itemPath, blob.Blob.Properties.ContentLength, blob.Blob.Properties.LastModified));
                     }
                 }
             }
-
-            // return results
-            //         .OrderByDescending(x => x.IsDirectory)
-            //         .ToArray();
         }
 
         private async IAsyncEnumerable<IFileStoreEntry> GetDirectoryContentFlatAsync(string path = null)
         {
-            // var results = new List<IFileStoreEntry>();
-
             // Folders are considered case sensitive in blob storage.
             var directories = new HashSet<string>();
 
@@ -171,8 +167,6 @@ namespace OrchardCore.FileStorage.AzureBlob
                 {
                     directories.Add(directory);
                     yield return new BlobDirectory(directory, _clock.UtcNow);
-
-                    // results.Add(new BlobDirectory(directory, _clock.UtcNow));
                 }
 
                 // Ignore directory marker files.
@@ -183,15 +177,9 @@ namespace OrchardCore.FileStorage.AzureBlob
                         name = name.Substring(_basePrefix.Length - 1);
                     }
                     yield return new BlobFile(name.Trim('/'), blob.Properties.ContentLength, blob.Properties.LastModified);
-                    // results.Add(new BlobFile(name.Trim('/'), blob.Properties.ContentLength, blob.Properties.LastModified));
                 }
             }
-
-            // return results
-            //         .OrderByDescending(x => x.IsDirectory)
-            //         .ToArray();
         }
-
 
         public async Task<bool> TryCreateDirectoryAsync(string path)
         {

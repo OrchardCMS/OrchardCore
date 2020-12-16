@@ -44,16 +44,14 @@ namespace OrchardCore.FileStorage.FileSystem
             return Task.FromResult<IFileStoreEntry>(null);
         }
 
-        public async IAsyncEnumerable<IFileStoreEntry> GetDirectoryContentAsync(string path = null, bool includeSubDirectories = false)
+        public IAsyncEnumerable<IFileStoreEntry> GetDirectoryContentAsync(string path = null, bool includeSubDirectories = false)
         {
             var physicalPath = GetPhysicalPath(path);
             var results = new List<IFileStoreEntry>();
 
             if (!Directory.Exists(physicalPath))
             {
-                // return results.AsEnumerable();
-                yield break;
-                // return Task.FromResult((IEnumerable<IFileStoreEntry>)results);
+                return results.ToAsyncEnumerable();
             }
 
             // Add directories.
@@ -80,14 +78,7 @@ namespace OrchardCore.FileStorage.FileSystem
                         return new FileSystemStoreEntry(filePath, fileSystemInfo);
                     }));
 
-            await Task.Delay(1);
-
-            foreach(var result in results)
-            {
-                yield return result;
-            }
-
-            // return Task.FromResult((IEnumerable<IFileStoreEntry>)results);
+            return results.ToAsyncEnumerable();
         }
 
         public Task<bool> TryCreateDirectoryAsync(string path)
