@@ -154,7 +154,15 @@
                             }
                             <a asp-action="Reload" asp-route-id="@entry.Name" class="btn text-secondary btn-sm" itemprop="UnsafeUrl" data-toggle="tooltip" title="@T["Reload"]"><i class="fa fa-redo"></i></a>
                         </div>
-                        <a href="@GetEncodedUrl(entry, originalPathBase)">@entry.Name</a>
+                        <a href="@GetEncodedUrl(entry, originalPathBase)">@entry.Name</a> 
+                        @if (!string.IsNullOrEmpty(entry.ShellSettings["DatabaseProvider"]))
+                        {                       
+                        <span class="badge badge-light font-weight-normal"><i class="fa fa-database text-info"></i> @entry.ShellSettings["DatabaseProvider"]</span>
+                        }
+                        @if (!string.IsNullOrEmpty(entry.ShellSettings["DatabaseProvider"]))
+                        {                       
+                        <span class="badge badge-light font-weight-normal"><i class="fa fa-image text-info"></i> @entry.ShellSettings["RecipeName"]</span>
+                        }
                         <a href="@FullRequestPath&Options.Filter=@entry.ShellSettings.State">
                         @switch (entry.ShellSettings.State)
                         {
@@ -176,7 +184,7 @@
                         }</a>
                         @if (!string.IsNullOrEmpty(entry.ShellSettings.RequestUrlHost))
                         {
-                            <p><code data-toggle="tooltip" title="@T["Url host"]"><i class="fa fa-globe"></i> @entry.ShellSettings.RequestUrlHost</code></p>
+                            <p><code data-toggle="tooltip" title="@T["Url host"]">@entry.ShellSettings.RequestUrlHost</code></p>
                         }
                         @if (!string.IsNullOrEmpty(entry.Description))
                         {
