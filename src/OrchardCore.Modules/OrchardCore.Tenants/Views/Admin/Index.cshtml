@@ -135,11 +135,11 @@
                     </div>
                     <div class="properties">
                         <div class="related">
+                            <a asp-action="Edit" asp-route-id="@entry.Name" class="btn text-primary btn-sm" data-toggle="tooltip" title="@T["Edit"]"><i class="fa fa-edit"></i></a>
                             @if (entry.ShellSettings.State == TenantState.Running)
                             {
                             <a class="btn text-info btn-sm" href="@GetDisplayUrl(entry, originalPathBase)" target="_blank" data-toggle="tooltip" title="@GetDisplayUrl(entry, originalPathBase)"><i class="fa fa-external-link"></i></a>
                             }
-                            <a asp-action="Edit" asp-route-id="@entry.Name" class="btn text-primary btn-sm" data-toggle="tooltip" title="@T["Edit"]"><i class="fa fa-edit"></i></a>
                             @if (!entry.IsDefaultTenant && entry.ShellSettings.State == TenantState.Running)
                             {
                                 <a asp-action="Disable" asp-route-id="@entry.Name" class="btn text-danger btn-sm" itemprop="UnsafeUrl" data-toggle="tooltip" title="@T["Disable"]"><i class="fa fa-toggle-off"></i></a>
