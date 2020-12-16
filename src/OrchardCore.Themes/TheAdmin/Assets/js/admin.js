@@ -197,5 +197,4 @@ function isNumber(str) {
     return str.length === 1 && str.match(/[0-9]/i);
 }
 
-$('[data-toggle="collapse"]').collapse();
 $('[data-toggle="tooltip"]').tooltip();
