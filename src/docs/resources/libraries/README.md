@@ -35,7 +35,7 @@ The below table lists the different Client side libraries:
 | [GraphiQL](https://github.com/graphql/graphiql) | GraphQL editor. | 1.2 | [MIT](https://github.com/graphql/graphiql/blob/main/LICENSE) |
 | [Gulp](https://github.com/gulpjs/gulp) | A toolkit to automate & enhance your workflow. | 4.0.2 | [MIT](https://github.com/gulpjs/gulp/blob/master/LICENSE) |
 | [Gulp](https://github.com/gulpjs/gulp-cli) | Command Line Interface for gulp. | 2.3.0 | [MIT](https://github.com/gulpjs/gulp-cli/blob/master/LICENSE) |
-| [jsPlumb](https://github.com/jsplumb/jsplumb) | Visual connectivity for webapps. | 2.15.4 | [MIT and GPLv2](https://github.com/jsplumb/jsplumb/blob/master/jsPlumb-LICENSE.txt) |
+| [jsPlumb](https://github.com/jsplumb/jsplumb) | Visual connectivity for webapps. | 2.15.5 | [MIT and GPLv2](https://github.com/jsplumb/jsplumb/blob/master/jsPlumb-LICENSE.txt) |
 | [TypeScript](https://github.com/microsoft/TypeScript) | Superset of JavaScript that compiles to clean JavaScript output. | 4.1.3 | [Apache-2.0 License](https://github.com/microsoft/TypeScript/blob/master/LICENSE.txtE) |
 | [React](https://github.com/facebook/react) | JavaScript library for building user interface. | 17.0 | [MIT](https://github.com/facebook/react/blob/master/LICENSE) |
 | [Vue](https://github.com/vuejs/vue) | JavaScript framework for building UI on the web. | 2.6.11.0 | [MIT](https://github.com/vuejs/vue/blob/dev/LICENSE) |
