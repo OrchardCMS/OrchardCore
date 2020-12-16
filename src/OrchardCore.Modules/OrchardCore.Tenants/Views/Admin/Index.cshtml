@@ -82,17 +82,7 @@
     <div class="card mb-3 position-sticky action-bar">
         <div class="card-body bg-primary p-3">
             <div class="form-group mb-n1">
-                 <div class="input-group input-group-sm w-lg-50 d-inline-flex has-filter">                    
-                    <div class="input-group-prepend">
-                        <button class="btn btn-sm dropdown-toggle" style="border:1px solid lightgrey" type="button" data-toggle="dropdown" id="filter-dropdown" aria-haspopup="true" aria-expanded="false">
-                            <i class="fa fa-filter" title="@T["Filters"]"></i>
-                        </button>
-                        <div class="dropdown-menu @if(CultureInfo.CurrentUICulture.IsRightToLeft()){<text>dropdown-menu-right</text>}" aria-labelledby="filter-dropdown">
-                            <a class="dropdown-item" href="?Options.Filter=Running">@T["Only running tenants"]</a>
-                            <a class="dropdown-item" href="?Options.Filter=Disabled">@T["Only disabled tenants"]</a>
-                            <a class="dropdown-item" href="?Options.Filter=Uninitialized">@T["Only uninitialized tenants"]</a>
-                        </div>
-                    </div>                    
+                 <div class="input-group input-group-sm w-lg-50 d-inline-flex has-search">
                     <i class="fa fa-search form-control-feedback"></i>
                     <input id="search-box" asp-for="Options.Search" class="form-control" placeholder="@T["Search"]" type="search" autofocus />
                 </div>
@@ -164,6 +154,7 @@
                             }
                             <a asp-action="Reload" asp-route-id="@entry.Name" class="btn text-secondary btn-sm" itemprop="UnsafeUrl" data-toggle="tooltip" title="@T["Reload"]"><i class="fa fa-redo"></i></a>
                         </div>
+                        <a href="@FullRequestPath&Options.Filter=@entry.ShellSettings.State">
                         @switch (entry.ShellSettings.State)
                         {
                             case TenantState.Uninitialized:
@@ -181,8 +172,12 @@
                             case TenantState.Invalid:
                                 <span data-toggle="tooltip" title="@T["Invalid"]"><i class="fa fa-circle text-warning"></i></span>
                                 break;
+                        }</a>
+                        <a href="@GetEncodedUrl(entry, originalPathBase)">@entry.Name</a>
+                        @if (!string.IsNullOrEmpty(entry.ShellSettings.RequestUrlHost))
+                        {
+                            <p><code data-toggle="tooltip" title="@T["Url host"]"><i class="fa fa-globe"></i> @entry.ShellSettings.RequestUrlHost</code></p>
                         }
-                        <a href="@GetEncodedUrl(entry, originalPathBase)" data-toggle="tooltip" title="@GetEncodedUrl(entry, originalPathBase)">@entry.Name</a>
                         @if (!string.IsNullOrEmpty(entry.Description))
                         {
                             <p class="mb-0"><small class="text-muted">@entry.Description</small></p>
