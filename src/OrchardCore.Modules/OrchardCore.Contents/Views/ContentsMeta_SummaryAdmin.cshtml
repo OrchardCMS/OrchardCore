@@ -6,8 +6,10 @@
 
 @if (contentItem.ModifiedUtc.HasValue)
 {
-    <small class="text-muted">
-        <i class="fa fa-calendar" title="@T["Last modified"]"></i> @await DisplayAsync(await New.Timespan(Utc: contentItem.ModifiedUtc))
-        <i class="fa fa-user"></i> @contentItem.Author
+    <small class="badge badge-light font-weight-normal" data-toggle="tooltip" title="@T["Last modified date"]">
+        <i class="fa fa-calendar text-secondary"></i> @await DisplayAsync(await New.Timespan(Utc: contentItem.ModifiedUtc))
+    </small>
+    <small class="badge badge-light font-weight-normal" data-toggle="tooltip" title="@T["Last modified by"]">
+        <i class="fa fa-user text-secondary"></i> @contentItem.Author
     </small>
 }

@@ -25,7 +25,7 @@
         {
             @contentItem
         }
-        - <small class="text-muted"><a href="@(FullRequestPath)&Options.SelectedContentType=@contentItem.ContentType" data-toggle="tooltip" title="@T["Filter"]">@contentItem.ContentType</a></small>
+        - <small class="badge badge-light font-weight-normal"><i class="far fa-file-alt text-secondary"></i> <a href="@(FullRequestPath)&Options.SelectedContentType=@contentItem.ContentType" data-toggle="tooltip" title="@T["Content type"]">@contentItem.ContentType</a></small>
         @if (Model.Header != null)
         {
             <div class="header">@await DisplayAsync(Model.Header)</div>
