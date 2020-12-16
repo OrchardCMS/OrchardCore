@@ -78,25 +78,23 @@
     <input type="submit" name="submit.Filter" id="submitFilter" class="d-none" />
     <input type="submit" name="submit.BulkAction" class="d-none" />
     <input name="BulkAction" type="hidden" />
-
+    
     <div class="card mb-3 position-sticky action-bar">
         <div class="card-body bg-primary p-3">
             <div class="form-group mb-n1">
-                <div class="input-group input-group-sm w-lg-50 d-inline-flex">
+                <div class="input-group input-group-sm w-lg-50 d-inline-flex has-filter">                    
                     <div class="input-group-prepend">
-                        <button class="btn btn-secondary btn-sm dropdown-toggle" style="border:1px solid lightgrey" type="button" data-toggle="dropdown" id="filter-dropdown" aria-haspopup="true" aria-expanded="false">
-                            @T["Filters"]
+                        <button class="btn btn-sm dropdown-toggle" style="border:1px solid lightgrey" type="button" data-toggle="dropdown" id="filter-dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fa fa-filter" title="@T["Filters"]"></i>
                         </button>
-                        <div class="dropdown-menu" aria-labelledby="filter-dropdown">
+                        <div class="dropdown-menu @if(CultureInfo.CurrentUICulture.IsRightToLeft()){<text>dropdown-menu-right</text>}" aria-labelledby="filter-dropdown">
                             <a class="dropdown-item" href="?Options.Filter=Running">@T["Only running tenants"]</a>
                             <a class="dropdown-item" href="?Options.Filter=Disabled">@T["Only disabled tenants"]</a>
                             <a class="dropdown-item" href="?Options.Filter=Uninitialized">@T["Only uninitialized tenants"]</a>
                         </div>
                     </div>
+                    <i class="fa fa-search form-control-feedback"></i>
                     <input id="search-box" asp-for="Options.Search" class="form-control" placeholder="@T["Search"]" type="search" autofocus />
-                    <div class="input-group-append">
-                        <button type="submit" class="btn btn-sm btn-secondary">@T["Search"]</button>
-                    </div>
                 </div>
                 <div class="dropdown float-right order-md-1">
                     <a asp-route-action="Create" class="btn btn-sm btn-secondary float-right create" role="button">@T["Add Tenant"]</a>
@@ -162,32 +160,30 @@
                             }
                             <a asp-action="Reload" asp-route-id="@entry.Name" class="btn btn-secondary btn-sm" itemprop="UnsafeUrl">@T["Reload"]</a>
                         </div>
+                        @switch (entry.ShellSettings.State)
+                        {
+                            case TenantState.Uninitialized:
+                                <small><i class="fa fa-xs fa-circle text-secondary" title="@T["Uninitialized"]"></i></small>
+                                break;
+                            case TenantState.Initializing:
+                                <small><i class="fa fa-xs fa-circle text-info" title="@T["Initializing"]"></i></small>
+                                break;
+                            case TenantState.Running:
+                                <small><i class="fa fa-xs fa-circle text-success" title="@T["Running"]"></i></small>
+                                break;
+                            case TenantState.Disabled:
+                                <small><i class="fa fa-xs fa-circle text-danger" title="@T["Disabled"]"></i></small>
+                                break;
+                            case TenantState.Invalid:
+                                <small><i class="fa fa-xs fa-circle text-warning" title="@T["Invalid"]"></i></small>
+                                break;
+                        }
                         <a href="@GetEncodedUrl(entry, originalPathBase)" target="_blank">@entry.Name</a>
                         <code class="hint">@GetDisplayUrl(entry, originalPathBase)</code>
                         @if (!string.IsNullOrEmpty(entry.Description))
                         {
                             <p class="mb-0"><small class="text-muted">@entry.Description</small></p>
                         }
-                        <div class="metadata">
-                            @switch (entry.ShellSettings.State)
-                            {
-                                case TenantState.Disabled:
-                                    <span class="badge badge-danger">@T["Disabled"]</span>
-                                    break;
-                                case TenantState.Initializing:
-                                    <span class="badge badge-info">@T["Initializing"]</span>
-                                    break;
-                                case TenantState.Invalid:
-                                    <span class="badge badge-warning">@T["Invalid"]</span>
-                                    break;
-                                case TenantState.Running:
-                                    <span class="badge badge-success">@T["Running"]</span>
-                                    break;
-                                case TenantState.Uninitialized:
-                                    <span class="badge badge-secondary">@T["Uninitialized"]</span>
-                                    break;
-                            }
-                        </div>
                     </div>
                 </li>
             }
@@ -195,7 +191,7 @@
         else
         {
             <li class="list-group-item">
-                <div class="alert alert-info">
+                <div class="alert alert-info mb-0">
                     @T["<strong>Nothing here!</strong> Your search returned no results."]
                 </div>
             </li>

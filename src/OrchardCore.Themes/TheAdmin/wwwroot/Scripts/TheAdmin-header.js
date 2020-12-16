@@ -23,18 +23,23 @@ var observer = new MutationObserver(function (mutations) {
 
           isCompactExplicit = adminPreferences.isCompactExplicit;
 
-          if (adminPreferences.darkMode) {
-            html.setAttribute('data-theme', 'darkmode');
-          } else {
-            html.setAttribute('data-theme', 'default');
+          if (html.getAttribute('data-darkmode') === 'True') {
+            if (adminPreferences.darkMode) {
+              html.setAttribute('data-theme', 'darkmode');
+            } else {
+              html.setAttribute('data-theme', 'default');
+            }
           }
         } else {
-          body.classList.add('no-admin-preferences'); // Automatically sets darkmode based on OS preferences
+          body.classList.add('no-admin-preferences');
 
-          if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-            html.setAttribute('data-theme', 'darkmode');
-          } else {
-            html.setAttribute('data-theme', 'default');
+          if (html.getAttribute('data-darkmode') === 'True') {
+            // Automatically sets darkmode based on OS preferences
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+              html.setAttribute('data-theme', 'darkmode');
+            } else {
+              html.setAttribute('data-theme', 'default');
+            }
           }
         } // we're done: 
 

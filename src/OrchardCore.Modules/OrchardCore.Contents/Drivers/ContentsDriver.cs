@@ -17,6 +17,7 @@ namespace OrchardCore.Contents.Drivers
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthorizationService _authorizationService;
+
         public ContentsDriver(
             IContentDefinitionManager contentDefinitionManager,
             IHttpContextAccessor httpContextAccessor,
@@ -92,26 +93,15 @@ namespace OrchardCore.Contents.Drivers
             }
 
             results.Add(Dynamic("Content_PublishButton").Location("Actions:10")
-                .RenderWhen(async () =>
-                {
-                    if (await _authorizationService.AuthorizeAsync(context.User, CommonPermissions.PublishContent, contentItem))
-                    {
-                        return true;
-                    }
-
-                    return false;
-                })
-            );
+                .RenderWhen(() => _authorizationService.AuthorizeAsync(context.User, CommonPermissions.PublishContent, contentItem)));
 
             results.Add(Dynamic("Content_SaveDraftButton").Location("Actions:20")
                 .RenderWhen(async () =>
                 {
-                    if (contentTypeDefinition.GetSettings<ContentTypeSettings>().Draftable)
+                    if (contentTypeDefinition.GetSettings<ContentTypeSettings>().Draftable &&
+                        await _authorizationService.AuthorizeAsync(context.User, CommonPermissions.EditContent, contentItem))
                     {
-                        if (await _authorizationService.AuthorizeAsync(context.User, CommonPermissions.EditContent, contentItem))
-                        {
-                            return true;
-                        }
+                        return true;
                     }
 
                     return false;
