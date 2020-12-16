@@ -147,6 +147,10 @@
                     </div>
                     <div class="properties">
                         <div class="related">
+                            @if (entry.ShellSettings.State == TenantState.Running)
+                            {
+                            <a class="btn btn-sm text-info" href="@GetDisplayUrl(entry, originalPathBase)" target="_blank" data-toggle="tooltip" title="@GetDisplayUrl(entry, originalPathBase)"><i class="fa fa-external-link"></i></a>
+                            }
                             <a asp-action="Edit" asp-route-id="@entry.Name" class="btn text-primary btn-sm" data-toggle="tooltip" title="@T["Edit"]"><i class="fa fa-edit"></i></a>
                             @if (!entry.IsDefaultTenant && entry.ShellSettings.State == TenantState.Running)
                             {
@@ -158,7 +162,7 @@
                             }
                             @if (entry.ShellSettings.State == TenantState.Uninitialized)
                             {
-                                <a class="btn btn-info btn-sm" id="btn-setup-@entry.Name" href="@GetEncodedUrl(entry, originalPathBase)" data-toggle="tooltip" title="@T["Setup"]"><i class="fa fa-cog"></i></a>
+                                <a class="btn text-info btn-sm" id="btn-setup-@entry.Name" href="@GetEncodedUrl(entry, originalPathBase)" data-toggle="tooltip" title="@T["Setup"]"><i class="fa fa-cog"></i></a>
                             }
                             <a asp-action="Reload" asp-route-id="@entry.Name" class="btn text-secondary btn-sm" itemprop="UnsafeUrl" data-toggle="tooltip" title="@T["Reload"]"><i class="fa fa-redo"></i></a>
                         </div>
@@ -180,8 +184,7 @@
                                 <span data-toggle="tooltip" title="@T["Invalid"]"><i class="fa fa-circle text-warning"></i></span>
                                 break;
                         }
-                        <a href="@GetEncodedUrl(entry, originalPathBase)" target="_blank">@entry.Name</a>
-                        <code class="hint">@GetDisplayUrl(entry, originalPathBase)</code>
+                        <a href="@GetEncodedUrl(entry, originalPathBase)" data-toggle="tooltip" title="@GetEncodedUrl(entry, originalPathBase)">@entry.Name</a>
                         @if (!string.IsNullOrEmpty(entry.Description))
                         {
                             <p class="mb-0"><small class="text-muted">@entry.Description</small></p>
