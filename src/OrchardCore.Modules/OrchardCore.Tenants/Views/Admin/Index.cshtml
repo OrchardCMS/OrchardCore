@@ -184,7 +184,7 @@
                                 }
                                 @if (!entry.IsDefaultTenant && entry.ShellSettings.State == TenantState.Running)
                                 {
-                                    <a asp-action="Disable" asp-route-id="@entry.Name" class="btn text-danger btn-sm" itemprop="UnsafeUrl" data-toggle="tooltip" title="@T["Disable"]"><i class="fa fa-toggle-off"></i></a>
+                                    <a asp-action="Disable" asp-route-id="@entry.Name" class="btn text-danger btn-sm" itemprop="RemoveUrl UnsafeUrl" data-title="@T["Disable"]" data-message="@T["Are you sure you want to disable this tenant?"]" data-ok-text="@T["Ok"]" data-cancel-text="@T["Cancel"]" data-toggle="tooltip" title="@T["Disable"]"><i class="fa fa-toggle-off"></i></a>
                                 }
                                 @if (entry.ShellSettings.State == TenantState.Disabled)
                                 {
