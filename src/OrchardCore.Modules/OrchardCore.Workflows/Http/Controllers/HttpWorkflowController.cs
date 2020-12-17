@@ -239,7 +239,6 @@ namespace OrchardCore.Workflows.Http.Controllers
             if (!String.IsNullOrWhiteSpace(payload.WorkflowId))
             {
                 var workflow = await _workflowStore.GetAsync(payload.WorkflowId);
-
                 var signalActivities = workflow?.BlockingActivities.Where(x => x.Name == SignalEvent.EventName).ToList();
 
                 if (signalActivities == null)
