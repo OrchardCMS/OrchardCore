@@ -170,18 +170,6 @@ namespace OrchardCore.ResourceManagement
             return this;
         }
 
-        public ResourceDefinition SetDependencies(List<string> dependencies)
-        {
-            if (Dependencies == null)
-            {
-                Dependencies = new List<string>();
-            }
-
-            Dependencies.AddRange(dependencies);
-
-            return this;
-        }
-
         public ResourceDefinition SetInnerContent(string innerContent)
         {
             InnerContent = innerContent;
@@ -252,12 +240,7 @@ namespace OrchardCore.ResourceManagement
             switch (Type)
             {
                 case "script":
-                    tagBuilder = new TagBuilder("script")
-                    {
-                        Attributes = {
-                            { "type", "text/javascript" }
-                        }
-                    };
+                    tagBuilder = new TagBuilder("script");
                     filePathAttributeName = "src";
                     break;
                 case "stylesheet":
@@ -274,7 +257,8 @@ namespace OrchardCore.ResourceManagement
                     else
                     {
                         // Stylesheet resource
-                        tagBuilder = new TagBuilder("link") {
+                        tagBuilder = new TagBuilder("link")
+                        {
                             TagRenderMode = TagRenderMode.SelfClosing,
                             Attributes = {
                                 { "type", "text/css" },

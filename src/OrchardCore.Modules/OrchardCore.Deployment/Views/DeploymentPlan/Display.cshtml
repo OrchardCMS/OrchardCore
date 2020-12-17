@@ -3,28 +3,23 @@
 @using OrchardCore.Deployment.Services
 @using Microsoft.AspNetCore.Routing
 
-<h1>@RenderTitleSegments(T["Deployment Plan"])</h1>
+<zone Name="Title"><h1>@RenderTitleSegments(T["Deployment Plan"])</h1></zone>
 
-<nav class="admin-toolbar">
-    <ul class="navbar-nav mr-auto">
-        <li class="nav-item">
-            <div class="btn-group">
-                <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#modalTargets">
-                    @T["Execute"]
-                </button>
-            </div>
-        </li>
-    </ul>
-    <ul class="navbar-nav">
-        <li class="nav-item">
+<div class="card mb-3">
+    <nav class="card-body bg-primary p-3">
+        <div class="input-group input-group-sm w-lg-50 d-inline-flex">
+            <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#modalTargets">
+                @T["Execute"]
+            </button>
+        </div>
+        <div class="btn-group float-right">
             <!-- Button trigger modal -->
             <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modalSteps">
                 @T["Add Step"]
             </button>
-        </li>
-    </ul>
-</nav>
-
+        </div>
+    </nav>
+</div>
 <form asp-action="DeploymentPlan">
     @if (Model.Items.Any())
     {
@@ -41,25 +36,25 @@
     }
     else
     {
-        <div class="alert alert-info" role="alert">
+        <div class="alert alert-info mb-0" role="alert">
             @T["<strong>Nothing here!</strong> There are no steps on this plan for the moment."]
         </div>
     }
 </form>
 
 <!-- Modal -->
-<div class="modal fade" id="modalSteps" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div class="modal fade" id="modalSteps" tabindex="-1" role="dialog" aria-labelledby="available-steps-title" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">@T["Available Steps"]</h5>
+                <h5 class="modal-title" id="available-steps-title">@T["Available Steps"]</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
                 <div class="form-group">
-                    <input class="form-control" id="search-box" type="search" placeholder="@T["Filter"]" aria-label="@T["Filter"]" autofocus>
+                    <input class="form-control" id="search-box" type="search" placeholder="@T["Filter"]" aria-label="@T["Filter"]" autofocus />
                 </div>
                 <div id="cards" class="row">
                     @foreach (var thumbnail in Model.Thumbnails.OrderBy(t => t.Key))
@@ -80,11 +75,11 @@
     </div>
 </div>
 
-<div class="modal fade" id="modalTargets" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div class="modal fade" id="modalTargets" tabindex="-1" role="dialog" aria-labelledby="available-targets-title" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">@T["Available Targets"]</h5>
+                <h5 class="modal-title" id="available-targets-title">@T["Available Targets"]</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -115,7 +110,7 @@
         </div>
     </div>
 </div>
-<script at="Foot" type="text/javascript">
+<script at="Foot">
     $(document).ready(function() {
       $('#modalSteps').on('shown.bs.modal', function() {
         $('#search-box').trigger('focus');

@@ -4,7 +4,7 @@ This module configures Orchard to support Microsoft Account and/or Microsoft Azu
 
 ## Microsoft Account
 
-Authenticates users with their Microsoft Account. 
+Authenticates users with their Microsoft Account.
 If the site allows to register new users, a local user is created and the Microsoft Account is linked.
 If a local user with the same email is found, then the external login is linked to that account, after authenticating.
 
@@ -39,20 +39,19 @@ Available settings are:
 - CallbackPath: The request path within the application's base path where the user-agent will be returned. The middleware will process this request when it arrives.
 If no value is provided, setup Azure AD app to use the default path /signin-oidc.
 
-#### Recipe Step
+### Recipe Step
 
 The Azure Active Directory can be set during recipes using the settings step. Here is a sample step:
 
 ```json
 {
-	"name": "azureADSettings",
-	"appId": "86eb5541-ba2b-4255-9344-54eb73cec375",
-	"tenantId": "4cc363b6-5254-4b8c-bc1b-e951a5fc85ac",
-	"displayName": "Orchard Core AD App",	
-	"callbackPath": "/signin-oidc"
-},
+"name": "azureADSettings",
+"appId": "86eb5541-ba2b-4255-9344-54eb73cec375",
+"tenantId": "4cc363b6-5254-4b8c-bc1b-e951a5fc85ac",
+"displayName": "Orchard Core AD App",
+"callbackPath": "/signin-oidc"
+}
 ```
-
 
 ## Users Registration
 

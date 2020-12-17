@@ -77,11 +77,11 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
                             // [PartType]__[FieldName], e.g. HtmlBodyPart-Description
                             ctx.Shape.Metadata.Alternates.Add($"{partType}{displayType}__{fieldName}");
 
-                            // [ContentType]__[PartName]__[FieldName], e.g. Blog-HtmlBodyPart-Description, LandingPage-Services-Description
-                            ctx.Shape.Metadata.Alternates.Add($"{contentType}{displayType}__{partType}__{fieldName}");
-
                             // [ContentType]__[FieldType], e.g. Blog-TextField, LandingPage-TextField
                             ctx.Shape.Metadata.Alternates.Add($"{contentType}{displayType}__{fieldType}");
+
+                            // [ContentType]__[PartName]__[FieldName], e.g. Blog-HtmlBodyPart-Description, LandingPage-Services-Description
+                            ctx.Shape.Metadata.Alternates.Add($"{contentType}{displayType}__{partType}__{fieldName}");
                         }
                     }
                     else
@@ -116,11 +116,11 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
                             // [PartType]__[FieldName]__[ShapeType], e.g. HtmlBodyPart-Description-TextFieldSummary
                             ctx.Shape.Metadata.Alternates.Add($"{partType}{displayType}__{fieldName}__{shapeType}");
 
-                            // [ContentType]__[PartName]__[FieldName]__[ShapeType], e.g. Blog-HtmlBodyPart-Description-TextFieldSummary, LandingPage-Services-Description-TextFieldSummary
-                            ctx.Shape.Metadata.Alternates.Add($"{contentType}{displayType}__{partName}__{fieldName}__{shapeType}");
-
                             // [ContentType]__[FieldType]__[ShapeType], e.g. Blog-TextField-TextFieldSummary, LandingPage-TextField-TextFieldSummary
                             ctx.Shape.Metadata.Alternates.Add($"{contentType}{displayType}__{fieldType}__{shapeType}");
+
+                            // [ContentType]__[PartName]__[FieldName]__[ShapeType], e.g. Blog-HtmlBodyPart-Description-TextFieldSummary, LandingPage-Services-Description-TextFieldSummary
+                            ctx.Shape.Metadata.Alternates.Add($"{contentType}{displayType}__{partName}__{fieldName}__{shapeType}");
                         }
                     }
                 });
@@ -202,7 +202,13 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
 
             var updateFieldEditorContext = new UpdateFieldEditorContext(contentPart, typePartDefinition, partFieldDefinition, context);
 
+            _typePartDefinition = typePartDefinition;
+            _partFieldDefinition = partFieldDefinition;
+
             var result = await UpdateAsync(field, context.Updater, updateFieldEditorContext);
+
+            _typePartDefinition = null;
+            _partFieldDefinition = null;
 
             if (result == null)
             {

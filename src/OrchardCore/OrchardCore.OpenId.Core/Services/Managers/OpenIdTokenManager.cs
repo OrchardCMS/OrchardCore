@@ -14,10 +14,10 @@ namespace OrchardCore.OpenId.Services.Managers
     {
         public OpenIdTokenManager(
             IOpenIddictTokenCache<TToken> cache,
-            IOpenIddictTokenStoreResolver resolver,
             ILogger<OpenIddictTokenManager<TToken>> logger,
-            IOptionsMonitor<OpenIddictCoreOptions> options)
-            : base(cache, resolver, logger, options)
+            IOptionsMonitor<OpenIddictCoreOptions> options,
+            IOpenIddictTokenStoreResolver resolver)
+            : base(cache, logger, options, resolver)
         {
         }
 

@@ -8,19 +8,19 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
+using OrchardCore.Data.Documents;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Roles.ViewModels;
 using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Security.Services;
-using YesSql;
 
 namespace OrchardCore.Roles.Controllers
 {
     public class AdminController : Controller
     {
-        private readonly ISession _session;
+        private readonly IDocumentStore _documentStore;
         private readonly IAuthorizationService _authorizationService;
         private readonly IStringLocalizer S;
         private readonly RoleManager<IRole> _roleManager;
@@ -33,7 +33,7 @@ namespace OrchardCore.Roles.Controllers
         public AdminController(
             IAuthorizationService authorizationService,
             ITypeFeatureProvider typeFeatureProvider,
-            ISession session,
+            IDocumentStore documentStore,
             IStringLocalizer<AdminController> stringLocalizer,
             IHtmlLocalizer<AdminController> htmlLocalizer,
             RoleManager<IRole> roleManager,
@@ -50,7 +50,7 @@ namespace OrchardCore.Roles.Controllers
             _roleManager = roleManager;
             S = stringLocalizer;
             _authorizationService = authorizationService;
-            _session = session;
+            _documentStore = documentStore;
         }
 
         public async Task<ActionResult> Index()
@@ -106,11 +106,11 @@ namespace OrchardCore.Roles.Controllers
                 var result = await _roleManager.CreateAsync(role);
                 if (result.Succeeded)
                 {
-                    _notifier.Success(H["Role created successfully"]);
+                    _notifier.Success(H["Role created successfully."]);
                     return RedirectToAction(nameof(Index));
                 }
 
-                _session.Cancel();
+                _documentStore.Cancel();
 
                 foreach (var error in result.Errors)
                 {
@@ -141,13 +141,13 @@ namespace OrchardCore.Roles.Controllers
 
             if (result.Succeeded)
             {
-                _notifier.Success(H["Role deleted successfully"]);
+                _notifier.Success(H["Role deleted successfully."]);
             }
             else
             {
-                _session.Cancel();
+                _documentStore.Cancel();
 
-                _notifier.Error(H["Could not delete this role"]);
+                _notifier.Error(H["Could not delete this role."]);
 
                 foreach (var error in result.Errors)
                 {

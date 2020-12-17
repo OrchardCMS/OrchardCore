@@ -121,7 +121,7 @@ namespace OrchardCore.Queries.Sql
             //Expression
             expressionList.Rule = MakePlusRule(expressionList, comma, expression);
             expression.Rule = term | unExpr | binExpr | betweenExpr | inExpr | parameter;
-            term.Rule = Id | boolean | string_literal | number | funCall | tuple | parSelectStatement ;
+            term.Rule = Id | boolean | string_literal | number | funCall | tuple | parSelectStatement;
             boolean.Rule = TRUE | FALSE;
             tuple.Rule = "(" + expressionList + ")";
             parSelectStatement.Rule = "(" + selectStatement + ")";
@@ -131,7 +131,7 @@ namespace OrchardCore.Queries.Sql
             binOp.Rule = ToTerm("+") | "-" | "*" | "/" | "%" //arithmetic
                        | "&" | "|" | "^"                     //bit
                        | "=" | ">" | "<" | ">=" | "<=" | "<>" | "!=" | "!<" | "!>"
-                       | "AND" | "OR" | "LIKE" | "NOT LIKE" ;
+                       | "AND" | "OR" | "LIKE" | "NOT LIKE";
             betweenExpr.Rule = expression + notOpt + "BETWEEN" + expression + "AND" + expression;
             inExpr.Rule = expression + notOpt + "IN" + "(" + functionArguments + ")";
             notOpt.Rule = Empty | NOT;

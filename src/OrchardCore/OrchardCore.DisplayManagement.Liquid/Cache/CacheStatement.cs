@@ -5,10 +5,9 @@ using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Ast;
-using Microsoft.AspNetCore.Html;
-using Microsoft.Extensions.Options;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement;
 using OrchardCore.Environment.Cache;
 using OrchardCore.Liquid.Ast;
@@ -94,10 +93,12 @@ namespace OrchardCore.DynamicCache.Liquid
 
             if (cacheOptions.DebugMode)
             {
+                // No need to optimize this code as it will be used for debugging purpose.
                 var debugContent = new StringWriter();
-                debugContent.WriteLine($"<!-- CACHE BLOCK: {cacheContext.CacheId} ({Guid.NewGuid()})\r\n");
-                debugContent.WriteLine($"         VARY BY: {String.Join(", ", cacheContext.Contexts)}\r\n");
-                debugContent.WriteLine($"    DEPENDENCIES: {String.Join(", ", cacheContext.Tags)}\r\n");
+                debugContent.WriteLine();
+                debugContent.WriteLine($"<!-- CACHE BLOCK: {cacheContext.CacheId} ({Guid.NewGuid()})");
+                debugContent.WriteLine($"         VARY BY: {String.Join(", ", cacheContext.Contexts)}");
+                debugContent.WriteLine($"    DEPENDENCIES: {String.Join(", ", cacheContext.Tags)}");
                 debugContent.WriteLine($"      EXPIRES ON: {cacheContext.ExpiresOn}");
                 debugContent.WriteLine($"   EXPIRES AFTER: {cacheContext.ExpiresAfter}");
                 debugContent.WriteLine($" EXPIRES SLIDING: {cacheContext.ExpiresSliding}");

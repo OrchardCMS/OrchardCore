@@ -2,6 +2,7 @@ using OrchardCore.ContentLocalization.Models;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.Data.Migration;
+using YesSql.Sql;
 
 namespace OrchardCore.ContentLocalization.Records
 {
@@ -20,29 +21,42 @@ namespace OrchardCore.ContentLocalization.Records
                 .Attachable()
                 .WithDescription("Provides a way to create localized version of content."));
 
-            SchemaBuilder.CreateMapIndexTable(nameof(LocalizedContentItemIndex), table => table
+            SchemaBuilder.CreateMapIndexTable<LocalizedContentItemIndex>(table => table
                 .Column<string>("LocalizationSet", col => col.WithLength(26))
                 .Column<string>("Culture", col => col.WithLength(16))
                 .Column<string>("ContentItemId", c => c.WithLength(26))
+                .Column<bool>("Published")
+                .Column<bool>("Latest")
             );
 
-            SchemaBuilder.AlterTable(nameof(LocalizedContentItemIndex), table => table
-                .CreateIndex("IDX_LocalizationPartIndex_LocalizationSet_Culture", new[] { "LocalizationSet", "Culture" })
+            SchemaBuilder.AlterIndexTable<LocalizedContentItemIndex>(table => table
+                .CreateIndex("IDX_LocalizationPartIndex_DocumentId", "DocumentId", "LocalizationSet", "Culture", "ContentItemId", "Published", "Latest")
             );
 
-            SchemaBuilder.AlterTable(nameof(LocalizedContentItemIndex), table => table
-                .CreateIndex("IDX_LocalizationPartIndex_ContentItemId", "ContentItemId")
-            );
-
-            return 1;
+            // Return 3 to shortcut other migrations on new content definition schemas.
+            return 3;
         }
 
         public int UpdateFrom1()
         {
-            SchemaBuilder.AlterTable(nameof(LocalizedContentItemIndex), table => table
+            SchemaBuilder.AlterIndexTable<LocalizedContentItemIndex>(table => table
                 .AddColumn<bool>(nameof(LocalizedContentItemIndex.Published)));
 
             return 2;
+        }
+
+        // This code can be removed in a later version.
+        public int UpdateFrom2()
+        {
+            SchemaBuilder.AlterIndexTable<LocalizedContentItemIndex>(table => table
+                .AddColumn<bool>(nameof(LocalizedContentItemIndex.Latest))
+            );
+
+            SchemaBuilder.AlterIndexTable<LocalizedContentItemIndex>(table => table
+                .CreateIndex("IDX_LocalizationPartIndex_DocumentId", "DocumentId", "LocalizationSet", "Culture", "ContentItemId", "Published", "Latest")
+            );
+
+            return 3;
         }
     }
 }

@@ -2,10 +2,6 @@
     display: flex;
 
     .selected-media-name {
-        display: flex;
-        justify-content: flex-end;
-        align-items: flex-end;
-        flex-grow: 1;
     }
 
     code {
@@ -28,5 +24,32 @@
             position: absolute;
             z-index: -1;
         }
+    }
+}
+
+@media (min-width: 992px) {
+    .media-anchor-modal {
+        .modal-lg {
+            max-width: 1200px;
+        }
+    }
+}
+
+.media-anchor-modal {
+    .img-modal {
+        max-height: 70vh;
+    }
+}
+
+.icon-media-anchor {
+    position: absolute;
+    line-height: 0px;
+    color: $white;
+    font-size: 1.875rem;
+
+    path
+    {
+        stroke:$black;
+        stroke-width: 10;
     }
 }

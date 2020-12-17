@@ -15,10 +15,10 @@ namespace OrchardCore.OpenId.Services.Managers
     {
         public OpenIdAuthorizationManager(
             IOpenIddictAuthorizationCache<TAuthorization> cache,
-            IOpenIddictAuthorizationStoreResolver resolver,
             ILogger<OpenIddictAuthorizationManager<TAuthorization>> logger,
-            IOptionsMonitor<OpenIddictCoreOptions> options)
-            : base(cache, resolver, logger, options)
+            IOptionsMonitor<OpenIddictCoreOptions> options,
+            IOpenIddictAuthorizationStoreResolver resolver)
+            : base(cache, logger, options, resolver)
         {
         }
 

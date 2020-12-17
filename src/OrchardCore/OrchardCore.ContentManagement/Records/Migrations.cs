@@ -2,6 +2,7 @@ using System;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.Data.Migration;
+using YesSql.Sql;
 
 namespace OrchardCore.ContentManagement.Records
 {
@@ -15,7 +16,7 @@ namespace OrchardCore.ContentManagement.Records
 
         public int Create()
         {
-            SchemaBuilder.CreateMapIndexTable(nameof(ContentItemIndex), table => table
+            SchemaBuilder.CreateMapIndexTable<ContentItemIndex>(table => table
                 .Column<string>("ContentItemId", c => c.WithLength(26))
                 .Column<string>("ContentItemVersionId", c => c.WithLength(26))
                 .Column<bool>("Latest")
@@ -29,15 +30,15 @@ namespace OrchardCore.ContentManagement.Records
                 .Column<string>("DisplayText", column => column.Nullable().WithLength(ContentItemIndex.MaxDisplayTextSize))
             );
 
-            SchemaBuilder.AlterTable(nameof(ContentItemIndex), table => table
+            SchemaBuilder.AlterIndexTable<ContentItemIndex>(table => table
                 .CreateIndex("IDX_ContentItemIndex_ContentItemId", "ContentItemId", "Latest", "Published", "CreatedUtc")
             );
 
-            SchemaBuilder.AlterTable(nameof(ContentItemIndex), table => table
+            SchemaBuilder.AlterIndexTable<ContentItemIndex>(table => table
                 .CreateIndex("IDX_ContentItemIndex_ContentItemVersionId", "ContentItemVersionId")
             );
 
-            SchemaBuilder.AlterTable(nameof(ContentItemIndex), table => table
+            SchemaBuilder.AlterIndexTable<ContentItemIndex>(table => table
                 .CreateIndex("IDX_ContentItemIndex_DisplayText", "DisplayText")
             );
 
@@ -46,11 +47,11 @@ namespace OrchardCore.ContentManagement.Records
 
         public int UpdateFrom1()
         {
-            SchemaBuilder.AlterTable(nameof(ContentItemIndex), table => table
+            SchemaBuilder.AlterIndexTable<ContentItemIndex>(table => table
                 .AddColumn<string>("ContentItemVersionId", c => c.WithLength(26))
             );
 
-            SchemaBuilder.AlterTable(nameof(ContentItemIndex), table => table
+            SchemaBuilder.AlterIndexTable<ContentItemIndex>(table => table
                 .CreateIndex("IDX_ContentItemIndex_ContentItemVersionId", "ContentItemVersionId")
             );
 
@@ -59,11 +60,11 @@ namespace OrchardCore.ContentManagement.Records
 
         public int UpdateFrom2()
         {
-            SchemaBuilder.AlterTable(nameof(ContentItemIndex), table => table
+            SchemaBuilder.AlterIndexTable<ContentItemIndex>(table => table
                 .AddColumn<string>("DisplayText", column => column.Nullable().WithLength(ContentItemIndex.MaxDisplayTextSize))
             );
 
-            SchemaBuilder.AlterTable(nameof(ContentItemIndex), table => table
+            SchemaBuilder.AlterIndexTable<ContentItemIndex>(table => table
                 .CreateIndex("IDX_ContentItemIndex_DisplayText", "DisplayText")
             );
 

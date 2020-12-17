@@ -25,6 +25,7 @@ namespace OrchardCore.OpenId.ViewModels
         public bool AllowClientCredentialsFlow { get; set; }
         public bool AllowAuthorizationCodeFlow { get; set; }
         public bool AllowRefreshTokenFlow { get; set; }
+        public bool AllowHybridFlow { get; set; }
         public bool AllowImplicitFlow { get; set; }
         public bool AllowLogoutEndpoint { get; set; }
 

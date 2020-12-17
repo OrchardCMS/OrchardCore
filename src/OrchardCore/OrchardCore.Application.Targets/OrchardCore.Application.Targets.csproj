@@ -2,7 +2,12 @@
 
   <PropertyGroup>
     <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
-    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <!-- NuGet properties-->
+    <Title>Target for Modular OrchardCore Application</Title>
+    <Description>$(OCFrameworkDescription)
+    
+    Converts the application into a modular application.</Description>
+    <PackageTags>$(PackageTags) OrchardCoreFramework</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>

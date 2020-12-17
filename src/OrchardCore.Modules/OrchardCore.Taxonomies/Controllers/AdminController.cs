@@ -213,7 +213,12 @@ namespace OrchardCore.Taxonomies.Controllers
                 return NotFound();
             }
 
-            var contentItem = taxonomyItem.ToObject<ContentItem>();
+            var existing = taxonomyItem.ToObject<ContentItem>();
+
+            // Create a new item to take into account the current type definition.
+            var contentItem = await _contentManager.NewAsync(existing.ContentType);
+
+            contentItem.Merge(existing);            
             contentItem.Weld<TermPart>();
             contentItem.Alter<TermPart>(t => t.TaxonomyContentItemId = taxonomyContentItemId);
 
@@ -279,7 +284,7 @@ namespace OrchardCore.Taxonomies.Controllers
             taxonomyItem.Remove();
             _session.Save(taxonomy);
 
-            _notifier.Success(H["Taxonomy item deleted successfully"]);
+            _notifier.Success(H["Taxonomy item deleted successfully."]);
 
             return RedirectToAction("Edit", "Admin", new { area = "OrchardCore.Contents", contentItemId = taxonomyContentItemId });
         }

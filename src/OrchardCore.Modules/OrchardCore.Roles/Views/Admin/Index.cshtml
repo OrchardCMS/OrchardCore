@@ -1,42 +1,30 @@
 @using System.Linq
-@using OrchardCore.Security.Services
 
 @model OrchardCore.Roles.ViewModels.RolesViewModel
-@inject IRoleService RoleService
 
-<div class="row">
-    <div class="form-group col mb-n1">
-        <h1>@RenderTitleSegments(T["Roles"])</h1>
-    </div>
-</div>
-<form autocomplete="off">
-    <div class="row">
-        <div class="form-group col-xl-4 col-sm-6">
-            <div class="input-group input-group-sm filter-options">
+<zone Name="Title"><h1>@RenderTitleSegments(T["Roles"])</h1></zone>
+
+<div class="card mb-3 position-sticky action-bar">
+    <div class="card-body bg-primary p-3">
+        <div class="form-group mb-n1">
+            <div class="input-group input-group-sm w-sm-50 w-25 d-inline-flex has-search">
+                <i class="fa fa-search form-control-feedback"></i>
                 <input id="search-box" class="form-control" placeholder="@T["Search"]" type="search" autofocus />
             </div>
-        </div>
-        <div class="form-group col-xl-8 col-sm-6">
             <div class="btn-group float-right">
-                <a asp-route-action="Create" class="btn btn-primary" role="button">@T["Add Role"]</a>
+                <a asp-route-action="Create" class="btn btn-sm btn-secondary float-right create" role="button">@T["Add Role"]</a>
             </div>
         </div>
     </div>
-</form>
+</div>
 
-<form asp-action="Index">
-    <ul id="roles" class="list-group">
+<form asp-action="Index" class="roles">
+    <ul class="list-group">
         @for (var i = 0; i < Model.RoleEntries.Count; i++)
         {
             var message = T["Are you sure you want to delete this role?"];
-            var claims = await RoleService.GetRoleClaimsAsync(Model.RoleEntries[i].Name);
 
-            if(claims.Any())
-            {
-                message = T["The role is associated to existing user(s). Are you sure you want to remove it?"];
-            }
-
-            <li class="list-group-item" data-role="@Model.RoleEntries[i].Name">
+            <li class="list-group-item" data-filter-value="@Model.RoleEntries[i].Name">
                 <div class="properties">
                     <div class="related">
                         <a class="edit btn btn-primary btn-sm" role="button" asp-action="Edit" asp-route-id="@Model.RoleEntries[i].Name">@T["Edit"]</a>
@@ -54,7 +42,7 @@
     </div>
 </form>
 
-<script at="Foot" type="text/javascript">
+<script at="Foot">
     $(function () {
         var searchBox = $('#search-box');
 
@@ -63,7 +51,7 @@
             if (event.which == 13) {
 
                 // Edit the role if there is a single filtered element
-                var visible = $('#roles > li:visible');
+                var visible = $('.roles > ul > li:visible');
                 if (visible.length == 1) {
                     window.location = visible.find('.edit').attr('href');
                 }
@@ -74,27 +62,22 @@
         // On each keypress filter the list of roles
         searchBox.keyup(function (e) {
             var search = $(this).val().toLowerCase();
+            var elementsToFilter = $("[data-filter-value]");
+
             // On ESC, clear the search box and display all roles
             if (e.keyCode == 27 || search == '') {
                 searchBox.val('');
-                $('#roles > li').toggle(true);
-                var visible = $('#roles > li:visible');
-                if (visible.length == 0) {
-                    $('#list-alert').removeClass("d-none");
-                }
-                else {
-                    $('#list-alert').addClass("d-none");
-                }
+                elementsToFilter.toggle(true);
             }
             else {
-                $('#roles > li').each(function () {
-                    var role = $(this).data('role').toLowerCase();
-                    var found = role.indexOf(search) > -1;
+                elementsToFilter.each(function () {
+                    var text = $(this).data('filter-value').toLowerCase();
+                    var found = text.indexOf(search) > -1;
                     $(this).toggle(found);
                 });
 
                 // We display an alert if a search is not found
-                var visible = $('#roles > li:visible');
+                var visible = $('.roles > ul > li:visible');
                 if (visible.length == 0) {
                     $('#list-alert').removeClass("d-none");
                 }

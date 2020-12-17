@@ -87,8 +87,8 @@ Here we can see the Blog Post content type definition. We have now a section for
 Also, you can customize these templates for your specific needs in your theme by overriding these : 
 
 `/Views/Shared/Search.liquid or .cshtml` (general layout)  
-`/Views/SearchForm.liquid or .cshtml` (form layout)  
-`/Views/SearchResults.liquid or .cshtml` (results layout)   
+`/Views/Search-Form.liquid or .cshtml` (form layout)  
+`/Views/Search-Results.liquid or .cshtml` (results layout)   
 
 For example an idea here could be to simply customize the search result template to suit your needs by changing "Summary" to "SearchSummary" and create the corresponding shape templates.
 

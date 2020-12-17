@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Deployment;
+using OrchardCore.AdminMenu.Services;
 
 namespace OrchardCore.AdminMenu.Deployment
 {
@@ -9,9 +10,9 @@ namespace OrchardCore.AdminMenu.Deployment
     {
         private readonly IAdminMenuService _adminMenuService;
 
-        public AdminMenuDeploymentSource(IAdminMenuService adminMenuervice)
+        public AdminMenuDeploymentSource(IAdminMenuService adminMenuService)
         {
-            _adminMenuService = adminMenuervice;
+            _adminMenuService = adminMenuService;
         }
 
         public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
