@@ -82,7 +82,7 @@
     <div class="card mb-3 position-sticky action-bar">
         <div class="card-body bg-primary p-3">
             <div class="form-group mb-n1">
-                <div class="input-group input-group-sm w-50 d-inline-flex has-filter">                    
+                <div class="input-group input-group-sm w-50 d-inline-flex has-search">                    
                     <i class="fa fa-search form-control-feedback"></i>
                     <input id="search-box" asp-for="Options.Search" class="form-control" placeholder="@T["Search"]" type="search" autofocus />
                 </div>
@@ -136,7 +136,7 @@
                                 <label class="custom-control-label" for="tenantNames-@entry.Name"></label>
                             </div>
                             <div class="d-inline">
-                                <a href="@GetEncodedUrl(entry, originalPathBase)">@entry.Name</a>
+                                <a class="text-break" href="@GetEncodedUrl(entry, originalPathBase)">@entry.Name</a>
                                 @if (!string.IsNullOrEmpty(entry.ShellSettings["DatabaseProvider"]))
                                 {
                                     <span class="badge badge-light font-weight-normal"><i class="fa fa-database text-info"></i> @entry.ShellSettings["DatabaseProvider"]</span>
