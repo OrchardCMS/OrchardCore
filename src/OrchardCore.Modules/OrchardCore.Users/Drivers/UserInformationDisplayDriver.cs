@@ -21,15 +21,15 @@ namespace OrchardCore.Users.Drivers
             _authorizationService = authorizationService;
         }
 
-        public override Task<IDisplayResult> EditAsync(User user, BuildEditorContext context)
+        public override IDisplayResult Edit(User user)
         {
-            return Task.FromResult<IDisplayResult>(Initialize<EditUserInformationViewModel>("UserInformationFields_Edit", model =>
+            return Initialize<EditUserInformationViewModel>("UserInformationFields_Edit", model =>
             {
                 model.UserName = user.UserName;
                 model.Email = user.Email;
             })
             .Location("Content:1")
-            .RenderWhen(async () => await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.ManageOwnUserInformation)));
+            .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.ManageOwnUserInformation));
         }
 
         public override async Task<IDisplayResult> UpdateAsync(User user, UpdateEditorContext context)
@@ -48,7 +48,7 @@ namespace OrchardCore.Users.Drivers
                 user.Email = model.Email;
             }
 
-            return await EditAsync(user, context);
+            return Edit(user);
         }
     }
 }

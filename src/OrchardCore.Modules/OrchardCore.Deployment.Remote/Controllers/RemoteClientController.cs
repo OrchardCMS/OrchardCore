@@ -68,7 +68,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
 
             if (!string.IsNullOrWhiteSpace(options.Search))
             {
-                remoteClients = remoteClients.Where(x => x.ClientName.Contains(options.Search)).ToList();
+                remoteClients = remoteClients.Where(x => x.ClientName.Contains(options.Search, StringComparison.OrdinalIgnoreCase)).ToList();
             }
 
             var count = remoteClients.Count();
@@ -94,6 +94,15 @@ namespace OrchardCore.Deployment.Remote.Controllers
             };
 
             return View(model);
+        }
+
+        [HttpPost, ActionName("Index")]
+        [FormValueRequired("submit.Filter")]
+        public ActionResult IndexFilterPOST(RemoteClientIndexViewModel model)
+        {
+            return RedirectToAction("Index", new RouteValueDictionary {
+                { "Options.Search", model.Options.Search }
+            });
         }
 
         public async Task<IActionResult> Create()
@@ -125,7 +134,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
             {
                 await _remoteClientService.CreateRemoteClientAsync(model.ClientName, model.ApiKey);
 
-                _notifier.Success(H["Remote client created successfully"]);
+                _notifier.Success(H["Remote client created successfully."]);
                 return RedirectToAction(nameof(Index));
             }
 
@@ -181,7 +190,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
             {
                 await _remoteClientService.TryUpdateRemoteClient(model.Id, model.ClientName, model.ApiKey);
 
-                _notifier.Success(H["Remote client updated successfully"]);
+                _notifier.Success(H["Remote client updated successfully."]);
 
                 return RedirectToAction(nameof(Index));
             }
@@ -207,7 +216,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
 
             await _remoteClientService.DeleteRemoteClientAsync(id);
 
-            _notifier.Success(H["Remote client deleted successfully"]);
+            _notifier.Success(H["Remote client deleted successfully."]);
 
             return RedirectToAction(nameof(Index));
         }

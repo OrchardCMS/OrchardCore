@@ -29,7 +29,7 @@ namespace OrchardCore.ContentFields.GraphQL
                 .PagingArguments()
                 .ResolveAsync(x =>
                 {
-                    var contentItemLoader = x.GetorAddPublishedContentItemByIdDataLoader();
+                    var contentItemLoader = x.GetOrAddPublishedContentItemByIdDataLoader();
                     return contentItemLoader.LoadAsync(x.Page(x.Source.ContentItemIds));
                 });
         }

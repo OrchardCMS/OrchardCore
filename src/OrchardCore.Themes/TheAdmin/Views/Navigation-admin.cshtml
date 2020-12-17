@@ -21,7 +21,6 @@
 @if (adminSettings.DisplayMenuFilter)
 {
 <script at="Foot">
-    $('[data-toggle="tooltip"]').tooltip();
     $(document).bind('keydown', function (e) {
         if (e.ctrlKey && e.shiftKey && e.which == 70) {
             $('#filter').focus();

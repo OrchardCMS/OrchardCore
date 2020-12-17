@@ -93,7 +93,7 @@ namespace OrchardCore.Demo
             services.AddScoped<IShapeTableProvider, DemoShapeProvider>();
             services.AddShapeAttributes<DemoShapeProvider>();
             services.AddScoped<INavigationProvider, AdminMenu>();
-            services.AddScoped<IContentDisplayDriver, TestContentElementDisplay>();
+            services.AddScoped<IContentDisplayDriver, TestContentElementDisplayDriver>();
             services.AddScoped<IDataMigration, Migrations>();
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddContentPart<TestContentPartA>();
