@@ -15,7 +15,6 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
@@ -34,7 +33,6 @@ namespace OrchardCore.Lucene.Controllers
     public class AdminController : Controller
     {
         private readonly ISession _session;
-        private readonly IContentManager _contentManager;
         private readonly LuceneIndexManager _luceneIndexManager;
         private readonly LuceneIndexingService _luceneIndexingService;
         private readonly IAuthorizationService _authorizationService;
@@ -53,7 +51,6 @@ namespace OrchardCore.Lucene.Controllers
 
         public AdminController(
             ISession session,
-            IContentManager contentManager,
             IContentDefinitionManager contentDefinitionManager,
             LuceneIndexManager luceneIndexManager,
             LuceneIndexingService luceneIndexingService,
@@ -71,7 +68,6 @@ namespace OrchardCore.Lucene.Controllers
             ILogger<AdminController> logger)
         {
             _session = session;
-            _contentManager = contentManager;
             _luceneIndexManager = luceneIndexManager;
             _luceneIndexingService = luceneIndexingService;
             _authorizationService = authorizationService;
@@ -90,23 +86,23 @@ namespace OrchardCore.Lucene.Controllers
             _logger = logger;
         }
 
-        public async Task<ActionResult> Index(AdminIndexViewModel model, PagerParameters pagerParameters)
+        public async Task<IActionResult> Index(ContentOptions options, PagerParameters pagerParameters)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageIndexes))
             {
                 return Forbid();
             }
 
-            model.Indexes = (await _luceneIndexSettingsService.GetSettingsAsync()).Select(i => new IndexViewModel { Name = i.IndexName });
+            var indexes = (await _luceneIndexSettingsService.GetSettingsAsync()).Select(i => new IndexViewModel { Name = i.IndexName });
 
             var siteSettings = await _siteService.GetSiteSettingsAsync();
             var pager = new Pager(pagerParameters, siteSettings.PageSize);
-            var count = model.Indexes.Count();
-            var results = model.Indexes;
+            var count = indexes.Count();
+            var results = indexes;
 
-            if (!string.IsNullOrWhiteSpace(model.Options.Search))
+            if (!string.IsNullOrWhiteSpace(options.Search))
             {
-                results = results.Where(q => q.Name.IndexOf(model.Options.Search, StringComparison.OrdinalIgnoreCase) >= 0);
+                results = results.Where(q => q.Name.IndexOf(options.Search, StringComparison.OrdinalIgnoreCase) >= 0);
             }
 
             results = results
@@ -117,8 +113,12 @@ namespace OrchardCore.Lucene.Controllers
             var routeData = new RouteData();
             var pagerShape = (await New.Pager(pager)).TotalItemCount(count).RouteData(routeData);
 
-            model.Indexes = results;
-            model.Pager = pagerShape;
+            var model = new AdminIndexViewModel
+            {
+                Indexes = results,
+                Options = options,
+                Pager = pagerShape
+            };
 
             model.Options.ContentsBulkAction = new List<SelectListItem>() {
                 new SelectListItem() { Text = S["Reset"], Value = nameof(ContentsBulkAction.Reset) },
@@ -127,6 +127,15 @@ namespace OrchardCore.Lucene.Controllers
             };
 
             return View(model);
+        }
+
+        [HttpPost, ActionName("Index")]
+        [FormValueRequired("submit.Filter")]
+        public ActionResult IndexFilterPOST(AdminIndexViewModel model)
+        {
+            return RedirectToAction("Index", new RouteValueDictionary {
+                { "Options.Search", model.Options.Search }
+            });
         }
 
         public async Task<ActionResult> Edit(string indexName = null)
