@@ -11,7 +11,6 @@
         font-weight: bold;
         position: absolute;
         top: 10px;
-        left: 275px; // $left-navigation-width + 10px
     }
 
     .nav-link {
@@ -25,6 +24,12 @@
 
     .btn.nav-link {
         display: inline-block;
+    }
+
+    @include media-breakpoint-up(sm) {
+        h1 {
+            left: 275px; // $left-navigation-width + 10px
+        }
     }
 
     @include media-breakpoint-down(sm) {
@@ -65,7 +70,6 @@
     margin-right: 11px;
     width: 25px;
 }
-
 // When left-sidebar is compact nav brand is compacted too.
 // It displays logo only, not text.
 .left-sidebar-compact .ta-navbar-brand {
