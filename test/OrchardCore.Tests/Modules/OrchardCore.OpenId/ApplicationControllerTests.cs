@@ -33,6 +33,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
                 Mock.Of<IStringLocalizer<ApplicationController>>(),
                 Mock.Of<IAuthorizationService>(),
                 Mock.Of<IOpenIdApplicationManager>(),
+                Mock.Of<IOpenIdScopeManager>(),
                 Mock.Of<IHtmlLocalizer<ApplicationController>>(),
                 Mock.Of<INotifier>(),
                 Mock.Of<ShellDescriptor>());
@@ -50,6 +51,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
                 Mock.Of<IStringLocalizer<ApplicationController>>(),
                 MockAuthorizationServiceMock().Object,
                 Mock.Of<IOpenIdApplicationManager>(),
+                Mock.Of<IOpenIdScopeManager>(),
                 Mock.Of<IHtmlLocalizer<ApplicationController>>(),
                 Mock.Of<INotifier>(),
                 Mock.Of<ShellDescriptor>());
@@ -73,6 +75,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
                 MockStringLocalizer().Object,
                 MockAuthorizationServiceMock().Object,
                 Mock.Of<IOpenIdApplicationManager>(),
+                Mock.Of<IOpenIdScopeManager>(),
                 Mock.Of<IHtmlLocalizer<ApplicationController>>(),
                 Mock.Of<INotifier>(),
                 Mock.Of<ShellDescriptor>());
@@ -108,6 +111,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
                 MockStringLocalizer().Object,
                 MockAuthorizationServiceMock().Object,
                 Mock.Of<IOpenIdApplicationManager>(),
+                Mock.Of<IOpenIdScopeManager>(),
                 Mock.Of<IHtmlLocalizer<ApplicationController>>(),
                 Mock.Of<INotifier>(),
                 Mock.Of<ShellDescriptor>());
