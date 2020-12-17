@@ -1,20 +1,14 @@
-using Microsoft.AspNetCore.Mvc.TagHelpers;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 
 namespace OrchardCore.DisplayManagement.TagHelpers
 {
-    [HtmlTargetElement("input", Attributes = ForAttributeName)]
-    public class InputIsDisabledTagHelper : InputTagHelper
+    [HtmlTargetElement("input", Attributes = ForAndIsDisabledAttributeName)]
+    public class InputIsDisabledTagHelper : TagHelper
     {
-        private const string ForAttributeName = "asp-for";
+        private const string ForAndIsDisabledAttributeName = "asp-for, asp-is-disabled";
 
         [HtmlAttributeName("asp-is-disabled")]
         public bool IsDisabled { set; get; }
-
-        public InputIsDisabledTagHelper(IHtmlGenerator generator) : base(generator)
-        {
-        }
 
         public override void Process(TagHelperContext context, TagHelperOutput output)
         {
