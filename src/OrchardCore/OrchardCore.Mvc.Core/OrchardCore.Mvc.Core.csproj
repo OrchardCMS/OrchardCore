@@ -3,6 +3,12 @@
   <PropertyGroup>
     <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
     <RootNamespace>OrchardCore.Mvc</RootNamespace>
+    <!-- NuGet properties-->
+    <Title>OrchardCore Mvc Core</Title>
+    <Description>$(OCFrameworkDescription)
+    
+    Core Implementation for MVC application.</Description>
+    <PackageTags>$(PackageTags) OrchardCoreFramework</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>

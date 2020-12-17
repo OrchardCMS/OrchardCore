@@ -12,6 +12,12 @@
     <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
     <PackageType>Template</PackageType>
     <NoWarn>CS8021,CS2008</NoWarn>
+    <!-- NuGet properties-->
+    <Title>OrchardCore Code Generation Templates</Title>
+    <Description>$(OCFrameworkDescription)
+    
+    OrchardCore Code Templates for dotnet new template configurations for creating new websites, themes and modules from the command shell.</Description>
+    <PackageTags>$(PackageTags) OrchardCoreFramework</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>

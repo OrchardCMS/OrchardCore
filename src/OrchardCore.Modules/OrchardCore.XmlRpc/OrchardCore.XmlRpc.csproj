@@ -2,6 +2,12 @@
 
   <PropertyGroup>
     <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
+    <!-- NuGet properties-->
+    <Title>OrchardCore XmlRpc</Title>
+    <Description>$(OCFrameworkDescription)
+    
+    The remote publishing feature enables creation of contents from client applications such as Open Live Writer.</Description>
+    <PackageTags>$(PackageTags) OrchardCoreFramework Infrastructure</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
