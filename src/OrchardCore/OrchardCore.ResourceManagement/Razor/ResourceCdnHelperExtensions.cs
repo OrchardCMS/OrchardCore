@@ -27,10 +27,10 @@ public static class ResourceCdnHelperExtensions
             resourcePath = fileVersionProvider.AddFileVersionToPath(orchardHelper.HttpContext.Request.PathBase, resourcePath);
         }
 
-        // Don't prefix cdn if the path is absolute, or is in debug mode.
+        // Don't prefix cdn if the path includes a protocol, i.e. is an external url, or is in debug mode.
         if (!options.DebugMode
             && !String.IsNullOrEmpty(options.CdnBaseUrl)
-            && !Uri.TryCreate(resourcePath, UriKind.Absolute, out var uri))
+            && !resourcePath.Contains("//", StringComparison.OrdinalIgnoreCase))
         {
             resourcePath = options.CdnBaseUrl + resourcePath;
         }

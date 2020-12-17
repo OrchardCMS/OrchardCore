@@ -35,10 +35,10 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
                 resourcePath = _httpContextAccessor.HttpContext.Request.PathBase.Add(resourcePath.Substring(1)).Value;
             }
 
-            // Don't prefix cdn if the path is absolute, or is in debug mode.
+            // Don't prefix cdn if the path includes a protocol, i.e. is an external url, or is in debug mode.
             if (!_options.DebugMode
                 && !String.IsNullOrEmpty(_options.CdnBaseUrl)
-                && !Uri.TryCreate(resourcePath, UriKind.Absolute, out var uri))
+                && !resourcePath.Contains("//", StringComparison.OrdinalIgnoreCase))
             {
                 resourcePath = _options.CdnBaseUrl + resourcePath;
             }

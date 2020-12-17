@@ -228,10 +228,10 @@ namespace OrchardCore.ResourceManagement
                 url = fileVersionProvider.AddFileVersionToPath(applicationPath, url);
             }
 
-            // Don't prefix cdn if the path is absolute, or is in debug mode.
-            if (!settings.DebugMode
+            // Don't prefix cdn if the path includes a protocol, i.e. is an external url, or is in debug mode.
+            if (url != null && !settings.DebugMode
                 && !String.IsNullOrEmpty(settings.CdnBaseUrl)
-                && !Uri.TryCreate(url, UriKind.Absolute, out var uri))
+                && !url.Contains("//", StringComparison.OrdinalIgnoreCase))
             {
                 url = settings.CdnBaseUrl + url;
             }
