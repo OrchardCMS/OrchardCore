@@ -130,7 +130,7 @@
             {
                 <li class="list-group-item">
                     <div class="row">
-                        <div class="col-xl-6 col-sm-12 title">
+                        <div class="col-lg-6 col-sm-12 title">
                             <div class="custom-control custom-checkbox float-left">
                                 <input type="checkbox" class="custom-control-input" value="@entry.Name" name="tenantNames" id="tenantNames-@entry.Name">
                                 <label class="custom-control-label" for="tenantNames-@entry.Name"></label>
@@ -175,7 +175,7 @@
                                 }
                             </div>
                         </div>
-                        <div class="col-xl-6 col-sm-12 related">
+                        <div class="col-lg-6 col-sm-12 related">
                             <div class="float-right">
                                 <a asp-action="Edit" asp-route-id="@entry.Name" class="btn text-primary btn-sm" data-toggle="tooltip" title="@T["Edit"]"><i class="fa fa-edit"></i></a>
                                 @if (entry.ShellSettings.State == TenantState.Running)
