@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 
@@ -7,7 +8,7 @@ namespace OrchardCore.Localization
     /// <summary>
     /// Represents a dictionary for a certain culture.
     /// </summary>
-    public class CultureDictionary
+    public class CultureDictionary : IEnumerable<CultureDictionaryRecord>
     {
         /// <summary>
         /// Creates a new instance of <see cref="CultureDictionary"/>.
@@ -77,5 +78,15 @@ namespace OrchardCore.Localization
                 Translations[record.Key] = record.Translations;
             }
         }
+
+        public IEnumerator<CultureDictionaryRecord> GetEnumerator()
+        {
+            foreach (var item in Translations)
+            {
+                yield return new CultureDictionaryRecord(item.Key, null, item.Value);
+            }
+        }
+
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }
 }
