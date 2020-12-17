@@ -51,20 +51,22 @@
                             <a id="btn-darkmode" class="nav-link" data-toggle="tooltip" title="@(darkMode ? T["Light mode"] : T["Dark mode"])" role="button">
                                 @if (darkMode)
                                 {
-                                    <i class="fas fa-sun"></i>
+                                    <i class="fas fa-fw fa-sun"></i>
                                 }
                                 else
                                 {
-                                    <i class="fas fa-moon"></i>
+                                    <i class="fas fa-fw fa-moon"></i>
                                 }
+                                <span class="d-inline d-md-none">@T["Dark mode"]</span>
                             </a>
-                        }
-                    </li>
-                    <li class="nav-item">
-                        <a href="@Url.Content("~/")" class="nav-link" target="_blank" data-toggle="tooltip" title="@T["Visit Site"]"><i class="fa fa-external-link"></i></a>
-                    </li>
-                    <li class="nav-item">@await DisplayAsync(await New.UserMenu())</li>
-                </ul>
+                          }
+                      </li>
+                      <li class="nav-item">
+                          <a href="@Url.Content("~/")" class="nav-link" target="_blank" data-toggle="tooltip" title="@T["Visit Site"]"> <i class="fa fa-fw fa-external-link"></i>
+                              <span class="d-inline d-md-none">@T["Visit Site"]</span></a>
+                      </li>
+                      <li class="nav-item">@await DisplayAsync(await New.UserMenu())</li>
+                  </ul>
             </div>
         </div>
     </div>

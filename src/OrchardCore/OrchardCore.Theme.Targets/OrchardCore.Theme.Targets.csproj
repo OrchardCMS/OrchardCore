@@ -2,6 +2,12 @@
 
   <PropertyGroup>
     <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
+    <!-- NuGet properties-->
+    <Title>Target for OrchardCore Theme</Title>
+    <Description>$(OCCMSDescription)
+    
+    Converts project/library into an OrchardCore Theme that can be referenced in OrchardCore CMS application.</Description>
+    <PackageTags>$(PackageTags) OrchardCoreCMS</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>

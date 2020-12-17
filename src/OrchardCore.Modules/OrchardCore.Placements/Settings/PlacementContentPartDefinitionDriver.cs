@@ -44,6 +44,14 @@ namespace OrchardCore.Placements.Settings
                         DisplayType = "Summary",
                         Description = S["Placement for a {0} part in summary views", displayName]
                     });
+
+                model.ContentSettingsEntries.Add(
+                    new ContentSettingsEntry
+                    {
+                        ShapeType = $"{contentPartDefinition.Name}_Edit",
+                        Description = S["Placement in admin editor for a {0} part", displayName]
+                    });
+
             }).Location("Shortcuts");
         }
     }

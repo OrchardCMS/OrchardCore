@@ -7,7 +7,6 @@
 @using OrchardCore.Users.Models
 @inject ISiteService SiteService
 @inject SignInManager<IUser> SignInManager
-@inject IOptions<AdminOptions> AdminOptions
 
 @{
     var allowChangeEmail = (await SiteService.GetSiteSettingsAsync()).As<ChangeEmailSettings>().AllowChangeEmail;
@@ -19,7 +18,10 @@
         <li class="nav-item dropdown">
             <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown"><i class="fa fa-user fa-fw"></i> @User.Identity.Name<b class="caret"></b></a>
             <div class="dropdown-menu">
-                <a class="dropdown-item" asp-route-area="OrchardCore.Admin" asp-controller="Admin" asp-action="Index"><i class="fa fa-desktop fa-fw"></i> @T["Dashboard"]</a>
+                @if (User.HasClaim("Permission", "AccessAdminPanel"))
+                {
+                    <a class="dropdown-item" asp-route-area="OrchardCore.Admin" asp-controller="Admin" asp-action="Index"><i class="fa fa-desktop fa-fw"></i> @T["Dashboard"]</a>
+                }
                 @if (allowChangeEmail)
                 {
                     <a class="dropdown-item" asp-route-area="OrchardCore.Users" asp-controller="ChangeEmail" asp-action="Index"><i class="fa fa-envelope fa-fw"></i> @T["Change Email"]</a>
