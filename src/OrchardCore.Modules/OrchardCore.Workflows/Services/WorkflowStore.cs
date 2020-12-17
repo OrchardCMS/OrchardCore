@@ -117,7 +117,7 @@ namespace OrchardCore.Workflows.Services
             return query.ListAsync();
         }
 
-        public Task SaveAsync(Workflow workflow)
+        public async Task SaveAsync(Workflow workflow)
         {
             var isNew = workflow.Id == 0;
             _session.Save(workflow);
@@ -125,13 +125,16 @@ namespace OrchardCore.Workflows.Services
             if (isNew)
             {
                 var context = new WorkflowCreatedContext(workflow);
-                return _handlers.InvokeAsync((handler, context) => handler.CreatedAsync(context), context, _logger);
+                await _handlers.InvokeAsync((handler, context) => handler.CreatedAsync(context), context, _logger);
             }
             else
             {
                 var context = new WorkflowUpdatedContext(workflow);
-                return _handlers.InvokeAsync((handler, context) => handler.UpdatedAsync(context), context, _logger);
+                await _handlers.InvokeAsync((handler, context) => handler.UpdatedAsync(context), context, _logger);
             }
+
+            // Allow an atomic workflow to get up to date data.
+            await _session.FlushAsync();
         }
 
         public Task DeleteAsync(Workflow workflow)

@@ -31,7 +31,7 @@ namespace OrchardCore.Workflows.Models
         public int LockTimeoutInSeconds { get; set; }
 
         /// <summary>
-        /// The expiration in seconds of the lock acquired before executing a given workflow instance of this type.
+        /// The expiration in seconds of the lock acquired before executing a workflow instance of this type.
         /// </summary>
         public int LockExpirationInSeconds { get; set; }
 
@@ -49,5 +49,10 @@ namespace OrchardCore.Workflows.Models
         /// A complete list of the transitions between the activities on this workflow.
         /// </summary>
         public IList<Transition> Transitions { get; set; } = new List<Transition>();
+
+        /// <summary>
+        /// Whether a workflow instance of this type needs to be executed atomically.
+        /// </summary>
+        public bool IsAtomic() => LockTimeoutInSeconds > 0 && LockExpirationInSeconds > 0;
     }
 }

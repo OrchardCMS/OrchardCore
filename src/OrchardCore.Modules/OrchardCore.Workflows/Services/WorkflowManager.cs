@@ -147,20 +147,13 @@ namespace OrchardCore.Workflows.Services
                     continue;
                 }
 
-                // If not both locking times, or if it is not a singleton and the event is not exclusive.
-                if (workflowType.LockTimeoutInSeconds <= 0 || workflowType.LockExpirationInSeconds <= 0 ||
-                    (!workflowType.IsSingleton && !isExclusive))
-                {
-                    // Start a new workflow instance without any locking.
-                    await StartWorkflowAsync(workflowType, startActivity, input, correlationId);
-                    continue;
-                }
-
-                // Try to acquire a lock on the workflow type id.
-                (var locker, var locked) = await _distributedLock.TryAcquireLockAsync(
-                    "WFT_" + workflowType.WorkflowTypeId + "_LOCK",
-                    TimeSpan.FromSeconds(workflowType.LockTimeoutInSeconds),
-                    TimeSpan.FromSeconds(workflowType.LockExpirationInSeconds));
+                // If atomic, try to acquire a lock based on the workflow type id.
+                (var locker, var locked) = workflowType.IsAtomic()
+                    ? await _distributedLock.TryAcquireLockAsync(
+                        "WFT_" + workflowType.WorkflowTypeId + "_LOCK",
+                        TimeSpan.FromSeconds(workflowType.LockTimeoutInSeconds),
+                        TimeSpan.FromSeconds(workflowType.LockExpirationInSeconds))
+                    : (null, true);
 
                 if (!locked)
                 {
@@ -194,19 +187,13 @@ namespace OrchardCore.Workflows.Services
                     continue;
                 }
 
-                // If not both locking times are provided.
-                if (workflow.LockTimeoutInSeconds <= 0 || workflow.LockExpirationInSeconds <= 0)
-                {
-                    // Resume the workflow instance without any locking.
-                    await ResumeWorkflowAsync(workflow, name, input);
-                    continue;
-                }
-
-                // Try to acquire a lock on the workflow instance id.
-                (var locker, var locked) = await _distributedLock.TryAcquireLockAsync(
-                    "WFI_" + workflow.WorkflowId + "_LOCK",
-                    TimeSpan.FromSeconds(workflow.LockTimeoutInSeconds),
-                    TimeSpan.FromSeconds(workflow.LockExpirationInSeconds));
+                // If atomic, try to acquire a lock based on the workflow instance id.
+                (var locker, var locked) = workflow.IsAtomic()
+                    ? await _distributedLock.TryAcquireLockAsync(
+                        "WFI_" + workflow.WorkflowId + "_LOCK",
+                        TimeSpan.FromSeconds(workflow.LockTimeoutInSeconds),
+                        TimeSpan.FromSeconds(workflow.LockExpirationInSeconds))
+                    : (null, true);
 
                 if (!locked)
                 {
@@ -216,23 +203,17 @@ namespace OrchardCore.Workflows.Services
                 await using var acquiredLock = locker;
 
                 // Check if the workflow still exists and is still correlated.
-                var haltedWorkflow = await _workflowStore.GetAsync(workflow.Id);
+                var haltedWorkflow = workflow.IsAtomic() ? await _workflowStore.GetAsync(workflow.Id) : workflow;
                 if (haltedWorkflow == null || (!isAlwaysCorrelated && haltedWorkflow.CorrelationId != (correlationId ?? "")))
                 {
                     continue;
                 }
 
-                await ResumeWorkflowAsync(haltedWorkflow, name, input);
-            }
-        }
-
-        private async Task ResumeWorkflowAsync(Workflow workflow, string name, IDictionary<string, object> input = null)
-        {
-            var blockingActivities = workflow.BlockingActivities.Where(x => x.Name == name).ToArray();
-
-            foreach (var blockingActivity in blockingActivities)
-            {
-                await ResumeWorkflowAsync(workflow, blockingActivity, input);
+                var blockingActivities = haltedWorkflow.BlockingActivities.Where(x => x.Name == name).ToArray();
+                foreach (var blockingActivity in blockingActivities)
+                {
+                    await ResumeWorkflowAsync(haltedWorkflow, blockingActivity, input);
+                }
             }
         }
 

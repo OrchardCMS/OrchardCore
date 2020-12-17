@@ -48,5 +48,10 @@ namespace OrchardCore.Workflows.Models
         public IList<BlockingActivity> BlockingActivities { get; } = new List<BlockingActivity>();
 
         public DateTime CreatedUtc { get; set; }
+
+        /// <summary>
+        /// Whether this workflow instance needs to be executed atomically.
+        /// </summary>
+        public bool IsAtomic() => LockTimeoutInSeconds > 0 && LockExpirationInSeconds > 0;
     }
 }
