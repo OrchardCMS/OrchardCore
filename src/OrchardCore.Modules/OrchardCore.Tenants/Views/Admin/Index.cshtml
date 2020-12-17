@@ -130,8 +130,8 @@
             {
                 <li class="list-group-item">
                     <div class="row">
-                        <div class="col-lg-6 col-sm-12 title">
-                            <div class="custom-control custom-checkbox float-left">
+                        <div class="col-lg-6 col-sm-12 title d-flex">
+                            <div class="custom-control custom-checkbox float-left flex-shrink-0">
                                 <input type="checkbox" class="custom-control-input" value="@entry.Name" name="tenantNames" id="tenantNames-@entry.Name">
                                 <label class="custom-control-label" for="tenantNames-@entry.Name"></label>
                             </div>
@@ -167,11 +167,11 @@
                                 </a>
                                 @if (!string.IsNullOrEmpty(entry.ShellSettings.RequestUrlHost))
                                 {
-                                    <p class="mb-0 mx-4"><code data-toggle="tooltip" title="@T["Url host"]">@entry.ShellSettings.RequestUrlHost</code></p>
+                                    <p class="mb-0"><code data-toggle="tooltip" title="@T["Url host"]">@entry.ShellSettings.RequestUrlHost</code></p>
                                 }
                                 @if (!string.IsNullOrEmpty(entry.Description))
                                 {
-                                    <p class="mb-0 mx-4"><small class="text-muted">@entry.Description</small></p>
+                                    <p class="mb-0"><small class="text-muted">@entry.Description</small></p>
                                 }
                             </div>
                         </div>
