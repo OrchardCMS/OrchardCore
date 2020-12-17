@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
+using OrchardCore.Environment.Shell.Descriptor.Models;
 using OrchardCore.Modules;
 
 namespace Microsoft.Extensions.DependencyInjection
@@ -93,6 +94,24 @@ namespace Microsoft.Extensions.DependencyInjection
         public OrchardCoreBuilder Configure(Action<IApplicationBuilder> configure, int order = 0)
         {
             return Configure((app, routes, sp) => configure(app), order);
+        }
+
+        public OrchardCoreBuilder EnableFeature(string id)
+        {
+            return ConfigureServices(services =>
+            {
+                for (var index = 0; index < services.Count; index++)
+                {
+                    var service = services[index];
+                    if (service.ImplementationInstance is ShellFeature feature &&
+                        string.Equals(feature.Id, id, StringComparison.OrdinalIgnoreCase))
+                    {
+                        return;
+                    }
+                }
+
+                services.AddSingleton(new ShellFeature(id, alwaysEnabled: true));
+            });
         }
     }
 }

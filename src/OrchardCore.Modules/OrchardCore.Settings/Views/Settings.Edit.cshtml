@@ -4,11 +4,14 @@
 
 <p class="alert alert-warning">@T["The current tenant will be reloaded when the settings are saved."]</p>
 <ul class="nav nav-tabs">
-    <li class="nav-item">
+    <li class="nav-item pr-md-2">
         <a class="nav-link active" id="site-tab" data-toggle="tab" href="#site" role="tab" aria-controls="site" aria-selected="true">@T["Site"]</a>
     </li>
-    <li class="nav-item">
+    <li class="nav-item pr-md-2">
         <a class="nav-link" id="resources-tab" data-toggle="tab" href="#resources" role="tab" aria-controls="resources">@T["Resources"]</a>
+    </li>    
+    <li class="nav-item">
+        <a class="nav-link" id="cache-tab" data-toggle="tab" href="#cache" role="tab" aria-controls="cache">@T["Cache"]</a>
     </li>
 </ul>
 <div class="tab-content" id="tabs">
@@ -52,7 +55,7 @@
         </div>
 
         <div class="row">
-            <div class="col-xl-6 form-group" asp-validation-class-for="PageSize">
+            <div class="col-xl-4 form-group" asp-validation-class-for="PageSize">
                 <label asp-for="PageSize">@T["Page size"]</label>
                 <input asp-for="PageSize" type="number" class="form-control" />
                 <span asp-validation-for="PageSize"></span>
@@ -61,12 +64,12 @@
         </div>
     </div>
     <div class="tab-pane fade" id="resources" role="tabpanel" aria-labelledby="resources-tab">
-        <h5 class="form-group">@T["Resource Settings"]<span class="hint"> — @T["Settings for scripts and stylesheets"]</span></h5>
+        <h5>@T["Settings for scripts and stylesheets"]</h5>
         <div class="form-group" asp-validation-class-for="AppendVersion">
             <div class="custom-control custom-checkbox">
                 <input type="checkbox" class="custom-control-input" asp-for="@Model.AppendVersion" />
                 <label class="custom-control-label" asp-for="@Model.AppendVersion">@T["Use resources cache busting"]</label>
-                <span class="hint">— @T["Whether cache busting (append a version) is used for scripts and stylesheets"]</span>
+                <span class="hint dashed">@T["Whether cache busting (append a version) is used for scripts and stylesheets"]</span>
             </div>
         </div>
 
@@ -74,7 +77,7 @@
             <div class="custom-control custom-checkbox">
                 <input type="checkbox" class="custom-control-input" asp-for="@Model.UseCdn" />
                 <label class="custom-control-label" asp-for="@Model.UseCdn">@T["Use framework CDN (Content Delivery Network)"]</label>
-                <span class="hint">— @T["Whether a framework CDN is used for registered scripts and stylesheets, such as jQuery, or their local version"]</span>
+                <span class="hint dashed">@T["Whether a framework CDN is used for registered scripts and stylesheets, such as jQuery, or their local version"]</span>
             </div>
         </div>
 
@@ -97,4 +100,19 @@
             </div>
         </div>
     </div>
+    <div class="tab-pane fade" id="cache" role="tabpanel" aria-labelledby="cache-tab">
+        <h5>@T["Settings for dynamic caches"]</h5>
+        <div class="row form-group">
+            <div class="col-xl-6" asp-validation-class-for="CacheMode">
+                <label asp-for="CacheMode">@T["Cache Mode"]</label>
+                <select asp-for="CacheMode" class="form-control">
+                    <option value="@CacheMode.FromConfiguration.ToString()">@T["From environment — enabled in <em>Production</em>, disabled otherwise"]</option>
+                    <option value="@CacheMode.Enabled.ToString()">@T["Enabled"]</option>
+                    <option value="@CacheMode.DebugEnabled.ToString()">@T["Enabled with cache debug mode"]</option>
+                    <option value="@CacheMode.Disabled.ToString()">@T["Disabled"]</option>
+                </select>
+                <span class="hint">@T["Determines whether caches are enabled or disabled."]</span>
+            </div>
+        </div>
+    </div>    
 </div>

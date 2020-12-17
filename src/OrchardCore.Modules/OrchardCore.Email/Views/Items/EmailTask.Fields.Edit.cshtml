@@ -46,10 +46,11 @@
     <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input" asp-for="IsBodyHtml" />
         <label class="custom-control-label" asp-for="IsBodyHtml">@T["Does the Body contain HTML?"]</label>
-        <span class="hint">— @T["If checked, indicates the body of the email message is HTML. If unchecked, indicates the body of the email message is plain text."]</span>
+        <span class="hint dashed">@T["If checked, indicates the body of the email message is HTML. If unchecked, indicates the body of the email message is plain text."]</span>
     </div>
 </div>
 
+<style asp-name="codemirror"></style>
 <script asp-name="codemirror" depends-on="admin" at="Foot"></script>
 <script asp-name="codemirror-mode-javascript" at="Foot"></script>
 <script asp-name="codemirror-addon-mode-simple" at="Foot"></script>

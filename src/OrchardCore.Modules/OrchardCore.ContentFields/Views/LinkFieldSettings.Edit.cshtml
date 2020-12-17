@@ -1,15 +1,15 @@
 @model OrchardCore.ContentFields.Settings.LinkFieldSettings
 @using OrchardCore.ContentFields.Settings
 
-<div class="row">
-    <div class="form-group col-md-6">
-        <div class="custom-control custom-checkbox">
-            <input type="checkbox" class="custom-control-input" asp-for="Required" checked="@Model.Required" />
-            <label class="custom-control-label" asp-for="Required">@T["Required"]</label>
-            <span class="hint">— @T["Whether the url is required."]</span>
-        </div>
+<div class="form-group">
+    <div class="custom-control custom-checkbox">
+        <input type="checkbox" class="custom-control-input" asp-for="Required" checked="@Model.Required" />
+        <label class="custom-control-label" asp-for="Required">@T["Required"]</label>
+        <span class="hint dashed">@T["Whether the url is required."]</span>
     </div>
-    <div class="form-group col-md-6">
+</div>
+<div class="form-group">
+    <div class="w-100 w-md-50 pr-md-3">
         <label asp-for="LinkTextMode">@T["Text"]</label>
         <select asp-for="LinkTextMode" class="form-control">
             <option value="@LinkTextMode.Optional" selected="@(Model.LinkTextMode == LinkTextMode.Optional)">@T["Text is optional"]</option>

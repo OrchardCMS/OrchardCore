@@ -1,9 +1,9 @@
-using OrchardCore.Autoroute.Drivers;
 using OrchardCore.Autoroute.Models;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.ContentManagement.Records;
 using OrchardCore.Data.Migration;
+using YesSql.Sql;
 
 namespace OrchardCore.Autoroute
 {
@@ -22,25 +22,21 @@ namespace OrchardCore.Autoroute
                 .Attachable()
                 .WithDescription("Provides a custom url for your content item."));
 
-            SchemaBuilder.CreateMapIndexTable(nameof(AutoroutePartIndex), table => table
+            SchemaBuilder.CreateMapIndexTable<AutoroutePartIndex>(table => table
                 .Column<string>("ContentItemId", c => c.WithLength(26))
                 .Column<string>("ContainedContentItemId", c => c.WithLength(26))
                 .Column<string>("JsonPath", c => c.Unlimited())
-                .Column<string>("Path", col => col.WithLength(AutoroutePartDisplay.MaxPathLength))
+                .Column<string>("Path", col => col.WithLength(AutoroutePart.MaxPathLength))
                 .Column<bool>("Published")
                 .Column<bool>("Latest")
             );
 
-            SchemaBuilder.AlterTable(nameof(AutoroutePartIndex), table => table
-                .CreateIndex("IDX_AutoroutePartIndex_ContentItemIds", "ContentItemId", "ContainedContentItemId")
+            SchemaBuilder.AlterIndexTable<AutoroutePartIndex>(table => table
+                .CreateIndex("IDX_AutoroutePartIndex_DocumentId", "DocumentId")
             );
 
-            SchemaBuilder.AlterTable(nameof(AutoroutePartIndex), table => table
-                .CreateIndex("IDX_AutoroutePartIndex_State", "Published", "Latest")
-            );
-
-            // Return 4 to shortcut the second migration on new content definition schemas.
-            return 4;
+            // Return 5 to shortcut other migrations on new content definition schemas.
+            return 5;
         }
 
         // Migrate PartSettings. This only needs to run on old content definition schemas.
@@ -55,45 +51,35 @@ namespace OrchardCore.Autoroute
         // This code can be removed in a later version.
         public int UpdateFrom2()
         {
-            SchemaBuilder.AlterTable(nameof(AutoroutePartIndex), table => table
-                .CreateIndex("IDX_AutoroutePartIndex_Published", "Published")
-            );
-
             return 3;
         }
 
         // This code can be removed in a later version.
         public int UpdateFrom3()
         {
-            SchemaBuilder.AlterTable(nameof(AutoroutePartIndex), table => table
+            SchemaBuilder.AlterIndexTable<AutoroutePartIndex>(table => table
                 .AddColumn<string>("ContainedContentItemId", c => c.WithLength(26))
             );
 
-            SchemaBuilder.AlterTable(nameof(AutoroutePartIndex), table => table
+            SchemaBuilder.AlterIndexTable<AutoroutePartIndex>(table => table
                 .AddColumn<string>("JsonPath", c => c.Unlimited())
             );
 
-            SchemaBuilder.AlterTable(nameof(AutoroutePartIndex), table => table
+            SchemaBuilder.AlterIndexTable<AutoroutePartIndex>(table => table
                 .AddColumn<bool>("Latest", c => c.WithDefault(false))
             );
 
-            SchemaBuilder.AlterTable(nameof(AutoroutePartIndex), table => table
-                .DropIndex("IDX_AutoroutePartIndex_ContentItemId")
-            );
-
-            SchemaBuilder.AlterTable(nameof(AutoroutePartIndex), table => table
-                .CreateIndex("IDX_AutoroutePartIndex_ContentItemIds", "ContentItemId", "ContainedContentItemId")
-            );
-
-            SchemaBuilder.AlterTable(nameof(AutoroutePartIndex), table => table
-                .DropIndex("IDX_AutoroutePartIndex_Published")
-            );
-
-            SchemaBuilder.AlterTable(nameof(AutoroutePartIndex), table => table
-                .CreateIndex("IDX_AutoroutePartIndex_State", "Published", "Latest")
-            );
-
             return 4;
+        }
+
+        // This code can be removed in a later version.
+        public int UpdateFrom4()
+        {
+            SchemaBuilder.AlterIndexTable<AutoroutePartIndex>(table => table
+                .CreateIndex("IDX_AutoroutePartIndex_DocumentId", "DocumentId")
+            );
+
+            return 5;
         }
     }
 }

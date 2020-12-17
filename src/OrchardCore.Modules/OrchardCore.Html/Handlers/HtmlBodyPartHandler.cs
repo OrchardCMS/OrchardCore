@@ -8,27 +8,26 @@ using OrchardCore.ContentManagement.Models;
 using OrchardCore.Html.Models;
 using OrchardCore.Html.Settings;
 using OrchardCore.Html.ViewModels;
-using OrchardCore.ShortCodes.Services;
 using OrchardCore.Liquid;
+using OrchardCore.Shortcodes.Services;
+using Shortcodes;
 
 namespace OrchardCore.Html.Handlers
 {
     public class HtmlBodyPartHandler : ContentPartHandler<HtmlBodyPart>
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
-        private readonly IShortCodeService _shortCodeService;
+        private readonly IShortcodeService _shortcodeService;
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly HtmlEncoder _htmlEncoder;
-        private HtmlString _bodyAspect;
-        private int _contentItemId;
 
         public HtmlBodyPartHandler(IContentDefinitionManager contentDefinitionManager,
-            IShortCodeService shortCodeService,
+            IShortcodeService shortcodeService,
             ILiquidTemplateManager liquidTemplateManager,
             HtmlEncoder htmlEncoder)
         {
             _contentDefinitionManager = contentDefinitionManager;
-            _shortCodeService = shortCodeService;
+            _shortcodeService = shortcodeService;
             _liquidTemplateManager = liquidTemplateManager;
             _htmlEncoder = htmlEncoder;
         }
@@ -37,13 +36,6 @@ namespace OrchardCore.Html.Handlers
         {
             return context.ForAsync<BodyAspect>(async bodyAspect =>
             {
-                if (bodyAspect != null && part.ContentItem.Id == _contentItemId)
-                {
-                    bodyAspect.Body = _bodyAspect;
-
-                    return;
-                }
-
                 try
                 {
                     var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(part.ContentItem.ContentType);
@@ -51,6 +43,7 @@ namespace OrchardCore.Html.Handlers
                     var settings = contentTypePartDefinition.GetSettings<HtmlBodyPartSettings>();
 
                     var html = part.Html;
+
                     if (!settings.SanitizeHtml)
                     {
                         var model = new HtmlBodyPartViewModel()
@@ -64,15 +57,18 @@ namespace OrchardCore.Html.Handlers
                             scope => scope.SetValue("ContentItem", model.ContentItem));
                     }
 
-                    html = await _shortCodeService.ProcessAsync(html);
+                    html = await _shortcodeService.ProcessAsync(html,
+                        new Context
+                        {
+                            ["ContentItem"] = part.ContentItem,
+                            ["TypePartDefinition"] = contentTypePartDefinition
+                        });
 
-                    bodyAspect.Body = _bodyAspect = new HtmlString(html);
-                    _contentItemId = part.ContentItem.Id;
+                    bodyAspect.Body = new HtmlString(html);
                 }
                 catch
                 {
                     bodyAspect.Body = HtmlString.Empty;
-                    _contentItemId = default;
                 }
             });
         }

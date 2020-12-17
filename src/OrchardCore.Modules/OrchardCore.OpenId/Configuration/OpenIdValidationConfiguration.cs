@@ -4,27 +4,31 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
 using OpenIddict.Validation;
-using OpenIddict.Validation.Internal;
+using OpenIddict.Validation.AspNetCore;
+using OpenIddict.Validation.DataProtection;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Modules;
 using OrchardCore.OpenId.Services;
 using OrchardCore.OpenId.Settings;
+using OrchardCore.Security;
+using static OpenIddict.Abstractions.OpenIddictConstants;
 
 namespace OrchardCore.OpenId.Configuration
 {
     [Feature(OpenIdConstants.Features.Validation)]
     public class OpenIdValidationConfiguration : IConfigureOptions<AuthenticationOptions>,
-        IConfigureNamedOptions<OpenIddictValidationOptions>,
-        IConfigureNamedOptions<JwtBearerOptions>
+        IConfigureOptions<OpenIddictValidationOptions>,
+        IConfigureOptions<OpenIddictValidationDataProtectionOptions>,
+        IConfigureNamedOptions<ApiAuthorizationOptions>
     {
         private readonly ILogger _logger;
         private readonly IOpenIdValidationService _validationService;
@@ -56,7 +60,8 @@ namespace OrchardCore.OpenId.Configuration
 
             if (settings.Authority != null)
             {
-                options.AddScheme<JwtBearerHandler>(JwtBearerDefaults.AuthenticationScheme, displayName: null);
+                options.AddScheme<OpenIddictValidationAspNetCoreHandler>(
+                    OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme, displayName: null);
 
                 return;
             }
@@ -77,30 +82,13 @@ namespace OrchardCore.OpenId.Configuration
                     return;
                 }
 
-                // Register the JWT or validation handler in the authentication handlers collection.
-                if (configuration.AccessTokenFormat == OpenIdServerSettings.TokenFormat.Encrypted)
-                {
-                    options.AddScheme<OpenIddictValidationHandler>(OpenIddictValidationDefaults.AuthenticationScheme, displayName: null);
-                }
-                else if (configuration.AccessTokenFormat == OpenIdServerSettings.TokenFormat.JWT)
-                {
-                    options.AddScheme<JwtBearerHandler>(JwtBearerDefaults.AuthenticationScheme, displayName: null);
-                }
-                else
-                {
-                    throw new InvalidOperationException("The specified access token format is not valid.");
-                }
+                options.AddScheme<OpenIddictValidationAspNetCoreHandler>(
+                    OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme, displayName: null);
             }).GetAwaiter().GetResult();
         }
 
-        public void Configure(string name, JwtBearerOptions options)
+        public void Configure(OpenIddictValidationOptions options)
         {
-            // Ignore JWT handler instances that don't correspond to the instance managed by the OpenID module.
-            if (!string.Equals(name, JwtBearerDefaults.AuthenticationScheme))
-            {
-                return;
-            }
-
             var settings = GetValidationSettingsAsync().GetAwaiter().GetResult();
             if (settings == null)
             {
@@ -109,17 +97,29 @@ namespace OrchardCore.OpenId.Configuration
 
             // If the tokens are issued by an authorization server located in an Orchard tenant, retrieve the
             // authority and the signing key and register them in the token validation parameters to prevent
-            // the JWT handler from using an HTTP call to retrieve the discovery document from the other tenant.
-            // Otherwise, set the authority to allow the JWT handler to retrieve the endpoint URLs/signing keys
-            // from the remote server's metadata by sending an OpenID Connect/OAuth2 discovery request.
+            // the handler from using an HTTP call to retrieve the discovery document from the other tenant.
+            // Otherwise, set the authority to allow the handler to retrieve the endpoint URLs/signing keys
+            // from the remote server's metadata by sending an OpenID Connect/OAuth 2.0 discovery request.
 
             if (settings.Authority != null)
             {
-                options.RequireHttpsMetadata = string.Equals(settings.Authority.Scheme, Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase);
-                options.Audience = settings.Audience;
-                options.Authority = settings.Authority.AbsoluteUri;
+                options.Issuer = settings.Authority;
+                options.Audiences.Add(settings.Audience);
 
-                return;
+                // Note: OpenIddict 3.0 only accepts tokens issued with a non-empty token type (e.g "at+jwt")
+                // or with the generic "JWT" type and a special "token_type" claim containing the actual type
+                // for backward compatibility, which matches the recommended best practices and helps prevent
+                // token substitution attacks by ensuring JWT tokens of any other type are always rejected.
+                // Unfortunately, most of the OAuth 2.0/OpenID Connect servers haven't been updated to emit
+                // access tokens using the "at+jwt" token type header. To ensure the validation handler can still
+                // be used with these servers, an option is provided to disable the token validation logic.
+                // In this case, the received tokens are assumed to be access tokens (which is the only type
+                // currently used in the API validation feature), no matter what their actual "typ" header is.
+                if (settings.DisableTokenTypeValidation)
+                {
+                    options.TokenValidationParameters.TypeValidator = (type, token, parameters)
+                        => JsonWebTokenTypes.AccessToken;
+                }
             }
 
             // Note: the shell host guarantees that the OpenID server service resolved inside
@@ -138,11 +138,31 @@ namespace OrchardCore.OpenId.Configuration
                     return;
                 }
 
+                options.Configuration = new OpenIdConnectConfiguration
+                {
+                    Issuer = configuration.Authority?.AbsoluteUri
+                };
+
+                // Import the signing keys from the OpenID server configuration.
+                foreach (var key in await service.GetSigningKeysAsync())
+                {
+                    options.Configuration.SigningKeys.Add(key);
+                }
+
+                // Register the encryption keys used by the OpenID Connect server.
+                foreach (var key in await service.GetEncryptionKeysAsync())
+                {
+                    options.EncryptionCredentials.Add(new EncryptingCredentials(key,
+                        SecurityAlgorithms.RsaOAEP, SecurityAlgorithms.Aes256CbcHmacSha512));
+                }
+
                 // When the server is another tenant, don't allow the current tenant
                 // to choose the valid audiences, as this would otherwise allow it
                 // to validate/introspect tokens meant to be used with another tenant.
-                options.TokenValidationParameters.ValidAudience = OpenIdConstants.Prefixes.Tenant + _shellSettings.Name;
-                options.TokenValidationParameters.IssuerSigningKeys = await service.GetSigningKeysAsync();
+                options.Audiences.Add(OpenIdConstants.Prefixes.Tenant + _shellSettings.Name);
+
+                // Note: token entry validation must be enabled to be able to validate reference tokens.
+                options.EnableTokenEntryValidation = configuration.UseReferenceAccessTokens;
 
                 // If an authority was explicitly set in the OpenID server options,
                 // prefer it to the dynamic tenant comparison as it's more efficient.
@@ -159,7 +179,7 @@ namespace OrchardCore.OpenId.Configuration
                             throw new SecurityTokenInvalidIssuerException("The token issuer is not valid.");
                         }
 
-                        var tenant = _runningShellTable.Match(new HostString(uri.Authority), uri.AbsolutePath);
+                        var tenant = _runningShellTable.Match(HostString.FromUriComponent(uri), uri.AbsolutePath);
                         if (tenant == null || !string.Equals(tenant.Name, settings.Tenant))
                         {
                             throw new SecurityTokenInvalidIssuerException("The token issuer is not valid.");
@@ -171,16 +191,8 @@ namespace OrchardCore.OpenId.Configuration
             }).GetAwaiter().GetResult();
         }
 
-        public void Configure(JwtBearerOptions options) => Debug.Fail("This infrastructure method shouldn't be called.");
-
-        public void Configure(string name, OpenIddictValidationOptions options)
+        public void Configure(OpenIddictValidationDataProtectionOptions options)
         {
-            // Ignore validation handler instances that don't correspond to the instance managed by the OpenID module.
-            if (!string.Equals(name, OpenIddictValidationDefaults.AuthenticationScheme))
-            {
-                return;
-            }
-
             var settings = GetValidationSettingsAsync().GetAwaiter().GetResult();
             if (settings == null)
             {
@@ -192,7 +204,7 @@ namespace OrchardCore.OpenId.Configuration
             if (!string.IsNullOrEmpty(settings.Tenant) &&
                 !string.Equals(settings.Tenant, _shellSettings.Name))
             {
-                _shellHost.GetScopeAsync(settings.Tenant).GetAwaiter().GetResult().UsingAsync(async scope =>
+                CreateTenantScope(settings.Tenant).UsingAsync(async scope =>
                 {
                     // If the other tenant is released, ensure the current tenant is also restarted as it
                     // relies on a data protection provider whose lifetime is managed by the other tenant.
@@ -206,30 +218,19 @@ namespace OrchardCore.OpenId.Configuration
                     options.DataProtectionProvider = scope.ServiceProvider.GetDataProtectionProvider();
                 }).GetAwaiter().GetResult();
             }
-
-            // Don't allow the current tenant to choose the valid audiences, as this would
-            // otherwise allow it to introspect tokens meant to be used with another tenant.
-            options.Audiences.Add(OpenIdConstants.Prefixes.Tenant + _shellSettings.Name);
-
-            CreateTenantScope(settings.Tenant).UsingAsync(async scope =>
-            {
-                var service = scope.ServiceProvider.GetService<IOpenIdServerService>();
-                if (service == null)
-                {
-                    return;
-                }
-
-                var configuration = await GetServerSettingsAsync(service);
-                if (configuration == null)
-                {
-                    return;
-                }
-
-                options.UseReferenceTokens = configuration.UseReferenceTokens;
-            }).GetAwaiter().GetResult();
         }
 
-        public void Configure(OpenIddictValidationOptions options) => Debug.Fail("This infrastructure method shouldn't be called.");
+        public void Configure(string name, ApiAuthorizationOptions options)
+        {
+            // The default Orchard API authentication handler uses "Bearer" as the forwarded
+            // authentication scheme, that corresponds to the default value used by the JWT
+            // bearer handler from Microsoft. Yet, the OpenIddict validation handler uses
+            // a different authentication scheme, so the API scheme must be manually replaced.
+            options.ApiAuthenticationScheme = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme;
+        }
+
+        public void Configure(ApiAuthorizationOptions options)
+            => Debug.Fail("This infrastructure method shouldn't be called.");
 
         private ShellScope CreateTenantScope(string tenant)
         {

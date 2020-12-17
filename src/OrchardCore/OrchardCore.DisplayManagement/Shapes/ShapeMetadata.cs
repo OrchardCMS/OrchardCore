@@ -27,9 +27,12 @@ namespace OrchardCore.DisplayManagement.Shapes
         public string DisplayType { get; set; }
         public string Position { get; set; }
         public string Tab { get; set; }
+        public string Card { get; set; }
+        public string Column { get; set; }
         public string PlacementSource { get; set; }
         public string Prefix { get; set; }
         public string Name { get; set; }
+        public string Differentiator { get; set; }
         public AlternatesCollection Wrappers { get; set; }
         public AlternatesCollection Alternates { get; set; }
         public bool IsCached => _cacheContext != null;
@@ -85,7 +88,7 @@ namespace OrchardCore.DisplayManagement.Shapes
         }
 
         /// <summary>
-        /// Returns the <see cref="ShapeMetadataCacheContext"/> instance if the shape is cached.
+        /// Returns the <see cref="CacheContext"/> instance if the shape is cached.
         /// </summary>
         public CacheContext Cache()
         {

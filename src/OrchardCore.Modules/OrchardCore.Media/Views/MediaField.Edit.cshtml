@@ -1,55 +1,45 @@
 @model OrchardCore.Media.ViewModels.EditMediaFieldViewModel
-@using OrchardCore.Media.Settings;
+@using System.Globalization
+@using OrchardCore.Media.Settings
 @using OrchardCore.ContentManagement.Metadata.Models
 
 @{
     var settings = Model.PartFieldDefinition.GetSettings<MediaFieldSettings>();
     var modalMediaId = "Modal" + Html.IdFor(m => m);
 }
+<script asp-src="~/OrchardCore.Media/Scripts/media.js" asp-name="media" at="Foot" depends-on="admin, vuejs, sortable, vuedraggable, jQuery-ui"></script>
+<style asp-src="~/OrchardCore.Media/Styles/media.min.css" debug-src="~/OrchardCore.Media/Styles/media.css"></style>
 
-<partial name="Shared/MediaFieldEditResources.cshtml" />
+<div class="form-group" id="@Html.IdFor(m => m)" data-for="@Html.IdFor(m => m.Paths)">
+    <label asp-for="Paths">@Model.PartFieldDefinition.DisplayName()</label>
+    @if (!string.IsNullOrWhiteSpace(settings.Hint))
+    {
+        <span class="hint">@settings.Hint</span>
+    }
 
-<script at="Foot">
-    initializeMediaApplication(false,  '@Url.Action("MediaApplication", "Admin", new { area = "OrchardCore.Media" })');
-    initializeMediaField(
-        document.getElementById('@Html.IdFor(m => m)'),
-        document.getElementById('@Html.IdFor(m => m)-ModalBody'),
-        '@Url.Action("GetMediaItem", "Admin", new { area = "OrchardCore.Media" })',
-        @(settings.Multiple ? "true" : "false"));
-</script>
+    <input asp-for="Paths" type="hidden" class="paths" :value="paths" data-init="@Model.Paths" />
 
-<div class="mediafield-editor" id="@Html.IdFor(m => m)" data-for="@Html.IdFor(m => m.Paths)">
-    <div class="media-field">
-        <div class="form-group">
-            <label asp-for="Paths">@Model.PartFieldDefinition.DisplayName()</label>
-            @if (!string.IsNullOrWhiteSpace(settings.Hint))
-            {
-                <span class="hint">@settings.Hint</span>
-            }
-
-            <input asp-for="Paths" type="hidden" class="paths" :value="paths" data-init="@Model.Paths" />
-
-            <nav class="media-field-toolbar" v-cloak>
-                <div class="btn-group">
-                    <button type="button" class="btn btn-secondary btn-sm" :disabled="mediaItems.length < 1" v-on:click="smallThumbs = !smallThumbs">
-                        <span v-show="!smallThumbs" title="@T["Small Thumbs"]"><i class="fa fa-compress"></i></span>
-                        <span v-show="smallThumbs" title="@T["Large Thumbs"]"><i class="fa fa-expand"></i></span>
-                    </button>
-                    <a href="javascript:;" v-show="canAddMedia" v-on:click="showModal" class="btn btn-secondary btn-sm"><i class="fa fa-plus"></i></a>
-                    <a href="javascript:;" v-on:click="removeSelected" class="btn btn-secondary btn-sm" v-bind:class="{ disabled : !selectedMedia }"><i class="fa fa-trash"></i></a>
-                </div>
-                <div  class="selected-media-name">
-                    <code class="text-right" v-if="selectedMedia">@T["{{{{ selectedMedia.name }}}} ({{{{ isNaN(fileSize)? 0 : fileSize }}}} KB)"]</code>
-                </div>
-            </nav>
+    <div class="form-control-plaintext media-field-toolbar" v-cloak>
+        <div class="btn-group">
+            <button type="button" class="btn btn-secondary btn-sm" :disabled="mediaItems.length < 1" v-on:click="smallThumbs = !smallThumbs">
+                <span v-show="!smallThumbs" title="@T[" Small Thumbs"]"><i class="fas fa-compress-alt"></i></span>
+                <span v-show="smallThumbs" title="@T[" Large Thumbs"]"><i class="fas fa-expand-alt"></i></span>
+            </button>
+            <a href="javascript:;" v-show="canAddMedia" v-on:click="showModal" class="btn btn-secondary btn-sm"><i class="fas fa-plus"></i></a>
+            <a href="javascript:;" v-show="allowMediaText" v-on:click="showMediaTextModal" class="btn btn-secondary btn-sm" v-bind:class="{ disabled : !selectedMedia }"><i class="far fa-comment"></i></a>
+            <a href="javascript:;" v-show="allowAnchors" v-on:click="showAnchorModal" class="btn btn-secondary btn-sm" v-bind:class="{ disabled : !selectedMedia }"><i class="fas fa-crosshairs"></i></a>
+            <a href="javascript:;" v-on:click="removeSelected" class="btn btn-secondary btn-sm" v-bind:class="{ disabled : !selectedMedia }"><i class="fas fa-trash-alt"></i></a>
         </div>
-        <div class="form-group">
-            <media-field-thumbs-container :media-items="mediaItems"
-                                          :thumb-size="thumbSize"
-                                          :selected-media="selectedMedia">
-            </media-field-thumbs-container>
-        </div>
+        <label class="selected-media-name">
+            <code class="text-right" v-if="selectedMedia">@T["{{{{ selectedMedia.name }}}}{{{{ selectedMedia.mediaText === '' ? '' : ', ' + selectedMedia.mediaText }}}} ({{{{ isNaN(fileSize)? 0 : fileSize }}}} KB)"]</code>
+        </label>
     </div>
+
+    <media-field-thumbs-container :media-items="mediaItems" :thumb-size="thumbSize" :selected-media="selectedMedia" :id-prefix="idPrefix" :allow-anchors="allowAnchors"></media-field-thumbs-container>
+
+    <partial name="Shared/MediaFieldEditMediaTextModal.cshtml" />
+    <partial name="Shared/MediaFieldEditAnchorModal.cshtml" />
+
 </div>
 
 <div class="modal" id="@Html.IdFor(m => m)-ModalBody">
@@ -61,8 +51,7 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <div class="modal-body">
-            </div>
+            <div class="modal-body"></div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-primary mediaFieldSelectButton">@T["OK"]</button>
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">@T["Cancel"]</button>
@@ -72,3 +61,16 @@
 </div>
 
 <partial name="Shared/MediaFieldEditLocalization.cshtml" />
+
+<script at="Foot">
+    initializeMediaApplication(false, '@Url.Action("MediaApplication", "Admin", new { area = "OrchardCore.Media" })', '@Context.Request.PathBase.ToString()');
+
+    initializeMediaField(
+        document.getElementById('@Html.IdFor(m => m)'),
+        document.getElementById('@Html.IdFor(m => m)-ModalBody'),
+        '@Url.Action("GetMediaItem", "Admin", new { area = "OrchardCore.Media" })',
+        @(settings.Multiple ? "true" : "false"),
+        @(settings.AllowMediaText ? "true" : "false"),
+        @(settings.AllowAnchors ? "true" : "false"));
+</script> 
+  

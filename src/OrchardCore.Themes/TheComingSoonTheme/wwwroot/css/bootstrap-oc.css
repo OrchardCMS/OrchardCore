@@ -1,7 +1,7 @@
 /*!
- * Start Bootstrap - Coming Soon v5.0.7 (https://startbootstrap.com/template-overviews/coming-soon)
+ * Start Bootstrap - Coming Soon v5.0.9 (https://startbootstrap.com/theme/coming-soon)
  * Copyright 2013-2020 Start Bootstrap
- * Licensed under MIT (https://github.com/BlackrockDigital/startbootstrap-coming-soon/blob/master/LICENSE)
+ * Licensed under MIT (https://github.com/StartBootstrap/startbootstrap-coming-soon/blob/master/LICENSE)
  */
 
 /*
@@ -323,4 +323,9 @@ ul.pager {
 
 .form-coming-soon .validation-summary-errors {
   color: #ea912b;
+}
+
+#togglePassword {
+  width: 44px;
+  padding: 0;
 }

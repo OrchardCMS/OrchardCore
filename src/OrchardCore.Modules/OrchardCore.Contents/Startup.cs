@@ -1,4 +1,5 @@
 using System;
+using Fluid;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
@@ -10,6 +11,7 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Handlers;
+using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Routing;
 using OrchardCore.Contents.AdminNodes;
 using OrchardCore.Contents.Controllers;
@@ -26,11 +28,14 @@ using OrchardCore.Contents.Services;
 using OrchardCore.Contents.Settings;
 using OrchardCore.Contents.Sitemaps;
 using OrchardCore.Contents.TagHelpers;
+using OrchardCore.Contents.ViewModels;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data.Migration;
 using OrchardCore.Deployment;
+using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Handlers;
+using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Entities;
 using OrchardCore.Feeds;
 using OrchardCore.Indexing;
@@ -42,7 +47,7 @@ using OrchardCore.Navigation;
 using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Sitemaps.Builders;
-using OrchardCore.Sitemaps.Cache;
+using OrchardCore.Sitemaps.Handlers;
 using OrchardCore.Sitemaps.Models;
 using OrchardCore.Sitemaps.Services;
 
@@ -51,6 +56,17 @@ namespace OrchardCore.Contents
     public class Startup : StartupBase
     {
         private readonly AdminOptions _adminOptions;
+
+        static Startup()
+        {
+            TemplateContext.GlobalMemberAccessStrategy.Register<ContentItem>();
+            TemplateContext.GlobalMemberAccessStrategy.Register<ContentElement>();
+            TemplateContext.GlobalMemberAccessStrategy.Register<ShapeViewModel<ContentItem>>();
+            TemplateContext.GlobalMemberAccessStrategy.Register<ContentTypePartDefinition>();
+            TemplateContext.GlobalMemberAccessStrategy.Register<ContentPartFieldDefinition>();
+            TemplateContext.GlobalMemberAccessStrategy.Register<ContentFieldDefinition>();
+            TemplateContext.GlobalMemberAccessStrategy.Register<ContentPartDefinition>();
+        }
 
         public Startup(IOptions<AdminOptions> adminOptions)
         {
@@ -73,7 +89,7 @@ namespace OrchardCore.Contents
             services.AddScoped<IContentItemIndexHandler, FullTextContentIndexHandler>();
             services.AddScoped<IContentItemIndexHandler, AspectsContentIndexHandler>();
             services.AddScoped<IContentItemIndexHandler, DefaultContentIndexHandler>();
-            services.AddScoped<IContentAliasProvider, ContentItemIdAliasProvider>();
+            services.AddScoped<IContentHandleProvider, ContentItemIdHandleProvider>();
             services.AddScoped<IContentItemIndexHandler, ContentItemIndexCoordinator>();
 
             services.AddIdGeneration();
@@ -88,11 +104,7 @@ namespace OrchardCore.Contents
 
             // FullTextAspect
             services.AddScoped<IContentTypeDefinitionDisplayDriver, FullTextAspectSettingsDisplayDriver>();
-            services.AddScoped<IContentHandler, FullTextAspectSettingsHandler>();
-
-            // Feeds
-            // TODO: Move to feature
-            services.AddScoped<IFeedItemBuilder, CommonFeedItemBuilder>();
+            services.AddScoped<IContentHandler, FullTextAspectContentHandler>();
 
             services.AddTagHelpers<ContentLinkTagHelper>();
             services.AddTagHelpers<ContentItemTagHelper>();
@@ -112,6 +124,23 @@ namespace OrchardCore.Contents
                     options.JsonPathKey = "jsonPath";
                 }
             });
+
+            services.AddScoped<IContentsAdminListFilter, DefaultContentsAdminListFilter>();
+            services.AddScoped<IContentsAdminListQueryService, DefaultContentsAdminListQueryService>();
+
+            services.AddScoped<IDisplayManager<ContentOptionsViewModel>, DisplayManager<ContentOptionsViewModel>>();
+            services.AddScoped<IDisplayDriver<ContentOptionsViewModel>, ContentOptionsDisplayDriver>();
+
+            // Liquid
+            services.AddScoped<ILiquidTemplateEventHandler, ContentLiquidTemplateEventHandler>();
+
+            services.AddLiquidFilter<BuildDisplayFilter>("shape_build_display");
+            services.AddLiquidFilter<ContentItemFilter>("content_item_id");
+            services.AddLiquidFilter<DisplayTextFilter>("display_text");
+            services.AddLiquidFilter<DisplayUrlFilter>("display_url");
+            services.AddLiquidFilter<FullTextFilter>("full_text");
+
+            services.AddScoped(typeof(IContentItemRecursionHelper<>), typeof(ContentItemRecursionHelper<>));
         }
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
@@ -207,18 +236,6 @@ namespace OrchardCore.Contents
         }
     }
 
-    [RequireFeatures("OrchardCore.Liquid")]
-    public class LiquidStartup : StartupBase
-    {
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddScoped<ILiquidTemplateEventHandler, ContentLiquidTemplateEventHandler>();
-
-            services.AddLiquidFilter<BuildDisplayFilter>("shape_build_display");
-            services.AddLiquidFilter<ContentItemFilter>("content_item_id");
-        }
-    }
-
     [RequireFeatures("OrchardCore.Deployment")]
     public class DeploymentStartup : StartupBase
     {
@@ -260,12 +277,22 @@ namespace OrchardCore.Contents
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<ISitemapSourceBuilder, ContentTypesSitemapSourceBuilder>();
-            services.AddScoped<ISitemapSourceCacheManager, ContentTypesSitemapSourceCacheManager>();
+            services.AddScoped<ISitemapSourceUpdateHandler, ContentTypesSitemapSourceUpdateHandler>();
             services.AddScoped<ISitemapSourceModifiedDateProvider, ContentTypesSitemapSourceModifiedDateProvider>();
             services.AddScoped<IDisplayDriver<SitemapSource>, ContentTypesSitemapSourceDriver>();
             services.AddScoped<ISitemapSourceFactory, SitemapSourceFactory<ContentTypesSitemapSource>>();
             services.AddScoped<IContentItemsQueryProvider, DefaultContentItemsQueryProvider>();
-            services.AddScoped<IContentHandler, ContentTypesSitemapCacheHandler>();
+            services.AddScoped<IContentHandler, ContentTypesSitemapUpdateHandler>();
+        }
+    }
+
+    [RequireFeatures("OrchardCore.Feeds")]
+    public class FeedsStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            // Feeds
+            services.AddScoped<IFeedItemBuilder, CommonFeedItemBuilder>();
         }
     }
 }

@@ -1,7 +1,7 @@
 // <media-items-table> component
 Vue.component('media-items-table', {
     template: `
-        <table class="table media-items-table">
+        <table class="table media-items-table m-0">
             <thead>
                 <tr class="header-row">
                     <th scope="col" class="thumbnail-column">{{ T.imageHeader }}</th>
@@ -9,6 +9,10 @@ Vue.component('media-items-table', {
                        {{ T.nameHeader }}
                          <sort-indicator colname="name" :selectedcolname="sortBy" :asc="sortAsc"></sort-indicator>
                     </th>
+                    <th scope="col" v-on:click="changeSort('lastModify')"> 
+                       {{ T.lastModifyHeader }} 
+                         <sort-indicator colname="lastModify" :selectedcolname="sortBy" :asc="sortAsc"></sort-indicator> 
+                    </th> 
                     <th scope="col" v-on:click="changeSort('size')">
                         <span class="optional-col">
                             {{ T.sizeHeader }}
@@ -42,9 +46,12 @@ Vue.component('media-items-table', {
                                     <div class="buttons-container">
                                         <a href="javascript:;" class="btn btn-link btn-sm mr-1 edit-button" v-on:click.stop="renameMedia(media)"> {{ T.editButton }} </a >
                                         <a href="javascript:;" class="btn btn-link btn-sm delete-button" v-on:click.stop="deleteMedia(media)"> {{ T.deleteButton }} </a>
-                                        <a :href="media.url" class="btn btn-link btn-sm view-button"> {{ T.viewButton }} </a>
+                                        <a :href="media.url" target="_blank" class="btn btn-link btn-sm view-button"> {{ T.viewButton }} </a>
                                     </div>
                                 </div>
+                            </td>
+                            <td>
+                                <div class="text-col"> {{ printDateTime(media.lastModify) }} </div>
                             </td>
                             <td>
                                 <div class="text-col optional-col"> {{ isNaN(media.size)? 0 : Math.round(media.size / 1024) }} KB</div>
@@ -72,6 +79,7 @@ Vue.component('media-items-table', {
         var self = this;
         self.T.imageHeader = $('#t-image-header').val();
         self.T.nameHeader = $('#t-name-header').val();
+        self.T.lastModifyHeader = $('#t-lastModify-header').val();
         self.T.sizeHeader = $('#t-size-header').val();
         self.T.typeHeader = $('#t-type-header').val();
         self.T.editButton = $('#t-edit-button').val();
@@ -102,6 +110,10 @@ Vue.component('media-items-table', {
         },
         dragStart: function (media, e) {
             bus.$emit('mediaDragStartRequested', media, e);
+        },
+        printDateTime: function (datemillis){
+            var d = new Date(datemillis);
+            return d.toLocaleString();            
         }
     }
 });

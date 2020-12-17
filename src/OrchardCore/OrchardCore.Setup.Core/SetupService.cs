@@ -27,6 +27,7 @@ namespace OrchardCore.Setup.Services
     {
         private readonly IShellHost _shellHost;
         private readonly IShellContextFactory _shellContextFactory;
+        private readonly ISetupUserIdGenerator _setupUserIdGenerator;
         private readonly IEnumerable<IRecipeHarvester> _recipeHarvesters;
         private readonly ILogger _logger;
         private readonly IStringLocalizer S;
@@ -42,7 +43,7 @@ namespace OrchardCore.Setup.Services
         /// <param name="shellHost">The <see cref="IShellHost"/>.</param>
         /// <param name="hostingEnvironment">The <see cref="IHostEnvironment"/>.</param>
         /// <param name="shellContextFactory">The <see cref="IShellContextFactory"/>.</param>
-        /// <param name="runningShellTable">The <see cref="IRunningShellTable"/>.</param>
+        /// <param name="setupUserIdGenerator">The <see cref="ISetupUserIdGenerator"/>.</param>
         /// <param name="recipeHarvesters">A list of <see cref="IRecipeHarvester"/>s.</param>
         /// <param name="logger">The <see cref="ILogger"/>.</param>
         /// <param name="stringLocalizer">The <see cref="IStringLocalizer"/>.</param>
@@ -53,7 +54,7 @@ namespace OrchardCore.Setup.Services
             IShellHost shellHost,
             IHostEnvironment hostingEnvironment,
             IShellContextFactory shellContextFactory,
-            IRunningShellTable runningShellTable,
+            ISetupUserIdGenerator setupUserIdGenerator,
             IEnumerable<IRecipeHarvester> recipeHarvesters,
             ILogger<SetupService> logger,
             IStringLocalizer<SetupService> stringLocalizer,
@@ -65,6 +66,7 @@ namespace OrchardCore.Setup.Services
             _shellHost = shellHost;
             _applicationName = hostingEnvironment.ApplicationName;
             _shellContextFactory = shellContextFactory;
+            _setupUserIdGenerator = setupUserIdGenerator;
             _recipeHarvesters = recipeHarvesters;
             _logger = logger;
             S = stringLocalizer;
@@ -137,6 +139,10 @@ namespace OrchardCore.Setup.Services
             // Set shell state to "Initializing" so that subsequent HTTP requests are responded to with "Service Unavailable" while Orchard is setting up.
             context.ShellSettings.State = TenantState.Initializing;
 
+            // Due to database collation we normalize the userId to lower invariant.
+            // During setup there are no users so we do not need to check unicity.
+            context.AdminUserId = _setupUserIdGenerator.GenerateUniqueId().ToLowerInvariant();
+
             var shellSettings = new ShellSettings(context.ShellSettings);
 
             if (string.IsNullOrEmpty(shellSettings["DatabaseProvider"]))
@@ -163,7 +169,7 @@ namespace OrchardCore.Setup.Services
 
             using (var shellContext = await _shellContextFactory.CreateDescribedContextAsync(shellSettings, shellDescriptor))
             {
-                await shellContext.CreateScope().UsingAsync(async scope =>
+                await shellContext.CreateScope().UsingServiceScopeAsync(async scope =>
                 {
                     IStore store;
 
@@ -207,6 +213,7 @@ namespace OrchardCore.Setup.Services
                 {
                     context.SiteName,
                     context.AdminUsername,
+                    context.AdminUserId,
                     context.AdminEmail,
                     context.AdminPassword,
                     context.DatabaseProvider,
@@ -231,6 +238,7 @@ namespace OrchardCore.Setup.Services
                 await setupEventHandlers.InvokeAsync((handler, context) => handler.Setup(
                     context.SiteName,
                     context.AdminUsername,
+                    context.AdminUserId,
                     context.AdminEmail,
                     context.AdminPassword,
                     context.DatabaseProvider,

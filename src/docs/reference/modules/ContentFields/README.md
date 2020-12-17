@@ -20,6 +20,7 @@ Some fields are available in their specific module.
 | `TaxonomyField` | `string TaxonomyContentItemId, string[] TaxonomyContentItemId` |
 | `TextField` | `string Text` |
 | `TimeField` | `TimeSpan? Value` |
+| `UserPickerField` | `string[] UserIds` |
 | `YoutubeField` | `string EmbeddedAddress, string RawAddress` |
 
 !!! note
@@ -31,13 +32,17 @@ Some fields are available in their specific module.
 From a `Content` template, you can reference a field's value like this
 (if the content type is `Article` and has a Text Field named `MyField`):
 
-``` liquid tab="Liquid"
-{{ Model.ContentItem.Content.Article.MyField.Text }}
-```
+=== "Liquid"
 
-``` html tab="Razor"
-var fieldValue = Model.ContentItem.Content.Article.MyField.Text;
-```
+    ``` liquid
+    {{ Model.ContentItem.Content.Article.MyField.Text }}
+    ```
+
+=== "Razor"
+
+    ``` html
+    var fieldValue = Model.ContentItem.Content.Article.MyField.Text;
+    ```
 
 From a field shape (see Shape Type in the table listing all the fields) you can also access properties specific to each view model.
 
@@ -63,13 +68,13 @@ Some view models have special properties that are computed from the actual field
 
 #### Html Field Example
 
-``` liquid tab="Liquid"
+``` liquid
 {{ Model.Html }}
 ```
 
 or, to display the raw content before the tags are converted:
 
-``` liquid tab="Liquid"
+``` liquid
 {{ Model.Field.Html }}
 ```
 
@@ -83,13 +88,13 @@ or, to display the raw content before the tags are converted:
 
 #### DateTime Field Example
 
-``` liquid tab="Liquid"
+``` liquid
 {{ Model.LocalDateTime }}
 ```
 
 or, to display the UTC value before it is converted:
 
-``` liquid tab="Liquid"
+``` liquid
 {{ Model.Value }}
 ```
 
@@ -97,35 +102,43 @@ or, to display the UTC value before it is converted:
 
 #### ContentPicker Field Example
 
-``` liquid tab="Liquid"
-{% assign contentItems = Model.ContentItemIds | content_item_id %}
-{% for contentItem in contentItems %}
-    {{ contentItem.DisplayText }}
-{% endfor %}
-```
+=== "Liquid"
 
-```html tab="Razor"
-@foreach (var contentItem in await Orchard.GetContentItemsByIdAsync(Model.ContentItemIds))
-{
-    @contentItem.DisplayText
-}
-```
+    ``` liquid
+    {% assign contentItems = Model.ContentItemIds | content_item_id %}
+    {% for contentItem in contentItems %}
+        {{ contentItem.DisplayText }}
+    {% endfor %}
+    ```
+
+=== "Razor"
+
+    ```html
+    @foreach (var contentItem in await Orchard.GetContentItemsByIdAsync(Model.ContentItemIds))
+    {
+        @contentItem.DisplayText
+    }
+    ```
 
 Or to render the referenced content item:
 
-``` liquid tab="Liquid"
-{% assign contentItems = Model.ContentItemIds | content_item_id %}
-{% for contentItem in contentItems %}
-    {{ contentItem | shape_build_display: "Detail" | shape_render }}
-{% endfor %}
-```
+=== "Liquid"
 
-``` html tab="Razor"
-@foreach (var contentItem in await Orchard.GetContentItemsByIdAsync(Model.ContentItemIds))
-{
-    @await Orchard.DisplayAsync(contentItem, "Detail")
-}
-```
+    ``` liquid
+    {% assign contentItems = Model.ContentItemIds | content_item_id %}
+    {% for contentItem in contentItems %}
+        {{ contentItem | shape_build_display: "Detail" | shape_render }}
+    {% endfor %}
+    ```
+
+=== "Razor"
+
+    ``` html
+    @foreach (var contentItem in await Orchard.GetContentItemsByIdAsync(Model.ContentItemIds))
+    {
+        @await Orchard.DisplayAsync(contentItem, "Detail")
+    }
+    ```
 
 ### `LocalizationSetContentPickerField`
 
@@ -137,33 +150,89 @@ per set based on the request culture, if no culture is specified.
 
 #### LocalizationSet ContentPicker Field Example
 
-```liquid tab="Liquid"
-{% assign contentItems = Model.LocalizationSets | localization_set %}
-{% for contentItem in contentItems %}
-    {{ contentItem.DisplayText }}
-{% endfor %}
-```
+=== "Liquid"
 
-``` html tab="Razor"
-@model OrchardCore.ContentFields.ViewModels.DisplayLocalizationSetContentPickerFieldViewModel
-@using Microsoft.AspNetCore.Localization
+    ```liquid
+    {% assign contentItems = Model.LocalizationSets | localization_set %}
+    {% for contentItem in contentItems %}
+        {{ contentItem.DisplayText }}
+    {% endfor %}
+    ```
 
-@inject OrchardCore.ContentLocalization.IContentLocalizationManager ContentLocalizationManager;
+=== "Razor"
 
-@{
-    var currentCulture = Context.Features.Get<IRequestCultureFeature>().RequestCulture.Culture.Name;
-    var contentItems = await ContentLocalizationManager.GetItemsForSetsAsync(Model.LocalizationSets, currentCulture);
-}
-foreach (var contentItem in contentItems)
-{
-    <span class="value">@contentItem.DisplayText</span>
-    if (contentItem != contentItems.Last())
-    {
-        <span>,</span>
+    ``` html
+    @model OrchardCore.ContentFields.ViewModels.DisplayLocalizationSetContentPickerFieldViewModel
+    @using Microsoft.AspNetCore.Localization
+
+    @inject OrchardCore.ContentLocalization.IContentLocalizationManager ContentLocalizationManager;
+
+    @{
+        var currentCulture = Context.Features.Get<IRequestCultureFeature>().RequestCulture.Culture.Name;
+        var contentItems = await ContentLocalizationManager.GetItemsForSetsAsync(Model.LocalizationSets, currentCulture);
     }
-}
+    foreach (var contentItem in contentItems)
+    {
+        <span class="value">@contentItem.DisplayText</span>
+        if (contentItem != contentItems.Last())
+        {
+            <span>,</span>
+        }
+    }
+    ```
 
-```
+### `UserPicker Field`
+
+The User Picker field allows you to relate users to a content item.
+
+When adding the field to a content type, use the settings to specify whether to 
+
+- List all users, 
+- List users from specific roles.
+
+
+#### UserPicker Field Example
+
+=== "Liquid"
+
+    ```liquid
+    {% assign users = Model.UserIds | users_by_id %}
+    {% for user in users %}
+        {{ user.UserName }} - {{ user.Email }}
+    {% endfor %}
+    ```
+
+=== "Razor"
+
+    ``` html
+    @model OrchardCore.ContentFields.ViewModels.DisplayUserPickerFieldViewModel
+    @using OrchardCore.Mvc.Utilities
+
+    @{
+        var name = (Model.PartFieldDefinition.PartDefinition.Name + "-" + Model.PartFieldDefinition.Name).HtmlClassify();
+        var users = await @Orchard.GetUsersByIdsAsync(Model.UserIds);
+    }
+
+    <div class="field field-type-userpickerfield field-name-@name">
+        <span class="name">@Model.PartFieldDefinition.DisplayName():</span>
+        @if (users.Any())
+        {
+            foreach (var user in users)
+            {
+                <span class="value">@user.UserName</span>
+                if (user != users.Last())
+                {
+                    <span>,</span>
+                }
+            }
+        }
+        else
+        {
+            <span class="value">@T["No users."]</span>
+        }
+    </div>
+
+    ```
 
 ## Creating Custom Fields
 
@@ -225,7 +294,7 @@ This shape type will match a template file named `{FIELDTYPE}-{DISPLAYMODE}.Disp
 
 This template will need to render an `<option>` tag. Here is an example for a Header display mode options on the Text Field:
 
-``` html tab="Razor"
+``` html
 @{
     string currentDisplayMode = Model.DisplayMode;
 }
@@ -246,7 +315,7 @@ This shape type will match a template file named `{FIELDTYPE}-{EDITORNAME}.Optio
 
 This template will need to render an `<option>` tag. Here is an example for a Wysiwyg options on the Html Field:
 
-``` html tab="Razor"
+``` html
 @{
     string currentEditor = Model.Editor;
 }
