@@ -83,9 +83,6 @@ namespace OrchardCore.Tests.Workflows
             services.AddScoped(provider => new Mock<IViewLocalizer>().Object);
             services.AddScoped<IWorkflowExecutionContextHandler, DefaultWorkflowExecutionContextHandler>();
 
-            services.AddSingleton<IDistributedLock, LocalLock>()
-                .AddLogging();
-
             return services.BuildServiceProvider();
         }
 
@@ -115,6 +112,7 @@ namespace OrchardCore.Tests.Workflows
             var workflowTypeStore = new Mock<IWorkflowTypeStore>();
             var workflowStore = new Mock<IWorkflowStore>();
             var workflowIdGenerator = new Mock<IWorkflowIdGenerator>();
+            var distributedLock = new Mock<IDistributedLock>();
             var workflowManagerLogger = new Mock<ILogger<WorkflowManager>>();
             var workflowContextLogger = new Mock<ILogger<WorkflowExecutionContext>>();
             var missingActivityLogger = new Mock<ILogger<MissingActivity>>();
@@ -126,7 +124,7 @@ namespace OrchardCore.Tests.Workflows
                 workflowStore.Object,
                 workflowIdGenerator.Object,
                 workflowValueSerializers,
-                serviceProvider.GetRequiredService<IDistributedLock>(),
+                distributedLock.Object,
                 workflowManagerLogger.Object,
                 missingActivityLogger.Object,
                 missingActivityLocalizer.Object,
