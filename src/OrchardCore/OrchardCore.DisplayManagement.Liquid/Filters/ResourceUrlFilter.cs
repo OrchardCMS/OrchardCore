@@ -38,7 +38,9 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
             // Don't prefix cdn if the path includes a protocol, i.e. is an external url, or is in debug mode.
             if (!_options.DebugMode
                 && !String.IsNullOrEmpty(_options.CdnBaseUrl)
-                && !resourcePath.Contains("//", StringComparison.OrdinalIgnoreCase))
+                && !resourcePath.StartsWith("https://", StringComparison.OrdinalIgnoreCase)
+                && !resourcePath.StartsWith("http://", StringComparison.OrdinalIgnoreCase)
+                && !resourcePath.StartsWith("//", StringComparison.OrdinalIgnoreCase))
             {
                 resourcePath = _options.CdnBaseUrl + resourcePath;
             }

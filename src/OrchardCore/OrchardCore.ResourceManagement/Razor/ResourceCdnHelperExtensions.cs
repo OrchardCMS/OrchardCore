@@ -30,7 +30,9 @@ public static class ResourceCdnHelperExtensions
         // Don't prefix cdn if the path includes a protocol, i.e. is an external url, or is in debug mode.
         if (!options.DebugMode
             && !String.IsNullOrEmpty(options.CdnBaseUrl)
-            && !resourcePath.Contains("//", StringComparison.OrdinalIgnoreCase))
+            && !resourcePath.StartsWith("https://", StringComparison.OrdinalIgnoreCase)
+            && !resourcePath.StartsWith("http://", StringComparison.OrdinalIgnoreCase)
+            && !resourcePath.StartsWith("//", StringComparison.OrdinalIgnoreCase))
         {
             resourcePath = options.CdnBaseUrl + resourcePath;
         }
