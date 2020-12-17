@@ -139,29 +139,29 @@
                                 <a class="text-break" href="@GetEncodedUrl(entry, originalPathBase)">@entry.Name</a>
                                 @if (!string.IsNullOrEmpty(entry.ShellSettings["DatabaseProvider"]))
                                 {
-                                    <span class="badge badge-light font-weight-normal"><i class="fa fa-database text-info"></i> @entry.ShellSettings["DatabaseProvider"]</span>
+                                    <span class="badge ta-badge font-weight-normal"><i class="fa fa-database text-info"></i> @entry.ShellSettings["DatabaseProvider"]</span>
                                 }
                                 @if (!string.IsNullOrEmpty(entry.ShellSettings["RecipeName"]))
                                 {
-                                    <span class="badge badge-light font-weight-normal"><i class="fa fa-image text-info"></i> @entry.ShellSettings["RecipeName"]</span>
+                                    <span class="badge ta-badge font-weight-normal"><i class="fa fa-image text-info"></i> @entry.ShellSettings["RecipeName"]</span>
                                 }
                                 <a href="@FullRequestPath&Options.Filter=@entry.ShellSettings.State">
                                     @switch (entry.ShellSettings.State)
                                     {
                                         case TenantState.Uninitialized:
-                                            <span class="badge badge-light font-weight-normal"><i class="fa fa-cog text-secondary"></i> @T["Uninitialized"]</span>
+                                            <span class="badge ta-badge font-weight-normal"><i class="fa fa-cog text-secondary"></i> @T["Uninitialized"]</span>
                                             break;
                                         case TenantState.Initializing:
-                                            <span class="badge badge-light font-weight-normal"><i class="fa fa-hourglass-start text-info"></i> @T["Initializing"]</span>
+                                            <span class="badge ta-badge font-weight-normal"><i class="fa fa-hourglass-start text-info"></i> @T["Initializing"]</span>
                                             break;
                                         case TenantState.Running:
-                                            <span class="badge badge-light font-weight-normal"><i class="fa fa-check text-success"></i> @T["Running"]</span>
+                                            <span class="badge ta-badge font-weight-normal"><i class="fa fa-check text-success"></i> @T["Running"]</span>
                                             break;
                                         case TenantState.Disabled:
-                                            <span class="badge badge-light font-weight-normal"><i class="fa fa-remove text-danger"></i> @T["Disabled"]</span>
+                                            <span class="badge ta-badge font-weight-normal"><i class="fa fa-remove text-danger"></i> @T["Disabled"]</span>
                                             break;
                                         case TenantState.Invalid:
-                                            <span class="badge badge-light font-weight-normal"><i class="fa fa-exclamation-triangle text-warning"></i> @T["Invalid"]</span>
+                                            <span class="badge ta-badge font-weight-normal"><i class="fa fa-exclamation-triangle text-warning"></i> @T["Invalid"]</span>
                                             break;
                                     }
                                 </a>
