@@ -6,7 +6,7 @@
 }
 
 <div class="row">
-    <div class="col-lg-6 col-sm-12 title">
+    <div class="col-lg-9 col-sm-12 title">
         @if (Model.Selectors != null)
         {
             <div class="selectors d-inline cursor-pointer">
@@ -25,7 +25,7 @@
         {
             @contentItem
         }
-        - <small class="badge badge-light font-weight-normal"><i class="far fa-file-alt text-secondary"></i> <a href="@(FullRequestPath)&Options.SelectedContentType=@contentItem.ContentType" data-toggle="tooltip" title="@T["Content type"]">@contentItem.ContentType</a></small>
+        - <small class="badge ta-badge font-weight-normal"><i class="far fa-file-alt text-secondary"></i> <a href="@(FullRequestPath)&Options.SelectedContentType=@contentItem.ContentType" data-toggle="tooltip" title="@T["Content type"]">@contentItem.ContentType</a></small>
         @if (Model.Header != null)
         {
             <div class="header">@await DisplayAsync(Model.Header)</div>
@@ -41,7 +41,7 @@
             <div class="d-inline">@await DisplayAsync(Model.Meta)</div>
         }
     </div>
-    <div class="col-lg-6 col-sm-12">
+    <div class="col-lg-3 col-sm-12">
         <div class="float-right">
             @if (Model.Actions != null)
             {
