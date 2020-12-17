@@ -6,8 +6,10 @@
 @inject OrchardCore.Settings.ISiteService SiteService
 @inject OrchardCore.ContentManagement.IContentManager ContentManager
 @{
+    ContentItem contentItem = Model.ContentItem;
+    var hasPublished = await ContentManager.HasPublishedVersionAsync(contentItem);
     var site = await SiteService.GetSiteSettingsAsync();
-    var containedContentItemsAspect = await ContentManager.PopulateAspectAsync<ContainedContentItemsAspect>(Model.ContentItem);
+    var containedContentItemsAspect = await ContentManager.PopulateAspectAsync<ContainedContentItemsAspect>(contentItem);
 }
 
 @if (Model.Settings.AllowDisabled)
@@ -32,6 +34,12 @@
                 </div>
             }
             <input asp-for="Path" class="form-control" disabled="@(!Model.Settings.AllowCustomPath)" />
+            @if (hasPublished)
+            {
+                <div class="input-group-append">
+                    <div class="input-group-text"><a display-for="@contentItem" class="text-info" target="_blank"><i class="fa fa-external-link"></i></a></div>
+                </div>
+            }
             <span asp-validation-for="Path"></span>
         </div>
         @if (!String.IsNullOrWhiteSpace(Model.Settings.Pattern) && Model.Settings.AllowCustomPath)

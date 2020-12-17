@@ -16,5 +16,10 @@ namespace OrchardCore.Locking
         /// After 'expiration' the lock is auto released, a null value is equivalent to 'TimeSpan.MaxValue'.
         /// </summary>
         Task<(ILocker locker, bool locked)> TryAcquireLockAsync(string key, TimeSpan timeout, TimeSpan? expiration = null);
+
+        /// <summary>
+        /// Whether a named lock is already acquired.
+        /// </summary>
+        Task<bool> IsLockAcquiredAsync(string key);
     }
 }

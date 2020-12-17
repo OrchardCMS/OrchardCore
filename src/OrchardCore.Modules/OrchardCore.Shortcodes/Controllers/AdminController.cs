@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using Newtonsoft.Json;
 using OrchardCore.DisplayManagement;
@@ -69,7 +70,7 @@ namespace OrchardCore.Shortcodes.Controllers
 
             if (!string.IsNullOrWhiteSpace(options.Search))
             {
-                shortcodeTemplates = shortcodeTemplates.Where(x => x.Key.Contains(options.Search)).ToList();
+                shortcodeTemplates = shortcodeTemplates.Where(x => x.Key.Contains(options.Search, StringComparison.OrdinalIgnoreCase)).ToList();
             }
 
             var count = shortcodeTemplates.Count;
@@ -92,6 +93,15 @@ namespace OrchardCore.Shortcodes.Controllers
             };
 
             return View("Index", model);
+        }
+
+        [HttpPost, ActionName("Index")]
+        [FormValueRequired("submit.Filter")]
+        public ActionResult IndexFilterPOST(ShortcodeTemplateIndexViewModel model)
+        {
+            return RedirectToAction("Index", new RouteValueDictionary {
+                { "Options.Search", model.Options.Search }
+            });
         }
 
         public async Task<IActionResult> Create(ShortcodeTemplateViewModel model)
@@ -266,7 +276,7 @@ namespace OrchardCore.Shortcodes.Controllers
 
             await _shortcodeTemplatesManager.RemoveShortcodeTemplateAsync(name);
 
-            _notifier.Success(H["Shortcode template deleted successfully"]);
+            _notifier.Success(H["Shortcode template deleted successfully."]);
 
             return RedirectToAction(nameof(Index));
         }

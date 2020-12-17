@@ -46,7 +46,7 @@ namespace OrchardCore.ContentLocalization.Services
                 // Show contained elements for the specified culture
                 else if (!String.IsNullOrEmpty(viewModel.SelectedCulture))
                 {
-                    query.With<LocalizedContentItemIndex>(x => x.Culture == viewModel.SelectedCulture);
+                    query.With<LocalizedContentItemIndex>(i => (i.Published || i.Latest) && i.Culture == viewModel.SelectedCulture);
                 }
             }
         }

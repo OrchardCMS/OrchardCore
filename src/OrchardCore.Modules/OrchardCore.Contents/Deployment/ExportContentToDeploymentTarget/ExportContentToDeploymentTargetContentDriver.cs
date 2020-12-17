@@ -1,9 +1,7 @@
-using System.Threading.Tasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.ViewModels;
 using OrchardCore.Deployment;
-using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Entities;
 using OrchardCore.Settings;
@@ -28,7 +26,8 @@ namespace OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget
             return Combine(
                 Dynamic("ExportContentToDeploymentTarget_Modal__ActionDeploymentTarget")
                     .Location("SummaryAdmin", "ActionsMenu:30")
-                    .RenderWhen(async () => {
+                    .RenderWhen(async () =>
+                    {
                         if (await _deploymentPlanService.DoesUserHaveExportPermissionAsync())
                         {
                             var siteSettings = await _siteService.GetSiteSettingsAsync();
@@ -43,7 +42,8 @@ namespace OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget
                     }),
                 Shape("ExportContentToDeploymentTarget_SummaryAdmin__Button__Actions", new ContentItemViewModel(model))
                     .Location("SummaryAdmin", "ActionsMenu:40")
-                    .RenderWhen(async () => {
+                    .RenderWhen(async () =>
+                    {
                         if (await _deploymentPlanService.DoesUserHaveExportPermissionAsync())
                         {
                             var siteSettings = await _siteService.GetSiteSettingsAsync();
