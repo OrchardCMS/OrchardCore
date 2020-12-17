@@ -27,7 +27,7 @@ namespace OrchardCore.Setup.Services
         /// Create a time based token for tenant setup.
         /// </summary>
         /// <param name="shellSettings">The <see cref="ShellSettings"/>.</param>
-        /// <returns> A string token that represents a finite lifetime<returns>
+        /// <returns> A string token that represents a finite lifetime</returns>
         string CreateSetupToken(ShellSettings shellSettings);
     }
 }

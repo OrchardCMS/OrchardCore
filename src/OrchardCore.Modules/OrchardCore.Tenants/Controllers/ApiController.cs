@@ -5,6 +5,8 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
@@ -329,14 +331,6 @@ namespace OrchardCore.Tenants.Controllers
             }
 
             return $"{Request.Scheme}://{hostString + pathString + queryString}";
-        }
-
-        private string CreateSetupToken(ShellSettings shellSettings)
-        {
-            // Create a public url to setup the new tenant
-            var dataProtector = _dataProtectorProvider.CreateProtector("Tokens").ToTimeLimitedDataProtector();
-            var token = dataProtector.Protect(shellSettings["Secret"], _clock.UtcNow.Add(new TimeSpan(24, 0, 0)));
-            return token;
         }
     }
 }

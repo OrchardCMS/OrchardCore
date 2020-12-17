@@ -19,26 +19,32 @@ var observer = new MutationObserver(function (mutations) {
                     }
                     isCompactExplicit = adminPreferences.isCompactExplicit;
 
-                    if (adminPreferences.darkMode){
-                        html.setAttribute('data-theme', 'darkmode');
-                    }
-                    else
+                    if(html.getAttribute('data-darkmode') === 'True')
                     {
-                        html.setAttribute('data-theme', 'default');
+                        if (adminPreferences.darkMode){
+                            html.setAttribute('data-theme', 'darkmode');
+                        }
+                        else
+                        {
+                            html.setAttribute('data-theme', 'default');
+                        }
                     }
                 } 
                 else 
                 {
                     body.classList.add('no-admin-preferences');
 
-                    // Automatically sets darkmode based on OS preferences
-                    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)
+                    if(html.getAttribute('data-darkmode') === 'True')
                     {
-                        html.setAttribute('data-theme', 'darkmode');
-                    }
-                    else
-                    {
-                        html.setAttribute('data-theme', 'default');
+                        // Automatically sets darkmode based on OS preferences
+                        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)
+                        {
+                            html.setAttribute('data-theme', 'darkmode');
+                        }
+                        else
+                        {
+                            html.setAttribute('data-theme', 'default');
+                        }
                     }
                 }
 

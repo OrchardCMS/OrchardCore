@@ -20,7 +20,7 @@ namespace OrchardCore.Tenants.Workflows.Handlers
         {
             return _workflowManager.TriggerEventAsync(nameof(TenantCreatedEvent),
                 input: new { ShellSettings = context.ShellSettings, EncodedUrl = context.EncodedUrl },
-                correlationId: context.ShellSettings.Identifier
+                correlationId: context.ShellSettings.VersionId
             );
         }
 

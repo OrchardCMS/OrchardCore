@@ -43,7 +43,7 @@ namespace OrchardCore.Markdown
         {
             // Markdown Part
             services.AddContentPart<MarkdownBodyPart>()
-                .UseDisplayDriver<MarkdownBodyPartDisplay>()
+                .UseDisplayDriver<MarkdownBodyPartDisplayDriver>()
                 .AddHandler<MarkdownBodyPartHandler>();
 
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, MarkdownBodyPartSettingsDisplayDriver>();

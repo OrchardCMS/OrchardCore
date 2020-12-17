@@ -11,7 +11,7 @@ namespace OrchardCore.ContentLocalization.Drivers
 {
     public class ContentCulturePickerSettingsDriver : SectionDisplayDriver<ISite, ContentCulturePickerSettings>
     {
-        public const string GroupId = "ContentCulturePicker";
+        public const string GroupId = "contentCulturePicker";
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthorizationService _authorizationService;
 

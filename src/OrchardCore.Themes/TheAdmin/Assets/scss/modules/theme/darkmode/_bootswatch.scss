@@ -10,6 +10,7 @@
     @extend .navbar-dark;
 }
 
+@import "../../admin/_list.scss";
 @import "../../admin/_sidebar-menu.scss";
 // Layout ======================================================================
 @import "../../_layout.scss";

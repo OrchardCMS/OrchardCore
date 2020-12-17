@@ -1,35 +1,29 @@
 @model OrchardCore.Media.ViewModels.DisplayMediaFieldViewModel
 @using OrchardCore.ContentManagement.Metadata.Models
-@using System.Text.RegularExpressions
+@using OrchardCore.Mvc.Utilities
 @{
     var paths = Model.Paths ?? Array.Empty<string>();
     var mediaTexts = Model.Field?.MediaTexts ?? Array.Empty<string>();
+    var name = (Model.PartFieldDefinition.PartDefinition.Name + "-" + Model.PartFieldDefinition.Name).HtmlClassify();
 }
 @if (paths.Any())
 {
-    <div class="form-group row">
-        <label class="col-sm-2 col-form-label col-form-label-sm">@Model.PartFieldDefinition.DisplayName():</label>
-        <div class="col-sm-10">
-            @for (int i = 0; i < paths.Count(); i++)
+    <div class="field field-type-mediafield field-name-@name">
+        <span class="name">@Model.PartFieldDefinition.DisplayName()</span>
+        @for (int i = 0; i < paths.Length; i++)
+        {
+            var path = paths[i];
+            var url = Orchard.AssetUrl(path);
+            var text = !string.IsNullOrEmpty(mediaTexts[i]) ? mediaTexts[i] : path;
+
+            if (Orchard.IsImageFile(path))
             {
-                var path = paths[i];
-                var url = Orchard.AssetUrl(path);
-                var text = !string.IsNullOrEmpty(mediaTexts[i]) ? mediaTexts[i] : path;
-                var displayImg = Regex.IsMatch(path, @"(\.(gif|jpe?g|tiff?|png|webp|bmp)$)");
-                if (displayImg)
-                {
-                    <div class="card text-white">
-                        <img class="card-img" src="@url" alt="@text">
-                        <div class="card-img-overlay">
-                            <h5 class="card-title">@text</h5>
-                        </div>
-                    </div>
-                }
-                else
-                {
-                    <a href="@url">@text</a>
-                }
+                <img src="@url" alt="@text">
             }
-        </div>
+            else
+            {
+                <a href="@url">@text</a>
+            }
+        }
     </div>
 }
