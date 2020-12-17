@@ -12,10 +12,10 @@
 
 @if (hasEditPermission)
 {
-    <a edit-for="@contentItem" asp-route-returnUrl="@FullRequestPath" class="btn btn-primary btn-sm">@T["Edit"]</a>
+    <a edit-for="@contentItem" asp-route-returnUrl="@FullRequestPath" data-toggle="tooltip" title="@T["Edit"]" class="btn btn-sm text-primary"><i class="fa fa-edit"></i></a>
 }
 
 @if (hasPublished && hasViewPermission)
 {
-    <a display-for="@contentItem" target="_blank" class="btn btn-success btn-sm">@T["View"]</a>
+    <a display-for="@contentItem" target="_blank" data-toggle="tooltip" title="@T["View"]" class="btn btn-sm text-success"><i class="fa fa-external-link"></i></a>
 }
