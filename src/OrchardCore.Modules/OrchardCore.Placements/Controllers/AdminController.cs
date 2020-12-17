@@ -73,7 +73,7 @@ namespace OrchardCore.Placements.Controllers
 
             if (!string.IsNullOrWhiteSpace(options.Search))
             {
-                shapeList = shapeList.Where(x => x.ShapeType.Contains(options.Search)).ToList();
+                shapeList = shapeList.Where(x => x.ShapeType.Contains(options.Search, StringComparison.OrdinalIgnoreCase)).ToList();
             }
 
             var count = shapeList.Count();
