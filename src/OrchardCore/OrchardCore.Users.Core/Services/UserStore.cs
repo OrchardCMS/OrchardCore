@@ -77,9 +77,9 @@ namespace OrchardCore.Users.Services
 
             try
             {
-                newUser.UserId = await GenerateUniqueUserId(user, newUser.UserId);
+                newUser.UserId = await GenerateUniqueUserIdAsync(user, newUser.UserId);
 
-                await SaveUser(newUser, true);
+                await SaveUserAsync(newUser, true);
 
                 var context = new UserContext(user);
                 await Handlers.InvokeAsync((handler, context) => handler.CreatedAsync(context), context, _logger);
@@ -94,7 +94,7 @@ namespace OrchardCore.Users.Services
             return IdentityResult.Success;
         }
 
-        protected virtual async Task SaveUser(IUser user, bool autoCommit = false)
+        protected virtual async Task SaveUserAsync(IUser user, bool autoCommit = false)
         {
             _session.Save(user);
 
@@ -104,7 +104,7 @@ namespace OrchardCore.Users.Services
             }
         }
 
-        protected virtual async Task<string> GenerateUniqueUserId(IUser user, string suggestedId)
+        protected virtual async Task<string> GenerateUniqueUserIdAsync(IUser user, string suggestedId)
         {
             string newUserId = suggestedId;
 
@@ -116,7 +116,7 @@ namespace OrchardCore.Users.Services
 
             var attempts = 10;
 
-            while (await GetUserCount(newUserId) != 0)
+            while (await GetUserCountAsync(newUserId) != 0)
             {
                 if (attempts-- == 0)
                 {
@@ -129,7 +129,7 @@ namespace OrchardCore.Users.Services
             return newUserId;
         }
 
-        protected virtual async Task<int> GetUserCount(string userId)
+        protected virtual async Task<int> GetUserCountAsync(string userId)
         {
             return await _session.QueryIndex<UserIndex>(x => x.UserId == userId).CountAsync();
         }
@@ -237,7 +237,7 @@ namespace OrchardCore.Users.Services
                 throw new ArgumentNullException(nameof(user));
             }
 
-            await SaveUser(user);
+            await SaveUserAsync(user);
 
             var context = new UserContext(user);
             await Handlers.InvokeAsync((handler, context) => handler.UpdatedAsync(context), context, _logger);
