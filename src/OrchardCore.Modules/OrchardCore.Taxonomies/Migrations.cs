@@ -5,6 +5,7 @@ using OrchardCore.Data.Migration;
 using OrchardCore.Taxonomies.Fields;
 using OrchardCore.Taxonomies.Indexing;
 using OrchardCore.Taxonomies.Settings;
+using YesSql.Sql;
 
 namespace OrchardCore.Taxonomies
 {
@@ -41,7 +42,7 @@ namespace OrchardCore.Taxonomies
                 .WithPart("TaxonomyPart", part => part.WithPosition("4"))
             );
 
-            SchemaBuilder.CreateMapIndexTable(nameof(TaxonomyIndex), table => table
+            SchemaBuilder.CreateMapIndexTable<TaxonomyIndex>(table => table
                 .Column<string>("TaxonomyContentItemId", c => c.WithLength(26))
                 .Column<string>("ContentItemId", c => c.WithLength(26))
                 .Column<string>("ContentType", column => column.WithLength(ContentItemIndex.MaxContentTypeSize))
@@ -50,11 +51,11 @@ namespace OrchardCore.Taxonomies
                 .Column<string>("TermContentItemId", column => column.WithLength(26))
             );
 
-            SchemaBuilder.AlterTable(nameof(TaxonomyIndex), table => table
+            SchemaBuilder.AlterIndexTable<TaxonomyIndex>(table => table
                 .CreateIndex("IDX_TaxonomyIndex_List", "ContentType", "ContentPart", "ContentField")
             );
 
-            SchemaBuilder.AlterTable(nameof(TaxonomyIndex), table => table
+            SchemaBuilder.AlterIndexTable<TaxonomyIndex>(table => table
                 .CreateIndex("IDX_TaxonomyIndex_Search", "TermContentItemId")
             );
 

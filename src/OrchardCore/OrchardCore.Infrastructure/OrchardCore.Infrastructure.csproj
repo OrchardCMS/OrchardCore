@@ -2,6 +2,12 @@
 
   <PropertyGroup>
     <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
+    <!-- NuGet properties-->
+    <Title>OrchardCore Infrastructure</Title>
+    <Description>$(OCCMSDescription)
+    
+    Implementation for OrchardCoreCMS Infrastructure </Description>
+    <PackageTags>$(PackageTags) OrchardCoreCMS Infrastructure</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
@@ -9,8 +15,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="MailKit" />
-    <PackageReference Include="MessagePack" />
+    <PackageReference Include="HtmlSanitizer" />
+    <PackageReference Include="MimeKit" />
   </ItemGroup>
   
   <ItemGroup>

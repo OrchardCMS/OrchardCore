@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Admin;
@@ -14,8 +15,10 @@ using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Navigation;
+using OrchardCore.Routing;
 using OrchardCore.Settings;
 using YesSql;
+using YesSql.Services;
 
 namespace OrchardCore.Deployment.Controllers
 {
@@ -57,7 +60,7 @@ namespace OrchardCore.Deployment.Controllers
             H = htmlLocalizer;
         }
 
-        public async Task<IActionResult> Index(DeploymentPlanIndexOptions options, PagerParameters pagerParameters)
+        public async Task<IActionResult> Index(ContentOptions options, PagerParameters pagerParameters)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageDeploymentPlan))
             {
@@ -72,22 +75,17 @@ namespace OrchardCore.Deployment.Controllers
             var siteSettings = await _siteService.GetSiteSettingsAsync();
             var pager = new Pager(pagerParameters, siteSettings.PageSize);
 
-            // default options
-            if (options == null)
-            {
-                options = new DeploymentPlanIndexOptions();
-            }
-
             var deploymentPlans = _session.Query<DeploymentPlan, DeploymentPlanIndex>();
 
             if (!string.IsNullOrWhiteSpace(options.Search))
             {
-                deploymentPlans = deploymentPlans.Where(dp => dp.Name.Contains(options.Search));
+                deploymentPlans = deploymentPlans.Where(x => x.Name.Contains(options.Search));
             }
 
             var count = await deploymentPlans.CountAsync();
 
             var results = await deploymentPlans
+                .OrderBy(p => p.Name)
                 .Skip(pager.GetStartIndex())
                 .Take(pager.PageSize)
                 .ListAsync();
@@ -105,7 +103,51 @@ namespace OrchardCore.Deployment.Controllers
                 Pager = pagerShape
             };
 
+            model.Options.DeploymentPlansBulkAction = new List<SelectListItem>() {
+                new SelectListItem() { Text = S["Delete"], Value = nameof(ContentsBulkAction.Delete) }
+            };
+
             return View(model);
+        }
+
+        [HttpPost, ActionName(nameof(Index))]
+        [FormValueRequired("submit.Filter")]
+        public ActionResult IndexFilterPOST(DeploymentPlanIndexViewModel model)
+        {
+            return RedirectToAction(nameof(Index), new RouteValueDictionary {
+                { "Options.Search", model.Options.Search }
+            });
+        }
+
+        [HttpPost, ActionName(nameof(Index))]
+        [FormValueRequired("submit.BulkAction")]
+        public async Task<ActionResult> IndexBulkActionPOST(ContentOptions options, IEnumerable<int> itemIds)
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageDeploymentPlan))
+            {
+                return Forbid();
+            }
+
+            if (itemIds?.Count() > 0)
+            {
+                var checkedItems = await _session.Query<DeploymentPlan, DeploymentPlanIndex>().Where(x => x.DocumentId.IsIn(itemIds)).ListAsync();
+                switch (options.BulkAction)
+                {
+                    case ContentsBulkAction.None:
+                        break;
+                    case ContentsBulkAction.Delete:
+                        foreach (var item in checkedItems)
+                        {
+                            _session.Delete(item);
+                        }
+                        _notifier.Success(H["Deployment plans successfully deleted."]);
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            }
+
+            return RedirectToAction(nameof(Index));
         }
 
         public async Task<IActionResult> Display(int id)
@@ -175,6 +217,12 @@ namespace OrchardCore.Deployment.Controllers
                 {
                     ModelState.AddModelError(nameof(CreateDeploymentPlanViewModel.Name), S["The name is mandatory."]);
                 }
+
+                var count = await _session.QueryIndex<DeploymentPlanIndex>(x => x.Name == model.Name).CountAsync();
+                if (count > 0)
+                {
+                    ModelState.AddModelError(nameof(CreateDeploymentPlanViewModel.Name), S["A deployment plan with the same name already exists."]);
+                }
             }
 
             if (ModelState.IsValid)
@@ -234,6 +282,14 @@ namespace OrchardCore.Deployment.Controllers
                 {
                     ModelState.AddModelError(nameof(EditDeploymentPlanViewModel.Name), S["The name is mandatory."]);
                 }
+                if (!String.Equals(model.Name, deploymentPlan.Name, StringComparison.OrdinalIgnoreCase))
+                {
+                    var count = await _session.QueryIndex<DeploymentPlanIndex>(x => x.Name == model.Name && x.DocumentId != model.Id).CountAsync();
+                    if (count > 0)
+                    {
+                        ModelState.AddModelError(nameof(CreateDeploymentPlanViewModel.Name), S["A deployment plan with the same name already exists."]);
+                    }
+                }
             }
 
             if (ModelState.IsValid)
@@ -242,7 +298,7 @@ namespace OrchardCore.Deployment.Controllers
 
                 _session.Save(deploymentPlan);
 
-                _notifier.Success(H["Deployment plan updated successfully"]);
+                _notifier.Success(H["Deployment plan updated successfully."]);
 
                 return RedirectToAction(nameof(Index));
             }
@@ -268,7 +324,7 @@ namespace OrchardCore.Deployment.Controllers
 
             _session.Delete(deploymentPlan);
 
-            _notifier.Success(H["Deployment plan deleted successfully"]);
+            _notifier.Success(H["Deployment plan deleted successfully."]);
 
             return RedirectToAction(nameof(Index));
         }

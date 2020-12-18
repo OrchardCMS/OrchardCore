@@ -2,19 +2,24 @@ using System;
 using System.Web;
 using Fluid;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.Data.Migration;
+using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Theming;
+using OrchardCore.Entities;
 using OrchardCore.Environment.Commands;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Configuration;
+using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Liquid;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
@@ -22,6 +27,7 @@ using OrchardCore.Navigation;
 using OrchardCore.Security;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
+using OrchardCore.Settings.Deployment;
 using OrchardCore.Setup.Events;
 using OrchardCore.Users.Commands;
 using OrchardCore.Users.Controllers;
@@ -37,9 +43,6 @@ namespace OrchardCore.Users
 {
     public class Startup : StartupBase
     {
-        private const string LoginPath = "Login";
-        private const string ChangePasswordPath = "ChangePassword";
-
         private readonly AdminOptions _adminOptions;
         private readonly string _tenantName;
 
@@ -51,26 +54,35 @@ namespace OrchardCore.Users
 
         public override void Configure(IApplicationBuilder builder, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
+            var userOptions = serviceProvider.GetRequiredService<IOptions<UserOptions>>().Value;
+
             var accountControllerName = typeof(AccountController).ControllerName();
 
             routes.MapAreaControllerRoute(
                 name: "Login",
                 areaName: "OrchardCore.Users",
-                pattern: LoginPath,
+                pattern: userOptions.LoginPath,
                 defaults: new { controller = accountControllerName, action = nameof(AccountController.Login) }
             );
             routes.MapAreaControllerRoute(
                 name: "ChangePassword",
                 areaName: "OrchardCore.Users",
-                pattern: ChangePasswordPath,
+                pattern: userOptions.ChangePasswordUrl,
                 defaults: new { controller = accountControllerName, action = nameof(AccountController.ChangePassword) }
             );
 
             routes.MapAreaControllerRoute(
                 name: "UsersLogOff",
                 areaName: "OrchardCore.Users",
-                pattern: "/Users/LogOff",
+                pattern: userOptions.LogoffPath,
                 defaults: new { controller = accountControllerName, action = nameof(AccountController.LogOff) }
+            );
+
+            routes.MapAreaControllerRoute(
+                name: "ExternalLogins",
+                areaName: "OrchardCore.Users",
+                pattern: userOptions.ExternalLoginsUrl,
+                defaults: new { controller = accountControllerName, action = nameof(AccountController.ExternalLogins) }
             );
 
             var adminControllerName = typeof(AdminController).ControllerName();
@@ -96,14 +108,8 @@ namespace OrchardCore.Users
             routes.MapAreaControllerRoute(
                 name: "UsersEdit",
                 areaName: "OrchardCore.Users",
-                pattern: _adminOptions.AdminUrlPrefix + "/Users/Edit/{id}",
+                pattern: _adminOptions.AdminUrlPrefix + "/Users/Edit/{id?}",
                 defaults: new { controller = adminControllerName, action = nameof(AdminController.Edit) }
-            );
-            routes.MapAreaControllerRoute(
-                name: "UsersEditPassword",
-                areaName: "OrchardCore.Users",
-                pattern: _adminOptions.AdminUrlPrefix + "/Users/EditPassword/{id}",
-                defaults: new { controller = adminControllerName, action = nameof(AdminController.EditPassword) }
             );
 
             builder.UseAuthorization();
@@ -111,6 +117,12 @@ namespace OrchardCore.Users
 
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<UserOptions>(userOptions =>
+            {
+                var configuration = ShellScope.Services.GetRequiredService<IShellConfiguration>();
+                configuration.GetSection("OrchardCore_Users").Bind(userOptions);
+            });
+
             services.AddSecurity();
 
             // Add ILookupNormalizer as Singleton because it is needed by UserIndexProvider
@@ -132,25 +144,21 @@ namespace OrchardCore.Users
             services.TryAddScoped<IUserSecurityStampStore<IUser>>(sp => sp.GetRequiredService<UserStore>());
             services.TryAddScoped<IUserLoginStore<IUser>>(sp => sp.GetRequiredService<UserStore>());
             services.TryAddScoped<IUserClaimStore<IUser>>(sp => sp.GetRequiredService<UserStore>());
+            services.TryAddScoped<IUserAuthenticationTokenStore<IUser>>(sp => sp.GetRequiredService<UserStore>());
 
             services.ConfigureApplicationCookie(options =>
             {
+                var userOptions = ShellScope.Services.GetRequiredService<IOptions<UserOptions>>();
+
                 options.Cookie.Name = "orchauth_" + HttpUtility.UrlEncode(_tenantName);
-                
+
                 // Don't set the cookie builder 'Path' so that it uses the 'IAuthenticationFeature' value
                 // set by the pipeline and comming from the request 'PathBase' which already ends with the
                 // tenant prefix but may also start by a path related e.g to a virtual folder.
 
-                options.LoginPath = "/" + LoginPath;
+                options.LoginPath = "/" + userOptions.Value.LoginPath;
+                options.LogoutPath = "/" + userOptions.Value.LogoffPath;
                 options.AccessDeniedPath = "/Error/403";
-
-                // Disabling same-site is required for OpenID's module prompt=none support to work correctly.
-                // Note: it has no practical impact on the security of the site since all endpoints are always
-                // protected by antiforgery checks, that are enforced with or without this setting being changed.
-                // 2019-12-10; Removed, since https://github.com/aspnet/Announcements/issues/390
-                // 2020-02-17; Reenabled since we have compensation logic for backwardscompatibility
-                // 2020-03-23; Moved the SameSiteNode.None to the Startup of the OIDC Server
-                options.Cookie.SameSite = SameSiteMode.Strict;
             });
 
             services.AddSingleton<IIndexProvider, UserIndexProvider>();
@@ -161,6 +169,8 @@ namespace OrchardCore.Users
 
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IUserClaimsPrincipalFactory<IUser>, DefaultUserClaimsPrincipalFactory>();
+            services.AddIdGeneration();
+            services.AddSingleton<IUserIdGenerator, DefaultUserIdGenerator>();
 
             services.AddScoped<IMembershipService, MembershipService>();
             services.AddScoped<ISetupEventHandler, SetupEventHandler>();
@@ -172,10 +182,9 @@ namespace OrchardCore.Users
 
             services.AddScoped<IDisplayDriver<ISite>, LoginSettingsDisplayDriver>();
 
-            services.AddScoped<ILiquidTemplateEventHandler, UserLiquidTemplateEventHandler>();
-
             services.AddScoped<IDisplayManager<User>, DisplayManager<User>>();
             services.AddScoped<IDisplayDriver<User>, UserDisplayDriver>();
+            services.AddScoped<IDisplayDriver<User>, UserInformationDisplayDriver>();
             services.AddScoped<IDisplayDriver<User>, UserButtonsDisplayDriver>();
 
             services.AddScoped<IThemeSelector, UsersThemeSelector>();
@@ -191,6 +200,24 @@ namespace OrchardCore.Users
             services.AddLiquidFilter<HasPermissionFilter>("has_permission");
             services.AddLiquidFilter<HasClaimFilter>("has_claim");
             services.AddLiquidFilter<IsInRoleFilter>("is_in_role");
+            services.AddLiquidFilter<UserEmailFilter>("user_email");
+            services.AddLiquidFilter<UserIdFilter>("user_id");
+            services.AddLiquidFilter<UsersByIdFilter>("users_by_id");
+        }
+    }
+
+    [RequireFeatures("OrchardCore.Deployment")]
+    public class LoginDeploymentStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddTransient<IDeploymentSource, SiteSettingsPropertyDeploymentSource<LoginSettings>>();
+            services.AddScoped<IDisplayDriver<DeploymentStep>>(sp =>
+            {
+                var S = sp.GetService<IStringLocalizer<LoginDeploymentStartup>>();
+                return new SiteSettingsPropertyDeploymentStepDriver<LoginSettings>(S["Login settings"], S["Exports the Login settings."]);
+            });
+            services.AddSingleton<IDeploymentStepFactory>(new SiteSettingsPropertyDeploymentStepFactory<LoginSettings>());
         }
     }
 
@@ -229,6 +256,22 @@ namespace OrchardCore.Users
         }
     }
 
+    [Feature("OrchardCore.Users.ChangeEmail")]
+    [RequireFeatures("OrchardCore.Deployment")]
+    public class ChangeEmailDeploymentStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddTransient<IDeploymentSource, SiteSettingsPropertyDeploymentSource<ChangeEmailSettings>>();
+            services.AddScoped<IDisplayDriver<DeploymentStep>>(sp =>
+            {
+                var S = sp.GetService<IStringLocalizer<ChangeEmailDeploymentStartup>>();
+                return new SiteSettingsPropertyDeploymentStepDriver<ChangeEmailSettings>(S["Change Email settings"], S["Exports the Change Email settings."]);
+            });
+            services.AddSingleton<IDeploymentStepFactory>(new SiteSettingsPropertyDeploymentStepFactory<ChangeEmailSettings>());
+        }
+    }
+
     [Feature("OrchardCore.Users.Registration")]
     public class RegistrationStartup : StartupBase
     {
@@ -253,6 +296,22 @@ namespace OrchardCore.Users
         {
             services.AddScoped<INavigationProvider, RegistrationAdminMenu>();
             services.AddScoped<IDisplayDriver<ISite>, RegistrationSettingsDisplayDriver>();
+        }
+    }
+
+    [Feature("OrchardCore.Users.Registration")]
+    [RequireFeatures("OrchardCore.Deployment")]
+    public class RegistrationDeploymentStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddTransient<IDeploymentSource, SiteSettingsPropertyDeploymentSource<RegistrationSettings>>();
+            services.AddScoped<IDisplayDriver<DeploymentStep>>(sp =>
+            {
+                var S = sp.GetService<IStringLocalizer<RegistrationDeploymentStartup>>();
+                return new SiteSettingsPropertyDeploymentStepDriver<RegistrationSettings>(S["Registration settings"], S["Exports the Registration settings."]);
+            });
+            services.AddSingleton<IDeploymentStepFactory>(new SiteSettingsPropertyDeploymentStepFactory<RegistrationSettings>());
         }
     }
 
@@ -301,6 +360,32 @@ namespace OrchardCore.Users
         {
             services.AddScoped<INavigationProvider, ResetPasswordAdminMenu>();
             services.AddScoped<IDisplayDriver<ISite>, ResetPasswordSettingsDisplayDriver>();
+        }
+    }
+
+    [Feature("OrchardCore.Users.ResetPassword")]
+    [RequireFeatures("OrchardCore.Deployment")]
+    public class ResetPasswordDeploymentStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddTransient<IDeploymentSource, SiteSettingsPropertyDeploymentSource<ResetPasswordSettings>>();
+            services.AddScoped<IDisplayDriver<DeploymentStep>>(sp =>
+            {
+                var S = sp.GetService<IStringLocalizer<ResetPasswordDeploymentStartup>>();
+                return new SiteSettingsPropertyDeploymentStepDriver<ResetPasswordSettings>(S["Reset Password settings"], S["Exports the Reset Password settings."]);
+            });
+            services.AddSingleton<IDeploymentStepFactory>(new SiteSettingsPropertyDeploymentStepFactory<ResetPasswordSettings>());
+        }
+    }
+
+    [Feature("OrchardCore.Users.CustomUserSettings")]
+    public class CustomUserSettingsStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddScoped<IDisplayDriver<User>, CustomUserSettingsDisplayDriver>();
+            services.AddScoped<IPermissionProvider, CustomUserSettingsPermissions>();
         }
     }
 }

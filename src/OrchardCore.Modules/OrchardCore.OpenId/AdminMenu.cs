@@ -29,7 +29,7 @@ namespace OrchardCore.OpenId
             }
 
             builder.Add(S["Security"], security => security
-            .Add(S["OpenID Connect"], S["OpenID Connect"], category =>
+            .Add(S["OpenID Connect"], S["OpenID Connect"].PrefixPosition(), category =>
             {
                 category.AddClass("openid").Id("openid");
 

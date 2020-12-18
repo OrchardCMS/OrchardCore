@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
@@ -28,7 +29,7 @@ namespace OrchardCore.Workflows.Expressions
             _logger = logger;
         }
 
-        public async Task<T> EvaluateAsync<T>(WorkflowExpression<T> expression, WorkflowExecutionContext workflowContext)
+        public async Task<T> EvaluateAsync<T>(WorkflowExpression<T> expression, WorkflowExecutionContext workflowContext, TextEncoder encoder)
         {
             var templateContext = CreateTemplateContext(workflowContext);
             var expressionContext = new WorkflowExecutionExpressionContext(templateContext, workflowContext);
@@ -36,8 +37,11 @@ namespace OrchardCore.Workflows.Expressions
             await _workflowContextHandlers.InvokeAsync((h, expressionContext) => h.EvaluatingExpressionAsync(expressionContext), expressionContext, _logger);
 
             // Set WorkflowContext as a local scope property.
-            var result = await _liquidTemplateManager.RenderAsync(expression.Expression, System.Text.Encodings.Web.JavaScriptEncoder.Default,
-                scope => scope.SetValue("Workflow", workflowContext));
+            var result = await _liquidTemplateManager.RenderAsync(
+                expression.Expression,
+                encoder ?? NullEncoder.Default,
+                scope => scope.SetValue("Workflow", workflowContext)
+                );
 
             return string.IsNullOrWhiteSpace(result) ? default(T) : (T)Convert.ChangeType(result, typeof(T));
         }

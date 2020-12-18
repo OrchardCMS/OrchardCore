@@ -74,6 +74,9 @@
         this.bind('keyup keydown', function (event) {
             checkStrength($(this).val());
         });
+        this.bind('drop', function (event) {
+            checkStrength(event.originalEvent.dataTransfer.getData("text"));
+        });
 
         this.parents('form').on('submit', function () {
             if (!valid) {

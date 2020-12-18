@@ -136,6 +136,11 @@ namespace OrchardCore.DisplayManagement.Descriptors.ShapeAttributeStrategy
                 return displayContext.ServiceProvider.GetService<IShapeFactory>();
             }
 
+            if (String.Equals(parameter.Name, "ShapeFactory", StringComparison.OrdinalIgnoreCase))
+            {
+                return displayContext.ServiceProvider.GetService<IShapeFactory>();
+            }
+
             if (String.Equals(parameter.Name, "Html", StringComparison.OrdinalIgnoreCase))
             {
                 var viewContextAccessor = displayContext.ServiceProvider.GetRequiredService<ViewContextAccessor>();

@@ -1,0 +1,9 @@
+@model dynamic
+
+<div class="@String.Join(" ", Model.Classes.ToArray())">
+    @foreach(var item in Model.Items)
+    {
+        @await DisplayAsync(item)
+    }
+</div>
+

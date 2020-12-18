@@ -85,17 +85,17 @@ namespace OrchardCore.Workflows.Http.Controllers
             {
                 if (_logger.IsEnabled(LogLevel.Warning))
                 {
-                    _logger.LogWarning("The provided workflow type with ID '{WorkflowTypeId}' could not be found.", payload.WorkflowId);
+                    _logger.LogWarning("The provided workflow with ID '{WorkflowTypeId}' could not be found.", payload.WorkflowId);
                 }
 
                 return NotFound();
             }
 
-            if(!workflowType.IsEnabled)
+            if (!workflowType.IsEnabled)
             {
                 if (_logger.IsEnabled(LogLevel.Warning))
                 {
-                    _logger.LogWarning("The provided workflow type with ID '{WorkflowTypeId}' is not enabled.", payload.WorkflowId);
+                    _logger.LogWarning("The provided workflow with ID '{WorkflowTypeId}' is not enabled.", payload.WorkflowId);
                 }
 
                 return NotFound();
@@ -137,19 +137,23 @@ namespace OrchardCore.Workflows.Http.Controllers
             // If the activity is a start activity, start a new workflow.
             if (startActivity.IsStart)
             {
-                if (_logger.IsEnabled(LogLevel.Debug))
+                // If this is not a singleton workflow or there is not already an halted instance, start a new workflow.
+                if (!workflowType.IsSingleton || !await _workflowStore.HasHaltedInstanceAsync(workflowType.WorkflowTypeId))
                 {
-                    _logger.LogDebug("Invoking new workflow of type '{WorkflowTypeId}' with start activity '{ActivityId}'", workflowType.WorkflowTypeId, startActivity.ActivityId);
-                }
+                    if (_logger.IsEnabled(LogLevel.Debug))
+                    {
+                        _logger.LogDebug("Invoking new workflow of type '{WorkflowTypeId}' with start activity '{ActivityId}'", workflowType.WorkflowTypeId, startActivity.ActivityId);
+                    }
 
-                await _workflowManager.StartWorkflowAsync(workflowType, startActivity);
+                    await _workflowManager.StartWorkflowAsync(workflowType, startActivity);
+                }
             }
             else
             {
-                // Otherwise, we need to resume a halted workflow.
-                var workflow = (await _workflowStore.ListAsync(workflowType.WorkflowTypeId, new[] { startActivity.ActivityId })).FirstOrDefault();
+                // Otherwise, we need to resume all halted workflows on this activity.
+                var workflows = await _workflowStore.ListAsync(workflowType.WorkflowTypeId, new[] { startActivity.ActivityId });
 
-                if (workflow == null)
+                if (!workflows.Any())
                 {
                     if (_logger.IsEnabled(LogLevel.Warning))
                     {
@@ -159,16 +163,19 @@ namespace OrchardCore.Workflows.Http.Controllers
                     return NotFound();
                 }
 
-                var blockingActivity = workflow.BlockingActivities.FirstOrDefault(x => x.ActivityId == startActivity.ActivityId);
-
-                if (blockingActivity != null)
+                foreach (var workflow in workflows)
                 {
-                    if (_logger.IsEnabled(LogLevel.Debug))
-                    {
-                        _logger.LogDebug("Resuming workflow with ID '{WorkflowId}' on activity '{ActivityId}'", workflow.WorkflowId, blockingActivity.ActivityId);
-                    }
+                    var blockingActivity = workflow.BlockingActivities.FirstOrDefault(x => x.ActivityId == startActivity.ActivityId);
 
-                    await _workflowManager.ResumeWorkflowAsync(workflow, blockingActivity);
+                    if (blockingActivity != null)
+                    {
+                        if (_logger.IsEnabled(LogLevel.Debug))
+                        {
+                            _logger.LogDebug("Resuming workflow with ID '{WorkflowId}' on activity '{ActivityId}'", workflow.WorkflowId, blockingActivity.ActivityId);
+                        }
+
+                        await _workflowManager.ResumeWorkflowAsync(workflow, blockingActivity);
+                    }
                 }
             }
 

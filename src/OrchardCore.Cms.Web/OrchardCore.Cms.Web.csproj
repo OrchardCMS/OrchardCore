@@ -7,7 +7,6 @@
 
   <PropertyGroup>
     <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
-    <TieredCompilation>true</TieredCompilation>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <WarningsNotAsErrors>612,618</WarningsNotAsErrors>
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
@@ -22,12 +21,6 @@
   <ItemGroup>
     <ProjectReference Include="..\OrchardCore\OrchardCore.Application.Cms.Targets\OrchardCore.Application.Cms.Targets.csproj" />
     <ProjectReference Include="..\OrchardCore\OrchardCore.Logging.NLog\OrchardCore.Logging.NLog.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Update="NLog.config">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
 
   <!-- Necessary as we reference the Project and not the Package -->

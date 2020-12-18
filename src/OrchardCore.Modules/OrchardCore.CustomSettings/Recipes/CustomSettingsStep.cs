@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using OrchardCore.CustomSettings.Services;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 using OrchardCore.Settings;
@@ -14,14 +13,10 @@ namespace OrchardCore.CustomSettings.Recipes
     public class CustomSettingsStep : IRecipeStepHandler
     {
         private readonly ISiteService _siteService;
-        private readonly CustomSettingsService _customSettingsService;
 
-        public CustomSettingsStep(
-            ISiteService siteService,
-            CustomSettingsService customSettingsService)
+        public CustomSettingsStep(ISiteService siteService)
         {
             _siteService = siteService;
-            _customSettingsService = customSettingsService;
         }
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
@@ -36,19 +31,6 @@ namespace OrchardCore.CustomSettings.Recipes
             var customSettingsList = (from property in model.Properties()
                                       where property.Name != "name"
                                       select property).ToArray();
-
-            var customSettingsNames = (from customSettings in customSettingsList
-                                       select customSettings.Name).ToArray();
-
-            var customSettingsTypes = _customSettingsService.GetSettingsTypes(customSettingsNames).ToArray();
-
-            foreach (var customSettingsType in customSettingsTypes)
-            {
-                if (!await _customSettingsService.CanUserCreateSettingsAsync(customSettingsType))
-                {
-                    return;
-                }
-            }
 
             var siteSettings = await _siteService.LoadSiteSettingsAsync();
 

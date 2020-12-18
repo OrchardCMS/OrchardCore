@@ -4,7 +4,7 @@ namespace OrchardCore.Scripting
 {
     /// <summary>
     /// An implementation of <see cref="IGlobalMethodProvider"/> provides custom methods for
-    /// an <see cref="IScriptingManager"/> intance.
+    /// an <see cref="IScriptingManager"/> instance.
     /// </summary>
     public interface IGlobalMethodProvider
     {

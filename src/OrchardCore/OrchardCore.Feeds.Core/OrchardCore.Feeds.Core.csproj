@@ -2,6 +2,14 @@
 
   <PropertyGroup>
     <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
+
+    <!-- NuGet properties-->
+    <Title>OrchardCore Feeds Core </Title>
+    <Description>$(OCFrameworkDescription)
+
+    Core implementation of RSS for Feeds Module.</Description>
+    <PackageTags>$(PackageTags) OrchardCoreFramework RSS</PackageTags>
+
   </PropertyGroup>
 
   <ItemGroup>

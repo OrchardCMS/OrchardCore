@@ -9,7 +9,7 @@ namespace OrchardCore.ReCaptcha.Workflows
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddActivity<ValidateReCaptchaTask, ValidateReCaptchaTaskDisplay>();
+            services.AddActivity<ValidateReCaptchaTask, ValidateReCaptchaTaskDisplayDriver>();
         }
     }
 }

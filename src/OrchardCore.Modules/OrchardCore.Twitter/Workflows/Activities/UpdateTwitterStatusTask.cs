@@ -18,7 +18,8 @@ namespace OrchardCore.Twitter.Workflows.Activities
         public UpdateTwitterStatusTask(
             TwitterClient twitterClient,
             IWorkflowExpressionEvaluator expressionEvaluator,
-            IStringLocalizer<UpdateTwitterStatusTask> localizer)
+            IStringLocalizer<UpdateTwitterStatusTask> localizer
+            )
         {
             _twitterClient = twitterClient;
             _expressionEvaluator = expressionEvaluator;
@@ -49,7 +50,8 @@ namespace OrchardCore.Twitter.Workflows.Activities
         // This is the heart of the activity and actually performs the work to be done.
         public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            var status = await _expressionEvaluator.EvaluateAsync(StatusTemplate, workflowContext);
+            // The twitter client encodes the status using FormUrlEncodedContent
+            var status = await _expressionEvaluator.EvaluateAsync(StatusTemplate, workflowContext, null);
 
             var result = await _twitterClient.UpdateStatus(status);
             workflowContext.Properties.Add("TwitterResponse", await result.Content.ReadAsStringAsync());

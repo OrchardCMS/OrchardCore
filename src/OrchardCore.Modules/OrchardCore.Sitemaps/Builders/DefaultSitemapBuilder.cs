@@ -21,7 +21,7 @@ namespace OrchardCore.Sitemaps.Builders
                 return null;
             }
 
-            foreach(var sitemapTypeBuilder in _sitemapTypeBuilders)
+            foreach (var sitemapTypeBuilder in _sitemapTypeBuilders)
             {
                 await sitemapTypeBuilder.BuildAsync(sitemap, context);
                 if (context.Response != null)

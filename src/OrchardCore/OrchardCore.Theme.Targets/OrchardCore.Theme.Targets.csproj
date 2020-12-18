@@ -1,8 +1,13 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
-    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <!-- NuGet properties-->
+    <Title>Target for OrchardCore Theme</Title>
+    <Description>$(OCCMSDescription)
+    
+    Converts project/library into an OrchardCore Theme that can be referenced in OrchardCore CMS application.</Description>
+    <PackageTags>$(PackageTags) OrchardCoreCMS</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>

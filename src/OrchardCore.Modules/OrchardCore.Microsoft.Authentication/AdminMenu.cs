@@ -23,7 +23,7 @@ namespace OrchardCore.Microsoft.Authentication
             {
                 builder.Add(S["Security"], security => security
                         .Add(S["Authentication"], authentication => authentication
-                        .Add(S["Microsoft"], S["Microsoft"], client => client
+                        .Add(S["Microsoft"], S["Microsoft"].PrefixPosition(), client => client
                         .AddClass("microsoft").Id("microsoft")
                             .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = MicrosoftAuthenticationConstants.Features.MicrosoftAccount })
                             .Permission(Permissions.ManageMicrosoftAuthentication)
@@ -54,10 +54,11 @@ namespace OrchardCore.Microsoft.Authentication
             {
                 builder.Add(S["Security"], security => security
                         .Add(S["Authentication"], authentication => authentication
-                        .Add(S["Azure Active Directory"], S["Azure Active Directory"], client => client
-                            .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = MicrosoftAuthenticationConstants.Features.AAD })
-                            .Permission(Permissions.ManageMicrosoftAuthentication)
-                            .LocalNav())
+                            .Add(S["Azure Active Directory"], S["Azure Active Directory"].PrefixPosition(), client => client
+                                .AddClass("azuread").Id("azuread")
+                                .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = MicrosoftAuthenticationConstants.Features.AAD })
+                                .Permission(Permissions.ManageMicrosoftAuthentication)
+                                .LocalNav())
                     ));
             }
             return Task.CompletedTask;

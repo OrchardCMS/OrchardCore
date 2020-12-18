@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
+using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentFields.Settings;
 using OrchardCore.ContentFields.ViewModels;
 using OrchardCore.ContentLocalization;
@@ -12,8 +13,9 @@ using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Modules;
+using OrchardCore.Mvc.ModelBinding;
 
-namespace OrchardCore.ContentFields.Fields
+namespace OrchardCore.ContentFields.Drivers
 {
     [RequireFeatures("OrchardCore.ContentLocalization")]
     public class LocalizationSetContentPickerFieldDisplayDriver : ContentFieldDisplayDriver<LocalizationSetContentPickerField>
@@ -93,12 +95,12 @@ namespace OrchardCore.ContentFields.Fields
 
             if (settings.Required && field.LocalizationSets.Length == 0)
             {
-                updater.ModelState.AddModelError(Prefix, S["The {0} field is required.", context.PartFieldDefinition.DisplayName()]);
+                updater.ModelState.AddModelError(Prefix, nameof(field.LocalizationSets), S["The {0} field is required.", context.PartFieldDefinition.DisplayName()]);
             }
 
             if (!settings.Multiple && field.LocalizationSets.Length > 1)
             {
-                updater.ModelState.AddModelError(Prefix, S["The {0} field cannot contain multiple items.", context.PartFieldDefinition.DisplayName()]);
+                updater.ModelState.AddModelError(Prefix, nameof(field.LocalizationSets), S["The {0} field cannot contain multiple items.", context.PartFieldDefinition.DisplayName()]);
             }
 
             return Edit(field, context);

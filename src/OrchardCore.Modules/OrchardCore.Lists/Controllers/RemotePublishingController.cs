@@ -50,8 +50,8 @@ namespace OrchardCore.Lists.Controllers
             var options = new XElement(
                 XName.Get("service", manifestUri),
                 new XElement(XName.Get("engineName", manifestUri), "Orchard CMS"),
-                new XElement(XName.Get("engineLink", manifestUri), "https://orchardproject.net"),
-                new XElement(XName.Get("homePageLink", manifestUri), "https://orchardproject.net"),
+                new XElement(XName.Get("engineLink", manifestUri), "https://orchardcore.net"),
+                new XElement(XName.Get("homePageLink", manifestUri), "https://orchardcore.net"),
                 new XElement(XName.Get("apis", manifestUri),
                     new XElement(XName.Get("api", manifestUri),
                         new XAttribute("name", "MetaWeblog"),

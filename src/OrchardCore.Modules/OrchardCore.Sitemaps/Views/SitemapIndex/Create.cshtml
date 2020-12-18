@@ -1,6 +1,6 @@
 @model CreateSitemapIndexViewModel
 
-<h1>@RenderTitleSegments(T["Create Sitemap Index"])</h1>
+<zone Name="Title"><h1>@RenderTitleSegments(T["Create Sitemap Index"])</h1></zone>
 
 @if (String.IsNullOrEmpty(Site.BaseUrl))
 {
@@ -56,7 +56,7 @@
     </div>
 
     <div class="form-group">
-        <button class="btn btn-primary" type="submit">@T["Save"]</button>
-        <a class="btn btn-secondary" asp-controller="SitemapIndex" asp-action="List" asp-area="OrchardCore.Sitemaps">@T["Cancel"]</a>
+        <button class="btn btn-primary save" type="submit">@T["Save"]</button>
+        <a class="btn btn-secondary cancel" role="button" asp-controller="SitemapIndex" asp-action="List" asp-area="OrchardCore.Sitemaps">@T["Cancel"]</a>
     </div>
 </form>

@@ -70,10 +70,10 @@ namespace OrchardCore.Workflows.Services
         public async Task<WorkflowExecutionContext> CreateWorkflowExecutionContextAsync(WorkflowType workflowType, Workflow workflow, IDictionary<string, object> input = null)
         {
             var state = workflow.State.ToObject<WorkflowState>();
-            var activityQuery = await Task.WhenAll(workflowType.Activities.Select(async x =>
+            var activityQuery = await Task.WhenAll(workflowType.Activities.Select(x =>
             {
                 var activityState = state.ActivityStates.ContainsKey(x.ActivityId) ? state.ActivityStates[x.ActivityId] : new JObject();
-                return await CreateActivityExecutionContextAsync(x, activityState);
+                return CreateActivityExecutionContextAsync(x, activityState);
             }));
             var mergedInput = (await DeserializeAsync(state.Input)).Merge(input ?? new Dictionary<string, object>());
             var properties = await DeserializeAsync(state.Properties);
@@ -102,7 +102,7 @@ namespace OrchardCore.Workflows.Services
             return Task.FromResult(context);
         }
 
-        public async Task TriggerEventAsync(string name, IDictionary<string, object> input = null, string correlationId = null, bool isExclusive = false)
+        public async Task TriggerEventAsync(string name, IDictionary<string, object> input = null, string correlationId = null, bool isExclusive = false, bool isAlwaysCorrelated = false)
         {
             var activity = _activityLibrary.GetActivityByName(name);
 
@@ -116,7 +116,7 @@ namespace OrchardCore.Workflows.Services
             var workflowTypesToStart = await _workflowTypeStore.GetByStartActivityAsync(name);
 
             // And any workflow halted on this kind of activity for the specified target.
-            var haltedWorkflows = await _workflowStore.ListByActivityNameAsync(name, correlationId);
+            var haltedWorkflows = await _workflowStore.ListByActivityNameAsync(name, correlationId, isAlwaysCorrelated);
 
             // If no workflow matches the event, do nothing.
             if (!workflowTypesToStart.Any() && !haltedWorkflows.Any())
@@ -127,8 +127,14 @@ namespace OrchardCore.Workflows.Services
             // Start new workflows.
             foreach (var workflowType in workflowTypesToStart)
             {
-                // If this is a singleton workflow or if the event is exclusive, and there's already an instance, then skip.
-                if ((workflowType.IsSingleton || isExclusive) && haltedWorkflows.Any(x => x.WorkflowTypeId == workflowType.WorkflowTypeId))
+                // If this is a singleton workflow and there's already an halted instance, then skip.
+                if (workflowType.IsSingleton && await _workflowStore.HasHaltedInstanceAsync(workflowType.WorkflowTypeId))
+                {
+                    continue;
+                }
+
+                // If the event is exclusive and there's already an instance halted on this activity type, then skip.
+                if (isExclusive && haltedWorkflows.Any(x => x.WorkflowTypeId == workflowType.WorkflowTypeId))
                 {
                     continue;
                 }
@@ -358,7 +364,12 @@ namespace OrchardCore.Workflows.Services
                     if (transition != null)
                     {
                         var destinationActivity = workflowContext.WorkflowType.Activities.SingleOrDefault(x => x.ActivityId == transition.DestinationActivityId);
-                        scheduled.Push(destinationActivity);
+
+                        // Check that the activity doesn't point to itself.
+                        if (destinationActivity != activity)
+                        {
+                            scheduled.Push(destinationActivity);
+                        }
                     }
                 }
 

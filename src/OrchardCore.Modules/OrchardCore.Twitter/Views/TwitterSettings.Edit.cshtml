@@ -1,12 +1,13 @@
 @using OrchardCore.Twitter.ViewModels;
 @model TwitterSettingsViewModel;
 
-<p class="alert alert-warning">@T["The current tenant will be reloaded when the settings are saved."]</p>
+<p class="alert alert-warning">@T["The current tenant will be reloaded when the settings are saved."]
+    <i class="fa fa-book"></i> <a href="@(OrchardCore.Admin.Constants.DocsUrl)reference/modules/Twitter/#twitter-integration" target="_blank">@T["See documentation"]</a></p>
 
 <h3>@T["Twitter Integration Settings"]</h3>
 
 <div class="form-group row" asp-validation-class-for="APIKey">
-    <div class="col-lg">
+    <div class="col-large">
         <label asp-for="APIKey">@T["API key"]</label>
         <input asp-for="APIKey" class="form-control" autocomplete="off" />
         <span asp-validation-for="APIKey"></span>
@@ -15,7 +16,7 @@
 </div>
 
 <div class="form-group row" asp-validation-class-for="APISecretKey">
-    <div class="col-lg">
+    <div class="col-large">
         <label asp-for="APISecretKey">@T["API secret key"]</label>
         <input asp-for="APISecretKey" class="form-control" type="password" value="@Model.APISecretKey" autocomplete="off" />
         <span asp-validation-for="APISecretKey"></span>
@@ -24,7 +25,7 @@
 </div>
 
 <div class="form-group row" asp-validation-class-for="AccessToken">
-    <div class="col-lg">
+    <div class="col-large">
         <label asp-for="AccessToken">@T["Access Token"]</label>
         <input asp-for="AccessToken" class="form-control" autocomplete="off" />
         <span asp-validation-for="AccessToken"></span>
@@ -33,7 +34,7 @@
 </div>
 
 <div class="form-group row" asp-validation-class-for="AccessTokenSecret">
-    <div class="col-lg">
+    <div class="col-large">
         <label asp-for="AccessTokenSecret">@T["Access Token Secret"]</label>
         <input asp-for="AccessTokenSecret" class="form-control" type="password" value="@Model.AccessTokenSecret" autocomplete="off" />
         <span asp-validation-for="AccessTokenSecret"></span>

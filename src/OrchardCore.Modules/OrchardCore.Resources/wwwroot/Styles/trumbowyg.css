@@ -4,7 +4,7 @@
 */
 
 /**
- * Trumbowyg v2.21.0 - A lightweight WYSIWYG editor
+ * Trumbowyg v2.23.0 - A lightweight WYSIWYG editor
  * Default stylesheet for Trumbowyg editor
  * ------------------------
  * @link http://alex-d.github.io/Trumbowyg
@@ -44,8 +44,7 @@
   min-height: 300px; }
 
 [dir] .trumbowyg-box, [dir] .trumbowyg-editor {
-  border: 1px solid #DDD;
-  margin: 17px auto; }
+  border: 1px solid #DDD; }
 
 [dir] .trumbowyg-box .trumbowyg-editor {
   margin: 0 auto; }
@@ -127,7 +126,8 @@
 .trumbowyg-editor[contenteditable=true]:empty:not(:focus)::before {
   content: attr(placeholder);
   color: #999;
-  pointer-events: none; }
+  pointer-events: none;
+  white-space: break-spaces; }
 
 .trumbowyg-button-pane {
   width: 100%;

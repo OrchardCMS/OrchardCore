@@ -7,7 +7,7 @@ namespace OrchardCore.Indexing
 {
     /// <summary>
     /// An implementation of <see cref="ContentFieldIndexHandler&lt;TField&gt;"/> is able to take part in the rendering of
-    /// a <see cref="TField"/> instance.
+    /// a <see typeparamref="TField"/> instance.
     /// </summary>
     public abstract class ContentFieldIndexHandler<TField> : IContentFieldIndexHandler where TField : ContentField
     {

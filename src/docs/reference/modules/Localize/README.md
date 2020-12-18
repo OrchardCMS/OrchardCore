@@ -5,7 +5,7 @@ It also supports plural forms.
 
 ## Online translations
 
-[![Crowdin](https://d322cqt584bo4o.cloudfront.net/orchard-core/localized.svg)](https://crowdin.com/project/orchard-core)
+[![Crowdin](https://badges.crowdin.net/orchard-core/localized.svg)](https://crowdin.com/project/orchard-core)
 
 The localization files for the different cultures are available on [Crowdin](https://crowdin.com/project/orchard-core).
 
@@ -26,6 +26,9 @@ PO files are found at these locations:
 It is suggested to put your localization files in the `/Localization/` folder if you are using docker.  
 Especially if mounting a volume at `/App_Data/` as mounting hides pre-existing files.
 
+!!! note
+    If you edit a .po file, you need to restart the application to make your change effective.
+
 ### Publishing Localization files
 
 The PO files need to be included in the publish output directory. 
@@ -39,7 +42,11 @@ Add the following configurations to your `[Web Project].csproj` file to include 
   </ItemGroup>
 ```
 
+!!! note
+    Translation files can be provided by a module, in that case they are embedded automatically in the module assembly unless Visual Studio added some bad item groups in the project file.
+
 ## Recipe Step
+
 Cultures can be added during recipes using the settings step. Here is a sample step:
 
 ```json

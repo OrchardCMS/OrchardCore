@@ -41,7 +41,7 @@ namespace OrchardCore.Settings.Drivers
                 model.CdnBaseUrl = site.CdnBaseUrl;
                 model.ResourceDebugMode = site.ResourceDebugMode;
                 model.AppendVersion = site.AppendVersion;
-                model.Meta = site.Meta;
+                model.CacheMode = site.CacheMode;
             }).Location("Content:1").OnGroup(GroupId);
         }
 
@@ -62,7 +62,7 @@ namespace OrchardCore.Settings.Drivers
                     site.CdnBaseUrl = model.CdnBaseUrl;
                     site.ResourceDebugMode = model.ResourceDebugMode;
                     site.AppendVersion = model.AppendVersion;
-                    site.Meta = model.Meta;
+                    site.CacheMode = model.CacheMode;
                 }
 
                 if (!String.IsNullOrEmpty(site.BaseUrl) && !Uri.TryCreate(site.BaseUrl, UriKind.Absolute, out var baseUrl))

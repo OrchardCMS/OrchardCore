@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement;
+using OrchardCore.ContentPreview;
 using OrchardCore.Data;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Scope;
@@ -23,7 +25,9 @@ namespace OrchardCore.Indexing.Services
     public class IndexingTaskManager : IIndexingTaskManager
     {
         private readonly IClock _clock;
+        private readonly IStore _store;
         private readonly IDbConnectionAccessor _dbConnectionAccessor;
+        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ILogger _logger;
 
         private readonly string _tablePrefix;
@@ -32,11 +36,15 @@ namespace OrchardCore.Indexing.Services
         public IndexingTaskManager(
             IClock clock,
             ShellSettings shellSettings,
+            IStore store,
             IDbConnectionAccessor dbConnectionAccessor,
+            IHttpContextAccessor httpContextAccessor,
             ILogger<IndexingTaskManager> logger)
         {
             _clock = clock;
+            _store = store;
             _dbConnectionAccessor = dbConnectionAccessor;
+            _httpContextAccessor = httpContextAccessor;
             _logger = logger;
 
             _tablePrefix = shellSettings["TablePrefix"];
@@ -54,10 +62,15 @@ namespace OrchardCore.Indexing.Services
                 throw new ArgumentNullException("contentItem");
             }
 
+            // Do not index a preview content item.
+            if (_httpContextAccessor.HttpContext?.Features.Get<ContentPreviewFeature>()?.Previewing == true)
+            {
+                return Task.CompletedTask;
+            }
+
             if (contentItem.Id == 0)
             {
-                // Ignore that case, when Update is called on a content item which has not be "created" yet
-
+                // Ignore that case, when Update is called on a content item which has not be "created" yet.
                 return Task.CompletedTask;
             }
 
@@ -87,6 +100,7 @@ namespace OrchardCore.Indexing.Services
 
             var serviceProvider = scope.ServiceProvider;
 
+            var session = serviceProvider.GetService<YesSql.ISession>();
             var dbConnectionAccessor = serviceProvider.GetService<IDbConnectionAccessor>();
             var shellSettings = serviceProvider.GetService<ShellSettings>();
             var logger = serviceProvider.GetService<ILogger<IndexingTaskManager>>();
@@ -122,9 +136,9 @@ namespace OrchardCore.Indexing.Services
             {
                 await connection.OpenAsync();
 
-                using (var transaction = connection.BeginTransaction())
+                using (var transaction = connection.BeginTransaction(session.Store.Configuration.IsolationLevel))
                 {
-                    var dialect = SqlDialectFactory.For(transaction.Connection);
+                    var dialect = session.Store.Configuration.SqlDialect;
 
                     try
                     {
@@ -173,7 +187,7 @@ namespace OrchardCore.Indexing.Services
 
                 try
                 {
-                    var dialect = SqlDialectFactory.For(connection);
+                    var dialect = _store.Configuration.SqlDialect;
                     var sqlBuilder = dialect.CreateBuilder(_tablePrefix);
 
                     sqlBuilder.Select();
@@ -185,7 +199,7 @@ namespace OrchardCore.Indexing.Services
                         sqlBuilder.Take(count.ToString());
                     }
 
-                    sqlBuilder.WhereAlso($"{dialect.QuoteForColumnName("Id")} > @Id");
+                    sqlBuilder.WhereAnd($"{dialect.QuoteForColumnName("Id")} > @Id");
 
                     return await connection.QueryAsync<IndexingTask>(sqlBuilder.ToSqlString(), new { Id = afterTaskId });
                 }

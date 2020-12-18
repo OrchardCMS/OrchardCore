@@ -2,9 +2,9 @@ using OrchardCore.Modules.Manifest;
 
 [assembly: Module(
     Name = "Dynamic Cache",
-    Author = "The Orchard Team",
-    Website = "https://orchardproject.net",
-    Version = "2.0.0",
-    Description = "Dynamic Cache.",
+    Author = ManifestConstants.OrchardCoreTeam,
+    Website = ManifestConstants.OrchardCoreWebsite,
+    Version = ManifestConstants.OrchardCoreVersion,
+    Description = "The Dynamic Cache module adds tag helpers to cache items dynamically.",
     Category = "Performance"
 )]

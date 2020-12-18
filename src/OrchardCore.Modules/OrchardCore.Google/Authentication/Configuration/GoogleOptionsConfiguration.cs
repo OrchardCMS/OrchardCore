@@ -69,6 +69,8 @@ namespace OrchardCore.Google.Authentication.Configuration
             {
                 options.CallbackPath = settings.CallbackPath;
             }
+
+            options.SaveTokens = settings.SaveTokens;
         }
 
         public void Configure(GoogleOptions options) => Debug.Fail("This infrastructure method shouldn't be called.");

@@ -13,13 +13,16 @@ namespace OrchardCore.Users.Workflows
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddActivity<RegisterUserTask, RegisterUserTaskDisplay>();
-            services.AddActivity<UserCreatedEvent, UserCreatedEventDisplay>();
-            services.AddActivity<UserEnabledEvent, UserEnabledEventDisplay>();
-            services.AddActivity<UserDisabledEvent, UserDisabledEventDisplay>();
-            services.AddActivity<UserLoggedInEvent, UserLoggedInEventDisplay>();
+            services.AddActivity<RegisterUserTask, RegisterUserTaskDisplayDriver>();
+            services.AddActivity<UserCreatedEvent, UserCreatedEventDisplayDriver>();
+            services.AddActivity<UserDeletedEvent, UserDeletedEventDisplayDriver>();
+            services.AddActivity<UserEnabledEvent, UserEnabledEventDisplayDriver>();
+            services.AddActivity<UserDisabledEvent, UserDisabledEventDisplayDriver>();
+            services.AddActivity<UserUpdatedEvent, UserUpdatedEventDisplayDriver>();
+            services.AddActivity<UserLoggedInEvent, UserLoggedInEventDisplayDriver>();
             services.AddScoped<IUserEventHandler, UserEventHandler>();
-            services.AddActivity<AssignUserRoleTask, AssignUserRoleTaskDisplay>();
+            services.AddActivity<AssignUserRoleTask, AssignUserRoleTaskDisplayDriver>();
+            services.AddActivity<ValidateUserTask, ValidateUserTaskDisplayDriver>();
         }
     }
 }

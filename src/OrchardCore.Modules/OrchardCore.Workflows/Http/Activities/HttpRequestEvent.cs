@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
@@ -55,7 +56,7 @@ namespace OrchardCore.Workflows.Http.Activities
         {
             var httpContext = _httpContextAccessor.HttpContext;
             var httpRequest = httpContext.Request;
-            var isMatch = string.Equals(HttpMethod, httpRequest.Method, System.StringComparison.OrdinalIgnoreCase);
+            var isMatch = String.Equals(HttpMethod, httpRequest.Method, StringComparison.OrdinalIgnoreCase);
 
             return isMatch;
         }

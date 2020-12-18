@@ -9,7 +9,7 @@ namespace OrchardCore.ContentManagement.Routing
             // Normalize path.
             Path = "/" + path.Trim('/');
 
-            ContainedContentItemId = containedContentItemId;//; ?? contentItemId;
+            ContainedContentItemId = containedContentItemId;
             JsonPath = jsonPath;
         }
 
@@ -30,7 +30,7 @@ namespace OrchardCore.ContentManagement.Routing
         public string ContainedContentItemId;
 
         /// <summary>
-        /// The json path of an item contained within then document.
+        /// The json path of an item contained within the document.
         /// </summary>
         public string JsonPath;
     }

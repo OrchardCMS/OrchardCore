@@ -22,7 +22,7 @@ namespace OrchardCore.GitHub
             {
                 builder.Add(S["Security"], security => security
                         .Add(S["Authentication"], authentication => authentication
-                        .Add(S["GitHub"], S["GitHub"], settings => settings
+                        .Add(S["GitHub"], S["GitHub"].PrefixPosition(), settings => settings
                         .AddClass("github").Id("github")
                             .Action("Index", "Admin", new { area = "OrchardCore.Settings", groupId = GitHubConstants.Features.GitHubAuthentication })
                             .Permission(Permissions.ManageGitHubAuthentication)

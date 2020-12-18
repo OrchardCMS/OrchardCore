@@ -9,7 +9,7 @@ namespace OrchardCore.Recipes
         {
             services.AddScoped<IRecipeHarvester, ApplicationRecipeHarvester>();
             services.AddScoped<IRecipeHarvester, RecipeHarvester>();
-            services.AddSingleton<IRecipeExecutor, RecipeExecutor>();
+            services.AddTransient<IRecipeExecutor, RecipeExecutor>();
             services.AddScoped<IRecipeMigrator, RecipeMigrator>();
             services.AddScoped<IRecipeReader, RecipeReader>();
 

@@ -1,0 +1,145 @@
+@model ShortcodeTemplateViewModel
+@inject IDisplayManager<ShortcodeDescriptor> ShortcodeDescriptorDisplayManager
+@inject IShortcodeDescriptorManager ShortcodeDescriptorManager
+
+@{
+    var shortcodeDescriptors = await ShortcodeDescriptorManager.GetShortcodeDescriptors();
+    var categories = shortcodeDescriptors
+        .SelectMany(s => s.Categories)
+        .GroupBy(c => c, StringComparer.OrdinalIgnoreCase)
+        .Select(g => g.Key);
+
+    var jCategories = JsonConvert.SerializeObject(categories);  
+    var jSelectedCategories = JsonConvert.SerializeObject(Model.Categories);
+}
+
+<style asp-name="codemirror"></style>
+<style asp-name="codemirror-addon-display-fullscreen"></style>
+<script asp-name="codemirror" depends-on="admin" at="Foot"></script>
+<script asp-name="codemirror-addon-edit-closetag" at="Foot"></script>
+<script asp-name="codemirror-mode-javascript" at="Foot"></script>
+<script asp-name="codemirror-addon-display-autorefresh" at="Foot"></script>
+<script asp-name="codemirror-addon-display-fullscreen" at="Foot"></script>
+<script asp-name="codemirror-addon-mode-simple" at="Foot"></script>
+<script asp-name="codemirror-addon-mode-multiplex" at="Foot"></script>
+<script asp-name="codemirror-addon-selection-active-line" at="Foot"></script>
+<script asp-name="codemirror-mode-css" at="Foot"></script>
+<script asp-name="codemirror-mode-htmlmixed" at="Foot"></script>
+<script asp-name="codemirror-mode-javascript" at="Foot"></script>
+<script asp-name="codemirror-mode-xml" at="Foot"></script>
+
+<script asp-src="~/OrchardCore.Liquid/codemirror/liquid.js" at="Foot"></script>
+
+<style asp-name="vue-multiselect"></style>
+<style asp-src="~/OrchardCore.Shortcodes/Styles/shortcodes.min.css" debug-src="~/OrchardCore.Shortcodes/Styles/shortcodes.css" asp-name="shortcodes"></style>
+<script asp-src="~/OrchardCore.Shortcodes/Scripts/shortcode-templates.min.js" debug-src="~/OrchardCore.Shortcodes/Scripts/shortcode-templates.js" at="Foot" depends-on="vuejs, vue-multiselect"></script>
+
+<zone Name="Title"><h1>@RenderTitleSegments(T["Edit Shortcode"])</h1></zone>
+
+<div asp-validation-summary="All"></div>
+<form asp-action="Edit" method="post">
+
+    <input type="hidden" value="@Model.Name" name="sourceName" />
+
+    <div class="row">
+        <div class="col-12 col-md-6" >
+            <div class="form-group" asp-validation-class-for="Name">
+                <label asp-for="Name">@T["Name"]</label>
+                <input asp-for="Name" class="form-control" autofocus />
+                <span asp-validation-for="Name"></span>
+                <span class="hint">@T["The name of the shortcode."]</span>
+            </div>
+            <div class="form-group" asp-validation-class-for="Hint">
+                <label asp-for="Hint">@T["Hint"]</label>
+                <input asp-for="Hint" class="form-control" />
+                <span class="hint">@T["The hint for the shortcode."]</span>
+            </div>
+
+            <div class="form-group" asp-validation-class-for="Usage">
+                <label asp-for="Usage">@T["Usage"]</label>
+                <textarea asp-for="Usage" rows="10" class="form-control"></textarea>
+                <span class="hint">@T["Example usage of the shortcode."]</span>
+            </div>   
+
+            @* Do not move app from here, it is specific to categories, and causes conflicts with codemirror due to dom rewrites. *@
+            <div class="form-group" asp-validation-class-for="SelectedCategories" id="shortcodeCategories" data-categories="@jCategories" data-selected-categories="@jSelectedCategories">
+                <label asp-for="SelectedCategories">@T["Categories"]</label>
+                <input class="form-control" asp-for="SelectedCategories" type="hidden" v-bind:value="getSelectedCategories()"/>
+                    <vue-multiselect v-model="value"
+                                     placeholder="@T["Type to search"]"
+                                     select-label="@T["Select"]"
+                                     deselect-label="@T["Remove"]"
+                                     :options="options"
+                                     :multiple="true"
+                                     :show-labels="false"
+                                     :close-on-select="false"
+                                     :clear-on-select="false"
+                                     :taggable="true"
+                                     tag-position="bottom"
+                                     tag-placeholder="@T["Press enter to add a category"]"
+                                     @@tag="addCategory">
+                        <template slot="noResult">
+                            @T["No categories found"]
+                        </template>
+                        <template slot="noOptions">
+                            @T["No categories found"]
+                        </template>
+                    </vue-multiselect>
+                <span class="hint">@T["The categories for this shortcode."]</span>
+            </div>     
+
+            <div class="form-group" asp-validation-class-for="DefaultValue">
+                <label asp-for="DefaultValue">@T["Default Shortcode Value"]</label>
+                <input asp-for="DefaultValue" class="form-control" />
+                <span class="hint">@T["The default value of the short code when selected. Defaults to [name]."]</span>
+            </div>  
+        </div>
+        <div class="col-12 col-md-6 d-flex align-items-center justify-content-center">
+            <div id="shortcodePreview">
+            @{
+                var descriptor = new ShortcodeDescriptor
+                {
+                    Name = Model.Name,
+                    Hint = Model.Hint,
+                    DefaultValue = Model.DefaultValue,
+                    Usage = Model.Usage           
+                };
+                dynamic shape = await ShortcodeDescriptorDisplayManager.BuildDisplayAsync(descriptor, null, "SummaryAdmin");
+                shape.Actions = null;
+                @await DisplayAsync(shape)
+            }
+            </div>
+        </div>
+        <div class="col-12">
+            <div class="form-group" asp-validation-class-for="Content">
+                <label asp-for="Content">@T["Content"]</label>
+                <textarea asp-for="Content" rows="10" class="form-control"></textarea>
+                <span class="hint">@T["The Liquid template."]</span>
+            </div>
+        </div>    
+    </div>
+    <div class="form-group">
+        <div class="btn-group">
+            <button type="submit" name="submit" class="btn btn-primary save">@T["Save"]</button>
+            <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-reference="parent" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <span class="sr-only">@T["Toggle Dropdown"]</span>
+            </button>
+            <div class="dropdown-menu">
+                <button class="dropdown-item save-continue" name="submit" type="submit" value="SaveAndContinue">@T["and continue"]</button>
+            </div>
+        </div>
+
+        <a class="btn btn-secondary cancel" role="button" asp-route-action="Index">@T["Cancel"]</a>
+    </div>
+</form>
+
+<script at="Foot">
+    initializeShortcodesTemplateEditor(
+        document.getElementById('shortcodeCategories'), 
+        document.getElementById('@Html.IdFor(x => x.Content)'),
+        document.getElementById('@Html.IdFor(x => x.Usage)'),
+        document.getElementById('shortcodePreview'),
+        document.getElementById('@Html.IdFor(x => x.Name)'),
+        document.getElementById('@Html.IdFor(x => x.Hint)')
+    );
+</script>
