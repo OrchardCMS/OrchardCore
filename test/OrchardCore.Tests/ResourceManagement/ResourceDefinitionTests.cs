@@ -37,6 +37,22 @@ namespace OrchardCore.Tests.ResourceManagement
         }
 
         [Theory]
+        [InlineData("/base")]
+        [InlineData("https://base.com")]
+        public void GetScriptResourceWithBasePath(string basePath)
+        {
+            var resourceDefinition = _resourceManifest.DefineScript("foo")
+                .SetUrl("~/foo.js", "~/foo.debug.js")
+                .SetBasePath(basePath);
+
+            var requireSettings = new RequireSettings { DebugMode = false, CdnMode = false };
+            var tagBuilder = resourceDefinition.GetTagBuilder(requireSettings, String.Empty, StubFileVersionProvider.Instance);
+
+            Assert.Equal("script", tagBuilder.TagName);
+            Assert.Equal($"{basePath}/foo.js", tagBuilder.Attributes["src"]);
+        }
+
+        [Theory]
         [InlineData("")]
         [InlineData("/tenant")]
         public void GetScriptResourceWithDebugUrl(string applicationPath)
@@ -83,7 +99,7 @@ namespace OrchardCore.Tests.ResourceManagement
             Assert.Equal("script", tagBuilder.TagName);
             Assert.Equal("https://cdn.tld/foo.debug.js", tagBuilder.Attributes["src"]);
         }
-     
+
         [Theory]
         [InlineData("", "~/foo.js", "https://hostcdn.net/foo.js")]
         [InlineData("/tenant", "~/foo.js", "https://hostcdn.net/tenant/foo.js")]
@@ -119,7 +135,7 @@ namespace OrchardCore.Tests.ResourceManagement
 
             Assert.Equal("script", tagBuilder.TagName);
             Assert.Equal("console.log('foo');", ReadIHtmlContent(tagBuilder.InnerHtml));
-        }   
+        }
 
         [Theory]
         [InlineData("")]
@@ -196,7 +212,7 @@ namespace OrchardCore.Tests.ResourceManagement
             Assert.Equal("text/css", tagBuilder.Attributes["type"]);
             Assert.Equal("stylesheet", tagBuilder.Attributes["rel"]);
             Assert.Equal(expected, tagBuilder.Attributes["href"]);
-        }        
+        }
 
         [Theory]
         [InlineData("")]
