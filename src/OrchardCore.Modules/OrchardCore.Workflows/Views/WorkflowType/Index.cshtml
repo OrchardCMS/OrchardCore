@@ -13,18 +13,13 @@
     <input type="submit" name="submit.Filter" id="submitFilter" class="d-none" />
     <input type="submit" name="submit.BulkAction" class="d-none" />
     <input asp-for="Options.BulkAction" type="hidden" />
-
+    
     <div class="card mb-3 position-sticky action-bar">
         <div class="card-body bg-primary p-3">
-            <div class="form-group mb-n1">
+            <div class="form-group mb-n1 has-search">
                 <div class="input-group input-group-sm w-lg-50 d-inline-flex">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text bg-secondary text-light">@T["Filter"]</span>
-                    </div>
+                    <i class="fa fa-search form-control-feedback"></i>
                     <input asp-for="Options.Search" class="form-control" placeholder="@T["Search"]" type="search" autofocus />
-                    <div class="input-group-append">
-                        <button type="submit" class="btn btn-sm btn-secondary">@T["Search"]</button>
-                    </div>
                 </div>
                 <div class="btn-group float-right">
                     <a asp-action="EditProperties" asp-route-returnUrl="@FullRequestPath" class="btn btn-sm btn-secondary float-right create" role="button">@T["Create Workflow"]</a>
@@ -32,7 +27,6 @@
             </div>
         </div>
     </div>
-
     <ul class="list-group with-checkbox">
         @if (Model.WorkflowTypes.Any())
         {

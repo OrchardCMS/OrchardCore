@@ -23,12 +23,12 @@
     <PackageManagement Include="Lucene.Net.Analysis.Common" Version="4.8.0-beta00013" />
     <PackageManagement Include="Lucene.Net.QueryParser" Version="4.8.0-beta00013" />
     <PackageManagement Include="MailKit" Version="2.10.0" />
-    <PackageManagement Include="Markdig" Version="0.22.0" />
+    <PackageManagement Include="Markdig" Version="0.22.1" />
     <PackageManagement Include="MessagePack" Version="2.2.60" />
     <PackageManagement Include="Microsoft.NET.Test.Sdk" Version="16.2.0" />
-    <PackageManagement Include="MimeKit" Version="2.10.0" />
-    <PackageManagement Include="MiniProfiler.AspNetCore.Mvc" Version="4.2.1" />
-    <PackageManagement Include="Moq" Version="4.15.1" />
+    <PackageManagement Include="MimeKit" Version="2.10.1" />
+    <PackageManagement Include="MiniProfiler.AspNetCore.Mvc" Version="4.2.22" />
+    <PackageManagement Include="Moq" Version="4.15.2" />
     <PackageManagement Include="ncrontab" Version="3.3.1" />
     <PackageManagement Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageManagement Include="NLog.Web.AspNetCore" Version="4.9.3" />
@@ -37,7 +37,7 @@
     <PackageManagement Include="OpenIddict.Core" Version="[3.0.0-rc2.20607.88]" />
     <PackageManagement Include="OrchardCore.Translations.All" Version="1.0.0-rc2-108003" />
     <PackageManagement Include="Serilog.AspNetCore" Version="3.4.0" />
-    <PackageManagement Include="Shortcodes" Version="1.0.0-beta-175913881" />
+    <PackageManagement Include="Shortcodes" Version="1.0.0" />
     <PackageManagement Include="SixLabors.ImageSharp.Web" Version="1.0.1" />
     <PackageManagement Include="xunit.analyzers" Version="0.10.0" />
     <!-- xunit downgraded due to Theory Skip bug c.f. https://github.com/xunit/xunit/issues/1782 -->

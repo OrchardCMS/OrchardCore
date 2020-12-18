@@ -73,6 +73,25 @@ namespace OrchardCore.Redis.Services
             return (null, false);
         }
 
+        public async Task<bool> IsLockAcquiredAsync(string key)
+        {
+            if (_redis.Database == null)
+            {
+                await _redis.ConnectAsync();
+            }
+
+            try
+            {
+                return (await _redis.Database.LockQueryAsync(_prefix + key)).HasValue;
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Fails to check whether the named lock '{LockName}' is already acquired.", _prefix + key);
+            }
+
+            return false;
+        }
+
         private async Task<bool> LockAsync(string key, TimeSpan expiry)
         {
             if (_redis.Database == null)

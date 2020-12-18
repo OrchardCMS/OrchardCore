@@ -169,8 +169,8 @@ namespace OrchardCore.Placements.Controllers
             }
             catch (Exception e)
             {
-                _notifier.Error(H["An error occurred while saving the placement"]);
-                _logger.LogError(e, "An error occurred while saving the placement");
+                _notifier.Error(H["An error occurred while saving the placement."]);
+                _logger.LogError(e, "An error occurred while saving the placement.");
                 return View(viewModel);
             }
 

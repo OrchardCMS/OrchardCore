@@ -9,13 +9,13 @@
     var culture = await Orchard.GetContentCultureAsync(Model.MarkdownBodyPart.ContentItem);
 }
 
-<script asp-name="simplemde" depends-on="admin" asp-src="~/OrchardCore.Markdown/Scripts/simplemde.min.js" at="Foot"></script>
+<script asp-name="mde" depends-on="admin" asp-src="~/OrchardCore.Markdown/Scripts/mde.min.js" at="Foot"></script>
 <style asp-name="codemirror"></style>
-<style asp-name="simplemdecss" asp-src="~/OrchardCore.Markdown/Styles/simplemde.min.css" debug-src="~/OrchardCore.Markdown/Styles/simplemde.css"></style>
+<style asp-name="mdecss" asp-src="~/OrchardCore.Markdown/Styles/mde.min.css" debug-src="~/OrchardCore.Markdown/Styles/mde.css"></style>
 
 @await DisplayAsync(await New.ShortcodeModal())
 
-<div class="form-group simplemde-editor">
+<div class="form-group mde-editor">
     <label asp-for="Markdown">@Model.TypePartDefinition.DisplayName()</label>
     <span class="hint">@T["The markdown text of the content item."]</span>
     <textarea asp-for="Markdown" rows="5" class="form-control content-preview-text"></textarea>
@@ -26,16 +26,16 @@
         var markdownElement = document.getElementById("@Html.IdFor(m => m.Markdown)");
         @* When part is rendered by a flow part only the elements scripts are rendered, so the html element will not exist. *@
         if (markdownElement) {
-            var simplemde = new SimpleMDE({
+            var mde = new EasyMDE({
                 element: markdownElement,
                 forceSync: true,
-                toolbar: simplemdeToolbar,
+                toolbar: mdeToolbar,
                 autoDownloadFontAwesome: false
             });
 
-            initializeSimpleMdeShortcodeWrapper(simplemde);
+            initializeMdeShortcodeWrapper(mde);
 
-            simplemde.codemirror.on('change', function () {
+            mde.codemirror.on('change', function () {
                 $(document).trigger('contentpreview:render');
             });
 

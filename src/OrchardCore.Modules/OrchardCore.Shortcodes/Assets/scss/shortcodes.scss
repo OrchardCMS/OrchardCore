@@ -35,6 +35,6 @@ $icon-shortcode-bg: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/s
     display: inline-block;
     width: 20px;
     height: 20px;
-    background: no-repeat 50% / 100% 100%;    
-    background-image: escape-svg($icon-shortcode-bg);
+    background: no-repeat 50% / 100% 100% !important;    
+    background-image: escape-svg($icon-shortcode-bg) !important;
 }

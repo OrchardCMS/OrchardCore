@@ -11,7 +11,7 @@ namespace OrchardCore.Users.Drivers
 {
     public class LoginSettingsDisplayDriver : SectionDisplayDriver<ISite, LoginSettings>
     {
-        public const string GroupId = "LoginSettings";
+        public const string GroupId = "userLogin";
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthorizationService _authorizationService;
 
