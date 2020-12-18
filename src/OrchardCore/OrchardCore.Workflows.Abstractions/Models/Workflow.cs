@@ -32,14 +32,14 @@ namespace OrchardCore.Workflows.Models
         public string FaultMessage { get; set; }
 
         /// <summary>
-        /// The timeout in seconds to acquire a lock before executing this workflow instance.
+        /// The timeout in milliseconds to acquire a lock before executing this workflow instance.
         /// </summary>
-        public int LockTimeoutInSeconds { get; set; }
+        public int LockTimeout { get; set; }
 
         /// <summary>
-        /// The expiration in seconds of the lock acquired before executing this workflow instance.
+        /// The expiration in milliseconds of the lock acquired before executing this workflow instance.
         /// </summary>
-        public int LockExpirationInSeconds { get; set; }
+        public int LockExpiration { get; set; }
 
         /// <summary>
         /// List of activities the current workflow instance is waiting on
@@ -52,6 +52,6 @@ namespace OrchardCore.Workflows.Models
         /// <summary>
         /// Whether this workflow instance needs to be executed atomically.
         /// </summary>
-        public bool IsAtomic() => LockTimeoutInSeconds > 0 && LockExpirationInSeconds > 0;
+        public bool IsAtomic() => LockTimeout > 0 && LockExpiration > 0;
     }
 }

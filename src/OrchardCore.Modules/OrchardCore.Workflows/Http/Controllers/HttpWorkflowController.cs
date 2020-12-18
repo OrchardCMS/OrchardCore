@@ -145,8 +145,8 @@ namespace OrchardCore.Workflows.Http.Controllers
                 (var locker, var locked) = workflowType.IsAtomic() && workflowType.IsSingleton
                     ? await _distributedLock.TryAcquireLockAsync(
                         "WFT_" + workflowType.WorkflowTypeId + "_LOCK",
-                        TimeSpan.FromSeconds(workflowType.LockTimeoutInSeconds),
-                        TimeSpan.FromSeconds(workflowType.LockExpirationInSeconds))
+                        TimeSpan.FromMilliseconds(workflowType.LockTimeout),
+                        TimeSpan.FromMilliseconds(workflowType.LockExpiration))
                     : (null, true);
 
                 if (locked)
@@ -195,8 +195,8 @@ namespace OrchardCore.Workflows.Http.Controllers
                         (var locker, var locked) = workflow.IsAtomic()
                             ? await _distributedLock.TryAcquireLockAsync(
                                 "WFI_" + workflow.WorkflowId + "_LOCK",
-                                TimeSpan.FromSeconds(workflow.LockTimeoutInSeconds),
-                                TimeSpan.FromSeconds(workflow.LockExpirationInSeconds))
+                                TimeSpan.FromMilliseconds(workflow.LockTimeout),
+                                TimeSpan.FromMilliseconds(workflow.LockExpiration))
                             : (null, true);
 
                         if (!locked)
@@ -252,8 +252,8 @@ namespace OrchardCore.Workflows.Http.Controllers
                 (var locker, var locked) = workflow.IsAtomic()
                     ? await _distributedLock.TryAcquireLockAsync(
                         "WFI_" + workflow.WorkflowId + "_LOCK",
-                        TimeSpan.FromSeconds(workflow.LockTimeoutInSeconds),
-                        TimeSpan.FromSeconds(workflow.LockExpirationInSeconds))
+                        TimeSpan.FromMilliseconds(workflow.LockTimeout),
+                        TimeSpan.FromMilliseconds(workflow.LockExpiration))
                     : (null, true);
 
                 if (locked)

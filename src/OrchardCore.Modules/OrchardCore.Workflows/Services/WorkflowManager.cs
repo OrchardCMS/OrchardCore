@@ -66,8 +66,8 @@ namespace OrchardCore.Workflows.Services
                     ActivityStates = workflowType.Activities.Select(x => x).ToDictionary(x => x.ActivityId, x => x.Properties)
                 }),
                 CorrelationId = correlationId,
-                LockTimeoutInSeconds = workflowType.LockTimeoutInSeconds,
-                LockExpirationInSeconds = workflowType.LockExpirationInSeconds,
+                LockTimeout = workflowType.LockTimeout,
+                LockExpiration = workflowType.LockExpiration,
                 CreatedUtc = _clock.UtcNow
             };
 
@@ -151,8 +151,8 @@ namespace OrchardCore.Workflows.Services
                 (var locker, var locked) = workflowType.IsAtomic() && (workflowType.IsSingleton || isExclusive)
                     ? await _distributedLock.TryAcquireLockAsync(
                         "WFT_" + workflowType.WorkflowTypeId + "_LOCK",
-                        TimeSpan.FromSeconds(workflowType.LockTimeoutInSeconds),
-                        TimeSpan.FromSeconds(workflowType.LockExpirationInSeconds))
+                        TimeSpan.FromMilliseconds(workflowType.LockTimeout),
+                        TimeSpan.FromMilliseconds(workflowType.LockExpiration))
                     : (null, true);
 
                 if (!locked)
@@ -191,8 +191,8 @@ namespace OrchardCore.Workflows.Services
                 (var locker, var locked) = workflow.IsAtomic()
                     ? await _distributedLock.TryAcquireLockAsync(
                         "WFI_" + workflow.WorkflowId + "_LOCK",
-                        TimeSpan.FromSeconds(workflow.LockTimeoutInSeconds),
-                        TimeSpan.FromSeconds(workflow.LockExpirationInSeconds))
+                        TimeSpan.FromMilliseconds(workflow.LockTimeout),
+                        TimeSpan.FromMilliseconds(workflow.LockExpiration))
                     : (null, true);
 
                 if (!locked)

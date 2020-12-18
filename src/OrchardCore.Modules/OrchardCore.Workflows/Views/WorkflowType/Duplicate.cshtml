@@ -29,15 +29,15 @@
     </div>
 
     <div class="form-group">
-        <label asp-for="LockTimeoutInSeconds">@T["Lock timeout"]</label>
-        <input asp-for="LockTimeoutInSeconds" type="number" min="0" max="30" class="form-control">
-        <span class="hint">@T["The timeout in seconds to acquire a lock before executing a given workflow of this type atomically. Leave it to zero to not use any locking."]</span>
+        <label asp-for="LockTimeout">@T["Lock timeout"]</label>
+        <input asp-for="LockTimeout" type="number" min="0" max="30000" class="form-control">
+        <span class="hint">@T["The timeout in milliseconds to acquire a lock before executing a given workflow of this type atomically. Leave it to zero to not use any locking."]</span>
     </div>
 
     <div class="form-group">
-        <label asp-for="LockExpirationInSeconds">@T["Lock expiration"]</label>
-        <input asp-for="LockExpirationInSeconds" type="number" min="0" max="30" class="form-control">
-        <span class="hint">@T["The expiration in seconds of the lock acquired before executing a workflow of this type atomically. Leave it to zero to not use any locking."]</span>
+        <label asp-for="LockExpiration">@T["Lock expiration"]</label>
+        <input asp-for="LockExpiration" type="number" min="0" max="30000" class="form-control">
+        <span class="hint">@T["The expiration in milliseconds of the lock acquired before executing a workflow of this type atomically. Leave it to zero to not use any locking."]</span>
     </div>
 
     <div class="form-group">
