@@ -52,9 +52,9 @@ namespace OrchardCore.Workflows.Http.Filters
                 {
                     if (workflowTypes.TryGetValue(Int32.Parse(entry.WorkflowId), out var workflowType))
                     {
-                        var activity = workflowType.Activities.Single(x => x.ActivityId == entry.ActivityId);
+                        var activity = workflowType.Activities.FirstOrDefault(x => x.ActivityId == entry.ActivityId);
 
-                        if (activity.IsStart)
+                        if (activity?.IsStart == true)
                         {
                             // If atomic and a singleton, try to acquire a lock based on the workflow type id.
                             (var locker, var locked) = workflowType.IsAtomic() && workflowType.IsSingleton
@@ -118,7 +118,7 @@ namespace OrchardCore.Workflows.Http.Filters
                         }
 
                         // And if it is still halted on this activity.
-                        var blockingActivity = haltedWorkflow.BlockingActivities.Single(x => x.ActivityId == entry.ActivityId);
+                        var blockingActivity = haltedWorkflow.BlockingActivities.FirstOrDefault(x => x.ActivityId == entry.ActivityId);
                         if (blockingActivity != null)
                         {
                             await _workflowManager.ResumeWorkflowAsync(haltedWorkflow, blockingActivity);
