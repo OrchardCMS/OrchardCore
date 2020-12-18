@@ -145,3 +145,17 @@ Output
 ```text
 Title
 ```
+
+## Configuration
+
+The following configuration is used by default and can be customized:
+
+```json
+{
+   "OrchardCore": {
+    "OrchardCore_ContentLocalization_CulturePicker": {
+     "CookieLifeTime": 14 // Set the culture picker cookie life time (in days).
+    }
+  }
+}
+```

@@ -3,6 +3,12 @@
   <PropertyGroup>
     <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
     <RootNamespace>OrchardCore.Shortcodes</RootNamespace>
+    <!-- NuGet properties-->
+    <Title>OrchardCore Shortcodes Abstractions</Title>
+    <Description>$(OCCMSDescription)
+    
+    Abstractions for Shortcodes module</Description>
+    <PackageTags>$(PackageTags) OrchardCoreCMS Abstractions</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>

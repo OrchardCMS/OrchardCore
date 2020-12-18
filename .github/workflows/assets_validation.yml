@@ -27,4 +27,3 @@ jobs:
         git status
         echo "Please make sure to build them properly before pushing"
         exit -1
-

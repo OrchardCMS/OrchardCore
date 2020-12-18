@@ -16,7 +16,7 @@
     <div class="card mb-3 position-sticky action-bar">
         <div class="card-body bg-primary p-3">
             <div class="form-group mb-n1">
-                <div class="input-group input-group-sm w-lg-50 d-inline-flex has-search">
+                <div class="input-group input-group-sm w-sm-50 w-25 d-inline-flex has-search">
                 <i class="fa fa-search form-control-feedback"></i>
                     <input asp-for="Options.Search" class="form-control" placeholder="@T["Search"]" type="search" autofocus />
                 </div>
@@ -80,6 +80,7 @@
             <li class="list-group-item">
                 <div class="alert alert-info mb-0" role="alert">
                     @T["<strong>Nothing here!</strong> There are no shortcodes for the moment."]
+                    <i class="fa fa-book"></i> <a href="@(OrchardCore.Admin.Constants.DocsUrl)reference/modules/Shortcodes/#example-shortcode-templates" target="_blank">@T["See documentation"]</a>
                 </div>
             </li>
         }
