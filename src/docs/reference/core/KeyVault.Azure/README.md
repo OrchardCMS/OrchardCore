@@ -15,7 +15,7 @@ When debbugging or executing locally, developers have several options for authen
 ## Configuration
 In addition, you will need to specify the name of your Azure Key Vault and optionally a reload interval in seconds.
 ```json
-"OrchardCore_Azure_KeyVault": {
+"OrchardCore_KeyVault_Azure": {
     "KeyVaultName": "", // Set the name of your Azure Key Vault.
     "ReloadInterval": "" // Optional, sets the timespan to wait between attempts at polling the Azure KeyVault for changes. Leave blank to disable reloading.
 }

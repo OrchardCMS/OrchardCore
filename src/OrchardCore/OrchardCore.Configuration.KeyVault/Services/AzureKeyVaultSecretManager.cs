@@ -1,7 +1,7 @@
 using Azure.Extensions.AspNetCore.Configuration.Secrets;
 using Azure.Security.KeyVault.Secrets;
 
-namespace OrchardCore.Azure.KeyVault.Services
+namespace OrchardCore.Configuration.KeyVault.Services
 {
     public class AzureKeyVaultSecretManager : KeyVaultSecretManager
     {

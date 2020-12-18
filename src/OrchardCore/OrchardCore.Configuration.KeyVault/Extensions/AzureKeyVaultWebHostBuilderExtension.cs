@@ -5,7 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using OrchardCore.Azure.KeyVault.Services;
 
-namespace OrchardCore.Azure.KeyVault.Extensions
+namespace OrchardCore.Configuration.KeyVault.Extensions
 {
     public static class AzureKeyVaultWebHostBuilderExtension
     {
@@ -21,11 +21,11 @@ namespace OrchardCore.Azure.KeyVault.Extensions
             builder.ConfigureAppConfiguration((context, configuration) =>
             {
                 var builtConfig = configuration.Build();
-                var keyVaultName = builtConfig["OrchardCore:OrchardCore_Azure_KeyVault:KeyVaultName"];
+                var keyVaultName = builtConfig["OrchardCore:OrchardCore_KeyVault_Azure:KeyVaultName"];
 
                 TimeSpan? reloadInterval = null;
                 double interval;
-                if (Double.TryParse(builtConfig["OrchardCore:OrchardCore_Azure_KeyVault:ReloadInterval"], out interval))
+                if (Double.TryParse(builtConfig["OrchardCore:OrchardCore_KeyVault_Azure:ReloadInterval"], out interval))
                 {
                     reloadInterval = TimeSpan.FromSeconds(interval);
                 }
