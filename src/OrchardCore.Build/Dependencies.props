@@ -38,9 +38,8 @@
     <PackageManagement Include="Shortcodes" Version="1.0.0" />
     <PackageManagement Include="SixLabors.ImageSharp.Web" Version="1.0.1" />
     <PackageManagement Include="xunit.analyzers" Version="0.10.0" />
-    <!-- xunit downgraded due to Theory Skip bug c.f. https://github.com/xunit/xunit/issues/1782 -->
-    <PackageManagement Include="xunit" Version="2.3.1" />
-    <PackageManagement Include="xunit.runner.visualstudio" Version="2.3.1" />
+    <PackageManagement Include="xunit" Version="2.4.1" />
+    <PackageManagement Include="xunit.runner.visualstudio" Version="2.4.1" />
     <PackageManagement Include="YesSql.Abstractions" Version="2.0.0-beta-1637" />
     <PackageManagement Include="YesSql.Core" Version="2.0.0-beta-1637" />
     <PackageManagement Include="YesSql.Provider.MySql" Version="1.0.0-beta-1637" />
