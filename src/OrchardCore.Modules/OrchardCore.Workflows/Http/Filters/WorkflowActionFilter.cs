@@ -56,8 +56,8 @@ namespace OrchardCore.Workflows.Http.Filters
 
                         if (activity.IsStart)
                         {
-                            // If atomic, try to acquire a lock based on the workflow type id.
-                            (var locker, var locked) = workflowType.IsAtomic()
+                            // If atomic and a singleton, try to acquire a lock based on the workflow type id.
+                            (var locker, var locked) = workflowType.IsAtomic() && workflowType.IsSingleton
                                 ? await _distributedLock.TryAcquireLockAsync(
                                     "WFT_" + workflowType.WorkflowTypeId + "_LOCK",
                                     TimeSpan.FromSeconds(workflowType.LockTimeoutInSeconds),
@@ -112,14 +112,16 @@ namespace OrchardCore.Workflows.Http.Filters
 
                         // Check if the workflow still exists and is still correlated.
                         var haltedWorkflow = workflow.IsAtomic() ? await _workflowStore.GetAsync(workflow.Id) : workflow;
-                        if (haltedWorkflow != null && (String.IsNullOrWhiteSpace(correlationId) || workflow.CorrelationId == correlationId))
+                        if (haltedWorkflow == null || (!String.IsNullOrWhiteSpace(correlationId) && haltedWorkflow.CorrelationId != correlationId))
                         {
-                            // And if it is still halted on this activity.
-                            var blockingActivity = haltedWorkflow.BlockingActivities.Single(x => x.ActivityId == entry.ActivityId);
-                            if (blockingActivity != null)
-                            {
-                                await _workflowManager.ResumeWorkflowAsync(haltedWorkflow, blockingActivity);
-                            }
+                            continue;
+                        }
+
+                        // And if it is still halted on this activity.
+                        var blockingActivity = haltedWorkflow.BlockingActivities.Single(x => x.ActivityId == entry.ActivityId);
+                        if (blockingActivity != null)
+                        {
+                            await _workflowManager.ResumeWorkflowAsync(haltedWorkflow, blockingActivity);
                         }
                     }
                 }

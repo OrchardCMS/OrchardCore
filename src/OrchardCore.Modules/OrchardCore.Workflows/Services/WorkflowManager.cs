@@ -147,8 +147,8 @@ namespace OrchardCore.Workflows.Services
                     continue;
                 }
 
-                // If atomic, try to acquire a lock based on the workflow type id.
-                (var locker, var locked) = workflowType.IsAtomic()
+                // If atomic and a singleton (or an exclusive event), try to acquire a lock based on the workflow type id.
+                (var locker, var locked) = workflowType.IsAtomic() && (workflowType.IsSingleton || isExclusive)
                     ? await _distributedLock.TryAcquireLockAsync(
                         "WFT_" + workflowType.WorkflowTypeId + "_LOCK",
                         TimeSpan.FromSeconds(workflowType.LockTimeoutInSeconds),

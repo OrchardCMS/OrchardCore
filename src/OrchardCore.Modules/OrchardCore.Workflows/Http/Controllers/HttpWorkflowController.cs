@@ -141,8 +141,8 @@ namespace OrchardCore.Workflows.Http.Controllers
             // If the activity is a start activity, start a new workflow.
             if (startActivity.IsStart)
             {
-                // If atomic, try to acquire a lock based on the workflow type id.
-                (var locker, var locked) = workflowType.IsAtomic()
+                // If atomic and a singleton, try to acquire a lock based on the workflow type id.
+                (var locker, var locked) = workflowType.IsAtomic() && workflowType.IsSingleton
                     ? await _distributedLock.TryAcquireLockAsync(
                         "WFT_" + workflowType.WorkflowTypeId + "_LOCK",
                         TimeSpan.FromSeconds(workflowType.LockTimeoutInSeconds),
@@ -208,14 +208,16 @@ namespace OrchardCore.Workflows.Http.Controllers
 
                         // Check if the workflow still exists.
                         var haltedWorkflow = workflow.IsAtomic() ? await _workflowStore.GetAsync(workflow.Id) : workflow;
-                        if (haltedWorkflow != null)
+                        if (haltedWorkflow == null)
                         {
-                            // And if it is still halted on this activity.
-                            blockingActivity = haltedWorkflow.BlockingActivities.FirstOrDefault(x => x.ActivityId == startActivity.ActivityId);
-                            if (blockingActivity != null)
-                            {
-                                await _workflowManager.ResumeWorkflowAsync(haltedWorkflow, blockingActivity);
-                            }
+                            continue;
+                        }
+
+                        // And if it is still halted on this activity.
+                        blockingActivity = haltedWorkflow.BlockingActivities.FirstOrDefault(x => x.ActivityId == startActivity.ActivityId);
+                        if (blockingActivity != null)
+                        {
+                            await _workflowManager.ResumeWorkflowAsync(haltedWorkflow, blockingActivity);
                         }
                     }
                 }
