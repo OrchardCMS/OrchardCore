@@ -6,8 +6,10 @@
 @{
     ContentItem contentItem = Model.ContentItem;
     var hasPublished = await ContentManager.HasPublishedVersionAsync(contentItem);
+    var hasDraft = contentItem.HasDraft();
     var hasEditPermission = await AuthorizationService.AuthorizeAsync(User, CommonPermissions.EditContent, contentItem);
     var hasViewPermission = await AuthorizationService.AuthorizeAsync(User, CommonPermissions.ViewContent, contentItem);
+    var hasPreviewPermission = await AuthorizationService.AuthorizeAsync(User, CommonPermissions.PreviewContent, contentItem);
 }
 
 @if (hasEditPermission)
@@ -17,5 +19,10 @@
 
 @if (hasPublished && hasViewPermission)
 {
-    <a display-for="@contentItem" target="_blank" data-toggle="tooltip" title="@T["View"]" class="btn btn-sm text-success"><i class="fa fa-external-link"></i></a>
+    <a display-for="@contentItem" target="_blank" data-toggle="tooltip" title="@T["View"]" class="btn btn-sm text-success"><i class="fas fa-external-link-alt"></i></a>
 }
+@if (hasDraft && hasPreviewPermission)
+{
+    <a asp-action="Preview" asp-controller="Item" asp-route-area="OrchardCore.Contents" asp-route-contentItemId="@contentItem.ContentItemId" target="_blank" data-toggle="tooltip" title="@T["Preview Draft"]" class="btn btn-sm text-primary"><i class="fas fa-external-link-alt"></i></a>
+}
+
