@@ -18,7 +18,7 @@
 <body dir="@Orchard.CultureDir()">
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
         <div class="container">
-            <a class="navbar-brand" href="~/#">@Site.SiteName</a>
+            <shape type="Branding" />
             <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -33,7 +33,13 @@
         @await RenderSectionAsync("Messages", required: false)
         @await RenderBodyAsync()
     </main>
-    @await RenderSectionAsync("Footer", required: false)
+    @if (ThemeLayout["Footer"] != null) {
+    <footer>
+        <div class="container">
+            @await RenderSectionAsync("Footer", required: false)
+        </div>
+    </footer>
+    }
     <resources type="FootScript" />
 </body>
 </html>

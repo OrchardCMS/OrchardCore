@@ -8,7 +8,8 @@ namespace OrchardCore.Apis
         /// <summary>
         /// Registers a type describing input arguments
         /// </summary>
-        /// <typeparam name="TInputType"></typeparam>
+        /// <typeparam name="TObject"></typeparam>
+        /// <typeparam name="TObjectType"></typeparam>
         /// <param name="services"></param>
         public static void AddInputObjectGraphType<TObject, TObjectType>(this IServiceCollection services)
             where TObject : class

@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
-using OrchardCore.ContentPreview.Models;
+using OrchardCore.Contents;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Utilities;
@@ -48,10 +48,13 @@ namespace OrchardCore.ContentPreview.Controllers
         [HttpPost]
         public async Task<IActionResult> Render()
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ContentPreview))
+            if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.PreviewContent))
             {
                 return this.ChallengeOrForbid();
             }
+
+            // Mark request as a `Preview` request so that drivers / handlers or underlying services can be aware of an active preview mode.
+            HttpContext.Features.Set(new ContentPreviewFeature());
 
             var contentItemType = Request.Form["ContentItemType"];
             var contentItem = await _contentManager.NewAsync(contentItemType);

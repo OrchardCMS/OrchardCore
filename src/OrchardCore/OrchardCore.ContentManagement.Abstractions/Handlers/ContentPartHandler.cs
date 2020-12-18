@@ -115,6 +115,20 @@ namespace OrchardCore.ContentManagement.Handlers
                 : Task.CompletedTask;
         }
 
+        Task IContentPartHandler.DraftSavingAsync(SaveDraftContentContext context, ContentPart part)
+        {
+            return part is TPart tpart
+                ? DraftSavingAsync(context, tpart)
+                : Task.CompletedTask;
+        }
+
+        Task IContentPartHandler.DraftSavedAsync(SaveDraftContentContext context, ContentPart part)
+        {
+            return part is TPart tpart
+                ? DraftSavedAsync(context, tpart)
+                : Task.CompletedTask;
+        }
+
         Task IContentPartHandler.PublishingAsync(PublishContentContext context, ContentPart part)
         {
             return part is TPart tpart
@@ -195,6 +209,8 @@ namespace OrchardCore.ContentManagement.Handlers
         public virtual Task ValidatedAsync(ValidateContentContext context, TPart instance) => Task.CompletedTask;
         public virtual Task VersioningAsync(VersionContentContext context, TPart existing, TPart building) => Task.CompletedTask;
         public virtual Task VersionedAsync(VersionContentContext context, TPart existing, TPart building) => Task.CompletedTask;
+        public virtual Task DraftSavingAsync(SaveDraftContentContext context, TPart instance) => Task.CompletedTask;
+        public virtual Task DraftSavedAsync(SaveDraftContentContext context, TPart instance) => Task.CompletedTask;
         public virtual Task PublishingAsync(PublishContentContext context, TPart instance) => Task.CompletedTask;
         public virtual Task PublishedAsync(PublishContentContext context, TPart instance) => Task.CompletedTask;
         public virtual Task UnpublishingAsync(PublishContentContext context, TPart instance) => Task.CompletedTask;

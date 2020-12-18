@@ -48,8 +48,5 @@ using OrchardCore.OpenId;
     Name = "OpenID Token Validation",
     Category = "OpenID Connect",
     Description = "Validates tokens issued by the Orchard OpenID server or by a remote server supporting JWT and OpenID Connect discovery.",
-    Dependencies = new[]
-    {
-        OpenIdConstants.Features.Core
-    }
+    Dependencies = new[] { OpenIdConstants.Features.Core }
 )]

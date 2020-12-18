@@ -2832,7 +2832,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
     builder.trailingSpace = displayText.charCodeAt(text.length - 1) == 32;
 
-    if (style || startStyle || endStyle || mustWrap || css) {
+    if (style || startStyle || endStyle || mustWrap || css || attributes) {
       var fullStyle = style || "";
 
       if (startStyle) {
@@ -4536,7 +4536,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     try {
       x = e.clientX - space.left;
       y = e.clientY - space.top;
-    } catch (e) {
+    } catch (e$1) {
       return null;
     }
 
@@ -4993,7 +4993,11 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
     if (cm.options.cursorBlinkRate > 0) {
       display.blinker = setInterval(function () {
-        return display.cursorDiv.style.visibility = (on = !on) ? "" : "hidden";
+        if (!cm.hasFocus()) {
+          onBlur(cm);
+        }
+
+        display.cursorDiv.style.visibility = (on = !on) ? "" : "hidden";
       }, cm.options.cursorBlinkRate);
     } else if (cm.options.cursorBlinkRate < 0) {
       display.cursorDiv.style.visibility = "hidden";
@@ -5001,9 +5005,12 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
   }
 
   function ensureFocus(cm) {
-    if (!cm.state.focused) {
+    if (!cm.hasFocus()) {
       cm.display.input.focus();
-      onFocus(cm);
+
+      if (!cm.state.focused) {
+        onFocus(cm);
+      }
     }
   }
 
@@ -5012,13 +5019,16 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     setTimeout(function () {
       if (cm.state.delayingBlurEvent) {
         cm.state.delayingBlurEvent = false;
-        onBlur(cm);
+
+        if (cm.state.focused) {
+          onBlur(cm);
+        }
       }
     }, 100);
   }
 
   function onFocus(cm, e) {
-    if (cm.state.delayingBlurEvent) {
+    if (cm.state.delayingBlurEvent && !cm.state.draggingText) {
       cm.state.delayingBlurEvent = false;
     }
 
@@ -5302,8 +5312,9 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       }
     }
 
-    var screenleft = cm.curOp && cm.curOp.scrollLeft != null ? cm.curOp.scrollLeft : display.scroller.scrollLeft;
-    var screenw = displayWidth(cm) - (cm.options.fixedGutter ? display.gutters.offsetWidth : 0);
+    var gutterSpace = cm.options.fixedGutter ? 0 : display.gutters.offsetWidth;
+    var screenleft = cm.curOp && cm.curOp.scrollLeft != null ? cm.curOp.scrollLeft : display.scroller.scrollLeft - gutterSpace;
+    var screenw = displayWidth(cm) - display.gutters.offsetWidth;
     var tooWide = rect.right - rect.left > screenw;
 
     if (tooWide) {
@@ -5313,7 +5324,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     if (rect.left < 10) {
       result.scrollLeft = 0;
     } else if (rect.left < screenleft) {
-      result.scrollLeft = Math.max(0, rect.left - (tooWide ? 0 : 10));
+      result.scrollLeft = Math.max(0, rect.left + gutterSpace - (tooWide ? 0 : 10));
     } else if (rect.right > screenw + screenleft - 3) {
       result.scrollLeft = rect.right + (tooWide ? 0 : 10) - screenw;
     }
@@ -8468,7 +8479,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       if (widget.insertAt == null) {
         widgets.push(widget);
       } else {
-        widgets.splice(Math.min(widgets.length - 1, Math.max(0, widget.insertAt)), 0, widget);
+        widgets.splice(Math.min(widgets.length, Math.max(0, widget.insertAt)), 0, widget);
       }
 
       widget.line = line;
@@ -9700,7 +9711,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
           cm.replaceSelection(text$1, "around", "paste");
           cm.display.input.focus();
         }
-      } catch (e) {}
+      } catch (e$1) {}
     }
   }
 
@@ -9873,6 +9884,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     220: "\\",
     221: "]",
     222: "'",
+    224: "Mod",
     63232: "Up",
     63233: "Down",
     63234: "Left",
@@ -10149,7 +10161,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       name = "Ctrl-" + name;
     }
 
-    if ((flipCtrlCmd ? event.ctrlKey : event.metaKey) && base != "Cmd") {
+    if ((flipCtrlCmd ? event.ctrlKey : event.metaKey) && base != "Mod") {
       name = "Cmd-" + name;
     }
 
@@ -10554,7 +10566,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       return cm.moveH(1, "word");
     },
     delCharBefore: function delCharBefore(cm) {
-      return cm.deleteH(-1, "char");
+      return cm.deleteH(-1, "codepoint");
     },
     delCharAfter: function delCharAfter(cm) {
       return cm.deleteH(1, "char");
@@ -11128,6 +11140,15 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       }
 
       cm.state.draggingText = false;
+
+      if (cm.state.delayingBlurEvent) {
+        if (cm.hasFocus()) {
+          cm.state.delayingBlurEvent = false;
+        } else {
+          delayBlurEvent(cm);
+        }
+      }
+
       off(display.wrapper.ownerDocument, "mouseup", dragEnd);
       off(display.wrapper.ownerDocument, "mousemove", mouseMove);
       off(display.scroller, "dragstart", dragStart);
@@ -11168,20 +11189,19 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     }
 
     cm.state.draggingText = dragEnd;
-    dragEnd.copy = !behavior.moveOnDrag; // IE's approach to draggable
-
-    if (display.scroller.dragDrop) {
-      display.scroller.dragDrop();
-    }
-
+    dragEnd.copy = !behavior.moveOnDrag;
     on(display.wrapper.ownerDocument, "mouseup", dragEnd);
     on(display.wrapper.ownerDocument, "mousemove", mouseMove);
     on(display.scroller, "dragstart", dragStart);
     on(display.scroller, "drop", dragEnd);
-    delayBlurEvent(cm);
+    cm.state.delayingBlurEvent = true;
     setTimeout(function () {
       return display.input.focus();
-    }, 20);
+    }, 20); // IE's approach to draggable
+
+    if (display.scroller.dragDrop) {
+      display.scroller.dragDrop();
+    }
   }
 
   function rangeForUnit(cm, pos, unit) {
@@ -11203,6 +11223,10 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
 
   function leftButtonSelect(cm, event, start, behavior) {
+    if (ie) {
+      delayBlurEvent(cm);
+    }
+
     var display = cm.display,
         doc = cm.doc;
     e_preventDefault(event);
@@ -11456,7 +11480,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       try {
         mX = e.clientX;
         mY = e.clientY;
-      } catch (e) {
+      } catch (e$1) {
         return false;
       }
     }
@@ -11597,7 +11621,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         _replaceRange(cm.doc, val, newBreaks[i], Pos(newBreaks[i].line, newBreaks[i].ch + val.length));
       }
     });
-    option("specialChars", /[\u0000-\u001f\u007f-\u009f\u00ad\u061c\u200b-\u200f\u2028\u2029\ufeff\ufff9-\ufffc]/g, function (cm, val, old) {
+    option("specialChars", /[\u0000-\u001f\u007f-\u009f\u00ad\u061c\u200b-\u200c\u200e\u200f\u2028\u2029\ufeff\ufff9-\ufffc]/g, function (cm, val, old) {
       cm.state.specialChars = new RegExp(val.source + (val.test("\t") ? "" : "|\t"), "g");
 
       if (old != Init) {
@@ -11830,7 +11854,11 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     attachDoc(this, doc);
 
     if (options.autofocus && !mobile || this.hasFocus()) {
-      setTimeout(bind(onFocus, this), 20);
+      setTimeout(function () {
+        if (this$1.hasFocus() && !this$1.state.focused) {
+          onFocus(this$1);
+        }
+      }, 20);
     } else {
       onBlur(this);
     }
@@ -12197,7 +12225,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
           } else if (cm.state.overwrite && !paste) // Handle overwrite
           {
             to = Pos(to.line, Math.min(getLine(doc, to.line).text.length, to.ch + lst(textLines).length));
-          } else if (paste && lastCopied && lastCopied.lineWise && lastCopied.text.join("\n") == inserted) {
+          } else if (paste && lastCopied && lastCopied.lineWise && lastCopied.text.join("\n") == textLines.join("\n")) {
           from = to = Pos(from.line, 0);
         }
       }
@@ -13000,14 +13028,14 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       });
     };
   } // Used for horizontal relative motion. Dir is -1 or 1 (left or
-  // right), unit can be "char", "column" (like char, but doesn't
-  // cross line boundaries), "word" (across next word), or "group" (to
-  // the start of next group of word or non-word-non-whitespace
-  // chars). The visually param controls whether, in right-to-left
-  // text, direction 1 means to move towards the next index in the
-  // string, or towards the character to the right of the current
-  // position. The resulting position will have a hitSide=true
-  // property if it reached the end of the document.
+  // right), unit can be "codepoint", "char", "column" (like char, but
+  // doesn't cross line boundaries), "word" (across next word), or
+  // "group" (to the start of next group of word or
+  // non-word-non-whitespace chars). The visually param controls
+  // whether, in right-to-left text, direction 1 means to move towards
+  // the next index in the string, or towards the character to the right
+  // of the current position. The resulting position will have a
+  // hitSide=true property if it reached the end of the document.
 
 
   function _findPosH(doc, pos, dir, unit, visually) {
@@ -13030,7 +13058,15 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     function moveOnce(boundToLine) {
       var next;
 
-      if (visually) {
+      if (unit == "codepoint") {
+        var ch = lineObj.text.charCodeAt(pos.ch + (unit > 0 ? 0 : -1));
+
+        if (isNaN(ch)) {
+          next = null;
+        } else {
+          next = new Pos(pos.line, Math.max(0, Math.min(lineObj.text.length, pos.ch + dir * (ch >= 0xD800 && ch < 0xDC00 ? 2 : 1))), -dir);
+        }
+      } else if (visually) {
         next = moveVisually(doc.cm, lineObj, pos, dir);
       } else {
         next = moveLogically(lineObj, pos, dir);
@@ -13049,7 +13085,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       return true;
     }
 
-    if (unit == "char") {
+    if (unit == "char" || unit == "codepoint") {
       moveOnce();
     } else if (unit == "column") {
       moveOnce(true);
@@ -14433,6 +14469,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     }
 
     this.textarea.disabled = val == "nocursor";
+    this.textarea.readOnly = !!val;
   };
 
   TextareaInput.prototype.setUneditable = function () {};
@@ -14612,6 +14649,6 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
   CodeMirror.fromTextArea = fromTextArea;
   addLegacyProps(CodeMirror);
-  CodeMirror.version = "5.54.0";
+  CodeMirror.version = "5.58.3";
   return CodeMirror;
 });

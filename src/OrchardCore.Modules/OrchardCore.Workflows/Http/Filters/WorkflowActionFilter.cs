@@ -35,8 +35,8 @@ namespace OrchardCore.Workflows.Http.Filters
         {
             var httpMethod = context.HttpContext.Request.Method;
             var routeValues = context.RouteData.Values;
-            var workflowTypeEntries = _workflowTypeRouteEntries.GetWorkflowRouteEntries(httpMethod, routeValues);
-            var workflowEntries = _workflowRouteEntries.GetWorkflowRouteEntries(httpMethod, routeValues);
+            var workflowTypeEntries = await _workflowTypeRouteEntries.GetWorkflowRouteEntriesAsync(httpMethod, routeValues);
+            var workflowEntries = await _workflowRouteEntries.GetWorkflowRouteEntriesAsync(httpMethod, routeValues);
 
             if (workflowTypeEntries.Any())
             {

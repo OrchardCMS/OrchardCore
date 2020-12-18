@@ -75,6 +75,8 @@ namespace OrchardCore.GitHub.Configuration
             {
                 options.CallbackPath = loginSettings.CallbackPath;
             }
+
+            options.SaveTokens = loginSettings.SaveTokens;
         }
 
         public void Configure(GitHubOptions options) => Debug.Fail("This infrastructure method shouldn't be called.");

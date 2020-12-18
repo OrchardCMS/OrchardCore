@@ -41,7 +41,8 @@ namespace OrchardCore.Contents.Scripting
                     if (result.Succeeded)
                     {
                         return contentItem;
-                    } else
+                    }
+                    else
                     {
                         throw new ValidationException(string.Join(", ", result.Errors));
                     }

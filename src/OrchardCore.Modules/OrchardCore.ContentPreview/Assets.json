@@ -1,0 +1,8 @@
+[
+    {
+        "inputs": [
+            "Assets/js/contentpreview.edit.js"
+        ],
+        "output": "wwwroot/Scripts/contentpreview.edit.js"
+    }
+]

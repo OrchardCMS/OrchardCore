@@ -61,7 +61,7 @@ namespace OrchardCore.Lists.Controllers
 
             foreach (var pagedContentItem in pageOfContentItems)
             {
-                if (!await _authorizationService.AuthorizeAsync(User, Permissions.PublishContent, pagedContentItem))
+                if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.PublishContent, pagedContentItem))
                 {
                     return Forbid();
                 }

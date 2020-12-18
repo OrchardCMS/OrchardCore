@@ -48,6 +48,14 @@ The following properties are available on the `MarkdownFieldViewModel` class.
 | `Part` | `ContentPart` | The part this field is attached to. |
 | `PartFieldDefinition` | `ContentPartFieldDefinition` | The part field definition. |
 
+## Sanitization
+
+Markdown output is sanitized during the rendering of content with Display Management.
+
+You can disable this by unchecking the `Sanitize HTML` setting, or further configuring the [HTML Sanitizer](../../core/Sanitizer/README.md)
+
+When rendering content directly you can disable sanitization by passing a boolean to the helper.
+
 ## Editors
 
 The __Markdown Part__ editor can be different for each content type. In the __Markdown Part__ settings of a 
@@ -116,6 +124,91 @@ To render a Markdown string to HTML within Razor use the `MarkdownToHtmlAsync` h
 In this example we assume that `Model.ContentItem.Content.MarkdownParagraph.Content` represents an `MarkdownField`, and `Markdown` is the field value, and we cast to a string, as extension methods do not support dynamic dispatching.
 
 This helper will also parse any liquid included in the Markdown.
+
+By default this helper will also sanitize the Markdown. 
+
+To disable sanitization:
+
+```csharp
+@await Orchard.MarkdownToHtmlAsync((string)Model.ContentItem.Content.MarkdownParagraph.Content.Markdown, false)
+```
+
+## Markdown Configuration
+
+The following configuration values are used by default and can be customized:
+
+```json
+    "OrchardCore_Markdown": {
+      "Extensions": "nohtml+advanced"
+    }
+```
+
+The supported extensions described as following:
+
+| Extension | Description |
+| --- | --- |
+| `advanced` | Enable advanced markdown extensions |
+| `pipetables` | Adds a pipe table |
+| `gfm-pipetables` | Adds a pipe table with using header for column count |
+| `hardlinebreak` | Uses the softline break as hardline break |
+| `footnotes` | Allows a footnotes |
+| `footers` | Adds footer block |
+| `citations` | Adds citation |
+| `attributes` |  Allows to attach HTML attributes |
+| `gridtables` | Adds grid table |
+| `abbreviations` | Stores an abbreviation object at the document level |
+| `emojis` | Supports the emojis and smileys |
+| `definitionlists` | Adds a definition list |
+| `customcontainers` | Adds a block custom container |
+| `figures` | Adds figure |
+| `mathematics` | Enable mathematics symbols |
+| `bootstrap` | Enable bootstrap classes |
+| `medialinks` | Extends image Markdown links in case a video or an audio file is linked and output proper link |
+| `smartypants` | Uses the SmartyPants |
+| `autoidentifiers` | Uses the auto-identifier |
+| `tasklists` | Adds the task list |
+| `diagrams` | Allows diagrams |
+| `nofollowlinks` | Add rel=nofollow to all links rendered to HTML |
+| `noopenerlinks` |  |
+| `noreferrerlinks` | Adds rel=nofollow to all links rendered to HTML |
+| `nohtml` | Disables html support |
+| `yaml` | Parses a YAML format into the MarkdownDocument |
+| `nonascii-noescape` | Disables URI escape with % characters for non-US-ASCII characters |
+| `autolinks` | Enable autolinks from text `http://`, `https://`, `ftp://`, `mailto:`, `www.xxx.yyy` |
+| `globalization` | Adds support for right-to-left content by adding appropriate html attribtues |
+
+## Markdown Pipeline
+
+The markdown pipeline is configurable using `IOptions<MarkdownPipelineOptions>` during service registration with a configuration 
+extension method `ConfigureMarkdownPipeline`.
+
+By default the pipeline enables some markdown advanced features and disables HTML by converting any HTML found in the Markdown content to escaped HTML entities.
+
+You may call this extension method multiple times during the startup pipeline to alter configurations.
+
+To clear this configuration:
+
+```
+services
+    .AddOrchardCms()
+    .ConfigureServices(tenantServices =>
+        tenantServices.PostConfigure<MarkdownPipelineOptions>(o =>
+            {
+                o.Configure.Clear();
+            }));
+```
+
+To include other `MarkdownPipelineOptions` such as emojis and smileys we could use:
+
+```
+services
+    .AddOrchardCms()
+    .ConfigureServices(tenantServices =>
+        tenantServices.ConfigureMarkdownPipeline((pipeline) => 
+        { 
+            pipeline.UseEmojiAndSmiley();
+        }));
+```
 
 ## CREDITS
 

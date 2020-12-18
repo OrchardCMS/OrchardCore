@@ -3,6 +3,13 @@
   <PropertyGroup>
     <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
     <RootNamespace>OrchardCore.Localization</RootNamespace>
+    <!-- NuGet properties-->
+    <Title>OrchardCore Localization Abstractions</Title>
+    <Description>$(OCFrameworkDescription)
+    
+    Abstractions for Localization
+    </Description>
+    <PackageTags>$(PackageTags) OrchardCoreFramework Localization</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>

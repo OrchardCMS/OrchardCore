@@ -2,6 +2,14 @@
 
   <PropertyGroup>
     <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
+
+    <!-- NuGet properties-->
+    <Title>OrchardCore DynamicCache Abstractions</Title>
+    <Description>$(OCFrameworkDescription)
+
+    Abstractions for Dynamic Cache Module.</Description>
+    <PackageTags>$(PackageTags) OrchardCoreFramework Cache</PackageTags>
+
   </PropertyGroup>
 
   <ItemGroup>

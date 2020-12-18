@@ -23,11 +23,12 @@
     }
 
     var vueElementId = $"TaxonomyField-Tags_{partName}_{fieldName}_{Guid.NewGuid().ToString("n")}";
+    var termEntriesKey = Html.NameFor(x => x.TermEntries);
+
 }
 
 <script asp-src="~/OrchardCore.Taxonomies/Scripts/tags-editor.min.js" debug-src="~/OrchardCore.Taxonomies/Scripts/tags-editor.js" asp-name="tags-editor" at="Foot" depends-on="vuejs, vue-multiselect"></script>
 <style asp-src="~/OrchardCore.Taxonomies/Styles/tags-editor.min.css" debug-src="~/OrchardCore.Taxonomies/Styles/tags-editor.css" asp-name="tags-editor" depends-on="vue-multiselect"></style>
-
 
 <label>@Model.PartFieldDefinition.DisplayName()</label>
 
@@ -36,7 +37,7 @@
 
 @if (!String.IsNullOrEmpty(taxonomySettings.Hint))
 {
-    <span class="hint">— @taxonomySettings.Hint</span>
+    <span class="hint dashed">@taxonomySettings.Hint</span>
 }
 
 @if (Model.Taxonomy == null)
@@ -48,7 +49,7 @@
 else
 {
     <div class="form-group">
-        <div id="@vueElementId" class="tags" data-taxonomy-content-item-id="@Model.Taxonomy.ContentItemId" data-open="@open.ToString().ToLower()" data-leaves-only="@taxonomySettings.LeavesOnly.ToString().ToLower()" data-create-tag-error-message="@T["Error creating tag"]" data-part-name="@partName" data-field-name="@fieldName" data-all-tag-terms="@allTagTerms" data-create-tag-url="@createTagUrl" data-term-entries-key="@nameof(EditTaxonomyFieldViewModel.TermEntries)" data-content-item-id-key="@nameof(TermEntry.ContentItemId)" data-selected-key="@nameof(TermEntry.Selected)">
+        <div id="@vueElementId" class="tags" data-taxonomy-content-item-id="@Model.Taxonomy.ContentItemId" data-open="@open.ToString().ToLower()" data-leaves-only="@taxonomySettings.LeavesOnly.ToString().ToLower()" data-create-tag-error-message="@T["Error creating tag"]" data-all-tag-terms="@allTagTerms" data-create-tag-url="@createTagUrl" data-term-entries-key="@termEntriesKey" data-content-item-id-key="@nameof(TermEntry.ContentItemId)" data-selected-key="@nameof(TermEntry.Selected)">
 
             <div class="form-group">
                 <div class="w-xl-50">

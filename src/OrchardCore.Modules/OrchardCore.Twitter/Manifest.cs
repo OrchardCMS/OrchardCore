@@ -1,8 +1,5 @@
-using System.Runtime.CompilerServices;
 using OrchardCore.Modules.Manifest;
 using OrchardCore.Twitter;
-
-[assembly: InternalsVisibleTo("OrchardCore.Tests")]
 
 [assembly: Module(
     Name = "Twitter",

@@ -1,5 +1,6 @@
 @model SiteSettingsDeploymentStepViewModel
 @using System.Reflection
+@using Newtonsoft.Json
 @{
     var settings = Model.Settings;
 }
@@ -8,8 +9,13 @@
 <div class="form-group">
     <span class="hint">@T["The site settings to add as part of the plan."]</span>
     <ul class="list-group w-md-50">
-        @foreach (var setting in typeof(ISite).GetProperties(BindingFlags.Public | BindingFlags.Instance))
+        @foreach (var setting in typeof(SiteSettings).GetProperties(BindingFlags.Public | BindingFlags.Instance))
         {
+            if (setting.GetCustomAttributes(false).OfType<JsonIgnoreAttribute>().Any())
+            {
+                continue;
+            }
+
             var name = setting.Name;
             var checkd = settings?.Contains(name);
 

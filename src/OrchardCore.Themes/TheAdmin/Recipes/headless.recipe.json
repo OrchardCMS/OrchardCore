@@ -17,7 +17,6 @@
   "steps": [
     {
       "name": "feature",
-      "disable": [],
       "enable": [
         // SaaS
         "OrchardCore.HomeRoute",
@@ -48,7 +47,6 @@
         "OrchardCore.Layers",
         "OrchardCore.Lucene",
         "OrchardCore.Lists",
-        "OrchardCore.Liquid",
         "OrchardCore.Markdown",
         "OrchardCore.Media",
         "OrchardCore.Menu",

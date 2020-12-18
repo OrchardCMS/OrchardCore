@@ -1,6 +1,6 @@
 @model OrchardCore.Workflows.ViewModels.WorkflowTypePropertiesViewModel
 
-<h1>@RenderTitleSegments(T["Copy Workflow Type"])</h1>
+<zone Name="Title"><h1>@RenderTitleSegments(T["Copy Workflow"])</h1></zone>
 
 <div asp-validation-summary="ModelOnly"></div>
 <form asp-action="Duplicate" method="post">
@@ -9,7 +9,7 @@
         <label asp-for="Name">@T["Name"]</label>
         <input asp-for="Name" class="form-control" autofocus />
         <span asp-validation-for="Name" class="text-danger"></span>
-        <div class="hint">@T["The name of the workflow type."]</div>
+        <div class="hint">@T["The name of the workflow."]</div>
     </div>
 
     <div class="form-group">
@@ -37,7 +37,7 @@
     </div>
 
     <div class="form-group">
-        <button class="btn btn-primary" type="submit">@T["Save"]</button>
-        <a class="btn btn-secondary" href="@Model.ReturnUrl">@T["Cancel"]</a>
+        <button class="btn btn-primary save" type="submit">@T["Save"]</button>
+        <a class="btn btn-secondary cancel" role="button" href="@Model.ReturnUrl">@T["Cancel"]</a>
     </div>
 </form>

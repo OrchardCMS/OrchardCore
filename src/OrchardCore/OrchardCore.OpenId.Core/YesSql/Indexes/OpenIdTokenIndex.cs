@@ -9,6 +9,7 @@ namespace OrchardCore.OpenId.YesSql.Indexes
         public string TokenId { get; set; }
         public string ApplicationId { get; set; }
         public string AuthorizationId { get; set; }
+        public DateTimeOffset? CreationDate { get; set; }
         public DateTimeOffset? ExpirationDate { get; set; }
         public string ReferenceId { get; set; }
         public string Status { get; set; }
@@ -26,6 +27,7 @@ namespace OrchardCore.OpenId.YesSql.Indexes
                     TokenId = token.TokenId,
                     ApplicationId = token.ApplicationId,
                     AuthorizationId = token.AuthorizationId,
+                    CreationDate = token.CreationDate,
                     ExpirationDate = token.ExpirationDate,
                     ReferenceId = token.ReferenceId,
                     Status = token.Status,

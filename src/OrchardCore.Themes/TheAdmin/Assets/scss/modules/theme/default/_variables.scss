@@ -1,0 +1,3 @@
+// Override Bootstrap variables
+// Because !default means that a variable is not assigned if it already contains a value,
+// we alter the variable before importing boostrap as _variables.scss will use !default

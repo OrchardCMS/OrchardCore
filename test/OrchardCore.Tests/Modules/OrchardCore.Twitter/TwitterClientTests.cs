@@ -80,10 +80,9 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Twitter
                     message = msg
                 );
 
-            var mockTwitterClient = new Mock<TwitterClient>(Mock.Of<ILogger<TwitterClient>>())
+            var mockTwitterClient = new Mock<TwitterClient>(
+                new HttpClient(mockFakeHttpMessageHandler.Object), Mock.Of<ILogger<TwitterClient>>())
             { CallBase = true };
-
-            TwitterClient._client = new HttpClient(mockFakeHttpMessageHandler.Object);
 
             mockHttpMessageHandler.Setup(c => c.GetNonce())
                 .Returns(() => "kYjzVBB8Y0ZFabxSWbWovY3uYSQ2pTgmZeNu2VS4cg");

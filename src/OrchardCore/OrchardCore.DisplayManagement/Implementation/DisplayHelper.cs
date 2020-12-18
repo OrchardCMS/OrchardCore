@@ -55,7 +55,7 @@ namespace OrchardCore.DisplayManagement.Implementation
             }
 
             // zero args - no display to execute
-            return null;
+            return Task.FromResult<IHtmlContent>(null);
         }
 
         private async Task<IHtmlContent> ShapeTypeExecuteAsync(string name, INamedEnumerable<object> parameters)

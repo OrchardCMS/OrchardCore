@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Threading;
 using System.Threading.Tasks;
@@ -18,7 +19,7 @@ namespace OrchardCore.OpenId.Abstractions.Managers
         ValueTask<object> FindByPhysicalIdAsync(string identifier, CancellationToken cancellationToken = default);
         ValueTask<string> GetPhysicalIdAsync(object application, CancellationToken cancellationToken = default);
         ValueTask<ImmutableArray<string>> GetRolesAsync(object application, CancellationToken cancellationToken = default);
-        ValueTask<ImmutableArray<object>> ListInRoleAsync(string role, CancellationToken cancellationToken = default);
+        IAsyncEnumerable<object> ListInRoleAsync(string role, CancellationToken cancellationToken = default);
         ValueTask SetRolesAsync(object application, ImmutableArray<string> roles, CancellationToken cancellationToken = default);
     }
 }
