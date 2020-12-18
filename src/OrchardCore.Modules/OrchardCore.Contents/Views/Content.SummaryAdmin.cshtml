@@ -30,6 +30,11 @@
         {
             <div class="header">@await DisplayAsync(Model.Header)</div>
         }
+
+        @if (Model.List != null)
+        {
+            <div class="d-inline">@await DisplayAsync(Model.List)</div>
+        }
         @if (Model.Tags != null)
         {
             <div class="d-inline">

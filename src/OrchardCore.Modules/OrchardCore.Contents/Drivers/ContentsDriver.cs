@@ -76,7 +76,8 @@ namespace OrchardCore.Contents.Drivers
             }
 
             results.Add(Shape("ContentsTags_SummaryAdmin", new ContentItemViewModel(contentItem)).Location("SummaryAdmin", "Tags:10"));
-            results.Add(Shape("ContentsMeta_SummaryAdmin", new ContentItemViewModel(contentItem)).Location("SummaryAdmin", "Meta:20"));
+            results.Add(Shape("ContentsList_SummaryAdmin", new ContentItemViewModel(contentItem)).Location("SummaryAdmin", "List:20"));
+            results.Add(Shape("ContentsMeta_SummaryAdmin", new ContentItemViewModel(contentItem)).Location("SummaryAdmin", "Meta:30"));
 
             return Combine(results.ToArray());
         }
