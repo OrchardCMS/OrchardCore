@@ -29,7 +29,6 @@ namespace OrchardCore.Tests.ResourceManagement
             var tagBuilder = resourceDefinition.GetTagBuilder(requireSettings, basePath, StubFileVersionProvider.Instance);
 
             Assert.Equal("script", tagBuilder.TagName);
-            Assert.Equal("text/javascript", tagBuilder.Attributes["type"]);
             Assert.Equal($"{basePath}/foo.js", tagBuilder.Attributes["src"]);
         }
 
@@ -44,7 +43,6 @@ namespace OrchardCore.Tests.ResourceManagement
             var tagBuilder = resourceDefinition.GetTagBuilder(requireSettings, basePath, StubFileVersionProvider.Instance);
 
             Assert.Equal("script", tagBuilder.TagName);
-            Assert.Equal("text/javascript", tagBuilder.Attributes["type"]);
             Assert.Equal($"{basePath}/foo.debug.js", tagBuilder.Attributes["src"]);
         }
 
@@ -59,7 +57,6 @@ namespace OrchardCore.Tests.ResourceManagement
             var tagBuilder = resourceDefinition.GetTagBuilder(requireSettings, basePath, StubFileVersionProvider.Instance);
 
             Assert.Equal("script", tagBuilder.TagName);
-            Assert.Equal("text/javascript", tagBuilder.Attributes["type"]);
             Assert.Equal("https://cdn.tld/foo.js", tagBuilder.Attributes["src"]);
         }
 
@@ -74,7 +71,6 @@ namespace OrchardCore.Tests.ResourceManagement
             var tagBuilder = resourceDefinition.GetTagBuilder(requireSettings, basePath, StubFileVersionProvider.Instance);
 
             Assert.Equal("script", tagBuilder.TagName);
-            Assert.Equal("text/javascript", tagBuilder.Attributes["type"]);
             Assert.Equal("https://cdn.tld/foo.debug.js", tagBuilder.Attributes["src"]);
         }
 
@@ -88,7 +84,6 @@ namespace OrchardCore.Tests.ResourceManagement
             var tagBuilder = resourceDefinition.GetTagBuilder(requireSettings, basePath, StubFileVersionProvider.Instance);
 
             Assert.Equal("script", tagBuilder.TagName);
-            Assert.Equal("text/javascript", tagBuilder.Attributes["type"]);
             Assert.Equal("console.log('foo');", ReadIHtmlContent(tagBuilder.InnerHtml));
         }
 
@@ -154,6 +149,24 @@ namespace OrchardCore.Tests.ResourceManagement
             Assert.Equal("text/css", tagBuilder.Attributes["type"]);
             Assert.Equal("stylesheet", tagBuilder.Attributes["rel"]);
             Assert.Equal("https://cdn.tld/foo.debug.css", tagBuilder.Attributes["href"]);
+        }
+
+        [Fact]
+        public void GetStyleResourceWithAttributes()
+        {
+            var resourceDefinition = _resourceManifest.DefineStyle("foo")
+                .SetUrl("~/foo.css", "~/foo.debug.css")
+                .SetAttribute("id", "foo")
+                .SetAttribute("media", "all");
+
+            var requireSettings = new RequireSettings { DebugMode = false, CdnMode = false };
+            var tagBuilder = resourceDefinition.GetTagBuilder(requireSettings, basePath, StubFileVersionProvider.Instance);
+
+            Assert.Equal("link", tagBuilder.TagName);
+            Assert.Equal("text/css", tagBuilder.Attributes["type"]);
+            Assert.Equal("stylesheet", tagBuilder.Attributes["rel"]);
+            Assert.Equal("foo", tagBuilder.Attributes["id"]);
+            Assert.Equal("all", tagBuilder.Attributes["media"]);
         }
 
         [Fact]

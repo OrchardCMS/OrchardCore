@@ -6,7 +6,7 @@
     <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input" asp-for="RequireHttps" asp-is-disabled="@(!Model.IsHttpsRequest)" />
         <label class="custom-control-label" asp-for="RequireHttps">@T["Require HTTPS"]</label>
-        <span class="hint">— @T["Require HTTPS for all requests"]</span>
+        <span class="hint dashed">@T["Require HTTPS for all requests"]</span>
     </div>
 </div>
 
@@ -14,7 +14,7 @@
     <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input" asp-for="EnableStrictTransportSecurity" asp-is-disabled="@(!Model.IsHttpsRequest)" />
         <label class="custom-control-label" asp-for="EnableStrictTransportSecurity">@T["Enable HSTS"]</label>
-        <span class="hint">— @T["Indicates to browsers that connecting without transport security (e.g SSL or TLS) isn't allowed."]</span>
+        <span class="hint dashed">@T["Indicates to browsers that connecting without transport security (e.g SSL or TLS) isn't allowed."]</span>
     </div>
 
     <div class="alert alert-danger">@T["This option should be enabled with caution, as it may prevent users from connecting if HTTPS was later disabled or wasn't available."]</div>
@@ -24,7 +24,7 @@
     <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input" asp-for="RequireHttpsPermanent" asp-is-disabled="@(!Model.IsHttpsRequest)" />
         <label class="custom-control-label" asp-for="RequireHttpsPermanent">@T["Require HTTPS Permanent"]</label>
-        <span class="hint">— @T["Specifies whether a permanent redirect, 308 Moved Permanently, should be used instead of a temporary redirect, 307 Found, when redirecting to HTTPS"]</span>
+        <span class="hint dashed">@T["Specifies whether a permanent redirect, 308 Moved Permanently, should be used instead of a temporary redirect, 307 Found, when redirecting to HTTPS"]</span>
     </div>
 </div>
 

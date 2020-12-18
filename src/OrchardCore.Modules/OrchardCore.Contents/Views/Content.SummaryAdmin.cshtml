@@ -1,11 +1,12 @@
+@using OrchardCore.Contents
 @using OrchardCore.ContentManagement
-
+@inject IAuthorizationService AuthorizationService
 @{
     ContentItem contentItem = Model.ContentItem;
 }
 
 <div class="row">
-    <div class="col-xl-6 col-sm-12 title">
+    <div class="col-lg-9 col-sm-12 title">
         @if (Model.Selectors != null)
         {
             <div class="selectors d-inline cursor-pointer">
@@ -16,56 +17,52 @@
             <input type="checkbox" class="custom-control-input" value="@contentItem.Id" name="itemIds" id="itemIds-@contentItem.Id">
             <label class="custom-control-label" for="itemIds-@contentItem.Id"></label>
         </div>
-        <a admin-for="@contentItem" asp-route-returnUrl="@FullRequestPath" /> - <small class="text-muted">@contentItem.ContentType</small>
-        @if (Model.Tags != null)
+        @if (await AuthorizationService.AuthorizeAsync(User, CommonPermissions.EditContent, contentItem))
         {
-            @await DisplayAsync(Model.Tags)
+            <a admin-for="@contentItem" asp-route-returnUrl="@FullRequestPath" />
         }
+        else
+        {
+            @contentItem
+        }
+        - <small class="badge ta-badge font-weight-normal"><i class="far fa-file-alt text-secondary"></i> <a href="@(FullRequestPath)&Options.SelectedContentType=@contentItem.ContentType" data-toggle="tooltip" title="@T["Content type"]">@contentItem.ContentType</a></small>
         @if (Model.Header != null)
         {
             <div class="header">@await DisplayAsync(Model.Header)</div>
         }
-
+        @if (Model.Tags != null)
+        {
+            <div class="d-inline">
+                @await DisplayAsync(Model.Tags)
+            </div>
+        }
         @if (Model.Meta != null)
         {
-            <div class="metadata">@await DisplayAsync(Model.Meta)</div>
+            <div class="d-inline">@await DisplayAsync(Model.Meta)</div>
         }
     </div>
-
-    @if (Model.Actions != null)
-    {
-        <div class="col-xl-6 col-sm-12 related">
-            <div class="float-right">
+    <div class="col-lg-3 col-sm-12">
+        <div class="float-right">
+            @if (Model.Actions != null)
+            {
                 @await DisplayAsync(Model.Actions)
-                @if (Model.ActionsMenu != null)
-                {
-                    <div class="btn-group">
-                        <button type="button" class="btn btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            @T["Actions"]
-                        </button>
-                        <div id="actionsMenu" class="dropdown-menu dropdown-menu-right">
-                            @await DisplayAsync(Model.ActionsMenu)
-                        </div>
+            }
+            @if (Model.ActionsMenu != null)
+            {
+                <div class="btn-group" title="@T["Actions"]">
+                    <button type="button" class="btn btn-sm text-secondary" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fa fa-ellipsis-v"></i>
+                    </button>
+                    <div class="actions-menu dropdown-menu dropdown-menu-right">
+                        @await DisplayAsync(Model.ActionsMenu)
                     </div>
-                }
-            </div>
+                </div>
+            }
         </div>
-    }
+    </div>
 </div>
 
 @if (Model.Content != null)
 {
     <div class="col primary">@await DisplayAsync(Model.Content)</div>
 }
-
-<script at="Foot" type="text/javascript">
-    $(function(){
-        
-        $("#actionsMenu.dropdown-menu").each(function(i, e){
-            var count = $(e).children().length;
-            if(count == 0){
-                $(this).parent().hide();
-            }
-        });
-    });
-</script>

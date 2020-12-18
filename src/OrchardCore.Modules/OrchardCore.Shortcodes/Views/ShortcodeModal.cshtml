@@ -12,6 +12,7 @@ and call @await DisplayAsync(await New.ShortcodeModal()) from the fields view
     var shortcodeDescriptors = await ShortcodeDescriptorManager.GetShortcodeDescriptors();
     var categories = shortcodeDescriptors
         .SelectMany(s => s.Categories)
+        .OrderBy(c => c, StringComparer.OrdinalIgnoreCase)
         .GroupBy(c => c, StringComparer.OrdinalIgnoreCase)
         .Select(g => g.Key);
 
@@ -47,7 +48,7 @@ and call @await DisplayAsync(await New.ShortcodeModal()) from the fields view
                         <div class="row">
                             <div class="col-sm-3 col-md-3 col-lg-2">
                                 <div class="form-group">
-                                    <input class="form-control" type="search" placeholder="@T["Filter"]" aria-label="@T["Filter"]" v-model="filter" ref="filter" >
+                                    <input class="form-control" type="search" placeholder="@T["Filter"]" aria-label="@T["Filter"]" v-model="filter" ref="filter" />
                                 </div>
                                 <ul class="nav nav-pills flex-column">
                                     <li class="nav-item">

@@ -1,4 +1,6 @@
 @model PlaceholderAdminNodeViewModel
+@using Newtonsoft.Json;
+@using Newtonsoft.Json.Serialization;
 
 <style asp-src="~/OrchardCore.AdminMenu/Styles/admin-menu.min.css" debug-src="~/OrchardCore.AdminMenu/Styles/admin-menu.css" at="Head" depends-on="admin"></style>
 <style asp-src="~/OrchardCore.AdminMenu/Styles/admin-menu-icon-picker.min.css" debug-src="~/OrchardCore.AdminMenu/Styles/admin-menu-icon-picker.css" at="Head" depends-on="admin"></style>
@@ -62,6 +64,63 @@
             </div>
         </div>
     </div>
+</div>
+
+<div class="form-group">
+    @{
+        var selectedItems = JsonConvert.SerializeObject(Model.SelectedItems, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() });
+        var allItems = JsonConvert.SerializeObject(Model.AllItems, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() });
+    }
+
+    <script asp-name="admin-menu-permission-picker" asp-src="~/OrchardCore.AdminMenu/Scripts/admin-menu-permission-picker.min.js" debug-src="~/OrchardCore.AdminMenu/Scripts/admin-menu-permission-picker.js" at="Foot" depends-on="vuejs, vue-multiselect"></script>
+    <style asp-name="admin-menu-permission-picker" asp-src="~/OrchardCore.AdminMenu/Styles/admin-menu-permission-picker.min.css" debug-src="~/OrchardCore.AdminMenu/Styles/admin-menu-permission-picker.css" depends-on="vue-multiselect"></style>
+
+    <label asp-for="SelectedPermissionNames">@T["Permissions"]</label>
+
+    <div id="PermissionPicker" class="vue-multiselect" data-editor-type="PermissionPicker" data-selected-items="@selectedItems" data-all-items="@allItems" data-multiple="true">
+
+        <div class="form-group">
+            <ul class="list-group w-xl-50 permission-picker-default__list" v-show="arrayOfItems.length" v-cloak>
+                <li v-for="(item, i) in arrayOfItems"
+                    class="list-group-item permission-picker-default__list-item d-flex align-items-start justify-content-between"
+                    :key="item.name">
+                    <div class="align-items-center align-self-center"><span>{{ item.displayText }}</span></div>
+
+                    <div class="btn-group btn-group-sm align-items-center" role="group">
+                        <button v-on:click="remove(item)" type="button" class="btn btn-secondary permission-picker-default__list-item__delete"><i class="fa fa-trash fa-sm" aria-hidden="true"></i></button>
+                    </div>
+                </li>
+            </ul>
+        </div>
+
+        <div class="form-group">
+            <div class="w-xl-50">
+                <input asp-for="SelectedPermissionNames" type="hidden" v-model="selectedNames" />
+                <vue-multiselect v-model="value" 
+                                :options="options" 
+                                track-by="name"
+                                label="displayText" 
+                                placeholder="@T["Type to search"]"
+                                @@select="onSelect"
+                                :searchable="true" 
+                                :close-on-select="true" 
+                                :reset-after="true"
+                                :show-labels="true" 
+                                :hide-selected="false"
+                                select-label="@T["Select"]" 
+                                deselect-label="@T["Remove"]">
+                    <template slot="option" slot-scope="props">
+                        <div v-cloak><span>{{ props.option.displayText }}</span></div>
+                    </template>
+                    <template slot="noResult">
+                        @T["No result found"]
+                    </template>
+                </vue-multiselect>
+                <span class="hint">@T["The permissions required to display this menu item (optional)."]</span>
+            </div>
+        </div>
+    </div>
+    <script at="Foot" depends-on="admin-menu-permission-picker">initAdminMenuPermissionsPicker(document.querySelector("#PermissionPicker"))</script>
 </div>
 
 <script at="Foot">

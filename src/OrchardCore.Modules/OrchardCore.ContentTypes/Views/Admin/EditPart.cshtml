@@ -9,17 +9,17 @@
         .OrderBy(x => x.Order)
         .Select(x => x.Field);
 }
-<h1>@RenderTitleSegments(T["Edit Content Part - {0}", Model.DisplayName])</h1>
+<zone Name="Title"><h1>@RenderTitleSegments(T["Edit Content Part - {0}", Model.DisplayName])</h1></zone>
 
 <form asp-action="EditPart">
     @Html.ValidationSummary()
 
     <div class="form-group">
-        <div class="row col-small">
+        <div class="w-sm-75 w-md-50 w-lg-25">
             <label asp-for="Name">@T["Technical Name"]</label>
             <input asp-for="Name" class="form-control" readonly />
-            <span class="hint">@T["Technical name of the part."]</span>
         </div>
+        <span class="hint">@T["Technical name of the part."]</span>
     </div>
 
     @await DisplayAsync(Model.Editor)
@@ -38,7 +38,7 @@
                                 <a asp-route-action="EditField" asp-route-id="@Model.PartDefinition.Name" asp-route-name="@field.Name" asp-route-returnUrl="@FullRequestPath" class="btn btn-primary btn-sm" role="button">@T["Edit"]</a>
                                 <a asp-route-action="RemoveFieldFrom" asp-route-id="@Model.PartDefinition.Name" asp-route-name="@field.Name" class="btn btn-danger btn-sm" role="button" itemprop="UnsafeUrl RemoveUrl">@T["Remove"]</a>
                             </div>
-                            @field.DisplayName() <span class="hint">— @field.FieldDefinition.Name.CamelFriendly()</span>
+                            @field.DisplayName() <span class="hint dashed">@field.FieldDefinition.Name.CamelFriendly()</span>
                         </div>
                         <input type="hidden" name="OrderedFieldNames" value="@field.Name" />
                     </li>
@@ -49,14 +49,21 @@
     <div class="form-group">
         <a asp-route-action="AddFieldTo" asp-route-id="@Model.PartDefinition.Name" asp-route-returnUrl="@FullRequestPath" class="btn btn-info btn-sm" role="button">@T["Add Field"]</a>
     </div>
+    
+    @if (Model.Editor.Shortcuts != null)
+    {
+        <div class="form-group">
+            @await DisplayAsync(Model.Editor.Shortcuts)
+        </div>
+    }
 
     <div class="form-group">
-        <button class="btn btn-primary" type="submit" name="submit.Save" value="Save">@T["Save"]</button>
-        <button class="btn btn-danger" type="submit" name="submit.Delete" value="Delete" itemprop="RemoveUrl">@T["Delete"]</button>
+        <button class="btn btn-primary save" type="submit" name="submit.Save" value="Save">@T["Save"]</button>
+        <button class="btn btn-danger delete" type="submit" name="submit.Delete" value="Delete" itemprop="RemoveUrl">@T["Delete"]</button>
     </div>
 </form>
 
-<script at="Foot" type="text/javascript">
+<script at="Foot">
     //<![CDATA[
     $(function () {
         Sortable.create(document.getElementById("fields"));

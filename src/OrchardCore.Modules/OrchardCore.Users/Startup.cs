@@ -15,6 +15,7 @@ using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Theming;
+using OrchardCore.Entities;
 using OrchardCore.Environment.Commands;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Configuration;
@@ -107,14 +108,8 @@ namespace OrchardCore.Users
             routes.MapAreaControllerRoute(
                 name: "UsersEdit",
                 areaName: "OrchardCore.Users",
-                pattern: _adminOptions.AdminUrlPrefix + "/Users/Edit/{id}",
+                pattern: _adminOptions.AdminUrlPrefix + "/Users/Edit/{id?}",
                 defaults: new { controller = adminControllerName, action = nameof(AdminController.Edit) }
-            );
-            routes.MapAreaControllerRoute(
-                name: "UsersEditPassword",
-                areaName: "OrchardCore.Users",
-                pattern: _adminOptions.AdminUrlPrefix + "/Users/EditPassword/{id}",
-                defaults: new { controller = adminControllerName, action = nameof(AdminController.EditPassword) }
             );
 
             builder.UseAuthorization();
@@ -162,6 +157,7 @@ namespace OrchardCore.Users
                 // tenant prefix but may also start by a path related e.g to a virtual folder.
 
                 options.LoginPath = "/" + userOptions.Value.LoginPath;
+                options.LogoutPath = "/" + userOptions.Value.LogoffPath;
                 options.AccessDeniedPath = "/Error/403";
             });
 
@@ -173,6 +169,8 @@ namespace OrchardCore.Users
 
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IUserClaimsPrincipalFactory<IUser>, DefaultUserClaimsPrincipalFactory>();
+            services.AddIdGeneration();
+            services.AddSingleton<IUserIdGenerator, DefaultUserIdGenerator>();
 
             services.AddScoped<IMembershipService, MembershipService>();
             services.AddScoped<ISetupEventHandler, SetupEventHandler>();
@@ -184,10 +182,9 @@ namespace OrchardCore.Users
 
             services.AddScoped<IDisplayDriver<ISite>, LoginSettingsDisplayDriver>();
 
-            services.AddScoped<ILiquidTemplateEventHandler, UserLiquidTemplateEventHandler>();
-
             services.AddScoped<IDisplayManager<User>, DisplayManager<User>>();
             services.AddScoped<IDisplayDriver<User>, UserDisplayDriver>();
+            services.AddScoped<IDisplayDriver<User>, UserInformationDisplayDriver>();
             services.AddScoped<IDisplayDriver<User>, UserButtonsDisplayDriver>();
 
             services.AddScoped<IThemeSelector, UsersThemeSelector>();
@@ -204,6 +201,8 @@ namespace OrchardCore.Users
             services.AddLiquidFilter<HasClaimFilter>("has_claim");
             services.AddLiquidFilter<IsInRoleFilter>("is_in_role");
             services.AddLiquidFilter<UserEmailFilter>("user_email");
+            services.AddLiquidFilter<UserIdFilter>("user_id");
+            services.AddLiquidFilter<UsersByIdFilter>("users_by_id");
         }
     }
 
@@ -377,6 +376,16 @@ namespace OrchardCore.Users
                 return new SiteSettingsPropertyDeploymentStepDriver<ResetPasswordSettings>(S["Reset Password settings"], S["Exports the Reset Password settings."]);
             });
             services.AddSingleton<IDeploymentStepFactory>(new SiteSettingsPropertyDeploymentStepFactory<ResetPasswordSettings>());
+        }
+    }
+
+    [Feature("OrchardCore.Users.CustomUserSettings")]
+    public class CustomUserSettingsStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddScoped<IDisplayDriver<User>, CustomUserSettingsDisplayDriver>();
+            services.AddScoped<IPermissionProvider, CustomUserSettingsPermissions>();
         }
     }
 }

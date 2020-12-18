@@ -12,11 +12,11 @@ using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.ContentTypes.Services;
 using OrchardCore.ContentTypes.ViewModels;
+using OrchardCore.Data.Documents;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Mvc.Utilities;
 using OrchardCore.Routing;
-using YesSql;
 
 namespace OrchardCore.ContentTypes.Controllers
 {
@@ -25,7 +25,7 @@ namespace OrchardCore.ContentTypes.Controllers
         private readonly IContentDefinitionService _contentDefinitionService;
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly IAuthorizationService _authorizationService;
-        private readonly ISession _session;
+        private readonly IDocumentStore _documentStore;
         private readonly IContentDefinitionDisplayManager _contentDefinitionDisplayManager;
         private readonly IHtmlLocalizer H;
         private readonly IStringLocalizer S;
@@ -37,7 +37,7 @@ namespace OrchardCore.ContentTypes.Controllers
             IContentDefinitionService contentDefinitionService,
             IContentDefinitionManager contentDefinitionManager,
             IAuthorizationService authorizationService,
-            ISession session,
+            IDocumentStore documentStore,
             IHtmlLocalizer<AdminController> htmlLocalizer,
             IStringLocalizer<AdminController> stringLocalizer,
             INotifier notifier,
@@ -45,7 +45,7 @@ namespace OrchardCore.ContentTypes.Controllers
         {
             _notifier = notifier;
             _contentDefinitionDisplayManager = contentDefinitionDisplayManager;
-            _session = session;
+            _documentStore = documentStore;
             _authorizationService = authorizationService;
             _contentDefinitionService = contentDefinitionService;
             _contentDefinitionManager = contentDefinitionManager;
@@ -128,7 +128,7 @@ namespace OrchardCore.ContentTypes.Controllers
 
             if (!ModelState.IsValid)
             {
-                _session.Cancel();
+                _documentStore.Cancel();
                 return View(viewModel);
             }
 
@@ -183,7 +183,7 @@ namespace OrchardCore.ContentTypes.Controllers
 
             if (!ModelState.IsValid)
             {
-                _session.Cancel();
+                _documentStore.Cancel();
 
                 return View(viewModel);
             }
@@ -313,7 +313,7 @@ namespace OrchardCore.ContentTypes.Controllers
 
             if (!ModelState.IsValid)
             {
-                _session.Cancel();
+                _documentStore.Cancel();
                 return await AddPartsTo(id);
             }
 
@@ -376,7 +376,7 @@ namespace OrchardCore.ContentTypes.Controllers
 
             if (!ModelState.IsValid)
             {
-                _session.Cancel();
+                _documentStore.Cancel();
                 return await AddReusablePartTo(id);
             }
 
@@ -528,7 +528,7 @@ namespace OrchardCore.ContentTypes.Controllers
 
             if (!ModelState.IsValid)
             {
-                _session.Cancel();
+                _documentStore.Cancel();
                 return View(viewModel);
             }
             else
@@ -642,7 +642,7 @@ namespace OrchardCore.ContentTypes.Controllers
                 viewModel.Part = partDefinition;
                 viewModel.Fields = _contentDefinitionService.GetFields().Select(x => x.Name).OrderBy(x => x).ToList();
 
-                _session.Cancel();
+                _documentStore.Cancel();
 
                 ViewData["ReturnUrl"] = returnUrl;
                 return View(viewModel);
@@ -746,7 +746,7 @@ namespace OrchardCore.ContentTypes.Controllers
                 {
                     // Calls update to build editor shape with the display name validation failures, and other validation errors.
                     viewModel.Shape = await _contentDefinitionDisplayManager.UpdatePartFieldEditorAsync(field, _updateModelAccessor.ModelUpdater);
-                    _session.Cancel();
+                    _documentStore.Cancel();
 
                     ViewData["ReturnUrl"] = returnUrl;
                     return View(viewModel);
@@ -764,7 +764,7 @@ namespace OrchardCore.ContentTypes.Controllers
 
             if (!ModelState.IsValid)
             {
-                _session.Cancel();
+                _documentStore.Cancel();
 
                 ViewData["ReturnUrl"] = returnUrl;
                 return View(viewModel);
@@ -914,7 +914,7 @@ namespace OrchardCore.ContentTypes.Controllers
                     if (!ModelState.IsValid)
                     {
                         viewModel.Shape = await _contentDefinitionDisplayManager.UpdateTypePartEditorAsync(part, _updateModelAccessor.ModelUpdater);
-                        _session.Cancel();
+                        _documentStore.Cancel();
                         return View(viewModel);
                     }
                 }
@@ -929,7 +929,7 @@ namespace OrchardCore.ContentTypes.Controllers
 
             if (!ModelState.IsValid)
             {
-                _session.Cancel();
+                _documentStore.Cancel();
                 return View(viewModel);
             }
             else

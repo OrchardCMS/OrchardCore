@@ -20,9 +20,9 @@ namespace OrchardCore.Environment.Shell
         /// </summary>
         public async static Task ReloadAllShellContextsAsync(this IShellHost shellHost)
         {
-            foreach (var shell in shellHost.ListShellContexts())
+            foreach (var settings in shellHost.GetAllSettings())
             {
-                await shellHost.ReloadShellContextAsync(shell.Settings);
+                await shellHost.ReloadShellContextAsync(settings);
             }
         }
 
@@ -32,9 +32,9 @@ namespace OrchardCore.Environment.Shell
         /// </summary>
         public async static Task ReleaseAllShellContextsAsync(this IShellHost shellHost)
         {
-            foreach (var shell in shellHost.ListShellContexts())
+            foreach (var settings in shellHost.GetAllSettings())
             {
-                await shellHost.ReleaseShellContextAsync(shell.Settings);
+                await shellHost.ReleaseShellContextAsync(settings);
             }
         }
 

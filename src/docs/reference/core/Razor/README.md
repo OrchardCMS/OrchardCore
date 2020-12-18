@@ -11,8 +11,12 @@ Many extensions methods are available in Razor with `@Orchard`.
 | `CultureDir()` | OrchardCore.DisplayManagement | Returns the current culture direction. |
 | `CultureName()` | OrchardCore.DisplayManagement | Returns the current culture name. |
 | `ResourceUrl(string resourcePath, bool? appendVersion = null)` | OrchardCore.ResourceManagement | Prefixes the Cdn Base URL to the specified resource path. |
+| `GetContentItemIdByAliasAsync(string alias)` | OrchardCore.Contents | Returns a content item id from its alias. Ex: `carousel` |
+| `GetContentItemIdBySlugAsync(string slug)` | OrchardCore.Contents | Returns a content item id from its slug. Ex: `myblog/my-blog-post` |
 | `GetContentItemIdByHandleAsync(string handle)` | OrchardCore.Contents | Returns a content item id from its handle. Ex: `alias:carousel`, `slug:myblog/my-blog-post` |
-| `GetContentItemByHandleAsync(string handle, bool latest = false)` | OrchardCore.Contents | Loads a content item by its handle, seeking the latest version or not. |
+| `GetContentItemByAliasAsync(string alias, bool latest = false)` | OrchardCore.Contents | Loads a content item by its alias, seeking the latest version or not. Ex: `carousel` |
+| `GetContentItemBySlugAsync(string slug, bool latest = false)` | OrchardCore.Contents | Loads a content item by its slug, seeking the latest version or not. Ex: `slug:myblog/my-blog-post`|
+| `GetContentItemByHandleAsync(string handle, bool latest = false)` | OrchardCore.Contents | Loads a content item by its handle, seeking the latest version or not. Ex: `alias:carousel`, `slug:myblog/my-blog-post`|
 | `GetContentItemByIdAsync(string contentItemId, bool latest = false)` | OrchardCore.Contents | Loads a content item by its id. |
 | `GetContentItemsByIdAsync(IEnumerable<string> contentItemIds, bool latest = false)` | OrchardCore.Contents | Loads a list of content items by their ids. |
 | `GetContentItemByVersionIdAsync(string contentItemVersionId)` | OrchardCore.Contents | Loads a content item by its version id. |

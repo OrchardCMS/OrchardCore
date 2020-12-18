@@ -135,6 +135,7 @@ namespace OrchardCore.ContentManagement
         /// <summary>
         /// Creates (persists) a new Published content item
         /// </summary>
+        /// <param name="contentManager">The <see cref="IContentManager"/> instance.</param>
         /// <param name="contentItem">The content instance filled with all necessary data</param>
 
         public static Task CreateAsync(this IContentManager contentManager, ContentItem contentItem)
@@ -190,6 +191,7 @@ namespace OrchardCore.ContentManagement
         /// <summary>
         /// Gets either the published container content item with the specified id, or if the json path supplied gets the contained content item. 
         /// </summary>
+        /// <param name="contentManager">The <see cref="IContentManager"/> instance.</param>
         /// <param name="id">The content item id to load</param>
         /// <param name="jsonPath">The json path of the contained content item</param>
         public static Task<ContentItem> GetAsync(this IContentManager contentManager, string id, string jsonPath)
@@ -200,6 +202,7 @@ namespace OrchardCore.ContentManagement
         /// <summary>
         /// Gets either the container content item with the specified id and version, or if the json path supplied gets the contained content item.
         /// </summary>
+        /// <param name="contentManager">The <see cref="IContentManager"/> instance.</param>
         /// <param name="id">The id content item id to load</param>
         /// <param name="options">The version option</param>
         /// <param name="jsonPath">The json path of the contained content item</param>

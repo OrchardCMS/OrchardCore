@@ -26,3 +26,30 @@
         }
     }
 }
+
+@media (min-width: 992px) {
+    .media-anchor-modal {
+        .modal-lg {
+            max-width: 1200px;
+        }
+    }
+}
+
+.media-anchor-modal {
+    .img-modal {
+        max-height: 70vh;
+    }
+}
+
+.icon-media-anchor {
+    position: absolute;
+    line-height: 0px;
+    color: $white;
+    font-size: 1.875rem;
+
+    path
+    {
+        stroke:$black;
+        stroke-width: 10;
+    }
+}

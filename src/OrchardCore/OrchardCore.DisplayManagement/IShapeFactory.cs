@@ -31,6 +31,7 @@ namespace OrchardCore.DisplayManagement
         /// <summary>
         /// Creates a new shape by copying the properties of the specific model.
         /// </summary>
+        /// <param name="factory">The <see cref="IShapeFactory"/>.</param>
         /// <param name="shapeType">The type of shape to create.</param>
         /// <param name="model">The model to copy.</param>
         /// <returns></returns>
@@ -66,9 +67,10 @@ namespace OrchardCore.DisplayManagement
         }
 
         /// <summary>
-        /// Creates a dynamic proxy instance for the <see cref="TModel"/> type and initializes it.
+        /// Creates a dynamic proxy instance for the type and initializes it.
         /// </summary>
         /// <typeparam name="TModel">The type to instantiate.</typeparam>
+        /// <param name="factory">The <see cref="IShapeFactory"/>.</param>
         /// <param name="shapeType">The shape type to create.</param>
         /// <param name="initializeAsync">The initialization method.</param>
         /// <returns></returns>
@@ -96,9 +98,10 @@ namespace OrchardCore.DisplayManagement
         }
 
         /// <summary>
-        /// Creates a dynamic proxy instance for the <see cref="TModel"/> type and initializes it.
+        /// Creates a dynamic proxy instance for the type and initializes it.
         /// </summary>
         /// <typeparam name="TModel">The type to instantiate.</typeparam>
+        /// <param name="factory">The <see cref="IShapeFactory"/>.</param>
         /// <param name="shapeType">The shape type to create.</param>
         /// <param name="initialize">The initialization method.</param>
         /// <returns></returns>

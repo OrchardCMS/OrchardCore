@@ -32,7 +32,8 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         valueKeywords = parserConfig.valueKeywords || {},
         allowNested = parserConfig.allowNested,
         lineComment = parserConfig.lineComment,
-        supportsAtComponent = parserConfig.supportsAtComponent === true;
+        supportsAtComponent = parserConfig.supportsAtComponent === true,
+        highlightNonStandardPropertyKeywords = config.highlightNonStandardPropertyKeywords !== false;
     var type, override;
 
     function ret(style, tp) {
@@ -203,7 +204,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
           override = "property";
           return "maybeprop";
         } else if (nonStandardPropertyKeywords.hasOwnProperty(word)) {
-          override = "string-2";
+          override = highlightNonStandardPropertyKeywords ? "string-2" : "property";
           return "maybeprop";
         } else if (allowNested) {
           override = stream.match(/^\s*:(?:\s|$)/, false) ? "property" : "tag";
@@ -292,7 +293,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
       if (type == "word") {
         var word = stream.current().toLowerCase();
-        if (word == "only" || word == "not" || word == "and" || word == "or") override = "keyword";else if (mediaTypes.hasOwnProperty(word)) override = "attribute";else if (mediaFeatures.hasOwnProperty(word)) override = "property";else if (mediaValueKeywords.hasOwnProperty(word)) override = "keyword";else if (propertyKeywords.hasOwnProperty(word)) override = "property";else if (nonStandardPropertyKeywords.hasOwnProperty(word)) override = "string-2";else if (valueKeywords.hasOwnProperty(word)) override = "atom";else if (colorKeywords.hasOwnProperty(word)) override = "keyword";else override = "error";
+        if (word == "only" || word == "not" || word == "and" || word == "or") override = "keyword";else if (mediaTypes.hasOwnProperty(word)) override = "attribute";else if (mediaFeatures.hasOwnProperty(word)) override = "property";else if (mediaValueKeywords.hasOwnProperty(word)) override = "keyword";else if (propertyKeywords.hasOwnProperty(word)) override = "property";else if (nonStandardPropertyKeywords.hasOwnProperty(word)) override = highlightNonStandardPropertyKeywords ? "string-2" : "property";else if (valueKeywords.hasOwnProperty(word)) override = "atom";else if (colorKeywords.hasOwnProperty(word)) override = "keyword";else override = "error";
       }
 
       return state.context.type;

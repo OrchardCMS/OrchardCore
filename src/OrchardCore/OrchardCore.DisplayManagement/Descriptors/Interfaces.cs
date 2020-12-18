@@ -45,7 +45,7 @@ namespace OrchardCore.DisplayManagement.Descriptors
         /// Builds a contextualized <see cref="IPlacementInfoResolver"/>
         /// </summary>
         /// <param name="context">The <see cref="IBuildShapeContext"/> for which we need a placement resolver</param>
-        /// <returns>An instance of <see cref="IPlacementInfoResolver"/> for the current context or <see cref="null"/> if this provider is not concerned.</returns>
+        /// <returns>An instance of <see cref="IPlacementInfoResolver"/> for the current context or <see langword="null"/> if this provider is not concerned.</returns>
         Task<IPlacementInfoResolver> BuildPlacementInfoResolverAsync(IBuildShapeContext context);
     }
 
@@ -58,7 +58,7 @@ namespace OrchardCore.DisplayManagement.Descriptors
         /// Resolves <see cref="PlacementInfo"/> for the provided <see cref="ShapePlacementContext"/>
         /// </summary>
         /// <param name="placementContext">The <see cref="ShapePlacementContext"/></param>
-        /// <returns>An <see cref="PlacementInfo"/> or <see cref="null"/> if not concerned.</returns>
+        /// <returns>An <see cref="PlacementInfo"/> or <see langword="null"/> if not concerned.</returns>
         PlacementInfo ResolvePlacement(ShapePlacementContext placementContext);
     }
 }

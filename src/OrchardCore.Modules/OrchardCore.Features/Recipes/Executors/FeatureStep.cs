@@ -34,8 +34,8 @@ namespace OrchardCore.Features.Recipes.Executors
             var step = context.Step.ToObject<FeatureStepModel>();
             var features = _extensionManager.GetFeatures();
 
-            var featuresToDisable = features.Where(x => step.Disable.Contains(x.Id)).ToList();
-            var featuresToEnable = features.Where(x => step.Enable.Contains(x.Id)).ToList();
+            var featuresToDisable = features.Where(x => step.Disable?.Contains(x.Id) == true).ToList();
+            var featuresToEnable = features.Where(x => step.Enable?.Contains(x.Id) == true).ToList();
 
             if (featuresToDisable.Count > 0 || featuresToEnable.Count > 0)
             {

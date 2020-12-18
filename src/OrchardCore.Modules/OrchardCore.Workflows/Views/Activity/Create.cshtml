@@ -1,7 +1,7 @@
 @model OrchardCore.Workflows.ViewModels.ActivityEditViewModel
 
 <div data-workflow-type-id="@Model.WorkflowTypeId" data-activity-id="@Model.ActivityId">
-    <h1>@RenderTitleSegments(T["Add {0}", Model.Activity.DisplayText.Value])</h1>
+    <zone Name="Title"><h1>@RenderTitleSegments(T["Add {0}", Model.Activity.DisplayText.Value])</h1></zone>
 
     <div asp-validation-summary="ModelOnly"></div>
     <form asp-action="Create" asp-route-workflowtypeid="@Model.WorkflowTypeId" asp-route-activityname="@Model.Activity.Name" asp-route-returnurl="@Model.ReturnUrl" method="post" enctype="multipart/form-data">
@@ -9,8 +9,8 @@
         @await DisplayAsync(Model.ActivityEditor)
 
         <div class="form-group">
-            <button class="btn btn-primary" type="submit">@T["Save"]</button>
-            <a class="btn btn-secondary" href="@Model.ReturnUrl">@T["Cancel"]</a>
+            <button class="btn btn-primary save" type="submit">@T["Save"]</button>
+            <a class="btn btn-secondary cancel" role="button" href="@Model.ReturnUrl">@T["Cancel"]</a>
         </div>
     </form>
 </div>

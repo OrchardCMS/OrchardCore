@@ -37,7 +37,7 @@ namespace OrchardCore.Shortcodes
         /// The hint text for the shortcode.
         /// </summary>
         public string Hint { get; set; }
-        
+
         /// <summary>
         /// The HTML usage description for the shortcode.
         /// </summary>

@@ -82,7 +82,9 @@ namespace OrchardCore.Lucene.Handlers
 
                 foreach (var indexSettings in await luceneIndexSettingsService.GetSettingsAsync())
                 {
-                    if (indexSettings.IndexedContentTypes.Contains(context.ContentItem.ContentType))
+                    var ignoreIndexedCulture = indexSettings.Culture == "any" ? false : context.ContentItem.Content?.LocalizationPart?.Culture != indexSettings.Culture;
+
+                    if (indexSettings.IndexedContentTypes.Contains(context.ContentItem.ContentType) && !ignoreIndexedCulture)
                     {
                         if (!indexSettings.IndexLatest && !publishedLoaded)
                         {

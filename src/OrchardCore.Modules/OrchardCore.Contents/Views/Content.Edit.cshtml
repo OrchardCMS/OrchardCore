@@ -31,7 +31,7 @@
 
                 @if (!String.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
                 {
-                    <a id="button-cancel" href="@returnUrl" class="btn btn-secondary">@T["Cancel"]</a>
+                    <a class="btn btn-secondary cancel" role="button" href="@returnUrl">@T["Cancel"]</a>
                 }
             </div>
         </div>

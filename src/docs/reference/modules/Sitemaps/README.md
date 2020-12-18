@@ -18,13 +18,13 @@ Sitemap Indexes are configured by creating a Sitemap Index and selecting which S
 
 - Go to _Configuration -> SEO -> Sitemaps_
 
-- Create a new Sitemap
+- Create a new Sitemap.
 
 - Set the path for the Sitemap, note that the path must end in `.xml`
 
-- Give it a name
+- Give it a name.
 
-- Select Edit
+- Select Edit.
 
 - Add a Sitemap Source to it.
 
@@ -50,17 +50,17 @@ whichever is reached first.
 
 If you need to limit the quantity of Content Items in a Sitemap 
 
-- Uncheck Index All Content Types
+- Uncheck Index All Content Types.
 
-- Check Limit items
+- Check Limit items.
 
-- Select the Content Type to index
+- Select the Content Type to index.
 
 - Choose to Skip `x` number of Content Items and Take `x` number of Content Items. 
 
 For the remaining Content Items, create another Sitemap, and repeat choosing different values for Skip and Take as appropriate.
 
-For other Content Types create another Sitemap, and include all these Sitemaps in a Sitemap index.
+For other Content Types, create another Sitemap and include all these Sitemaps in a Sitemap index.
 
 !!! note
     The only content types listed for inclusion on a sitemap are those with the `AutoroutePart` attached.
@@ -74,29 +74,29 @@ Settings here can override any Sitemap configuration.
 
 - Check to override the Sitemap configuration.
 
-- Exclude the Content Item
+- Exclude the Content Item.
 
-- Alter the Priority
+- Alter the Priority.
 
-- Alter the Change Frequency
+- Alter the Change Frequency.
 
 !!! note
     You do not have to add the SitemapPart to a Content Type for it to be part of a Sitemap.
 
 ## Localized Sitemaps
 
-To support the google hreflang sitemap extensions enable the Localized Content Items Sitemap feature.
+To support the google hreflang sitemap extensions, enable the Localized Content Items Sitemap feature.
 
 This will automatically include any localized content items in your sitemap.
 
 Refer [Google Sitemap Extensions](https://support.google.com/webmasters/answer/189077) for more information
 on this protocol.
 
-## Decouplod Razor Pages
+## Decoupled Razor Pages
 
-To include Content Types displayed with Razor Pages enable the Sitemaps for Decoupled Razor Pages feature.
+To include Content Types displayed with Razor Pages, enable the Sitemaps for Decoupled Razor Pages feature.
 
-In your `Startup.cs` configure the `SitemapsRazorPagesOptions` to support the routes for your Content Types.
+In your `Startup.cs`, configure the `SitemapsRazorPagesOptions` to support the routes for your Content Types.
 
 ```
 public override void ConfigureServices(IServiceCollection services)

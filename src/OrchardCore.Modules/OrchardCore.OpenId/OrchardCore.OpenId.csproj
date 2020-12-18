@@ -1,8 +1,14 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+<Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
-    <TargetFrameworks>$(AspNetCoreTargetFramework)</TargetFrameworks>
+    <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
+    <!-- NuGet properties-->
+    <Title>OrchardCore OpenId</Title>
+    <Description>$(OCCMSDescription)
+    
+    Provides OpenId Connect client, server and management features.</Description>
+    <PackageTags>$(PackageTags) OrchardCoreCMS OpenId</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>

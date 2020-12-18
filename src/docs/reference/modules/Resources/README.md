@@ -49,18 +49,24 @@ The `OrchardCore.Resources` module provides some commonly used ones:
 | jQuery.slim           | Script | 3.5.1         | -              |
 | jQuery-ui             | Script | 1.12.1        | jQuery         |
 | jQuery-ui-i18n        | Script | 1.7.2         | jQuery-ui      |
+| jquery.easing         | Script | 1.4.1         | -              |
+| jquery-resizable-dom  | Script | 0.35.0        | -              |
 | popper                | Script | 1.16.1        | -              |
-| bootstrap             | Script | 3.4.0, 4.5.2  | jQuery, Popper |
-| bootstrap             | Style  | 3.4.0, 4.5.2  | -              |
+| bootstrap             | Script | 3.4.0, 4.5.3  | jQuery, Popper |
+| bootstrap             | Style  | 3.4.0, 4.5.3  | -              |
 | bootstrap-select      | Script | 1.13.18       | -              |
 | bootstrap-select      | Style  | 1.13.18       | -              |
 | bootstrap-slider      | Script | 11.0.2        | -              |
 | bootstrap-slider      | Style  | 11.0.2        | -              |
-| codemirror            | Script | 5.57.0        | -              |
-| codemirror            | Style  | 5.57.0        | -              |
-| font-awesome          | Style  | 4.7.0, 5.14.0 | -              |
-| font-awesome          | Script | 5.14.0        | -              |
-| font-awesome-v4-shims | Script | 5.14.0        | -              |
+| codemirror            | Script | 5.58.3        | -              |
+| codemirror            | Style  | 5.58.3        | -              |
+| font-awesome          | Style  | 4.7.0, 5.15.1 | -              |
+| font-awesome          | Script | 5.15.1        | -              |
+| font-awesome-v4-shims | Script | 5.15.1        | -              |
+| Sortable              | Script | 1.10.2        | -              |
+| trumbowyg             | Script | 2.23.0        | -              |
+| vue-multiselect       | Script | 2.1.6         | -              |
+| vuedraggable          | Script | 2.24.3        | Sortable       |
 
 ### Registering a Resource Manifest
 
@@ -173,7 +179,7 @@ resourceManager.AppendMeta(new MetaEntry { Name = "keywords", Content = "orchard
 
 ### Using the Tag Helpers
 
-From your module, in the `_ViewImports.cshtml` or your view, add `@addTagHelper *, OrchardCore.ResourceManagement`.
+From your module, in the `_ViewImports.cshtml` or your view, add `@addTagHelper *, OrchardCore.ResourceManagement`, and take a direct reference to the `OrchardCore.ResourceManagement` nuget package.
 
 #### Register a named script or stylesheet
 
@@ -535,6 +541,9 @@ These should be rendered at the bottom of the `<body>` section.
     </body>
     ```
 
+!!! note
+    When using tag helpers in Razor, you must take a direct reference to the `OrchardCore.ResourceManagement` nuget package in each theme or module that uses the tag helpers. This is not required when using Liquid.
+    
 ### Logging
 
 If you register a resource by name and it is not found this will be logged as an error in your `App_Data/Logs` folder.

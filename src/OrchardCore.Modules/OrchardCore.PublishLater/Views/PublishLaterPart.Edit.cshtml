@@ -1,11 +1,12 @@
 @using Microsoft.AspNetCore.Authorization
+@using OrchardCore.Contents
 @model PublishLaterPartViewModel
 
 @inject IAuthorizationService AuthorizationService
 
 <style asp-src="~/OrchardCore.PublishLater/Styles/publish-later.min.css" debug-src="~/OrchardCore.PublishLater/Styles/publish-later.css"></style>
 
-@if (await AuthorizationService.AuthorizeAsync(User, OrchardCore.Contents.CommonPermissions.PublishContent, Model.ContentItem))
+@if (await AuthorizationService.AuthorizeAsync(User, CommonPermissions.PublishContent, Model.ContentItem))
 {
     <div class="btn-group">
         <input asp-for="ScheduledPublishLocalDateTime" type="datetime-local" class="form-control content-preview-select" />

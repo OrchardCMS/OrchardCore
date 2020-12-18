@@ -293,5 +293,12 @@
       "node_modules/@fortawesome/fontawesome-free/webfonts/*"
     ],
     "output": "wwwroot/Vendor/fontawesome-free/webfonts/@"
+  },
+  {
+    "generateSourceMaps": false,
+    "inputs": [
+      "Assets/js/js.cookie.js"
+    ],
+    "output": "wwwroot/Scripts/js.cookie.js"
   }
 ]

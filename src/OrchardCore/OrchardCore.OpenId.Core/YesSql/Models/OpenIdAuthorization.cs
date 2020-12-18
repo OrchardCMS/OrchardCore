@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Immutable;
 using Newtonsoft.Json.Linq;
 
@@ -15,6 +16,11 @@ namespace OrchardCore.OpenId.YesSql.Models
         /// associated with the current authorization.
         /// </summary>
         public string ApplicationId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the creation date of the current authorization.
+        /// </summary>
+        public DateTimeOffset? CreationDate { get; set; }
 
         /// <summary>
         /// Gets or sets the physical identifier associated with the current authorization.

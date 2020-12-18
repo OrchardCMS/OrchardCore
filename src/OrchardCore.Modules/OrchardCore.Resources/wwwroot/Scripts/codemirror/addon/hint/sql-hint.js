@@ -209,7 +209,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     var words = lineText.split(/\s+/);
 
     for (var i = 0; i < words.length; i++) {
-      if (words[i]) f(words[i].replace(/[,;]/g, ''));
+      if (words[i]) f(words[i].replace(/[`,;]/g, ''));
     }
   }
 

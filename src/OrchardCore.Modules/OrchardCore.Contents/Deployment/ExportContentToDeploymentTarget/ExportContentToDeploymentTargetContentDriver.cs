@@ -1,11 +1,8 @@
-using System.Threading.Tasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.ViewModels;
 using OrchardCore.Deployment;
-using OrchardCore.Deployment.Services;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Entities;
 using OrchardCore.Settings;
 
@@ -24,22 +21,42 @@ namespace OrchardCore.Contents.Deployment.ExportContentToDeploymentTarget
             _siteService = siteService;
         }
 
-        public override async Task<IDisplayResult> DisplayAsync(ContentItem model, BuildDisplayContext context)
+        public override IDisplayResult Display(ContentItem model)
         {
-            if (await _deploymentPlanService.DoesUserHaveExportPermissionAsync())
-            {
-                var siteSettings = await _siteService.GetSiteSettingsAsync();
-                var exportContentToDeploymentTargetSettings = siteSettings.As<ExportContentToDeploymentTargetSettings>();
-                if (exportContentToDeploymentTargetSettings.ExportContentToDeploymentTargetPlanId != 0)
-                {
-                    return Combine(
-                        Dynamic("ExportContentToDeploymentTarget_Modal__ActionDeploymentTarget").Location("SummaryAdmin", "ActionsMenu:30"),
-                        Shape("ExportContentToDeploymentTarget_SummaryAdmin__Button__Actions", new ContentItemViewModel(model)).Location("SummaryAdmin", "ActionsMenu:40")
-                    );
-                }
-            }
+            return Combine(
+                Dynamic("ExportContentToDeploymentTarget_Modal__ActionDeploymentTarget")
+                    .Location("SummaryAdmin", "ActionsMenu:30")
+                    .RenderWhen(async () =>
+                    {
+                        if (await _deploymentPlanService.DoesUserHaveExportPermissionAsync())
+                        {
+                            var siteSettings = await _siteService.GetSiteSettingsAsync();
+                            var exportContentToDeploymentTargetSettings = siteSettings.As<ExportContentToDeploymentTargetSettings>();
+                            if (exportContentToDeploymentTargetSettings.ExportContentToDeploymentTargetPlanId != 0)
+                            {
+                                return true;
+                            }
+                        }
 
-            return null;
+                        return false;
+                    }),
+                Shape("ExportContentToDeploymentTarget_SummaryAdmin__Button__Actions", new ContentItemViewModel(model))
+                    .Location("SummaryAdmin", "ActionsMenu:40")
+                    .RenderWhen(async () =>
+                    {
+                        if (await _deploymentPlanService.DoesUserHaveExportPermissionAsync())
+                        {
+                            var siteSettings = await _siteService.GetSiteSettingsAsync();
+                            var exportContentToDeploymentTargetSettings = siteSettings.As<ExportContentToDeploymentTargetSettings>();
+                            if (exportContentToDeploymentTargetSettings.ExportContentToDeploymentTargetPlanId != 0)
+                            {
+                                return true;
+                            }
+                        }
+
+                        return false;
+                    })
+                );
         }
     }
 }

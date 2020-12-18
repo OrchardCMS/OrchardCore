@@ -1,16 +1,17 @@
 site_name: Orchard Core Documentation
 theme:
-  name: material
+  name: material  
+  custom_dir: src/docs/theme
   logo: docs/assets/images/orchard-logo.png
   favicon: docs/assets/images/favicon-blue.png
   features:
-    - instant
-    - tabs
+    - navigation.instant
+    - navigation.tabs
   palette:
     primary: blue
     accent: light blue
   static_templates:
-    - docs/404.html
+    - 404.html
     
 extra:
   social:
@@ -56,7 +57,8 @@ markdown_extensions:
 #  - markdown.extensions.nl2br
 
 plugins:
-  - search
+  - search  
+  - git-authors
   - git-revision-date-localized
   - exclude:
       glob:
@@ -88,6 +90,7 @@ nav:
         - Customize encoding settings: docs/guides/encoding-settings/README.md
         - Understanding Content Definitions Stores: docs/guides/content-definitions/README.md 
         - Change password configuration: docs/guides/password-configuration/README.md 
+        - Azure AD integration: docs/guides/azuread-integration/README.md 
     - Key Topics: 
         - Manage your Content: docs/topics/content-management/README.md
         - Customize the Display: docs/topics/display/README.md
@@ -100,6 +103,8 @@ nav:
 #        - Configuration: docs/topics/configuration/README.md
         - Workflows: docs/topics/workflows/README.md
         - Contributing to the docs: docs/topics/docs-contributions/README.md
+        - Publishing a new release: docs/topics/publishing-releases/README.md
+        - Using Docker: docs/topics/docker/README.md
     - Reference: 
         - CMS Modules: 
             - Content Types: docs/reference/modules/ContentTypes/README.md
@@ -121,14 +126,17 @@ nav:
             - Widgets: docs/reference/modules/Widgets/README.md
             - Forms: docs/reference/modules/Forms/README.md
             - Templates: docs/reference/modules/Templates/README.md
+            - Placements: docs/reference/modules/Placements/README.md
             - Themes: docs/reference/modules/Themes/README.md
             - Liquid: docs/reference/modules/Liquid/README.md
             - Indexing: docs/reference/modules/Indexing/README.md
             - SQL: docs/reference/modules/SQL/README.md
             - Lucene: docs/reference/modules/Lucene/README.md
             - Queries: docs/reference/modules/Queries/README.md
-            - Media: docs/reference/modules/Media/README.md
-            - Media Azure: docs/reference/modules/Media.Azure/README.md
+            - Media:
+                - Media: docs/reference/modules/Media/README.md
+                - Media Slugify: docs/reference/modules/Media.Slugify/README.md
+                - Media Azure: docs/reference/modules/Media.Azure/README.md
             - ReCaptcha: docs/reference/modules/ReCaptcha/README.md
             - Resources: docs/reference/modules/Resources/README.md
             - Shortcodes: docs/reference/modules/Shortcodes/README.md
@@ -145,7 +153,9 @@ nav:
                 - Twitter: docs/reference/modules/Twitter/README.md
                 - GitHub: docs/reference/modules/GitHub/README.md
                 - Google: docs/reference/modules/Google/README.md
-            - Users: docs/reference/modules/Users/README.md
+            - Users: 
+                - Configuration: docs/reference/modules/Users/Configuration/README.md
+                - Custom User Settings: docs/reference/modules/Users/CustomUserSettings/README.md
         - Core Modules: 
     #        - How to use Core Modules: docs/reference/core/README.md
             - Features: docs/reference/modules/Features/README.md
@@ -178,9 +188,13 @@ nav:
             - DataProtection (Azure Storage): docs/reference/modules/DataProtection.Azure/README.md
     - Resources: 
         - Learning: docs/resources/README.md
+        - Tutorials: docs/resources/tutorials/README.md
+        - Development Tools: docs/resources/development-tools/README.md
         - Meeting: docs/resources/meeting/README.md
-        - Workshops: docs/resources/workshops/README.md
         - Branding: docs/resources/branding/README.md
+        - Libraries: docs/resources/libraries/README.md
+        - Owners: docs/resources/owners/README.md
+        - Workshops: docs/resources/workshops/README.md
     - Releases: 
         - 1.0.0-rc2: docs/releases/1.0.0-rc2.md
         - 1.0.0-rc1: docs/releases/1.0.0-rc1.md

@@ -24,7 +24,7 @@ namespace OrchardCore.Html.Settings
 
                 model.SanitizeHtml = settings.SanitizeHtml;
             })
-            .Location("Editor");
+            .Location("Content:20");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentTypePartDefinition contentTypePartDefinition, UpdateTypePartEditorContext context)

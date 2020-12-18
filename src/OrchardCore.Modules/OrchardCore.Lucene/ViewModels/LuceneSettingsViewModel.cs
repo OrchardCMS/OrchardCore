@@ -8,5 +8,6 @@ namespace OrchardCore.Lucene.ViewModels
         public string SearchIndex { get; set; }
         public IEnumerable<string> SearchIndexes { get; set; }
         public string SearchFields { get; set; }
+        public bool AllowLuceneQueriesInSearch { get; set; }
     }
 }

@@ -162,7 +162,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         if (ch != ">" || !state.lexical || state.lexical.type != ">") {
           if (stream.eat("=")) {
             if (ch == "!" || ch == "=") stream.eat("=");
-          } else if (/[<>*+\-]/.test(ch)) {
+          } else if (/[<>*+\-|&?]/.test(ch)) {
             stream.eat(ch);
             if (ch == ">") stream.eat(ch);
           }
@@ -180,7 +180,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
             return ret(kw.type, kw.style, word);
           }
 
-          if (word == "async" && stream.match(/^(\s|\/\*.*?\*\/)*[\[\(\w]/, false)) return ret("async", "keyword", word);
+          if (word == "async" && stream.match(/^(\s|\/\*([^*]|\*(?!\/))*?\*\/)*[\[\(\w]/, false)) return ret("async", "keyword", word);
         }
 
         return ret("variable", "variable", word);
@@ -1145,7 +1145,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         return parseJS(state, style, type, content, stream);
       },
       indent: function indent(state, textAfter) {
-        if (state.tokenize == tokenComment) return CodeMirror.Pass;
+        if (state.tokenize == tokenComment || state.tokenize == tokenQuasi) return CodeMirror.Pass;
         if (state.tokenize != tokenBase) return 0;
         var firstChar = textAfter && textAfter.charAt(0),
             lexical = state.lexical,

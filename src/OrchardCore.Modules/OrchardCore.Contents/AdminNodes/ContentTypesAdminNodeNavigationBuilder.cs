@@ -62,7 +62,7 @@ namespace OrchardCore.Contents.AdminNodes
                     cTypeMenu.Priority(node.Priority);
                     cTypeMenu.Position(node.Position);
                     cTypeMenu.Permission(
-                        ContentTypePermissionsHelper.CreateDynamicPermission(ContentTypePermissionsHelper.PermissionTemplates[Permissions.PublishOwnContent.Name], ctd));
+                        ContentTypePermissionsHelper.CreateDynamicPermission(ContentTypePermissionsHelper.PermissionTemplates[CommonPermissions.PublishOwnContent.Name], ctd));
 
                     GetIconClasses(ctd, node).ToList().ForEach(c => cTypeMenu.AddClass(c));
                 });

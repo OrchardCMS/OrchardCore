@@ -18,7 +18,6 @@ using Newtonsoft.Json.Linq;
 using OrchardCore.Environment.Shell;
 using OrchardCore.OpenId.Settings;
 using OrchardCore.Settings;
-using static OpenIddict.Abstractions.OpenIddictConstants;
 
 namespace OrchardCore.OpenId.Services
 {
@@ -63,8 +62,9 @@ namespace OrchardCore.OpenId.Services
             // In this case, only the authorization code and refresh token flows are used.
             return new OpenIdServerSettings
             {
+                AllowAuthorizationCodeFlow = true,
+                AllowRefreshTokenFlow = true,
                 AuthorizationEndpointPath = "/connect/authorize",
-                GrantTypes = { GrantTypes.AuthorizationCode, GrantTypes.RefreshToken },
                 LogoutEndpointPath = "/connect/logout",
                 TokenEndpointPath = "/connect/token",
                 UserinfoEndpointPath = "/connect/userinfo"
@@ -92,7 +92,9 @@ namespace OrchardCore.OpenId.Services
 
             var results = ImmutableArray.CreateBuilder<ValidationResult>();
 
-            if (settings.GrantTypes.Count == 0)
+            if (!settings.AllowAuthorizationCodeFlow && !settings.AllowClientCredentialsFlow &&
+                !settings.AllowHybridFlow && !settings.AllowImplicitFlow &&
+                !settings.AllowPasswordFlow && !settings.AllowRefreshTokenFlow)
             {
                 results.Add(new ValidationResult(S["At least one OpenID Connect flow must be enabled."]));
             }
@@ -154,55 +156,62 @@ namespace OrchardCore.OpenId.Services
                 }
             }
 
-            if (settings.GrantTypes.Contains(GrantTypes.Password) && !settings.TokenEndpointPath.HasValue)
+            if (settings.AllowPasswordFlow && !settings.TokenEndpointPath.HasValue)
             {
                 results.Add(new ValidationResult(S["The password flow cannot be enabled when the token endpoint is disabled."], new[]
                 {
-                    nameof(settings.GrantTypes)
+                    nameof(settings.AllowPasswordFlow)
                 }));
             }
 
-            if (settings.GrantTypes.Contains(GrantTypes.ClientCredentials) && !settings.TokenEndpointPath.HasValue)
+            if (settings.AllowClientCredentialsFlow && !settings.TokenEndpointPath.HasValue)
             {
                 results.Add(new ValidationResult(S["The client credentials flow cannot be enabled when the token endpoint is disabled."], new[]
                 {
-                    nameof(settings.GrantTypes)
+                    nameof(settings.AllowClientCredentialsFlow)
                 }));
             }
 
-            if (settings.GrantTypes.Contains(GrantTypes.AuthorizationCode) &&
-               (!settings.AuthorizationEndpointPath.HasValue || !settings.TokenEndpointPath.HasValue))
+            if (settings.AllowAuthorizationCodeFlow && (!settings.AuthorizationEndpointPath.HasValue || !settings.TokenEndpointPath.HasValue))
             {
                 results.Add(new ValidationResult(S["The authorization code flow cannot be enabled when the authorization and token endpoints are disabled."], new[]
                 {
-                    nameof(settings.GrantTypes)
+                    nameof(settings.AllowAuthorizationCodeFlow)
                 }));
             }
 
-            if (settings.GrantTypes.Contains(GrantTypes.RefreshToken))
+            if (settings.AllowRefreshTokenFlow)
             {
                 if (!settings.TokenEndpointPath.HasValue)
                 {
                     results.Add(new ValidationResult(S["The refresh token flow cannot be enabled when the token endpoint is disabled."], new[]
                     {
-                        nameof(settings.GrantTypes)
+                        nameof(settings.AllowRefreshTokenFlow)
                     }));
                 }
 
-                if (!settings.GrantTypes.Contains(GrantTypes.Password) && !settings.GrantTypes.Contains(GrantTypes.AuthorizationCode))
+                if (!settings.AllowPasswordFlow && !settings.AllowAuthorizationCodeFlow && !settings.AllowHybridFlow)
                 {
                     results.Add(new ValidationResult(S["The refresh token flow can only be enabled if the password, authorization code or hybrid flows are enabled."], new[]
                     {
-                        nameof(settings.GrantTypes)
+                        nameof(settings.AllowRefreshTokenFlow)
                     }));
                 }
             }
 
-            if (settings.GrantTypes.Contains(GrantTypes.Implicit) && !settings.AuthorizationEndpointPath.HasValue)
+            if (settings.AllowImplicitFlow && !settings.AuthorizationEndpointPath.HasValue)
             {
                 results.Add(new ValidationResult(S["The implicit flow cannot be enabled when the authorization endpoint is disabled."], new[]
                 {
-                    nameof(settings.GrantTypes)
+                    nameof(settings.AllowImplicitFlow)
+                }));
+            }
+
+            if (settings.AllowHybridFlow && (!settings.AuthorizationEndpointPath.HasValue || !settings.TokenEndpointPath.HasValue))
+            {
+                results.Add(new ValidationResult(S["The hybrid flow cannot be enabled when the authorization and token endpoints are disabled."], new[]
+                {
+                    nameof(settings.AllowHybridFlow)
                 }));
             }
 
@@ -210,7 +219,7 @@ namespace OrchardCore.OpenId.Services
             {
                 results.Add(new ValidationResult(S["Access token encryption can only be disabled when using JWT tokens."], new[]
                 {
-                    nameof(settings.GrantTypes)
+                    nameof(settings.DisableAccessTokenEncryption)
                 }));
             }
 
@@ -542,7 +551,7 @@ namespace OrchardCore.OpenId.Services
         {
             var algorithm = GenerateRsaSecurityKey(size: 2048);
             var certificate = GenerateCertificate(X509KeyUsageFlags.DigitalSignature, algorithm, settings);
-            
+
             // Note: setting the friendly name is not supported on Unix machines (including Linux and macOS).
             // To ensure an exception is not thrown by the property setter, an OS runtime check is used here.
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
