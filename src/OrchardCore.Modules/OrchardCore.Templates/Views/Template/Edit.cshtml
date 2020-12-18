@@ -28,7 +28,7 @@ else
 
 <div asp-validation-summary="ModelOnly"></div>
 <form asp-action="Edit" asp-route-returnUrl="@ViewData["returnUrl"]" method="post">
-    <div class="form-group position-sticky action-bar text-right">
+    <div class="form-group position-sticky action-bar">
         <div class="btn-group">
             <button type="submit" name="submit" class="btn btn-primary save">@T["Save"]</button>
             <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-reference="parent" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -48,6 +48,7 @@ else
         {
             <a class="btn btn-info" role="button" href="@Url.Action("Index", "Preview", new { area = "OrchardCore.Templates" })" target="_blank">@T["Preview"]</a>
         }
+        <a href="#editContent" class="btn" data-toggle="tooltip" title="@T["Go to content"]"><i class="fa fa-edit"></i> @T["Content"]</a>
     </div>
 
     <input type="hidden" value="@Model.Name" name="sourceName" />
@@ -63,6 +64,7 @@ else
     <div class="form-group" asp-validation-class-for="Description">
         <label asp-for="Description">@T["Description"]</label>
         <input asp-for="Description" class="form-control" autofocus />
+        <div id="editContent">&nbsp;</div>
         <span class="hint">@T["The description of the template."]</span>
     </div>
 
