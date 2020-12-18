@@ -383,8 +383,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Tests.Functiona
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Placements", "src\OrchardCore.Modules\OrchardCore.Placements\OrchardCore.Placements.csproj", "{5F94223B-CD69-47E1-B4AE-DEA03CBC4D3D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.KeyVault.Azure", "src\OrchardCore.Modules\OrchardCore.KeyVault.Azure\OrchardCore.KeyVault.Azure.csproj", "{DF01453F-5DE5-49A6-A9F3-C549A6DBD7C1}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Configuration.KeyVault", "src\OrchardCore\OrchardCore.Configuration.KeyVault\OrchardCore.Configuration.KeyVault.csproj", "{3F89DF42-735F-4EE6-BB82-3F6574D8DDDD}"
 EndProject
 Global

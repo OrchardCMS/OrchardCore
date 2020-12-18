@@ -3,7 +3,7 @@ using Azure.Extensions.AspNetCore.Configuration.Secrets;
 using Azure.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
-using OrchardCore.Azure.KeyVault.Services;
+using OrchardCore.Configuration.KeyVault.Services;
 
 namespace OrchardCore.Configuration.KeyVault.Extensions
 {
