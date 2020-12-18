@@ -48,6 +48,7 @@ namespace OrchardCore.Twitter.Signin.Drivers
                 {
                     model.CallbackPath = settings.CallbackPath;
                 }
+                model.SaveTokens = settings.SaveTokens;
             }).Location("Content:5").OnGroup(TwitterConstants.Features.Signin);
         }
 
@@ -68,6 +69,7 @@ namespace OrchardCore.Twitter.Signin.Drivers
                 {
                     var protector = _dataProtectionProvider.CreateProtector(TwitterConstants.Features.Signin);
                     settings.CallbackPath = model.CallbackPath;
+                    settings.SaveTokens = model.SaveTokens;
                     await _shellHost.ReleaseShellContextAsync(_shellSettings);
                 }
             }

@@ -51,8 +51,8 @@ namespace OrchardCore.Users.Workflows.Activities
 
         public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            var userName = await _expressionEvaluator.EvaluateAsync(UserName, workflowContext);
-            var roleName = await _expressionEvaluator.EvaluateAsync(RoleName, workflowContext);
+            var userName = await _expressionEvaluator.EvaluateAsync(UserName, workflowContext, null);
+            var roleName = await _expressionEvaluator.EvaluateAsync(RoleName, workflowContext, null);
 
             User user = (User)await _userService.GetUserAsync(userName);
 

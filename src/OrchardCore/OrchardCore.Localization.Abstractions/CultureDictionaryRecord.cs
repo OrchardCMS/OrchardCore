@@ -11,6 +11,17 @@ namespace OrchardCore.Localization
         /// Creates new instance of <see cref="CultureDictionaryRecord"/>.
         /// </summary>
         /// <param name="messageId">The message Id.</param>
+        /// <param name="translations">a list of translations</param>
+        public CultureDictionaryRecord(string messageId, params string[] translations)
+            : this(messageId, null, translations)
+        {
+
+        }
+
+        /// <summary>
+        /// Creates new instance of <see cref="CultureDictionaryRecord"/>.
+        /// </summary>
+        /// <param name="messageId">The message Id.</param>
         /// <param name="context">The message context.</param>
         /// <param name="translations">a list of translations</param>
         public CultureDictionaryRecord(string messageId, string context, string[] translations)

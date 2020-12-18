@@ -9,7 +9,6 @@ using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Layout;
 using OrchardCore.DisplayManagement.ModelBinding;
-using OrchardCore.DisplayManagement.Theming;
 using OrchardCore.Modules;
 
 namespace OrchardCore.ContentTypes.Editors
@@ -20,7 +19,6 @@ namespace OrchardCore.ContentTypes.Editors
         private readonly IShapeTableManager _shapeTableManager;
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly IShapeFactory _shapeFactory;
-        private readonly IThemeManager _themeManager;
         private readonly ILayoutAccessor _layoutAccessor;
         private readonly ILogger _logger;
 
@@ -29,16 +27,15 @@ namespace OrchardCore.ContentTypes.Editors
             IShapeTableManager shapeTableManager,
             IContentDefinitionManager contentDefinitionManager,
             IShapeFactory shapeFactory,
-            IThemeManager themeManager,
+            IEnumerable<IShapePlacementProvider> placementProviders,
             ILogger<DefaultContentDefinitionDisplayManager> logger,
             ILayoutAccessor layoutAccessor
-            ) : base(shapeTableManager, shapeFactory, themeManager)
+            ) : base(shapeFactory, placementProviders)
         {
             _handlers = handlers;
             _shapeTableManager = shapeTableManager;
             _contentDefinitionManager = contentDefinitionManager;
             _shapeFactory = shapeFactory;
-            _themeManager = themeManager;
             _layoutAccessor = layoutAccessor;
             _logger = logger;
         }
@@ -82,7 +79,7 @@ namespace OrchardCore.ContentTypes.Editors
 
             var layout = await _layoutAccessor.GetLayoutAsync();
 
-            _contentDefinitionManager.AlterTypeDefinition(contentTypeDefinition.Name, typeBuilder =>
+            await _contentDefinitionManager.AlterTypeDefinitionAsync(contentTypeDefinition.Name, async typeBuilder =>
             {
                 var typeContext = new UpdateTypeEditorContext(
                     typeBuilder,
@@ -94,9 +91,9 @@ namespace OrchardCore.ContentTypes.Editors
                     updater
                 );
 
-                BindPlacementAsync(typeContext).GetAwaiter().GetResult();
+                await BindPlacementAsync(typeContext);
 
-                _handlers.InvokeAsync((handler, contentTypeDefinition, typeContext) => handler.UpdateTypeEditorAsync(contentTypeDefinition, typeContext), contentTypeDefinition, typeContext, _logger).GetAwaiter().GetResult();
+                await _handlers.InvokeAsync((handler, contentTypeDefinition, typeContext) => handler.UpdateTypeEditorAsync(contentTypeDefinition, typeContext), contentTypeDefinition, typeContext, _logger);
             });
 
             return contentTypeDefinitionShape;
@@ -140,7 +137,7 @@ namespace OrchardCore.ContentTypes.Editors
             UpdatePartEditorContext partContext = null;
             var layout = await _layoutAccessor.GetLayoutAsync();
 
-            _contentDefinitionManager.AlterPartDefinition(contentPartDefinition.Name, partBuilder =>
+            await _contentDefinitionManager.AlterPartDefinitionAsync(contentPartDefinition.Name, async partBuilder =>
             {
                 partContext = new UpdatePartEditorContext(
                     partBuilder,
@@ -152,9 +149,9 @@ namespace OrchardCore.ContentTypes.Editors
                     updater
                 );
 
-                BindPlacementAsync(partContext).GetAwaiter().GetResult();
+                await BindPlacementAsync(partContext);
 
-                _handlers.InvokeAsync((handler, contentPartDefinition, partContext) => handler.UpdatePartEditorAsync(contentPartDefinition, partContext), contentPartDefinition, partContext, _logger).GetAwaiter().GetResult();
+                await _handlers.InvokeAsync((handler, contentPartDefinition, partContext) => handler.UpdatePartEditorAsync(contentPartDefinition, partContext), contentPartDefinition, partContext, _logger);
             });
 
             return contentPartDefinitionShape;
@@ -197,9 +194,9 @@ namespace OrchardCore.ContentTypes.Editors
             dynamic typePartDefinitionShape = await CreateContentShapeAsync("ContentTypePartDefinition_Edit");
             var layout = await _layoutAccessor.GetLayoutAsync();
 
-            _contentDefinitionManager.AlterTypeDefinition(contentTypePartDefinition.ContentTypeDefinition.Name, typeBuilder =>
+            await _contentDefinitionManager.AlterTypeDefinitionAsync(contentTypePartDefinition.ContentTypeDefinition.Name, typeBuilder =>
             {
-                typeBuilder.WithPart(contentTypePartDefinition.Name, async typePartBuilder =>
+                return typeBuilder.WithPartAsync(contentTypePartDefinition.Name, async typePartBuilder =>
                 {
                     typePartDefinitionShape.ContentPart = contentTypePartDefinition;
 
@@ -261,9 +258,9 @@ namespace OrchardCore.ContentTypes.Editors
 
             var layout = await _layoutAccessor.GetLayoutAsync();
 
-            _contentDefinitionManager.AlterPartDefinition(contentPartDefinition.Name, partBuilder =>
+            await _contentDefinitionManager.AlterPartDefinitionAsync(contentPartDefinition.Name, partBuilder =>
             {
-                partBuilder.WithField(contentPartFieldDefinition.Name, async partFieldBuilder =>
+                return partBuilder.WithFieldAsync(contentPartFieldDefinition.Name, async partFieldBuilder =>
                 {
                     partFieldDefinitionShape.ContentField = contentPartFieldDefinition;
 

@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using GraphQL.Types;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Primitives;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Apis.GraphQL;
@@ -16,22 +16,28 @@ namespace OrchardCore.Queries.Sql.GraphQL.Queries
 {
     /// <summary>
     /// This implementation of <see cref="ISchemaBuilder"/> registers
-    /// all SQL Qeries as GraphQL queries.
+    /// all SQL Queries as GraphQL queries.
     /// </summary>
     public class SqlQueryFieldTypeProvider : ISchemaBuilder
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly ILogger<SqlQueryFieldTypeProvider> _logger;
 
-        public SqlQueryFieldTypeProvider(IHttpContextAccessor httpContextAccessor)
+        public SqlQueryFieldTypeProvider(IHttpContextAccessor httpContextAccessor, ILogger<SqlQueryFieldTypeProvider> logger)
         {
             _httpContextAccessor = httpContextAccessor;
+            _logger = logger;
+        }
+        public Task<string> GetIdentifierAsync()
+        {
+            var queryManager = _httpContextAccessor.HttpContext.RequestServices.GetService<IQueryManager>();
+            return queryManager.GetIdentifierAsync();
         }
 
-        public async Task<IChangeToken> BuildAsync(ISchema schema)
+        public async Task BuildAsync(ISchema schema)
         {
             var queryManager = _httpContextAccessor.HttpContext.RequestServices.GetService<IQueryManager>();
 
-            var changeToken = queryManager.ChangeToken;
             var queries = await queryManager.ListQueriesAsync();
 
             foreach (var query in queries.OfType<SqlQuery>())
@@ -40,46 +46,66 @@ namespace OrchardCore.Queries.Sql.GraphQL.Queries
                     continue;
 
                 var name = query.Name;
-                var source = query.Source;
 
-                var querySchema = JObject.Parse(query.Schema);
-
-                var type = querySchema["type"].ToString();
-
-                if (type.StartsWith("ContentItem/", StringComparison.OrdinalIgnoreCase))
+                try
                 {
-                    var contentType = type.Remove(0, 12);
-                    schema.Query.AddField(BuildContentTypeFieldType(schema, contentType, query));
+                    var querySchema = JObject.Parse(query.Schema);
+                    if (!querySchema.ContainsKey("type"))
+                    {
+                        _logger.LogError("The Query '{Name}' schema is invalid, the 'type' property was not found.", name);
+                        continue;
+                    }
+                    var type = querySchema["type"].ToString();
+                    FieldType fieldType;
+
+                    if (type.StartsWith("ContentItem/", StringComparison.OrdinalIgnoreCase))
+                    {
+                        var contentType = type.Remove(0, 12);
+                        fieldType = BuildContentTypeFieldType(schema, contentType, query);
+                    }
+                    else
+                    {
+                        fieldType = BuildSchemaBasedFieldType(query, querySchema);
+                    }
+
+                    if (fieldType != null)
+                    {
+                        schema.Query.AddField(fieldType);
+                    }
                 }
-                else
+                catch (Exception e)
                 {
-                    schema.Query.AddField(BuildSchemaBasedFieldType(schema, query, querySchema));
+                    _logger.LogError(e, "The Query '{Name}' has an invalid schema.", name);
                 }
             }
-
-            return changeToken;
         }
 
-        private FieldType BuildSchemaBasedFieldType(ISchema schema, SqlQuery query, JToken querySchema)
+        private FieldType BuildSchemaBasedFieldType(SqlQuery query, JToken querySchema)
         {
+            var properties = querySchema["properties"];
+            if (properties == null)
+            {
+                return null;
+            }
+
             var typetype = new ObjectGraphType<JObject>
             {
                 Name = query.Name
             };
 
-            var properties = querySchema["Properties"];
-
-            foreach (var child in properties.Children())
+            foreach (JProperty child in properties.Children())
             {
-                var name = ((JProperty)child).Name;
+                var name = child.Name;
                 var nameLower = name.Replace('.', '_');
-                var type = child["type"].ToString();
+                var type = child.Value["type"].ToString();
+                var description = child.Value["description"]?.ToString();
 
-                if (type == "String")
+                if (type == "string")
                 {
                     var field = typetype.Field(
                         typeof(StringGraphType),
                         nameLower,
+                        description: description,
                         resolve: context =>
                         {
                             var source = context.Source;
@@ -87,11 +113,12 @@ namespace OrchardCore.Queries.Sql.GraphQL.Queries
                         });
                     field.Metadata.Add("Name", name);
                 }
-                if (type == "Integer")
+                else if (type == "integer")
                 {
                     var field = typetype.Field(
                         typeof(IntGraphType),
                         nameLower,
+                        description: description,
                         resolve: context =>
                         {
                             var source = context.Source;
@@ -131,7 +158,11 @@ namespace OrchardCore.Queries.Sql.GraphQL.Queries
 
         private FieldType BuildContentTypeFieldType(ISchema schema, string contentType, SqlQuery query)
         {
-            var typetype = schema.Query.Fields.OfType<ContentItemsFieldType>().First(x => x.Name == contentType);
+            var typetype = schema.Query.Fields.OfType<ContentItemsFieldType>().FirstOrDefault(x => x.Name == contentType);
+            if (typetype == null)
+            {
+                return null;
+            }
 
             var fieldType = new FieldType
             {

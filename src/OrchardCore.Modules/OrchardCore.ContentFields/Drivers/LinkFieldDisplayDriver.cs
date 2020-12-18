@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
+using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentFields.Settings;
 using OrchardCore.ContentFields.ViewModels;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
@@ -8,8 +9,9 @@ using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Mvc.ModelBinding;
 
-namespace OrchardCore.ContentFields.Fields
+namespace OrchardCore.ContentFields.Drivers
 {
     public class LinkFieldDisplayDriver : ContentFieldDisplayDriver<LinkField>
     {
@@ -47,35 +49,44 @@ namespace OrchardCore.ContentFields.Fields
 
         public override async Task<IDisplayResult> UpdateAsync(LinkField field, IUpdateModel updater, UpdateFieldEditorContext context)
         {
-            bool modelUpdated = await updater.TryUpdateModelAsync(field, Prefix, f => f.Url, f => f.Text);
+            var modelUpdated = await updater.TryUpdateModelAsync(field, Prefix, f => f.Url, f => f.Text);
 
             if (modelUpdated)
             {
                 var settings = context.PartFieldDefinition.GetSettings<LinkFieldSettings>();
 
                 var urlToValidate = field.Url;
-                var indexAnchor = urlToValidate.IndexOf('#');
-                if (indexAnchor > -1)
+                if (!string.IsNullOrEmpty(urlToValidate))
                 {
-                    urlToValidate = urlToValidate.Substring(0, indexAnchor);
+                    var indexAnchor = urlToValidate.IndexOf('#');
+                    if (indexAnchor > -1)
+                    {
+                        urlToValidate = urlToValidate.Substring(0, indexAnchor);
+                    }
                 }
 
+                // Validate Url
                 if (settings.Required && String.IsNullOrWhiteSpace(field.Url))
                 {
-                    updater.ModelState.AddModelError(Prefix, S["The url is required for {0}.", context.PartFieldDefinition.DisplayName()]);
+                    updater.ModelState.AddModelError(Prefix, nameof(field.Url), S["The url is required for {0}.", context.PartFieldDefinition.DisplayName()]);
                 }
                 else if (!string.IsNullOrWhiteSpace(field.Url) && !Uri.IsWellFormedUriString(urlToValidate, UriKind.RelativeOrAbsolute))
                 {
-                    updater.ModelState.AddModelError(Prefix, S["{0} is an invalid url.", field.Url]);
+                    updater.ModelState.AddModelError(Prefix, nameof(field.Url), S["{0} is an invalid url.", field.Url]);
                 }
-                else if (settings.LinkTextMode == LinkTextMode.Required && string.IsNullOrWhiteSpace(field.Text))
+
+                // Validate Text
+                if (settings.LinkTextMode == LinkTextMode.Required && string.IsNullOrWhiteSpace(field.Text))
                 {
-                    updater.ModelState.AddModelError(Prefix, S["The link text is required for {0}.", context.PartFieldDefinition.DisplayName()]);
+                    updater.ModelState.AddModelError(Prefix, nameof(field.Text), S["The link text is required for {0}.", context.PartFieldDefinition.DisplayName()]);
                 }
                 else if (settings.LinkTextMode == LinkTextMode.Static && string.IsNullOrWhiteSpace(settings.DefaultText))
                 {
-                    updater.ModelState.AddModelError(Prefix, S["The text default value is required for {0}.", context.PartFieldDefinition.DisplayName()]);
+                    updater.ModelState.AddModelError(Prefix, nameof(field.Text), S["The text default value is required for {0}.", context.PartFieldDefinition.DisplayName()]);
                 }
+
+                // Run this through a sanitizer in case someone puts html in it.
+                // No settings.
             }
 
             return Edit(field, context);

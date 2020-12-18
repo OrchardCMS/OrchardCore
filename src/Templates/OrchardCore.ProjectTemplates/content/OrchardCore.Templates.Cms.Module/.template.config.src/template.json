@@ -2,7 +2,7 @@
   "$schema": "http://json.schemastore.org/template",
   "author": "Orchard Project",
   "classifications": [ "Web", "Orchard Core", "CMS" ],
-  "name": "Orchard Core Module",
+  "name": "Orchard Core Cms Module",
   "identity": "OrchardCore.Templates.Cms.Module",
   "shortName": "ocmodulecms",
   "sourceName": "OrchardCore.Templates.Cms.Module",

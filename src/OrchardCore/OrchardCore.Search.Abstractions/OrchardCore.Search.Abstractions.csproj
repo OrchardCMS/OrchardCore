@@ -3,6 +3,12 @@
   <PropertyGroup>
     <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
     <RootNamespace>OrchardCore.Search.Abstractions</RootNamespace>
+    <!-- NuGet properties-->
+    <Title>OrchardCore Search Abstractions</Title>
+    <Description>$(OCCMSDescription)
+    
+    Abstractions for search.</Description>
+    <PackageTags>$(PackageTags) OrchardCoreCMS Abstractions</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
@@ -13,4 +19,5 @@
     <ProjectReference Include="..\OrchardCore.ContentManagement\OrchardCore.ContentManagement.csproj" />
     <ProjectReference Include="..\OrchardCore.DisplayManagement\OrchardCore.DisplayManagement.csproj" />
   </ItemGroup>
+
 </Project>

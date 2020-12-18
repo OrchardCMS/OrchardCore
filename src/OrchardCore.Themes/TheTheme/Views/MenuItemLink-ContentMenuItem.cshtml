@@ -1,0 +1,22 @@
+@inject IOptions<AutorouteOptions> AutorouteOptions
+
+@{
+    ContentItem contentItem = Model.ContentItem;
+    var menuItemPart = contentItem.As<ContentMenuItemPart>();
+    var routeValues = new RouteValueDictionary(AutorouteOptions.Value.GlobalRouteValues);
+    routeValues[AutorouteOptions.Value.ContentItemIdKey] = menuItemPart.ContentItem.Content.ContentMenuItemPart.SelectedContentItem.ContentItemIds[0];
+    var linkUrl = Url.RouteUrl(routeValues);
+}
+
+@if ((int)Model.Level > 0)
+{
+    <a class="dropdown-item" href="@linkUrl">@menuItemPart.Name</a>
+}
+else if (Model.HasItems)
+{
+    <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="@linkUrl">@menuItemPart.Name<b class="caret"></b></a>
+}
+else
+{
+    <a class="nav-link" href="@linkUrl">@menuItemPart.Name</a>
+}

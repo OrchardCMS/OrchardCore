@@ -26,7 +26,7 @@ namespace OrchardCore.Templates.Cms.Module
                 .UseDisplayDriver<MyTestPartDisplayDriver>()
                 .AddHandler<MyTestPartHandler>();
 
-            services.AddScoped<IContentPartDefinitionDisplayDriver, MyTestPartSettingsDisplayDriver>();
+            services.AddScoped<IContentTypePartDefinitionDisplayDriver, MyTestPartSettingsDisplayDriver>();
             services.AddScoped<IDataMigration, Migrations>();
 #endif
         }

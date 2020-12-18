@@ -2,13 +2,13 @@
 // different media field editors share this component to present the thumbs.
 Vue.component('mediaFieldThumbsContainer', {
     template: '\
-       <div id="mediaContainerMain" v-cloak>\
+       <div :id="idPrefix + \'_mediaContainerMain\'" v-cloak>\
          <div v-if="mediaItems.length < 1" class="card text-center">\
              <div class= "card-body" >\
                 <span class="hint">{{T.noImages}}</span>\
              </div>\
          </div>\
-         <draggable :list="mediaItems" element="ol" class="row media-items-grid" >\
+         <draggable :list="mediaItems" tag="ol" class="row media-items-grid" >\
             <li v-for="media in mediaItems"\
                 :key="media.vuekey" \
                 class="media-container-main-list-item card"\
@@ -26,7 +26,7 @@ Vue.component('mediaFieldThumbsContainer', {
                          <div class="media-container-main-item-title card-body">\
                                 <a href="javascript:;" class="btn btn-light btn-sm float-right inline-media-button delete-button"\
                                     v-on:click.stop="selectAndDeleteMedia(media)"><i class="fa fa-trash"></i></a>\
-                                <a :href="media.url" class="btn btn-light btn-sm float-right inline-media-button view-button""><i class="fa fa-download"></i></a> \
+                                <a :href="media.url" target="_blank" class="btn btn-light btn-sm float-right inline-media-button view-button""><i class="fa fa-download"></i></a> \
                                 <span class="media-filename card-text small" :title="media.mediaPath">{{ media.isNew ? media.name.substr(36) : media.name }}</span>\
                          </div>\
                     </div>\
@@ -54,7 +54,8 @@ Vue.component('mediaFieldThumbsContainer', {
     props: {
         mediaItems: Array,
         selectedMedia: Object,
-        thumbSize: Number
+        thumbSize: Number,
+        idPrefix: String
     },
     created: function () {
 

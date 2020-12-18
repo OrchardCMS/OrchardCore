@@ -76,6 +76,8 @@ namespace OrchardCore.Microsoft.Authentication.Configuration
             {
                 options.CallbackPath = loginSettings.CallbackPath;
             }
+
+            options.SaveTokens = loginSettings.SaveTokens;
         }
 
         public void Configure(MicrosoftAccountOptions options) => Debug.Fail("This infrastructure method shouldn't be called.");

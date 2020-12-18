@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using Fluid;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
@@ -29,13 +28,12 @@ using OrchardCore.Modules;
 using OrchardCore.Routing;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Sitemaps.Services;
-using YesSql;
-using YesSql.Indexes;
 
 namespace OrchardCore.Autoroute
 {
     public class Startup : StartupBase
     {
+
         public override int ConfigureOrder => -100;
 
         static Startup()
@@ -47,7 +45,7 @@ namespace OrchardCore.Autoroute
         {
             // Autoroute Part
             services.AddContentPart<AutoroutePart>()
-                .UseDisplayDriver<AutoroutePartDisplay>()
+                .UseDisplayDriver<AutoroutePartDisplayDriver>()
                 .AddHandler<AutoroutePartHandler>();
 
             services.AddScoped<IContentHandler, DefaultRouteContentHandler>();
@@ -56,11 +54,13 @@ namespace OrchardCore.Autoroute
             services.AddScoped<IContentTypePartDefinitionDisplayDriver, AutoroutePartSettingsDisplayDriver>();
             services.AddScoped<IContentPartIndexHandler, AutoroutePartIndexHandler>();
 
-            services.AddScoped<IScopedIndexProvider, AutoroutePartIndexProvider>();
-            services.AddScoped<IDataMigration, Migrations>();
+            services.AddScoped<AutoroutePartIndexProvider>();
+            services.AddScoped<IScopedIndexProvider>(sp => sp.GetRequiredService<AutoroutePartIndexProvider>());
+            services.AddScoped<IContentHandler>(sp => sp.GetRequiredService<AutoroutePartIndexProvider>());
 
+            services.AddScoped<IDataMigration, Migrations>();
             services.AddSingleton<IAutorouteEntries, AutorouteEntries>();
-            services.AddScoped<IContentAliasProvider, AutorouteAliasProvider>();
+            services.AddScoped<IContentHandleProvider, AutorouteHandleProvider>();
 
             services.AddScoped<ILiquidTemplateEventHandler, ContentAutorouteLiquidTemplateEventHandler>();
 
@@ -78,12 +78,6 @@ namespace OrchardCore.Autoroute
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
         {
-            var entries = serviceProvider.GetRequiredService<IAutorouteEntries>();
-            var session = serviceProvider.GetRequiredService<ISession>();
-
-            var autoroutes = session.QueryIndex<AutoroutePartIndex>(o => o.Published).ListAsync().GetAwaiter().GetResult();
-            entries.AddEntries(autoroutes.Select(e => new AutorouteEntry(e.ContentItemId, e.Path, e.ContainedContentItemId, e.JsonPath)));
-
             // The 1st segment prevents the transformer to be executed for the home.
             routes.MapDynamicControllerRoute<AutoRouteTransformer>("/{any}/{**slug}");
         }

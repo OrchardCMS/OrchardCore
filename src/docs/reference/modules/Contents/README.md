@@ -1,4 +1,4 @@
-# Contents (OrchardCore.Contents)
+# Contents (`OrchardCore.Contents`)
 
 This module provides Content Management services.
 
@@ -8,19 +8,19 @@ You can access content items from liquid views and templates by using the `Conte
 By default, you can retrieve content by alias or content item ID.  
 Other modules (such as `Alias` and `Autoroute`) allow you to retrieve content by other identifiers.
 
-### Loading from an alias
+### Loading from a handle
 
 ```liquid
 {% assign my_content = Content["alias:main-menu"] %}
 ```
 
-Aliases can be in various forms, like when using Autoroute, with the `slug` prefix.
+Handles can be in various forms, like when using Autoroute, with the `slug` prefix.
 
 ```liquid
 {% assign my_content = Content["slug:my-blog/my-blog-post"] %}
 ```
 
-> Aliases are provided by implementing `IContentAliasProvider`.
+> Handles are provided by implementing `IContentHandleProvider`.
 
 ### Loading the latest version of a content item
 

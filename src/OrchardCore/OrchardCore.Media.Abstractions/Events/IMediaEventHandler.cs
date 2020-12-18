@@ -11,6 +11,7 @@ namespace OrchardCore.Media.Events
         Task MediaDeletedFileAsync(MediaDeletedContext context);
         Task MediaDeletingDirectoryAsync(MediaDeletingContext context);
         Task MediaDeletedDirectoryAsync(MediaDeletedContext context);
-        Task MediaMovingAsync(MediaMovingContext context);
+        Task MediaMovingAsync(MediaMoveContext context);
+        Task MediaMovedAsync(MediaMoveContext context);
     }
 }

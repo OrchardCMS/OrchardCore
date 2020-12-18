@@ -16,7 +16,7 @@ namespace OrchardCore.DisplayManagement.Shapes
     {
         private List<string> _classes;
         private Dictionary<string, string> _attributes;
-        private readonly List<IPositioned> _items = new List<IPositioned>();
+        private List<IPositioned> _items = new List<IPositioned>();
         private bool _sorted = false;
 
         public ShapeMetadata Metadata { get; } = new ShapeMetadata();
@@ -25,7 +25,20 @@ namespace OrchardCore.DisplayManagement.Shapes
         public string TagName { get; set; }
         public IList<string> Classes => _classes ??= new List<string>();
         public IDictionary<string, string> Attributes => _attributes ??= new Dictionary<string, string>();
-        public IEnumerable<dynamic> Items => _items;
+        public IEnumerable<dynamic> Items
+        {
+            get
+            {
+                if (!_sorted)
+                {
+                    _items = _items.OrderBy(x => x, FlatPositionComparer.Instance).ToList();
+                    _sorted = true;
+                }
+
+                return _items;
+            }
+        }
+
         public bool HasItems => _items.Count > 0;
 
         public string Position
@@ -125,7 +138,7 @@ namespace OrchardCore.DisplayManagement.Shapes
         {
             if (!_sorted)
             {
-                _items.Sort(FlatPositionComparer.Instance);
+                _items = _items.OrderBy(x => x, FlatPositionComparer.Instance).ToList();
                 _sorted = true;
             }
 
@@ -136,7 +149,7 @@ namespace OrchardCore.DisplayManagement.Shapes
         {
             if (!_sorted)
             {
-                _items.Sort(FlatPositionComparer.Instance);
+                _items = _items.OrderBy(x => x, FlatPositionComparer.Instance).ToList();
                 _sorted = true;
             }
 

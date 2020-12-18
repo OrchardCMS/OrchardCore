@@ -22,7 +22,8 @@ namespace OrchardCore.Roles
             }
 
             builder.Add(S["Security"], security => security
-                        .Add(S["Roles"], S["Roles"], installed => installed
+                        .Add(S["Roles"], S["Roles"].PrefixPosition(), roles => roles
+                            .AddClass("roles").Id("roles")
                             .Action("Index", "Admin", "OrchardCore.Roles")
                             .Permission(Permissions.ManageRoles)
                             .LocalNav()

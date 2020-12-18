@@ -1,0 +1,20 @@
+ [
+  {
+    "inputs": [
+      "wwwroot/dist/css/styles.css"
+    ],
+    "output": "wwwroot/Styles/styles.css"
+  },
+  {
+    "inputs": [
+      "wwwroot/scss/bootstrap-oc.scss"
+    ],
+    "output": "wwwroot/Styles/bootstrap-oc.css"
+  },
+  {
+    "inputs": [
+      "wwwroot/dist/js/scripts.js"
+    ],
+    "output": "wwwroot/Scripts/scripts.js"
+  }
+]

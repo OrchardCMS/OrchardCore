@@ -8,7 +8,7 @@ If you want to specify another prefix in the urls to access the admin section, y
 
 ``` json
   "OrchardCore": {
-    "OrchardCore.Admin": {
+    "OrchardCore_Admin": {
       "AdminUrlPrefix": "YourCustomAdminUrl"
 	  }
 	}

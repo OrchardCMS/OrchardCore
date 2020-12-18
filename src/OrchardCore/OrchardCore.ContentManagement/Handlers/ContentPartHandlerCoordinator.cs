@@ -35,7 +35,7 @@ namespace OrchardCore.ContentManagement.Handlers
 
             foreach (var element in partHandlers.Select(x => x.GetType()))
             {
-                logger.LogWarning("The content part handler '{ContentPartHandler}' should not be registerd in DI. Use AddHandler<T> instead.", element);
+                logger.LogWarning("The content part handler '{ContentPartHandler}' should not be registered in DI. Use AddHandler<T> instead.", element);
             }
 
             _logger = logger;
@@ -59,7 +59,7 @@ namespace OrchardCore.ContentManagement.Handlers
                 var partHandlers = _contentPartHandlerResolver.GetHandlers(partName);
                 await partHandlers.InvokeAsync((handler, context, part) => handler.ActivatingAsync(context, part), context, part, _logger);
                 // TODO: This can be removed in a future release as the recommended way is to use ContentOptions.
-                // Iteratate existing handler registrations as multiple handlers maybe not be registered with ContentOptions.
+                // Iterate existing handler registrations as multiple handlers maybe not be registered with ContentOptions.
                 await _partHandlers.InvokeAsync((handler, context, part) => handler.ActivatingAsync(context, part), context, part, _logger);
                 context.Builder.Weld(typePartDefinition.Name, part);
             }
@@ -82,7 +82,7 @@ namespace OrchardCore.ContentManagement.Handlers
                     var partHandlers = _contentPartHandlerResolver.GetHandlers(partName);
                     await partHandlers.InvokeAsync((handler, context, part) => handler.ActivatedAsync(context, part), context, part, _logger);
                     // TODO: This can be removed in a future release as the recommended way is to use ContentOptions.
-                    // Iteratate existing handler registrations as multiple handlers maybe not be registered with ContentOptions.
+                    // Iterate existing handler registrations as multiple handlers maybe not be registered with ContentOptions.
                     await _partHandlers.InvokeAsync((handler, context, part) => handler.ActivatedAsync(context, part), context, part, _logger);
                 }
             }
@@ -106,7 +106,7 @@ namespace OrchardCore.ContentManagement.Handlers
                     var partHandlers = _contentPartHandlerResolver.GetHandlers(partName);
                     await partHandlers.InvokeAsync((handler, context, part) => handler.CreatingAsync(context, part), context, part, _logger);
                     // TODO: This can be removed in a future release as the recommended way is to use ContentOptions.
-                    // Iteratate existing handler registrations as multiple handlers maybe not be registered with ContentOptions.
+                    // Iterate existing handler registrations as multiple handlers maybe not be registered with ContentOptions.
                     await _partHandlers.InvokeAsync((handler, context, part) => handler.CreatingAsync(context, part), context, part, _logger);
                 }
             }
@@ -130,8 +130,56 @@ namespace OrchardCore.ContentManagement.Handlers
                     var partHandlers = _contentPartHandlerResolver.GetHandlers(partName);
                     await partHandlers.InvokeAsync((handler, context, part) => handler.CreatedAsync(context, part), context, part, _logger);
                     // TODO: This can be removed in a future release as the recommended way is to use ContentOptions.
-                    // Iteratate existing handler registrations as multiple handlers maybe not be registered with ContentOptions.
+                    // Iterate existing handler registrations as multiple handlers maybe not be registered with ContentOptions.
                     await _partHandlers.InvokeAsync((handler, context, part) => handler.CreatedAsync(context, part), context, part, _logger);
+                }
+            }
+        }
+
+        public override async Task ImportingAsync(ImportContentContext context)
+        {
+            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
+            if (contentTypeDefinition == null)
+                return;
+
+            foreach (var typePartDefinition in contentTypeDefinition.Parts)
+            {
+                var partName = typePartDefinition.PartDefinition.Name;
+                var activator = _contentPartFactory.GetTypeActivator(partName);
+
+                var part = context.ContentItem.Get(activator.Type, typePartDefinition.Name) as ContentPart;
+
+                if (part != null)
+                {
+                    var partHandlers = _contentPartHandlerResolver.GetHandlers(partName);
+                    await partHandlers.InvokeAsync((handler, context, part) => handler.ImportingAsync(context, part), context, part, _logger);
+                    // TODO: This can be removed in a future release as the recommended way is to use ContentOptions.
+                    // Iteratate existing handler registrations as multiple handlers maybe not be registered with ContentOptions.
+                    await _partHandlers.InvokeAsync((handler, context, part) => handler.ImportingAsync(context, part), context, part, _logger);
+                }
+            }
+        }
+
+        public override async Task ImportedAsync(ImportContentContext context)
+        {
+            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
+            if (contentTypeDefinition == null)
+                return;
+
+            foreach (var typePartDefinition in contentTypeDefinition.Parts)
+            {
+                var partName = typePartDefinition.PartDefinition.Name;
+                var activator = _contentPartFactory.GetTypeActivator(partName);
+
+                var part = context.ContentItem.Get(activator.Type, typePartDefinition.Name) as ContentPart;
+
+                if (part != null)
+                {
+                    var partHandlers = _contentPartHandlerResolver.GetHandlers(partName);
+                    await partHandlers.InvokeAsync((handler, context, part) => handler.ImportedAsync(context, part), context, part, _logger);
+                    // TODO: This can be removed in a future release as the recommended way is to use ContentOptions.
+                    // Iteratate existing handler registrations as multiple handlers maybe not be registered with ContentOptions.
+                    await _partHandlers.InvokeAsync((handler, context, part) => handler.ImportedAsync(context, part), context, part, _logger);
                 }
             }
         }
@@ -153,7 +201,7 @@ namespace OrchardCore.ContentManagement.Handlers
                     var partHandlers = _contentPartHandlerResolver.GetHandlers(partName);
                     await partHandlers.InvokeAsync((handler, context, part) => handler.InitializingAsync(context, part), context, part, _logger);
                     // TODO: This can be removed in a future release as the recommended way is to use ContentOptions.
-                    // Iteratate existing handler registrations as multiple handlers maybe not be registered with ContentOptions.
+                    // Iterate existing handler registrations as multiple handlers maybe not be registered with ContentOptions.
                     await _partHandlers.InvokeAsync((handler, context, part) => handler.InitializingAsync(context, part), context, part, _logger);
                 }
             }
@@ -177,7 +225,7 @@ namespace OrchardCore.ContentManagement.Handlers
                     var partHandlers = _contentPartHandlerResolver.GetHandlers(partName);
                     await partHandlers.InvokeAsync((handler, context, part) => handler.InitializedAsync(context, part), context, part, _logger);
                     // TODO: This can be removed in a future release as the recommended way is to use ContentOptions.
-                    // Iteratate existing handler registrations as multiple handlers maybe not be registered with ContentOptions.
+                    // Iterate existing handler registrations as multiple handlers maybe not be registered with ContentOptions.
                     await _partHandlers.InvokeAsync((handler, context, part) => handler.InitializedAsync(context, part), context, part, _logger);
                 }
             }
@@ -213,7 +261,7 @@ namespace OrchardCore.ContentManagement.Handlers
                 var partHandlers = _contentPartHandlerResolver.GetHandlers(partName);
                 await partHandlers.InvokeAsync((handler, context, part) => handler.LoadingAsync(context, part), context, part, _logger);
                 // TODO: This can be removed in a future release as the recommended way is to use ContentOptions.
-                // Iteratate existing handler registrations as multiple handlers maybe not be registered with ContentOptions.
+                // Iterate existing handler registrations as multiple handlers maybe not be registered with ContentOptions.
                 await _partHandlers.InvokeAsync((handler, context, part) => handler.LoadingAsync(context, part), context, part, _logger);
                 foreach (var partFieldDefinition in typePartDefinition.PartDefinition.Fields)
                 {
@@ -246,8 +294,102 @@ namespace OrchardCore.ContentManagement.Handlers
                     var partHandlers = _contentPartHandlerResolver.GetHandlers(partName);
                     await partHandlers.InvokeAsync((handler, context, part) => handler.LoadedAsync(context, part), context, part, _logger);
                     // TODO: This can be removed in a future release as the recommended way is to use ContentOptions.
-                    // Iteratate existing handler registrations as multiple handlers maybe not be registered with ContentOptions.
+                    // Iterate existing handler registrations as multiple handlers maybe not be registered with ContentOptions.
                     await _partHandlers.InvokeAsync((handler, context, part) => handler.LoadedAsync(context, part), context, part, _logger);
+                }
+            }
+        }
+
+        public override async Task ValidatingAsync(ValidateContentContext context)
+        {
+            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
+            if (contentTypeDefinition == null)
+                return;
+
+            foreach (var typePartDefinition in contentTypeDefinition.Parts)
+            {
+                var partName = typePartDefinition.PartDefinition.Name;
+                var activator = _contentPartFactory.GetTypeActivator(partName);
+
+                var part = context.ContentItem.Get(activator.Type, typePartDefinition.Name) as ContentPart;
+
+                if (part != null)
+                {
+                    var partHandlers = _contentPartHandlerResolver.GetHandlers(partName);
+                    await partHandlers.InvokeAsync((handler, context, part) => handler.ValidatingAsync(context, part), context, part, _logger);
+                    // TODO: This can be removed in a future release as the recommended way is to use ContentOptions.
+                    // Iteratate existing handler registrations as multiple handlers maybe not be registered with ContentOptions.
+                    await _partHandlers.InvokeAsync((handler, context, part) => handler.ValidatingAsync(context, part), context, part, _logger);
+                }
+            }
+        }
+
+        public override async Task ValidatedAsync(ValidateContentContext context)
+        {
+            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
+            if (contentTypeDefinition == null)
+                return;
+
+            foreach (var typePartDefinition in contentTypeDefinition.Parts)
+            {
+                var partName = typePartDefinition.PartDefinition.Name;
+                var activator = _contentPartFactory.GetTypeActivator(partName);
+
+                var part = context.ContentItem.Get(activator.Type, typePartDefinition.Name) as ContentPart;
+
+                if (part != null)
+                {
+                    var partHandlers = _contentPartHandlerResolver.GetHandlers(partName);
+                    await partHandlers.InvokeAsync((handler, context, part) => handler.ValidatedAsync(context, part), context, part, _logger);
+                    // TODO: This can be removed in a future release as the recommended way is to use ContentOptions.
+                    // Iteratate existing handler registrations as multiple handlers maybe not be registered with ContentOptions.
+                    await _partHandlers.InvokeAsync((handler, context, part) => handler.ValidatedAsync(context, part), context, part, _logger);
+                }
+            }
+        }
+
+        public override async Task DraftSavingAsync(SaveDraftContentContext context)
+        {
+            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
+            if (contentTypeDefinition == null)
+                return;
+
+            foreach (var typePartDefinition in contentTypeDefinition.Parts)
+            {
+                var partName = typePartDefinition.PartDefinition.Name;
+                var activator = _contentPartFactory.GetTypeActivator(partName);
+                var part = context.ContentItem.Get(activator.Type, typePartDefinition.Name) as ContentPart; ;
+
+                if (part != null)
+                {
+                    var partHandlers = _contentPartHandlerResolver.GetHandlers(partName);
+                    await partHandlers.InvokeAsync((handler, context, part) => handler.DraftSavingAsync(context, part), context, part, _logger);
+                    // TODO: This can be removed in a future release as the recommended way is to use ContentOptions.
+                    // Iterate existing handler registrations as multiple handlers maybe not be registered with ContentOptions.
+                    await _partHandlers.InvokeAsync((handler, context, part) => handler.DraftSavingAsync(context, part), context, part, _logger);
+                }
+            }
+        }
+
+        public override async Task DraftSavedAsync(SaveDraftContentContext context)
+        {
+            var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
+            if (contentTypeDefinition == null)
+                return;
+
+            foreach (var typePartDefinition in contentTypeDefinition.Parts)
+            {
+                var partName = typePartDefinition.PartDefinition.Name;
+                var activator = _contentPartFactory.GetTypeActivator(partName);
+                var part = context.ContentItem.Get(activator.Type, typePartDefinition.Name) as ContentPart; ;
+
+                if (part != null)
+                {
+                    var partHandlers = _contentPartHandlerResolver.GetHandlers(partName);
+                    await partHandlers.InvokeAsync((handler, context, part) => handler.DraftSavedAsync(context, part), context, part, _logger);
+                    // TODO: This can be removed in a future release as the recommended way is to use ContentOptions.
+                    // Iterate existing handler registrations as multiple handlers maybe not be registered with ContentOptions.
+                    await _partHandlers.InvokeAsync((handler, context, part) => handler.DraftSavedAsync(context, part), context, part, _logger);
                 }
             }
         }
@@ -269,7 +411,7 @@ namespace OrchardCore.ContentManagement.Handlers
                     var partHandlers = _contentPartHandlerResolver.GetHandlers(partName);
                     await partHandlers.InvokeAsync((handler, context, part) => handler.PublishingAsync(context, part), context, part, _logger);
                     // TODO: This can be removed in a future release as the recommended way is to use ContentOptions.
-                    // Iteratate existing handler registrations as multiple handlers maybe not be registered with ContentOptions.
+                    // Iterate existing handler registrations as multiple handlers maybe not be registered with ContentOptions.
                     await _partHandlers.InvokeAsync((handler, context, part) => handler.PublishingAsync(context, part), context, part, _logger);
                 }
             }
@@ -292,7 +434,7 @@ namespace OrchardCore.ContentManagement.Handlers
                     var partHandlers = _contentPartHandlerResolver.GetHandlers(partName);
                     await partHandlers.InvokeAsync((handler, context, part) => handler.PublishedAsync(context, part), context, part, _logger);
                     // TODO: This can be removed in a future release as the recommended way is to use ContentOptions.
-                    // Iteratate existing handler registrations as multiple handlers maybe not be registered with ContentOptions.
+                    // Iterate existing handler registrations as multiple handlers maybe not be registered with ContentOptions.
                     await _partHandlers.InvokeAsync((handler, context, part) => handler.PublishedAsync(context, part), context, part, _logger);
                 }
             }
@@ -315,7 +457,7 @@ namespace OrchardCore.ContentManagement.Handlers
                     var partHandlers = _contentPartHandlerResolver.GetHandlers(partName);
                     await partHandlers.InvokeAsync((handler, context, part) => handler.RemovingAsync(context, part), context, part, _logger);
                     // TODO: This can be removed in a future release as the recommended way is to use ContentOptions.
-                    // Iteratate existing handler registrations as multiple handlers maybe not be registered with ContentOptions.
+                    // Iterate existing handler registrations as multiple handlers maybe not be registered with ContentOptions.
                     await _partHandlers.InvokeAsync((handler, context, part) => handler.RemovingAsync(context, part), context, part, _logger);
                 }
             }
@@ -338,7 +480,7 @@ namespace OrchardCore.ContentManagement.Handlers
                     var partHandlers = _contentPartHandlerResolver.GetHandlers(partName);
                     await partHandlers.InvokeAsync((handler, context, part) => handler.RemovedAsync(context, part), context, part, _logger);
                     // TODO: This can be removed in a future release as the recommended way is to use ContentOptions.
-                    // Iteratate existing handler registrations as multiple handlers maybe not be registered with ContentOptions.
+                    // Iterate existing handler registrations as multiple handlers maybe not be registered with ContentOptions.
                     await _partHandlers.InvokeAsync((handler, context, part) => handler.RemovedAsync(context, part), context, part, _logger);
                 }
             }
@@ -361,7 +503,7 @@ namespace OrchardCore.ContentManagement.Handlers
                     var partHandlers = _contentPartHandlerResolver.GetHandlers(partName);
                     await partHandlers.InvokeAsync((handler, context, part) => handler.UnpublishingAsync(context, part), context, part, _logger);
                     // TODO: This can be removed in a future release as the recommended way is to use ContentOptions.
-                    // Iteratate existing handler registrations as multiple handlers maybe not be registered with ContentOptions.
+                    // Iterate existing handler registrations as multiple handlers maybe not be registered with ContentOptions.
                     await _partHandlers.InvokeAsync((handler, context, part) => handler.UnpublishingAsync(context, part), context, part, _logger);
                 }
             }
@@ -384,7 +526,7 @@ namespace OrchardCore.ContentManagement.Handlers
                     var partHandlers = _contentPartHandlerResolver.GetHandlers(partName);
                     await partHandlers.InvokeAsync((handler, context, part) => handler.UnpublishedAsync(context, part), context, part, _logger);
                     // TODO: This can be removed in a future release as the recommended way is to use ContentOptions.
-                    // Iteratate existing handler registrations as multiple handlers maybe not be registered with ContentOptions.
+                    // Iterate existing handler registrations as multiple handlers maybe not be registered with ContentOptions.
                     await _partHandlers.InvokeAsync((handler, context, part) => handler.UnpublishedAsync(context, part), context, part, _logger);
                 }
             }
@@ -407,7 +549,7 @@ namespace OrchardCore.ContentManagement.Handlers
                     var partHandlers = _contentPartHandlerResolver.GetHandlers(partName);
                     await partHandlers.InvokeAsync((handler, context, part) => handler.UpdatingAsync(context, part), context, part, _logger);
                     // TODO: This can be removed in a future release as the recommended way is to use ContentOptions.
-                    // Iteratate existing handler registrations as multiple handlers maybe not be registered with ContentOptions.
+                    // Iterate existing handler registrations as multiple handlers maybe not be registered with ContentOptions.
                     await _partHandlers.InvokeAsync((handler, context, part) => handler.UpdatingAsync(context, part), context, part, _logger);
                 }
             }
@@ -430,7 +572,7 @@ namespace OrchardCore.ContentManagement.Handlers
                     var partHandlers = _contentPartHandlerResolver.GetHandlers(partName);
                     await partHandlers.InvokeAsync((handler, context, part) => handler.UpdatedAsync(context, part), context, part, _logger);
                     // TODO: This can be removed in a future release as the recommended way is to use ContentOptions.
-                    // Iteratate existing handler registrations as multiple handlers maybe not be registered with ContentOptions.
+                    // Iterate existing handler registrations as multiple handlers maybe not be registered with ContentOptions.
                     await _partHandlers.InvokeAsync((handler, context, part) => handler.UpdatedAsync(context, part), context, part, _logger);
                 }
             }
@@ -455,7 +597,7 @@ namespace OrchardCore.ContentManagement.Handlers
                     var partHandlers = _contentPartHandlerResolver.GetHandlers(partName);
                     await partHandlers.InvokeAsync((handler, context, existingPart, buildingPart) => handler.VersioningAsync(context, existingPart, buildingPart), context, existingPart, buildingPart, _logger);
                     // TODO: This can be removed in a future release as the recommended way is to use ContentOptions.
-                    // Iteratate existing handler registrations as multiple handlers maybe not be registered with ContentOptions.
+                    // Iterate existing handler registrations as multiple handlers maybe not be registered with ContentOptions.
                     await _partHandlers.InvokeAsync((handler, context, existingPart, buildingPart) => handler.VersioningAsync(context, existingPart, buildingPart), context, existingPart, buildingPart, _logger);
                 }
             }
@@ -480,7 +622,7 @@ namespace OrchardCore.ContentManagement.Handlers
                     var partHandlers = _contentPartHandlerResolver.GetHandlers(partName);
                     await partHandlers.InvokeAsync((handler, context, existingPart, buildingPart) => handler.VersionedAsync(context, existingPart, buildingPart), context, existingPart, buildingPart, _logger);
                     // TODO: This can be removed in a future release as the recommended way is to use ContentOptions.
-                    // Iteratate existing handler registrations as multiple handlers maybe not be registered with ContentOptions.
+                    // Iterate existing handler registrations as multiple handlers maybe not be registered with ContentOptions.
                     await _partHandlers.InvokeAsync((handler, context, existingPart, buildingPart) => handler.VersionedAsync(context, existingPart, buildingPart), context, existingPart, buildingPart, _logger);
                 }
             }
@@ -503,7 +645,7 @@ namespace OrchardCore.ContentManagement.Handlers
                     var partHandlers = _contentPartHandlerResolver.GetHandlers(partName);
                     await partHandlers.InvokeAsync((handler, context, part) => handler.GetContentItemAspectAsync(context, part), context, part, _logger);
                     // TODO: This can be removed in a future release as the recommended way is to use ContentOptions.
-                    // Iteratate existing handler registrations as multiple handlers maybe not be registered with ContentOptions.
+                    // Iterate existing handler registrations as multiple handlers maybe not be registered with ContentOptions.
                     await _partHandlers.InvokeAsync((handler, context, part) => handler.GetContentItemAspectAsync(context, part), context, part, _logger);
                 }
             }
@@ -525,7 +667,7 @@ namespace OrchardCore.ContentManagement.Handlers
                     var partHandlers = _contentPartHandlerResolver.GetHandlers(partName);
                     await partHandlers.InvokeAsync((handler, context, part) => handler.ClonedAsync(context, part), context, part, _logger);
                     // TODO: This can be removed in a future release as the recommended way is to use ContentOptions.
-                    // Iteratate existing handler registrations as multiple handlers maybe not be registered with ContentOptions.
+                    // Iterate existing handler registrations as multiple handlers maybe not be registered with ContentOptions.
                     await _partHandlers.InvokeAsync((handler, context, part) => handler.ClonedAsync(context, part), context, part, _logger);
                 }
             }
@@ -547,7 +689,7 @@ namespace OrchardCore.ContentManagement.Handlers
                     var partHandlers = _contentPartHandlerResolver.GetHandlers(partName);
                     await partHandlers.InvokeAsync((handler, context, part) => handler.CloningAsync(context, part), context, part, _logger);
                     // TODO: This can be removed in a future release as the recommended way is to use ContentOptions.
-                    // Iteratate existing handler registrations as multiple handlers maybe not be registered with ContentOptions.=
+                    // Iterate existing handler registrations as multiple handlers maybe not be registered with ContentOptions.=
                     await _partHandlers.InvokeAsync((handler, context, part) => handler.CloningAsync(context, part), context, part, _logger);
                 }
             }

@@ -41,7 +41,7 @@ namespace OrchardCore.Tests.Localization
         [Fact]
         public void GetDictionaryReturnsDictionaryWithTranslationsFromProvider()
         {
-            var dictionaryRecord = new CultureDictionaryRecord("ball", null, new[] { "míč", "míče", "míčů" });
+            var dictionaryRecord = new CultureDictionaryRecord("ball", "míč", "míče", "míčů");
             _translationProvider
                 .Setup(o => o.LoadTranslations(It.Is<string>(culture => culture == "cs"), It.IsAny<CultureDictionary>()))
                 .Callback<string, CultureDictionary>((culture, dictioanry) => dictioanry.MergeTranslations(new[] { dictionaryRecord }));

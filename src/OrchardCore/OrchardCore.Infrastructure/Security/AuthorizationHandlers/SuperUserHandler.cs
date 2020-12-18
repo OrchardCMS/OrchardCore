@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using OrchardCore.Settings;
@@ -20,19 +21,25 @@ namespace OrchardCore.Security.AuthorizationHandlers
 
         public async Task HandleAsync(AuthorizationHandlerContext context)
         {
-            if (context?.User?.Identity?.Name == null)
+            var userId = context?.User?.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null)
             {
                 return;
             }
 
-            var superUser = (await _siteService.GetSiteSettingsAsync()).SuperUser;
+            var site = await _siteService.GetSiteSettingsAsync();
 
-            if (String.Equals(context.User.Identity.Name, superUser, StringComparison.OrdinalIgnoreCase))
+            if (String.Equals(userId, site.SuperUser, StringComparison.OrdinalIgnoreCase))
             {
-                foreach (var requirement in context.Requirements.OfType<PermissionRequirement>())
-                {
-                    context.Succeed(requirement);
-                }
+                SucceedAllRequirements(context);
+            }
+        }
+
+        private static void SucceedAllRequirements(AuthorizationHandlerContext context)
+        {
+            foreach (var requirement in context.Requirements.OfType<PermissionRequirement>())
+            {
+                context.Succeed(requirement);
             }
         }
     }

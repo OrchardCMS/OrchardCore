@@ -1,7 +1,9 @@
+using System.Collections.Generic;
+
 namespace OrchardCore.Email
 {
     /// <summary>
-    /// Represents a class that contains an information for the mail message.
+    /// Represents a class that contains information of the mail message.
     /// </summary>
     public class MailMessage
     {
@@ -31,10 +33,10 @@ namespace OrchardCore.Email
         public string ReplyTo { get; set; }
 
         /// <summary>
-        /// Gets or sets the actual submittor of the email.
+        /// Gets or sets the actual submitter of the email.
         /// </summary>
         /// <remark>
-        /// This property is required if not the same as <see cref="From"/>, for more informaton please refer to https://ietf.org/rfc/rfc822.txt.
+        /// This property is required if not the same as <see cref="From"/>, for more information please refer to https://ietf.org/rfc/rfc822.txt.
         /// </remark>
         public string Sender { get; set; }
 
@@ -52,5 +54,10 @@ namespace OrchardCore.Email
         /// Gets or sets whether the message body is an HTML.
         /// </summary>
         public bool IsBodyHtml { get; set; }
+
+        /// <summary>
+        /// The collection of message attachments.
+        /// </summary>
+        public List<MailMessageAttachment> Attachments { get; } = new List<MailMessageAttachment>();
     }
 }

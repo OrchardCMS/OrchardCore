@@ -46,7 +46,7 @@ namespace OrchardCore.Modules
         {
             stoppingToken.Register(() =>
             {
-                _logger.LogError("'{ServiceName}' is stopping.", nameof(ModularBackgroundService));
+                _logger.LogInformation("'{ServiceName}' is stopping.", nameof(ModularBackgroundService));
             });
 
             while (GetRunningShells().Count() < 1)
@@ -77,9 +77,9 @@ namespace OrchardCore.Modules
                     await WaitAsync(pollingDelay, stoppingToken);
                 }
             }
-            catch (Exception e)
+            catch (Exception ex) when (!ex.IsFatal())
             {
-                _logger.LogError(e, "Error while executing '{ServiceName}', the service is stopping.", nameof(ModularBackgroundService));
+                _logger.LogError(ex, "Error while executing '{ServiceName}', the service is stopping.", nameof(ModularBackgroundService));
             }
         }
 
@@ -127,9 +127,9 @@ namespace OrchardCore.Modules
 
                             _logger.LogInformation("Finished processing background task '{TaskName}' on tenant '{TenantName}'.", taskName, tenant);
                         }
-                        catch (Exception e)
+                        catch (Exception ex) when (!ex.IsFatal())
                         {
-                            _logger.LogError(e, "Error while processing background task '{TaskName}' on tenant '{TenantName}'.", taskName, tenant);
+                            _logger.LogError(ex, "Error while processing background task '{TaskName}' on tenant '{TenantName}'.", taskName, tenant);
                         }
                     });
                 }
@@ -196,12 +196,12 @@ namespace OrchardCore.Modules
                                 settings = await settingsProvider.GetSettingsAsync(task);
                             }
                         }
-                        catch (Exception e)
+                        catch (Exception ex) when (!ex.IsFatal())
                         {
-                            _logger.LogError(e, "Error while updating settings of background task '{TaskName}' on tenant '{TenantName}'.", taskName, tenant);
+                            _logger.LogError(ex, "Error while updating settings of background task '{TaskName}' on tenant '{TenantName}'.", taskName, tenant);
                         }
 
-                        settings = settings ?? task.GetDefaultSettings();
+                        settings ??= task.GetDefaultSettings();
 
                         if (scheduler.Released || !scheduler.Settings.Schedule.Equals(settings.Schedule))
                         {

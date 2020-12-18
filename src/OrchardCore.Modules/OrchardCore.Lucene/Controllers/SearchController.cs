@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Lucene.Net.QueryParsers.Classic;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Records;
@@ -32,6 +33,7 @@ namespace OrchardCore.Lucene.Controllers
         private readonly LuceneAnalyzerManager _luceneAnalyzerManager;
         private readonly ISearchQueryService _searchQueryService;
         private readonly ISession _session;
+        private readonly IStringLocalizer S;
         private readonly IEnumerable<IPermissionProvider> _permissionProviders;
         private readonly dynamic New;
         private readonly ILogger _logger;
@@ -45,6 +47,7 @@ namespace OrchardCore.Lucene.Controllers
             LuceneAnalyzerManager luceneAnalyzerManager,
             ISearchQueryService searchQueryService,
             ISession session,
+            IStringLocalizer<SearchController> stringLocalizer,
             IEnumerable<IPermissionProvider> permissionProviders,
             IShapeFactory shapeFactory,
             ILogger<SearchController> logger
@@ -58,6 +61,7 @@ namespace OrchardCore.Lucene.Controllers
             _luceneAnalyzerManager = luceneAnalyzerManager;
             _searchQueryService = searchQueryService;
             _session = session;
+            S = stringLocalizer;
             _permissionProviders = permissionProviders;
             New = shapeFactory;
             _logger = logger;
@@ -120,7 +124,6 @@ namespace OrchardCore.Lucene.Controllers
             // We Query Lucene index
             var analyzer = _luceneAnalyzerManager.CreateAnalyzer(await _luceneIndexSettingsService.GetIndexAnalyzerAsync(luceneIndexSettings.IndexName));
             var queryParser = new MultiFieldQueryParser(LuceneSettings.DefaultVersion, luceneSettings.DefaultSearchFields, analyzer);
-            var query = queryParser.Parse(QueryParser.Escape(viewModel.Terms));
 
             // Fetch one more result than PageSize to generate "More" links
             var start = 0;
@@ -137,7 +140,31 @@ namespace OrchardCore.Lucene.Controllers
                 end = Convert.ToInt32(pagerParameters.After) + pager.PageSize + 1;
             }
 
-            var contentItemIds = await _searchQueryService.ExecuteQueryAsync(query, searchSettings.SearchIndex, start, end);
+            var terms = viewModel.Terms;
+            if (!searchSettings.AllowLuceneQueriesInSearch)
+            {
+                terms = QueryParser.Escape(terms);
+            }
+
+            IList<string> contentItemIds;
+            try
+            {
+                var query = queryParser.Parse(terms);
+                contentItemIds = (await _searchQueryService.ExecuteQueryAsync(query, searchSettings.SearchIndex, start, end))
+                    .ToList();
+            }
+            catch (ParseException e)
+            {
+                ModelState.AddModelError("Terms", S["Incorrect query syntax."]);
+                _logger.LogError(e, "Incorrect Lucene search query syntax provided in search:");
+
+                // Return a SearchIndexViewModel without SearchResults or Pager shapes since there is an error.
+                return View(new SearchIndexViewModel
+                {
+                    Terms = viewModel.Terms,
+                    SearchForm = new SearchFormViewModel("Search__Form") { Terms = viewModel.Terms },
+                });
+            }
 
             // We Query database to retrieve content items.
             IQuery<ContentItem> queryDb;
@@ -155,7 +182,8 @@ namespace OrchardCore.Lucene.Controllers
                     .Take(pager.PageSize + 1);
             }
 
-            var containedItems = await queryDb.ListAsync();
+            // Sort the content items by their rank in the search results returned by Lucene.
+            var containedItems = (await queryDb.ListAsync()).OrderBy(x => contentItemIds.IndexOf(x.ContentItemId));
 
             // We set the PagerSlim before and after links
             if (pagerParameters.After != null || pagerParameters.Before != null)

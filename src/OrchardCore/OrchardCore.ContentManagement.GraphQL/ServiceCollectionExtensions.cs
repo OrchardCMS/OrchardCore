@@ -3,7 +3,9 @@ using OrchardCore.Apis.GraphQL;
 using OrchardCore.ContentManagement.GraphQL.Options;
 using OrchardCore.ContentManagement.GraphQL.Queries;
 using OrchardCore.ContentManagement.GraphQL.Queries.Types;
+using OrchardCore.ContentManagement.Records;
 using OrchardCore.Security.Permissions;
+using YesSql.Indexes;
 
 namespace OrchardCore.ContentManagement.GraphQL
 {
@@ -25,7 +27,15 @@ namespace OrchardCore.ContentManagement.GraphQL
 
             services.AddOptions<GraphQLContentOptions>();
 
+            services.AddWhereInputIndexPropertyProvider<ContentItemIndex>();
+
             return services;
+        }
+
+        public static void AddWhereInputIndexPropertyProvider<IIndexType>(this IServiceCollection services)
+            where IIndexType : MapIndex
+        {
+            services.AddSingleton<IIndexPropertyProvider, IndexPropertyProvider<IIndexType>>();
         }
 
         /// <summary>

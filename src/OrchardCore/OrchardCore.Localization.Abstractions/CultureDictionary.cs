@@ -1,12 +1,14 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 
 namespace OrchardCore.Localization
 {
     /// <summary>
     /// Represents a dictionary for a certain culture.
     /// </summary>
-    public class CultureDictionary
+    public class CultureDictionary : IEnumerable<CultureDictionaryRecord>
     {
         /// <summary>
         /// Creates a new instance of <see cref="CultureDictionary"/>.
@@ -34,16 +36,9 @@ namespace OrchardCore.Localization
         /// Gets the localized value.
         /// </summary>
         /// <param name="key">The resource key.</param>
-        /// <returns></returns>
-        public string this[string key] => this[key, null];
-
-        /// <summary>
-        /// Gets the localized value.
-        /// </summary>
-        /// <param name="key">The resource key.</param>
         /// <param name="count">The number to specify the pluralization form.</param>
         /// <returns></returns>
-        public string this[string key, int? count]
+        public string this[string key, int? count = null]
         {
             get
             {
@@ -60,7 +55,7 @@ namespace OrchardCore.Localization
                 var pluralForm = count.HasValue ? PluralRule(count.Value) : 0;
                 if (pluralForm >= translations.Length)
                 {
-                    throw new PluralFormNotFoundException($"Plural form '{pluralForm}' doesn't exist for the key '{key}' in the '{CultureName}' culture.");
+                    throw new PluralFormNotFoundException($"Plural form '{pluralForm}' doesn't exist for the key '{key}' in the '{CultureName}' culture.", new PluralForm(key, pluralForm, CultureInfo.GetCultureInfo(CultureName)));
                 }
 
                 return translations[pluralForm];
@@ -83,5 +78,15 @@ namespace OrchardCore.Localization
                 Translations[record.Key] = record.Translations;
             }
         }
+
+        public IEnumerator<CultureDictionaryRecord> GetEnumerator()
+        {
+            foreach (var item in Translations)
+            {
+                yield return new CultureDictionaryRecord(item.Key, null, item.Value);
+            }
+        }
+
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }
 }

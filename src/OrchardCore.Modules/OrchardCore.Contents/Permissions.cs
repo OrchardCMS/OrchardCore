@@ -24,7 +24,8 @@ namespace OrchardCore.Contents
         public static readonly Permission PreviewOwnContent = CommonPermissions.PreviewOwnContent;
         public static readonly Permission CloneContent = CommonPermissions.CloneContent;
         public static readonly Permission CloneOwnContent = CommonPermissions.CloneOwnContent;
-        public static readonly Permission GetApiContent = new Permission("GetApiContent", "View content via the api");
+        public static readonly Permission ListContent = CommonPermissions.ListContent;
+        public static readonly Permission AccessContentApi = new Permission("AccessContentApi", "Access content via the api");
 
         //public static readonly Permission MetaListContent = new Permission { ImpliedBy = new[] { EditOwnContent, PublishOwnContent, DeleteOwnContent } };
 
@@ -44,7 +45,8 @@ namespace OrchardCore.Contents
                 PreviewContent,
                 CloneContent,
                 CloneOwnContent,
-                GetApiContent
+                AccessContentApi,
+                ListContent
             }
             .AsEnumerable());
         }
@@ -54,30 +56,30 @@ namespace OrchardCore.Contents
             return new[] {
                 new PermissionStereotype {
                     Name = "Administrator",
-                    Permissions = new[] {PublishContent, EditContent, DeleteContent, PreviewContent, CloneContent, GetApiContent}
+                    Permissions = new[] { PublishContent, EditContent, DeleteContent, PreviewContent, CloneContent, AccessContentApi, ListContent }
                 },
                 new PermissionStereotype {
                     Name = "Editor",
-                    Permissions = new[] {PublishContent, EditContent, DeleteContent, PreviewContent, CloneContent, GetApiContent }
+                    Permissions = new[] { PublishContent, EditContent, DeleteContent, PreviewContent, CloneContent, ListContent }
                 },
                 new PermissionStereotype {
                     Name = "Moderator"
                 },
                 new PermissionStereotype {
                     Name = "Author",
-                    Permissions = new[] {PublishOwnContent, EditOwnContent, DeleteOwnContent, PreviewOwnContent, CloneOwnContent, GetApiContent }
+                    Permissions = new[] { PublishOwnContent, EditOwnContent, DeleteOwnContent, PreviewOwnContent, CloneOwnContent }
                 },
                 new PermissionStereotype {
                     Name = "Contributor",
-                    Permissions = new[] {EditOwnContent, PreviewOwnContent, CloneOwnContent, GetApiContent }
+                    Permissions = new[] { EditOwnContent, PreviewOwnContent, CloneOwnContent }
                 },
                 new PermissionStereotype {
                     Name = "Authenticated",
-                    Permissions = new[] {ViewContent, GetApiContent }
+                    Permissions = new[] { ViewContent }
                 },
                 new PermissionStereotype {
                     Name = "Anonymous",
-                    Permissions = new[] {ViewContent}
+                    Permissions = new[] { ViewContent }
                 },
             };
         }

@@ -5,6 +5,7 @@ using OrchardCore.Captcha.ActionFilters.Detection;
 using OrchardCore.Captcha.Services;
 using OrchardCore.ReCaptcha.Configuration;
 using OrchardCore.ReCaptcha.Services;
+using OrchardCore.ReCaptcha.TagHelpers;
 using Polly;
 
 namespace OrchardCore.ReCaptcha.Core
@@ -20,6 +21,7 @@ namespace OrchardCore.ReCaptcha.Core
             services.AddTransient<IConfigureOptions<ReCaptchaSettings>, ReCaptchaSettingsConfiguration>();
             services.AddTransient<CaptchaService, ReCaptchaService>();
             services.AddTransient<ReCaptchaService>();
+            services.AddTagHelpers<ReCaptchaTagHelper>();
 
             if (configure != null)
             {

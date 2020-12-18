@@ -2,9 +2,9 @@
   "name": "Agency",
   "displayName": "Agency",
   "description": "Ready to use company website.",
-  "author": "The Orchard Team",
-  "website": "https://orchardproject.net",
-  "version": "2.0",
+  "author": "The Orchard Core Team",
+  "website": "https://orchardcore.net",
+  "version": "1.0.0-rc2",
   "issetuprecipe": true,
   "categories": [ "default" ],
   "tags": [ "agency" ],
@@ -18,7 +18,6 @@
   "steps": [
     {
       "name": "feature",
-      "disable": [],
       "enable": [
         // SaaS
         "OrchardCore.HomeRoute",
@@ -50,11 +49,11 @@
         "OrchardCore.Flows",
         "OrchardCore.Layers",
         "OrchardCore.Lists",
-        "OrchardCore.Liquid",
         "OrchardCore.Markdown",
         "OrchardCore.Media",
         "OrchardCore.Menu",
         "OrchardCore.Queries",
+        "OrchardCore.Shortcodes.Templates",
         "OrchardCore.Title",
         "OrchardCore.Templates",
         "OrchardCore.Widgets",
@@ -72,7 +71,6 @@
     },
     {
       "name": "settings",
-      "Meta": "[file:text('Snippets/meta.html')]",
       "HomeRoute": {
         "Action": "Display",
         "Controller": "Item",
@@ -948,7 +946,7 @@
           "DisplayText": "Footer",
           "Latest": true,
           "Published": true,
-          "Owner": "[js: parameters('AdminUsername')]",
+          "Owner": "[js: parameters('AdminUserId')]",
           "Author": "[js: parameters('AdminUsername')]",
           "LayerMetadata": {
             "Layer": "Always",
@@ -984,71 +982,71 @@
       "Files": [
         {
           "TargetPath": "about/1.jpg",
-          "SourcePath": "../wwwroot/img/about/1.jpg"
+          "SourcePath": "../wwwroot/src/assets/img/about/1.jpg"
         },
         {
           "TargetPath": "about/2.jpg",
-          "SourcePath": "../wwwroot/img/about/2.jpg"
+          "SourcePath": "../wwwroot/src/assets/img/about/2.jpg"
         },
         {
           "TargetPath": "about/3.jpg",
-          "SourcePath": "../wwwroot/img/about/3.jpg"
+          "SourcePath": "../wwwroot/src/assets/img/about/3.jpg"
         },
         {
           "TargetPath": "about/4.jpg",
-          "SourcePath": "../wwwroot/img/about/4.jpg"
+          "SourcePath": "../wwwroot/src/assets/img/about/4.jpg"
         },
         {
           "TargetPath": "logos/creative-market.jpg",
-          "SourcePath": "../wwwroot/img/logos/creative-market.jpg"
+          "SourcePath": "../wwwroot/src/assets/img/logos/creative-market.jpg"
         },
         {
           "TargetPath": "logos/designmodo.jpg",
-          "SourcePath": "../wwwroot/img/logos/designmodo.jpg"
+          "SourcePath": "../wwwroot/src/assets/img/logos/designmodo.jpg"
         },
         {
           "TargetPath": "logos/envato.jpg",
-          "SourcePath": "../wwwroot/img/logos/envato.jpg"
+          "SourcePath": "../wwwroot/src/assets/img/logos/envato.jpg"
         },
         {
           "TargetPath": "logos/themeforest.jpg",
-          "SourcePath": "../wwwroot/img/logos/themeforest.jpg"
+          "SourcePath": "../wwwroot/src/assets/img/logos/themeforest.jpg"
         },
         {
           "TargetPath": "portfolio/01-full.jpg",
-          "SourcePath": "../wwwroot/img/portfolio/01-full.jpg"
+          "SourcePath": "../wwwroot/src/assets/img/portfolio/01-full.jpg"
         },
         {
           "TargetPath": "portfolio/02-full.jpg",
-          "SourcePath": "../wwwroot/img/portfolio/02-full.jpg"
+          "SourcePath": "../wwwroot/src/assets/img/portfolio/02-full.jpg"
         },
         {
           "TargetPath": "portfolio/03-full.jpg",
-          "SourcePath": "../wwwroot/img/portfolio/03-full.jpg"
+          "SourcePath": "../wwwroot/src/assets/img/portfolio/03-full.jpg"
         },
         {
           "TargetPath": "portfolio/04-full.jpg",
-          "SourcePath": "../wwwroot/img/portfolio/04-full.jpg"
+          "SourcePath": "../wwwroot/src/assets/img/portfolio/04-full.jpg"
         },
         {
           "TargetPath": "portfolio/05-full.jpg",
-          "SourcePath": "../wwwroot/img/portfolio/05-full.jpg"
+          "SourcePath": "../wwwroot/src/assets/img/portfolio/05-full.jpg"
         },
         {
           "TargetPath": "portfolio/06-full.jpg",
-          "SourcePath": "../wwwroot/img/portfolio/06-full.jpg"
+          "SourcePath": "../wwwroot/src/assets/img/portfolio/06-full.jpg"
         },
         {
           "TargetPath": "team/1.jpg",
-          "SourcePath": "../wwwroot/img/team/1.jpg"
+          "SourcePath": "../wwwroot/src/assets/img/team/1.jpg"
         },
         {
           "TargetPath": "team/2.jpg",
-          "SourcePath": "../wwwroot/img/team/2.jpg"
+          "SourcePath": "../wwwroot/src/assets/img/team/2.jpg"
         },
         {
           "TargetPath": "team/3.jpg",
-          "SourcePath": "../wwwroot/img/team/3.jpg"
+          "SourcePath": "../wwwroot/src/assets/img/team/3.jpg"
         }
       ]
     },
@@ -1062,7 +1060,7 @@
           "DisplayText": "Main Menu",
           "Latest": true,
           "Published": true,
-          "Owner": "[js: parameters('AdminUsername')]",
+          "Owner": "[js: parameters('AdminUserId')]",
           "Author": "[js: parameters('AdminUsername')]",
           "MenuPart": {},
           "TitlePart": {
@@ -1123,7 +1121,7 @@
           "DisplayText": "[js: parameters('SiteName')]",
           "Latest": true,
           "Published": true,
-          "Owner": "[js: parameters('AdminUsername')]",
+          "Owner": "[js: parameters('AdminUserId')]",
           "Author": "[js: parameters('AdminUsername')]",
           "LandingPage": {},
           "AutoroutePart": {
@@ -1675,7 +1673,35 @@
           "Content": "[file:text('Snippets/landingpage.liquid')]"
         }
       }
-    }
-
+    },
+    {
+      "name": "MediaProfiles",
+      "MediaProfiles": {
+        "medium": {
+          "Hint": "A medium image (480px x 480px)",
+          "Width": 480,
+          "Height": 480,
+          "Mode": 0,
+          "Format": 0,
+          "Quality": 100
+        },        
+        "small": {
+          "Hint": "A small image (240px x 240px)",
+          "Width": 240,
+          "Height": 240,
+          "Mode": 0,
+          "Format": 0,
+          "Quality": 100
+        },        
+        "extrasmall": {
+          "Hint": "A extra small image (160px x 160px)",
+          "Width": 160,
+          "Height": 160,
+          "Mode": 0,
+          "Format": 0,
+          "Quality": 100
+        }
+      }
+    }  
   ]
 }

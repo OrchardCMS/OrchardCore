@@ -5,7 +5,8 @@
     {% if imagePath == nil %}
         <header class="masthead" style="background-image: url('{{ "~/TheBlogTheme/img/post-bg.jpg" | href }}')">
     {% else %}
-        <header class="masthead" style="background-image: url('{{ imagePath | asset_url }}')">
+        {% assign anchor = Model.ContentItem.Content.BlogPost.Image.Anchors.first %}
+        <header class="masthead" style="background-image: url('{{ imagePath | asset_url | resize_url: profile:"banner", anchor: anchor }}')">
     {% endif %}
         <div class="overlay"></div>
         <div class="container">
@@ -17,7 +18,7 @@
                         <span class="meta">
                             {% assign format = "MMMM dd, yyyy" | t %}
                             {% assign dateTime = "DateTime" | shape_new: utc: Model.ContentItem.CreatedUtc, format: format | shape_stringify %}
-                            {{ "Posted by" | t }} <a href="#">{{ Model.ContentItem.Owner }}</a> {{ "on {0}" | t: dateTime | raw }}
+                            {{ "Posted by" | t }} <a href="#">{{ Model.ContentItem.Author }}</a> {{ "on {0}" | t: dateTime | raw }}
                         </span>
                     </div>
                 </div>
@@ -29,4 +30,4 @@
 {{ Model.Content.ContentsMetadata | shape_render }}
 {{ Model.Content.MarkdownBodyPart | shape_render }}
 {{ Model.Content.BlogPost-Category | shape_render }}
-{{ Model.Content.BlogPost-Tags-TaxonomyField_Display__Tags | shape_render }}
+{{ Model.Content.BlogPost-Tags | shape_render }}

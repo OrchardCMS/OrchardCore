@@ -19,7 +19,7 @@ namespace OrchardCore.Workflows.Models
         public string WorkflowTypeId { get; set; }
 
         /// <summary>
-        /// The correlation ID can be used to resume workflows that sre associated with specific objects, such as content items.
+        /// The correlation ID can be used to resume workflows that are associated with specific objects, such as content items.
         /// </summary>
         public string CorrelationId { get; set; }
 

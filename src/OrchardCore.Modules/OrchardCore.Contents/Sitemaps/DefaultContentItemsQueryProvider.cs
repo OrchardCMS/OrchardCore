@@ -25,7 +25,7 @@ namespace OrchardCore.Contents.Sitemaps
             _routeableContentTypeCoordinator = routeableContentTypeCoordinator;
         }
 
-        public async Task GetContentItems(ContentTypesSitemapSource source, ContentItemsQueryContext context)
+        public async Task GetContentItemsAsync(ContentTypesSitemapSource source, ContentItemsQueryContext context)
         {
             var routeableContentTypeDefinitions = _routeableContentTypeCoordinator.ListRoutableTypeDefinitions();
 

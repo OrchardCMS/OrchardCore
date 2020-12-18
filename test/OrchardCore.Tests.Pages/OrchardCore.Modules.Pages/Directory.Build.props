@@ -3,9 +3,5 @@
   <Import Project="..\..\..\src\OrchardCore.Build\OrchardCore.Commons.props" />
   <Import Project="..\..\..\src\OrchardCore\OrchardCore.Module.Targets\OrchardCore.Module.Targets.props" />
 
-  <PropertyGroup>
-    <DebugType>embedded</DebugType>
-    <EmbedAllSources>true</EmbedAllSources>
-  </PropertyGroup>
 
 </Project>

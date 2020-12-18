@@ -18,7 +18,7 @@ The following configuration values are used by default and can be customized:
 ```json
 {
    "OrchardCore": {
-    "OrchardCore.Media.Azure": {
+    "OrchardCore_Media_Azure": {
       // Set to your Azure Storage account connection string.
       "ConnectionString": "", 
       // Set to the Azure Blob container name. A container name must be a valid DNS name and conform to Azure container naming rules eg. lowercase only.
@@ -56,7 +56,7 @@ The `ContainerName` property and the `BasePath` property are the only templatabl
 ```json
 {
   "OrchardCore": {
-    "OrchardCore.Media.Azure": {
+    "OrchardCore_Media_Azure": {
       // Set to your Azure Storage account connection string.
       "ConnectionString": "", 
       // Optionally configure with liquid. A container name must be a valid DNS name and conform to Azure container naming rules eg. lowercase only.
@@ -74,7 +74,7 @@ The `ContainerName` property and the `BasePath` property are the only templatabl
 ```json
 {
   "OrchardCore": {
-    "OrchardCore.Media.Azure": {
+    "OrchardCore_Media_Azure": {
       // Set to your Azure Storage account connection string.
       "ConnectionString": "", 
       // Optionally configure with liquid. A container name must be a valid DNS name and conform to Azure container naming rules eg. lowercase only.

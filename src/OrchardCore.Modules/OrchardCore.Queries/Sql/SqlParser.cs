@@ -41,7 +41,7 @@ namespace OrchardCore.Queries.Sql
         {
             try
             {
-                var tree = new Irony.Parsing.Parser(language).Parse(sql);
+                var tree = new Parser(language).Parse(sql);
 
                 if (tree.HasErrors())
                 {
@@ -140,7 +140,7 @@ namespace OrchardCore.Queries.Sql
 
             if (!String.IsNullOrEmpty(_where))
             {
-                sqlBuilder.WhereAlso(_where);
+                sqlBuilder.WhereAnd(_where);
             }
 
             EvaluateGroupClause(selectStatement.ChildNodes[5]);
@@ -349,6 +349,17 @@ namespace OrchardCore.Queries.Sql
                     _builder.Append("AND ");
                     EvaluateExpression(parseTreeNode.ChildNodes[5]);
                     break;
+                case "inExpr":
+                    EvaluateExpression(parseTreeNode.ChildNodes[0]);
+                    _builder.Append(" ");
+                    if (parseTreeNode.ChildNodes[1].ChildNodes.Count > 0)
+                    {
+                        _builder.Append("NOT ");
+                    }
+                    _builder.Append("IN (");
+                    EvaluateInArgs(parseTreeNode.ChildNodes[3]);
+                    _builder.Append(")");
+                    break;
                 // Term and Tuple are transient, to they appear directly
                 case "Id":
                     EvaluateId(parseTreeNode);
@@ -373,12 +384,6 @@ namespace OrchardCore.Queries.Sql
                 case "parSelectStmt":
                     _builder.Append("(");
                     _builder.Append(EvaluateSelectStatement(parseTreeNode.ChildNodes[0]));
-                    _builder.Append(")");
-                    break;
-                case "inStmt":
-                    EvaluateExpression(parseTreeNode.ChildNodes[0]);
-                    _builder.Append(" IN (");
-                    EvaluateExpressionList(parseTreeNode.ChildNodes[2]);
                     _builder.Append(")");
                     break;
                 case "parameter":
@@ -418,6 +423,20 @@ namespace OrchardCore.Queries.Sql
                 case "*":
                     _builder.Append("*");
                     break;
+            }
+        }
+
+        private void EvaluateInArgs(ParseTreeNode inArgs)
+        {
+            if (inArgs.ChildNodes[0].Term.Name == "selectStatement")
+            {
+                // selectStatement
+                _builder.Append(EvaluateSelectStatement(inArgs.ChildNodes[0]));
+            }
+            else
+            {
+                // expressionList
+                EvaluateExpressionList(inArgs.ChildNodes[0]);
             }
         }
 

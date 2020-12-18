@@ -80,7 +80,7 @@ Configuration is done via the standard shell configuration, as follows.
 ```json
 {
   "OrchardCore": {
-    "OrchardCore.Apis.GraphQL": {
+    "OrchardCore_Apis_GraphQL": {
       "ExposeExceptions": true,
       "MaxDepth": 50, 
       "MaxComplexity": 100, 
