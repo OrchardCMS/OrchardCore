@@ -63,7 +63,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
 
             if (!string.IsNullOrWhiteSpace(options.Search))
             {
-                remoteInstances = remoteInstances.Where(x => x.Name.Contains(options.Search)).ToList();
+                remoteInstances = remoteInstances.Where(x => x.Name.Contains(options.Search, StringComparison.OrdinalIgnoreCase)).ToList();
             }
 
             var count = remoteInstances.Count();
@@ -89,6 +89,15 @@ namespace OrchardCore.Deployment.Remote.Controllers
             };
 
             return View(model);
+        }
+
+        [HttpPost, ActionName("Index")]
+        [FormValueRequired("submit.Filter")]
+        public ActionResult IndexFilterPOST(RemoteInstanceIndexViewModel model)
+        {
+            return RedirectToAction("Index", new RouteValueDictionary {
+                { "Options.Search", model.Options.Search }
+            });
         }
 
         public async Task<IActionResult> Create()
@@ -120,7 +129,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
             {
                 await _service.CreateRemoteInstanceAsync(model.Name, model.Url, model.ClientName, model.ApiKey);
 
-                _notifier.Success(H["Remote instance created successfully"]);
+                _notifier.Success(H["Remote instance created successfully."]);
                 return RedirectToAction(nameof(Index));
             }
 
@@ -178,7 +187,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
             {
                 await _service.UpdateRemoteInstance(model.Id, model.Name, model.Url, model.ClientName, model.ApiKey);
 
-                _notifier.Success(H["Remote instance updated successfully"]);
+                _notifier.Success(H["Remote instance updated successfully."]);
 
                 return RedirectToAction(nameof(Index));
             }
@@ -204,7 +213,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
 
             await _service.DeleteRemoteInstanceAsync(id);
 
-            _notifier.Success(H["Remote instance deleted successfully"]);
+            _notifier.Success(H["Remote instance deleted successfully."]);
 
             return RedirectToAction(nameof(Index));
         }

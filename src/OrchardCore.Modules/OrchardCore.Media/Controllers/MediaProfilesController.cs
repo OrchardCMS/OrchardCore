@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
@@ -69,7 +70,7 @@ namespace OrchardCore.Media.Controllers
 
             if (!string.IsNullOrWhiteSpace(options.Search))
             {
-                mediaProfiles = mediaProfiles.Where(x => x.Key.Contains(options.Search)).ToList();
+                mediaProfiles = mediaProfiles.Where(x => x.Key.Contains(options.Search, StringComparison.OrdinalIgnoreCase)).ToList();
             }
 
             var count = mediaProfiles.Count;
@@ -91,6 +92,15 @@ namespace OrchardCore.Media.Controllers
             };
 
             return View("Index", model);
+        }
+
+        [HttpPost, ActionName("Index")]
+        [FormValueRequired("submit.Filter")]
+        public ActionResult IndexFilterPOST(MediaProfileIndexViewModel model)
+        {
+            return RedirectToAction("Index", new RouteValueDictionary {
+                { "Options.Search", model.Options.Search }
+            });
         }
 
         public async Task<IActionResult> Create()
@@ -276,7 +286,7 @@ namespace OrchardCore.Media.Controllers
 
             await _mediaProfilesManager.RemoveMediaProfileAsync(name);
 
-            _notifier.Success(H["Media profile deleted successfully"]);
+            _notifier.Success(H["Media profile deleted successfully."]);
 
             return RedirectToAction(nameof(Index));
         }

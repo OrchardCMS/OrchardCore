@@ -3,17 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Metadata.Settings;
-using OrchardCore.Users.ViewModels;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Users.Models;
-using Microsoft.AspNetCore.Http;
+using OrchardCore.Users.ViewModels;
 
 namespace OrchardCore.Users.Drivers
 {
@@ -50,7 +50,7 @@ namespace OrchardCore.Users.Drivers
             var results = new List<IDisplayResult>();
             var userClaim = _httpContextAccessor.HttpContext.User;
 
-            foreach(var contentTypeDefinition in contentTypeDefinitions)
+            foreach (var contentTypeDefinition in contentTypeDefinitions)
             {
                 results.Add(Initialize<CustomUserSettingsEditViewModel>("CustomUserSettings", async model =>
                     {
@@ -60,7 +60,7 @@ namespace OrchardCore.Users.Drivers
                     })
                     .Location($"Content:10#{contentTypeDefinition.DisplayName}")
                     .Differentiator($"CustomUserSettings-{contentTypeDefinition.Name}")
-                    .RenderWhen(async () => await _authorizationService.AuthorizeAsync(userClaim, CustomUserSettingsPermissions.CreatePermissionForType(contentTypeDefinition))));
+                    .RenderWhen(() => _authorizationService.AuthorizeAsync(userClaim, CustomUserSettingsPermissions.CreatePermissionForType(contentTypeDefinition))));
             }
 
             return Task.FromResult<IDisplayResult>(Combine(results.ToArray()));
@@ -69,7 +69,7 @@ namespace OrchardCore.Users.Drivers
         public override async Task<IDisplayResult> UpdateAsync(User user, UpdateEditorContext context)
         {
             var userClaim = _httpContextAccessor.HttpContext.User;
-            foreach(var contentTypeDefinition in GetContentTypeDefinitions())
+            foreach (var contentTypeDefinition in GetContentTypeDefinitions())
             {
                 if (!await _authorizationService.AuthorizeAsync(userClaim, CustomUserSettingsPermissions.CreatePermissionForType(contentTypeDefinition)))
                 {

@@ -1,7 +1,10 @@
 @using OrchardCore.Twitter.Signin.ViewModels;
 @model TwitterSigninSettingsViewModel;
 
-<p class="alert alert-warning">@T["The current tenant will be reloaded when the settings are saved."]</p>
+<p class="alert alert-warning">
+    @T["The current tenant will be reloaded when the settings are saved."]
+    <i class="fa fa-book"></i> <a href="@(OrchardCore.Admin.Constants.DocsUrl)reference/modules/Twitter/#sign-in-with-twitter" target="_blank">@T["See documentation"]</a>
+</p>
 
 <h3>@T["Sign in with Twitter Settings"]</h3>
 
