@@ -14,15 +14,15 @@
 
 @if (hasEditPermission)
 {
-    <a edit-for="@contentItem" asp-route-returnUrl="@FullRequestPath" data-toggle="tooltip" title="@T["Edit"]" class="btn btn-sm text-primary"><i class="fa fa-edit"></i> <span class="ta-action-button">@T["Edit"]</span></a>
+    <a edit-for="@contentItem" asp-route-returnUrl="@FullRequestPath" data-toggle="tooltip" title="@T["Edit"]" class="btn btn-sm text-primary ta-action-button edit"><i class="fa fa-edit"></i> <span>@T["Edit"]</span></a>
 }
 
 @if (hasPublished && hasViewPermission)
 {
-    <a display-for="@contentItem" target="_blank" data-toggle="tooltip" title="@T["View"]" class="btn btn-sm text-success"><i class="fas fa-external-link-alt"></i> <span class="ta-action-button">@T["View"]</span></a>
+    <a display-for="@contentItem" target="_blank" data-toggle="tooltip" title="@T["View"]" class="btn btn-sm text-success ta-action-button view"><i class="fas fa-external-link-alt"></i> <span>@T["View"]</span></a>
 }
 @if (hasDraft && hasPreviewPermission)
 {
-    <a asp-action="Preview" asp-controller="Item" asp-route-area="OrchardCore.Contents" asp-route-contentItemId="@contentItem.ContentItemId" target="_blank" data-toggle="tooltip" title="@T["Preview Draft"]" class="btn btn-sm text-primary"><i class="fas fa-external-link-alt"></i> <span class="ta-action-button">@T["Preview Draft"]</span></a>
+    <a asp-action="Preview" asp-controller="Item" asp-route-area="OrchardCore.Contents" asp-route-contentItemId="@contentItem.ContentItemId" target="_blank" data-toggle="tooltip" title="@T["Preview Draft"]" class="btn btn-sm text-primary ta-action-button preview"><i class="fas fa-external-link-alt"></i> <span>@T["Preview Draft"]</span></a>
 }
 
