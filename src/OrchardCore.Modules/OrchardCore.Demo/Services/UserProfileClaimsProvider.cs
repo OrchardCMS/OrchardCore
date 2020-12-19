@@ -2,34 +2,24 @@ using System;
 using System.Globalization;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Options;
+using GraphQL;
 using OrchardCore.Demo.Models;
-using OrchardCore.Entities;
-using OrchardCore.Security;
 using OrchardCore.Users;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.Services;
 
 namespace OrchardCore.Demo.Services
 {
-    internal class DemoUserClaimsPrincipalFactory : DefaultUserClaimsPrincipalFactory
+    public class UserProfileClaimsProvider : IClaimsProvider
     {
-        public DemoUserClaimsPrincipalFactory(UserManager<IUser> userManager, RoleManager<IRole> roleManager,
-            IOptions<IdentityOptions> identityOptions) : base(userManager, roleManager, identityOptions)
+        public Task<ClaimsIdentity> GenerateAsync(IUser user, ClaimsIdentity claims)
         {
-        }
-
-        protected override async Task<ClaimsIdentity> GenerateClaimsAsync(IUser user)
-        {
-            var claims = await base.GenerateClaimsAsync(user);
-
             var u = user as User;
             var profile = u.As<UserProfile>();
 
             claims.AddClaim(new Claim("preferred_username", user.UserName));
 
-            var name = "";
+            var name = string.Empty;
             if (!string.IsNullOrEmpty(profile.FirstName))
             {
                 claims.AddClaim(new Claim("given_name", profile.FirstName));
@@ -52,7 +42,7 @@ namespace OrchardCore.Demo.Services
                 claims.AddClaim(new Claim("updated_at", ConvertToUnixTimestamp(profile.UpdatedAt).ToString(CultureInfo.InvariantCulture)));
             }
 
-            return claims;
+            return Task.FromResult(claims);
         }
 
         public static double ConvertToUnixTimestamp(DateTime date)
