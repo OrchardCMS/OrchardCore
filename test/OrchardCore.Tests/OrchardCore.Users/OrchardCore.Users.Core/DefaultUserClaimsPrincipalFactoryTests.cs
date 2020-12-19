@@ -3,6 +3,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Moq;
 using OrchardCore.Security;
@@ -26,6 +27,7 @@ namespace OrchardCore.Tests.OrchardCore.Users.Core
             userManager.Setup(m => m.GetUserIdAsync(user)).ReturnsAsync(user.UserId);
             userManager.Setup(m => m.GetUserNameAsync(user)).ReturnsAsync(user.UserName);
             userManager.Setup(m => m.GetEmailAsync(user)).ReturnsAsync(user.Email);
+
             if (emailVerified)
             {
                 userManager.Setup(m => m.IsEmailConfirmedAsync(user)).ReturnsAsync(emailVerified);
@@ -35,8 +37,10 @@ namespace OrchardCore.Tests.OrchardCore.Users.Core
 
             var options = new Mock<IOptions<IdentityOptions>>();
             options.Setup(a => a.Value).Returns(new IdentityOptions());
-
-            var factory = new DefaultUserClaimsPrincipalFactory(userManager.Object, roleManager, options.Object);
+            var services = new ServiceCollection();
+            services.AddScoped<IClaimsProvider, EmailClaimsProvider>();
+            IServiceProvider serviceProvider = services.BuildServiceProvider();
+            var factory = new DefaultUserClaimsPrincipalFactory(userManager.Object, roleManager, options.Object, serviceProvider);
 
             //Act
             var principal = await factory.CreateAsync(user);
