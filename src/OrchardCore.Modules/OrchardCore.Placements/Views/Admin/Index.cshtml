@@ -27,33 +27,33 @@
     </div>
 
     <ul class="list-group with-checkbox">
-        <li class="list-group-item bg-primary">
-            <div class="row">
-                <div class="form-group col mb-n1">
-                    <div class="custom-control custom-checkbox mt-2 mr-n2">
-                        <input type="checkbox" class="custom-control-input" id="select-all">
-                        <label class="custom-control-label" for="select-all" id="select-all-label" title="@T["Select All"]"></label>
-                        <label id="items" for="select-all">@T.Plural(Model.ShapePlacements.Count, "1 item", "{0} items")<span class="text-muted" title="@T["Items {0} to {1}", startIndex, endIndex]">@T.Plural((int)Model.Pager.TotalItemCount, " / {0} item in total", " / {0} items in total")</span></label>
-                        <label id="selected-items" class="text-muted" for="select-all"></label>
-                    </div>
-                </div>
-                <div class="form-group col-2 mb-n1" style="display:none" id="actions">
-                    <span class="dropdown float-right mt-1">
-                        <button class="btn btn-sm btn-light dropdown-toggle" type="button" id="bulk-action-menu-button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            @T["Actions"]
-                        </button>
-                        <span class="dropdown-menu dropdown-menu-right" aria-labelledby="bulk-action-menu-button">
-                            @foreach (var item in Model.Options.ContentsBulkAction)
-                            {
-                                <a class="dropdown-item" href="javascript:void(0)" data-action="@item.Value" data-title="@T["Bulk Action"]" data-message="@T["Are you sure you want to {0} these items?", @item.Text.ToLower()]">@item.Text</a>
-                            }
-                        </span>
-                    </span>
-                </div>
-            </div>
-        </li>
         @if (Model.ShapePlacements.Any())
         {
+            <li class="list-group-item bg-primary">
+                <div class="row">
+                    <div class="form-group col mb-n1">
+                        <div class="custom-control custom-checkbox mt-2 mr-n2">
+                            <input type="checkbox" class="custom-control-input" id="select-all">
+                            <label class="custom-control-label" for="select-all" id="select-all-label" title="@T["Select All"]"></label>
+                            <label id="items" for="select-all">@T.Plural(Model.ShapePlacements.Count, "1 item", "{0} items")<span class="text-muted" title="@T["Items {0} to {1}", startIndex, endIndex]">@T.Plural((int)Model.Pager.TotalItemCount, " / {0} item in total", " / {0} items in total")</span></label>
+                            <label id="selected-items" class="text-muted" for="select-all"></label>
+                        </div>
+                    </div>
+                    <div class="form-group col-2 mb-n1" style="display:none" id="actions">
+                        <span class="dropdown float-right mt-1">
+                            <button class="btn btn-sm btn-light dropdown-toggle" type="button" id="bulk-action-menu-button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                @T["Actions"]
+                            </button>
+                            <span class="dropdown-menu dropdown-menu-right" aria-labelledby="bulk-action-menu-button">
+                                @foreach (var item in Model.Options.ContentsBulkAction)
+                                {
+                                    <a class="dropdown-item" href="javascript:void(0)" data-action="@item.Value" data-title="@T["Bulk Action"]" data-message="@T["Are you sure you want to {0} these items?", @item.Text.ToLower()]">@item.Text</a>
+                                }
+                            </span>
+                        </span>
+                    </div>
+                </div>
+            </li>
             @foreach (var entry in Model.ShapePlacements)
             {
                 <li class="list-group-item">
