@@ -8,7 +8,6 @@
     var hasDraft = contentItem.HasDraft();
     var hasDeletePermission = await AuthorizationService.AuthorizeAsync(User, CommonPermissions.DeleteContent, contentItem);
     var hasEditPermission = await AuthorizationService.AuthorizeAsync(User, CommonPermissions.EditContent, contentItem);
-    var hasPreviewPermission = await AuthorizationService.AuthorizeAsync(User, CommonPermissions.PreviewContent, contentItem);
     var hasPublishPermission = await AuthorizationService.AuthorizeAsync(User, CommonPermissions.PublishContent, contentItem);
     var hasClonePermission = await AuthorizationService.AuthorizeAsync(User, CommonPermissions.CloneContent, contentItem);
 }
@@ -20,12 +19,7 @@
         <a asp-action="Publish" asp-controller="Admin" asp-route-area="OrchardCore.Contents" asp-route-contentItemId="@contentItem.ContentItemId" asp-route-returnUrl="@FullRequestPath" itemprop="UnsafeUrl" class="dropdown-item btn-sm">@T["Publish Draft"]</a>
     }
 
-    if (hasPreviewPermission)
-    {
-        <a asp-action="Preview" asp-controller="Item" asp-route-area="OrchardCore.Contents" asp-route-contentItemId="@contentItem.ContentItemId" class="dropdown-item btn-sm">@T["Preview Draft"]</a>
-    }
-
-    if (hasPublishPermission || hasPreviewPermission)
+    if (hasPublishPermission)
     {
         <div class="dropdown-divider"></div>
     }

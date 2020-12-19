@@ -1,10 +1,11 @@
-@inject DarkModeService DarkModeService;
+﻿@inject DarkModeService DarkModeService;
+@inject IOptions<AdminOptions> AdminOptions;
 @{
     var adminSettings = Site.As<AdminSettings>();
     var darkMode = await DarkModeService.IsDarkModeAsync();
 }
 <!DOCTYPE html>
-<html lang="@Orchard.CultureName()" dir="@Orchard.CultureDir()" data-theme="@DarkModeService.CurrentTheme">
+<html lang="@Orchard.CultureName()" dir="@Orchard.CultureDir()" data-theme="@DarkModeService.CurrentTheme" data-darkmode="@adminSettings.DisplayDarkMode">
 <head>
     <title>@RenderTitleSegments(Site.SiteName, "before")</title>
     <meta charset="utf-8">
@@ -30,49 +31,65 @@
 <body class="preload">
     <div class="ta-wrapper">
         <div class="ta-navbar-top navbar-expand-lg bg-primary">
-            <a class="ta-navbar-brand" href="@Url.Content("~/")" target="_blank">@Site.SiteName</a>
+            <a class="ta-navbar-brand" href="@Url.Content("~/" + AdminOptions.Value.AdminUrlPrefix)"><img src="/TheAdmin/logo.png" /><span>@Site.SiteName</span></a>
             <div class="mr-auto">
-                @if(adminSettings.DisplayTitlesInTopbar)
+                @if (adminSettings.DisplayTitlesInTopbar)
                 {
-                @await RenderSectionAsync("Title", required: false)
+                    @await RenderSectionAsync("Title", required: false)
                 }
             </div>
-            <div id="navbar-links">
-                @await RenderSectionAsync("NavbarTop", required: false)
+            @await RenderSectionAsync("NavbarTop", required: false)
+            <button class="navbar-toggler pull-right" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="@T["Toggle navigation"]">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse flex-grow-0" id="navbarNav">
+                <ul class="navbar-nav">
+                    @await RenderSectionAsync("NavbarLinks", required: false)
+                    <li class="nav-item">
+                        @if (adminSettings.DisplayDarkMode)
+                        {
+                            <a id="btn-darkmode" class="nav-link" data-toggle="tooltip" title="@(darkMode ? T["Light mode"] : T["Dark mode"])" role="button">
+                                @if (darkMode)
+                                {
+                                    <i class="fas fa-fw fa-sun"></i>
+                                }
+                                else
+                                {
+                                    <i class="fas fa-fw fa-moon"></i>
+                                }
+                                <span class="d-inline d-md-none">@T["Dark mode"]</span>
+                            </a>
+                        }
+                    </li>
+                    <li class="nav-item">
+                        <a href="@Url.Content("~/")" class="nav-link" target="_blank" data-toggle="tooltip" title="@T["Visit Site"]">
+                            <i class="fa fa-fw fa-external-link"></i>
+                            <span class="d-inline d-md-none">@T["Visit Site"]</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">@await DisplayAsync(await New.UserMenu())</li>
+                </ul>
             </div>
-            @await DisplayAsync(await New.UserMenu())
-            @if (adminSettings.DisplayDarkMode)
-            {
-                <a id="btn-darkmode" class="btn btn-sm btn-light ml-2" title="@T["Dark mode"]">
-                    @if (darkMode)
-                    {
-                        <i class="fas fa-sun"></i>
-                    }
-                    else
-                    {
-                        <i class="fas fa-moon"></i>
-                    }
-                </a>
-            }
         </div>
+    </div>
 
-        <div id="ta-left-sidebar" class="d-flex flex-column justify-content-between align-items-stretch">
-            @await RenderSectionAsync("Navigation", required: false)
-            <div class="footer">
-                <button class="leftbar-compactor" type="button" title="@T["Collapse / expand menu"]"></button>
-            </div>
+    <div id="ta-left-sidebar" class="d-flex flex-column justify-content-between align-items-stretch">
+        @await RenderSectionAsync("Navigation", required: false)
+        <div class="footer">
+            <button class="leftbar-compactor" type="button" title="@T["Collapse / expand menu"]"></button>
         </div>
+    </div>
 
-        <div class="ta-content">
-            @await RenderSectionAsync("Header", required: false)
-            @await RenderSectionAsync("Messages", required: false)
-            @await RenderSectionAsync("Breadcrumbs", required: false)            
-            @if(!adminSettings.DisplayTitlesInTopbar)
-            {
+    <div class="ta-content">
+        @await RenderSectionAsync("Header", required: false)
+        @await RenderSectionAsync("Messages", required: false)
+        @await RenderSectionAsync("Breadcrumbs", required: false)
+        @if (!adminSettings.DisplayTitlesInTopbar)
+        {
             @await RenderSectionAsync("Title", required: false)
-            }
-            @await RenderBodyAsync()
-        </div>
+        }
+        @await RenderBodyAsync()
+    </div>
     </div>
 
     @await RenderSectionAsync("Footer", required: false)

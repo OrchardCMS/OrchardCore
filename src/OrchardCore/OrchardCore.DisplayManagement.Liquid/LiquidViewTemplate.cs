@@ -47,6 +47,7 @@ namespace OrchardCore.DisplayManagement.Liquid
 
             TemplateContext.GlobalMemberAccessStrategy.Register<Shape>("*", new ShapeAccessor());
             TemplateContext.GlobalMemberAccessStrategy.Register<ZoneHolding>("*", new ShapeAccessor());
+            TemplateContext.GlobalMemberAccessStrategy.Register<ShapeMetadata>();
 
             Factory.RegisterTag<RenderBodyTag>("render_body");
             Factory.RegisterTag<RenderSectionTag>("render_section");

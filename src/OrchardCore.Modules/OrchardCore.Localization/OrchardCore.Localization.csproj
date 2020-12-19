@@ -3,6 +3,14 @@
   <PropertyGroup>
     <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
+    <!-- NuGet properties-->
+    <Title>OrchardCore Localization</Title>
+    <Description>$(OCFrameworkDescription)
+    
+    Provides the infrastructure necessary to support localized string using the PO (Portable Object) localization file format.
+    It also supports plural forms.
+    </Description>
+    <PackageTags>$(PackageTags) OrchardCoreFramework Localization</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
