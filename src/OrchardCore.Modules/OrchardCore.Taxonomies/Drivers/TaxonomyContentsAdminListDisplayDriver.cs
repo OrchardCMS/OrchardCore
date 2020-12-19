@@ -100,6 +100,7 @@ namespace OrchardCore.Taxonomies.Drivers
                     })
                     .Location("Actions:40." + position.ToString())
                     .Prefix("Taxonomy" + taxonomy.ContentItemId)
+                    .Differentiator("Taxonomy" + taxonomy.ContentItemId)
                 );
 
                 position += 5;
