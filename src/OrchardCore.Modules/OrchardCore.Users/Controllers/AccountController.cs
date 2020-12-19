@@ -102,7 +102,10 @@ namespace OrchardCore.Users.Controllers
                     return RedirectToAction(nameof(DefaultExternalLogin), new { protectedToken, returnUrl });
                 }
             }
-
+            foreach (var errorMessage in TempData.Where(x => x.Key.StartsWith("error")).Select(x => x.Value.ToString()))
+            {
+                ModelState.AddModelError(string.Empty, errorMessage);
+            }
             ViewData["ReturnUrl"] = returnUrl;
             return View();
         }
@@ -211,7 +214,10 @@ namespace OrchardCore.Users.Controllers
                             }
                         }
                     }
-                    ModelState.AddModelError(string.Empty, S["Invalid login attempt."]);
+                    else
+                    {
+                        ModelState.AddModelError(string.Empty, S["Invalid login attempt."]);
+                    }
                     await _accountEvents.InvokeAsync((e, model) => e.LoggingInFailedAsync(model.UserName), model, _logger);
                 }
             }
@@ -374,14 +380,16 @@ namespace OrchardCore.Users.Controllers
             if (remoteError != null)
             {
                 _logger.LogError("Error from external provider: {Error}", remoteError);
-                return RedirectToAction(nameof(Login));
+                ModelState.AddModelError("", S["An error occured in external provider"]);
+                return RedirectToLogin(returnUrl);
             }
 
             var info = await _signInManager.GetExternalLoginInfoAsync();
             if (info == null)
             {
                 _logger.LogError("Could not get external login info.");
-                return RedirectToAction(nameof(Login));
+                ModelState.AddModelError("", S["An error occured in external provider"]);
+                return RedirectToLogin(returnUrl);
             }
 
             var registrationSettings = (await _siteService.GetSiteSettingsAsync()).As<RegistrationSettings>();
@@ -389,7 +397,7 @@ namespace OrchardCore.Users.Controllers
 
             if (user != null)
             {
-                if (!await AddConfirmEmailError(user))
+                if (!await AddConfirmEmailError(user) && !AddUserEnabledError(user))
                 {
                     await _accountEvents.InvokeAsync((e, user, modelState) => e.LoggingInAsync(user.UserName, (key, message) => modelState.AddModelError(key, message)), user, ModelState, _logger);
 
@@ -420,7 +428,7 @@ namespace OrchardCore.Users.Controllers
                     ViewData["UserName"] = user.UserName;
                     ViewData["Email"] = email;
 
-                    return View("LinkExternalLogin");
+                    return View(nameof(LinkExternalLogin));
                 }
                 else
                 {
@@ -477,7 +485,7 @@ namespace OrchardCore.Users.Controllers
                                     else
                                     {
                                         ModelState.AddModelError(string.Empty, S["Invalid login attempt."]);
-                                        return View(nameof(Login));
+                                        return RedirectToLogin(returnUrl);
                                     }
                                 }
                                 AddIdentityErrors(identityResult);
@@ -487,7 +495,21 @@ namespace OrchardCore.Users.Controllers
                     }
                 }
             }
-            return RedirectToAction(nameof(Login));
+            return RedirectToLogin(returnUrl);
+        }
+
+        private RedirectToActionResult RedirectToLogin(string returnUrl)
+        {
+            var iix = 0;
+            foreach (var state in ModelState.Where(x => x.Key == string.Empty))
+            {
+                foreach (var item in state.Value.Errors)
+                {
+                    iix++;
+                    TempData[$"error_{iix}"] = item.ErrorMessage;
+                }
+            }
+            return RedirectToAction(nameof(Login), new { returnUrl });
         }
 
         [HttpPost]
