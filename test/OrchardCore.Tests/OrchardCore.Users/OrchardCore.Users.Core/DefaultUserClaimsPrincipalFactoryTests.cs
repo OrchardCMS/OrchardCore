@@ -38,7 +38,7 @@ namespace OrchardCore.Tests.OrchardCore.Users.Core
             var options = new Mock<IOptions<IdentityOptions>>();
             options.Setup(a => a.Value).Returns(new IdentityOptions());
             var services = new ServiceCollection();
-            services.AddScoped<IClaimsProvider, EmailClaimsProvider>();
+
             IServiceProvider serviceProvider = services.BuildServiceProvider();
             var factory = new DefaultUserClaimsPrincipalFactory(userManager.Object, roleManager, options.Object, serviceProvider);
 
