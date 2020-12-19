@@ -2,6 +2,7 @@
 @{
     int startIndex = (Model.Pager.Page - 1) * (Model.Pager.PageSize) + 1;
     int endIndex = startIndex + Model.Templates.Count - 1;
+    var formAction = Model.Options.AdminTemplates ? "admin" : "index";
 }
 
 @if (Model.Options.AdminTemplates)
@@ -14,7 +15,7 @@ else
 }
 
 @* the form is necessary to generate and antiforgery token for the delete action *@
-<form asp-action="Index">
+<form asp-action="@formAction">
     <input type="submit" name="submit.Filter" id="submitFilter" class="d-none" />
     <input asp-for="Options.AdminTemplates" type="hidden" />
     <input asp-for="Options.BulkAction" type="hidden" />
