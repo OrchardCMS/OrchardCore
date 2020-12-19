@@ -38,38 +38,24 @@
                     @await RenderSectionAsync("Title", required: false)
                 }
             </div>
-            @await RenderSectionAsync("NavbarTop", required: false)
-            <button class="navbar-toggler pull-right" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="@T["Toggle navigation"]">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse flex-grow-0" id="navbarNav">
-                <ul class="navbar-nav">
-                    @await RenderSectionAsync("NavbarLinks", required: false)
-                    <li class="nav-item">
-                        @if (adminSettings.DisplayDarkMode)
-                        {
-                            <a id="btn-darkmode" class="nav-link" data-toggle="tooltip" title="@(darkMode ? T["Light mode"] : T["Dark mode"])" role="button">
-                                @if (darkMode)
-                                {
-                                    <i class="fas fa-fw fa-sun"></i>
-                                }
-                                else
-                                {
-                                    <i class="fas fa-fw fa-moon"></i>
-                                }
-                                <span class="d-inline d-md-none">@T["Dark mode"]</span>
-                            </a>
-                        }
-                    </li>
-                    <li class="nav-item">
-                        <a href="@Url.Content("~/")" class="nav-link" target="_blank" data-toggle="tooltip" title="@T["Visit Site"]">
-                            <i class="fa fa-fw fa-external-link"></i>
-                            <span class="d-inline d-md-none">@T["Visit Site"]</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">@await DisplayAsync(await New.UserMenu())</li>
-                </ul>
-            </div>
+            @await RenderSectionAsync("NavbarTop", required: false)           
+            @if (adminSettings.DisplayDarkMode)
+            {
+                <a id="btn-darkmode" class="ml-3" data-toggle="tooltip" title="@(darkMode ? T["Light mode"] : T["Dark mode"])" role="button">
+                    @if (darkMode)
+                    {
+                        <i class="fas fa-sun"></i>
+                    }
+                    else
+                    {
+                        <i class="fas fa-moon"></i>
+                    }
+                </a>
+            }
+            <a href="@Url.Content("~/")" class="ml-3" target="_blank" data-toggle="tooltip" title="@T["Visit Site"]">
+                <i class="fa fa-fw fa-external-link"></i>
+            </a>
+            @await DisplayAsync(await New.UserMenu())
         </div>
     </div>
 
