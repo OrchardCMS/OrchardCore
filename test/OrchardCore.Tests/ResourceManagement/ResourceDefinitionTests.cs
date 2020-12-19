@@ -23,6 +23,7 @@ namespace OrchardCore.Tests.ResourceManagement
         [Theory]
         [InlineData("")]
         [InlineData("/tenant")]
+        [InlineData("/virtualpath/tenant")]
         public void GetScriptResourceWithUrl(string applicationPath)
         {
             var resourceDefinition = _resourceManifest.DefineScript("foo")
@@ -38,7 +39,6 @@ namespace OrchardCore.Tests.ResourceManagement
 
         [Theory]
         [InlineData("/base")]
-        [InlineData("https://base.com")]
         public void GetScriptResourceWithBasePath(string basePath)
         {
             var resourceDefinition = _resourceManifest.DefineScript("foo")
@@ -55,6 +55,7 @@ namespace OrchardCore.Tests.ResourceManagement
         [Theory]
         [InlineData("")]
         [InlineData("/tenant")]
+        [InlineData("/virtualpath/tenant")]
         public void GetScriptResourceWithDebugUrl(string applicationPath)
         {
             var resourceDefinition = _resourceManifest.DefineScript("foo")
@@ -71,6 +72,7 @@ namespace OrchardCore.Tests.ResourceManagement
         [Theory]
         [InlineData("")]
         [InlineData("/tenant")]
+        [InlineData("/virtualpath/tenant")]
         public void GetScriptResourceWithCdnUrl(string applicationPath)
         {
             var resourceDefinition = _resourceManifest.DefineScript("foo")
@@ -87,6 +89,7 @@ namespace OrchardCore.Tests.ResourceManagement
         [Theory]
         [InlineData("")]
         [InlineData("/tenant")]
+        [InlineData("/virtualpath/tenant")]
         public void GetScriptResourceWithDebugCdnUrl(string applicationPath)
         {
             var resourceDefinition = _resourceManifest.DefineScript("foo")
@@ -124,6 +127,7 @@ namespace OrchardCore.Tests.ResourceManagement
         [Theory]
         [InlineData("")]
         [InlineData("/tenant")]
+        [InlineData("/virtualpath/tenant")]
         public void GetScriptResourceWithInlineContent(string applicationPath)
         {
             var resourceDefinition = _resourceManifest.DefineScript("foo")
@@ -140,6 +144,7 @@ namespace OrchardCore.Tests.ResourceManagement
         [Theory]
         [InlineData("")]
         [InlineData("/tenant")]
+        [InlineData("/virtualpath/tenant")]
         public void GetStyleResourceWithUrl(string applicationPath)
         {
             var resourceDefinition = _resourceManifest.DefineStyle("foo")
@@ -158,6 +163,7 @@ namespace OrchardCore.Tests.ResourceManagement
         [Theory]
         [InlineData("")]
         [InlineData("/tenant")]
+        [InlineData("/virtualpath/tenant")]
         public void GetStyleResourceWithDebugUrl(string applicationPath)
         {
             var resourceDefinition = _resourceManifest.DefineStyle("foo")
@@ -176,6 +182,7 @@ namespace OrchardCore.Tests.ResourceManagement
         [Theory]
         [InlineData("")]
         [InlineData("/tenant")]
+        [InlineData("/virtualpath/tenant")]
         public void GetStyleResourceWithCdnUrl(string applicationPath)
         {
             var resourceDefinition = _resourceManifest.DefineStyle("foo")
@@ -217,6 +224,7 @@ namespace OrchardCore.Tests.ResourceManagement
         [Theory]
         [InlineData("")]
         [InlineData("/tenant")]
+        [InlineData("/virtualpath/tenant")]
         public void GetStyleResourceWithDebugCdnUrl(string applicationPath)
         {
             var resourceDefinition = _resourceManifest.DefineStyle("foo")
@@ -235,6 +243,7 @@ namespace OrchardCore.Tests.ResourceManagement
         [Theory]
         [InlineData("")]
         [InlineData("/tenant")]
+        [InlineData("/virtualpath/tenant")]
         public void GetStyleResourceWithAttributes(string applicationPath)
         {
             var resourceDefinition = _resourceManifest.DefineStyle("foo")
@@ -255,6 +264,7 @@ namespace OrchardCore.Tests.ResourceManagement
         [Theory]
         [InlineData("")]
         [InlineData("/tenant")]
+        [InlineData("/virtualpath/tenant")]
         public void GetStyleResourceWithInlineContent(string applicationPath)
         {
             var resourceDefinition = _resourceManifest.DefineStyle("foo")
