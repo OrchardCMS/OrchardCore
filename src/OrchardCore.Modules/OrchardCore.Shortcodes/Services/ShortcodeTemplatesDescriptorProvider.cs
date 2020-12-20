@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -27,6 +26,6 @@ namespace OrchardCore.Shortcodes.Services
                     Usage = kvp.Value.Usage,
                     Categories = kvp.Value.Categories
                 });
-            }
+        }
     }
 }

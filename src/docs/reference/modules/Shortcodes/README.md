@@ -35,10 +35,10 @@ Shortcode templates are designed to be able to override a code based Shortcode o
 
 | Parameter | Value |
 | --------- | ----------- |
-| `Name` | [display_text] |
+| `Name` | display_text |
 | `Hint` | Returns the display text of the content item. |
 | `Usage` | [display_text] |
-| `Content` | `{{ Context.ContentItem.DisplayText }}`<br>`{{ More}}` |
+| `Content` | `{{ Context.ContentItem.DisplayText }}`<br>`{{ More }}` |
 
 !!! note
     The `ContentItem` `Context` is only available when the caller, i.e. an `HtmlBodyPart`, has passed the `ContentItem` value to the `Context`. 
@@ -47,7 +47,7 @@ Shortcode templates are designed to be able to override a code based Shortcode o
 
 | Parameter | Value |
 | --------- | ----------- |
-| `Name` | [site_name] |
+| `Name` | site_name |
 | `Hint` | Returns the site name. |
 | `Usage` | [site_name] |
 | `Content` | `{{ Site.SiteName }}` |
@@ -56,7 +56,7 @@ Shortcode templates are designed to be able to override a code based Shortcode o
 
 | Parameter | Value |
 | --------- | ----------- |
-| `Name` | [primary] |
+| `Name` | primary |
 | `Hint` | Formats text in the themes primary color. |
 | `Usage` | [primary text]&lt;br&lt;[primary]text[/primary] |
 | `Content` | `{% capture output %}`<br>`{% if Args.Text != nil %}`<br>`<span class="text-primary">{{Args.Text}}</span>`<br>`{% else %}`<br>`<span class="text-primary">{{Content}}</span>`<br>`{% endif %}`<br>`{% endcapture %}`<br>`{{ output | sanitize | raw }}` |
@@ -73,7 +73,7 @@ Shortcodes can be registered in code via a `ShortcodeDelegate` using the `AddSho
 | `Shortcode` | `ShortcodeDelegate` | The Shortcode Delegate. |
 | `Describe` | `Action<ShortcodeOption>` | Optionally a Description of the Shortcode. |
 
-In this example we register a `[bold]` Shortcode Delegate and describe the Shortcode.
+In this example, we register a `[bold]` Shortcode Delegate and describe the Shortcode.
 
 ``` csharp
 services.AddShortcode("bold", (args, content, ctx) => {
@@ -124,6 +124,24 @@ services.AddShortcode<ImageShortcodeProvider>("image", describe => {
     When upgrading from version `1.0.0-rc2-13450` you may need to re-enable the Shortcodes feature, through _Configuration -> Features_
 
     The Shortcode Templates feature is only available from the [Preview Feed](../../../getting-started/preview-package-source)
+
+## Available Shortcodes
+
+### `[locale]`
+
+The `locale` shortcode allows you to conditionally render content in the specified language. Output is based on the current thread culture.
+This shortcode is accessible when the `OrchardCore.Localization` module is enabled. 
+
+Example
+```
+[locale en]English Text[/locale][locale fr]French Text[/locale]
+```
+
+By default, the shortcode will render the content if the current locale is a parent of the specified language. 
+For example, if the current locale is `en-CA` and you specified this shortcode: `[locale en]English Text[/locale]` The output will be `English Text`.
+You can disable this behavior by passing `false` as the second argument of the shortcode. 
+`[locale en false]English Text[/locale]` would render nothing if the current culture is not exactly `en`.
+
 
 ## Video
 

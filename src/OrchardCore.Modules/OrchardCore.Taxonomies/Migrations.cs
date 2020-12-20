@@ -51,11 +51,11 @@ namespace OrchardCore.Taxonomies
                 .Column<string>("TermContentItemId", column => column.WithLength(26))
             );
 
-            SchemaBuilder.AlterTable(nameof(TaxonomyIndex), table => table
+            SchemaBuilder.AlterIndexTable<TaxonomyIndex>(table => table
                 .CreateIndex("IDX_TaxonomyIndex_List", "ContentType", "ContentPart", "ContentField")
             );
 
-            SchemaBuilder.AlterTable(nameof(TaxonomyIndex), table => table
+            SchemaBuilder.AlterIndexTable<TaxonomyIndex>(table => table
                 .CreateIndex("IDX_TaxonomyIndex_Search", "TermContentItemId")
             );
 

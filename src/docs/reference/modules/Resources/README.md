@@ -52,21 +52,21 @@ The `OrchardCore.Resources` module provides some commonly used ones:
 | jquery.easing         | Script | 1.4.1         | -              |
 | jquery-resizable-dom  | Script | 0.35.0        | -              |
 | popper                | Script | 1.16.1        | -              |
-| bootstrap             | Script | 3.4.0, 4.5.2  | jQuery, Popper |
-| bootstrap             | Style  | 3.4.0, 4.5.2  | -              |
+| bootstrap             | Script | 3.4.0, 4.5.3  | jQuery, Popper |
+| bootstrap             | Style  | 3.4.0, 4.5.3  | -              |
 | bootstrap-select      | Script | 1.13.18       | -              |
 | bootstrap-select      | Style  | 1.13.18       | -              |
 | bootstrap-slider      | Script | 11.0.2        | -              |
 | bootstrap-slider      | Style  | 11.0.2        | -              |
-| codemirror            | Script | 5.58.0        | -              |
-| codemirror            | Style  | 5.58.0        | -              |
-| font-awesome          | Style  | 4.7.0, 5.15.0 | -              |
-| font-awesome          | Script | 5.15.0        | -              |
-| font-awesome-v4-shims | Script | 5.15.0        | -              |
+| codemirror            | Script | 5.58.3        | -              |
+| codemirror            | Style  | 5.58.3        | -              |
+| font-awesome          | Style  | 4.7.0, 5.15.1 | -              |
+| font-awesome          | Script | 5.15.1        | -              |
+| font-awesome-v4-shims | Script | 5.15.1        | -              |
 | Sortable              | Script | 1.10.2        | -              |
-| trumbowyg             | Script | 2.21.0        | -              |
+| trumbowyg             | Script | 2.23.0        | -              |
 | vue-multiselect       | Script | 2.1.6         | -              |
-| vuedraggable          | Script | 2.24.1        | Sortable       |
+| vuedraggable          | Script | 2.24.3        | Sortable       |
 
 ### Registering a Resource Manifest
 

@@ -32,7 +32,7 @@ namespace OrchardCore.Roles.Recipes
 
             foreach (var importedRole in model.Roles)
             {
-                if (string.IsNullOrWhiteSpace(importedRole.Name))
+                if (String.IsNullOrWhiteSpace(importedRole.Name))
                     continue;
 
                 var role = (Role)await _roleManager.FindByNameAsync(importedRole.Name);
@@ -43,6 +43,7 @@ namespace OrchardCore.Roles.Recipes
                     role = new Role { RoleName = importedRole.Name };
                 }
 
+                role.RoleDescription = importedRole.Description;
                 role.RoleClaims.RemoveAll(c => c.ClaimType == Permission.ClaimType);
                 role.RoleClaims.AddRange(importedRole.Permissions.Select(p => new RoleClaim { ClaimType = Permission.ClaimType, ClaimValue = p }));
 

@@ -324,6 +324,17 @@ namespace OrchardCore.OpenId.YesSql.Stores
         }
 
         /// <inheritdoc/>
+        public virtual ValueTask<DateTimeOffset?> GetRedemptionDateAsync(TToken token, CancellationToken cancellationToken)
+        {
+            if (token == null)
+            {
+                throw new ArgumentNullException(nameof(token));
+            }
+
+            return new ValueTask<DateTimeOffset?>(token.RedemptionDate);
+        }
+
+        /// <inheritdoc/>
         public virtual ValueTask<string> GetReferenceIdAsync(TToken token, CancellationToken cancellationToken)
         {
             if (token == null)
@@ -541,6 +552,19 @@ namespace OrchardCore.OpenId.YesSql.Stores
                 Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
                 WriteIndented = false
             }));
+
+            return default;
+        }
+
+        /// <inheritdoc/>
+        public virtual ValueTask SetRedemptionDateAsync(TToken token, DateTimeOffset? date, CancellationToken cancellationToken)
+        {
+            if (token == null)
+            {
+                throw new ArgumentNullException(nameof(token));
+            }
+
+            token.RedemptionDate = date?.UtcDateTime;
 
             return default;
         }

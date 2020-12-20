@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OrchardCore.ContentManagement;
+using OrchardCore.Contents;
 using OrchardCore.Mvc.Utilities;
 
 namespace OrchardCore.Demo.Controllers
@@ -41,7 +42,7 @@ namespace OrchardCore.Demo.Controllers
 
             var contentItem = await _contentManager.GetAsync(id);
 
-            if (!await _authorizationService.AuthorizeAsync(User, OrchardCore.Contents.CommonPermissions.ViewContent, contentItem))
+            if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.ViewContent, contentItem))
             {
                 return this.ChallengeOrForbid("Api");
             }

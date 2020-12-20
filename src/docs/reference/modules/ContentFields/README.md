@@ -20,6 +20,7 @@ Some fields are available in their specific module.
 | `TaxonomyField` | `string TaxonomyContentItemId, string[] TaxonomyContentItemId` |
 | `TextField` | `string Text` |
 | `TimeField` | `TimeSpan? Value` |
+| `UserPickerField` | `string[] UserIds` |
 | `YoutubeField` | `string EmbeddedAddress, string RawAddress` |
 
 !!! note
@@ -178,6 +179,59 @@ per set based on the request culture, if no culture is specified.
             <span>,</span>
         }
     }
+    ```
+
+### `UserPicker Field`
+
+The User Picker field allows you to relate users to a content item.
+
+When adding the field to a content type, use the settings to specify whether to 
+
+- List all users, 
+- List users from specific roles.
+
+
+#### UserPicker Field Example
+
+=== "Liquid"
+
+    ```liquid
+    {% assign users = Model.UserIds | users_by_id %}
+    {% for user in users %}
+        {{ user.UserName }} - {{ user.Email }}
+    {% endfor %}
+    ```
+
+=== "Razor"
+
+    ``` html
+    @model OrchardCore.ContentFields.ViewModels.DisplayUserPickerFieldViewModel
+    @using OrchardCore.Mvc.Utilities
+
+    @{
+        var name = (Model.PartFieldDefinition.PartDefinition.Name + "-" + Model.PartFieldDefinition.Name).HtmlClassify();
+        var users = await @Orchard.GetUsersByIdsAsync(Model.UserIds);
+    }
+
+    <div class="field field-type-userpickerfield field-name-@name">
+        <span class="name">@Model.PartFieldDefinition.DisplayName():</span>
+        @if (users.Any())
+        {
+            foreach (var user in users)
+            {
+                <span class="value">@user.UserName</span>
+                if (user != users.Last())
+                {
+                    <span>,</span>
+                }
+            }
+        }
+        else
+        {
+            <span class="value">@T["No users."]</span>
+        }
+    </div>
+
     ```
 
 ## Creating Custom Fields

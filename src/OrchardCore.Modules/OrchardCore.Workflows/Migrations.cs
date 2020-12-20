@@ -45,7 +45,7 @@ namespace OrchardCore.Workflows
 
         public int UpdateFrom1()
         {
-            SchemaBuilder.AlterTable(nameof(WorkflowIndex), table =>
+            SchemaBuilder.AlterIndexTable<WorkflowIndex>(table =>
             {
                 table.AddColumn<string>("WorkflowStatus");
             });

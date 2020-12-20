@@ -67,7 +67,7 @@ namespace OrchardCore.Queries.Sql.Controllers
             stopwatch.Start();
 
             var connection = _store.Configuration.ConnectionFactory.CreateConnection();
-            var dialect = SqlDialectFactory.For(connection);
+            var dialect = _store.Configuration.SqlDialect;
 
             var parameters = JsonConvert.DeserializeObject<Dictionary<string, object>>(model.Parameters);
 

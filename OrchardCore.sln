@@ -215,8 +215,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Https", "src\Or
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{184139CF-C4AB-4FBE-AE19-54C8B3FE5C5E}"
 	ProjectSection(SolutionItems) = preProject
-		.travis.yml = .travis.yml
-		appveyor.yml = appveyor.yml
 		src\OrchardCore.Build\Dependencies.AspNetCore.props = src\OrchardCore.Build\Dependencies.AspNetCore.props
 		src\OrchardCore.Build\Dependencies.props = src\OrchardCore.Build\Dependencies.props
 		NuGet.config = NuGet.config
@@ -284,13 +282,6 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Infrastructure.Abstractions", "src\OrchardCore\OrchardCore.Infrastructure.Abstractions\OrchardCore.Infrastructure.Abstractions.csproj", "{7440FFDC-3815-4C7D-B4C6-FE1D521AD1FE}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TheComingSoonTheme", "src\OrchardCore.Themes\TheComingSoonTheme\TheComingSoonTheme.csproj", "{75FEF545-9846-4FCE-AF9D-B6A4EB27AA2E}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Functional", "Functional", "{7B59A132-759A-4B32-B5A0-D585B9F33AD2}"
-	ProjectSection(SolutionItems) = preProject
-		test\Functional\package.json = test\Functional\package.json
-		test\Functional\samples-mvc.test.js = test\Functional\samples-mvc.test.js
-		test\Functional\setup.test.js = test\Functional\setup.test.js
-	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Setup.Core", "src\OrchardCore\OrchardCore.Setup.Core\OrchardCore.Setup.Core.csproj", "{65543A7D-9B20-4C42-9072-1C12BEA1FDEE}"
 EndProject
@@ -386,7 +377,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Shortcodes.Abst
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Settings.Core", "src\OrchardCore\OrchardCore.Settings.Core\OrchardCore.Settings.Core.csproj", "{1286E568-BAFE-45E2-BF60-4350DB99FF83}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrchardCore.ContentPreview.Abstractions", "src\OrchardCore\OrchardCore.ContentPreview.Abstractions\OrchardCore.ContentPreview.Abstractions.csproj", "{57EA05E8-0275-4163-8FD1-2B244E396F91}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.ContentPreview.Abstractions", "src\OrchardCore\OrchardCore.ContentPreview.Abstractions\OrchardCore.ContentPreview.Abstractions.csproj", "{57EA05E8-0275-4163-8FD1-2B244E396F91}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Tests.Functional", "test\Functional\OrchardCore.Tests.Functional.csproj", "{2CA507BD-5517-4CD2-8F30-093AC5D11EBA}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Placements", "src\OrchardCore.Modules\OrchardCore.Placements\OrchardCore.Placements.csproj", "{5F94223B-CD69-47E1-B4AE-DEA03CBC4D3D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Configuration.KeyVault", "src\OrchardCore\OrchardCore.Configuration.KeyVault\OrchardCore.Configuration.KeyVault.csproj", "{17187E9E-90EE-4484-AC5E-8920D9126025}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -394,6 +391,10 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9D78FE2C-4179-47F6-B28A-034868280197}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9D78FE2C-4179-47F6-B28A-034868280197}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9D78FE2C-4179-47F6-B28A-034868280197}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9D78FE2C-4179-47F6-B28A-034868280197}.Release|Any CPU.Build.0 = Release|Any CPU
 		{08D9CD53-5812-4429-B163-0ECBB268B045}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{08D9CD53-5812-4429-B163-0ECBB268B045}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{08D9CD53-5812-4429-B163-0ECBB268B045}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -486,10 +487,6 @@ Global
 		{2FDE5786-2120-478E-B638-26C4B5CDD783}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2FDE5786-2120-478E-B638-26C4B5CDD783}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2FDE5786-2120-478E-B638-26C4B5CDD783}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9D78FE2C-4179-47F6-B28A-034868280197}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9D78FE2C-4179-47F6-B28A-034868280197}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9D78FE2C-4179-47F6-B28A-034868280197}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9D78FE2C-4179-47F6-B28A-034868280197}.Release|Any CPU.Build.0 = Release|Any CPU
 		{2FE86E75-3007-4BCC-9FFD-B3D1FF06CA89}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{2FE86E75-3007-4BCC-9FFD-B3D1FF06CA89}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2FE86E75-3007-4BCC-9FFD-B3D1FF06CA89}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -1034,11 +1031,24 @@ Global
 		{57EA05E8-0275-4163-8FD1-2B244E396F91}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{57EA05E8-0275-4163-8FD1-2B244E396F91}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{57EA05E8-0275-4163-8FD1-2B244E396F91}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2CA507BD-5517-4CD2-8F30-093AC5D11EBA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2CA507BD-5517-4CD2-8F30-093AC5D11EBA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2CA507BD-5517-4CD2-8F30-093AC5D11EBA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2CA507BD-5517-4CD2-8F30-093AC5D11EBA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5F94223B-CD69-47E1-B4AE-DEA03CBC4D3D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5F94223B-CD69-47E1-B4AE-DEA03CBC4D3D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5F94223B-CD69-47E1-B4AE-DEA03CBC4D3D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5F94223B-CD69-47E1-B4AE-DEA03CBC4D3D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{17187E9E-90EE-4484-AC5E-8920D9126025}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{17187E9E-90EE-4484-AC5E-8920D9126025}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{17187E9E-90EE-4484-AC5E-8920D9126025}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{17187E9E-90EE-4484-AC5E-8920D9126025}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
+		{9D78FE2C-4179-47F6-B28A-034868280197} = {275E087F-A4E2-4A7B-A924-ED68E3A52086}
 		{90030E85-0C4F-456F-B879-443E8A3F220D} = {275E087F-A4E2-4A7B-A924-ED68E3A52086}
 		{F23AC6C2-DE44-4699-999D-3C478EF3D691} = {275E087F-A4E2-4A7B-A924-ED68E3A52086}
 		{AF3BADEA-CC93-4116-B3C1-F8D074EBEE4F} = {275E087F-A4E2-4A7B-A924-ED68E3A52086}
@@ -1070,7 +1080,6 @@ Global
 		{B34E0A0F-C979-4612-B740-74F5D2DA36AF} = {275E087F-A4E2-4A7B-A924-ED68E3A52086}
 		{B7747485-DEB1-4CBB-8E2F-9CF9F3901DBD} = {B34E0A0F-C979-4612-B740-74F5D2DA36AF}
 		{04472175-8BFD-4BA6-A0E4-241F186F89CC} = {275E087F-A4E2-4A7B-A924-ED68E3A52086}
-		{9D78FE2C-4179-47F6-B28A-034868280197} = {275E087F-A4E2-4A7B-A924-ED68E3A52086}
 		{2FE86E75-3007-4BCC-9FFD-B3D1FF06CA89} = {A066395F-6F73-45DC-B5A6-B4E306110DCE}
 		{6A46E0DC-D958-46D9-A62D-45D7685E4FAA} = {A066395F-6F73-45DC-B5A6-B4E306110DCE}
 		{B2857A9B-4405-402A-91C3-CFB63BEE5A70} = {A066395F-6F73-45DC-B5A6-B4E306110DCE}
@@ -1168,7 +1177,6 @@ Global
 		{9FC1AA36-6334-4A62-AB19-C091BBFDD1E0} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
 		{7440FFDC-3815-4C7D-B4C6-FE1D521AD1FE} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
 		{75FEF545-9846-4FCE-AF9D-B6A4EB27AA2E} = {AF3BADEA-CC93-4116-B3C1-F8D074EBEE4F}
-		{7B59A132-759A-4B32-B5A0-D585B9F33AD2} = {B8D16C60-99B4-43D5-A3AD-4CD89AF39B25}
 		{65543A7D-9B20-4C42-9072-1C12BEA1FDEE} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
 		{E920D550-AB94-4449-AD6D-ED97985BF4F1} = {B8D16C60-99B4-43D5-A3AD-4CD89AF39B25}
 		{3436F913-676F-4F37-87DF-BAC7941C6478} = {E920D550-AB94-4449-AD6D-ED97985BF4F1}
@@ -1214,6 +1222,9 @@ Global
 		{901DA1A3-E5C7-4965-80EA-A1780BE1B820} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
 		{1286E568-BAFE-45E2-BF60-4350DB99FF83} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
 		{57EA05E8-0275-4163-8FD1-2B244E396F91} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
+		{2CA507BD-5517-4CD2-8F30-093AC5D11EBA} = {B8D16C60-99B4-43D5-A3AD-4CD89AF39B25}
+		{5F94223B-CD69-47E1-B4AE-DEA03CBC4D3D} = {90030E85-0C4F-456F-B879-443E8A3F220D}
+		{17187E9E-90EE-4484-AC5E-8920D9126025} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {46A1D25A-78D1-4476-9CBF-25B75E296341}

@@ -243,14 +243,14 @@ namespace OrchardCore.DisplayManagement.RazorPages
             var zone = ThemeLayout[name];
 
             return zone != null;
-        }       
+        }
 
         /// <summary>
         /// Renders a zone from the RazorPages.
         /// </summary>
         /// <param name="name">The name of the zone to render.</param>
         public Task<IHtmlContent> RenderSectionAsync(string name)
-        {           
+        {
             if (name == null)
             {
                 throw new ArgumentNullException(nameof(name));
@@ -265,7 +265,7 @@ namespace OrchardCore.DisplayManagement.RazorPages
         /// <param name="name">The name of the zone to render.</param>
         /// <param name="required">Whether the zone is required or not.</param>
         public Task<IHtmlContent> RenderSectionAsync(string name, bool required)
-        {            
+        {
             if (name == null)
             {
                 throw new ArgumentNullException(nameof(name));

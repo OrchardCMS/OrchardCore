@@ -11,6 +11,7 @@
 
   // The variables are evaluated the first time they are accessed, and reused across steps
   "variables": {
+    "adminUrlPrefix": "[js: configuration('OrchardCore_Admin:AdminUrlPrefix', 'Admin')]",
     "blogContentItemId": "[js:uuid()]",
     "menuContentItemId": "[js:uuid()]",
     "tagsContentItemId": "[js:uuid()]",
@@ -26,7 +27,6 @@
   "steps": [
     {
       "name": "feature",
-      "disable": [],
       "enable": [
         // SaaS
         "OrchardCore.HomeRoute",
@@ -685,7 +685,8 @@
                   "Template": null
                 },
                 "MediaFieldSettings": {
-                  "Multiple": false
+                  "Multiple": false,
+                  "AllowAnchors": true
                 }
               }
             }
@@ -722,7 +723,8 @@
                   "Template": null
                 },
                 "MediaFieldSettings": {
-                  "Multiple": false
+                  "Multiple": false,
+                  "AllowAnchors": true
                 }
               }  
             },              
@@ -784,7 +786,8 @@
                   "Position": "0"
                 },
                 "MediaFieldSettings": {
-                  "Multiple": false
+                  "Multiple": false,
+                  "AllowAnchors": true
                 }
               }
             }
@@ -965,6 +968,8 @@
         {
           "ContentType": "Menu",
           "ContentItemId": "[js: variables('menuContentItemId')]",
+          "Owner": "[js: parameters('AdminUserId')]",
+          "Author": "[js: parameters('AdminUsername')]",
           "DisplayText": "Main Menu",
           "Latest": true,
           "Published": true,
@@ -998,6 +1003,8 @@
         },
         {
           "ContentItemId": "[js: variables('tagsContentItemId')]",
+          "Owner": "[js: parameters('AdminUserId')]",
+          "Author": "[js: parameters('AdminUsername')]",
           "ContentType": "Taxonomy",
           "DisplayText": "Tags",
           "Latest": true,
@@ -1062,6 +1069,8 @@
         },
         {
           "ContentItemId": "[js: variables('categoriesContentItemId')]",
+          "Owner": "[js: parameters('AdminUserId')]",
+          "Author": "[js: parameters('AdminUsername')]",
           "ContentType": "Taxonomy",
           "DisplayText": "Categories",
           "Latest": true,
@@ -1107,7 +1116,7 @@
           "DisplayText": "Blog",
           "Latest": true,
           "Published": true,
-          "Owner": "[js: parameters('AdminUsername')]",
+          "Owner": "[js: parameters('AdminUserId')]",
           "Author": "[js: parameters('AdminUsername')]",
           "TitlePart": {
             "Title": "Blog"
@@ -1123,6 +1132,15 @@
             "Image": {
               "Paths": [
                 "home-bg.jpg"
+              ],
+              "MediaTexts":[
+                ""
+              ],
+              "Anchors": [
+                {
+                  "X": 0.5,
+                  "Y": 0.5
+                }
               ]
             }
           }
@@ -1133,7 +1151,7 @@
           "DisplayText": "Man must explore, and this is exploration at its greatest",
           "Latest": true,
           "Published": true,
-          "Owner": "[js: parameters('AdminUsername')]",
+          "Owner": "[js: parameters('AdminUserId')]",
           "Author": "[js: parameters('AdminUsername')]",
           "TitlePart": {
             "Title": "Man must explore, and this is exploration at its greatest"
@@ -1155,6 +1173,15 @@
             "Image": {
               "Paths": [
                 "post-bg.jpg"
+              ],
+              "MediaTexts":[
+                ""
+              ],
+              "Anchors": [
+                {
+                  "X": 0.5,
+                  "Y": 0.5
+                }
               ]
             },
             "Tags": {
@@ -1184,7 +1211,7 @@
           "DisplayText": "About",
           "Latest": true,
           "Published": true,
-          "Owner": "[js: parameters('AdminUsername')]",
+          "Owner": "[js: parameters('AdminUserId')]",
           "Author": "[js: parameters('AdminUsername')]",
           "AutoroutePart": {
             "Path": "about",
@@ -1213,7 +1240,7 @@
           "Displaytext": "Footer",
           "Latest": true,
           "Published": true,
-          "Owner": "[js: parameters('AdminUsername')]",
+          "Owner": "[js: parameters('AdminUserId')]",
           "Author": "[js: parameters('AdminUsername')]",
           "LayerMetadata": {
             "Layer": "Always",
@@ -1285,8 +1312,9 @@
             {
               "$type": "OrchardCore.AdminMenu.AdminNodes.LinkAdminNode, OrchardCore.AdminMenu",
               "LinkText": "Blog",
-              "LinkUrl": "[js: 'Admin/Contents/ContentItems/' +  variables('blogContentItemId') + '/Display']",
+              "LinkUrl": "[js: variables('adminUrlPrefix') + '/Contents/ContentItems/' +  variables('blogContentItemId') + '/Display']",
               "IconClass": "fas fa-rss",
+              "PermissionNames": [],
               "UniqueId": "7b293d57056a4eebb3713f07f12c65d8",
               "Enabled": true,
               "Text": null,
@@ -1297,17 +1325,15 @@
               "LinkToFirstChild": true,
               "LocalNav": false,
               "Culture": null,
-              "Resource": null,
               "Items": [],
-              "RouteValues": null,
-              "Permissions": [],
               "Classes": []
             },
             {
               "$type": "OrchardCore.AdminMenu.AdminNodes.LinkAdminNode, OrchardCore.AdminMenu",
               "LinkText": "Main Menu",
-              "LinkUrl": "[js: 'Admin/Contents/ContentItems/' +  variables('menuContentItemId') + '/Edit']",
+              "LinkUrl": "[js: variables('adminUrlPrefix') + '/Contents/ContentItems/' +  variables('menuContentItemId') + '/Edit']",
               "IconClass": "fas fa-sitemap",
+              "PermissionNames": [],
               "UniqueId": "5118cecfde834dacb26ac08980f1b5a7",
               "Enabled": true,
               "Text": null,
@@ -1318,16 +1344,14 @@
               "LinkToFirstChild": true,
               "LocalNav": false,
               "Culture": null,
-              "Resource": null,
               "Items": [],
-              "RouteValues": null,
-              "Permissions": [],
               "Classes": []
             },
             {
               "$type": "OrchardCore.AdminMenu.AdminNodes.PlaceholderAdminNode, OrchardCore.AdminMenu",
               "LinkText": "Content",
               "IconClass": null,
+              "PermissionNames": [],
               "UniqueId": "3e590d44f8704e4588e272dd966ce291",
               "Enabled": true,
               "Text": null,
@@ -1338,12 +1362,11 @@
               "LinkToFirstChild": true,
               "LocalNav": false,
               "Culture": null,
-              "Resource": null,
               "Items": [
                 {
                   "$type": "OrchardCore.AdminMenu.AdminNodes.LinkAdminNode, OrchardCore.AdminMenu",
                   "LinkText": "Content Items",
-                  "LinkUrl": "Admin/Contents/ContentItems/",
+                  "LinkUrl": "[js: variables('adminUrlPrefix') + '/Contents/ContentItems/']",
                   "IconClass": null,
                   "UniqueId": "7b293d57056a4eebb3713f07f12c65d9",
                   "Enabled": true,
@@ -1355,16 +1378,14 @@
                   "LinkToFirstChild": true,
                   "LocalNav": false,
                   "Culture": null,
-                  "Resource": null,
                   "Items": [],
-                  "RouteValues": null,
-                  "Permissions": [],
                   "Classes": []
                 },
                 {
                   "$type": "OrchardCore.AdminMenu.AdminNodes.PlaceholderAdminNode, OrchardCore.AdminMenu",
                   "LinkText": "Content Types",
                   "IconClass": null,
+                  "PermissionNames": [],
                   "UniqueId": "2f1fc33133334a1abf7d1a0516ee8b4e",
                   "Enabled": true,
                   "Text": null,
@@ -1376,7 +1397,6 @@
                   "LinkToFirstChild": true,
                   "LocalNav": false,
                   "Culture": null,
-                  "Resource": null,
                   "Items": [
                     {
                       "$type": "OrchardCore.Contents.AdminNodes.ContentTypesAdminNode, OrchardCore.Contents",
@@ -1393,25 +1413,31 @@
                       "LinkToFirstChild": true,
                       "LocalNav": false,
                       "Culture": null,
-                      "Resource": null,
                       "Items": [],
-                      "RouteValues": null,
-                      "Permissions": [],
                       "Classes": []
                     }
                   ],
-                  "RouteValues": null,
-                  "Permissions": [],
                   "Classes": []
                 }
               ],
-              "RouteValues": null,
-              "Permissions": [],
               "Classes": []
             }
           ]
         }
       ]
-    }
+    },
+    {
+      "name": "MediaProfiles",
+      "MediaProfiles": {
+        "banner": {
+          "Hint": "A banner image (2048px x 600px, cropped)",
+          "Width": 2048,
+          "Height": 600,
+          "Mode": 2,
+          "Format": 0,
+          "Quality": 100
+        }
+      }
+    }    
   ]
 }

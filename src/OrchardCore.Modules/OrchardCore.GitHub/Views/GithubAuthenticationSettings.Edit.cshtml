@@ -1,7 +1,11 @@
 @using OrchardCore.GitHub.ViewModels;
 @model GitHubAuthenticationSettingsViewModel;
 
-<p class="alert alert-warning">@T["The current tenant will be reloaded when the settings are saved."]</p>
+<p class="alert alert-warning">
+    @T["The current tenant will be reloaded when the settings are saved."]
+    <i class="fa fa-book"></i> <a href="@(OrchardCore.Admin.Constants.DocsUrl)reference/modules/GitHub/#authenticate-with-github" target="_blank">@T["See documentation"]</a>
+</p>
+
 
 <h3>@T["GitHub Authentication Settings"]</h3>
 
@@ -36,6 +40,6 @@
     <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input" asp-for="SaveTokens">
         <label class="custom-control-label" asp-for="SaveTokens">@T["Store tokens"]</label>
-        <span class="hint">— @T["Store external authentication tokens for reuse"]</span>
+        <span class="hint dashed">@T["Store external authentication tokens for reuse"]</span>
     </div>
 </div>

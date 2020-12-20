@@ -90,6 +90,26 @@ namespace OrchardCore.Environment.Shell
             }
         }
 
+        public async Task<IEnumerable<string>> LoadSettingsNamesAsync()
+        {
+            await _semaphore.WaitAsync();
+            try
+            {
+                await EnsureConfigurationAsync();
+
+                var tenantsSettings = (await new ConfigurationBuilder()
+                    .AddSourcesAsync(_settingsSources))
+                    .Build();
+
+                var tenants = tenantsSettings.GetChildren().Select(section => section.Key);
+                return _configuredTenants.Concat(tenants).Distinct().ToArray();
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
+        }
+
         public async Task<ShellSettings> LoadSettingsAsync(string tenant)
         {
             await _semaphore.WaitAsync();
@@ -227,7 +247,7 @@ namespace OrchardCore.Environment.Shell
             var configuration = configurationBuilder.Build().GetSection("OrchardCore");
 
             _configuredTenants = configuration.GetChildren()
-                .Where(section => Enum.TryParse<TenantState>(section["State"], ignoreCase: true, out var result))
+                .Where(section => Enum.TryParse<TenantState>(section["State"], ignoreCase: true, out _))
                 .Select(section => section.Key)
                 .Distinct()
                 .ToArray();

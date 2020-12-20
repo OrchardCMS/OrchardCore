@@ -118,7 +118,8 @@ namespace Microsoft.Extensions.DependencyInjection
 
             builder.ConfigureServices(s =>
             {
-                s.AddSingleton<ILock, LocalLock>();
+                s.AddSingleton<LocalLock>();
+                s.AddSingleton<ILock>(sp => sp.GetRequiredService<LocalLock>());
                 s.AddSingleton<IDistributedLock>(sp => sp.GetRequiredService<LocalLock>());
             });
         }

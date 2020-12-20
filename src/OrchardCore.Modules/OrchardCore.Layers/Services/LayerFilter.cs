@@ -8,14 +8,16 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Caching.Memory;
 using OrchardCore.Admin;
 using OrchardCore.ContentManagement.Display;
+using OrchardCore.Data.Documents;
 using OrchardCore.DisplayManagement.Layout;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.Theming;
 using OrchardCore.DisplayManagement.Zones;
-using OrchardCore.Environment.Cache;
+using OrchardCore.Documents;
 using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Layers.Handlers;
+using OrchardCore.Layers.Models;
 using OrchardCore.Layers.ViewModels;
 using OrchardCore.Mvc.Utilities;
 using OrchardCore.Scripting;
@@ -24,15 +26,17 @@ namespace OrchardCore.Layers.Services
 {
     public class LayerFilter : IAsyncResultFilter
     {
+        private const string WidgetsKey = "OrchardCore.Layers.LayerFilter:AllWidgets";
+
         private readonly ILayoutAccessor _layoutAccessor;
         private readonly IContentItemDisplayManager _contentItemDisplayManager;
         private readonly IUpdateModelAccessor _modelUpdaterAccessor;
         private readonly IScriptingManager _scriptingManager;
         private readonly IMemoryCache _memoryCache;
-        private readonly ISignal _signal;
         private readonly IThemeManager _themeManager;
         private readonly IAdminThemeService _adminThemeService;
         private readonly ILayerService _layerService;
+        private readonly IVolatileDocumentManager<LayerState> _layerStateManager;
 
         public LayerFilter(
             ILayerService layerService,
@@ -41,9 +45,9 @@ namespace OrchardCore.Layers.Services
             IUpdateModelAccessor modelUpdaterAccessor,
             IScriptingManager scriptingManager,
             IMemoryCache memoryCache,
-            ISignal signal,
             IThemeManager themeManager,
-            IAdminThemeService adminThemeService)
+            IAdminThemeService adminThemeService,
+            IVolatileDocumentManager<LayerState> layerStateManager)
         {
             _layerService = layerService;
             _layoutAccessor = layoutAccessor;
@@ -51,9 +55,9 @@ namespace OrchardCore.Layers.Services
             _modelUpdaterAccessor = modelUpdaterAccessor;
             _scriptingManager = scriptingManager;
             _memoryCache = memoryCache;
-            _signal = signal;
             _themeManager = themeManager;
             _adminThemeService = adminThemeService;
+            _layerStateManager = layerStateManager;
         }
 
         public async Task OnResultExecutionAsync(ResultExecutingContext context, ResultExecutionDelegate next)
@@ -72,11 +76,20 @@ namespace OrchardCore.Layers.Services
                     return;
                 }
 
-                var widgets = await _memoryCache.GetOrCreateAsync("OrchardCore.Layers.LayerFilter:AllWidgets", entry =>
+                var layerState = await _layerStateManager.GetOrCreateImmutableAsync();
+
+                if (!_memoryCache.TryGetValue<CacheEntry>(WidgetsKey, out var cacheEntry) || cacheEntry.Identifier != layerState.Identifier)
                 {
-                    entry.AddExpirationToken(_signal.GetToken(LayerMetadataHandler.LayerChangeToken));
-                    return _layerService.GetLayerWidgetsMetadataAsync(x => x.Published);
-                });
+                    cacheEntry = new CacheEntry()
+                    {
+                        Identifier = layerState.Identifier,
+                        Widgets = await _layerService.GetLayerWidgetsMetadataAsync(x => x.Published)
+                    };
+
+                    _memoryCache.Set(WidgetsKey, cacheEntry);
+                }
+
+                var widgets = cacheEntry.Widgets;
 
                 var layers = (await _layerService.GetLayersAsync()).Layers.ToDictionary(x => x.Name);
 
@@ -145,6 +158,11 @@ namespace OrchardCore.Layers.Services
             }
 
             await next.Invoke();
+        }
+
+        internal class CacheEntry : Document
+        {
+            public IEnumerable<LayerMetadata> Widgets { get; set; }
         }
     }
 }

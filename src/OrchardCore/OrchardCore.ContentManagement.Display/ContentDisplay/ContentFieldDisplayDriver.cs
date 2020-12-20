@@ -202,7 +202,13 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
 
             var updateFieldEditorContext = new UpdateFieldEditorContext(contentPart, typePartDefinition, partFieldDefinition, context);
 
+            _typePartDefinition = typePartDefinition;
+            _partFieldDefinition = partFieldDefinition;
+
             var result = await UpdateAsync(field, context.Updater, updateFieldEditorContext);
+
+            _typePartDefinition = null;
+            _partFieldDefinition = null;
 
             if (result == null)
             {

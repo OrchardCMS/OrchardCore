@@ -18,30 +18,32 @@ namespace OrchardCore.Environment.Shell.Scope
     public class ShellScope : IServiceScope
     {
         private static readonly AsyncLocal<ShellScope> _current = new AsyncLocal<ShellScope>();
-
         private static readonly Dictionary<string, SemaphoreSlim> _semaphores = new Dictionary<string, SemaphoreSlim>();
 
         private readonly IServiceScope _serviceScope;
-
         private readonly Dictionary<object, object> _items = new Dictionary<object, object>();
         private readonly List<Func<ShellScope, Task>> _beforeDispose = new List<Func<ShellScope, Task>>();
         private readonly HashSet<string> _deferredSignals = new HashSet<string>();
         private readonly List<Func<ShellScope, Task>> _deferredTasks = new List<Func<ShellScope, Task>>();
 
         private bool _serviceScopeOnly;
+        private bool _shellTerminated;
+        private bool _terminated;
         private bool _disposed;
 
         public ShellScope(ShellContext shellContext)
         {
             // Prevent the context from being disposed until the end of the scope
             Interlocked.Increment(ref shellContext._refCount);
-
             ShellContext = shellContext;
 
             // The service provider is null if we try to create
             // a scope on a disabled shell or already disposed.
             if (shellContext.ServiceProvider == null)
             {
+                // Keep the counter clean before failing.
+                Interlocked.Decrement(ref shellContext._refCount);
+
                 throw new ArgumentNullException(nameof(shellContext.ServiceProvider),
                     $"Can't resolve a scope on tenant: {shellContext.Settings.Name}");
             }
@@ -150,8 +152,8 @@ namespace OrchardCore.Environment.Shell.Scope
         /// </summary>
         public static Task<ShellScope> CreateChildScopeAsync()
         {
-            var shellHost = ShellScope.Services.GetRequiredService<IShellHost>();
-            return shellHost.GetScopeAsync(ShellScope.Context.Settings);
+            var shellHost = Services.GetRequiredService<IShellHost>();
+            return shellHost.GetScopeAsync(Context.Settings);
         }
 
         /// <summary>
@@ -159,7 +161,7 @@ namespace OrchardCore.Environment.Shell.Scope
         /// </summary>
         public static Task<ShellScope> CreateChildScopeAsync(ShellSettings settings)
         {
-            var shellHost = ShellScope.Services.GetRequiredService<IShellHost>();
+            var shellHost = Services.GetRequiredService<IShellHost>();
             return shellHost.GetScopeAsync(settings);
         }
 
@@ -168,38 +170,38 @@ namespace OrchardCore.Environment.Shell.Scope
         /// </summary>
         public static Task<ShellScope> CreateChildScopeAsync(string tenant)
         {
-            var shellHost = ShellScope.Services.GetRequiredService<IShellHost>();
+            var shellHost = Services.GetRequiredService<IShellHost>();
             return shellHost.GetScopeAsync(tenant);
         }
 
         /// <summary>
         /// Execute a delegate using a child scope created from the current one.
         /// </summary>
-        public static async Task UsingChildScopeAsync(Func<ShellScope, Task> execute)
+        public static async Task UsingChildScopeAsync(Func<ShellScope, Task> execute, bool activateShell = true)
         {
-            await (await CreateChildScopeAsync()).UsingAsync(execute);
+            await (await CreateChildScopeAsync()).UsingAsync(execute, activateShell);
         }
 
         /// <summary>
         /// Execute a delegate using a child scope created from the current one.
         /// </summary>
-        public static async Task UsingChildScopeAsync(ShellSettings settings, Func<ShellScope, Task> execute)
+        public static async Task UsingChildScopeAsync(ShellSettings settings, Func<ShellScope, Task> execute, bool activateShell = true)
         {
-            await (await CreateChildScopeAsync(settings)).UsingAsync(execute);
+            await (await CreateChildScopeAsync(settings)).UsingAsync(execute, activateShell);
         }
 
         /// <summary>
         /// Execute a delegate using a child scope created from the current one.
         /// </summary>
-        public static async Task UsingChildScopeAsync(string tenant, Func<ShellScope, Task> execute)
+        public static async Task UsingChildScopeAsync(string tenant, Func<ShellScope, Task> execute, bool activateShell = true)
         {
-            await (await CreateChildScopeAsync(tenant)).UsingAsync(execute);
+            await (await CreateChildScopeAsync(tenant)).UsingAsync(execute, activateShell);
         }
 
         /// <summary>
         /// Start holding this shell scope along the async flow.
         /// </summary>
-        public void StartAsyncFlow() => _current.Value = this;
+        internal void StartAsyncFlow() => _current.Value = this;
 
         /// <summary>
         /// Executes a delegate using this shell scope in an isolated async flow,
@@ -216,7 +218,7 @@ namespace OrchardCore.Environment.Shell.Scope
         /// Executes a delegate using this shell scope in an isolated async flow,
         /// while managing the shell state and invoking tenant events.
         /// </summary>
-        public async Task UsingAsync(Func<ShellScope, Task> execute)
+        public async Task UsingAsync(Func<ShellScope, Task> execute, bool activateShell = true)
         {
             if (Current == this)
             {
@@ -228,20 +230,35 @@ namespace OrchardCore.Environment.Shell.Scope
             {
                 StartAsyncFlow();
 
-                await ActivateShellAsync();
+                if (activateShell)
+                {
+                    await ActivateShellInternalAsync();
+                }
 
                 await execute(this);
 
+                await TerminateShellInternalAsync();
                 await BeforeDisposeAsync();
+            }
+        }
 
-                await DisposeAsync();
+        /// <summary>
+        /// Terminates a shell using this shell scope.
+        /// </summary>
+        internal async Task TerminateShellAsync()
+        {
+            using (this)
+            {
+                StartAsyncFlow();
+                await TerminateShellInternalAsync();
+                await BeforeDisposeAsync();
             }
         }
 
         /// <summary>
         /// Activate the shell, if not yet done, by calling the related tenant event handlers.
         /// </summary>
-        public async Task ActivateShellAsync()
+        internal async Task ActivateShellInternalAsync()
         {
             if (ShellContext.IsActivated)
             {
@@ -254,7 +271,6 @@ namespace OrchardCore.Environment.Shell.Scope
             }
 
             SemaphoreSlim semaphore;
-
             lock (_semaphores)
             {
                 if (!_semaphores.TryGetValue(ShellContext.Settings.Name, out semaphore))
@@ -264,23 +280,14 @@ namespace OrchardCore.Environment.Shell.Scope
             }
 
             await semaphore.WaitAsync();
-
             try
             {
                 // The tenant gets activated here.
                 if (!ShellContext.IsActivated)
                 {
-                    using (var scope = ShellContext.CreateScope())
+                    await new ShellScope(ShellContext).UsingAsync(async scope =>
                     {
-                        if (scope == null)
-                        {
-                            return;
-                        }
-
-                        scope.StartAsyncFlow();
-
                         var tenantEvents = scope.ServiceProvider.GetServices<IModularTenantEvents>();
-
                         foreach (var tenantEvent in tenantEvents)
                         {
                             await tenantEvent.ActivatingAsync();
@@ -290,11 +297,7 @@ namespace OrchardCore.Environment.Shell.Scope
                         {
                             await tenantEvent.ActivatedAsync();
                         }
-
-                        await scope.BeforeDisposeAsync();
-
-                        await scope.DisposeAsync();
-                    }
+                    }, activateShell: false);
 
                     ShellContext.IsActivated = true;
                 }
@@ -335,7 +338,7 @@ namespace OrchardCore.Environment.Shell.Scope
         /// </summary>
         public static void AddDeferredTask(Func<ShellScope, Task> task) => Current?.DeferredTask(task);
 
-        public async Task BeforeDisposeAsync()
+        internal async Task BeforeDisposeAsync()
         {
             foreach (var callback in _beforeDispose)
             {
@@ -350,7 +353,6 @@ namespace OrchardCore.Environment.Shell.Scope
             if (_deferredSignals.Any())
             {
                 var signal = ShellContext.ServiceProvider.GetRequiredService<ISignal>();
-
                 foreach (var key in _deferredSignals)
                 {
                     await signal.SignalTokenAsync(key);
@@ -363,9 +365,8 @@ namespace OrchardCore.Environment.Shell.Scope
 
                 foreach (var task in _deferredTasks)
                 {
-                    ShellScope scope;
-
                     // Create a new scope (maybe based on a new shell) for each task.
+                    ShellScope scope;
                     try
                     {
                         // May fail if a shell was released before being disabled.
@@ -377,10 +378,8 @@ namespace OrchardCore.Environment.Shell.Scope
                         scope = new ShellScope(ShellContext);
                     }
 
-                    using (scope)
+                    await scope.UsingServiceScopeAsync(async scope =>
                     {
-                        scope.StartAsyncFlow();
-
                         var logger = scope.ServiceProvider.GetService<ILogger<ShellScope>>();
 
                         try
@@ -393,41 +392,56 @@ namespace OrchardCore.Environment.Shell.Scope
                                 "Error while processing deferred task '{TaskName}' on tenant '{TenantName}'.",
                                 task.GetType().FullName, ShellContext.Settings.Name);
                         }
-
-                        await scope.BeforeDisposeAsync();
-
-                        await scope.DisposeAsync();
-                    }
+                    });
                 }
             }
         }
 
         /// <summary>
-        /// Terminates the shell, if released and in its last scope, by calling the related event handlers.
-        /// Returns true if the shell context should be disposed consequently to this scope being released.
+        /// Terminates the shell, if released and in its last scope, by calling the related event handlers,
+        /// and specifies if the shell context should be disposed consequently to this scope being disposed.
         /// </summary>
-        private async Task<bool> TerminateShellAsync()
+        internal async Task TerminateShellInternalAsync()
         {
             if (_serviceScopeOnly)
             {
-                return false;
+                return;
             }
 
-            // A disabled shell still in use is released by its last scope.
-            if (ShellContext.Settings.State == TenantState.Disabled)
+            _terminated = true;
+
+            // If the shell context is released and in its last shell scope, according to the ref counter value,
+            // the terminate event handlers are called, and the shell will be disposed at the end of this scope.
+
+            // Check if the decremented value of the ref counter reached 0.
+            if (Interlocked.Decrement(ref ShellContext._refCount) == 0)
             {
-                if (Interlocked.CompareExchange(ref ShellContext._refCount, 1, 1) == 1)
+                // A disabled shell still in use is released by its last scope.
+                if (ShellContext.Settings.State == TenantState.Disabled)
                 {
-                    ShellContext.Release();
+                    ShellContext.ReleaseFromLastScope();
                 }
-            }
 
-            // If the context is still being released, it will be disposed if the ref counter is equal to 0.
-            // To prevent this while executing the terminating events, the ref counter is not decremented here.
-            if (ShellContext._released && Interlocked.CompareExchange(ref ShellContext._refCount, 1, 1) == 1)
-            {
+                if (!ShellContext._released)
+                {
+                    return;
+                }
+
+                // If released after the counter reached 0, a new last scope may have been created.
+                if (Interlocked.CompareExchange(ref ShellContext._refCount, 0, 0) != 0)
+                {
+                    return;
+                }
+
+                // If a new last scope reached this point, ensure that the shell is terminated once.
+                if (Interlocked.Exchange(ref ShellContext._terminated, 1) == 1)
+                {
+                    return;
+                }
+
+                _shellTerminated = true;
+
                 var tenantEvents = _serviceScope.ServiceProvider.GetServices<IModularTenantEvents>();
-
                 foreach (var tenantEvent in tenantEvents)
                 {
                     await tenantEvent.TerminatingAsync();
@@ -437,33 +451,7 @@ namespace OrchardCore.Environment.Shell.Scope
                 {
                     await tenantEvent.TerminatedAsync();
                 }
-
-                return true;
             }
-
-            return false;
-        }
-
-        public async Task DisposeAsync()
-        {
-            if (_disposed)
-            {
-                return;
-            }
-
-            var disposeShellContext = await TerminateShellAsync();
-
-            _serviceScope.Dispose();
-
-            if (disposeShellContext)
-            {
-                ShellContext.Dispose();
-            }
-
-            // Decrement the counter at the very end of the scope
-            Interlocked.Decrement(ref ShellContext._refCount);
-
-            _disposed = true;
         }
 
         public void Dispose()
@@ -473,7 +461,20 @@ namespace OrchardCore.Environment.Shell.Scope
                 return;
             }
 
-            DisposeAsync().GetAwaiter().GetResult();
+            _disposed = true;
+            _serviceScope.Dispose();
+
+            // Check if the shell has been terminated.
+            if (_shellTerminated)
+            {
+                ShellContext.Dispose();
+            }
+
+            if (!_terminated)
+            {
+                // Keep the counter clean if not yet decremented.
+                Interlocked.Decrement(ref ShellContext._refCount);
+            }
         }
     }
 }

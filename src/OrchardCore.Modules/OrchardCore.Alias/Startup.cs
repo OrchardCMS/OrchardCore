@@ -22,6 +22,7 @@ namespace OrchardCore.Alias
 {
     public class Startup : StartupBase
     {
+
         static Startup()
         {
             TemplateContext.GlobalMemberAccessStrategy.Register<AliasPartViewModel>();

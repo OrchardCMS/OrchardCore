@@ -2,50 +2,57 @@
 
 ## What you will build
 
-You will build an application that is made of modules. The module will provide a Controller and a View while the Layout will
-be provided by the main application project.
+You will build a modular ASP.NET Core MVC web application similar to the sample "Hello World" application included with Orchard Core. It includes a web application and a module. The web application provides the layout while the module registers a route and responds to homepage requests. You can refer to the following projects in [Orchard Core](https://github.com/OrchardCMS/OrchardCore) for more information.
+
+- src/OrchardCore.Mvc.Web
+- src/OrchardCore.Modules/OrchardCore.Mvc.HelloWorld
 
 ## What you will need
 
 - The current version of the .NET Core SDK. You can download it from here [https://www.microsoft.com/net/download/core](https://www.microsoft.com/net/download/core).
-- A text editor and a terminal where you can type dotnet commands.
+- A text editor and a terminal where you can run dotnet CLI commands.
 
 ## Creating an Orchard Core site and module
 
-There are different ways to create sites and modules for Orchard Core. You can learn more about them [here](../../getting-started/templates/README.md).  
-In this guide we will use our "Code Generation Templates".
+There are different ways to create sites and modules for Orchard Core. You can learn more about them [here](../../getting-started/templates/README.md).
 
-You can install the latest released templates using this command:
+In this guide we will use our [Code Generation Templates](../../getting-started/templates/). You can install the latest stable release of the templates using this command:
 
 ```dotnet new -i OrchardCore.ProjectTemplates::1.0.0-*```
 
 !!! note
     To use the development branch of the template add `--nuget-source https://nuget.cloudsmith.io/orchardcore/preview/v3/index.json`
 
-Create an empty folder that will contain your site. Open a terminal, navigate to that folder and run this:
+Create an empty folder, called `OrchardCore.Mvc`, that will contain our projects. Open a terminal, navigate to that folder and run the following command to create the web application:
 
-```dotnet new ocmvc -n MySite```
+```dotnet new ocmvc -n OrchardCore.Mvc.Web```
 
-This creates a new ASP.NET MVC application in a new folder named `MySite`.  
-We can now create a new module with the following command:
+Next, create the "Hello World" module.
 
-```dotnet new ocmodulemvc -n MyModule```
+```dotnet new ocmodulemvc -n OrchardCore.Mvc.HelloWorld```
+ 
+Add a project reference to the web application that points to the module.
 
-The module is created in the `MyModule` folder.  
-The next step is to reference the module from the application, by adding a project reference:
+```dotnet add OrchardCore.Mvc.Web reference OrchardCore.Mvc.HelloWorld```
 
-```dotnet add MySite reference MyModule```
+Optionally, you can add a solution file that references both the web application and module in case you want to open a solution in Visual Studio.
+
+```
+dotnet new sln -n OrchardCore.Mvc
+dotnet sln add OrchardCore.Mvc.Web\OrchardCore.Mvc.Web.csproj
+dotnet sln add OrchardCore.Mvc.HelloWorld\OrchardCore.Mvc.HelloWorld.csproj
+```
 
 ## Testing the resulting application
 
-From the root of the folder containing both projects, run this command:
+From the `OrchardCore.Mvc` root folder containing both projects, run the following command to start the web application:
 
-`dotnet run --project .\MySite\MySite.csproj`
+`dotnet run --project .\OrchardCore.Mvc.Web\OrchardCore.Mvc.Web.csproj`
 
 !!! note
     If you are using the development branch of the templates, run `dotnet restore .\MySite\MySite.csproj --source https://nuget.cloudsmith.io/orchardcore/preview/v3/index.json` before running the application
 
-Your application should now be running and contain the open ports:
+Your application should now be running and listening on the following ports:
 
 ```
 Now listening on: https://localhost:5001
@@ -53,32 +60,36 @@ Now listening on: http://localhost:5000
 Application started. Press Ctrl+C to shut down.
 ```
 
-Open a browser on <https://localhost:5001/MyModule/Home/Index>  
-It should display __Hello from MyModule__
+Open a browser and navigate to <https://localhost:5001/OrchardCore.Mvc.HelloWorld/Home/Index>. It should display __Hello from OrchardCore.Mvc.HelloWorld__.
 
-> The Layout is coming from the main application project, while the controller, action and view are coming from the module project.
+> The Layout is from the main web application project, while the controller, action and view are from the module project.
 
 ## Registering a custom route
 
-By default all routes in modules are modeled like `{area}/{controller}/{action}` where `{area}` is the name of the module.  
-We will change the route of the view in this module to handle the home page.
+By default, all routes in modules follow the pattern `{area}/{controller}/{action}`, where `{area}` is the name of the module. We will change the route of the view in the module to respond to homepage requests.
 
-In the `Startup.cs` file of `MyModule`, add this code in the `Configure()` method.
+In the `Startup.cs` file of `OrchardCore.Mvc.HelloWorld`, add a custom route in the `Configure()` method.
 
 ```csharp
     routes.MapAreaControllerRoute(
         name: "Home",
-        areaName: "MyModule",
+        areaName: "OrchardCore.Mvc.HelloWorld",
         pattern: "",
         defaults: new { controller = "Home", action = "Index" }
     );
 ```
 
-Restart the application and open the home page, which should display the same result as with the previous url.
+You can also change the `Index.cshtml` file in the module's `Views` -> `Home` folder so that it displays __Hello World__ similar to the project in Orchard Core.
+
+```html
+<h1>Hello World</h1>
+```
+
+Restart the application and navigate to the homepage at <https://localhost:5001> to display the __Hello World__ message.
 
 ## Summary
 
-You just created an ASP.NET Core application with a module containing a Controller and a View.
+You just created a modular ASP.NET Core MVC web application using Orchard Core. It includes a web application that supplies the layout and a custom module that responds to homepage requests.
 
 ## Tutorial
 

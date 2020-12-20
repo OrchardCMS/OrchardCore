@@ -72,9 +72,9 @@
 			"request": "launch",
 			"internalConsoleOptions": "openOnSessionStart",
 			"preLaunchTask": "Web App: Dotnet Publish (framework dependent)",
-			"program": "${workspaceRoot}/build/release/OrchardCore.Cms.Web.dll",
+			"program": "${workspaceRoot}/.build/release/OrchardCore.Cms.Web.dll",
 			"args": [],
-			"cwd": "${workspaceRoot}/build/release",
+			"cwd": "${workspaceRoot}/.build/release",
 			"stopAtEntry": false,
 			"launchBrowser": {
 				"enabled": true,
@@ -91,9 +91,9 @@
 			"request": "launch",
 			"internalConsoleOptions": "openOnSessionStart",
 			"preLaunchTask": "Web App: Dotnet Publish (self-contained)",
-			"program": "${workspaceRoot}/build/release/OrchardCore.Cms.Web.dll",
+			"program": "${workspaceRoot}/.build/release/OrchardCore.Cms.Web.dll",
 			"args": [],
-			"cwd": "${workspaceRoot}/build/release",
+			"cwd": "${workspaceRoot}/.build/release",
 			"stopAtEntry": false,
 			"launchBrowser": {
 				"enabled": true,

@@ -1,56 +1,148 @@
 using System;
-using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using OrchardCore.Locking.Distributed;
 
 namespace OrchardCore.Locking
 {
     /// <summary>
     /// This component is a tenant singleton which allows to acquire named locks for a given tenant.
-    /// This is a non distributed version where expiration times are not used to auto release locks.
     /// </summary>
     public class LocalLock : IDistributedLock, IDisposable
     {
-        private readonly ConcurrentDictionary<string, SemaphoreSlim> _semaphores = new ConcurrentDictionary<string, SemaphoreSlim>();
+        private readonly ILogger _logger;
+
+        private readonly Dictionary<string, Semaphore> _semaphores = new Dictionary<string, Semaphore>();
+
+        public LocalLock(ILogger<LocalLock> logger)
+        {
+            _logger = logger;
+        }
 
         /// <summary>
         /// Waits indefinitely until acquiring a named lock with a given expiration for the current tenant.
-        /// This is a non distributed version where the expiration time is not used to auto release the lock.
+        /// After 'expiration' the lock is auto released, a null value is equivalent to 'TimeSpan.MaxValue'.
         /// </summary>
         public async Task<ILocker> AcquireLockAsync(string key, TimeSpan? expiration = null)
         {
-            var semaphore = _semaphores.GetOrAdd(key, (name) => new SemaphoreSlim(1));
+            var semaphore = GetOrCreateSemaphore(key);
+            await semaphore.Value.WaitAsync();
 
-            await semaphore.WaitAsync();
-            return new Locker(semaphore);
+            return new Locker(this, semaphore, expiration);
         }
 
         /// <summary>
         /// Tries to acquire a named lock in a given timeout with a given expiration for the current tenant.
-        /// This is a non distributed version where the expiration time is not used to auto release the lock.
+        /// After 'expiration' the lock is auto released, a null value is equivalent to 'TimeSpan.MaxValue'.
         /// </summary>
         public async Task<(ILocker locker, bool locked)> TryAcquireLockAsync(string key, TimeSpan timeout, TimeSpan? expiration = null)
         {
-            var semaphore = _semaphores.GetOrAdd(key, (name) => new SemaphoreSlim(1));
+            var semaphore = GetOrCreateSemaphore(key);
 
-            if (await semaphore.WaitAsync(timeout))
+            if (await semaphore.Value.WaitAsync(timeout))
             {
-                return (new Locker(semaphore), true);
+                return (new Locker(this, semaphore, expiration), true);
             }
+
+            _logger.LogWarning("Fails to acquire the named lock '{LockName}' after the given timeout of '{Timeout}'.",
+                key, timeout.ToString());
 
             return (null, false);
         }
 
+        public Task<bool> IsLockAcquiredAsync(string key)
+        {
+            lock (_semaphores)
+            {
+                if (_semaphores.TryGetValue(key, out var semaphore))
+                {
+                    return Task.FromResult(semaphore.Value.CurrentCount == 0);
+                }
+
+                return Task.FromResult(false);
+            }
+        }
+
+        private Semaphore GetOrCreateSemaphore(string key)
+        {
+            lock (_semaphores)
+            {
+                if (_semaphores.TryGetValue(key, out var semaphore))
+                {
+                    semaphore.RefCount++;
+                }
+                else
+                {
+                    semaphore = new Semaphore(key, new SemaphoreSlim(1));
+                    _semaphores[key] = semaphore;
+                }
+
+                return semaphore;
+            }
+        }
+
+        private class Semaphore
+        {
+            public Semaphore(string key, SemaphoreSlim value)
+            {
+                Key = key;
+                Value = value;
+                RefCount = 1;
+            }
+
+            internal string Key { get; }
+            internal SemaphoreSlim Value { get; }
+            internal int RefCount { get; set; }
+        }
+
         private class Locker : ILocker
         {
-            private readonly SemaphoreSlim _semaphore;
+            private readonly LocalLock _localLock;
+            private readonly Semaphore _semaphore;
+            private readonly CancellationTokenSource _cts;
+            private volatile int _released;
             private bool _disposed;
 
-            public Locker(SemaphoreSlim semaphore)
+            public Locker(LocalLock localLock, Semaphore semaphore, TimeSpan? expiration)
             {
+                _localLock = localLock;
                 _semaphore = semaphore;
+
+                if (expiration.HasValue)
+                {
+                    _cts = new CancellationTokenSource(expiration.Value);
+                    _cts.Token.Register(Release);
+                }
+            }
+
+            private void Release()
+            {
+                if (Interlocked.Exchange(ref _released, 1) == 0)
+                {
+                    lock (_localLock._semaphores)
+                    {
+                        if (_localLock._semaphores.TryGetValue(_semaphore.Key, out var semaphore))
+                        {
+                            semaphore.RefCount--;
+
+                            if (semaphore.RefCount == 0)
+                            {
+                                _localLock._semaphores.Remove(_semaphore.Key);
+                            }
+                        }
+                    }
+
+                    _semaphore.Value.Release();
+                }
+            }
+
+            public ValueTask DisposeAsync()
+            {
+                Dispose();
+                return default;
             }
 
             public void Dispose()
@@ -62,7 +154,9 @@ namespace OrchardCore.Locking
 
                 _disposed = true;
 
-                _semaphore.Release();
+                _cts?.Dispose();
+
+                Release();
             }
         }
 
@@ -72,7 +166,7 @@ namespace OrchardCore.Locking
 
             foreach (var semaphore in semaphores)
             {
-                semaphore.Dispose();
+                semaphore.Value.Dispose();
             }
         }
     }

@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Web.Middleware;
@@ -25,29 +26,92 @@ namespace OrchardCore.Media.Processing
             options.BrowserMaxAge = TimeSpan.FromDays(_mediaOptions.MaxBrowserCacheDays);
             options.CacheMaxAge = TimeSpan.FromDays(_mediaOptions.MaxCacheDays);
             options.CachedNameLength = 12;
-            options.OnParseCommandsAsync = validation =>
+            options.OnParseCommandsAsync = context =>
             {
-                // Force some parameters to prevent disk filling.
-                // For more advanced resize parameters the usage of profiles will be necessary.
-                // This can be done with a custom IImageWebProcessor implementation that would
-                // accept profile names.
-
-                if (validation.Commands.Count > 0)
+                if (context.Commands.Count == 0)
                 {
-                    validation.Commands.Remove(ResizeWebProcessor.Compand);
-                    validation.Commands.Remove(ResizeWebProcessor.Sampler);
-                    validation.Commands.Remove(ResizeWebProcessor.Xy);
-                    validation.Commands.Remove(ResizeWebProcessor.Anchor);
-                    validation.Commands.Remove(BackgroundColorWebProcessor.Color);
+                    return Task.CompletedTask;
+                }
 
-                    if (!validation.Commands.ContainsKey(ResizeWebProcessor.Mode))
+                var mediaOptions = context.Context.RequestServices.GetRequiredService<IOptions<MediaOptions>>().Value;
+                if (mediaOptions.UseTokenizedQueryString)
+                {
+                    if (context.Commands.TryGetValue(TokenCommandProcessor.TokenCommand, out var tokenString))
                     {
-                        validation.Commands[ResizeWebProcessor.Mode] = "max";
+                        var mediaTokenService =  context.Context.RequestServices.GetRequiredService<IMediaTokenService>();
+                        // The token must now be validated against the HMAC of the other commands.
+                        // Use the Raw value, not the parsed value.
+                        var token = context.Commands["token"];
+
+                        // Remove the token from the commands.
+                        context.Commands.Remove(TokenCommandProcessor.TokenCommand);
+
+                        // When token is invalid no image commands will be processed.
+                        if (!mediaTokenService.TryValidateToken(context.Commands, token))
+                        {
+                            context.Commands.Clear();
+
+                            return Task.CompletedTask;
+                        }
+
+                        // Do not evaluate supported sizes here, as with tokenization any size is allowed.
                     }
+                    else
+                    {
+                        ValidateTokenlessCommands(context, mediaOptions);
+                    }
+                }
+                else
+                {
+                    ValidateTokenlessCommands(context, mediaOptions);
+                }
+
+                // The following commands are not supported by default.
+                context.Commands.Remove(ResizeWebProcessor.Compand);
+                context.Commands.Remove(ResizeWebProcessor.Sampler);
+                context.Commands.Remove(ResizeWebProcessor.Anchor);
+
+                // When only a version command is applied pass on this request.
+                if (context.Commands.Count == 1 && context.Commands.ContainsKey(ImageVersionProcessor.VersionCommand))
+                {
+                    context.Commands.Clear();
+                }
+                else if (!context.Commands.ContainsKey(ResizeWebProcessor.Mode))
+                {
+                    context.Commands[ResizeWebProcessor.Mode] = "max";
                 }
 
                 return Task.CompletedTask;
             };
+        }
+
+        private static void ValidateTokenlessCommands(ImageCommandContext context, MediaOptions mediaOptions)
+        {
+            // The following commands are not supported without a tokenized query string.
+            context.Commands.Remove(ResizeWebProcessor.Xy);
+            context.Commands.Remove(ImageVersionProcessor.VersionCommand);
+            context.Commands.Remove(BackgroundColorWebProcessor.Color);
+
+            // Width and height must be part of the supported sizes array when tokenization is disabled.
+            if (context.Commands.TryGetValue(ResizeWebProcessor.Width, out var widthString))
+            {
+                var width = context.Parser.ParseValue<int>(widthString, context.Culture);
+
+                if (Array.BinarySearch<int>(mediaOptions.SupportedSizes, width) < 0)
+                {
+                    context.Commands.Remove(ResizeWebProcessor.Width);
+                }
+            }
+
+            if (context.Commands.TryGetValue(ResizeWebProcessor.Height, out var heightString))
+            {
+                var height = context.Parser.ParseValue<int>(heightString, context.Culture);
+
+                if (Array.BinarySearch<int>(mediaOptions.SupportedSizes, height) < 0)
+                {
+                    context.Commands.Remove(ResizeWebProcessor.Height);
+                }
+            }
         }
     }
 }

@@ -38,19 +38,9 @@ namespace OrchardCore.Contents.Security
 
             if (contentItem != null)
             {
-                if (contentItem.Owner != null) // If we want to evaluate a specific content item authorization
+                if (OwnerVariationExists(requirement.Permission) && HasOwnership(context.User, contentItem))
                 {
-                    if (OwnerVariationExists(requirement.Permission) && HasOwnership(context.User, contentItem))
-                    {
-                        permission = GetOwnerVariation(requirement.Permission);
-                    }
-                }
-                else // If we want to evaluate if a user has authorization on a ContentType globally
-                {
-                    if (OwnerVariationExists(requirement.Permission))
-                    {
-                        permission = GetOwnerVariation(requirement.Permission);
-                    }
+                    permission = GetOwnerVariation(requirement.Permission);
                 }
             }
 
@@ -86,34 +76,34 @@ namespace OrchardCore.Contents.Security
 
         private static Permission GetOwnerVariation(Permission permission)
         {
-            if (permission.Name == Permissions.PublishContent.Name)
+            if (permission.Name == CommonPermissions.PublishContent.Name)
             {
-                return Permissions.PublishOwnContent;
+                return CommonPermissions.PublishOwnContent;
             }
 
-            if (permission.Name == Permissions.EditContent.Name)
+            if (permission.Name == CommonPermissions.EditContent.Name)
             {
-                return Permissions.EditOwnContent;
+                return CommonPermissions.EditOwnContent;
             }
 
-            if (permission.Name == Permissions.DeleteContent.Name)
+            if (permission.Name == CommonPermissions.DeleteContent.Name)
             {
-                return Permissions.DeleteOwnContent;
+                return CommonPermissions.DeleteOwnContent;
             }
 
-            if (permission.Name == Permissions.ViewContent.Name)
+            if (permission.Name == CommonPermissions.ViewContent.Name)
             {
-                return Permissions.ViewOwnContent;
+                return CommonPermissions.ViewOwnContent;
             }
 
-            if (permission.Name == Permissions.PreviewContent.Name)
+            if (permission.Name == CommonPermissions.PreviewContent.Name)
             {
-                return Permissions.PreviewOwnContent;
+                return CommonPermissions.PreviewOwnContent;
             }
 
-            if (permission.Name == Permissions.CloneContent.Name)
+            if (permission.Name == CommonPermissions.CloneContent.Name)
             {
-                return Permissions.CloneOwnContent;
+                return CommonPermissions.CloneOwnContent;
             }
 
             return null;
@@ -126,7 +116,7 @@ namespace OrchardCore.Contents.Security
                 return false;
             }
 
-            return user.Identity.Name == content.Owner;
+            return user.FindFirstValue(ClaimTypes.NameIdentifier) == content.Owner;
         }
 
         private static bool OwnerVariationExists(Permission permission)

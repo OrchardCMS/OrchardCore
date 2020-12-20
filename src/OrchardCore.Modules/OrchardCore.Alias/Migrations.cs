@@ -26,13 +26,13 @@ namespace OrchardCore.Alias
             // NOTE: The Alias Length has been upgraded from 64 characters to 767.
             // For existing SQL databases update the AliasPartIndex tables Alias column length manually.
             SchemaBuilder.CreateMapIndexTable<AliasPartIndex>(table => table
-                .Column<string>("Alias", col => col.WithLength(AliasPartDisplayDriver.MaxAliasLength))
+                .Column<string>("Alias", col => col.WithLength(AliasPart.MaxAliasLength))
                 .Column<string>("ContentItemId", c => c.WithLength(26))
                 .Column<bool>("Latest", c => c.WithDefault(false))
                 .Column<bool>("Published", c => c.WithDefault(true))
             );
 
-            SchemaBuilder.AlterTable(nameof(AliasPartIndex), table => table
+            SchemaBuilder.AlterIndexTable<AliasPartIndex>(table => table
                 .CreateIndex("IDX_AliasPartIndex_Alias", "Alias", "Published", "Latest")
             );
 
@@ -43,11 +43,11 @@ namespace OrchardCore.Alias
         // This code can be removed in a later version as Latest and Published are alterations.
         public int UpdateFrom1()
         {
-            SchemaBuilder.AlterTable(nameof(AliasPartIndex), table => table
+            SchemaBuilder.AlterIndexTable<AliasPartIndex>(table => table
                 .AddColumn<bool>("Latest", c => c.WithDefault(false))
             );
 
-            SchemaBuilder.AlterTable(nameof(AliasPartIndex), table => table
+            SchemaBuilder.AlterIndexTable<AliasPartIndex>(table => table
                 .AddColumn<bool>("Published", c => c.WithDefault(true))
             );
 

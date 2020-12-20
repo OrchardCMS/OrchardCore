@@ -53,6 +53,11 @@ namespace OrchardCore.ResourceManagement.TagHelpers
             {
                 // Include custom script
                 var setting = _resourceManager.RegisterUrl("stylesheet", Src, DebugSrc);
+                
+                foreach (var attribute in output.Attributes)
+                {
+                    setting.SetAttribute(attribute.Name, attribute.Value.ToString());
+                }
 
                 if (At != ResourceLocation.Unspecified)
                 {
@@ -88,6 +93,11 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                 // Resource required
 
                 var setting = _resourceManager.RegisterResource("stylesheet", Name);
+
+                foreach (var attribute in output.Attributes)
+                {
+                    setting.SetAttribute(attribute.Name, attribute.Value.ToString());
+                }
 
                 if (At != ResourceLocation.Unspecified)
                 {
@@ -148,6 +158,11 @@ namespace OrchardCore.ResourceManagement.TagHelpers
 
                 var definition = _resourceManager.InlineManifest.DefineStyle(Name);
                 definition.SetUrl(Src, DebugSrc);
+
+                foreach (var attribute in output.Attributes)
+                {
+                    definition.SetAttribute(attribute.Name, attribute.Value.ToString());
+                }
 
                 if (!String.IsNullOrEmpty(Version))
                 {

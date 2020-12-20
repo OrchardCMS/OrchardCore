@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Metadata;
@@ -21,10 +20,8 @@ namespace OrchardCore.ContentManagement.Cache
         {
             if (contexts.Any(ctx => String.Equals(ctx, "types", StringComparison.OrdinalIgnoreCase)))
             {
-                var hash = await _contentDefinitionManager.GetTypesHashAsync();
-
-                // Add a hash based on the content definition record serial number.
-                entries.Add(new CacheContextEntry("types", hash.ToString(CultureInfo.InvariantCulture)));
+                var identifier = await _contentDefinitionManager.GetIdentifierAsync();
+                entries.Add(new CacheContextEntry("types", identifier));
 
                 return;
             }
