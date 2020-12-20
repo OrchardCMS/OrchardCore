@@ -16,18 +16,6 @@
     </div>
 }
 
-<h6>@T["Roles"]</h6>
-<div class="form-group">
-    @for (var i = 0; i < Model.Roles.Length; i++)
-    {
-        <div class="custom-control custom-checkbox">
-            <input asp-for="Roles[i].IsSelected" type="checkbox" class="custom-control-input">
-            <input type="hidden" asp-for="Roles[i].Role" />
-            <label class="custom-control-label cursor-pointer" asp-for="Roles[i].IsSelected">@Model.Roles[i].Role</label>
-        </div>
-    }
-</div>
-
 <div class="form-group">
     <div class="custom-control custom-switch">
         <input asp-for="IsEnabled" type="checkbox" class="custom-control-input" checked="@Model.IsEnabled" />
