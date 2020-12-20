@@ -6,6 +6,7 @@
   "identity": "OrchardCore.Templates.Mvc.Web",
   "shortName": "ocmvc",
   "sourceName": "OrchardCore.Templates.Mvc.Web",
+  "defaultName": "OrchardCore.Mvc.Web",
   "preferNameDirectory": true,
   "symbols": {
     "Framework": {

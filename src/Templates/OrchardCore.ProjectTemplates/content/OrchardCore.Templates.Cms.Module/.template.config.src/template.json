@@ -6,6 +6,7 @@
   "identity": "OrchardCore.Templates.Cms.Module",
   "shortName": "ocmodulecms",
   "sourceName": "OrchardCore.Templates.Cms.Module",
+  "defaultName": "OrchardCore.Cms.Module",
   "preferNameDirectory": true,
   "symbols": {
     "Framework": {

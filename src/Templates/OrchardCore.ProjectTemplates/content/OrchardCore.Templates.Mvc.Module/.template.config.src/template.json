@@ -6,6 +6,7 @@
   "identity": "OrchardCore.Templates.Mvc.Module",
   "shortName": "ocmodulemvc",
   "sourceName": "OrchardCore.Templates.Mvc.Module",
+  "defaultName": "OrchardCore.Mvc.Module",
   "preferNameDirectory": true,
   "symbols": {
     "Framework": {

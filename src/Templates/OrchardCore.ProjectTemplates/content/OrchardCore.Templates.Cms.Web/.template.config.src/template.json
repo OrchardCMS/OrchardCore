@@ -6,6 +6,7 @@
   "identity": "OrchardCore.Templates.Cms.Web",
   "shortName": "occms",
   "sourceName": "OrchardCore.Templates.Cms.Web",
+  "defaultName": "OrchardCore.Cms.Web",
   "preferNameDirectory": true,
   "symbols": {
     "Framework": {

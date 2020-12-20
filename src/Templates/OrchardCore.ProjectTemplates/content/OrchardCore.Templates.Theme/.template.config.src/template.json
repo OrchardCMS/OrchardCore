@@ -6,6 +6,7 @@
   "identity": "OrchardCore.Templates.Theme",
   "shortName": "octheme",
   "sourceName": "OrchardCore.Templates.Theme",
+  "defaultName": "OrchardCore.Theme",
   "preferNameDirectory": true,
   "symbols": {
     "Framework": {
