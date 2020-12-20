@@ -5,7 +5,7 @@ using OrchardCore.Captcha.Configuration;
 
 namespace OrchardCore.Captcha.ActionFilters.Detection
 {
-    public class IpAddressRobotDetector : IDetectRobots
+     public class IpAddressRobotDetector : IDetectRobots
     {
         private const string IpAddressAbuseDetectorCacheKey = "IpAddressRobotDetector";
 
