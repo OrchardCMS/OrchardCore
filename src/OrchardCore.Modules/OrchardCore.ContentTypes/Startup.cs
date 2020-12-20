@@ -157,8 +157,8 @@ namespace OrchardCore.ContentTypes
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddTransient<ILocalizationDataProvider, ContentTypeDataLocalizationProvider>();
-            services.AddTransient<ILocalizationDataProvider, ContentFieldDataLocalizationProvider>();
+            services.AddScoped<ILocalizationDataProvider, ContentTypeDataLocalizationProvider>();
+            services.AddScoped<ILocalizationDataProvider, ContentFieldDataLocalizationProvider>();
         }
     }
 }
