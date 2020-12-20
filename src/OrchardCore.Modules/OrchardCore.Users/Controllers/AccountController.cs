@@ -381,7 +381,7 @@ namespace OrchardCore.Users.Controllers
             if (remoteError != null)
             {
                 _logger.LogError("Error from external provider: {Error}", remoteError);
-                ModelState.AddModelError("", S["An error occured in external provider"]);
+                ModelState.AddModelError("", S["An error occurred in external provider."]);
                 return RedirectToLogin(returnUrl);
             }
 
@@ -389,7 +389,7 @@ namespace OrchardCore.Users.Controllers
             if (info == null)
             {
                 _logger.LogError("Could not get external login info.");
-                ModelState.AddModelError("", S["An error occured in external provider"]);
+                ModelState.AddModelError("", S["An error occurred in external provider."]);
                 return RedirectToLogin(returnUrl);
             }
 
