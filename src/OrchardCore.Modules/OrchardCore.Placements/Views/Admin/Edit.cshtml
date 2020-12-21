@@ -43,7 +43,7 @@
 
         @if (!Model.Creating)
         {
-            <a asp-route-action="Delete" asp-route-area="OrchardCore.Placements" asp-route-shapeType="@Model.ShapeType" class="btn btn-danger" role="button" data-url="UnsafeUrl RemoveUrl">@T["Delete"]</a>
+            <a asp-route-action="Delete" asp-route-area="OrchardCore.Placements" asp-route-shapeType="@Model.ShapeType" class="btn btn-danger" role="button" data-url-af="UnsafeUrl RemoveUrl">@T["Delete"]</a>
         }
 
         <a class="btn btn-secondary cancel" role="button" href="@returnUrl">@T["Cancel"]</a>

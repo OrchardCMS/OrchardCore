@@ -47,10 +47,10 @@ $(window).on("load", function() {
 });
 
 $(function () {
-    $("body").on("click", "[data-url~='RemoveUrl']", function () {
+    $("body").on("click", "[data-url-af~='RemoveUrl']", function () {
         var _this = $(this);
         // don't show the confirm dialog if the link is also UnsafeUrl, as it will already be handled below.
-        if (_this.filter("[data-url~='UnsafeUrl']").length == 1) {
+        if (_this.filter("[data-url-af~='UnsafeUrl']").length == 1) {
             return false;
         }
         confirmDialog({..._this.data(),  
@@ -76,7 +76,7 @@ $(function () {
 $(function () {
     var magicToken = $("input[name=__RequestVerificationToken]").first();
     if (magicToken) {
-        $("body").on("click", "a[data-url~='UnsafeUrl']", function () {
+        $("body").on("click", "a[data-url-af~='UnsafeUrl']", function () {
             var _this = $(this);
             var hrefParts = _this.attr("href").split("?");
             var form = $("<form action=\"" + hrefParts[0] + "\" method=\"POST\" />");
@@ -106,7 +106,7 @@ $(function () {
                 return false;
             }
 
-            if (_this.filter("[data-url~='RemoveUrl']").length == 1) {
+            if (_this.filter("[data-url-af~='RemoveUrl']").length == 1) {
                 confirmDialog({..._this.data(), 
                     callback: function(resp) {
                         if (resp) {
