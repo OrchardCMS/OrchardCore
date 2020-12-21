@@ -229,12 +229,11 @@ namespace OrchardCore.ResourceManagement
             }
 
             // Don't prefix cdn if the path includes a protocol, i.e. is an external url, or is in debug mode.
-            if (url != null && !settings.DebugMode
-                && !String.IsNullOrEmpty(settings.CdnBaseUrl)
+            if (url != null && !settings.DebugMode && !String.IsNullOrEmpty(settings.CdnBaseUrl) &&
                 // Don't evaluate with Uri.TryCreate as it produces incorrect results on Linux.
-                && !url.StartsWith("https://", StringComparison.OrdinalIgnoreCase)
-                && !url.StartsWith("http://", StringComparison.OrdinalIgnoreCase)
-                && !url.StartsWith("//", StringComparison.OrdinalIgnoreCase))
+                !url.StartsWith("https://", StringComparison.OrdinalIgnoreCase) &&
+                !url.StartsWith("http://", StringComparison.OrdinalIgnoreCase) &&
+                !url.StartsWith("//", StringComparison.OrdinalIgnoreCase))
             {
                 url = settings.CdnBaseUrl + url;
             }
