@@ -11,6 +11,10 @@
         font-weight: bold;
         position: absolute;
         top: 10px;
+        max-width: 220px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
     .nav-link {
@@ -49,6 +53,7 @@
     @extend .navbar-brand;
     overflow: hidden;
     height: 42px;
+    width: 259px;
     margin-left: 5px;
     padding-top: 10px;
     white-space: nowrap;
@@ -61,7 +66,7 @@
 
     span:last-child {
         font-weight: bold;
-        color: rgba(0, 120, 212, 1);
+        color: $white;
     }
 }
 
@@ -70,10 +75,11 @@
     margin-right: 11px;
     width: 25px;
 }
+
 // When left-sidebar is compact nav brand is compacted too.
 // It displays logo only, not text.
 .left-sidebar-compact .ta-navbar-brand {
-    width: 30px;
+    width: 47px;
     height: 42px;
 
     span {
