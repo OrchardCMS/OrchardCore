@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Moq;
+using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentTypes.Services;
 using OrchardCore.ContentTypes.ViewModels;
@@ -47,17 +48,18 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Localization
         private ContentTypeDefinition CreateContentTypeDefinition(string name, string displayName, string[] fields)
         {
             var contentPartFieldDefinitions = new List<ContentPartFieldDefinition>();
-            
+            var settings = new JObject();
+
             foreach (var field in fields)
             {
-                contentPartFieldDefinitions.Add(new ContentPartFieldDefinition(new ContentFieldDefinition("TextField"), field, null));
+                contentPartFieldDefinitions.Add(new ContentPartFieldDefinition(new ContentFieldDefinition("TextField"), field, settings));
             }
 
             return new ContentTypeDefinition(
                 name,
                 displayName,
-                new List<ContentTypePartDefinition> { new ContentTypePartDefinition("Part", new ContentPartDefinition("Part", contentPartFieldDefinitions, null), null) },
-                null);
+                new List<ContentTypePartDefinition> { new ContentTypePartDefinition("Part", new ContentPartDefinition("Part", contentPartFieldDefinitions, settings), settings) },
+                settings);
         }
     }
 }
