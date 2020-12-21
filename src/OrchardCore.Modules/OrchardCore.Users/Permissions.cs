@@ -1,23 +1,43 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
+using OrchardCore.Security.Services;
 
 namespace OrchardCore.Users
 {
     public class Permissions : IPermissionProvider
     {
         public static readonly Permission ManageUsers = CommonPermissions.ManageUsers;
+        public static readonly Permission ManageUsersOfEmptyRoles = CommonPermissions.ManageUsersOfEmptyRoles;
         public static readonly Permission ManageOwnUserInformation = new Permission("ManageOwnUserInformation", "Manage own user information", new Permission[] { ManageUsers });
 
-        public Task<IEnumerable<Permission>> GetPermissionsAsync()
+        private readonly IRoleService _roleService;
+
+        public Permissions(IRoleService roleService)
         {
-            return Task.FromResult(new[]
+            _roleService = roleService;
+        }
+
+        public async Task<IEnumerable<Permission>> GetPermissionsAsync()
+        {
+            var list = new List<Permission>
             {
                 ManageUsers,
-                ManageOwnUserInformation
+                ManageOwnUserInformation,
+                ManageUsersOfEmptyRoles
+            };
+
+            var roles = (await _roleService.GetRoleNamesAsync())
+                .Except(new[] { "Anonymous", "Authenticated" }, StringComparer.OrdinalIgnoreCase);
+
+            foreach (var role in roles)
+            {
+                list.Add(CommonPermissions.CreatePermissionForManageUsersOfRole(role));
             }
-            .AsEnumerable());
+
+            return list;
         }
 
         public IEnumerable<PermissionStereotype> GetDefaultStereotypes()

@@ -163,6 +163,7 @@ namespace OrchardCore.Users
 
             services.AddSingleton<IIndexProvider, UserIndexProvider>();
             services.AddSingleton<IIndexProvider, UserByRoleNameIndexProvider>();
+            services.AddSingleton<IIndexProvider, UserRoleNameIndexProvider>();
             services.AddSingleton<IIndexProvider, UserByLoginInfoIndexProvider>();
             services.AddSingleton<IIndexProvider, UserByClaimIndexProvider>();
             services.AddScoped<IDataMigration, Migrations>();

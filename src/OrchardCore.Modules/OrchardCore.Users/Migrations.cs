@@ -118,5 +118,13 @@ namespace OrchardCore.Users
 
             return 6;
         }
+
+        public int UpdateFrom6()
+        {
+            SchemaBuilder.CreateMapIndexTable<UserRoleNameIndex>(table => table
+                .Column<string>("RoleName"));
+
+            return 7;
+        }
     }
 }

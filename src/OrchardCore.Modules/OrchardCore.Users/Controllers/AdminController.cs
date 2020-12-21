@@ -15,6 +15,7 @@ using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Navigation;
 using OrchardCore.Routing;
+using OrchardCore.Security.Services;
 using OrchardCore.Settings;
 using OrchardCore.Users.Indexes;
 using OrchardCore.Users.Models;
@@ -22,6 +23,7 @@ using OrchardCore.Users.Services;
 using OrchardCore.Users.ViewModels;
 using YesSql;
 using YesSql.Services;
+using YesSql.Sql;
 
 namespace OrchardCore.Users.Controllers
 {
@@ -35,6 +37,7 @@ namespace OrchardCore.Users.Controllers
         private readonly IDisplayManager<User> _userDisplayManager;
         private readonly INotifier _notifier;
         private readonly IUserService _userService;
+        private readonly IRoleService _roleService;
         private readonly IUpdateModelAccessor _updateModelAccessor;
 
         private readonly dynamic New;
@@ -48,6 +51,7 @@ namespace OrchardCore.Users.Controllers
             ISession session,
             UserManager<IUser> userManager,
             IUserService userService,
+            IRoleService roleService,
             INotifier notifier,
             ISiteService siteService,
             IShapeFactory shapeFactory,
@@ -63,6 +67,7 @@ namespace OrchardCore.Users.Controllers
             _notifier = notifier;
             _siteService = siteService;
             _userService = userService;
+            _roleService = roleService;
             _updateModelAccessor = updateModelAccessor;
 
             New = shapeFactory;
@@ -72,10 +77,10 @@ namespace OrchardCore.Users.Controllers
 
         public async Task<ActionResult> Index(UserIndexOptions options, PagerParameters pagerParameters)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers))
-            {
-                return Forbid();
-            }
+            // if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers))
+            // {
+            //     return Forbid();
+            // }
 
             var siteSettings = await _siteService.GetSiteSettingsAsync();
             var pager = new Pager(pagerParameters, siteSettings.PageSize);
@@ -118,6 +123,97 @@ namespace OrchardCore.Users.Controllers
                     //users = users.OrderBy(u => u.LastLoginUtc);
                     break;
             }
+
+            // TODO Index with user roles.
+            // get all roles.
+            // get roles this user is authorized to edit
+            // add to query.
+            // secnario
+            // editing user can manage editors
+            // query user is in role of editors and contributors
+            // should the editing user be able to manage them?
+            // or should the editing user must have permissions to edit editors and contributors.
+            // 2nd one I think.
+
+            // var authorizedRoles = "editor", "contributor"
+            // user.With<UserRoleIndex>(index => index.RoleName.IsIn(authorizedRoles))
+
+
+            // var users = await _session.Query<User, UserByRoleNameIndex>(u => u.RoleName == normalizedRoleName).ListAsync();
+
+                var roleNames = await GetNormalizedRoleNamesAsync();
+                var authorizedRoleNames = await GetAuthorizedRoleNamesAsync(roleNames);
+            // Alter the query if the user does not have permission for all roles.
+            if (roleNames.Count() != authorizedRoleNames.Count())
+            {
+                var predicates = GetRoleNamePredicates(authorizedRoleNames, roleNames);
+                if (predicates.Any())
+                {
+
+                }
+
+/*
+// Think this will fail on SQL server because the select items are not part of the group by
+SELECT DISTINCT [Document].*, [UserIndex_a1].[NormalizedUserName] FROM [Document] INNER JOIN [UserIndex] AS [UserIndex_a1] ON [UserIndex_a1].[DocumentId] = [Document].[Id] INNER JOIN [UserRoleNameIndex] AS [UserRoleNameIndex_a1] ON [UserRoleNameIndex_a1].[DocumentId] = [Document].[Id]
+-- WHERE
+
+
+GROUP BY RoleName
+HAVING RoleName IN ( 'EDITOR', 'AUTHOR')
+*/
+                users.With<UserRoleNameIndex>()
+                .Where("GROUP BY RoleName HAVING RoleName IN ( " + String.Join(",", authorizedRoleNames) + " )");
+                // users.With<UserByRoleNameIndex>(x => x)
+
+                // users.With<UserRoleNameIndex>(x => x.RoleName.IsIn(authorizedRoleNames) && x.RoleName.IsNotIn(roleNames.Except(authorizedRoleNames)));
+                // users.All(
+                //     u => u.With<UserByRoleNameIndex>(x => x.RoleName.IsIn(authorizedRoleNames)),
+                //     u => u.With<UserByRoleNameIndex>(x => x.RoleName.IsNotIn(roleNames.Except(authorizedRoleNames)))
+                // );
+                // foreach (var authorizedRoleName in authorizedRoleNames)
+                // {
+                    // users.All(
+                    //     u => u.All(
+                    //         u => u.Any(
+                    //             u => u.With<UserRoleNameIndex>(x => x.RoleName == "EDITOR")
+                    //         )
+                    //     ),
+                    //     u => u.All(
+                    //         u => u.Any(
+                    //             u => u.With<UserRoleNameIndex>(x => x.RoleName != "AUTHOR"),
+                    //             u => u.With<UserRoleNameIndex>(x => x.RoleName != "ADMINISTRATOR")
+                    //         )
+                    //     )
+
+                    // );
+
+
+                //  users.All(
+                //         u => u.All(
+                //             u => u.Any(
+                //                 u => u.With<UserByRoleNameIndex>(x => x.RoleName == "EDITOR"),
+                //                 u => u.With<UserByRoleNameIndex>(x => x.RoleName == "CONTRIBUTOR")
+                //             )
+                //         ),
+                //         u => u.All(
+                //             u => u.Any(
+                //                 u => u.With<UserByRoleNameIndex>(x => x.RoleName != "AUTHOR"),
+                //                 u => u.With<UserByRoleNameIndex>(x => x.RoleName != "ADMINISTRATOR"),
+                //                 u => u.With<UserByRoleNameIndex>(x => x.RoleName != "MODERATOR")
+                //             )
+                //         )
+
+                //     );
+
+                    // users.Any
+                    // users.Any(predicates);
+                // }
+                // users.With<UserByRoleNameIndex>()
+                //     .
+
+            }
+
+
 
             var count = await users.CountAsync();
 
@@ -175,6 +271,29 @@ namespace OrchardCore.Users.Controllers
             };
 
             return View(model);
+        }
+
+        private Func<IQuery<User>, IQuery<User>>[] GetRoleNamePredicates(IEnumerable<string> authorizedRoleNames, IEnumerable<string> notAuthorizedRoleNames)
+        {
+            var predicates = new List<Func<IQuery<User>, IQuery<User>>>();
+
+            var authorizedPredicates = new List<Func<IQuery<User>, IQuery<User>>>();
+            var notAuthorizedPredicates = new List<Func<IQuery<User>, IQuery<User>>>();
+
+            foreach(var role in authorizedRoleNames)
+            {
+                authorizedPredicates.Add(u => u.With<UserByRoleNameIndex>(x => x.RoleName == role));
+            }
+
+            foreach(var role in notAuthorizedRoleNames)
+            {
+                notAuthorizedPredicates.Add(u => u.With<UserByRoleNameIndex>(x => x.RoleName != role));
+            }
+//was all.
+            // predicates.All(u => u.Any(authorizedPredicates.ToArray()));
+            predicates.Add(u => u.Any(notAuthorizedPredicates.ToArray()));
+
+            return predicates.ToArray();
         }
 
         [HttpPost, ActionName("Index")]
@@ -295,13 +414,13 @@ namespace OrchardCore.Users.Controllers
                     return Forbid();
                 }
             }
-            else
-            {
-                if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers))
-                {
-                    return Forbid();
-                }
-            }
+            // else
+            // {
+            //     if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers))
+            //     {
+            //         return Forbid();
+            //     }
+            // }
 
             var user = await _userManager.FindByIdAsync(id) as User;
             if (user == null)
@@ -309,11 +428,83 @@ namespace OrchardCore.Users.Controllers
                 return NotFound();
             }
 
+            if (!user.RoleNames.Any())
+            {
+                if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsersOfEmptyRoles))
+                {
+                    return Forbid();
+                }
+            }
+            else
+            {
+
+                var roleNames = await GetRoleNamesAsync();
+                var authorizedRoleNames = await GetAuthorizedRoleNamesAsync(roleNames);
+
+                if (user.RoleNames.Any(userRole => !authorizedRoleNames.Any(authorizedRole => authorizedRole == userRole)))
+                {
+                    return Forbid();
+                }
+            }
+
+            // bool hasPermission = true;
+            // foreach(var role in authorizedRoleNames)
+            // {
+            //     // Here we would have to actually check auth?
+
+            //     // If the user we are trying to edit has a role which we are not authorized to edit we fail authorization.
+            //     // If the user has any roles we are not authorized to edit we fail authorization.
+
+
+
+            //     if (!user.RoleNames.Contains(role, StringComparer.OrdinalIgnoreCase))
+            //     {
+            //         hasPermission = false;
+            //         break;
+
+            //     }
+            // }
+
+            // if (!hasPermission)
+            // {
+            //     return Forbid();
+            // }
+
             var shape = await _userDisplayManager.BuildEditorAsync(user, updater: _updateModelAccessor.ModelUpdater, isNew: false);
 
             ViewData["ReturnUrl"] = returnUrl;
 
             return View(shape);
+        }
+
+        private async Task<IEnumerable<string>> GetRoleNamesAsync()
+        {
+            var roleNames = await _roleService.GetRoleNamesAsync();
+            return roleNames.Except(new[] { "Anonymous", "Authenticated" }, StringComparer.OrdinalIgnoreCase);
+        }
+
+        private async Task<IEnumerable<string>> GetNormalizedRoleNamesAsync()
+        {
+            var roleNames = await _roleService.GetNormalizedRoleNamesAsync();
+            return roleNames.Except(new[] { "Anonymous", "Authenticated" }, StringComparer.OrdinalIgnoreCase);
+        }
+
+        private async Task<IEnumerable<string>> GetAuthorizedRoleNamesAsync(IEnumerable<string> roleNames)
+        {
+            var authorizedRoleNames = new List<string>();
+            var normalizer = _userManager.KeyNormalizer;
+            foreach (var roleName in roleNames)
+            {
+                // TODO obviously this changes to a dynamic permission of ManageUsersOfRole.
+                // In which case we might not even need a dynamic role permission.
+                // Just a manage users of role is probably enough?
+                if (await _authorizationService.AuthorizeAsync(User, CommonPermissions.CreatePermissionForManageUsersOfRole(roleName)))
+                {
+                    authorizedRoleNames.Add(roleName);
+                }
+            }
+
+            return authorizedRoleNames;
         }
 
         [HttpPost]
@@ -331,16 +522,48 @@ namespace OrchardCore.Users.Controllers
                     return Forbid();
                 }
             }
-            else if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers))
-            {
-                return Forbid();
-            }
+            // else if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers))
+            // {
+            //     return Forbid();
+            // }
 
             var user = await _userManager.FindByIdAsync(id) as User;
             if (user == null)
             {
                 return NotFound();
             }
+
+            if (!user.RoleNames.Any())
+            {
+                if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsersOfEmptyRoles))
+                {
+                    return Forbid();
+                }
+            }
+            else
+            {
+
+                var roleNames = await GetRoleNamesAsync();
+                var authorizedRoleNames = await GetAuthorizedRoleNamesAsync(roleNames);
+
+                if (user.RoleNames.Any(userRole => !authorizedRoleNames.Any(authorizedRole => authorizedRole == userRole)))
+                {
+                    return Forbid();
+                }
+            }
+            // TODO Index with user roles.
+            // get all roles.
+            // get roles this user is authorized to edit
+            // add to query.
+            // secnario
+            // editing user can manage editors
+            // query user is in role of editors and contributors
+            // should the editing user be able to manage them?
+            // or should the editing user must have permissions to edit editors and contributors.
+            // 2nd one I think.
+
+            // var authorizedRoles = "editor", "contributor"
+            // user.With<UserRoleIndex>(index => index.RoleName.IsIn(authorizedRoles))
 
             var shape = await _userDisplayManager.UpdateEditorAsync(user, updater: _updateModelAccessor.ModelUpdater, isNew: false);
 
