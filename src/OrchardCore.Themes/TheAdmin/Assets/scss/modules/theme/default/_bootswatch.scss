@@ -10,6 +10,11 @@
     @extend .navbar-light;
 }
 
+.ta-badge {
+    @extend .badge-light;
+}
+
+@import "../../admin/_list.scss";
 @import "../../admin/_sidebar-menu.scss";
 // Layout ======================================================================
 @import "../../_layout.scss";

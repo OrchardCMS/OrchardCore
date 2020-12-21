@@ -170,6 +170,7 @@ nav:
             - GraphQL queries: docs/reference/core/Apis.GraphQL.Abstractions/README.md
             - Health Check: docs/reference/modules/HealthChecks/README.md
             - HTTPS: docs/reference/modules/Https/README.md
+            - Key Vault (Azure): docs/reference/core/KeyVault.Azure/README.md
             - Localization: docs/reference/modules/Localize/README.md
             - Logging Serilog: docs/reference/core/Logging.Serilog/readme.md
             - Mini Profiler: docs/reference/modules/MiniProfiler/README.md
