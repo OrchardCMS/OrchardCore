@@ -7,8 +7,8 @@
     <Title>OrchardCore Setup Abstractions</Title>
     <Description>$(OCCMSDescription)
     
-     Abstractions for setup module.</Description>
-    <PackageTags>$(PackageTags) OrchardCoreCMS  Abstractions</PackageTags>
+    Abstractions for setup module.</Description>
+    <PackageTags>$(PackageTags) OrchardCoreCMS Abstractions</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>

@@ -5,12 +5,14 @@
 }
 <h1>@RenderTitleSegments(T["Media options"])</h1>
 
-<p class="alert alert-secondary">@T["Media is configured with appsettings.json."]</p>
+<p class="alert alert-secondary">
+    @T["Media is configured with appsettings.json."]
+    <i class="fa fa-book"></i> <a href="https://docs.orchardcore.net/en/latest/docs/reference/modules/Media/#configuration" target="_blank">@T["See documentation"]</a>
+</p>
 
-<a href="https://docs.orchardcore.net/en/latest/docs/reference/modules/Media/#configuration">@T["See documentation"]</a>
 <div class="form-group row">
     <label asp-for="SupportedSizes" class="col-sm-2 col-form-label">@T["Supported sizes"]</label>
-    <div class="col-sm-10">        
+    <div class="col-sm-10">
         <code><input type="text" class="form-control-plaintext" value="@supportedSizes" /></code>
         <span class="hint">@T["The accepted sizes for custom width and height."]</span>
     </div>
