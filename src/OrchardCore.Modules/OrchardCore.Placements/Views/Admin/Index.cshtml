@@ -64,7 +64,7 @@
                     <div class="properties">
                         <div class="related">
                             <a asp-action="Edit" asp-route-shapeType="@entry.ShapeType" asp-route-returnUrl="@FullRequestPath" class="btn btn-primary btn-sm">@T["Edit"]</a>
-                            <a asp-action="Delete" asp-route-shapeType="@entry.ShapeType" asp-route-returnUrl="@FullRequestPath" class="btn btn-danger btn-sm" itemprop="RemoveUrl UnsafeUrl">@T["Delete"]</a>
+                            <a asp-action="Delete" asp-route-shapeType="@entry.ShapeType" asp-route-returnUrl="@FullRequestPath" class="btn btn-danger btn-sm" data-url="RemoveUrl UnsafeUrl">@T["Delete"]</a>
                         </div>
                         <a asp-action="Edit" asp-route-shapeType="@entry.ShapeType" asp-route-returnUrl="@FullRequestPath">@entry.ShapeType</a>
                     </div>

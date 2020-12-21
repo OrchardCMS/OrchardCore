@@ -13,7 +13,7 @@
            asp-route-sitemapId="@Model.SitemapId" 
            asp-route-sourceId="@Model.SitemapSource.Id" 
            class="btn btn-danger btn-sm" 
-           itemprop="RemoveUrl UnsafeUrl">@T["Delete"]</a>
+           data-url="RemoveUrl UnsafeUrl">@T["Delete"]</a>
     </div>
 
     @await DisplayAsync(Model.Content)
