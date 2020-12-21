@@ -16,7 +16,9 @@
     }
 </style>
 <div asp-validation-summary="ModelOnly"></div>
-<h1>@T["Cors Settings"]</h1>
+<zone Name="Title">
+    <h1>@T["Cors Settings"]</h1>
+</zone>
 <span class="subscript">@T["CORS stands for Cross-Origin Request more information can be found here"] <a target="_blank" href="https://docs.microsoft.com/en-us/aspnet/core/security/cors">https://docs.microsoft.com/en-us/aspnet/core/security/cors</a></span>
 <form id="corsForm" asp-action="Index" method="post">
     <input type="hidden" name="CorsSettings" id="CorsSettings" value='@Html.Raw(Json.Serialize(Model.Policies, settings))' />
@@ -33,17 +35,14 @@
                 <li class="list-group-item" v-for="policy in policies">
                     <div class="properties">
                         <div class="related float-xs-right">
-                            <span v-if="policy.IsDefaultPolicy" class="badge badge-info">Default Policy</span>
-                            <button class="btn btn-primary btn-sm" type="button" v-on:click="editPolicy(policy)">Edit</button>
-                            <button class="delete btn btn-danger btn-sm" type="button" v-on:click="deletePolicy(policy, $event)">Delete</button>
+                            <span v-if="policy.IsDefaultPolicy" class="badge ta-badge">@T["Default Policy"]</span>
+                            <button class="btn btn-primary btn-sm" type="button" v-on:click="editPolicy(policy)">@T["Edit"]</button>
+                            <button class="delete btn btn-danger btn-sm" type="button" v-on:click="deletePolicy(policy, $event)">@T["Delete"]</button>
                         </div>
                         {{ policy.Name }}
                     </div>
                 </li>
             </ul>
-            <div class="form-group">
-                <button class="primaryAction btn btn-primary" type="submit">Save</button>
-            </div>
         </div>
         <policy-details v-if="selectedPolicy" v-bind:policy="selectedPolicy" v-on:ok="updatePolicy" v-on:back="back" />
     </div>
