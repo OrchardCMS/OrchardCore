@@ -3,7 +3,7 @@
 @using OrchardCore.Deployment.Services
 @using Microsoft.AspNetCore.Routing
 
-<h1>@RenderTitleSegments(T["Deployment Plan"])</h1>
+<zone Name="Title"><h1>@RenderTitleSegments(T["Deployment Plan"])</h1></zone>
 
 <div class="card mb-3">
     <nav class="card-body bg-primary p-3">
@@ -36,7 +36,7 @@
     }
     else
     {
-        <div class="alert alert-info mb-1" role="alert">
+        <div class="alert alert-info mb-0" role="alert">
             @T["<strong>Nothing here!</strong> There are no steps on this plan for the moment."]
         </div>
     }
@@ -54,7 +54,7 @@
             </div>
             <div class="modal-body">
                 <div class="form-group">
-                    <input class="form-control" id="search-box" type="search" placeholder="@T["Filter"]" aria-label="@T["Filter"]" autofocus>
+                    <input class="form-control" id="search-box" type="search" placeholder="@T["Filter"]" aria-label="@T["Filter"]" autofocus />
                 </div>
                 <div id="cards" class="row">
                     @foreach (var thumbnail in Model.Thumbnails.OrderBy(t => t.Key))

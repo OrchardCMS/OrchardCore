@@ -6,57 +6,52 @@
 }
 
 <div class="row">
-    <div class="col-xl-6 col-sm-12 title">
+    <div class="col-xl-9 col-sm-12 title">
         <div class="custom-control custom-checkbox float-left">
             <input type="checkbox" class="custom-control-input" value="@contentItem.Id" name="itemIds" id="itemIds-@contentItem.Id">
             <label class="custom-control-label" for="itemIds-@contentItem.Id"></label>
         </div>
         @if (await AuthorizationService.AuthorizeAsync(User, CommonPermissions.EditContent, contentItem))
         {
-            <div class="d-inline">
-                <a admin-for="@contentItem" asp-route-returnUrl="@FullRequestPath" /> - <small class="text-muted">@T["Widget"]</small>
-            </div>
+            <a admin-for="@contentItem" asp-route-returnUrl="@FullRequestPath" />
         }
         else
         {
-            <div class="d-inline">
-                @contentItem - <small class="text-muted">@T["Widget"]</small>
-            </div>
+            @contentItem
+        }
+        - <small class="text-muted">@contentItem.ContentType</small>
+        @if (Model.Header != null)
+        {
+            <div class="header">@await DisplayAsync(Model.Header)</div>
         }
         @if (Model.Tags != null)
         {
             @await DisplayAsync(Model.Tags)
         }
-        @if (Model.Header != null)
-        {
-            <div class="header">@await DisplayAsync(Model.Header)</div>
-        }
-
         @if (Model.Meta != null)
         {
-            <div class="metadata">@await DisplayAsync(Model.Meta)</div>
+        <div class="d-inline">@await DisplayAsync(Model.Meta)</div>
         }
     </div>
-
-    @if (Model.Actions != null)
-    {
-        <div class="col-xl-6 col-sm-12 related">
-            <div class="float-right">
+    <div class="col-xl-3 col-sm-12">
+        <div class="float-right button-group">
+            @if (Model.Actions != null)
+            {
                 @await DisplayAsync(Model.Actions)
-                @if (Model.ActionsMenu != null)
-                {
-                    <div class="btn-group">
-                        <button type="button" class="btn btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            @T["Actions"]
-                        </button>
-                        <div class="dropdown-menu dropdown-menu-right">
-                            @await DisplayAsync(Model.ActionsMenu)
-                        </div>
+            }
+            @if (Model.ActionsMenu != null)
+            {
+                <div class="btn-group">
+                    <button type="button" class="btn btn-sm text-secondary" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fa fa-ellipsis-v" title="@T["Actions"]"></i>
+                    </button>
+                    <div class="actions-menu dropdown-menu dropdown-menu-right">
+                        @await DisplayAsync(Model.ActionsMenu)
                     </div>
-                }
-            </div>
+                </div>
+            }
         </div>
-    }    
+    </div>
 </div>
 
 @if (Model.Content != null)

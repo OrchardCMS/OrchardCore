@@ -2,6 +2,12 @@
 
   <PropertyGroup>
     <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
+     <!-- NuGet properties-->
+    <Title>Target for Modular OrchardCore CMS Application</Title>
+    <Description>$(OCCMSDescription)
+    
+    Converts the application into a modular OrchardCore CMS application with TheAdmin theme but without any front-end Themes.</Description>
+    <PackageTags>$(PackageTags) OrchardCoreCMS CMS</PackageTags>
   </PropertyGroup>
 
   <!-- Add ".props" and ".targets" files in the package specific to the "Cms.Core" bundle -->
@@ -72,6 +78,7 @@
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Menu\OrchardCore.Menu.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Navigation\OrchardCore.Navigation.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.OpenId\OrchardCore.OpenId.csproj" PrivateAssets="none" />
+    <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Placements\OrchardCore.Placements.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.PublishLater\OrchardCore.PublishLater.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Queries\OrchardCore.Queries.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.ReCaptcha\OrchardCore.ReCaptcha.csproj" PrivateAssets="none" />

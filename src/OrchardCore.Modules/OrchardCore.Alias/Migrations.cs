@@ -32,7 +32,7 @@ namespace OrchardCore.Alias
                 .Column<bool>("Published", c => c.WithDefault(true))
             );
 
-            SchemaBuilder.AlterTable(nameof(AliasPartIndex), table => table
+            SchemaBuilder.AlterIndexTable<AliasPartIndex>(table => table
                 .CreateIndex("IDX_AliasPartIndex_Alias", "Alias", "Published", "Latest")
             );
 
@@ -43,11 +43,11 @@ namespace OrchardCore.Alias
         // This code can be removed in a later version as Latest and Published are alterations.
         public int UpdateFrom1()
         {
-            SchemaBuilder.AlterTable(nameof(AliasPartIndex), table => table
+            SchemaBuilder.AlterIndexTable<AliasPartIndex>(table => table
                 .AddColumn<bool>("Latest", c => c.WithDefault(false))
             );
 
-            SchemaBuilder.AlterTable(nameof(AliasPartIndex), table => table
+            SchemaBuilder.AlterIndexTable<AliasPartIndex>(table => table
                 .AddColumn<bool>("Published", c => c.WithDefault(true))
             );
 

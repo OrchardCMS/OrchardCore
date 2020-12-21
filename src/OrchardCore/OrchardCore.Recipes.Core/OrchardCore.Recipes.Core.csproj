@@ -3,6 +3,12 @@
   <PropertyGroup>
     <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
     <RootNamespace>OrchardCore.Recipes</RootNamespace>
+    <!-- NuGet properties-->
+    <Title>OrchardCore Recipes Core</Title>
+    <Description>$(OCFrameworkDescription)
+    
+    Core Implementation for OrchardCore Recipes.</Description>
+    <PackageTags>$(PackageTags) OrchardCoreFramework Infrastructure</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>

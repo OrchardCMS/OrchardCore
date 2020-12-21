@@ -12,7 +12,7 @@ describe('ComingSoon Recipe test', function () {
     it('Displays the home page of the ComingSoon theme', function(){
         cy.visit(`${tenant.prefix}`);
         cy.get('h1').should('contain.text', 'Coming Soon');
-        cy.get('p').should('contain.text', "We're working hard to finish the development of this site. Our target launch date is December 2020! Sign up for updates using the form below!");
+        cy.get('p').should('contain.text', "We're working hard to finish the development of this site.");
     })
 
     it('ComingSoon admin login should work', function(){

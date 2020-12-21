@@ -2,7 +2,7 @@
 @{
     int i = 0;
 }
-<h1>@T["Add Named Part To \"{0}\"", Model.Type.DisplayName]</h1>
+<zone Name="Title"><h1>@T["Add Named Part To \"{0}\"", Model.Type.DisplayName]</h1></zone>
 
 <form asp-action="AddReusablePartTo">
     @Html.ValidationSummary()

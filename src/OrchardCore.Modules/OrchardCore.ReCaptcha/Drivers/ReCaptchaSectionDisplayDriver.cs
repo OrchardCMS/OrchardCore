@@ -31,7 +31,7 @@ namespace OrchardCore.ReCaptcha.Drivers
             _authorizationService = authorizationService;
         }
 
-        public override async Task<IDisplayResult> EditAsync(ReCaptchaSettings section, BuildEditorContext context)
+        public override async Task<IDisplayResult> EditAsync(ReCaptchaSettings settings, BuildEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
 
@@ -42,8 +42,8 @@ namespace OrchardCore.ReCaptcha.Drivers
 
             return Initialize<ReCaptchaSettingsViewModel>("ReCaptchaSettings_Edit", model =>
                 {
-                    model.SiteKey = section.SiteKey;
-                    model.SecretKey = section.SecretKey;
+                    model.SiteKey = settings.SiteKey;
+                    model.SecretKey = settings.SecretKey;
                 })
                 .Location("Content")
                 .OnGroup(GroupId);

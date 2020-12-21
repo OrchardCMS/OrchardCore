@@ -55,7 +55,7 @@ namespace OrchardCore.OpenId.YesSql.Migrations
 
         public int UpdateFrom1()
         {
-            SchemaBuilder.AlterTable(nameof(OpenIdTokenIndex), table => table
+            SchemaBuilder.AlterIndexTable<OpenIdTokenIndex>(table => table
                 .AddColumn<string>(nameof(OpenIdTokenIndex.Type)));
 
             return 2;
@@ -88,10 +88,10 @@ namespace OrchardCore.OpenId.YesSql.Migrations
 
         public int UpdateFrom3()
         {
-            SchemaBuilder.AlterTable(nameof(OpenIdAuthorizationIndex), table => table
+            SchemaBuilder.AlterIndexTable<OpenIdAuthorizationIndex>(table => table
                 .AddColumn<DateTimeOffset>(nameof(OpenIdAuthorizationIndex.CreationDate)));
 
-            SchemaBuilder.AlterTable(nameof(OpenIdTokenIndex), table => table
+            SchemaBuilder.AlterIndexTable<OpenIdTokenIndex>(table => table
                 .AddColumn<DateTimeOffset>(nameof(OpenIdTokenIndex.CreationDate)));
 
             return 4;

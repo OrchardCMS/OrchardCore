@@ -33,7 +33,7 @@ namespace OrchardCore.Templates.Settings
                         Key = $"{contentPartDefinition.Name}_Summary",
                         Description = S["Template for a {0} part in summary views", contentPartDefinition.DisplayName()]
                     });
-            }).Location("Content");
+            }).Location("Shortcuts");
         }
     }
 }

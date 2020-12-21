@@ -27,7 +27,7 @@ namespace OrchardCore.Lists
                 .Column<int>("Order")
             );
 
-            SchemaBuilder.AlterTable(nameof(ContainedPartIndex), table => table
+            SchemaBuilder.AlterIndexTable<ContainedPartIndex>(table => table
                 .CreateIndex("IDX_ContainedPartIndex_ListContentItemId", "ListContentItemId")
             );
 

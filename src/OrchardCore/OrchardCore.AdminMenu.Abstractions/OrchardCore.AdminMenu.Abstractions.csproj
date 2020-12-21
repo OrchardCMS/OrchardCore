@@ -3,6 +3,13 @@
   <PropertyGroup>
     <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
     <RootNamespace>OrchardCore.AdminMenu</RootNamespace>
+
+    <!-- NuGet properties-->
+    <Title>OrchardCore AdminMenu Abstractions</Title>
+    <Description>$(OCCMSDescription)
+    
+    Abstractions for AdminMenu Module.</Description>
+    <PackageTags>$(PackageTags) OrchardCoreCMS Abstractions</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>

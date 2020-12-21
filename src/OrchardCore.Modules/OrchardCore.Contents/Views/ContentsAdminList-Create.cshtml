@@ -1,20 +1,24 @@
 @model ContentOptionsViewModel
-<div class="form-group">
+<div class="form-group d-inline-flex float-right mb-0">
     <div class="btn-group">
         @if (Model.CreatableTypes.Any())
         {
             @if (Model.CreatableTypes.Count == 1)
             {
-                <a class="btn btn-sm btn-success" href="@Url.RouteUrl(new { area = "OrchardCore.Contents", controller = "Admin", action = "Create", id = Model.CreatableTypes.First().Value, returnUrl = FullRequestPath })">@T["New {0}", Model.CreatableTypes.First().Text]</a>
+                <a class="btn btn-sm btn-secondary" href="@Url.RouteUrl(new { area = "OrchardCore.Contents", controller = "Admin", action = "Create", id = Model.CreatableTypes.First().Value, returnUrl = FullRequestPath })">@T["New {0}", Model.CreatableTypes.First().Text]</a>
             }
             else
             {
-                <button class="btn btn-sm btn-success dropdown-toggle" data-toggle="dropdown" id="new-dropdown" type="button" aria-haspopup="true" aria-expanded="false">@T["New"]</button>
-                <div class="dropdown-menu dropdown-menu-right scrollable" aria-labelledby="new-dropdown">
-                    @foreach (var item in Model.CreatableTypes)
-                    {
-                        <a class="dropdown-item" href="@Url.RouteUrl(new { area = "OrchardCore.Contents", controller = "Admin", action = "Create", id = @item.Value, returnUrl = FullRequestPath })">@T[item.Text]</a>
-                    }
+                <div class="dropdown order-md-1">
+                    <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" id="new-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        @T["New"]
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-right scrollable" aria-labelledby="bulk-action-menu-button">
+                        @foreach (var item in Model.CreatableTypes)
+                        {
+                            <a class="dropdown-item" href="@Url.RouteUrl(new { area = "OrchardCore.Contents", controller = "Admin", action = "Create", id = @item.Value, returnUrl = FullRequestPath })">@T[item.Text]</a>
+                        }
+                    </div>
                 </div>
             }
         }

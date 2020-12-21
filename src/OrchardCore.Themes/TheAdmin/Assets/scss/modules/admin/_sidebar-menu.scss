@@ -328,6 +328,7 @@ body:not(.left-sidebar-compact) {
         #filter:focus {
             border: none;
             box-shadow: unset;
+            border-radius: unset;
         }
     }
 }

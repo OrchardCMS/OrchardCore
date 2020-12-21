@@ -5,7 +5,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Localization;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
@@ -31,6 +33,7 @@ namespace OrchardCore.Sitemaps.Controllers
         private readonly ISiteService _siteService;
         private readonly IUpdateModelAccessor _updateModelAccessor;
         private readonly INotifier _notifier;
+        private readonly IStringLocalizer S;
         private readonly IHtmlLocalizer H;
         private readonly dynamic New;
 
@@ -45,6 +48,7 @@ namespace OrchardCore.Sitemaps.Controllers
             IUpdateModelAccessor updateModelAccessor,
             INotifier notifier,
             IShapeFactory shapeFactory,
+            IStringLocalizer<AdminController> stringLocalizer,
             IHtmlLocalizer<AdminController> htmlLocalizer)
         {
             _sitemapService = sitemapService;
@@ -56,11 +60,12 @@ namespace OrchardCore.Sitemaps.Controllers
             _siteService = siteService;
             _updateModelAccessor = updateModelAccessor;
             _notifier = notifier;
+            S = stringLocalizer;
             H = htmlLocalizer;
             New = shapeFactory;
         }
 
-        public async Task<IActionResult> List(SitemapListOptions options, PagerParameters pagerParameters)
+        public async Task<IActionResult> List(ContentOptions options, PagerParameters pagerParameters)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSitemaps))
             {
@@ -70,18 +75,12 @@ namespace OrchardCore.Sitemaps.Controllers
             var siteSettings = await _siteService.GetSiteSettingsAsync();
             var pager = new Pager(pagerParameters, siteSettings.PageSize);
 
-            // default options
-            if (options == null)
-            {
-                options = new SitemapListOptions();
-            }
-
             var sitemaps = (await _sitemapManager.GetSitemapsAsync())
                 .OfType<Sitemap>();
 
             if (!string.IsNullOrWhiteSpace(options.Search))
             {
-                sitemaps = sitemaps.Where(smp => smp.Name.Contains(options.Search));
+                sitemaps = sitemaps.Where(x => x.Name.Contains(options.Search, StringComparison.OrdinalIgnoreCase));
             }
 
             var count = sitemaps.Count();
@@ -102,6 +101,10 @@ namespace OrchardCore.Sitemaps.Controllers
                 Sitemaps = results.Select(sm => new SitemapListEntry { SitemapId = sm.SitemapId, Name = sm.Name, Enabled = sm.Enabled }).ToList(),
                 Options = options,
                 Pager = pagerShape
+            };
+
+            model.Options.ContentsBulkAction = new List<SelectListItem>() {
+                new SelectListItem() { Text = S["Delete"], Value = nameof(ContentsBulkAction.Remove) }
             };
 
             return View(model);
@@ -267,7 +270,7 @@ namespace OrchardCore.Sitemaps.Controllers
 
                 await _sitemapManager.UpdateSitemapAsync(sitemap);
 
-                _notifier.Success(H["Sitemap updated successfully"]);
+                _notifier.Success(H["Sitemap updated successfully."]);
 
                 return RedirectToAction(nameof(List));
             }
@@ -293,7 +296,7 @@ namespace OrchardCore.Sitemaps.Controllers
 
             await _sitemapManager.DeleteSitemapAsync(sitemapId);
 
-            _notifier.Success(H["Sitemap deleted successfully"]);
+            _notifier.Success(H["Sitemap deleted successfully."]);
 
             return RedirectToAction(nameof(List));
         }
@@ -317,9 +320,41 @@ namespace OrchardCore.Sitemaps.Controllers
 
             await _sitemapManager.UpdateSitemapAsync(sitemap);
 
-            _notifier.Success(H["Sitemap toggled successfully"]);
+            _notifier.Success(H["Sitemap toggled successfully."]);
 
             return RedirectToAction(nameof(List));
+        }
+
+        [HttpPost, ActionName("List")]
+        [FormValueRequired("submit.BulkAction")]
+        public async Task<ActionResult> ListPost(ViewModels.ContentOptions options, IEnumerable<string> itemIds)
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageSitemaps))
+            {
+                return Forbid();
+            }
+
+            if (itemIds?.Count() > 0)
+            {
+                var sitemapsList = await _sitemapManager.LoadSitemapsAsync();
+                var checkedContentItems = sitemapsList.Where(x => itemIds.Contains(x.SitemapId));
+                switch (options.BulkAction)
+                {
+                    case ContentsBulkAction.None:
+                        break;
+                    case ContentsBulkAction.Remove:
+                        foreach (var item in checkedContentItems)
+                        {
+                            await _sitemapManager.DeleteSitemapAsync(item.SitemapId);
+                        }
+                        _notifier.Success(H["Sitemaps successfully removed."]);
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            }
+
+            return RedirectToAction("List");
         }
     }
 }

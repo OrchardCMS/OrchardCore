@@ -57,48 +57,8 @@ namespace OrchardCore.DisplayManagement
             );
 
             return placementResolvers.Aggregate<IPlacementInfoResolver, PlacementInfo>(null, (prev, resolver) =>
-                CombinePlacements(prev, resolver.ResolvePlacement(placementContext))
+                PlacementInfoExtensions.Combine(prev, resolver.ResolvePlacement(placementContext))
             );
-        }
-
-        private static PlacementInfo CombinePlacements(PlacementInfo first, PlacementInfo second)
-        {
-            if (first == null)
-            {
-                return second;
-            }
-            else if (second != null)
-            {
-                CombineAlternates(first.Alternates, second.Alternates);
-                CombineAlternates(first.Wrappers, second.Wrappers);
-                if (!String.IsNullOrEmpty(second.ShapeType))
-                {
-                    first.ShapeType = second.ShapeType;
-                }
-                if (!String.IsNullOrEmpty(second.Location))
-                {
-                    first.Location = second.Location;
-                }
-                if (!String.IsNullOrEmpty(second.DefaultPosition))
-                {
-                    first.DefaultPosition = second.DefaultPosition;
-                }
-                first.Source += "," + second.Source;
-            }
-            return first;
-        }
-
-        private static AlternatesCollection CombineAlternates(AlternatesCollection first, AlternatesCollection second)
-        {
-            if (first == null)
-            {
-                return second;
-            }
-            else if (second != null)
-            {
-                first.AddRange(second);
-            }
-            return first;
         }
 
         protected ValueTask<IShape> CreateContentShapeAsync(string actualShapeType)

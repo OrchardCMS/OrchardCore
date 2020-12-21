@@ -78,7 +78,7 @@ namespace OrchardCore.Sitemaps
 
             // Sitemap Part.
             services.AddContentPart<SitemapPart>()
-                .UseDisplayDriver<SitemapPartDisplay>()
+                .UseDisplayDriver<SitemapPartDisplayDriver>()
                 .AddHandler<SitemapPartHandler>();
 
             //custom url in sitemap

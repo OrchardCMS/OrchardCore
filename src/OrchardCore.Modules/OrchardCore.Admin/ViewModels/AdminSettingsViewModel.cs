@@ -5,5 +5,7 @@ namespace OrchardCore.Admin.ViewModels
         public bool DisplayMenuFilter { get; set; }
 
         public bool DisplayDarkMode { get; set; }
+
+        public bool DisplayTitlesInTopbar { get; set; }
     }
 }

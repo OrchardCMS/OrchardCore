@@ -15,14 +15,17 @@ namespace OrchardCore.Documents
     public class VolatileDocumentManager<TDocument> : DocumentManager<TDocument>, IVolatileDocumentManager<TDocument> where TDocument : class, IDocument, new()
     {
         private const string LockKeySuffix = "_LOCK";
-        private static readonly TimeSpan LockTimeout = TimeSpan.FromMilliseconds(100);
-        private static readonly TimeSpan LockExpiration = TimeSpan.FromSeconds(1);
+        private static readonly TimeSpan DefaultLockTimeout = TimeSpan.FromSeconds(1);
+        private static readonly TimeSpan DefaultLockExpiration = TimeSpan.FromSeconds(1);
 
         private readonly IDistributedLock _distributedLock;
         private readonly string _lockKey;
 
         private delegate Task<TDocument> UpdateDelegate();
         private UpdateDelegate _updateDelegateAsync;
+
+        private delegate Task AfterUpdateDelegate(TDocument document);
+        private AfterUpdateDelegate _afterUpdateDelegateAsync;
 
         public VolatileDocumentManager(
             IDocumentStore documentStore,
@@ -37,7 +40,8 @@ namespace OrchardCore.Documents
             _lockKey = _options.CacheKey + LockKeySuffix;
         }
 
-        public Task UpdateAtomicAsync(Func<Task<TDocument>> updateAsync)
+        public Task UpdateAtomicAsync(Func<Task<TDocument>> updateAsync, Func<TDocument, Task> afterUpdateAsync = null,
+            TimeSpan? lockAcquireTimeout = null, TimeSpan? lockExpirationTime = null)
         {
             if (updateAsync == null)
             {
@@ -46,9 +50,17 @@ namespace OrchardCore.Documents
 
             _updateDelegateAsync += () => updateAsync();
 
+            if (afterUpdateAsync != null)
+            {
+                _afterUpdateDelegateAsync += document => afterUpdateAsync(document);
+            }
+
             _documentStore.AfterCommitSuccess<TDocument>(async () =>
             {
-                (var locker, var locked) = await _distributedLock.TryAcquireLockAsync(_lockKey, LockTimeout, LockExpiration);
+                var timeout = lockAcquireTimeout ?? DefaultLockTimeout;
+                var expiration = lockExpirationTime ?? DefaultLockExpiration;
+
+                (var locker, var locked) = await _distributedLock.TryAcquireLockAsync(_lockKey, timeout, expiration);
                 if (!locked)
                 {
                     return;
@@ -65,6 +77,14 @@ namespace OrchardCore.Documents
                 document.Identifier ??= IdGenerator.GenerateId();
 
                 await SetInternalAsync(document);
+
+                if (_afterUpdateDelegateAsync != null)
+                {
+                    foreach (var d in _afterUpdateDelegateAsync.GetInvocationList())
+                    {
+                        await ((AfterUpdateDelegate)d)(document);
+                    }
+                }
             });
 
             return Task.CompletedTask;

@@ -117,20 +117,20 @@ $navbar-light-toggler-border-color: rgba($gray-900, 0.1) !default;
 // Pagination
 
 $pagination-color: $white !default;
-$pagination-bg: $success !default;
-$pagination-border-width: 0 !default;
-$pagination-border-color: transparent !default;
+$pagination-bg: $gray-900 !default;
+$pagination-border-width: 1px !default;
+$pagination-border-color: $gray-700 !default;
 
 $pagination-hover-color: $white !default;
-$pagination-hover-bg: lighten($success, 10%) !default;
+$pagination-hover-bg: lighten($gray-900, 10%) !default;
 $pagination-hover-border-color: transparent !default;
 
-$pagination-active-bg: $pagination-hover-bg !default;
-$pagination-active-border-color: transparent !default;
+$pagination-active-bg: $primary !default;
+$pagination-active-border-color: $gray-700 !default;
 
 $pagination-disabled-color: $white !default;
-$pagination-disabled-bg: darken($success, 15%) !default;
-$pagination-disabled-border-color: transparent !default;
+$pagination-disabled-bg: $pagination-hover-bg !default;
+$pagination-disabled-border-color: $gray-700 !default;
 
 // Jumbotron
 

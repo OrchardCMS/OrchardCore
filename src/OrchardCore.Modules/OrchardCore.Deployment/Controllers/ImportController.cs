@@ -81,7 +81,7 @@ namespace OrchardCore.Deployment.Controllers
                     }
                     else
                     {
-                        _notifier.Error(H["Only zip or json files are supported"]);
+                        _notifier.Error(H["Only zip or json files are supported."]);
 
                         return RedirectToAction("Index");
                     }

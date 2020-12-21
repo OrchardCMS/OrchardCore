@@ -1,10 +1,12 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
@@ -15,6 +17,7 @@ using OrchardCore.Media.Processing;
 using OrchardCore.Media.Services;
 using OrchardCore.Media.ViewModels;
 using OrchardCore.Navigation;
+using OrchardCore.Routing;
 using OrchardCore.Settings;
 
 namespace OrchardCore.Media.Controllers
@@ -38,8 +41,8 @@ namespace OrchardCore.Media.Controllers
             ISiteService siteService,
             INotifier notifier,
             IShapeFactory shapeFactory,
-            IStringLocalizer<AdminController> stringLocalizer,
-            IHtmlLocalizer<AdminController> htmlLocalizer
+            IStringLocalizer<MediaProfilesController> stringLocalizer,
+            IHtmlLocalizer<MediaProfilesController> htmlLocalizer
             )
         {
             _authorizationService = authorizationService;
@@ -52,7 +55,7 @@ namespace OrchardCore.Media.Controllers
             H = htmlLocalizer;
         }
 
-        public async Task<IActionResult> Index(PagerParameters pagerParameters)
+        public async Task<IActionResult> Index(ContentOptions options, PagerParameters pagerParameters)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMediaProfiles))
             {
@@ -61,13 +64,20 @@ namespace OrchardCore.Media.Controllers
 
             var siteSettings = await _siteService.GetSiteSettingsAsync();
             var pager = new Pager(pagerParameters, siteSettings.PageSize);
+
             var mediaProfilesDocument = await _mediaProfilesManager.GetMediaProfilesDocumentAsync();
+            var mediaProfiles = mediaProfilesDocument.MediaProfiles.ToList();
 
-            var count = mediaProfilesDocument.MediaProfiles.Count;
+            if (!string.IsNullOrWhiteSpace(options.Search))
+            {
+                mediaProfiles = mediaProfiles.Where(x => x.Key.Contains(options.Search, StringComparison.OrdinalIgnoreCase)).ToList();
+            }
 
-            var mediaProfiles = mediaProfilesDocument.MediaProfiles.OrderBy(x => x.Key)
+            var count = mediaProfiles.Count;
+
+            mediaProfiles = mediaProfiles.OrderBy(x => x.Key)
                 .Skip(pager.GetStartIndex())
-                .Take(pager.PageSize);
+                .Take(pager.PageSize).ToList();
 
             var pagerShape = (await New.Pager(pager)).TotalItemCount(count);
 
@@ -77,7 +87,20 @@ namespace OrchardCore.Media.Controllers
                 Pager = pagerShape
             };
 
+            model.Options.ContentsBulkAction = new List<SelectListItem>() {
+                new SelectListItem() { Text = S["Delete"], Value = nameof(ContentsBulkAction.Remove) }
+            };
+
             return View("Index", model);
+        }
+
+        [HttpPost, ActionName("Index")]
+        [FormValueRequired("submit.Filter")]
+        public ActionResult IndexFilterPOST(MediaProfileIndexViewModel model)
+        {
+            return RedirectToAction("Index", new RouteValueDictionary {
+                { "Options.Search", model.Options.Search }
+            });
         }
 
         public async Task<IActionResult> Create()
@@ -263,9 +286,41 @@ namespace OrchardCore.Media.Controllers
 
             await _mediaProfilesManager.RemoveMediaProfileAsync(name);
 
-            _notifier.Success(H["Media profile deleted successfully"]);
+            _notifier.Success(H["Media profile deleted successfully."]);
 
             return RedirectToAction(nameof(Index));
+        }
+
+        [HttpPost, ActionName("Index")]
+        [FormValueRequired("submit.BulkAction")]
+        public async Task<ActionResult> IndexPost(ViewModels.ContentOptions options, IEnumerable<string> itemIds)
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMediaProfiles))
+            {
+                return Forbid();
+            }
+
+            if (itemIds?.Count() > 0)
+            {
+                var mediaProfilesDocument = await _mediaProfilesManager.LoadMediaProfilesDocumentAsync();
+                var checkedContentItems = mediaProfilesDocument.MediaProfiles.Where(x => itemIds.Contains(x.Key));
+                switch (options.BulkAction)
+                {
+                    case ContentsBulkAction.None:
+                        break;
+                    case ContentsBulkAction.Remove:
+                        foreach (var item in checkedContentItems)
+                        {
+                            await _mediaProfilesManager.RemoveMediaProfileAsync(item.Key);
+                        }
+                        _notifier.Success(H["Media profiles successfully removed."]);
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            }
+
+            return RedirectToAction("Index");
         }
 
         private void BuildViewModel(MediaProfileViewModel model)

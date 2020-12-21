@@ -38,10 +38,10 @@ namespace OrchardCore.Environment.Shell
 
         public string Name { get; set; }
 
-        public string Identifier
+        public string VersionId
         {
-            get => _settings["Identifier"];
-            set => _settings["Identifier"] = value;
+            get => _settings["VersionId"];
+            set => _settings["VersionId"] = value;
         }
 
         public string RequestUrlHost

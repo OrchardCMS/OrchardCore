@@ -1944,6 +1944,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "tropcicstefan",
+      "name": "tropcicstefan",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/30324480?v=4",
+      "profile": "https://github.com/tropcicstefan",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true
