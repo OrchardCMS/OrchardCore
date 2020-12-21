@@ -2,6 +2,11 @@
 
 <zone Name="Title"><h1>@RenderTitleSegments(T["Edit Sitemap Source"])</h1></zone>
 
+@if (String.IsNullOrEmpty(Site.BaseUrl))
+{
+    <p class="alert alert-warning">@T["The site settings 'Base url' property is empty, but is required to generate sitemaps."]</p>
+}
+
 <div asp-validation-summary="ModelOnly"></div>
 <form asp-action="Edit" method="post">
     @await DisplayAsync(Model.Editor.Content)

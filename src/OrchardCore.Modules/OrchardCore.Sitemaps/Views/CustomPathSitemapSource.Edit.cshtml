@@ -2,11 +2,6 @@
 @using OrchardCore.Sitemaps.Models
 <h5>@T["Custom Url"]</h5>
 
-@if (String.IsNullOrEmpty(Site.BaseUrl))
-{
-    <p class="alert alert-warning">@T["The site settings 'Base url' property is empty, but is required to generate sitemaps."]</p>
-}
-
 <div id="index-all-row" class="row">
     <div class="col-6">
         <div class="card mb-4">
@@ -21,9 +16,9 @@
                             </div>
                         }
                         <input asp-for="Url" class="form-control" autofocus />
-                        <span asp-validation-for="Url" class="text-danger">@T["The Url is required or have used a wrong format"]</span>
                     </div>
-                    <span class="hint">@T["The URL to add to the sitemap. ex. /path_to_something or ~/path/to/something"]</span>
+                    <span asp-validation-for="Url"></span>
+                    <span class="hint">@T["The URL to add to the sitemap. ex. path/to/something"]</span>
                 </div>
                 <div class="form-group" asp-validation-class-for="ChangeFrequency">
                     <label asp-for="ChangeFrequency">@T["Change Frequency"] </label>

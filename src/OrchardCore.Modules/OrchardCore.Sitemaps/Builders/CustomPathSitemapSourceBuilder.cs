@@ -39,11 +39,11 @@ namespace OrchardCore.Sitemaps.Builders
             if (string.IsNullOrEmpty(source.Url))
                 return false;
 
-            if(!(context.HostPrefix?? "").EndsWith("/") && !source.Url.StartsWith("/") && !source.Url.StartsWith("~"))
-                source.Url = "/" + source.Url;
+            //add ~/ to the path, because the user insert it without leadind /
+            var path = "~/" + source.Url;
 
             var loc = new XElement(Namespace + "loc");
-            loc.Add(context.HostPrefix + context.UrlHelper.Content(source.Url));
+            loc.Add(context.HostPrefix + context.UrlHelper.Content(path));
             url.Add(loc);
             return true;
         }

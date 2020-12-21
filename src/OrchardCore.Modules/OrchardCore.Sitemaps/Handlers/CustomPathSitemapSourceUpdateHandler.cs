@@ -18,22 +18,12 @@ namespace OrchardCore.Sitemaps.Handlers
 
         public async Task UpdateSitemapAsync(SitemapUpdateContext context)
         {
-            var contentItem = context.UpdateObject as ContentItem;
-
-            if (contentItem == null)
-            {
-                return;
-            }
-
-            var sitemaps = (await _sitemapManager.LoadSitemapsAsync())
-                .Where(s => s.GetType() == typeof(Sitemap));
+            var sitemaps = (await _sitemapManager.LoadSitemapsAsync()).Where(s => s.GetType() == typeof(Sitemap));
 
             if (!sitemaps.Any())
             {
                 return;
             }
-
-            var contentTypeName = contentItem.ContentType;
 
             foreach (var sitemap in sitemaps)
             {

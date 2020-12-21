@@ -1,6 +1,5 @@
 using System;
 using System.Threading.Tasks;
-using OrchardCore.Sitemaps.Builders;
 using OrchardCore.Sitemaps.Models;
 
 
