@@ -16,7 +16,7 @@ namespace OrchardCore.DisplayManagement.Shapes
     {
         private List<string> _classes;
         private Dictionary<string, string> _attributes;
-        private readonly List<IPositioned> _items = new List<IPositioned>();
+        private List<IPositioned> _items = new List<IPositioned>();
         private bool _sorted = false;
 
         public ShapeMetadata Metadata { get; } = new ShapeMetadata();
@@ -25,7 +25,20 @@ namespace OrchardCore.DisplayManagement.Shapes
         public string TagName { get; set; }
         public IList<string> Classes => _classes ??= new List<string>();
         public IDictionary<string, string> Attributes => _attributes ??= new Dictionary<string, string>();
-        public IEnumerable<dynamic> Items => _items;
+        public IEnumerable<dynamic> Items
+        {
+            get
+            {
+                if (!_sorted)
+                {
+                    _items = _items.OrderBy(x => x, FlatPositionComparer.Instance).ToList();
+                    _sorted = true;
+                }
+
+                return _items;
+            }
+        }
+
         public bool HasItems => _items.Count > 0;
 
         public string Position
@@ -108,11 +121,24 @@ namespace OrchardCore.DisplayManagement.Shapes
             return null;
         }
 
+        public IShape NormalizedNamed(string shapeName)
+        {
+            for (var i = 0; i < _items.Count; i++)
+            {
+                if (_items[i] is IShape shape && shape.Metadata.Name?.Replace("__", "-") == shapeName)
+                {
+                    return shape;
+                }
+            }
+
+            return null;
+        }
+
         IEnumerator<object> IEnumerable<object>.GetEnumerator()
         {
             if (!_sorted)
             {
-                _items.Sort(FlatPositionComparer.Instance);
+                _items = _items.OrderBy(x => x, FlatPositionComparer.Instance).ToList();
                 _sorted = true;
             }
 
@@ -123,7 +149,7 @@ namespace OrchardCore.DisplayManagement.Shapes
         {
             if (!_sorted)
             {
-                _items.Sort(FlatPositionComparer.Instance);
+                _items = _items.OrderBy(x => x, FlatPositionComparer.Instance).ToList();
                 _sorted = true;
             }
 
@@ -182,14 +208,21 @@ namespace OrchardCore.DisplayManagement.Shapes
             return tagBuilder;
         }
 
-        public override bool TryGetMember(System.Dynamic.GetMemberBinder binder, out object result)
+        public override bool TryGetMember(GetMemberBinder binder, out object result)
         {
             var name = binder.Name;
+
             if (!base.TryGetMember(binder, out result) || (null == result))
             {
-                //Try to get Named shape
-                result = Named(name.Replace("__", "-"));
+                // Try to get a Named shape
+                result = Named(name);
+
+                if (result == null)
+                {
+                    result = NormalizedNamed(name.Replace("__", "-"));
+                }
             }
+
             return true;
         }
 

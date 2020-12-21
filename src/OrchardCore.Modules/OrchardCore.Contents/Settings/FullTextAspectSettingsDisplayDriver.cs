@@ -12,7 +12,7 @@ namespace OrchardCore.Contents.Settings
     public class FullTextAspectSettingsDisplayDriver : ContentTypeDefinitionDisplayDriver
     {
         private readonly ILiquidTemplateManager _templateManager;
-        private readonly IStringLocalizer<FullTextAspectSettingsDisplayDriver> S;
+        private readonly IStringLocalizer S;
 
         public FullTextAspectSettingsDisplayDriver(
             ILiquidTemplateManager templateManager,

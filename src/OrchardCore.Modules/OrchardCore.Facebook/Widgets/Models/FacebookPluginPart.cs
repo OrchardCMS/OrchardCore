@@ -1,4 +1,3 @@
-using System;
 using OrchardCore.ContentManagement;
 
 namespace OrchardCore.Facebook.Widgets.Models

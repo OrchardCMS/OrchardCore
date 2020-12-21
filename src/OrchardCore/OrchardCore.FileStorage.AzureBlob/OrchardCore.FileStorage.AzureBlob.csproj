@@ -2,6 +2,13 @@
 
   <PropertyGroup>
     <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
+    
+    <!-- NuGet properties-->
+    <Title>OrchardCore FileStorage AzureBlob</Title>
+    <Description>$(OCFrameworkDescription)
+    
+    Implementation for AzureBlob FileStorage.</Description>
+    <PackageTags>$(PackageTags) OrchardCoreFramework Azure</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
@@ -9,7 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Azure.Storage.Blob"/>
+    <PackageReference Include="Azure.Storage.Blobs" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,13 +1,14 @@
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
+using Newtonsoft.Json;
 using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.Navigation
 {
     /// <summary>
-    /// Represents a menu item descrbibed by an <see cref="INavigationProvider"/> implementation.
-    /// A menu item can desbribe child menu items.
+    /// Represents a menu item described by an <see cref="INavigationProvider"/> implementation.
+    /// A menu item can describe child menu items.
     /// </summary>
     public class MenuItem
     {
@@ -68,6 +69,7 @@ namespace OrchardCore.Navigation
         /// <summary>
         /// The resource the permission is protecting.
         /// </summary>
+        [JsonIgnore]
         public object Resource { get; set; }
 
         /// <summary>
@@ -78,11 +80,13 @@ namespace OrchardCore.Navigation
         /// <summary>
         /// The optional route values for this menu item.
         /// </summary>
+        [JsonIgnore]
         public RouteValueDictionary RouteValues { get; set; }
 
         /// <summary>
         /// The list of <see cref="Permission"/> objects the user must have in order to see this menu item.
         /// </summary>
+        [JsonIgnore]
         public List<Permission> Permissions { get; }
 
         /// <summary>

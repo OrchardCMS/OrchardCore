@@ -16,7 +16,7 @@ namespace OrchardCore.Modules
         }
 
         /// <summary>
-        /// The name of the feaure to assign the component to.
+        /// The name of the feature to assign the component to.
         /// </summary>
         public string FeatureName { get; set; }
     }

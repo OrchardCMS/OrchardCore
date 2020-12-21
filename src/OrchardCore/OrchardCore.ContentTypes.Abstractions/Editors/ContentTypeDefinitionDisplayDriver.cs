@@ -1,4 +1,3 @@
-using System;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.DisplayManagement.Handlers;
 

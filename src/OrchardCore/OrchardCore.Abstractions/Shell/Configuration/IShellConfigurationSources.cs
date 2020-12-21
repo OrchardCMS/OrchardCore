@@ -6,15 +6,15 @@ namespace OrchardCore.Environment.Shell.Configuration
 {
     public interface IShellConfigurationSources
     {
-        void AddSources(string tenant, IConfigurationBuilder builder);
+        Task AddSourcesAsync(string tenant, IConfigurationBuilder builder);
         Task SaveAsync(string tenant, IDictionary<string, string> data);
     }
 
     public static class ShellConfigurationSourcesExtensions
     {
-        public static IConfigurationBuilder AddSources(this IConfigurationBuilder builder, string tenant, IShellConfigurationSources sources)
+        public static async Task<IConfigurationBuilder> AddSourcesAsync(this IConfigurationBuilder builder, string tenant, IShellConfigurationSources sources)
         {
-            sources.AddSources(tenant, builder);
+            await sources.AddSourcesAsync(tenant, builder);
             return builder;
         }
     }

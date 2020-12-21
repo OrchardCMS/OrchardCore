@@ -12,10 +12,13 @@ namespace OrchardCore.OpenId.ViewModels
 
         [Url]
         public string Authority { get; set; }
-
-        public StoreLocation? CertificateStoreLocation { get; set; }
-        public StoreName? CertificateStoreName { get; set; }
-        public string CertificateThumbprint { get; set; }
+        public bool DisableAccessTokenEncryption { get; set; }
+        public StoreLocation? EncryptionCertificateStoreLocation { get; set; }
+        public StoreName? EncryptionCertificateStoreName { get; set; }
+        public string EncryptionCertificateThumbprint { get; set; }
+        public StoreLocation? SigningCertificateStoreLocation { get; set; }
+        public StoreName? SigningCertificateStoreName { get; set; }
+        public string SigningCertificateThumbprint { get; set; }
         public IList<CertificateInfo> AvailableCertificates { get; } = new List<CertificateInfo>();
         public bool EnableTokenEndpoint { get; set; }
         public bool EnableAuthorizationEndpoint { get; set; }
@@ -25,8 +28,10 @@ namespace OrchardCore.OpenId.ViewModels
         public bool AllowClientCredentialsFlow { get; set; }
         public bool AllowAuthorizationCodeFlow { get; set; }
         public bool AllowRefreshTokenFlow { get; set; }
+        public bool AllowHybridFlow { get; set; }
         public bool AllowImplicitFlow { get; set; }
-        public bool UseRollingTokens { get; set; }
+        public bool DisableRollingRefreshTokens { get; set; }
+        public bool UseReferenceAccessTokens { get; set; }
 
         public class CertificateInfo
         {

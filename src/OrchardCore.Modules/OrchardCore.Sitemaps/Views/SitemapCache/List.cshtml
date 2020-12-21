@@ -1,38 +1,36 @@
 @model OrchardCore.Sitemaps.ViewModels.ListSitemapCacheViewModel
 
-<h1>@RenderTitleSegments(T["Sitemaps Cache"])</h1>
+<zone Name="Title"><h1>@RenderTitleSegments(T["Sitemaps Cache"])</h1></zone>
 
-<form autocomplete="off">
-
-    <div class="row">
-        <div class="form-group col-xl-4 col-sm-6">
-            <div class="input-group input-group-sm filter-options">
-                <input id="search-box" class="form-control" placeholder="@T["Search"]" type="search" autofocus="autofocus" />
+<div class="card mb-3 position-sticky action-bar">
+    <div class="card-body bg-primary p-3">
+        <div class="form-group mb-n1">
+            <div class="input-group input-group-sm w-sm-50 w-25 d-inline-flex has-search">
+                <i class="fa fa-search form-control-feedback"></i>
+                <input id="search-box" class="form-control" placeholder="@T["Search"]" type="search" autofocus />
             </div>
-        </div>
-        <div class="form-group col-xl-8 col-sm-6">
             <div class="btn-group float-right">
                 <a asp-route-action="PurgeAll" class="btn btn-sm btn-danger float-right" data-title="@T["Purge All"]" data-message="@T["Are you sure you want to purge the entire sitemap cache?"]" itemprop="RemoveUrl UnsafeUrl">@T["Purge All"]</a>
             </div>
         </div>
     </div>
+</div>
 
-</form>
-
+@* the form is necessary to generate and antiforgery token for the purge action *@
 <form asp-action="List">
-    @* the form is necessary to generate and antiforgery token for the purge action *@
-
     @if (Model.CachedFileNames.Any())
     {
         <ul id="cache-entries" class="list-group">
             @for (var i = 0; i < Model.CachedFileNames.Length; i++)
             {
                 <li class="list-group-item" data-cacheentry="@Model.CachedFileNames[i]">
-                    <div class="properties">
-                        <div class="related">
+                    <div class="row">
+                        <div class="col">
+                            @Model.CachedFileNames[i]
+                        </div>
+                        <div class="col">
                             <a asp-action="Purge" asp-route-cacheFileName="@Model.CachedFileNames[i]" class="btn btn-sm btn-danger float-right" data-title="@T["Purge"]" data-message="@T["Are you sure you want to purge this sitemap?"]" itemprop="RemoveUrl UnsafeUrl">@T["Purge"]</a>
                         </div>
-                        @Model.CachedFileNames[i]
                     </div>
                 </li>
             }
@@ -40,18 +38,16 @@
     }
     else
     {
-        <div id="none-alert" class="alert alert-info" role="alert">
+        <div id="none-alert" class="alert alert-info mb-1" role="alert">
             @T["<strong>Nothing here!</strong> There are no sitemaps cached for the moment."]
         </div>
     }
-
-    <div id="search-alert" class="alert alert-info d-none" role="alert">
+    <div id="search-alert" class="alert alert-info mb-1 d-none" role="alert">
         @T["<strong>Nothing here!</strong> Your search returned no results."]
     </div>
-
 </form>
 
-<script at="Foot" type="text/javascript">
+<script at="Foot">
     $(function () {
         var searchBox = $('#search-box');
 

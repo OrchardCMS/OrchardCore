@@ -11,6 +11,6 @@ namespace OrchardCore.Environment.Shell
         /// <summary>
         /// Triggered whenever a shell descriptor has changed.
         /// </summary>
-        Task Changed(ShellDescriptor descriptor, string tenant);
+        Task ChangedAsync(ShellDescriptor descriptor, ShellSettings settings);
     }
 }

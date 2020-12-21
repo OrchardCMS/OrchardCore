@@ -17,26 +17,6 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Email
         [Fact]
         public async Task SendEmail_WithDisplayName()
         {
-            var pickupDirectoryPath = Path.Combine(Directory.GetCurrentDirectory(), "Email");
-
-            if (Directory.Exists(pickupDirectoryPath))
-            {
-                var directory = new DirectoryInfo(pickupDirectoryPath);
-                directory.GetFiles().ToList().ForEach(f => f.Delete());
-            }
-
-            Directory.CreateDirectory(pickupDirectoryPath);
-
-            var options = new Mock<IOptions<SmtpSettings>>();
-            options.Setup(o => o.Value).Returns(new SmtpSettings
-            {
-                DefaultSender = "Your Name <youraddress@host.com>",
-                DeliveryMethod = SmtpDeliveryMethod.SpecifiedPickupDirectory,
-                PickupDirectoryLocation = pickupDirectoryPath
-            });
-            var logger = new Mock<ILogger<SmtpService>>();
-            var localizer = new Mock<IStringLocalizer<SmtpService>>();
-            var smtp = new SmtpService(options.Object, logger.Object, localizer.Object);
             var message = new MailMessage
             {
                 To = "info@oc.com",
@@ -44,50 +24,19 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Email
                 Body = "Test Message"
             };
 
-            var result = await smtp.SendAsync(message);
-
-            Assert.True(result.Succeeded);
+            await SendEmailAsync("Your Name <youraddress@host.com>", message);
         }
 
         [Fact]
         public async Task SendEmail_UsesDefaultSender()
         {
-            var pickupDirectoryPath = Path.Combine(Directory.GetCurrentDirectory(), "Email");
-
-            if (Directory.Exists(pickupDirectoryPath))
-            {
-                var directory = new DirectoryInfo(pickupDirectoryPath);
-                directory.GetFiles().ToList().ForEach(f => f.Delete());
-            }
-
-            Directory.CreateDirectory(pickupDirectoryPath);
-
-            var options = new Mock<IOptions<SmtpSettings>>();
-            options.Setup(o => o.Value).Returns(new SmtpSettings
-            {
-                DefaultSender = "Your Name <youraddress@host.com>",
-                DeliveryMethod = SmtpDeliveryMethod.SpecifiedPickupDirectory,
-                PickupDirectoryLocation = pickupDirectoryPath
-            });
-            var logger = new Mock<ILogger<SmtpService>>();
-            var localizer = new Mock<IStringLocalizer<SmtpService>>();
-            var smtp = new SmtpService(options.Object, logger.Object, localizer.Object);
             var message = new MailMessage
             {
                 To = "info@oc.com",
                 Subject = "Test",
                 Body = "Test Message"
             };
-
-            var result = await smtp.SendAsync(message);
-
-            Assert.True(result.Succeeded);
-
-            var file = new DirectoryInfo(pickupDirectoryPath).GetFiles().FirstOrDefault();
-
-            Assert.NotNull(file);
-
-            var content = File.ReadAllText(file.FullName);
+            var content = await SendEmailAsync("Your Name <youraddress@host.com>", message);
 
             Assert.Contains("From: Your Name <youraddress@host.com>", content);
         }
@@ -95,26 +44,6 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Email
         [Fact]
         public async Task SendEmail_UsesCustomSender()
         {
-            var pickupDirectoryPath = Path.Combine(Directory.GetCurrentDirectory(), "Email");
-
-            if (Directory.Exists(pickupDirectoryPath))
-            {
-                var directory = new DirectoryInfo(pickupDirectoryPath);
-                directory.GetFiles().ToList().ForEach(f => f.Delete());
-            }
-
-            Directory.CreateDirectory(pickupDirectoryPath);
-
-            var options = new Mock<IOptions<SmtpSettings>>();
-            options.Setup(o => o.Value).Returns(new SmtpSettings
-            {
-                DefaultSender = "Your Name <youraddress@host.com>",
-                DeliveryMethod = SmtpDeliveryMethod.SpecifiedPickupDirectory,
-                PickupDirectoryLocation = pickupDirectoryPath
-            });
-            var logger = new Mock<ILogger<SmtpService>>();
-            var localizer = new Mock<IStringLocalizer<SmtpService>>();
-            var smtp = new SmtpService(options.Object, logger.Object, localizer.Object);
             var message = new MailMessage
             {
                 To = "info@oc.com",
@@ -122,64 +51,75 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Email
                 Body = "Test Message",
                 From = "My Name <youraddress@host.com>",
             };
-
-            var result = await smtp.SendAsync(message);
-
-            Assert.True(result.Succeeded);
-
-            var file = new DirectoryInfo(pickupDirectoryPath).GetFiles().FirstOrDefault();
-
-            Assert.NotNull(file);
-
-            var content = File.ReadAllText(file.FullName);
+            var content = await SendEmailAsync("Your Name <youraddress@host.com>", message);
 
             Assert.Contains("From: My Name <youraddress@host.com>", content);
-            Assert.Contains("Sender: My Name <youraddress@host.com>", content);
+            Assert.Contains("Sender: Your Name <youraddress@host.com>", content);
         }
 
         [Fact]
-        public async Task SendEmail_UsesReplyTo()
+        public async Task SendEmail_UsesCustomAuthorAndSender()
         {
-            var pickupDirectoryPath = Path.Combine(Directory.GetCurrentDirectory(), "Email");
-
-            if (Directory.Exists(pickupDirectoryPath))
-            {
-                var directory = new DirectoryInfo(pickupDirectoryPath);
-                directory.GetFiles().ToList().ForEach(f => f.Delete());
-            }
-
-            Directory.CreateDirectory(pickupDirectoryPath);
-
-            var options = new Mock<IOptions<SmtpSettings>>();
-            options.Setup(o => o.Value).Returns(new SmtpSettings
-            {
-                DefaultSender = "Your Name <youraddress@host.com>",
-                DeliveryMethod = SmtpDeliveryMethod.SpecifiedPickupDirectory,
-                PickupDirectoryLocation = pickupDirectoryPath
-            });
-            var logger = new Mock<ILogger<SmtpService>>();
-            var localizer = new Mock<IStringLocalizer<SmtpService>>();
-            var smtp = new SmtpService(options.Object, logger.Object, localizer.Object);
             var message = new MailMessage
             {
                 To = "info@oc.com",
                 Subject = "Test",
                 Body = "Test Message",
-                From = "sebastienros@gmail.com",
-                ReplyTo = "sebastienros@gmail.com",
+                Sender = "Hisham Bin Ateya <hishamco_2007@hotmail.com>",
             };
+            var content = await SendEmailAsync("Sebastien Ros <sebastienros@gmail.com>", message);
 
-            var result = await smtp.SendAsync(message);
+            Assert.Contains("From: Sebastien Ros <sebastienros@gmail.com>", content);
+            Assert.Contains("Sender: Hisham Bin Ateya <hishamco_2007@hotmail.com>", content);
+        }
 
-            Assert.True(result.Succeeded);
+        [Fact]
+        public async Task SendEmail_UsesMultipleAuthors()
+        {
+            var message = new MailMessage
+            {
+                To = "info@oc.com",
+                Subject = "Test",
+                Body = "Test Message",
+                From = "sebastienros@gmail.com,hishamco_2007@hotmail.com"
+            };
+            var content = await SendEmailAsync("Hisham Bin Ateya <hishamco_2007@hotmail.com>", message);
 
-            var file = new DirectoryInfo(pickupDirectoryPath).GetFiles().FirstOrDefault();
+            Assert.Contains("From: sebastienros@gmail.com, hishamco_2007@hotmail.com", content);
+            Assert.Contains("Sender: Hisham Bin Ateya <hishamco_2007@hotmail.com>", content);
+        }
 
-            Assert.NotNull(file);
+        [Fact]
+        public async Task SendEmail_UsesReplyTo()
+        {
+            var message = new MailMessage
+            {
+                To = "Hisham Bin Ateya <hishamco_2007@hotmail.com>",
+                Subject = "Test",
+                Body = "Test Message",
+                From = "Hisham Bin Ateya <hishamco_2007@hotmail.com>",
+                ReplyTo = "Hisham Bin Ateya <hishamco_2007@yahoo.com>",
+            };
+            var content = await SendEmailAsync("Your Name <youraddress@host.com>", message);
 
-            var content = File.ReadAllText(file.FullName);
+            Assert.Contains("From: Hisham Bin Ateya <hishamco_2007@hotmail.com>", content);
+            Assert.Contains("Reply-To: Hisham Bin Ateya <hishamco_2007@yahoo.com>", content);
+        }
 
-            Assert.Contains("From: sebastienros@gmail.com", content);
+        [Fact]
+        public async Task ReplyTo_ShouldHaveAuthors_IfNotSet()
+        {
+            var message = new MailMessage
+            {
+                To = "info@oc.com",
+                Subject = "Test",
+                Body = "Test Message",
+                From = "Sebastien Ros <sebastienros@gmail.com>"
+            };
+            var content = await SendEmailAsync("Your Name <youraddress@host.com>", message);
+
+            Assert.Contains("From: Sebastien Ros <sebastienros@gmail.com>", content);
+            Assert.Contains("Reply-To: Sebastien Ros <sebastienros@gmail.com>", content);
         }
 
         [Theory]
@@ -189,12 +129,47 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Email
         [InlineData("<mailbox@domain.com>", "", "mailbox@domain.com")]
         [InlineData("mailbox@domain.com", "", "mailbox@domain.com")]
         [InlineData("(comment)mailbox(comment)@(comment)domain.com(me) ", "me", "mailbox@domain.com")]
+        [InlineData("Sébastien <sébastien@domain.com>", "Sébastien", "sébastien@domain.com")]
         public void MailBoxAddress_ShouldParseEmail(string text, string name, string address)
         {
             Assert.True(MailboxAddress.TryParse(text, out var mailboxAddress));
-
             Assert.Equal(name, mailboxAddress.Name);
             Assert.Equal(address, mailboxAddress.Address);
+        }
+
+        private async Task<string> SendEmailAsync(string defaultSender, MailMessage message)
+        {
+            var pickupDirectoryPath = Path.Combine(Directory.GetCurrentDirectory(), "Email");
+
+            if (Directory.Exists(pickupDirectoryPath))
+            {
+                var directory = new DirectoryInfo(pickupDirectoryPath);
+                directory.GetFiles().ToList().ForEach(f => f.Delete());
+            }
+
+            Directory.CreateDirectory(pickupDirectoryPath);
+
+            var options = new Mock<IOptions<SmtpSettings>>();
+            options.Setup(o => o.Value).Returns(new SmtpSettings
+            {
+                DefaultSender = defaultSender,
+                DeliveryMethod = SmtpDeliveryMethod.SpecifiedPickupDirectory,
+                PickupDirectoryLocation = pickupDirectoryPath
+            });
+            var logger = new Mock<ILogger<SmtpService>>();
+            var localizer = new Mock<IStringLocalizer<SmtpService>>();
+            var smtp = new SmtpService(options.Object, logger.Object, localizer.Object);
+            var result = await smtp.SendAsync(message);
+
+            Assert.True(result.Succeeded);
+
+            var file = new DirectoryInfo(pickupDirectoryPath).GetFiles().FirstOrDefault();
+
+            Assert.NotNull(file);
+
+            var content = File.ReadAllText(file.FullName);
+
+            return content;
         }
     }
 }

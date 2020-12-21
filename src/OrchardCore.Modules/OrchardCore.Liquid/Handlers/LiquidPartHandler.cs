@@ -12,7 +12,6 @@ namespace OrchardCore.Liquid.Handlers
     {
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly HtmlEncoder _htmlEncoder;
-        private HtmlString _bodyAspect;
 
         public LiquidPartHandler(ILiquidTemplateManager liquidTemplateManager, HtmlEncoder htmlEncoder)
         {
@@ -24,12 +23,6 @@ namespace OrchardCore.Liquid.Handlers
         {
             return context.ForAsync<BodyAspect>(async bodyAspect =>
             {
-                if (_bodyAspect != null)
-                {
-                    bodyAspect.Body = _bodyAspect;
-                    return;
-                }
-
                 try
                 {
                     var model = new LiquidPartViewModel()
@@ -41,7 +34,7 @@ namespace OrchardCore.Liquid.Handlers
                     var result = await _liquidTemplateManager.RenderAsync(part.Liquid, _htmlEncoder, model,
                         scope => scope.SetValue("ContentItem", model.ContentItem));
 
-                    bodyAspect.Body = _bodyAspect = new HtmlString(result);
+                    bodyAspect.Body = new HtmlString(result);
                 }
                 catch
                 {

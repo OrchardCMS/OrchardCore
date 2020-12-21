@@ -12,7 +12,7 @@ namespace OrchardCore.Queries.Drivers
     public class QueryDisplayDriver : DisplayDriver<Query>
     {
         private readonly IQueryManager _queryManager;
-        private readonly IStringLocalizer<QueryDisplayDriver> S;
+        private readonly IStringLocalizer S;
 
         public QueryDisplayDriver(IQueryManager queryManager, IStringLocalizer<QueryDisplayDriver> stringLocalizer)
         {
@@ -68,7 +68,10 @@ namespace OrchardCore.Queries.Drivers
             {
                 updater.ModelState.AddModelError(nameof(model.Name), S["Name is required"]);
             }
-
+            if (!string.IsNullOrEmpty(model.Schema) && !model.Schema.IsJson())
+            {
+                updater.ModelState.AddModelError(nameof(model.Schema), S["Invalid schema JSON supplied."]);
+            }
             var safeName = model.Name.ToSafeName();
             if (String.IsNullOrEmpty(safeName) || model.Name != safeName)
             {

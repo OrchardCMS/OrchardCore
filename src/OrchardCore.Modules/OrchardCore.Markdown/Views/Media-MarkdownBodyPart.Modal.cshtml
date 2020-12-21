@@ -1,4 +1,4 @@
-<script asp-src="~/OrchardCore.Markdown/Scripts/simplemde.mediatoolbar.min.js" debug-src="~/OrchardCore.Markdown/Scripts/simplemde.mediatoolbar.js" at="Foot"></script>
+<script asp-src="~/OrchardCore.Markdown/Scripts/mde.mediatoolbar.min.js" debug-src="~/OrchardCore.Markdown/Scripts/mde.mediatoolbar.js" at="Foot"></script>
 
 <div class="modal fade" id="mediaModalMarkdown">
     <div class="modal-dialog modal-lg media-modal" role="document">
@@ -19,9 +19,9 @@
     </div>
 </div>
 
-<script asp-src="~/OrchardCore.Media/Scripts/media.js" asp-name="media" at="Foot" depends-on="admin, vuejs, sortable, vuedraggable"></script>
+<script asp-src="~/OrchardCore.Media/Scripts/media.js" asp-name="media" at="Foot" depends-on="admin, vuejs, sortable, vuedraggable, jQuery-ui"></script>
 <style asp-src="~/OrchardCore.Media/Styles/media.min.css" debug-src="~/OrchardCore.Media/Styles/media.css"></style>
 
 <script at="Foot">
-    initializeMediaApplication(false, '@Url.Action("MediaApplication", "Admin", new { area = "OrchardCore.Media" })');
+    initializeMediaApplication(false, '@Url.Action("MediaApplication", "Admin", new { area = "OrchardCore.Media" })', '@Context.Request.PathBase.ToString()');
 </script>

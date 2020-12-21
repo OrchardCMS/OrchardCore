@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -8,7 +9,7 @@ namespace OrchardCore.DisplayManagement.Shapes
     /// <summary>
     /// An ordered collection optimized for lookups.
     /// </summary>
-    public class AlternatesCollection
+    public class AlternatesCollection : IEnumerable<string>
     {
         public static AlternatesCollection Empty = new AlternatesCollection();
 
@@ -124,6 +125,11 @@ namespace OrchardCore.DisplayManagement.Shapes
             }
 
             return _collection.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
 
         private class KeyedAlternateCollection : KeyedCollection<string, string>

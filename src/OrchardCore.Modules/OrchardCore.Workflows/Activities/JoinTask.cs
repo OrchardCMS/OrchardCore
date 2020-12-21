@@ -9,7 +9,7 @@ namespace OrchardCore.Workflows.Activities
 {
     public class JoinTask : TaskActivity
     {
-        private readonly IStringLocalizer<JoinTask> S;
+        private readonly IStringLocalizer S;
 
         public enum JoinMode
         {

@@ -11,7 +11,7 @@ namespace OrchardCore.Media.Services
         private readonly IMediaFileStore _fileStore;
         private readonly AttachedMediaFieldFileService _attachedMediaFieldFileService;
         private readonly ShellSettings _shellSettings;
-        private readonly ILogger<TempDirCleanerService> _logger;
+        private readonly ILogger _logger;
 
         public TempDirCleanerService(IMediaFileStore fileStore,
             AttachedMediaFieldFileService attachedMediaFieldFileService,

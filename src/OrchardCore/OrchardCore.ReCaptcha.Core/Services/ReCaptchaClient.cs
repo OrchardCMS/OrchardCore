@@ -12,7 +12,7 @@ namespace OrchardCore.ReCaptcha.Services
     public class ReCaptchaClient
     {
         private readonly HttpClient _httpClient;
-        private readonly ILogger<ReCaptchaClient> _logger;
+        private readonly ILogger _logger;
 
         public ReCaptchaClient(HttpClient httpClient, IOptions<ReCaptchaSettings> optionsAccessor, ILogger<ReCaptchaClient> logger)
         {

@@ -12,7 +12,7 @@ namespace OrchardCore.MiniProfiler
 
         public Task DisplayedAsync(ShapeDisplayContext context)
         {
-            if (_timings.TryGetValue(context, out IDisposable timing))
+            if (_timings.TryGetValue(context, out var timing))
             {
                 _timings.Remove(context);
                 timing.Dispose();
@@ -30,7 +30,7 @@ namespace OrchardCore.MiniProfiler
 
         public Task DisplayingFinalizedAsync(ShapeDisplayContext context)
         {
-            if (_timings.TryGetValue(context, out IDisposable timing))
+            if (_timings.TryGetValue(context, out var timing))
             {
                 _timings.Remove(context);
                 timing.Dispose();

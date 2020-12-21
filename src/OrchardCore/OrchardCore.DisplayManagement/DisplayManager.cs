@@ -5,7 +5,6 @@ using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Layout;
 using OrchardCore.DisplayManagement.ModelBinding;
-using OrchardCore.DisplayManagement.Theming;
 using OrchardCore.Modules;
 
 namespace OrchardCore.DisplayManagement
@@ -15,24 +14,21 @@ namespace OrchardCore.DisplayManagement
         private readonly IEnumerable<IDisplayDriver<TModel>> _drivers;
         private readonly IShapeFactory _shapeFactory;
         private readonly ILayoutAccessor _layoutAccessor;
+        private readonly ILogger _logger;
 
         public DisplayManager(
             IEnumerable<IDisplayDriver<TModel>> drivers,
-            IShapeTableManager shapeTableManager,
             IShapeFactory shapeFactory,
-            IThemeManager themeManager,
+            IEnumerable<IShapePlacementProvider> placementProviders,
             ILogger<DisplayManager<TModel>> logger,
             ILayoutAccessor layoutAccessor
-            ) : base(shapeTableManager, shapeFactory, themeManager)
+            ) : base(shapeFactory, placementProviders)
         {
             _shapeFactory = shapeFactory;
             _layoutAccessor = layoutAccessor;
             _drivers = drivers;
-
-            Logger = logger;
+            _logger = logger;
         }
-
-        private ILogger Logger { get; set; }
 
         public async Task<IShape> BuildDisplayAsync(TModel model, IUpdateModel updater, string displayType = null, string group = null)
         {
@@ -69,7 +65,7 @@ namespace OrchardCore.DisplayManagement
                 {
                     await result.ApplyAsync(context);
                 }
-            }, model, context, Logger);
+            }, model, context, _logger);
 
             return shape;
         }
@@ -103,7 +99,7 @@ namespace OrchardCore.DisplayManagement
                 {
                     await result.ApplyAsync(context);
                 }
-            }, model, context, Logger);
+            }, model, context, _logger);
 
             return shape;
         }
@@ -137,7 +133,7 @@ namespace OrchardCore.DisplayManagement
                 {
                     await result.ApplyAsync(context);
                 }
-            }, model, context, Logger);
+            }, model, context, _logger);
 
             return shape;
         }

@@ -29,7 +29,7 @@ namespace OrchardCore.Apis.GraphQL.Client
         /// <param name="value">
         /// The value.
         /// </param>
-        /// <param name="formatter">
+        /// <param name="settings">
         /// The formatter.
         /// </param>
         /// <typeparam name="T">
@@ -94,7 +94,7 @@ namespace OrchardCore.Apis.GraphQL.Client
         /// <param name="value">
         /// The value.
         /// </param>
-        /// <param name="formatter">
+        /// <param name="settings">
         /// The formatter.
         /// </param>
         /// <typeparam name="T">
@@ -128,7 +128,7 @@ namespace OrchardCore.Apis.GraphQL.Client
         /// <param name="value">
         /// The value.
         /// </param>
-        /// <param name="formatter">
+        /// <param name="settings">
         /// The formatter.
         /// </param>
         /// <typeparam name="T">

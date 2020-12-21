@@ -58,6 +58,7 @@ namespace OrchardCore.Google.Authentication.Drivers
                 {
                     model.CallbackPath = settings.CallbackPath.Value;
                 }
+                model.SaveTokens = settings.SaveTokens;
             }).Location("Content:5").OnGroup(GoogleConstants.Features.GoogleAuthentication);
         }
 
@@ -81,7 +82,8 @@ namespace OrchardCore.Google.Authentication.Drivers
                     settings.ClientID = model.ClientID;
                     settings.ClientSecret = protector.Protect(model.ClientSecret);
                     settings.CallbackPath = model.CallbackPath;
-                    await _shellHost.ReloadShellContextAsync(_shellSettings);
+                    settings.SaveTokens = model.SaveTokens;
+                    await _shellHost.ReleaseShellContextAsync(_shellSettings);
                 }
             }
             return await EditAsync(settings, context);

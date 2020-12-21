@@ -1,8 +1,8 @@
-# OrchardCore.Facebook
+# Facebook (`OrchardCore.Facebook`)
 
 ## Facebook Module
 
-`OrchardCore.Facebook` provides the following features
+`OrchardCore.Facebook` provides the following features:
 
 - Core Components
 - Facebook Login

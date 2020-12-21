@@ -12,7 +12,7 @@ It’s important to note the differences between the framework and the CMS. Some
 [![Join the chat at https://gitter.im/OrchardCMS/OrchardCore](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/OrchardCMS/OrchardCore?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![BSD-3-Clause License](https://img.shields.io/badge/license-BSD--3--Clause-blue.svg)](https://github.com/OrchardCMS/OrchardCore/blob/master/LICENSE)
 [![Documentation](https://readthedocs.org/projects/orchardcore/badge/)](https://docs.orchardcore.net/)
-[![Crowdin](https://d322cqt584bo4o.cloudfront.net/orchard-core/localized.svg)](https://crowdin.com/project/orchard-core)
+[![Crowdin](https://badges.crowdin.net/orchard-core/localized.svg)](https://crowdin.com/project/orchard-core)
 
 ## Building Software as a Service (SaaS) solutions with the Orchard Core Framework
 
@@ -58,8 +58,8 @@ Orchard Core CMS supports all major site building strategies:
 
 ## Status
 
-The latest released version of Orchard Core is `1.0.0-rc1`.
-The release notes can be found on <https://github.com/OrchardCMS/OrchardCore/releases/tag/1.0.0-rc1>
+The latest released version of Orchard Core is `1.0.0-rc2`.
+The release notes can be found on <https://github.com/OrchardCMS/OrchardCore/releases/tag/1.0.0-rc2>
 
 The software is almost ready for final release. No feature development or enhancement of the software is undertaken; tightly scoped bug fixes are the only code you're allowed to write in this phase, and even then only for the most heinous and debilitating of bugs.
 
@@ -82,14 +82,17 @@ Here is a more detailed [roadmap](https://github.com/OrchardCMS/OrchardCore/wiki
 - Call `dotnet run`.
 - Then open the `http://localhost:5000` URL in your browser.
 
-You can also read the [Code Generation Templates documentation](./docs/getting-started/templates/) to create new applications from predefined templates.
+You can also read the [Code Generation Templates documentation](docs/getting-started/templates/README.md) to create new applications from predefined templates.
 
 ### Visual Studio
+
+For more details on the various development tools we recommend for using with Orchard Core check out [the Development Tools documentation page](docs/resources/development-tools/README.md).
 
 - Download Visual Studio 2019 (any edition) from <https://www.visualstudio.com/downloads/>.
 - Open `OrchardCore.sln` and wait for Visual Studio to restore all Nuget packages.
 - Ensure `OrchardCore.Cms.Web` is the startup project and run it.
 - Optionally install the [Lombiq Orchard Visual Studio Extension](https://marketplace.visualstudio.com/items?itemName=LombiqVisualStudioExtension.LombiqOrchardVisualStudioExtension) to add some useful utilities to your Visual Studio such as an error log watcher or a dependency injector.
+- Optionally install the [code snippets from the Orchard Dojo Library](https://orcharddojo.net/orchard-resources/CoreLibrary/Utilities/VisualStudioSnippets/) to quickly generate code in some common scenarios during module and theme development.
 
 ### Docker
 

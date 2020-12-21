@@ -3,7 +3,7 @@
 ** Any changes made directly to this file will be overwritten next time its asset group is processed by Gulp.
 */
 
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: https://codemirror.net/LICENSE
@@ -150,22 +150,25 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       } else if (ch == "`") {
         state.tokenize = tokenQuasi;
         return tokenQuasi(stream, state);
-      } else if (ch == "#") {
+      } else if (ch == "#" && stream.peek() == "!") {
         stream.skipToEnd();
-        return ret("error", "error");
-      } else if (ch == "<" && stream.match("!--") || ch == "-" && stream.match("->")) {
+        return ret("meta", "meta");
+      } else if (ch == "#" && stream.eatWhile(wordRE)) {
+        return ret("variable", "property");
+      } else if (ch == "<" && stream.match("!--") || ch == "-" && stream.match("->") && !/\S/.test(stream.string.slice(0, stream.start))) {
         stream.skipToEnd();
         return ret("comment", "comment");
       } else if (isOperatorChar.test(ch)) {
         if (ch != ">" || !state.lexical || state.lexical.type != ">") {
           if (stream.eat("=")) {
             if (ch == "!" || ch == "=") stream.eat("=");
-          } else if (/[<>*+\-]/.test(ch)) {
+          } else if (/[<>*+\-|&?]/.test(ch)) {
             stream.eat(ch);
             if (ch == ">") stream.eat(ch);
           }
         }
 
+        if (ch == "?" && stream.eat(".")) return ret(".");
         return ret("operator", "operator", stream.current());
       } else if (wordRE.test(ch)) {
         stream.eatWhile(wordRE);
@@ -177,7 +180,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
             return ret(kw.type, kw.style, word);
           }
 
-          if (word == "async" && stream.match(/^(\s|\/\*.*?\*\/)*[\[\(\w]/, false)) return ret("async", "keyword", word);
+          if (word == "async" && stream.match(/^(\s|\/\*([^*]|\*(?!\/))*?\*\/)*[\[\(\w]/, false)) return ret("async", "keyword", word);
         }
 
         return ret("variable", "variable", word);
@@ -551,7 +554,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
 
     function parenExpr(type) {
       if (type != "(") return pass();
-      return cont(pushlex(")"), expression, expect(")"), poplex);
+      return cont(pushlex(")"), maybeexpression, expect(")"), poplex);
     }
 
     function expressionInner(type, value, noComma) {
@@ -586,7 +589,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
     }
 
     function maybeoperatorComma(type, value) {
-      if (type == ",") return cont(expression);
+      if (type == ",") return cont(maybeexpression);
       return maybeoperatorNoComma(type, value, false);
     }
 
@@ -597,7 +600,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
 
       if (type == "operator") {
         if (/\+\+|--/.test(value) || isTS && value == "!") return cont(me);
-        if (isTS && value == "<" && cx.stream.match(/^([^>]|<.*?>)*>\s*\(/, false)) return cont(pushlex(">"), commasep(typeexpr, ">"), poplex, me);
+        if (isTS && value == "<" && cx.stream.match(/^([^<>]|<[^<>]*>)*>\s*\(/, false)) return cont(pushlex(">"), commasep(typeexpr, ">"), poplex, me);
         if (value == "?") return cont(expression, expect(":"), expr);
         return cont(expr);
       }
@@ -1011,11 +1014,11 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
 
       if (type == "variable" || cx.style == "keyword") {
         cx.marked = "property";
-        return cont(isTS ? classfield : functiondef, classBody);
+        return cont(classfield, classBody);
       }
 
-      if (type == "number" || type == "string") return cont(isTS ? classfield : functiondef, classBody);
-      if (type == "[") return cont(expression, maybetype, expect("]"), isTS ? classfield : functiondef, classBody);
+      if (type == "number" || type == "string") return cont(classfield, classBody);
+      if (type == "[") return cont(expression, maybetype, expect("]"), classfield, classBody);
 
       if (value == "*") {
         cx.marked = "keyword";
@@ -1142,7 +1145,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
         return parseJS(state, style, type, content, stream);
       },
       indent: function indent(state, textAfter) {
-        if (state.tokenize == tokenComment) return CodeMirror.Pass;
+        if (state.tokenize == tokenComment || state.tokenize == tokenQuasi) return CodeMirror.Pass;
         if (state.tokenize != tokenBase) return 0;
         var firstChar = textAfter && textAfter.charAt(0),
             lexical = state.lexical,

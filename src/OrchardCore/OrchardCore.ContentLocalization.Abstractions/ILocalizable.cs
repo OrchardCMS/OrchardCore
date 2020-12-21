@@ -1,5 +1,3 @@
-using System;
-
 namespace OrchardCore.ContentLocalization
 {
     public interface ILocalizable

@@ -1,5 +1,3 @@
-using System;
-
 namespace OrchardCore.OpenId.ViewModels
 {
     public class ErrorViewModel

@@ -1,8 +1,9 @@
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
+using OrchardCore.Caching.Distributed;
 using OrchardCore.Environment.Cache;
 using OrchardCore.Environment.Cache.CacheContextProviders;
-using OrchardCore.Infrastructure.Cache;
+using OrchardCore.Modules;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -15,8 +16,23 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             builder.ConfigureServices(services =>
             {
-                services.AddTransient<ITagCache, DefaultTagCache>();
-                services.AddSingleton<ISignal, Signal>();
+                services.AddSingleton<ISignal>(sp =>
+                {
+                    var messageBus = sp.GetService<IMessageBus>();
+
+                    if (messageBus == null)
+                    {
+                        return new Signal();
+                    }
+                    else
+                    {
+                        return new DistributedSignal(messageBus);
+                    }
+                });
+
+                services.AddSingleton<IModularTenantEvents>(sp => sp.GetRequiredService<ISignal>());
+
+                services.AddScoped<ITagCache, DefaultTagCache>();
                 services.AddScoped<ICacheContextManager, CacheContextManager>();
                 services.AddScoped<ICacheScopeManager, CacheScopeManager>();
 
@@ -32,12 +48,10 @@ namespace Microsoft.Extensions.DependencyInjection
 
                 // MemoryDistributedCache needs to be registered as a singleton as it owns a MemoryCache instance.
                 services.AddSingleton<IDistributedCache, MemoryDistributedCache>();
-
-                // Provides a distributed cache service that can return existing references in the current scope.
-                services.AddScoped<IScopedDistributedCache, ScopedDistributedCache>();
             });
 
-            return builder;
+            // Adds services to keep in sync any document type between a document store and a multi level cache.
+            return builder.AddDocumentManagement();
         }
     }
 }

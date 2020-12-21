@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
 using OrchardCore.Workflows.Abstractions.Models;
@@ -12,24 +14,39 @@ namespace OrchardCore.Email.Workflows.Activities
     {
         private readonly ISmtpService _smtpService;
         private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
-        private readonly IStringLocalizer<EmailTask> S;
+        private readonly IStringLocalizer S;
+        private readonly HtmlEncoder _htmlEncoder;
 
         public EmailTask(
             ISmtpService smtpService,
             IWorkflowExpressionEvaluator expressionEvaluator,
-            IStringLocalizer<EmailTask> localizer
+            IStringLocalizer<EmailTask> localizer,
+            HtmlEncoder htmlEncoder
         )
         {
             _smtpService = smtpService;
             _expressionEvaluator = expressionEvaluator;
             S = localizer;
+            _htmlEncoder = htmlEncoder;
         }
 
         public override string Name => nameof(EmailTask);
         public override LocalizedString DisplayText => S["Email Task"];
         public override LocalizedString Category => S["Messaging"];
 
+        public WorkflowExpression<string> Author
+        {
+            get => GetProperty(() => new WorkflowExpression<string>());
+            set => SetProperty(value);
+        }
+
         public WorkflowExpression<string> Sender
+        {
+            get => GetProperty(() => new WorkflowExpression<string>());
+            set => SetProperty(value);
+        }
+
+        public WorkflowExpression<string> ReplyTo
         {
             get => GetProperty(() => new WorkflowExpression<string>());
             set => SetProperty(value);
@@ -67,22 +84,29 @@ namespace OrchardCore.Email.Workflows.Activities
 
         public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            var sender = await _expressionEvaluator.EvaluateAsync(Sender, workflowContext);
-            var recipients = await _expressionEvaluator.EvaluateAsync(Recipients, workflowContext);
-            var subject = await _expressionEvaluator.EvaluateAsync(Subject, workflowContext);
-            var body = await _expressionEvaluator.EvaluateAsync(Body, workflowContext);
+            var author = await _expressionEvaluator.EvaluateAsync(Author, workflowContext, null);
+            var sender = await _expressionEvaluator.EvaluateAsync(Sender, workflowContext, null);
+            var replyTo = await _expressionEvaluator.EvaluateAsync(ReplyTo, workflowContext, null);
+            var recipients = await _expressionEvaluator.EvaluateAsync(Recipients, workflowContext, null);
+            var subject = await _expressionEvaluator.EvaluateAsync(Subject, workflowContext, null);
+            // Don't html-encode liquid tags if the email is not html
+            var body = await _expressionEvaluator.EvaluateAsync(Body, workflowContext, IsBodyHtml ? _htmlEncoder : null);
 
             var message = new MailMessage
             {
+                // Author and Sender are both not required fields.
+                From = author?.Trim() ?? sender?.Trim(),
                 To = recipients.Trim(),
+                // Email reply-to header https://tools.ietf.org/html/rfc4021#section-2.1.4
+                ReplyTo = replyTo?.Trim(),
                 Subject = subject.Trim(),
                 Body = body?.Trim(),
                 IsBodyHtml = IsBodyHtml
             };
 
-            if (!string.IsNullOrWhiteSpace(sender))
+            if (!String.IsNullOrWhiteSpace(sender))
             {
-                message.From = sender.Trim();
+                message.Sender = sender.Trim();
             }
 
             var result = await _smtpService.SendAsync(message);

@@ -8,7 +8,7 @@ namespace OrchardCore.Workflows.Activities
 {
     public class ForkTask : TaskActivity
     {
-        private readonly IStringLocalizer<ForkTask> S;
+        private readonly IStringLocalizer S;
 
         public ForkTask(IStringLocalizer<ForkTask> localizer)
         {

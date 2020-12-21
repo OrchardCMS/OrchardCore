@@ -9,6 +9,7 @@ using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Records;
+using OrchardCore.Contents;
 using OrchardCore.Contents.Security;
 using OrchardCore.Navigation;
 using YesSql;
@@ -20,7 +21,7 @@ namespace OrchardCore.Lists.AdminNodes
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly IContentManager _contentManager;
         private readonly ISession _session;
-        private readonly ILogger<ListsAdminNodeNavigationBuilder> _logger;
+        private readonly ILogger _logger;
         private ListsAdminNode _node;
         private ContentTypeDefinition _contentType;
 
@@ -61,8 +62,8 @@ namespace OrchardCore.Lists.AdminNodes
                 await builder.AddAsync(new LocalizedString(_contentType.DisplayName, _contentType.DisplayName), async listTypeMenu =>
                 {
                     AddPrefixToClasses(_node.IconForParentLink).ForEach(c => listTypeMenu.AddClass(c));
-                    listTypeMenu.Permission(ContentTypePermissions.CreateDynamicPermission(
-                        ContentTypePermissions.PermissionTemplates[Contents.Permissions.EditContent.Name], _contentType));
+                    listTypeMenu.Permission(ContentTypePermissionsHelper.CreateDynamicPermission(
+                        ContentTypePermissionsHelper.PermissionTemplates[CommonPermissions.EditContent.Name], _contentType));
                     await AddContentItemsAsync(listTypeMenu);
                 });
             }
@@ -103,8 +104,8 @@ namespace OrchardCore.Lists.AdminNodes
                         m.LocalNav();
                         AddPrefixToClasses(_node.IconForContentItems).ToList().ForEach(c => m.AddClass(c));
 
-                        m.Permission(ContentTypePermissions.CreateDynamicPermission(
-                        ContentTypePermissions.PermissionTemplates[Contents.Permissions.EditContent.Name], _contentType));
+                        m.Permission(ContentTypePermissionsHelper.CreateDynamicPermission(
+                        ContentTypePermissionsHelper.PermissionTemplates[CommonPermissions.EditContent.Name], _contentType));
                     });
                 }
             }

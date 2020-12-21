@@ -1,5 +1,3 @@
-using System;
-
 namespace OrchardCore.Demo.Models
 {
     public class FakeShape

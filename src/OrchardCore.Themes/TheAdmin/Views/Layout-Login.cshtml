@@ -1,5 +1,9 @@
+@inject DarkModeService DarkModeService;
+@{
+    var darkMode = await DarkModeService.IsDarkModeAsync();
+}
 <!DOCTYPE html>
-<html lang="@Orchard.CultureName()" dir="@Orchard.CultureDir()">
+<html lang="@Orchard.CultureName()" dir="@Orchard.CultureDir()" data-theme="@DarkModeService.CurrentTheme">
 <head>
     <title>@RenderTitleSegments(Site.SiteName, "before")</title>
     <meta charset="utf-8">
@@ -14,19 +18,19 @@
     <script asp-name="font-awesome-v4-shims" at="Foot" version="5"></script>
 
     <resources type="Header" />
-
 </head>
-<body class="preload">
+<body>
     <div class="ta-content ta-content-login">
+        @await RenderSectionAsync("Header", required: false)
         @await RenderSectionAsync("Messages", required: false)
-        
+
         <div class="auth-wrapper">
-        @await RenderBodyAsync()
+            @await RenderBodyAsync()
         </div>
     </div>
 
     @await RenderSectionAsync("Footer", required: false)
 
-    <resources type="Footer" />    
+    <resources type="Footer" />
 </body>
 </html>

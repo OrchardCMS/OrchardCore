@@ -11,7 +11,7 @@ namespace OrchardCore.Tests.Workflows.Activities
     public class AddTask : TaskActivity
     {
         private readonly IWorkflowScriptEvaluator _scriptEvaluator;
-        private readonly IStringLocalizer<AddTask> S;
+        private readonly IStringLocalizer S;
 
         public AddTask(IWorkflowScriptEvaluator scriptEvaluator, IStringLocalizer<AddTask> stringLocalizer)
         {

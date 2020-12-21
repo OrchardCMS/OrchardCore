@@ -3,6 +3,12 @@
   <PropertyGroup>
     <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
+     <!-- NuGet properties-->
+    <Title>OrchardCore Title</Title>
+    <Description>$(OCCMSDescription)
+    
+    The title module enables content items to have titles.</Description>
+    <PackageTags>$(PackageTags) OrchardCoreCMS</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>

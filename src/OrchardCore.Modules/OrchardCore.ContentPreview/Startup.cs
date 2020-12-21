@@ -9,7 +9,7 @@ using OrchardCore.ContentPreview.Models;
 using OrchardCore.ContentPreview.Settings;
 using OrchardCore.ContentTypes.Editors;
 using OrchardCore.Data.Migration;
-using OrchardCore.Security.Permissions;
+using OrchardCore.ResourceManagement;
 
 namespace OrchardCore.ContentPreview
 {
@@ -17,8 +17,9 @@ namespace OrchardCore.ContentPreview
     {
         public override void ConfigureServices(IServiceCollection services)
         {
+            services.AddScoped<IResourceManifestProvider, ResourceManifest>();
+
             services.AddScoped<IContentDisplayDriver, ContentPreviewDriver>();
-            services.AddScoped<IPermissionProvider, Permissions>();
 
             // Preview Part
             services.AddContentPart<PreviewPart>()

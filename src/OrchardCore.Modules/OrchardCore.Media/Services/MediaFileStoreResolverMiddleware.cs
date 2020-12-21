@@ -14,10 +14,10 @@ namespace OrchardCore.Media.Services
     /// </summary>
     public class MediaFileStoreResolverMiddleware
     {
-        private static readonly ConcurrentDictionary<string, Lazy<Task>> Workers = new ConcurrentDictionary<string, Lazy<Task>>();
+        private readonly ConcurrentDictionary<string, Lazy<Task>> Workers = new ConcurrentDictionary<string, Lazy<Task>>(StringComparer.OrdinalIgnoreCase);
 
         private readonly RequestDelegate _next;
-        private readonly ILogger<MediaFileStoreResolverMiddleware> _logger;
+        private readonly ILogger _logger;
         private readonly IMediaFileStoreCache _mediaFileStoreCache;
         private readonly IMediaFileStore _mediaFileStore;
 
@@ -45,8 +45,6 @@ namespace OrchardCore.Media.Services
         /// <param name="context"></param>
         public async Task Invoke(HttpContext context)
         {
-            //TODO for 3.0 and endpoint routing, validate it is not an endpoint
-
             // Support only Head requests or Get Requests.
             if (!HttpMethods.IsGet(context.Request.Method) && !HttpMethods.IsHead(context.Request.Method))
             {

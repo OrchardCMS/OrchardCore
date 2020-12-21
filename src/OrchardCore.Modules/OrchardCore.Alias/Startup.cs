@@ -22,6 +22,7 @@ namespace OrchardCore.Alias
 {
     public class Startup : StartupBase
     {
+
         static Startup()
         {
             TemplateContext.GlobalMemberAccessStrategy.Register<AliasPartViewModel>();
@@ -31,7 +32,7 @@ namespace OrchardCore.Alias
         {
             services.AddSingleton<IIndexProvider, AliasPartIndexProvider>();
             services.AddScoped<IDataMigration, Migrations>();
-            services.AddScoped<IContentAliasProvider, AliasPartContentAliasProvider>();
+            services.AddScoped<IContentHandleProvider, AliasPartContentHandleProvider>();
 
             // Identity Part
             services.AddContentPart<AliasPart>()

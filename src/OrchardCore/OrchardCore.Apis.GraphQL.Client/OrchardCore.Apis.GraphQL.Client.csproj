@@ -2,6 +2,12 @@
 
   <PropertyGroup>
     <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
+    <!-- NuGet properties-->
+    <Title>OrchardCore GraphQL Client Abstractions</Title>
+    <Description>$(OCFrameworkDescription)
+    
+    Abstractions for GraphQL Client</Description>
+    <PackageTags>$(PackageTags) OrchardCoreFramework GraphQL Client Abstractions</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>

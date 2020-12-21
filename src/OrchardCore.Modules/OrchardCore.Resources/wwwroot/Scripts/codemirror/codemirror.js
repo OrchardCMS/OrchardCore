@@ -3,7 +3,7 @@
 ** Any changes made directly to this file will be overwritten next time its asset group is processed by Gulp.
 */
 
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: https://codemirror.net/LICENSE
@@ -299,7 +299,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
   } // Number of pixels added to scroller and sizer to hide scrollbar
 
 
-  var scrollerGap = 30; // Returned or thrown by various protocols to signal 'I'm not
+  var scrollerGap = 50; // Returned or thrown by various protocols to signal 'I'm not
   // handling this'.
 
   var Pass = {
@@ -725,7 +725,8 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
           order.push(new BidiSpan(0, start, i$7));
         } else {
           var pos = i$7,
-              at = order.length;
+              at = order.length,
+              isRTL = direction == "rtl" ? 1 : 0;
 
           for (++i$7; i$7 < len && types[i$7] != "L"; ++i$7) {}
 
@@ -733,6 +734,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
             if (countsAsNum.test(types[j$2])) {
               if (pos < j$2) {
                 order.splice(at, 0, new BidiSpan(1, pos, j$2));
+                at += isRTL;
               }
 
               var nstart = j$2;
@@ -740,6 +742,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
               for (++j$2; j$2 < i$7 && countsAsNum.test(types[j$2]); ++j$2) {}
 
               order.splice(at, 0, new BidiSpan(2, nstart, j$2));
+              at += isRTL;
               pos = j$2;
             } else {
               ++j$2;
@@ -1854,7 +1857,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
 
         if (output[prop] == null) {
           output[prop] = lineClass[2];
-        } else if (!new RegExp("(?:^|\s)" + lineClass[2] + "(?:$|\s)").test(output[prop])) {
+        } else if (!new RegExp("(?:^|\\s)" + lineClass[2] + "(?:$|\\s)").test(output[prop])) {
           output[prop] += " " + lineClass[2];
         }
       }
@@ -2829,7 +2832,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
 
     builder.trailingSpace = displayText.charCodeAt(text.length - 1) == 32;
 
-    if (style || startStyle || endStyle || mustWrap || css) {
+    if (style || startStyle || endStyle || mustWrap || css || attributes) {
       var fullStyle = style || "";
 
       if (startStyle) {
@@ -4533,7 +4536,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
     try {
       x = e.clientX - space.left;
       y = e.clientY - space.top;
-    } catch (e) {
+    } catch (e$1) {
       return null;
     }
 
@@ -4990,7 +4993,11 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
 
     if (cm.options.cursorBlinkRate > 0) {
       display.blinker = setInterval(function () {
-        return display.cursorDiv.style.visibility = (on = !on) ? "" : "hidden";
+        if (!cm.hasFocus()) {
+          onBlur(cm);
+        }
+
+        display.cursorDiv.style.visibility = (on = !on) ? "" : "hidden";
       }, cm.options.cursorBlinkRate);
     } else if (cm.options.cursorBlinkRate < 0) {
       display.cursorDiv.style.visibility = "hidden";
@@ -4998,9 +5005,12 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
   }
 
   function ensureFocus(cm) {
-    if (!cm.state.focused) {
+    if (!cm.hasFocus()) {
       cm.display.input.focus();
-      onFocus(cm);
+
+      if (!cm.state.focused) {
+        onFocus(cm);
+      }
     }
   }
 
@@ -5009,13 +5019,16 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
     setTimeout(function () {
       if (cm.state.delayingBlurEvent) {
         cm.state.delayingBlurEvent = false;
-        onBlur(cm);
+
+        if (cm.state.focused) {
+          onBlur(cm);
+        }
       }
     }, 100);
   }
 
   function onFocus(cm, e) {
-    if (cm.state.delayingBlurEvent) {
+    if (cm.state.delayingBlurEvent && !cm.state.draggingText) {
       cm.state.delayingBlurEvent = false;
     }
 
@@ -5299,8 +5312,9 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       }
     }
 
-    var screenleft = cm.curOp && cm.curOp.scrollLeft != null ? cm.curOp.scrollLeft : display.scroller.scrollLeft;
-    var screenw = displayWidth(cm) - (cm.options.fixedGutter ? display.gutters.offsetWidth : 0);
+    var gutterSpace = cm.options.fixedGutter ? 0 : display.gutters.offsetWidth;
+    var screenleft = cm.curOp && cm.curOp.scrollLeft != null ? cm.curOp.scrollLeft : display.scroller.scrollLeft - gutterSpace;
+    var screenw = displayWidth(cm) - display.gutters.offsetWidth;
     var tooWide = rect.right - rect.left > screenw;
 
     if (tooWide) {
@@ -5310,7 +5324,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
     if (rect.left < 10) {
       result.scrollLeft = 0;
     } else if (rect.left < screenleft) {
-      result.scrollLeft = Math.max(0, rect.left - (tooWide ? 0 : 10));
+      result.scrollLeft = Math.max(0, rect.left + gutterSpace - (tooWide ? 0 : 10));
     } else if (rect.right > screenw + screenleft - 3) {
       result.scrollLeft = rect.right + (tooWide ? 0 : 10) - screenw;
     }
@@ -5408,7 +5422,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
   }
 
   function setScrollTop(cm, val, forceScroll) {
-    val = Math.min(cm.display.scroller.scrollHeight - cm.display.scroller.clientHeight, val);
+    val = Math.max(0, Math.min(cm.display.scroller.scrollHeight - cm.display.scroller.clientHeight, val));
 
     if (cm.display.scroller.scrollTop == val && !forceScroll) {
       return;
@@ -5425,7 +5439,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
 
 
   function setScrollLeft(cm, val, isScroller, forceScroll) {
-    val = Math.min(val, cm.display.scroller.scrollWidth - cm.display.scroller.clientWidth);
+    val = Math.max(0, Math.min(val, cm.display.scroller.scrollWidth - cm.display.scroller.clientWidth));
 
     if ((isScroller ? val == cm.doc.scrollLeft : Math.abs(cm.doc.scrollLeft - val) < 2) && !forceScroll) {
       return;
@@ -6138,7 +6152,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
 
     snapshot.activeElt.focus();
 
-    if (snapshot.anchorNode && contains(document.body, snapshot.anchorNode) && contains(document.body, snapshot.focusNode)) {
+    if (!/^(INPUT|TEXTAREA)$/.test(snapshot.activeElt.nodeName) && snapshot.anchorNode && contains(document.body, snapshot.anchorNode) && contains(document.body, snapshot.focusNode)) {
       var sel = window.getSelection(),
           range = document.createRange();
       range.setEnd(snapshot.anchorNode, snapshot.anchorOffset);
@@ -6253,6 +6267,8 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
         if (update.visible.from >= cm.display.viewFrom && update.visible.to <= cm.display.viewTo) {
           break;
         }
+      } else if (first) {
+        update.visible = visibleLines(cm.display, cm.doc, viewport);
       }
 
       if (!updateDisplayIfNeeded(cm, update)) {
@@ -8463,7 +8479,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       if (widget.insertAt == null) {
         widgets.push(widget);
       } else {
-        widgets.splice(Math.min(widgets.length - 1, Math.max(0, widget.insertAt)), 0, widget);
+        widgets.splice(Math.min(widgets.length, Math.max(0, widget.insertAt)), 0, widget);
       }
 
       widget.line = line;
@@ -9627,7 +9643,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
               origin: "paste"
             };
             makeChange(cm.doc, change);
-            setSelectionReplaceHistory(cm.doc, simpleSelection(pos, changeEnd(change)));
+            setSelectionReplaceHistory(cm.doc, simpleSelection(_clipPos(cm.doc, pos), _clipPos(cm.doc, changeEnd(change))));
           })();
         }
       };
@@ -9695,7 +9711,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
           cm.replaceSelection(text$1, "around", "paste");
           cm.display.input.focus();
         }
-      } catch (e) {}
+      } catch (e$1) {}
     }
   }
 
@@ -9868,6 +9884,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
     220: "\\",
     221: "]",
     222: "'",
+    224: "Mod",
     63232: "Up",
     63233: "Down",
     63234: "Left",
@@ -10144,7 +10161,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       name = "Ctrl-" + name;
     }
 
-    if ((flipCtrlCmd ? event.ctrlKey : event.metaKey) && base != "Cmd") {
+    if ((flipCtrlCmd ? event.ctrlKey : event.metaKey) && base != "Mod") {
       name = "Cmd-" + name;
     }
 
@@ -10224,7 +10241,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
 
   function endOfLine(visually, cm, lineObj, lineNo, dir) {
     if (visually) {
-      if (cm.getOption("direction") == "rtl") {
+      if (cm.doc.direction == "rtl") {
         dir = -dir;
       }
 
@@ -10549,7 +10566,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       return cm.moveH(1, "word");
     },
     delCharBefore: function delCharBefore(cm) {
-      return cm.deleteH(-1, "char");
+      return cm.deleteH(-1, "codepoint");
     },
     delCharAfter: function delCharAfter(cm) {
       return cm.deleteH(1, "char");
@@ -10695,7 +10712,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
     var order = getOrder(line, cm.doc.direction);
 
     if (!order || order[0].level == 0) {
-      var firstNonWS = Math.max(0, line.text.search(/\S/));
+      var firstNonWS = Math.max(start.ch, line.text.search(/\S/));
       var inWS = pos.line == start.line && pos.ch <= firstNonWS && pos.ch;
       return Pos(start.line, inWS ? 0 : firstNonWS, start.sticky);
     }
@@ -10836,6 +10853,11 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
 
   function onKeyDown(e) {
     var cm = this;
+
+    if (e.target && e.target != cm.display.input.getField()) {
+      return;
+    }
+
     cm.curOp.focus = activeElt();
 
     if (signalDOMEvent(cm, e)) {
@@ -10895,6 +10917,10 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
 
   function onKeyPress(e) {
     var cm = this;
+
+    if (e.target && e.target != cm.display.input.getField()) {
+      return;
+    }
 
     if (eventInWidget(cm.display, e) || signalDOMEvent(cm, e) || e.ctrlKey && !e.altKey || mac && e.metaKey) {
       return;
@@ -11114,6 +11140,15 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       }
 
       cm.state.draggingText = false;
+
+      if (cm.state.delayingBlurEvent) {
+        if (cm.hasFocus()) {
+          cm.state.delayingBlurEvent = false;
+        } else {
+          delayBlurEvent(cm);
+        }
+      }
+
       off(display.wrapper.ownerDocument, "mouseup", dragEnd);
       off(display.wrapper.ownerDocument, "mousemove", mouseMove);
       off(display.scroller, "dragstart", dragStart);
@@ -11127,9 +11162,11 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
         } // Work around unexplainable focus problem in IE9 (#2127) and Chrome (#3081)
 
 
-        if (webkit || ie && ie_version == 9) {
+        if (webkit && !safari || ie && ie_version == 9) {
           setTimeout(function () {
-            display.wrapper.ownerDocument.body.focus();
+            display.wrapper.ownerDocument.body.focus({
+              preventScroll: true
+            });
             display.input.focus();
           }, 20);
         } else {
@@ -11152,20 +11189,19 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
     }
 
     cm.state.draggingText = dragEnd;
-    dragEnd.copy = !behavior.moveOnDrag; // IE's approach to draggable
-
-    if (display.scroller.dragDrop) {
-      display.scroller.dragDrop();
-    }
-
+    dragEnd.copy = !behavior.moveOnDrag;
     on(display.wrapper.ownerDocument, "mouseup", dragEnd);
     on(display.wrapper.ownerDocument, "mousemove", mouseMove);
     on(display.scroller, "dragstart", dragStart);
     on(display.scroller, "drop", dragEnd);
-    delayBlurEvent(cm);
+    cm.state.delayingBlurEvent = true;
     setTimeout(function () {
       return display.input.focus();
-    }, 20);
+    }, 20); // IE's approach to draggable
+
+    if (display.scroller.dragDrop) {
+      display.scroller.dragDrop();
+    }
   }
 
   function rangeForUnit(cm, pos, unit) {
@@ -11187,6 +11223,10 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
 
 
   function leftButtonSelect(cm, event, start, behavior) {
+    if (ie) {
+      delayBlurEvent(cm);
+    }
+
     var display = cm.display,
         doc = cm.doc;
     e_preventDefault(event);
@@ -11440,7 +11480,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       try {
         mX = e.clientX;
         mY = e.clientY;
-      } catch (e) {
+      } catch (e$1) {
         return false;
       }
     }
@@ -11581,7 +11621,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
         _replaceRange(cm.doc, val, newBreaks[i], Pos(newBreaks[i].line, newBreaks[i].ch + val.length));
       }
     });
-    option("specialChars", /[\u0000-\u001f\u007f-\u009f\u00ad\u061c\u200b-\u200f\u2028\u2029\ufeff\ufff9-\ufffc]/g, function (cm, val, old) {
+    option("specialChars", /[\u0000-\u001f\u007f-\u009f\u00ad\u061c\u200b-\u200c\u200e\u200f\u2028\u2029\ufeff\ufff9-\ufffc]/g, function (cm, val, old) {
       cm.state.specialChars = new RegExp(val.source + (val.test("\t") ? "" : "|\t"), "g");
 
       if (old != Init) {
@@ -11662,6 +11702,10 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       }
 
       cm.display.input.readOnlyChanged(val);
+    });
+    option("screenReaderLabel", null, function (cm, val) {
+      val = val === '' ? null : val;
+      cm.display.input.screenReaderLabelChanged(val);
     });
     option("disableInput", false, function (cm, val) {
       if (!val) {
@@ -11810,7 +11854,11 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
     attachDoc(this, doc);
 
     if (options.autofocus && !mobile || this.hasFocus()) {
-      setTimeout(bind(onFocus, this), 20);
+      setTimeout(function () {
+        if (this$1.hasFocus() && !this$1.state.focused) {
+          onFocus(this$1);
+        }
+      }, 20);
     } else {
       onBlur(this);
     }
@@ -12177,7 +12225,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
           } else if (cm.state.overwrite && !paste) // Handle overwrite
           {
             to = Pos(to.line, Math.min(getLine(doc, to.line).text.length, to.ch + lst(textLines).length));
-          } else if (paste && lastCopied && lastCopied.lineWise && lastCopied.text.join("\n") == inserted) {
+          } else if (paste && lastCopied && lastCopied.lineWise && lastCopied.text.join("\n") == textLines.join("\n")) {
           from = to = Pos(from.line, 0);
         }
       }
@@ -12920,7 +12968,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
         scrollToCoords(this, this.doc.scrollLeft, this.doc.scrollTop);
         updateGutterSpace(this.display);
 
-        if (oldHeight == null || Math.abs(oldHeight - textHeight(this.display)) > .5) {
+        if (oldHeight == null || Math.abs(oldHeight - textHeight(this.display)) > .5 || this.options.lineWrapping) {
           estimateLineHeights(this);
         }
 
@@ -12980,21 +13028,21 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       });
     };
   } // Used for horizontal relative motion. Dir is -1 or 1 (left or
-  // right), unit can be "char", "column" (like char, but doesn't
-  // cross line boundaries), "word" (across next word), or "group" (to
-  // the start of next group of word or non-word-non-whitespace
-  // chars). The visually param controls whether, in right-to-left
-  // text, direction 1 means to move towards the next index in the
-  // string, or towards the character to the right of the current
-  // position. The resulting position will have a hitSide=true
-  // property if it reached the end of the document.
+  // right), unit can be "codepoint", "char", "column" (like char, but
+  // doesn't cross line boundaries), "word" (across next word), or
+  // "group" (to the start of next group of word or
+  // non-word-non-whitespace chars). The visually param controls
+  // whether, in right-to-left text, direction 1 means to move towards
+  // the next index in the string, or towards the character to the right
+  // of the current position. The resulting position will have a
+  // hitSide=true property if it reached the end of the document.
 
 
   function _findPosH(doc, pos, dir, unit, visually) {
     var oldPos = pos;
     var origDir = dir;
     var lineObj = getLine(doc, pos.line);
-    var lineDir = visually && doc.cm && doc.cm.getOption("direction") == "rtl" ? -dir : dir;
+    var lineDir = visually && doc.direction == "rtl" ? -dir : dir;
 
     function findNextLine() {
       var l = pos.line + lineDir;
@@ -13010,7 +13058,15 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
     function moveOnce(boundToLine) {
       var next;
 
-      if (visually) {
+      if (unit == "codepoint") {
+        var ch = lineObj.text.charCodeAt(pos.ch + (unit > 0 ? 0 : -1));
+
+        if (isNaN(ch)) {
+          next = null;
+        } else {
+          next = new Pos(pos.line, Math.max(0, Math.min(lineObj.text.length, pos.ch + dir * (ch >= 0xD800 && ch < 0xDC00 ? 2 : 1))), -dir);
+        }
+      } else if (visually) {
         next = moveVisually(doc.cm, lineObj, pos, dir);
       } else {
         next = moveLogically(lineObj, pos, dir);
@@ -13029,7 +13085,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
       return true;
     }
 
-    if (unit == "char") {
+    if (unit == "char" || unit == "codepoint") {
       moveOnce();
     } else if (unit == "column") {
       moveOnce(true);
@@ -13131,8 +13187,23 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
         cm = input.cm;
     var div = input.div = display.lineDiv;
     disableBrowserMagic(div, cm.options.spellcheck, cm.options.autocorrect, cm.options.autocapitalize);
+
+    function belongsToInput(e) {
+      for (var t = e.target; t; t = t.parentNode) {
+        if (t == div) {
+          return true;
+        }
+
+        if (/\bCodeMirror-(?:line)?widget\b/.test(t.className)) {
+          break;
+        }
+      }
+
+      return false;
+    }
+
     on(div, "paste", function (e) {
-      if (signalDOMEvent(cm, e) || handlePaste(e, cm)) {
+      if (!belongsToInput(e) || signalDOMEvent(cm, e) || handlePaste(e, cm)) {
         return;
       } // IE doesn't fire input events, so we schedule a read for the pasted content in this way
 
@@ -13176,7 +13247,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
     });
 
     function onCopyCut(e) {
-      if (signalDOMEvent(cm, e)) {
+      if (!belongsToInput(e) || signalDOMEvent(cm, e)) {
         return;
       }
 
@@ -13239,9 +13310,18 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
     on(div, "cut", onCopyCut);
   };
 
+  ContentEditableInput.prototype.screenReaderLabelChanged = function (label) {
+    // Label for screenreaders, accessibility
+    if (label) {
+      this.div.setAttribute('aria-label', label);
+    } else {
+      this.div.removeAttribute('aria-label');
+    }
+  };
+
   ContentEditableInput.prototype.prepareSelection = function () {
     var result = prepareSelection(this.cm, false);
-    result.focus = this.cm.state.focused;
+    result.focus = document.activeElement == this.div;
     return result;
   };
 
@@ -13372,7 +13452,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
 
   ContentEditableInput.prototype.focus = function () {
     if (this.cm.options.readOnly != "nocursor") {
-      if (!this.selectionInEditor()) {
+      if (!this.selectionInEditor() || document.activeElement != this.div) {
         this.showSelection(this.prepareSelection(), true);
       }
 
@@ -14031,6 +14111,15 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
     this.textarea = this.wrapper.firstChild;
   };
 
+  TextareaInput.prototype.screenReaderLabelChanged = function (label) {
+    // Label for screenreaders, accessibility
+    if (label) {
+      this.textarea.setAttribute('aria-label', label);
+    } else {
+      this.textarea.removeAttribute('aria-label');
+    }
+  };
+
   TextareaInput.prototype.prepareSelection = function () {
     // Redraw the selection and/or cursor
     var cm = this.cm,
@@ -14380,6 +14469,7 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
     }
 
     this.textarea.disabled = val == "nocursor";
+    this.textarea.readOnly = !!val;
   };
 
   TextareaInput.prototype.setUneditable = function () {};
@@ -14559,6 +14649,6 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
 
   CodeMirror.fromTextArea = fromTextArea;
   addLegacyProps(CodeMirror);
-  CodeMirror.version = "5.51.0";
+  CodeMirror.version = "5.58.3";
   return CodeMirror;
 });

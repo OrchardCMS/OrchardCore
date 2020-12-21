@@ -28,8 +28,17 @@ namespace OrchardCore.ContentManagement.Handlers
         {
             return Task.CompletedTask;
         }
-
         public virtual Task CreatedAsync(CreateContentContext context)
+        {
+            return Task.CompletedTask;
+        }
+
+        public virtual Task ImportingAsync(ImportContentContext context)
+        {
+            return Task.CompletedTask;
+        }
+
+        public virtual Task ImportedAsync(ImportContentContext context)
         {
             return Task.CompletedTask;
         }
@@ -54,12 +63,32 @@ namespace OrchardCore.ContentManagement.Handlers
             return Task.CompletedTask;
         }
 
+        public virtual Task ValidatingAsync(ValidateContentContext context)
+        {
+            return Task.CompletedTask;
+        }
+
+        public virtual Task ValidatedAsync(ValidateContentContext context)
+        {
+            return Task.CompletedTask;
+        }
+
         public virtual Task VersioningAsync(VersionContentContext context)
         {
             return Task.CompletedTask;
         }
 
         public virtual Task VersionedAsync(VersionContentContext context)
+        {
+            return Task.CompletedTask;
+        }
+
+        public virtual Task DraftSavingAsync(SaveDraftContentContext context)
+        {
+            return Task.CompletedTask;
+        }
+
+        public virtual Task DraftSavedAsync(SaveDraftContentContext context)
         {
             return Task.CompletedTask;
         }

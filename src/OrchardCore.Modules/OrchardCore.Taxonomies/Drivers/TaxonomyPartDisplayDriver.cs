@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
-using OrchardCore.ContentManagement.Metadata;
+using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Taxonomies.Models;
@@ -16,19 +16,15 @@ namespace OrchardCore.Taxonomies.Drivers
 {
     public class TaxonomyPartDisplayDriver : ContentPartDisplayDriver<TaxonomyPart>
     {
-        private readonly IContentManager _contentManager;
-        private readonly IServiceProvider _serviceProvider;
-        private readonly IContentDefinitionManager _contentDefinitionManager;
-
-        public TaxonomyPartDisplayDriver(
-            IContentDefinitionManager contentDefinitionManager,
-            IContentManager contentManager,
-            IServiceProvider serviceProvider
-            )
+        public override IDisplayResult Display(TaxonomyPart part, BuildPartDisplayContext context)
         {
-            _contentDefinitionManager = contentDefinitionManager;
-            _serviceProvider = serviceProvider;
-            _contentManager = contentManager;
+            var hasItems = part.Terms.Any();
+            return Initialize<TaxonomyPartViewModel>(hasItems ? "TaxonomyPart" : "TaxonomyPart_Empty", m =>
+            {
+                m.ContentItem = part.ContentItem;
+                m.TaxonomyPart = part;
+            })
+            .Location("Detail", "Content:5");
         }
 
         public override IDisplayResult Edit(TaxonomyPart part)

@@ -1,9 +1,6 @@
 /* Flow uses common Widget CSS from Widget Module  - Define any additional Flow or Bag specific CSS here*/
 .widget-editor-body > div > .edit-container{
     
-    div.form-group {
-        margin-bottom: 0px !important;
-    }
     div.form-group:only-of-type > label {
         display: none;
     }
@@ -21,6 +18,23 @@
         border-top:none;
         border-right:none;
     } 
+}
+
+.btn-widget-add-below, .btn-widget-metadata {
+    ::-webkit-scrollbar {
+        width: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background-color: #495057;
+    }
+    
+    .dropdown-menu {
+        max-height: 200px;
+        overflow: hidden auto;
+        scrollbar-width: thin;
+        scrollbar-color: #495057 #EAEAEA;
+    }
 }
 
 .widget-editor.card:focus-within {
@@ -74,7 +88,6 @@
         left: calc(-14px + 50%);
     }
 }
-
 
 [dir="rtl"] .btn-widget-add-below {
     >  .btn-group {

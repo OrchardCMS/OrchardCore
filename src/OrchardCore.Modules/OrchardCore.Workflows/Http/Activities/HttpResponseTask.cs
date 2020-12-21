@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
@@ -16,17 +17,20 @@ namespace OrchardCore.Workflows.Http.Activities
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
-        private readonly IStringLocalizer<HttpResponseTask> S;
+        private readonly IStringLocalizer S;
+        private readonly UrlEncoder _urlEncoder;
 
         public HttpResponseTask(
             IStringLocalizer<HttpResponseTask> localizer,
             IHttpContextAccessor httpContextAccessor,
-            IWorkflowExpressionEvaluator expressionEvaluator
+            IWorkflowExpressionEvaluator expressionEvaluator,
+            UrlEncoder urlEncoder
         )
         {
             S = localizer;
             _httpContextAccessor = httpContextAccessor;
             _expressionEvaluator = expressionEvaluator;
+            _urlEncoder = urlEncoder;
         }
 
         public override string Name => nameof(HttpResponseTask);
@@ -66,9 +70,9 @@ namespace OrchardCore.Workflows.Http.Activities
 
         public override async Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
-            var headersString = await _expressionEvaluator.EvaluateAsync(Headers, workflowContext);
-            var content = await _expressionEvaluator.EvaluateAsync(Content, workflowContext);
-            var contentType = await _expressionEvaluator.EvaluateAsync(ContentType, workflowContext);
+            var headersString = await _expressionEvaluator.EvaluateAsync(Headers, workflowContext, _urlEncoder);
+            var content = await _expressionEvaluator.EvaluateAsync(Content, workflowContext, null);
+            var contentType = await _expressionEvaluator.EvaluateAsync(ContentType, workflowContext, _urlEncoder);
             var headers = ParseHeaders(headersString);
             var response = _httpContextAccessor.HttpContext.Response;
 

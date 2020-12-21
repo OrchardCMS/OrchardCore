@@ -2,10 +2,11 @@ using OrchardCore.Modules.Manifest;
 
 [assembly: Module(
     Name = "Lucene",
-    Author = "The Orchard Team",
-    Website = "https://orchardproject.net",
-    Version = "2.0.0"
+    Author = ManifestConstants.OrchardCoreTeam,
+    Website = ManifestConstants.OrchardCoreWebsite,
+    Version = ManifestConstants.OrchardCoreVersion
 )]
+
 [assembly: Feature(
     Id = "OrchardCore.Lucene",
     Name = "Lucene",
@@ -13,7 +14,6 @@ using OrchardCore.Modules.Manifest;
     Dependencies = new[]
     {
         "OrchardCore.Indexing",
-        "OrchardCore.Liquid",
         "OrchardCore.ContentTypes"
     },
     Category = "Content Management"

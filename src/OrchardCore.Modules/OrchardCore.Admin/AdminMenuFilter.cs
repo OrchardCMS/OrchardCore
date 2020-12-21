@@ -6,7 +6,6 @@ using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Layout;
 using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.DisplayManagement.Zones;
-using OrchardCore.Navigation;
 
 namespace OrchardCore.Admin
 {
@@ -16,15 +15,12 @@ namespace OrchardCore.Admin
     /// </summary>
     public class AdminMenuFilter : IAsyncResultFilter
     {
-        private readonly INavigationManager _navigationManager;
         private readonly ILayoutAccessor _layoutAccessor;
         private readonly IShapeFactory _shapeFactory;
 
-        public AdminMenuFilter(INavigationManager navigationManager,
-            ILayoutAccessor layoutAccessor,
+        public AdminMenuFilter(ILayoutAccessor layoutAccessor,
             IShapeFactory shapeFactory)
         {
-            _navigationManager = navigationManager;
             _layoutAccessor = layoutAccessor;
             _shapeFactory = shapeFactory;
         }

@@ -17,7 +17,7 @@ namespace OrchardCore.GitHub.Configuration
     {
         private readonly IGitHubAuthenticationService _githubAuthenticationService;
         private readonly IDataProtectionProvider _dataProtectionProvider;
-        private readonly ILogger<GitHubOptionsConfiguration> _logger;
+        private readonly ILogger _logger;
 
         public GitHubOptionsConfiguration(
             IGitHubAuthenticationService githubAuthenticationService,
@@ -38,7 +38,9 @@ namespace OrchardCore.GitHub.Configuration
             }
 
             if (_githubAuthenticationService.ValidateSettings(settings).Any())
+            {
                 return;
+            }
 
             // Register the OpenID Connect client handler in the authentication handlers collection.
             options.AddScheme(GitHubDefaults.AuthenticationScheme, builder =>
@@ -73,6 +75,8 @@ namespace OrchardCore.GitHub.Configuration
             {
                 options.CallbackPath = loginSettings.CallbackPath;
             }
+
+            options.SaveTokens = loginSettings.SaveTokens;
         }
 
         public void Configure(GitHubOptions options) => Debug.Fail("This infrastructure method shouldn't be called.");

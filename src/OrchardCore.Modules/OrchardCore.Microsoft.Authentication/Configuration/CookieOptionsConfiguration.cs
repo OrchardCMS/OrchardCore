@@ -1,4 +1,3 @@
-using System;
 using System.Diagnostics;
 using Microsoft.AspNetCore.Authentication.AzureAD.UI;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -9,12 +8,10 @@ namespace OrchardCore.Microsoft.Authentication.Configuration
 {
     internal class CookieOptionsConfiguration : IConfigureNamedOptions<CookieAuthenticationOptions>
     {
-        private readonly IOptionsMonitor<AzureADOptions> _azureADOptions;
         private readonly string _tenantPrefix;
 
-        public CookieOptionsConfiguration(IOptionsMonitor<AzureADOptions> azureADOptions, ShellSettings shellSettings)
+        public CookieOptionsConfiguration(ShellSettings shellSettings)
         {
-            _azureADOptions = azureADOptions;
             _tenantPrefix = "/" + shellSettings.RequestUrlPrefix;
         }
 

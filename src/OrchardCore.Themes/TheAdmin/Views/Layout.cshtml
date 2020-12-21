@@ -1,5 +1,11 @@
-﻿<!DOCTYPE html>
-<html lang="@Orchard.CultureName()" dir="@Orchard.CultureDir()">
+﻿@inject DarkModeService DarkModeService;
+@inject IOptions<AdminOptions> AdminOptions;
+@{
+    var adminSettings = Site.As<AdminSettings>();
+    var darkMode = await DarkModeService.IsDarkModeAsync();
+}
+<!DOCTYPE html>
+<html lang="@Orchard.CultureName()" dir="@Orchard.CultureDir()" data-theme="@DarkModeService.CurrentTheme" data-darkmode="@adminSettings.DisplayDarkMode">
 <head>
     <title>@RenderTitleSegments(Site.SiteName, "before")</title>
     <meta charset="utf-8">
@@ -8,52 +14,83 @@
     <link type="image/x-icon" rel="shortcut icon" href="~/TheAdmin/favicon.ico" />
 
     <!-- Bootstrap CSS -->
-    <style asp-name="admin" asp-src="~/TheAdmin/Styles/TheAdmin.min.css" debug-src="~/TheAdmin/Styles/TheAdmin.css" depends-on="jQuery-ui"></style>
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style media="all" asp-name="admin" asp-src="~/TheAdmin/Styles/TheAdmin.min.css" debug-src="~/TheAdmin/Styles/TheAdmin.css"></style>
+
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons|Material+Icons+Outlined|Material+Icons+Two+Tone|Material+Icons+Round|Material+Icons+Sharp" rel="stylesheet">
 
     <script asp-name="font-awesome" at="Foot" version="5"></script>
     <script asp-name="font-awesome-v4-shims" at="Foot" version="5"></script>
-    <script asp-name="admin" asp-src="~/TheAdmin/Scripts/TheAdmin.min.js" debug-src="~/TheAdmin/Scripts/TheAdmin.js" depends-on="jQuery, jQuery-ui, jQuery-ui-i18n" at="Foot"></script>
+    <script asp-name="jscookie" at="Foot" version="2.1.4"></script>
+    <script asp-name="admin" asp-src="~/TheAdmin/Scripts/TheAdmin.min.js" debug-src="~/TheAdmin/Scripts/TheAdmin.js" depends-on="jQuery" at="Foot"></script>
     <resources type="Header" />
 
-    <!-- This script can't wait to the footer -->
-    <script type="text/javascript" asp-src="~/TheAdmin/Scripts/userPreferencesLoader.min.js" debug-src="~/TheAdmin/Scripts/userPreferencesLoader.js"></script>
-
-    @await RenderSectionAsync("Header", required: false)
+    <!-- This script can't wait till the footer -->
+    <script asp-src="~/TheAdmin/Scripts/TheAdmin-header.min.js" debug-src="~/TheAdmin/Scripts/TheAdmin-header.js"></script>
+    @await RenderSectionAsync("HeadMeta", required: false)
 </head>
 <body class="preload">
     <div class="ta-wrapper">
-        <div class="ta-navbar-top">
-            <a class="ta-navbar-brand" href="@Url.Content("~/")"><span>@Site.SiteName</span></a>
-            <div class="collapse navbar-collapse" id="navbar-links">
-                <div class="mr-auto">
-                    @await RenderSectionAsync("NavbarTop", required: false)
-                </div>
-                <ul class="nav navbar-nav">
+        <div class="ta-navbar-top navbar-expand-lg bg-primary">
+            <a class="ta-navbar-brand" href="@Url.Content("~/" + AdminOptions.Value.AdminUrlPrefix)"><img src="/TheAdmin/logo.png" /><span>@Site.SiteName</span></a>
+            <div class="mr-auto">
+                @if (adminSettings.DisplayTitlesInTopbar)
+                {
+                    @await RenderSectionAsync("Title", required: false)
+                }
+            </div>
+            @await RenderSectionAsync("NavbarTop", required: false)
+            <button class="navbar-toggler pull-right" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="@T["Toggle navigation"]">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse flex-grow-0" id="navbarNav">
+                <ul class="navbar-nav">
+                    @await RenderSectionAsync("NavbarLinks", required: false)
                     <li class="nav-item">
-                        <a class="nav-link"><span><i class="fa fa-user" aria-hidden="true"></i></span><span> @User.Identity.Name</span></a>
+                        @if (adminSettings.DisplayDarkMode)
+                        {
+                            <a id="btn-darkmode" class="nav-link" data-toggle="tooltip" title="@(darkMode ? T["Light mode"] : T["Dark mode"])" role="button">
+                                @if (darkMode)
+                                {
+                                    <i class="fas fa-fw fa-sun"></i>
+                                }
+                                else
+                                {
+                                    <i class="fas fa-fw fa-moon"></i>
+                                }
+                                <span class="d-inline d-md-none">@T["Dark mode"]</span>
+                            </a>
+                        }
                     </li>
+                    <li class="nav-item">
+                        <a href="@Url.Content("~/")" class="nav-link" target="_blank" data-toggle="tooltip" title="@T["Visit Site"]">
+                            <i class="fa fa-fw fa-external-link"></i>
+                            <span class="d-inline d-md-none">@T["Visit Site"]</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">@await DisplayAsync(await New.UserMenu())</li>
                 </ul>
-                <form asp-route-area="OrchardCore.Users" asp-controller="Account" asp-action="LogOff" method="post" class="form-inline">
-                    <button type="submit" class="btn btn-link nav-link" role="button"><i class="fa fa-sign-out" aria-hidden="true"></i> @T["Log off"]</button>
-                </form>
             </div>
         </div>
+    </div>
 
-        <div id="ta-left-sidebar" class="d-flex flex-column justify-content-between align-items-stretch">
-            @await RenderSectionAsync("Navigation", required: false)
-            <div class="footer">
-                <button class="leftbar-compactor" type="button" title="@T["Collapse / expand menu"]"></button>
-            </div>
+    <div id="ta-left-sidebar" class="d-flex flex-column justify-content-between align-items-stretch">
+        @await RenderSectionAsync("Navigation", required: false)
+        <div class="footer">
+            <button class="leftbar-compactor" type="button" title="@T["Collapse / expand menu"]"></button>
         </div>
+    </div>
 
-        <div class="ta-content">
-            @await RenderSectionAsync("Messages", required: false)
-            @await RenderSectionAsync("Breadcrumbs", required: false)
-
-            @await RenderBodyAsync()
-        </div>
-    </div><!-- /.ta-wrapper -->
+    <div class="ta-content">
+        @await RenderSectionAsync("Header", required: false)
+        @await RenderSectionAsync("Messages", required: false)
+        @await RenderSectionAsync("Breadcrumbs", required: false)
+        @if (!adminSettings.DisplayTitlesInTopbar)
+        {
+            @await RenderSectionAsync("Title", required: false)
+        }
+        @await RenderBodyAsync()
+    </div>
+    </div>
 
     @await RenderSectionAsync("Footer", required: false)
 

@@ -1,35 +1,48 @@
 # Content Fields (`OrchardCore.ContentFields`)
 
-This module provides common content fields.
+This module provides common content fields.  
+Some fields are available in their specific module.
 
 ## Available Fields
 
-| Name | Properties | Shape Type | Shape Class |
-| --- | --- | --- | --- |
-| `BooleanField` | `Value (bool)` | `BooleanField` | `DisplayBooleanFieldViewModel` |
-| `ContentPickerField` | `ContentItemIds (string[])` | `ContentPickerField` | `DisplayContentPickerFieldViewModel` |
-| `LocalizationSetContentPickerField` | `LocalizationSets (string[])` | `LocalizationSetContentPickerField` | `DisplayLocalizationSetContentPickerFieldViewModel` |
-| `DateField` | `Value (DateTime?)` | `DateField` | `DisplayDateFieldViewModel` |
-| `DateTimeField` | `Value (DateTime?)` | `DateTimeField` | `DisplayDateTimeFieldViewModel` |
-| `HtmlField` | `Html (string)` | `HtmlField` | `DisplayHtmlFieldViewModel` |
-| `LinkField` | `Url (string), Text (string)` | `LinkField` | `DisplayLinkFieldViewModel` |
-| `NumericField` | `Value (decimal?)` | `NumericField` | `DisplayNumericFieldViewModel` |
-| `TextField` | `Text (string)` | `TextField` | `DisplayTextFieldViewModel` |
-| `TimeField` | `Value (TimeSpan?)` | `TimeField` | `DisplayTimeFieldViewModel` |
-| `YoutubeField` | `EmbeddedAddress (string), RawAddress (string)` | `YoutubeField` | `YoutubeFieldDisplayViewModel` |
+| Name | Properties |
+| --- | --- |
+| `BooleanField` | `bool Value` |
+| `ContentPickerField` | `string[] ContentItemIds` |
+| `DateField` | `DateTime? Value` |
+| `DateTimeField` | `DateTime? Value` |
+| `HtmlField` | `string Html` |
+| `LinkField` | `string Url, string Text` |
+| `LocalizationSetContentPickerField` | `string[] LocalizationSets` |
+| `MarkdownField` | `string Markdown` |
+| `MediaField` | `string[] Paths` |
+| `NumericField` | `decimal? Value` |
+| `TaxonomyField` | `string TaxonomyContentItemId, string[] TaxonomyContentItemId` |
+| `TextField` | `string Text` |
+| `TimeField` | `TimeSpan? Value` |
+| `UserPickerField` | `string[] UserIds` |
+| `YoutubeField` | `string EmbeddedAddress, string RawAddress` |
+
+!!! note
+    Each field is rendered by a corresponding `Shape Type` that is using its own a Display view model.  
+    Ex: `BooleanField` is rendered by a shape type called `BooleanField` with a `DisplayBooleanFieldViewModel`.
 
 ## Usage
 
 From a `Content` template, you can reference a field's value like this
 (if the content type is `Article` and has a Text Field named `MyField`):
 
-``` liquid tab="Liquid"
-{{ Model.ContentItem.Content.Article.MyField.Value }}
-```
+=== "Liquid"
 
-``` html tab="Razor"
-var fieldValue = Model.ContentItem.Content.Article.MyField.Text;
-```
+    ``` liquid
+    {{ Model.ContentItem.Content.Article.MyField.Text }}
+    ```
+
+=== "Razor"
+
+    ``` html
+    var fieldValue = Model.ContentItem.Content.Article.MyField.Text;
+    ```
 
 From a field shape (see Shape Type in the table listing all the fields) you can also access properties specific to each view model.
 
@@ -55,13 +68,13 @@ Some view models have special properties that are computed from the actual field
 
 #### Html Field Example
 
-```liquid
+``` liquid
 {{ Model.Html }}
 ```
 
 or, to display the raw content before the tags are converted:
 
-```liquid
+``` liquid
 {{ Model.Field.Html }}
 ```
 
@@ -75,13 +88,13 @@ or, to display the raw content before the tags are converted:
 
 #### DateTime Field Example
 
-```liquid
+``` liquid
 {{ Model.LocalDateTime }}
 ```
 
 or, to display the UTC value before it is converted:
 
-```liquid
+``` liquid
 {{ Model.Value }}
 ```
 
@@ -89,35 +102,43 @@ or, to display the UTC value before it is converted:
 
 #### ContentPicker Field Example
 
-```liquid
-{% assign contentItems = Model.ContentItemIds | content_item_id %}
-{% for contentItem in contentItems %}
-    {{ contentItem.DisplayText }}
-{% endfor %}
-```
+=== "Liquid"
 
-```html tab="Razor"
-@foreach (var contentItem in await Orchard.GetContentItemsByIdAsync(Model.ContentItemIds))
-{
-    @contentItem.DisplayText
-}
-```
+    ``` liquid
+    {% assign contentItems = Model.ContentItemIds | content_item_id %}
+    {% for contentItem in contentItems %}
+        {{ contentItem.DisplayText }}
+    {% endfor %}
+    ```
+
+=== "Razor"
+
+    ```html
+    @foreach (var contentItem in await Orchard.GetContentItemsByIdAsync(Model.ContentItemIds))
+    {
+        @contentItem.DisplayText
+    }
+    ```
 
 Or to render the referenced content item:
 
-``` liquid tab="Liquid"
-{% assign contentItems = Model.ContentItemIds | content_item_id %}
-{% for contentItem in contentItems %}
-    {{ contentItem | shape_build_display: "Detail" | shape_render }}
-{% endfor %}
-```
+=== "Liquid"
 
-``` html tab="Razor"
-@foreach (var contentItem in await Orchard.GetContentItemsByIdAsync(Model.ContentItemIds))
-{
-    @await Orchard.DisplayAsync(contentItem, "Detail")
-}
-```
+    ``` liquid
+    {% assign contentItems = Model.ContentItemIds | content_item_id %}
+    {% for contentItem in contentItems %}
+        {{ contentItem | shape_build_display: "Detail" | shape_render }}
+    {% endfor %}
+    ```
+
+=== "Razor"
+
+    ``` html
+    @foreach (var contentItem in await Orchard.GetContentItemsByIdAsync(Model.ContentItemIds))
+    {
+        @await Orchard.DisplayAsync(contentItem, "Detail")
+    }
+    ```
 
 ### `LocalizationSetContentPickerField`
 
@@ -129,33 +150,89 @@ per set based on the request culture, if no culture is specified.
 
 #### LocalizationSet ContentPicker Field Example
 
-```liquid
-{% assign contentItems = Model.LocalizationSets | localization_set %}
-{% for contentItem in contentItems %}
-    {{ contentItem.DisplayText }}
-{% endfor %}
-```
+=== "Liquid"
 
-``` html tab="Razor"
-@model OrchardCore.ContentFields.ViewModels.DisplayLocalizationSetContentPickerFieldViewModel
-@using Microsoft.AspNetCore.Localization
+    ```liquid
+    {% assign contentItems = Model.LocalizationSets | localization_set %}
+    {% for contentItem in contentItems %}
+        {{ contentItem.DisplayText }}
+    {% endfor %}
+    ```
 
-@inject OrchardCore.ContentLocalization.IContentLocalizationManager ContentLocalizationManager;
+=== "Razor"
 
-@{
-    var currentCulture = Context.Features.Get<IRequestCultureFeature>().RequestCulture.Culture.Name;
-    var contentItems = await ContentLocalizationManager.GetItemsForSetsAsync(Model.LocalizationSets, currentCulture);
-}
-foreach (var contentItem in contentItems)
-{
-    <span class="value">@contentItem.DisplayText</span>
-    if (contentItem != contentItems.Last())
-    {
-        <span>,</span>
+    ``` html
+    @model OrchardCore.ContentFields.ViewModels.DisplayLocalizationSetContentPickerFieldViewModel
+    @using Microsoft.AspNetCore.Localization
+
+    @inject OrchardCore.ContentLocalization.IContentLocalizationManager ContentLocalizationManager;
+
+    @{
+        var currentCulture = Context.Features.Get<IRequestCultureFeature>().RequestCulture.Culture.Name;
+        var contentItems = await ContentLocalizationManager.GetItemsForSetsAsync(Model.LocalizationSets, currentCulture);
     }
-}
+    foreach (var contentItem in contentItems)
+    {
+        <span class="value">@contentItem.DisplayText</span>
+        if (contentItem != contentItems.Last())
+        {
+            <span>,</span>
+        }
+    }
+    ```
 
-```
+### `UserPicker Field`
+
+The User Picker field allows you to relate users to a content item.
+
+When adding the field to a content type, use the settings to specify whether to 
+
+- List all users, 
+- List users from specific roles.
+
+
+#### UserPicker Field Example
+
+=== "Liquid"
+
+    ```liquid
+    {% assign users = Model.UserIds | users_by_id %}
+    {% for user in users %}
+        {{ user.UserName }} - {{ user.Email }}
+    {% endfor %}
+    ```
+
+=== "Razor"
+
+    ``` html
+    @model OrchardCore.ContentFields.ViewModels.DisplayUserPickerFieldViewModel
+    @using OrchardCore.Mvc.Utilities
+
+    @{
+        var name = (Model.PartFieldDefinition.PartDefinition.Name + "-" + Model.PartFieldDefinition.Name).HtmlClassify();
+        var users = await @Orchard.GetUsersByIdsAsync(Model.UserIds);
+    }
+
+    <div class="field field-type-userpickerfield field-name-@name">
+        <span class="name">@Model.PartFieldDefinition.DisplayName():</span>
+        @if (users.Any())
+        {
+            foreach (var user in users)
+            {
+                <span class="value">@user.UserName</span>
+                if (user != users.Last())
+                {
+                    <span>,</span>
+                }
+            }
+        }
+        else
+        {
+            <span class="value">@T["No users."]</span>
+        }
+    </div>
+
+    ```
 
 ## Creating Custom Fields
 
@@ -238,17 +315,17 @@ This shape type will match a template file named `{FIELDTYPE}-{EDITORNAME}.Optio
 
 This template will need to render an `<option>` tag. Here is an example for a Wysiwyg options on the Html Field:
 
-``` html tab="Razor"
+``` html
 @{
     string currentEditor = Model.Editor;
 }
 <option value="Wysiwyg" selected="@(currentEditor == "Wysiwyg")">@T["Wysiwyg editor"]</option>
 ```
 
-Then you can create the editor shape by adding a file named `{FIELDTYPE}_Editor__{EDITORNAME}` which is
-represented by a template file named `{FIELDTYPE}-{EDITORNAME}.Editor.cshtml`.
+Then you can create the editor shape by adding a file named `{FIELDTYPE}_Edit__{EDITORNAME}` which is
+represented by a template file named `{FIELDTYPE}-{EDITORNAME}.Edit.cshtml`.
 
-For instance the filename for the Wysiwyg editor on the Html Field is named `HtmlField-Wysiwyg.Editor.cshtml`.
+For instance the filename for the Wysiwyg editor on the Html Field is named `HtmlField-Wysiwyg.Edit.cshtml`.
 
 ### Customising Display Driver Registration
 

@@ -5,29 +5,42 @@
     var culture = await Orchard.GetContentCultureAsync(Model.Field.ContentItem);
 }
 
+@await DisplayAsync(await New.ShortcodeModal())
+
 <div class="form-group">
     <label asp-for="Html">@Model.PartFieldDefinition.DisplayName()</label>
-    <input asp-for="Html" class="form-control content-preview-text" dir="@culture.GetLanguageDirection()" />
+    <textarea asp-for="Html" rows="5" class="form-control content-preview-text" dir="@culture.GetLanguageDirection()"></textarea>
     @if (!String.IsNullOrEmpty(settings.Hint))
     {
         <span class="hint">@settings.Hint</span>
     }
 </div>
 
+<style asp-name="codemirror"></style>
 <script asp-name="codemirror" depends-on="admin" at="Foot"></script>
+<script asp-name="codemirror-addon-display-autorefresh" at="Foot"></script>
+<script asp-name="codemirror-addon-edit-closetag" at="Foot"></script>
+<script asp-name="codemirror-addon-selection-active-line" at="Foot"></script>
 <script asp-name="codemirror-mode-css" at="Foot"></script>
 <script asp-name="codemirror-mode-htmlmixed" at="Foot"></script>
 <script asp-name="codemirror-mode-javascript" at="Foot"></script>
 <script asp-name="codemirror-mode-xml" at="Foot"></script>
 <script at="Foot">
     $(function () {
-        var optionsTexArea = document.getElementById('@Html.IdFor(x => x.Html)');
-        var editor = CodeMirror.fromTextArea(optionsTexArea, {
-            lineNumbers: false,
-            lineWrapping: true,
-            matchBrackets: true,
-            mode: { name: "htmlmixed" }
-        });
-        setTimeout(function() { editor.refresh(); },1);
+        var optionsTextArea = document.getElementById('@Html.IdFor(x => x.Html)');
+        @* When the field is rendered by a flow part only the elements scripts are rendered, so the html element will not exist. *@
+        if (optionsTextArea) {
+            var editor = CodeMirror.fromTextArea(optionsTextArea, {
+                autoCloseTags: true,
+                autoRefresh: true,
+                lineNumbers: true,
+                lineWrapping: true,
+                matchBrackets: true,
+                styleActiveLine: true,
+                mode: { name: "htmlmixed" }
+            });
+            
+            initializeCodeMirrorShortcodeWrapper(editor);
+        }
     });
 </script>

@@ -23,10 +23,10 @@ namespace OrchardCore.Tests.Extensions
             });
 
         private static IFeaturesProvider ModuleFeatureProvider =
-            new FeaturesProvider(new[] { new ThemeFeatureBuilderEvents() }, new NullLogger<FeaturesProvider>());
+            new FeaturesProvider(new[] { new ThemeFeatureBuilderEvents() });
 
         private static IFeaturesProvider ThemeFeatureProvider =
-            new FeaturesProvider(new[] { new ThemeFeatureBuilderEvents() }, new NullLogger<FeaturesProvider>());
+            new FeaturesProvider(new[] { new ThemeFeatureBuilderEvents() });
 
         private IExtensionManager ModuleScopedExtensionManager;
         private IExtensionManager ThemeScopedExtensionManager;

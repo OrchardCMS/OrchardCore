@@ -13,15 +13,13 @@ namespace OrchardCore.Workflows.Timers
     {
         public static string EventName => nameof(TimerEvent);
         private readonly IClock _clock;
-        private readonly IStringLocalizer<TimerEvent> S;
+        private readonly IStringLocalizer S;
 
         public TimerEvent(IClock clock, IStringLocalizer<TimerEvent> localizer)
         {
             _clock = clock;
             S = localizer;
         }
-
-        private IStringLocalizer T { get; }
 
         public override string Name => EventName;
 
@@ -70,8 +68,6 @@ namespace OrchardCore.Workflows.Timers
 
         private bool IsExpired()
         {
-            var startedUtc = StartedUtc;
-
             if (StartedUtc == null)
             {
                 StartedUtc = StartAtUtc ?? _clock.UtcNow;

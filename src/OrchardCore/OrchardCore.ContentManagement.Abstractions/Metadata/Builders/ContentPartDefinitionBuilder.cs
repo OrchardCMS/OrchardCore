@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.ContentManagement.Utilities;
 
 namespace OrchardCore.ContentManagement.Metadata.Builders
 {
@@ -40,6 +42,15 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
 
         public ContentPartDefinition Build()
         {
+            if (!Name[0].IsLetter())
+            {
+                throw new ArgumentException("Content type name must start with a letter", "name");
+            }
+            if (!String.Equals(Name, Name.ToSafeName(), StringComparison.OrdinalIgnoreCase))
+            {
+                throw new ArgumentException("Content type name contains invalid characters", "name");
+            }
+
             return new ContentPartDefinition(Name, _fields, _settings);
         }
 
@@ -127,6 +138,32 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
             return this;
         }
 
+        public async Task<ContentPartDefinitionBuilder> WithFieldAsync(string fieldName, Func<ContentPartFieldDefinitionBuilder, Task> configurationAsync)
+        {
+            var existingField = _fields.FirstOrDefault(x => x.Name == fieldName);
+
+            if (existingField != null)
+            {
+                var toRemove = _fields.Where(x => x.Name == fieldName).ToArray();
+                foreach (var remove in toRemove)
+                {
+                    _fields.Remove(remove);
+                }
+            }
+            else
+            {
+                existingField = new ContentPartFieldDefinition(null, fieldName, new JObject());
+            }
+
+            var configurer = new FieldConfigurerImpl(existingField, _part);
+
+            await configurationAsync(configurer);
+
+            _fields.Add(configurer.Build());
+
+            return this;
+        }
+
         private class FieldConfigurerImpl : ContentPartFieldDefinitionBuilder
         {
             private ContentFieldDefinition _fieldDefinition;
@@ -143,6 +180,15 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
 
             public override ContentPartFieldDefinition Build()
             {
+                if (!_fieldName[0].IsLetter())
+                {
+                    throw new ArgumentException("Content field name must start with a letter", "name");
+                }
+                if (!String.Equals(_fieldName, _fieldName.ToSafeName(), StringComparison.OrdinalIgnoreCase))
+                {
+                    throw new ArgumentException("Content field name contains invalid characters", "name");
+                }
+
                 return new ContentPartFieldDefinition(_fieldDefinition, _fieldName, _settings);
             }
 

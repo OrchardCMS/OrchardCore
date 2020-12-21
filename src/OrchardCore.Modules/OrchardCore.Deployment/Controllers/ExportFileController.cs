@@ -1,5 +1,7 @@
+using System;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -7,7 +9,9 @@ using OrchardCore.Admin;
 using OrchardCore.Deployment.Core.Mvc;
 using OrchardCore.Deployment.Core.Services;
 using OrchardCore.Deployment.Services;
+using OrchardCore.Deployment.Steps;
 using OrchardCore.Mvc.Utilities;
+using OrchardCore.Recipes.Models;
 using YesSql;
 
 namespace OrchardCore.Deployment.Controllers
@@ -52,7 +56,23 @@ namespace OrchardCore.Deployment.Controllers
             {
                 archiveFileName = PathExtensions.Combine(Path.GetTempPath(), filename);
 
-                var deploymentPlanResult = new DeploymentPlanResult(fileBuilder);
+                var recipeDescriptor = new RecipeDescriptor();
+                var recipeFileDeploymentStep = deploymentPlan.DeploymentSteps.FirstOrDefault(ds => ds.Name == nameof(RecipeFileDeploymentStep)) as RecipeFileDeploymentStep;
+
+                if (recipeFileDeploymentStep != null)
+                {
+                    recipeDescriptor.Name = recipeFileDeploymentStep.RecipeName;
+                    recipeDescriptor.DisplayName = recipeFileDeploymentStep.DisplayName;
+                    recipeDescriptor.Description = recipeFileDeploymentStep.Description;
+                    recipeDescriptor.Author = recipeFileDeploymentStep.Author;
+                    recipeDescriptor.WebSite = recipeFileDeploymentStep.WebSite;
+                    recipeDescriptor.Version = recipeFileDeploymentStep.Version;
+                    recipeDescriptor.IsSetupRecipe = recipeFileDeploymentStep.IsSetupRecipe;
+                    recipeDescriptor.Categories = (recipeFileDeploymentStep.Categories ?? "").Split(',', StringSplitOptions.RemoveEmptyEntries);
+                    recipeDescriptor.Tags = (recipeFileDeploymentStep.Tags ?? "").Split(',', StringSplitOptions.RemoveEmptyEntries);
+                }
+
+                var deploymentPlanResult = new DeploymentPlanResult(fileBuilder, recipeDescriptor);
                 await _deploymentManager.ExecuteDeploymentPlanAsync(deploymentPlan, deploymentPlanResult);
                 ZipFile.CreateFromDirectory(fileBuilder.Folder, archiveFileName);
             }
