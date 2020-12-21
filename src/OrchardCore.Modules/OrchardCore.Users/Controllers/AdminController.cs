@@ -135,85 +135,66 @@ namespace OrchardCore.Users.Controllers
             // or should the editing user must have permissions to edit editors and contributors.
             // 2nd one I think.
 
-            // var authorizedRoles = "editor", "contributor"
-            // user.With<UserRoleIndex>(index => index.RoleName.IsIn(authorizedRoles))
-
-
-            // var users = await _session.Query<User, UserByRoleNameIndex>(u => u.RoleName == normalizedRoleName).ListAsync();
-
                 var roleNames = await GetNormalizedRoleNamesAsync();
                 var authorizedRoleNames = await GetAuthorizedRoleNamesAsync(roleNames);
             // Alter the query if the user does not have permission for all roles.
             if (roleNames.Count() != authorizedRoleNames.Count())
             {
-                var predicates = GetRoleNamePredicates(authorizedRoleNames, roleNames);
-                if (predicates.Any())
-                {
 
-                }
 
 /*
-// Think this will fail on SQL server because the select items are not part of the group by
-SELECT DISTINCT [Document].*, [UserIndex_a1].[NormalizedUserName] FROM [Document] INNER JOIN [UserIndex] AS [UserIndex_a1] ON [UserIndex_a1].[DocumentId] = [Document].[Id] INNER JOIN [UserRoleNameIndex] AS [UserRoleNameIndex_a1] ON [UserRoleNameIndex_a1].[DocumentId] = [Document].[Id]
--- WHERE
+SELECT DocumentId, RoleName 
+  FROM UserRoleNameIndex 
+WHERE NOT EXISTS
+(SELECT RoleName FROM UserRoleNameIndex AS US2
+WHERE UserRoleNameIndex.DocumentId = US2.DocumentId 
+GROUP BY US2.RoleName
+HAVING US2.RoleName  IN ('AUTHOR', 'ADMINISTRATOR')
+)
 
 
-GROUP BY RoleName
-HAVING RoleName IN ( 'EDITOR', 'AUTHOR')
+and this works with the reduce index. so no new index. helpful
+
+WHERE NOT EXISTS
+(SELECT RoleName FROM UserByRoleNameIndex AS US2
+INNER JOIN [UserByRoleNameIndex_Document] AS [D2] ON [US2].[Id] = [D2].[UserByRoleNameIndexId]
+WHERE D2.DocumentId = Document.Id 
+GROUP BY US2.RoleName
+HAVING US2.RoleName  IN ('AUTHOR', 'ADMINISTRATOR')
+)
+
+
 */
-                users.With<UserRoleNameIndex>()
-                .Where("GROUP BY RoleName HAVING RoleName IN ( " + String.Join(",", authorizedRoleNames) + " )");
-                // users.With<UserByRoleNameIndex>(x => x)
 
-                // users.With<UserRoleNameIndex>(x => x.RoleName.IsIn(authorizedRoleNames) && x.RoleName.IsNotIn(roleNames.Except(authorizedRoleNames)));
-                // users.All(
-                //     u => u.With<UserByRoleNameIndex>(x => x.RoleName.IsIn(authorizedRoleNames)),
-                //     u => u.With<UserByRoleNameIndex>(x => x.RoleName.IsNotIn(roleNames.Except(authorizedRoleNames)))
-                // );
-                // foreach (var authorizedRoleName in authorizedRoleNames)
-                // {
-                    // users.All(
-                    //     u => u.All(
-                    //         u => u.Any(
-                    //             u => u.With<UserRoleNameIndex>(x => x.RoleName == "EDITOR")
-                    //         )
-                    //     ),
-                    //     u => u.All(
-                    //         u => u.Any(
-                    //             u => u.With<UserRoleNameIndex>(x => x.RoleName != "AUTHOR"),
-                    //             u => u.With<UserRoleNameIndex>(x => x.RoleName != "ADMINISTRATOR")
-                    //         )
-                    //     )
+                var notAuthorizedRoles = roleNames.Except(authorizedRoleNames).Select(x => "'" + x + "'");
 
-                    // );
+                var dialect = _session.Store.Dialect;
+                var tablePrefix = _session.Store.Configuration.TablePrefix;
+
+                var builder = dialect.CreateBuilder(tablePrefix);
+
+                var type = typeof(UserByRoleNameIndex);
+
+                var indexTable = _session.Store.Configuration.TableNameConvention.GetIndexTable(type);
+                var indexDocumentTable = indexTable + "_Document"; // TODO check if it needs a quite
+
+                // TODO get doc table, no collection.
+                //var documentTable = Store.Configuration.TableNameConvention.GetDocumentTable(collection);
+
+                builder.Select();
+                builder.AddSelector(dialect.QuoteForColumnName("RoleName"));
+                builder.From(indexTable);
+                builder.InnerJoin(indexDocumentTable, indexTable, "Id", indexDocumentTable, "UserByRoleNameIndexId");
 
 
-                //  users.All(
-                //         u => u.All(
-                //             u => u.Any(
-                //                 u => u.With<UserByRoleNameIndex>(x => x.RoleName == "EDITOR"),
-                //                 u => u.With<UserByRoleNameIndex>(x => x.RoleName == "CONTRIBUTOR")
-                //             )
-                //         ),
-                //         u => u.All(
-                //             u => u.Any(
-                //                 u => u.With<UserByRoleNameIndex>(x => x.RoleName != "AUTHOR"),
-                //                 u => u.With<UserByRoleNameIndex>(x => x.RoleName != "ADMINISTRATOR"),
-                //                 u => u.With<UserByRoleNameIndex>(x => x.RoleName != "MODERATOR")
-                //             )
-                //         )
+                builder.WhereAnd($"{dialect.QuoteForTableName(indexDocumentTable)}.{dialect.QuoteForColumnName("DocumentId")} = {dialect.QuoteForTableName("Document")}.{dialect.QuoteForColumnName("Id")}");
+                builder.GroupBy($"{dialect.QuoteForColumnName("RoleName")}");
+                builder.Having($"{dialect.QuoteForColumnName("RoleName")} {dialect.InOperator(String.Join(',', notAuthorizedRoles))}");
 
-                //     );
+                var cmd = builder.ToSqlString();
 
-                    // users.Any
-                    // users.Any(predicates);
-                // }
-                // users.With<UserByRoleNameIndex>()
-                //     .
-
+                users.Where($"not exists ({cmd})");
             }
-
-
 
             var count = await users.CountAsync();
 
@@ -271,29 +252,6 @@ HAVING RoleName IN ( 'EDITOR', 'AUTHOR')
             };
 
             return View(model);
-        }
-
-        private Func<IQuery<User>, IQuery<User>>[] GetRoleNamePredicates(IEnumerable<string> authorizedRoleNames, IEnumerable<string> notAuthorizedRoleNames)
-        {
-            var predicates = new List<Func<IQuery<User>, IQuery<User>>>();
-
-            var authorizedPredicates = new List<Func<IQuery<User>, IQuery<User>>>();
-            var notAuthorizedPredicates = new List<Func<IQuery<User>, IQuery<User>>>();
-
-            foreach(var role in authorizedRoleNames)
-            {
-                authorizedPredicates.Add(u => u.With<UserByRoleNameIndex>(x => x.RoleName == role));
-            }
-
-            foreach(var role in notAuthorizedRoleNames)
-            {
-                notAuthorizedPredicates.Add(u => u.With<UserByRoleNameIndex>(x => x.RoleName != role));
-            }
-//was all.
-            // predicates.All(u => u.Any(authorizedPredicates.ToArray()));
-            predicates.Add(u => u.Any(notAuthorizedPredicates.ToArray()));
-
-            return predicates.ToArray();
         }
 
         [HttpPost, ActionName("Index")]
