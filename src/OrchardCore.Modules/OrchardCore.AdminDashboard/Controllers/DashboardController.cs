@@ -71,27 +71,12 @@ namespace OrchardCore.AdminDashboard.Controllers
                 return Forbid();
             }
 
-            var model = new AdminDashboardViewModel();
-
-            return View(model);
-        }
-
-        public async Task<IActionResult> Widgets()
-        {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAdminDashboard))
+            var widgets = await _adminDashboardService.GetWidgetsAsync(x => x.Published);
+            
+            var model = new AdminDashboardViewModel
             {
-                return Forbid();
-            }
-
-            var model = new AdminDashboardViewModel();
-            //var widgets = await _adminDashboardService.GetWidgetsAsync(c => c.Latest == true);
-
-            //model.Widgets = new List<dynamic>();
-
-            //foreach (var widget in widgets) //.OrderBy(x => x.Position))
-            //{
-            //    model.Widgets.Add(await _contentItemDisplayManager.BuildDisplayAsync(widget.ContentItem, _updateModelAccessor.ModelUpdater, "SummaryAdmin"));
-            //}
+                Widgets = widgets
+            };
 
             return View(model);
         }

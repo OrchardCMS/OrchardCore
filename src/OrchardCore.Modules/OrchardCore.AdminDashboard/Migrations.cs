@@ -17,13 +17,11 @@ namespace OrchardCore.AdminDashboard
 
         public int Create()
         {
-            //    //SchemaBuilder.CreateMapIndexTable<DashboardMetadataIndex>(table => table
-            //    //   .Column<string>("Zone", c => c.WithLength(64))
-            //    //);
+            SchemaBuilder.CreateMapIndexTable<DashboardPartIndex>(table => {});
 
             _contentDefinitionManager.AlterPartDefinition("DashboardPart", builder => builder
                 .Attachable()
-                .WithDescription("Provides a way to add widgets to a dashboard for your content item.")
+                .WithDescription("Provides a way to add widgets to a dashboard for your content items.")
                 );
 
             return 1;

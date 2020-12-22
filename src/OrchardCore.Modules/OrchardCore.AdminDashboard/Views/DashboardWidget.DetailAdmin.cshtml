@@ -1,0 +1,46 @@
+@using OrchardCore.Mvc.Utilities;
+@using OrchardCore.ContentManagement
+
+@{
+
+    Model.Classes.Add("content-item");
+    ContentItem contentItem = Model.ContentItem;
+    var contentTypeClassName = contentItem.ContentType.HtmlClassify();
+    Model.Classes.Add(contentTypeClassName);
+}
+
+<div class="col-4">
+<div class="card">
+    <div class="card-body">
+        <div class="card-header">
+            @if (Model.Header != null)
+            {
+                @await DisplayAsync(Model.Header)
+            }
+            else
+            {
+                @* Move this to the DashboardPart shape *@
+                <a class="btn btn-sm btn-primary" edit-for="@contentItem" asp-route-returnUrl="@FullRequestPath">
+                    @T["Edit {0}", @Model.ContentItem.DisplayText]
+                </a>           
+
+                @Model.ContentItem.DisplayText
+            }
+            
+            @if (Model.Meta != null)
+            {
+                <div class="metadata">
+                    @await DisplayAsync(Model.Meta)
+                </div>
+            }
+        </div>
+        @await DisplayAsync(Model.Content)
+    </div>
+    @if (Model.Footer != null)
+    {
+        <div class="card-footer">
+            @await DisplayAsync(Model.Footer)
+        </div>
+    }
+</div>
+</div>

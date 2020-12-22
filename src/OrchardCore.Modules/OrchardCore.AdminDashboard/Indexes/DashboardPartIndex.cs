@@ -6,7 +6,6 @@ namespace OrchardCore.AdminDashboard.Indexes
 {
     public class DashboardPartIndex : MapIndex
     {
-        //public string Zone { get; set; }
     }
 
     public class DashboardPartIndexProvider : IndexProvider<ContentItem>
@@ -16,15 +15,22 @@ namespace OrchardCore.AdminDashboard.Indexes
             context.For<DashboardPartIndex>()
                 .Map(contentItem =>
                 {
-                    var dashboardMetadata = contentItem.As<DashboardMetadata>();
-                    if (dashboardMetadata != null)
+                    var dashboardPart = contentItem.As<DashboardPart>();
+
+                    if (dashboardPart == null)
                     {
-                        return new DashboardPartIndex
-                        {
-                        };
+                        return null;
                     }
 
-                    return null;
+                    // Store only published and latest versions
+                    if (!contentItem.Published && !contentItem.Latest)
+                    {
+                        return null;
+                    }                    
+                    
+                    return new DashboardPartIndex
+                    {
+                    };
                 });
         }
     }

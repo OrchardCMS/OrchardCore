@@ -6,6 +6,6 @@ using OrchardCore.Modules.Manifest;
     Website = ManifestConstants.OrchardCoreWebsite,
     Version = ManifestConstants.OrchardCoreVersion,
     Description = "Allows to organize widgets in an Admin Dashboard.",
-    Dependencies = new[] { "OrchardCore.ContentTypes" },
+    Dependencies = new[] { "OrchardCore.ContentTypes", "OrchardCore.Admin" },
     Category = "Content Management"
 )]
