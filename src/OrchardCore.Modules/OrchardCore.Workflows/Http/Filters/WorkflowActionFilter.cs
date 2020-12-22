@@ -52,12 +52,12 @@ namespace OrchardCore.Workflows.Http.Filters
                 {
                     if (workflowTypes.TryGetValue(Int32.Parse(entry.WorkflowId), out var workflowType))
                     {
-                        var activity = workflowType.Activities.FirstOrDefault(x => x.ActivityId == entry.ActivityId);
+                        var activity = workflowType.Activities.SingleOrDefault(x => x.ActivityId == entry.ActivityId);
 
                         if (activity?.IsStart == true)
                         {
-                            // If atomic and a singleton, try to acquire a lock based on the workflow type id.
-                            (var locker, var locked) = workflowType.IsAtomic() && workflowType.IsSingleton
+                            // If atomic, try to acquire a lock per workflow type id.
+                            (var locker, var locked) = workflowType.IsAtomic()
                                 ? await _distributedLock.TryAcquireLockAsync(
                                     "WFT_" + workflowType.WorkflowTypeId + "_LOCK",
                                     TimeSpan.FromMilliseconds(workflowType.LockTimeout),
@@ -95,7 +95,7 @@ namespace OrchardCore.Workflows.Http.Filters
                         (String.IsNullOrWhiteSpace(correlationId) ||
                         workflow.CorrelationId == correlationId))
                     {
-                        // If atomic, try to acquire a lock based on the workflow instance id.
+                        // If atomic, try to acquire a lock per workflow id.
                         (var locker, var locked) = workflow.IsAtomic()
                             ? await _distributedLock.TryAcquireLockAsync(
                                 "WFI_" + workflow.WorkflowId + "_LOCK",
@@ -110,7 +110,7 @@ namespace OrchardCore.Workflows.Http.Filters
 
                         await using var acquiredLock = locker;
 
-                        // Check if the workflow still exists and is still correlated.
+                        // If atomic, check if the workflow still exists and is still correlated.
                         var haltedWorkflow = workflow.IsAtomic() ? await _workflowStore.GetAsync(workflow.Id) : workflow;
                         if (haltedWorkflow == null || (!String.IsNullOrWhiteSpace(correlationId) && haltedWorkflow.CorrelationId != correlationId))
                         {
@@ -118,7 +118,7 @@ namespace OrchardCore.Workflows.Http.Filters
                         }
 
                         // And if it is still halted on this activity.
-                        var blockingActivity = haltedWorkflow.BlockingActivities.FirstOrDefault(x => x.ActivityId == entry.ActivityId);
+                        var blockingActivity = haltedWorkflow.BlockingActivities.SingleOrDefault(x => x.ActivityId == entry.ActivityId);
                         if (blockingActivity != null)
                         {
                             await _workflowManager.ResumeWorkflowAsync(haltedWorkflow, blockingActivity);

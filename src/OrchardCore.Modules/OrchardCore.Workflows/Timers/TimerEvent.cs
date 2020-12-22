@@ -33,12 +33,6 @@ namespace OrchardCore.Workflows.Timers
             set => SetProperty(value);
         }
 
-        public DateTime? StartAtUtc
-        {
-            get => GetProperty<DateTime?>();
-            set => SetProperty(value);
-        }
-
         private DateTime? StartedUtc
         {
             get => GetProperty<DateTime?>();
@@ -68,10 +62,8 @@ namespace OrchardCore.Workflows.Timers
 
         private bool IsExpired()
         {
-            if (StartedUtc == null)
-            {
-                StartedUtc = StartAtUtc ?? _clock.UtcNow;
-            }
+            // Shift the start time by the timer event granularity.
+            StartedUtc ??= _clock.UtcNow - TimeSpan.FromMinutes(1);
 
             var schedule = CrontabSchedule.Parse(CronExpression);
             var whenUtc = schedule.GetNextOccurrence(StartedUtc.Value);

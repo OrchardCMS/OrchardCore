@@ -113,26 +113,14 @@ namespace OrchardCore.Workflows.Services
         public async Task TriggerEventAsync(string name, IDictionary<string, object> input = null, string correlationId = null, bool isExclusive = false, bool isAlwaysCorrelated = false)
         {
             var activity = _activityLibrary.GetActivityByName(name);
-
             if (activity == null)
             {
                 _logger.LogError("Activity '{ActivityName}' was not found", name);
                 return;
             }
 
-            // Look for workflow types with a corresponding starting activity.
+            // Start new workflows whose types have a corresponding starting activity.
             var workflowTypesToStart = await _workflowTypeStore.GetByStartActivityAsync(name);
-
-            // And any workflow halted on this kind of activity for the specified target.
-            var haltedWorkflows = await _workflowStore.ListByActivityNameAsync(name, correlationId, isAlwaysCorrelated);
-
-            // If no workflow matches the event, do nothing.
-            if (!workflowTypesToStart.Any() && !haltedWorkflows.Any())
-            {
-                return;
-            }
-
-            // Start new workflows.
             foreach (var workflowType in workflowTypesToStart)
             {
                 // Don't allow scope reentrance per workflow type id.
@@ -141,14 +129,8 @@ namespace OrchardCore.Workflows.Services
                     continue;
                 }
 
-                var startActivity = workflowType.Activities.FirstOrDefault(x => x.IsStart && String.Equals(x.Name, name, StringComparison.OrdinalIgnoreCase));
-                if (startActivity == null)
-                {
-                    continue;
-                }
-
-                // If atomic and a singleton (or an exclusive event), try to acquire a lock based on the workflow type id.
-                (var locker, var locked) = workflowType.IsAtomic() && (workflowType.IsSingleton || isExclusive)
+                // If atomic, try to acquire a lock per workflow type id.
+                (var locker, var locked) = workflowType.IsAtomic()
                     ? await _distributedLock.TryAcquireLockAsync(
                         "WFT_" + workflowType.WorkflowTypeId + "_LOCK",
                         TimeSpan.FromMilliseconds(workflowType.LockTimeout),
@@ -168,17 +150,19 @@ namespace OrchardCore.Workflows.Services
                     continue;
                 }
 
-                // Check if the event is exclusive and there's already a correlated instance halted on this activity type.
+                // Check if the event is exclusive and there's already a correlated instance halted on a starting activity of this type.
                 if (isExclusive && (await _workflowStore.ListAsync(workflowType.WorkflowTypeId, name, correlationId, isAlwaysCorrelated))
-                    .Any())
+                    .Any(x => x.BlockingActivities.Any(x => x.Name == name && x.IsStart)))
                 {
                     continue;
                 }
 
+                var startActivity = workflowType.Activities.FirstOrDefault(x => x.IsStart && x.Name == name);
                 await StartWorkflowAsync(workflowType, startActivity, input, correlationId);
             }
 
-            // Resume halted workflows.
+            // Resume workflow instances halted on this kind of activity for the specified target.
+            var haltedWorkflows = await _workflowStore.ListByActivityNameAsync(name, correlationId, isAlwaysCorrelated);
             foreach (var workflow in haltedWorkflows)
             {
                 // Don't allow scope reentrance per workflow instance id.
@@ -187,7 +171,7 @@ namespace OrchardCore.Workflows.Services
                     continue;
                 }
 
-                // If atomic, try to acquire a lock based on the workflow instance id.
+                // If atomic, try to acquire a lock per workflow id.
                 (var locker, var locked) = workflow.IsAtomic()
                     ? await _distributedLock.TryAcquireLockAsync(
                         "WFI_" + workflow.WorkflowId + "_LOCK",
@@ -202,7 +186,7 @@ namespace OrchardCore.Workflows.Services
 
                 await using var acquiredLock = locker;
 
-                // Check if the workflow still exists and is still correlated.
+                // If atomic, check if the workflow still exists and is still correlated.
                 var haltedWorkflow = workflow.IsAtomic() ? await _workflowStore.GetAsync(workflow.Id) : workflow;
                 if (haltedWorkflow == null || (!isAlwaysCorrelated && haltedWorkflow.CorrelationId != (correlationId ?? "")))
                 {
@@ -224,6 +208,12 @@ namespace OrchardCore.Workflows.Services
             var workflowContext = await CreateWorkflowExecutionContextAsync(workflowType, workflow, input);
 
             workflowContext.Status = WorkflowStatus.Resuming;
+
+            // Don't allow scope reentrance per workflow id.
+            _workflowScopedIds.Add(workflow.WorkflowId);
+
+            // Don't allow scope reentrance per workflow type id.
+            _workflowScopedIds.Add(workflow.WorkflowTypeId);
 
             // Signal every activity that the workflow is about to be resumed.
             var cancellationToken = new CancellationToken();
@@ -284,6 +274,12 @@ namespace OrchardCore.Workflows.Services
 
             // Create a new workflow instance.
             var workflow = NewWorkflow(workflowType, correlationId);
+
+            // Don't allow scope reentrance per workflow id.
+            _workflowScopedIds.Add(workflow.WorkflowId);
+
+            // Don't allow scope reentrance per workflow type id.
+            _workflowScopedIds.Add(workflow.WorkflowTypeId);
 
             // Create a workflow context.
             var workflowContext = await CreateWorkflowExecutionContextAsync(workflowType, workflow, input);

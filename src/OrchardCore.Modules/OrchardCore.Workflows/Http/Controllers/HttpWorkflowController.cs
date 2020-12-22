@@ -141,8 +141,8 @@ namespace OrchardCore.Workflows.Http.Controllers
             // If the activity is a start activity, start a new workflow.
             if (startActivity.IsStart)
             {
-                // If atomic and a singleton, try to acquire a lock based on the workflow type id.
-                (var locker, var locked) = workflowType.IsAtomic() && workflowType.IsSingleton
+                // If atomic, try to acquire a lock per workflow type id.
+                (var locker, var locked) = workflowType.IsAtomic()
                     ? await _distributedLock.TryAcquireLockAsync(
                         "WFT_" + workflowType.WorkflowTypeId + "_LOCK",
                         TimeSpan.FromMilliseconds(workflowType.LockTimeout),
@@ -191,7 +191,7 @@ namespace OrchardCore.Workflows.Http.Controllers
                             _logger.LogDebug("Resuming workflow with ID '{WorkflowId}' on activity '{ActivityId}'", workflow.WorkflowId, blockingActivity.ActivityId);
                         }
 
-                        // If atomic, try to acquire a lock based on the workflow instance id.
+                        // If atomic, try to acquire a lock per workflow id.
                         (var locker, var locked) = workflow.IsAtomic()
                             ? await _distributedLock.TryAcquireLockAsync(
                                 "WFI_" + workflow.WorkflowId + "_LOCK",
@@ -206,7 +206,7 @@ namespace OrchardCore.Workflows.Http.Controllers
 
                         await using var acquiredLock = locker;
 
-                        // Check if the workflow still exists.
+                        // If atomic, check if the workflow still exists.
                         var haltedWorkflow = workflow.IsAtomic() ? await _workflowStore.GetAsync(workflow.Id) : workflow;
                         if (haltedWorkflow == null)
                         {
@@ -248,7 +248,7 @@ namespace OrchardCore.Workflows.Http.Controllers
                     return NotFound();
                 }
 
-                // If atomic, try to acquire a lock based on the workflow instance id.
+                // If atomic, try to acquire a lock per workflow id.
                 (var locker, var locked) = workflow.IsAtomic()
                     ? await _distributedLock.TryAcquireLockAsync(
                         "WFI_" + workflow.WorkflowId + "_LOCK",
@@ -260,7 +260,7 @@ namespace OrchardCore.Workflows.Http.Controllers
                 {
                     await using var acquiredLock = locker;
 
-                    // Check if the workflow still exists (don't check if it is correlated as before).
+                    // If atomic, check if the workflow still exists (without checking if it is correlated).
                     workflow = workflow.IsAtomic() ? await _workflowStore.GetAsync(workflow.Id) : workflow;
                     if (workflow != null)
                     {
