@@ -30,7 +30,7 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Localization
             Assert.NotNull(translationsDocument);
             Assert.Equal(4, translationsDocument.Translations.Count);
             var firstTranslation = translationsDocument.Translations.First();
-            Assert.Equal("Article1", firstTranslation.Key);
+            Assert.Equal("Article1", firstTranslation.Value.Key);
             Assert.Equal("es", firstTranslation.Value.Values.Last().Key);
             Assert.Equal("Artículo1", firstTranslation.Value.Values.Last().Value);
         }
@@ -54,9 +54,9 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Localization
             var groups = translationsDocument.Translations.GroupBy(t => t.Value.Context);
 
             Assert.Equal(2, groups.Count());
-            Assert.Equal("Content Type", groups.First().Key);
+            Assert.StartsWith("Content Type", groups.First().Key);
             Assert.Equal(3, (int)groups.First().Count());
-            Assert.Equal("Content Field", groups.Last().Key);
+            Assert.StartsWith("Content Field", groups.Last().Key);
             Assert.Equal(1, (int)groups.Last().Count());
         }
 
