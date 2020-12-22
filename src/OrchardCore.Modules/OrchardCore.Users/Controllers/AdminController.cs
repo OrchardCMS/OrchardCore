@@ -77,10 +77,15 @@ namespace OrchardCore.Users.Controllers
 
         public async Task<ActionResult> Index(UserIndexOptions options, PagerParameters pagerParameters)
         {
-            // if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers))
-            // {
-            //     return Forbid();
-            // }
+            var roleNames = await GetNormalizedRoleNamesAsync();
+            var authorizedRoleNames = await GetAuthorizedRoleNamesAsync(roleNames);
+
+            var hasManageAuthenticatedPermission = await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsersInAuthenticatedRole);
+
+            if (authorizedRoleNames.Count() == 0 && !hasManageAuthenticatedPermission)
+            {
+                return Forbid();
+            }
 
             var siteSettings = await _siteService.GetSiteSettingsAsync();
             var pager = new Pager(pagerParameters, siteSettings.PageSize);
@@ -124,76 +129,85 @@ namespace OrchardCore.Users.Controllers
                     break;
             }
 
-            // TODO Index with user roles.
-            // get all roles.
-            // get roles this user is authorized to edit
-            // add to query.
-            // secnario
-            // editing user can manage editors
-            // query user is in role of editors and contributors
-            // should the editing user be able to manage them?
-            // or should the editing user must have permissions to edit editors and contributors.
-            // 2nd one I think.
-
-                var roleNames = await GetNormalizedRoleNamesAsync();
-                var authorizedRoleNames = await GetAuthorizedRoleNamesAsync(roleNames);
             // Alter the query if the user does not have permission for all roles.
             if (roleNames.Count() != authorizedRoleNames.Count())
             {
+                /*  Filter users and return on users who are in a role which the current user is authorized to manage.
+                    If a user is in two roles and the current user can only manage one of those roles they are not authorized to manage the user.
 
+                    Sample code for Sqlite
+                    SELECT DISTINCT [Document].*, [UserIndex_a1].[NormalizedUserName]
+                    FROM [Document]
+                    INNER JOIN [UserIndex] AS [UserIndex_a1] ON [UserIndex_a1].[DocumentId] = [Document].[Id]
 
-/*
-SELECT DocumentId, RoleName 
-  FROM UserRoleNameIndex 
-WHERE NOT EXISTS
-(SELECT RoleName FROM UserRoleNameIndex AS US2
-WHERE UserRoleNameIndex.DocumentId = US2.DocumentId 
-GROUP BY US2.RoleName
-HAVING US2.RoleName  IN ('AUTHOR', 'ADMINISTRATOR')
-)
+                    WHERE not exists (
+                        SELECT [RoleName]
+                        FROM UserByRoleNameIndex
+                        INNER JOIN [UserByRoleNameIndex_Document] ON [UserByRoleNameIndex].[Id] = [UserByRoleNameIndex_Document].[UserByRoleNameIndexId]
+                        WHERE [UserByRoleNameIndex_Document].[DocumentId] = [Document].[Id]
+                        GROUP BY [RoleName]
+                        HAVING [RoleName]  IN ('MODERATOR', 'CONTRIBUTOR', 'AUTHOR', 'ADMINISTRATOR')
+                    )
 
+                    ORDER BY [UserIndex_a1].[NormalizedUserName] LIMIT 10 OFFSET 0
 
-and this works with the reduce index. so no new index. helpful
-
-WHERE NOT EXISTS
-(SELECT RoleName FROM UserByRoleNameIndex AS US2
-INNER JOIN [UserByRoleNameIndex_Document] AS [D2] ON [US2].[Id] = [D2].[UserByRoleNameIndexId]
-WHERE D2.DocumentId = Document.Id 
-GROUP BY US2.RoleName
-HAVING US2.RoleName  IN ('AUTHOR', 'ADMINISTRATOR')
-)
-
-
-*/
-
-                var notAuthorizedRoles = roleNames.Except(authorizedRoleNames).Select(x => "'" + x + "'");
+                */
 
                 var dialect = _session.Store.Dialect;
-                var tablePrefix = _session.Store.Configuration.TablePrefix;
 
-                var builder = dialect.CreateBuilder(tablePrefix);
+                var builderNotExists = dialect.CreateBuilder(_session.Store.Configuration.TablePrefix);
 
-                var type = typeof(UserByRoleNameIndex);
+                var indexType = typeof(UserByRoleNameIndex);
 
-                var indexTable = _session.Store.Configuration.TableNameConvention.GetIndexTable(type);
-                var indexDocumentTable = indexTable + "_Document"; // TODO check if it needs a quite
+                var indexTable = _session.Store.Configuration.TableNameConvention.GetIndexTable(indexType);
+                var documentTable = _session.Store.Configuration.TableNameConvention.GetDocumentTable();
 
-                // TODO get doc table, no collection.
-                //var documentTable = Store.Configuration.TableNameConvention.GetDocumentTable(collection);
+                var bridgeTableName = indexTable + "_" + documentTable;
+                var bridgeTableIndexColumnName = indexType.Name + "Id";
 
-                builder.Select();
-                builder.AddSelector(dialect.QuoteForColumnName("RoleName"));
-                builder.From(indexTable);
-                builder.InnerJoin(indexDocumentTable, indexTable, "Id", indexDocumentTable, "UserByRoleNameIndexId");
+                builderNotExists.Select();
+                builderNotExists.AddSelector(dialect.QuoteForColumnName("RoleName"));
+                builderNotExists.From(indexTable);
+                builderNotExists.InnerJoin(bridgeTableName, indexTable, "Id", bridgeTableName, bridgeTableIndexColumnName);
 
 
-                builder.WhereAnd($"{dialect.QuoteForTableName(indexDocumentTable)}.{dialect.QuoteForColumnName("DocumentId")} = {dialect.QuoteForTableName("Document")}.{dialect.QuoteForColumnName("Id")}");
-                builder.GroupBy($"{dialect.QuoteForColumnName("RoleName")}");
-                builder.Having($"{dialect.QuoteForColumnName("RoleName")} {dialect.InOperator(String.Join(',', notAuthorizedRoles))}");
+                builderNotExists.WhereAnd($"{dialect.QuoteForTableName(bridgeTableName)}.{dialect.QuoteForColumnName("DocumentId")} = {dialect.QuoteForTableName(documentTable)}.{dialect.QuoteForColumnName("Id")}");
+                builderNotExists.GroupBy($"{dialect.QuoteForColumnName("RoleName")}");
 
-                var cmd = builder.ToSqlString();
+                var notAuthorizedRolesQueryValue = String.Join(", ", roleNames.Except(authorizedRoleNames).Select(x => dialect.GetSqlValue(x)));
+                builderNotExists.Having($"{dialect.QuoteForColumnName("RoleName")} {dialect.InOperator(notAuthorizedRolesQueryValue)}");
 
-                users.Where($"not exists ({cmd})");
+                var notExistsCmd = builderNotExists.ToSqlString();
+
+                if (!hasManageAuthenticatedPermission)
+                {
+                    /* When the user does not have permission to manage authenticated users we append this predicate to ensure that users with no roles in the database are included.
+
+                    Sample code for Sqlite
+                        AND EXISTS
+                        (   SELECT [RoleName]
+                            FROM UserByRoleNameIndex
+                            INNER JOIN [UserByRoleNameIndex_Document] ON [UserByRoleNameIndex].[Id] = [UserByRoleNameIndex_Document].[UserByRoleNameIndexId]
+                            WHERE [UserByRoleNameIndex_Document].[DocumentId] = [Document].[Id]
+                        )
+                    */
+
+                    var builderExists = dialect.CreateBuilder(_session.Store.Configuration.TablePrefix);
+
+                    builderExists.Select();
+                    builderExists.AddSelector(dialect.QuoteForColumnName("RoleName"));
+                    builderExists.From(indexTable);
+                    builderExists.InnerJoin(bridgeTableName, indexTable, "Id", bridgeTableName, bridgeTableIndexColumnName);
+                    builderExists.WhereAnd($"{dialect.QuoteForTableName(bridgeTableName)}.{dialect.QuoteForColumnName("DocumentId")} = {dialect.QuoteForTableName(documentTable)}.{dialect.QuoteForColumnName("Id")}");
+
+                    var existsCmd = builderExists.ToSqlString();
+
+                    users.Where($"not exists ({notExistsCmd}) and exists ({existsCmd})");
+                }
+                else
+                {
+                    users.Where($"not exists ({notExistsCmd})");
+                }
             }
 
             var count = await users.CountAsync();
@@ -269,6 +283,7 @@ HAVING US2.RoleName  IN ('AUTHOR', 'ADMINISTRATOR')
         [FormValueRequired("submit.BulkAction")]
         public async Task<ActionResult> IndexPOST(UserIndexOptions options, IEnumerable<string> itemIds)
         {
+            // TODO permissions check here.
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers))
             {
                 return Forbid();
@@ -276,40 +291,44 @@ HAVING US2.RoleName  IN ('AUTHOR', 'ADMINISTRATOR')
 
             if (itemIds?.Count() > 0)
             {
-                var checkedContentItems = await _session.Query<User, UserIndex>().Where(x => x.UserId.IsIn(itemIds)).ListAsync();
+                var checkedUsers = await _session.Query<User, UserIndex>().Where(x => x.UserId.IsIn(itemIds)).ListAsync();
                 switch (options.BulkAction)
                 {
                     case UsersBulkAction.None:
                         break;
                     case UsersBulkAction.Approve:
-                        foreach (var item in checkedContentItems)
+                        foreach (var user in checkedUsers)
                         {
-                            var token = await _userManager.GenerateEmailConfirmationTokenAsync(item);
-                            await _userManager.ConfirmEmailAsync(item, token);
-                            _notifier.Success(H["User {0} successfully approved.", item.UserName]);
+                            // TODO Individual permissions check here
+                            var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                            await _userManager.ConfirmEmailAsync(user, token);
+                            _notifier.Success(H["User {0} successfully approved.", user.UserName]);
                         }
                         break;
                     case UsersBulkAction.Delete:
-                        foreach (var item in checkedContentItems)
+                        foreach (var user in checkedUsers)
                         {
-                            await _userManager.DeleteAsync(item);
-                            _notifier.Success(H["User {0} successfully deleted.", item.UserName]);
+                            // TODO Individual permissions check here
+                            await _userManager.DeleteAsync(user);
+                            _notifier.Success(H["User {0} successfully deleted.", user.UserName]);
                         }
                         break;
                     case UsersBulkAction.Disable:
-                        foreach (var item in checkedContentItems)
+                        foreach (var user in checkedUsers)
                         {
-                            item.IsEnabled = false;
-                            await _userManager.UpdateAsync(item);
-                            _notifier.Success(H["User {0} successfully disabled.", item.UserName]);
+                            // TODO Individual permissions check here
+                            user.IsEnabled = false;
+                            await _userManager.UpdateAsync(user);
+                            _notifier.Success(H["User {0} successfully disabled.", user.UserName]);
                         }
                         break;
                     case UsersBulkAction.Enable:
-                        foreach (var item in checkedContentItems)
+                        foreach (var user in checkedUsers)
                         {
-                            item.IsEnabled = true;
-                            await _userManager.UpdateAsync(item);
-                            _notifier.Success(H["User {0} successfully enabled.", item.UserName]);
+                            // TODO Individual permissions check here
+                            user.IsEnabled = true;
+                            await _userManager.UpdateAsync(user);
+                            _notifier.Success(H["User {0} successfully enabled.", user.UserName]);
                         }
                         break;
                     default:
@@ -321,6 +340,9 @@ HAVING US2.RoleName  IN ('AUTHOR', 'ADMINISTRATOR')
         }
         public async Task<IActionResult> Create()
         {
+            // TODO
+            // Check for permission to create Authenticated Users
+            // The driver will only allow roles to be assigned if the current user has the correct permission.
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers))
             {
                 return Forbid();
@@ -335,6 +357,9 @@ HAVING US2.RoleName  IN ('AUTHOR', 'ADMINISTRATOR')
         [ActionName(nameof(Create))]
         public async Task<IActionResult> CreatePost()
         {
+            // TODO
+            // Check for permission to create Authenticated Users
+            // The driver will only allow roles to be assigned if the current user has the correct permission.
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers))
             {
                 return Forbid();
@@ -388,7 +413,7 @@ HAVING US2.RoleName  IN ('AUTHOR', 'ADMINISTRATOR')
 
             if (!user.RoleNames.Any())
             {
-                if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsersOfEmptyRoles))
+                if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsersInAuthenticatedRole))
                 {
                     return Forbid();
                 }
@@ -398,6 +423,7 @@ HAVING US2.RoleName  IN ('AUTHOR', 'ADMINISTRATOR')
 
                 var roleNames = await GetRoleNamesAsync();
                 var authorizedRoleNames = await GetAuthorizedRoleNamesAsync(roleNames);
+                // TODO check IsAuthenticated as well
 
                 if (user.RoleNames.Any(userRole => !authorizedRoleNames.Any(authorizedRole => authorizedRole == userRole)))
                 {
@@ -450,13 +476,9 @@ HAVING US2.RoleName  IN ('AUTHOR', 'ADMINISTRATOR')
         private async Task<IEnumerable<string>> GetAuthorizedRoleNamesAsync(IEnumerable<string> roleNames)
         {
             var authorizedRoleNames = new List<string>();
-            var normalizer = _userManager.KeyNormalizer;
             foreach (var roleName in roleNames)
             {
-                // TODO obviously this changes to a dynamic permission of ManageUsersOfRole.
-                // In which case we might not even need a dynamic role permission.
-                // Just a manage users of role is probably enough?
-                if (await _authorizationService.AuthorizeAsync(User, CommonPermissions.CreatePermissionForManageUsersOfRole(roleName)))
+                if (await _authorizationService.AuthorizeAsync(User, CommonPermissions.CreatePermissionForManageUsersInRole(roleName)))
                 {
                     authorizedRoleNames.Add(roleName);
                 }
@@ -493,7 +515,7 @@ HAVING US2.RoleName  IN ('AUTHOR', 'ADMINISTRATOR')
 
             if (!user.RoleNames.Any())
             {
-                if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsersOfEmptyRoles))
+                if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsersInAuthenticatedRole))
                 {
                     return Forbid();
                 }
@@ -503,6 +525,7 @@ HAVING US2.RoleName  IN ('AUTHOR', 'ADMINISTRATOR')
 
                 var roleNames = await GetRoleNamesAsync();
                 var authorizedRoleNames = await GetAuthorizedRoleNamesAsync(roleNames);
+                // TODO check authenticated as well.
 
                 if (user.RoleNames.Any(userRole => !authorizedRoleNames.Any(authorizedRole => authorizedRole == userRole)))
                 {
@@ -567,6 +590,7 @@ HAVING US2.RoleName  IN ('AUTHOR', 'ADMINISTRATOR')
         [HttpPost]
         public async Task<IActionResult> Delete(string id)
         {
+            // TODO permissions check.
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers))
             {
                 return Forbid();
@@ -602,6 +626,7 @@ HAVING US2.RoleName  IN ('AUTHOR', 'ADMINISTRATOR')
 
         public async Task<IActionResult> EditPassword(string id)
         {
+            // TODO permissions check.
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers))
             {
                 return Forbid();
@@ -622,6 +647,7 @@ HAVING US2.RoleName  IN ('AUTHOR', 'ADMINISTRATOR')
         [HttpPost]
         public async Task<IActionResult> EditPassword(ResetPasswordViewModel model)
         {
+            // TODO permissions check.
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers))
             {
                 return Forbid();

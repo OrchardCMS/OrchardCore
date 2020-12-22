@@ -39,16 +39,6 @@ namespace OrchardCore.Roles
             }
 
             return list;
-
-
-
-            // return Task.FromResult(new[]
-            // {
-            //     ManageRoles,
-            //     AssignRoles,
-            //     StandardPermissions.SiteOwner
-            // }
-            // .AsEnumerable());
         }
 
         public IEnumerable<PermissionStereotype> GetDefaultStereotypes()

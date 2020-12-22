@@ -10,7 +10,7 @@ namespace OrchardCore.Users
     public class Permissions : IPermissionProvider
     {
         public static readonly Permission ManageUsers = CommonPermissions.ManageUsers;
-        public static readonly Permission ManageUsersOfEmptyRoles = CommonPermissions.ManageUsersOfEmptyRoles;
+        public static readonly Permission ManageUsersInAuthenticatedRole = CommonPermissions.ManageUsersInAuthenticatedRole;
         public static readonly Permission ManageOwnUserInformation = new Permission("ManageOwnUserInformation", "Manage own user information", new Permission[] { ManageUsers });
 
         private readonly IRoleService _roleService;
@@ -26,7 +26,7 @@ namespace OrchardCore.Users
             {
                 ManageUsers,
                 ManageOwnUserInformation,
-                ManageUsersOfEmptyRoles
+                ManageUsersInAuthenticatedRole
             };
 
             var roles = (await _roleService.GetRoleNamesAsync())
@@ -34,7 +34,7 @@ namespace OrchardCore.Users
 
             foreach (var role in roles)
             {
-                list.Add(CommonPermissions.CreatePermissionForManageUsersOfRole(role));
+                list.Add(CommonPermissions.CreatePermissionForManageUsersInRole(role));
             }
 
             return list;
