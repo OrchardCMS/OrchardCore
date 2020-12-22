@@ -1,23 +1,33 @@
 using System.Threading.Tasks;
+using OrchardCore.Documents;
 using OrchardCore.Localization.Models;
 
 namespace OrchardCore.Localization.Services
 {
     public class TranslationsManager : ITranslationsManager
     {
-        public async Task<TranslationsDocument> GetTranslationsDocumentAsync()
-        {
-            // TODO: Fetch the translations from the database
-            var document = new TranslationsDocument();
-            await Task.CompletedTask;
+        private readonly IDocumentManager<TranslationsDocument> _documentManager;
 
-            return document;
-        }
-        
-        public async Task UpdateTranslationAsync(string name, Translation template)
+        public TranslationsManager(IDocumentManager<TranslationsDocument> documentManager) => _documentManager = documentManager;
+
+        public Task<TranslationsDocument> LoadTranslationsDocumentAsync() => _documentManager.GetOrCreateMutableAsync();
+
+        public Task<TranslationsDocument> GetTranslationsDocumentAsync() => _documentManager.GetOrCreateImmutableAsync();
+
+        public async Task RemoveTranslationAsync(string name)
         {
-            // TODO: update the translations into the database
-            await Task.CompletedTask;
+            var document = await LoadTranslationsDocumentAsync();
+            document.Translations.Remove(name);
+
+            await _documentManager.UpdateAsync(document);
+        }
+
+        public async Task UpdateTranslationAsync(string name, Translation translation)
+        {
+            var document = await LoadTranslationsDocumentAsync();
+            document.Translations[name] = translation;
+
+            await _documentManager.UpdateAsync(document);
         }
     }
 }

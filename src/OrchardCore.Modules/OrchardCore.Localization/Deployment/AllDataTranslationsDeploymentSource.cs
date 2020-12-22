@@ -29,7 +29,7 @@ namespace OrchardCore.Localization.Deployment
 
             foreach (var translation in translationsDocument.Translations)
             {
-                translationObjects[translation.Key] = JObject.FromObject(translation.Values);
+                translationObjects[translation.Key] = JObject.FromObject(translation.Value);
             }
 
             result.Steps.Add(new JObject(

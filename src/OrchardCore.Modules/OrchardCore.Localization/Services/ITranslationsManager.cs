@@ -5,8 +5,12 @@ namespace OrchardCore.Localization.Services
 {
     public interface ITranslationsManager
     {
+        Task<TranslationsDocument> LoadTranslationsDocumentAsync();
+
         Task<TranslationsDocument> GetTranslationsDocumentAsync();
-        
-        Task UpdateTranslationAsync(string name, Translation template);
+
+        Task RemoveTranslationAsync(string name);
+
+        Task UpdateTranslationAsync(string name, Translation translation);
     }
 }

@@ -1,10 +1,11 @@
+using System;
 using System.Collections.Generic;
+using OrchardCore.Data.Documents;
 
 namespace OrchardCore.Localization.Models
 {
-    public class TranslationsDocument
+    public class TranslationsDocument : Document
     {
-        public int Id { get; set; }
-        public List<Translation> Translations { get; } = new List<Translation>();
+        public Dictionary<string, Translation> Translations { get; set; } = new Dictionary<string, Translation>(StringComparer.OrdinalIgnoreCase);
     }
 }

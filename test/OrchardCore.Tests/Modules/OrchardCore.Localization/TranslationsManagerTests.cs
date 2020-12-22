@@ -17,7 +17,11 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Localization
             translationsManager.Setup(tm => tm.GetTranslationsDocumentAsync())
                 .ReturnsAsync(() => {
                     var translationsDocument = new TranslationsDocument();
-                    translationsDocument.Translations.AddRange(GetTranslations());
+                    foreach (var translation in GetTranslations())
+                    {
+                        var key = $"{translation.Context}:{translation.Key}";
+                        translationsDocument.Translations.Add(key, translation);
+                    }
 
                     return translationsDocument;
                 });
@@ -27,8 +31,8 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Localization
             Assert.Equal(4, translationsDocument.Translations.Count);
             var firstTranslation = translationsDocument.Translations.First();
             Assert.Equal("Article1", firstTranslation.Key);
-            Assert.Equal("es", firstTranslation.Values.Last().Key);
-            Assert.Equal("Artículo1", firstTranslation.Values.Last().Value);
+            Assert.Equal("es", firstTranslation.Value.Values.Last().Key);
+            Assert.Equal("Artículo1", firstTranslation.Value.Values.Last().Value);
         }
 
         [Fact]
@@ -38,12 +42,16 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Localization
             translationsManager.Setup(tm => tm.GetTranslationsDocumentAsync())
                 .ReturnsAsync(() => {
                     var translationsDocument = new TranslationsDocument();
-                    translationsDocument.Translations.AddRange(GetTranslations());
+                    foreach (var translation in GetTranslations())
+                    {
+                        var key = $"{translation.Context}:{translation.Key}";
+                        translationsDocument.Translations.Add(key, translation);
+                    }
 
                     return translationsDocument;
                 });
             var translationsDocument = await translationsManager.Object.GetTranslationsDocumentAsync();
-            var groups = translationsDocument.Translations.GroupBy(t => t.Context);
+            var groups = translationsDocument.Translations.GroupBy(t => t.Value.Context);
 
             Assert.Equal(2, groups.Count());
             Assert.Equal("Content Type", groups.First().Key);
