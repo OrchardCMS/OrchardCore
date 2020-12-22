@@ -29,6 +29,13 @@
 
     <input type="hidden" asp-for="Name" />
 
+    @if (Model.Editor.Shortcuts != null)
+    {
+        <div class="form-group">
+            @await DisplayAsync(Model.Editor.Shortcuts)
+        </div>
+    }
+
     @await DisplayAsync(Model.Editor)
 
     <div class="form-group">
@@ -46,14 +53,6 @@
                                 <a asp-route-action="RemoveFieldFrom" asp-route-id="@Model.TypeDefinition.Name" asp-route-name="@field.Name" class="btn btn-danger btn-sm" role="button" itemprop="UnsafeUrl RemoveUrl">@T["Remove"]</a>
                             </div>
                             @field.DisplayName() <span class="hint dashed">@field.FieldDefinition.Name.CamelFriendly()</span>
-                            @if (!string.IsNullOrEmpty(field.DisplayMode()))
-                            {
-                                <span class="badge ta-badge font-weight-normal" data-toggle="tooltip" title="@T["Display mode"]"><i class="fa fa-eye text-info"></i> @field.DisplayMode()</span>
-                            }
-                                @if (!string.IsNullOrEmpty(field.Editor()))
-                            {
-                                <span class="badge ta-badge font-weight-normal" data-toggle="tooltip" title="@T["Editor"]"><i class="fa fa-edit text-info"></i> @field.Editor()</span>
-                            }
                         </div>
                         <input type="hidden" asp-for="OrderedFieldNames" value="@field.Name" />
                     </li>
@@ -101,13 +100,6 @@
         <a asp-route-action="AddPartsTo" asp-route-id="@Model.TypeDefinition.Name" class="btn btn-info btn-sm" role="button">@T["Add Parts"]</a>
         <a asp-route-action="AddReusablePartTo" asp-route-id="@Model.TypeDefinition.Name" class="btn btn-info btn-sm" role="button">@T["Add Named Part"]</a>
     </div>
-    
-    @if (Model.Editor.Shortcuts != null)
-    {
-        <div class="form-group">
-            @await DisplayAsync(Model.Editor.Shortcuts)
-        </div>
-    }
 
     <div class="form-group">
         <button class="btn btn-primary save" type="submit" name="submit.Save" value="Save">@T["Save"]</button>
