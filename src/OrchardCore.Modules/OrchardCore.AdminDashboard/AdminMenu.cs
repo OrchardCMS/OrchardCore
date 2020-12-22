@@ -23,12 +23,11 @@ namespace OrchardCore.AdminDashboard
             }
 
             // Configuration and settings menus for the AdminDashboard module
-            builder.Add(S["Configuration"], configuration => configuration
-                      .Add(S["Dashboard"], S["Dashboard"].PrefixPosition(), admt => admt
+            builder.Add(S["Dashboard"], NavigationConstants.AdminMenuDashboardPosition, adm => adm
+                    .AddClass("dashboard").Id("dashboard").Action("Index", "Dashboard", new { area = "OrchardCore.AdminDashboard" })
                         .Permission(Permissions.ManageAdminDashboard)
-                        .Action("Index", "Dashboard", new { area = "OrchardCore.AdminDashboard" })
                         .LocalNav()
-                    ));
+                    );
 
             return Task.CompletedTask;
         }

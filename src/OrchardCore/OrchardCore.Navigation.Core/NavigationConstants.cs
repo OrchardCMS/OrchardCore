@@ -2,6 +2,7 @@ namespace OrchardCore.Navigation
 {
     public static class NavigationConstants
     {
+        public const string AdminMenuDashboardPosition = "0";
         public const string AdminMenuContentPosition = "1";
         public const string AdminMenuDesignPosition = "2";
         public const string AdminMenuSearchPosition = "6";

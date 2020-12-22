@@ -9,38 +9,34 @@
     Model.Classes.Add(contentTypeClassName);
 }
 
-<div class="col-4">
-<div class="card">
-    <div class="card-body">
-        <div class="card-header">
-            @if (Model.Header != null)
-            {
+<div class="col-xl-3 col-lg-4 mb-4">
+    <div class="card">
+        @if (Model.Header != null)
+        {
+            <div class="card-header">
                 @await DisplayAsync(Model.Header)
-            }
-            else
-            {
-                @* Move this to the DashboardPart shape *@
-                <a class="btn btn-sm btn-primary" edit-for="@contentItem" asp-route-returnUrl="@FullRequestPath">
-                    @T["Edit {0}", @Model.ContentItem.DisplayText]
-                </a>           
-
-                @Model.ContentItem.DisplayText
-            }
-            
+            </div>
+        }
+        <div class="card-body">
             @if (Model.Meta != null)
             {
                 <div class="metadata">
                     @await DisplayAsync(Model.Meta)
                 </div>
             }
+            @* Move this to the DashboardPart shape *@
+            <a class="btn btn-sm btn-primary float-right" edit-for="@contentItem" asp-route-returnUrl="@FullRequestPath">
+                @T["Edit"]
+            </a>
+            <h5 class="card-title">@Model.ContentItem.DisplayText</h5>
+
+            @await DisplayAsync(Model.Content)
         </div>
-        @await DisplayAsync(Model.Content)
+        @if (Model.Footer != null)
+        {
+            <div class="card-footer">
+                @await DisplayAsync(Model.Footer)
+            </div>
+        }
     </div>
-    @if (Model.Footer != null)
-    {
-        <div class="card-footer">
-            @await DisplayAsync(Model.Footer)
-        </div>
-    }
-</div>
 </div>

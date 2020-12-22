@@ -37,10 +37,8 @@ namespace OrchardCore.AdminDashboard
             services.AddScoped<IAdminDashboardService, AdminDashboardService>();
             services.AddSingleton<IIndexProvider, DashboardPartIndexProvider>();
 
-            services
-                .AddContentPart<DashboardPart>()
-                .UseDisplayDriver<DashboardPartDisplayDriver>()
-                ;
+            services.AddContentPart<DashboardPart>()
+                .UseDisplayDriver<DashboardPartDisplayDriver>();
 
             services.AddScoped<IDataMigration, Migrations>();
         }
@@ -51,7 +49,7 @@ namespace OrchardCore.AdminDashboard
             var dashboardControllerName = typeof(DashboardController).ControllerName();
 
             routes.MapAreaControllerRoute(
-                name: "AdminDashboard",
+                name: "AdminDashboardIndex",
                 areaName: "OrchardCore.AdminDashboard",
                 pattern: _adminOptions.AdminUrlPrefix + "/Dashboard",
                 defaults: new { controller = dashboardControllerName, action = nameof(DashboardController.Index) }
