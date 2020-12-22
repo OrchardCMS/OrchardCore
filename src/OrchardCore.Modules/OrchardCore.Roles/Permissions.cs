@@ -8,37 +8,20 @@ using OrchardCore.Security.Services;
 
 namespace OrchardCore.Roles
 {
-    public class Permissions : IPermissionProvider
+      public class Permissions : IPermissionProvider
     {
-        public static readonly Permission ManageRoles = CommonPermissions.ManageRoles;
-        public static readonly Permission AssignRoles = CommonPermissions.AssignRoles;
+        public static readonly Permission ManageRoles = new Permission("ManageRoles", "Managing Roles", isSecurityCritical: true);
 
+        // TODO remove. This permission is no longer useful.
+        // public static readonly Permission AssignRoles = new Permission("AssignRoles", "Assign Roles", new[] { ManageRoles }, isSecurityCritical: true);
 
-        private readonly IRoleService _roleService;
-
-        public Permissions(IRoleService roleService)
+        public Task<IEnumerable<Permission>> GetPermissionsAsync()
         {
-            _roleService = roleService;
-        }
-
-        public async Task<IEnumerable<Permission>> GetPermissionsAsync()
-        {
-            var list = new List<Permission>
+            return Task.FromResult(new[]
             {
-                ManageRoles,
-                AssignRoles,
-                StandardPermissions.SiteOwner
-            };
-
-            var roles = (await _roleService.GetRoleNamesAsync())
-                .Except(new[] { "Anonymous", "Authenticated" }, StringComparer.OrdinalIgnoreCase);
-
-            foreach (var role in roles)
-            {
-                list.Add(CommonPermissions.CreatePermissionForAssignRole(role));
+                ManageRoles, StandardPermissions.SiteOwner
             }
-
-            return list;
+            .AsEnumerable());
         }
 
         public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
@@ -46,16 +29,9 @@ namespace OrchardCore.Roles
             return new[] {
                 new PermissionStereotype {
                     Name = "Administrator",
-                    Permissions = new[]
-                    {
-                        ManageRoles,
-                        AssignRoles,
-                        StandardPermissions.SiteOwner
-                    }
+                    Permissions = new[] { ManageRoles, StandardPermissions.SiteOwner }
                 },
             };
         }
-
-
     }
 }

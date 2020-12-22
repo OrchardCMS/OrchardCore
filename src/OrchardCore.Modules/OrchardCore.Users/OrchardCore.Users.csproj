@@ -30,7 +30,6 @@
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Settings.Core\OrchardCore.Settings.Core.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Setup.Abstractions\OrchardCore.Setup.Abstractions.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.ResourceManagement\OrchardCore.ResourceManagement.csproj" />
-    <ProjectReference Include="..\..\OrchardCore\OrchardCore.Roles.Core\OrchardCore.Roles.Core.csproj" />
     <ProjectReference Include="..\..\OrchardCore\OrchardCore.Workflows.Abstractions\OrchardCore.Workflows.Abstractions.csproj" />
   </ItemGroup>
 </Project>

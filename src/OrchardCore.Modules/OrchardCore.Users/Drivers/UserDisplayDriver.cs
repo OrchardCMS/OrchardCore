@@ -57,15 +57,16 @@ namespace OrchardCore.Users.Drivers
             );
         }
 
-        public override Task<IDisplayResult> EditAsync(User user, BuildEditorContext context)
+        public override IDisplayResult Edit(User user)
         {
-            return Task.FromResult<IDisplayResult>(Initialize<EditUserViewModel>("UserFields_Edit", model =>
+            return Initialize<EditUserViewModel>("UserFields_Edit", model =>
             {
                 model.EmailConfirmed = user.EmailConfirmed;
                 model.IsEnabled = user.IsEnabled;
             })
             .Location("Content:1.5")
-            .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.ManageUsers)));
+                // TODO is now per role, and only users who can manage that role, can manage that user.
+            .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.ManageUsers));
         }
 
         public override async Task<IDisplayResult> UpdateAsync(User user, UpdateEditorContext context)
@@ -73,7 +74,7 @@ namespace OrchardCore.Users.Drivers
             if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.ManageUsers))
             {
                 // When the user is only editing their profile never update this part of the user.
-                return await EditAsync(user, context);
+                return Edit(user);
             }
 
             var model = new EditUserViewModel();
@@ -93,7 +94,7 @@ namespace OrchardCore.Users.Drivers
                 }
                 else
                 {
-                    if (user.UserId != httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier))
+                    if (!String.Equals(user.UserId, httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier)))
                     {
                         user.IsEnabled = model.IsEnabled;
                         var userContext = new UserContext(user);
@@ -121,7 +122,7 @@ namespace OrchardCore.Users.Drivers
                 }
             }
 
-            return await EditAsync(user, context);
+            return Edit(user);
         }
     }
 }
