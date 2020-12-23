@@ -8,14 +8,14 @@
 }
 @if (hasPublished)
 {
-    <span class="badge badge-success" title="@T["Published"]">
-        <i class="fa fa-check" aria-hidden="true"></i> @T["Published"]
+    <span class="badge ta-badge font-weight-normal" data-toggle="tooltip" title="@T["Status"]">
+        <i class="fa fa-check text-success" aria-hidden="true"></i> @T["Published"]
     </span>
 }
 
 @if (hasDraft)
 {
-    <span class="badge badge-primary" title="@T["Draft"]">
-        <i class="fa fa-pencil" aria-hidden="true"></i> @T["Draft"]
+    <span class="badge ta-badge font-weight-normal" data-toggle="tooltip" title="@T["Status"]">
+        <i class="fa fa-pencil text-primary" aria-hidden="true"></i> @T["Draft"]
     </span>
 }

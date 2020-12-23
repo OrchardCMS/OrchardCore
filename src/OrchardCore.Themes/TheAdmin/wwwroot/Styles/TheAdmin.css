@@ -15660,10 +15660,6 @@
       font-weight: bold;
       position: absolute;
       top: 10px; }
-    [dir=ltr]:root[data-theme='default'] .ta-navbar-top h1 {
-  left: 275px; }
-    [dir=rtl]:root[data-theme='default'] .ta-navbar-top h1 {
-      right: 275px; }
     :root[data-theme='default'] .ta-navbar-top .nav-link {
       font-size: 14px; }
     [dir]:root[data-theme='default'] .ta-navbar-top .breadcrumb {
@@ -15671,6 +15667,11 @@
       margin-top: 1rem; }
     :root[data-theme='default'] .ta-navbar-top .btn.nav-link, :root[data-theme='default'] .ta-navbar-top .nav-link.button {
       display: inline-block; }
+    @media (min-width: 576px) {
+      [dir=ltr]:root[data-theme='default'] .ta-navbar-top h1 {
+    left: 275px; }
+      [dir=rtl]:root[data-theme='default'] .ta-navbar-top h1 {
+        right: 275px; } }
     @media (max-width: 767.98px) {
       [dir]:root[data-theme='default'] .ta-navbar-top .navbar-collapse li:first-child .nav-link {
         padding-top: 15px; }
@@ -32318,10 +32319,6 @@
       font-weight: bold;
       position: absolute;
       top: 10px; }
-    [dir=ltr]:root[data-theme='darkmode'] .ta-navbar-top h1 {
-  left: 275px; }
-    [dir=rtl]:root[data-theme='darkmode'] .ta-navbar-top h1 {
-      right: 275px; }
     :root[data-theme='darkmode'] .ta-navbar-top .nav-link {
       font-size: 14px; }
     [dir]:root[data-theme='darkmode'] .ta-navbar-top .breadcrumb {
@@ -32329,6 +32326,11 @@
       margin-top: 1rem; }
     :root[data-theme='darkmode'] .ta-navbar-top .btn.nav-link, :root[data-theme='darkmode'] .ta-navbar-top .nav-link.button {
       display: inline-block; }
+    @media (min-width: 576px) {
+      [dir=ltr]:root[data-theme='darkmode'] .ta-navbar-top h1 {
+    left: 275px; }
+      [dir=rtl]:root[data-theme='darkmode'] .ta-navbar-top h1 {
+        right: 275px; } }
     @media (max-width: 767.98px) {
       [dir]:root[data-theme='darkmode'] .ta-navbar-top .navbar-collapse li:first-child .nav-link {
         padding-top: 15px; }
@@ -33254,6 +33256,8 @@
     background-color: #181a1b; }
   :root[data-theme='darkmode'] .blockquote-footer {
     color: #888; }
+  :root[data-theme='darkmode'] .trumbowyg-fullscreen .trumbowyg-editor {
+    color: black; }
   [dir]:root[data-theme='darkmode'] .table-primary, [dir]:root[data-theme='darkmode'] .table-primary > th, [dir]:root[data-theme='darkmode'] .table-primary > td {
     background-color: #007bff; }
   [dir]:root[data-theme='darkmode'] .table-secondary, [dir]:root[data-theme='darkmode'] .table-secondary > th, [dir]:root[data-theme='darkmode'] .table-secondary > td {

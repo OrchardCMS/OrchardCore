@@ -2,9 +2,9 @@
 
 @if (!string.IsNullOrEmpty(Model.LocalizationSet) && Model.ContentItemCultures.Any())
 {
-    <div class="btn-group">
-        <button type="button" class="btn btn-info btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            @T["Localizations"]
+    <div class="btn-group" title="@T["Localizations"]">
+        <button type="button" class="btn btn-sm text-info" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <i class="fa fa-globe"></i>
         </button>
         <div class="dropdown-menu dropdown-menu-right">
             @foreach (var culture in Model.ContentItemCultures)
