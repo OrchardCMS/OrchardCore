@@ -60,7 +60,7 @@ namespace OrchardCore.Configuration.KeyVault.Extensions
 
                 configuration.AddAzureKeyVault(
                     keyVaultEndpointUri,
-                    new DefaultAzureCredential(includeInteractiveCredentials: true),
+                    tokenCredential,
                     configOptions
                 );
             });
