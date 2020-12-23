@@ -24,7 +24,6 @@ namespace OrchardCore.MiniProfiler
             services.AddScoped<IShapeDisplayEvents, ShapeStep>();
 
             services.AddMiniProfiler();
-            services.Configure<MiniProfilerOptions>(settings => settings.AllowOnAdmin = true);
         }
 
         public override void Configure(IApplicationBuilder app, IEndpointRouteBuilder routes, IServiceProvider serviceProvider)
