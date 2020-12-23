@@ -1,8 +1,5 @@
 @model OrchardCore.ContentManagement.Display.ViewModels.ContentItemViewModel
 
-@if (Model.ContentItem.Content["ListPart"] != null)
-{
-    <a class="btn btn-sm text-secondary" data-toggle="tooltip" title="@T["List Items"]" asp-route-action="List" asp-route-area="OrchardCore.Contents" asp-route-contentTypeId="@Model.ContentItem.ContentType">
-        <i class="fa fa-list"></i>
-    </a>
-}
+<a class="btn btn-sm text-secondary" data-toggle="tooltip" title="@T["List Items"]" admin-for="@Model.ContentItem">
+    <i class="fa fa-list"></i>
+</a>
