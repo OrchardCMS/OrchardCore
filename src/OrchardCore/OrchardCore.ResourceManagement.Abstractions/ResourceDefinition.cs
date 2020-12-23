@@ -233,7 +233,8 @@ namespace OrchardCore.ResourceManagement
                 // Don't evaluate with Uri.TryCreate as it produces incorrect results on Linux.
                 !url.StartsWith("https://", StringComparison.OrdinalIgnoreCase) &&
                 !url.StartsWith("http://", StringComparison.OrdinalIgnoreCase) &&
-                !url.StartsWith("//", StringComparison.OrdinalIgnoreCase))
+                !url.StartsWith("//", StringComparison.OrdinalIgnoreCase) &&
+                !url.StartsWith("file://", StringComparison.OrdinalIgnoreCase))
             {
                 url = settings.CdnBaseUrl + url;
             }

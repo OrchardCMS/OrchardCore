@@ -40,7 +40,8 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
                 // Don't evaluate with Uri.TryCreate as it produces incorrect results on Linux.
                 !resourcePath.StartsWith("https://", StringComparison.OrdinalIgnoreCase) &&
                 !resourcePath.StartsWith("http://", StringComparison.OrdinalIgnoreCase) &&
-                !resourcePath.StartsWith("//", StringComparison.OrdinalIgnoreCase))
+                !resourcePath.StartsWith("//", StringComparison.OrdinalIgnoreCase) &&
+                !resourcePath.StartsWith("file://", StringComparison.OrdinalIgnoreCase))
             {
                 resourcePath = _options.CdnBaseUrl + resourcePath;
             }
