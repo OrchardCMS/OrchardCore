@@ -52,9 +52,9 @@ namespace OrchardCore.Workflows.Http.Filters
                 {
                     if (workflowTypes.TryGetValue(Int32.Parse(entry.WorkflowId), out var workflowType))
                     {
-                        var activity = workflowType.Activities.SingleOrDefault(x => x.ActivityId == entry.ActivityId);
+                        var activity = workflowType.Activities.Single(x => x.ActivityId == entry.ActivityId);
 
-                        if (activity?.IsStart == true)
+                        if (activity.IsStart)
                         {
                             // If atomic, try to acquire a lock per workflow type id.
                             (var locker, var locked) = workflowType.IsAtomic()
