@@ -33,8 +33,8 @@
     <PackageManagement Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageManagement Include="NLog.Web.AspNetCore" Version="4.9.3" />
     <PackageManagement Include="NodaTime" Version="3.0.3" />
-    <PackageManagement Include="OpenIddict.AspNetCore" Version="[3.0.0-rc2.20607.88]" />
-    <PackageManagement Include="OpenIddict.Core" Version="[3.0.0-rc2.20607.88]" />
+    <PackageManagement Include="OpenIddict.AspNetCore" Version="3.0.0" />
+    <PackageManagement Include="OpenIddict.Core" Version="3.0.0" />
     <PackageManagement Include="OrchardCore.Translations.All" Version="1.0.0-rc2-108003" />
     <PackageManagement Include="Serilog.AspNetCore" Version="3.4.0" />
     <PackageManagement Include="Shortcodes" Version="1.0.0" />
