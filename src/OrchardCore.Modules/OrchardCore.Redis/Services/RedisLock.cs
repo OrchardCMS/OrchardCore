@@ -64,8 +64,11 @@ namespace OrchardCore.Redis.Services
                     }
                     catch (TaskCanceledException)
                     {
-                        _logger.LogWarning("Fails to acquire the named lock '{LockName}' after the given timeout of '{Timeout}'.",
-                            _prefix + key, timeout.ToString());
+                        if (_logger.IsEnabled(LogLevel.Debug))
+                        {
+                            _logger.LogDebug("Timeout elapsed before acquiring the named lock '{LockName}' after the given timeout of '{Timeout}'.",
+                                _prefix + key, timeout.ToString());
+                        }
                     }
                 }
             }

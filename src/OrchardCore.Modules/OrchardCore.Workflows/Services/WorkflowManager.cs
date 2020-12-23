@@ -27,7 +27,7 @@ namespace OrchardCore.Workflows.Services
         private readonly IStringLocalizer<MissingActivity> _missingActivityLocalizer;
         private readonly IClock _clock;
 
-        private readonly HashSet<string> _workflowScopedIds = new HashSet<string>();
+        private readonly Dictionary<string, int> _recursions = new Dictionary<string, int>();
 
         public WorkflowManager
         (
@@ -119,12 +119,51 @@ namespace OrchardCore.Workflows.Services
                 return;
             }
 
+            // Resume workflow instances halted on this kind of activity for the specified target.
+            var haltedWorkflows = await _workflowStore.ListByActivityNameAsync(name, correlationId, isAlwaysCorrelated);
+            foreach (var workflow in haltedWorkflows)
+            {
+                // Don't allow scope recursion per workflow instance id.
+                if (_recursions.TryGetValue(workflow.WorkflowId, out var count) && count > 0)
+                {
+                    continue;
+                }
+
+                // If atomic, try to acquire a lock per workflow id.
+                (var locker, var locked) = workflow.IsAtomic()
+                    ? await _distributedLock.TryAcquireLockAsync(
+                        "WFI_" + workflow.WorkflowId + "_LOCK",
+                        TimeSpan.FromMilliseconds(workflow.LockTimeout),
+                        TimeSpan.FromMilliseconds(workflow.LockExpiration))
+                    : (null, true);
+
+                if (!locked)
+                {
+                    continue;
+                }
+
+                await using var acquiredLock = locker;
+
+                // If atomic, check if the workflow still exists and is still correlated.
+                var haltedWorkflow = workflow.IsAtomic() ? await _workflowStore.GetAsync(workflow.Id) : workflow;
+                if (haltedWorkflow == null || (!isAlwaysCorrelated && haltedWorkflow.CorrelationId != (correlationId ?? "")))
+                {
+                    continue;
+                }
+
+                var blockingActivities = haltedWorkflow.BlockingActivities.Where(x => x.Name == name).ToArray();
+                foreach (var blockingActivity in blockingActivities)
+                {
+                    await ResumeWorkflowAsync(haltedWorkflow, blockingActivity, input);
+                }
+            }
+
             // Start new workflows whose types have a corresponding starting activity.
             var workflowTypesToStart = await _workflowTypeStore.GetByStartActivityAsync(name);
             foreach (var workflowType in workflowTypesToStart)
             {
-                // Don't allow scope reentrance per workflow type id.
-                if (!_workflowScopedIds.Add(workflowType.WorkflowTypeId))
+                // Don't allow scope recursion per workflow type id.
+                if (_recursions.TryGetValue(workflowType.WorkflowTypeId, out var count) && count > 0)
                 {
                     continue;
                 }
@@ -160,45 +199,6 @@ namespace OrchardCore.Workflows.Services
                 var startActivity = workflowType.Activities.FirstOrDefault(x => x.IsStart && x.Name == name);
                 await StartWorkflowAsync(workflowType, startActivity, input, correlationId);
             }
-
-            // Resume workflow instances halted on this kind of activity for the specified target.
-            var haltedWorkflows = await _workflowStore.ListByActivityNameAsync(name, correlationId, isAlwaysCorrelated);
-            foreach (var workflow in haltedWorkflows)
-            {
-                // Don't allow scope reentrance per workflow instance id.
-                if (!_workflowScopedIds.Add(workflow.WorkflowId))
-                {
-                    continue;
-                }
-
-                // If atomic, try to acquire a lock per workflow id.
-                (var locker, var locked) = workflow.IsAtomic()
-                    ? await _distributedLock.TryAcquireLockAsync(
-                        "WFI_" + workflow.WorkflowId + "_LOCK",
-                        TimeSpan.FromMilliseconds(workflow.LockTimeout),
-                        TimeSpan.FromMilliseconds(workflow.LockExpiration))
-                    : (null, true);
-
-                if (!locked)
-                {
-                    continue;
-                }
-
-                await using var acquiredLock = locker;
-
-                // If atomic, check if the workflow still exists and is still correlated.
-                var haltedWorkflow = workflow.IsAtomic() ? await _workflowStore.GetAsync(workflow.Id) : workflow;
-                if (haltedWorkflow == null || (!isAlwaysCorrelated && haltedWorkflow.CorrelationId != (correlationId ?? "")))
-                {
-                    continue;
-                }
-
-                var blockingActivities = haltedWorkflow.BlockingActivities.Where(x => x.Name == name).ToArray();
-                foreach (var blockingActivity in blockingActivities)
-                {
-                    await ResumeWorkflowAsync(haltedWorkflow, blockingActivity, input);
-                }
-            }
         }
 
         public async Task<WorkflowExecutionContext> ResumeWorkflowAsync(Workflow workflow, BlockingActivity awaitingActivity, IDictionary<string, object> input = null)
@@ -208,12 +208,6 @@ namespace OrchardCore.Workflows.Services
             var workflowContext = await CreateWorkflowExecutionContextAsync(workflowType, workflow, input);
 
             workflowContext.Status = WorkflowStatus.Resuming;
-
-            // Don't allow scope reentrance per workflow id.
-            _workflowScopedIds.Add(workflow.WorkflowId);
-
-            // Don't allow scope reentrance per workflow type id.
-            _workflowScopedIds.Add(workflow.WorkflowTypeId);
 
             // Signal every activity that the workflow is about to be resumed.
             var cancellationToken = new CancellationToken();
@@ -275,12 +269,6 @@ namespace OrchardCore.Workflows.Services
             // Create a new workflow instance.
             var workflow = NewWorkflow(workflowType, correlationId);
 
-            // Don't allow scope reentrance per workflow id.
-            _workflowScopedIds.Add(workflow.WorkflowId);
-
-            // Don't allow scope reentrance per workflow type id.
-            _workflowScopedIds.Add(workflow.WorkflowTypeId);
-
             // Create a workflow context.
             var workflowContext = await CreateWorkflowExecutionContextAsync(workflowType, workflow, input);
             workflowContext.Status = WorkflowStatus.Starting;
@@ -328,6 +316,9 @@ namespace OrchardCore.Workflows.Services
 
         public async Task<IEnumerable<ActivityRecord>> ExecuteWorkflowAsync(WorkflowExecutionContext workflowContext, ActivityRecord activity)
         {
+            // Prevent scope recursion per workflow.
+            IncrementScopeRecursion(workflowContext.Workflow);
+
             var workflowType = workflowContext.WorkflowType;
             var scheduled = new Stack<ActivityRecord>();
             var blocking = new List<ActivityRecord>();
@@ -404,6 +395,10 @@ namespace OrchardCore.Workflows.Services
                 {
                     _logger.LogError(ex, "An unhandled error occurred while executing an activity. Workflow ID: '{WorkflowTypeId}'. Activity: '{ActivityId}', '{ActivityName}'. Putting the workflow in the faulted state.", workflowType.Id, activityContext.ActivityRecord.ActivityId, activityContext.ActivityRecord.Name);
                     workflowContext.Fault(ex, activityContext);
+
+                    // Decrement the workflow scope recursion count.
+                    DecrementScopeRecursion(workflowContext.Workflow);
+
                     return blocking.Distinct();
                 }
 
@@ -444,7 +439,22 @@ namespace OrchardCore.Workflows.Services
                 }
             }
 
+            // Decrement the workflow scope recursion count.
+            DecrementScopeRecursion(workflowContext.Workflow);
+
             return blockingActivities;
+        }
+
+        private void IncrementScopeRecursion(Workflow workflow)
+        {
+            _recursions[workflow.WorkflowId] = _recursions.TryGetValue(workflow.WorkflowId, out var count) ? ++count : 1;
+            _recursions[workflow.WorkflowTypeId] = _recursions.TryGetValue(workflow.WorkflowTypeId, out count) ? ++count : 1;
+        }
+
+        private void DecrementScopeRecursion(Workflow workflow)
+        {
+            _recursions[workflow.WorkflowId]--;
+            _recursions[workflow.WorkflowTypeId]--;
         }
 
         private async Task PersistAsync(WorkflowExecutionContext workflowContext)

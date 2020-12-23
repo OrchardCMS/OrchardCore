@@ -62,9 +62,7 @@ namespace OrchardCore.Workflows.Timers
 
         private bool IsExpired()
         {
-            // Shift the start time by the timer event granularity.
-            StartedUtc ??= _clock.UtcNow - TimeSpan.FromMinutes(1);
-
+            StartedUtc ??= _clock.UtcNow;
             var schedule = CrontabSchedule.Parse(CronExpression);
             var whenUtc = schedule.GetNextOccurrence(StartedUtc.Value);
 
