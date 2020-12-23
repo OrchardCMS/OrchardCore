@@ -60,9 +60,9 @@ namespace OrchardCore.ResourceManagement
             return this;
         }
 
-        public ResourceDefinition SetBasePath(string virtualPath)
+        public ResourceDefinition SetBasePath(string basePath)
         {
-            _basePath = virtualPath;
+            _basePath = basePath;
             return this;
         }
 
@@ -228,10 +228,13 @@ namespace OrchardCore.ResourceManagement
                 url = fileVersionProvider.AddFileVersionToPath(applicationPath, url);
             }
 
-            // Don't prefix cdn if the path is absolute, or is in debug mode.
-            if (!settings.DebugMode
-                && !String.IsNullOrEmpty(settings.CdnBaseUrl)
-                && !Uri.TryCreate(url, UriKind.Absolute, out var uri))
+            // Don't prefix cdn if the path includes a protocol, i.e. is an external url, or is in debug mode.
+            if (url != null && !settings.DebugMode && !String.IsNullOrEmpty(settings.CdnBaseUrl) &&
+                // Don't evaluate with Uri.TryCreate as it produces incorrect results on Linux.
+                !url.StartsWith("https://", StringComparison.OrdinalIgnoreCase) &&
+                !url.StartsWith("http://", StringComparison.OrdinalIgnoreCase) &&
+                !url.StartsWith("//", StringComparison.OrdinalIgnoreCase) &&
+                !url.StartsWith("file://", StringComparison.OrdinalIgnoreCase))
             {
                 url = settings.CdnBaseUrl + url;
             }
