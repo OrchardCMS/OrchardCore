@@ -1,4 +1,5 @@
 using System;
+using Azure.Core;
 using Azure.Extensions.AspNetCore.Configuration.Secrets;
 using Azure.Identity;
 using Microsoft.Extensions.Configuration;
@@ -16,7 +17,28 @@ namespace OrchardCore.Configuration.KeyVault.Extensions
         /// <returns>The web host builder.</returns>
         public static IHostBuilder AddOrchardCoreAzureKeyVault(this IHostBuilder builder)
         {
-            if (builder == null) throw new ArgumentNullException(nameof(builder));
+            if (builder == null) 
+            {
+                throw new ArgumentNullException(nameof(builder));
+            }
+
+            builder.AddOrchardCoreAzureKeyVault(new DefaultAzureCredential(includeInteractiveCredentials: true));
+
+            return builder;
+        }
+
+        /// <summary>
+        /// Adds Azure Key Vault as a Configuration Source.
+        /// </summary>
+        /// <param name="builder">The web host builder to configure.</param>
+        /// <param name="tokenCredential">The token credential to use for authentication.</param>
+        /// <returns>The web host builder.</returns>
+        public static IHostBuilder AddOrchardCoreAzureKeyVault(this IHostBuilder builder, TokenCredential tokenCredential)
+        {
+            if (builder == null) 
+            {
+                throw new ArgumentNullException(nameof(builder));
+            }
 
             builder.ConfigureAppConfiguration((context, configuration) =>
             {
@@ -24,8 +46,7 @@ namespace OrchardCore.Configuration.KeyVault.Extensions
                 var keyVaultName = builtConfig["OrchardCore:OrchardCore_KeyVault_Azure:KeyVaultName"];
 
                 TimeSpan? reloadInterval = null;
-                double interval;
-                if (Double.TryParse(builtConfig["OrchardCore:OrchardCore_KeyVault_Azure:ReloadInterval"], out interval))
+                if (Double.TryParse(builtConfig["OrchardCore:OrchardCore_KeyVault_Azure:ReloadInterval"], out var interval))
                 {
                     reloadInterval = TimeSpan.FromSeconds(interval);
                 }
