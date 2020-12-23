@@ -39,10 +39,10 @@ namespace OrchardCore.Resources
             DefineScript(manifest, "jQuery.slim", "https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.slim.js", "3.5.1")
                 .SetCdnIntegrity("sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj", "sha384-x6NENSfxadikq2gB4e6/qompriNc+y1J3eqWg3hAAMNBs4dFU303XMTcU3uExJgZ");
 
-            DefineScript(manifest, "jQuery.easing", "https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js", "1.4.1", "jQuery")
+            DefineScript(manifest, "jQuery.easing", "https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.js", "1.4.1", "jQuery")
                 .SetCdnIntegrity("sha384-leGYpHE9Tc4N9OwRd98xg6YFpB9shlc/RkilpFi0ljr3QD4tFoFptZvgnnzzwG4Q", "sha384-fwPA0FyfPOiDsglgAC4ZWmBGwpXSZNkq9IG+cM9HL4CkpNQo4xgCDkOIPdWypLMX");
 
-            DefineScript(manifest, "jQuery-ui", "https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js", "1.12.1", "jQuery")
+            DefineScript(manifest, "jQuery-ui", "https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.js", "1.12.1", "jQuery")
                 .SetCdnIntegrity("sha384-PtTRqvDhycIBU6x1wwIqnbDo8adeWIWP3AHmnrvccafo35E7oIvW7HPXn2YimvWu", "sha384-JPbtLYL10d/Z1crlc6GGGGM3PavCzzoUJ1UxH0bXHOfguWHQ6XAWrIzW+MBGGXe5");
 
             manifest
