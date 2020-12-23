@@ -92,7 +92,7 @@
                     <li class="list-group-item">
                         <div class="properties">
                             <div class="related">
-                                <a asp-action="Delete" asp-route-id="@entry.Workflow.Id" class="btn btn-danger btn-sm" data-url-af="RemoveUrl UnsafeUrl">@T["Delete"]</a>
+                                <a asp-action="Delete" asp-route-id="@entry.Workflow.Id" class="btn btn-danger btn-sm" data-message="@T["Are you sure you want to delete this workflow instance?"]" data-url-af="RemoveUrl UnsafeUrl">@T["Delete"]</a>
                             </div>
 
                             <div class="custom-control custom-checkbox float-left">
