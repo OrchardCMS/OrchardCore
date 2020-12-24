@@ -196,7 +196,7 @@ namespace OrchardCore.Workflows.Services
                     continue;
                 }
 
-                var startActivity = workflowType.Activities.FirstOrDefault(x => x.IsStart && String.Equals(x.Name, name, StringComparison.OrdinalIgnoreCase));
+                var startActivity = workflowType.Activities.FirstOrDefault(x => x.IsStart && x.Name == name);
                 if (startActivity != null)
                 {
                     await StartWorkflowAsync(workflowType, startActivity, input, correlationId);
