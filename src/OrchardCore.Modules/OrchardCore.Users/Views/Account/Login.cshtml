@@ -23,7 +23,7 @@
     {
         <div class="col-md-6 @(loginProviders.Count == 0 ? "offset-md-3" : String.Empty)">
             <form asp-controller="Account" asp-action="Login" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="auth-form">
-                <h4>@T["Log in to {0}", Site.SiteName]</h4>
+                <h4>@T["Log in"]</h4>
                 <hr />
                 <div asp-validation-summary="All" class="text-danger"></div>
                 <div class="form-group">
@@ -67,7 +67,7 @@
     {
         <div class="col-md-6 @(disableLocalLogin ? "offset-md-3" : String.Empty)">
             <section>
-                <h4>@T["Use another service to log in to {0}", Site.SiteName]</h4>
+                <h4>@T["Use another service to log in"]</h4>
                 <hr />
                 <form asp-controller="Account" asp-action="ExternalLogin" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="form-horizontal">
                     <div>
