@@ -445,7 +445,7 @@ namespace OrchardCore.Media.Controllers
 
         public async Task<IActionResult> Options()
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMediaOptions))
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ViewMediaOptions))
             {
                 return Forbid();
             }
