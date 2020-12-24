@@ -130,13 +130,7 @@ namespace OrchardCore.Workflows.Services
                 }
 
                 // If atomic, try to acquire a lock per workflow id.
-                (var locker, var locked) = workflow.IsAtomic()
-                    ? await _distributedLock.TryAcquireLockAsync(
-                        "WFI_" + workflow.WorkflowId + "_LOCK",
-                        TimeSpan.FromMilliseconds(workflow.LockTimeout),
-                        TimeSpan.FromMilliseconds(workflow.LockExpiration))
-                    : (null, true);
-
+                (var locker, var locked) = await _distributedLock.TryAcquireWorkflowLockAsync(workflow);
                 if (!locked)
                 {
                     continue;
@@ -169,13 +163,7 @@ namespace OrchardCore.Workflows.Services
                 }
 
                 // If atomic, try to acquire a lock per workflow type id.
-                (var locker, var locked) = workflowType.IsAtomic()
-                    ? await _distributedLock.TryAcquireLockAsync(
-                        "WFT_" + workflowType.WorkflowTypeId + "_LOCK",
-                        TimeSpan.FromMilliseconds(workflowType.LockTimeout),
-                        TimeSpan.FromMilliseconds(workflowType.LockExpiration))
-                    : (null, true);
-
+                (var locker, var locked) = await _distributedLock.TryAcquireWorkflowTypeLockAsync(workflowType);
                 if (!locked)
                 {
                     continue;

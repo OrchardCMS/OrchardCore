@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Admin;
 using OrchardCore.Locking.Distributed;
+using OrchardCore.Workflows.Helpers;
 using OrchardCore.Workflows.Http.Activities;
 using OrchardCore.Workflows.Http.Models;
 using OrchardCore.Workflows.Services;
@@ -142,13 +143,7 @@ namespace OrchardCore.Workflows.Http.Controllers
             if (startActivity.IsStart)
             {
                 // If atomic, try to acquire a lock per workflow type id.
-                (var locker, var locked) = workflowType.IsAtomic()
-                    ? await _distributedLock.TryAcquireLockAsync(
-                        "WFT_" + workflowType.WorkflowTypeId + "_LOCK",
-                        TimeSpan.FromMilliseconds(workflowType.LockTimeout),
-                        TimeSpan.FromMilliseconds(workflowType.LockExpiration))
-                    : (null, true);
-
+                (var locker, var locked) = await _distributedLock.TryAcquireWorkflowTypeLockAsync(workflowType);
                 if (locked)
                 {
                     await using var acquiredLock = locker;
@@ -192,13 +187,7 @@ namespace OrchardCore.Workflows.Http.Controllers
                         }
 
                         // If atomic, try to acquire a lock per workflow id.
-                        (var locker, var locked) = workflow.IsAtomic()
-                            ? await _distributedLock.TryAcquireLockAsync(
-                                "WFI_" + workflow.WorkflowId + "_LOCK",
-                                TimeSpan.FromMilliseconds(workflow.LockTimeout),
-                                TimeSpan.FromMilliseconds(workflow.LockExpiration))
-                            : (null, true);
-
+                        (var locker, var locked) = await _distributedLock.TryAcquireWorkflowLockAsync(workflow);
                         if (!locked)
                         {
                             continue;
@@ -249,13 +238,7 @@ namespace OrchardCore.Workflows.Http.Controllers
                 }
 
                 // If atomic, try to acquire a lock per workflow id.
-                (var locker, var locked) = workflow.IsAtomic()
-                    ? await _distributedLock.TryAcquireLockAsync(
-                        "WFI_" + workflow.WorkflowId + "_LOCK",
-                        TimeSpan.FromMilliseconds(workflow.LockTimeout),
-                        TimeSpan.FromMilliseconds(workflow.LockExpiration))
-                    : (null, true);
-
+                (var locker, var locked) = await _distributedLock.TryAcquireWorkflowLockAsync(workflow);
                 if (locked)
                 {
                     await using var acquiredLock = locker;
@@ -266,6 +249,7 @@ namespace OrchardCore.Workflows.Http.Controllers
                     {
                         // The workflow could be blocking on multiple Signal activities, but only the activity with the provided signal name
                         // will be executed as SignalEvent checks for the provided "Signal" input.
+                        signalActivities = workflow.BlockingActivities.Where(x => x.Name == SignalEvent.EventName).ToList();
                         foreach (var signalActivity in signalActivities)
                         {
                             await _workflowManager.ResumeWorkflowAsync(workflow, signalActivity, input);
