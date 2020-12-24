@@ -22,6 +22,8 @@ namespace OrchardCore.AdminDashboard
 {
     public class Startup : StartupBase
     {
+        public override int ConfigureOrder => -10;
+
         private readonly AdminOptions _adminOptions;
 
         public Startup(IOptions<AdminOptions> adminOptions)
@@ -32,7 +34,6 @@ namespace OrchardCore.AdminDashboard
         public override void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<IPermissionProvider, Permissions>();
-            services.AddScoped<INavigationProvider, AdminMenu>();
 
             services.AddScoped<IAdminDashboardService, AdminDashboardService>();
             services.AddSingleton<IIndexProvider, DashboardPartIndexProvider>();

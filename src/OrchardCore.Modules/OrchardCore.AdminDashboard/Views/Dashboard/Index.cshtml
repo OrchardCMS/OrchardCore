@@ -1,39 +1,39 @@
 @model AdminDashboardViewModel
 @using OrchardCore.ContentManagement.Metadata.Settings;
+@inject IAuthorizationService AuthorizationService
 @inject IContentManager ContentManager
 @inject OrchardCore.ContentManagement.Metadata.IContentDefinitionManager ContentDefinitionManager
 @inject OrchardCore.ContentManagement.Display.IContentItemDisplayManager ContentItemDisplayManager
 
 @{
+    var hasManageDashboardPermission = await AuthorizationService.AuthorizeAsync(User, Permissions.ManageAdminDashboard);
     var widgetContentTypes = ContentDefinitionManager.ListTypeDefinitions().Where(t => !string.IsNullOrEmpty(t.GetSettings<ContentTypeSettings>().Stereotype) && t.GetSettings<ContentTypeSettings>().Stereotype.Contains("DashboardWidget")).OrderBy(x => x.DisplayName);
 }
 
-<zone Name="Title"><h1>@RenderTitleSegments(T["Dashboard"])</h1></zone>
+@if (hasManageDashboardPermission && widgetContentTypes.Any())
+{
+    <div class="btn-group float-right mb-3">
+        <button type="button" class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            @T["Add Widget"]
+        </button>
+        <div class="dropdown-menu">
+            @foreach (var type in widgetContentTypes)
+            {
+                var contentItem = await ContentManager.NewAsync(type.Name);
+                var createRoute = (await ContentManager.PopulateAspectAsync<ContentItemMetadata>(contentItem)).CreateRouteValues;
+                createRoute["returnUrl"] = FullRequestPath;
 
-<div class="row mb-3">
-    <div class="col">
-        @if (widgetContentTypes.Any())
-        {
-            <div class="btn-group">
-                <button type="button" class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    @T["Add Widget"]
-                </button>
-                <div class="dropdown-menu">
-                    @foreach (var type in widgetContentTypes)
-                    {
-                        var contentItem = await ContentManager.NewAsync(type.Name);
-                        var createRoute = (await ContentManager.PopulateAspectAsync<ContentItemMetadata>(contentItem)).CreateRouteValues;
-                        createRoute["returnUrl"] = FullRequestPath;
-
-                        <a class="dropdown-item add-list-widget btn-sm"
-                           data-widget-type="@type.Name"
-                           href="@Url.Action((string)createRoute["Action"], (string)createRoute["controller"], createRoute)">@type.DisplayName</a>
-                    }
-                </div>
-            </div>
-        }
+                <a class="dropdown-item add-list-widget btn-sm"
+                   data-widget-type="@type.Name"
+                   href="@Url.Action((string)createRoute["Action"], (string)createRoute["controller"], createRoute)">@type.DisplayName</a>
+            }
+        </div>
     </div>
-</div>
+}
+
+<zone Name="Title"><h1 class="float-left">@RenderTitleSegments(T["Dashboard"])</h1></zone>
+<div class="clearfix"></div>
+
 <div class="row">
     @foreach (var contentItem in Model.Widgets)
     {
