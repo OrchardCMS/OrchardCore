@@ -1,7 +1,7 @@
 @model BackgroundTaskIndexViewModel
 @inject OrchardCore.Modules.ILocalClock LocalClock
 
-<h1>@RenderTitleSegments(T["Background Tasks"])</h1>
+<zone Name="Title"><h1>@RenderTitleSegments(T["Background Tasks"])</h1></zone>
 
 <form asp-action="Index"> @* the form is necessary to generate an antiforgery token for the delete action *@
 

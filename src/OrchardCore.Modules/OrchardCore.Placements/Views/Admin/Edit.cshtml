@@ -9,7 +9,7 @@
 <script asp-name="codemirror-addon-selection-active-line" at="Foot"></script>
 <script asp-name="codemirror-mode-javascript" at="Foot"></script>
 
-<h1>@RenderTitleSegments(Model.Creating ? T["Create Placement"] : T["Edit Placement"])</h1>
+<zone Name="Title"><h1>@RenderTitleSegments(Model.Creating ? T["Create Placement"] : T["Edit Placement"])</h1></zone>
 
 <form asp-action="Edit" asp-route-returnUrl="@ViewData["returnUrl"]" method="post">
     @Html.HiddenFor(m => m.Creating)
@@ -46,10 +46,7 @@
             <a asp-route-action="Delete" asp-route-area="OrchardCore.Placements" asp-route-shapeType="@Model.ShapeType" class="btn btn-danger" role="button" itemprop="UnsafeUrl RemoveUrl">@T["Delete"]</a>
         }
 
-        @if (Url.IsLocalUrl(returnUrl))
-        {
-            <a class="btn btn-secondary" href="@returnUrl">@T["Cancel"]</a>
-        }
+        <a class="btn btn-secondary cancel" role="button" href="@returnUrl">@T["Cancel"]</a>
     </div>
 </form>
 

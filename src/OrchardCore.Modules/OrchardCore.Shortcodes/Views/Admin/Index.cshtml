@@ -5,25 +5,20 @@
     int endIndex = startIndex + Model.ShortcodeTemplates.Count - 1;
 }
 
-<h1>@RenderTitleSegments(T["Shortcodes"])</h1>
+<zone Name="Title"><h1>@RenderTitleSegments(T["Shortcodes"])</h1></zone>
 
 @* the form is necessary to generate and antiforgery token for the delete action *@
 <form asp-action="Index">
     <input type="submit" name="submit.Filter" id="submitFilter" class="d-none" />
     <input asp-for="Options.BulkAction" type="hidden" />
     <input type="submit" name="submit.BulkAction" class="d-none" />
-    
+        
     <div class="card mb-3 position-sticky action-bar">
         <div class="card-body bg-primary p-3">
             <div class="form-group mb-n1">
-                <div class="input-group input-group-sm w-lg-50 d-inline-flex">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text bg-secondary text-light">@T["Filter"]</span>
-                    </div>
+                <div class="input-group input-group-sm w-sm-50 w-25 d-inline-flex has-search">
+                <i class="fa fa-search form-control-feedback"></i>
                     <input asp-for="Options.Search" class="form-control" placeholder="@T["Search"]" type="search" autofocus />
-                    <div class="input-group-append">
-                        <button type="submit" class="btn btn-sm btn-secondary">@T["Search"]</button>
-                    </div>
                 </div>
                 <div class="btn-group float-right">
                     <a asp-route-action="Create" class="btn btn-sm btn-secondary float-right create" role="button">@T["Add Shortcode"]</a>
@@ -85,6 +80,7 @@
             <li class="list-group-item">
                 <div class="alert alert-info mb-0" role="alert">
                     @T["<strong>Nothing here!</strong> There are no shortcodes for the moment."]
+                    <i class="fa fa-book"></i> <a href="@(OrchardCore.Admin.Constants.DocsUrl)reference/modules/Shortcodes/#example-shortcode-templates" target="_blank">@T["See documentation"]</a>
                 </div>
             </li>
         }

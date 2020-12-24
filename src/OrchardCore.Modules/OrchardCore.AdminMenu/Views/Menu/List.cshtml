@@ -7,24 +7,20 @@
 <style asp-src="~/OrchardCore.AdminMenu/Styles/admin-menu.min.css" debug-src="~/OrchardCore.AdminMenu/Styles/admin-menu.css" at="Head" depends-on="admin, jQuery-ui"></style>
 <script asp-src="~/OrchardCore.AdminMenu/Scripts/admin-menu.min.js" debug-src="~/OrchardCore.AdminMenu/Scripts/admin-menu.js" at="Foot" depends-on="admin, jQuery-ui"></script>
 
-<h1>@RenderTitleSegments(T["Admin Menus"])</h1>
+<zone Name="Title"><h1>@RenderTitleSegments(T["Admin Menus"])</h1></zone>
 
+@* the form is necessary to generate an antiforgery token for the delete and toggle actions *@
 <form asp-action="List">
+    <input type="submit" name="submit.Filter" id="submitFilter" class="d-none" />
     <input asp-for="Options.BulkAction" type="hidden" />
     <input type="submit" name="submit.BulkAction" class="d-none" />
-    @* the form is necessary to generate an antiforgery token for the delete and toggle actions *@
-
+    
     <div class="card mb-3 position-sticky action-bar">
         <div class="card-body bg-primary p-3">
             <div class="form-group mb-n1">
-                <div class="input-group input-group-sm w-lg-50 d-inline-flex">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text bg-secondary text-light">@T["Filter"]</span>
-                    </div>
+                <div class="input-group input-group-sm w-sm-50 w-25 d-inline-flex has-search">
+                    <i class="fa fa-search form-control-feedback"></i>
                     <input asp-for="Options.Search" class="form-control" placeholder="@T["Search"]" type="search" autofocus />
-                    <div class="input-group-append">
-                        <button type="submit" class="btn btn-sm btn-secondary">@T["Search"]</button>
-                    </div>
                 </div>
                 <div class="btn-group float-right">
                     <a asp-route-action="Create" class="btn btn-sm btn-secondary float-right create" role="button">@T["Add Admin Menu"]</a>
@@ -32,7 +28,6 @@
             </div>
         </div>
     </div>
-
     <ul class="list-group with-checkbox">
         @if (Model.AdminMenu.Any())
         {

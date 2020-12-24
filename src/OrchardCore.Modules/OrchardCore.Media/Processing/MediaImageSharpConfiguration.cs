@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Web.Commands;
 using SixLabors.ImageSharp.Web.Middleware;
 using SixLabors.ImageSharp.Web.Processors;
 
@@ -40,21 +39,19 @@ namespace OrchardCore.Media.Processing
                     if (context.Commands.TryGetValue(TokenCommandProcessor.TokenCommand, out var tokenString))
                     {
                         var mediaTokenService =  context.Context.RequestServices.GetRequiredService<IMediaTokenService>();
-                        var token = context.Parser.ParseValue<string>(tokenString, context.Culture);
-                        var commands = mediaTokenService.GetTokenizedCommands(token);
+                        // The token must now be validated against the HMAC of the other commands.
+                        // Use the Raw value, not the parsed value.
+                        var token = context.Commands["token"];
 
-                        context.Commands.Clear();
+                        // Remove the token from the commands.
+                        context.Commands.Remove(TokenCommandProcessor.TokenCommand);
 
                         // When token is invalid no image commands will be processed.
-                        if (commands == null)
+                        if (!mediaTokenService.TryValidateToken(context.Commands, token))
                         {
-                            return Task.CompletedTask;
-                        }
+                            context.Commands.Clear();
 
-                        // Set commands to the tokens value.
-                        foreach(var command in commands)
-                        {
-                            context.Commands[command.Key] = command.Value;
+                            return Task.CompletedTask;
                         }
 
                         // Do not evaluate supported sizes here, as with tokenization any size is allowed.

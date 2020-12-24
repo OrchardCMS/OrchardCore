@@ -22,7 +22,7 @@
         .Select(x => x.Field);
 }
 
-<h1>@RenderTitleSegments(T["Edit Content Type - {0}", Model.TypeDefinition.DisplayName])</h1>
+<zone Name="Title"><h1>@RenderTitleSegments(T["Edit Content Type - {0}", Model.TypeDefinition.DisplayName])</h1></zone>
 
 <form asp-action="Edit">
     @Html.ValidationSummary()
@@ -53,6 +53,15 @@
                                 <a asp-route-action="RemoveFieldFrom" asp-route-id="@Model.TypeDefinition.Name" asp-route-name="@field.Name" class="btn btn-danger btn-sm" role="button" itemprop="UnsafeUrl RemoveUrl">@T["Remove"]</a>
                             </div>
                             @field.DisplayName() <span class="hint dashed">@field.FieldDefinition.Name.CamelFriendly()</span>
+                            
+                            @if (!string.IsNullOrEmpty(field.DisplayMode()))
+                            {
+                                <span class="badge ta-badge font-weight-normal" data-toggle="tooltip" title="@T["Display mode"]"><i class="fas fa-tv text-info"></i> @field.DisplayMode()</span>
+                            }
+                            @if (!string.IsNullOrEmpty(field.Editor()))
+                            {
+                                <span class="badge ta-badge font-weight-normal" data-toggle="tooltip" title="@T["Editor"]"><i class="fa fa-edit text-info"></i> @field.Editor()</span>
+                            }
                         </div>
                         <input type="hidden" asp-for="OrderedFieldNames" value="@field.Name" />
                     </li>
