@@ -10,7 +10,7 @@
   <ItemGroup>
     <PackageManagement Include="AngleSharp" Version="0.14.0" />
     <PackageManagement Include="Azure.Extensions.AspNetCore.Configuration.Secrets" Version="1.0.2" />
-    <PackageManagement Include="Azure.Extensions.AspNetCore.DataProtection.Blobs" Version="1.0.1" />
+    <PackageManagement Include="Azure.Extensions.AspNetCore.DataProtection.Blobs" Version="1.2.0" />
     <PackageManagement Include="Azure.Identity" Version="1.3.0" />
     <PackageManagement Include="Azure.Storage.Blobs" Version="12.7.0" />
     <PackageManagement Include="Castle.Core" Version="4.4.1" />
@@ -33,8 +33,8 @@
     <PackageManagement Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageManagement Include="NLog.Web.AspNetCore" Version="4.9.3" />
     <PackageManagement Include="NodaTime" Version="3.0.3" />
-    <PackageManagement Include="OpenIddict.AspNetCore" Version="[3.0.0-rc2.20607.88]" />
-    <PackageManagement Include="OpenIddict.Core" Version="[3.0.0-rc2.20607.88]" />
+    <PackageManagement Include="OpenIddict.AspNetCore" Version="3.0.0" />
+    <PackageManagement Include="OpenIddict.Core" Version="3.0.0" />
     <PackageManagement Include="OrchardCore.Translations.All" Version="1.0.0-rc2-108003" />
     <PackageManagement Include="Serilog.AspNetCore" Version="3.4.0" />
     <PackageManagement Include="Shortcodes" Version="1.0.0" />
