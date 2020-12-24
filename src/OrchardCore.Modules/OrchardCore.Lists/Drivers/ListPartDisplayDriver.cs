@@ -40,7 +40,6 @@ namespace OrchardCore.Lists.Drivers
                         var pager = await GetPagerSlimAsync(context);
                         var settings = context.TypePartDefinition.GetSettings<ListPartSettings>();
                         var containedItemOptions = new ContainedItemOptions();
-                        containedItemOptions.Status = ContentsStatus.Published;
                         model.ContentItems = (await _containerService.QueryContainedItemsAsync(
                             listPart.ContentItem.ContentItemId,
                             settings.EnableOrdering,
