@@ -177,24 +177,24 @@
                         </div>
                         <div class="col-lg-6 col-sm-12 related">
                             <div class="float-right">
-                                <a asp-action="Edit" asp-route-id="@entry.Name" class="btn btn-primary btn-sm edit"><i class="fa fa-edit"></i> @T["Edit"]</a>
+                                <a asp-action="Edit" asp-route-id="@entry.Name" class="btn btn-primary btn-sm edit">@T["Edit"]</a>
                                 @if (entry.ShellSettings.State == TenantState.Running)
                                 {
-                                    <a class="btn btn-info btn-sm view" href="@GetDisplayUrl(entry, originalPathBase)" target="_blank"><i class="fa fa-external-link"></i> @T["View"]</a>
+                                    <a class="btn btn-info btn-sm view" href="@GetDisplayUrl(entry, originalPathBase)" target="_blank">@T["View"]</a>
                                 }
                                 @if (!entry.IsDefaultTenant && entry.ShellSettings.State == TenantState.Running)
                                 {
-                                    <a asp-action="Disable" asp-route-id="@entry.Name" class="btn btn-danger btn-sm disable" itemprop="RemoveUrl UnsafeUrl" data-title="@T["Disable"]" data-message="@T["Are you sure you want to disable this tenant?"]" data-ok-text="@T["Ok"]" data-cancel-text="@T["Cancel"]"><i class="fa fa-power-off"></i> @T["Disable"]</a>
+                                    <a asp-action="Disable" asp-route-id="@entry.Name" class="btn btn-danger btn-sm disable" itemprop="RemoveUrl UnsafeUrl" data-title="@T["Disable"]" data-message="@T["Are you sure you want to disable this tenant?"]" data-ok-text="@T["Ok"]" data-cancel-text="@T["Cancel"]">@T["Disable"]</a>
                                 }
                                 @if (entry.ShellSettings.State == TenantState.Disabled)
                                 {
-                                    <a asp-action="Enable" asp-route-id="@entry.Name" class="btn btn-success btn-sm enable" itemprop="UnsafeUrl"><i class="fa fa-power-off"></i> @T["Enable"]</a>
+                                    <a asp-action="Enable" asp-route-id="@entry.Name" class="btn btn-success btn-sm enable" itemprop="UnsafeUrl">@T["Enable"]</a>
                                 }
                                 @if (entry.ShellSettings.State == TenantState.Uninitialized)
                                 {
-                                    <a class="btn btn-info btn-sm setup" id="btn-setup-@entry.Name" href="@GetEncodedUrl(entry, originalPathBase)"><i class="fa fa-cog"></i> @T["Setup"]</a>
+                                    <a class="btn btn-info btn-sm setup" id="btn-setup-@entry.Name" href="@GetEncodedUrl(entry, originalPathBase)">@T["Setup"]</a>
                                 }
-                                <a asp-action="Reload" asp-route-id="@entry.Name" class="btn btn-secondary btn-sm reload" itemprop="UnsafeUrl"><i class="fa fa-redo"></i> @T["Reload"]</a>
+                                <a asp-action="Reload" asp-route-id="@entry.Name" class="btn btn-secondary btn-sm reload" itemprop="UnsafeUrl">@T["Reload"]</a>
                             </div>
                         </div>
                     </div>
