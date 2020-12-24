@@ -184,11 +184,8 @@ namespace OrchardCore.Workflows.Services
                     continue;
                 }
 
-                var startActivity = workflowType.Activities.FirstOrDefault(x => x.IsStart && x.Name == name);
-                if (startActivity != null)
-                {
-                    await StartWorkflowAsync(workflowType, startActivity, input, correlationId);
-                }
+                var startActivity = workflowType.Activities.First(x => x.IsStart && x.Name == name);
+                await StartWorkflowAsync(workflowType, startActivity, input, correlationId);
             }
         }
 
@@ -308,7 +305,7 @@ namespace OrchardCore.Workflows.Services
         public async Task<IEnumerable<ActivityRecord>> ExecuteWorkflowAsync(WorkflowExecutionContext workflowContext, ActivityRecord activity)
         {
             // Prevent scope recursion per workflow.
-            IncrementScopeRecursion(workflowContext.Workflow);
+            IncrementRecursion(workflowContext.Workflow);
 
             var workflowType = workflowContext.WorkflowType;
             var scheduled = new Stack<ActivityRecord>();
@@ -388,7 +385,7 @@ namespace OrchardCore.Workflows.Services
                     workflowContext.Fault(ex, activityContext);
 
                     // Decrement the workflow scope recursion count.
-                    DecrementScopeRecursion(workflowContext.Workflow);
+                    DecrementRecursion(workflowContext.Workflow);
 
                     return blocking.Distinct();
                 }
@@ -430,19 +427,19 @@ namespace OrchardCore.Workflows.Services
                 }
             }
 
-            // Decrement the workflow scope recursion count.
-            DecrementScopeRecursion(workflowContext.Workflow);
+            // Decrement the workflow scope recursion.
+            DecrementRecursion(workflowContext.Workflow);
 
             return blockingActivities;
         }
 
-        private void IncrementScopeRecursion(Workflow workflow)
+        private void IncrementRecursion(Workflow workflow)
         {
             _recursions[workflow.WorkflowId] = _recursions.TryGetValue(workflow.WorkflowId, out var count) ? ++count : 1;
             _recursions[workflow.WorkflowTypeId] = _recursions.TryGetValue(workflow.WorkflowTypeId, out count) ? ++count : 1;
         }
 
-        private void DecrementScopeRecursion(Workflow workflow)
+        private void DecrementRecursion(Workflow workflow)
         {
             _recursions[workflow.WorkflowId]--;
             _recursions[workflow.WorkflowTypeId]--;
