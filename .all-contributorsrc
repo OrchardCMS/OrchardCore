@@ -2026,6 +2026,15 @@
       "contributions": [
         "translation"
       ]
+    },
+    {
+      "login": "npietron",
+      "name": "npietron",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/17119997?v=4",
+      "profile": "https://github.com/npietron",
+      "contributions": [
+        "translation"
+      ]
     }
   ],
   "skipCi": true

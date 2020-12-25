@@ -1,7 +1,7 @@
 # Contributors ✨
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-216-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-217-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
@@ -297,6 +297,9 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <td align="center"><a href="http://www.coming.com.cn"><img src="https://avatars2.githubusercontent.com/u/3014302?v=4" width="100px;" alt=""/><br /><sub><b>Pim Hwang</b></sub></a><br /><a href="#translation-PimHwang" title="Translation">🌍</a></td>
     <td align="center"><a href="http://www.omidnasri.ir"><img src="https://avatars3.githubusercontent.com/u/11842391?v=4" width="100px;" alt=""/><br /><sub><b>Omid Nasri</b></sub></a><br /><a href="#translation-omidnasri" title="Translation">🌍</a></td>
     <td align="center"><a href="https://github.com/mcoztunc"><img src="https://avatars0.githubusercontent.com/u/2112981?v=4" width="100px;" alt=""/><br /><sub><b>Mustafa Can Öztunç</b></sub></a><br /><a href="#translation-mcoztunc" title="Translation">🌍</a></td>
+  </tr>
+  <tr>
+    <td align="center"><a href="https://github.com/npietron"><img src="https://avatars1.githubusercontent.com/u/17119997?v=4" width="100px;" alt=""/><br /><sub><b>npietron</b></sub></a><br /><a href="#translation-npietron" title="Translation">🌍</a></td>
   </tr>
 </table>
 
