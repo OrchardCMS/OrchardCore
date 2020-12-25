@@ -2008,6 +2008,15 @@
       "contributions": [
         "translation"
       ]
+    },
+    {
+      "login": "omidnasri",
+      "name": "Omid Nasri",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/11842391?v=4",
+      "profile": "http://www.omidnasri.ir",
+      "contributions": [
+        "translation"
+      ]
     }
   ],
   "skipCi": true

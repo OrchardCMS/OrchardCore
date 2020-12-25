@@ -1,7 +1,7 @@
 # Contributors ✨
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-214-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-215-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
@@ -295,6 +295,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <td align="center"><a href="http://www.mdameer.com"><img src="https://avatars3.githubusercontent.com/u/2022320?v=4" width="100px;" alt=""/><br /><sub><b>Mohammad Dameer</b></sub></a><br /><a href="#translation-mdameer" title="Translation">🌍</a></td>
     <td align="center"><a href="https://www.axuno.net"><img src="https://avatars2.githubusercontent.com/u/10255664?v=4" width="100px;" alt=""/><br /><sub><b>axunonb</b></sub></a><br /><a href="#translation-axunonb" title="Translation">🌍</a></td>
     <td align="center"><a href="http://www.coming.com.cn"><img src="https://avatars2.githubusercontent.com/u/3014302?v=4" width="100px;" alt=""/><br /><sub><b>Pim Hwang</b></sub></a><br /><a href="#translation-PimHwang" title="Translation">🌍</a></td>
+    <td align="center"><a href="http://www.omidnasri.ir"><img src="https://avatars3.githubusercontent.com/u/11842391?v=4" width="100px;" alt=""/><br /><sub><b>Omid Nasri</b></sub></a><br /><a href="#translation-omidnasri" title="Translation">🌍</a></td>
   </tr>
 </table>
 
