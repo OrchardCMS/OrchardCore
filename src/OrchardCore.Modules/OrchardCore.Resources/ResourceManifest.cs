@@ -143,7 +143,7 @@ namespace OrchardCore.Resources
             manifest
                 .DefineStyle("codemirror")
                 .SetUrl("~/OrchardCore.Resources/Styles/codemirror/codemirror.min.css", "~/OrchardCore.Resources/Styles/codemirror/codemirror.css")
-                .SetCdn(codeMirrorUrl + "lib/codemirror.min.css", codeMirrorUrl + "lib/codemirror.css")
+                .SetCdn(codeMirrorUrl + "codemirror.min.css", codeMirrorUrl + "codemirror.css")
                 .SetCdnIntegrity("sha384-h3l8qwg0s18FbBn7yQprJyfhea0JR5bHVKUADDjGVW6JmV82nU0BqqJUBLSefoXq", "sha384-me3GYw39+VnACscdDXhP/b1IARe/OQVQhFGmJaZpMi9PappkEGC93cl+iVBotdjX")
                 .SetVersion(codeMirrorVersion);
 
