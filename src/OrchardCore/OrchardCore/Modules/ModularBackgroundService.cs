@@ -108,8 +108,9 @@ namespace OrchardCore.Modules
                         break;
                     }
 
-                    var distributedLock = shell.ServiceProvider.GetRequiredService<IDistributedLock>();
+                    var distributedLock = shellScope.ShellContext.ServiceProvider.GetRequiredService<IDistributedLock>();
 
+                    // Try to acquire a lock before using the scope, so that a next process gets the last committed data.
                     (var locker, var locked) = await distributedLock.TryAcquireBackgroundTaskLockAsync(scheduler.Settings);
                     if (!locked)
                     {

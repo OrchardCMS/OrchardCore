@@ -8,17 +8,17 @@ namespace OrchardCore.BackgroundTasks
     public static class DistributedLockExtensions
     {
         /// <summary>
-        /// Tries to acquire a distributed lock on the related background task. If the lock service is a local implementation returns true but with a null locker.
+        /// Tries to acquire a lock on the background task if it is atomic and if the lock service is not a local lock, otherwise returns true with a null locker.
         /// </summary>
         public static Task<(ILocker locker, bool locked)> TryAcquireBackgroundTaskLockAsync(this IDistributedLock distributedLock, BackgroundTaskSettings settings)
         {
-            if (distributedLock is ILocalLock || settings.LockTimeout <= 0 || settings.LockExpiration <= 0)
+            if (distributedLock is ILocalLock || !settings.IsAtomic())
             {
                 return Task.FromResult<(ILocker, bool)>((null, true));
             }
 
             return distributedLock.TryAcquireLockAsync(
-                "BGT_" + settings.Name + "_LOCK",
+                settings.Name + "_LOCK",
                 TimeSpan.FromMilliseconds(settings.LockTimeout),
                 TimeSpan.FromMilliseconds(settings.LockExpiration));
         }
