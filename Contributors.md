@@ -1,7 +1,7 @@
 # Contributors ✨
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-223-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-224-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
@@ -308,6 +308,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
   </tr>
   <tr>
     <td align="center"><a href="https://github.com/valiantzhao"><img src="https://avatars3.githubusercontent.com/u/2221730?v=4" width="100px;" alt=""/><br /><sub><b>valiant.zhao</b></sub></a><br /><a href="#translation-valiantzhao" title="Translation">🌍</a></td>
+    <td align="center"><a href="https://github.com/WahidBitar"><img src="https://avatars0.githubusercontent.com/u/1735126?v=4" width="100px;" alt=""/><br /><sub><b>Wahid Bitar</b></sub></a><br /><a href="#translation-WahidBitar" title="Translation">🌍</a></td>
   </tr>
 </table>
 
