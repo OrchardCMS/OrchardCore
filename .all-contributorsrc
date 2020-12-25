@@ -2053,6 +2053,15 @@
       "contributions": [
         "translation"
       ]
+    },
+    {
+      "login": "rms81",
+      "name": "KamZone",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/1382857?v=4",
+      "profile": "http://umprogramador.net/",
+      "contributions": [
+        "translation"
+      ]
     }
   ],
   "skipCi": true
