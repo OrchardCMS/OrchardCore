@@ -34,8 +34,7 @@ namespace OrchardCore.Documents
             _distributedLock = distributedLock;
         }
 
-        public Task UpdateAtomicAsync(Func<Task<TDocument>> updateAsync, Func<TDocument, Task> afterUpdateAsync = null,
-            TimeSpan? lockAcquireTimeout = null, TimeSpan? lockExpirationTime = null)
+        public Task UpdateAtomicAsync(Func<Task<TDocument>> updateAsync, Func<TDocument, Task> afterUpdateAsync = null)
         {
             if (updateAsync == null)
             {
@@ -53,8 +52,8 @@ namespace OrchardCore.Documents
             {
                 (var locker, var locked) = await _distributedLock.TryAcquireLockAsync(
                     _options.CacheKey + "_LOCK",
-                    lockAcquireTimeout ?? TimeSpan.FromSeconds(10),
-                    lockExpirationTime ?? TimeSpan.FromSeconds(10));
+                    TimeSpan.FromMilliseconds(_options.LockTimeout),
+                    TimeSpan.FromMilliseconds(_options.LockExpiration));
 
                 if (!locked)
                 {
