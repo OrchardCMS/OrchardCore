@@ -5,7 +5,6 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
-using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Menu.Models;
@@ -15,21 +14,6 @@ namespace OrchardCore.Menu.Drivers
 {
     public class MenuPartDisplayDriver : ContentPartDisplayDriver<MenuPart>
     {
-        private readonly IContentManager _contentManager;
-        private readonly IServiceProvider _serviceProvider;
-        private readonly IContentDefinitionManager _contentDefinitionManager;
-
-        public MenuPartDisplayDriver(
-            IContentDefinitionManager contentDefinitionManager,
-            IContentManager contentManager,
-            IServiceProvider serviceProvider
-            )
-        {
-            _contentDefinitionManager = contentDefinitionManager;
-            _serviceProvider = serviceProvider;
-            _contentManager = contentManager;
-        }
-
         public override IDisplayResult Edit(MenuPart part)
         {
             return Initialize<MenuPartEditViewModel>("MenuPart_Edit", model =>
