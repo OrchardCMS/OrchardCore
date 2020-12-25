@@ -24,11 +24,11 @@ namespace OrchardCore.Lists.Services
         public ContainerService(
             YesSql.ISession session,
             IContentManager contentManager,
-            IHttpContextAccessor hca)
+            IHttpContextAccessor httpContextAccessor)
         {
             _session = session;
             _contentManager = contentManager;
-            _httpContextAccessor = hca;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public async Task<int> GetNextOrderNumberAsync(string contentItemId)
