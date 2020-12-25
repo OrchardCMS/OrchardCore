@@ -100,7 +100,7 @@ namespace OrchardCore.Taxonomies.Drivers
                     })
                     .Location("Actions:40." + position.ToString())
                     .Prefix("Taxonomy" + taxonomy.ContentItemId)
-                    .Differentiator("Taxonomy" + taxonomy.ContentItemId)
+                    .Differentiator(GetDifferentiator(taxonomy))
                 );
 
                 position += 5;
@@ -157,6 +157,60 @@ namespace OrchardCore.Taxonomies.Drivers
                     PopulateTermEntries(termEntries, children, level + 1);
                 }
             }
+        }
+               private static string GetDifferentiator(ContentItem contentItem)
+        {
+            var identifier = contentItem.Content.AliasPart?.Alias?.ToString() ?? contentItem.DisplayText ?? contentItem.ContentItemId;
+            var encodedIdentifier = EncodeAlternateElement(identifier);
+            var differentiator = FormatName(encodedIdentifier);
+            // ContentsAdminListTaxonomyFilter__[differentiator] e.g. ContentsAdminListTaxonomyFilter-Category
+            return "ContentsAdminListTaxonomyFilter__" + differentiator;
+        }
+        /// <summary>
+        /// Encodes dashed and dots so that they don't conflict in filenames
+        /// </summary>
+        /// <param name="alternateElement"></param>
+        /// <returns></returns>
+        private static string EncodeAlternateElement(string alternateElement)
+        {
+            return alternateElement.Replace("-", "__").Replace('.', '_');
+        }
+        /// <summary>
+        /// Converts "foo-ba r" to "FooBaR"
+        /// </summary>
+        private static string FormatName(string name)
+        {
+            if (String.IsNullOrEmpty(name))
+            {
+                return null;
+            }
+
+            name = name.Trim();
+            var nextIsUpper = true;
+            var result = new StringBuilder(name.Length);
+            for (var i = 0; i < name.Length; i++)
+            {
+                var c = name[i];
+
+                if (c == '-' || char.IsWhiteSpace(c))
+                {
+                    nextIsUpper = true;
+                    continue;
+                }
+
+                if (nextIsUpper)
+                {
+                    result.Append(c.ToString().ToUpper());
+                }
+                else
+                {
+                    result.Append(c);
+                }
+
+                nextIsUpper = false;
+            }
+
+            return result.ToString();
         }
     }
 
