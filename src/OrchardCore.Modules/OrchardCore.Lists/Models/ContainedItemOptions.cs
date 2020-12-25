@@ -3,6 +3,7 @@ namespace OrchardCore.Lists.Models
     public enum ContentsStatus
     {
         Published,
+        Latest,
         Draft,
         Owner
     }

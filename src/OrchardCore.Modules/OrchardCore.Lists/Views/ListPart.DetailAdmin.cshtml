@@ -5,7 +5,12 @@
 
 @inject OrchardCore.ContentManagement.Display.IContentItemDisplayManager ContentItemDisplayManager
 @{
-    var enableOrdering = Model.EnableOrdering && Model.ContentItems.Count() > 1;
+    var enableOrdering =
+        Model.EnableOrdering &&
+        Model.ContentItems.Count() > 1 &&
+        Model.ListPartFilterViewModel.Status == ContentsStatus.Latest &&
+        string.IsNullOrEmpty(Model.ListPartFilterViewModel.DisplayText);
+
     if (enableOrdering)
     {
         <script asp-src="~/OrchardCore.Lists/Scripts/ci-list-ordering.min.js" debug-src="~/OrchardCore.Lists/Scripts/ci-list-ordering.js" asp-name="ci-list-ordering" at="Foot" depends-on="sortable, jQuery"></script>
@@ -29,8 +34,8 @@ else
                             <button class="btn btn-sm dropdown-toggle" style="border:1px solid lightgrey" type="button" data-toggle="dropdown" id="filter-dropdown" aria-haspopup="true" aria-expanded="false">
                                 <i class="fa fa-filter" title="@T["Filters"]"></i>
                             </button>
-                            <div class="dropdown-menu @if (CultureInfo.CurrentUICulture.IsRightToLeft())
-                                {<text>dropdown-menu-right</text>}" aria-labelledby="filter-dropdown">
+                            <div class="dropdown-menu @if (CultureInfo.CurrentUICulture.IsRightToLeft()) {<text>dropdown-menu-right</text>}" aria-labelledby="filter-dropdown">
+                                @* Latest not surfaced here to be consistent with the main content items list filter. *@
                                 <a class="dropdown-item" href="?Status=Draft">@T["Only draft items"]</a>
                                 <a class="dropdown-item" href="?Status=Published">@T["Only published items"]</a>
                                 <a class="dropdown-item" href="?Status=Owner">@T["Owned by me"]</a>

@@ -368,11 +368,14 @@ namespace OrchardCore.Lists.Services
 
             switch (containedItemOptions.Status)
             {
-                case ContentsStatus.Draft:
-                    containedItems.With<ContentItemIndex>(i => !i.Published && i.Latest);
-                    break;
                 case ContentsStatus.Published:
                     containedItems.With<ContentItemIndex>(i => i.Published);
+                    break;
+                case ContentsStatus.Latest:
+                    containedItems.With<ContentItemIndex>(i => i.Latest);
+                    break;
+                case ContentsStatus.Draft:
+                    containedItems.With<ContentItemIndex>(i => !i.Published && i.Latest);
                     break;
                 case ContentsStatus.Owner:
                     var currentUserName = _httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier);

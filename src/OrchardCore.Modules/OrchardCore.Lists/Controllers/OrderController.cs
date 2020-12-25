@@ -57,7 +57,8 @@ namespace OrchardCore.Lists.Controllers
                 containerId,
                 true,
                 pager,
-                new ContainedItemOptions())).ToList();
+                new ContainedItemOptions { Status = ContentsStatus.Latest }))
+                .ToList();
 
             if (pageOfContentItems == null || !pageOfContentItems.Any())
             {
