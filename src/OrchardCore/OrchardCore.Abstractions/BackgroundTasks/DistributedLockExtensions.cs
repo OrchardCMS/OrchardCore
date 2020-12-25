@@ -12,7 +12,7 @@ namespace OrchardCore.BackgroundTasks
         /// </summary>
         public static Task<(ILocker locker, bool locked)> TryAcquireBackgroundTaskLockAsync(this IDistributedLock distributedLock, BackgroundTaskSettings settings)
         {
-            if (distributedLock is LocalLock || settings.LockTimeout <= 0 || settings.LockExpiration <= 0)
+            if (distributedLock is ILocalLock || settings.LockTimeout <= 0 || settings.LockExpiration <= 0)
             {
                 return Task.FromResult<(ILocker, bool)>((null, true));
             }
