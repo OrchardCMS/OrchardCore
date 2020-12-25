@@ -1999,6 +1999,15 @@
       "contributions": [
         "translation"
       ]
+    },
+    {
+      "login": "PimHwang",
+      "name": "Pim Hwang",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/3014302?v=4",
+      "profile": "http://www.coming.com.cn",
+      "contributions": [
+        "translation"
+      ]
     }
   ],
   "skipCi": true
