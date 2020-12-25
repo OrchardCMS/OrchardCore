@@ -1,7 +1,7 @@
 # Contributors ✨
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-222-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-223-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
@@ -305,6 +305,9 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <td align="center"><a href="http://umprogramador.net/"><img src="https://avatars1.githubusercontent.com/u/1382857?v=4" width="100px;" alt=""/><br /><sub><b>KamZone</b></sub></a><br /><a href="#translation-rms81" title="Translation">🌍</a></td>
     <td align="center"><a href="https://www.tommisaaskilahti.fi"><img src="https://avatars2.githubusercontent.com/u/49377661?v=4" width="100px;" alt=""/><br /><sub><b>Tommi Sääskilahti</b></sub></a><br /><a href="#translation-cesspoolK" title="Translation">🌍</a></td>
     <td align="center"><a href="http://www.burgan-systems.com"><img src="https://avatars2.githubusercontent.com/u/29854720?v=4" width="100px;" alt=""/><br /><sub><b>Bnis Profile</b></sub></a><br /><a href="#translation-rgcode2012" title="Translation">🌍</a></td>
+  </tr>
+  <tr>
+    <td align="center"><a href="https://github.com/valiantzhao"><img src="https://avatars3.githubusercontent.com/u/2221730?v=4" width="100px;" alt=""/><br /><sub><b>valiant.zhao</b></sub></a><br /><a href="#translation-valiantzhao" title="Translation">🌍</a></td>
   </tr>
 </table>
 
