@@ -15663,7 +15663,7 @@
       top: 10px; }
     @media (max-width: 575.98px) {
       :root[data-theme='default'] .ta-navbar-top h1 {
-        max-width: 220px;
+        max-width: 180px;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis; } }
@@ -32343,7 +32343,7 @@
       top: 10px; }
     @media (max-width: 575.98px) {
       :root[data-theme='darkmode'] .ta-navbar-top h1 {
-        max-width: 220px;
+        max-width: 180px;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis; } }
