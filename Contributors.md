@@ -1,7 +1,7 @@
 # Contributors ✨
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-217-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-218-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
@@ -300,6 +300,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
   </tr>
   <tr>
     <td align="center"><a href="https://github.com/npietron"><img src="https://avatars1.githubusercontent.com/u/17119997?v=4" width="100px;" alt=""/><br /><sub><b>npietron</b></sub></a><br /><a href="#translation-npietron" title="Translation">🌍</a></td>
+    <td align="center"><a href="http://www.fmtv365.com"><img src="https://avatars0.githubusercontent.com/u/8943258?v=4" width="100px;" alt=""/><br /><sub><b>nianjitao</b></sub></a><br /><a href="#translation-NianJiTao" title="Translation">🌍</a></td>
   </tr>
 </table>
 
