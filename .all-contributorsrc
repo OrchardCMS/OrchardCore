@@ -1962,6 +1962,15 @@
       "contributions": [
         "translation"
       ]
+    },
+    {
+      "login": "MarcBruins",
+      "name": "Marc Bruins",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/676025?v=4",
+      "profile": "http://www.marcbruins.nl",
+      "contributions": [
+        "translation"
+      ]
     }
   ],
   "skipCi": true
