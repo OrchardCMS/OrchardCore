@@ -2116,6 +2116,15 @@
       "contributions": [
         "translation"
       ]
+    },
+    {
+      "login": "nadavhury",
+      "name": "Nadav Hury",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/1974430?v=4",
+      "profile": "https://github.com/nadavhury",
+      "contributions": [
+        "translation"
+      ]
     }
   ],
   "skipCi": true
