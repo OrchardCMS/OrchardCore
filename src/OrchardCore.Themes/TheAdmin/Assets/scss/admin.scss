@@ -20,6 +20,8 @@
     @import "modules/admin/_jquery-ui.scss";
 
     @import "modules/theme/default/_bootswatch.scss";
+
+    height: 100%;
 }
 
 :root[data-theme='darkmode'] {
@@ -44,4 +46,6 @@
     @import "modules/admin/_jquery-ui.scss";
 
     @import "modules/theme/darkmode/_bootswatch.scss";
+
+    height: 100%;
 }

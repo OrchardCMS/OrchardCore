@@ -8,10 +8,23 @@
 
 .ta-navbar-top {
     @extend .navbar-light;
+    color: $gray-800;
+
+    a {
+        color: $gray-700;
+        text-decoration: none;
+    }
 }
 
 .ta-badge {
     @extend .badge-light;
+}
+
+.ta-navbar-brand {
+    span:last-child {
+        font-weight: bold;
+        color: $gray-700;
+    }
 }
 
 @import "../../admin/_list.scss";
