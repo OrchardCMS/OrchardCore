@@ -150,7 +150,11 @@ namespace OrchardCore.Lists.Services
             }
         }
 
-        public async Task<IEnumerable<ContentItem>> QueryContainedItemsAsync(string contentItemId, bool enableOrdering, PagerSlim pager, ContainedItemOptions containedItemOptions)
+        public async Task<IEnumerable<ContentItem>> QueryContainedItemsAsync(
+            string contentItemId,
+            bool enableOrdering,
+            PagerSlim pager,
+            ContainedItemOptions containedItemOptions)
         {
             if (containedItemOptions == null)
             {
@@ -164,9 +168,9 @@ namespace OrchardCore.Lists.Services
                 {
                     var beforeValue = int.Parse(pager.Before);
                     query = _session.Query<ContentItem>()
-                        .With<ContainedPartIndex>(CreateOrderedContainedPartIndexFilter(beforeValue, null, contentItemId))
+                        .With(CreateOrderedContainedPartIndexFilter(beforeValue, null, contentItemId))
                         .OrderByDescending(x => x.Order)
-                        .With<ContentItemIndex>(CreateOrderedContentIndexFilter(containedItemOptions.Status))
+                        .With(CreateOrderedContentIndexFilter(containedItemOptions.Status))
                         .Take(pager.PageSize + 1);
                 }
                 else
@@ -174,7 +178,7 @@ namespace OrchardCore.Lists.Services
                     var beforeValue = new DateTime(long.Parse(pager.Before));
                     query = _session.Query<ContentItem>()
                         .With<ContainedPartIndex>(x => x.ListContentItemId == contentItemId)
-                        .With<ContentItemIndex>(CreateDefaultContentIndexFilter(beforeValue, null, containedItemOptions.Status))
+                        .With(CreateDefaultContentIndexFilter(beforeValue, null, containedItemOptions.Status))
                         .OrderBy(x => x.CreatedUtc)
                         .Take(pager.PageSize + 1);
                 }
@@ -221,17 +225,17 @@ namespace OrchardCore.Lists.Services
                 {
                     var afterValue = int.Parse(pager.After);
                     query = _session.Query<ContentItem>()
-                        .With<ContainedPartIndex>(CreateOrderedContainedPartIndexFilter(null, afterValue, contentItemId))
+                        .With(CreateOrderedContainedPartIndexFilter(null, afterValue, contentItemId))
                         .OrderBy(x => x.Order)
-                        .With<ContentItemIndex>(CreateOrderedContentIndexFilter(containedItemOptions.Status))
+                        .With(CreateOrderedContentIndexFilter(containedItemOptions.Status))
                         .Take(pager.PageSize + 1);
                 }
                 else
                 {
                     var afterValue = new DateTime(long.Parse(pager.After));
                     query = _session.Query<ContentItem>()
-                        .With<ContainedPartIndex>(CreateOrderedContainedPartIndexFilter(null, null, contentItemId))
-                        .With<ContentItemIndex>(CreateDefaultContentIndexFilter(null, afterValue, containedItemOptions.Status))
+                        .With(CreateOrderedContainedPartIndexFilter(null, null, contentItemId))
+                        .With(CreateDefaultContentIndexFilter(null, afterValue, containedItemOptions.Status))
                         .OrderByDescending(x => x.CreatedUtc)
                         .Take(pager.PageSize + 1);
                 }
@@ -276,16 +280,16 @@ namespace OrchardCore.Lists.Services
                 if (enableOrdering)
                 {
                     query = _session.Query<ContentItem>()
-                        .With<ContainedPartIndex>(CreateOrderedContainedPartIndexFilter(null, null, contentItemId))
+                        .With(CreateOrderedContainedPartIndexFilter(null, null, contentItemId))
                         .OrderBy(x => x.Order)
-                        .With<ContentItemIndex>(CreateOrderedContentIndexFilter(containedItemOptions.Status))
+                        .With(CreateOrderedContentIndexFilter(containedItemOptions.Status))
                         .Take(pager.PageSize + 1);
                 }
                 else
                 {
                     query = _session.Query<ContentItem>()
                         .With<ContainedPartIndex>(x => x.ListContentItemId == contentItemId)
-                        .With<ContentItemIndex>(CreateDefaultContentIndexFilter(null, null, containedItemOptions.Status))
+                        .With(CreateDefaultContentIndexFilter(null, null, containedItemOptions.Status))
                         .OrderByDescending(x => x.CreatedUtc)
                         .Take(pager.PageSize + 1);
                 }
