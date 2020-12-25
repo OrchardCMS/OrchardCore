@@ -154,7 +154,7 @@ namespace OrchardCore.Lists.Services
         {
             if (containedItemOptions == null)
             {
-                throw new NullReferenceException();
+                throw new ArgumentNullException(nameof(containedItemOptions));
             }
 
             IQuery<ContentItem> query = null;
