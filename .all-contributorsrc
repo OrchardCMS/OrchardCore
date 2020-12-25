@@ -2071,6 +2071,15 @@
       "contributions": [
         "translation"
       ]
+    },
+    {
+      "login": "rgcode2012",
+      "name": "Bnis Profile",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/29854720?v=4",
+      "profile": "http://www.burgan-systems.com",
+      "contributions": [
+        "translation"
+      ]
     }
   ],
   "skipCi": true
