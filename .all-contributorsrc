@@ -2062,6 +2062,15 @@
       "contributions": [
         "translation"
       ]
+    },
+    {
+      "login": "cesspoolK",
+      "name": "Tommi Sääskilahti",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/49377661?v=4",
+      "profile": "https://www.tommisaaskilahti.fi",
+      "contributions": [
+        "translation"
+      ]
     }
   ],
   "skipCi": true
