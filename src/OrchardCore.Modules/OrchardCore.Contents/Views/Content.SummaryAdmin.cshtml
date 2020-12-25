@@ -6,7 +6,7 @@
 }
 
 <div class="row">
-    <div class="col-lg-9 col-sm-12 title">
+    <div class="col-lg-6 col-sm-12 title">
         @if (Model.Selectors != null)
         {
             <div class="selectors d-inline cursor-pointer">
@@ -41,7 +41,7 @@
             <div class="d-inline">@await DisplayAsync(Model.Meta)</div>
         }
     </div>
-    <div class="col-lg-3 col-sm-12">
+    <div class="col-lg-6 col-sm-12">
         <div class="float-right">
             @if (Model.Actions != null)
             {
@@ -50,8 +50,8 @@
             @if (Model.ActionsMenu != null)
             {
                 <div class="btn-group" title="@T["Actions"]">
-                    <button type="button" class="btn btn-sm text-secondary" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <i class="fa fa-ellipsis-v"></i>
+                    <button type="button" class="btn btn-sm btn-secondary dropdown-toggle actions" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <span>@T["Actions"]</span>
                     </button>
                     <div class="actions-menu dropdown-menu dropdown-menu-right">
                         @await DisplayAsync(Model.ActionsMenu)
