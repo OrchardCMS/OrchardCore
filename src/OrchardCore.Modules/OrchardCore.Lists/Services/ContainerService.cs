@@ -379,7 +379,7 @@ namespace OrchardCore.Lists.Services
 
                     if (currentUserName != null)
                     {
-                        containedItems.With<ContentItemIndex>(i => i.Owner == currentUserName.ToString());
+                        containedItems.With<ContentItemIndex>(i => i.Owner == currentUserName);
                     }
 
                     break;
