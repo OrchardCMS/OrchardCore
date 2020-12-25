@@ -1981,6 +1981,15 @@
       "contributions": [
         "translation"
       ]
+    },
+    {
+      "login": "mdameer",
+      "name": "Mohammad Dameer",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/2022320?v=4",
+      "profile": "http://www.mdameer.com",
+      "contributions": [
+        "translation"
+      ]
     }
   ],
   "skipCi": true
