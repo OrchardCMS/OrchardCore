@@ -11,7 +11,7 @@ namespace OrchardCore.Locking
     /// <summary>
     /// This component is a tenant singleton which allows to acquire named locks for a given tenant.
     /// </summary>
-    public class LocalLock : IDistributedLock, IDisposable
+    public class LocalLock : IDistributedLock, ILocalLock, IDisposable
     {
         private readonly ILogger _logger;
 
