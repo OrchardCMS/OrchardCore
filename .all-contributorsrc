@@ -2044,6 +2044,15 @@
       "contributions": [
         "translation"
       ]
+    },
+    {
+      "login": "praedo",
+      "name": "Maksim Zhdan",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/3378144?v=4",
+      "profile": "http://praedo.ru",
+      "contributions": [
+        "translation"
+      ]
     }
   ],
   "skipCi": true
