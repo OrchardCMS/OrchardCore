@@ -2107,6 +2107,15 @@
       "contributions": [
         "translation"
       ]
+    },
+    {
+      "login": "KhoiNguyenICT",
+      "name": "khoinguyenict",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/25011643?v=4",
+      "profile": "https://github.com/KhoiNguyenICT",
+      "contributions": [
+        "translation"
+      ]
     }
   ],
   "skipCi": true
