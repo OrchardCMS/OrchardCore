@@ -108,6 +108,17 @@ namespace OrchardCore.Modules
                         break;
                     }
 
+                    var distributedLock = shell.ServiceProvider.GetRequiredService<IDistributedLock>();
+
+                    (var locker, var locked) = await distributedLock.TryAcquireBackgroundTaskLockAsync(scheduler.Settings);
+                    if (!locked)
+                    {
+                        _logger.LogInformation("Timeout to acquire a lock on background task '{TaskName}' on tenant '{TenantName}'.", scheduler.Name, tenant);
+                        return;
+                    }
+
+                    await using var acquiredLock = locker;
+
                     await shellScope.UsingAsync(async scope =>
                     {
                         var taskName = scheduler.Name;
@@ -124,18 +135,6 @@ namespace OrchardCore.Modules
                             _logger.LogInformation("Start processing background task '{TaskName}' on tenant '{TenantName}'.", taskName, tenant);
 
                             scheduler.Run();
-
-                            var distributedLock = scope.ServiceProvider.GetRequiredService<IDistributedLock>();
-
-                            (var locker, var locked) = await distributedLock.TryAcquireBackgroundTaskLockAsync(scheduler.Settings);
-                            if (!locked)
-                            {
-                                _logger.LogInformation("Timeout to acquire a lock on background task '{TaskName}' on tenant '{TenantName}'.", taskName, tenant);
-                                return;
-                            }
-
-                            await using var acquiredLock = locker;
-
                             await task.DoWorkAsync(scope.ServiceProvider, stoppingToken);
 
                             _logger.LogInformation("Finished processing background task '{TaskName}' on tenant '{TenantName}'.", taskName, tenant);
