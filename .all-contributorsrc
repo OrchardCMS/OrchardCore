@@ -2098,6 +2098,15 @@
       "contributions": [
         "translation"
       ]
+    },
+    {
+      "login": "alexzcx",
+      "name": "Alex Zhao",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/5806994?v=4",
+      "profile": "https://github.com/alexzcx",
+      "contributions": [
+        "translation"
+      ]
     }
   ],
   "skipCi": true
