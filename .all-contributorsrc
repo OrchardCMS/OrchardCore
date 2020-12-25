@@ -1990,6 +1990,15 @@
       "contributions": [
         "translation"
       ]
+    },
+    {
+      "login": "axunonb",
+      "name": "axunonb",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/10255664?v=4",
+      "profile": "https://www.axuno.net",
+      "contributions": [
+        "translation"
+      ]
     }
   ],
   "skipCi": true
