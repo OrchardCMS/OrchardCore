@@ -1,7 +1,7 @@
 # Contributors ✨
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-210-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-211-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
@@ -289,6 +289,9 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <td align="center"><a href="https://github.com/tropcicstefan"><img src="https://avatars1.githubusercontent.com/u/30324480?v=4" width="100px;" alt=""/><br /><sub><b>tropcicstefan</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=tropcicstefan" title="Code">💻</a></td>
     <td align="center"><a href="http://www.neuhold.pro"><img src="https://avatars1.githubusercontent.com/u/698992?v=4" width="100px;" alt=""/><br /><sub><b>Benedikt Neuhold</b></sub></a><br /><a href="#translation-benschi11" title="Translation">🌍</a></td>
     <td align="center"><a href="http://www.marcbruins.nl"><img src="https://avatars1.githubusercontent.com/u/676025?v=4" width="100px;" alt=""/><br /><sub><b>Marc Bruins</b></sub></a><br /><a href="#translation-MarcBruins" title="Translation">🌍</a></td>
+  </tr>
+  <tr>
+    <td align="center"><a href="https://github.com/Malaprade"><img src="https://avatars0.githubusercontent.com/u/18284078?v=4" width="100px;" alt=""/><br /><sub><b>Jarno Malaprade</b></sub></a><br /><a href="#translation-Malaprade" title="Translation">🌍</a></td>
   </tr>
 </table>
 

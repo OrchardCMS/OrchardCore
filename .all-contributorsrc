@@ -1971,6 +1971,15 @@
       "contributions": [
         "translation"
       ]
+    },
+    {
+      "login": "Malaprade",
+      "name": "Jarno Malaprade",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/18284078?v=4",
+      "profile": "https://github.com/Malaprade",
+      "contributions": [
+        "translation"
+      ]
     }
   ],
   "skipCi": true
