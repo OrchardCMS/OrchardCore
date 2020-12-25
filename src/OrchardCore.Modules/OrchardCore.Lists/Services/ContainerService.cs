@@ -183,7 +183,7 @@ namespace OrchardCore.Lists.Services
                         .Take(pager.PageSize + 1);
                 }
 
-                query = ContainedItemOptionsFilter(containedItemOptions, query);
+                query = CreateContainedItemOptionsFilter(containedItemOptions, query);
 
                 var containedItems = await query.ListAsync();
 
@@ -240,7 +240,7 @@ namespace OrchardCore.Lists.Services
                         .Take(pager.PageSize + 1);
                 }
 
-                query = ContainedItemOptionsFilter(containedItemOptions, query);
+                query = CreateContainedItemOptionsFilter(containedItemOptions, query);
 
                 var containedItems = await query.ListAsync();
 
@@ -294,7 +294,7 @@ namespace OrchardCore.Lists.Services
                         .Take(pager.PageSize + 1);
                 }
 
-                query = ContainedItemOptionsFilter(containedItemOptions, query);
+                query = CreateContainedItemOptionsFilter(containedItemOptions, query);
 
                 var containedItems = await query.ListAsync();
 
@@ -359,7 +359,7 @@ namespace OrchardCore.Lists.Services
             }
         }
 
-        private IQuery<ContentItem> ContainedItemOptionsFilter(ContainedItemOptions containedItemOptions, IQuery<ContentItem> containedItems)
+        private IQuery<ContentItem> CreateContainedItemOptionsFilter(ContainedItemOptions containedItemOptions, IQuery<ContentItem> containedItems)
         {
             if (!string.IsNullOrEmpty(containedItemOptions.DisplayText))
             {
