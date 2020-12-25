@@ -11,10 +11,16 @@
         font-weight: bold;
         position: absolute;
         top: 10px;
-        max-width: 220px;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
+    }
+
+    @include media-breakpoint-down(xs) {
+
+        h1 {
+            max-width: 220px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
     }
 
     .nav-link {

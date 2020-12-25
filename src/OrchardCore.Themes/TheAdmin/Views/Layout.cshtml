@@ -62,31 +62,32 @@
                 </div>
             </div>
         </div>
-    </div>
 
-    <div id="ta-left-sidebar" class="d-flex flex-column justify-content-between align-items-stretch">
-        @await RenderSectionAsync("Navigation", required: false)
-        <div class="footer">
-            <button class="leftbar-compactor" type="button" title="@T["Collapse / expand menu"]"></button>
+
+        <div id="ta-left-sidebar" class="d-flex flex-column justify-content-between align-items-stretch">
+            @await RenderSectionAsync("Navigation", required: false)
+            <div class="footer">
+                <button class="leftbar-compactor" type="button" title="@T["Collapse / expand menu"]"></button>
+            </div>
         </div>
+
+        <div class="ta-content flex-fill">
+            @await RenderSectionAsync("Header", required: false)
+            @await RenderSectionAsync("Messages", required: false)
+            @await RenderSectionAsync("Breadcrumbs", required: false)
+            @if (!adminSettings.DisplayTitlesInTopbar)
+            {
+                @await RenderSectionAsync("Title", required: false)
+            }
+            @await RenderBodyAsync()
+        </div>
+        </div>
+
+        @await RenderSectionAsync("Footer", required: false)
+
+        <div id="confirmRemoveModalMetadata" data-title="@T["Delete"]" data-message="@T["Are you sure you want to remove this element?"]" data-ok-text="@T["Ok"]" data-cancel-text="@T["Cancel"]" data-ok-class="btn-danger" data-cancel-class="btn-secondary"></div>
+
+        <resources type="Footer" />
     </div>
-
-    <div class="ta-content">
-        @await RenderSectionAsync("Header", required: false)
-        @await RenderSectionAsync("Messages", required: false)
-        @await RenderSectionAsync("Breadcrumbs", required: false)
-        @if (!adminSettings.DisplayTitlesInTopbar)
-        {
-            @await RenderSectionAsync("Title", required: false)
-        }
-        @await RenderBodyAsync()
-    </div>
-    </div>
-
-    @await RenderSectionAsync("Footer", required: false)
-
-    <div id="confirmRemoveModalMetadata" data-title="@T["Delete"]" data-message="@T["Are you sure you want to remove this element?"]" data-ok-text="@T["Ok"]" data-cancel-text="@T["Cancel"]" data-ok-class="btn-danger" data-cancel-class="btn-secondary"></div>
-
-    <resources type="Footer" />
 </body>
 </html>
