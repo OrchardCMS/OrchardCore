@@ -5,11 +5,12 @@ namespace OrchardCore.Resources
     public class ResourceManifest : IResourceManifestProvider
     {
         // CDNs
+        private const string cloudflareUrl = "https://cdnjs.cloudflare.com/ajax/libs/";
         private const string jsDelivrUrl = "https://cdn.jsdelivr.net/npm/";
         // Versions
         private const string codeMirrorVersion = "5.59.0";
         // URLs
-        private const string codeMirrorUrl = jsDelivrUrl + "codemirror@" + codeMirrorVersion + "/";
+        private const string codeMirrorUrl = cloudflareUrl + "codemirror/" + codeMirrorVersion + "/"; //jsDelivrUrl + "codemirror@" + codeMirrorVersion + "/";
 
         public void BuildManifests(IResourceManifestBuilder builder)
         {
