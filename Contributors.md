@@ -1,7 +1,7 @@
 # Contributors ✨
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-208-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-209-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
@@ -287,6 +287,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <td align="center"><a href="https://www.linoa.com"><img src="https://avatars1.githubusercontent.com/u/17902415?v=4" width="100px;" alt=""/><br /><sub><b>Julien Chomarat</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=juchom" title="Documentation">📖</a></td>
     <td align="center"><a href="https://github.com/3bit"><img src="https://avatars1.githubusercontent.com/u/1174592?v=4" width="100px;" alt=""/><br /><sub><b>Achim Gmeiner</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=3bit" title="Code">💻</a></td>
     <td align="center"><a href="https://github.com/tropcicstefan"><img src="https://avatars1.githubusercontent.com/u/30324480?v=4" width="100px;" alt=""/><br /><sub><b>tropcicstefan</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=tropcicstefan" title="Code">💻</a></td>
+    <td align="center"><a href="http://www.neuhold.pro"><img src="https://avatars1.githubusercontent.com/u/698992?v=4" width="100px;" alt=""/><br /><sub><b>Benedikt Neuhold</b></sub></a><br /><a href="#translation-benschi11" title="Translation">🌍</a></td>
   </tr>
 </table>
 

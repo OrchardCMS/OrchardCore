@@ -1953,6 +1953,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "benschi11",
+      "name": "Benedikt Neuhold",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/698992?v=4",
+      "profile": "http://www.neuhold.pro",
+      "contributions": [
+        "translation"
+      ]
     }
   ],
   "skipCi": true
