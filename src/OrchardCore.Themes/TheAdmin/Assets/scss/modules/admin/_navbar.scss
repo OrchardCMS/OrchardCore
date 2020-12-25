@@ -56,6 +56,16 @@
     }
 }
 
+body:not(.left-sidebar-compact) {
+    @include media-breakpoint-down(sm) {
+        .ta-navbar-top {
+            h1 {
+                display: none;
+            }
+        }
+    }
+}
+
 .ta-navbar-brand {
     @extend .navbar-brand;
     overflow: hidden;
