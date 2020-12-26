@@ -47,8 +47,11 @@ namespace OrchardCore.Locking
                 return (new Locker(this, semaphore, expiration), true);
             }
 
-            _logger.LogWarning("Fails to acquire the named lock '{LockName}' after the given timeout of '{Timeout}'.",
-                key, timeout.ToString());
+            if (_logger.IsEnabled(LogLevel.Debug))
+            {
+                _logger.LogWarning("Timeout elapsed before acquiring the named lock '{LockName}' after the given timeout of '{Timeout}'.",
+                    key, timeout.ToString());
+            }
 
             return (null, false);
         }
