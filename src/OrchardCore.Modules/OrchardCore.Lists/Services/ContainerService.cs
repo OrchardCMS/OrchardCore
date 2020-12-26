@@ -169,21 +169,22 @@ namespace OrchardCore.Lists.Services
                     var beforeValue = int.Parse(pager.Before);
                     query = _session.Query<ContentItem>()
                         .With(CreateOrderedContainedPartIndexFilter(beforeValue, null, contentItemId))
-                        .OrderByDescending(x => x.Order)
-                        .With(CreateOrderedContentIndexFilter(containedItemOptions.Status))
-                        .Take(pager.PageSize + 1);
+                        .OrderByDescending(x => x.Order);
                 }
                 else
                 {
                     var beforeValue = new DateTime(long.Parse(pager.Before));
                     query = _session.Query<ContentItem>()
-                        .With<ContainedPartIndex>(x => x.ListContentItemId == contentItemId)
-                        .With(CreateDefaultContentIndexFilter(beforeValue, null, containedItemOptions.Status))
-                        .OrderBy(x => x.CreatedUtc)
-                        .Take(pager.PageSize + 1);
+                        .With<ContainedPartIndex>(x => x.ListContentItemId == contentItemId);
+
+                    ApplyPagingContentIndexFilter(beforeValue, null, true, query);
                 }
 
-                query = CreateContainedItemOptionsFilter(containedItemOptions, query);
+                ApplyContainedItemOptionsFilter(containedItemOptions, query);
+
+                // Take() needs to be the last expression in the query otherwise the ORDER BY clause will be
+                // syntactically incorrect.
+                query.Take(pager.PageSize + 1);
 
                 var containedItems = await query.ListAsync();
 
@@ -226,21 +227,20 @@ namespace OrchardCore.Lists.Services
                     var afterValue = int.Parse(pager.After);
                     query = _session.Query<ContentItem>()
                         .With(CreateOrderedContainedPartIndexFilter(null, afterValue, contentItemId))
-                        .OrderBy(x => x.Order)
-                        .With(CreateOrderedContentIndexFilter(containedItemOptions.Status))
-                        .Take(pager.PageSize + 1);
+                        .OrderBy(x => x.Order);
                 }
                 else
                 {
                     var afterValue = new DateTime(long.Parse(pager.After));
                     query = _session.Query<ContentItem>()
-                        .With(CreateOrderedContainedPartIndexFilter(null, null, contentItemId))
-                        .With(CreateDefaultContentIndexFilter(null, afterValue, containedItemOptions.Status))
-                        .OrderByDescending(x => x.CreatedUtc)
-                        .Take(pager.PageSize + 1);
+                        .With(CreateOrderedContainedPartIndexFilter(null, null, contentItemId));
+
+                    ApplyPagingContentIndexFilter(null, afterValue, false, query);
                 }
 
-                query = CreateContainedItemOptionsFilter(containedItemOptions, query);
+                ApplyContainedItemOptionsFilter(containedItemOptions, query);
+
+                query.Take(pager.PageSize + 1);
 
                 var containedItems = await query.ListAsync();
 
@@ -281,20 +281,19 @@ namespace OrchardCore.Lists.Services
                 {
                     query = _session.Query<ContentItem>()
                         .With(CreateOrderedContainedPartIndexFilter(null, null, contentItemId))
-                        .OrderBy(x => x.Order)
-                        .With(CreateOrderedContentIndexFilter(containedItemOptions.Status))
-                        .Take(pager.PageSize + 1);
+                        .OrderBy(x => x.Order);
                 }
                 else
                 {
                     query = _session.Query<ContentItem>()
-                        .With<ContainedPartIndex>(x => x.ListContentItemId == contentItemId)
-                        .With(CreateDefaultContentIndexFilter(null, null, containedItemOptions.Status))
-                        .OrderByDescending(x => x.CreatedUtc)
-                        .Take(pager.PageSize + 1);
+                        .With<ContainedPartIndex>(x => x.ListContentItemId == contentItemId);
+
+                    ApplyPagingContentIndexFilter(null, null, false, query);
                 }
 
-                query = CreateContainedItemOptionsFilter(containedItemOptions, query);
+                ApplyContainedItemOptionsFilter(containedItemOptions, query);
+
+                query.Take(pager.PageSize + 1);
 
                 var containedItems = await query.ListAsync();
 
@@ -323,85 +322,59 @@ namespace OrchardCore.Lists.Services
             }
         }
 
-        private static Expression<Func<ContentItemIndex, bool>> CreateDefaultContentIndexFilter(DateTime? before, DateTime? after, ContentsStatus contentsStatus)
+        private static void ApplyPagingContentIndexFilter(DateTime? before, DateTime? after, bool orderByAsc, IQuery<ContentItem> query)
         {
+            var indexQuery = query.With<ContentItemIndex>();
+
             if (before != null)
             {
-                if (contentsStatus == ContentsStatus.Published)
-                {
-                    return x => x.Published && x.CreatedUtc > before;
-                }
-                else
-                {
-                    return x => x.Latest && x.CreatedUtc > before;
-                }
+                indexQuery.Where(i => i.CreatedUtc > before);
             }
 
             if (after != null)
             {
-                if (contentsStatus == ContentsStatus.Published)
-                {
-                    return x => x.Published && x.CreatedUtc < after;
-                }
-                else
-                {
-                    return x => x.Latest && x.CreatedUtc < after;
-                }
+                indexQuery.Where(i => i.CreatedUtc < after);
             }
 
-            if (contentsStatus == ContentsStatus.Published)
+            if (orderByAsc)
             {
-                return x => x.Published;
+                indexQuery.OrderBy(i => i.CreatedUtc);
             }
             else
             {
-                return x => x.Latest;
+                indexQuery.OrderByDescending(i => i.CreatedUtc);
             }
         }
 
-        private IQuery<ContentItem> CreateContainedItemOptionsFilter(ContainedItemOptions containedItemOptions, IQuery<ContentItem> containedItems)
+        private void ApplyContainedItemOptionsFilter(ContainedItemOptions containedItemOptions, IQuery<ContentItem> query)
         {
             if (!string.IsNullOrEmpty(containedItemOptions.DisplayText))
             {
-                containedItems.With<ContentItemIndex>(i => i.DisplayText.Contains(containedItemOptions.DisplayText));
+                query.With<ContentItemIndex>(i => i.DisplayText.Contains(containedItemOptions.DisplayText));
             }
 
             switch (containedItemOptions.Status)
             {
                 case ContentsStatus.Published:
-                    containedItems.With<ContentItemIndex>(i => i.Published);
+                    query.With<ContentItemIndex>(i => i.Published);
                     break;
                 case ContentsStatus.Latest:
-                    containedItems.With<ContentItemIndex>(i => i.Latest);
+                    query.With<ContentItemIndex>(i => i.Latest);
                     break;
                 case ContentsStatus.Draft:
-                    containedItems.With<ContentItemIndex>(i => !i.Published && i.Latest);
+                    query.With<ContentItemIndex>(i => !i.Published && i.Latest);
                     break;
                 case ContentsStatus.Owner:
                     var currentUserName = _httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier);
 
                     if (currentUserName != null)
                     {
-                        containedItems.With<ContentItemIndex>(i => i.Owner == currentUserName);
+                        query.With<ContentItemIndex>(i => i.Owner == currentUserName);
                     }
 
                     break;
                 default:
                     throw new NotSupportedException("Unknown status filter.");
-            }
-
-            return containedItems;
-        }
-
-        private static Expression<Func<ContentItemIndex, bool>> CreateOrderedContentIndexFilter(ContentsStatus contentsStatus)
-        {
-            if (contentsStatus == ContentsStatus.Published)
-            {
-                return x => x.Published;
-            }
-            else
-            {
-                return x => x.Latest;
             }
         }
 
