@@ -34,7 +34,7 @@ namespace OrchardCore.Documents.Options
 
                 options.Serializer = DefaultDocumentSerializer.Instance;
 
-                if (options.CompressThreshold <= 0)
+                if (options.CompressThreshold == 0)
                 {
                     options.CompressThreshold = 10_000;
                 }
@@ -60,6 +60,8 @@ namespace OrchardCore.Documents.Options
             options.SynchronizationLatency = config.SynchronizationLatency;
             options.Serializer = config.Serializer;
             options.CompressThreshold = config.CompressThreshold;
+
+            // Only used by an explicit atomic update.
             options.LockTimeout = config.LockTimeout;
             options.LockExpiration = config.LockExpiration;
         }
