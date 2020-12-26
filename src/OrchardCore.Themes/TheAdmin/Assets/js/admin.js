@@ -51,7 +51,7 @@ $(function () {
         var _this = $(this);
         if(_this.filter("a[itemprop~='UnsafeUrl']").length == 1)
         {
-            console.log('Please use data-url-af instead of itemprop attribute for confirm modals. Using itemprop will eventually become deprecated.')
+            console.warn('Please use data-url-af instead of itemprop attribute for confirm modals. Using itemprop will eventually become deprecated.')
         }
         // don't show the confirm dialog if the link is also UnsafeUrl, as it will already be handled below.
         if (_this.filter("[data-url-af~='UnsafeUrl'], a[itemprop~='UnsafeUrl']").length == 1) {
@@ -84,7 +84,7 @@ $(function () {
             var _this = $(this);
             if(_this.filter("a[itemprop~='UnsafeUrl']").length == 1)
             {
-                console.log('Please use data-url-af instead of itemprop attribute for confirm modals. Using itemprop will eventually become deprecated.')
+                console.warn('Please use data-url-af instead of itemprop attribute for confirm modals. Using itemprop will eventually become deprecated.')
             }
             var hrefParts = _this.attr("href").split("?");
             var form = $("<form action=\"" + hrefParts[0] + "\" method=\"POST\" />");
