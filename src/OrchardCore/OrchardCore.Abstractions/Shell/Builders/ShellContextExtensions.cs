@@ -20,19 +20,21 @@ namespace OrchardCore.Environment.Shell.Builders
                 ? (ILock)shellContext.ServiceProvider.GetRequiredService<ILocalLock>()
                 : shellContext.ServiceProvider.GetRequiredService<IDistributedLock>();
 
-            // If it is a local lock, use a maximum timeout without any expiration.
-            if (lockService is ILocalLock localLock)
+            TimeSpan timeout, expiration;
+            if (lockService is ILocalLock)
             {
-                return localLock.TryAcquireLockAsync("SHELL_ACTIVATE_LOCK", TimeSpan.MaxValue);
+                // If it is a local lock, don't use any timeout and expiration.
+                timeout = expiration = TimeSpan.MaxValue;
+            }
+            else
+            {
+                // If it is a distributed lock, use the configured timeout and expiration.
+                var options = shellContext.ServiceProvider.GetRequiredService<IOptions<ShellContextOptions>>();
+                timeout = TimeSpan.FromMilliseconds(options.Value.ShellActivateLockTimeout);
+                expiration = TimeSpan.FromMilliseconds(options.Value.ShellActivateLockExpiration);
             }
 
-            // If it is a distributed lock, use the configured timeout and expiration.
-            var options = shellContext.ServiceProvider.GetRequiredService<IOptions<ShellContextOptions>>().Value;
-
-            return lockService.TryAcquireLockAsync(
-                "SHELL_ACTIVATE_LOCK",
-                TimeSpan.FromMilliseconds(options.ShellActivateLockTimeout),
-                TimeSpan.FromMilliseconds(options.ShellActivateLockExpiration));
+            return lockService.TryAcquireLockAsync("SHELL_ACTIVATE_LOCK", timeout, expiration);
         }
     }
 }
