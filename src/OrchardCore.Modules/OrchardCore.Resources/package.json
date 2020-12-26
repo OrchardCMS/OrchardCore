@@ -11,6 +11,7 @@
     "jquery": "3.5.1",
     "jquery-resizable-dom": "0.35.0",
     "jquery.easing": "1.4.1",
+    "js-cookie": "2.2.1",
     "popper.js": "1.16.1",
     "sortablejs": "^1.10.2",
     "trumbowyg": "2.23.0",
