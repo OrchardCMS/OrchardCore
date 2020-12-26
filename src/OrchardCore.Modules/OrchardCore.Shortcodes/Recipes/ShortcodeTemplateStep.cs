@@ -11,23 +11,23 @@ namespace OrchardCore.Shortcodes.Recipes
     /// <summary>
     /// This recipe step creates a set of shortcodes.
     /// </summary>
-    public class ShhortcodeStep : IRecipeStepHandler
+    public class ShortcodeTemplateStep : IRecipeStepHandler
     {
         private readonly ShortcodeTemplatesManager _templatesManager;
 
-        public ShhortcodeStep(ShortcodeTemplatesManager templatesManager)
+        public ShortcodeTemplateStep(ShortcodeTemplatesManager templatesManager)
         {
             _templatesManager = templatesManager;
         }
 
         public async Task ExecuteAsync(RecipeExecutionContext context)
         {
-            if (!String.Equals(context.Name, "Shortcodes", StringComparison.OrdinalIgnoreCase))
+            if (!String.Equals(context.Name, "ShortcodeTemplates", StringComparison.OrdinalIgnoreCase))
             {
                 return;
             }
 
-            if (context.Step.Property("Shortcodes").Value is JObject templates)
+            if (context.Step.Property("ShortcodeTemplates").Value is JObject templates)
             {
                 foreach (var property in templates.Properties())
                 {
