@@ -42,13 +42,16 @@ namespace OrchardCore.Locking
         {
             var semaphore = GetOrCreateSemaphore(key);
 
-            if (await semaphore.Value.WaitAsync(timeout))
+            if (await semaphore.Value.WaitAsync(timeout != TimeSpan.MaxValue ? timeout : Timeout.InfiniteTimeSpan))
             {
                 return (new Locker(this, semaphore, expiration), true);
             }
 
-            _logger.LogWarning("Fails to acquire the named lock '{LockName}' after the given timeout of '{Timeout}'.",
-                key, timeout.ToString());
+            if (_logger.IsEnabled(LogLevel.Debug))
+            {
+                _logger.LogWarning("Timeout elapsed before acquiring the named lock '{LockName}' after the given timeout of '{Timeout}'.",
+                    key, timeout.ToString());
+            }
 
             return (null, false);
         }
@@ -111,7 +114,7 @@ namespace OrchardCore.Locking
                 _localLock = localLock;
                 _semaphore = semaphore;
 
-                if (expiration.HasValue)
+                if (expiration.HasValue && expiration.Value != TimeSpan.MaxValue)
                 {
                     _cts = new CancellationTokenSource(expiration.Value);
                     _cts.Token.Register(Release);
