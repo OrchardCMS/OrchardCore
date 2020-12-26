@@ -42,7 +42,7 @@ namespace OrchardCore.Locking
         {
             var semaphore = GetOrCreateSemaphore(key);
 
-            if (await semaphore.Value.WaitAsync(timeout))
+            if (await semaphore.Value.WaitAsync(timeout != TimeSpan.MaxValue ? timeout : Timeout.InfiniteTimeSpan))
             {
                 return (new Locker(this, semaphore, expiration), true);
             }
@@ -111,7 +111,7 @@ namespace OrchardCore.Locking
                 _localLock = localLock;
                 _semaphore = semaphore;
 
-                if (expiration.HasValue)
+                if (expiration.HasValue && expiration.Value != TimeSpan.MaxValue)
                 {
                     _cts = new CancellationTokenSource(expiration.Value);
                     _cts.Token.Register(Release);

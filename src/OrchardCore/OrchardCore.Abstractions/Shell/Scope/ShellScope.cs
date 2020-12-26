@@ -272,10 +272,10 @@ namespace OrchardCore.Environment.Shell.Scope
             }
 
             // Try to acquire a lock before using a new scope, so that a next process gets the last committed data.
-            (var locker, var locked) = await ShellContext.TryAcquireActivateShellLockAsync();
+            (var locker, var locked) = await ShellContext.TryAcquireShellActivateLockAsync();
             if (!locked)
             {
-                return;
+                throw new TimeoutException($"Fails to acquire a lock before activating the tenant: {ShellContext.Settings.Name}");
             }
 
             await using var acquiredLock = locker;

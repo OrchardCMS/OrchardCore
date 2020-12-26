@@ -45,7 +45,7 @@ namespace OrchardCore.Redis.Services
         /// </summary>
         public async Task<(ILocker locker, bool locked)> TryAcquireLockAsync(string key, TimeSpan timeout, TimeSpan? expiration = null)
         {
-            using (var cts = new CancellationTokenSource(timeout))
+            using (var cts = new CancellationTokenSource(timeout != TimeSpan.MaxValue ? timeout : Timeout.InfiniteTimeSpan))
             {
                 var retries = 0.0;
 

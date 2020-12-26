@@ -20,6 +20,7 @@ namespace OrchardCore.Environment.Shell
             {
                 // Use a single default site by default, i.e. if WithTenants hasn't been called before
                 services.TryAddSingleton<IShellSettingsManager, SingleShellSettingsManager>();
+                services.AddTransient<IConfigureOptions<ShellContextOptions>, ShellContextOptionsSetup>();
                 services.AddTransient<IConfigureOptions<ShellOptions>, ShellOptionsSetup>();
 
                 services.AddSingleton<IShellContextFactory, ShellContextFactory>();
