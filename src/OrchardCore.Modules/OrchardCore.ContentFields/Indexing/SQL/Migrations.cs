@@ -435,11 +435,9 @@ namespace OrchardCore.ContentFields.Indexing.SQL
             );
 
             // The indexes here represent a change in technique to always include the DocumentId
-
             SchemaBuilder.AlterIndexTable<MultiSelectFieldIndex>(table => table
                 .CreateIndex("IDX_MultiSelectFieldIndex_Ids", "DocumentId", "ContentItemId", "Published", "Latest", "ContentItemVersionId")
             );
-
 
             SchemaBuilder.AlterIndexTable<MultiSelectFieldIndex>(table => table
                 .CreateIndex("IDX_MultiSelectFieldIndex_Types", "DocumentId", "ContentType", "ContentPart", "ContentField")
