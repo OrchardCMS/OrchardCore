@@ -12,7 +12,7 @@
 
 @if (values.Any())
 {
-<div class="field field-type-contentpickerfield field-name-@name">
+<div class="field field-type-multiselectfield field-name-@name">
     <span class="name">@Model.PartFieldDefinition.DisplayName()@T[":"]</span>
     @foreach (var value in values)
     {

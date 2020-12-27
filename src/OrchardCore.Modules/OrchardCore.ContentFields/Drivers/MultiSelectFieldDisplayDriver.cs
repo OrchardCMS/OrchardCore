@@ -10,6 +10,7 @@ using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Mvc.Utilities;
 
 namespace OrchardCore.ContentFields.Fields
 {
@@ -42,7 +43,7 @@ namespace OrchardCore.ContentFields.Fields
                 if (context.IsNew)
                 {
                     var settings = context.PartFieldDefinition.GetSettings<MultiSelectFieldSettings>();
-                    var options = string.IsNullOrWhiteSpace(settings.Options) ? new MultiSelectListValueOption[0] : JsonConvert.DeserializeObject<MultiSelectListValueOption[]>(settings.Options);
+                    var options = settings.Options.IsJson() ? Array.Empty<MultiSelectListValueOption>() : JsonConvert.DeserializeObject<MultiSelectListValueOption[]>(settings.Options);
 
                     values = options.Where(o => o.Default).Select(o => o.Value).ToArray();
                 }

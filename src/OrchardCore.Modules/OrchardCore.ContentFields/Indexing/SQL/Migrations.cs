@@ -419,5 +419,38 @@ namespace OrchardCore.ContentFields.Indexing.SQL
 
             return 2;
         }
+
+        public int UpdateFrom2()
+        {
+            SchemaBuilder.CreateMapIndexTable<MultiSelectFieldIndex>(table => table
+                .Column<string>("ContentItemId", column => column.WithLength(26))
+                .Column<string>("ContentItemVersionId", column => column.WithLength(26))
+                .Column<string>("ContentType", column => column.WithLength(ContentItemIndex.MaxContentTypeSize))
+                .Column<string>("ContentPart", column => column.WithLength(ContentItemIndex.MaxContentPartSize))
+                .Column<string>("ContentField", column => column.WithLength(ContentItemIndex.MaxContentFieldSize))
+                .Column<bool>("Published", column => column.Nullable())
+                .Column<bool>("Latest", column => column.Nullable())
+                .Column<string>("Value", column => column.Nullable().WithLength(MultiSelectFieldIndex.MaxValueSize))
+                .Column<string>("BigValue", column => column.Nullable().Unlimited())
+            );
+
+            // The indexes here represent a change in technique to always include the DocumentId
+
+            SchemaBuilder.AlterIndexTable<MultiSelectFieldIndex>(table => table
+                .CreateIndex("IDX_MultiSelectFieldIndex_Ids", "DocumentId", "ContentItemId", "Published", "Latest", "ContentItemVersionId")
+            );
+
+
+            SchemaBuilder.AlterIndexTable<MultiSelectFieldIndex>(table => table
+                .CreateIndex("IDX_MultiSelectFieldIndex_Types", "DocumentId", "ContentType", "ContentPart", "ContentField")
+            );
+
+            // This must stay under the MySql limits on length for key value indexes.
+            SchemaBuilder.AlterIndexTable<MultiSelectFieldIndex>(table => table
+                .CreateIndex("IDX_MultiSelectFieldIndex_Value", "DocumentId", "Value")
+            );
+
+            return 3;
+        }
     }
 }

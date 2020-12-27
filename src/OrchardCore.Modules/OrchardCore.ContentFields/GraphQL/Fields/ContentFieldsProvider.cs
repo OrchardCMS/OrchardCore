@@ -84,6 +84,17 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
                     FieldAccessor = field => (TimeSpan?)field.Content.Value
                 }
             }
+            ,
+            {
+                nameof(MultiSelectField),
+                new FieldTypeDescriptor
+                {
+                    Description = "Multi select field",
+                    FieldType = typeof(ListGraphType<StringGraphType>),
+                    UnderlyingType = typeof(MultiSelectField),
+                    FieldAccessor = field => field.Content.Values
+                }
+            }
         };
 
         public FieldType GetField(ContentPartFieldDefinition field)

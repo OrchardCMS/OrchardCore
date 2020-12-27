@@ -88,6 +88,7 @@ namespace OrchardCore.ContentFields
             services.AddContentField<MultiSelectField>()
                 .UseDisplayDriver<MultiSelectFieldDisplayDriver>();
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, MultiSelectFieldSettingsDriver>();
+            services.AddScoped<IContentPartFieldDefinitionDisplayDriver, MultiSelectFieldCheckboxListEditorSettingsDriver>();
             services.AddScoped<IContentFieldIndexHandler, MultiSelectFieldIndexHandler>();
 
             // Numeric Field
@@ -188,6 +189,7 @@ namespace OrchardCore.ContentFields
             services.AddScoped<IScopedIndexProvider, LinkFieldIndexProvider>();
             services.AddScoped<IScopedIndexProvider, HtmlFieldIndexProvider>();
             services.AddScoped<IScopedIndexProvider, UserPickerFieldIndexProvider>();
+            services.AddScoped<IScopedIndexProvider, MultiSelectFieldIndexProvider>();
         }
     }
 
