@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Net.Http.Headers;
@@ -7,15 +8,15 @@ using OrchardCore.Environment.Shell.Models;
 namespace OrchardCore.Modules
 {
     /// <summary>
-    /// This middleware replaces the default service provider by the one for the current tenant
+    /// This middleware replaces the default service container by the one for the current tenant.
     /// </summary>
-    public class ModularTenantContainerMiddleware
+    public class TenantContainerMiddleware
     {
         private readonly RequestDelegate _next;
         private readonly IShellHost _shellHost;
         private readonly IRunningShellTable _runningShellTable;
 
-        public ModularTenantContainerMiddleware(
+        public TenantContainerMiddleware(
             RequestDelegate next,
             IShellHost shellHost,
             IRunningShellTable runningShellTable)
@@ -43,20 +44,28 @@ namespace OrchardCore.Modules
                     return;
                 }
 
-                // Makes 'RequestServices' aware of the current 'ShellScope'.
-                httpContext.UseShellScopeServices();
-
-                var shellScope = await _shellHost.GetScopeAsync(shellSettings);
+                var shellContext = await _shellHost.GetOrCreateShellContextAsync(shellSettings);
 
                 // Holds the 'ShellContext' for the full request.
                 httpContext.Features.Set(new ShellContextFeature
                 {
-                    ShellContext = shellScope.ShellContext,
+                    ShellContext = shellContext,
                     OriginalPath = httpContext.Request.Path,
                     OriginalPathBase = httpContext.Request.PathBase
                 });
 
-                await shellScope.UsingAsync(scope => _next.Invoke(httpContext));
+                // Define a PathBase for the current request that is the RequestUrlPrefix.
+                // This will allow any view to reference ~/ as the tenant's base url.
+                // Because IIS or another middleware might have already set it, we just append the tenant prefix value.
+                if (!String.IsNullOrEmpty(shellContext.Settings.RequestUrlPrefix))
+                {
+                    PathString prefix = "/" + shellContext.Settings.RequestUrlPrefix;
+                    httpContext.Request.PathBase += prefix;
+                    httpContext.Request.Path.StartsWithSegments(prefix, StringComparison.OrdinalIgnoreCase, out PathString remainingPath);
+                    httpContext.Request.Path = remainingPath;
+                }
+
+                await _next(httpContext);
             }
         }
     }

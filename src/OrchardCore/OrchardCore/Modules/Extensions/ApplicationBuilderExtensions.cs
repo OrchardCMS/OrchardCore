@@ -1,8 +1,11 @@
 using System;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
+using Microsoft.Net.Http.Headers;
 using OrchardCore.Modules;
 
 namespace Microsoft.AspNetCore.Builder
@@ -28,14 +31,41 @@ namespace Microsoft.AspNetCore.Builder
             app.UseMiddleware<PoweredByMiddleware>();
 
             // Ensure the shell tenants are loaded when a request comes in
-            // and replaces the current service provider for the tenant's one.
-            app.UseMiddleware<ModularTenantContainerMiddleware>();
+            // and replaces the current service container for the tenant's one.
+            app.UseMiddleware<TenantContainerMiddleware>();
+
+            // Serve static files from modules.
+            app.UseModuleStaticFiles();
+
+            // Create a new scope on the tenant container.
+            app.UseMiddleware<TenantScopeMiddleware>();
 
             configure?.Invoke(app);
 
-            app.UseMiddleware<ModularTenantRouterMiddleware>(app.ServerFeatures);
+            // Forward the request to the tenant specific pipeline.
+            app.UseMiddleware<TenantRouterMiddleware>(app.ServerFeatures);
 
             return app;
+        }
+
+        private static IApplicationBuilder UseModuleStaticFiles(this IApplicationBuilder app)
+        {
+            var options = app.ApplicationServices.GetRequiredService<IOptions<StaticFileOptions>>().Value;
+            var fileProvider = app.ApplicationServices.GetRequiredService<IModuleStaticFileProvider>();
+
+            var configuration = app.ApplicationServices.GetRequiredService<IConfiguration>();
+            var cacheControl = configuration.GetValue("OrchardCore:StaticFileOptions:CacheControl", "public, max-age=2592000, s-max-age=31557600");
+
+            options.RequestPath = "";
+            options.FileProvider = fileProvider;
+
+            // Cache static files for a year as they are coming from embedded resources and should not vary
+            options.OnPrepareResponse = ctx =>
+            {
+                ctx.Context.Response.Headers[HeaderNames.CacheControl] = cacheControl;
+            };
+
+            return app.UseStaticFiles(options);
         }
     }
 }

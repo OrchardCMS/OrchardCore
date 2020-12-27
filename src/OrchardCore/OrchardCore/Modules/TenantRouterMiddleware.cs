@@ -19,16 +19,16 @@ namespace OrchardCore.Modules
     /// Handles a request by forwarding it to the tenant specific pipeline.
     /// It also initializes the middlewares for the requested tenant on the first request.
     /// </summary>
-    public class ModularTenantRouterMiddleware
+    public class TenantRouterMiddleware
     {
         private readonly IFeatureCollection _features;
         private readonly ILogger _logger;
         private readonly ConcurrentDictionary<string, SemaphoreSlim> _semaphores = new ConcurrentDictionary<string, SemaphoreSlim>();
 
-        public ModularTenantRouterMiddleware(
+        public TenantRouterMiddleware(
             IFeatureCollection features,
             RequestDelegate next,
-            ILogger<ModularTenantRouterMiddleware> logger)
+            ILogger<TenantRouterMiddleware> logger)
         {
             _features = features;
             _logger = logger;
@@ -42,17 +42,6 @@ namespace OrchardCore.Modules
             }
 
             var shellContext = ShellScope.Context;
-
-            // Define a PathBase for the current request that is the RequestUrlPrefix.
-            // This will allow any view to reference ~/ as the tenant's base url.
-            // Because IIS or another middleware might have already set it, we just append the tenant prefix value.
-            if (!String.IsNullOrEmpty(shellContext.Settings.RequestUrlPrefix))
-            {
-                PathString prefix = "/" + shellContext.Settings.RequestUrlPrefix;
-                httpContext.Request.PathBase += prefix;
-                httpContext.Request.Path.StartsWithSegments(prefix, StringComparison.OrdinalIgnoreCase, out PathString remainingPath);
-                httpContext.Request.Path = remainingPath;
-            }
 
             // Do we need to rebuild the pipeline ?
             if (shellContext.Pipeline == null)

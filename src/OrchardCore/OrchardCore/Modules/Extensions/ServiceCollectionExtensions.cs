@@ -16,12 +16,10 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
-using Microsoft.Net.Http.Headers;
 using OrchardCore;
 using OrchardCore.Environment.Extensions;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Builders;
-using OrchardCore.Environment.Shell.Configuration;
 using OrchardCore.Environment.Shell.Descriptor.Models;
 using OrchardCore.Environment.Shell.Models;
 using OrchardCore.Localization;
@@ -157,60 +155,37 @@ namespace Microsoft.Extensions.DependencyInjection
         }
 
         /// <summary>
-        /// Adds tenant level configuration to serve static files from modules
+        /// Adds host level configuration to serve static files from modules
         /// </summary>
         private static void AddStaticFiles(OrchardCoreBuilder builder)
         {
-            builder.ConfigureServices(services =>
-            {
-                services.AddSingleton<IModuleStaticFileProvider>(serviceProvider =>
-                {
-                    var env = serviceProvider.GetRequiredService<IHostEnvironment>();
-                    var appContext = serviceProvider.GetRequiredService<IApplicationContext>();
+            var services = builder.ApplicationServices;
 
-                    IModuleStaticFileProvider fileProvider;
-                    if (env.IsDevelopment())
+            services.AddSingleton(serviceProvider =>
+            {
+                var env = serviceProvider.GetRequiredService<IHostEnvironment>();
+                var appContext = serviceProvider.GetRequiredService<IApplicationContext>();
+
+                IModuleStaticFileProvider fileProvider;
+                if (env.IsDevelopment())
+                {
+                    var fileProviders = new List<IStaticFileProvider>
                     {
-                        var fileProviders = new List<IStaticFileProvider>
-                        {
                             new ModuleProjectStaticFileProvider(appContext),
                             new ModuleEmbeddedStaticFileProvider(appContext)
-                        };
-                        fileProvider = new ModuleCompositeStaticFileProvider(fileProviders);
-                    }
-                    else
-                    {
-                        fileProvider = new ModuleEmbeddedStaticFileProvider(appContext);
-                    }
-                    return fileProvider;
-                });
-
-                services.AddSingleton<IStaticFileProvider>(serviceProvider =>
+                    };
+                    fileProvider = new ModuleCompositeStaticFileProvider(fileProviders);
+                }
+                else
                 {
-                    return serviceProvider.GetRequiredService<IModuleStaticFileProvider>();
-                });
+                    fileProvider = new ModuleEmbeddedStaticFileProvider(appContext);
+                }
+                return fileProvider;
             });
 
-            builder.Configure((app, routes, serviceProvider) =>
+            services.AddSingleton<IStaticFileProvider>(serviceProvider =>
             {
-                var fileProvider = serviceProvider.GetRequiredService<IModuleStaticFileProvider>();
-
-                var options = serviceProvider.GetRequiredService<IOptions<StaticFileOptions>>().Value;
-
-                options.RequestPath = "";
-                options.FileProvider = fileProvider;
-
-                var shellConfiguration = serviceProvider.GetRequiredService<IShellConfiguration>();
-
-                var cacheControl = shellConfiguration.GetValue("StaticFileOptions:CacheControl", "public, max-age=2592000, s-max-age=31557600");
-
-                // Cache static files for a year as they are coming from embedded resources and should not vary
-                options.OnPrepareResponse = ctx =>
-                {
-                    ctx.Context.Response.Headers[HeaderNames.CacheControl] = cacheControl;
-                };
-
-                app.UseStaticFiles(options);
+                return serviceProvider.GetRequiredService<IModuleStaticFileProvider>();
             });
         }
 
