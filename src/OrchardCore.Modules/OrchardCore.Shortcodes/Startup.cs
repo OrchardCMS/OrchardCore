@@ -12,11 +12,13 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
+using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Shortcodes.Controllers;
 using OrchardCore.Shortcodes.Deployment;
 using OrchardCore.Shortcodes.Drivers;
 using OrchardCore.Shortcodes.Providers;
+using OrchardCore.Shortcodes.Recipes;
 using OrchardCore.Shortcodes.Services;
 using OrchardCore.Shortcodes.ViewModels;
 using Shortcodes;
@@ -70,10 +72,6 @@ namespace OrchardCore.Shortcodes
 
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddTransient<IDeploymentSource, AllShortcodeTemplatesDeploymentSource>();
-            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AllShortcodeTemplatesDeploymentStep>());
-            services.AddScoped<IDisplayDriver<DeploymentStep>, AllShortcodeTemplatesDeploymentStepDriver>();
-
             services.AddScoped<ShortcodeTemplatesManager>();
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<INavigationProvider, AdminMenu>();
@@ -128,6 +126,20 @@ namespace OrchardCore.Shortcodes
 </table>";
                 d.Categories = new string[] { "Localization" };
             });
+        }
+    }
+
+    [RequireFeatures("OrchardCore.Deployment", "OrchardCore.Shortcodes.Templates")]
+    public class ShortcodeTemplatesDeployementStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddRecipeExecutionStep<ShortcodeTemplateStep>();
+
+            services.AddTransient<IDeploymentSource, AllShortcodeTemplatesDeploymentSource>();
+            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AllShortcodeTemplatesDeploymentStep>());
+            services.AddScoped<IDisplayDriver<DeploymentStep>, AllShortcodeTemplatesDeploymentStepDriver>();
+
         }
     }
 }
