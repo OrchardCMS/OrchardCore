@@ -1,4 +1,7 @@
 @model OrchardCore.Layers.ViewModels.LayerEditViewModel
+@{
+    var returnUrl = ViewData["returnUrl"]?.ToString();
+}
 
 <zone Name="Title"><h1>@RenderTitleSegments(T["Edit Layer - {0}", Model.Name])</h1></zone>
 
@@ -22,4 +25,5 @@
     </div>
 
     <input class="button" type="submit" value="@T["Save"]" />
+    <a class="btn btn-secondary cancel" role="button" href="@returnUrl">@T["Cancel"]</a>
 </form>

@@ -104,13 +104,14 @@ namespace OrchardCore.Layers.Controllers
             return RedirectToAction("Index");
         }
 
-        public async Task<IActionResult> Create()
+        public async Task<IActionResult> Create(string returnUrl = null)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageLayers))
             {
                 return Forbid();
             }
 
+            ViewData["ReturnUrl"] = returnUrl;
             return View();
         }
 
@@ -143,7 +144,7 @@ namespace OrchardCore.Layers.Controllers
             return View(model);
         }
 
-        public async Task<IActionResult> Edit(string name)
+        public async Task<IActionResult> Edit(string name, string returnUrl = null)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageLayers))
             {
@@ -166,6 +167,7 @@ namespace OrchardCore.Layers.Controllers
                 Description = layer.Description
             };
 
+            ViewData["ReturnUrl"] = returnUrl;
             return View(model);
         }
 
