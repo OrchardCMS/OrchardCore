@@ -159,22 +159,12 @@ namespace OrchardCore.Taxonomies.Drivers
                 }
             }
         }
-               private static string GetDifferentiator(ContentItem contentItem)
+        private static string GetDifferentiator(ContentItem contentItem)
         {
             var identifier = contentItem.Content.AliasPart?.Alias?.ToString() ?? contentItem.DisplayText ?? contentItem.ContentItemId;
-            var encodedIdentifier = EncodeAlternateElement(identifier);
-            var differentiator = FormatName(encodedIdentifier);
+            var differentiator = FormatName(identifier);
             // ContentsAdminListTaxonomyFilter__[differentiator] e.g. ContentsAdminListTaxonomyFilter-Category
             return "ContentsAdminListTaxonomyFilter__" + differentiator;
-        }
-        /// <summary>
-        /// Encodes dashed and dots so that they don't conflict in filenames
-        /// </summary>
-        /// <param name="alternateElement"></param>
-        /// <returns></returns>
-        private static string EncodeAlternateElement(string alternateElement)
-        {
-            return alternateElement.Replace("-", "__").Replace('.', '_');
         }
         /// <summary>
         /// Converts "foo-ba r" to "FooBaR"
