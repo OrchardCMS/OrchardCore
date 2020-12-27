@@ -126,6 +126,11 @@ namespace OrchardCore.Workflows.Services
                 // Don't allow scope recursion per workflow instance id.
                 if (_recursions.TryGetValue(workflow.WorkflowId, out var count) && count > 0)
                 {
+                    if (_logger.IsEnabled(LogLevel.Debug))
+                    {
+                        _logger.LogDebug("Don't allow scope recursion per workflow instance id: '{Workflow}'.", workflow.WorkflowId);
+                    }
+
                     continue;
                 }
 
@@ -159,6 +164,11 @@ namespace OrchardCore.Workflows.Services
                 // Don't allow scope recursion per workflow type id.
                 if (_recursions.TryGetValue(workflowType.WorkflowTypeId, out var count) && count > 0)
                 {
+                    if (_logger.IsEnabled(LogLevel.Debug))
+                    {
+                        _logger.LogDebug("Don't allow scope recursion per workflow type: '{WorkflowType}'.", workflowType.Name);
+                    }
+
                     continue;
                 }
 
