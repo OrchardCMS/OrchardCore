@@ -332,10 +332,22 @@ The CustomSettings step allows you to populate your custom settings with initial
 ```json
     {
       "name": "custom-settings",
-      "BlogSettings": {
-        "ContentType": "BlogSettings",
-        "HtmlBodyPart": {
-          "Body": "Welcome to my blog"
+      "MyCustomSettings": {
+        "ContentItemId": "400d6c7pwj8675crzacd6gyywt",
+        "ContentItemVersionId": null,
+        "ContentType": "MyCustomSettings",
+        "DisplayText": "",
+        "Latest": false,
+        "Published": false,
+        "ModifiedUtc": null,
+        "PublishedUtc": null,
+        "CreatedUtc": null,
+        "Owner": "",
+        "Author": "",
+        "MyCustomSettingsPart": {
+          "MyTextField": {
+            "Text": "My custom text"
+          }
         }
       }
     }
