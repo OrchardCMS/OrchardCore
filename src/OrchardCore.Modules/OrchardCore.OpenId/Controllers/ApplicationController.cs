@@ -113,7 +113,7 @@ namespace OrchardCore.OpenId.Controllers
                 _notifier.Warning(H["There are no registered services to provide roles."]);
             }
 
-            await foreach (var scope in _scopeManager.ListAsync())
+            await foreach (var scope in _scopeManager.ListAsync(null, null, default))
             {
                 model.ScopeEntries.Add(new CreateOpenIdApplicationViewModel.ScopeEntry
                 {

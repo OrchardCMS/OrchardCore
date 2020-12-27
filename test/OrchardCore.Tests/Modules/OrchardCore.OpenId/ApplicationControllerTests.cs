@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Security.Claims;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -45,13 +46,16 @@ namespace OrchardCore.Tests.Modules.OrchardCore.OpenId
         [Fact]
         public async Task UsersShouldBeAbleToCreateApplicationIfAllowed()
         {
+            var mockOpenIdScopeManager = new Mock<IOpenIdScopeManager>();
+            object[] mockData = new object[0];
+            mockOpenIdScopeManager.Setup(m => m.ListAsync(null,null,default)).Returns(mockData.ToAsyncEnumerable());
             var controller = new ApplicationController(
                 Mock.Of<IShapeFactory>(),
                 Mock.Of<ISiteService>(),
                 Mock.Of<IStringLocalizer<ApplicationController>>(),
                 MockAuthorizationServiceMock().Object,
                 Mock.Of<IOpenIdApplicationManager>(),
-                Mock.Of<IOpenIdScopeManager>(),
+                mockOpenIdScopeManager.Object,
                 Mock.Of<IHtmlLocalizer<ApplicationController>>(),
                 Mock.Of<INotifier>(),
                 Mock.Of<ShellDescriptor>());
