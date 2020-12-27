@@ -10,10 +10,10 @@
             else
             {
                 <div class="dropdown order-md-1">
-                    <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" id="new-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" id="new-dropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         @T["New"]
                     </button>
-                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="bulk-action-menu-button">
+                    <div class="dropdown-menu dropdown-menu-right scrollable" aria-labelledby="bulk-action-menu-button">
                         @foreach (var item in Model.CreatableTypes)
                         {
                             <a class="dropdown-item" href="@Url.RouteUrl(new { area = "OrchardCore.Contents", controller = "Admin", action = "Create", id = @item.Value, returnUrl = FullRequestPath })">@T[item.Text]</a>

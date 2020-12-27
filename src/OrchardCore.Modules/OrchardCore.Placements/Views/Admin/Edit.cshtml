@@ -46,10 +46,7 @@
             <a asp-route-action="Delete" asp-route-area="OrchardCore.Placements" asp-route-shapeType="@Model.ShapeType" class="btn btn-danger" role="button" itemprop="UnsafeUrl RemoveUrl">@T["Delete"]</a>
         }
 
-        @if (Url.IsLocalUrl(returnUrl))
-        {
-            <a class="btn btn-secondary" href="@returnUrl">@T["Cancel"]</a>
-        }
+        <a class="btn btn-secondary cancel" role="button" href="@returnUrl">@T["Cancel"]</a>
     </div>
 </form>
 

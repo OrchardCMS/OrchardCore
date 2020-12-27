@@ -5,7 +5,7 @@ using OrchardCore.Workflows.Display;
 
 namespace OrchardCore.Contents.Workflows.Drivers
 {
-    public abstract class ContentTaskDisplayDriverDriver<TActivity, TViewModel> : ActivityDisplayDriver<TActivity, TViewModel> where TActivity : ContentTask where TViewModel : ContentTaskViewModel<TActivity>, new()
+    public abstract class ContentTaskDisplayDriver<TActivity, TViewModel> : ActivityDisplayDriver<TActivity, TViewModel> where TActivity : ContentTask where TViewModel : ContentTaskViewModel<TActivity>, new()
     {
         public override IDisplayResult Display(TActivity activity)
         {
