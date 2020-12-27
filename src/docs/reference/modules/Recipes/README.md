@@ -325,12 +325,27 @@ The Deployment step allows you to create a deployment plan with deployment steps
     }
 ```
 
+### CustomSettings Step
+
+The CustomSettings step allows you to populate your custom settings with initial values.
+
+```json
+    {
+      "name": "custom-settings",
+      "BlogSettings": {
+        "ContentType": "BlogSettings",
+        "HtmlBodyPart": {
+          "Body": "Welcome to my blog"
+        }
+      }
+    }
+```
+
 ### Other settings Step
 
 Here are other available steps:
 
 - `Command`
-- `custom-settings`
 - `FacebookLoginSettings`
 - `FacebookSettings`
 - `GitHubAuthentication`
