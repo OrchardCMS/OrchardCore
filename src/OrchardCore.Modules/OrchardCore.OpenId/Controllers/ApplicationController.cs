@@ -302,14 +302,14 @@ namespace OrchardCore.OpenId.Controllers
                 _notifier.Warning(H["There are no registered services to provide roles."]);
             }
 
-            var scopes = await _applicationManager.GetPermissionsAsync(application);
+            var permissions = await _applicationManager.GetPermissionsAsync(application);
             await foreach (var scope in _scopeManager.ListAsync())
             {
                 var scopeName = await _scopeManager.GetNameAsync(scope);
                 model.ScopeEntries.Add(new EditOpenIdApplicationViewModel.ScopeEntry
                 {
                     Name = scopeName,
-                    Selected = scopes.Contains(OpenIddictConstants.Permissions.Prefixes.Scope + scopeName, StringComparer.OrdinalIgnoreCase)
+                    Selected = await _applicationManager.HasPermissionAsync(application, OpenIddictConstants.Permissions.Prefixes.Scope + scopeName)
                 });
             }
 
@@ -516,7 +516,7 @@ namespace OrchardCore.OpenId.Controllers
                 descriptor.Roles.Add(selectedRole);
             }
 
-            descriptor.Permissions.RemoveWhere(scope => scope.StartsWith(OpenIddictConstants.Permissions.Prefixes.Scope));
+            descriptor.Permissions.RemoveWhere(permission => permission.StartsWith(OpenIddictConstants.Permissions.Prefixes.Scope));
             foreach (var selectedScope in (model.ScopeEntries
                 .Where(scope => scope.Selected)
                 .Select(scope => scope.Name)))
