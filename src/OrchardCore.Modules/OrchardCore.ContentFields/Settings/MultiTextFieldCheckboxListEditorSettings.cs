@@ -1,8 +1,6 @@
-using Newtonsoft.Json;
-
 namespace OrchardCore.ContentFields.Settings
 {
-    public class MultiSelectFieldCheckboxListEditorSettings
+    public class MultiTextFieldCheckboxListEditorSettings
     {
         public CheckboxDirection Direction { get; set; }
     }

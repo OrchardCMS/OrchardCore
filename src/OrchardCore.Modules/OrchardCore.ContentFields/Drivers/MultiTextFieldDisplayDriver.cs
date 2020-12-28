@@ -14,18 +14,18 @@ using OrchardCore.Mvc.Utilities;
 
 namespace OrchardCore.ContentFields.Fields
 {
-    public class MultiSelectFieldDisplayDriver : ContentFieldDisplayDriver<MultiSelectField>
+    public class MultiTextFieldDisplayDriver : ContentFieldDisplayDriver<MultiTextField>
     {
         private readonly IStringLocalizer S;
 
-        public MultiSelectFieldDisplayDriver(IStringLocalizer<MultiSelectFieldDisplayDriver> localizer)
+        public MultiTextFieldDisplayDriver(IStringLocalizer<MultiTextFieldDisplayDriver> localizer)
         {
             S = localizer;
         }
 
-        public override IDisplayResult Display(MultiSelectField field, BuildFieldDisplayContext context)
+        public override IDisplayResult Display(MultiTextField field, BuildFieldDisplayContext context)
         {
-            return Initialize<DisplayMultiSelectFieldViewModel>(GetDisplayShapeType(context), model =>
+            return Initialize<DisplayMultiTextFieldViewModel>(GetDisplayShapeType(context), model =>
             {
                 model.Field = field;
                 model.Part = context.ContentPart;
@@ -35,15 +35,15 @@ namespace OrchardCore.ContentFields.Fields
             .Location("SummaryAdmin", "");
         }
 
-        public override IDisplayResult Edit(MultiSelectField field, BuildFieldEditorContext context)
+        public override IDisplayResult Edit(MultiTextField field, BuildFieldEditorContext context)
         {
-            return Initialize<EditMultiSelectFieldViewModel>(GetEditorShapeType(context), model =>
+            return Initialize<EditMultiTextFieldViewModel>(GetEditorShapeType(context), model =>
             {
                 var values = field.Values;
                 if (context.IsNew)
                 {
-                    var settings = context.PartFieldDefinition.GetSettings<MultiSelectFieldSettings>();
-                    var options = settings.Options.IsJson() ? Array.Empty<MultiSelectListValueOption>() : JsonConvert.DeserializeObject<MultiSelectListValueOption[]>(settings.Options);
+                    var settings = context.PartFieldDefinition.GetSettings<MultiTextFieldSettings>();
+                    var options = settings.Options.IsJson() ? Array.Empty<MultiTextListValueOption>() : JsonConvert.DeserializeObject<MultiTextListValueOption[]>(settings.Options);
 
                     values = options.Where(o => o.Default).Select(o => o.Value).ToArray();
                 }
@@ -54,11 +54,11 @@ namespace OrchardCore.ContentFields.Fields
             });
         }
 
-        public override async Task<IDisplayResult> UpdateAsync(MultiSelectField field, IUpdateModel updater, UpdateFieldEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(MultiTextField field, IUpdateModel updater, UpdateFieldEditorContext context)
         {
             if (await updater.TryUpdateModelAsync(field, Prefix, f => f.Values))
             {
-                var settings = context.PartFieldDefinition.GetSettings<MultiSelectFieldSettings>();
+                var settings = context.PartFieldDefinition.GetSettings<MultiTextFieldSettings>();
                 if (settings.Required && (field.Values == null || !field.Values.Any()))
                 {
                     updater.ModelState.AddModelError(Prefix, S["A value is required for {0}.", context.PartFieldDefinition.DisplayName()]);

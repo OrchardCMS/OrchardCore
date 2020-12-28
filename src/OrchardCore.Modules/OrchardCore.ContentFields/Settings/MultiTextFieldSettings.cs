@@ -2,14 +2,14 @@ using Newtonsoft.Json;
 
 namespace OrchardCore.ContentFields.Settings
 {
-    public class MultiSelectFieldSettings
+    public class MultiTextFieldSettings
     {
         public string Hint { get; set; }
         public bool Required { get; set; }
         public string Options { get; set; }
     }
 
-    public class MultiSelectListValueOption
+    public class MultiTextListValueOption
     {
         [JsonProperty("name")]
         public string Name { get; set; }

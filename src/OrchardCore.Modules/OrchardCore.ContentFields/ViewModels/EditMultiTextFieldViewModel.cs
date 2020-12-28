@@ -4,10 +4,10 @@ using OrchardCore.ContentManagement.Metadata.Models;
 
 namespace OrchardCore.ContentFields.ViewModels
 {
-    public class DisplayMultiSelectFieldViewModel
+    public class EditMultiTextFieldViewModel
     {
-        public string[] Values => Field.Values;
-        public MultiSelectField Field { get; set; }
+        public string[] Values { get; set; }
+        public MultiTextField Field { get; set; }
         public ContentPart Part { get; set; }
         public ContentPartFieldDefinition PartFieldDefinition { get; set; }
     }

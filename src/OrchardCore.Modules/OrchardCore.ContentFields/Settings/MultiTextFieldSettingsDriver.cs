@@ -9,32 +9,32 @@ using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.ContentFields.Settings
 {
-    public class MultiSelectFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<MultiSelectField>
+    public class MultiTextFieldSettingsDriver : ContentPartFieldDefinitionDisplayDriver<MultiTextField>
     {
         private readonly IStringLocalizer S;
 
-        public MultiSelectFieldSettingsDriver(IStringLocalizer<MultiSelectFieldSettingsDriver> localizer)
+        public MultiTextFieldSettingsDriver(IStringLocalizer<MultiTextFieldSettingsDriver> localizer)
         {
             S = localizer;
         }
 
         public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition)
         {
-            return Initialize<MultiSelectFieldSettings>("MultiSelectFieldSettings_Edit", model =>
+            return Initialize<MultiTextFieldSettings>("MultiTextFieldSettings_Edit", model =>
             {
-                var settings = partFieldDefinition.GetSettings<MultiSelectFieldSettings>();
+                var settings = partFieldDefinition.GetSettings<MultiTextFieldSettings>();
 
                 model.Required = settings.Required;
                 model.Hint = settings.Hint;
-                model.Options = settings.Options ?? JsonConvert.SerializeObject(new MultiSelectListValueOption[0], Formatting.Indented);
+                model.Options = settings.Options ?? JsonConvert.SerializeObject(new MultiTextListValueOption[0], Formatting.Indented);
             })
             .Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)
         {
-                var model = new MultiSelectSettingsViewModel();
-                var settings = new MultiSelectFieldSettings();
+                var model = new MultiTextSettingsViewModel();
+                var settings = new MultiTextFieldSettings();
 
                 await context.Updater.TryUpdateModelAsync(model, Prefix);
 

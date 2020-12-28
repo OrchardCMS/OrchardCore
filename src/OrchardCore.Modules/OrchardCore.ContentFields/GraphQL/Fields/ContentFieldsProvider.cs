@@ -86,12 +86,12 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
             }
             ,
             {
-                nameof(MultiSelectField),
+                nameof(MultiTextField),
                 new FieldTypeDescriptor
                 {
-                    Description = "Multi select field",
+                    Description = "Multi text field",
                     FieldType = typeof(ListGraphType<StringGraphType>),
-                    UnderlyingType = typeof(MultiSelectField),
+                    UnderlyingType = typeof(MultiTextField),
                     FieldAccessor = field => field.Content.Values
                 }
             }

@@ -10,7 +10,7 @@ using YesSql.Indexes;
 
 namespace OrchardCore.ContentFields.Indexing.SQL
 {
-    public class MultiSelectFieldIndex : ContentFieldIndex
+    public class MultiTextFieldIndex : ContentFieldIndex
     {
         // Maximum length that MySql can support in an index under utf8 collation 768 - document id 4 bytes
         public const int MaxValueSize = 764;
@@ -19,20 +19,20 @@ namespace OrchardCore.ContentFields.Indexing.SQL
         public string BigValue { get; set; }
     }
 
-    public class MultiSelectFieldIndexProvider : ContentFieldIndexProvider
+    public class MultiTextFieldIndexProvider : ContentFieldIndexProvider
     {
         private readonly IServiceProvider _serviceProvider;
         private readonly HashSet<string> _ignoredTypes = new HashSet<string>();
         private IContentDefinitionManager _contentDefinitionManager;
 
-        public MultiSelectFieldIndexProvider(IServiceProvider serviceProvider)
+        public MultiTextFieldIndexProvider(IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;
         }
 
         public override void Describe(DescribeContext<ContentItem> context)
         {
-            context.For<MultiSelectFieldIndex>()
+            context.For<MultiTextFieldIndex>()
                 .Map(contentItem =>
                 {
                     // Can we safely ignore this content item?
@@ -55,17 +55,17 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                     }
 
                     var fieldDefinitions = contentTypeDefinition
-                        .Parts.SelectMany(x => x.PartDefinition.Fields.Where(f => f.FieldDefinition.Name == nameof(MultiSelectField)))
+                        .Parts.SelectMany(x => x.PartDefinition.Fields.Where(f => f.FieldDefinition.Name == nameof(MultiTextField)))
                         .ToArray();
 
-                   // This type doesn't have any MultiSelectField, ignore it
+                   // This type doesn't have any MultiTextField, ignore it
                     if (fieldDefinitions.Length == 0)
                     {
                         _ignoredTypes.Add(contentItem.ContentType);
                         return null;
                     }
 
-                    var results = new List<MultiSelectFieldIndex>();
+                    var results = new List<MultiTextFieldIndex>();
 
                     foreach (var fieldDefinition in fieldDefinitions)
                     {
@@ -83,10 +83,10 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                             continue;
                         }
 
-                        var field = jField.ToObject<MultiSelectField>();
+                        var field = jField.ToObject<MultiTextField>();
                         foreach(var value in field.Values)
                         {
-                            results.Add(new MultiSelectFieldIndex
+                            results.Add(new MultiTextFieldIndex
                             {
                                 Latest = contentItem.Latest,
                                 Published = contentItem.Published,
@@ -95,7 +95,7 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                                 ContentType = contentItem.ContentType,
                                 ContentPart = fieldDefinition.PartDefinition.Name,
                                 ContentField = fieldDefinition.Name,
-                                Value = value?.Substring(0, Math.Min(value.Length, MultiSelectFieldIndex.MaxValueSize)),
+                                Value = value?.Substring(0, Math.Min(value.Length, MultiTextFieldIndex.MaxValueSize)),
                                 BigValue = value
                             });
                         }

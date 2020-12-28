@@ -85,11 +85,11 @@ namespace OrchardCore.ContentFields
             services.AddScoped<IContentFieldIndexHandler, LinkFieldIndexHandler>();
 
             // Link Field
-            services.AddContentField<MultiSelectField>()
-                .UseDisplayDriver<MultiSelectFieldDisplayDriver>();
-            services.AddScoped<IContentPartFieldDefinitionDisplayDriver, MultiSelectFieldSettingsDriver>();
-            services.AddScoped<IContentPartFieldDefinitionDisplayDriver, MultiSelectFieldCheckboxListEditorSettingsDriver>();
-            services.AddScoped<IContentFieldIndexHandler, MultiSelectFieldIndexHandler>();
+            services.AddContentField<MultiTextField>()
+                .UseDisplayDriver<MultiTextFieldDisplayDriver>();
+            services.AddScoped<IContentPartFieldDefinitionDisplayDriver, MultiTextFieldSettingsDriver>();
+            services.AddScoped<IContentPartFieldDefinitionDisplayDriver, MultiTextFieldCheckboxListEditorSettingsDriver>();
+            services.AddScoped<IContentFieldIndexHandler, MultiTextFieldIndexHandler>();
 
             // Numeric Field
             services.AddContentField<NumericField>()
@@ -189,7 +189,7 @@ namespace OrchardCore.ContentFields
             services.AddScoped<IScopedIndexProvider, LinkFieldIndexProvider>();
             services.AddScoped<IScopedIndexProvider, HtmlFieldIndexProvider>();
             services.AddScoped<IScopedIndexProvider, UserPickerFieldIndexProvider>();
-            services.AddScoped<IScopedIndexProvider, MultiSelectFieldIndexProvider>();
+            services.AddScoped<IScopedIndexProvider, MultiTextFieldIndexProvider>();
         }
     }
 

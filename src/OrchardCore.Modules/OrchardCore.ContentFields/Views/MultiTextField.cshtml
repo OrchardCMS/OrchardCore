@@ -1,18 +1,18 @@
-@model OrchardCore.ContentFields.ViewModels.DisplayMultiSelectFieldViewModel
+@model OrchardCore.ContentFields.ViewModels.DisplayMultiTextFieldViewModel
 @using Newtonsoft.Json
 @using OrchardCore.Mvc.Utilities
 @using OrchardCore.ContentManagement.Metadata.Models
 
 @{
     var name = (Model.PartFieldDefinition.PartDefinition.Name + "-" + Model.PartFieldDefinition.Name).HtmlClassify();
-    var settings = Model.PartFieldDefinition.GetSettings<MultiSelectFieldSettings>();
-    var listOptions = string.IsNullOrWhiteSpace(settings.Options) ? new MultiSelectListValueOption[0] : JsonConvert.DeserializeObject<MultiSelectListValueOption[]>(settings.Options);
+    var settings = Model.PartFieldDefinition.GetSettings<MultiTextFieldSettings>();
+    var listOptions = string.IsNullOrWhiteSpace(settings.Options) ? new MultiTextListValueOption[0] : JsonConvert.DeserializeObject<MultiTextListValueOption[]>(settings.Options);
     var values = listOptions.Where(o => Model.Values.Contains(o.Value)).Select(o => T[o.Name].Value).ToArray();
 }
 
 @if (values.Any())
 {
-<div class="field field-type-multiselectfield field-name-@name">
+<div class="field field-type-multitextfield field-name-@name">
     <span class="name">@Model.PartFieldDefinition.DisplayName()@T[":"]</span>
     @foreach (var value in values)
     {

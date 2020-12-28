@@ -1,6 +1,5 @@
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
-using Newtonsoft.Json;
 using OrchardCore.ContentFields.Fields;
 using OrchardCore.ContentFields.ViewModels;
 using OrchardCore.ContentManagement.Metadata.Models;
@@ -9,20 +8,20 @@ using OrchardCore.DisplayManagement.Views;
 
 namespace OrchardCore.ContentFields.Settings
 {
-    public class MultiSelectFieldCheckboxListEditorSettingsDriver : ContentPartFieldDefinitionDisplayDriver<MultiSelectField>
+    public class MultiTextFieldCheckboxListEditorSettingsDriver : ContentPartFieldDefinitionDisplayDriver<MultiTextField>
     {
         private readonly IStringLocalizer S;
 
-        public MultiSelectFieldCheckboxListEditorSettingsDriver(IStringLocalizer<MultiSelectFieldCheckboxListEditorSettingsDriver> localizer)
+        public MultiTextFieldCheckboxListEditorSettingsDriver(IStringLocalizer<MultiTextFieldCheckboxListEditorSettingsDriver> localizer)
         {
             S = localizer;
         }
 
         public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition)
         {
-            return Initialize<CheckboxListSettingsViewModel>("MultiSelectFieldCheckboxListEditorSettings_Edit", model =>
+            return Initialize<CheckboxListSettingsViewModel>("MultiTextFieldCheckboxListEditorSettings_Edit", model =>
             {
-                var settings = partFieldDefinition.GetSettings<MultiSelectFieldCheckboxListEditorSettings>();
+                var settings = partFieldDefinition.GetSettings<MultiTextFieldCheckboxListEditorSettings>();
 
                 model.Direction = settings.Direction;
             })
@@ -34,7 +33,7 @@ namespace OrchardCore.ContentFields.Settings
             if (partFieldDefinition.Editor() == "CheckboxList")
             {
                 var model = new CheckboxListSettingsViewModel();
-                var settings = new MultiSelectFieldCheckboxListEditorSettings();
+                var settings = new MultiTextFieldCheckboxListEditorSettings();
 
                 await context.Updater.TryUpdateModelAsync(model, Prefix);
 
