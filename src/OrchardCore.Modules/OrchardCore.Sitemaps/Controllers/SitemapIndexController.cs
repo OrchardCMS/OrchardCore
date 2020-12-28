@@ -12,6 +12,7 @@ using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Routing;
 using OrchardCore.Settings;
@@ -34,6 +35,7 @@ namespace OrchardCore.Sitemaps.Controllers
         private readonly IStringLocalizer S;
         private readonly IHtmlLocalizer H;
         private readonly dynamic New;
+        private readonly IClock _clock;
 
         public SitemapIndexController(
             ISitemapHelperService sitemapService,
@@ -45,7 +47,8 @@ namespace OrchardCore.Sitemaps.Controllers
             IShapeFactory shapeFactory,
             IStringLocalizer<SitemapIndexController> stringLocalizer,
             IHtmlLocalizer<SitemapIndexController> htmlLocalizer,
-            INotifier notifier)
+            INotifier notifier,
+            IClock clock)
         {
             _sitemapService = sitemapService;
             _authorizationService = authorizationService;
@@ -57,6 +60,7 @@ namespace OrchardCore.Sitemaps.Controllers
             New = shapeFactory;
             S = stringLocalizer;
             H = htmlLocalizer;
+            _clock = clock;
         }
 
         public async Task<IActionResult> List(ContentOptions options, PagerParameters pagerParameters)
@@ -173,6 +177,7 @@ namespace OrchardCore.Sitemaps.Controllers
                 sitemap.Name = model.Name;
                 sitemap.Enabled = model.Enabled;
                 sitemap.Path = model.Path;
+                sitemap.LastModifiedUtc = _clock.UtcNow;
 
                 indexSource.ContainedSitemapIds = model.ContainableSitemaps
                     .Where(m => m.IsChecked)
@@ -262,6 +267,7 @@ namespace OrchardCore.Sitemaps.Controllers
                 sitemap.Name = model.Name;
                 sitemap.Enabled = model.Enabled;
                 sitemap.Path = model.Path;
+                sitemap.LastModifiedUtc = _clock.UtcNow;
 
                 indexSource.ContainedSitemapIds = model.ContainableSitemaps
                     .Where(m => m.IsChecked)

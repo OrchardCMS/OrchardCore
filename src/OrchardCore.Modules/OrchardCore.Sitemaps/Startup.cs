@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
+using OrchardCore.BackgroundTasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.Data.Migration;
@@ -222,6 +223,15 @@ namespace OrchardCore.Sitemaps
         {
             services.AddOptions<SitemapsRazorPagesOptions>();
             services.AddScoped<IRouteableContentTypeProvider, RazorPagesContentTypeProvider>();
+        }
+    }
+
+    [Feature("OrchardCore.Sitemaps.Cleanup")]
+    public class SitemapsCleanupStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddSingleton<IBackgroundTask, SitemapCacheBackgroundTask>();
         }
     }
 }

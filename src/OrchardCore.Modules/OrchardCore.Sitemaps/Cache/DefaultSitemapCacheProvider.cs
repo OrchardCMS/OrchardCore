@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
@@ -7,6 +8,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Sitemaps.Models;
 
 namespace OrchardCore.Sitemaps.Cache
 {
@@ -104,6 +106,38 @@ namespace OrchardCore.Sitemaps.Cache
             }
 
             return Task.FromResult(hasErrors);
+        }
+
+        public Task CleanupAsync(IEnumerable<SitemapType> sitemaps)
+        {
+            var folders = _fileProvider.GetDirectoryContents(String.Empty);
+            foreach (var fileInfo in folders)
+            {
+                if (fileInfo.IsDirectory)
+                {
+                    // Sitemap cache only stores files, so any folder has been created by the user and will be ignored.
+                    continue;
+                }
+                else
+                {
+                    var sitemap = sitemaps.FirstOrDefault(s => String.Equals(s.Path, fileInfo.Name, StringComparison.OrdinalIgnoreCase));
+                    if (sitemap != null && fileInfo.LastModified.UtcDateTime >= sitemap.LastModifiedUtc)
+                    {
+                        continue;
+                    }
+
+                    try
+                    {
+                        File.Delete(fileInfo.PhysicalPath);
+                    }
+                    catch (IOException ex)
+                    {
+                        _logger.LogError(ex, "Error deleting cache file {Path}", fileInfo.PhysicalPath);
+                    }
+                }
+            }
+
+            return Task.CompletedTask;
         }
 
         public Task<IEnumerable<string>> ListAsync()

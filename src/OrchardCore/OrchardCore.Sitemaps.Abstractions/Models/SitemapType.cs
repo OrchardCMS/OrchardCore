@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using OrchardCore.Data.Documents;
 
@@ -27,6 +28,11 @@ namespace OrchardCore.Sitemaps.Models
         /// Sitemap path.
         /// </summary>
         public string Path { get; set; }
+
+        /// <summary>
+        /// When the sitemap was last modified.
+        /// </summary>
+        public DateTime? LastModifiedUtc { get; set; }
 
         /// <summary>
         /// Sitemap sources contained by this sitemap.

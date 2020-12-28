@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Linq;
@@ -20,7 +21,7 @@ namespace OrchardCore.Sitemaps.Controllers
         private const int ErrorLength = 52_428_800;
 
         private static readonly ConcurrentDictionary<string, Lazy<Task<Stream>>> Workers = new ConcurrentDictionary<string, Lazy<Task<Stream>>>(StringComparer.OrdinalIgnoreCase);
-        private static readonly ConcurrentDictionary<string, string> Identifiers = new ConcurrentDictionary<string, string>();
+        private static ConcurrentDictionary<string, string> Identifiers;
 
         private readonly ISitemapManager _sitemapManager;
         private readonly ISiteService _siteService;
@@ -48,6 +49,13 @@ namespace OrchardCore.Sitemaps.Controllers
 
         public async Task<IActionResult> Index(CancellationToken cancellationToken, string sitemapId)
         {
+            if (Identifiers == null)
+            {
+                var sitemaps = await _sitemapManager.GetSitemapsAsync();
+
+                Identifiers = new ConcurrentDictionary<string, string>(sitemaps.ToDictionary(x => x.SitemapId, x => x.Identifier));
+            }
+
             var sitemap = await _sitemapManager.GetSitemapAsync(sitemapId);
 
             if (sitemap == null || !sitemap.Enabled)
