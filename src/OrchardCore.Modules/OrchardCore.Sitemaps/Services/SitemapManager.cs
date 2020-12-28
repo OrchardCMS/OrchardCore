@@ -66,7 +66,6 @@ namespace OrchardCore.Sitemaps.Services
 
             existing.Sitemaps[sitemap.SitemapId] = sitemap;
             sitemap.Identifier = IdGenerator.GenerateId();
-            sitemap.CachePath = sitemap.Identifier + "_" + sitemap.Path;
 
             await _documentManager.UpdateAsync(existing);
             await _sitemapEntries.BuildEntriesAsync(existing.Sitemaps.Values);

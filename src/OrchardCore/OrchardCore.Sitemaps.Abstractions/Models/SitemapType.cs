@@ -8,7 +8,7 @@ namespace OrchardCore.Sitemaps.Models
     /// </summary>
     public abstract class SitemapType : Document
     {
-        private string _cachePath;
+        private string _path;
 
         /// <summary>
         /// Sitemap id.
@@ -28,17 +28,16 @@ namespace OrchardCore.Sitemaps.Models
         /// <summary>
         /// Sitemap path.
         /// </summary>
-        public string Path { get; set; }
+        public string Path
+        {
+            get => _path;
+            set => _path = value.TrimStart('/');
+        }
 
         /// <summary>
-        /// Sitemap cache path.
+        /// Sitemap unique file name used for caching.
         /// </summary>
-        public string CachePath
-        {
-            // An existing sitemap may not have a cache path.
-            get => _cachePath ?? Identifier + "_" + Path;
-            set => _cachePath = value;
-        }
+        public string CacheFileName => Name + "_" + Identifier + Sitemap.PathExtension;
 
         /// <summary>
         /// Sitemap sources contained by this sitemap.

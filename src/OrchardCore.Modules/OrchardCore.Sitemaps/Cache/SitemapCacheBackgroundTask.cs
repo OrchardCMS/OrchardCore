@@ -17,7 +17,7 @@ namespace OrchardCore.Sitemaps.Cache
             var sitemapCacheProvider = serviceProvider.GetRequiredService<ISitemapCacheProvider>();
 
             var sitemaps = await sitemapManager.GetSitemapsAsync();
-            await sitemapCacheProvider.CleanupAsync(sitemaps.Select(s => s.CachePath));
+            await sitemapCacheProvider.CleanSitemapCacheAsync(sitemaps.Select(s => s.CacheFileName));
         }
     }
 }
