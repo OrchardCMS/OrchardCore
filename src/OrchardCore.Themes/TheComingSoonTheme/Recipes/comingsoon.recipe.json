@@ -42,7 +42,6 @@
         "OrchardCore.Localization",
         "OrchardCore.Media",
         "OrchardCore.Navigation",
-        "OrchardCore.Placements",
         "OrchardCore.Recipes",
         "OrchardCore.Resources",
         "OrchardCore.Roles",
