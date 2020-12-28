@@ -120,7 +120,20 @@ namespace OrchardCore.Users
             return 6;
         }
 
-        public int UpdateFrom6()
+        // Migrate any user names replacing '@' with '+' as user names can no longer be an email address.
+        public async Task<int> UpdateFrom6Async()
+        {
+            var users = await _session.Query<User, UserIndex>(u => u.NormalizedUserName.Contains("@")).ListAsync();
+            foreach(var user in users)
+            {
+                user.UserName = user.UserName.Replace('@', '+');
+                _session.Save(user);
+            }
+
+            return 7;
+        }
+        
+        public int UpdateFrom7()
         {
             SchemaBuilder.AlterIndexTable<UserIndex>(table => table
                 .AddColumn<bool>(nameof(UserIndex.LockoutEnabled), c => c.NotNull().WithDefault(false)));
@@ -132,10 +145,9 @@ namespace OrchardCore.Users
                 .AddColumn<int>(nameof(UserIndex.AccessFailedCount), c => c.NotNull().WithDefault(0)));
 
             SchemaBuilder.AlterIndexTable<UserIndex>(table => table
-                .CreateIndex("IDX_UserIndex_LockoutEnabled", "LockoutEnabled")
-            );
-
-            return 7;
+                .CreateIndex("IDX_UserIndex_LockoutEnabled", "LockoutEnabled"));
+                
+            return 8;
         }
     }
 }
