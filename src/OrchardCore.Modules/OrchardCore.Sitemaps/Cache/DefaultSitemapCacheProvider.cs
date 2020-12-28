@@ -107,7 +107,7 @@ namespace OrchardCore.Sitemaps.Cache
             return Task.FromResult(hasErrors);
         }
 
-        public Task CleanupAsync(IEnumerable<string> cachePaths)
+        public Task CleanupAsync(IEnumerable<string> excludes)
         {
             var folders = _fileProvider.GetDirectoryContents(String.Empty);
             foreach (var fileInfo in folders)
@@ -119,9 +119,8 @@ namespace OrchardCore.Sitemaps.Cache
                 }
                 else
                 {
-                    // Check if the cached file, whose name embeds the sitemap identifier, is still in use.
-                    var cachePath = cachePaths.FirstOrDefault(path => String.Equals(path, fileInfo.Name, StringComparison.OrdinalIgnoreCase));
-                    if (cachePath != null)
+                    // Check if the file is excluded and still needs to be cached.
+                    if (excludes.Contains(fileInfo.Name, StringComparer.OrdinalIgnoreCase))
                     {
                         continue;
                     }

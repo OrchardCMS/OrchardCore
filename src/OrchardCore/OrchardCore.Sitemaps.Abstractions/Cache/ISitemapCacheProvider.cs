@@ -15,7 +15,7 @@ namespace OrchardCore.Sitemaps.Cache
         Task ClearSitemapCacheAsync(string path);
         Task<bool> PurgeAllAsync();
         Task<bool> PurgeAsync(string cacheFileName);
-        Task CleanupAsync(IEnumerable<string> cachePaths);
+        Task CleanupAsync(IEnumerable<string> excludes);
         Task<IEnumerable<string>> ListAsync();
     }
 }
