@@ -325,12 +325,39 @@ The Deployment step allows you to create a deployment plan with deployment steps
     }
 ```
 
+### CustomSettings Step
+
+The CustomSettings step allows you to populate your custom settings with initial values.
+
+```json
+    {
+      "name": "custom-settings",
+      "MyCustomSettings": {
+        "ContentItemId": "400d6c7pwj8675crzacd6gyywt",
+        "ContentItemVersionId": null,
+        "ContentType": "MyCustomSettings",
+        "DisplayText": "",
+        "Latest": false,
+        "Published": false,
+        "ModifiedUtc": null,
+        "PublishedUtc": null,
+        "CreatedUtc": null,
+        "Owner": "",
+        "Author": "",
+        "MyCustomSettingsPart": {
+          "MyTextField": {
+            "Text": "My custom text"
+          }
+        }
+      }
+    }
+```
+
 ### Other settings Step
 
 Here are other available steps:
 
 - `Command`
-- `custom-settings`
 - `FacebookLoginSettings`
 - `FacebookSettings`
 - `GitHubAuthentication`

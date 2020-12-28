@@ -1,7 +1,10 @@
 @using OrchardCore.Facebook.Login.ViewModels;
 @model FacebookLoginSettingsViewModel;
 
-<p class="alert alert-warning">@T["The current tenant will be reloaded when the settings are saved."]</p>
+<p class="alert alert-warning">
+    @T["The current tenant will be reloaded when the settings are saved."]
+    <a class="seedoc" href="@(OrchardCore.Admin.Constants.DocsUrl)reference/modules/Facebook/#facebook-login" target="_blank">@T["See documentation"]</a>
+</p>
 
 <h3>@T["Login Settings"]</h3>
 

@@ -124,7 +124,8 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
                 return new HtmlContentValue(await task);
             }
 
-            if (input.ToObjectValue() is IShape shape)
+            var shape = input.ToObjectValue();
+            if (shape != null)
             {
                 if (!context.AmbientValues.TryGetValue("DisplayHelper", out var item) || !(item is IDisplayHelper displayHelper))
                 {

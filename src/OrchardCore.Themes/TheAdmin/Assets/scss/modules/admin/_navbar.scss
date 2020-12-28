@@ -11,15 +11,21 @@
         font-weight: bold;
         position: absolute;
         top: 10px;
-        left: 275px; // $left-navigation-width + 10px
+    }
+
+    @include media-breakpoint-down(xs) {
+
+        h1 {
+            max-width: 180px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            height: 32px;
+        }
     }
 
     .nav-link {
         font-size: 14px;
-    }
-
-    .nav-item {
-        text-align: right;
     }
 
     .breadcrumb {
@@ -29,6 +35,12 @@
 
     .btn.nav-link {
         display: inline-block;
+    }
+
+    @include media-breakpoint-up(sm) {
+        h1 {
+            left: 275px; // $left-navigation-width + 10px
+        }
     }
 
     @include media-breakpoint-down(sm) {
@@ -44,18 +56,23 @@
     }
 }
 
+body:not(.left-sidebar-compact) {
+    @include media-breakpoint-down(sm) {
+        .ta-navbar-top {
+            h1 {
+                display: none;
+            }
+        }
+    }
+}
+
 .ta-navbar-brand {
     @extend .navbar-brand;
     overflow: hidden;
     height: 42px;
-    margin-left: 11px;
-    margin-right: 24px;
-    padding-left: 36px;
+    width: 259px;
+    margin-left: 5px;
     padding-top: 10px;
-    background-image: url(/TheAdmin/logo.png);
-    background-repeat: no-repeat;
-    background-position: left center;
-    background-size: 28px auto;
     white-space: nowrap;
     font-size: 14px;
     transition: width 0.2s ease-in-out;
@@ -66,14 +83,20 @@
 
     span:last-child {
         font-weight: bold;
-        color: rgba(0, 120, 212, 1);
+        color: $white;
     }
+}
+
+.ta-navbar-brand img {
+    margin-left: 5px;
+    margin-right: 11px;
+    width: 25px;
 }
 
 // When left-sidebar is compact nav brand is compacted too.
 // It displays logo only, not text.
 .left-sidebar-compact .ta-navbar-brand {
-    width: 30px;
+    width: 47px;
     height: 42px;
 
     span {
@@ -84,6 +107,10 @@
 .left-sidebar-compact .ta-navbar-top {
     h1 {
         left: 63px; // $left-navigation-width-when-compact + 15px
+    }
+
+    .nav-item {
+        margin-left: 10px;
     }
 }
 

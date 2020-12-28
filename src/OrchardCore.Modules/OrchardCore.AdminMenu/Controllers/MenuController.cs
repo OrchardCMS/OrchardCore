@@ -110,6 +110,15 @@ namespace OrchardCore.AdminMenu.Controllers
             return View(model);
         }
 
+        [HttpPost, ActionName("List")]
+        [FormValueRequired("submit.Filter")]
+        public ActionResult IndexFilterPOST(AdminMenuListViewModel model)
+        {
+            return RedirectToAction("List", new RouteValueDictionary {
+                { "Options.Search", model.Options.Search }
+            });
+        }
+
         public async Task<IActionResult> Create()
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAdminMenu))

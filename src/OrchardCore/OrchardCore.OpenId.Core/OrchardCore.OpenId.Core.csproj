@@ -2,6 +2,12 @@
 
   <PropertyGroup>
     <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
+    <!-- NuGet properties-->
+    <Title>OrchardCore OpenId Core</Title>
+    <Description>$(OCCMSDescription)
+    
+    Core implementation for OpenId.</Description>
+    <PackageTags>$(PackageTags) OrchardCoreCMS OpenId</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
