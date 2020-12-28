@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,7 +17,7 @@ namespace OrchardCore.Sitemaps.Cache
             var sitemapCacheProvider = serviceProvider.GetRequiredService<ISitemapCacheProvider>();
 
             var sitemaps = await sitemapManager.GetSitemapsAsync();
-            await sitemapCacheProvider.CleanupAsync(sitemaps);
+            await sitemapCacheProvider.CleanupAsync(sitemaps.Select(s => s.CachePath));
         }
     }
 }

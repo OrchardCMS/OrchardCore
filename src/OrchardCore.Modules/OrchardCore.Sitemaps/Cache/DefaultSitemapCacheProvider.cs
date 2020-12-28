@@ -40,9 +40,9 @@ namespace OrchardCore.Sitemaps.Cache
             _logger = logger;
         }
 
-        public Task<ISitemapCacheFileResolver> GetCachedSitemapAsync(SitemapType sitemap)
+        public Task<ISitemapCacheFileResolver> GetCachedSitemapAsync(string path)
         {
-            var fileInfo = _fileProvider.GetFileInfo(sitemap.Identifier + sitemap.Path);
+            var fileInfo = _fileProvider.GetFileInfo(path);
             if (fileInfo.Exists)
             {
                 return Task.FromResult<ISitemapCacheFileResolver>(new PhysicalSitemapCacheFileResolver(fileInfo));
@@ -51,9 +51,9 @@ namespace OrchardCore.Sitemaps.Cache
             return Task.FromResult<ISitemapCacheFileResolver>(null);
         }
 
-        public async Task SetSitemapCacheAsync(Stream stream, SitemapType sitemap, CancellationToken cancellationToken)
+        public async Task SetSitemapCacheAsync(Stream stream, string path, CancellationToken cancellationToken)
         {
-            var cachePath = Path.Combine(_fileProvider.Root, sitemap.Identifier + sitemap.Path);
+            var cachePath = Path.Combine(_fileProvider.Root, path);
 
             using (var fileStream = File.Create(cachePath))
             {
@@ -62,9 +62,9 @@ namespace OrchardCore.Sitemaps.Cache
             }
         }
 
-        public Task ClearSitemapCacheAsync(SitemapType sitemap)
+        public Task ClearSitemapCacheAsync(string path)
         {
-            var fileInfo = _fileProvider.GetFileInfo(sitemap.Identifier + sitemap.Path);
+            var fileInfo = _fileProvider.GetFileInfo(path);
             if (fileInfo.Exists)
             {
                 try
@@ -108,7 +108,7 @@ namespace OrchardCore.Sitemaps.Cache
             return Task.FromResult(hasErrors);
         }
 
-        public Task CleanupAsync(IEnumerable<SitemapType> sitemaps)
+        public Task CleanupAsync(IEnumerable<string> paths)
         {
             var folders = _fileProvider.GetDirectoryContents(String.Empty);
             foreach (var fileInfo in folders)
@@ -121,8 +121,8 @@ namespace OrchardCore.Sitemaps.Cache
                 else
                 {
                     // Check if the cached file, whose name embeds the sitemap identifier, is still in use.
-                    var sitemap = sitemaps.FirstOrDefault(s => String.Equals(s.Identifier + s.Path, fileInfo.Name, StringComparison.OrdinalIgnoreCase));
-                    if (sitemap != null)
+                    var path = paths.FirstOrDefault(path => String.Equals(path, fileInfo.Name, StringComparison.OrdinalIgnoreCase));
+                    if (path != null)
                     {
                         continue;
                     }

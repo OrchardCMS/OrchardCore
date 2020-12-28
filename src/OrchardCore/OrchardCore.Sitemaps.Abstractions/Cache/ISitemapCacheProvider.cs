@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using OrchardCore.Sitemaps.Models;
 
 namespace OrchardCore.Sitemaps.Cache
 {
@@ -11,12 +10,12 @@ namespace OrchardCore.Sitemaps.Cache
     /// </summary>
     public interface ISitemapCacheProvider
     {
-        Task<ISitemapCacheFileResolver> GetCachedSitemapAsync(SitemapType sitemap);
-        Task SetSitemapCacheAsync(Stream stream, SitemapType sitemap, CancellationToken cancellationToken);
-        Task ClearSitemapCacheAsync(SitemapType sitemap);
+        Task<ISitemapCacheFileResolver> GetCachedSitemapAsync(string path);
+        Task SetSitemapCacheAsync(Stream stream, string path, CancellationToken cancellationToken);
+        Task ClearSitemapCacheAsync(string path);
         Task<bool> PurgeAllAsync();
         Task<bool> PurgeAsync(string cacheFileName);
-        Task CleanupAsync(IEnumerable<SitemapType> sitemaps);
+        Task CleanupAsync(IEnumerable<string> paths);
         Task<IEnumerable<string>> ListAsync();
     }
 }

@@ -65,7 +65,7 @@ namespace OrchardCore.Sitemaps.Controllers
             ISitemapCacheFileResolver fileResolver = null;
             if (Identifiers.TryGetValue(sitemapId, out var identifier) && sitemap.Identifier == identifier)
             {
-                fileResolver = await _sitemapCacheProvider.GetCachedSitemapAsync(sitemap);
+                fileResolver = await _sitemapCacheProvider.GetCachedSitemapAsync(sitemap.CachePath);
             }
 
             if (fileResolver != null)
@@ -116,7 +116,7 @@ namespace OrchardCore.Sitemaps.Controllers
                             _logger.LogWarning("Sitemap nearing 50MB length limit");
                         }
 
-                        await _sitemapCacheProvider.SetSitemapCacheAsync(stream, sitemap, cancellationToken);
+                        await _sitemapCacheProvider.SetSitemapCacheAsync(stream, sitemap.CachePath, cancellationToken);
 
                         Identifiers[sitemap.SitemapId] = sitemap.Identifier;
 
