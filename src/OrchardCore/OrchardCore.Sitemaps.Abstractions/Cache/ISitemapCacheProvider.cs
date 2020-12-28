@@ -11,9 +11,9 @@ namespace OrchardCore.Sitemaps.Cache
     /// </summary>
     public interface ISitemapCacheProvider
     {
-        Task<ISitemapCacheFileResolver> GetCachedSitemapAsync(string path);
-        Task SetSitemapCacheAsync(Stream stream, string path, CancellationToken cancellationToken);
-        Task ClearSitemapCacheAsync(string path);
+        Task<ISitemapCacheFileResolver> GetCachedSitemapAsync(SitemapType sitemap);
+        Task SetSitemapCacheAsync(Stream stream, SitemapType sitemap, CancellationToken cancellationToken);
+        Task ClearSitemapCacheAsync(SitemapType sitemap);
         Task<bool> PurgeAllAsync();
         Task<bool> PurgeAsync(string cacheFileName);
         Task CleanupAsync(IEnumerable<SitemapType> sitemaps);

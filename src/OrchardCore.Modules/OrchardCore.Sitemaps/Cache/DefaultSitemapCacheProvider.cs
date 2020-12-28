@@ -40,9 +40,9 @@ namespace OrchardCore.Sitemaps.Cache
             _logger = logger;
         }
 
-        public Task<ISitemapCacheFileResolver> GetCachedSitemapAsync(string path)
+        public Task<ISitemapCacheFileResolver> GetCachedSitemapAsync(SitemapType sitemap)
         {
-            var fileInfo = _fileProvider.GetFileInfo(path);
+            var fileInfo = _fileProvider.GetFileInfo(sitemap.Identifier + sitemap.Path);
             if (fileInfo.Exists)
             {
                 return Task.FromResult<ISitemapCacheFileResolver>(new PhysicalSitemapCacheFileResolver(fileInfo));
@@ -51,9 +51,9 @@ namespace OrchardCore.Sitemaps.Cache
             return Task.FromResult<ISitemapCacheFileResolver>(null);
         }
 
-        public async Task SetSitemapCacheAsync(Stream stream, string path, CancellationToken cancellationToken)
+        public async Task SetSitemapCacheAsync(Stream stream, SitemapType sitemap, CancellationToken cancellationToken)
         {
-            var cachePath = Path.Combine(_fileProvider.Root, path);
+            var cachePath = Path.Combine(_fileProvider.Root, sitemap.Identifier + sitemap.Path);
 
             using (var fileStream = File.Create(cachePath))
             {
@@ -62,9 +62,9 @@ namespace OrchardCore.Sitemaps.Cache
             }
         }
 
-        public Task ClearSitemapCacheAsync(string path)
+        public Task ClearSitemapCacheAsync(SitemapType sitemap)
         {
-            var fileInfo = _fileProvider.GetFileInfo(path);
+            var fileInfo = _fileProvider.GetFileInfo(sitemap.Identifier + sitemap.Path);
             if (fileInfo.Exists)
             {
                 try
@@ -120,8 +120,8 @@ namespace OrchardCore.Sitemaps.Cache
                 }
                 else
                 {
-                    var sitemap = sitemaps.FirstOrDefault(s => String.Equals(s.Path, fileInfo.Name, StringComparison.OrdinalIgnoreCase));
-                    if (sitemap != null && fileInfo.LastModified.UtcDateTime >= sitemap.LastModifiedUtc)
+                    var sitemap = sitemaps.FirstOrDefault(s => String.Equals(s.Identifier + s.Path, fileInfo.Name, StringComparison.OrdinalIgnoreCase));
+                    if (sitemap != null)
                     {
                         continue;
                     }

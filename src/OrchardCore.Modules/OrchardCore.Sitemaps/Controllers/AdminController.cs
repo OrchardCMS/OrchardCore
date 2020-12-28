@@ -205,7 +205,6 @@ namespace OrchardCore.Sitemaps.Controllers
                     Name = model.Name,
                     Path = model.Path,
                     Enabled = model.Enabled,
-                    LastModifiedUtc = _clock.UtcNow
                 };
 
                 await _sitemapManager.UpdateSitemapAsync(sitemap);
@@ -272,7 +271,6 @@ namespace OrchardCore.Sitemaps.Controllers
                 sitemap.Name = model.Name;
                 sitemap.Enabled = model.Enabled;
                 sitemap.Path = model.Path;
-                sitemap.LastModifiedUtc = _clock.UtcNow;
 
                 await _sitemapManager.UpdateSitemapAsync(sitemap);
 

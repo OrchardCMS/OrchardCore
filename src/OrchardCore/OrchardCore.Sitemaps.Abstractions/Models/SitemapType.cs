@@ -30,11 +30,6 @@ namespace OrchardCore.Sitemaps.Models
         public string Path { get; set; }
 
         /// <summary>
-        /// When the sitemap was last modified.
-        /// </summary>
-        public DateTime? LastModifiedUtc { get; set; }
-
-        /// <summary>
         /// Sitemap sources contained by this sitemap.
         /// </summary>
         public List<SitemapSource> SitemapSources { get; set; } = new List<SitemapSource>();

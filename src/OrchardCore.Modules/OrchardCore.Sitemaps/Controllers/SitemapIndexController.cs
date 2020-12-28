@@ -177,7 +177,6 @@ namespace OrchardCore.Sitemaps.Controllers
                 sitemap.Name = model.Name;
                 sitemap.Enabled = model.Enabled;
                 sitemap.Path = model.Path;
-                sitemap.LastModifiedUtc = _clock.UtcNow;
 
                 indexSource.ContainedSitemapIds = model.ContainableSitemaps
                     .Where(m => m.IsChecked)
@@ -267,7 +266,6 @@ namespace OrchardCore.Sitemaps.Controllers
                 sitemap.Name = model.Name;
                 sitemap.Enabled = model.Enabled;
                 sitemap.Path = model.Path;
-                sitemap.LastModifiedUtc = _clock.UtcNow;
 
                 indexSource.ContainedSitemapIds = model.ContainableSitemaps
                     .Where(m => m.IsChecked)
