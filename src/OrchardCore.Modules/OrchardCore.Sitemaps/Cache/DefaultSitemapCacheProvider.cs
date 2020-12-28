@@ -1,14 +1,13 @@
 using System;
-using System.Linq;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Sitemaps.Models;
 
 namespace OrchardCore.Sitemaps.Cache
 {
@@ -108,7 +107,7 @@ namespace OrchardCore.Sitemaps.Cache
             return Task.FromResult(hasErrors);
         }
 
-        public Task CleanupAsync(IEnumerable<string> paths)
+        public Task CleanupAsync(IEnumerable<string> cachePaths)
         {
             var folders = _fileProvider.GetDirectoryContents(String.Empty);
             foreach (var fileInfo in folders)
@@ -121,8 +120,8 @@ namespace OrchardCore.Sitemaps.Cache
                 else
                 {
                     // Check if the cached file, whose name embeds the sitemap identifier, is still in use.
-                    var path = paths.FirstOrDefault(path => String.Equals(path, fileInfo.Name, StringComparison.OrdinalIgnoreCase));
-                    if (path != null)
+                    var cachePath = cachePaths.FirstOrDefault(path => String.Equals(path, fileInfo.Name, StringComparison.OrdinalIgnoreCase));
+                    if (cachePath != null)
                     {
                         continue;
                     }
