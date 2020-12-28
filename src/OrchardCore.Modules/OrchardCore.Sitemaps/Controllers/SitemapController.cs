@@ -51,20 +51,18 @@ namespace OrchardCore.Sitemaps.Controllers
         {
             if (Identifiers == null)
             {
-                var sitemaps = await _sitemapManager.GetSitemapsAsync();
-
-                Identifiers = new ConcurrentDictionary<string, string>(sitemaps.ToDictionary(x => x.SitemapId, x => x.Identifier));
+                Identifiers = new ConcurrentDictionary<string, string>(
+                    (await _sitemapManager.GetSitemapsAsync())
+                        .ToDictionary(x => x.SitemapId, x => x.Identifier));
             }
 
             var sitemap = await _sitemapManager.GetSitemapAsync(sitemapId);
-
             if (sitemap == null || !sitemap.Enabled)
             {
                 return NotFound();
             }
 
             ISitemapCacheFileResolver fileResolver = null;
-
             if (Identifiers.TryGetValue(sitemapId, out var identifier) && sitemap.Identifier == identifier)
             {
                 fileResolver = await _sitemapCacheProvider.GetCachedSitemapAsync(sitemap.Path);

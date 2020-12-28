@@ -11,7 +11,7 @@ namespace OrchardCore.Sitemaps.Services
     public class SitemapHelperService : ISitemapHelperService
     {
         // Path requirements for sitemaps include . as acceptable character.
-        public static char[] InvalidCharactersForPath = ":?#[]@!$&'()*+,;=<>\\|%".ToCharArray();
+        public static char[] InvalidCharactersForPath = ":?#[]@!$&'()*+,;=<>\\/|%".ToCharArray();
         public const int MaxPathLength = 1024;
         public const string Prefix = "";
         public const string Path = "Path";
