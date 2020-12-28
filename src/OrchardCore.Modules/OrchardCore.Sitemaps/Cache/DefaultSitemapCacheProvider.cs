@@ -120,6 +120,7 @@ namespace OrchardCore.Sitemaps.Cache
                 }
                 else
                 {
+                    // Check if the cached file, whose name embeds the sitemap identifier, is still in use.
                     var sitemap = sitemaps.FirstOrDefault(s => String.Equals(s.Identifier + s.Path, fileInfo.Name, StringComparison.OrdinalIgnoreCase));
                     if (sitemap != null)
                     {
