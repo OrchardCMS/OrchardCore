@@ -12,7 +12,6 @@ using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
-using OrchardCore.Modules;
 using OrchardCore.Navigation;
 using OrchardCore.Routing;
 using OrchardCore.Settings;
@@ -37,7 +36,6 @@ namespace OrchardCore.Sitemaps.Controllers
         private readonly IStringLocalizer S;
         private readonly IHtmlLocalizer H;
         private readonly dynamic New;
-        private readonly IClock _clock;
 
         public AdminController(
             ISitemapHelperService sitemapService,
@@ -51,8 +49,7 @@ namespace OrchardCore.Sitemaps.Controllers
             INotifier notifier,
             IShapeFactory shapeFactory,
             IStringLocalizer<AdminController> stringLocalizer,
-            IHtmlLocalizer<AdminController> htmlLocalizer,
-            IClock clock)
+            IHtmlLocalizer<AdminController> htmlLocalizer)
         {
             _sitemapService = sitemapService;
             _displayManager = displayManager;
@@ -66,7 +63,6 @@ namespace OrchardCore.Sitemaps.Controllers
             S = stringLocalizer;
             H = htmlLocalizer;
             New = shapeFactory;
-            _clock = clock;
         }
 
         public async Task<IActionResult> List(ContentOptions options, PagerParameters pagerParameters)
@@ -204,7 +200,7 @@ namespace OrchardCore.Sitemaps.Controllers
                     SitemapId = _sitemapIdGenerator.GenerateUniqueId(),
                     Name = model.Name,
                     Path = model.Path,
-                    Enabled = model.Enabled,
+                    Enabled = model.Enabled
                 };
 
                 await _sitemapManager.UpdateSitemapAsync(sitemap);
