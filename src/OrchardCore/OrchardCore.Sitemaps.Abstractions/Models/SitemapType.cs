@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Newtonsoft.Json;
 using OrchardCore.Data.Documents;
 
 namespace OrchardCore.Sitemaps.Models
@@ -37,6 +38,7 @@ namespace OrchardCore.Sitemaps.Models
         /// <summary>
         /// Sitemap unique file name used for caching.
         /// </summary>
+        [JsonIgnore]
         public string CacheFileName => Name + "_" + Identifier + Sitemap.PathExtension;
 
         /// <summary>
