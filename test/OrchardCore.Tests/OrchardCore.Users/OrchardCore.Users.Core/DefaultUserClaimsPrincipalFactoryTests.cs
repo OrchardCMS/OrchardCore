@@ -19,6 +19,7 @@ namespace OrchardCore.Tests.OrchardCore.Users.Core
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
+        [Obsolete]
         public async Task EnsurePrincipalHasExpectedClaims(bool emailVerified)
         {
             //Arrange
@@ -37,10 +38,8 @@ namespace OrchardCore.Tests.OrchardCore.Users.Core
 
             var options = new Mock<IOptions<IdentityOptions>>();
             options.Setup(a => a.Value).Returns(new IdentityOptions());
-            var services = new ServiceCollection();
 
-            IServiceProvider serviceProvider = services.BuildServiceProvider();
-            var factory = new DefaultUserClaimsPrincipalFactory(userManager.Object, roleManager, options.Object, serviceProvider);
+            var factory = new DefaultUserClaimsPrincipalFactory(userManager.Object, roleManager, options.Object);
 
             //Act
             var principal = await factory.CreateAsync(user);

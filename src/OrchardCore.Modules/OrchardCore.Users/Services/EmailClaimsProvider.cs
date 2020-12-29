@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace OrchardCore.Users.Services
 {
-    public class EmailClaimsProvider : IClaimsProvider
+    internal class EmailClaimsProvider : IClaimsProvider
     {
         private readonly UserManager<IUser> _userManager;
 
@@ -13,7 +13,7 @@ namespace OrchardCore.Users.Services
         {
             _userManager = userManager;
         }
-        public async Task<ClaimsIdentity> GenerateAsync(IUser user, ClaimsIdentity claims)
+        public async Task GenerateAsync(IUser user, ClaimsIdentity claims)
         {
             if (user == null)
             {
@@ -37,8 +37,6 @@ namespace OrchardCore.Users.Services
                 var confirmed = await _userManager.IsEmailConfirmedAsync(user);
                 claims.AddClaim(new Claim("email_verified", confirmed ? bool.TrueString : bool.FalseString, ClaimValueTypes.Boolean));
             }
-
-            return claims;
         }
     }
 }
