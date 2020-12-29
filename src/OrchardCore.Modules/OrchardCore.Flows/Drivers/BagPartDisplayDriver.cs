@@ -91,7 +91,17 @@ namespace OrchardCore.Flows.Drivers
         private IEnumerable<ContentTypeDefinition> GetContainedContentTypes(ContentTypePartDefinition typePartDefinition)
         {
             var settings = typePartDefinition.GetSettings<BagPartSettings>();
-            return settings.ContainedContentTypes.Select(contentType => _contentDefinitionManager.GetTypeDefinition(contentType));
+            var ctds = new List<ContentTypeDefinition>();
+            foreach(var containedContentType in settings.ContainedContentTypes)
+            {
+                var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(containedContentType);
+                if (contentTypeDefinition != null)
+                {
+                    ctds.Add(contentTypeDefinition);
+                }
+            }
+
+            return ctds;
         }
     }
 }

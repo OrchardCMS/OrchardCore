@@ -99,9 +99,17 @@ namespace OrchardCore.Flows.Drivers
                 return _contentDefinitionManager.ListTypeDefinitions().Where(t => t.GetSettings<ContentTypeSettings>().Stereotype == "Widget");
             }
 
-            return settings.ContainedContentTypes
-                .Select(contentType => _contentDefinitionManager.GetTypeDefinition(contentType))
-                .Where(t => t.GetSettings<ContentTypeSettings>().Stereotype == "Widget");
+            var ctds = new List<ContentTypeDefinition>();
+            foreach(var containedContentType in settings.ContainedContentTypes)
+            {
+                var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(containedContentType);
+                if (contentTypeDefinition != null && contentTypeDefinition.GetSettings<ContentTypeSettings>().Stereotype == "Widget")
+                {
+                    ctds.Add(contentTypeDefinition);
+                }
+            }
+
+            return ctds;
         }
     }
 }
