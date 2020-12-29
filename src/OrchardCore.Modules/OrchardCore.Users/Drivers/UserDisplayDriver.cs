@@ -111,12 +111,12 @@ namespace OrchardCore.Users.Drivers
                 var userContext = new UserContext(user);
                 // TODO This handler should be invoked through the create or update methods.
                 // otherwise it will not be invoked when a workflow, or othcr hperation,anges this value.
-
+                await _userEventHandlers.InvokeAsync((handler, context) => handler.EnabledAsync(userContext), userContext, _logger);
             }
 
             if (context.Updater.ModelState.IsValid)
             {
-                if (model.EmailConfirmed)
+                if (model.EmailConfirmed && !await _userManager.IsEmailConfirmedAsync(user))
                 {
                     var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                     await _userManager.ConfirmEmailAsync(user, token);

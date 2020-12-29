@@ -20,6 +20,7 @@ namespace OrchardCore.Users.Drivers
     public class UserRoleDisplayDriver : DisplayDriver<User>
     {
         private const string AdministratorRole = "Administrator";
+
         private readonly UserManager<IUser> _userManager;
         private readonly IRoleService _roleService;
         private readonly IUserRoleStore<IUser> _userRoleStore;
