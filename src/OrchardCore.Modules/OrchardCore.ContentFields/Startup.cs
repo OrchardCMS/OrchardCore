@@ -90,7 +90,7 @@ namespace OrchardCore.ContentFields
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, LinkFieldSettingsDriver>();
             services.AddScoped<IContentFieldIndexHandler, LinkFieldIndexHandler>();
 
-            // Link Field
+            // MultiText Field
             services.AddContentField<MultiTextField>()
                 .UseDisplayDriver<MultiTextFieldDisplayDriver>();
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, MultiTextFieldSettingsDriver>();

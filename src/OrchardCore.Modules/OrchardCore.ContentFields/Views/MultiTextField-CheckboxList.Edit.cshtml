@@ -11,23 +11,21 @@
 
         options.Add(new SelectListItem { Text = option.Name, Value = option.Value, Selected = isSelected });
     }
-}
-@{     
     var i = 0;
-    <div class="form-group">
-        <label>@Model.PartFieldDefinition.DisplayName()</label>
-        @foreach (var option in options)
-        {
-            <div class="custom-control custom-checkbox">
-                <input type="checkbox" id="@(Html.IdFor(m => m.Values) + "_" + i)" name="@(Html.NameFor(m => m.Values))" class="custom-control-input" value="@option.Value" @(option.Selected ? "checked='checked'" : "") />
-                <label class="custom-control-label" for="@(Html.IdFor(m => m.Values) + "_" + i)">@option.Text</label>
-            </div>
-            i++;
-        }
-
-        @if (!String.IsNullOrEmpty(settings.Hint))
-        {
-            <span class="hint">@settings.Hint</span>
-        }
-    </div>
 }
+<div class="form-group">
+    <label>@Model.PartFieldDefinition.DisplayName()</label>
+    @foreach (var option in options)
+    {
+        <div class="custom-control custom-checkbox">
+            <input type="checkbox" id="@(Html.IdFor(m => m.Values) + "_" + i)" name="@(Html.NameFor(m => m.Values))" class="custom-control-input" value="@option.Value" @(option.Selected ? "checked='checked'" : "") />
+            <label class="custom-control-label" for="@(Html.IdFor(m => m.Values) + "_" + i)">@option.Text</label>
+        </div>
+        i++;
+    }
+
+    @if (!String.IsNullOrEmpty(settings.Hint))
+    {
+        <span class="hint">@settings.Hint</span>
+    }
+</div>
