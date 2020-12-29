@@ -75,14 +75,14 @@
                             <div class="btn-group btn-group-sm">
                                 <a asp-action="Delete"
                                 asp-route-sitemapId="@entry.SitemapId"
-                                class="btn btn-danger" itemprop="RemoveUrl UnsafeUrl">@T["Delete"]</a>
+                                class="btn btn-danger" data-url-af="RemoveUrl UnsafeUrl">@T["Delete"]</a>
                                 <button type="button" class="btn btn-danger dropdown-toggle dropdown-toggle-split" data-reference="parent" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                     <span class="sr-only">@T["Toggle Dropdown"]</span>
                                 </button>
                                 <div class="dropdown-menu dropdown-menu-right">
                                     <a asp-action="Toggle"
                                     asp-route-sitemapId="@entry.SitemapId"
-                                    class="dropdown-item btn-sm" itemprop="UnsafeUrl">@(entry.Enabled ? T["Disable"] : T["Enable"])</a>
+                                    class="dropdown-item btn-sm" data-url-af="UnsafeUrl">@(entry.Enabled ? T["Disable"] : T["Enable"])</a>
                                 </div>
                             </div>
                         </div>

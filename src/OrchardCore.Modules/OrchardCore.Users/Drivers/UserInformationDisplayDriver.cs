@@ -5,8 +5,6 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Users.Models;
@@ -16,21 +14,15 @@ namespace OrchardCore.Users.Drivers
 {
     public class UserInformationDisplayDriver : DisplayDriver<User>
     {
-        private readonly UserManager<IUser> _userManager;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthorizationService _authorizationService;
-        private readonly IStringLocalizer S;
 
         public UserInformationDisplayDriver(
-            UserManager<IUser> userManager,
             IHttpContextAccessor httpContextAccessor,
-            IAuthorizationService authorizationService,
-            IStringLocalizer<UserInformationDisplayDriver> stringLocalizer)
+            IAuthorizationService authorizationService)
         {
-            _userManager = userManager;
             _httpContextAccessor = httpContextAccessor;
             _authorizationService = authorizationService;
-            S = stringLocalizer;
         }
 
         public override IDisplayResult Edit(User user)
@@ -53,46 +45,14 @@ namespace OrchardCore.Users.Drivers
 
             var model = new EditUserInformationViewModel();
 
-            if (!await context.Updater.TryUpdateModelAsync(model, Prefix))
+            if (await context.Updater.TryUpdateModelAsync(model, Prefix))
             {
-                return Edit(user);
-            }
+                // Do not use the user manager to set these values, or validate them here, as they will validate at the incorrect time.
+                // After this driver runs the IUserService.UpdateAsync or IUserService.CreateAsync method will
+                // validate the user and provide the correct error messages based on the entire user objects values.
 
-            model.UserName = model.UserName?.Trim();
-            model.Email = model.Email?.Trim();
+                // Custom properties should still be validated in the driver.
 
-            if (string.IsNullOrWhiteSpace(model.UserName))
-            {
-                context.Updater.ModelState.AddModelError("UserName", S["A user name is required."]);
-            }
-
-            if (string.IsNullOrWhiteSpace(model.Email))
-            {
-                context.Updater.ModelState.AddModelError("Email", S["An email is required."]);
-            }
-
-            var userWithSameName = await _userManager.FindByNameAsync(model.UserName);
-            if (userWithSameName != null)
-            {
-                var userWithSameNameId = await _userManager.GetUserIdAsync(userWithSameName);
-                if (userWithSameNameId != user.UserId)
-                {
-                    context.Updater.ModelState.AddModelError(string.Empty, S["The user name is already used."]);
-                }
-            }
-
-            var userWithSameEmail = await _userManager.FindByEmailAsync(model.Email);
-            if (userWithSameEmail != null)
-            {
-                var userWithSameEmailId = await _userManager.GetUserIdAsync(userWithSameEmail);
-                if (userWithSameEmailId != user.UserId)
-                {
-                    context.Updater.ModelState.AddModelError(string.Empty, S["The email is already used."]);
-                }
-            }
-
-            if (context.Updater.ModelState.IsValid)
-            {
                 user.UserName = model.UserName;
                 user.Email = model.Email;
             }

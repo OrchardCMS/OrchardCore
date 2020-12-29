@@ -29,7 +29,6 @@ namespace OrchardCore.Users.Drivers
         private readonly ILogger _logger;
         private readonly IHtmlLocalizer H;
 
-
         public UserDisplayDriver(
             UserManager<IUser> userManager,
             IHttpContextAccessor httpContextAccessor,
@@ -85,8 +84,8 @@ namespace OrchardCore.Users.Drivers
 
             if (!model.IsEnabled && user.IsEnabled)
             {
-                var usersOfAdminRole = (await _userManager.GetUsersInRoleAsync(AdministratorRole)).Cast<User>();;
-                if (usersOfAdminRole.Count() == 1 && String.Equals(user.UserId, usersOfAdminRole.First().UserId , StringComparison.OrdinalIgnoreCase))
+                var usersOfAdminRole = (await _userManager.GetUsersInRoleAsync(AdministratorRole)).Cast<User>(); ;
+                if (usersOfAdminRole.Count() == 1 && String.Equals(user.UserId, usersOfAdminRole.First().UserId, StringComparison.OrdinalIgnoreCase))
                 {
                     _notifier.Warning(H["Cannot disable the only administrator."]);
                 }
@@ -96,6 +95,8 @@ namespace OrchardCore.Users.Drivers
                     {
                         user.IsEnabled = model.IsEnabled;
                         var userContext = new UserContext(user);
+                        // TODO This handler should be invoked through the create or update methods.
+                        // otherwise it will not be invoked when a workflow, or other operation, changes this value.
                         await _userEventHandlers.InvokeAsync((handler, context) => handler.DisabledAsync(userContext), userContext, _logger);
                     }
                     else
@@ -108,7 +109,9 @@ namespace OrchardCore.Users.Drivers
             {
                 user.IsEnabled = model.IsEnabled;
                 var userContext = new UserContext(user);
-                await _userEventHandlers.InvokeAsync((handler, context) => handler.EnabledAsync(userContext), userContext, _logger);
+                // TODO This handler should be invoked through the create or update methods.
+                // otherwise it will not be invoked when a workflow, or othcr hperation,anges this value.
+
             }
 
             if (context.Updater.ModelState.IsValid)
