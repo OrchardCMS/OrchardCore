@@ -75,7 +75,7 @@ namespace OrchardCore.Tests.OrchardCore.Users
             Assert.Equal("A user with the same email already exists.", controller.ViewData.ModelState["Email"].Errors[0].ErrorMessage);
         }
 
-        private static Mock<SignInManager<TUser>> MockSignInManager<TUser>(UserManager<TUser> userManager = null) where TUser : class
+        private static Mock<SignInManager<TUser>> MockSignInManager<TUser>(UserManager<TUser> userManager = null) where TUser : class, IUser
         {
             var context = new Mock<HttpContext>();
             var manager = userManager ?? UsersMockHelper.MockUserManager<TUser>().Object;
