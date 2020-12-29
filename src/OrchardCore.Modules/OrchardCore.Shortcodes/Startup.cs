@@ -76,6 +76,8 @@ namespace OrchardCore.Shortcodes
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<INavigationProvider, AdminMenu>();
 
+            services.AddRecipeExecutionStep<ShortcodeTemplateStep>();
+
             services.AddScoped<IShortcodeProvider, TemplateShortcodeProvider>();
             services.AddScoped<IShortcodeDescriptorProvider, ShortcodeTemplatesDescriptorProvider>();
         }
@@ -134,8 +136,6 @@ namespace OrchardCore.Shortcodes
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddRecipeExecutionStep<ShortcodeTemplateStep>();
-
             services.AddTransient<IDeploymentSource, AllShortcodeTemplatesDeploymentSource>();
             services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AllShortcodeTemplatesDeploymentStep>());
             services.AddScoped<IDisplayDriver<DeploymentStep>, AllShortcodeTemplatesDeploymentStepDriver>();
