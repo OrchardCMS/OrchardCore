@@ -28,6 +28,9 @@ namespace OrchardCore.Modules
             var feature = httpContext.Features.Get<ShellContextFeature>();
             var shellScope = await _shellHost.GetScopeAsync(feature.ShellContext.Settings);
 
+            // Update the feature as the scope may have been created on a different shell.
+            feature.ShellContext = shellScope.ShellContext;
+
             await shellScope.UsingAsync(scope => _next.Invoke(httpContext));
         }
     }

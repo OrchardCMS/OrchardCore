@@ -43,7 +43,7 @@ namespace Microsoft.AspNetCore.Builder
             configure?.Invoke(app);
 
             // Forward the request to the tenant specific pipeline.
-            app.UseMiddleware<TenantRouterMiddleware>(app.ServerFeatures);
+            app.UseMiddleware<TenantPipelineMiddleware>(app.ServerFeatures);
 
             return app;
         }
