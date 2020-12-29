@@ -51,7 +51,7 @@
                                     <ul class="list-group zones">
                                         @foreach (var contentItemSummary in Model.Widgets[zone])
                                         {
-                                            contentItemSummary.Tags.Add(Html.Raw("<span class=\"badge ta-badge font-weight-normal\"><i class=\"fa fa-bookmark-o text-info\" aria-hidden=\"true\"></i> " + contentItemSummary.ContentItem.Content.LayerMetadata.Layer + "</span>"));
+                                            contentItemSummary.Tags.Add(Html.Raw("<span class=\"badge ta-badge align-text-top font-weight-normal\"><i class=\"fa fa-bookmark-o text-info\" aria-hidden=\"true\"></i> " + contentItemSummary.ContentItem.Content.LayerMetadata.Layer + "</span>"));
                                             maxPosition = Math.Max(maxPosition, (double)contentItemSummary.ContentItem.Content.LayerMetadata.Position);
 
                                             <text>
