@@ -10,7 +10,7 @@ using OrchardCore.Users.Services;
 
 namespace OrchardCore.Demo.Services
 {
-    class UserProfileClaimsProvider : IClaimsProvider
+    internal class UserProfileClaimsProvider : IClaimsProvider
     {
         public Task<ClaimsIdentity> GenerateAsync(IUser user, ClaimsIdentity claims)
         {
