@@ -5,6 +5,6 @@ namespace OrchardCore.Users.Services
 {
     public interface IUserClaimsProvider
     {
-        Task<ClaimsIdentity> GenerateAsync(IUser user, ClaimsIdentity claims);
+        Task GenerateAsync(IUser user, ClaimsIdentity claims);
     }
 }
