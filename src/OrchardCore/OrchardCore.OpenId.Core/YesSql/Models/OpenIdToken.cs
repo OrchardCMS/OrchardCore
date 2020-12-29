@@ -24,12 +24,12 @@ namespace OrchardCore.OpenId.YesSql.Models
         public string AuthorizationId { get; set; }
 
         /// <summary>
-        /// Gets or sets the date on which the token will start to be considered valid.
+        /// Gets or sets the creation date of the current token.
         /// </summary>
         public DateTimeOffset? CreationDate { get; set; }
 
         /// <summary>
-        /// Gets or sets the date on which the token will no longer be considered valid.
+        /// Gets or sets the expiration date of the current token.
         /// </summary>
         public DateTimeOffset? ExpirationDate { get; set; }
 
@@ -49,6 +49,11 @@ namespace OrchardCore.OpenId.YesSql.Models
         /// Gets or sets the additional properties associated with the current token.
         /// </summary>
         public JObject Properties { get; set; }
+
+        /// <summary>
+        /// Gets or sets the redemption date of the current token.
+        /// </summary>
+        public DateTimeOffset? RedemptionDate { get; set; }
 
         /// <summary>
         /// Gets or sets the reference identifier associated

@@ -28,8 +28,10 @@ https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.identity.passwo
 
 ## Reading configuration from an external config file
 
-A better way to achieve this is to read configuration from an external file.  
-This will allow you to specify different settings depending on the environment and transform the configuration section when you deploy it.
+A better way to achieve this is to read configuration from configuration sources as settings files, environment variables, command-line arguments. For a complete list of the default configuration sources used by the default configuration providers, and how you can customize it, see the related ASP.NET Core documentation:  
+https://docs.microsoft.com/en-us/aspnet/core/fundamentals/configuration/?view=aspnetcore-3.1
+
+Using the `appsettings.{Environment}.json` settings files, for example `appsettings.json`, `appsettings.Production.json` and `appsettings.Development.json`, will allow you to specify different settings depending on the environment and transform the configuration section when you deploy it.
 
 To do this, add a `Configuration` property in the `Startup` class:
 
@@ -40,41 +42,35 @@ public IConfiguration Configuration { get; }
 In order to initialize the `Configuration`, set the property in the constructor like this:
 
 ```cs
- public Startup(IHostingEnvironment env)
- {
-   var builder = new ConfigurationBuilder()
-       .SetBasePath(env.ContentRootPath)
-       .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-       .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true, reloadOnChange: true)
-       .AddEnvironmentVariables();
-
-   Configuration = builder.Build();
- }
+public Startup(IConfiguration configuration)
+{
+    Configuration = configuration;
+}
 ```
 
 Then, replace the hard coded configuration with this code that reads it from the configuration file:
 
 ```cs
 services.Configure<IdentityOptions>(options =>
- {
+{
     Configuration.GetSection("IdentityOptions").Bind(options);
- });
+});
 ```
  
 Finally, create a file called `appsettings.json` with this configuration in json:
 
 ```json
 {
- "IdentityOptions": {
-   "Password": {
-     "RequireDigit": false,
-     "RequireLowercase": true,
-     "RequireUppercase": true,
-     "RequireNonAlphanumeric": false,
-     "RequiredUniqueChars": 3,
-     "RequiredLength": 6
-   }
- }
+  "IdentityOptions": {
+    "Password": {
+      "RequireDigit": false,
+      "RequireLowercase": true,
+      "RequireUppercase": true,
+      "RequireNonAlphanumeric": false,
+      "RequiredUniqueChars": 3,
+      "RequiredLength": 6
+    }
+  }
 }
 ```
 

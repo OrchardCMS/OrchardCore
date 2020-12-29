@@ -3,16 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using OrchardCore.DynamicCache.Models;
 using OrchardCore.Environment.Cache;
 
 namespace OrchardCore.DynamicCache.Services
 {
-    public class DefaultDynamicCacheService : IDynamicCacheService, ITagRemovedEventHandler
+    public class DefaultDynamicCacheService : IDynamicCacheService
     {
         private readonly ICacheContextManager _cacheContextManager;
         private readonly IDynamicCache _dynamicCache;
@@ -98,7 +98,7 @@ namespace OrchardCore.DynamicCache.Services
 
             // Lazy load to prevent cyclic dependency
             var tagCache = _serviceProvider.GetRequiredService<ITagCache>();
-            tagCache.Tag(cacheKey, context.Tags.ToArray());
+            await tagCache.TagAsync(cacheKey, context.Tags.ToArray());
         }
 
         private async Task<string> GetCacheKey(CacheContext context)

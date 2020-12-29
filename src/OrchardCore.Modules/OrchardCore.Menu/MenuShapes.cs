@@ -32,10 +32,10 @@ namespace OrchardCore.Menu
 
                     var shapeFactory = context.ServiceProvider.GetRequiredService<IShapeFactory>();
                     var contentManager = context.ServiceProvider.GetRequiredService<IContentManager>();
-                    var aliasManager = context.ServiceProvider.GetRequiredService<IContentAliasManager>();
+                    var handleManager = context.ServiceProvider.GetRequiredService<IContentHandleManager>();
 
                     string contentItemId = menu.Alias != null
-                        ? await aliasManager.GetContentItemIdAsync(menu.Alias)
+                        ? await handleManager.GetContentItemIdAsync(menu.Alias)
                         : menu.ContentItemId;
 
                     if (contentItemId == null)

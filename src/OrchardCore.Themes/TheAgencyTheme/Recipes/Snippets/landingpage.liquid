@@ -54,7 +54,7 @@
                             <i class="fas fa-plus fa-3x"></i>
                         </div>
                     </div>
-                    <img class="img-fluid" src="{{ project.Project.Image.Paths.first | asset_url | resize_url: width:480, height: 480, mode: 'stretch' }}" alt="{{ project.DisplayText }}">
+                    <img class="img-fluid" src="{{ project.Project.Image.Paths.first | asset_url | resize_url: profile: 'medium', mode: 'stretch' }}" alt="{{ project.DisplayText }}">
                 </div>
                 <div class="portfolio-caption">
                     <h4>{{ project.DisplayText }}</h4>
@@ -83,7 +83,7 @@
                     {% for milestone in Model.ContentItem.Content.About.ContentItems %}
                     <li class="{% cycle '', 'timeline-inverted' %}">
                         <div class="timeline-image">
-                            <img class="rounded-circle img-fluid" src="{{ milestone.Milestone.Image.Paths.first | asset_url | resize_url: width:160, height: 160, mode: 'stretch' }}" alt="">
+                            <img class="rounded-circle img-fluid" src="{{ milestone.Milestone.Image.Paths.first | asset_url | resize_url: profile: 'extrasmall', mode: 'stretch' }}" alt="">
                         </div>
                         <div class="timeline-panel">
                             <div class="timeline-heading">
@@ -126,7 +126,7 @@
             {% for member in Model.ContentItem.Content.Team.ContentItems %}
             <div class="col-sm-4">
                 <div class="team-member">
-                    <img class="mx-auto rounded-circle" src="{{ member.TeamMember.Picture.Paths.first | asset_url | resize_url: width:240, height: 240, mode: 'stretch' }}" alt="">
+                    <img class="mx-auto rounded-circle" src="{{ member.TeamMember.Picture.Paths.first | asset_url | resize_url: profile: 'small', mode: 'stretch' }}" alt="">
                     <h4>{{ member.DisplayText }}</h4>
                     <p class="text-muted">{{ member.TeamMember.Occupation.Text }}</p>
                     <ul class="list-inline social-buttons">
@@ -244,7 +244,7 @@
                             <!-- Project Details Go Here -->
                             <h2 class="text-uppercase">{{ project.DisplayText }}</h2>
                             <p class="item-intro text-muted">{{ project.Project.Category.Text }}</p>
-                            <img class="img-fluid d-block mx-auto" src="{{ project.Project.Image.Paths.first | asset_url | resize_url: width:480, height: 480, mode: 'max' }}" alt="{{ project.DisplayText }}">
+                            <img class="img-fluid d-block mx-auto" src="{{ project.Project.Image.Paths.first | asset_url | resize_url: profile: 'medium', mode: 'max' }}" alt="{{ project.DisplayText }}">
                             <p>{{ project.HtmlBodyPart.Html | raw }}</p>
                             {% comment %}
                             <ul class="list-inline">

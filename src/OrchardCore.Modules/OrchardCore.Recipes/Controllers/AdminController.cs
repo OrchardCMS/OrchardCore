@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -67,7 +68,8 @@ namespace OrchardCore.Recipes.Controllers
 
             var model = recipes.Select(recipe => new RecipeViewModel
             {
-                Name = recipe.DisplayName,
+                Name = recipe.Name,
+                DisplayName = recipe.DisplayName,
                 FileName = recipe.RecipeFileInfo.Name,
                 BasePath = recipe.BasePath,
                 Tags = recipe.Tags,
@@ -94,7 +96,7 @@ namespace OrchardCore.Recipes.Controllers
 
             if (recipe == null)
             {
-                _notifier.Error(H["Recipe was not found"]);
+                _notifier.Error(H["Recipe was not found."]);
                 return RedirectToAction("Index");
             }
 
@@ -111,6 +113,7 @@ namespace OrchardCore.Recipes.Controllers
                 {
                     site.SiteName,
                     AdminUsername = User.Identity.Name,
+                    AdminUserId = User.FindFirstValue(ClaimTypes.NameIdentifier)
                 },
                 CancellationToken.None);
             }
@@ -122,7 +125,7 @@ namespace OrchardCore.Recipes.Controllers
 
             await _shellHost.ReleaseShellContextAsync(_shellSettings);
 
-            _notifier.Success(H["The recipe '{0}' has been run successfully", recipe.Name]);
+            _notifier.Success(H["The recipe '{0}' has been run successfully.", recipe.DisplayName]);
             return RedirectToAction("Index");
         }
     }

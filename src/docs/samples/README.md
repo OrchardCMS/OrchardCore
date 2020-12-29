@@ -1,5 +1,9 @@
 # Samples
 
+## Authors
+
+{{ git_site_authors }}
+
 ## Caret
 
 ^^Insert me^^

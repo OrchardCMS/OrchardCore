@@ -24,7 +24,7 @@ namespace OrchardCore.Shortcodes.Services
                 context = new Context();
             }
 
-            foreach(var contextProvider in _shortcodeContextProviders)
+            foreach (var contextProvider in _shortcodeContextProviders)
             {
                 contextProvider.Contextualize(context);
             }

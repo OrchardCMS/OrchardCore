@@ -151,6 +151,11 @@ It has the `Widget` stereotype in its content definition.
 Page Layout in which you can add widgets.  
 See [Flow](../reference/modules/Flow/README.md)
 
+### Shortcode
+
+A Shortcode is a small piece of code wrapped into [brackets] that can add some behavior to content editors, like embedding media files.  
+See [Shortcodes](../reference/modules/Shortcodes/README.md)
+
 ## Administrator
 
 ### Recipe

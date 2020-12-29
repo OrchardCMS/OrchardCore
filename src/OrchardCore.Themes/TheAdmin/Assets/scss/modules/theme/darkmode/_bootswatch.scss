@@ -1,0 +1,266 @@
+// Darkly 4.3.1
+// Bootswatch
+
+// Variables ===================================================================
+@import "_admin-variables.scss";
+// Navbar ======================================================================
+@import "../../admin/_navbar.scss";
+
+.ta-navbar-top {
+    @extend .navbar-dark;
+    color: $gray-300;
+
+    a {
+        color: $gray-300;
+        text-decoration: none;
+    }
+}
+
+.ta-badge {
+    @extend .badge-dark;
+}
+
+.ta-navbar-brand {
+    span:last-child {
+        font-weight: bold;
+        color: $gray-300;
+    }
+}
+
+@import "../../admin/_list.scss";
+@import "../../admin/_sidebar-menu.scss";
+// Layout ======================================================================
+@import "../../_layout.scss";
+
+.bg-primary {
+    background-color: rgb(27, 30, 31) !important;
+}
+
+#mediaApp {
+    background-color: $body-bg;
+}
+
+// Buttons =====================================================================
+
+// Typography ==================================================================
+
+.blockquote {
+    &-footer {
+        color: $gray-600;
+    }
+}
+
+.trumbowyg-fullscreen .trumbowyg-editor{
+    color: black;
+}
+
+// Tables ======================================================================
+
+.table {
+    &-primary {
+        &,
+        > th,
+        > td {
+            background-color: $primary;
+        }
+    }
+
+    &-secondary {
+        &,
+        > th,
+        > td {
+            background-color: $secondary;
+        }
+    }
+
+    &-light {
+        &,
+        > th,
+        > td {
+            background-color: $light;
+        }
+    }
+
+    &-dark {
+        &,
+        > th,
+        > td {
+            background-color: $dark;
+        }
+    }
+
+    &-success {
+        &,
+        > th,
+        > td {
+            background-color: $success;
+        }
+    }
+
+    &-info {
+        &,
+        > th,
+        > td {
+            background-color: $info;
+        }
+    }
+
+    &-danger {
+        &,
+        > th,
+        > td {
+            background-color: $danger;
+        }
+    }
+
+    &-warning {
+        &,
+        > th,
+        > td {
+            background-color: $warning;
+        }
+    }
+
+    &-active {
+        &,
+        > th,
+        > td {
+            background-color: $table-active-bg;
+        }
+    }
+
+    &-hover {
+        .table-primary:hover {
+            &,
+            > th,
+            > td {
+                background-color: darken($primary, 5%);
+            }
+        }
+
+        .table-secondary:hover {
+            &,
+            > th,
+            > td {
+                background-color: darken($secondary, 5%);
+            }
+        }
+
+        .table-light:hover {
+            &,
+            > th,
+            > td {
+                background-color: darken($light, 5%);
+            }
+        }
+
+        .table-dark:hover {
+            &,
+            > th,
+            > td {
+                background-color: darken($dark, 5%);
+            }
+        }
+
+        .table-success:hover {
+            &,
+            > th,
+            > td {
+                background-color: darken($success, 5%);
+            }
+        }
+
+        .table-info:hover {
+            &,
+            > th,
+            > td {
+                background-color: darken($info, 5%);
+            }
+        }
+
+        .table-danger:hover {
+            &,
+            > th,
+            > td {
+                background-color: darken($danger, 5%);
+            }
+        }
+
+        .table-warning:hover {
+            &,
+            > th,
+            > td {
+                background-color: darken($warning, 5%);
+            }
+        }
+
+        .table-active:hover {
+            &,
+            > th,
+            > td {
+                background-color: $table-active-bg;
+            }
+        }
+    }
+}
+
+// Forms =======================================================================
+@import "modules/admin/_forms.scss";
+
+.input-group-addon {
+    color: #fff;
+}
+
+// Navs ========================================================================
+
+.breadcrumb a {
+    color: #fff;
+}
+
+.pagination {
+    a:hover {
+        text-decoration: none;
+    }
+}
+
+// Indicators ==================================================================
+
+.close {
+    opacity: 0.4;
+
+    &:hover,
+    &:focus {
+        opacity: 1;
+    }
+}
+
+.alert {
+    @each $color, $value in $theme-colors {
+        &-#{$color} {
+            @if $enable-gradients {
+                background: $value linear-gradient(180deg, mix($white, $value, 15%), $value) repeat-x;
+            } @else {
+                background-color: $value;
+            }
+        }
+    }
+}
+
+// Progress bars ===============================================================
+
+// Containers ==================================================================
+
+.list-group-item-action {
+    color: #fff;
+
+    &:hover,
+    &:focus {
+        background-color: $gray-700;
+        color: #fff;
+    }
+
+    .list-group-item-heading {
+        color: #fff;
+    }
+}
+

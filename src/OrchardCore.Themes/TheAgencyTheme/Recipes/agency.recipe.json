@@ -18,7 +18,6 @@
   "steps": [
     {
       "name": "feature",
-      "disable": [],
       "enable": [
         // SaaS
         "OrchardCore.HomeRoute",
@@ -53,6 +52,7 @@
         "OrchardCore.Markdown",
         "OrchardCore.Media",
         "OrchardCore.Menu",
+        "OrchardCore.Placements",
         "OrchardCore.Queries",
         "OrchardCore.Shortcodes.Templates",
         "OrchardCore.Title",
@@ -947,7 +947,7 @@
           "DisplayText": "Footer",
           "Latest": true,
           "Published": true,
-          "Owner": "[js: parameters('AdminUsername')]",
+          "Owner": "[js: parameters('AdminUserId')]",
           "Author": "[js: parameters('AdminUsername')]",
           "LayerMetadata": {
             "Layer": "Always",
@@ -1061,7 +1061,7 @@
           "DisplayText": "Main Menu",
           "Latest": true,
           "Published": true,
-          "Owner": "[js: parameters('AdminUsername')]",
+          "Owner": "[js: parameters('AdminUserId')]",
           "Author": "[js: parameters('AdminUsername')]",
           "MenuPart": {},
           "TitlePart": {
@@ -1122,7 +1122,7 @@
           "DisplayText": "[js: parameters('SiteName')]",
           "Latest": true,
           "Published": true,
-          "Owner": "[js: parameters('AdminUsername')]",
+          "Owner": "[js: parameters('AdminUserId')]",
           "Author": "[js: parameters('AdminUsername')]",
           "LandingPage": {},
           "AutoroutePart": {
@@ -1674,7 +1674,35 @@
           "Content": "[file:text('Snippets/landingpage.liquid')]"
         }
       }
-    }
-
+    },
+    {
+      "name": "MediaProfiles",
+      "MediaProfiles": {
+        "medium": {
+          "Hint": "A medium image (480px x 480px)",
+          "Width": 480,
+          "Height": 480,
+          "Mode": 0,
+          "Format": 0,
+          "Quality": 100
+        },        
+        "small": {
+          "Hint": "A small image (240px x 240px)",
+          "Width": 240,
+          "Height": 240,
+          "Mode": 0,
+          "Format": 0,
+          "Quality": 100
+        },        
+        "extrasmall": {
+          "Hint": "A extra small image (160px x 160px)",
+          "Width": 160,
+          "Height": 160,
+          "Mode": 0,
+          "Format": 0,
+          "Quality": 100
+        }
+      }
+    }  
   ]
 }

@@ -206,7 +206,13 @@
 
             var selected = $(e.target).prop('checked');
             $(listItem).find('select, input:not(.content-type-checkbox)').each(function () {
-                selected ? $(this).prop('readonly', false) : $(this).prop('readonly', true);
+                if (selected) {
+                    $(this).prop('readonly', false)
+                    $(this).prop('disabled', false);
+                } else {
+                    $(this).prop('readonly', true);
+                    $(this).prop('disabled', true);
+                }
             });
         });
 

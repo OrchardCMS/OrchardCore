@@ -11,8 +11,12 @@ Many extensions methods are available in Razor with `@Orchard`.
 | `CultureDir()` | OrchardCore.DisplayManagement | Returns the current culture direction. |
 | `CultureName()` | OrchardCore.DisplayManagement | Returns the current culture name. |
 | `ResourceUrl(string resourcePath, bool? appendVersion = null)` | OrchardCore.ResourceManagement | Prefixes the Cdn Base URL to the specified resource path. |
+| `GetContentItemIdByAliasAsync(string alias)` | OrchardCore.Contents | Returns a content item id from its alias. Ex: `carousel` |
+| `GetContentItemIdBySlugAsync(string slug)` | OrchardCore.Contents | Returns a content item id from its slug. Ex: `myblog/my-blog-post` |
 | `GetContentItemIdByHandleAsync(string handle)` | OrchardCore.Contents | Returns a content item id from its handle. Ex: `alias:carousel`, `slug:myblog/my-blog-post` |
-| `GetContentItemByHandleAsync(string handle, bool latest = false)` | OrchardCore.Contents | Loads a content item by its handle, seeking the latest version or not. |
+| `GetContentItemByAliasAsync(string alias, bool latest = false)` | OrchardCore.Contents | Loads a content item by its alias, seeking the latest version or not. Ex: `carousel` |
+| `GetContentItemBySlugAsync(string slug, bool latest = false)` | OrchardCore.Contents | Loads a content item by its slug, seeking the latest version or not. Ex: `slug:myblog/my-blog-post`|
+| `GetContentItemByHandleAsync(string handle, bool latest = false)` | OrchardCore.Contents | Loads a content item by its handle, seeking the latest version or not. Ex: `alias:carousel`, `slug:myblog/my-blog-post`|
 | `GetContentItemByIdAsync(string contentItemId, bool latest = false)` | OrchardCore.Contents | Loads a content item by its id. |
 | `GetContentItemsByIdAsync(IEnumerable<string> contentItemIds, bool latest = false)` | OrchardCore.Contents | Loads a list of content items by their ids. |
 | `GetContentItemByVersionIdAsync(string contentItemVersionId)` | OrchardCore.Contents | Loads a content item by its version id. |
@@ -20,7 +24,7 @@ Many extensions methods are available in Razor with `@Orchard`.
 | `GetRecentContentItemsByContentTypeAsync(string contentType, int maxContentItems = 10)` | OrchardCore.Contents | Loads content items of a specific type. |
 | `LiquidToHtmlAsync(string liquid)` | [OrchardCore.Liquid](../../modules/Liquid/README.md#razor-helpers) | Parses a liquid string to HTML. |
 | `LiquidToHtmlAsync(string liquid, object model)` | [OrchardCore.Liquid](../../modules/Liquid/README.md#razor-helpers) | Parses a liquid string to HTML. |
-| `SanitizeHtml(string html)` | [OrchardCore.Infrastructure](../../core/Sanitize/README.md#razor-helpers) | Sanitizes an HTML string. |
+| `SanitizeHtml(string html)` | [OrchardCore.Infrastructure](../Sanitizer/README.md#razor-helper) | Sanitizes an HTML string. |
 | `QueryListItemsCountAsync(string listContentItemId, Expression<Func<ContentItemIndex, bool>> itemPredicate = null)` | OrchardCore.Lists | Returns list count. |
 | `QueryListItemsAsync(string listContentItemId, Expression<Func<ContentItemIndex, bool>> itemPredicate = null)` | [OrchardCore.List](../../modules/List/README.md#orchard-helpers) | Returns list items. |
 | `MarkdownToHtmlAsync(string listContentItemId, Expression<Func<ContentItemIndex, bool>> itemPredicate = null)` | [OrchardCore.Markdown](../../modules/Markdown/README.md#razor-helper) | Converts Markdown string to HTML. |

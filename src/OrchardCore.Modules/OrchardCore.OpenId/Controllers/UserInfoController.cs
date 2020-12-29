@@ -129,9 +129,9 @@ namespace OrchardCore.OpenId.Controllers
 
             if (principal.HasScope(Scopes.Phone))
             {
-                var phone = principal.FindFirst(Claims.PhoneNumber)?.Value     ??
+                var phone = principal.FindFirst(Claims.PhoneNumber)?.Value ??
                             principal.FindFirst(ClaimTypes.MobilePhone)?.Value ??
-                            principal.FindFirst(ClaimTypes.HomePhone)?.Value   ??
+                            principal.FindFirst(ClaimTypes.HomePhone)?.Value ??
                             principal.FindFirst(ClaimTypes.OtherPhone)?.Value;
 
                 if (!string.IsNullOrEmpty(phone))

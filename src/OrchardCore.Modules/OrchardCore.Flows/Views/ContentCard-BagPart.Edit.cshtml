@@ -13,7 +13,7 @@
         }
         <button type="button" class="btn btn-outline-secondary btn-sm widget-editor-btn-toggle widget-editor-btn-collapse"><i class="fa fa-angle-down" aria-hidden="true"></i></button>
         <button type="button" class="btn btn-outline-secondary btn-sm widget-editor-btn-toggle widget-editor-btn-expand"><i class="fa fa-angle-up" aria-hidden="true"></i></button>
-        @T["{0} — <span class=\"hint\">{1}</span>", contentItem.DisplayText, contentType]
+        @T["{0} <span class=\"hint dashed\">{1}</span>", contentItem.DisplayText, contentType]
         @if (Model.CanDelete != false)
         {
             <div class="btn-group btn-group-sm float-right" role="group">

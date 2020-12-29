@@ -30,15 +30,15 @@ namespace OrchardCore.ContentManagement.Records
                 .Column<string>("DisplayText", column => column.Nullable().WithLength(ContentItemIndex.MaxDisplayTextSize))
             );
 
-            SchemaBuilder.AlterTable(nameof(ContentItemIndex), table => table
+            SchemaBuilder.AlterIndexTable<ContentItemIndex>(table => table
                 .CreateIndex("IDX_ContentItemIndex_ContentItemId", "ContentItemId", "Latest", "Published", "CreatedUtc")
             );
 
-            SchemaBuilder.AlterTable(nameof(ContentItemIndex), table => table
+            SchemaBuilder.AlterIndexTable<ContentItemIndex>(table => table
                 .CreateIndex("IDX_ContentItemIndex_ContentItemVersionId", "ContentItemVersionId")
             );
 
-            SchemaBuilder.AlterTable(nameof(ContentItemIndex), table => table
+            SchemaBuilder.AlterIndexTable<ContentItemIndex>(table => table
                 .CreateIndex("IDX_ContentItemIndex_DisplayText", "DisplayText")
             );
 
@@ -47,11 +47,11 @@ namespace OrchardCore.ContentManagement.Records
 
         public int UpdateFrom1()
         {
-            SchemaBuilder.AlterTable(nameof(ContentItemIndex), table => table
+            SchemaBuilder.AlterIndexTable<ContentItemIndex>(table => table
                 .AddColumn<string>("ContentItemVersionId", c => c.WithLength(26))
             );
 
-            SchemaBuilder.AlterTable(nameof(ContentItemIndex), table => table
+            SchemaBuilder.AlterIndexTable<ContentItemIndex>(table => table
                 .CreateIndex("IDX_ContentItemIndex_ContentItemVersionId", "ContentItemVersionId")
             );
 
@@ -60,11 +60,11 @@ namespace OrchardCore.ContentManagement.Records
 
         public int UpdateFrom2()
         {
-            SchemaBuilder.AlterTable(nameof(ContentItemIndex), table => table
+            SchemaBuilder.AlterIndexTable<ContentItemIndex>(table => table
                 .AddColumn<string>("DisplayText", column => column.Nullable().WithLength(ContentItemIndex.MaxDisplayTextSize))
             );
 
-            SchemaBuilder.AlterTable(nameof(ContentItemIndex), table => table
+            SchemaBuilder.AlterIndexTable<ContentItemIndex>(table => table
                 .CreateIndex("IDX_ContentItemIndex_DisplayText", "DisplayText")
             );
 

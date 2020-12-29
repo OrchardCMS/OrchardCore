@@ -27,7 +27,7 @@ namespace OrchardCore.Contents.Deployment
         }
 
         public override async Task<IDisplayResult> UpdateAsync(AllContentDeploymentStep step, IUpdateModel updater)
-        {            
+        {
             await updater.TryUpdateModelAsync(step, Prefix, x => x.ExportAsSetupRecipe);
 
             return Edit(step);

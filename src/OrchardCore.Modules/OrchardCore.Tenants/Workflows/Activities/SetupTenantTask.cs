@@ -19,14 +19,11 @@ namespace OrchardCore.Tenants.Workflows.Activities
     {
         private readonly IClock _clock;
         private readonly IUpdateModelAccessor _updateModelAccessor;
-        private readonly IWorkflowExpressionEvaluator _expressionEvaluator;
-
         public SetupTenantTask(IShellSettingsManager shellSettingsManager, IShellHost shellHost, ISetupService setupService, IClock clock, IWorkflowExpressionEvaluator expressionEvaluator, IWorkflowScriptEvaluator scriptEvaluator, IUpdateModelAccessor updateModelAccessor, IStringLocalizer<SetupTenantTask> localizer)
             : base(shellSettingsManager, shellHost, expressionEvaluator, scriptEvaluator, localizer)
         {
             SetupService = setupService;
             _clock = clock;
-            _expressionEvaluator = expressionEvaluator;
             _updateModelAccessor = updateModelAccessor;
         }
 
@@ -120,15 +117,15 @@ namespace OrchardCore.Tenants.Workflows.Activities
                 return Outcomes("Failed");
             }
 
-            var siteName = (await _expressionEvaluator.EvaluateAsync(SiteName, workflowContext, null))?.Trim();
-            var adminUsername = (await _expressionEvaluator.EvaluateAsync(AdminUsername, workflowContext, null))?.Trim();
-            var adminEmail = (await _expressionEvaluator.EvaluateAsync(AdminEmail, workflowContext, null))?.Trim();
-            var adminPassword = (await _expressionEvaluator.EvaluateAsync(AdminPassword, workflowContext, null))?.Trim();
+            var siteName = (await ExpressionEvaluator.EvaluateAsync(SiteName, workflowContext, null))?.Trim();
+            var adminUsername = (await ExpressionEvaluator.EvaluateAsync(AdminUsername, workflowContext, null))?.Trim();
+            var adminEmail = (await ExpressionEvaluator.EvaluateAsync(AdminEmail, workflowContext, null))?.Trim();
+            var adminPassword = (await ExpressionEvaluator.EvaluateAsync(AdminPassword, workflowContext, null))?.Trim();
 
-            var databaseProvider = (await _expressionEvaluator.EvaluateAsync(DatabaseProvider, workflowContext, null))?.Trim();
-            var databaseConnectionString = (await _expressionEvaluator.EvaluateAsync(DatabaseConnectionString, workflowContext, null))?.Trim();
-            var databaseTablePrefix = (await _expressionEvaluator.EvaluateAsync(DatabaseTablePrefix, workflowContext, null))?.Trim();
-            var recipeName = (await _expressionEvaluator.EvaluateAsync(RecipeName, workflowContext, null))?.Trim();
+            var databaseProvider = (await ExpressionEvaluator.EvaluateAsync(DatabaseProvider, workflowContext, null))?.Trim();
+            var databaseConnectionString = (await ExpressionEvaluator.EvaluateAsync(DatabaseConnectionString, workflowContext, null))?.Trim();
+            var databaseTablePrefix = (await ExpressionEvaluator.EvaluateAsync(DatabaseTablePrefix, workflowContext, null))?.Trim();
+            var recipeName = (await ExpressionEvaluator.EvaluateAsync(RecipeName, workflowContext, null))?.Trim();
 
             if (string.IsNullOrEmpty(databaseProvider))
             {

@@ -30,7 +30,7 @@ dotnet new occms
 
 The above command will use the default options.
 
-You can pass the following CLI parameters to setup options
+You can pass the following CLI parameters to setup options:
 
 ```CMD
 Orchard Core Cms Web App (C#)
@@ -61,7 +61,7 @@ dotnet new ocmvc
 
 ### From Visual Studio (manual way)
 
-Fire up Visual Studio, create a new solution file (`.sln`) by creating a new ASP.NET Core Web Application :
+Fire up Visual Studio, create a new solution file (`.sln`) by creating a new ASP.NET Core Web Application:
 
 ![image](../assets/images/templates/orchard-screencast-1.gif)
 
@@ -72,13 +72,12 @@ Now that we created a new Web Application we need to add proper dependencies so 
 
 ![image](../assets/images/templates/orchard-screencast-2.gif)
 
-Finally we will need to register Orchard CMS service in our `Startup.cs` file like this :
+Finally, we will need to register Orchard CMS service in our `Startup.cs` file like this:
 
 ```C#
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 namespace MyNewWebsite
 {
@@ -92,7 +91,7 @@ namespace MyNewWebsite
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
@@ -118,7 +117,7 @@ dotnet new ocmodulecms
 
 The above command will use the default options.
 
-You can pass the following CLI parameters to setup options
+You can pass the following CLI parameters to setup options:
 
 ```CMD
 Orchard Core Module (C#)
@@ -146,7 +145,7 @@ dotnet new ocmodulecms -n ModuleName.OrchardCore --AddPart true --PartName Test
 ```
 
 !!! note
-    `Part` is appended automatically to the end of the supplied `PartName`
+    `Part` is appended automatically to the end of the supplied `PartName`.
 
 ### New module from Visual Studio (manual way)
 
@@ -154,7 +153,7 @@ Fire up Visual Studio, open Orchard Core solution file (`.sln`), select `Orchard
 
 ![image](../assets/images/templates/38450533-6c0fbc98-39ed-11e8-91a5-d26a1105b91a.png)
 
-For marking this new Class Library as an Orchard Module we will now need to reference `OrchardCore.Module.Targets` NuGet package.
+For marking this new Class Library as an Orchard Module, we will now need to reference `OrchardCore.Module.Targets` NuGet package.
 
 !!! note
     If you want to use the `preview` packages, [configure the OrchardCore Preview url in your Package sources](../preview-package-source.md)
@@ -168,7 +167,7 @@ Once you have found it, click on the Install button on the right panel next to V
 
 ![image](../assets/images/templates/38450558-f4b83098-39ed-11e8-93c7-0fd9e5112dff.png)
 
-Once done, your new module will look like this :
+Once done, your new module will look like this:
 
 ![image](../assets/images/templates/38450628-31c8e2b0-39ef-11e8-9de7-c15f0c6544c5.png)
 
@@ -204,7 +203,7 @@ dotnet new octheme -n "ThemeName.OrchardCore"
 
 ### New theme from Visual Studio (manual way)
 
-Should be the same procedure as with modules, but instead we need to reference `OrchardCore.Theme.Targets`, and the `Manifest.cs` file differs slightly:
+Should be the same procedure as with modules but instead, we need to reference `OrchardCore.Theme.Targets` and the `Manifest.cs` file differs slightly:
 
 ```C#
 using OrchardCore.DisplayManagement.Manifest;

@@ -1,5 +1,5 @@
 @model OrchardCore.Deployment.ViewModels.ImportJsonViewModel
-<h1>@RenderTitleSegments(T["JSON Import"])</h1>
+<zone Name="Title"><h1>@RenderTitleSegments(T["JSON Import"])</h1></zone>
 
 <style asp-name="codemirror"></style>
 <script asp-name="codemirror" depends-on="admin" at="Foot"></script>
@@ -12,7 +12,7 @@
     <div class="form-group">
         <textarea asp-for="Json" class="form-control mb-2" rows="20"></textarea>
     </div>
-    <button class="btn btn-primary" type="submit">@T["Import"]</button>
+    <button class="btn btn-primary import" type="submit">@T["Import"]</button>
 </form>
 
 <script at="Foot">

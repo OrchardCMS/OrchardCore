@@ -5,7 +5,7 @@
 
 <style asp-name="bootstrap"></style>
 <script asp-name="bootstrap" at="Foot"></script>
-<script asp-src="~/OrchardCore.Templates/js.cookie.js" depends-on="jquery" at="Foot"></script>
+<script asp-name="js-cookie" at="Foot"></script>
 
 <resources type="Header" />
 
@@ -38,7 +38,7 @@
 
 <resources type="Footer" />
 
-<script type="text/javascript">
+<script>
     var indexPreviewUrl = $(document.getElementById('indexPreviewUrl')).data('value');
     var renderPreviewUrl = $(document.getElementById('renderPreviewUrl')).data('value');
     var contentPreviewUrl = $(document.getElementById('contentPreviewUrl')).data('value');
@@ -127,7 +127,7 @@
                 previewRendering = false;
                 return;
             }
-            formData += '&' + $.param({ 'Alias': contentPreviewUrl || "" });
+            formData += '&' + $.param({ 'Handle': contentPreviewUrl || "" });
 
             $.post(renderPreviewUrl, formData)
                 .done(function (data) {

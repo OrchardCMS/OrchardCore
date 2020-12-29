@@ -37,14 +37,15 @@ namespace OrchardCore.OpenId.Drivers
                 model.EnableTokenEndpoint = settings.TokenEndpointPath.HasValue;
                 model.EnableUserInfoEndpoint = settings.UserinfoEndpointPath.HasValue;
 
-                model.AllowPasswordFlow = settings.GrantTypes.Contains(GrantTypes.Password);
-                model.AllowClientCredentialsFlow = settings.GrantTypes.Contains(GrantTypes.ClientCredentials);
-                model.AllowAuthorizationCodeFlow = settings.GrantTypes.Contains(GrantTypes.AuthorizationCode);
-                model.AllowRefreshTokenFlow = settings.GrantTypes.Contains(GrantTypes.RefreshToken);
-                model.AllowImplicitFlow = settings.GrantTypes.Contains(GrantTypes.Implicit);
+                model.AllowAuthorizationCodeFlow = settings.AllowAuthorizationCodeFlow;
+                model.AllowClientCredentialsFlow = settings.AllowClientCredentialsFlow;
+                model.AllowHybridFlow = settings.AllowHybridFlow;
+                model.AllowImplicitFlow = settings.AllowImplicitFlow;
+                model.AllowPasswordFlow = settings.AllowPasswordFlow;
+                model.AllowRefreshTokenFlow = settings.AllowRefreshTokenFlow;
 
                 model.DisableAccessTokenEncryption = settings.DisableAccessTokenEncryption;
-                model.UseRollingRefreshTokens = settings.UseRollingRefreshTokens;
+                model.DisableRollingRefreshTokens = settings.DisableRollingRefreshTokens;
                 model.UseReferenceAccessTokens = settings.UseReferenceAccessTokens;
 
                 foreach (var (certificate, location, name) in await _serverService.GetAvailableCertificatesAsync())
@@ -90,53 +91,15 @@ namespace OrchardCore.OpenId.Drivers
             settings.UserinfoEndpointPath = model.EnableUserInfoEndpoint ?
                 new PathString("/connect/userinfo") : PathString.Empty;
 
-            if (model.AllowAuthorizationCodeFlow)
-            {
-                settings.GrantTypes.Add(GrantTypes.AuthorizationCode);
-            }
-            else
-            {
-                settings.GrantTypes.Remove(GrantTypes.AuthorizationCode);
-            }
-
-            if (model.AllowImplicitFlow)
-            {
-                settings.GrantTypes.Add(GrantTypes.Implicit);
-            }
-            else
-            {
-                settings.GrantTypes.Remove(GrantTypes.Implicit);
-            }
-
-            if (model.AllowClientCredentialsFlow)
-            {
-                settings.GrantTypes.Add(GrantTypes.ClientCredentials);
-            }
-            else
-            {
-                settings.GrantTypes.Remove(GrantTypes.ClientCredentials);
-            }
-
-            if (model.AllowPasswordFlow)
-            {
-                settings.GrantTypes.Add(GrantTypes.Password);
-            }
-            else
-            {
-                settings.GrantTypes.Remove(GrantTypes.Password);
-            }
-
-            if (model.AllowRefreshTokenFlow)
-            {
-                settings.GrantTypes.Add(GrantTypes.RefreshToken);
-            }
-            else
-            {
-                settings.GrantTypes.Remove(GrantTypes.RefreshToken);
-            }
+            settings.AllowAuthorizationCodeFlow = model.AllowAuthorizationCodeFlow;
+            settings.AllowClientCredentialsFlow = model.AllowClientCredentialsFlow;
+            settings.AllowHybridFlow = model.AllowHybridFlow;
+            settings.AllowImplicitFlow = model.AllowImplicitFlow;
+            settings.AllowPasswordFlow = model.AllowPasswordFlow;
+            settings.AllowRefreshTokenFlow = model.AllowRefreshTokenFlow;
 
             settings.DisableAccessTokenEncryption = model.DisableAccessTokenEncryption;
-            settings.UseRollingRefreshTokens = model.UseRollingRefreshTokens;
+            settings.DisableRollingRefreshTokens = model.DisableRollingRefreshTokens;
             settings.UseReferenceAccessTokens = model.UseReferenceAccessTokens;
 
             return await EditAsync(settings, context);

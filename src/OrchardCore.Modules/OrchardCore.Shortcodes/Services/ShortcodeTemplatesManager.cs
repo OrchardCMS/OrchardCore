@@ -1,89 +1,37 @@
-using System;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Primitives;
-using OrchardCore.Data;
-using OrchardCore.Environment.Cache;
+using OrchardCore.Documents;
 using OrchardCore.Shortcodes.Models;
-using YesSql;
 
 namespace OrchardCore.Shortcodes.Services
 {
     public class ShortcodeTemplatesManager
     {
-        private const string CacheKey = nameof(ShortcodeTemplatesManager);
+        private readonly IDocumentManager<ShortcodeTemplatesDocument> _documentManager;
 
-        private readonly ISignal _signal;
-        private readonly ISession _session;
-        private readonly ISessionHelper _sessionHelper;
-        private readonly IMemoryCache _memoryCache;
-
-        public ShortcodeTemplatesManager(
-            ISignal signal,
-            ISession session,
-            ISessionHelper sessionHelper,
-            IMemoryCache memoryCache)
-        {
-            _signal = signal;
-            _session = session;
-            _sessionHelper = sessionHelper;
-            _memoryCache = memoryCache;
-        }
-
-        public IChangeToken ChangeToken => _signal.GetToken(CacheKey);
+        public ShortcodeTemplatesManager(IDocumentManager<ShortcodeTemplatesDocument> documentManager) => _documentManager = documentManager;
 
         /// <summary>
-        /// Returns the document from the database to be updated.
+        /// Loads the shortcode templates document from the store for updating and that should not be cached.
         /// </summary>
-        public Task<ShortcodeTemplatesDocument> LoadShortcodeTemplatesDocumentAsync() => _sessionHelper.LoadForUpdateAsync<ShortcodeTemplatesDocument>();
+        public Task<ShortcodeTemplatesDocument> LoadShortcodeTemplatesDocumentAsync() => _documentManager.GetOrCreateMutableAsync();
 
         /// <summary>
-        /// Returns the document from the cache or creates a new one. The result should not be updated.
+        /// Gets the shortcode templates document from the cache for sharing and that should not be updated.
         /// </summary>
-        public async Task<ShortcodeTemplatesDocument> GetShortcodeTemplatesDocumentAsync()
-        {
-            if (!_memoryCache.TryGetValue<ShortcodeTemplatesDocument>(CacheKey, out var document))
-            {
-                var changeToken = ChangeToken;
-                bool cacheable;
-
-                (cacheable, document) = await _sessionHelper.GetForCachingAsync<ShortcodeTemplatesDocument>();
-
-                if (cacheable)
-                {
-                    foreach (var template in document.ShortcodeTemplates.Values)
-                    {
-                        template.IsReadonly = true;
-                    }
-
-                    _memoryCache.Set(CacheKey, document, changeToken);
-                }
-            }
-
-            return document;
-        }
+        public Task<ShortcodeTemplatesDocument> GetShortcodeTemplatesDocumentAsync() => _documentManager.GetOrCreateImmutableAsync();
 
         public async Task RemoveShortcodeTemplateAsync(string name)
         {
             var document = await LoadShortcodeTemplatesDocumentAsync();
             document.ShortcodeTemplates.Remove(name);
-
-            _session.Save(document);
-            _signal.DeferredSignalToken(CacheKey);
+            await _documentManager.UpdateAsync(document);
         }
 
         public async Task UpdateShortcodeTemplateAsync(string name, ShortcodeTemplate template)
         {
-            if (template.IsReadonly)
-            {
-                throw new ArgumentException("The object is read-only");
-            }
-
             var document = await LoadShortcodeTemplatesDocumentAsync();
             document.ShortcodeTemplates[name.ToLower()] = template;
-
-            _session.Save(document);
-            _signal.DeferredSignalToken(CacheKey);
+            await _documentManager.UpdateAsync(document);
         }
     }
 }

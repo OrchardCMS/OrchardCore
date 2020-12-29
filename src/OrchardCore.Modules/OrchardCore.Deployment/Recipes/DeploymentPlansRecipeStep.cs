@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
-using OrchardCore.Deployment.Services;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
 
@@ -72,9 +71,7 @@ namespace OrchardCore.Deployment.Recipes
                 throw new InvalidOperationException($"{prefix} {String.Join(", ", unknownTypes)}. {suffix}");
             }
 
-            _deploymentPlanService.CreateOrUpdateDeploymentPlans(deploymentPlans);
-
-            return Task.CompletedTask;
+            return _deploymentPlanService.CreateOrUpdateDeploymentPlansAsync(deploymentPlans);
         }
 
         private class DeploymentPlansModel

@@ -11,8 +11,8 @@
     The shape is created from TaxonomyPartDisplayDriver
 *@
 
-<script asp-src="~/OrchardCore.Taxonomies/Scripts/menu.js" at="Foot" depends-on="admin"></script>
-<style asp-src="~/OrchardCore.Taxonomies/Styles/menu.min.css" debug-src="~/OrchardCore.Taxonomies/Styles/menu.css"></style>
+<script asp-src="~/OrchardCore.Taxonomies/Scripts/menu.js" at="Foot" depends-on="admin, jQuery-ui"></script>
+<style asp-src="~/OrchardCore.Taxonomies/Styles/menu.min.css" debug-src="~/OrchardCore.Taxonomies/Styles/menu.css" depends-on="jQuery-ui"></style>
 
 @{
     var updater = ModelUpdaterAccessor.ModelUpdater;
@@ -30,15 +30,17 @@
 @if (canAddTerm && Model.TermContentType != null)
 {
     var termContentType = ContentDefinitionManager.GetTypeDefinition(Model.TermContentType);
-
-    <a class="btn btn-primary btn-sm"
-        asp-route-action="Create"
-        asp-route-controller="Admin"
-        asp-route-id="@Model.TaxonomyPart.TermContentType"
-        asp-route-taxonomyContentItemId="@Model.TaxonomyPart.ContentItem.ContentItemId"
-        asp-route-area="OrchardCore.Taxonomies">
-        @T["Add {0}", termContentType.DisplayName]
-    </a>
+    @if (termContentType != null)
+    {
+        <a class="btn btn-primary btn-sm"
+            asp-route-action="Create"
+            asp-route-controller="Admin"
+            asp-route-id="@Model.TaxonomyPart.TermContentType"
+            asp-route-taxonomyContentItemId="@Model.TaxonomyPart.ContentItem.ContentItemId"
+            asp-route-area="OrchardCore.Taxonomies">
+            @T["Add {0}", termContentType.DisplayName]
+        </a>
+    }
 }
 
 <p>

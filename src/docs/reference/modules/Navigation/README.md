@@ -122,6 +122,23 @@ Each of these shapes are ultimately morphed into `Pager_Link`.
 Alternates for each of these shapes are created using the `PagerId` like `Pager_Previous` `[PagerId]` which
 would in turn look for the template `Pager-MainBlog.Previous.cshtml`.
 
+## SEO
+
+In order to block search engines from crawling all your pagers links, it is possible to override the Pager anchors "rel" attributes with "no-follow". To achieve this, you can simply do this: 
+
+=== "Liquid"
+
+    ``` liquid
+    {% shape_pager Model.Pager attributes: "{\"rel\": \"no-follow\"}" %}
+    ```
+
+=== "C#"
+
+    ``` html
+    Model.Pager.Attributes["rel"] = "no-follow;
+    @await DisplayAsync(Model.Pager)
+    ```
+
 ## Extending Navigation
 
 Navigation can be extended, through code, by implementing `INavigationProvider` and registering it in the extending module (or theme) `Startup.cs` file.

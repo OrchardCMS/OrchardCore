@@ -14,6 +14,8 @@ namespace OrchardCore.Contents.Liquid
 {
     public class BuildDisplayFilter : ILiquidFilter
     {
+        private const int DefaultMaxContentItemRecursions = 20;
+
         public ValueTask<FluidValue> ProcessAsync(FluidValue input, FilterArguments arguments, TemplateContext ctx)
         {
             static async ValueTask<FluidValue> Awaited(Task<IShape> task)
@@ -45,9 +47,22 @@ namespace OrchardCore.Contents.Liquid
                 throw new ArgumentException("Services missing while invoking 'shape_build_display'");
             }
 
+            var serviceProvider = (IServiceProvider)services;
+
+            var buildDisplayRecursionHelper = serviceProvider.GetRequiredService<IContentItemRecursionHelper<BuildDisplayFilter>>();
+
+            // When {{ Model.ContentItem | shape_build_display | shape_render }} is called prevent unlimited recursions.
+            // max_recursions is an optional argument to override the default limit of 20.
+            var maxRecursions = arguments["max_recursions"];
+            var recursionLimit = maxRecursions.Type == FluidValues.Number ? Convert.ToInt32(maxRecursions.ToNumberValue()) : DefaultMaxContentItemRecursions;
+            if (buildDisplayRecursionHelper.IsRecursive(contentItem, recursionLimit))
+            {
+                return new ValueTask<FluidValue>(NilValue.Instance);
+            }
+
             var displayType = arguments["type"].Or(arguments.At(0)).ToStringValue();
-            var displayManager = ((IServiceProvider)services).GetRequiredService<IContentItemDisplayManager>();
-            var updateModelAccessor = ((IServiceProvider)services).GetRequiredService<IUpdateModelAccessor>();
+            var displayManager = serviceProvider.GetRequiredService<IContentItemDisplayManager>();
+            var updateModelAccessor = serviceProvider.GetRequiredService<IUpdateModelAccessor>();
 
             var task = displayManager.BuildDisplayAsync(contentItem, updateModelAccessor.ModelUpdater, displayType);
             if (task.IsCompletedSuccessfully)

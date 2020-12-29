@@ -13,7 +13,7 @@ namespace OrchardCore.Users.Drivers
     [Feature("OrchardCore.Users.ChangeEmail")]
     public class ChangeEmailSettingsDisplayDriver : SectionDisplayDriver<ISite, ChangeEmailSettings>
     {
-        public const string GroupId = "ChangeEmailSettings";
+        public const string GroupId = "userChangeEmail";
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthorizationService _authorizationService;
 
@@ -24,7 +24,7 @@ namespace OrchardCore.Users.Drivers
             _httpContextAccessor = httpContextAccessor;
             _authorizationService = authorizationService;
         }
-        public override async Task<IDisplayResult> EditAsync(ChangeEmailSettings section, BuildEditorContext context)
+        public override async Task<IDisplayResult> EditAsync(ChangeEmailSettings settings, BuildEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
 
@@ -35,7 +35,7 @@ namespace OrchardCore.Users.Drivers
 
             return Initialize<ChangeEmailSettings>("ChangeEmailSettings_Edit", model =>
             {
-                model.AllowChangeEmail = section.AllowChangeEmail;
+                model.AllowChangeEmail = settings.AllowChangeEmail;
             }).Location("Content:5").OnGroup(GroupId);
         }
 

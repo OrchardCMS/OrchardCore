@@ -4,11 +4,12 @@ namespace OrchardCore.Shortcodes
 {
     public class ShortcodeOption
     {
+        private string _defaultValue;
+
         /// <summary>
         /// The shortcode name.
         /// </summary>
         public string Name { get; set; }
-        private string _defaultValue;
 
         /// <summary>
         /// The default value of the shortcode when selected.
@@ -36,6 +37,7 @@ namespace OrchardCore.Shortcodes
         /// The hint text for the shortcode.
         /// </summary>
         public string Hint { get; set; }
+
         /// <summary>
         /// The HTML usage description for the shortcode.
         /// </summary>

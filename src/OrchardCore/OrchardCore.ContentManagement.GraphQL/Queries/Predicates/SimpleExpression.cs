@@ -29,6 +29,11 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Predicates
         /// </summary>
         protected virtual string Operation { get; }
 
+        public void SearchUsedAlias(IPredicateQuery predicateQuery)
+        {
+            predicateQuery.SearchUsedAlias(_propertyName);
+        }
+
         /// <summary>
         /// Converts the SimpleExpression to a SQL <see cref="string" />.
         /// </summary>

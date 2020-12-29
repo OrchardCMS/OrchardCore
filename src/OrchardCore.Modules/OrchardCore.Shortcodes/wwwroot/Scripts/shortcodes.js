@@ -31,7 +31,7 @@ jQuery.fn.extend({
   }
 });
 var shortcodeWrapperTemplate = "\n<div class=\"shortcode-modal-wrapper\"></div>\n";
-var shortcodeBtnTemplate = "\n<button type=\"button\" class=\"shortcode-modal-btn btn btn-sm\">\n<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\">\n    <path d=\"M16 4.2v1.5h2.5v12.5H16v1.5h4V4.2h-4zM4.2 19.8h4v-1.5H5.8V5.8h2.5V4.2h-4l-.1 15.6zm5.1-3.1l1.4.6 4-10-1.4-.6-4 10z\"></path>\n</svg>\n</button>\n"; // Wraps each .shortcode-modal-input class with a wrapper, and attaches detaches the shortcode app as required.
+var shortcodeBtnTemplate = "\n<button type=\"button\" class=\"shortcode-modal-btn btn btn-sm\">\n    <span class=\"icon-shortcode\"></span>\n</button>\n"; // Wraps each .shortcode-modal-input class with a wrapper, and attaches detaches the shortcode app as required.
 
 $(function () {
   $('.shortcode-modal-input').each(function () {
@@ -48,7 +48,7 @@ $(function () {
 var shortcodesApp;
 
 function initializeShortcodesApp(element) {
-  if (element) {
+  if (element && !shortcodesApp) {
     var elementId = element.id;
     shortcodesApp = new Vue({
       el: '#' + elementId,
@@ -110,8 +110,8 @@ function initializeShortcodesApp(element) {
             return s.name === name;
           });
         },
-        insertShortcode: function insertShortcode(defaultValue) {
-          this.defaultValue = defaultValue;
+        insertShortcode: function insertShortcode(event) {
+          this.defaultValue = event.target.dataset.defaultValue;
           $(this.$el).modal('hide');
           this.onClose(this.defaultValue);
         }

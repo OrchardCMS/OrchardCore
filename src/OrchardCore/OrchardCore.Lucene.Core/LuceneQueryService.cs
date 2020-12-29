@@ -39,21 +39,27 @@ namespace OrchardCore.Lucene
 
             var sortFields = GetSortFields(sortProperty);
 
-            TopDocs docs = context.IndexSearcher.Search(
-                query,
-                size + from,
-                sortFields.Length == 0 ? Sort.RELEVANCE : new Sort(sortFields)
-            );
+            LuceneTopDocs result = null;
+            TopDocs topDocs = null;
 
-            if (from > 0)
+            if (size > 0)
             {
-                docs = new TopDocs(docs.TotalHits - from, docs.ScoreDocs.Skip(from).ToArray(), docs.MaxScore);
+                topDocs = context.IndexSearcher.Search(
+                    query,
+                    size + from,
+                    sortFields.Length == 0 ? Sort.RELEVANCE : new Sort(sortFields)
+                );
+
+                if (from > 0)
+                {
+                    topDocs = new TopDocs(topDocs.TotalHits - from, topDocs.ScoreDocs.Skip(from).ToArray(), topDocs.MaxScore);
+                }
+
+                var collector = new TotalHitCountCollector();
+                context.IndexSearcher.Search(query, collector);
+
+                result = new LuceneTopDocs() { TopDocs = topDocs, Count = collector.TotalHits };
             }
-
-            var collector = new TotalHitCountCollector();
-            context.IndexSearcher.Search(query, collector);
-
-            var result = new LuceneTopDocs { TopDocs = docs, Count = collector.TotalHits };
 
             return Task.FromResult(result);
         }

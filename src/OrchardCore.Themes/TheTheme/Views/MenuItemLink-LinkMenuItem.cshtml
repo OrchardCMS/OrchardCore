@@ -1,20 +1,16 @@
 @using OrchardCore.ContentManagement
-
 @{
     ContentItem contentItem = Model.ContentItem;
-    var linkMenuItemPart = contentItem.Content["LinkMenuItemPart"];
+    var linkMenuItemPart = contentItem.As<LinkMenuItemPart>();
     int level = (int)Model.Level;
-}
 
-@if (level > 0)
-{ 
-    <a class="dropdown-item" href="@Url.Content((string)linkMenuItemPart.Url)">@linkMenuItemPart.Name</a>
+    TagBuilder tag = Tag(Model, "a");
+    tag.Attributes["href"] = linkMenuItemPart.Url;
+    tag.InnerHtml.Append(linkMenuItemPart.Name);
+
+    if (Model.Level == 0 && Model.HasItems)
+    {
+        tag.InnerHtml.AppendHtml("<b class=\"caret\"></b>");
+    }
 }
-else if ((bool)(Model.HasItems))
-{
-    <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="@Url.Content((string)linkMenuItemPart.Url)">@linkMenuItemPart.Name<b class="caret"></b></a>
-}
-else
-{
-    <a class="nav-link" href="@Url.Content((string)linkMenuItemPart.Url)">@linkMenuItemPart.Name</a>
-}
+@tag

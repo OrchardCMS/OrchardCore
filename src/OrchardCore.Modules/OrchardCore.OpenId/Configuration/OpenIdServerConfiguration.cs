@@ -54,10 +54,9 @@ namespace OrchardCore.OpenId.Configuration
                 return;
             }
 
-            options.IgnoreScopePermissions = true;
             options.Issuer = settings.Authority;
             options.DisableAccessTokenEncryption = settings.DisableAccessTokenEncryption;
-            options.UseRollingRefreshTokens = settings.UseRollingRefreshTokens;
+            options.DisableRollingRefreshTokens = settings.DisableRollingRefreshTokens;
             options.UseReferenceAccessTokens = settings.UseReferenceAccessTokens;
 
             foreach (var key in _serverService.GetEncryptionKeysAsync().GetAwaiter().GetResult())
@@ -88,7 +87,59 @@ namespace OrchardCore.OpenId.Configuration
                 options.UserinfoEndpointUris.Add(new Uri(settings.UserinfoEndpointPath.Value, UriKind.Relative));
             }
 
-            options.GrantTypes.UnionWith(settings.GrantTypes);
+            // For now, response types and response modes are not directly
+            // configurable and are inferred from the selected flows.
+            if (settings.AllowAuthorizationCodeFlow)
+            {
+                options.CodeChallengeMethods.Add(CodeChallengeMethods.Sha256);
+
+                options.GrantTypes.Add(GrantTypes.AuthorizationCode);
+
+                options.ResponseModes.Add(ResponseModes.FormPost);
+                options.ResponseModes.Add(ResponseModes.Fragment);
+                options.ResponseModes.Add(ResponseModes.Query);
+
+                options.ResponseTypes.Add(ResponseTypes.Code);
+            }
+            if (settings.AllowClientCredentialsFlow)
+            {
+                options.GrantTypes.Add(GrantTypes.ClientCredentials);
+            }
+            if (settings.AllowHybridFlow)
+            {
+                options.CodeChallengeMethods.Add(CodeChallengeMethods.Sha256);
+
+                options.GrantTypes.Add(GrantTypes.AuthorizationCode);
+                options.GrantTypes.Add(GrantTypes.Implicit);
+
+                options.ResponseModes.Add(ResponseModes.FormPost);
+                options.ResponseModes.Add(ResponseModes.Fragment);
+
+                options.ResponseTypes.Add(ResponseTypes.Code + ' ' + ResponseTypes.IdToken);
+                options.ResponseTypes.Add(ResponseTypes.Code + ' ' + ResponseTypes.IdToken + ' ' + ResponseTypes.Token);
+                options.ResponseTypes.Add(ResponseTypes.Code + ' ' + ResponseTypes.Token);
+            }
+            if (settings.AllowImplicitFlow)
+            {
+                options.GrantTypes.Add(GrantTypes.Implicit);
+
+                options.ResponseModes.Add(ResponseModes.FormPost);
+                options.ResponseModes.Add(ResponseModes.Fragment);
+
+                options.ResponseTypes.Add(ResponseTypes.IdToken);
+                options.ResponseTypes.Add(ResponseTypes.IdToken + ' ' + ResponseTypes.Token);
+                options.ResponseTypes.Add(ResponseTypes.Token);
+            }
+            if (settings.AllowPasswordFlow)
+            {
+                options.GrantTypes.Add(GrantTypes.Password);
+            }
+            if (settings.AllowRefreshTokenFlow)
+            {
+                options.GrantTypes.Add(GrantTypes.RefreshToken);
+
+                options.Scopes.Add(Scopes.OfflineAccess);
+            }
 
             options.Scopes.Add(Scopes.Email);
             options.Scopes.Add(Scopes.Phone);
@@ -118,11 +169,11 @@ namespace OrchardCore.OpenId.Configuration
             options.EnableTokenEndpointPassthrough = true;
             options.EnableUserinfoEndpointPassthrough = true;
 
-            // Note: caching is enabled for both the authorization and logout endpoints to allow sending
+            // Note: caching is enabled for both authorization and logout requests to allow sending
             // large POST authorization and logout requests, but can be programmatically disabled, as the
             // authorization and logout views support flowing the entire payload and not just the request_id.
-            options.EnableAuthorizationEndpointCaching = true;
-            options.EnableLogoutEndpointCaching = true;
+            options.EnableAuthorizationRequestCaching = true;
+            options.EnableLogoutRequestCaching = true;
 
             // Note: error pass-through is enabled to allow the actions of the MVC authorization controller
             // to handle the errors returned by the interactive endpoints without relying on the generic
