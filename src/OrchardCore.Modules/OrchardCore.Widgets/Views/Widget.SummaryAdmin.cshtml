@@ -29,37 +29,41 @@
             </div>
             @if (Model.Header != null)
             {
-                <div class="header">@await DisplayAsync(Model.Header)</div>
+                <div class="header">
+                    @await DisplayAsync(Model.Header)
+                </div>
             }
             @if (Model.Tags != null)
             {
-                @await DisplayAsync(Model.Tags)
+                <div class="tag">
+                    @await DisplayAsync(Model.Tags)
+                </div>
             }
             @if (Model.Meta != null)
             {
-                <div class="d-inline">@await DisplayAsync(Model.Meta)</div>
+                <div class="metadata">
+                    @await DisplayAsync(Model.Meta)
+                </div>
             }
         </div>
     </div>
     <div class="col-lg-auto col-12 d-flex justify-content-end">
         <div class="actions">
-            <div class="float-right button-group text-nowrap">
-                @if (Model.Actions != null)
-                {
-                    @await DisplayAsync(Model.Actions)
-                }
-                @if (Model.ActionsMenu != null)
-                {
-                    <div class="btn-group">
-                        <button type="button" class="btn btn-sm btn-secondary dropdown-toggle actions" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <span>@T["Actions"]</span>
-                        </button>
-                        <div class="actions-menu dropdown-menu dropdown-menu-right">
-                            @await DisplayAsync(Model.ActionsMenu)
-                        </div>
+            @if (Model.Actions != null)
+            {
+                @await DisplayAsync(Model.Actions)
+            }
+            @if (Model.ActionsMenu != null)
+            {
+                <div class="btn-group">
+                    <button type="button" class="btn btn-sm btn-secondary dropdown-toggle actions" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <span>@T["Actions"]</span>
+                    </button>
+                    <div class="actions-menu dropdown-menu dropdown-menu-right">
+                        @await DisplayAsync(Model.ActionsMenu)
                     </div>
-                }
-            </div>
+                </div>
+            }
         </div>
     </div>
 </div>
@@ -67,6 +71,8 @@
 @if (Model.Content != null)
 {
     <div class="row">
-        <div class="col primary">@await DisplayAsync(Model.Content)</div>
+        <div class="col primary">
+            @await DisplayAsync(Model.Content)
+        </div>
     </div>
 }
