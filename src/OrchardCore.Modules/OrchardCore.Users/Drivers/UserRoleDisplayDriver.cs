@@ -62,7 +62,17 @@ namespace OrchardCore.Users.Drivers
 
                 if (authorizedRoleNames.Any())
                 {
-                    var userRoleNames = await _userManager.GetRolesAsync(user);
+                    var userRoleNames = await _userRoleStore.GetRolesAsync(user, default(CancellationToken));
+                    // Validate that for all the roles the user is in, the current user is authorized to manage those roles.
+                    // e.g. user is in Administrators, and Editors, but the current user can only manage Editors.
+                    // Therefore they cannot manage this users roles.
+                    foreach (var userRoleName in userRoleNames)
+                    {
+                        if (!authorizedRoleNames.Contains(userRoleName, StringComparer.OrdinalIgnoreCase))
+                        {
+                            return;
+                        }
+                    }
                     var roles = authorizedRoleNames.Select(x => new RoleEntry { Role = x, IsSelected = userRoleNames.Contains(x, StringComparer.OrdinalIgnoreCase) }).ToArray();
 
                     model.Roles = roles;
@@ -84,10 +94,25 @@ namespace OrchardCore.Users.Drivers
             if (await context.Updater.TryUpdateModelAsync(model, Prefix))
             {
                 // Authorize each role in the model to prevent html injection.
-                var authorizedRoleNames = await GetAuthorizedRoleNamesAsync(model.Roles.Select(x => x.Role));                
+                var authorizedRoleNames = await GetAuthorizedRoleNamesAsync(model.Roles.Select(x => x.Role));
+                var userRoleNames = await _userRoleStore.GetRolesAsync(user, default(CancellationToken));
+                // Validate that for all the roles the user is in, the current user is authorized to manage those roles.
+                // e.g. user is in Administrators, and Editors, but the current user can only manage Editors.
+                // Therefore they cannot manage this users roles.
+                foreach (var userRoleName in userRoleNames)
+                {
+                    if (!authorizedRoleNames.Contains(userRoleName, StringComparer.OrdinalIgnoreCase))
+                    {
+                        return Edit(user);
+                    }
+                }
+
                 var authorizedSelectedRoleNames = await GetAuthorizedRoleNamesAsync(model.Roles.Where(x => x.IsSelected).Select(x => x.Role));
 
-                if (!authorizedRoleNames.Any())
+                // When the current user can manage authenticated users they are allowed to remove a user from all roles, but only if they are allowed to manage all the roles the user is currently in.
+                var manageAuthenticatedUsers = await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, CommonPermissions.ManageUsersInAuthenticatedRole);
+
+                if (!authorizedRoleNames.Any() && !manageAuthenticatedUsers)
                 {
                     return Edit(user);
                 }
@@ -104,22 +129,20 @@ namespace OrchardCore.Users.Drivers
                 {
                     // Remove roles in two steps to prevent an iteration on a modified collection
                     var rolesToRemove = new List<string>();
-                    foreach (var role in await _userRoleStore.GetRolesAsync(user, default(CancellationToken)))
+                    foreach (var role in userRoleNames)
                     {
-                        // Only remove roles if the current user is allowed to manage those roles.
-                        if (authorizedRoleNames.Contains(role, StringComparer.OrdinalIgnoreCase) && !authorizedSelectedRoleNames.Contains(role, StringComparer.OrdinalIgnoreCase))
+                        if (!authorizedSelectedRoleNames.Contains(role, StringComparer.OrdinalIgnoreCase))
                         {
                             rolesToRemove.Add(role);
                         }
                     }
-
                     foreach (var role in rolesToRemove)
                     {
                         if (String.Equals(role, AdministratorRole, StringComparison.OrdinalIgnoreCase))
                         {
-                            var usersOfAdminRole = (await _userManager.GetUsersInRoleAsync(AdministratorRole)).Cast<User>();;
+                            var usersOfAdminRole = (await _userManager.GetUsersInRoleAsync(AdministratorRole)).Cast<User>();
                             // Make sure we always have at least one administrator account
-                            if (usersOfAdminRole.Count() == 1 && String.Equals(user.UserId, usersOfAdminRole.First().UserId , StringComparison.OrdinalIgnoreCase))
+                            if (usersOfAdminRole.Count() == 1 && String.Equals(user.UserId, usersOfAdminRole.First().UserId, StringComparison.OrdinalIgnoreCase))
                             {
                                 _notifier.Warning(H["Cannot remove administrator role from the only administrator."]);
                                 continue;
@@ -158,7 +181,7 @@ namespace OrchardCore.Users.Drivers
         private async Task<IEnumerable<string>> GetAuthorizedRoleNamesAsync(IEnumerable<string> roleNames)
         {
             var authorizedRoleNames = new List<string>();
-            foreach(var roleName in roleNames)
+            foreach (var roleName in roleNames)
             {
                 if (await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, CommonPermissions.CreatePermissionForManageUsersInRole(roleName)))
                 {

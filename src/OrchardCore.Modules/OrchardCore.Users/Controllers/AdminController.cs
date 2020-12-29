@@ -77,15 +77,15 @@ namespace OrchardCore.Users.Controllers
 
         public async Task<ActionResult> Index(UserIndexOptions options, PagerParameters pagerParameters)
         {
-            var roleNames = await GetNormalizedRoleNamesAsync();
-            var authorizedRoleNames = await GetAuthorizedRoleNamesAsync(roleNames);
+            // Check a dummy user account to see if the current user has permission to manage it.
+            var authUser = new User();
 
-            var hasManageAuthenticatedPermission = await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsersInAuthenticatedRole);
-
-            if (authorizedRoleNames.Count() == 0 && !hasManageAuthenticatedPermission)
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers, authUser))
             {
                 return Forbid();
             }
+
+
 
             var siteSettings = await _siteService.GetSiteSettingsAsync();
             var pager = new Pager(pagerParameters, siteSettings.PageSize);
@@ -129,6 +129,10 @@ namespace OrchardCore.Users.Controllers
                     break;
             }
 
+            var roleNames = await GetNormalizedRoleNamesAsync();
+            var authorizedRoleNames = await GetAuthorizedRoleNamesAsync(roleNames);
+            var hasManageAuthenticatedPermission = await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsersInAuthenticatedRole);
+
             // Alter the query if the user does not have permission for all roles.
             if (roleNames.Count() != authorizedRoleNames.Count())
             {
@@ -154,14 +158,10 @@ namespace OrchardCore.Users.Controllers
                 */
 
                 var dialect = _session.Store.Dialect;
-
                 var builderNotExists = dialect.CreateBuilder(_session.Store.Configuration.TablePrefix);
-
                 var indexType = typeof(UserByRoleNameIndex);
-
                 var indexTable = _session.Store.Configuration.TableNameConvention.GetIndexTable(indexType);
                 var documentTable = _session.Store.Configuration.TableNameConvention.GetDocumentTable();
-
                 var bridgeTableName = indexTable + "_" + documentTable;
                 var bridgeTableIndexColumnName = indexType.Name + "Id";
 
@@ -181,7 +181,7 @@ namespace OrchardCore.Users.Controllers
 
                 if (!hasManageAuthenticatedPermission)
                 {
-                    /* When the user does not have permission to manage authenticated users we append this predicate to ensure that users with no roles in the database are included.
+                    /* When the user does not have permission to manage authenticated users append this predicate to ensure that users with no roles in the database are not included.
 
                     Sample code for Sqlite
                         AND EXISTS
@@ -283,8 +283,10 @@ namespace OrchardCore.Users.Controllers
         [FormValueRequired("submit.BulkAction")]
         public async Task<ActionResult> IndexPOST(UserIndexOptions options, IEnumerable<string> itemIds)
         {
-            // TODO permissions check here.
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers))
+            // Check a dummy user account to see if the current user has permission to manage it.
+            var authUser = new User();
+
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers, authUser))
             {
                 return Forbid();
             }
@@ -292,6 +294,16 @@ namespace OrchardCore.Users.Controllers
             if (itemIds?.Count() > 0)
             {
                 var checkedUsers = await _session.Query<User, UserIndex>().Where(x => x.UserId.IsIn(itemIds)).ListAsync();
+
+                // To prevent html injection we authorize each user before performing any operations.
+                foreach (var user in checkedUsers)
+                {
+                    if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers, user))
+                    {
+                        return Forbid();
+                    }
+                }
+
                 switch (options.BulkAction)
                 {
                     case UsersBulkAction.None:
@@ -299,16 +311,21 @@ namespace OrchardCore.Users.Controllers
                     case UsersBulkAction.Approve:
                         foreach (var user in checkedUsers)
                         {
-                            // TODO Individual permissions check here
-                            var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                            await _userManager.ConfirmEmailAsync(user, token);
-                            _notifier.Success(H["User {0} successfully approved.", user.UserName]);
+                            if (!await _userManager.IsEmailConfirmedAsync(user))
+                            {
+                                var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                                await _userManager.ConfirmEmailAsync(user, token);
+                                _notifier.Success(H["User {0} successfully approved.", user.UserName]);
+                            }
                         }
                         break;
                     case UsersBulkAction.Delete:
                         foreach (var user in checkedUsers)
                         {
-                            // TODO Individual permissions check here
+                            if (String.Equals(user.UserId, User.FindFirstValue(ClaimTypes.NameIdentifier), StringComparison.OrdinalIgnoreCase))
+                            {
+                                continue;
+                            }
                             await _userManager.DeleteAsync(user);
                             _notifier.Success(H["User {0} successfully deleted.", user.UserName]);
                         }
@@ -316,7 +333,10 @@ namespace OrchardCore.Users.Controllers
                     case UsersBulkAction.Disable:
                         foreach (var user in checkedUsers)
                         {
-                            // TODO Individual permissions check here
+                            if (String.Equals(user.UserId, User.FindFirstValue(ClaimTypes.NameIdentifier), StringComparison.OrdinalIgnoreCase))
+                            {
+                                continue;
+                            }
                             user.IsEnabled = false;
                             await _userManager.UpdateAsync(user);
                             _notifier.Success(H["User {0} successfully disabled.", user.UserName]);
@@ -325,7 +345,10 @@ namespace OrchardCore.Users.Controllers
                     case UsersBulkAction.Enable:
                         foreach (var user in checkedUsers)
                         {
-                            // TODO Individual permissions check here
+                            if (String.Equals(user.UserId, User.FindFirstValue(ClaimTypes.NameIdentifier), StringComparison.OrdinalIgnoreCase))
+                            {
+                                continue;
+                            }
                             user.IsEnabled = true;
                             await _userManager.UpdateAsync(user);
                             _notifier.Success(H["User {0} successfully enabled.", user.UserName]);
@@ -340,15 +363,14 @@ namespace OrchardCore.Users.Controllers
         }
         public async Task<IActionResult> Create()
         {
-            // TODO
-            // Check for permission to create Authenticated Users
-            // The driver will only allow roles to be assigned if the current user has the correct permission.
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers))
+            var user = new User();
+
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers, user))
             {
                 return Forbid();
             }
 
-            var shape = await _userDisplayManager.BuildEditorAsync(new User(), updater: _updateModelAccessor.ModelUpdater, isNew: true);
+            var shape = await _userDisplayManager.BuildEditorAsync(user, updater: _updateModelAccessor.ModelUpdater, isNew: true);
 
             return View(shape);
         }
@@ -357,15 +379,12 @@ namespace OrchardCore.Users.Controllers
         [ActionName(nameof(Create))]
         public async Task<IActionResult> CreatePost()
         {
-            // TODO
-            // Check for permission to create Authenticated Users
-            // The driver will only allow roles to be assigned if the current user has the correct permission.
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers))
+            var user = new User();
+
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers, user))
             {
                 return Forbid();
             }
-
-            var user = new User();
 
             var shape = await _userDisplayManager.UpdateEditorAsync(user, updater: _updateModelAccessor.ModelUpdater, isNew: true);
 
@@ -389,6 +408,7 @@ namespace OrchardCore.Users.Controllers
         public async Task<IActionResult> Edit(string id, string returnUrl)
         {
             // When no id is provided we assume the user is trying to edit their own profile.
+            var editingOwnUser = false;
             if (String.IsNullOrEmpty(id))
             {
                 id = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -396,14 +416,8 @@ namespace OrchardCore.Users.Controllers
                 {
                     return Forbid();
                 }
+                editingOwnUser = true;
             }
-            // else
-            // {
-            //     if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers))
-            //     {
-            //         return Forbid();
-            //     }
-            // }
 
             var user = await _userManager.FindByIdAsync(id) as User;
             if (user == null)
@@ -411,80 +425,16 @@ namespace OrchardCore.Users.Controllers
                 return NotFound();
             }
 
-            if (!user.RoleNames.Any())
+            if (!editingOwnUser && !await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers, user))
             {
-                if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsersInAuthenticatedRole))
-                {
-                    return Forbid();
-                }
+                return Forbid();
             }
-            else
-            {
-
-                var roleNames = await GetRoleNamesAsync();
-                var authorizedRoleNames = await GetAuthorizedRoleNamesAsync(roleNames);
-                // TODO check IsAuthenticated as well
-
-                if (user.RoleNames.Any(userRole => !authorizedRoleNames.Any(authorizedRole => authorizedRole == userRole)))
-                {
-                    return Forbid();
-                }
-            }
-
-            // bool hasPermission = true;
-            // foreach(var role in authorizedRoleNames)
-            // {
-            //     // Here we would have to actually check auth?
-
-            //     // If the user we are trying to edit has a role which we are not authorized to edit we fail authorization.
-            //     // If the user has any roles we are not authorized to edit we fail authorization.
-
-
-
-            //     if (!user.RoleNames.Contains(role, StringComparer.OrdinalIgnoreCase))
-            //     {
-            //         hasPermission = false;
-            //         break;
-
-            //     }
-            // }
-
-            // if (!hasPermission)
-            // {
-            //     return Forbid();
-            // }
 
             var shape = await _userDisplayManager.BuildEditorAsync(user, updater: _updateModelAccessor.ModelUpdater, isNew: false);
 
             ViewData["ReturnUrl"] = returnUrl;
 
             return View(shape);
-        }
-
-        private async Task<IEnumerable<string>> GetRoleNamesAsync()
-        {
-            var roleNames = await _roleService.GetRoleNamesAsync();
-            return roleNames.Except(new[] { "Anonymous", "Authenticated" }, StringComparer.OrdinalIgnoreCase);
-        }
-
-        private async Task<IEnumerable<string>> GetNormalizedRoleNamesAsync()
-        {
-            var roleNames = await _roleService.GetNormalizedRoleNamesAsync();
-            return roleNames.Except(new[] { "Anonymous", "Authenticated" }, StringComparer.OrdinalIgnoreCase);
-        }
-
-        private async Task<IEnumerable<string>> GetAuthorizedRoleNamesAsync(IEnumerable<string> roleNames)
-        {
-            var authorizedRoleNames = new List<string>();
-            foreach (var roleName in roleNames)
-            {
-                if (await _authorizationService.AuthorizeAsync(User, CommonPermissions.CreatePermissionForManageUsersInRole(roleName)))
-                {
-                    authorizedRoleNames.Add(roleName);
-                }
-            }
-
-            return authorizedRoleNames;
         }
 
         [HttpPost]
@@ -502,10 +452,6 @@ namespace OrchardCore.Users.Controllers
                     return Forbid();
                 }
             }
-            // else if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers))
-            // {
-            //     return Forbid();
-            // }
 
             var user = await _userManager.FindByIdAsync(id) as User;
             if (user == null)
@@ -513,38 +459,10 @@ namespace OrchardCore.Users.Controllers
                 return NotFound();
             }
 
-            if (!user.RoleNames.Any())
+            if (!editingOwnUser && !await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers, user))
             {
-                if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsersInAuthenticatedRole))
-                {
-                    return Forbid();
-                }
+                return Forbid();
             }
-            else
-            {
-
-                var roleNames = await GetRoleNamesAsync();
-                var authorizedRoleNames = await GetAuthorizedRoleNamesAsync(roleNames);
-                // TODO check authenticated as well.
-
-                if (user.RoleNames.Any(userRole => !authorizedRoleNames.Any(authorizedRole => authorizedRole == userRole)))
-                {
-                    return Forbid();
-                }
-            }
-            // TODO Index with user roles.
-            // get all roles.
-            // get roles this user is authorized to edit
-            // add to query.
-            // secnario
-            // editing user can manage editors
-            // query user is in role of editors and contributors
-            // should the editing user be able to manage them?
-            // or should the editing user must have permissions to edit editors and contributors.
-            // 2nd one I think.
-
-            // var authorizedRoles = "editor", "contributor"
-            // user.With<UserRoleIndex>(index => index.RoleName.IsIn(authorizedRoles))
 
             var shape = await _userDisplayManager.UpdateEditorAsync(user, updater: _updateModelAccessor.ModelUpdater, isNew: false);
 
@@ -590,17 +508,16 @@ namespace OrchardCore.Users.Controllers
         [HttpPost]
         public async Task<IActionResult> Delete(string id)
         {
-            // TODO permissions check.
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers))
-            {
-                return Forbid();
-            }
-
             var user = await _userManager.FindByIdAsync(id) as User;
 
             if (user == null)
             {
                 return NotFound();
+            }
+
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers, user))
+            {
+                return Forbid();
             }
 
             var result = await _userManager.DeleteAsync(user);
@@ -626,17 +543,16 @@ namespace OrchardCore.Users.Controllers
 
         public async Task<IActionResult> EditPassword(string id)
         {
-            // TODO permissions check.
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers))
-            {
-                return Forbid();
-            }
-
             var user = await _userManager.FindByIdAsync(id) as User;
 
             if (user == null)
             {
                 return NotFound();
+            }
+
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers, user))
+            {
+                return Forbid();
             }
 
             var model = new ResetPasswordViewModel { Email = user.Email };
@@ -647,17 +563,16 @@ namespace OrchardCore.Users.Controllers
         [HttpPost]
         public async Task<IActionResult> EditPassword(ResetPasswordViewModel model)
         {
-            // TODO permissions check.
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers))
-            {
-                return Forbid();
-            }
-
             var user = await _userManager.FindByEmailAsync(model.Email) as User;
 
             if (user == null)
             {
                 return NotFound();
+            }
+
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers, user))
+            {
+                return Forbid();
             }
 
             if (ModelState.IsValid)
@@ -673,6 +588,26 @@ namespace OrchardCore.Users.Controllers
             }
 
             return View(model);
+        }
+
+        private async Task<IEnumerable<string>> GetNormalizedRoleNamesAsync()
+        {
+            var roleNames = await _roleService.GetNormalizedRoleNamesAsync();
+            return roleNames.Except(new[] { "Anonymous", "Authenticated" }, StringComparer.OrdinalIgnoreCase);
+        }
+
+        private async Task<IEnumerable<string>> GetAuthorizedRoleNamesAsync(IEnumerable<string> roleNames)
+        {
+            var authorizedRoleNames = new List<string>();
+            foreach (var roleName in roleNames)
+            {
+                if (await _authorizationService.AuthorizeAsync(User, CommonPermissions.CreatePermissionForManageUsersInRole(roleName)))
+                {
+                    authorizedRoleNames.Add(roleName);
+                }
+            }
+
+            return authorizedRoleNames;
         }
     }
 }

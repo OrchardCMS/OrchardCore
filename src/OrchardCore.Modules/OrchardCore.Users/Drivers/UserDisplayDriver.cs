@@ -12,7 +12,6 @@ using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Modules;
-using OrchardCore.Security.Services;
 using OrchardCore.Users.Handlers;
 using OrchardCore.Users.Models;
 using OrchardCore.Users.ViewModels;
@@ -65,20 +64,19 @@ namespace OrchardCore.Users.Drivers
                 model.IsEnabled = user.IsEnabled;
             })
             .Location("Content:1.5")
-                // TODO is now per role, and only users who can manage that role, can manage that user.
-            .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.ManageUsers));
+            .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.ManageUsers, user));
         }
 
         public override async Task<IDisplayResult> UpdateAsync(User user, UpdateEditorContext context)
         {
-            if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.ManageUsers))
+            // To prevent html injection when updating the user must meet all authorization requirements.
+            if (!(await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.ManageUsers, user)))
             {
                 // When the user is only editing their profile never update this part of the user.
                 return Edit(user);
             }
 
             var model = new EditUserViewModel();
-            var httpContext = _httpContextAccessor.HttpContext;
 
             if (!await context.Updater.TryUpdateModelAsync(model, Prefix))
             {
@@ -94,7 +92,7 @@ namespace OrchardCore.Users.Drivers
                 }
                 else
                 {
-                    if (!String.Equals(user.UserId, httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier)))
+                    if (!String.Equals(user.UserId, _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier)))
                     {
                         user.IsEnabled = model.IsEnabled;
                         var userContext = new UserContext(user);

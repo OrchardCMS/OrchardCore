@@ -1,3 +1,7 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -21,7 +25,7 @@ namespace OrchardCore.Users.Drivers
             UserManager<IUser> userManager,
             IHttpContextAccessor httpContextAccessor,
             IAuthorizationService authorizationService,
-            IStringLocalizer<UserDisplayDriver> stringLocalizer)
+            IStringLocalizer<UserInformationDisplayDriver> stringLocalizer)
         {
             _userManager = userManager;
             _httpContextAccessor = httpContextAccessor;
@@ -29,24 +33,29 @@ namespace OrchardCore.Users.Drivers
             S = stringLocalizer;
         }
 
-        public override Task<IDisplayResult> EditAsync(User user, BuildEditorContext context)
+        public override IDisplayResult Edit(User user)
         {
-            return Task.FromResult<IDisplayResult>(Initialize<EditUserInformationViewModel>("UserInformationFields_Edit", model =>
+            return Initialize<EditUserInformationViewModel>("UserInformationFields_Edit", model =>
             {
                 model.UserName = user.UserName;
                 model.Email = user.Email;
             })
             .Location("Content:1")
-            .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.ManageOwnUserInformation)));
+            .RenderWhen(() => AuthorizeAsync(user));
         }
 
         public override async Task<IDisplayResult> UpdateAsync(User user, UpdateEditorContext context)
         {
+            if (!await AuthorizeAsync(user))
+            {
+                return Edit(user);
+            }
+
             var model = new EditUserInformationViewModel();
 
             if (!await context.Updater.TryUpdateModelAsync(model, Prefix))
             {
-                return await EditAsync(user, context);
+                return Edit(user);
             }
 
             model.UserName = model.UserName?.Trim();
@@ -88,7 +97,19 @@ namespace OrchardCore.Users.Drivers
                 user.Email = model.Email;
             }
 
-            return await EditAsync(user, context);
+            return Edit(user);
+        }
+
+        private async Task<bool> AuthorizeAsync(User user)
+        {
+            // When the current user matches this user we can ask for ManageOwnUserInformation
+            if (String.Equals(user.UserId, _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier), StringComparison.OrdinalIgnoreCase))
+            {
+                return await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.ManageOwnUserInformation);
+            }
+
+            // Otherwise we require permission to manage this users information.
+            return await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.ManageUsers, user);
         }
     }
 }
