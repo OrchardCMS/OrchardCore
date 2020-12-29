@@ -1,3 +1,4 @@
+using System;
 using Newtonsoft.Json;
 
 namespace OrchardCore.ContentFields.Settings
@@ -6,10 +7,9 @@ namespace OrchardCore.ContentFields.Settings
     {
         public string Hint { get; set; }
         public bool Required { get; set; }
-        public string Options { get; set; }
+        public MultiTextFieldValueOption[] Options { get; set; } = Array.Empty<MultiTextFieldValueOption>();
     }
-
-    public class MultiTextListValueOption
+    public class MultiTextFieldValueOption
     {
         [JsonProperty("name")]
         public string Name { get; set; }

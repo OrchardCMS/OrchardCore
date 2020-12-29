@@ -6,7 +6,7 @@ namespace OrchardCore.ContentFields.ViewModels
 {
     public class DisplayMultiTextFieldViewModel
     {
-        public string[] Values => Field.Values;
+        public string[] Values { get; set; }
         public MultiTextField Field { get; set; }
         public ContentPart Part { get; set; }
         public ContentPartFieldDefinition PartFieldDefinition { get; set; }

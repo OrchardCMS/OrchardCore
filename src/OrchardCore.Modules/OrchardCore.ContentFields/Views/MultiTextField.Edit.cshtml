@@ -1,13 +1,11 @@
 @model OrchardCore.ContentFields.ViewModels.EditMultiTextFieldViewModel
-@using Newtonsoft.Json
 @using OrchardCore.Mvc.Utilities
 
 @{
     var settings = Model.PartFieldDefinition.GetSettings<MultiTextFieldSettings>();
     var options = new List<SelectListItem>();
-    var listOptions = settings.Options.IsJson() ? JsonConvert.DeserializeObject<MultiTextListValueOption[]>(settings.Options) : Array.Empty<MultiTextListValueOption>();
 
-    foreach (var option in listOptions)
+    foreach (var option in settings.Options)
     {
         bool isSelected = Model.Values.Contains(option.Value) ? true : false; 
 

@@ -20,31 +20,29 @@ namespace OrchardCore.ContentFields.Settings
 
         public override IDisplayResult Edit(ContentPartFieldDefinition partFieldDefinition)
         {
-            return Initialize<MultiTextFieldSettings>("MultiTextFieldSettings_Edit", model =>
+            return Initialize<MultiTextFieldSettingsViewModel>("MultiTextFieldSettings_Edit", model =>
             {
                 var settings = partFieldDefinition.GetSettings<MultiTextFieldSettings>();
 
                 model.Required = settings.Required;
                 model.Hint = settings.Hint;
-                model.Options = settings.Options ?? JsonConvert.SerializeObject(new MultiTextListValueOption[0], Formatting.Indented);
+                model.Options = JsonConvert.SerializeObject(settings.Options, Formatting.Indented);
             })
             .Location("Content");
         }
 
         public override async Task<IDisplayResult> UpdateAsync(ContentPartFieldDefinition partFieldDefinition, UpdatePartFieldEditorContext context)
         {
-                var model = new MultiTextSettingsViewModel();
-                var settings = new MultiTextFieldSettings();
+            var model = new MultiTextFieldSettingsViewModel();
+            var settings = new MultiTextFieldSettings();
 
-                await context.Updater.TryUpdateModelAsync(model, Prefix);
-
+            if (await context.Updater.TryUpdateModelAsync(model, Prefix))
+            {
+                settings.Required = model.Required;
+                settings.Hint = model.Hint;
                 try
                 {
-                    settings.Required = model.Required;
-                    settings.Hint = model.Hint;
-                    settings.Options = model.Options; // string.IsNullOrWhiteSpace(model.Options)
-                        //? new MultiValueListValueOption[0]
-                        //: JsonConvert.DeserializeObject<MultiValueListValueOption[]>(model.Options);
+                    settings.Options = JsonConvert.DeserializeObject<MultiTextFieldValueOption[]>(model.Options);
                 }
                 catch
                 {
@@ -53,6 +51,7 @@ namespace OrchardCore.ContentFields.Settings
                 }
 
                 context.Builder.WithSettings(settings);
+            }
 
             return Edit(partFieldDefinition);
         }

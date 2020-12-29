@@ -48,6 +48,12 @@ namespace OrchardCore.ContentFields
             TemplateContext.GlobalMemberAccessStrategy.Register<DisplayDateFieldViewModel>();
             TemplateContext.GlobalMemberAccessStrategy.Register<TimeField>();
             TemplateContext.GlobalMemberAccessStrategy.Register<DisplayTimeFieldViewModel>();
+            TemplateContext.GlobalMemberAccessStrategy.Register<MultiTextField>();
+            TemplateContext.GlobalMemberAccessStrategy.Register<DisplayMultiTextFieldViewModel>();
+            TemplateContext.GlobalMemberAccessStrategy.Register<UserPickerField>();
+            TemplateContext.GlobalMemberAccessStrategy.Register<DisplayUserPickerFieldViewModel>();
+            TemplateContext.GlobalMemberAccessStrategy.Register<ContentPickerField>();
+            TemplateContext.GlobalMemberAccessStrategy.Register<DisplayContentPickerFieldViewModel>();
         }
 
         public Startup(IOptions<AdminOptions> adminOptions)
