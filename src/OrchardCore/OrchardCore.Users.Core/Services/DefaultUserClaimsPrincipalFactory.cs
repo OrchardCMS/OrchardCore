@@ -28,7 +28,7 @@ namespace OrchardCore.Users.Services
 
         protected override async Task<ClaimsIdentity> GenerateClaimsAsync(IUser user)
         {
-            ClaimsIdentity claims = await base.GenerateClaimsAsync(user);
+            var claims = await base.GenerateClaimsAsync(user);
 
             var claimsProviders = _serviceProvider.GetRequiredService<IEnumerable<IClaimsProvider>>();
 
