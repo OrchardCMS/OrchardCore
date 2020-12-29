@@ -139,7 +139,6 @@ namespace OrchardCore.Shortcodes
             services.AddTransient<IDeploymentSource, AllShortcodeTemplatesDeploymentSource>();
             services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AllShortcodeTemplatesDeploymentStep>());
             services.AddScoped<IDisplayDriver<DeploymentStep>, AllShortcodeTemplatesDeploymentStepDriver>();
-
         }
     }
 }
