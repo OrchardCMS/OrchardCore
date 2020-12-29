@@ -4,7 +4,7 @@ using OrchardCore.Contents.Workflows.ViewModels;
 
 namespace OrchardCore.Contents.Workflows.Drivers
 {
-    public class ContentUpdatedEventDisplayDriver : ContentEventDisplayDriverDriver<ContentUpdatedEvent, ContentUpdatedEventViewModel>
+    public class ContentUpdatedEventDisplayDriver : ContentEventDisplayDriver<ContentUpdatedEvent, ContentUpdatedEventViewModel>
     {
         public ContentUpdatedEventDisplayDriver(IContentDefinitionManager contentDefinitionManager) : base(contentDefinitionManager)
         {
