@@ -27,7 +27,7 @@ namespace OrchardCore.Modules
 
         public TenantPipelineMiddleware(
             IFeatureCollection features,
-            RequestDelegate next,
+            RequestDelegate _,
             ILogger<TenantPipelineMiddleware> logger)
         {
             _features = features;
@@ -36,17 +36,16 @@ namespace OrchardCore.Modules
 
         public async Task Invoke(HttpContext httpContext)
         {
-            if (_logger.IsEnabled(LogLevel.Information))
-            {
-                _logger.LogInformation("Begin Routing Request");
-            }
-
+            // Do we need to rebuild the pipeline?
             var shellContext = ShellScope.Context;
-
-            // Do we need to rebuild the pipeline ?
             if (shellContext.Pipeline == null)
             {
                 await InitializePipelineAsync(shellContext);
+            }
+
+            if (_logger.IsEnabled(LogLevel.Information))
+            {
+                _logger.LogInformation("Execute the '{TenantName}' tenant pipeline.", shellContext.Settings.Name);
             }
 
             await shellContext.Pipeline.Invoke(httpContext);
@@ -63,6 +62,11 @@ namespace OrchardCore.Modules
             {
                 if (shellContext.Pipeline == null)
                 {
+                    if (_logger.IsEnabled(LogLevel.Information))
+                    {
+                        _logger.LogInformation("Build the '{TenantName}' tenant pipeline.", shellContext.Settings.Name);
+                    }
+
                     shellContext.Pipeline = BuildTenantPipeline();
                 }
             }
