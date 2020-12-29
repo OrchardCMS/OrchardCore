@@ -30,15 +30,14 @@ namespace Microsoft.AspNetCore.Builder
 
             app.UseMiddleware<PoweredByMiddleware>();
 
-            // Ensure the shell tenants are loaded when a request comes in
-            // and replaces the current service container for the tenant's one.
-            app.UseMiddleware<TenantContainerMiddleware>();
+            // Select a tenant given the current request.
+            app.UseMiddleware<TenantMatcherMiddleware>();
 
             // Serve static files from modules.
             app.UseModuleStaticFiles();
 
-            // Create a new scope on the tenant container.
-            app.UseMiddleware<TenantScopeMiddleware>();
+            // Replaces the current service container for the tenant's one.
+            app.UseMiddleware<TenantContainerMiddleware>();
 
             configure?.Invoke(app);
 
