@@ -32,7 +32,7 @@ using OrchardCore.Modules.Manifest;
 [assembly: Feature(
     Id = "OrchardCore.Sitemaps.Cleanup",
     Name = "Sitemaps Cleanup",
-    Description = "Cleanup sitemap cached files.",
+    Description = "Cleanup sitemap cached files through a background task.",
     Dependencies = new[]
     {
         "OrchardCore.Sitemaps"
