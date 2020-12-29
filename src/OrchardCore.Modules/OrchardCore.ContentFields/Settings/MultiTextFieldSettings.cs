@@ -9,6 +9,7 @@ namespace OrchardCore.ContentFields.Settings
         public bool Required { get; set; }
         public MultiTextFieldValueOption[] Options { get; set; } = Array.Empty<MultiTextFieldValueOption>();
     }
+
     public class MultiTextFieldValueOption
     {
         [JsonProperty("name")]

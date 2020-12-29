@@ -94,7 +94,6 @@ namespace OrchardCore.ContentFields
             services.AddContentField<MultiTextField>()
                 .UseDisplayDriver<MultiTextFieldDisplayDriver>();
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, MultiTextFieldSettingsDriver>();
-            services.AddScoped<IContentPartFieldDefinitionDisplayDriver, MultiTextFieldCheckboxListEditorSettingsDriver>();
             services.AddScoped<IContentFieldIndexHandler, MultiTextFieldIndexHandler>();
 
             // Numeric Field

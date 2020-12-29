@@ -24,9 +24,10 @@
             </div>
             i++;
         }
+
+        @if (!String.IsNullOrEmpty(settings.Hint))
+        {
+            <span class="hint">@settings.Hint</span>
+        }
     </div>
-}
-@if (!String.IsNullOrEmpty(settings.Hint))
-{
-    <span class="hint">— @settings.Hint</span>
 }
