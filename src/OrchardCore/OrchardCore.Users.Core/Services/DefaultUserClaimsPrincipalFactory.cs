@@ -32,7 +32,7 @@ namespace OrchardCore.Users.Services
 
             var claimsProviders = _serviceProvider.GetRequiredService<IEnumerable<IClaimsProvider>>();
 
-            foreach (IClaimsProvider claimsProvider in claimsProviders)
+            foreach (var claimsProvider in claimsProviders)
             {
                 await claimsProvider.GenerateAsync(user, claims);
             }
