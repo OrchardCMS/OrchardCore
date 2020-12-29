@@ -75,7 +75,7 @@ else
         @await DisplayAsync(Model.Pager)
         @if (enableOrdering)
         {
-            <div id="ordering-url" class="d-none" data-url="@Url.Action("UpdateContentItemOrders", "Order", new { area = "OrchardCore.Lists" })" />
+            <div id="ordering-url" class="d-none" data-url-af="@Url.Action("UpdateContentItemOrders", "Order", new { area = "OrchardCore.Lists" })" />
             <div id="container-id" class="d-none" data-id="@Model.ListPart.ContentItem.ContentItemId" />
             <div id="pager-before" class="d-none" data-before="@Model.Pager.Before" />
             <div id="pager-after" class="d-none" data-after="@Model.Pager.After" />

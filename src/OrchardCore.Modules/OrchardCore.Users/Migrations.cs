@@ -118,5 +118,18 @@ namespace OrchardCore.Users
 
             return 6;
         }
+
+        // Migrate any user names replacing '@' with '+' as user names can no longer be an email address.
+        public async Task<int> UpdateFrom6Async()
+        {
+            var users = await _session.Query<User, UserIndex>(u => u.NormalizedUserName.Contains("@")).ListAsync();
+            foreach(var user in users)
+            {
+                user.UserName = user.UserName.Replace('@', '+');
+                _session.Save(user);
+            }
+
+            return 7;
+        }
     }
 }

@@ -101,7 +101,7 @@
         <p>
             <span class="hint">
                 @T["Select a layer to reveal its associated widgets."]
-                <i class="fa fa-book"></i> <a href="@(OrchardCore.Admin.Constants.DocsUrl)reference/modules/Layers/#rules" target="_blank">@T["See documentation"]</a>
+                <a class="seedoc" href="@(OrchardCore.Admin.Constants.DocsUrl)reference/modules/Layers/#rules" target="_blank">@T["See documentation"]</a>
             </span>
         </p>
         <div class="form-group">
@@ -117,7 +117,7 @@
                                 </div>
                                 <div>
                                     <a class="btn btn-primary btn-sm" href="@Url.Action("Edit", "Admin", new { area = "OrchardCore.Layers", name = layer.Name })">@T["Edit"]</a>
-                                    <a class="btn btn-danger btn-sm" href="@Url.Action("Delete", "Admin", new { area = "OrchardCore.Layers", name = layer.Name })" itemprop="RemoveUrl UnsafeUrl">@T["Delete"]</a>
+                                    <a class="btn btn-danger btn-sm" href="@Url.Action("Delete", "Admin", new { area = "OrchardCore.Layers", name = layer.Name })" data-url-af="RemoveUrl UnsafeUrl">@T["Delete"]</a>
                                 </div>
                             </div>
                             <div>

@@ -31,7 +31,6 @@ namespace OrchardCore.Users.Drivers
         private readonly ILogger _logger;
         private readonly IHtmlLocalizer H;
 
-
         public UserDisplayDriver(
             UserManager<IUser> userManager,
             IRoleService roleService,
@@ -109,6 +108,9 @@ namespace OrchardCore.Users.Drivers
                     {
                         user.IsEnabled = model.IsEnabled;
                         var userContext = new UserContext(user);
+                        // TODO This handler should be invoked through the create or update methods.
+                        // otherwise it will not be invoked when a workflow changes this value.
+                        // or other operation.
                         await Handlers.InvokeAsync((handler, context) => handler.DisabledAsync(userContext), userContext, _logger);
                     }
                     else
@@ -121,6 +123,9 @@ namespace OrchardCore.Users.Drivers
             {
                 user.IsEnabled = model.IsEnabled;
                 var userContext = new UserContext(user);
+                // TODO This handler should be invoked through the or update methods.
+                // otherwise it will not be invoked when a workflow changes this value.
+                // or other operation.
                 await Handlers.InvokeAsync((handler, context) => handler.EnabledAsync(userContext), userContext, _logger);
             }
 

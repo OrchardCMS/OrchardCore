@@ -10,9 +10,9 @@ using OrchardCore.Workflows.Display;
 
 namespace OrchardCore.Contents.Workflows.Drivers
 {
-    public abstract class ContentEventDisplayDriverDriver<TActivity, TViewModel> : ActivityDisplayDriver<TActivity, TViewModel> where TActivity : ContentEvent where TViewModel : ContentEventViewModel<TActivity>, new()
+    public abstract class ContentEventDisplayDriver<TActivity, TViewModel> : ActivityDisplayDriver<TActivity, TViewModel> where TActivity : ContentEvent where TViewModel : ContentEventViewModel<TActivity>, new()
     {
-        protected ContentEventDisplayDriverDriver(IContentDefinitionManager contentDefinitionManager)
+        protected ContentEventDisplayDriver(IContentDefinitionManager contentDefinitionManager)
         {
             ContentDefinitionManager = contentDefinitionManager;
         }
