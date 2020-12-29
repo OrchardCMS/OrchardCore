@@ -10,10 +10,18 @@ namespace OrchardCore.Media
         public static readonly Permission ManageMedia = new Permission("ManageMediaContent", "Manage Media");
         public static readonly Permission ManageAttachedMediaFieldsFolder = new Permission("ManageAttachedMediaFieldsFolder", "Manage Attached Media Fields Folder");
         public static readonly Permission ManageMediaProfiles = new Permission("ManageMediaProfiles", "Manage Media Profiles");
+        public static readonly Permission ViewMediaOptions = new Permission("ViewMediaOptions", "View Media Options");
 
         public Task<IEnumerable<Permission>> GetPermissionsAsync()
         {
-            return Task.FromResult(new[] { ManageMedia, ManageAttachedMediaFieldsFolder }.AsEnumerable());
+            return Task.FromResult(new[]
+            {
+                ManageMedia,
+                ManageAttachedMediaFieldsFolder,
+                ManageMediaProfiles,
+                ViewMediaOptions
+            }
+            .AsEnumerable());
         }
 
         public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
@@ -23,7 +31,7 @@ namespace OrchardCore.Media
                 new PermissionStereotype
                 {
                     Name = "Administrator",
-                    Permissions = new[] { ManageMedia, ManageAttachedMediaFieldsFolder, ManageMediaProfiles }
+                    Permissions = new[] { ManageMedia, ManageAttachedMediaFieldsFolder, ManageMediaProfiles, ViewMediaOptions }
                 },
                 new PermissionStereotype
                 {
