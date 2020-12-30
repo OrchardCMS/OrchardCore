@@ -1,9 +1,10 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using OrchardCore.Modules;
 using OrchardCore.Security;
 
 namespace OrchardCore.Users.Services
@@ -14,24 +15,24 @@ namespace OrchardCore.Users.Services
     public class DefaultUserClaimsPrincipalProviderFactory : UserClaimsPrincipalFactory<IUser, IRole>
     {
         private readonly IEnumerable<IClaimsProvider> _claimsProviders;
+        private readonly ILogger _logger;
 
         public DefaultUserClaimsPrincipalProviderFactory(
             UserManager<IUser> userManager,
             RoleManager<IRole> roleManager,
             IOptions<IdentityOptions> identityOptions,
-            IEnumerable<IClaimsProvider> claimsProviders) : base(userManager, roleManager, identityOptions)
+            IEnumerable<IClaimsProvider> claimsProviders,
+            ILogger<DefaultUserClaimsPrincipalProviderFactory> logger) : base(userManager, roleManager, identityOptions)
         {
-            _claimsProviders = claimsProviders ?? Enumerable.Empty<IClaimsProvider>();
+            _claimsProviders = claimsProviders;
+            _logger = logger;
         }
 
         protected override async Task<ClaimsIdentity> GenerateClaimsAsync(IUser user)
         {
             var claims = await base.GenerateClaimsAsync(user);
 
-            foreach (var claimsProvider in _claimsProviders)
-            {
-                await claimsProvider.GenerateAsync(user, claims);
-            }
+            await _claimsProviders.InvokeAsync((claimsProvider) => claimsProvider.GenerateAsync(user, claims), _logger);
 
             return claims;
         }

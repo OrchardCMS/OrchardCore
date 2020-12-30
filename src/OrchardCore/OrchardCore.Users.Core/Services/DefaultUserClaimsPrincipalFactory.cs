@@ -28,7 +28,6 @@ namespace OrchardCore.Users.Services
             // Todo: In a future version the base implementation will generate the email claim if the user store is an 'IUserEmailStore',
             // so we will not have to add it here, and everywhere we are using the hardcoded "email" claim type, we will have to use the
             // new 'IdentityOptions.ClaimsIdentity.EmailClaimType' or at least its default value which is 'ClaimTypes.Email'.
-            // Shouldn't this get removed and replaced by registering OrchardCore.Users.Services.EmailClaimsProvider into the IoC instead?
 
             var email = await UserManager.GetEmailAsync(user);
             if (!String.IsNullOrEmpty(email))
