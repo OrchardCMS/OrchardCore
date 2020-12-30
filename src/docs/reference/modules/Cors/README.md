@@ -1,7 +1,7 @@
 # CORS (`OrchardCore.Cors`)
 
 CORS stands for Cross-Origin Resource Sharing.  
-Modern browsers do not allow script execution from a different domain that served the scripts.  
+Modern browsers do not allow script execution from a different domain that serves the scripts.
 This restriction is called the same-origin policy.  
 In order to tell the browser to be less strict, we can allow some exceptions configured in the CORS module.
 
