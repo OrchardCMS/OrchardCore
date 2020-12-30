@@ -38,21 +38,26 @@
                 </div>
             </div>
             <ul class="list-group mb-2" v-cloak>
-                <li class="list-group-item d-flex" v-for="policy in policies" :data-filter-value="policy.Name">
-                    <div class="align-self-center mr-auto">{{ policy.Name }}</div>
-                    <div class="align-self-center">
-                        <span v-if="policy.IsDefaultPolicy" class="badge ta-badge">@T["Default Policy"]</span>
-                        <button class="btn btn-primary btn-sm" type="button" v-on:click="editPolicy(policy)">@T["Edit"]</button>
-                        <button class="delete btn btn-danger btn-sm" type="button" v-on:click="deletePolicy(policy, $event)">@T["Delete"]</button>
+                <li class="list-group-item" v-for="policy in policies" :data-filter-value="policy.Name">
+                    <div class="d-flex">
+                        <div class="align-self-center mr-auto">{{ policy.Name }}</div>
+                        <div class="align-self-center">
+                            <span v-if="policy.IsDefaultPolicy" class="badge ta-badge">@T["Default Policy"]</span>
+                            <button class="btn btn-primary btn-sm" type="button" v-on:click="editPolicy(policy)">@T["Edit"]</button>
+                            <button class="delete btn btn-danger btn-sm" type="button" v-on:click="deletePolicy(policy, $event)">@T["Delete"]</button>
+                        </div>
                     </div>
                 </li>
             </ul>
+            <div id="list-alert" class="alert alert-info" role="alert" v-if="policies.length == 0">
+                @T["<strong>Nothing here!</strong> There are no CORS policies for the moment."]
+            </div>
         </div>
         <policy-details v-if="selectedPolicy" v-bind:policy="selectedPolicy" v-on:ok="updatePolicy" v-on:back="back" />
     </div>
-        <div id="list-alert" class="alert alert-info d-none" role="alert">
-            @T["<strong>Nothing here!</strong> Your search returned no results."]
-        </div>
+    <div id="list-alert" class="alert alert-info d-none" role="alert">
+        @T["<strong>Nothing here!</strong> Your search returned no results."]
+    </div>
 </form>
 
 <script type="text/x-template" id="policy-details">
