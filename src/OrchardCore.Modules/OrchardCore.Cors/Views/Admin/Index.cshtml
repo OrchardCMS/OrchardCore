@@ -24,15 +24,21 @@
     <input type="hidden" name="CorsSettings" id="CorsSettings" value='@Html.Raw(Json.Serialize(Model.Policies, settings))' />
     <div id="corsAdmin">
         <div v-if="!selectedPolicy">
-            <nav class="admin-toolbar">
-                <ul class="navbar-nav mr-auto">
-                    <li class="nav-item">
-                        <button class="btn btn-primary" type="button" v-on:click="newPolicy">@T["Add a policy"]</button>
-                    </li>
-                </ul>
-            </nav>
+            <div class="card mb-3 position-sticky action-bar">
+                <div class="card-body bg-primary p-3">
+                    <div class="form-group mb-n1">
+                        <div class="input-group input-group-sm w-sm-50 w-25 d-inline-flex has-search">
+                            <i class="fa fa-search form-control-feedback"></i>
+                            <input id="search-box" class="form-control" placeholder="@T["Search"]" type="search" autofocus />
+                        </div>
+                        <div class="btn-group float-right">
+                            <button class="btn btn-sm btn-secondary" type="button" v-on:click="newPolicy">@T["Add a policy"]</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <ul class="list-group mb-2" v-cloak>
-                <li class="list-group-item" v-for="policy in policies">
+                <li class="list-group-item" v-for="policy in policies" :data-filter-value="policy.Name">
                     <div class="properties">
                         <div class="related float-xs-right">
                             <span v-if="policy.IsDefaultPolicy" class="badge ta-badge">@T["Default Policy"]</span>
@@ -46,6 +52,9 @@
         </div>
         <policy-details v-if="selectedPolicy" v-bind:policy="selectedPolicy" v-on:ok="updatePolicy" v-on:back="back" />
     </div>
+        <div id="list-alert" class="alert alert-info d-none" role="alert">
+            @T["<strong>Nothing here!</strong> Your search returned no results."]
+        </div>
 </form>
 
 <script type="text/x-template" id="policy-details">
