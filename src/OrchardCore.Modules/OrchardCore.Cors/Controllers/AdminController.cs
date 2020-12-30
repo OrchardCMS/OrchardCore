@@ -119,7 +119,7 @@ namespace OrchardCore.Cors.Controllers
 
             await _corsService.UpdateSettingsAsync(corsSettings);
 
-            _notifier.Success(TH["The CORS settings have been updated."]);
+            _notifier.Success(TH["The CORS settings has updated successfully.."]);
 
             return View(model);
         }
