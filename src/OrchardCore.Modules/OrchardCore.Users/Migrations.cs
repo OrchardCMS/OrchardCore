@@ -66,8 +66,8 @@ namespace OrchardCore.Users
                .Column<string>(nameof(UserByClaimIndex.ClaimValue)),
                 null);
 
-            // Return 6 here to skip migrations on new database schemas.
-            return 6;
+            // Return 8 here to skip migrations on new database schemas.
+            return 8;
         }
 
         public int UpdateFrom3()
