@@ -8,6 +8,7 @@
 body {
     margin-bottom: $footer-height;
     cursor: default;
+    height: 100%;
 }
 
 @include cursor-class(move);
@@ -27,6 +28,10 @@ body {
 
 // Layout
 // -----------------------------
+
+.ta-wrapper {
+
+}
 
 .ta-content {
     padding: 15px;

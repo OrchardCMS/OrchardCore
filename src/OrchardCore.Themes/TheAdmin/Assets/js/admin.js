@@ -47,13 +47,17 @@ $(window).on("load", function() {
 });
 
 $(function () {
-    $("body").on("click", "[itemprop~='RemoveUrl']", function () {
+    $("body").on("click", "[data-url-af~='RemoveUrl'], a[itemprop~='RemoveUrl']", function () {
         var _this = $(this);
+        if(_this.filter("a[itemprop~='UnsafeUrl']").length == 1)
+        {
+            console.warn('Please use data-url-af instead of itemprop attribute for confirm modals. Using itemprop will eventually become deprecated.')
+        }
         // don't show the confirm dialog if the link is also UnsafeUrl, as it will already be handled below.
-        if (_this.filter("[itemprop~='UnsafeUrl']").length == 1) {
+        if (_this.filter("[data-url-af~='UnsafeUrl'], a[itemprop~='UnsafeUrl']").length == 1) {
             return false;
         }
-        confirmDialog({..._this.data(),  
+        confirmDialog({..._this.data(),
              callback: function(resp) {
                 if (resp) {
                     var url = _this.attr('href');
@@ -76,8 +80,12 @@ $(function () {
 $(function () {
     var magicToken = $("input[name=__RequestVerificationToken]").first();
     if (magicToken) {
-        $("body").on("click", "a[itemprop~='UnsafeUrl'], a[data-unsafe-url]", function () {
+        $("body").on("click", "a[data-url-af~='UnsafeUrl'], a[itemprop~='UnsafeUrl']", function () {
             var _this = $(this);
+            if(_this.filter("a[itemprop~='UnsafeUrl']").length == 1)
+            {
+                console.warn('Please use data-url-af instead of itemprop attribute for confirm modals. Using itemprop will eventually become deprecated.')
+            }
             var hrefParts = _this.attr("href").split("?");
             var form = $("<form action=\"" + hrefParts[0] + "\" method=\"POST\" />");
             form.append(magicToken.clone());
@@ -106,7 +114,7 @@ $(function () {
                 return false;
             }
 
-            if (_this.filter("[itemprop~='RemoveUrl']").length == 1) {
+            if (_this.filter("[data-url-af~='RemoveUrl'], a[itemprop~='RemoveUrl']").length == 1) {
                 confirmDialog({..._this.data(), 
                     callback: function(resp) {
                         if (resp) {

@@ -8,10 +8,7 @@ module.exports = {
     },
     resolve: {
         // Add `.ts` and `.tsx` as a resolvable extension.
-        extensions: [".ts", ".tsx", ".js", ".mjs"],
-        fallback: {
-            "assert": require.resolve("assert/") 
-        }
+        extensions: [".ts", ".tsx", ".js", ".mjs"]
     },
     performance: {
       hints: false,

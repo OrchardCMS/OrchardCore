@@ -51,7 +51,7 @@ else
         <span class="hint">@T["The Liquid template."]</span>
     </div>
 
-    <div class="form-group position-sticky action-bar">
+    <div class="form-group">
         <div class="btn-group">
             <button type="submit" name="submit" class="btn btn-primary save">@T["Save"]</button>
             <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-reference="parent" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -79,15 +79,5 @@ else
         initializeTemplatePreview(
             document.getElementById('@Html.IdFor(x => x.Name)'),
             document.getElementById('@Html.IdFor(x => x.Content)'));
-
-        $(window).scroll(function (e) {
-            var $actionsBar = $('.action-bar');
-            if ($(this).scrollTop() > 200) {
-                $actionsBar.attr('style', 'position: fixed !important');
-            }
-            else {
-                $actionsBar.attr('style', 'position: static !important');
-            }
-        });
     });
 </script>

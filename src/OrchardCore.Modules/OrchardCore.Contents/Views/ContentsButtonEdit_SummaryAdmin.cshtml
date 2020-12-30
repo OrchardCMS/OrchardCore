@@ -6,16 +6,23 @@
 @{
     ContentItem contentItem = Model.ContentItem;
     var hasPublished = await ContentManager.HasPublishedVersionAsync(contentItem);
+    var hasDraft = contentItem.HasDraft();
     var hasEditPermission = await AuthorizationService.AuthorizeAsync(User, CommonPermissions.EditContent, contentItem);
     var hasViewPermission = await AuthorizationService.AuthorizeAsync(User, CommonPermissions.ViewContent, contentItem);
+    var hasPreviewPermission = await AuthorizationService.AuthorizeAsync(User, CommonPermissions.PreviewContent, contentItem);
 }
 
 @if (hasEditPermission)
 {
-    <a edit-for="@contentItem" asp-route-returnUrl="@FullRequestPath" data-toggle="tooltip" title="@T["Edit"]" class="btn btn-sm text-primary"><i class="fa fa-edit"></i></a>
+    <a edit-for="@contentItem" asp-route-returnUrl="@FullRequestPath" class="btn btn-sm btn-primary edit"><span>@T["Edit"]</span></a>
 }
 
 @if (hasPublished && hasViewPermission)
 {
-    <a display-for="@contentItem" target="_blank" data-toggle="tooltip" title="@T["View"]" class="btn btn-sm text-success"><i class="fa fa-external-link"></i></a>
+    <a display-for="@contentItem" target="_blank" class="btn btn-sm btn-success view"><span>@T["View"]</span></a>
+}
+
+@if (hasDraft && hasPreviewPermission)
+{
+    <a asp-action="Preview" asp-controller="Item" asp-route-area="OrchardCore.Contents" asp-route-contentItemId="@contentItem.ContentItemId" target="_blank" class="btn btn-sm btn-primary preview"><span>@T["Preview Draft"]</span></a>
 }

@@ -30,7 +30,7 @@
                     asp-route-id="@Model.AdminMenuId"
                     asp-route-treeNodeId="@Model.MenuItem.UniqueId"
                     class="btn btn-danger btn-sm"
-                    itemprop="RemoveUrl UnsafeUrl">@T["Delete"]</a>
+                    data-url-af="RemoveUrl UnsafeUrl">@T["Delete"]</a>
             </div>
             <span class="text-warning">@T["Can't show the item of type: {0}. Maybe a required module has been disabled?", menuType]</span>
         }
@@ -49,7 +49,7 @@
                         asp-controller="Node"
                         asp-route-id="@Model.AdminMenuId"
                         asp-route-treeNodeId="@Model.MenuItem.UniqueId"
-                        class="btn btn-danger" itemprop="RemoveUrl UnsafeUrl">@T["Delete"]</a>
+                        class="btn btn-danger" data-url-af="RemoveUrl UnsafeUrl">@T["Delete"]</a>
                     <button type="button" class="btn btn-danger dropdown-toggle dropdown-toggle-split" data-reference="parent" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <span class="sr-only">@T["Toggle Dropdown"]</span>
                     </button>
@@ -58,7 +58,7 @@
                             asp-action="Toggle"
                             asp-route-id="@Model.AdminMenuId"
                             asp-route-treeNodeId="@Model.MenuItem.UniqueId"
-                            class="dropdown-item btn-sm" itemprop="UnsafeUrl">@toggleButtonText</a>
+                            class="dropdown-item btn-sm" data-url-af="UnsafeUrl">@toggleButtonText</a>
                     </div>
                 </div>
             </div>

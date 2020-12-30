@@ -2,6 +2,7 @@
 @{
     int startIndex = (Model.Pager.Page - 1) * (Model.Pager.PageSize) + 1;
     int endIndex = startIndex + Model.Templates.Count - 1;
+    var formAction = Model.Options.AdminTemplates ? "admin" : "index";
 }
 
 @if (Model.Options.AdminTemplates)
@@ -14,7 +15,7 @@ else
 }
 
 @* the form is necessary to generate and antiforgery token for the delete action *@
-<form asp-action="Index">
+<form asp-action="@formAction">
     <input type="submit" name="submit.Filter" id="submitFilter" class="d-none" />
     <input asp-for="Options.AdminTemplates" type="hidden" />
     <input asp-for="Options.BulkAction" type="hidden" />
@@ -71,7 +72,7 @@ else
                     <div class="properties">
                         <div class="related">
                             <a asp-action="Edit" asp-route-name="@entry.Name" asp-route-admintemplates="@Model.Options.AdminTemplates" asp-route-returnUrl="@FullRequestPath" class="btn btn-primary btn-sm">@T["Edit"]</a>
-                            <a asp-action="Delete" asp-route-name="@entry.Name" asp-route-admintemplates="@Model.Options.AdminTemplates" asp-route-returnUrl="@FullRequestPath" class="btn btn-danger btn-sm" itemprop="RemoveUrl UnsafeUrl">@T["Delete"]</a>
+                            <a asp-action="Delete" asp-route-name="@entry.Name" asp-route-admintemplates="@Model.Options.AdminTemplates" asp-route-returnUrl="@FullRequestPath" class="btn btn-danger btn-sm" data-url-af="RemoveUrl UnsafeUrl">@T["Delete"]</a>
                         </div>
                         <a asp-action="Edit" asp-route-name="@entry.Name" asp-route-admintemplates="@Model.Options.AdminTemplates" asp-route-returnUrl="@FullRequestPath">@entry.Name</a>
                         @if (!String.IsNullOrWhiteSpace(entry.Template.Description))
@@ -87,7 +88,7 @@ else
             <li class="list-group-item">
                 <div class="alert alert-info mb-0" role="alert">
                     @T["<strong>Nothing here!</strong> There are no templates for the moment."]
-                    <i class="fa fa-book"></i> <a href="@(OrchardCore.Admin.Constants.DocsUrl)reference/modules/Templates" target="_blank">@T["See documentation"]</a>
+                    <a class="seedoc" href="@(OrchardCore.Admin.Constants.DocsUrl)reference/modules/Templates" target="_blank">@T["See documentation"]</a>
                 </div>
             </li>
         }

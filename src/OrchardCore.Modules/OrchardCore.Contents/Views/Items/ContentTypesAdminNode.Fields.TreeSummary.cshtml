@@ -23,7 +23,7 @@
 
     @if (Model.Value.ShowAll)
     {
-        <span class="badge badge-info">@T["Show all Content Types"]</span>
+        <span class="badge badge-success">@T["Show all Content Types"]</span>
     }
     else
     {
@@ -31,7 +31,7 @@
         {
             foreach (var displayName in selectedDisplayNames)
             {
-                <span class="badge badge-info">@displayName</span>
+                <span class="badge ta-badge">@displayName</span>
             }
         }
         else

@@ -19,7 +19,7 @@ namespace OrchardCore.Media.Controllers
     public class AdminController : Controller
     {
         private static readonly char[] _invalidFolderNameCharacters = new char[] { '\\', '/' };
-        
+
         private readonly HashSet<string> _allowedFileExtensions;
         private readonly IMediaFileStore _mediaFileStore;
         private readonly IMediaNameNormalizerService _mediaNameNormalizerService;
@@ -445,7 +445,7 @@ namespace OrchardCore.Media.Controllers
 
         public async Task<IActionResult> Options()
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageMedia))
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ViewMediaOptions))
             {
                 return Forbid();
             }
