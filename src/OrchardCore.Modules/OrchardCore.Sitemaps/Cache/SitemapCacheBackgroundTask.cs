@@ -8,7 +8,7 @@ using OrchardCore.Sitemaps.Services;
 
 namespace OrchardCore.Sitemaps.Cache
 {
-    [BackgroundTask(Schedule = "* * * * *", Description = "Cleanup sitemap cache files.")]
+    [BackgroundTask(Schedule = "*/5 * * * *", Description = "Cleanup sitemap cache files.")]
     public class SitemapCacheBackgroundTask : IBackgroundTask
     {
         public async Task DoWorkAsync(IServiceProvider serviceProvider, CancellationToken cancellationToken)
