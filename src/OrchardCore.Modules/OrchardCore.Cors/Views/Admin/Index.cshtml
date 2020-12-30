@@ -5,7 +5,7 @@
     var settings = new JsonSerializerSettings { StringEscapeHandling = StringEscapeHandling.EscapeHtml };
 }
 
-<script asp-src="https://vuejs.org/js/vue.min.js" debug-src="https://vuejs.org/js/vue.js" asp-name="vuejs" at="Foot" depends-on="jQuery"></script>
+<script asp-name="vuejs" at="Foot"></script>
 <script depends-on="vuejs" asp-src="~/OrchardCore.Cors/Scripts/cors-admin.min.js" debug-src="~/OrchardCore.Cors/Scripts/cors-admin.js" type="text/javascript" asp-name="cors-admin" at="Foot"></script>
 <script depends-on="cors-admin" at="Foot">
     corsApp.policies = @Html.Raw(Json.Serialize(Model.Policies, settings));
@@ -17,9 +17,9 @@
 </style>
 <div asp-validation-summary="ModelOnly"></div>
 <zone Name="Title">
-    <h1>@T["Cors Settings"]</h1>
+    <h1>@T["CORS Settings"]</h1>
 </zone>
-<span class="subscript">@T["CORS stands for Cross-Origin Resource Sharing. More information can be found here:"] <a target="_blank" href="https://docs.microsoft.com/en-us/aspnet/core/security/cors">https://docs.microsoft.com/en-us/aspnet/core/security/cors</a></span>
+<div class="alert alert-info">@T["CORS stands for Cross-Origin Resource Sharing. More information can be found here:"] <a target="_blank" href="https://docs.microsoft.com/en-us/aspnet/core/security/cors">https://docs.microsoft.com/en-us/aspnet/core/security/cors</a></div>
 <form id="corsForm" asp-action="Index" method="post">
     <input type="hidden" name="CorsSettings" id="CorsSettings" value='@Html.Raw(Json.Serialize(Model.Policies, settings))' />
     <div id="corsAdmin">
@@ -55,18 +55,17 @@
             <div class="card-body">
                 <h5 class="card-title">
                     @T["Details"]
-                    <span class="hint">@T[" - Provide policy details"]</span>
+                    <span class="hint dashed">@T["Provide policy details."]</span>
                 </h5>
                 <div class="form-group">
                     <label>@T["Policy name"]</label>
-                    <input v-model="policy.Name" placeholder="edit me" type="text" class="form-control" />
-                    <span class="hint">@T["Name of the policy"]</span>
+                    <input v-model="policy.Name" type="text" class="form-control" />
+                    <span class="hint">@T["The name of the policy."]</span>
                 </div>
                 <div class="form-group">
-                    <div class="form-check">
-                        <label>
-                            <input class="form-check-input" v-model="policy.IsDefaultPolicy" type="checkbox">@T["Set policy as default policy"]
-                        </label>
+                    <div class="custom-control custom-checkbox">
+                        <input class="custom-control-input" id="set-default-policy" v-model="policy.IsDefaultPolicy" type="checkbox">
+                        <label class="custom-control-label" for="set-default-policy">@T["Set as default policy"]</label>
                     </div>
                 </div>
             </div>
@@ -76,16 +75,15 @@
             <div class="card-body">
                 <h5 class="card-title">
                     @T["Credentials"]
-                    <span class="hint">@T[" - Configure the credentials behavior"]</span>
+                    <span class="hint dashed">@T["Configure the credentials behavior."]</span>
                 </h5>
 
                 <div class="form-group">
-                    <div class="form-check">
-                        <label>
-                            <input class="form-check-input" v-model="policy.AllowCredentials" type="checkbox" />@T["Allow credentials"]
-                        </label>
+                    <div class="custom-control custom-checkbox">
+                        <input class="custom-control-input" id="allow-credentials" v-model="policy.AllowCredentials" type="checkbox" />
+                        <label class="custom-control-label" for="allow-credentials">@T["Allow credentials"]</label>
+                        <span class="hint dashed">@T["Allows credentials to be transported in requests. This setting is not allowed in combination with Allow Any Origin."]</span>
                     </div>
-                    <span class="hint">@T["Allows credentials to be transported in requests. Be aware that this setting is not allowed in combination with Allow Any Origin."]</span>
                 </div>
             </div>
         </div>
@@ -94,16 +92,14 @@
             <div class="card-body">
                 <h5 class="card-title">
                     @T["Origins"]
-                    <span class="hint">@T[" - Configure the origins behavior"]</span>
+                    <span class="hint dashed">@T["Configure the origins behavior."]</span>
                 </h5>
 
                 <div class="form-group">
-                    <div class="form-check">
-                        <label>
-                            <input class="form-check-input" v-model="policy.AllowAnyOrigin" type="checkbox" />
-                            @T["Allow any origin"]
-                        </label>
-                        <span class="hint">@T["Allows requests from any origin. This will bypass any origin that is configured below."]</span>
+                    <div class="custom-control custom-checkbox">
+                        <input class="custom-control-input" id="allowed-origins" v-model="policy.AllowAnyOrigin" type="checkbox" />
+                        <label class="custom-control-label" for="allowed-origins">@T["Allow any origin"]</label>
+                        <span class="hint dashed">@T["Allows requests from any origin. This will bypass any origin that is configured below."]</span>
                     </div>
                     <options-list v-bind:options="policy.AllowedOrigins" optionType="@T["Origin"]" title="@T["Allowed origins"]" subTitle="" />
                 </div>
@@ -114,17 +110,15 @@
             <div class="card-body">
                 <h5 class="card-title">
                     @T["Headers"]
-                    <span class="hint">@T[" - Allow certain or all headers to be used by the external client"]</span>
+                    <span class="hint dashed">@T["Allow certain or all headers to be used by the external client."]</span>
                 </h5>
 
                 <div class="form-group">
-                    <div class="form-check">
-                        <label>
-                            <input class="form-check-input" v-model="policy.AllowAnyHeader" type="checkbox" />
-                            @T["Allow any header"]
-                        </label>
+                    <div class="custom-control custom-checkbox">
+                        <input class="custom-control-input" id="allowed-headers" v-model="policy.AllowAnyHeader" type="checkbox" />
+                        <label class="custom-control-label" for="allowed-headers">@T["Allow any header"]</label>
+                    <span class="hint dashed">@T["Allows requests with any header. This will bypass any headers that are configured below."]</span>
                     </div>
-                    <span class="hint">@T["Allows requests with any header. This will bypass any headers that are configured below."]</span>
                     <options-list v-bind:options="policy.AllowedHeaders" optionType="@T["Header"]" title="@T["Allowed headers"]" subTitle="" />
                 </div>
             </div>
@@ -134,22 +128,22 @@
             <div class="card-body">
                 <h5 class="card-title">
                     @T["Methods"]
-                    <span class="hint">@T[" - Configure the methods behavior (POST, PUT, DELETE, GET, etc)"]</span>
+                    <span class="hint dashed">@T["Configure the methods behavior (POST, PUT, DELETE, GET, etc)."]</span>
                 </h5>
 
                 <div class="form-group">
-                    <div class="form-check">
-                        <label><input class="form-check-input" v-model="policy.AllowAnyMethod" type="checkbox" />@T["Allow any method"]</label>
+                    <div class="custom-control custom-checkbox">
+                        <input class="custom-control-input" id="allowed-methods" v-model="policy.AllowAnyMethod" type="checkbox" />
+                        <label class="custom-control-label" for="allowed-methods">@T["Allow any method"]</label>
+                    <span class="hint dashed">@T["Allows requests with any method. This will bypass any methods that are configured below."]</span>
                     </div>
-                    <span class="hint">@T["Allows requests with any method. This will bypass any methods that are configured below."]</span>
-
                     <options-list v-bind:options="policy.AllowedMethods" optionType="@T["Method"]" title="@T["Allowed methods"]" subTitle="" />
                 </div>
             </div>
         </div>
         <div class="form-group">
             <button type="button" class="btn btn-primary" v-on:click="$emit('ok', policy, $event)">@T["Save"]</button>
-            <button type="button" class="btn btn-warning" v-on:click="$emit('back')">@T["Cancel"]</button>
+            <button type="button" class="btn btn-secondary" v-on:click="$emit('back')">@T["Cancel"]</button>
         </div>
     </div>
 </script>
@@ -173,7 +167,7 @@
             </ul>
         </nav>
 
-        <ul class="list-group" v-for="option in options">
+        <ul class="list-group my-1" v-for="option in options">
             <li class="list-group-item">
                 <div class="properties">
                     <div class="related float-xs-right">
