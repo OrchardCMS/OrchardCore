@@ -17,7 +17,7 @@ using OrchardCore.Environment.Shell.Models;
 
 namespace OrchardCore.Modules
 {
-    internal class TenantBackgroundService : BackgroundService
+    internal class ModularBackgroundService : BackgroundService
     {
         private static readonly TimeSpan PollingTime = TimeSpan.FromMinutes(1);
         private static readonly TimeSpan MinIdleTime = TimeSpan.FromSeconds(10);
@@ -32,10 +32,10 @@ namespace OrchardCore.Modules
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ILogger _logger;
 
-        public TenantBackgroundService(
+        public ModularBackgroundService(
             IShellHost shellHost,
             IHttpContextAccessor httpContextAccessor,
-            ILogger<TenantBackgroundService> logger)
+            ILogger<ModularBackgroundService> logger)
         {
             _shellHost = shellHost;
             _httpContextAccessor = httpContextAccessor;
@@ -46,7 +46,7 @@ namespace OrchardCore.Modules
         {
             stoppingToken.Register(() =>
             {
-                _logger.LogInformation("'{ServiceName}' is stopping.", nameof(TenantBackgroundService));
+                _logger.LogInformation("'{ServiceName}' is stopping.", nameof(ModularBackgroundService));
             });
 
             while (GetRunningShells().Count() < 1)
@@ -63,9 +63,9 @@ namespace OrchardCore.Modules
 
             var previousShells = Enumerable.Empty<ShellContext>();
 
-            try
+            while (!stoppingToken.IsCancellationRequested)
             {
-                while (!stoppingToken.IsCancellationRequested)
+                try
                 {
                     var runningShells = GetRunningShells();
                     await UpdateAsync(previousShells, runningShells, stoppingToken);
@@ -76,10 +76,10 @@ namespace OrchardCore.Modules
                     await RunAsync(runningShells, stoppingToken);
                     await WaitAsync(pollingDelay, stoppingToken);
                 }
-            }
-            catch (Exception ex) when (!ex.IsFatal())
-            {
-                _logger.LogError(ex, "Error while executing '{ServiceName}', the service is stopping.", nameof(TenantBackgroundService));
+                catch (Exception ex) when (!ex.IsFatal())
+                {
+                    _logger.LogError(ex, "Error while executing '{ServiceName}'", nameof(ModularBackgroundService));
+                }
             }
         }
 
