@@ -35,8 +35,7 @@ using OrchardCore.Modules.Manifest;
     Description = "Cleanup sitemap cache files through a background task.",
     Dependencies = new[]
     {
-        "OrchardCore.Sitemaps",
-        "OrchardCore.BackgroundTasks"
+        "OrchardCore.Sitemaps"
     },
     Category = "Content Management"
 )]
