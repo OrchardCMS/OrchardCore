@@ -2125,6 +2125,15 @@
       "contributions": [
         "translation"
       ]
+    },
+    {
+      "login": "TalMcMahon",
+      "name": "Tal McMahon",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/3964594?v=4",
+      "profile": "http://PlanToDisrupt.com",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "skipCi": true
