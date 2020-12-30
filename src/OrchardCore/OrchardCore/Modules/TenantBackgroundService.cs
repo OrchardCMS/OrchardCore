@@ -17,7 +17,7 @@ using OrchardCore.Environment.Shell.Models;
 
 namespace OrchardCore.Modules
 {
-    internal class ModularBackgroundService : BackgroundService
+    internal class TenantBackgroundService : BackgroundService
     {
         private static readonly TimeSpan PollingTime = TimeSpan.FromMinutes(1);
         private static readonly TimeSpan MinIdleTime = TimeSpan.FromSeconds(10);
@@ -32,10 +32,10 @@ namespace OrchardCore.Modules
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ILogger _logger;
 
-        public ModularBackgroundService(
+        public TenantBackgroundService(
             IShellHost shellHost,
             IHttpContextAccessor httpContextAccessor,
-            ILogger<ModularBackgroundService> logger)
+            ILogger<TenantBackgroundService> logger)
         {
             _shellHost = shellHost;
             _httpContextAccessor = httpContextAccessor;
@@ -46,7 +46,7 @@ namespace OrchardCore.Modules
         {
             stoppingToken.Register(() =>
             {
-                _logger.LogInformation("'{ServiceName}' is stopping.", nameof(ModularBackgroundService));
+                _logger.LogInformation("'{ServiceName}' is stopping.", nameof(TenantBackgroundService));
             });
 
             while (GetRunningShells().Count() < 1)
@@ -78,7 +78,7 @@ namespace OrchardCore.Modules
                 }
                 catch (Exception ex) when (!ex.IsFatal())
                 {
-                    _logger.LogError(ex, "Error while executing '{ServiceName}'", nameof(ModularBackgroundService));
+                    _logger.LogError(ex, "Error while executing '{ServiceName}'", nameof(TenantBackgroundService));
                 }
             }
         }
