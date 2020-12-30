@@ -41,9 +41,9 @@
                 <li class="list-group-item d-flex" v-for="policy in policies" :data-filter-value="policy.Name">
                     <div class="align-self-center mr-auto">{{ policy.Name }}</div>
                     <div class="align-self-center">
-                            <span v-if="policy.IsDefaultPolicy" class="badge ta-badge">@T["Default Policy"]</span>
-                            <button class="btn btn-primary btn-sm" type="button" v-on:click="editPolicy(policy)">@T["Edit"]</button>
-                            <button class="delete btn btn-danger btn-sm" type="button" v-on:click="deletePolicy(policy, $event)">@T["Delete"]</button>
+                        <span v-if="policy.IsDefaultPolicy" class="badge ta-badge">@T["Default Policy"]</span>
+                        <button class="btn btn-primary btn-sm" type="button" v-on:click="editPolicy(policy)">@T["Edit"]</button>
+                        <button class="delete btn btn-danger btn-sm" type="button" v-on:click="deletePolicy(policy, $event)">@T["Delete"]</button>
                     </div>
                 </li>
             </ul>
@@ -75,7 +75,6 @@
                 </div>
             </div>
         </div>
-
         <div class="card mb-2">
             <div class="card-body">
                 <h5 class="card-title">
@@ -90,7 +89,6 @@
                 </div>
             </div>
         </div>
-
         <div class="card mb-2">
             <div class="card-body">
                 <h5 class="card-title">
@@ -108,7 +106,6 @@
                 </div>
             </div>
         </div>
-
         <div class="card mb-2">
             <div class="card-body">
                 <h5 class="card-title">
@@ -126,7 +123,6 @@
                 </div>
             </div>
         </div>
-
         <div class="card mb-2">
             <div class="card-body">
                 <h5 class="card-title">
@@ -169,7 +165,6 @@
                 </li>
             </ul>
         </nav>
-
         <ul class="list-group my-1 mt-4">
             <li class="list-group-item d-flex" v-for="option in options">
                 <div class="align-self-center mr-auto">{{ option }}</div>
