@@ -8,4 +8,4 @@ In order to tell the browser to be less strict, we can allow some exceptions con
 For more information, see https://docs.microsoft.com/en-us/aspnet/core/security/cors and https://developer.mozilla.org/nl/docs/Web/HTTP/CORS.
 
 !!! warning
-    As AllowCredentials and AllowAnyOrigin are considered a security risk, policies containing BOTH these options will NOT be activated.
+    As using AllowCredentials and AllowAnyOrigin at the same time is considered as a security risk, policies containing BOTH these options will NOT be activated.

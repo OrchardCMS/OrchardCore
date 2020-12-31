@@ -26,7 +26,7 @@ namespace OrchardCore.Cors.Services
             {
                 if (corsPolicy.AllowCredentials && corsPolicy.AllowAnyOrigin)
                 {
-                    _logger.LogWarning($"AllowCredentials and AllowAnyOrigin is considered a security risk, policy {corsPolicy.Name} not loaded");
+                    _logger.LogWarning("Using AllowCredentials and AllowAnyOrigin at the same time is considered as a security risk, the {policyName} policy will not be loaded.", corsPolicy.Name);
                     continue;
                 }
 
