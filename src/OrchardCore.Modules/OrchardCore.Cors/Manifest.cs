@@ -1,9 +1,9 @@
 using OrchardCore.Modules.Manifest;
 
 [assembly: Module(
-    Name = "Cors Configuration",
-    Author = "The Orchard Team",
-    Website = "http://orchardproject.net",
-    Version = "2.0.0",
-    Description = "Enables configuration of Cors settings",
+    Name = "CORS Configuration",
+    Author = ManifestConstants.OrchardCoreTeam,
+    Website = ManifestConstants.OrchardCoreWebsite,
+    Version = ManifestConstants.OrchardCoreVersion,
+    Description = "Enables configuration of CORS settings.",
     Category = "Security")]

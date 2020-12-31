@@ -1,10 +1,11 @@
-# Cors (`OrchardCore.Cors`)
+# CORS (`OrchardCore.Cors`)
 
-Cors is shorthard for; Cross-Origin Resource Sharing. Modern browsers do not allow script execution from a different domain that served the scripts.
-This restriction is called the same-origin policy. In order to tell the browser to be less strict, we can allow some exceptions configured in the CORS module.
+CORS stands for Cross-Origin Resource Sharing.  
+Modern browsers do not allow script execution from a different domain that serves the scripts.
+This restriction is called the same-origin policy.  
+In order to tell the browser to be less strict, we can allow some exceptions configured in the CORS module.
 
-For more information, see; https://docs.microsoft.com/en-us/aspnet/core/security/cors and https://developer.mozilla.org/nl/docs/Web/HTTP/CORS.
+For more information, see https://docs.microsoft.com/en-us/aspnet/core/security/cors and https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS.
 
 !!! warning
-
-AllowCredentials and AllowAnyOrigin is considered a security risk, policies containing both these options will NOT be activated.
+    As using AllowCredentials and AllowAnyOrigin at the same time is considered as a security risk, policies containing BOTH these options will NOT be activated.
