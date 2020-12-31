@@ -141,7 +141,7 @@ namespace OrchardCore.Users
             return 8;
         }
         
-        public int UpdateFrom7()
+        public int UpdateFrom8()
         {
             SchemaBuilder.AlterIndexTable<UserIndex>(table => table
                 .AddColumn<bool>(nameof(UserIndex.LockoutEnabled), c => c.NotNull().WithDefault(false)));
@@ -155,7 +155,7 @@ namespace OrchardCore.Users
             SchemaBuilder.AlterIndexTable<UserIndex>(table => table
                 .CreateIndex("IDX_UserIndex_LockoutEnabled", "LockoutEnabled"));
                 
-            return 8;
+            return 9;
         }
     }
 }
