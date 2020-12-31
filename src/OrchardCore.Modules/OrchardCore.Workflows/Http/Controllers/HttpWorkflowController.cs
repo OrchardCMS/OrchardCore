@@ -196,7 +196,7 @@ namespace OrchardCore.Workflows.Http.Controllers
                         await using var acquiredLock = locker;
 
                         // If atomic, check if the workflow still exists.
-                        var haltedWorkflow = workflow.IsAtomic() ? await _workflowStore.GetAsync(workflow.Id) : workflow;
+                        var haltedWorkflow = workflow.IsAtomic ? await _workflowStore.GetAsync(workflow.WorkflowId) : workflow;
                         if (haltedWorkflow == null)
                         {
                             continue;
@@ -244,7 +244,7 @@ namespace OrchardCore.Workflows.Http.Controllers
                     await using var acquiredLock = locker;
 
                     // If atomic, check if the workflow still exists (without checking if it is correlated).
-                    workflow = workflow.IsAtomic() ? await _workflowStore.GetAsync(workflow.Id) : workflow;
+                    workflow = workflow.IsAtomic ? await _workflowStore.GetAsync(workflow.WorkflowId) : workflow;
                     if (workflow != null)
                     {
                         // The workflow could be blocking on multiple Signal activities, but only the activity with the provided signal name

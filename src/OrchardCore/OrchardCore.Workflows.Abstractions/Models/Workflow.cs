@@ -32,14 +32,19 @@ namespace OrchardCore.Workflows.Models
         public string FaultMessage { get; set; }
 
         /// <summary>
+        /// Controls whether this workflow instance should be executed atomically.
+        /// </summary>
+        public bool IsAtomic { get; set; }
+
+        /// <summary>
         /// The timeout in milliseconds to acquire a lock before executing this workflow instance.
         /// </summary>
-        public int LockTimeout { get; set; }
+        public int LockTimeout { get; set; } = 30_000;
 
         /// <summary>
         /// The expiration in milliseconds of the lock acquired before executing this workflow instance.
         /// </summary>
-        public int LockExpiration { get; set; }
+        public int LockExpiration { get; set; } = 30_000;
 
         /// <summary>
         /// List of activities the current workflow instance is waiting on
@@ -48,10 +53,5 @@ namespace OrchardCore.Workflows.Models
         public IList<BlockingActivity> BlockingActivities { get; } = new List<BlockingActivity>();
 
         public DateTime CreatedUtc { get; set; }
-
-        /// <summary>
-        /// Whether this workflow instance needs to be executed atomically.
-        /// </summary>
-        public bool IsAtomic() => LockTimeout > 0 && LockExpiration > 0;
     }
 }

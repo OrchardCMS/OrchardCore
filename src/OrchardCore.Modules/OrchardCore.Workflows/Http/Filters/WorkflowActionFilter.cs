@@ -99,7 +99,7 @@ namespace OrchardCore.Workflows.Http.Filters
                         await using var acquiredLock = locker;
 
                         // If atomic, check if the workflow still exists and is still correlated.
-                        var haltedWorkflow = workflow.IsAtomic() ? await _workflowStore.GetAsync(workflow.Id) : workflow;
+                        var haltedWorkflow = workflow.IsAtomic ? await _workflowStore.GetAsync(workflow.WorkflowId) : workflow;
                         if (haltedWorkflow == null || (!String.IsNullOrWhiteSpace(correlationId) && haltedWorkflow.CorrelationId != correlationId))
                         {
                             continue;

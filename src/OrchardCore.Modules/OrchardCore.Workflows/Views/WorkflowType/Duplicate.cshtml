@@ -29,15 +29,25 @@
     </div>
 
     <div class="form-group">
-        <label asp-for="LockTimeout">@T["Lock timeout"]</label>
-        <input asp-for="LockTimeout" type="number" min="0" max="30000" class="form-control">
-        <span class="hint">@T["The timeout in milliseconds to acquire a lock before executing a given workflow of this type atomically. Leave it to zero to not use any locking."]</span>
+        <div class="custom-control custom-checkbox">
+            <input asp-for="IsAtomic" type="checkbox" class="custom-control-input" data-toggle="collapse" data-target="#is-atomic" checked="@Model.IsAtomic">
+            <label class="custom-control-label" asp-for="IsAtomic">@T["Atomic instances"]</label>
+            <span class="hint">@T["Check to ensure any workflow of this type is executed atomically. Leave unchecked to allow any workflow to be executed concurrently."]</span>
+        </div>
     </div>
 
-    <div class="form-group">
-        <label asp-for="LockExpiration">@T["Lock expiration"]</label>
-        <input asp-for="LockExpiration" type="number" min="0" max="30000" class="form-control">
-        <span class="hint">@T["The expiration in milliseconds of the lock acquired before executing a workflow of this type atomically. Leave it to zero to not use any locking."]</span>
+    <div id="is-atomic" class="collapse">
+        <div class="form-group">
+            <label asp-for="LockTimeout">@T["Lock timeout (ms)"]</label>
+            <input asp-for="LockTimeout" type="number" min="0" max="30000" class="form-control">
+            <span class="hint">@T["The timeout in milliseconds to acquire a lock before executing a given workflow instance of this type atomically."]</span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="LockExpiration">@T["Lock expiration (ms)"]</label>
+            <input asp-for="LockExpiration" type="number" min="0" max="30000" class="form-control">
+            <span class="hint">@T["The expiration in milliseconds of the acquired lock while executing a workflow instance of this type atomically."]</span>
+        </div>
     </div>
 
     <div class="form-group">

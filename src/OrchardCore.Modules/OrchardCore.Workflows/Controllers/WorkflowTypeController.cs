@@ -232,6 +232,7 @@ namespace OrchardCore.Workflows.Controllers
                     Name = workflowType.Name,
                     IsEnabled = workflowType.IsEnabled,
                     IsSingleton = workflowType.IsSingleton,
+                    IsAtomic = workflowType.IsAtomic,
                     LockTimeout = workflowType.LockTimeout,
                     LockExpiration = workflowType.LockExpiration,
                     DeleteFinishedWorkflows = workflowType.DeleteFinishedWorkflows,
@@ -274,6 +275,7 @@ namespace OrchardCore.Workflows.Controllers
             workflowType.Name = viewModel.Name?.Trim();
             workflowType.IsEnabled = viewModel.IsEnabled;
             workflowType.IsSingleton = viewModel.IsSingleton;
+            workflowType.IsAtomic = viewModel.IsAtomic;
             workflowType.LockTimeout = viewModel.LockTimeout;
             workflowType.LockExpiration = viewModel.LockExpiration;
             workflowType.DeleteFinishedWorkflows = viewModel.DeleteFinishedWorkflows;
@@ -305,6 +307,7 @@ namespace OrchardCore.Workflows.Controllers
             {
                 Id = id,
                 IsSingleton = workflowType.IsSingleton,
+                IsAtomic = workflowType.IsAtomic,
                 LockTimeout = workflowType.LockTimeout,
                 LockExpiration = workflowType.LockExpiration,
                 Name = "Copy-" + workflowType.Name,
@@ -333,6 +336,7 @@ namespace OrchardCore.Workflows.Controllers
             workflowType.Name = viewModel.Name?.Trim();
             workflowType.IsEnabled = viewModel.IsEnabled;
             workflowType.IsSingleton = viewModel.IsSingleton;
+            workflowType.IsAtomic = viewModel.IsAtomic;
             workflowType.LockTimeout = viewModel.LockTimeout;
             workflowType.LockExpiration = viewModel.LockExpiration;
             workflowType.DeleteFinishedWorkflows = viewModel.DeleteFinishedWorkflows;

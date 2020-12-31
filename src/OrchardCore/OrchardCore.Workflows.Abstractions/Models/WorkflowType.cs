@@ -26,14 +26,19 @@ namespace OrchardCore.Workflows.Models
         public bool IsSingleton { get; set; }
 
         /// <summary>
+        /// Controls whether a workflow instance of this type should be executed atomically.
+        /// </summary>
+        public bool IsAtomic { get; set; }
+
+        /// <summary>
         /// The timeout in milliseconds to acquire a lock before executing a given workflow instance of this type.
         /// </summary>
-        public int LockTimeout { get; set; }
+        public int LockTimeout { get; set; } = 30_000;
 
         /// <summary>
         /// The expiration in milliseconds of the lock acquired before executing a workflow instance of this type.
         /// </summary>
-        public int LockExpiration { get; set; }
+        public int LockExpiration { get; set; } = 30_000;
 
         /// <summary>
         /// Controls whether workflow instances will be deleted upon completion.
@@ -49,10 +54,5 @@ namespace OrchardCore.Workflows.Models
         /// A complete list of the transitions between the activities on this workflow.
         /// </summary>
         public IList<Transition> Transitions { get; set; } = new List<Transition>();
-
-        /// <summary>
-        /// Whether a workflow instance of this type needs to be executed atomically.
-        /// </summary>
-        public bool IsAtomic() => LockTimeout > 0 && LockExpiration > 0;
     }
 }

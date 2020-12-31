@@ -66,6 +66,7 @@ namespace OrchardCore.Workflows.Services
                     ActivityStates = workflowType.Activities.Select(x => x).ToDictionary(x => x.ActivityId, x => x.Properties)
                 }),
                 CorrelationId = correlationId,
+                IsAtomic = workflowType.IsAtomic,
                 LockTimeout = workflowType.LockTimeout,
                 LockExpiration = workflowType.LockExpiration,
                 CreatedUtc = _clock.UtcNow
@@ -144,7 +145,7 @@ namespace OrchardCore.Workflows.Services
                 await using var acquiredLock = locker;
 
                 // If atomic, check if the workflow still exists and is still correlated.
-                var haltedWorkflow = workflow.IsAtomic() ? await _workflowStore.GetAsync(workflow.Id) : workflow;
+                var haltedWorkflow = workflow.IsAtomic ? await _workflowStore.GetAsync(workflow.WorkflowId) : workflow;
                 if (haltedWorkflow == null || (!isAlwaysCorrelated && haltedWorkflow.CorrelationId != (correlationId ?? "")))
                 {
                     continue;
@@ -172,8 +173,8 @@ namespace OrchardCore.Workflows.Services
                     continue;
                 }
 
-                // If atomic, try to acquire a lock per workflow type id.
-                (var locker, var locked) = await _distributedLock.TryAcquireWorkflowTypeLockAsync(workflowType);
+                // If atomic or the event is exclusive, try to acquire a lock per workflow type id.
+                (var locker, var locked) = await _distributedLock.TryAcquireWorkflowTypeLockAsync(workflowType, isExclusive);
                 if (!locked)
                 {
                     continue;
