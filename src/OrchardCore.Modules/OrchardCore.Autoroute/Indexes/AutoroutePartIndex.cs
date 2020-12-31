@@ -77,6 +77,7 @@ namespace OrchardCore.ContentManagement.Records
         public void Describe(DescribeContext<ContentItem> context)
         {
             context.For<AutoroutePartIndex>()
+                .When(contentItem => contentItem.Has<AutoroutePart>())
                 .Map(async contentItem =>
                 {
                     var part = contentItem.As<AutoroutePart>();

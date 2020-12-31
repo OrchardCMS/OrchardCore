@@ -18,6 +18,7 @@ namespace OrchardCore.Alias.Indexes
         public override void Describe(DescribeContext<ContentItem> context)
         {
             context.For<AliasPartIndex>()
+                .When(contentItem => contentItem.Has<AliasPart>())
                 .Map(contentItem =>
                 {
                     var alias = contentItem.As<AliasPart>()?.Alias;
