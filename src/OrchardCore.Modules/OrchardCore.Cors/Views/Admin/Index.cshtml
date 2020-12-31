@@ -37,7 +37,7 @@
                     </div>
                 </div>
             </div>
-            <ul class="list-group mb-2" v-cloak>
+            <ul class="list-group mb-2" v-cloak v-if="policies.length > 0">
                 <li class="list-group-item" v-for="policy in policies" :data-filter-value="policy.Name">
                     <div class="d-flex">
                         <div class="align-self-center mr-auto">{{ policy.Name }}</div>
@@ -101,7 +101,7 @@
                     <span class="hint dashed">@T["Configure the origins behavior."]</span>
                 </h5>
 
-                <div class="form-group">
+                <div class="">
                     <div class="custom-control custom-checkbox mb-2">
                         <input class="custom-control-input" id="allowed-origins" v-model="policy.AllowAnyOrigin" type="checkbox" />
                         <label class="custom-control-label" for="allowed-origins">@T["Allow any origin"]</label>
@@ -118,7 +118,7 @@
                     <span class="hint dashed">@T["Allow certain or all headers to be used by the external client."]</span>
                 </h5>
 
-                <div class="form-group">
+                <div class="">
                     <div class="custom-control custom-checkbox mb-2">
                         <input class="custom-control-input" id="allowed-headers" v-model="policy.AllowAnyHeader" type="checkbox" />
                         <label class="custom-control-label" for="allowed-headers">@T["Allow any header"]</label>
@@ -135,7 +135,7 @@
                     <span class="hint dashed">@T["Configure the methods behavior (POST, PUT, DELETE, GET, etc)."]</span>
                 </h5>
 
-                <div class="form-group">
+                <div class="">
                     <div class="custom-control custom-checkbox mb-2">
                         <input class="custom-control-input" id="allowed-methods" v-model="policy.AllowAnyMethod" type="checkbox" />
                         <label class="custom-control-label" for="allowed-methods">@T["Allow any method"]</label>
@@ -156,21 +156,13 @@
     <div>
         <label>{{ title }}</label>
         <span class="hint" v-if="subTitle">{{ subTitle }}</span>
-        <nav class="mb-2">
-            <ul class="navbar-nav mr-auto">
-                <li class="nav-item">
-                    <div class="row">
-                        <div class="col">
-                            <input v-model="newOption" type="text" class="form-control" />
-                        </div>
-                        <div class="col">
-                            <button type="button" class="btn btn-primary btn-sm" v-on:click="addOption(newOption)">@T["Add"] {{ optionType }}</button>
-                        </div>
-                    </div>
-                </li>
-            </ul>
-        </nav>
-        <ul class="list-group my-1 mt-4">
+        <div class="input-group input-group-sm mb-2 w-50">
+            <input type="text" class="form-control" v-model="newOption">
+            <div class="input-group-append">
+                <button class="btn btn-primary btn-sm" type="button" v-on:click="addOption(newOption)">@T["Add"] {{ optionType }}</button>
+            </div>
+        </div>
+        <ul class="list-group mt-3" v-if="options.length > 0">
             <li class="list-group-item d-flex" v-for="option in options">
                 <div class="align-self-center mr-auto">{{ option }}</div>
                 <div class="align-self-center">
