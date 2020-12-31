@@ -20,13 +20,15 @@ namespace OrchardCore.Cors.Services
         {
             var corsSettings = _corsService.GetSettingsAsync().GetAwaiter().GetResult();
             if (corsSettings?.Policies == null || !corsSettings.Policies.Any())
+            {
                 return;
+            }
 
             foreach (var corsPolicy in corsSettings.Policies)
             {
                 if (corsPolicy.AllowCredentials && corsPolicy.AllowAnyOrigin)
                 {
-                    _logger.LogWarning("Using AllowCredentials and AllowAnyOrigin at the same time is considered as a security risk, the {policyName} policy will not be loaded.", corsPolicy.Name);
+                    _logger.LogWarning("Using AllowCredentials and AllowAnyOrigin at the same time is considered a security risk, the {PolicyName} policy will not be loaded.", corsPolicy.Name);
                     continue;
                 }
 
