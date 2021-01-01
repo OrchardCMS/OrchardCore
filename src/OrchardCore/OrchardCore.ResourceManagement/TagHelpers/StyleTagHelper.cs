@@ -51,13 +51,8 @@ namespace OrchardCore.ResourceManagement.TagHelpers
 
             if (String.IsNullOrEmpty(Name) && !String.IsNullOrEmpty(Src))
             {
-                // Include custom script
+                // Include custom style
                 var setting = _resourceManager.RegisterUrl("stylesheet", Src, DebugSrc);
-                
-                foreach (var attribute in output.Attributes)
-                {
-                    setting.SetAttribute(attribute.Name, attribute.Value.ToString());
-                }
 
                 if (At != ResourceLocation.Unspecified)
                 {
@@ -66,6 +61,11 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                 else
                 {
                     setting.AtLocation(ResourceLocation.Head);
+                }
+
+                foreach (var attribute in output.Attributes)
+                {
+                    setting.SetAttribute(attribute.Name, attribute.Value.ToString());
                 }
 
                 if (!String.IsNullOrEmpty(Condition))
@@ -87,6 +87,17 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                 {
                     setting.UseCulture(Culture);
                 }
+
+                if (!String.IsNullOrEmpty(DependsOn))
+                {
+                    setting.SetDependencies(DependsOn.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries));
+                }
+
+                if (At == ResourceLocation.Inline)
+                {
+                    _resourceManager.RenderLocalStyle(setting, output.Content);
+                }
+
             }
             else if (!String.IsNullOrEmpty(Name) && String.IsNullOrEmpty(Src))
             {
@@ -138,7 +149,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                     setting.UseVersion(Version);
                 }
 
-                // This allows additions to the pre registered scripts dependencies.
+                // This allows additions to the pre registered style dependencies.
                 if (!String.IsNullOrEmpty(DependsOn))
                 {
                     setting.SetDependencies(DependsOn.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries));
@@ -147,9 +158,14 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                 var childContent = await output.GetChildContentAsync();
                 if (!childContent.IsEmptyOrWhiteSpace)
                 {
-                    // Inline content definition
+                    // Inline named style definition
                     _resourceManager.InlineManifest.DefineStyle(Name)
                         .SetInnerContent(childContent.GetContent());
+                }
+
+                if (At == ResourceLocation.Inline)
+                {
+                    _resourceManager.RenderLocalStyle(setting, output.Content);
                 }
             }
             else if (!String.IsNullOrEmpty(Name) && !String.IsNullOrEmpty(Src))
@@ -184,18 +200,8 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                     definition.SetDependencies(DependsOn.Split(',', StringSplitOptions.RemoveEmptyEntries));
                 }
 
-                // Also include the style
-
+                // Also include the style.
                 var setting = _resourceManager.RegisterResource("stylesheet", Name);
-
-                if (At != ResourceLocation.Unspecified)
-                {
-                    setting.AtLocation(At);
-                }
-                else
-                {
-                    setting.AtLocation(ResourceLocation.Head);
-                }
 
                 if (UseCdn != null)
                 {
@@ -215,6 +221,19 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                 if (!String.IsNullOrEmpty(Culture))
                 {
                     setting.UseCulture(Culture);
+                }
+
+                if (At == ResourceLocation.Inline)
+                {
+                    _resourceManager.RenderLocalStyle(setting, output.Content);
+                }
+                else if (At != ResourceLocation.Unspecified)
+                {
+                    setting.AtLocation(At);
+                }
+                else
+                {
+                    setting.AtLocation(ResourceLocation.Head);
                 }
             }
             else if (String.IsNullOrEmpty(Name) && String.IsNullOrEmpty(Src))
