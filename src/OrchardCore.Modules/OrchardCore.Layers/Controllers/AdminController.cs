@@ -111,7 +111,6 @@ namespace OrchardCore.Layers.Controllers
                 return Forbid();
             }
 
-            ViewData["ReturnUrl"] = returnUrl;
             return View();
         }
 
@@ -167,7 +166,6 @@ namespace OrchardCore.Layers.Controllers
                 Description = layer.Description
             };
 
-            ViewData["ReturnUrl"] = returnUrl;
             return View(model);
         }
 

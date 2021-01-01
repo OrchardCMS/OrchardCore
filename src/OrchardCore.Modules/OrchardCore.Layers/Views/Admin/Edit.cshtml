@@ -1,6 +1,6 @@
 @model OrchardCore.Layers.ViewModels.LayerEditViewModel
 @{
-    var returnUrl = ViewData["returnUrl"]?.ToString();
+    var returnUrl = Context.Request.Query["returnUrl"];
 }
 
 <zone Name="Title"><h1>@RenderTitleSegments(T["Edit Layer - {0}", Model.Name])</h1></zone>
