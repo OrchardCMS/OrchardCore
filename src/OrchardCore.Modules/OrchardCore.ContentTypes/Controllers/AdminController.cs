@@ -583,7 +583,6 @@ namespace OrchardCore.ContentTypes.Controllers
                 Fields = _contentDefinitionService.GetFields().Select(x => x.Name).OrderBy(x => x).ToList()
             };
 
-            ViewData["ReturnUrl"] = returnUrl;
             return View(viewModel);
         }
 
@@ -644,7 +643,6 @@ namespace OrchardCore.ContentTypes.Controllers
 
                 _documentStore.Cancel();
 
-                ViewData["ReturnUrl"] = returnUrl;
                 return View(viewModel);
             }
 
@@ -693,7 +691,6 @@ namespace OrchardCore.ContentTypes.Controllers
                 Shape = await _contentDefinitionDisplayManager.BuildPartFieldEditorAsync(partFieldDefinition, _updateModelAccessor.ModelUpdater)
             };
 
-            ViewData["ReturnUrl"] = returnUrl;
             return View(viewModel);
         }
 
@@ -748,7 +745,6 @@ namespace OrchardCore.ContentTypes.Controllers
                     viewModel.Shape = await _contentDefinitionDisplayManager.UpdatePartFieldEditorAsync(field, _updateModelAccessor.ModelUpdater);
                     _documentStore.Cancel();
 
-                    ViewData["ReturnUrl"] = returnUrl;
                     return View(viewModel);
                 }
 
@@ -766,7 +762,6 @@ namespace OrchardCore.ContentTypes.Controllers
             {
                 _documentStore.Cancel();
 
-                ViewData["ReturnUrl"] = returnUrl;
                 return View(viewModel);
             }
             else
