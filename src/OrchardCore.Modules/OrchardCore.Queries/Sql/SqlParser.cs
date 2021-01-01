@@ -41,7 +41,7 @@ namespace OrchardCore.Queries.Sql
         {
             try
             {
-                var tree = new Parser(language).Parse(sql);
+                var tree = new Irony.Parsing.Parser(language).Parse(sql);
 
                 if (tree.HasErrors())
                 {
