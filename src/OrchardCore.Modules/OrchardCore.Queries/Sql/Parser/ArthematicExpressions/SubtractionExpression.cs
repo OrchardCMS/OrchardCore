@@ -1,8 +1,8 @@
 namespace OrchardCore.Queries.Sql.Parser
 {
-    public class SubstractionExpression : BinaryExpression
+    public class SubtractionExpression : BinaryExpression
     {
-        public SubstractionExpression(Expression left, Expression right) : base(left, right)
+        public SubtractionExpression(Expression left, Expression right) : base(left, right)
         {
         }
 
