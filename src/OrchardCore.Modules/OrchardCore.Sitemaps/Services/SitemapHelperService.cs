@@ -5,6 +5,7 @@ using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Liquid;
 using OrchardCore.Mvc.ModelBinding;
+using OrchardCore.Sitemaps.Models;
 
 namespace OrchardCore.Sitemaps.Services
 {
@@ -15,7 +16,6 @@ namespace OrchardCore.Sitemaps.Services
         public const int MaxPathLength = 1024;
         public const string Prefix = "";
         public const string Path = "Path";
-        public const string SitemapPathExtension = ".xml";
 
         private readonly ISlugService _slugService;
         private readonly ISitemapManager _sitemapManager;
@@ -47,9 +47,9 @@ namespace OrchardCore.Sitemaps.Services
             }
 
             // Precludes possibility of collision with Autoroute as Autoroute excludes . as a valid path character.
-            if (!path.EndsWith(SitemapPathExtension))
+            if (!path.EndsWith(Sitemap.PathExtension))
             {
-                updater.ModelState.AddModelError(Prefix, Path, S["Your permalink must end with {0}.", SitemapPathExtension]);
+                updater.ModelState.AddModelError(Prefix, Path, S["Your permalink must end with {0}.", Sitemap.PathExtension]);
             }
 
             if (path.Length > MaxPathLength)
@@ -61,12 +61,12 @@ namespace OrchardCore.Sitemaps.Services
             if (string.IsNullOrEmpty(sitemapId))
             {
                 routeExists = (await _sitemapManager.GetSitemapsAsync())
-                    .Any(p => String.Equals(p.Path, path, StringComparison.OrdinalIgnoreCase));
+                    .Any(p => String.Equals(p.Path, path.TrimStart('/'), StringComparison.OrdinalIgnoreCase));
             }
             else
             {
                 routeExists = (await _sitemapManager.GetSitemapsAsync())
-                    .Any(p => p.SitemapId != sitemapId && String.Equals(p.Path, path, StringComparison.OrdinalIgnoreCase));
+                    .Any(p => p.SitemapId != sitemapId && String.Equals(p.Path, path.TrimStart('/'), StringComparison.OrdinalIgnoreCase));
             }
 
             if (routeExists)
@@ -77,7 +77,7 @@ namespace OrchardCore.Sitemaps.Services
 
         public string GetSitemapSlug(string name)
         {
-            return _slugService.Slugify(name) + SitemapPathExtension;
+            return _slugService.Slugify(name) + Sitemap.PathExtension;
         }
 
     }

@@ -20,7 +20,7 @@
 
     <script asp-name="font-awesome" at="Foot" version="5"></script>
     <script asp-name="font-awesome-v4-shims" at="Foot" version="5"></script>
-    <script asp-name="jscookie" at="Foot" version="2.1.4"></script>
+    <script asp-name="js-cookie" at="Foot" version="2"></script>
     <script asp-name="admin" asp-src="~/TheAdmin/Scripts/TheAdmin.min.js" debug-src="~/TheAdmin/Scripts/TheAdmin.js" depends-on="jQuery" at="Foot"></script>
     <resources type="Header" />
 
@@ -31,71 +31,60 @@
 <body class="preload">
     <div class="ta-wrapper">
         <div class="ta-navbar-top navbar-expand-lg bg-primary">
-            <a class="ta-navbar-brand" href="@Url.Content("~/" + AdminOptions.Value.AdminUrlPrefix)"><img src="/TheAdmin/logo.png" alt="@Site.SiteName" /><span>@Site.SiteName</span></a>
-            <div class="mr-auto">
-                @if (adminSettings.DisplayTitlesInTopbar)
-                {
-                    @await RenderSectionAsync("Title", required: false)
-                }
-            </div>
-            @await RenderSectionAsync("NavbarTop", required: false)
-            <button class="navbar-toggler pull-right" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="@T["Toggle navigation"]">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse flex-grow-0" id="navbarNav">
-                <ul class="navbar-nav">
-                    @await RenderSectionAsync("NavbarLinks", required: false)
-                    <li class="nav-item">
-                        @if (adminSettings.DisplayDarkMode)
-                        {
-                            <a id="btn-darkmode" class="nav-link" data-toggle="tooltip" title="@(darkMode ? T["Light mode"] : T["Dark mode"])" role="button">
-                                @if (darkMode)
-                                {
-                                    <i class="fas fa-fw fa-sun"></i>
-                                }
-                                else
-                                {
-                                    <i class="fas fa-fw fa-moon"></i>
-                                }
-                                <span class="d-inline d-md-none">@T["Dark mode"]</span>
-                            </a>
-                        }
-                    </li>
-                    <li class="nav-item">
-                        <a href="@Url.Content("~/")" class="nav-link" target="_blank" data-toggle="tooltip" title="@T["Visit Site"]">
-                            <i class="fa fa-fw fa-external-link"></i>
-                            <span class="d-inline d-md-none">@T["Visit Site"]</span>
+            <div class="d-flex w-100">
+                <a class="ta-navbar-brand" href="@Url.Content("~/" + AdminOptions.Value.AdminUrlPrefix)"><img src="/TheAdmin/logo.png" alt="@Site.SiteName" /><span>@Site.SiteName</span></a>
+            
+                <div class="flex-grow-1">
+                    @if (adminSettings.DisplayTitlesInTopbar)
+                    {
+                        @await RenderSectionAsync("Title", required: false)
+                    }
+                </div>
+                <div class="d-flex align-items-center">
+                    @await RenderSectionAsync("NavbarTop", required: false)
+                    @if (adminSettings.DisplayDarkMode)
+                    {
+                        <a id="btn-darkmode" class="ml-3" data-toggle="tooltip" title="@(darkMode ? T["Light mode"] : T["Dark mode"])" role="button">
+                            @if (darkMode)
+                            {
+                                <i class="fas fa-sun"></i>
+                            }
+                            else
+                            {
+                                <i class="fas fa-moon"></i>
+                            }
                         </a>
-                    </li>
-                    <li class="nav-item">@await DisplayAsync(await New.UserMenu())</li>
-                </ul>
+                    }
+                    <a href="@Url.Content("~/")" class="ml-3" target="_blank" data-toggle="tooltip" title="@T["Visit Site"]" role="button">
+                        <i class="fa fa-fw fa-external-link"></i>
+                    </a>
+                    @await DisplayAsync(await New.UserMenu())
+                </div>
             </div>
         </div>
-    </div>
 
-    <div id="ta-left-sidebar" class="d-flex flex-column justify-content-between align-items-stretch">
-        @await RenderSectionAsync("Navigation", required: false)
-        <div class="footer">
-            <button class="leftbar-compactor" type="button" title="@T["Collapse / expand menu"]"></button>
+        <div id="ta-left-sidebar" class="d-flex flex-column justify-content-between align-items-stretch">
+            @await RenderSectionAsync("Navigation", required: false)
+            <div class="footer">
+                <button class="leftbar-compactor" type="button" title="@T["Collapse / expand menu"]"></button>
+            </div>
         </div>
-    </div>
 
-    <div class="ta-content">
-        @await RenderSectionAsync("Header", required: false)
-        @await RenderSectionAsync("Messages", required: false)
-        @await RenderSectionAsync("Breadcrumbs", required: false)
-        @if (!adminSettings.DisplayTitlesInTopbar)
-        {
-            @await RenderSectionAsync("Title", required: false)
-        }
-        @await RenderBodyAsync()
-    </div>
-    </div>
+        <div class="ta-content">
+            @await RenderSectionAsync("Header", required: false)
+            @await RenderSectionAsync("Messages", required: false)
+            @await RenderSectionAsync("Breadcrumbs", required: false)
+            @if (!adminSettings.DisplayTitlesInTopbar)
+            {
+                @await RenderSectionAsync("Title", required: false)
+            }
+            @await RenderBodyAsync()
+        </div>
 
-    @await RenderSectionAsync("Footer", required: false)
+        @await RenderSectionAsync("Footer", required: false)
 
+    </div>
     <div id="confirmRemoveModalMetadata" data-title="@T["Delete"]" data-message="@T["Are you sure you want to remove this element?"]" data-ok-text="@T["Ok"]" data-cancel-text="@T["Cancel"]" data-ok-class="btn-danger" data-cancel-class="btn-secondary"></div>
-
     <resources type="Footer" />
 </body>
 </html>
