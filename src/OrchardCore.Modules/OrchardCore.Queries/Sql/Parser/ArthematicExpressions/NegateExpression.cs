@@ -6,6 +6,6 @@ namespace OrchardCore.Queries.Sql.Parser.ArthematicExpressions
         {
         }
 
-        public override object Evaluate() => -1 * InnerExpression.EvaluateAsNumber();
+        public override object Evaluate() => -1 * InnerExpression.EvaluateAsDecimal();
     }
 }

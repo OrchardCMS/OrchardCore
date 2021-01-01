@@ -6,6 +6,6 @@ namespace OrchardCore.Queries.Sql.Parser
         {
         }
 
-        public override object Evaluate() => Left.EvaluateAsNumber() / Right.EvaluateAsNumber();
+        public override object Evaluate() => Left.EvaluateAsDecimal() / Right.EvaluateAsDecimal();
     }
 }
