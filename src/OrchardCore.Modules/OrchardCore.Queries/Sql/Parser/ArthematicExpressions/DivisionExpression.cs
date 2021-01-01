@@ -4,9 +4,8 @@ namespace OrchardCore.Queries.Sql.Parser
     {
         public DivisionExpression(Expression left, Expression right) : base(left, right)
         {
-
         }
 
-        public override decimal Evaluate() => Left.Evaluate() / Right.Evaluate();
+        public override object Evaluate() => Left.EvaluateAsNumber() / Right.EvaluateAsNumber();
     }
 }
