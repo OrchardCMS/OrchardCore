@@ -64,9 +64,9 @@ namespace OrchardCore.Modules
 
             var previousShells = Enumerable.Empty<ShellContext>();
 
-            try
+            while (!stoppingToken.IsCancellationRequested)
             {
-                while (!stoppingToken.IsCancellationRequested)
+                try
                 {
                     var runningShells = GetRunningShells();
                     await UpdateAsync(previousShells, runningShells, stoppingToken);
@@ -77,10 +77,10 @@ namespace OrchardCore.Modules
                     await RunAsync(runningShells, stoppingToken);
                     await WaitAsync(pollingDelay, stoppingToken);
                 }
-            }
-            catch (Exception ex) when (!ex.IsFatal())
-            {
-                _logger.LogError(ex, "Error while executing '{ServiceName}', the service is stopping.", nameof(ModularBackgroundService));
+                catch (Exception ex) when (!ex.IsFatal())
+                {
+                    _logger.LogError(ex, "Error while executing '{ServiceName}'", nameof(ModularBackgroundService));
+                }
             }
         }
 
