@@ -1,4 +1,4 @@
-namespace OrchardCore.Queries.Sql.Parser.LogicalExpressions
+namespace OrchardCore.Queries.Sql.Parser.Expressions
 {
     public class AndExpression : BinaryExpression
     {

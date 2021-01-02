@@ -1,4 +1,4 @@
-namespace OrchardCore.Queries.Sql.Parser
+namespace OrchardCore.Queries.Sql.Parser.Expressions
 {
     public class MultiplicationExpression : BinaryExpression
     {

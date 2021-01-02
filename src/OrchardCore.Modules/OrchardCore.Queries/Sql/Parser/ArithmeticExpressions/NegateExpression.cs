@@ -1,4 +1,4 @@
-namespace OrchardCore.Queries.Sql.Parser.ArthematicExpressions
+namespace OrchardCore.Queries.Sql.Parser.Expressions
 {
     public class NegateExpression : UnaryExpression
     {
