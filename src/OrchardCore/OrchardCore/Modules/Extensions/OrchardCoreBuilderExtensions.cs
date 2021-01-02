@@ -93,7 +93,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         public static OrchardCoreBuilder AddBackgroundService(this OrchardCoreBuilder builder)
         {
-            builder.ApplicationServices.AddSingleton<IHostedService, TenantBackgroundService>();
+            builder.ApplicationServices.AddSingleton<IHostedService, ModularBackgroundService>();
 
             return builder;
         }

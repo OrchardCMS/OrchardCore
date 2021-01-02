@@ -31,18 +31,18 @@ namespace Microsoft.AspNetCore.Builder
             app.UseMiddleware<PoweredByMiddleware>();
 
             // Select a tenant given the current request.
-            app.UseMiddleware<TenantMatcherMiddleware>();
+            app.UseMiddleware<ModularTenantMatcherMiddleware>();
 
             // Serve static files from modules.
             app.UseModuleStaticFiles();
 
             // Replaces the current service container for the tenant's one.
-            app.UseMiddleware<TenantContainerMiddleware>();
+            app.UseMiddleware<ModularTenantContainerMiddleware>();
 
             configure?.Invoke(app);
 
             // Forward the request to the tenant specific pipeline.
-            app.UseMiddleware<TenantPipelineMiddleware>(app.ServerFeatures);
+            app.UseMiddleware<ModularTenantPipelineMiddleware>(app.ServerFeatures);
 
             return app;
         }

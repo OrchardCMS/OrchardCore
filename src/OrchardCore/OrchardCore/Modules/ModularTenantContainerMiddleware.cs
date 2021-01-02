@@ -7,12 +7,12 @@ namespace OrchardCore.Modules
     /// <summary>
     /// This middleware replaces the default service container by the one for the current tenant.
     /// </summary>
-    public class TenantContainerMiddleware
+    public class ModularTenantContainerMiddleware
     {
         private readonly RequestDelegate _next;
         private readonly IShellHost _shellHost;
 
-        public TenantContainerMiddleware(
+        public ModularTenantContainerMiddleware(
             RequestDelegate next,
             IShellHost shellHost)
         {

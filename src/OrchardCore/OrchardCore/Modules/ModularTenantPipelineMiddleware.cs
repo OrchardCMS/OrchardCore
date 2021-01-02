@@ -19,16 +19,16 @@ namespace OrchardCore.Modules
     /// Handles a request by forwarding it to the tenant specific pipeline.
     /// It also builds the pipeline of a given tenant on the first request.
     /// </summary>
-    public class TenantPipelineMiddleware
+    public class ModularTenantPipelineMiddleware
     {
         private readonly IFeatureCollection _features;
         private readonly ILogger _logger;
         private readonly ConcurrentDictionary<string, SemaphoreSlim> _semaphores = new ConcurrentDictionary<string, SemaphoreSlim>();
 
-        public TenantPipelineMiddleware(
+        public ModularTenantPipelineMiddleware(
             IFeatureCollection features,
             RequestDelegate _,
-            ILogger<TenantPipelineMiddleware> logger)
+            ILogger<ModularTenantPipelineMiddleware> logger)
         {
             _features = features;
             _logger = logger;

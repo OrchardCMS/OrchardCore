@@ -10,13 +10,13 @@ namespace OrchardCore.Modules
     /// <summary>
     /// This middleware selects a tenant given the current request.
     /// </summary>
-    public class TenantMatcherMiddleware
+    public class ModularTenantMatcherMiddleware
     {
         private readonly RequestDelegate _next;
         private readonly IShellHost _shellHost;
         private readonly IRunningShellTable _runningShellTable;
 
-        public TenantMatcherMiddleware(
+        public ModularTenantMatcherMiddleware(
             RequestDelegate next,
             IShellHost shellHost,
             IRunningShellTable runningShellTable)
