@@ -186,14 +186,15 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                 // Allow Inline to work with both named scripts, and named inline scripts.
                 if (At != ResourceLocation.Unspecified)
                 {
-                    var childContent = await output.GetChildContentAsync();
                     // Named inline declaration.
+                    var childContent = await output.GetChildContentAsync();
                     if (!childContent.IsEmptyOrWhiteSpace)
                     {
                         // Inline content definition
                         _resourceManager.InlineManifest.DefineScript(Name)
                             .SetInnerContent(childContent.GetContent());
                     }
+
                     if (At == ResourceLocation.Inline)
                     {
                         _resourceManager.RenderLocalScript(setting, output.Content);
