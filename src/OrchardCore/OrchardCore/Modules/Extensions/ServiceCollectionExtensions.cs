@@ -155,7 +155,7 @@ namespace Microsoft.Extensions.DependencyInjection
         }
 
         /// <summary>
-        /// Adds host level configuration to serve static files from modules
+        /// Adds host level services to serve static files from modules
         /// </summary>
         private static void AddStaticFiles(OrchardCoreBuilder builder)
         {
