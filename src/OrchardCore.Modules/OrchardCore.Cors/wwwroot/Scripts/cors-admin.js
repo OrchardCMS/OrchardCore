@@ -38,6 +38,9 @@ var corsApp = new Vue({
     policies: null,
     defaultPolicyName: null
   },
+  updated: function updated() {
+    this.searchBox();
+  },
   methods: {
     newPolicy: function newPolicy() {
       this.selectedPolicy = {
@@ -90,6 +93,50 @@ var corsApp = new Vue({
     },
     back: function back() {
       this.selectedPolicy = null;
+    },
+    searchBox: function searchBox() {
+      var searchBox = $('#search-box'); // On Enter, edit the item if there is a single one
+
+      searchBox.keypress(function (event) {
+        if (event.which == 13) {
+          // Edit the item if there is a single filtered element
+          var visible = $('#corsAdmin > ul > li:visible');
+
+          if (visible.length == 1) {
+            window.location = visible.find('.edit').attr('href');
+          }
+
+          return false;
+        }
+      }); // On each keypress filter the list
+
+      searchBox.keyup(function (e) {
+        var search = $(this).val().toLowerCase();
+        var elementsToFilter = $("[data-filter-value]"); // On ESC, clear the search box and display all
+
+        if (e.keyCode == 27 || search == '') {
+          searchBox.val('');
+          elementsToFilter.toggle(true);
+          $('#list-alert').addClass("d-none");
+        } else {
+          var intVisible = 0;
+          elementsToFilter.each(function () {
+            var text = $(this).data('filter-value').toLowerCase();
+            var found = text.indexOf(search) > -1;
+            $(this).toggle(found);
+
+            if (found) {
+              intVisible++;
+            }
+          }); // We display an alert if a search is not found
+
+          if (intVisible == 0) {
+            $('#list-alert').removeClass("d-none");
+          } else {
+            $('#list-alert').addClass("d-none");
+          }
+        }
+      });
     }
   }
 });
