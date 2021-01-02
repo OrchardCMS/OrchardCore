@@ -131,7 +131,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                     setting.SetAttribute(attribute.Name, attribute.Value.ToString());
                 }
 
-                if (At == ResourceLocation.Unspecified)
+                if (At == ResourceLocation.Unspecified || At == ResourceLocation.Inline)
                 {
                     _resourceManager.RenderLocalScript(setting, output.Content);
                 }
@@ -183,12 +183,10 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                     setting.SetDependencies(DependsOn.Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries));
                 }
 
-                if (At == ResourceLocation.Unspecified)
+                // Allow Inline to work with both named scripts, and named inline scripts.
+                if (At != ResourceLocation.Unspecified)
                 {
-                    _resourceManager.RenderLocalScript(setting, output.Content);
-                }
-                else
-                {
+                    // Named inline declaration.
                     var childContent = await output.GetChildContentAsync();
                     if (!childContent.IsEmptyOrWhiteSpace)
                     {
@@ -196,6 +194,15 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                         _resourceManager.InlineManifest.DefineScript(Name)
                             .SetInnerContent(childContent.GetContent());
                     }
+
+                    if (At == ResourceLocation.Inline)
+                    {
+                        _resourceManager.RenderLocalScript(setting, output.Content);
+                    }
+                }
+                else
+                {
+                    _resourceManager.RenderLocalScript(setting, output.Content);
                 }
             }
             else if (!String.IsNullOrEmpty(Name) && !String.IsNullOrEmpty(Src))
@@ -265,6 +272,11 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                     foreach (var attribute in output.Attributes)
                     {
                         setting.SetAttribute(attribute.Name, attribute.Value.ToString());
+                    }
+
+                    if (At == ResourceLocation.Inline)
+                    {
+                        _resourceManager.RenderLocalScript(setting, output.Content);
                     }
                 }
             }

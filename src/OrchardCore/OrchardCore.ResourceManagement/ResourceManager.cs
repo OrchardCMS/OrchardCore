@@ -23,7 +23,8 @@ namespace OrchardCore.ResourceManagement
         private List<IHtmlContent> _headScripts;
         private List<IHtmlContent> _footScripts;
         private List<IHtmlContent> _styles;
-        private readonly HashSet<string> _localScripts;
+        private HashSet<string> _localScripts;
+        private HashSet<string> _localStyles;
 
         private readonly IResourceManifestState _resourceManifestState;
         private readonly ResourceManagementOptions _options;
@@ -40,7 +41,6 @@ namespace OrchardCore.ResourceManagement
             _fileVersionProvider = fileVersionProvider;
 
             _builtResources = new Dictionary<string, ResourceRequiredContext[]>(StringComparer.OrdinalIgnoreCase);
-            _localScripts = new HashSet<string>();
         }
 
         public IEnumerable<ResourceManifest> ResourceManifests
@@ -684,13 +684,38 @@ namespace OrchardCore.ResourceManagement
         public void RenderLocalScript(RequireSettings settings, IHtmlContentBuilder builder)
         {
             var localScripts = DoGetRequiredResources("script");
+            _localScripts ??= new HashSet<string>();
 
             var first = true;
 
             foreach (var context in localScripts)
             {
-                if (context.Settings.Location == ResourceLocation.Unspecified
-                    && (_localScripts.Add(context.Settings.Name) || context.Settings.Name == settings.Name))
+                if ((context.Settings.Location == ResourceLocation.Unspecified || context.Settings.Location == ResourceLocation.Inline) &&
+                    (_localScripts.Add(context.Settings.Name) || context.Settings.Name == settings.Name))
+                {
+                    if (!first)
+                    {
+                        builder.AppendHtml(System.Environment.NewLine);
+                    }
+
+                    first = false;
+
+                    builder.AppendHtml(context.GetHtmlContent(_options.ContentBasePath));
+                }
+            }
+        }
+
+        public void RenderLocalStyle(RequireSettings settings, IHtmlContentBuilder builder)
+        {
+            var localStyles = DoGetRequiredResources("stylesheet");
+            _localStyles ??= new HashSet<string>();
+
+            var first = true;
+
+            foreach (var context in localStyles)
+            {
+                if (context.Settings.Location == ResourceLocation.Inline &&
+                    (_localStyles.Add(context.Settings.Name) || context.Settings.Name == settings.Name))
                 {
                     if (!first)
                     {
