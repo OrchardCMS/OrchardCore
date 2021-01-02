@@ -1,4 +1,5 @@
 using OrchardCore.Queries.Sql.Parser;
+using Parlot.Fluent;
 using Xunit;
 using SqlParser = OrchardCore.Queries.Sql.Parser.SqlParser;
 
@@ -11,14 +12,11 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Queries
         [InlineData("12.5", 12.5)]
         public void ParseNumberExpression(string text, decimal expected)
         {
-            // Arrange
-            var parser = new SqlParser();
-
-            // Act
-            var exp = parser.Parse(text);
+            // Arrange & Act
+            SqlParser.Expression.TryParse(text, out var expression);
 
             // Assert
-            Assert.Equal(expected, exp.EvaluateAsDecimal());
+            Assert.Equal(expected, expression.EvaluateAsDecimal());
         }
 
         [Theory]
@@ -28,14 +26,11 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Queries
         [InlineData("False", false)]
         public void ParseBooleanExpression(string text, bool expected)
         {
-            // Arrange
-            var parser = new SqlParser();
-
-            // Act
-            var exp = parser.Parse(text);
+            // Arrange & Act
+            SqlParser.Expression.TryParse(text, out var expression);
 
             // Assert
-            Assert.Equal(expected, exp.EvaluateAsBoolean());
+            Assert.Equal(expected, expression.EvaluateAsBoolean());
         }
 
         [Theory]
@@ -43,14 +38,11 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Queries
         [InlineData("\'Hisham\'", "Hisham")]
         public void ParseStringExpression(string text, string expected)
         {
-            // Arrange
-            var parser = new SqlParser();
-
-            // Act
-            var exp = parser.Parse(text);
+            // Arrange & Act
+            SqlParser.Expression.TryParse(text, out var expression);
 
             // Assert
-            Assert.Equal(expected, exp.Evaluate().ToString());
+            Assert.Equal(expected, expression.Evaluate().ToString());
         }
 
         [Theory]
@@ -60,14 +52,11 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Queries
         [InlineData("First_Name", "First_Name")]
         public void ParseIdentifierExpression(string text, string expected)
         {
-            // Arrange
-            var parser = new SqlParser();
-
-            // Act
-            var exp = parser.Parse(text);
+            // Arrange & Act
+            SqlParser.Expression.TryParse(text, out var expression);
 
             // Assert
-            Assert.Equal(expected, exp.Evaluate().ToString());
+            Assert.Equal(expected, expression.Evaluate().ToString());
         }
 
         [Theory]
@@ -79,14 +68,11 @@ namespace OrchardCore.Tests.Modules.OrchardCore.Queries
         [InlineData("150+50-5*5", 175)]
         public void ParseArithmaticExpression(string text, decimal expected)
         {
-            // Arrange
-            var parser = new SqlParser();
-
-            // Act
-            var exp = parser.Parse(text);
+            // Arrange & Act
+            SqlParser.Expression.TryParse(text, out var expression);
 
             // Assert
-            Assert.Equal(expected, exp.EvaluateAsDecimal());
+            Assert.Equal(expected, expression.EvaluateAsDecimal());
         }
     }
 }

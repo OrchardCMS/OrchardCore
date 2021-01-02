@@ -1,7 +1,8 @@
 using System;
 using OrchardCore.Queries.Sql.Parser.Expressions;
 using OrchardCore.Queries.Sql.Parser.Expressions.Terminals;
-using Parlot;
+using Parlot.Fluent;
+using static Parlot.Fluent.Parsers;
 
 namespace OrchardCore.Queries.Sql.Parser
 {
@@ -10,7 +11,7 @@ namespace OrchardCore.Queries.Sql.Parser
         
         Expression -> Experssion + Factor | Expression - Factor | Factor
         Factor -> Factor * Terminal | Factor / Terminal | Terminal
-        Terminal -> Identifier | Number | Boolean | String
+        Terminal -> Identifier | Number | Boolean | String | (Expression)
         Identifier = (Letter)(Letter | Digit)*
         Number -> (Sign)?(Digit)+
         Boolean -> True | False
@@ -19,125 +20,72 @@ namespace OrchardCore.Queries.Sql.Parser
         Digit -> [0 - 9]
         Sign -> [+ | -]
     */
-    public class SqlParser : Parser<Expression>
+    public class SqlParser
     {
-        private Scanner _scanner;
+        public static readonly IParser<Expression> Expression;
 
-        public override Expression Parse(string text)
+        static SqlParser()
         {
-            _scanner = new Scanner(text);
+            // Terminals
+            var plus = Terms.Char('+');
+            var minus = Terms.Char('-');
+            var times = Terms.Char('*');
+            var divided = Terms.Char('/');
+            var openParen = Terms.Char('(');
+            var closeParen = Terms.Char(')');
 
-            return ParseExpression();
-        }
+            var number = Terms.Decimal()
+                .Then<Expression>(e => new NumberExpression(e));
+            var boolean = Terms.Text("TRUE", caseInsensitive: true).Or(Terms.Text("FALSE", caseInsensitive: true))
+                .Then<Expression>(e => new BooleanExpression(Convert.ToBoolean(e)));
+            var stringLiteral = Terms.String(StringLiteralQuotes.SingleOrDouble)
+                .Then<Expression>(e => new StringExpression(e.Text));
+            var identifier = Terms.Identifier()
+                .Then<Expression>(e => new IdentifierExpression(e.Text));
 
-        private Expression ParseExpression()
-        {
-            var expression = ParseFactor();
-
-            while (true)
-            {
-                _scanner.SkipWhiteSpace();
-
-                if (_scanner.ReadChar('+'))
+            // Expressions
+            var expression = Deferred<Expression>();
+            var groupExpression = Between(openParen, expression, closeParen);
+            var terminal = identifier.Or(number).Or(boolean).Or(stringLiteral).Or(groupExpression);
+            var unaryExpression = Recursive<Expression>(e => minus
+                .And(e)
+                .Then<Expression>(e => new NegateExpression(e.Item2))
+                .Or(terminal));
+            var factor = unaryExpression.And(Star(times.Or(divided).And(unaryExpression)))
+                .Then(e =>
                 {
-                    _scanner.SkipWhiteSpace();
+                    var result = e.Item1;
+                    foreach (var operation in e.Item2)
+                    {
+                        result = operation.Item1 switch
+                        {
+                            '*' => new MultiplicationExpression(result, operation.Item2),
+                            '/' => new DivisionExpression(result, operation.Item2),
+                            _ => null
+                        };
+                    }
 
-                    expression = new AdditionExpression(expression, ParseFactor());
-                }
-                else if (_scanner.ReadChar('-'))
+                    return result;
+                });
+
+            expression.Parser = factor.And(Star(plus.Or(minus).And(factor)))
+                .Then(e =>
                 {
-                    _scanner.SkipWhiteSpace();
+                    var result = e.Item1;
+                    foreach (var operation in e.Item2)
+                    {
+                        result = operation.Item1 switch
+                        {
+                            '+' => new AdditionExpression(result, operation.Item2),
+                            '-' => new SubtractionExpression(result, operation.Item2),
+                            _ => null
+                        };
+                    }
 
-                    expression = new SubtractionExpression(expression, ParseFactor());
-                }
-                else
-                {
-                    break;
-                }
-            }
+                    return result;
+                });
 
-            return expression;
-        }
-
-        private Expression ParseFactor()
-        {
-            var expression = ParseUnaryExpression();
-            while (true)
-            {
-                _scanner.SkipWhiteSpace();
-
-                if (_scanner.ReadChar('*'))
-                {
-                    _scanner.SkipWhiteSpace();
-
-                    expression = new MultiplicationExpression(expression, ParseUnaryExpression());
-                }
-                else if (_scanner.ReadChar('/'))
-                {
-                    _scanner.SkipWhiteSpace();
-
-                    expression = new DivisionExpression(expression, ParseUnaryExpression());
-                }
-                else
-                {
-                    break;
-                }
-            }
-
-            return expression;
-        }
-
-        private Expression ParseUnaryExpression()
-        {
-            _scanner.SkipWhiteSpace();
-
-            if (_scanner.ReadChar('-'))
-            {
-                var expression = ParseUnaryExpression();
-                if (expression == null)
-                {
-                    throw new ParseException("Expected expression after '-'", _scanner.Cursor.Position);
-                }
-
-                return new NegateExpression(expression);
-            }
-
-            return ParseTerminal();
-        }
-
-        private Expression ParseTerminal()
-        {
-            _scanner.SkipWhiteSpace();
-
-            var token = new TokenResult();
-            if (_scanner.ReadIdentifier(token))
-            {
-                return new IdentifierExpression(token.Span.ToString());
-            }
-            else if (_scanner.ReadDecimal(token))
-            {
-                return new NumberExpression(Decimal.Parse(token.Span));
-            }
-            else if (_scanner.ReadText("TRUE", StringComparer.OrdinalIgnoreCase) || _scanner.ReadText("FALSE", StringComparer.OrdinalIgnoreCase))
-            {
-                return new BooleanExpression(Boolean.Parse(token.Span.ToString()));
-            }
-            else if (_scanner.ReadSingleQuotedString(token) || _scanner.ReadDoubleQuotedString(token))
-            {
-                var stringValue = token.Span.ToString();
-                if (stringValue.StartsWith("\""))
-                {
-                    return new StringExpression(stringValue.Trim('"'));
-                }
-                else
-                {
-                    return new StringExpression(stringValue.Trim('\''), StringQuote.Single);
-                }
-            }
-            else
-            {
-                throw new ParseException("Expected terminal.", _scanner.Cursor.Position);
-            }
+            Expression = expression;
         }
     }
 }
