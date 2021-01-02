@@ -142,7 +142,7 @@ namespace OrchardCore.Workflows.Http.Controllers
             // If the activity is a start activity, start a new workflow.
             if (startActivity.IsStart)
             {
-                // If atomic, try to acquire a lock per workflow type id.
+                // If a singleton, try to acquire a lock per workflow type.
                 (var locker, var locked) = await _distributedLock.TryAcquireWorkflowTypeLockAsync(workflowType);
                 if (locked)
                 {
@@ -186,7 +186,7 @@ namespace OrchardCore.Workflows.Http.Controllers
                             _logger.LogDebug("Resuming workflow with ID '{WorkflowId}' on activity '{ActivityId}'", workflow.WorkflowId, blockingActivity.ActivityId);
                         }
 
-                        // If atomic, try to acquire a lock per workflow id.
+                        // Try to acquire a lock per workflow instance.
                         (var locker, var locked) = await _distributedLock.TryAcquireWorkflowLockAsync(workflow);
                         if (!locked)
                         {
@@ -195,8 +195,8 @@ namespace OrchardCore.Workflows.Http.Controllers
 
                         await using var acquiredLock = locker;
 
-                        // If atomic, check if the workflow still exists.
-                        var haltedWorkflow = workflow.IsAtomic ? await _workflowStore.GetAsync(workflow.WorkflowId) : workflow;
+                        // Check if the workflow still exists.
+                        var haltedWorkflow = await _workflowStore.GetAsync(workflow.WorkflowId);
                         if (haltedWorkflow == null)
                         {
                             continue;
@@ -237,14 +237,14 @@ namespace OrchardCore.Workflows.Http.Controllers
                     return NotFound();
                 }
 
-                // If atomic, try to acquire a lock per workflow id.
+                // Try to acquire a lock per workflow instance.
                 (var locker, var locked) = await _distributedLock.TryAcquireWorkflowLockAsync(workflow);
                 if (locked)
                 {
                     await using var acquiredLock = locker;
 
-                    // If atomic, check if the workflow still exists (without checking if it is correlated).
-                    workflow = workflow.IsAtomic ? await _workflowStore.GetAsync(workflow.WorkflowId) : workflow;
+                    // Check if the workflow still exists (without checking if it is correlated).
+                    workflow = await _workflowStore.GetAsync(workflow.WorkflowId);
                     if (workflow != null)
                     {
                         // The workflow could be blocking on multiple Signal activities, but only the activity with the provided signal name

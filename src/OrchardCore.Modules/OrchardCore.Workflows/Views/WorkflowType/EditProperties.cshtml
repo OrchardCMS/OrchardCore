@@ -31,28 +31,6 @@
 
     <div class="form-group">
         <div class="custom-control custom-checkbox">
-            <input asp-for="IsAtomic" type="checkbox" class="custom-control-input" data-toggle="collapse" data-target="#is-atomic" checked="@Model.IsAtomic">
-            <label class="custom-control-label" asp-for="IsAtomic">@T["Atomic instances"]</label>
-            <span class="hint">@T["Check to ensure that any workflow instance of this type is executed by only one process at a time."]</span>
-        </div>
-    </div>
-
-    <div id="is-atomic" class="collapse">
-        <div class="form-group">
-            <label asp-for="LockTimeout">@T["Lock timeout (ms)"]</label>
-            <input asp-for="LockTimeout" type="number" min="0" max="30000" class="form-control">
-            <span class="hint">@T["The timeout in milliseconds to acquire a lock before executing a given workflow instance of this type atomically."]</span>
-        </div>
-
-        <div class="form-group">
-            <label asp-for="LockExpiration">@T["Lock expiration (ms)"]</label>
-            <input asp-for="LockExpiration" type="number" min="0" max="30000" class="form-control">
-            <span class="hint">@T["The expiration in milliseconds of the acquired lock while executing a workflow instance of this type atomically."]</span>
-        </div>
-    </div>
-
-    <div class="form-group">
-        <div class="custom-control custom-checkbox">
             <input asp-for="DeleteFinishedWorkflows" type="checkbox" class="custom-control-input">
             <label class="custom-control-label" asp-for="DeleteFinishedWorkflows">@T["Delete successfully completed workflows"]</label>
             <span class="hint">@T["Check to automatically delete workflows that have completed successfully. Leave unchecked to maintain a history of executed workflows."]</span>

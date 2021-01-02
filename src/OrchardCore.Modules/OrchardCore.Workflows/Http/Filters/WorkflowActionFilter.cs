@@ -56,7 +56,7 @@ namespace OrchardCore.Workflows.Http.Filters
 
                         if (activity.IsStart)
                         {
-                            // If atomic, try to acquire a lock per workflow type id.
+                            // If a singleton, try to acquire a lock per workflow type.
                             (var locker, var locked) = await _distributedLock.TryAcquireWorkflowTypeLockAsync(workflowType);
                             if (!locked)
                             {
@@ -89,7 +89,7 @@ namespace OrchardCore.Workflows.Http.Filters
                         (String.IsNullOrWhiteSpace(correlationId) ||
                         workflow.CorrelationId == correlationId))
                     {
-                        // If atomic, try to acquire a lock per workflow id.
+                        // Try to acquire a lock per workflow instance.
                         (var locker, var locked) = await _distributedLock.TryAcquireWorkflowLockAsync(workflow);
                         if (!locked)
                         {
@@ -98,8 +98,8 @@ namespace OrchardCore.Workflows.Http.Filters
 
                         await using var acquiredLock = locker;
 
-                        // If atomic, check if the workflow still exists and is still correlated.
-                        var haltedWorkflow = workflow.IsAtomic ? await _workflowStore.GetAsync(workflow.WorkflowId) : workflow;
+                        // Check if the workflow still exists and is still correlated.
+                        var haltedWorkflow = await _workflowStore.GetAsync(workflow.WorkflowId);
                         if (haltedWorkflow == null || (!String.IsNullOrWhiteSpace(correlationId) && haltedWorkflow.CorrelationId != correlationId))
                         {
                             continue;
