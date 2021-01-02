@@ -1,4 +1,4 @@
-namespace OrchardCore.Queries.Sql.Parser
+namespace OrchardCore.Queries.Sql.Parser.Expressions.Terminals
 {
     public class NumberExpression : Expression
     {
