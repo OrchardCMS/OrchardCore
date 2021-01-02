@@ -54,6 +54,11 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                 // Include custom style
                 var setting = _resourceManager.RegisterUrl("stylesheet", Src, DebugSrc);
 
+                foreach (var attribute in output.Attributes)
+                {
+                    setting.SetAttribute(attribute.Name, attribute.Value.ToString());
+                }
+
                 if (At != ResourceLocation.Unspecified)
                 {
                     setting.AtLocation(At);
@@ -61,11 +66,6 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                 else
                 {
                     setting.AtLocation(ResourceLocation.Head);
-                }
-
-                foreach (var attribute in output.Attributes)
-                {
-                    setting.SetAttribute(attribute.Name, attribute.Value.ToString());
                 }
 
                 if (!String.IsNullOrEmpty(Condition))
