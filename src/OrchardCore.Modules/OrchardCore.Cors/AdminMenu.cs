@@ -9,10 +9,10 @@ namespace OrchardCore.Cors
     {
         public AdminMenu(IStringLocalizer<AdminMenu> localizer)
         {
-            T = localizer;
+            S = localizer;
         }
 
-        public IStringLocalizer T { get; set; }
+        public IStringLocalizer S { get; set; }
 
         public Task BuildNavigationAsync(string name, NavigationBuilder builder)
         {
@@ -22,9 +22,10 @@ namespace OrchardCore.Cors
             }
 
             builder
-                .Add(T["Configuration"], configuration => configuration
-                    .Add(T["Settings"], settings => settings
-                        .Add(T["Cors"], "100", entry => entry
+                .Add(S["Configuration"], configuration => configuration
+                    .Add(S["Settings"], settings => settings
+                        .Add(S["CORS"], S["CORS"].PrefixPosition(), entry => entry
+                        .AddClass("cors").Id("cors")
                             .Action("Index", "Admin", new { area = "OrchardCore.Cors" })
                             .Permission(Permissions.ManageCorsSettings)
                             .LocalNav()

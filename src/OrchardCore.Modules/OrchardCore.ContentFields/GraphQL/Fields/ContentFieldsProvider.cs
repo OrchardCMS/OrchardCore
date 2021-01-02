@@ -83,6 +83,16 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
                     UnderlyingType = typeof(TimeField),
                     FieldAccessor = field => (TimeSpan?)field.Content.Value
                 }
+            },
+            {
+                nameof(MultiTextField),
+                new FieldTypeDescriptor
+                {
+                    Description = "Multi text field",
+                    FieldType = typeof(ListGraphType<StringGraphType>),
+                    UnderlyingType = typeof(MultiTextField),
+                    FieldAccessor = field => field.Content.Values
+                }
             }
         };
 
