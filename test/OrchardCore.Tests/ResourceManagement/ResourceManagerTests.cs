@@ -590,6 +590,44 @@ namespace OrchardCore.Tests.ResourceManagement
             );
         }
 
+        [Fact]
+        public async Task RenderLocalStyle()
+        {
+            var resourceManager = new ResourceManager(
+                new[] {
+                    new StubResourceManifestProvider(builder => {
+                        var manifest = builder.Add();
+                        manifest.DefineStyle("required").SetUrl("required.css")
+                            .SetDependencies("dependency");
+                        manifest.DefineStyle("dependency").SetUrl("dependency.css");
+                        manifest.DefineStyle("not-required").SetUrl("not-required.css");
+                    })
+                },
+                new ResourceManifestState(),
+                new OptionsWrapper<ResourceManagementOptions>(new ResourceManagementOptions()),
+                StubFileVersionProvider.Instance
+            );
+
+            var requireSetting = resourceManager.RegisterResource("stylesheet", "required").AtLocation(ResourceLocation.Inline);
+
+            var htmlBuilder = new HtmlContentBuilder();
+            resourceManager.RenderLocalStyle(requireSetting, htmlBuilder);
+
+            var document = await ParseHtmlAsync(htmlBuilder);
+            var scripts = document
+                .QuerySelectorAll<IHtmlLinkElement>("link");
+
+            Assert.Equal(2, scripts.Count());
+            Assert.Contains(scripts, script => script.Href.EndsWith("dependency.css"));
+            Assert.Contains(scripts, script => script.Href.EndsWith("required.css"));
+            Assert.Equal(DocumentPositions.Following, scripts.First(script => script.Href.EndsWith("dependency.css"))
+                .CompareDocumentPosition(
+                    scripts.First(script => script.Href.EndsWith("required.css"))
+                )
+            );
+        }
+
+
         #region Helpers
         private async Task<IDocument> ParseHtmlAsync(IHtmlContent content)
         {

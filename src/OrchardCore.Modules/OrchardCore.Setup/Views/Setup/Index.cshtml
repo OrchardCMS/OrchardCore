@@ -79,7 +79,7 @@
                 {
                     var uriString = UriHelper.BuildRelative(Context.Request.PathBase, Context.Request.Path, queryString.Add("ui-culture", culture.Name));
 
-                    <option value="@culture" data-url-af="@uriString" selected="@(culture.Name == Orchard.CultureName())">@(culture.NativeName ?? culture.Name)</option>
+                    <option value="@culture" data-url="@uriString" selected="@(culture.Name == Orchard.CultureName())">@(culture.NativeName ?? culture.Name)</option>
                 }
             </select>
         </div>
@@ -198,7 +198,7 @@
             <div class="form-group col-md-6" asp-validation-class-for="UserName">
                 <label asp-for="UserName">@T["User name"]</label>
                 <input asp-for="UserName" class="form-control" required />
-                <span asp-validation-for="UserName" class="text-danger">@T["The user name is required."]</span>
+                <span asp-validation-for="UserName" class="text-danger"></span>
             </div>
             <div class="form-group col-md-6" asp-validation-class-for="Email">
                 <label for="Email">@T["Email"]</label>
