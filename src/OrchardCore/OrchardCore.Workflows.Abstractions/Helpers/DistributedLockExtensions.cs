@@ -21,8 +21,8 @@ namespace OrchardCore.Workflows.Helpers
             {
                 return distributedLock.TryAcquireLockAsync(
                     "WFT_" + workflowType.WorkflowTypeId + "_LOCK",
-                    TimeSpan.FromMilliseconds(workflowType.LockTimeout > 0 ? workflowType.LockTimeout : 20_000),
-                    TimeSpan.FromMilliseconds(workflowType.LockExpiration > 0 ? workflowType.LockExpiration : 20_000));
+                    TimeSpan.FromMilliseconds(workflowType.GetLockTimeout()),
+                    TimeSpan.FromMilliseconds(workflowType.GetLockExpiration()));
             }
 
             return Task.FromResult<(ILocker, bool)>((null, true));
@@ -37,8 +37,8 @@ namespace OrchardCore.Workflows.Helpers
         {
             return distributedLock.TryAcquireLockAsync(
                 "WFI_" + workflow.WorkflowId + "_LOCK",
-                TimeSpan.FromMilliseconds(workflow.LockTimeout > 0 ? workflow.LockTimeout : 20_000),
-                TimeSpan.FromMilliseconds(workflow.LockExpiration > 0 ? workflow.LockExpiration : 20_000));
+                TimeSpan.FromMilliseconds(workflow.GetLockTimeout()),
+                TimeSpan.FromMilliseconds(workflow.GetLockExpiration()));
         }
     }
 }

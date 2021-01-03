@@ -34,12 +34,12 @@ namespace OrchardCore.Workflows.Models
         /// <summary>
         /// The timeout in milliseconds to acquire a lock before executing this workflow instance.
         /// </summary>
-        public int LockTimeout { get; set; }
+        public int? LockTimeout { get; set; }
 
         /// <summary>
         /// The expiration in milliseconds of the lock acquired before executing this workflow instance.
         /// </summary>
-        public int LockExpiration { get; set; }
+        public int? LockExpiration { get; set; }
 
         /// <summary>
         /// List of activities the current workflow instance is waiting on
@@ -48,5 +48,9 @@ namespace OrchardCore.Workflows.Models
         public IList<BlockingActivity> BlockingActivities { get; } = new List<BlockingActivity>();
 
         public DateTime CreatedUtc { get; set; }
+
+        public int GetLockTimeout() => LockTimeout.HasValue ? LockTimeout.Value : WorkflowType.DefaultLockTimeout;
+
+        public int GetLockExpiration() => LockExpiration.HasValue ? LockExpiration.Value : WorkflowType.DefaultLockExpiration;
     }
 }
