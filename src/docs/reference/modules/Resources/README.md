@@ -263,7 +263,7 @@ You can append a version hash that will be calculated, and calculation cached, a
 
 ##### Specify location
 
-Specify a location the script should load using `at`, for example `Foot` to rendered wherever the `FootScript` helper is located or `Head` to render with the `HeadScript` [See Foot Resources](#foot-resources). If the location is not specified, the script will be inserted wherever it is placed (inline).
+Specify a location the script should load using `at`, for example `Foot` to rendered wherever the `FootScript` helper is located or `Head` to render with the `HeadScript` [See Foot Resources](#foot-resources). If the location is not specified, or specified as `Inline`, the script will be inserted wherever it is placed (inline).
 
 === "Liquid"
 
@@ -277,7 +277,7 @@ Specify a location the script should load using `at`, for example `Foot` to rend
     <script asp-name="bootstrap" at="Foot"></script>
     ```
 
-Link and styles tag helpers always inject into the header section of the HTML document regardless of the `at` value.
+Link and styles tag helpers always inject into the header section of the HTML document, unless the `at` location is set to `Inline`.
 
 #### Inline definition
 
@@ -336,7 +336,7 @@ When rendering the scripts the resource manager will order the output based on t
 3. `bar`
 
 !!! note
-    You do not have to define a name for your script or style unless you want to reference it as a dependency.
+    You do not have to define a name for your script or style unless you want to reference it as a dependency, or declare it as `Inline`.
 
 #### Custom scripts
 
