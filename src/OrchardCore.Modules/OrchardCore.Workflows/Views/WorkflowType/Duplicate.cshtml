@@ -51,14 +51,14 @@
         <div class="tab-pane fade" id="advanced" role="tabpanel" aria-labelledby="advanced-tab">
             <div class="form-group">
                 <label asp-for="LockTimeout">@T["Lock timeout (ms)"]</label>
-                <input asp-for="LockTimeout" type="number" min="0" max="30000" class="form-control">
-                <span class="hint">@T["The timeout in milliseconds to acquire a lock before executing a given workflow instance of this type atomically."]</span>
+                <input asp-for="LockTimeout" type="number" max="30000" class="form-control">
+                <span class="hint">@T["The timeout in milliseconds to acquire a lock before executing a given workflow instance of this type atomically. Leave it to zero to not use any locking."]</span>
             </div>
 
             <div class="form-group">
                 <label asp-for="LockExpiration">@T["Lock expiration (ms)"]</label>
-                <input asp-for="LockExpiration" type="number" min="0" max="30000" class="form-control">
-                <span class="hint">@T["The expiration in milliseconds of the acquired lock while executing a workflow instance of this type atomically."]</span>
+                <input asp-for="LockExpiration" type="number" max="30000" class="form-control">
+                <span class="hint">@T["The expiration in milliseconds of the lock acquired before executing a workflow instance of this type atomically. Leave it to zero to not use any locking."]</span>
             </div>
         </div>
     </div>

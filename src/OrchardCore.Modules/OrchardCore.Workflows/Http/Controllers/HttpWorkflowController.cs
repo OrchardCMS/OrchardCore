@@ -195,8 +195,8 @@ namespace OrchardCore.Workflows.Http.Controllers
 
                         await using var acquiredLock = locker;
 
-                        // Check if the workflow still exists.
-                        var haltedWorkflow = await _workflowStore.GetAsync(workflow.WorkflowId);
+                        // If atomic, check if the workflow still exists.
+                        var haltedWorkflow = workflow.IsAtomic ? await _workflowStore.GetAsync(workflow.WorkflowId) : workflow;
                         if (haltedWorkflow == null)
                         {
                             continue;

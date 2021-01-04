@@ -9,9 +9,6 @@ namespace OrchardCore.Workflows.Models
     /// </summary>
     public class Workflow
     {
-        private int? _lockTimeout;
-        private int? _lockExpiration;
-
         public int Id { get; set; }
 
         /// <summary>
@@ -37,20 +34,12 @@ namespace OrchardCore.Workflows.Models
         /// <summary>
         /// The timeout in milliseconds to acquire a lock before executing this workflow instance.
         /// </summary>
-        public int? LockTimeout
-        {
-            get => _lockTimeout.HasValue ? _lockTimeout : WorkflowType.DefaultLockTimeout;
-            set => _lockTimeout = value;
-        }
+        public int LockTimeout { get; set; }
 
         /// <summary>
         /// The expiration in milliseconds of the lock acquired before executing this workflow instance.
         /// </summary>
-        public int? LockExpiration
-        {
-            get => _lockExpiration.HasValue ? _lockExpiration : WorkflowType.DefaultLockExpiration;
-            set => _lockExpiration = value;
-        }
+        public int LockExpiration { get; set; }
 
         /// <summary>
         /// List of activities the current workflow instance is waiting on
@@ -59,5 +48,10 @@ namespace OrchardCore.Workflows.Models
         public IList<BlockingActivity> BlockingActivities { get; } = new List<BlockingActivity>();
 
         public DateTime CreatedUtc { get; set; }
+
+        /// <summary>
+        /// Whether this workflow instance needs to be executed atomically.
+        /// </summary>
+        public bool IsAtomic => LockTimeout > 0 && LockExpiration > 0;
     }
 }

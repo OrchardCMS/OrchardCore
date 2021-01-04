@@ -7,12 +7,6 @@ namespace OrchardCore.Workflows.Models
     /// </summary>
     public class WorkflowType
     {
-        public const int DefaultLockTimeout = 10_000;
-        public const int DefaultLockExpiration = 10_000;
-
-        private int? _lockTimeout;
-        private int? _lockExpiration;
-
         public int Id { get; set; }
         public string WorkflowTypeId { get; set; }
 
@@ -34,20 +28,12 @@ namespace OrchardCore.Workflows.Models
         /// <summary>
         /// The timeout in milliseconds to acquire a lock before executing a given workflow instance of this type.
         /// </summary>
-        public int? LockTimeout
-        {
-            get => _lockTimeout.HasValue ? _lockTimeout : DefaultLockTimeout;
-            set => _lockTimeout = value;
-        }
+        public int LockTimeout { get; set; }
 
         /// <summary>
         /// The expiration in milliseconds of the lock acquired before executing a workflow instance of this type.
         /// </summary>
-        public int? LockExpiration
-        {
-            get => _lockExpiration.HasValue ? _lockExpiration : DefaultLockExpiration;
-            set => _lockExpiration = value;
-        }
+        public int LockExpiration { get; set; }
 
         /// <summary>
         /// Controls whether workflow instances will be deleted upon completion.
