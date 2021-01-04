@@ -33,6 +33,9 @@
                 <input asp-for="DefaultSchedule" class="form-control" type="hidden" />
                 <input asp-for="Description" class="form-control" type="hidden" />
             </div>
+
+            <div><span asp-validation-for="LockTimeout" class="text-danger">@T["Invalid lock timeout value in the advanced tab"]</span></div>
+            <div><span asp-validation-for="LockExpiration" class="text-danger">@T["Invalid lock expiration value in the advanced tab"]</span></div>
         </div>
 
         <div class="tab-pane fade" id="advanced" role="tabpanel" aria-labelledby="advanced-tab">
@@ -40,12 +43,14 @@
                 <label asp-for="LockTimeout">@T["Lock timeout (ms)"]</label>
                 <input asp-for="LockTimeout" type="number" min="0" max="30000" class="form-control">
                 <span class="hint">@T["The timeout in milliseconds to acquire a lock before executing the task atomically. Leave it to zero to not use any locking."]</span>
+                <span class="hint">@T["Ignored if there is no distributed lock feature enabled."]</span>
             </div>
 
             <div class="form-group" asp-validation-class-for="LockExpiration">
                 <label asp-for="LockExpiration">@T["Lock expiration (ms)"]</label>
                 <input asp-for="LockExpiration" type="number" min="0" max="30000" class="form-control">
                 <span class="hint">@T["The expiration in milliseconds of the lock acquired before executing the task atomically. Leave it to zero to not use any locking."]</span>
+                <span class="hint">@T["Ignored if there is no distributed lock feature enabled."]</span>
             </div>
         </div>
     </div>
