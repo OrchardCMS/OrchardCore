@@ -134,7 +134,7 @@ namespace OrchardCore.Workflows.Services
                     continue;
                 }
 
-                // Try to acquire a lock per workflow instance.
+                // If atomic, try to acquire a lock per workflow instance.
                 (var locker, var locked) = await _distributedLock.TryAcquireWorkflowLockAsync(workflow);
                 if (!locked)
                 {

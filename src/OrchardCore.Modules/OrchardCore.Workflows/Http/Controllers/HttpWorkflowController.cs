@@ -186,7 +186,7 @@ namespace OrchardCore.Workflows.Http.Controllers
                             _logger.LogDebug("Resuming workflow with ID '{WorkflowId}' on activity '{ActivityId}'", workflow.WorkflowId, blockingActivity.ActivityId);
                         }
 
-                        // Try to acquire a lock per workflow instance.
+                        // If atomic, try to acquire a lock per workflow instance.
                         (var locker, var locked) = await _distributedLock.TryAcquireWorkflowLockAsync(workflow);
                         if (!locked)
                         {
@@ -237,14 +237,14 @@ namespace OrchardCore.Workflows.Http.Controllers
                     return NotFound();
                 }
 
-                // Try to acquire a lock per workflow instance.
+                // If atomic, try to acquire a lock per workflow instance.
                 (var locker, var locked) = await _distributedLock.TryAcquireWorkflowLockAsync(workflow);
                 if (locked)
                 {
                     await using var acquiredLock = locker;
 
                     // Check if the workflow still exists (without checking if it is correlated).
-                    workflow = await _workflowStore.GetAsync(workflow.WorkflowId);
+                    workflow = workflow.IsAtomic ? await _workflowStore.GetAsync(workflow.WorkflowId) : workflow;
                     if (workflow != null)
                     {
                         // The workflow could be blocking on multiple Signal activities, but only the activity with the provided signal name

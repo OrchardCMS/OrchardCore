@@ -9,8 +9,8 @@ namespace OrchardCore.Workflows.Helpers
     public static class DistributedLockExtensions
     {
         /// <summary>
-        /// Tries to acquire a lock on this workflow if it is
-        /// atomic, otherwise returns true with a null locker.
+        /// Tries to acquire a lock before resuming this workflow instance, but only
+        /// if it is an atomic workflow, otherwise returns true with a null locker.
         /// </summary>
         public static Task<(ILocker locker, bool locked)> TryAcquireWorkflowLockAsync(
             this IDistributedLock distributedLock,
@@ -28,8 +28,8 @@ namespace OrchardCore.Workflows.Helpers
         }
 
         /// <summary>
-        /// Tries to acquire a lock on this workflow type if it is a singleton or
-        /// if the event is exclusive, otherwise returns true with a null locker.
+        /// Tries to acquire a lock before starting an instance of this workflow type, if it is
+        /// a singleton or if the event is exclusive, otherwise returns true with a null locker.
         /// </summary>
         public static Task<(ILocker locker, bool locked)> TryAcquireWorkflowTypeLockAsync(
             this IDistributedLock distributedLock,
