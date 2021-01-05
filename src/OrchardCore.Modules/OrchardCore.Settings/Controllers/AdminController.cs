@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.Localization;
 using OrchardCore.Settings.ViewModels;
 
 namespace OrchardCore.Settings.Controllers
@@ -73,7 +74,13 @@ namespace OrchardCore.Settings.Controllers
             {
                 await _siteService.UpdateSiteSettingsAsync(site);
 
-                _notifier.Success(H["Site settings updated successfully."]);
+                var culture = site.Properties
+                    .GetValue("LocalizationSettings")
+                    .Value<string>("DefaultCulture");
+                using(CultureScope.Create(culture))
+                {
+                    _notifier.Success(H["Site settings updated successfully."]);
+                }
 
                 return RedirectToAction(nameof(Index), new { groupId });
             }

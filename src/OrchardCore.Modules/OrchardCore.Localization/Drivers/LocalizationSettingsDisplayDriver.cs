@@ -118,7 +118,10 @@ namespace OrchardCore.Localization.Drivers
                     // We always release the tenant for the default culture and also supported cultures to take effect
                     await _shellHost.ReleaseShellContextAsync(_shellSettings);
 
-                    _notifier.Warning(H["The site has been restarted for the settings to take effect."]);
+                    using (CultureScope.Create(section.DefaultCulture))
+                    {
+                        _notifier.Warning(H["The site has been restarted for the settings to take effect."]);
+                    }
                 }
             }
 
