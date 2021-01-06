@@ -29,10 +29,25 @@ namespace OrchardCore.PublishLater
             SchemaBuilder.AlterIndexTable<PublishLaterPartIndex>(table => table
                 .CreateIndex(
                     $"IDX_{nameof(PublishLaterPartIndex)}_{nameof(PublishLaterPartIndex.ScheduledPublishUtc)}",
+                    "DocumentId",
                     nameof(PublishLaterPartIndex.ScheduledPublishUtc))
             );
 
-            return 1;
+            // Shortcut other migration steps on new content definition schemas.
+            return 2;
+        }
+
+        // This code can be removed in a later version.
+        public int UpdateFrom1()
+        {
+            SchemaBuilder.AlterIndexTable<PublishLaterPartIndex>(table => table
+                .CreateIndex(
+                    $"IDX_{nameof(PublishLaterPartIndex)}_{nameof(PublishLaterPartIndex.ScheduledPublishUtc)}",
+                    "DocumentId",
+                    nameof(PublishLaterPartIndex.ScheduledPublishUtc))
+            );
+
+            return 2;
         }
     }
 }
