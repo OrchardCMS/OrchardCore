@@ -16655,9 +16655,9 @@
   :root[data-theme='default'] input[type="password"]::-ms-reveal,
   :root[data-theme='default'] input[type="password"]::-ms-clear {
     display: none; }
-  [dir=ltr]:root[data-theme='default'] .has-filter .form-control-feedback, [dir=ltr]:root[data-theme='default'] .has-search .form-control {
+  [dir=ltr]:root[data-theme='default'] .has-filter .form-control, [dir=ltr]:root[data-theme='default'] .has-search .form-control {
   padding-left: 2rem; }
-  [dir=rtl]:root[data-theme='default'] .has-filter .form-control-feedback, [dir=rtl]:root[data-theme='default'] .has-search .form-control {
+  [dir=rtl]:root[data-theme='default'] .has-filter .form-control, [dir=rtl]:root[data-theme='default'] .has-search .form-control {
     padding-right: 2rem; }
   :root[data-theme='default'] .has-filter .form-control-feedback, :root[data-theme='default'] .has-search .form-control-feedback {
     position: absolute;
@@ -16679,9 +16679,9 @@
   [dir=rtl]:root[data-theme='default'] .has-search .form-control-feedback {
     right: 10px; }
   [dir=ltr]:root[data-theme='default'] .has-filter .form-control-feedback {
-  left: 70px; }
+  left: 55px; }
   [dir=rtl]:root[data-theme='default'] .has-filter .form-control-feedback {
-    right: 70px; }
+    right: 55px; }
 
 :root[data-theme='darkmode'] {
   /*!
@@ -33377,9 +33377,9 @@
   :root[data-theme='darkmode'] input[type="password"]::-ms-reveal,
   :root[data-theme='darkmode'] input[type="password"]::-ms-clear {
     display: none; }
-  [dir=ltr]:root[data-theme='darkmode'] .has-filter .form-control-feedback, [dir=ltr]:root[data-theme='darkmode'] .has-search .form-control {
+  [dir=ltr]:root[data-theme='darkmode'] .has-filter .form-control, [dir=ltr]:root[data-theme='darkmode'] .has-search .form-control {
   padding-left: 2rem; }
-  [dir=rtl]:root[data-theme='darkmode'] .has-filter .form-control-feedback, [dir=rtl]:root[data-theme='darkmode'] .has-search .form-control {
+  [dir=rtl]:root[data-theme='darkmode'] .has-filter .form-control, [dir=rtl]:root[data-theme='darkmode'] .has-search .form-control {
     padding-right: 2rem; }
   :root[data-theme='darkmode'] .has-filter .form-control-feedback, :root[data-theme='darkmode'] .has-search .form-control-feedback {
     position: absolute;
@@ -33401,9 +33401,9 @@
   [dir=rtl]:root[data-theme='darkmode'] .has-search .form-control-feedback {
     right: 10px; }
   [dir=ltr]:root[data-theme='darkmode'] .has-filter .form-control-feedback {
-  left: 70px; }
+  left: 55px; }
   [dir=rtl]:root[data-theme='darkmode'] .has-filter .form-control-feedback {
-    right: 70px; }
+    right: 55px; }
   :root[data-theme='darkmode'] .input-group-addon {
     color: #fff; }
   :root[data-theme='darkmode'] .breadcrumb a {

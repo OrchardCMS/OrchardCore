@@ -824,6 +824,8 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         return cont(expect("variable"), maybetypeOrIn, expect("]"), typeprop);
       } else if (type == "(") {
         return pass(functiondecl, typeprop);
+      } else if (!type.match(/[;\}\)\],]/)) {
+        return cont();
       }
     }
 
@@ -1199,6 +1201,10 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     json: true
   });
   CodeMirror.defineMIME("application/x-json", {
+    name: "javascript",
+    json: true
+  });
+  CodeMirror.defineMIME("application/manifest+json", {
     name: "javascript",
     json: true
   });

@@ -48,6 +48,12 @@ namespace OrchardCore.ContentFields
             TemplateContext.GlobalMemberAccessStrategy.Register<DisplayDateFieldViewModel>();
             TemplateContext.GlobalMemberAccessStrategy.Register<TimeField>();
             TemplateContext.GlobalMemberAccessStrategy.Register<DisplayTimeFieldViewModel>();
+            TemplateContext.GlobalMemberAccessStrategy.Register<MultiTextField>();
+            TemplateContext.GlobalMemberAccessStrategy.Register<DisplayMultiTextFieldViewModel>();
+            TemplateContext.GlobalMemberAccessStrategy.Register<UserPickerField>();
+            TemplateContext.GlobalMemberAccessStrategy.Register<DisplayUserPickerFieldViewModel>();
+            TemplateContext.GlobalMemberAccessStrategy.Register<ContentPickerField>();
+            TemplateContext.GlobalMemberAccessStrategy.Register<DisplayContentPickerFieldViewModel>();
         }
 
         public Startup(IOptions<AdminOptions> adminOptions)
@@ -83,6 +89,12 @@ namespace OrchardCore.ContentFields
                 .UseDisplayDriver<LinkFieldDisplayDriver>();
             services.AddScoped<IContentPartFieldDefinitionDisplayDriver, LinkFieldSettingsDriver>();
             services.AddScoped<IContentFieldIndexHandler, LinkFieldIndexHandler>();
+
+            // MultiText Field
+            services.AddContentField<MultiTextField>()
+                .UseDisplayDriver<MultiTextFieldDisplayDriver>();
+            services.AddScoped<IContentPartFieldDefinitionDisplayDriver, MultiTextFieldSettingsDriver>();
+            services.AddScoped<IContentFieldIndexHandler, MultiTextFieldIndexHandler>();
 
             // Numeric Field
             services.AddContentField<NumericField>()
@@ -182,6 +194,7 @@ namespace OrchardCore.ContentFields
             services.AddScoped<IScopedIndexProvider, LinkFieldIndexProvider>();
             services.AddScoped<IScopedIndexProvider, HtmlFieldIndexProvider>();
             services.AddScoped<IScopedIndexProvider, UserPickerFieldIndexProvider>();
+            services.AddScoped<IScopedIndexProvider, MultiTextFieldIndexProvider>();
         }
     }
 

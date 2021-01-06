@@ -21,7 +21,7 @@ else
     <input asp-for="Options.BulkAction" type="hidden" />
     <input type="submit" name="submit.BulkAction" class="d-none" />
     
-    <div class="card mb-3 position-sticky action-bar">
+    <div class="card mb-3 position-sticky action-bar" style="position: relative; top: 0;">
         <div class="card-body bg-primary p-3">
             <div class="form-group mb-n1">
                 <div class="input-group input-group-sm w-sm-50 w-25 d-inline-flex has-search">
@@ -88,7 +88,7 @@ else
             <li class="list-group-item">
                 <div class="alert alert-info mb-0" role="alert">
                     @T["<strong>Nothing here!</strong> There are no templates for the moment."]
-                    <i class="fa fa-book"></i> <a href="@(OrchardCore.Admin.Constants.DocsUrl)reference/modules/Templates" target="_blank">@T["See documentation"]</a>
+                    <a class="seedoc" href="@(OrchardCore.Admin.Constants.DocsUrl)reference/modules/Templates" target="_blank">@T["See documentation"]</a>
                 </div>
             </li>
         }
