@@ -376,6 +376,7 @@ namespace OrchardCore.ResourceManagement
                 return requiredResources;
             }
 
+            var starPhaseResources = new Dictionary<ResourceDefinition, RequireSettings>();
             var allResources = new OrderedDictionary();
             foreach (var settings in ResolveRequiredResources(resourceType))
             {
@@ -384,8 +385,20 @@ namespace OrchardCore.ResourceManagement
                 {
                     throw new InvalidOperationException($"Could not find a resource of type '{settings.Type}' named '{settings.Name}' with version '{settings.Version ?? "any"}'.");
                 }
+                if (resource.Dependencies != null && resource.Dependencies.Contains("*"))
+                {
+                    starPhaseResources[resource] = settings;
+                }
+                else
+                {
+                    ExpandDependencies(resource, settings, allResources, starPhaseResources);
+                }
+            }
 
-                ExpandDependencies(resource, settings, allResources);
+            foreach (var item in starPhaseResources)
+            {
+                item.Key.Dependencies.Remove("*");
+                ExpandDependencies(item.Key, item.Value, allResources, null);
             }
 
             requiredResources = new ResourceRequiredContext[allResources.Count];
@@ -407,13 +420,15 @@ namespace OrchardCore.ResourceManagement
         protected virtual void ExpandDependencies(
             ResourceDefinition resource,
             RequireSettings settings,
-            OrderedDictionary allResources)
+            OrderedDictionary allResources,
+            Dictionary<ResourceDefinition, RequireSettings> expandInStarPhaseResources)
         {
             if (resource == null)
             {
                 return;
             }
 
+            var expandInStarPhase = false;
             // Use any additional dependencies from the settings without mutating the resource that is held in a singleton collection.
             List<string> dependencies = null;
             if (resource.Dependencies != null)
@@ -465,10 +480,33 @@ namespace OrchardCore.ResourceManagement
                         continue;
                     }
 
-                    ExpandDependencies(dependency, settings, allResources);
+                    if (expandInStarPhaseResources != null)
+                    {
+                        if (expandInStarPhaseResources.ContainsKey(dependency))
+                        {
+                            expandInStarPhase = true;
+                            continue;
+                        }
+
+                        if (dependency.Dependencies != null && dependency.Dependencies.Contains("*"))
+                        {
+                            expandInStarPhaseResources[dependency] = tempSettings;
+                            expandInStarPhase = true;
+                            continue;
+                        }
+                    }
+
+                    ExpandDependencies(dependency, settings, allResources, expandInStarPhaseResources);
                 }
             }
-            allResources[resource] = settings;
+            if (expandInStarPhase)
+            {
+                expandInStarPhaseResources[resource] = settings;
+            }
+            else
+            {
+                allResources[resource] = settings;
+            }
         }
 
         public void RegisterLink(LinkEntry link)
