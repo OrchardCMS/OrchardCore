@@ -48,7 +48,7 @@ namespace OrchardCore.ContentFields.Indexing.SQL
             );
 
             SchemaBuilder.AlterIndexTable<BooleanFieldIndex>(table => table
-                .CreateIndex("IDX_ContentItemIndex_DocumentId",
+                .CreateIndex("IDX_BooleanFieldIndex_DocumentId",
                     "DocumentId",
                     "ContentItemId",
                     "ContentItemVersionId",
@@ -311,7 +311,7 @@ namespace OrchardCore.ContentFields.Indexing.SQL
             );
 
             SchemaBuilder.AlterIndexTable<BooleanFieldIndex>(table => table
-                .CreateIndex("IDX_ContentItemIndex_DocumentId",
+                .CreateIndex("IDX_BooleanFieldIndex_DocumentId",
                     "DocumentId",
                     "ContentItemId",
                     "ContentItemVersionId",

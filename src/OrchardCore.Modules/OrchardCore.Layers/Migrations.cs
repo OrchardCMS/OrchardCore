@@ -17,23 +17,17 @@ namespace OrchardCore.Layers
             );
 
             // Shortcut other migration steps on new content definition schemas.
-            return 3;
+            return 2;
         }
 
         // This code can be removed in a later version.
         public int UpdateFrom1()
         {
-            return 2;
-        }
-
-        // This code can be removed in a later version.
-        public int UpdateFrom2()
-        {
             SchemaBuilder.AlterIndexTable<LayerMetadataIndex>(table => table
                 .CreateIndex("IDX_LayerMetadataIndex_DocumentId", "DocumentId", "Zone")
             );
 
-            return 3;
+            return 2;
         }
     }
 }

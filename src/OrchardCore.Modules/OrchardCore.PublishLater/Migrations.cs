@@ -27,8 +27,7 @@ namespace OrchardCore.PublishLater
             );
 
             SchemaBuilder.AlterIndexTable<PublishLaterPartIndex>(table => table
-                .CreateIndex(
-                    $"IDX_{nameof(PublishLaterPartIndex)}_{nameof(PublishLaterPartIndex.ScheduledPublishUtc)}",
+                .CreateIndex($"IDX_{nameof(PublishLaterPartIndex)}_{nameof(PublishLaterPartIndex.ScheduledPublishUtc)}",
                     "DocumentId",
                     nameof(PublishLaterPartIndex.ScheduledPublishUtc))
             );
@@ -41,8 +40,7 @@ namespace OrchardCore.PublishLater
         public int UpdateFrom1()
         {
             SchemaBuilder.AlterIndexTable<PublishLaterPartIndex>(table => table
-                .CreateIndex(
-                    $"IDX_{nameof(PublishLaterPartIndex)}_{nameof(PublishLaterPartIndex.ScheduledPublishUtc)}",
+                .CreateIndex($"IDX_{nameof(PublishLaterPartIndex)}_{nameof(PublishLaterPartIndex.ScheduledPublishUtc)}",
                     "DocumentId",
                     nameof(PublishLaterPartIndex.ScheduledPublishUtc))
             );
