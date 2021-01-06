@@ -31,28 +31,29 @@ namespace OrchardCore.ContentManagement.Records
             );
 
             SchemaBuilder.AlterIndexTable<ContentItemIndex>(table => table
-                .CreateIndex("IDX_ContentItemIndex_ContentItemId", "ContentItemId", "Latest", "Published", "CreatedUtc")
+                .CreateIndex("IDX_ContentItemIndex_DocumentId",
+                    "DocumentId",
+                    "ContentItemId",
+                    "ContentItemVersionId",
+                    "Latest",
+                    "Published",
+                    "ContentType",
+                    "ModifiedUtc",
+                    "PublishedUtc",
+                    "CreatedUtc",
+                    "Owner",
+                    "Author",
+                    "DisplayText")
             );
 
-            SchemaBuilder.AlterIndexTable<ContentItemIndex>(table => table
-                .CreateIndex("IDX_ContentItemIndex_ContentItemVersionId", "ContentItemVersionId")
-            );
-
-            SchemaBuilder.AlterIndexTable<ContentItemIndex>(table => table
-                .CreateIndex("IDX_ContentItemIndex_DisplayText", "DisplayText")
-            );
-
-            return 3;
+            // Shortcut other migration steps on new content definition schemas.
+            return 6;
         }
 
         public int UpdateFrom1()
         {
             SchemaBuilder.AlterIndexTable<ContentItemIndex>(table => table
                 .AddColumn<string>("ContentItemVersionId", c => c.WithLength(26))
-            );
-
-            SchemaBuilder.AlterIndexTable<ContentItemIndex>(table => table
-                .CreateIndex("IDX_ContentItemIndex_ContentItemVersionId", "ContentItemVersionId")
             );
 
             return 2;
@@ -64,12 +65,7 @@ namespace OrchardCore.ContentManagement.Records
                 .AddColumn<string>("DisplayText", column => column.Nullable().WithLength(ContentItemIndex.MaxDisplayTextSize))
             );
 
-            SchemaBuilder.AlterIndexTable<ContentItemIndex>(table => table
-                .CreateIndex("IDX_ContentItemIndex_DisplayText", "DisplayText")
-            );
-
-            // Return 3 to shortcut the 3rd and 4th migration on new content definition schemas.
-            return 5;
+            return 3;
         }
 
         // Migrate content type definitions. This only needs to run on old content definition schemas.
@@ -156,6 +152,28 @@ namespace OrchardCore.ContentManagement.Records
             }
 
             return 5;
+        }
+
+        // This code can be removed in a later version.
+        public int UpdateFrom5()
+        {
+            SchemaBuilder.AlterIndexTable<ContentItemIndex>(table => table
+                .CreateIndex("IDX_ContentItemIndex_DocumentId",
+                    "DocumentId",
+                    "ContentItemId",
+                    "ContentItemVersionId",
+                    "Latest",
+                    "Published",
+                    "ContentType",
+                    "ModifiedUtc",
+                    "PublishedUtc",
+                    "CreatedUtc",
+                    "Owner",
+                    "Author",
+                    "DisplayText")
+            );
+
+            return 6;
         }
     }
 }

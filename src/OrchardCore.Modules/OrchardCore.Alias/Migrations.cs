@@ -1,4 +1,3 @@
-using OrchardCore.Alias.Drivers;
 using OrchardCore.Alias.Indexes;
 using OrchardCore.Alias.Models;
 using OrchardCore.ContentManagement.Metadata;
@@ -33,11 +32,11 @@ namespace OrchardCore.Alias
             );
 
             SchemaBuilder.AlterIndexTable<AliasPartIndex>(table => table
-                .CreateIndex("IDX_AliasPartIndex_Alias", "Alias", "Published", "Latest")
+                .CreateIndex("IDX_AliasPartIndex_DocumentId", "DocumentId", "Alias", "ContentItemId", "Latest", "Published")
             );
 
-            // Return 2 to shortcut the second migration on new content definition schemas.
-            return 2;
+            // Shortcut other migration steps on new content definition schemas.
+            return 3;
         }
 
         // This code can be removed in a later version as Latest and Published are alterations.
@@ -52,6 +51,16 @@ namespace OrchardCore.Alias
             );
 
             return 2;
+        }
+
+        // This code can be removed in a later version.
+        public int UpdateFrom2()
+        {
+            SchemaBuilder.AlterIndexTable<AliasPartIndex>(table => table
+                .CreateIndex("IDX_AliasPartIndex_DocumentId", "DocumentId", "Alias", "ContentItemId", "Latest", "Published")
+            );
+
+            return 3;
         }
     }
 }

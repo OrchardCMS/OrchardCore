@@ -33,7 +33,7 @@ namespace OrchardCore.ContentLocalization.Records
                 .CreateIndex("IDX_LocalizationPartIndex_DocumentId", "DocumentId", "LocalizationSet", "Culture", "ContentItemId", "Published", "Latest")
             );
 
-            // Return 3 to shortcut other migrations on new content definition schemas.
+            // Shortcut other migration steps on new content definition schemas.
             return 3;
         }
 
