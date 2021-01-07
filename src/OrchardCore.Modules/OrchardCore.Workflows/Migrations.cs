@@ -135,6 +135,7 @@ namespace OrchardCore.Workflows
                 "WorkflowId",
                 "WorkflowCorrelationId")
             );
+
             return 3;
         }
     }
