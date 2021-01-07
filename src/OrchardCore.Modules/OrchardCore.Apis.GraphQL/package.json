@@ -5,7 +5,7 @@
   "license": "MIT",
   "description": "A GraphiQL module for OrchardCore.",
   "dependencies": {
-    "graphiql": "1.2.1",
+    "graphiql": "1.2.2",
     "graphiql-explorer": "0.6.2",
     "graphql": "15.4.0",
     "react": "16.14.0",
