@@ -51,6 +51,7 @@ The `OrchardCore.Resources` module provides some commonly used ones:
 | jQuery-ui-i18n        | Script | 1.7.2         | jQuery-ui      |
 | jquery.easing         | Script | 1.4.1         | -              |
 | jquery-resizable-dom  | Script | 0.35.0        | -              |
+| js-cookie             | Script | 2.2.1         | jQuery         |
 | popper                | Script | 1.16.1        | -              |
 | bootstrap             | Script | 3.4.0, 4.5.3  | jQuery, Popper |
 | bootstrap             | Style  | 3.4.0, 4.5.3  | -              |
@@ -58,8 +59,8 @@ The `OrchardCore.Resources` module provides some commonly used ones:
 | bootstrap-select      | Style  | 1.13.18       | -              |
 | bootstrap-slider      | Script | 11.0.2        | -              |
 | bootstrap-slider      | Style  | 11.0.2        | -              |
-| codemirror            | Script | 5.58.3        | -              |
-| codemirror            | Style  | 5.58.3        | -              |
+| codemirror            | Script | 5.59.1        | -              |
+| codemirror            | Style  | 5.59.1        | -              |
 | font-awesome          | Style  | 4.7.0, 5.15.1 | -              |
 | font-awesome          | Script | 5.15.1        | -              |
 | font-awesome-v4-shims | Script | 5.15.1        | -              |
@@ -262,7 +263,7 @@ You can append a version hash that will be calculated, and calculation cached, a
 
 ##### Specify location
 
-Specify a location the script should load using `at`, for example `Foot` to rendered wherever the `FootScript` helper is located or `Head` to render with the `HeadScript` [See Foot Resources](#foot-resources). If the location is not specified, the script will be inserted wherever it is placed (inline).
+Specify a location the script should load using `at`, for example `Foot` to rendered wherever the `FootScript` helper is located or `Head` to render with the `HeadScript` [See Foot Resources](#foot-resources). If the location is not specified, or specified as `Inline`, the script will be inserted wherever it is placed (inline).
 
 === "Liquid"
 
@@ -276,7 +277,7 @@ Specify a location the script should load using `at`, for example `Foot` to rend
     <script asp-name="bootstrap" at="Foot"></script>
     ```
 
-Link and styles tag helpers always inject into the header section of the HTML document regardless of the `at` value.
+Link and styles tag helpers always inject into the header section of the HTML document, unless the `at` location is set to `Inline`.
 
 #### Inline definition
 
@@ -335,7 +336,7 @@ When rendering the scripts the resource manager will order the output based on t
 3. `bar`
 
 !!! note
-    You do not have to define a name for your script or style unless you want to reference it as a dependency.
+    You do not have to define a name for your script or style unless you want to reference it as a dependency, or declare it as `Inline`.
 
 #### Custom scripts
 

@@ -7,6 +7,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: https://codemirror.net/LICENSE
+// declare global: DOMRect
 (function (mod) {
   if ((typeof exports === "undefined" ? "undefined" : _typeof(exports)) == "object" && (typeof module === "undefined" ? "undefined" : _typeof(module)) == "object") // CommonJS
     mod(require("../../lib/codemirror"));else if (typeof define == "function" && define.amd) // AMD
@@ -96,7 +97,10 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         CodeMirror.signal(data, "pick", completion);
         self.cm.scrollIntoView();
       });
-      this.close();
+
+      if (this.options.closeOnPick) {
+        this.close();
+      }
     },
     cursorActivity: function cursorActivity() {
       if (this.debounce) {
@@ -114,7 +118,9 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
           line = this.cm.getLine(pos.line);
 
       if (pos.line != this.startPos.line || line.length - pos.ch != this.startLen - this.startPos.ch || pos.ch < identStart.ch || this.cm.somethingSelected() || !pos.ch || this.options.closeCharacters.test(line.charAt(pos.ch - 1))) {
-        this.close();
+        if (this.options.closeOnCursorActivity) {
+          this.close();
+        }
       } else {
         var self = this;
         this.debounce = requestAnimationFrame(function () {
@@ -283,10 +289,14 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     var winW = parentWindow.innerWidth || Math.max(ownerDocument.body.offsetWidth, ownerDocument.documentElement.offsetWidth);
     var winH = parentWindow.innerHeight || Math.max(ownerDocument.body.offsetHeight, ownerDocument.documentElement.offsetHeight);
     container.appendChild(hints);
-    var box = hints.getBoundingClientRect(),
-        overlapY = box.bottom - winH;
-    var scrolls = hints.scrollHeight > hints.clientHeight + 1;
-    var startScroll = cm.getScrollInfo();
+    var box = completion.options.moveOnOverlap ? hints.getBoundingClientRect() : new DOMRect();
+    var scrolls = completion.options.paddingForScrollbar ? hints.scrollHeight > hints.clientHeight + 1 : false; // Compute in the timeout to avoid reflow on init
+
+    var startScroll;
+    setTimeout(function () {
+      startScroll = cm.getScrollInfo();
+    });
+    var overlapY = box.bottom - winH;
 
     if (overlapY > 0) {
       var height = box.bottom - box.top,
@@ -385,8 +395,14 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       setTimeout(function () {
         cm.focus();
       }, 20);
-    });
-    this.scrollToActive();
+    }); // The first hint doesn't need to be scrolled to on init
+
+    var selectedHintRange = this.getSelectedHintRange();
+
+    if (selectedHintRange.from !== 0 || selectedHintRange.to !== 0) {
+      this.scrollToActive();
+    }
+
     CodeMirror.signal(data, "select", completions[this.selectedHint], hints.childNodes[this.selectedHint]);
     return true;
   }
@@ -430,14 +446,21 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       CodeMirror.signal(this.data, "select", this.data.list[this.selectedHint], node);
     },
     scrollToActive: function scrollToActive() {
-      var margin = this.completion.options.scrollMargin || 0;
-      var node1 = this.hints.childNodes[Math.max(0, this.selectedHint - margin)];
-      var node2 = this.hints.childNodes[Math.min(this.data.list.length - 1, this.selectedHint + margin)];
+      var selectedHintRange = this.getSelectedHintRange();
+      var node1 = this.hints.childNodes[selectedHintRange.from];
+      var node2 = this.hints.childNodes[selectedHintRange.to];
       var firstNode = this.hints.firstChild;
       if (node1.offsetTop < this.hints.scrollTop) this.hints.scrollTop = node1.offsetTop - firstNode.offsetTop;else if (node2.offsetTop + node2.offsetHeight > this.hints.scrollTop + this.hints.clientHeight) this.hints.scrollTop = node2.offsetTop + node2.offsetHeight - this.hints.clientHeight + firstNode.offsetTop;
     },
     screenAmount: function screenAmount() {
       return Math.floor(this.hints.clientHeight / this.hints.firstChild.offsetHeight) || 1;
+    },
+    getSelectedHintRange: function getSelectedHintRange() {
+      var margin = this.completion.options.scrollMargin || 0;
+      return {
+        from: Math.max(0, this.selectedHint - margin),
+        to: Math.min(this.data.list.length - 1, this.selectedHint + margin)
+      };
     }
   };
 
@@ -533,11 +556,15 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     completeSingle: true,
     alignWithWord: true,
     closeCharacters: /[\s()\[\]{};:>,]/,
+    closeOnCursorActivity: true,
+    closeOnPick: true,
     closeOnUnfocus: true,
     completeOnSingleClick: true,
     container: null,
     customKeys: null,
-    extraKeys: null
+    extraKeys: null,
+    paddingForScrollbar: true,
+    moveOnOverlap: true
   };
   CodeMirror.defineOption("hintOptions", null);
 });

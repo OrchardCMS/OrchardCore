@@ -24,6 +24,7 @@ namespace OrchardCore.ContentLocalization.Handlers
                 if (part.Culture != null)
                 {
                     cultureAspect.Culture = CultureInfo.GetCultureInfo(part.Culture);
+                    cultureAspect.HasCulture = true;
                 }
 
                 return Task.CompletedTask;
