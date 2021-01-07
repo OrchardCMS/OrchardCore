@@ -169,7 +169,7 @@ namespace OrchardCore.Users
 
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IUserClaimsPrincipalFactory<IUser>, DefaultUserClaimsPrincipalProviderFactory>();
-            services.AddScoped<IClaimsProvider, EmailClaimsProvider>();
+            services.AddScoped<IUserClaimsProvider, EmailClaimsProvider>();
             services.AddIdGeneration();
             services.AddSingleton<IUserIdGenerator, DefaultUserIdGenerator>();
 

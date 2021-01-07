@@ -95,7 +95,7 @@ namespace OrchardCore.Demo
             services.AddScoped<IDataMigration, Migrations>();
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddContentPart<TestContentPartA>();
-            services.AddScoped<IClaimsProvider, UserProfileClaimsProvider>();
+            services.AddScoped<IUserClaimsProvider, UserProfileClaimsProvider>();
 
             services.AddScoped<IDisplayDriver<User>, UserProfileDisplayDriver>();
 
