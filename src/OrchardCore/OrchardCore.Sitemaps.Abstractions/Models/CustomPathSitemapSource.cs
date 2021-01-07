@@ -7,7 +7,7 @@ namespace OrchardCore.Sitemaps.Models
     /// </summary>
     public class CustomPathSitemapSource : SitemapSource
     {
-        public static char[] InvalidCharactersForPath = ":?#[]@!$&'()*+,.;=<>\\|%".ToCharArray();
+        public static char[] InvalidCharactersForPath = ":?#[]@!$&'()*+,.;=<>\\|%{}".ToCharArray();
         public const int MaxPathLength = 1024;
 
         /// <summary>

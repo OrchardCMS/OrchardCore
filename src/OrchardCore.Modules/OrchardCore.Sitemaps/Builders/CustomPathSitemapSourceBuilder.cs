@@ -39,7 +39,7 @@ namespace OrchardCore.Sitemaps.Builders
             if (string.IsNullOrEmpty(source.Url))
                 return false;
 
-            //add ~/ to the path, because the user insert it without leadind /
+            //add ~/ to the path, because the user insert it without leading /
             var path = "~/" + source.Url;
 
             var loc = new XElement(Namespace + "loc");
