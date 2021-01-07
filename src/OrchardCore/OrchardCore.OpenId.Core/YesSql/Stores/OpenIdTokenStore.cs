@@ -259,7 +259,12 @@ namespace OrchardCore.OpenId.YesSql.Stores
                 throw new ArgumentNullException(nameof(token));
             }
 
-            return new ValueTask<DateTimeOffset?>(token.CreationDate);
+            if (token.CreationDate is null)
+            {
+                return new ValueTask<DateTimeOffset?>(result: null);
+            }
+
+            return new ValueTask<DateTimeOffset?>(DateTime.SpecifyKind(token.CreationDate.Value, DateTimeKind.Utc));
         }
 
         /// <inheritdoc/>
@@ -270,7 +275,12 @@ namespace OrchardCore.OpenId.YesSql.Stores
                 throw new ArgumentNullException(nameof(token));
             }
 
-            return new ValueTask<DateTimeOffset?>(token.ExpirationDate);
+            if (token.ExpirationDate is null)
+            {
+                return new ValueTask<DateTimeOffset?>(result: null);
+            }
+
+            return new ValueTask<DateTimeOffset?>(DateTime.SpecifyKind(token.ExpirationDate.Value, DateTimeKind.Utc));
         }
 
         /// <inheritdoc/>
@@ -564,7 +574,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
                 throw new ArgumentNullException(nameof(token));
             }
 
-            token.RedemptionDate = date?.UtcDateTime;
+            token.RedemptionDate = date;
 
             return default;
         }
