@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace OrchardCore.Users.Services
 {
-    public class EmailClaimsProvider : IClaimsProvider
+    public class EmailClaimsProvider : IUserClaimsProvider
     {
         private readonly UserManager<IUser> _userManager;
 

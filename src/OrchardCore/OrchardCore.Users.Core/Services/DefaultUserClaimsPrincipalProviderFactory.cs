@@ -10,18 +10,18 @@ using OrchardCore.Security;
 namespace OrchardCore.Users.Services
 {
     /// <summary>
-    /// Custom implementation of <see cref="IUserClaimsPrincipalFactory{TUser}"/> allowing adding claims by implementing the <see cref="IClaimsProvider"/>
+    /// Custom implementation of <see cref="IUserClaimsPrincipalFactory{TUser}"/> allowing adding claims by implementing the <see cref="IUserClaimsProvider"/>
     /// </summary>
     public class DefaultUserClaimsPrincipalProviderFactory : UserClaimsPrincipalFactory<IUser, IRole>
     {
-        private readonly IEnumerable<IClaimsProvider> _claimsProviders;
+        private readonly IEnumerable<IUserClaimsProvider> _claimsProviders;
         private readonly ILogger _logger;
 
         public DefaultUserClaimsPrincipalProviderFactory(
             UserManager<IUser> userManager,
             RoleManager<IRole> roleManager,
             IOptions<IdentityOptions> identityOptions,
-            IEnumerable<IClaimsProvider> claimsProviders,
+            IEnumerable<IUserClaimsProvider> claimsProviders,
             ILogger<DefaultUserClaimsPrincipalProviderFactory> logger) : base(userManager, roleManager, identityOptions)
         {
             _claimsProviders = claimsProviders;
