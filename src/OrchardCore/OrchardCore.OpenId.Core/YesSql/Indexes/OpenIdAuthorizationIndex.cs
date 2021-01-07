@@ -23,7 +23,7 @@ namespace OrchardCore.OpenId.YesSql.Indexes
                 {
                     ApplicationId = authorization.ApplicationId,
                     AuthorizationId = authorization.AuthorizationId,
-                    CreationDate = authorization.CreationDate?.UtcDateTime,
+                    CreationDate = authorization.CreationDate,
                     Status = authorization.Status,
                     Subject = authorization.Subject,
                     Type = authorization.Type
