@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace OrchardCore.Users.Services
 {
-    public interface IClaimsProvider
+    public interface IUserClaimsProvider
     {
         Task GenerateAsync(IUser user, ClaimsIdentity claims);
     }
