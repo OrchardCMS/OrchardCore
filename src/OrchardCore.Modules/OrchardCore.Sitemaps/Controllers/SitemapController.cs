@@ -20,7 +20,6 @@ namespace OrchardCore.Sitemaps.Controllers
         private const int ErrorLength = 52_428_800;
 
         private static readonly ConcurrentDictionary<string, Lazy<Task<Stream>>> Workers = new ConcurrentDictionary<string, Lazy<Task<Stream>>>(StringComparer.OrdinalIgnoreCase);
-        private static readonly ConcurrentDictionary<string, string> Identifiers = new ConcurrentDictionary<string, string>();
 
         private readonly ISitemapManager _sitemapManager;
         private readonly ISiteService _siteService;
@@ -49,19 +48,12 @@ namespace OrchardCore.Sitemaps.Controllers
         public async Task<IActionResult> Index(CancellationToken cancellationToken, string sitemapId)
         {
             var sitemap = await _sitemapManager.GetSitemapAsync(sitemapId);
-
             if (sitemap == null || !sitemap.Enabled)
             {
                 return NotFound();
             }
 
-            ISitemapCacheFileResolver fileResolver = null;
-
-            if (Identifiers.TryGetValue(sitemapId, out var identifier) && sitemap.Identifier == identifier)
-            {
-                fileResolver = await _sitemapCacheProvider.GetCachedSitemapAsync(sitemap.Path);
-            }
-
+            var fileResolver = await _sitemapCacheProvider.GetCachedSitemapAsync(sitemap.CacheFileName);
             if (fileResolver != null)
             {
                 // When multiple requests occur for the same sitemap it 
@@ -110,9 +102,7 @@ namespace OrchardCore.Sitemaps.Controllers
                             _logger.LogWarning("Sitemap nearing 50MB length limit");
                         }
 
-                        await _sitemapCacheProvider.SetSitemapCacheAsync(stream, sitemap.Path, cancellationToken);
-
-                        Identifiers[sitemap.SitemapId] = sitemap.Identifier;
+                        await _sitemapCacheProvider.SetSitemapCacheAsync(stream, sitemap.CacheFileName, cancellationToken);
 
                         return stream;
                     }

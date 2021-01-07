@@ -8,10 +8,23 @@
 
 .ta-navbar-top {
     @extend .navbar-dark;
+    color: $gray-300;
+
+    a {
+        color: $gray-300;
+        text-decoration: none;
+    }
 }
 
 .ta-badge {
     @extend .badge-dark;
+}
+
+.ta-navbar-brand {
+    span:last-child {
+        font-weight: bold;
+        color: $gray-300;
+    }
 }
 
 @import "../../admin/_list.scss";
@@ -26,6 +39,7 @@
 #mediaApp {
     background-color: $body-bg;
 }
+
 // Buttons =====================================================================
 
 // Typography ==================================================================
@@ -34,6 +48,10 @@
     &-footer {
         color: $gray-600;
     }
+}
+
+.trumbowyg-fullscreen .trumbowyg-editor{
+    color: black;
 }
 
 // Tables ======================================================================

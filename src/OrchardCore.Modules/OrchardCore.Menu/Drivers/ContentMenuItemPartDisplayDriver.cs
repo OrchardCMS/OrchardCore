@@ -1,8 +1,6 @@
 using System.Threading.Tasks;
-using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
-using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Menu.Models;
@@ -12,18 +10,6 @@ namespace OrchardCore.Menu.Drivers
 {
     public class ContentMenuItemPartDisplayDriver : ContentPartDisplayDriver<ContentMenuItemPart>
     {
-        private readonly IContentManager _contentManager;
-        private readonly IContentDefinitionManager _contentDefinitionManager;
-
-        public ContentMenuItemPartDisplayDriver(
-            IContentManager contentManager,
-            IContentDefinitionManager contentDefinitionManager
-            )
-        {
-            _contentManager = contentManager;
-            _contentDefinitionManager = contentDefinitionManager;
-        }
-
         public override IDisplayResult Display(ContentMenuItemPart part, BuildPartDisplayContext context)
         {
             return Combine(
