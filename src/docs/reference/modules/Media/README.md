@@ -422,7 +422,7 @@ This can be used for the `alt` tag of an image.
 
 When the setting is enabled the template must read and provide the value to the `img` tag.
 
-The `MediaText[]` is kept in sync with the `Paths[]` array and the index for a given path represents the index of a `MediaText` value.
+The `MediaTexts[]` is kept in sync with the `Paths[]` array and the index for a given path represents the index of a `MediaText` value.
 
 ## Image Anchors
 

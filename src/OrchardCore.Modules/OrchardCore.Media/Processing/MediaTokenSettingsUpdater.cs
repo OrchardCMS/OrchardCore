@@ -3,8 +3,8 @@ using System.Threading.Tasks;
 using OrchardCore.Entities;
 using OrchardCore.Environment.Extensions.Features;
 using OrchardCore.Environment.Shell;
-using OrchardCore.Settings;
 using OrchardCore.Modules;
+using OrchardCore.Settings;
 
 namespace OrchardCore.Media.Processing
 {
@@ -35,7 +35,7 @@ namespace OrchardCore.Media.Processing
                 rng.GetBytes(mediaTokenSettings.HashKey);
                 siteSettings.Put(mediaTokenSettings);
 
-                _siteService.UpdateSiteSettingsAsync(siteSettings).GetAwaiter().GetResult();
+                await _siteService.UpdateSiteSettingsAsync(siteSettings);
             }
         }
 
