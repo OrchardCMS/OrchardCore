@@ -341,7 +341,12 @@ namespace OrchardCore.OpenId.YesSql.Stores
                 throw new ArgumentNullException(nameof(token));
             }
 
-            return new ValueTask<DateTimeOffset?>(token.RedemptionDate);
+            if (token.RedemptionDate is null)
+            {
+                return new ValueTask<DateTimeOffset?>(result: null);
+            }
+
+            return new ValueTask<DateTimeOffset?>(DateTime.SpecifyKind(token.RedemptionDate.Value, DateTimeKind.Utc));
         }
 
         /// <inheritdoc/>
@@ -425,7 +430,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
 
             IList<Exception> exceptions = null;
 
-            for (var offset = 0; offset < 100_000; offset = offset + 1_000)
+            for (var offset = 0; offset < 100_000; offset += 1_000)
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
@@ -435,7 +440,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
                              token.AuthorizationId.IsNotIn<OpenIdAuthorizationIndex>(
                                 authorization => authorization.AuthorizationId,
                                 authorization => authorization.Status == Statuses.Valid) ||
-                             token.ExpirationDate < DateTimeOffset.UtcNow)).Skip(offset).Take(1_000).ListAsync();
+                             token.ExpirationDate < DateTime.UtcNow)).Skip(offset).Take(1_000).ListAsync();
 
                 foreach (var token in tokens)
                 {
@@ -574,7 +579,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
                 throw new ArgumentNullException(nameof(token));
             }
 
-            token.RedemptionDate = date;
+            token.RedemptionDate = date?.UtcDateTime;
 
             return default;
         }

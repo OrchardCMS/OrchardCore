@@ -53,7 +53,7 @@ namespace OrchardCore.OpenId.YesSql.Models
         /// <summary>
         /// Gets or sets the redemption date of the current token.
         /// </summary>
-        public DateTimeOffset? RedemptionDate { get; set; }
+        public DateTime? RedemptionDate { get; set; }
 
         /// <summary>
         /// Gets or sets the reference identifier associated

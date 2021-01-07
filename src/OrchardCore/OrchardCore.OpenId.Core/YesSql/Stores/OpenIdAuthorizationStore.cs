@@ -370,7 +370,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
 
             IList<Exception> exceptions = null;
 
-            for (var offset = 0; offset < 100_000; offset = offset + 1_000)
+            for (var offset = 0; offset < 100_000; offset += 1_000)
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
