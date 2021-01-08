@@ -21,7 +21,7 @@ namespace OrchardCore.Liquid.Filters
             // TODO This provides no context to the shortcode service.
             // It could take a content item as an argument to provide some context.
 
-            return new StringValue(await shortcodeService.ProcessAsync(input.ToStringValue());
+            return new StringValue(await shortcodeService.ProcessAsync(input.ToStringValue()));
         }
     }
 }
