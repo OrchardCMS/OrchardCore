@@ -51,7 +51,7 @@ namespace OrchardCore.Shortcodes.Services
                     if (content is LiquidContentAccessor contentAccessor)
                     {
                         contentAccessor.Content = model.Content;
-                        scope.SetValue("Content", FluidValue.Create(contentAccessor));
+                        scope.SetValue("Content", contentAccessor);
                     }
                     else
                     {
