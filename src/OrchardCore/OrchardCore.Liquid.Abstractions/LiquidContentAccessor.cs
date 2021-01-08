@@ -5,16 +5,10 @@ namespace OrchardCore.Liquid
     /// </summary>
     public class LiquidContentAccessor
     {
-        public LiquidContentAccessor(string content)
-        {
-            Content = content;
-        }
+        private readonly string _content;
 
-        public string Content { get; set; }
+        public LiquidContentAccessor(string content) => _content = content;
 
-        public override string ToString()
-        {
-            return Content;
-        }
+        public override string ToString() => _content;
     }
 }
