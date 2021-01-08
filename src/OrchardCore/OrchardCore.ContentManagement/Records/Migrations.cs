@@ -41,7 +41,7 @@ namespace OrchardCore.ContentManagement.Records
                     "ModifiedUtc",
                     "PublishedUtc",
                     "CreatedUtc",
-                    "Owner",
+                    //"Owner",
                     "Author",
                     "DisplayText")
             );
@@ -168,7 +168,7 @@ namespace OrchardCore.ContentManagement.Records
                     "ModifiedUtc",
                     "PublishedUtc",
                     "CreatedUtc",
-                    "Owner",
+                    //"Owner",
                     "Author",
                     "DisplayText")
             );
