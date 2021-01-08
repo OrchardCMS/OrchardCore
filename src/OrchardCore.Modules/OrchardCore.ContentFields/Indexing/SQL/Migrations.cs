@@ -32,8 +32,8 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                     "ContentPart",
                     "ContentField",
                     "Published",
-                    "Latest",
-                    "Text")
+                    "Latest"/*,
+                    "Text"*/)
             );
 
             SchemaBuilder.CreateMapIndexTable<BooleanFieldIndex>(table => table
@@ -206,9 +206,9 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                     "ContentPart",
                     "ContentField",
                     "Published",
-                    "Latest",
+                    "Latest"/*,
                     "Url",
-                    "Text")
+                    "Text"*/)
             );
 
             SchemaBuilder.CreateMapIndexTable<HtmlFieldIndex>(table => table
@@ -231,8 +231,8 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                     "ContentPart",
                     "ContentField",
                     "Published",
-                    "Latest",
-                    "Html")
+                    "Latest"/*,
+                    "Html"*/)
             );
 
             SchemaBuilder.CreateMapIndexTable<MultiTextFieldIndex>(table => table
@@ -256,8 +256,8 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                     "ContentPart",
                     "ContentField",
                     "Published",
-                    "Latest",
-                    "Value")
+                    "Latest"/*,
+                    "Value"*/)
             );
 
             // Shortcut other migration steps on new content definition schemas.
@@ -306,8 +306,8 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                     "ContentPart",
                     "ContentField",
                     "Published",
-                    "Latest",
-                    "Text")
+                    "Latest"/*,
+                    "Text"*/)
             );
 
             SchemaBuilder.AlterIndexTable<BooleanFieldIndex>(table => table
@@ -397,9 +397,9 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                     "ContentPart",
                     "ContentField",
                     "Published",
-                    "Latest",
+                    "Latest"/*,
                     "Url",
-                    "Text")
+                    "Text"*/)
             );
 
             SchemaBuilder.AlterIndexTable<HtmlFieldIndex>(table => table
@@ -411,8 +411,8 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                     "ContentPart",
                     "ContentField",
                     "Published",
-                    "Latest",
-                    "Html")
+                    "Latest"/*,
+                    "Html"*/)
             );
 
             SchemaBuilder.AlterIndexTable<MultiTextFieldIndex>(table => table
@@ -424,8 +424,8 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                     "ContentPart",
                     "ContentField",
                     "Published",
-                    "Latest",
-                    "Value")
+                    "Latest"/*,
+                    "Value"*/)
             );
 
             return 4;
