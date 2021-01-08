@@ -1,6 +1,7 @@
 
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
+using Fluid.Values;
 using OrchardCore.Liquid;
 using OrchardCore.Shortcodes.Models;
 using OrchardCore.Shortcodes.ViewModels;
@@ -45,9 +46,20 @@ namespace OrchardCore.Shortcodes.Services
                 scope =>
                 {
                     scope.SetValue("Model", model.Context.TryGetValue("Model", out var value) ? value : null);
-                    scope.SetValue("content", model.Content);
-                    scope.SetValue("args", model.Args);
-                    scope.SetValue("context", model.Context);
+
+                    var content = scope.GetValue("Content").ToObjectValue();
+                    if (content is LiquidContentAccessor contentAccessor)
+                    {
+                        contentAccessor.Content = model.Content;
+                        scope.SetValue("Content", FluidValue.Create(contentAccessor));
+                    }
+                    else
+                    {
+                        scope.SetValue("Content", model.Content);
+                    }
+
+                    scope.SetValue("Args", model.Args);
+                    scope.SetValue("Context", model.Context);
                 });
         }
     }
