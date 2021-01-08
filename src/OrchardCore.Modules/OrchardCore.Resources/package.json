@@ -13,7 +13,7 @@
     "jquery.easing": "1.4.1",
     "js-cookie": "2.2.1",
     "popper.js": "1.16.1",
-    "sortablejs": "^1.10.2",
+    "sortablejs": "^1.13.0",
     "trumbowyg": "2.23.0",
     "vue": "^2.6.12",
     "vue-multiselect": "^2.1.6",
