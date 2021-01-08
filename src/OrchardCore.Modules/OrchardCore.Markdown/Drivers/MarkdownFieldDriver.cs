@@ -67,7 +67,6 @@ namespace OrchardCore.Markdown.Drivers
                 model.Html = await _shortcodeService.ProcessAsync(model.Html,
                     new Context
                     {
-                        ["Model"] = model,
                         ["ContentItem"] = field.ContentItem,
                         ["PartFieldDefinition"] = context.PartFieldDefinition
                     });

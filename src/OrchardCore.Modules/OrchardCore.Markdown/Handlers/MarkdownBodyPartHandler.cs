@@ -55,17 +55,17 @@ namespace OrchardCore.Markdown.Handlers
                     // so filters must be run after the markdown has been processed.
                     var html = _markdownService.ToHtml(part.Markdown);
 
-                    var model = new MarkdownBodyPartViewModel()
-                    {
-                        Markdown = part.Markdown,
-                        Html = html,
-                        MarkdownBodyPart = part,
-                        ContentItem = part.ContentItem
-                    };
-
                     // The liquid rendering is for backwards compatability and can be removed in a future version.
                     if (!settings.SanitizeHtml)
                     {
+                        var model = new MarkdownBodyPartViewModel()
+                        {
+                            Markdown = part.Markdown,
+                            Html = html,
+                            MarkdownBodyPart = part,
+                            ContentItem = part.ContentItem
+                        };
+
                         html = await _liquidTemplateManager.RenderAsync(html, _htmlEncoder, model,
                             scope => scope.SetValue("ContentItem", model.ContentItem));
                     }
@@ -73,7 +73,6 @@ namespace OrchardCore.Markdown.Handlers
                     html = await _shortcodeService.ProcessAsync(html,
                         new Context
                         {
-                            ["Model"] = model,
                             ["ContentItem"] = part.ContentItem,
                             ["TypePartDefinition"] = contentTypePartDefinition
                         });

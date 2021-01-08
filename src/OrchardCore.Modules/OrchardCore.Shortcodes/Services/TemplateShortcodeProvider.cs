@@ -45,8 +45,6 @@ namespace OrchardCore.Shortcodes.Services
             return await _liquidTemplateManager.RenderAsync(template.Content, _htmlEncoder, model,
                 scope =>
                 {
-                    scope.SetValue("Model", model.Context.TryGetValue("Model", out var value) ? value : null);
-
                     var content = scope.GetValue("Content").ToObjectValue();
                     if (content is LiquidContentAccessor contentAccessor)
                     {
