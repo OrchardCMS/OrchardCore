@@ -4,6 +4,7 @@ using Fluid;
 using Fluid.Values;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Shortcodes.Services;
+using Shortcodes;
 
 namespace OrchardCore.Liquid.Filters
 {
@@ -21,7 +22,10 @@ namespace OrchardCore.Liquid.Filters
             // TODO This provides no context to the shortcode service.
             // It could take a content item as an argument to provide some context.
 
-            return new StringValue(await shortcodeService.ProcessAsync(input.ToStringValue()));
+            return new StringValue(await shortcodeService.ProcessAsync(input.ToStringValue(), new Context
+            {
+                ["Model"] = ctx.LocalScope.GetValue("Model")
+            }));
         }
     }
 }

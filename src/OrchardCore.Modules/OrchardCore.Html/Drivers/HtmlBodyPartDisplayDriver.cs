@@ -91,12 +91,12 @@ namespace OrchardCore.Html.Drivers
                     scope => scope.SetValue("ContentItem", model.ContentItem));
             }
 
-            model.Html = await _shortcodeService.ProcessAsync(model.Html,
-                new Context
-                {
-                    ["ContentItem"] = htmlBodyPart.ContentItem,
-                    ["TypePartDefinition"] = context.TypePartDefinition
-                });
+            model.Html = await _shortcodeService.ProcessAsync(model.Html, new Context
+            {
+                ["Model"] = model,
+                ["ContentItem"] = htmlBodyPart.ContentItem,
+                ["TypePartDefinition"] = context.TypePartDefinition
+            });
         }
     }
 }

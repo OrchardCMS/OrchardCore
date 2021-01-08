@@ -44,6 +44,8 @@ namespace OrchardCore.Shortcodes.Services
             return await _liquidTemplateManager.RenderAsync(template.Content, _htmlEncoder, model,
                 scope =>
                 {
+                    scope.SetValue("Model", model.Context.TryGetValue("Model", out var value) ? value : null);
+                    scope.SetValue("LiquidContent", scope.GetValue("Content"));
                     scope.SetValue("Content", model.Content);
                     scope.SetValue("Args", model.Args);
                     scope.SetValue("Context", model.Context);
