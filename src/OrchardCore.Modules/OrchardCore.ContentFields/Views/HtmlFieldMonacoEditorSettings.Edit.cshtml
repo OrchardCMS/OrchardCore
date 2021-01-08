@@ -1,0 +1,37 @@
+@model OrchardCore.ContentFields.ViewModels.MonacoSettingsViewModel
+<div id="@Html.IdFor(m => m)" class="field-editor field-editor-monaco">
+    <div class="form-group row">
+        <div class="col-large">
+            <label asp-for="Options">@T["Enter the editor options, language is always to `html` when saved."]</label>
+            <span class="hint"><a href="https://microsoft.github.io/monaco-editor/api/interfaces/monaco.editor.istandaloneeditorconstructionoptions.html" target="_blank">@T["Documentation for options"]</a></span>
+            <textarea asp-for="Options" class="form-control" autofocus="autofocus"></textarea>
+        </div>
+    </div>
+</div>
+
+<style asp-name="codemirror"></style>
+<script asp-name="codemirror" depends-on="admin" at="Foot"></script>
+<script asp-name="codemirror-addon-display-autorefresh" at="Foot"></script>
+<script asp-name="codemirror-mode-javascript" at="Foot"></script>
+
+<script at="Foot">
+    $(function () {
+        var optionsTextArea = document.getElementById('@Html.IdFor(x => x.Options)');
+        var editor = CodeMirror.fromTextArea(optionsTextArea, {
+            autoRefresh: true,
+            lineNumbers: true,
+            matchBrackets: true,
+            mode: { name: "javascript" }
+    });
+@{
+    if (string.IsNullOrEmpty(Model.Options))
+    {
+        string fullOptions = @"{
+            automaticLayout: true
+        }";
+<text>
+        editor.setValue(`@Html.Raw(fullOptions)`);</text>
+    }
+}
+});
+</script>

@@ -1,15 +1,25 @@
+using OrchardCore.Environment.Shell;
 using OrchardCore.ResourceManagement;
 
 namespace OrchardCore.Resources
 {
     public class ResourceManifest : IResourceManifestProvider
     {
+        private readonly string _tenantPrefix;
+
         // CDNs
         private const string cloudflareUrl = "https://cdnjs.cloudflare.com/ajax/libs/";
         // Versions
         private const string codeMirrorVersion = "5.59.1";
+        private const string monacoEditorVersion = "0.21.2";
         // URLs
         private const string codeMirrorUrl = cloudflareUrl + "codemirror/" + codeMirrorVersion + "/";
+        private const string monacoEditorUrl = cloudflareUrl + "monaco-editor/" + monacoEditorVersion + "/";
+
+        public ResourceManifest(ShellSettings shellSettings)
+        {
+            _tenantPrefix = string.IsNullOrEmpty(shellSettings.RequestUrlPrefix) ? string.Empty : "/" + shellSettings.RequestUrlPrefix;
+        }
 
         public void BuildManifests(IResourceManifestBuilder builder)
         {
@@ -122,14 +132,14 @@ namespace OrchardCore.Resources
                 .SetCdn("https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css", "https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.css")
                 .SetCdnIntegrity("sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2", "sha384-Ro2DNoUODgrLmRM7WL/mbXZ1D6WaudEiPPceIZTfzZrTahyJAxLMj5TF2RQwrpiG")
                 .SetVersion("4.5.3");
-            
+
             manifest
                 .DefineStyle("bootstrap-select")
                 .SetUrl("~/OrchardCore.Resources/Styles/bootstrap-select.min.css", "~/OrchardCore.Resources/Styles/bootstrap-select.css")
                 .SetCdn("https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.18/dist/css/bootstrap-select.min.css", "https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.18/dist/css/bootstrap-select.css")
                 .SetCdnIntegrity("sha384-dTqTc7d5t+FKhTIaMmda32pZNoXY/Y0ui0hRl5GzDQp4aARfEzbP1jzX6+KRuGKg", "sha384-OlTrhEtwZzUzVXapTUO8s6QryXzpD8mFyNVA8kyAi8KMgfOKSJYvielvExM+dNPR")
                 .SetVersion("1.13.18");
-                
+
             manifest
                 .DefineScript("bootstrap-select")
                 .SetDependencies("jQuery")
@@ -144,7 +154,7 @@ namespace OrchardCore.Resources
                 .SetCdn("https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/11.0.2/css/bootstrap-slider.min.css", "https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/11.0.2/css/bootstrap-slider.css")
                 .SetCdnIntegrity("sha384-Ot7O5p8Ws9qngwQOA1DP7acHuGIfK63cYbVJRYzrrMXhT3syEYhEsg+uqPsPpRhZ", "sha384-x1BbAB1QrM4/ZjT+vJzuI/NdvRo4tINKqg7lTN9jCq0bWrr/nelp9KfroZWd3UJu")
                 .SetVersion("11.0.2");
-                
+
             manifest
                 .DefineScript("bootstrap-slider")
                 .SetDependencies("jQuery")
@@ -392,6 +402,35 @@ namespace OrchardCore.Resources
                 .SetCdn("https://cdnjs.cloudflare.com/ajax/libs/js-cookie/2.2.1/js.cookie.min.js", "https://cdnjs.cloudflare.com/ajax/libs/js-cookie/2.2.1/js.cookie.js")
                 .SetCdnIntegrity("sha384-eITc5AorI6xzkW7XunGaNrcA0l6qrU/kA/mOhLQOC5thAzlHSClQTOecyzGK6QXK", "sha384-qYkL05PP6ICwBjU1X95J3yIhrm7w3efbzz0r1oti35uPxRjXP6t5B8gP0xNuOmdt")
                 .SetVersion("2.2.1");
+
+            manifest
+                .DefineScript("monaco-loader")
+                .SetUrl("~/OrchardCore.Resources/Scripts/monaco/min/vs/loader.js", "~/OrchardCore.Resources/Scripts/monaco/dev/vs/loader.js")
+                .SetCdn(monacoEditorUrl + "min/vs/loader.js")
+                .SetCdnIntegrity("sha512-fSLVGpTrvZYhUtBCsrJFYvg6CXQ6bt082MjIGrYsTQCbsmsi/iA9/gH8x15+pv3nP+QNPyuXWEftuJgo3d3dww==")
+                .SetDependencies("*")
+                .SetVersion(monacoEditorVersion);
+
+            manifest
+                .DefineScript("monaco")
+                .SetAttribute("data-tenant-prefix", _tenantPrefix)
+                .SetAttribute("data-monaco-editor-url", monacoEditorUrl)
+                .SetUrl("~/OrchardCore.Resources/Scripts/monaco/min.js", "~/OrchardCore.Resources/Scripts/monaco/dev.js")
+                .SetCdn("~/OrchardCore.Resources/Scripts/monaco/cdn.js")
+                .SetDependencies("monaco-loader")
+                .SetVersion(monacoEditorVersion);
+
+            //manifest
+            //    .DefineScript("monaco-editor-nls")
+            //    .SetUrl("~/OrchardCore.Resources/Scripts/monaco/min/vs/editor/editor.main.nls.js", "~/OrchardCore.Resources/Scripts/monaco/dev/vs/editor/editor.main.nls.js")
+            //    .SetDependencies("monaco")
+            //    .SetVersion(monacoEditorVersion);
+
+            //manifest
+            //    .DefineScript("monaco-editor")
+            //    .SetUrl("~/OrchardCore.Resources/Scripts/monaco/min/vs/editor/editor.main.js", "~/OrchardCore.Resources/Scripts/monaco/dev/vs/editor/editor.main.js")
+            //    .SetDependencies("monaco-editor-nls")
+            //    .SetVersion(monacoEditorVersion);
         }
     }
 }
