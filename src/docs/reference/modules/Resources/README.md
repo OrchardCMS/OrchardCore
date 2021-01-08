@@ -413,7 +413,7 @@ The style block will only be injected once based on its name and can optionally 
         .my-class {
             /* some style */
         }
-    {% endscriptblock %}
+    {% endstyleblock %}
     ```
 
 === "Razor"
