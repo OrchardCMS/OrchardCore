@@ -385,19 +385,12 @@ namespace OrchardCore.ResourceManagement
                 {
                     throw new InvalidOperationException($"Could not find a resource of type '{settings.Type}' named '{settings.Name}' with version '{settings.Version ?? "any"}'.");
                 }
-                if (resource.Dependencies != null && resource.Dependencies.Contains("*"))
-                {
-                    starPhaseResources[resource] = settings;
-                }
-                else
-                {
-                    ExpandDependencies(resource, settings, allResources, starPhaseResources);
-                }
+
+                ExpandDependencies(resource, settings, allResources, starPhaseResources);
             }
 
             foreach (var item in starPhaseResources)
             {
-                item.Key.Dependencies.Remove("*");
                 ExpandDependencies(item.Key, item.Value, allResources, null);
             }
 
@@ -497,6 +490,12 @@ namespace OrchardCore.ResourceManagement
                     }
 
                     ExpandDependencies(dependency, settings, allResources, expandInStarPhaseResources);
+
+                    if (expandInStarPhaseResources != null && expandInStarPhaseResources.ContainsKey(dependency))
+                    {
+                        expandInStarPhase = true;
+                        continue;
+                    }
                 }
             }
             if (expandInStarPhase)
