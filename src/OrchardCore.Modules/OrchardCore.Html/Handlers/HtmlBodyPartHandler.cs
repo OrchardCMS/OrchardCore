@@ -44,15 +44,15 @@ namespace OrchardCore.Html.Handlers
 
                     var html = part.Html;
 
+                    var model = new HtmlBodyPartViewModel()
+                    {
+                        Html = part.Html,
+                        HtmlBodyPart = part,
+                        ContentItem = part.ContentItem
+                    };
+
                     if (!settings.SanitizeHtml)
                     {
-                        var model = new HtmlBodyPartViewModel()
-                        {
-                            Html = part.Html,
-                            HtmlBodyPart = part,
-                            ContentItem = part.ContentItem
-                        };
-
                         html = await _liquidTemplateManager.RenderAsync(html, _htmlEncoder, model,
                             scope => scope.SetValue("ContentItem", model.ContentItem));
                     }
@@ -60,6 +60,7 @@ namespace OrchardCore.Html.Handlers
                     html = await _shortcodeService.ProcessAsync(html,
                         new Context
                         {
+                            ["Model"] = model,
                             ["ContentItem"] = part.ContentItem,
                             ["TypePartDefinition"] = contentTypePartDefinition
                         });
