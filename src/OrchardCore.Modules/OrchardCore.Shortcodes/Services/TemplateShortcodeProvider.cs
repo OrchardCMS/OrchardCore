@@ -45,9 +45,9 @@ namespace OrchardCore.Shortcodes.Services
                 scope =>
                 {
                     scope.SetValue("Model", model.Context.TryGetValue("Model", out var value) ? value : null);
-                    scope.SetValue("ShortcodeContent", model.Content);
-                    scope.SetValue("Args", model.Args);
-                    scope.SetValue("Context", model.Context);
+                    scope.SetValue("content", model.Content);
+                    scope.SetValue("args", model.Args);
+                    scope.SetValue("context", model.Context);
                 });
         }
     }
