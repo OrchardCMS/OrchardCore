@@ -21,7 +21,7 @@ namespace OrchardCore.ContentManagement.Records
                 .Column<string>("ContentItemVersionId", c => c.WithLength(26))
                 .Column<bool>("Latest")
                 .Column<bool>("Published")
-                .Column<string>("ContentType", column => column.WithLength(257))
+                .Column<string>("ContentType", column => column.WithLength(ContentItemIndex.MaxOwnerSize))
                 .Column<DateTime>("ModifiedUtc", column => column.Nullable())
                 .Column<DateTime>("PublishedUtc", column => column.Nullable())
                 .Column<DateTime>("CreatedUtc", column => column.Nullable())
@@ -36,11 +36,11 @@ namespace OrchardCore.ContentManagement.Records
                     //"ContentItemId",
                     //"ContentItemVersionId",
                     //"Latest",
-                    "Published",
+                    //"Published",
                     "ContentType",
                     //"ModifiedUtc",
                     //"PublishedUtc",
-                    //"CreatedUtc",
+                    "CreatedUtc",
                     //"Owner",
                     "Author",
                     "DisplayText")
