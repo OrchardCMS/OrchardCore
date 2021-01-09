@@ -28,6 +28,7 @@ namespace OrchardCore.ContentManagement.Records
                 .Column<string>("Owner", column => column.Nullable().WithLength(ContentItemIndex.MaxOwnerSize))
                 .Column<string>("Author", column => column.Nullable().WithLength(ContentItemIndex.MaxAuthorSize))
                 .Column<string>("DisplayText", column => column.Nullable().WithLength(ContentItemIndex.MaxDisplayTextSize))
+                .Column<bool>("Bool1")
             );
 
             SchemaBuilder.AlterIndexTable<ContentItemIndex>(table => table
@@ -36,7 +37,8 @@ namespace OrchardCore.ContentManagement.Records
                     //"ContentItemId",
                     //"ContentItemVersionId",
                     "Latest",
-                    //"Published",
+                    "Published",
+                    "Bool1",
                     "ContentType",
                     //"ModifiedUtc",
                     "PublishedUtc",
