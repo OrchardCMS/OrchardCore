@@ -32,8 +32,12 @@ namespace OrchardCore.Alias
                 .Column<bool>("Published", c => c.WithDefault(true))
             );
 
+            //SchemaBuilder.AlterIndexTable<AliasPartIndex>(table => table
+            //    .CreateIndex("IDX_AliasPartIndex_Alias", "Alias", "Published", "Latest")
+            //);
+
             SchemaBuilder.AlterIndexTable<AliasPartIndex>(table => table
-                .CreateIndex("IDX_AliasPartIndex_Alias", "Alias", "Published", "Latest")
+                .CreateIndex("IDX_AliasPartIndex_Alias", "Alias", "ContentItemId")
             );
 
             // Return 2 to shortcut the second migration on new content definition schemas.
