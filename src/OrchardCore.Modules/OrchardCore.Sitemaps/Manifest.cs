@@ -28,3 +28,14 @@ using OrchardCore.Modules.Manifest;
     },
     Category = "Content Management"
 )]
+
+[assembly: Feature(
+    Id = "OrchardCore.Sitemaps.Cleanup",
+    Name = "Sitemaps Cleanup",
+    Description = "Cleanup sitemap cache files through a background task.",
+    Dependencies = new[]
+    {
+        "OrchardCore.Sitemaps"
+    },
+    Category = "Content Management"
+)]

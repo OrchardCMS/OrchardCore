@@ -6,6 +6,7 @@ using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.ContentManagement.Display.ViewModels;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Lists.Models;
 using OrchardCore.Lists.Services;
@@ -18,14 +19,17 @@ namespace OrchardCore.Lists.Drivers
     {
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly IContainerService _containerService;
+        private readonly IUpdateModelAccessor _updateModelAccessor;
 
         public ListPartDisplayDriver(
             IContentDefinitionManager contentDefinitionManager,
-            IContainerService containerService
+            IContainerService containerService,
+            IUpdateModelAccessor updateModelAccessor
             )
         {
             _contentDefinitionManager = contentDefinitionManager;
             _containerService = containerService;
+            _updateModelAccessor = updateModelAccessor;
         }
 
         public override IDisplayResult Display(ListPart listPart, BuildPartDisplayContext context)
@@ -36,9 +40,13 @@ namespace OrchardCore.Lists.Drivers
                     {
                         var pager = await GetPagerSlimAsync(context);
                         var settings = context.TypePartDefinition.GetSettings<ListPartSettings>();
+                        var containedItemOptions = new ContainedItemOptions();
+                        model.ContentItems = (await _containerService.QueryContainedItemsAsync(
+                            listPart.ContentItem.ContentItemId,
+                            settings.EnableOrdering,
+                            pager,
+                            containedItemOptions)).ToArray();
 
-                        model.ListPart = listPart;
-                        model.ContentItems = (await _containerService.QueryContainedItemsAsync(listPart.ContentItem.ContentItemId, settings.EnableOrdering, pager, true)).ToArray();
                         model.ContainedContentTypeDefinitions = GetContainedContentTypes(context);
                         model.Context = context;
                         model.Pager = await context.New.PagerSlim(pager);
@@ -48,9 +56,21 @@ namespace OrchardCore.Lists.Drivers
                     {
                         var pager = await GetPagerSlimAsync(context);
                         var settings = context.TypePartDefinition.GetSettings<ListPartSettings>();
+                        var listPartFilterViewModel = new ListPartFilterViewModel();
+                        var containedItemOptions = new ContainedItemOptions();
 
+                        await _updateModelAccessor.ModelUpdater.TryUpdateModelAsync(listPartFilterViewModel, Prefix);
                         model.ListPart = listPart;
-                        model.ContentItems = (await _containerService.QueryContainedItemsAsync(listPart.ContentItem.ContentItemId, settings.EnableOrdering, pager, false)).ToArray();
+                        containedItemOptions.DisplayText = listPartFilterViewModel.DisplayText;
+                        containedItemOptions.Status = listPartFilterViewModel.Status;
+                        model.ListPartFilterViewModel = listPartFilterViewModel;
+
+                        model.ContentItems = (await _containerService.QueryContainedItemsAsync(
+                            listPart.ContentItem.ContentItemId,
+                            settings.EnableOrdering,
+                            pager,
+                            containedItemOptions)).ToArray();
+
                         model.ContainedContentTypeDefinitions = GetContainedContentTypes(context);
                         model.Context = context;
                         model.EnableOrdering = settings.EnableOrdering;

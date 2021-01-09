@@ -161,6 +161,7 @@ nav:
             - Features: docs/reference/modules/Features/README.md
             - Contents: docs/reference/modules/Contents/README.md
             - Configuration: docs/reference/core/Configuration/README.md
+            - Cors: docs/reference/core/Cors/README.md
             - Custom Settings: docs/reference/modules/CustomSettings/README.md
             - Placement: docs/reference/core/Placement/README.md
             - Data: docs/reference/core/Data/README.md
@@ -170,6 +171,7 @@ nav:
             - GraphQL queries: docs/reference/core/Apis.GraphQL.Abstractions/README.md
             - Health Check: docs/reference/modules/HealthChecks/README.md
             - HTTPS: docs/reference/modules/Https/README.md
+            - Key Vault (Azure): docs/reference/core/KeyVault.Azure/README.md
             - Localization: docs/reference/modules/Localize/README.md
             - Logging Serilog: docs/reference/core/Logging.Serilog/readme.md
             - Mini Profiler: docs/reference/modules/MiniProfiler/README.md

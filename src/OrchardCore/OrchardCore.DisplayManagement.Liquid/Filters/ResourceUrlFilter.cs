@@ -35,10 +35,13 @@ namespace OrchardCore.DisplayManagement.Liquid.Filters
                 resourcePath = _httpContextAccessor.HttpContext.Request.PathBase.Add(resourcePath.Substring(1)).Value;
             }
 
-            // Don't prefix cdn if the path is absolute, or is in debug mode.
-            if (!_options.DebugMode
-                && !String.IsNullOrEmpty(_options.CdnBaseUrl)
-                && !Uri.TryCreate(resourcePath, UriKind.Absolute, out var uri))
+            // Don't prefix cdn if the path includes a protocol, i.e. is an external url, or is in debug mode.
+            if (!_options.DebugMode && !String.IsNullOrEmpty(_options.CdnBaseUrl) &&
+                // Don't evaluate with Uri.TryCreate as it produces incorrect results on Linux.
+                !resourcePath.StartsWith("https://", StringComparison.OrdinalIgnoreCase) &&
+                !resourcePath.StartsWith("http://", StringComparison.OrdinalIgnoreCase) &&
+                !resourcePath.StartsWith("//", StringComparison.OrdinalIgnoreCase) &&
+                !resourcePath.StartsWith("file://", StringComparison.OrdinalIgnoreCase))
             {
                 resourcePath = _options.CdnBaseUrl + resourcePath;
             }
