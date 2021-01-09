@@ -31,6 +31,22 @@ namespace OrchardCore.ContentManagement.Records
             );
 
             SchemaBuilder.AlterIndexTable<ContentItemIndex>(table => table
+                .CreateIndex("IDX_ContentItemIndex_DocumentId",
+                    //"DocumentId",
+                    //"ContentItemId",
+                    //"ContentItemVersionId",
+                    //"Latest",
+                    //"Published",
+                    "ContentType",
+                    //"ModifiedUtc",
+                    //"PublishedUtc",
+                    //"CreatedUtc",
+                    //"Owner",
+                    "Author",
+                    "DisplayText")
+            );
+
+            SchemaBuilder.AlterIndexTable<ContentItemIndex>(table => table
                 .CreateIndex("IDX_ContentItemIndex_ContentItemId", "ContentItemId", "Latest", "Published", "CreatedUtc")
             );
 
