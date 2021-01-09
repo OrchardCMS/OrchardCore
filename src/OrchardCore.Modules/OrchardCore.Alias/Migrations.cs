@@ -27,7 +27,7 @@ namespace OrchardCore.Alias
             // For existing SQL databases update the AliasPartIndex tables Alias column length manually.
             SchemaBuilder.CreateMapIndexTable<AliasPartIndex>(table => table
                 .Column<string>("Alias", col => col.WithLength(AliasPart.MaxAliasLength))
-                .Column<string>("ContentItemId", c => c.WithLength(26))
+                .Column<string>("ContentItemId", c => c.WithLength(27))
                 .Column<bool>("Latest", c => c.WithDefault(false))
                 .Column<bool>("Published", c => c.WithDefault(true))
             );
