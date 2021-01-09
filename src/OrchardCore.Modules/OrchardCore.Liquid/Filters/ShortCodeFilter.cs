@@ -4,6 +4,8 @@ using Fluid;
 using Fluid.Values;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Shortcodes.Services;
+using OrchardCore.DisplayManagement.Shapes;
+using Shortcodes;
 
 namespace OrchardCore.Liquid.Filters
 {
@@ -18,10 +20,15 @@ namespace OrchardCore.Liquid.Filters
 
             var shortcodeService = ((IServiceProvider)services).GetRequiredService<IShortcodeService>();
 
-            // TODO This provides no context to the shortcode service.
-            // It could take a content item as an argument to provide some context.
+            var context = new Context();
 
-            return new StringValue(await shortcodeService.ProcessAsync(input.ToStringValue()));
+            var model = ctx.LocalScope.GetValue("Model").ToObjectValue();
+            if (model is Shape shape && shape.Properties.TryGetValue("ContentItem", out var contentItem))
+            {
+                context["ContentItem"] = contentItem;
+            }
+
+            return new StringValue(await shortcodeService.ProcessAsync(input.ToStringValue(), context));
         }
     }
 }
