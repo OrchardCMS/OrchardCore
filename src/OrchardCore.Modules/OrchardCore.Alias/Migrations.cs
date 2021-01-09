@@ -26,7 +26,7 @@ namespace OrchardCore.Alias
             // NOTE: The Alias Length has been upgraded from 64 characters to 767.
             // For existing SQL databases update the AliasPartIndex tables Alias column length manually.
             SchemaBuilder.CreateMapIndexTable<AliasPartIndex>(table => table
-                .Column<string>("Alias", col => col.WithLength(769))
+                .Column<string>("Alias", col => col.WithLength(800))
                 .Column<string>("ContentItemId", c => c.WithLength(26))
                 .Column<bool>("Latest", c => c.WithDefault(false))
                 .Column<bool>("Published", c => c.WithDefault(true))
