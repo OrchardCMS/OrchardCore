@@ -35,7 +35,7 @@ namespace OrchardCore.ContentManagement.Records
                     //"DocumentId",
                     //"ContentItemId",
                     //"ContentItemVersionId",
-                    //"Latest",
+                    "Latest",
                     //"Published",
                     "ContentType",
                     //"ModifiedUtc",
