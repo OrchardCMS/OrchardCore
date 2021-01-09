@@ -1,4 +1,3 @@
-
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid.Values;
@@ -35,6 +34,12 @@ namespace OrchardCore.Shortcodes.Services
                 return null;
             }
 
+            // Check if a shortcode template is recursively called.
+            if (!(_liquidTemplateManager.Context.LocalScope.GetValue(identifier) is NilValue))
+            {
+                return null;
+            }
+
             var model = new ShortcodeViewModel
             {
                 Args = arguments,
@@ -45,6 +50,9 @@ namespace OrchardCore.Shortcodes.Services
             return await _liquidTemplateManager.RenderAsync(template.Content, _htmlEncoder, model,
                 scope =>
                 {
+                    // Used for recursion checking.
+                    scope.SetValue(identifier, "");
+
                     var content = scope.GetValue("Content").ToObjectValue();
                     if (content is LiquidContentAccessor contentAccessor)
                     {
