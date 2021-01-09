@@ -21,7 +21,7 @@ namespace OrchardCore.ContentManagement.Records
                 .Column<string>("ContentItemVersionId", c => c.WithLength(26))
                 .Column<bool>("Latest")
                 .Column<bool>("Published")
-                .Column<string>("ContentType", column => column.WithLength(ContentItemIndex.MaxContentTypeSize))
+                .Column<string>("ContentType", column => column.WithLength(257))
                 .Column<DateTime>("ModifiedUtc", column => column.Nullable())
                 .Column<DateTime>("PublishedUtc", column => column.Nullable())
                 .Column<DateTime>("CreatedUtc", column => column.Nullable())
@@ -32,7 +32,7 @@ namespace OrchardCore.ContentManagement.Records
 
             SchemaBuilder.AlterIndexTable<ContentItemIndex>(table => table
                 .CreateIndex("IDX_ContentItemIndex_DocumentId",
-                    //"DocumentId",
+                    "DocumentId",
                     //"ContentItemId",
                     //"ContentItemVersionId",
                     //"Latest",
