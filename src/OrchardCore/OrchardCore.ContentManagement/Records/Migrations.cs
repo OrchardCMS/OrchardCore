@@ -28,24 +28,6 @@ namespace OrchardCore.ContentManagement.Records
                 .Column<string>("Owner", column => column.Nullable().WithLength(ContentItemIndex.MaxOwnerSize))
                 .Column<string>("Author", column => column.Nullable().WithLength(ContentItemIndex.MaxAuthorSize))
                 .Column<string>("DisplayText", column => column.Nullable().WithLength(ContentItemIndex.MaxDisplayTextSize))
-                .Column<bool>("Bool1")
-            );
-
-            SchemaBuilder.AlterIndexTable<ContentItemIndex>(table => table
-                .CreateIndex("IDX_ContentItemIndex_DocumentId",
-                    //"DocumentId",
-                    //"ContentItemId",
-                    //"ContentItemVersionId",
-                    "Latest",
-                    "Published",
-                    //"Bool1",
-                    "ContentType",
-                    //"ModifiedUtc",
-                    "PublishedUtc",
-                    "CreatedUtc",
-                    //"Owner",
-                    "Author",
-                    "DisplayText")
             );
 
             SchemaBuilder.AlterIndexTable<ContentItemIndex>(table => table
