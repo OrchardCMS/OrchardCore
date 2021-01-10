@@ -328,5 +328,13 @@
       "node_modules/monaco-editor/min-maps/**/*"
     ],
     "output": "wwwroot/Scripts/monaco/min-maps/@"
+  },
+  {
+    "copy": true,
+    "inputs": [
+      "Assets/monaco/monaco.json"
+    ],
+    "output": "wwwroot/Scripts/monaco/monaco.json"
   }
+
 ]

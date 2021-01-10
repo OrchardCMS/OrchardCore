@@ -22,11 +22,12 @@
         require(['vs/editor/editor.main'], function () {
 
             var settings = @Html.Raw(monacoSettings.Options);
-            settings.automaticLayout = true;
+            if (settings.automaticLayout == undefined) {
+                settings.automaticLayout = true;
+            }
             settings.language = 'html';
 
             var html = document.getElementsByTagName("html")[0];
-
             const mutationObserver = new MutationObserver(setTheme);
             mutationObserver.observe(html, { attributes: true });
 

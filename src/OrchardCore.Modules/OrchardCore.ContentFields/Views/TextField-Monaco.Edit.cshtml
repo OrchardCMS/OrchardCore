@@ -20,6 +20,12 @@
 <script at="Foot" depends-on="monaco">
     $(document).ready(function () {
         require(['vs/editor/editor.main'], function () {
+
+            var settings = @Html.Raw(monacoSettings.Options);
+            if (settings.automaticLayout == undefined) {
+                settings.automaticLayout = true;
+            }
+
             var html = document.getElementsByTagName("html")[0];
             const mutationObserver = new MutationObserver(setTheme);
             mutationObserver.observe(html, { attributes: true });
@@ -35,7 +41,7 @@
 
             setTheme();
 
-            var editor = monaco.editor.create(document.getElementById('@Html.IdFor(x => x.Text)_editor'), @Html.Raw(monacoSettings.Options));
+            var editor = monaco.editor.create(document.getElementById('@Html.IdFor(x => x.Text)_editor'), settings);
             var textArea = document.getElementById('@Html.IdFor(x => x.Text)');
 
             editor.getModel().setValue(textArea.value);
