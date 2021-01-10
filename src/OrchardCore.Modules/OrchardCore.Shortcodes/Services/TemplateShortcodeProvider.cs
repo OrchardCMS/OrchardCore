@@ -53,15 +53,16 @@ namespace OrchardCore.Shortcodes.Services
                     // Used for recursion checking.
                     scope.SetValue(identifier, "");
 
+                    // Don't conflict with the liquid scope 'Content' property.
                     var content = scope.GetValue("Content").ToObjectValue();
                     if (content is LiquidContentAccessor contentAccessor)
                     {
-                        contentAccessor.Content = model.Content;
+                        contentAccessor.Content = model.Content ?? "";
                         scope.SetValue("Content", contentAccessor);
                     }
                     else
                     {
-                        scope.SetValue("Content", model.Content);
+                        scope.SetValue("Content", model.Content ?? "");
                     }
 
                     scope.SetValue("Args", model.Args);

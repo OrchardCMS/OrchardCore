@@ -19,7 +19,7 @@ namespace OrchardCore.Contents.Liquid
 
         public Task RenderingAsync(TemplateContext context)
         {
-            context.SetValue("Content", new LiquidContentAccessor(""));
+            context.SetValue("Content", new LiquidContentAccessor());
             context.MemberAccessStrategy.Register<LiquidPropertyAccessor, FluidValue>((obj, name) => obj.GetValueAsync(name));
 
             context.MemberAccessStrategy.Register<LiquidContentAccessor, LiquidPropertyAccessor>("ContentItemId", obj =>
