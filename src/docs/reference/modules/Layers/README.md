@@ -40,6 +40,6 @@ You must have declared the corresponding zones as sections in your theme :
 
 === "Razor"
 
-``` html
-@await RenderSectionAsync("Header", required: false)
-```
+    ``` html
+    @await RenderSectionAsync("Header", required: false)
+    ```

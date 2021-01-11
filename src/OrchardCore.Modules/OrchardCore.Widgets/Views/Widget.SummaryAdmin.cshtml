@@ -24,24 +24,24 @@
                     @contentItem
                 }
             </div>
-            <div class="contenttype">
+            <div class="contenttype mr-1">
                 <span class="badge ta-badge font-weight-normal align-text-top"><i class="far fa-file-alt text-secondary"></i> @contentItem.ContentType</span>
             </div>
             @if (Model.Header != null)
             {
-                <div class="header">
+                <div class="header mr-1">
                     @await DisplayAsync(Model.Header)
                 </div>
             }
             @if (Model.Tags != null)
             {
-                <div class="tag">
+                <div class="tags mr-1">
                     @await DisplayAsync(Model.Tags)
                 </div>
             }
             @if (Model.Meta != null)
             {
-                <div class="metadata">
+                <div class="metadata mr-1">
                     @await DisplayAsync(Model.Meta)
                 </div>
             }
