@@ -36,7 +36,6 @@ namespace OrchardCore.ContentFields.GraphQL
             var shortcodeService = serviceProvider.GetRequiredService<IShortcodeService>();
             var contentDefinitionManager = serviceProvider.GetRequiredService<IContentDefinitionManager>();
 
-
             var jObject = ctx.Source.Content as JObject;
             // The JObject.Path is consistent here even when contained in a bag part.
             var jsonPath = jObject.Path;
@@ -65,7 +64,7 @@ namespace OrchardCore.ContentFields.GraphQL
                 html = await liquidTemplateManager.RenderAsync(html, htmlEncoder, model,
                     scope => scope.SetValue("ContentItem", ctx.Source.ContentItem));
             }
-            // TODO: sanitize html missing?? even in htmlbodyqueryobjecttype
+
             return await shortcodeService.ProcessAsync(html,
                 new Context
                 {
