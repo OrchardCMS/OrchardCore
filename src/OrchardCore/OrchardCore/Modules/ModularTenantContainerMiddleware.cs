@@ -22,7 +22,7 @@ namespace OrchardCore.Modules
 
         public async Task Invoke(HttpContext httpContext)
         {
-            // We only serve the next request if the tenant has been resolved.
+            // We only call the next request delegate if the tenant has been resolved.
             var shellSettingsFeature = httpContext.Features.Get<ShellSettingsFeature>();
             if (shellSettingsFeature != null)
             {

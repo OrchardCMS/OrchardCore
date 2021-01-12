@@ -33,7 +33,7 @@ namespace OrchardCore.Modules
 
             var shellSettings = _runningShellTable.Match(httpContext);
 
-            // We only serve the next request if the tenant has been resolved.
+            // We only call the next request delegate if the tenant has been resolved.
             if (shellSettings != null)
             {
                 if (shellSettings.State == TenantState.Initializing)
