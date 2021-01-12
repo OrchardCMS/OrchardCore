@@ -375,7 +375,7 @@ namespace OrchardCore.OpenId.YesSql.Stores
                 cancellationToken.ThrowIfCancellationRequested();
 
                 var authorizations = await _session.Query<TAuthorization, OpenIdAuthorizationIndex>(
-                    authorization => authorization.CreationDate < threshold &&
+                    authorization => authorization.CreationDate < threshold.UtcDateTime &&
                                     (authorization.Status != OpenIddictConstants.Statuses.Valid ||
                                     (authorization.Type == OpenIddictConstants.AuthorizationTypes.AdHoc &&
                                      authorization.AuthorizationId.IsNotIn<OpenIdTokenIndex>(
