@@ -23,7 +23,7 @@
             <div class="contentitem mr-2">
                 @if (await AuthorizationService.AuthorizeAsync(User, CommonPermissions.EditContent, contentItem))
                 {
-                    <a admin-for="@contentItem" asp-route-returnUrl="@FullRequestPath" />
+                    <a admin-for="@contentItem" asp-route-returnUrl="@FullRequestPath"/>
                 }
                 else
                 {
