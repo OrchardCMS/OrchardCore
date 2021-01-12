@@ -71,7 +71,6 @@
         "OrchardCore.Title",
         "OrchardCore.Templates",
         "OrchardCore.Widgets",
-        "OrchardCore.ContentFields.Indexing.SQL",
 
         // Themes
         "TheBlogTheme",
