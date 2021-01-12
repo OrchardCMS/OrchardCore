@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
@@ -15,12 +16,14 @@ namespace OrchardCore.ContentFields.Services
         private readonly IContentManager _contentManager;
         private readonly IContentDefinitionManager _contentDefinitionManager;
         private readonly ISession _session;
+        private readonly IStringLocalizer S;
 
-        public DefaultContentPickerResultProvider(IContentManager contentManager, IContentDefinitionManager contentDefinitionManager, ISession session)
+        public DefaultContentPickerResultProvider(IContentManager contentManager, IContentDefinitionManager contentDefinitionManager, ISession session, IStringLocalizer<DefaultContentPickerResultProvider> localizer)
         {
             _contentManager = contentManager;
             _contentDefinitionManager = contentDefinitionManager;
             _session = session;
+            S = localizer;
         }
 
         public string Name => "Default";
@@ -54,7 +57,8 @@ namespace OrchardCore.ContentFields.Services
                 results.Add(new ContentPickerResult
                 {
                     ContentItemId = contentItem.ContentItemId,
-                    DisplayText = contentItem.ToString(),
+                    DisplayText = contentItem.DisplayText,
+                    AdditionalText = await contentItem.GetContentItemRouteAndCulture(_contentManager, S),
                     HasPublished = await _contentManager.HasPublishedVersionAsync(contentItem)
                 });
             }

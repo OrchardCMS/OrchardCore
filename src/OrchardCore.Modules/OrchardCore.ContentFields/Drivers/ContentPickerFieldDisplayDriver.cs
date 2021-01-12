@@ -65,6 +65,7 @@ namespace OrchardCore.ContentFields.Drivers
                     {
                         Id = contentItemId,
                         DisplayText = contentItem.ToString(),
+                        AdditionalText = await contentItem.GetContentItemRouteAndCulture(_contentManager, S),
                         HasPublished = await _contentManager.HasPublishedVersionAsync(contentItem)
                     });
                 }
@@ -98,6 +99,6 @@ namespace OrchardCore.ContentFields.Drivers
             }
 
             return Edit(field, context);
-        }
+        }  
     }
 }
