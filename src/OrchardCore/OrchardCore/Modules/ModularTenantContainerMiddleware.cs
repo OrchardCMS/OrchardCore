@@ -22,21 +22,25 @@ namespace OrchardCore.Modules
 
         public async Task Invoke(HttpContext httpContext)
         {
-            // Makes 'RequestServices' aware of the current 'ShellScope'.
-            httpContext.UseShellScopeServices();
-
+            // We only serve the next request if the tenant has been resolved.
             var shellSettingsFeature = httpContext.Features.Get<ShellSettingsFeature>();
-            var shellScope = await _shellHost.GetScopeAsync(shellSettingsFeature.ShellSettings);
-
-            // Holds the 'ShellContext' for the full request.
-            httpContext.Features.Set(new ShellContextFeature
+            if (shellSettingsFeature != null)
             {
-                ShellContext = shellScope.ShellContext,
-                OriginalPath = shellSettingsFeature.OriginalPath,
-                OriginalPathBase = shellSettingsFeature.OriginalPathBase
-            });
+                // Makes 'RequestServices' aware of the current 'ShellScope'.
+                httpContext.UseShellScopeServices();
 
-            await shellScope.UsingAsync(scope => _next.Invoke(httpContext));
+                var shellScope = await _shellHost.GetScopeAsync(shellSettingsFeature.ShellSettings);
+
+                // Holds the 'ShellContext' for the full request.
+                httpContext.Features.Set(new ShellContextFeature
+                {
+                    ShellContext = shellScope.ShellContext,
+                    OriginalPath = shellSettingsFeature.OriginalPath,
+                    OriginalPathBase = shellSettingsFeature.OriginalPathBase
+                });
+
+                await shellScope.UsingAsync(scope => _next.Invoke(httpContext));
+            }
         }
     }
 }
