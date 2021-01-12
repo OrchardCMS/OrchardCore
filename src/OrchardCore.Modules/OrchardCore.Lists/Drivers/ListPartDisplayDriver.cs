@@ -78,7 +78,7 @@ namespace OrchardCore.Lists.Drivers
                     })
                     .Location("DetailAdmin", "Content:10"),
                     Initialize<ContentItemViewModel>("ListPart", model => model.ContentItem = listPart.ContentItem)
-                    .Location("SummaryAdmin", "Actions: before")
+                    .Location("SummaryAdmin", "Actions:4")
                 );
         }
 
