@@ -24,8 +24,24 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                     "DocumentId",
                     "ContentItemId",
                     "ContentItemVersionId",
+                    "Published",
+                    "Latest")
+            );
+
+            SchemaBuilder.AlterIndexTable<UserPickerFieldIndex>(table => table
+                .CreateIndex("IDX_UserPickerFieldIndex_DocumentId_ContentPart",
+                    "DocumentId",
                     "ContentType",
                     "ContentPart",
+                    "ContentField",
+                    "Published",
+                    "Latest")
+            );
+
+            SchemaBuilder.AlterIndexTable<UserPickerFieldIndex>(table => table
+                .CreateIndex("IDX_UserPickerFieldIndex_DocumentId_SelectedUserId",
+                    "DocumentId",
+                    "ContentType",
                     "ContentField",
                     "Published",
                     "Latest",
@@ -44,8 +60,24 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                     "DocumentId",
                     "ContentItemId",
                     "ContentItemVersionId",
+                    "Published",
+                    "Latest")
+            );
+
+            SchemaBuilder.AlterIndexTable<UserPickerFieldIndex>(table => table
+                .CreateIndex("IDX_UserPickerFieldIndex_DocumentId_ContentPart",
+                    "DocumentId",
                     "ContentType",
                     "ContentPart",
+                    "ContentField",
+                    "Published",
+                    "Latest")
+            );
+
+            SchemaBuilder.AlterIndexTable<UserPickerFieldIndex>(table => table
+                .CreateIndex("IDX_UserPickerFieldIndex_DocumentId_SelectedUserId",
+                    "DocumentId",
+                    "ContentType",
                     "ContentField",
                     "Published",
                     "Latest",

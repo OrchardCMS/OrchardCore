@@ -5,12 +5,12 @@ namespace OrchardCore.ContentManagement.Records
 {
     public class ContentItemIndex : MapIndex
     {
-        public const int MaxContentTypeSize = 200;
-        public const int MaxContentPartSize = 200;
-        public const int MaxContentFieldSize = 200;
-        public const int MaxOwnerSize = 200;
-        public const int MaxAuthorSize = 200;
-        public const int MaxDisplayTextSize = 200;
+        public const int MaxContentTypeSize = 255;
+        public const int MaxContentPartSize = 255;
+        public const int MaxContentFieldSize = 255;
+        public const int MaxOwnerSize = 255;
+        public const int MaxAuthorSize = 255;
+        public const int MaxDisplayTextSize = 255;
 
         public int DocumentId { get; set; }
         public string ContentItemId { get; set; }

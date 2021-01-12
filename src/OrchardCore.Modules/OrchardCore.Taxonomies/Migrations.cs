@@ -54,11 +54,17 @@ namespace OrchardCore.Taxonomies
             SchemaBuilder.AlterIndexTable<TaxonomyIndex>(table => table
                 .CreateIndex("IDX_TaxonomyIndex_DocumentId",
                 "DocumentId",
+                "TaxonomyContentItemId",
                 "ContentItemId",
+                "TermContentItemId")
+            );
+
+            SchemaBuilder.AlterIndexTable<TaxonomyIndex>(table => table
+                .CreateIndex("IDX_TaxonomyIndex_DocumentId_ContentType",
+                "DocumentId",
                 "ContentType",
                 "ContentPart",
-                "ContentField",
-                "TermContentItemId")
+                "ContentField")
             );
 
             // Shortcut other migration steps on new content definition schemas.
@@ -93,14 +99,21 @@ namespace OrchardCore.Taxonomies
         // This code can be removed in a later version.
         public int UpdateFrom3()
         {
+
             SchemaBuilder.AlterIndexTable<TaxonomyIndex>(table => table
                 .CreateIndex("IDX_TaxonomyIndex_DocumentId",
                 "DocumentId",
+                "TaxonomyContentItemId",
                 "ContentItemId",
+                "TermContentItemId")
+            );
+
+            SchemaBuilder.AlterIndexTable<TaxonomyIndex>(table => table
+                .CreateIndex("IDX_TaxonomyIndex_DocumentId_ContentType",
+                "DocumentId",
                 "ContentType",
                 "ContentPart",
-                "ContentField",
-                "TermContentItemId")
+                "ContentField")
             );
 
             return 4;

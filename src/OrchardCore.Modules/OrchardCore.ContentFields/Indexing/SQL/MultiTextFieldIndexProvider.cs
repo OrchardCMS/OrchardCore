@@ -12,8 +12,10 @@ namespace OrchardCore.ContentFields.Indexing.SQL
 {
     public class MultiTextFieldIndex : ContentFieldIndex
     {
-        // Maximum length that MySql can support in an index under utf8 collation 768 - document id 4 bytes
-        public const int MaxValueSize = 764;
+        // Maximum length that MySql can support in an index under utf8 collation is 768,
+        // minus 1 for the `DocumentId` integer (character size = integer size = 4 bytes).
+        // minus 1 (freeing 4 bytes) for the additional 'Published' and 'Latest' booleans.
+        public const int MaxValueSize = 766; // 
 
         public string Value { get; set; }
         public string BigValue { get; set; }

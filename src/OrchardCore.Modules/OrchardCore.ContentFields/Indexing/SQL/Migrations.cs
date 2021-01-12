@@ -11,6 +11,7 @@ namespace OrchardCore.ContentFields.Indexing.SQL
         {
             // NOTE: The Text Length has been decreased from 4000 characters to 768.
             // For existing SQL databases update the TextFieldIndex tables Text column length manually.
+            // INFO: The Text Length is now of 766 chars, but this is only used on a new installation.
             SchemaBuilder.CreateMapIndexTable<TextFieldIndex>(table => table
                 .Column<string>("ContentItemId", column => column.WithLength(26))
                 .Column<string>("ContentItemVersionId", column => column.WithLength(26))
@@ -28,12 +29,26 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                     "DocumentId",
                     "ContentItemId",
                     "ContentItemVersionId",
+                    "Published",
+                    "Latest")
+            );
+
+            SchemaBuilder.AlterIndexTable<TextFieldIndex>(table => table
+                .CreateIndex("IDX_TextFieldIndex_DocumentId_ContentType",
+                    "DocumentId",
                     "ContentType",
                     "ContentPart",
                     "ContentField",
                     "Published",
-                    "Latest"/*,
-                    "Text"*/)
+                    "Latest")
+            );
+
+            SchemaBuilder.AlterIndexTable<TextFieldIndex>(table => table
+                .CreateIndex("IDX_TextFieldIndex_DocumentId_Text",
+                    "DocumentId",
+                    "Published",
+                    "Latest",
+                    "Text")
             );
 
             SchemaBuilder.CreateMapIndexTable<BooleanFieldIndex>(table => table
@@ -52,6 +67,13 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                     "DocumentId",
                     "ContentItemId",
                     "ContentItemVersionId",
+                    "Published",
+                    "Latest")
+            );
+
+            SchemaBuilder.AlterIndexTable<BooleanFieldIndex>(table => table
+                .CreateIndex("IDX_BooleanFieldIndex_DocumentId_Boolean",
+                    "DocumentId",
                     "ContentType",
                     "ContentPart",
                     "ContentField",
@@ -76,8 +98,24 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                     "DocumentId",
                     "ContentItemId",
                     "ContentItemVersionId",
+                    "Published",
+                    "Latest")
+            );
+
+            SchemaBuilder.AlterIndexTable<NumericFieldIndex>(table => table
+                .CreateIndex("IDX_NumericFieldIndex_DocumentId_ContentType",
+                    "DocumentId",
                     "ContentType",
                     "ContentPart",
+                    "ContentField",
+                    "Published",
+                    "Latest")
+            );
+
+            SchemaBuilder.AlterIndexTable<NumericFieldIndex>(table => table
+                .CreateIndex("IDX_NumericFieldIndex_DocumentId_Numeric",
+                    "DocumentId",
+                    "ContentType",
                     "ContentField",
                     "Published",
                     "Latest",
@@ -100,8 +138,24 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                     "DocumentId",
                     "ContentItemId",
                     "ContentItemVersionId",
+                    "Published",
+                    "Latest")
+            );
+
+            SchemaBuilder.AlterIndexTable<DateTimeFieldIndex>(table => table
+                .CreateIndex("IDX_DateTimeFieldIndex_DocumentId_ContentType",
+                    "DocumentId",
                     "ContentType",
                     "ContentPart",
+                    "ContentField",
+                    "Published",
+                    "Latest")
+            );
+
+            SchemaBuilder.AlterIndexTable<DateTimeFieldIndex>(table => table
+                .CreateIndex("IDX_DateTimeFieldIndex_DocumentId_DateTime",
+                    "DocumentId",
+                    "ContentType",
                     "ContentField",
                     "Published",
                     "Latest",
@@ -124,8 +178,24 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                     "DocumentId",
                     "ContentItemId",
                     "ContentItemVersionId",
+                    "Published",
+                    "Latest")
+            );
+
+            SchemaBuilder.AlterIndexTable<DateFieldIndex>(table => table
+                .CreateIndex("IDX_DateFieldIndex_DocumentId_ContentType",
+                    "DocumentId",
                     "ContentType",
                     "ContentPart",
+                    "ContentField",
+                    "Published",
+                    "Latest")
+            );
+
+            SchemaBuilder.AlterIndexTable<DateFieldIndex>(table => table
+                .CreateIndex("IDX_DateFieldIndex_DocumentId_Date",
+                    "DocumentId",
+                    "ContentType",
                     "ContentField",
                     "Published",
                     "Latest",
@@ -148,8 +218,24 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                     "DocumentId",
                     "ContentItemId",
                     "ContentItemVersionId",
+                    "Published",
+                    "Latest")
+            );
+
+            SchemaBuilder.AlterIndexTable<ContentPickerFieldIndex>(table => table
+                .CreateIndex("IDX_ContentPickerFieldIndex_DocumentId_ContentType",
+                    "DocumentId",
                     "ContentType",
                     "ContentPart",
+                    "ContentField",
+                    "Published",
+                    "Latest")
+            );
+
+            SchemaBuilder.AlterIndexTable<ContentPickerFieldIndex>(table => table
+                .CreateIndex("IDX_ContentPickerFieldIndex_DocumentId_SelectedContentItemId",
+                    "DocumentId",
+                    "ContentType",
                     "ContentField",
                     "Published",
                     "Latest",
@@ -172,8 +258,24 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                     "DocumentId",
                     "ContentItemId",
                     "ContentItemVersionId",
+                    "Published",
+                    "Latest")
+            );
+
+            SchemaBuilder.AlterIndexTable<TimeFieldIndex>(table => table
+                .CreateIndex("IDX_TimeFieldIndex_DocumentId_ContentType",
+                    "DocumentId",
                     "ContentType",
                     "ContentPart",
+                    "ContentField",
+                    "Published",
+                    "Latest")
+            );
+
+            SchemaBuilder.AlterIndexTable<TimeFieldIndex>(table => table
+                .CreateIndex("IDX_TimeFieldIndex_DocumentId_Time",
+                    "DocumentId",
+                    "ContentType",
                     "ContentField",
                     "Published",
                     "Latest",
@@ -183,6 +285,7 @@ namespace OrchardCore.ContentFields.Indexing.SQL
             // NOTE: The Url and Text Length has been decreased from 4000 characters to 768.
             // For existing SQL databases update the LinkFieldIndex tables Url and Text column length manually.
             // The BigText and BigUrl columns are new additions so will not be populated until the content item is republished.
+            // INFO: The Url and Text Length is now of 766 chars, but this is only used on a new installation.
             SchemaBuilder.CreateMapIndexTable<LinkFieldIndex>(table => table
                 .Column<string>("ContentItemId", column => column.WithLength(26))
                 .Column<string>("ContentItemVersionId", column => column.WithLength(26))
@@ -202,13 +305,34 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                     "DocumentId",
                     "ContentItemId",
                     "ContentItemVersionId",
+                    "Published",
+                    "Latest")
+            );
+
+            SchemaBuilder.AlterIndexTable<LinkFieldIndex>(table => table
+                .CreateIndex("IDX_LinkFieldIndex_DocumentId_ContentType",
+                    "DocumentId",
                     "ContentType",
                     "ContentPart",
                     "ContentField",
                     "Published",
-                    "Latest"/*,
-                    "Url",
-                    "Text"*/)
+                    "Latest")
+            );
+
+            SchemaBuilder.AlterIndexTable<LinkFieldIndex>(table => table
+                .CreateIndex("IDX_LinkFieldIndex_DocumentId_Url",
+                    "DocumentId",
+                    "Published",
+                    "Latest",
+                    "Url")
+            );
+
+            SchemaBuilder.AlterIndexTable<LinkFieldIndex>(table => table
+                .CreateIndex("IDX_LinkFieldIndex_DocumentId_Text",
+                    "DocumentId",
+                    "Published",
+                    "Latest",
+                    "Text")
             );
 
             SchemaBuilder.CreateMapIndexTable<HtmlFieldIndex>(table => table
@@ -227,12 +351,18 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                     "DocumentId",
                     "ContentItemId",
                     "ContentItemVersionId",
+                    "Published",
+                    "Latest")
+            );
+
+            SchemaBuilder.AlterIndexTable<HtmlFieldIndex>(table => table
+                .CreateIndex("IDX_HtmlFieldIndex_DocumentId_ContentType",
+                    "DocumentId",
                     "ContentType",
                     "ContentPart",
                     "ContentField",
                     "Published",
-                    "Latest"/*,
-                    "Html"*/)
+                    "Latest")
             );
 
             SchemaBuilder.CreateMapIndexTable<MultiTextFieldIndex>(table => table
@@ -252,12 +382,26 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                     "DocumentId",
                     "ContentItemId",
                     "ContentItemVersionId",
+                    "Published",
+                    "Latest")
+            );
+
+            SchemaBuilder.AlterIndexTable<MultiTextFieldIndex>(table => table
+                .CreateIndex("IDX_MultiTextFieldIndex_DocumentId_ContentType",
+                    "DocumentId",
                     "ContentType",
                     "ContentPart",
                     "ContentField",
                     "Published",
-                    "Latest"/*,
-                    "Value"*/)
+                    "Latest")
+            );
+
+            SchemaBuilder.AlterIndexTable<MultiTextFieldIndex>(table => table
+                .CreateIndex("IDX_MultiTextFieldIndex_DocumentId_Value",
+                    "DocumentId",
+                    "Published",
+                    "Latest",
+                    "Value")
             );
 
             // Shortcut other migration steps on new content definition schemas.
@@ -302,19 +446,41 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                     "DocumentId",
                     "ContentItemId",
                     "ContentItemVersionId",
+                    "Published",
+                    "Latest")
+            );
+
+            SchemaBuilder.AlterIndexTable<TextFieldIndex>(table => table
+                .CreateIndex("IDX_TextFieldIndex_DocumentId_ContentType",
+                    "DocumentId",
                     "ContentType",
                     "ContentPart",
                     "ContentField",
                     "Published",
-                    "Latest"/*,
-                    "Text"*/)
+                    "Latest")
             );
+
+            // Can't be created on existing databases where the 'Text' may be of 768 chars.
+            //SchemaBuilder.AlterIndexTable<TextFieldIndex>(table => table
+            //    .CreateIndex("IDX_TextFieldIndex_DocumentId_Text",
+            //        "DocumentId",
+            //        "Published",
+            //        "Latest",
+            //        "Text")
+            //);
 
             SchemaBuilder.AlterIndexTable<BooleanFieldIndex>(table => table
                 .CreateIndex("IDX_BooleanFieldIndex_DocumentId",
                     "DocumentId",
                     "ContentItemId",
                     "ContentItemVersionId",
+                    "Published",
+                    "Latest")
+            );
+
+            SchemaBuilder.AlterIndexTable<BooleanFieldIndex>(table => table
+                .CreateIndex("IDX_BooleanFieldIndex_DocumentId_Boolean",
+                    "DocumentId",
                     "ContentType",
                     "ContentPart",
                     "ContentField",
@@ -328,8 +494,24 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                     "DocumentId",
                     "ContentItemId",
                     "ContentItemVersionId",
+                    "Published",
+                    "Latest")
+            );
+
+            SchemaBuilder.AlterIndexTable<NumericFieldIndex>(table => table
+                .CreateIndex("IDX_NumericFieldIndex_DocumentId_ContentType",
+                    "DocumentId",
                     "ContentType",
                     "ContentPart",
+                    "ContentField",
+                    "Published",
+                    "Latest")
+            );
+
+            SchemaBuilder.AlterIndexTable<NumericFieldIndex>(table => table
+                .CreateIndex("IDX_NumericFieldIndex_DocumentId_Numeric",
+                    "DocumentId",
+                    "ContentType",
                     "ContentField",
                     "Published",
                     "Latest",
@@ -341,8 +523,24 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                     "DocumentId",
                     "ContentItemId",
                     "ContentItemVersionId",
+                    "Published",
+                    "Latest")
+            );
+
+            SchemaBuilder.AlterIndexTable<DateTimeFieldIndex>(table => table
+                .CreateIndex("IDX_DateTimeFieldIndex_DocumentId_ContentType",
+                    "DocumentId",
                     "ContentType",
                     "ContentPart",
+                    "ContentField",
+                    "Published",
+                    "Latest")
+            );
+
+            SchemaBuilder.AlterIndexTable<DateTimeFieldIndex>(table => table
+                .CreateIndex("IDX_DateTimeFieldIndex_DocumentId_DateTime",
+                    "DocumentId",
+                    "ContentType",
                     "ContentField",
                     "Published",
                     "Latest",
@@ -354,8 +552,24 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                     "DocumentId",
                     "ContentItemId",
                     "ContentItemVersionId",
+                    "Published",
+                    "Latest")
+            );
+
+            SchemaBuilder.AlterIndexTable<DateFieldIndex>(table => table
+                .CreateIndex("IDX_DateFieldIndex_DocumentId_ContentType",
+                    "DocumentId",
                     "ContentType",
                     "ContentPart",
+                    "ContentField",
+                    "Published",
+                    "Latest")
+            );
+
+            SchemaBuilder.AlterIndexTable<DateFieldIndex>(table => table
+                .CreateIndex("IDX_DateFieldIndex_DocumentId_Date",
+                    "DocumentId",
+                    "ContentType",
                     "ContentField",
                     "Published",
                     "Latest",
@@ -367,8 +581,24 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                     "DocumentId",
                     "ContentItemId",
                     "ContentItemVersionId",
+                    "Published",
+                    "Latest")
+            );
+
+            SchemaBuilder.AlterIndexTable<ContentPickerFieldIndex>(table => table
+                .CreateIndex("IDX_ContentPickerFieldIndex_DocumentId_ContentType",
+                    "DocumentId",
                     "ContentType",
                     "ContentPart",
+                    "ContentField",
+                    "Published",
+                    "Latest")
+            );
+
+            SchemaBuilder.AlterIndexTable<ContentPickerFieldIndex>(table => table
+                .CreateIndex("IDX_ContentPickerFieldIndex_DocumentId_SelectedContentItemId",
+                    "DocumentId",
+                    "ContentType",
                     "ContentField",
                     "Published",
                     "Latest",
@@ -380,8 +610,24 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                     "DocumentId",
                     "ContentItemId",
                     "ContentItemVersionId",
+                    "Published",
+                    "Latest")
+            );
+
+            SchemaBuilder.AlterIndexTable<TimeFieldIndex>(table => table
+                .CreateIndex("IDX_TimeFieldIndex_DocumentId_ContentType",
+                    "DocumentId",
                     "ContentType",
                     "ContentPart",
+                    "ContentField",
+                    "Published",
+                    "Latest")
+            );
+
+            SchemaBuilder.AlterIndexTable<TimeFieldIndex>(table => table
+                .CreateIndex("IDX_TimeFieldIndex_DocumentId_Time",
+                    "DocumentId",
+                    "ContentType",
                     "ContentField",
                     "Published",
                     "Latest",
@@ -393,13 +639,36 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                     "DocumentId",
                     "ContentItemId",
                     "ContentItemVersionId",
+                    "Published",
+                    "Latest")
+            );
+
+            SchemaBuilder.AlterIndexTable<LinkFieldIndex>(table => table
+                .CreateIndex("IDX_LinkFieldIndex_DocumentId_ContentType",
+                    "DocumentId",
                     "ContentType",
                     "ContentPart",
                     "ContentField",
                     "Published",
-                    "Latest"/*,
-                    "Url",
-                    "Text"*/)
+                    "Latest")
+            );
+
+            // Can't be created on existing databases where the 'Url' may be of 768 chars.
+            SchemaBuilder.AlterIndexTable<LinkFieldIndex>(table => table
+                .CreateIndex("IDX_LinkFieldIndex_DocumentId_Url",
+                    "DocumentId",
+                    "Published",
+                    "Latest",
+                    "Url")
+            );
+
+            // Can't be created on existing databases where the 'Text' may be of 768 chars.
+            SchemaBuilder.AlterIndexTable<LinkFieldIndex>(table => table
+                .CreateIndex("IDX_LinkFieldIndex_DocumentId_Text",
+                    "DocumentId",
+                    "Published",
+                    "Latest",
+                    "Text")
             );
 
             SchemaBuilder.AlterIndexTable<HtmlFieldIndex>(table => table
@@ -407,12 +676,18 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                     "DocumentId",
                     "ContentItemId",
                     "ContentItemVersionId",
+                    "Published",
+                    "Latest")
+            );
+
+            SchemaBuilder.AlterIndexTable<HtmlFieldIndex>(table => table
+                .CreateIndex("IDX_HtmlFieldIndex_DocumentId_ContentType",
+                    "DocumentId",
                     "ContentType",
                     "ContentPart",
                     "ContentField",
                     "Published",
-                    "Latest"/*,
-                    "Html"*/)
+                    "Latest")
             );
 
             SchemaBuilder.AlterIndexTable<MultiTextFieldIndex>(table => table
@@ -420,12 +695,26 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                     "DocumentId",
                     "ContentItemId",
                     "ContentItemVersionId",
+                    "Published",
+                    "Latest")
+            );
+
+            SchemaBuilder.AlterIndexTable<MultiTextFieldIndex>(table => table
+                .CreateIndex("IDX_MultiTextFieldIndex_DocumentId_ContentType",
+                    "DocumentId",
                     "ContentType",
                     "ContentPart",
                     "ContentField",
                     "Published",
-                    "Latest"/*,
-                    "Value"*/)
+                    "Latest")
+            );
+
+            SchemaBuilder.AlterIndexTable<MultiTextFieldIndex>(table => table
+                .CreateIndex("IDX_MultiTextFieldIndex_DocumentId_Value",
+                    "DocumentId",
+                    "Published",
+                    "Latest",
+                    "Value")
             );
 
             return 4;
