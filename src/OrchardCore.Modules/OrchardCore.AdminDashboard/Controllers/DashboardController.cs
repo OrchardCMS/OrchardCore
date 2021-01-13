@@ -66,7 +66,7 @@ namespace OrchardCore.AdminDashboard.Controllers
 
         public async Task<IActionResult> Index()
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageAdminDashboard)) // Todo: Permissions.AccessDashboard?
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.AccessAdminDashboard) || !await _authorizationService.AuthorizeAsync(User, Permissions.ManageAdminDashboard))
             {
                 return Forbid();
             }

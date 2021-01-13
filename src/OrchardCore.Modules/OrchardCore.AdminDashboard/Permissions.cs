@@ -1,14 +1,14 @@
-using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.Security.Permissions;
-using OrchardCore.AdminDashboard.Services;
 
 namespace OrchardCore.AdminDashboard
 {
     public class Permissions : IPermissionProvider
     {
         public static readonly Permission ManageAdminDashboard = new Permission("ManageAdminDashboard", "Manage the Admin Dashboard");
+        public static readonly Permission AccessAdminDashboard = new Permission("AccessAdminDashboard", "Access the Admin Dashboard", new[] { ManageAdminDashboard });
 
         public Permissions()
         {
@@ -16,7 +16,12 @@ namespace OrchardCore.AdminDashboard
 
         public Task<IEnumerable<Permission>> GetPermissionsAsync()
         {
-            return Task.FromResult(GetPermissions());
+            return Task.FromResult(new[]
+            {
+                AccessAdminDashboard,
+                ManageAdminDashboard
+            }
+            .AsEnumerable());
         }
 
         public IEnumerable<PermissionStereotype> GetDefaultStereotypes()
@@ -26,16 +31,24 @@ namespace OrchardCore.AdminDashboard
                 new PermissionStereotype
                 {
                     Name = "Administrator",
-                    Permissions = new[] { ManageAdminDashboard }
+                    Permissions = new[] { AccessAdminDashboard, ManageAdminDashboard }
+                },
+                new PermissionStereotype {
+                    Name = "Editor",
+                    Permissions = new[] { AccessAdminDashboard }
+                },
+                new PermissionStereotype {
+                    Name = "Moderator",
+                    Permissions = new[] { AccessAdminDashboard }
+                },
+                new PermissionStereotype {
+                    Name = "Author",
+                    Permissions = new[] { AccessAdminDashboard }
+                },
+                new PermissionStereotype {
+                    Name = "Contributor",
+                    Permissions = new[] { AccessAdminDashboard }
                 }
-            };
-        }
-
-        private IEnumerable<Permission> GetPermissions()
-        {
-            return new[]
-            {
-                ManageAdminDashboard
             };
         }
     }
