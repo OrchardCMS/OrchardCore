@@ -123,7 +123,7 @@ You can use the `<shape>` tag helper to render any shape, even pass properties.
     ```
 
 For rendering content items, you could also use the following tag helper.
-Note: you need to add `@addTagHelper *, OrchardCore.Contents.TagHelpers` to your `_ViewImports.cshtml` file to load this tag helper.
+Note: you need to add `@addTagHelper *, OrchardCore.Contents.TagHelpers` to your `_ViewImports.cshtml` file to load this tag helper. Ensure your project file also has a reference to OrchardCore.Contents.TagHelpers.
 
 === "Razor"
 
