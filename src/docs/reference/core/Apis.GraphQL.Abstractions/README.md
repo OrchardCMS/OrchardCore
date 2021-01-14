@@ -67,7 +67,7 @@ public class Startup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         // I have omitted the registering of the AutoroutePart, as we expect that to already be registered
-        services.AddGraphQLQueryType<AutoroutePart, AutorouteQueryObjectType>();
+        services.AddObjectGraphType<AutoroutePart, AutorouteQueryObjectType>();
     }
 }
 ```
@@ -134,7 +134,7 @@ public class AutoroutePartGraphQLFilter : GraphQLFilter<ContentItem>
 
         if (!string.IsNullOrWhiteSpace(part.Path))
         {
-            return Task.FromResult(autorouteQuery.Where(index => index.Path == part.Path));
+            return Task.FromResult(autorouteQuery.Where(index => index.Path == part.Path).All());
         }
 
         return Task.FromResult(query);
