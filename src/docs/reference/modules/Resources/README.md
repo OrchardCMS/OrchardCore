@@ -548,3 +548,30 @@ These should be rendered at the bottom of the `<body>` section.
 ### Logging
 
 If you register a resource by name and it is not found this will be logged as an error in your `App_Data/Logs` folder.
+
+### Disabling CDN
+
+Some cdn urls (ex: jQuery) may not be available in some places.  
+If you want to disable the usage of cdn urls, you can add this code in your application's Startup:
+
+
+``` cs
+using Microsoft.Extensions.Options;
+using OrchardCore.ResourceManagement;
+
+namespace MyApplication.Web
+{
+    public class Startup
+    {
+        public void ConfigureServices(IServiceCollection services)
+        {
+            services.AddOrchardCms()
+                .ConfigureServices(tenantServices => {
+                    tenantServices.PostConfigure<ResourceManagementOptions>(o => o.UseCdn = false);
+                });
+        }
+    }
+}
+```
+
+You can also go to the Settings page (`/Admin/Settings/general`) and disable the 'Use Framework CDN' setting.
