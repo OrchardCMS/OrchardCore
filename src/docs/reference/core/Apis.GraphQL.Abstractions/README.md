@@ -134,7 +134,7 @@ public class AutoroutePartGraphQLFilter : GraphQLFilter<ContentItem>
 
         if (!string.IsNullOrWhiteSpace(part.Path))
         {
-            return Task.FromResult(autorouteQuery.Where(index => index.Path == part.Path));
+            return Task.FromResult(autorouteQuery.Where(index => index.Path == part.Path).All());
         }
 
         return Task.FromResult(query);
