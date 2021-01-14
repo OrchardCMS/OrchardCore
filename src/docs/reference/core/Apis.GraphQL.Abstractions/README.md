@@ -67,7 +67,7 @@ public class Startup : StartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         // I have omitted the registering of the AutoroutePart, as we expect that to already be registered
-        services.AddGraphQLQueryType<AutoroutePart, AutorouteQueryObjectType>();
+        services.AddObjectGraphType<AutoroutePart, AutorouteQueryObjectType>();
     }
 }
 ```
