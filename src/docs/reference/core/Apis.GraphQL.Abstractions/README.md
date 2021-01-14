@@ -100,6 +100,7 @@ public class AutorouteInputObjectType : InputObjectGraphType<AutoroutePart>
 }
 ```
 
+
 Update Startup class like below.
 
 ```c#
@@ -111,16 +112,6 @@ public class Startup : StartupBase
         // I have omitted the registering of the AutoroutePart, as we expect that to already be registered
         services.AddObjectGraphType<AutoroutePart, AutorouteQueryObjectType>();
         services.AddInputObjectGraphType<AutoroutePart, AutorouteInputObjectType>();
-    }
-}
-```c#
-public class AutorouteInputObjectType : InputObjectGraphType<AutoroutePart>
-{
-    public AutorouteInputObjectType()
-    {
-        Name = "AutoroutePartInput";
-
-        Field(x => x.Path, nullable: true).Description("the path of the content item to filter");
     }
 }
 ```
