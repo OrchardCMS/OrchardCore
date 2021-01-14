@@ -7,7 +7,6 @@ namespace OrchardCore.PublishLater.Indexes
 {
     public class PublishLaterPartIndex : MapIndex
     {
-        public DateTime? ScheduledPublishUtc { get; set; }
         public DateTime? ScheduledPublishUtcDateTime { get; set; }
     }
 
@@ -32,7 +31,6 @@ namespace OrchardCore.PublishLater.Indexes
 
                     return new PublishLaterPartIndex
                     {
-                        ScheduledPublishUtc = publishLaterPart.ScheduledPublishUtc,
                         ScheduledPublishUtcDateTime = publishLaterPart.ScheduledPublishUtc,
                     };
                 });
