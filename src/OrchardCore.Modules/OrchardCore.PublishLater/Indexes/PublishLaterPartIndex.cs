@@ -12,7 +12,7 @@ namespace OrchardCore.PublishLater.Indexes
 {
     public class PublishLaterPartIndex : MapIndex
     {
-        public DateTime? ScheduledPublishUtcDateTime { get; set; }
+        public DateTime? ScheduledPublishDateTimeUtc { get; set; }
     }
 
     public class PublishLaterPartIndexProvider : IndexProvider<ContentItem>, IScopedIndexProvider
@@ -71,7 +71,7 @@ namespace OrchardCore.PublishLater.Indexes
 
                     return new PublishLaterPartIndex
                     {
-                        ScheduledPublishUtcDateTime = publishLaterPart.ScheduledPublishUtc,
+                        ScheduledPublishDateTimeUtc = publishLaterPart.ScheduledPublishUtc,
                     };
                 });
         }

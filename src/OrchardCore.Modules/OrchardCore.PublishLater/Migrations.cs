@@ -24,13 +24,13 @@ namespace OrchardCore.PublishLater
                 .WithDescription("Adds the ability to schedule content items to be published at a given future date and time."));
 
             SchemaBuilder.CreateMapIndexTable<PublishLaterPartIndex>(table => table
-                .Column<DateTime>(nameof(PublishLaterPartIndex.ScheduledPublishUtcDateTime))
+                .Column<DateTime>(nameof(PublishLaterPartIndex.ScheduledPublishDateTimeUtc))
             );
 
             SchemaBuilder.AlterIndexTable<PublishLaterPartIndex>(table => table
-                .CreateIndex($"IDX_{nameof(PublishLaterPartIndex)}_{nameof(PublishLaterPartIndex.ScheduledPublishUtcDateTime)}",
+                .CreateIndex($"IDX_{nameof(PublishLaterPartIndex)}_{nameof(PublishLaterPartIndex.ScheduledPublishDateTimeUtc)}",
                     "DocumentId",
-                    nameof(PublishLaterPartIndex.ScheduledPublishUtcDateTime))
+                    nameof(PublishLaterPartIndex.ScheduledPublishDateTimeUtc))
             );
 
             // Shortcut other migration steps on new content definition schemas.
@@ -41,13 +41,13 @@ namespace OrchardCore.PublishLater
         public int UpdateFrom1()
         {
             SchemaBuilder.AlterIndexTable<PublishLaterPartIndex>(table => table
-                .AddColumn<DateTime>(nameof(PublishLaterPartIndex.ScheduledPublishUtcDateTime))
+                .AddColumn<DateTime>(nameof(PublishLaterPartIndex.ScheduledPublishDateTimeUtc))
             );
 
             SchemaBuilder.AlterIndexTable<PublishLaterPartIndex>(table => table
-                .CreateIndex($"IDX_{nameof(PublishLaterPartIndex)}_{nameof(PublishLaterPartIndex.ScheduledPublishUtcDateTime)}",
+                .CreateIndex($"IDX_{nameof(PublishLaterPartIndex)}_{nameof(PublishLaterPartIndex.ScheduledPublishDateTimeUtc)}",
                     "DocumentId",
-                    nameof(PublishLaterPartIndex.ScheduledPublishUtcDateTime))
+                    nameof(PublishLaterPartIndex.ScheduledPublishDateTimeUtc))
             );
 
             return 2;
