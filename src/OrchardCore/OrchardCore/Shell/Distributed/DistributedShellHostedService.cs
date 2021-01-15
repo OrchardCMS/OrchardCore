@@ -69,12 +69,12 @@ namespace OrchardCore.Environment.Shell.Distributed
                 _logger.LogInformation("'{ServiceName}' is stopping.", nameof(DistributedShellHostedService));
             });
 
-            try
-            {
-                // Init the idle time.
-                var idleTime = MinIdleTime;
+            // Init the idle time.
+            var idleTime = MinIdleTime;
 
-                while (!stoppingToken.IsCancellationRequested)
+            while (!stoppingToken.IsCancellationRequested)
+            {
+                try
                 {
                     // Wait for the current idle time on each loop.
                     if (!await TryWaitAsync(idleTime, stoppingToken))
@@ -219,10 +219,10 @@ namespace OrchardCore.Environment.Shell.Distributed
                         _shellCreatedId = shellCreatedId;
                     }
                 }
-            }
-            catch (Exception ex) when (!ex.IsFatal())
-            {
-                _logger.LogError(ex, "Error while executing '{ServiceName}', the service is stopping.", nameof(DistributedShellHostedService));
+                catch (Exception ex) when (!ex.IsFatal())
+                {
+                    _logger.LogError(ex, "Error while executing '{ServiceName}'", nameof(DistributedShellHostedService));
+                }
             }
 
             _terminated = true;
