@@ -378,6 +378,7 @@ namespace OrchardCore.ResourceManagement
 
             var starPhaseResources = new Dictionary<ResourceDefinition, RequireSettings>();
             var allResources = new OrderedDictionary();
+            var expandingResources = new Stack<ResourceDefinition>();
             foreach (var settings in ResolveRequiredResources(resourceType))
             {
                 var resource = FindResource(settings);
@@ -386,12 +387,12 @@ namespace OrchardCore.ResourceManagement
                     throw new InvalidOperationException($"Could not find a resource of type '{settings.Type}' named '{settings.Name}' with version '{settings.Version ?? "any"}'.");
                 }
 
-                ExpandDependencies(resource, settings, allResources, starPhaseResources);
+                ExpandDependencies(resource, settings, allResources,expandingResources, starPhaseResources);
             }
 
             foreach (var item in starPhaseResources)
             {
-                ExpandDependencies(item.Key, item.Value, allResources, null);
+                ExpandDependencies(item.Key, item.Value, allResources,expandingResources, null);
             }
 
             requiredResources = new ResourceRequiredContext[allResources.Count];
@@ -414,6 +415,7 @@ namespace OrchardCore.ResourceManagement
             ResourceDefinition resource,
             RequireSettings settings,
             OrderedDictionary allResources,
+            Stack<ResourceDefinition> expanding,
             Dictionary<ResourceDefinition, RequireSettings> expandInStarPhaseResources)
         {
             if (resource == null)
@@ -489,7 +491,13 @@ namespace OrchardCore.ResourceManagement
                         }
                     }
 
-                    ExpandDependencies(dependency, settings, allResources, expandInStarPhaseResources);
+                    if (expanding.Contains(dependency))
+                    {
+                        throw new InvalidOperationException($"Circular dependency of type '{settings.Type}' detected between {settings.Name} and {dependency.Name}");
+                    }
+                    expanding.Push(dependency);
+                    ExpandDependencies(dependency, settings, allResources, expanding, expandInStarPhaseResources);
+                    expanding.Pop();
 
                     if (expandInStarPhaseResources != null && expandInStarPhaseResources.ContainsKey(dependency))
                     {
