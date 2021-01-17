@@ -155,6 +155,30 @@ namespace OrchardCore.Tests.ResourceManagement
         }
 
         [Fact]
+        public void RequireCircularDependenciesShouldThrowException()
+        {
+            var resourceManager = new ResourceManager(
+                new[] {
+                    new StubResourceManifestProvider(builder => {
+                        var manifest = builder.Add();
+                        manifest.DefineResource("foo", "required")
+                            .SetDependencies("dependency");
+                        manifest.DefineResource("foo", "dependency")
+                            .SetDependencies("required");;
+                        manifest.DefineResource("foo", "not-required");
+                    })
+                },
+                new ResourceManifestState(),
+                new OptionsWrapper<ResourceManagementOptions>(new ResourceManagementOptions()),
+                StubFileVersionProvider.Instance
+            );
+
+            resourceManager.RegisterResource("foo", "required");
+
+            Assert.Throws<InvalidOperationException>(() => resourceManager.GetRequiredResources("foo"));
+        }
+
+        [Fact]
         public void RequireMultipleStarResourceDependencies()
         {
             var resourceManager = new ResourceManager(
@@ -202,8 +226,6 @@ namespace OrchardCore.Tests.ResourceManagement
             Assert.True(anotherDependencyIndex > simpleResourceIndex);
             Assert.True(starDependecyIndex > anotherDependencyIndex);
             Assert.True(starResourceIndex > starDependecyIndex);
-            
-
         }
 
 
@@ -299,6 +321,38 @@ namespace OrchardCore.Tests.ResourceManagement
             Assert.True(requiresDependencyIndex > dependecyIndex);
             Assert.True(simpleResourceIndex > requiresDependencyIndex);
             Assert.True(requiresStarDependencyIndex > starDependencyIndex);
+        }
+
+        [Fact]
+        public void RequireCircularIndirectStarDependencyShouldThrowException()
+        {
+            var resourceManager = new ResourceManager(
+                new[] {
+                    new StubResourceManifestProvider(builder => {
+                        var manifest = builder.Add();
+                        manifest.DefineResource("foo", "requires-dependency")
+                            .SetDependencies("dependency");
+                        manifest.DefineResource("foo", "dependency")
+                            .SetDependencies("indirect-dependency");
+                        manifest.DefineResource("foo", "indirect-dependency")
+                            .SetDependencies("dependency");
+                        manifest.DefineResource("foo", "requires-star-dependency")
+                            .SetDependencies("star-dependency","indirect-dependency");
+                        manifest.DefineResource("foo", "simple-resource");
+                        manifest.DefineResource("foo", "star-dependency")
+                            .SetDependencies("*");
+                    })
+                },
+                new ResourceManifestState(),
+                new OptionsWrapper<ResourceManagementOptions>(new ResourceManagementOptions()),
+                StubFileVersionProvider.Instance
+            );
+
+            resourceManager.RegisterResource("foo", "requires-star-dependency");
+            resourceManager.RegisterResource("foo", "requires-dependency");
+            resourceManager.RegisterResource("foo", "simple-resource");
+
+            Assert.Throws<InvalidOperationException>(() => resourceManager.GetRequiredResources("foo"));
         }
 
         [Fact]
