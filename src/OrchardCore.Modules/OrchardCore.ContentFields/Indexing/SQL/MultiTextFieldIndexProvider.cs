@@ -15,7 +15,7 @@ namespace OrchardCore.ContentFields.Indexing.SQL
         // Maximum length that MySql can support in an index under utf8 collation is 768,
         // minus 1 for the `DocumentId` integer (character size = integer size = 4 bytes).
         // minus 1 (freeing 4 bytes) for the additional 'Published' and 'Latest' booleans.
-        public const int MaxValueSize = 766; // 
+        public const int MaxValueSize = 766;
 
         public string Value { get; set; }
         public string BigValue { get; set; }
@@ -60,7 +60,7 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                         .Parts.SelectMany(x => x.PartDefinition.Fields.Where(f => f.FieldDefinition.Name == nameof(MultiTextField)))
                         .ToArray();
 
-                   // This type doesn't have any MultiTextField, ignore it
+                    // This type doesn't have any MultiTextField, ignore it
                     if (fieldDefinitions.Length == 0)
                     {
                         _ignoredTypes.Add(contentItem.ContentType);
@@ -86,7 +86,7 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                         }
 
                         var field = jField.ToObject<MultiTextField>();
-                        foreach(var value in field.Values)
+                        foreach (var value in field.Values)
                         {
                             results.Add(new MultiTextFieldIndex
                             {
