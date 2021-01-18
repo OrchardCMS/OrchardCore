@@ -40,6 +40,9 @@ namespace OrchardCore.PublishLater
         // This code can be removed in a later version.
         public int UpdateFrom1()
         {
+            // The 'ScheduledPublishUtc' column and related index are kept on existing databases,
+            // this because dropping an index and altering a column don't work on all providers.
+
             SchemaBuilder.AlterIndexTable<PublishLaterPartIndex>(table => table
                 .AddColumn<DateTime>(nameof(PublishLaterPartIndex.ScheduledPublishDateTimeUtc))
             );
