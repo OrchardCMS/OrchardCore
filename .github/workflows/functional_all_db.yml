@@ -16,11 +16,11 @@ jobs:
     - name: Setup .NET Core 3.1
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 3.1.404
+        dotnet-version: 3.1.405
     - name: Setup .NET Core 5.0
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 5.0.101
+        dotnet-version: 5.0.102
     - name: Functional Tests
       run: |
         cd test/Functional
@@ -43,11 +43,11 @@ jobs:
     - name: Setup .NET Core 3.1
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 3.1.404
+        dotnet-version: 3.1.405
     - name: Setup .NET Core 5.0
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 5.0.101
+        dotnet-version: 5.0.102
     - name: Functional Tests
       run: |
         cd test/Functional
@@ -88,11 +88,11 @@ jobs:
     - name: Setup .NET Core 3.1
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 3.1.404
+        dotnet-version: 3.1.405
     - name: Setup .NET Core 5.0
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 5.0.101
+        dotnet-version: 5.0.102
     - name: Functional Tests
       run: |
         cd test/Functional
@@ -129,11 +129,11 @@ jobs:
     - name: Setup .NET Core 3.1
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 3.1.404
+        dotnet-version: 3.1.405
     - name: Setup .NET Core 5.0
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 5.0.101
+        dotnet-version: 5.0.102
     - name: Functional Tests
       run: |
         cd test/Functional
@@ -169,11 +169,11 @@ jobs:
     - name: Setup .NET Core 3.1
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 3.1.404
+        dotnet-version: 3.1.405
     - name: Setup .NET Core 5.0
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 5.0.101
+        dotnet-version: 5.0.102
     - name: Functional Tests
       run: |
         cd test/Functional

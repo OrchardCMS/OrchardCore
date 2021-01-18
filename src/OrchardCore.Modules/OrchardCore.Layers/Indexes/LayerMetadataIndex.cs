@@ -14,6 +14,7 @@ namespace OrchardCore.Layers.Indexes
         public override void Describe(DescribeContext<ContentItem> context)
         {
             context.For<LayerMetadataIndex>()
+                .When(contentItem => contentItem.Has<LayerMetadata>())
                 .Map(contentItem =>
                 {
                     var layerMetadata = contentItem.As<LayerMetadata>();

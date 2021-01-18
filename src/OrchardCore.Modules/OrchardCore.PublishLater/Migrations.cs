@@ -1,3 +1,4 @@
+using System;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.Data.Migration;
@@ -23,13 +24,13 @@ namespace OrchardCore.PublishLater
                 .WithDescription("Adds the ability to schedule content items to be published at a given future date and time."));
 
             SchemaBuilder.CreateMapIndexTable<PublishLaterPartIndex>(table => table
-                .Column<string>(nameof(PublishLaterPartIndex.ScheduledPublishUtc))
+                .Column<DateTime>(nameof(PublishLaterPartIndex.ScheduledPublishDateTimeUtc))
             );
 
             SchemaBuilder.AlterIndexTable<PublishLaterPartIndex>(table => table
-                .CreateIndex($"IDX_{nameof(PublishLaterPartIndex)}_{nameof(PublishLaterPartIndex.ScheduledPublishUtc)}",
+                .CreateIndex($"IDX_{nameof(PublishLaterPartIndex)}_{nameof(PublishLaterPartIndex.ScheduledPublishDateTimeUtc)}",
                     "DocumentId",
-                    nameof(PublishLaterPartIndex.ScheduledPublishUtc))
+                    nameof(PublishLaterPartIndex.ScheduledPublishDateTimeUtc))
             );
 
             // Shortcut other migration steps on new content definition schemas.
@@ -39,10 +40,17 @@ namespace OrchardCore.PublishLater
         // This code can be removed in a later version.
         public int UpdateFrom1()
         {
+            // The 'ScheduledPublishUtc' column and related index are kept on existing databases,
+            // this because dropping an index and altering a column don't work on all providers.
+
             SchemaBuilder.AlterIndexTable<PublishLaterPartIndex>(table => table
-                .CreateIndex($"IDX_{nameof(PublishLaterPartIndex)}_{nameof(PublishLaterPartIndex.ScheduledPublishUtc)}",
+                .AddColumn<DateTime>(nameof(PublishLaterPartIndex.ScheduledPublishDateTimeUtc))
+            );
+
+            SchemaBuilder.AlterIndexTable<PublishLaterPartIndex>(table => table
+                .CreateIndex($"IDX_{nameof(PublishLaterPartIndex)}_{nameof(PublishLaterPartIndex.ScheduledPublishDateTimeUtc)}",
                     "DocumentId",
-                    nameof(PublishLaterPartIndex.ScheduledPublishUtc))
+                    nameof(PublishLaterPartIndex.ScheduledPublishDateTimeUtc))
             );
 
             return 2;

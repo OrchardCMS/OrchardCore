@@ -4,11 +4,12 @@ The below table lists the different .NET libraries used in Orchard Core:
 
 | Library | Usage | Version | License |
 |--- | --- | --- | --- |
-| [Azure Storage Blob for DataProtection](https://github.com/Azure/azure-sdk-for-net/blob/Azure.Extensions.AspNetCore.DataProtection.Blobs_1.2.0/sdk/extensions/Azure.Extensions.AspNetCore.DataProtection.Blobs/README.md) | Allows storing ASP.NET Core DataProtection keys in Azure Blob Storage | 1.2.0 |[MIT](https://github.com/Azure/azure-sdk-for-net/blob/master/LICENSE.txt) |
+| [Azure Storage Blobs](https://github.com/Azure/azure-sdk-for-net/blob/master/sdk/storage/Azure.Storage.Blobs/README.md) | Azure Storage Blobs client library for .NET | 12.8.0 |[MIT](https://github.com/Azure/azure-sdk-for-net/blob/master/LICENSE.txt) |
+| [Azure Storage Blobs for DataProtection](https://github.com/Azure/azure-sdk-for-net/blob/Azure.Extensions.AspNetCore.DataProtection.Blobs_1.2.0/sdk/extensions/Azure.Extensions.AspNetCore.DataProtection.Blobs/README.md) | Allows storing ASP.NET Core DataProtection keys in Azure Blob Storage | 1.2.0 |[MIT](https://github.com/Azure/azure-sdk-for-net/blob/master/LICENSE.txt) |
 | [Castle.Core](https://github.com/castleproject/Core) | Castle DynamicProxy. | 4.4.1 |[Apache-2.0](https://github.com/castleproject/Core/blob/master/LICENSE) |
 | [Fluid.Core](https://github.com/sebastienros/fluid) | .NET Liquid template engine. | 4.8.0-beta00013 | [MIT](https://github.com/sebastienros/fluid/blob/dev/LICENSE) |
 | [GraphQL](https://github.com/graphql/graphiql) | GraphiQL & GraphQL. | 2.4.0 | [MIT](https://github.com/graphql/graphiql/blob/main/LICENSE) |
-| [HtmlSanitizer](https://github.com/mganss/HtmlSanitizer) | Cleans HTML to avoid XSS attacks. | 5.0.372 | [MIT](https://github.com/mganss/HtmlSanitizer/blob/master/LICENSE.md) |
+| [HtmlSanitizer](https://github.com/mganss/HtmlSanitizer) | Cleans HTML to avoid XSS attacks. | 5.0.376 | [MIT](https://github.com/mganss/HtmlSanitizer/blob/master/LICENSE.md) |
 | [Image Sharp](https://github.com/SixLabors/ImageSharp.Web) | Middleware for ASP.NET-Core for image manipulation. | 1.0.1 |[Apache-2.0](https://github.com/SixLabors/ImageSharp.Web/blob/master/LICENSE) |
 | [Irony.Core](https://github.com/daxnet/irony) | A modified version of the Irony project with .NET Core support | 1.0.7 | [MIT](https://github.com/daxnet/irony/blob/master/LICENSE) |
 | [Jint](https://github.com/sebastienros/jint) | Javascript Interpreter for .NET. | 3.0.0-beta-1914 | [MIT](https://github.com/sebastienros/jint/blob/dev/LICENSE) |
@@ -44,7 +45,7 @@ The below table lists the different libraries used as Resources:
 | [jQuery Easing](https://github.com/gdsmith/jquery.easing) | jQuery Easing Plugin. | 1.4.1 | [MIT](https://github.com/gdsmith/jquery.easing/blob/master/LICENSE-BSD-3-Clause.txt) |
 | [js-cookie](https://github.com/js-cookie/js-cookie) | A simple, lightweight JavaScript API for handling browser cookies. | 2.2.1 | [MIT](https://github.com/js-cookie/js-cookie/blob/master/LICENSE) |
 | [Popper](https://github.com/popperjs/popper-core) | Positioning tooltips and popovers. | 1.16.1 | [MIT](https://github.com/popperjs/popper-core/blob/master/LICENSE.md) |
-| [Sortable](https://github.com/SortableJS/sortablejs) | Create and reorder lists with drag-and-drop. | 1.10.2 | [MIT](https://github.com/SortableJS/sortablejs/blob/master/LICENSE) |
+| [Sortable](https://github.com/SortableJS/sortablejs) | Create and reorder lists with drag-and-drop. | 1.13.0 | [MIT](https://github.com/SortableJS/sortablejs/blob/master/LICENSE) |
 | [Trumbowyg](https://github.com/Alex-D/Trumbowyg) | A lightweight and amazing WYSIWYG JavaScript editor. | 2.23.0 | [MIT](https://github.com/Alex-D/Trumbowyg/blob/develop/LICENSE) |
 | [vue-multiselect](https://github.com/shentao/vue-multiselect) | Universal select/multiselect/tagging component for Vue.js. | 2.1.6 | [MIT](https://github.com/shentao/vue-multiselect/blob/master/LICENSE) |
 | [Vue.Draggable](https://github.com/SortableJS/Vue.Draggable) | Vue drag-and-drop component based on Sortable.js. | 2.24.3 | [MIT](https://github.com/SortableJS/Vue.Draggable/blob/master/LICENSE) |
@@ -58,8 +59,8 @@ The below table lists the different Client side libraries:
 | [Gulp](https://github.com/gulpjs/gulp) | A toolkit to automate & enhance your workflow. | 4.0.2 | [MIT](https://github.com/gulpjs/gulp/blob/master/LICENSE) |
 | [Gulp](https://github.com/gulpjs/gulp-cli) | Command Line Interface for gulp. | 2.3.0 | [MIT](https://github.com/gulpjs/gulp-cli/blob/master/LICENSE) |
 | [jsPlumb](https://github.com/jsplumb/jsplumb) | Visual connectivity for webapps. | 2.15.5 | [MIT and GPLv2](https://github.com/jsplumb/jsplumb/blob/master/jsPlumb-LICENSE.txt) |
-| [TypeScript](https://github.com/microsoft/TypeScript) | Superset of JavaScript that compiles to clean JavaScript output. | 4.1.3 | [Apache-2.0](https://github.com/microsoft/TypeScript/blob/master/LICENSE.txtE) |
 | [React](https://github.com/facebook/react) | JavaScript library for building user interface. | 17.0 | [MIT](https://github.com/facebook/react/blob/master/LICENSE) |
+| [TypeScript](https://github.com/microsoft/TypeScript) | Superset of JavaScript that compiles to clean JavaScript output. | 4.1.3 | [Apache-2.0](https://github.com/microsoft/TypeScript/blob/master/LICENSE.txtE) |
 | [Vue](https://github.com/vuejs/vue) | JavaScript framework for building UI on the web. | 2.6.11.0 | [MIT](https://github.com/vuejs/vue/blob/dev/LICENSE) |
 | [WebPack](https://github.com/webpack/webpack) | A bundler for javascript and friends. | 5.10.1 | [MIT](https://github.com/webpack/webpack/blob/master/LICENSE) |
 
