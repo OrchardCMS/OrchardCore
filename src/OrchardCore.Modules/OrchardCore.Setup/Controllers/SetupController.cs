@@ -87,6 +87,7 @@ namespace OrchardCore.Setup.Controllers
         }
 
         [HttpPost, ActionName("Index")]
+        [ValidateAntiForgeryToken]
         public async Task<ActionResult> IndexPOST(SetupViewModel model)
         {
             if (!string.IsNullOrWhiteSpace(_shellSettings["Secret"]))
