@@ -4,7 +4,6 @@ using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Ast;
-using Fluid.Tags;
 using Microsoft.AspNetCore.Html;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.DisplayManagement.Title;
@@ -12,9 +11,9 @@ using OrchardCore.Liquid.Ast;
 
 namespace OrchardCore.DisplayManagement.Liquid.Tags
 {
-    public class RenderTitleSegmentsTag : ArgumentsTag
+    public class RenderTitleSegmentsTag
     {
-        public override async ValueTask<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context, FilterArgument[] args)
+        public static async ValueTask<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context, FilterArgument[] args)
         {
             if (!context.AmbientValues.TryGetValue("Services", out var services))
             {

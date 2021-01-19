@@ -4,16 +4,15 @@ using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Ast;
-using Fluid.Tags;
 using Microsoft.AspNetCore.Html;
 using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.Liquid.Ast;
 
 namespace OrchardCore.DisplayManagement.Liquid.Tags
 {
-    public class RenderSectionTag : ArgumentsTag
+    public class RenderSectionTag
     {
-        public override async ValueTask<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context, FilterArgument[] args)
+        public static async ValueTask<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context, FilterArgument[] args)
         {
             if (!context.AmbientValues.TryGetValue("ThemeLayout", out dynamic layout))
             {
