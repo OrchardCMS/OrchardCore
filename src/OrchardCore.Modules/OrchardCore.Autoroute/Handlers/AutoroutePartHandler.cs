@@ -21,6 +21,7 @@ using OrchardCore.Liquid;
 using OrchardCore.Localization;
 using OrchardCore.Settings;
 using YesSql;
+using YesSql.Services;
 
 namespace OrchardCore.Autoroute.Handlers
 {
@@ -456,18 +457,20 @@ namespace OrchardCore.Autoroute.Handlers
 
         private async Task<bool> IsAbsolutePathUniqueAsync(string path, string contentItemId)
         {
-            var isUnique = true;
-            var possibleConflicts = await _session.QueryIndex<AutoroutePartIndex>(o => (o.Published || o.Latest) && o.Path == path).ListAsync();
+            path = path.Trim('/');
+            var paths = new string[] { path, "/" + path, path + "/", "/" + path + "/" };
+
+            var possibleConflicts = await _session.QueryIndex<AutoroutePartIndex>(o => (o.Published || o.Latest) && o.Path.IsIn(paths)).ListAsync();
             if (possibleConflicts.Any())
             {
                 if (possibleConflicts.Any(x => x.ContentItemId != contentItemId) ||
                     possibleConflicts.Any(x => !String.IsNullOrEmpty(x.ContainedContentItemId) && x.ContainedContentItemId != contentItemId))
                 {
-                    isUnique = false;
+                    return false;
                 }
             }
 
-            return isUnique;
+            return true;
         }
     }
 }
