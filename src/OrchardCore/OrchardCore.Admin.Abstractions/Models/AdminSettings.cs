@@ -2,7 +2,7 @@ namespace OrchardCore.Admin.Models
 {
     public class AdminSettings
     {
-        public bool DisplayDarkMode { get; set; } = true;
+        public bool DisplayDarkMode { get; set; }
 
         public bool DisplayMenuFilter { get; set; }
 
