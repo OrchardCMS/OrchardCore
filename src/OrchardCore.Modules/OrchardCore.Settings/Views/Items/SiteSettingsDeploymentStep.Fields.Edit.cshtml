@@ -3,7 +3,7 @@
 @using Newtonsoft.Json
 @{
     var settings = Model.Settings;
-    var ignoredPropeties = new HashSet<string> { "Identifier", "Properties" };
+    var ignoredProperties = new HashSet<string> { "Identifier", "Properties" };
 }
 <h5>@T["Site Settings"]</h5>
 
@@ -17,7 +17,7 @@
                 continue;
             }
 
-            if (ignoredPropeties.Contains(setting.Name))
+            if (ignoredProperties.Contains(setting.Name))
             {
                 continue;
             }
