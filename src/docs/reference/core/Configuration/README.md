@@ -84,6 +84,32 @@ without having to provide a state value.
 }
 ```
 
+### Global tenant data access configuration
+
+What if you want all tenants to access the same database? The corresponding configuration can be kept in a single place, as opposed to setting up the same connection string for all tenants one by one, as following:
+
+```
+{
+  "OrchardCore": {
+    "ConnectionString": "...",
+    "DatabaseProvider": "SqlConnection",
+    "TablePrefix": "Default"
+  }
+}
+
+```
+
+Notes on the above configuration:
+
+- Be aware that while you can use the same configuration keys for tenants, as demonstrated above, this is in the root of the `OrchardCore` section.
+- Add the connection string for the database to be used by all tenants.
+- `DatabaseProvider` should correspond to the database engine used, the sample being one for SQL Server.
+- `TablePrefix` needs to be configured to the prefix used by the Default tenant. Other tenants should then be set up with a different prefix.
+
+This way, the app can be easily moved between environments (like a staging and production one), just configure the corresponding database's settings in the given environment. Tenants' shell settings won't contain this information, all tenants will use the same, global configuration.
+
+A related topic is [Shells Configuration Providers](../Shells/README.md). See especially the section about Database Shells Configuration Provider, on how to keep all shell configuration in the database.
+
 ### `IOptions` Configuration
 
 You can also configure `IOptions` from code in the web project's `Startup` class as explained in the [ASP.NET documentation](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/configuration/options). 
