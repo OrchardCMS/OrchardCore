@@ -61,9 +61,9 @@ The `OrchardCore.Resources` module provides some commonly used ones:
 | bootstrap-slider      | Style  | 11.0.2        | -              |
 | codemirror            | Script | 5.59.1        | -              |
 | codemirror            | Style  | 5.59.1        | -              |
-| font-awesome          | Style  | 4.7.0, 5.15.1 | -              |
-| font-awesome          | Script | 5.15.1        | -              |
-| font-awesome-v4-shims | Script | 5.15.1        | -              |
+| font-awesome          | Style  | 4.7.0, 5.15.2 | -              |
+| font-awesome          | Script | 5.15.2        | -              |
+| font-awesome-v4-shims | Script | 5.15.2        | -              |
 | Sortable              | Script | 1.10.2        | -              |
 | trumbowyg             | Script | 2.23.0        | -              |
 | vue-multiselect       | Script | 2.1.6         | -              |

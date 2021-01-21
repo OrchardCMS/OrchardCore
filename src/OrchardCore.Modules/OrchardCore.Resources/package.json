@@ -2,7 +2,7 @@
   "name": "orchardcore.resources",
   "version": "1.0.0",
   "dependencies": {
-    "@fortawesome/fontawesome-free": "5.15.1",
+    "@fortawesome/fontawesome-free": "5.15.2",
     "bootstrap": "4.5.3",
     "bootstrap-scss": "4.5.3",
     "bootstrap-select": "1.13.18",
