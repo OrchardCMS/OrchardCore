@@ -3,6 +3,7 @@
 @using Newtonsoft.Json
 @{
     var settings = Model.Settings;
+    var ignoredPropeties = new HashSet<string> { "Identifier", "Properties" };
 }
 <h5>@T["Site Settings"]</h5>
 
@@ -12,6 +13,11 @@
         @foreach (var setting in typeof(SiteSettings).GetProperties(BindingFlags.Public | BindingFlags.Instance))
         {
             if (setting.GetCustomAttributes(false).OfType<JsonIgnoreAttribute>().Any())
+            {
+                continue;
+            }
+
+            if (ignoredPropeties.Contains(setting.Name))
             {
                 continue;
             }
