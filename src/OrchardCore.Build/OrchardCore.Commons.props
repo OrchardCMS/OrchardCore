@@ -18,6 +18,8 @@
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
 
     <!-- Common NuGet properties-->
+    <OCFrameworkDescription>Orchard Core Framework is an application framework for building modular, multi-tenant applications on ASP.NET Core.</OCFrameworkDescription>
+    <OCCMSDescription>Orchard Core CMS is a Web Content Management System (CMS) built on top of the Orchard Core Framework.</OCCMSDescription>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <IncludeSourceRevisionInInformationalVersion>true</IncludeSourceRevisionInInformationalVersion>
     <ContinuousIntegrationBuild Condition="'$(CI)' == 'true'">true</ContinuousIntegrationBuild>
@@ -39,6 +41,6 @@
   </PropertyGroup>
   <ItemGroup>
       <!--This is used for Source Link -->
-       <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All"/>
+       <PackageReference Include="Microsoft.SourceLink.GitHub" PrivateAssets="All"/>
   </ItemGroup>
 </Project>

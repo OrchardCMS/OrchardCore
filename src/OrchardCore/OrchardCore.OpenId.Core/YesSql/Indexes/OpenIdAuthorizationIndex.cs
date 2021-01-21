@@ -8,7 +8,7 @@ namespace OrchardCore.OpenId.YesSql.Indexes
     {
         public string AuthorizationId { get; set; }
         public string ApplicationId { get; set; }
-        public DateTimeOffset? CreationDate { get; set; }
+        public DateTime? CreationDate { get; set; }
         public string Status { get; set; }
         public string Subject { get; set; }
         public string Type { get; set; }

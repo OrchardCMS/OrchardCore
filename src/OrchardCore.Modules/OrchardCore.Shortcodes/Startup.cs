@@ -6,16 +6,20 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
+using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
+using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Shortcodes.Controllers;
+using OrchardCore.Shortcodes.Deployment;
 using OrchardCore.Shortcodes.Drivers;
-using OrchardCore.Shortcodes.Services;
 using OrchardCore.Shortcodes.Providers;
+using OrchardCore.Shortcodes.Recipes;
+using OrchardCore.Shortcodes.Services;
 using OrchardCore.Shortcodes.ViewModels;
 using Shortcodes;
 using Sc = Shortcodes;
@@ -72,6 +76,8 @@ namespace OrchardCore.Shortcodes
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<INavigationProvider, AdminMenu>();
 
+            services.AddRecipeExecutionStep<ShortcodeTemplateStep>();
+
             services.AddScoped<IShortcodeProvider, TemplateShortcodeProvider>();
             services.AddScoped<IShortcodeDescriptorProvider, ShortcodeTemplatesDescriptorProvider>();
         }
@@ -122,6 +128,17 @@ namespace OrchardCore.Shortcodes
 </table>";
                 d.Categories = new string[] { "Localization" };
             });
+        }
+    }
+
+    [RequireFeatures("OrchardCore.Deployment", "OrchardCore.Shortcodes.Templates")]
+    public class ShortcodeTemplatesDeployementStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddTransient<IDeploymentSource, AllShortcodeTemplatesDeploymentSource>();
+            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AllShortcodeTemplatesDeploymentStep>());
+            services.AddScoped<IDisplayDriver<DeploymentStep>, AllShortcodeTemplatesDeploymentStepDriver>();
         }
     }
 }

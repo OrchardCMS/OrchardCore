@@ -88,7 +88,7 @@ public static class OrchardRazorHelperExtensions
         {
             var mediaTokenService = orchardHelper.HttpContext.RequestServices.GetService<IMediaTokenService>();
 
-            url = mediaTokenService.TokenizePath(url);
+            url = mediaTokenService.AddTokenToPath(url);
         }
 
         return url;

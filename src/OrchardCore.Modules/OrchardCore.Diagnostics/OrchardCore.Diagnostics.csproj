@@ -3,6 +3,12 @@
   <PropertyGroup>
     <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
+    <!-- NuGet properties-->
+    <Title>OrchardCore Diagnostics</Title>
+    <Description>$(OCFrameworkDescription)
+    
+    Provides services to handle application errors.</Description>
+    <PackageTags>$(PackageTags) OrchardCoreFramework Infrastructure</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>

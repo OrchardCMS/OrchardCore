@@ -34,10 +34,11 @@ namespace OrchardCore.Admin.Drivers
             }
 
             return Initialize<AdminSettingsViewModel>("AdminSettings_Edit", model =>
-                {
-                    model.DisplayMenuFilter = settings.DisplayMenuFilter;
-                    model.DisplayDarkMode = settings.DisplayDarkMode;
-                    model.DisplayTitlesInTopbar = settings.DisplayTitlesInTopbar;
+            {
+                model.DisplayDarkMode = settings.DisplayDarkMode;
+                model.DisplayMenuFilter = settings.DisplayMenuFilter;
+                model.DisplayNewMenu = settings.DisplayNewMenu;
+                model.DisplayTitlesInTopbar = settings.DisplayTitlesInTopbar;
                 }).Location("Content:3").OnGroup(GroupId);
         }
 
@@ -56,8 +57,9 @@ namespace OrchardCore.Admin.Drivers
 
                 await context.Updater.TryUpdateModelAsync(model, Prefix);
 
-                settings.DisplayMenuFilter = model.DisplayMenuFilter;
                 settings.DisplayDarkMode = model.DisplayDarkMode;
+                settings.DisplayMenuFilter = model.DisplayMenuFilter;
+                settings.DisplayNewMenu = model.DisplayNewMenu;
                 settings.DisplayTitlesInTopbar = model.DisplayTitlesInTopbar;
             }
 

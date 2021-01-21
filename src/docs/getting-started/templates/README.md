@@ -59,6 +59,10 @@ dotnet new occms --logger none
 dotnet new ocmvc  
 ```
 
+### From Visual Studio (New Project dialog)
+
+The templates can also be used from the New Project dialog in Visual Studio.
+
 ### From Visual Studio (manual way)
 
 Fire up Visual Studio, create a new solution file (`.sln`) by creating a new ASP.NET Core Web Application:
