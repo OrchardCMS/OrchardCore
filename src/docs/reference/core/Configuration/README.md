@@ -25,7 +25,7 @@ The Configuration Sources are loaded in the above order, and settings lower in t
 
 Orchard Core stores all Configuration data under the `OrchardCore` section in `appsettings.json` files:
 
-```
+```json
 {
   "OrchardCore": {
       ... module configurations ...
@@ -35,7 +35,7 @@ Orchard Core stores all Configuration data under the `OrchardCore` section in `a
 
 Each Orchard Core module has its own configuration section under the `OrchardCore` section:
 
-```
+```json
 {
   "OrchardCore": {
     "OrchardCore.Media": {
@@ -52,7 +52,7 @@ See the `appsettings.json` file for more examples.
 To pre configure the setup values for a tenant before it has been created you can specify a section named for the tenant,
 with a `State` value of `Uninitialized`
 
-```
+```json
 {
   "OrchardCore": {
     "MyTenant": {
@@ -72,7 +72,7 @@ The preconfigured tenant will then appear in the `Tenants` list in the admin, an
 To configure the values for a tenant after it has been created you can specify a section named for the tenant,
 without having to provide a state value.
 
-```
+```json
 {
   "OrchardCore": {
     "Default": {
@@ -84,6 +84,32 @@ without having to provide a state value.
 }
 ```
 
+### Global tenant data access configuration
+
+What if you want all tenants to access the same database? The corresponding configuration can be kept in a single place, as opposed to setting up the same connection string for all tenants one by one, as following:
+
+```json
+{
+  "OrchardCore": {
+    "ConnectionString": "...",
+    "DatabaseProvider": "SqlConnection",
+    "TablePrefix": "Default"
+  }
+}
+
+```
+
+Notes on the above configuration:
+
+- Be aware that while you can use the same configuration keys for tenants, as demonstrated above, this is in the root of the `OrchardCore` section.
+- Add the connection string for the database to be used by all tenants.
+- `DatabaseProvider` should correspond to the database engine used, the sample being one for SQL Server.
+- `TablePrefix` needs to be configured to the prefix used by the Default tenant. Other tenants should then be set up with a different prefix.
+
+This way, the app can be easily moved between environments (like a staging and production one) by configuring the corresponding database's settings in the given environment. Tenants' shell settings won't contain this information, all tenants will use the same, global configuration.
+
+A related topic is [Shells Configuration Providers](../Shells/README.md). See especially the section about Database Shells Configuration Provider, on how to keep all shell configuration in the database.
+
 ### `IOptions` Configuration
 
 You can also configure `IOptions` from code in the web project's `Startup` class as explained in the [ASP.NET documentation](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/configuration/options). 
@@ -93,7 +119,7 @@ A lot of Orchard Core features are configured through the admin UI with site set
 For example, the Email module allows SMTP configuration via the `SmtpSettings` class which by default is populated from the given tenant's site settings, as set on the admin. 
 However, you can override the site settings from the `Startup` class like this (note that we use `PostConfigure` to override the site settings values but if the module doesn't use site settings you can just use `Configure`):
 
-```
+```csharp
 services
     .AddOrchardCms()
     .ConfigureServices(tenantServices =>
@@ -124,7 +150,7 @@ services
 
 This will make the SMTP port use this configuration despite any other value defined in site settings. The second example's configuration value can come from e.g. an `appsettings.json` file like below:
 
-```
+```json
 {
   "OrchardCore": {
     "SmtpSettings": {
@@ -153,7 +179,7 @@ These settings can also be located in an `App_Data/appsettings.json` folder (not
 These settings are mutable and written during the setup for the Tenant. For this reason reading from Environment Name is not supported.
 Additionally these `appsettings.json` files do not need the `OrchardCore` section
 
-```
+```json
 {
   "OrchardCore_Media": {
     ... specific tenant configuration ...
@@ -201,7 +227,7 @@ Azure DevOps, or other CI/CD pipelines, are supported, on all platforms, and Jso
 
 If building with the nightly dev builds from the preview package feed, the CI/CD pipeline will need to use a `NuGet.Config` with the location of the `MyGet` package feed.
 
-```
+```xml
 <configuration>
   <packageSources>
     <add key="nuget" value="https://api.nuget.org/v3/index.json"/>
