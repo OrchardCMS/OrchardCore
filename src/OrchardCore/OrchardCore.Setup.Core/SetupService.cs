@@ -203,7 +203,7 @@ namespace OrchardCore.Setup.Services
                     context.DatabaseProvider,
                     context.DatabaseConnectionString,
                     context.DatabaseTablePrefix,
-                    Properties=context.Properties
+                    Properties = context.Properties
                 },
                 _applicationLifetime.ApplicationStopping);
             }
