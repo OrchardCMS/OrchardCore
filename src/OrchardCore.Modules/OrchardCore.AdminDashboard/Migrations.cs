@@ -25,7 +25,7 @@ namespace OrchardCore.AdminDashboard
 
             _contentDefinitionManager.AlterPartDefinition("DashboardPart", builder => builder
                 .Attachable()
-                .WithDescription("Provides a way to add widgets to a dashboard for your content items.")
+                .WithDescription("Provides a way to add widgets to a dashboard.")
                 );
 
             return 1;
