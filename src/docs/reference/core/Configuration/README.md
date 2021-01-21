@@ -25,7 +25,7 @@ The Configuration Sources are loaded in the above order, and settings lower in t
 
 Orchard Core stores all Configuration data under the `OrchardCore` section in `appsettings.json` files:
 
-```
+```json
 {
   "OrchardCore": {
       ... module configurations ...
@@ -35,7 +35,7 @@ Orchard Core stores all Configuration data under the `OrchardCore` section in `a
 
 Each Orchard Core module has its own configuration section under the `OrchardCore` section:
 
-```
+```json
 {
   "OrchardCore": {
     "OrchardCore.Media": {
@@ -52,7 +52,7 @@ See the `appsettings.json` file for more examples.
 To pre configure the setup values for a tenant before it has been created you can specify a section named for the tenant,
 with a `State` value of `Uninitialized`
 
-```
+```json
 {
   "OrchardCore": {
     "MyTenant": {
@@ -72,7 +72,7 @@ The preconfigured tenant will then appear in the `Tenants` list in the admin, an
 To configure the values for a tenant after it has been created you can specify a section named for the tenant,
 without having to provide a state value.
 
-```
+```json
 {
   "OrchardCore": {
     "Default": {
@@ -88,7 +88,7 @@ without having to provide a state value.
 
 What if you want all tenants to access the same database? The corresponding configuration can be kept in a single place, as opposed to setting up the same connection string for all tenants one by one, as following:
 
-```
+```json
 {
   "OrchardCore": {
     "ConnectionString": "...",
@@ -119,7 +119,7 @@ A lot of Orchard Core features are configured through the admin UI with site set
 For example, the Email module allows SMTP configuration via the `SmtpSettings` class which by default is populated from the given tenant's site settings, as set on the admin. 
 However, you can override the site settings from the `Startup` class like this (note that we use `PostConfigure` to override the site settings values but if the module doesn't use site settings you can just use `Configure`):
 
-```
+```csharp
 services
     .AddOrchardCms()
     .ConfigureServices(tenantServices =>
@@ -150,7 +150,7 @@ services
 
 This will make the SMTP port use this configuration despite any other value defined in site settings. The second example's configuration value can come from e.g. an `appsettings.json` file like below:
 
-```
+```json
 {
   "OrchardCore": {
     "SmtpSettings": {
@@ -179,7 +179,7 @@ These settings can also be located in an `App_Data/appsettings.json` folder (not
 These settings are mutable and written during the setup for the Tenant. For this reason reading from Environment Name is not supported.
 Additionally these `appsettings.json` files do not need the `OrchardCore` section
 
-```
+```json
 {
   "OrchardCore_Media": {
     ... specific tenant configuration ...
@@ -227,7 +227,7 @@ Azure DevOps, or other CI/CD pipelines, are supported, on all platforms, and Jso
 
 If building with the nightly dev builds from the preview package feed, the CI/CD pipeline will need to use a `NuGet.Config` with the location of the `MyGet` package feed.
 
-```
+```xml
 <configuration>
   <packageSources>
     <add key="nuget" value="https://api.nuget.org/v3/index.json"/>

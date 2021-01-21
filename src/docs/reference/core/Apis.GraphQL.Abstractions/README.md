@@ -30,7 +30,7 @@ Lets see how to wire a type in to the GraphQL schema;
 
 First: Lets start with a simple C# part
 
-```c#
+```csharp
 public class AutoroutePart : ContentPart
 {
     public string Path { get; set; }
@@ -40,7 +40,7 @@ public class AutoroutePart : ContentPart
 
 This is the part that is attached to your content item. GraphQL doesnt know what this is, so we now need to create a GraphQL representation of this class;
 
-```c#
+```csharp
 public class AutorouteQueryObjectType : ObjectGraphType<AutoroutePart>
 {
     public AutorouteQueryObjectType()
@@ -60,7 +60,7 @@ There are two things going on here;
 
 The last part is to tell the Orchard Subsystem about your new type, once this is done, the GraphQL subsystem will pick up your new object from its dependency tree. To do this, simple register it in a Startup class;
 
-```c#
+```csharp
 [RequireFeatures("OrchardCore.Apis.GraphQL")]
 public class Startup : StartupBase
 {
@@ -87,7 +87,7 @@ What we are going to cover here is;
 
 So, lets start. The Input type is similar to the Query type, here we want to tell the GraphQL schema that we accept this input.
 
-```c#
+```csharp
 public class AutorouteInputObjectType : InputObjectGraphType<AutoroutePart>
 {
     public AutorouteInputObjectType()
@@ -113,7 +113,7 @@ When an input part is registered, it adds in that part as the parent query, in t
 
 Next we want to implement a filter. The filter takes the input from the class we just built and the above example, and performs the actual filter against the object passed to it.
 
-```c#
+```csharp
 public class AutoroutePartGraphQLFilter : GraphQLFilter<ContentItem>
 {
     public override Task<IQuery<ContentItem>> PreQueryAsync(IQuery<ContentItem> query, ResolveFieldContext context)
