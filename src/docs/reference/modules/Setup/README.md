@@ -100,6 +100,8 @@ The following configuration values are used by default and can be customized:
 
 ## CDN disabled by default
 
-After a setup, the UseCdn option is disabled by default in the Resource settings.  
-This is to allow access to resources even when an internet connection is not available or countries like China where CDNs are not always accessible.  
-It is recommended to enable the CDN setting after the setup.
+The `UseCdn` option, configured in the _Configuration -> Settings -> General_ section, is disabled by default.
+This is to allow access to resources when an internet connection is not available or in countries like China, where CDNs are not always accessible.  
+
+!!! note
+    It is recommended to enable the CDN setting after the setup.
