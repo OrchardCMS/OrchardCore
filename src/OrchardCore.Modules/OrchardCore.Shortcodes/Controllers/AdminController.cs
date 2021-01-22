@@ -13,6 +13,7 @@ using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Liquid;
 using OrchardCore.Modules;
+using OrchardCore.Mvc.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Routing;
 using OrchardCore.Settings;
@@ -128,13 +129,9 @@ namespace OrchardCore.Shortcodes.Controllers
                 {
                     ModelState.AddModelError(nameof(ShortcodeTemplateViewModel.Name), S["The name is mandatory."]);
                 }
-                else if (String.IsNullOrEmpty(model.Content))
+                else if (!String.Equals(model.Name, model.Name.ToSafeName(), StringComparison.OrdinalIgnoreCase))
                 {
-                    ModelState.AddModelError(nameof(ShortcodeTemplateViewModel.Content), S["The template content is mandatory."]);
-                }
-                else if (!_liquidTemplateManager.Validate(model.Content, out var errors))
-                {
-                    ModelState.AddModelError(nameof(ShortcodeTemplateViewModel.Content), S["The template doesn't contain a valid Liquid expression. Details: {0}", string.Join(" ", errors)]);
+                    ModelState.AddModelError(nameof(ShortcodeTemplateViewModel.Name), S["The name contains invalid characters."]);
                 }
                 else
                 {
@@ -144,6 +141,15 @@ namespace OrchardCore.Shortcodes.Controllers
                     {
                         ModelState.AddModelError(nameof(ShortcodeTemplateViewModel.Name), S["A template with the same name already exists."]);
                     }
+                }
+
+                if (String.IsNullOrEmpty(model.Content))
+                {
+                    ModelState.AddModelError(nameof(ShortcodeTemplateViewModel.Content), S["The template content is mandatory."]);
+                }
+                else if (!_liquidTemplateManager.Validate(model.Content, out var errors))
+                {
+                    ModelState.AddModelError(nameof(ShortcodeTemplateViewModel.Content), S["The template doesn't contain a valid Liquid expression. Details: {0}", string.Join(" ", errors)]);
                 }
             }
 
@@ -224,7 +230,12 @@ namespace OrchardCore.Shortcodes.Controllers
                 {
                     ModelState.AddModelError(nameof(ShortcodeTemplateViewModel.Name), S["The name is mandatory."]);
                 }
-                else if (String.IsNullOrEmpty(model.Content))
+                else if (!String.Equals(model.Name, model.Name.ToSafeName(), StringComparison.OrdinalIgnoreCase))
+                {
+                    ModelState.AddModelError(nameof(ShortcodeTemplateViewModel.Name), S["The name contains invalid characters."]);
+                }
+
+                if (String.IsNullOrEmpty(model.Content))
                 {
                     ModelState.AddModelError(nameof(ShortcodeTemplateViewModel.Content), S["The template content is mandatory."]);
                 }
