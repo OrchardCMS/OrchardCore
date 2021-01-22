@@ -34,9 +34,6 @@ namespace OrchardCore.Settings.Services
             siteSettings.SiteName = siteName;
             siteSettings.SuperUser = userId;
             siteSettings.TimeZoneId = siteTimeZone;
-            // Disable Cdn by default
-            siteSettings.UseCdn = false;
-
             await _siteService.UpdateSiteSettingsAsync(siteSettings);
 
             // TODO: Add Encryption Settings in
