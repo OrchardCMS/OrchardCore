@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Autoroute.Models;
-using OrchardCore.Autoroute.Services;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Routing;
@@ -93,7 +92,8 @@ namespace OrchardCore.ContentManagement.Records
                 {
                     context.ContentItem.Remove<AutoroutePart>();
                     _partRemoved.Add(context.ContentItem);
-                    // When the part has been removed enlist an update for after the session has been commited.
+
+                    // When the part has been removed enlist an update for after the session has been committed.
                     var autorouteEntries = _serviceProvider.GetRequiredService<IAutorouteEntries>();
                     await autorouteEntries.UpdateEntriesAsync();
                 }
@@ -110,16 +110,16 @@ namespace OrchardCore.ContentManagement.Records
                 .Map(async contentItem =>
                 {
                     var part = contentItem.As<AutoroutePart>();
-                    var partRemoved = _partRemoved.Contains(contentItem);
-                    var contentItemRemoved = _contentItemRemoved.Contains(contentItem);
 
-                    // When the part has been removed form the type definition it will return null here but we still need to process the index.
+                    // When the part has been removed from the type definition it will return null here but we still need to process the index.
+                    var partRemoved = _partRemoved.Contains(contentItem);
                     if (!partRemoved && part == null)
                     {
                         return null;
                     }
 
                     // If the related content item was removed, a record is still added.
+                    var contentItemRemoved = _contentItemRemoved.Contains(contentItem);
                     if (!contentItem.Published && !contentItem.Latest && !contentItemRemoved)
                     {
                         return null;
