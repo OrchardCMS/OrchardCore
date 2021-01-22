@@ -3,11 +3,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.AdminDashboard.Models;
+using OrchardCore.AdminDashboard.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.ContentManagement.Metadata;
+using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Mvc.Utilities;
 using OrchardCore.Settings;
@@ -39,14 +41,23 @@ namespace OrchardCore.AdminDashboard.Drivers
             return Task.FromResult<IDisplayResult>(null);
         }
 
-        public override IDisplayResult Edit(DashboardPart widgetPart, BuildPartEditorContext context)
+        public override IDisplayResult Edit(DashboardPart dashboardPart, BuildPartEditorContext context)
         {
-            return null;
+            return Initialize<DashboardPartViewModel>(GetEditorShapeType(context), m => BuildViewModel(m, dashboardPart));
         }
 
-        public override Task<IDisplayResult> UpdateAsync(DashboardPart part, UpdatePartEditorContext context)
+        public override async Task<IDisplayResult> UpdateAsync(DashboardPart model, IUpdateModel updater, UpdatePartEditorContext context)
         {
-            return Task.FromResult(Edit(part, context));
+            await updater.TryUpdateModelAsync(model, Prefix, t => t.Position);
+
+            return Edit(model, context);
+        }
+
+        private void BuildViewModel(DashboardPartViewModel model, DashboardPart part)
+        {
+            model.Position = part.Position;
+            model.DashboardPart = part;
+            model.ContentItem = part.ContentItem;
         }
     }
 }

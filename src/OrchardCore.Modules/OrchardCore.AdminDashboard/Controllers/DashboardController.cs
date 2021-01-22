@@ -20,6 +20,7 @@ using OrchardCore.Settings;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
 using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.AdminDashboard.Models;
 
 namespace OrchardCore.AdminDashboard.Controllers
 {
@@ -72,7 +73,9 @@ namespace OrchardCore.AdminDashboard.Controllers
             }
 
             var widgets = await _adminDashboardService.GetWidgetsAsync(x => x.Published);
-            
+            // Order widgets by Position
+            widgets = widgets.OrderBy(c => c.As<DashboardPart>().Position);
+
             var model = new AdminDashboardViewModel
             {
                 Widgets = widgets
