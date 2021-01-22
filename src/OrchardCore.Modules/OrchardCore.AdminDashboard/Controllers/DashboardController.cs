@@ -1,26 +1,18 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.Admin;
-using OrchardCore.AdminDashboard.ViewModels;
 using OrchardCore.AdminDashboard.Services;
-using OrchardCore.DisplayManagement;
-using OrchardCore.DisplayManagement.Notify;
-using OrchardCore.Navigation;
-using OrchardCore.Routing;
-using OrchardCore.Settings;
+using OrchardCore.AdminDashboard.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
+using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
-using OrchardCore.AdminDashboard.Models;
+using OrchardCore.DisplayManagement.Notify;
+using OrchardCore.Settings;
 
 namespace OrchardCore.AdminDashboard.Controllers
 {
@@ -67,14 +59,12 @@ namespace OrchardCore.AdminDashboard.Controllers
 
         public async Task<IActionResult> Index()
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.AccessAdminDashboard) || !await _authorizationService.AuthorizeAsync(User, Permissions.ManageAdminDashboard))
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.AccessAdminDashboard))
             {
                 return Forbid();
             }
 
             var widgets = await _adminDashboardService.GetWidgetsAsync(x => x.Published);
-            // Order widgets by Position
-            widgets = widgets.OrderBy(c => c.As<DashboardPart>().Position);
 
             var model = new AdminDashboardViewModel
             {

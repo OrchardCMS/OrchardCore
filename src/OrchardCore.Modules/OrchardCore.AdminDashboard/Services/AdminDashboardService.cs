@@ -20,10 +20,13 @@ namespace OrchardCore.AdminDashboard.Services
 
         public async Task<IEnumerable<ContentItem>> GetWidgetsAsync(Expression<Func<ContentItemIndex, bool>> predicate)
         {
-            return await _session
+            var widgets = await _session
                 .Query<ContentItem, DashboardPartIndex>()
+                .OrderBy(w => w.Position)
                 .With(predicate)
                 .ListAsync();
+
+            return widgets;
         }
     }
 }

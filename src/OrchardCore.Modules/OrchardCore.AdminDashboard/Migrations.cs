@@ -21,7 +21,9 @@ namespace OrchardCore.AdminDashboard
 
         public int Create()
         {
-            SchemaBuilder.CreateMapIndexTable<DashboardPartIndex>(table => { });
+            SchemaBuilder.CreateMapIndexTable<DashboardPartIndex>(table => table
+               .Column<double>("Position")
+            );
 
             _contentDefinitionManager.AlterPartDefinition("DashboardPart", builder => builder
                 .Attachable()
