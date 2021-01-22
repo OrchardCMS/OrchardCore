@@ -104,4 +104,4 @@ The `UseCdn` option, configured in the _Configuration -> Settings -> General_ se
 This is to allow access to resources when an internet connection is not available or in countries like China, where CDNs are not always accessible.  
 
 !!! note
-    It is recommended to enable the CDN setting after the setup.
+    It is recommended to enable the CDN setting after setup.
