@@ -265,7 +265,11 @@ namespace OrchardCore.Shortcodes.Controllers
 
                 await _shortcodeTemplatesManager.UpdateShortcodeTemplateAsync(model.Name, template);
 
-                if (submit != "SaveAndContinue")
+                if (submit == "SaveAndContinue")
+                {
+                    return RedirectToAction(nameof(Edit), new { name = model.Name });
+                }
+                else
                 {
                     return RedirectToAction(nameof(Index));
                 }
