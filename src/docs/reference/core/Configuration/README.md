@@ -92,7 +92,9 @@ What if you want all tenants to access the same database? The corresponding conf
 {
   "OrchardCore": {
     "ConnectionString": "...",
-    "DatabaseProvider": "SqlConnection",
+    "DatabaseProvider": "SqlConnection"
+  },
+  "Default" : {
     "TablePrefix": "Default"
   }
 }
@@ -101,10 +103,10 @@ What if you want all tenants to access the same database? The corresponding conf
 
 Notes on the above configuration:
 
-- Be aware that while you can use the same configuration keys for tenants, as demonstrated above, this is in the root of the `OrchardCore` section.
+- Be aware that while you can use the same configuration keys for tenants, as demonstrated previously, this is in the root of the `OrchardCore` section.
 - Add the connection string for the database to be used by all tenants.
 - `DatabaseProvider` should correspond to the database engine used, the sample being one for SQL Server.
-- `TablePrefix` needs to be configured to the prefix used by the Default tenant. Other tenants should then be set up with a different prefix.
+- `TablePrefix` needs to be configured to the prefix used by the Default tenant so tables can be separated for each tenant (otherwise just the Default tenant's tables would lack prefixes). Other tenants should then be set up with a different prefix.
 
 This way, the app can be easily moved between environments (like a staging and production one) by configuring the corresponding database's settings in the given environment. Tenants' shell settings won't contain this information, all tenants will use the same, global configuration.
 
