@@ -234,6 +234,11 @@ namespace OrchardCore.Shortcodes.Controllers
                 {
                     ModelState.AddModelError(nameof(ShortcodeTemplateViewModel.Name), S["The name contains invalid characters."]);
                 }
+                else if (!String.Equals(model.Name, sourceName, StringComparison.OrdinalIgnoreCase)
+                    && shortcodeTemplatesDocument.ShortcodeTemplates.ContainsKey(model.Name))
+                {
+                    ModelState.AddModelError(nameof(ShortcodeTemplateViewModel.Name), S["A template with the same name already exists."]);
+                }
 
                 if (String.IsNullOrEmpty(model.Content))
                 {
