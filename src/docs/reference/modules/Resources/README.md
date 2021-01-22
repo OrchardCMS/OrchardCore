@@ -61,9 +61,9 @@ The `OrchardCore.Resources` module provides some commonly used ones:
 | bootstrap-slider      | Style  | 11.0.2        | -              |
 | codemirror            | Script | 5.59.2        | -              |
 | codemirror            | Style  | 5.59.2        | -              |
-| font-awesome          | Style  | 4.7.0, 5.15.1 | -              |
-| font-awesome          | Script | 5.15.1        | -              |
-| font-awesome-v4-shims | Script | 5.15.1        | -              |
+| font-awesome          | Style  | 4.7.0, 5.15.2 | -              |
+| font-awesome          | Script | 5.15.2        | -              |
+| font-awesome-v4-shims | Script | 5.15.2        | -              |
 | Sortable              | Script | 1.10.2        | -              |
 | trumbowyg             | Script | 2.23.0        | -              |
 | vue-multiselect       | Script | 2.1.6         | -              |
@@ -548,3 +548,11 @@ These should be rendered at the bottom of the `<body>` section.
 ### Logging
 
 If you register a resource by name and it is not found this will be logged as an error in your `App_Data/Logs` folder.
+
+## CDN disabled by default
+
+The `UseCdn` option, configured in the _Configuration -> Settings -> General_ section, is disabled by default.
+This is to allow access to resources when an internet connection is not available or in countries like China, where CDNs are not always accessible.  
+
+!!! note
+    It is recommended to enable the CDN setting after setup.
