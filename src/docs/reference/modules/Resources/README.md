@@ -548,3 +548,11 @@ These should be rendered at the bottom of the `<body>` section.
 ### Logging
 
 If you register a resource by name and it is not found this will be logged as an error in your `App_Data/Logs` folder.
+
+## CDN disabled by default
+
+The `UseCdn` option, configured in the _Configuration -> Settings -> General_ section, is disabled by default.
+This is to allow access to resources when an internet connection is not available or in countries like China, where CDNs are not always accessible.  
+
+!!! note
+    It is recommended to enable the CDN setting after setup.
