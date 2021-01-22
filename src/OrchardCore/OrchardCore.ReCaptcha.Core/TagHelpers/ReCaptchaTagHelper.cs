@@ -1,7 +1,6 @@
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.Extensions.DependencyInjection;
@@ -22,16 +21,16 @@ namespace OrchardCore.ReCaptcha.TagHelpers
     public class ReCaptchaTagHelper : TagHelper
     {
         private readonly IResourceManager _resourceManager;
-        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IDetectRobots _robotDetector;
         private readonly ReCaptchaSettings _settings;
         private readonly ILogger _logger;
         private readonly ILocalizationService _localizationService;
         private readonly IStringLocalizer S;
 
-        public ReCaptchaTagHelper(IOptions<ReCaptchaSettings> optionsAccessor, IResourceManager resourceManager, ILocalizationService localizationService, IHttpContextAccessor httpContextAccessor, ILogger<ReCaptchaTagHelper> logger, IStringLocalizer<ReCaptchaTagHelper> localizer)
+        public ReCaptchaTagHelper(IOptions<ReCaptchaSettings> optionsAccessor, IResourceManager resourceManager, ILocalizationService localizationService, IDetectRobots robotDetector, ILogger<ReCaptchaTagHelper> logger, IStringLocalizer<ReCaptchaTagHelper> localizer)
         {
             _resourceManager = resourceManager;
-            _httpContextAccessor = httpContextAccessor;
+            _robotDetector = robotDetector;
             _settings = optionsAccessor.Value;
             Mode = ReCaptchaMode.PreventRobots;
             _logger = logger;
@@ -51,8 +50,7 @@ namespace OrchardCore.ReCaptcha.TagHelpers
 
         public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
         {
-            var robotDetectors = _httpContextAccessor.HttpContext.RequestServices.GetServices<IDetectRobots>();
-            var robotDetected = robotDetectors.Invoke(d => d.DetectRobot(), _logger).Any(d => d.IsRobot) && Mode == ReCaptchaMode.PreventRobots;
+            var robotDetected = _robotDetector.Invoke(d => d.DetectRobot(), _logger).Any(d => d.IsRobot) && Mode == ReCaptchaMode.PreventRobots;
             var alwaysShow = Mode == ReCaptchaMode.AlwaysShow;
             var isConfigured = _settings != null;
 
