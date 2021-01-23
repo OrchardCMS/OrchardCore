@@ -84,8 +84,8 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         return ret("qualifier", "qualifier");
       } else if (/[:;{}\[\]\(\)]/.test(ch)) {
         return ret(null, ch);
-      } else if (stream.match(/[\w-.]+(?=\()/)) {
-        if (/^(url(-prefix)?|domain|regexp)$/.test(stream.current().toLowerCase())) {
+      } else if (stream.match(/^[\w-.]+(?=\()/)) {
+        if (/^(url(-prefix)?|domain|regexp)$/i.test(stream.current())) {
           state.tokenize = tokenParenthesized;
         }
 
@@ -120,7 +120,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     function tokenParenthesized(stream, state) {
       stream.next(); // Must be '('
 
-      if (!stream.match(/\s*[\"\')]/, false)) state.tokenize = tokenString(")");else state.tokenize = null;
+      if (!stream.match(/^\s*[\"\')]/, false)) state.tokenize = tokenString(")");else state.tokenize = null;
       return ret(null, "(");
     } // Context management
 
@@ -505,7 +505,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         }
       },
       ":": function _(stream) {
-        if (stream.match(/\s*\{/, false)) return [null, null];
+        if (stream.match(/^\s*\{/, false)) return [null, null];
         return false;
       },
       "$": function $(stream) {

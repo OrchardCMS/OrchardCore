@@ -299,7 +299,10 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                 {
                     _resourceManager.RegisterHeadScript(builder);
                 }
-                else
+                else if (At == ResourceLocation.Inline)
+                {
+                    output.Content.SetHtmlContent(builder);
+                } else 
                 {
                     _resourceManager.RegisterFootScript(builder);
                 }
