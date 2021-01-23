@@ -2,8 +2,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Moq;
-using OrchardCore.Localization.Models;
-using OrchardCore.Localization.Services;
+using OrchardCore.Localization.Dynamic.Models;
+using OrchardCore.Localization.Dynamic.Services;
 using Xunit;
 
 namespace OrchardCore.Tests.Modules.OrchardCore.Localization

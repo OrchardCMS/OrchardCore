@@ -7,14 +7,11 @@ using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement.Handlers;
-using OrchardCore.Localization.Deployment;
 using OrchardCore.Localization.Drivers;
-using OrchardCore.Localization.Recipes;
 using OrchardCore.Localization.Models;
 using OrchardCore.Localization.Services;
 using OrchardCore.Modules;
 using OrchardCore.Navigation;
-using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
 using OrchardCore.Settings.Deployment;
@@ -38,13 +35,6 @@ namespace OrchardCore.Localization
 
             services.AddPortableObjectLocalization(options => options.ResourcesPath = "Localization");
             services.Replace(ServiceDescriptor.Singleton<ILocalizationFileLocationProvider, ModularPoFileLocationProvider>());
-
-            services.AddScoped<TranslationsManager>();
-            services.AddRecipeExecutionStep<TranslationsStep>();
-
-            services.AddTransient<IDeploymentSource, AllDataTranslationsDeploymentSource>();
-            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AllDataTranslationsDeploymentStep>());
-            services.AddScoped<IDisplayDriver<DeploymentStep>, AllDataTranslationsDeploymentStepDriver>();
         }
 
         /// <inheritdocs />

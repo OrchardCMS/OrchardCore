@@ -3,10 +3,10 @@ using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Recipes.Models;
 using OrchardCore.Recipes.Services;
-using OrchardCore.Localization.Models;
-using OrchardCore.Localization.Services;
+using OrchardCore.Localization.Dynamic.Models;
+using OrchardCore.Localization.Dynamic.Services;
 
-namespace OrchardCore.Localization.Recipes
+namespace OrchardCore.Localization.Dynamic.Recipes
 {
     public class TranslationsStep : IRecipeStepHandler
     {

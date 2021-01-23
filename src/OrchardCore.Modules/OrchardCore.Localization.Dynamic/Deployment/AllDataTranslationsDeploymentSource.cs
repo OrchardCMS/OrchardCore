@@ -2,9 +2,9 @@ using System;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Deployment;
-using OrchardCore.Localization.Services;
+using OrchardCore.Localization.Dynamic.Services;
 
-namespace OrchardCore.Localization.Deployment
+namespace OrchardCore.Localization.Dynamic.Deployment
 {
     public class AllDataTranslationsDeploymentSource : IDeploymentSource
     {

@@ -151,14 +151,4 @@ namespace OrchardCore.ContentTypes
             services.AddScoped<IDisplayDriver<DeploymentStep>, DeleteContentDefinitionDeploymentStepDriver>();
         }
     }
-
-    [RequireFeatures("OrchardCore.Localization")]
-    public class LocalizationStartup : StartupBase
-    {
-        public override void ConfigureServices(IServiceCollection services)
-        {
-            services.AddScoped<ILocalizationDataProvider, ContentTypeDataLocalizationProvider>();
-            services.AddScoped<ILocalizationDataProvider, ContentFieldDataLocalizationProvider>();
-        }
-    }
 }
