@@ -131,9 +131,9 @@ namespace OrchardCore.Setup.Services
 
             if (string.IsNullOrEmpty(shellSettings["DatabaseProvider"]))
             {
-                shellSettings["DatabaseProvider"] = context.Properties["DatabaseProvider"].ToString();
-                shellSettings["ConnectionString"] = context.Properties["DatabaseConnectionString"].ToString();
-                shellSettings["TablePrefix"] = context.Properties["DatabaseTablePrefix"].ToString();
+                shellSettings["DatabaseProvider"] = context.Properties["DatabaseProvider"]?.ToString();
+                shellSettings["ConnectionString"] = context.Properties["DatabaseConnectionString"]?.ToString();
+                shellSettings["TablePrefix"] = context.Properties["DatabaseTablePrefix"]?.ToString();
             }
 
             if (String.IsNullOrWhiteSpace(shellSettings["DatabaseProvider"]))
@@ -208,7 +208,7 @@ namespace OrchardCore.Setup.Services
                 var setupEventHandlers = scope.ServiceProvider.GetServices<ISetupEventHandler>();
                 var logger = scope.ServiceProvider.GetRequiredService<ILogger<SetupService>>();
 
-                await setupEventHandlers.InvokeAsync((handler, handlerContext) => handler.Setup(
+                await setupEventHandlers.InvokeAsync((handler, context) => handler.Setup(
                     context.Properties,
                     reportError
                     ), context, logger);
