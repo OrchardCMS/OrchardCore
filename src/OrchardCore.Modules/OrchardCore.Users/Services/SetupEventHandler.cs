@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using OrchardCore.Abstractions.Setup;
 using OrchardCore.Setup.Events;
 using OrchardCore.Users.Models;
 
@@ -25,14 +26,14 @@ namespace OrchardCore.Users.Services
         {
             var user = new User
             {
-                UserName = properties["AdminUsername"]?.ToString(),
-                UserId = properties["AdminUserId"]?.ToString(),
-                Email =properties["AdminEmail"]?.ToString(),
+                UserName = properties[SetupConstants.AdminUsername]?.ToString(),
+                UserId = properties[SetupConstants.AdminUserId]?.ToString(),
+                Email =properties[SetupConstants.AdminEmail]?.ToString(),
                 RoleNames = new string[] { "Administrator" },
                 EmailConfirmed = true
             };
 
-            return _userService.CreateUserAsync(user, properties["AdminPassword"]?.ToString(), reportError);
+            return _userService.CreateUserAsync(user, properties[SetupConstants.AdminPassword]?.ToString(), reportError);
         }
     }
 }

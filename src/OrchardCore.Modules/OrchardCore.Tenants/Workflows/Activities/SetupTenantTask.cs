@@ -2,6 +2,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
+using OrchardCore.Abstractions.Setup;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Models;
@@ -156,16 +158,16 @@ namespace OrchardCore.Tenants.Workflows.Activities
                 EnabledFeatures = null,
                 Errors = new Dictionary<string, string>(),
                 Recipe = recipe,
-                Properties = new Dictionary<string, object>()
+                Properties = new Dictionary<string, object>
                 {
-                    {"SiteName", siteName},
-                    {"AdminUsername", adminUsername},
-                    {"AdminEmail", AdminEmail},
-                    {"AdminPassword", adminPassword},
-                    {"SiteTimeZone", _clock.GetSystemTimeZone().TimeZoneId},
-                    {"DatabaseProvider", databaseProvider},
-                    {"DatabaseConnectionString", databaseConnectionString},
-                    {"DatabaseTablePrefix", databaseTablePrefix},
+                    {SetupConstants.SiteName, siteName},
+                    {SetupConstants.AdminUsername, adminUsername},
+                    {SetupConstants.AdminEmail, AdminEmail},
+                    {SetupConstants.AdminPassword, adminPassword},
+                    {SetupConstants.SiteTimeZone, _clock.GetSystemTimeZone().TimeZoneId},
+                    {SetupConstants.DatabaseProvider, databaseProvider},
+                    {SetupConstants.DatabaseConnectionString, databaseConnectionString},
+                    {SetupConstants.DatabaseConnectionString, databaseTablePrefix},
                 }
             };
 

@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using OrchardCore.Abstractions.Setup;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Descriptor;
@@ -125,15 +126,15 @@ namespace OrchardCore.Setup.Services
 
             // Due to database collation we normalize the userId to lower invariant.
             // During setup there are no users so we do not need to check unicity.
-            context.Properties["AdminUserId"] = _setupUserIdGenerator.GenerateUniqueId().ToLowerInvariant();
+            context.Properties[SetupConstants.AdminUserId] = _setupUserIdGenerator.GenerateUniqueId().ToLowerInvariant();
 
             var shellSettings = new ShellSettings(context.ShellSettings);
 
             if (string.IsNullOrEmpty(shellSettings["DatabaseProvider"]))
             {
-                shellSettings["DatabaseProvider"] = context.Properties["DatabaseProvider"]?.ToString();
-                shellSettings["ConnectionString"] = context.Properties["DatabaseConnectionString"]?.ToString();
-                shellSettings["TablePrefix"] = context.Properties["DatabaseTablePrefix"]?.ToString();
+                shellSettings["DatabaseProvider"] = context.Properties[SetupConstants.DatabaseProvider]?.ToString();
+                shellSettings["ConnectionString"] = context.Properties[SetupConstants.DatabaseConnectionString]?.ToString();
+                shellSettings["TablePrefix"] = context.Properties[SetupConstants.DatabaseTablePrefix]?.ToString();
             }
 
             if (String.IsNullOrWhiteSpace(shellSettings["DatabaseProvider"]))
@@ -211,7 +212,7 @@ namespace OrchardCore.Setup.Services
                 await setupEventHandlers.InvokeAsync((handler, context) => handler.Setup(
                     context.Properties,
                     reportError
-                    ), context, logger);
+                ), context, logger);
             });
 
             if (context.Errors.Any())

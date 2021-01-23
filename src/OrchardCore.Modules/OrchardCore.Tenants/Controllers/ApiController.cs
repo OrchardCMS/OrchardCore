@@ -10,6 +10,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
+using OrchardCore.Abstractions.Setup;
 using OrchardCore.Data;
 using OrchardCore.Email;
 using OrchardCore.Environment.Shell;
@@ -252,16 +254,16 @@ namespace OrchardCore.Tenants.Controllers
                 EnabledFeatures = null, // default list,
                 Errors = new Dictionary<string, string>(),
                 Recipe = recipeDescriptor,
-                Properties = new Dictionary<string, object>()
+                Properties = new Dictionary<string, object>
                 {
-                    {"SiteName", model.SiteName},
-                    {"AdminUsername", model.UserName},
-                    {"AdminEmail", model.Email},
-                    {"AdminPassword", model.Password},
-                    {"SiteTimeZone", model.SiteTimeZone},
-                    {"DatabaseProvider", selectedProvider.Value},
-                    {"DatabaseConnectionString", connectionString},
-                    {"DatabaseTablePrefix", tablePrefix},
+                    {SetupConstants.SiteName, model.SiteName},
+                    {SetupConstants.AdminUsername, model.UserName},
+                    {SetupConstants.AdminEmail, model.Email},
+                    {SetupConstants.AdminPassword, model.Password},
+                    {SetupConstants.SiteTimeZone, model.SiteTimeZone},
+                    {SetupConstants.DatabaseProvider, selectedProvider.Value},
+                    {SetupConstants.DatabaseConnectionString, connectionString},
+                    {SetupConstants.DatabaseTablePrefix, tablePrefix},
                 }
             };
 

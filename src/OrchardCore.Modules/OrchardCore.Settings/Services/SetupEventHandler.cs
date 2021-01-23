@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using OrchardCore.Abstractions.Setup;
 using OrchardCore.Setup.Events;
 
 namespace OrchardCore.Settings.Services
@@ -24,9 +25,9 @@ namespace OrchardCore.Settings.Services
         {
             // Updating site settings
             var siteSettings = await _siteService.LoadSiteSettingsAsync();
-            siteSettings.SiteName = properties["SiteName"]?.ToString();
-            siteSettings.SuperUser = properties["AdminUserId"]?.ToString();
-            siteSettings.TimeZoneId = properties["SiteTimeZone"]?.ToString();
+            siteSettings.SiteName = properties[SetupConstants.SiteName]?.ToString();
+            siteSettings.SuperUser = properties[SetupConstants.AdminUserId]?.ToString();
+            siteSettings.TimeZoneId = properties[SetupConstants.SiteTimeZone]?.ToString();
             await _siteService.UpdateSiteSettingsAsync(siteSettings);
 
             // TODO: Add Encryption Settings in
