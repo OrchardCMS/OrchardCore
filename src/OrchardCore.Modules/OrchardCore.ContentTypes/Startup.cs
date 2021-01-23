@@ -16,7 +16,6 @@ using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
-using OrchardCore.Localization;
 
 namespace OrchardCore.ContentTypes
 {
