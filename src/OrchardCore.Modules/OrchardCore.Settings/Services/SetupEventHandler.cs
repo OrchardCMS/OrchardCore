@@ -24,9 +24,9 @@ namespace OrchardCore.Settings.Services
         {
             // Updating site settings
             var siteSettings = await _siteService.LoadSiteSettingsAsync();
-            siteSettings.SiteName = properties["SiteName"].ToString();
-            siteSettings.SuperUser = properties["AdminUserId"].ToString();
-            siteSettings.TimeZoneId = properties["SiteTimeZone"].ToString();
+            siteSettings.SiteName = properties["SiteName"]?.ToString();
+            siteSettings.SuperUser = properties["AdminUserId"]?.ToString();
+            siteSettings.TimeZoneId = properties["SiteTimeZone"]?.ToString();
             await _siteService.UpdateSiteSettingsAsync(siteSettings);
 
             // TODO: Add Encryption Settings in

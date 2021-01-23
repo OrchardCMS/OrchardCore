@@ -25,14 +25,14 @@ namespace OrchardCore.Users.Services
         {
             var user = new User
             {
-                UserName = properties["AdminUsername"].ToString(),
-                UserId = properties["AdminUserId"].ToString(),
-                Email =properties["AdminEmail"].ToString(),
+                UserName = properties["AdminUsername"]?.ToString(),
+                UserId = properties["AdminUserId"]?.ToString(),
+                Email =properties["AdminEmail"]?.ToString(),
                 RoleNames = new string[] { "Administrator" },
                 EmailConfirmed = true
             };
 
-            return _userService.CreateUserAsync(user, properties["AdminPassword"].ToString(), reportError);
+            return _userService.CreateUserAsync(user, properties["AdminPassword"]?.ToString(), reportError);
         }
     }
 }
