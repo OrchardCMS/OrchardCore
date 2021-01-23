@@ -109,7 +109,7 @@ namespace OrchardCore.Media.Filters
             if (mediaOptions.UseTokenizedQueryString)
             {
                 var mediaTokenService = serviceProvider.GetRequiredService<IMediaTokenService>();
-                resizedUrl = mediaTokenService.TokenizePath(resizedUrl);
+                resizedUrl = mediaTokenService.AddTokenToPath(resizedUrl);
             }
 
             return new StringValue(resizedUrl);

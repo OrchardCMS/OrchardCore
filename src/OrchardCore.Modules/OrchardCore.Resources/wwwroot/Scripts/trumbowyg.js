@@ -6,7 +6,7 @@
 function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 /**
- * Trumbowyg v2.22.0 - A lightweight WYSIWYG editor
+ * Trumbowyg v2.23.0 - A lightweight WYSIWYG editor
  * Trumbowyg core file
  * ------------------------
  * @link http://alex-d.github.io/Trumbowyg
@@ -75,15 +75,9 @@ Object.defineProperty(jQuery.trumbowyg, 'defaultOptions', {
     autogrow: false,
     autogrowOnEnter: false,
     imageWidthModalEdit: false,
+    hideButtonTexts: null,
     prefix: 'trumbowyg-',
-    // classes for inputs
-    tagClasses: {
-      h1: null,
-      h2: null,
-      h3: null,
-      h4: null,
-      p: null
-    },
+    tagClasses: {},
     semantic: true,
     semanticKeepAttributes: false,
     resetCss: false,
@@ -102,7 +96,8 @@ Object.defineProperty(jQuery.trumbowyg, 'defaultOptions', {
     plugins: {},
     urlProtocol: false,
     minimalLinks: false,
-    defaultLinkTarget: undefined
+    defaultLinkTarget: undefined,
+    svgPath: null
   },
   writable: false,
   enumerable: true,
@@ -1419,12 +1414,10 @@ Object.defineProperty(jQuery.trumbowyg, 'defaultOptions', {
               listId = window.getSelection().focusNode.parentNode;
             }
 
-            var arr = t.o.tagClasses[param];
+            var classes = t.o.tagClasses[param];
 
-            if (arr) {
-              for (var i = 0; i < arr.length; i += 1) {
-                $(listId).addClass(arr[i]);
-              }
+            if (classes) {
+              $(listId).addClass(classes);
             }
           } catch (e) {}
         }

@@ -2,6 +2,12 @@
 
   <PropertyGroup>
     <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
+     <!-- NuGet properties-->
+    <Title>Target for Modular OrchardCore CMS Application</Title>
+    <Description>$(OCCMSDescription)
+    
+    Converts the application into a modular OrchardCore CMS application with TheAdmin theme but without any front-end Themes.</Description>
+    <PackageTags>$(PackageTags) OrchardCoreCMS CMS</PackageTags>
   </PropertyGroup>
 
   <!-- Add ".props" and ".targets" files in the package specific to the "Cms.Core" bundle -->
@@ -40,6 +46,7 @@
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.ContentPreview\OrchardCore.ContentPreview.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Contents\OrchardCore.Contents.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.ContentTypes\OrchardCore.ContentTypes.csproj" PrivateAssets="none" />
+    <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Cors\OrchardCore.Cors.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.CustomSettings\OrchardCore.CustomSettings.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.DataProtection.Azure\OrchardCore.DataProtection.Azure.csproj" PrivateAssets="none" />
     <ProjectReference Include="..\..\OrchardCore.Modules\OrchardCore.Deployment\OrchardCore.Deployment.csproj" PrivateAssets="none" />

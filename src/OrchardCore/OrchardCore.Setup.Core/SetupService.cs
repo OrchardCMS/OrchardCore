@@ -217,6 +217,9 @@ namespace OrchardCore.Setup.Services
 
             if (context.Errors.Any())
             {
+                // So that the new registered shell is reverted back to the 'Uninitialized' state.
+                context.ShellSettings = shellSettings;
+
                 return executionId;
             }
 

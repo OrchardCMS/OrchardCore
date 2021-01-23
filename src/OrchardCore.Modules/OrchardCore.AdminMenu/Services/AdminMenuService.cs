@@ -5,7 +5,7 @@ using OrchardCore.AdminMenu.Models;
 using OrchardCore.AdminMenu.Services;
 using OrchardCore.Documents;
 
-namespace OrchardCore.AdminMenu
+namespace OrchardCore.AdminMenu.Services
 {
     public class AdminMenuService : IAdminMenuService
     {

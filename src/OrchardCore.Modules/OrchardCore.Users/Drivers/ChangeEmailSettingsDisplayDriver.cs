@@ -13,7 +13,7 @@ namespace OrchardCore.Users.Drivers
     [Feature("OrchardCore.Users.ChangeEmail")]
     public class ChangeEmailSettingsDisplayDriver : SectionDisplayDriver<ISite, ChangeEmailSettings>
     {
-        public const string GroupId = "ChangeEmailSettings";
+        public const string GroupId = "userChangeEmail";
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthorizationService _authorizationService;
 

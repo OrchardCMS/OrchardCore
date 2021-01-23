@@ -353,7 +353,7 @@ public class NotifyTask : TaskActivity
 The following is an example of a simple activity display driver:
 
 ```csharp
-public class NotifyTaskDisplay : ActivityDisplayDriver<NotifyTask, NotifyTaskViewModel>
+public class NotifyTaskDisplayDriver : ActivityDisplayDriver<NotifyTask, NotifyTaskViewModel>
 {
     protected override void EditActivity(NotifyTask activity, NotifyTaskViewModel model)
     {

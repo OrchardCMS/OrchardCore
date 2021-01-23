@@ -23,7 +23,8 @@ namespace OrchardCore.ResourceManagement
         private List<IHtmlContent> _headScripts;
         private List<IHtmlContent> _footScripts;
         private List<IHtmlContent> _styles;
-        private readonly HashSet<string> _localScripts;
+        private HashSet<string> _localScripts;
+        private HashSet<string> _localStyles;
 
         private readonly IResourceManifestState _resourceManifestState;
         private readonly ResourceManagementOptions _options;
@@ -40,7 +41,6 @@ namespace OrchardCore.ResourceManagement
             _fileVersionProvider = fileVersionProvider;
 
             _builtResources = new Dictionary<string, ResourceRequiredContext[]>(StringComparer.OrdinalIgnoreCase);
-            _localScripts = new HashSet<string>();
         }
 
         public IEnumerable<ResourceManifest> ResourceManifests
@@ -385,13 +385,6 @@ namespace OrchardCore.ResourceManagement
                     throw new InvalidOperationException($"Could not find a resource of type '{settings.Type}' named '{settings.Name}' with version '{settings.Version ?? "any"}'.");
                 }
 
-                // Register any additional dependencies for the resource here,
-                // rather than in Combine as they are additive, and should not be Combined.
-                if (settings.Dependencies != null)
-                {
-                    resource.SetDependencies(settings.Dependencies);
-                }
-
                 ExpandDependencies(resource, settings, allResources);
             }
 
@@ -421,6 +414,21 @@ namespace OrchardCore.ResourceManagement
                 return;
             }
 
+            // Use any additional dependencies from the settings without mutating the resource that is held in a singleton collection.
+            List<string> dependencies = null;
+            if (resource.Dependencies != null)
+            {
+                dependencies = new List<string>(resource.Dependencies);
+                if (settings.Dependencies != null)
+                {
+                    dependencies.AddRange(settings.Dependencies);
+                }
+            }
+            else if (settings.Dependencies != null)
+            {
+                dependencies = new List<string>(settings.Dependencies);
+            }
+
             // Settings is given so they can cascade down into dependencies. For example, if Foo depends on Bar, and Foo's required
             // location is Head, so too should Bar's location.
             // forge the effective require settings for this resource
@@ -430,14 +438,14 @@ namespace OrchardCore.ResourceManagement
                 ? ((RequireSettings)allResources[resource]).Combine(settings)
                 : new RequireSettings(_options) { Type = resource.Type, Name = resource.Name }.Combine(settings);
 
-            if (resource.Dependencies != null)
+            if (dependencies != null)
             {
                 // share search instance
                 var tempSettings = new RequireSettings();
 
-                for (var i = 0; i < resource.Dependencies.Count; i++)
+                for (var i = 0; i < dependencies.Count; i++)
                 {
-                    var d = resource.Dependencies[i];
+                    var d = dependencies[i];
                     var idx = d.IndexOf(':');
                     var name = d;
                     string version = null;
@@ -573,6 +581,11 @@ namespace OrchardCore.ResourceManagement
 
             foreach (var context in styleSheets)
             {
+                if (context.Settings.Location == ResourceLocation.Inline)
+                {
+                    continue;
+                }
+
                 if (!first)
                 {
                     builder.AppendHtml(System.Environment.NewLine);
@@ -676,13 +689,38 @@ namespace OrchardCore.ResourceManagement
         public void RenderLocalScript(RequireSettings settings, IHtmlContentBuilder builder)
         {
             var localScripts = DoGetRequiredResources("script");
+            _localScripts ??= new HashSet<string>();
 
             var first = true;
 
             foreach (var context in localScripts)
             {
-                if (context.Settings.Location == ResourceLocation.Unspecified
-                    && (_localScripts.Add(context.Settings.Name) || context.Settings.Name == settings.Name))
+                if ((context.Settings.Location == ResourceLocation.Unspecified || context.Settings.Location == ResourceLocation.Inline) &&
+                    (_localScripts.Add(context.Settings.Name) || context.Settings.Name == settings.Name))
+                {
+                    if (!first)
+                    {
+                        builder.AppendHtml(System.Environment.NewLine);
+                    }
+
+                    first = false;
+
+                    builder.AppendHtml(context.GetHtmlContent(_options.ContentBasePath));
+                }
+            }
+        }
+
+        public void RenderLocalStyle(RequireSettings settings, IHtmlContentBuilder builder)
+        {
+            var localStyles = DoGetRequiredResources("stylesheet");
+            _localStyles ??= new HashSet<string>();
+
+            var first = true;
+
+            foreach (var context in localStyles)
+            {
+                if (context.Settings.Location == ResourceLocation.Inline &&
+                    (_localStyles.Add(context.Settings.Name) || context.Settings.Name == settings.Name))
                 {
                     if (!first)
                     {

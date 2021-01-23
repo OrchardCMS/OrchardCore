@@ -19,7 +19,7 @@ namespace OrchardCore.Media.Controllers
     public class AdminController : Controller
     {
         private static readonly char[] _invalidFolderNameCharacters = new char[] { '\\', '/' };
-        
+
         private readonly HashSet<string> _allowedFileExtensions;
         private readonly IMediaFileStore _mediaFileStore;
         private readonly IMediaNameNormalizerService _mediaNameNormalizerService;
@@ -27,6 +27,7 @@ namespace OrchardCore.Media.Controllers
         private readonly IContentTypeProvider _contentTypeProvider;
         private readonly ILogger _logger;
         private readonly IStringLocalizer S;
+        private readonly MediaOptions _mediaOptions;
 
         public AdminController(
             IMediaFileStore mediaFileStore,
@@ -42,7 +43,8 @@ namespace OrchardCore.Media.Controllers
             _mediaNameNormalizerService = mediaNameNormalizerService;
             _authorizationService = authorizationService;
             _contentTypeProvider = contentTypeProvider;
-            _allowedFileExtensions = options.Value.AllowedFileExtensions;
+            _mediaOptions = options.Value;
+            _allowedFileExtensions = _mediaOptions.AllowedFileExtensions;
             _logger = logger;
             S = stringLocalizer;
         }
@@ -418,11 +420,6 @@ namespace OrchardCore.Media.Controllers
             return new ObjectResult(mediaFolder);
         }
 
-        public IActionResult MediaApplication()
-        {
-            return View();
-        }
-
         public object CreateFileResult(IFileStoreEntry mediaFile)
         {
             _contentTypeProvider.TryGetContentType(mediaFile.Name, out var contentType);
@@ -439,6 +436,21 @@ namespace OrchardCore.Media.Controllers
                 mediaText = String.Empty,
                 anchor = new { x = 0.5f, y = 0.5f }
             };
+        }
+
+        public IActionResult MediaApplication()
+        {
+            return View();
+        }
+
+        public async Task<IActionResult> Options()
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ViewMediaOptions))
+            {
+                return Forbid();
+            }
+
+            return View(_mediaOptions);
         }
     }
 }
