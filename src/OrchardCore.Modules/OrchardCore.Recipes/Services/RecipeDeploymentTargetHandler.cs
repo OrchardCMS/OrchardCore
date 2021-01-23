@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.FileProviders;
@@ -31,7 +32,7 @@ namespace OrchardCore.Recipes.Services
                 RecipeFileInfo = fileProvider.GetFileInfo("Recipe.json")
             };
 
-            await _recipeExecutor.ExecuteAsync(executionId, recipeDescriptor, new object(), CancellationToken.None);
+            await _recipeExecutor.ExecuteAsync(executionId, recipeDescriptor, new Dictionary<string, object>(), CancellationToken.None);
 
             await _shellHost.ReleaseShellContextAsync(_shellSettings);
         }

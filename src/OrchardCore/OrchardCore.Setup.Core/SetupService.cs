@@ -125,20 +125,20 @@ namespace OrchardCore.Setup.Services
 
             // Due to database collation we normalize the userId to lower invariant.
             // During setup there are no users so we do not need to check unicity.
-            context.AdminUserId = _setupUserIdGenerator.GenerateUniqueId().ToLowerInvariant();
+            context.Properties["AdminUserId"] = _setupUserIdGenerator.GenerateUniqueId().ToLowerInvariant();
 
             var shellSettings = new ShellSettings(context.ShellSettings);
 
             if (string.IsNullOrEmpty(shellSettings["DatabaseProvider"]))
             {
-                shellSettings["DatabaseProvider"] = context.DatabaseProvider;
-                shellSettings["ConnectionString"] = context.DatabaseConnectionString;
-                shellSettings["TablePrefix"] = context.DatabaseTablePrefix;
+                shellSettings["DatabaseProvider"] = context.Properties["DatabaseProvider"].ToString();
+                shellSettings["ConnectionString"] = context.Properties["DatabaseConnectionString"].ToString();
+                shellSettings["TablePrefix"] = context.Properties["DatabaseTablePrefix"].ToString();
             }
 
             if (String.IsNullOrWhiteSpace(shellSettings["DatabaseProvider"]))
             {
-                throw new ArgumentException($"{nameof(context.DatabaseProvider)} is required");
+                throw new ArgumentException("DatabaseProvider is required");
             }
 
             // Creating a standalone environment based on a "minimum shell descriptor".
@@ -193,19 +193,7 @@ namespace OrchardCore.Setup.Services
 
                 var recipeExecutor = shellContext.ServiceProvider.GetRequiredService<IRecipeExecutor>();
 
-                await recipeExecutor.ExecuteAsync(executionId, context.Recipe, new
-                {
-                    context.SiteName,
-                    context.AdminUsername,
-                    context.AdminUserId,
-                    context.AdminEmail,
-                    context.AdminPassword,
-                    context.DatabaseProvider,
-                    context.DatabaseConnectionString,
-                    context.DatabaseTablePrefix,
-                    Properties = context.Properties
-                },
-                _applicationLifetime.ApplicationStopping);
+                await recipeExecutor.ExecuteAsync(executionId, context.Recipe, context.Properties, _applicationLifetime.ApplicationStopping);
             }
 
             // Reloading the shell context as the recipe has probably updated its features
@@ -221,18 +209,9 @@ namespace OrchardCore.Setup.Services
                 var logger = scope.ServiceProvider.GetRequiredService<ILogger<SetupService>>();
 
                 await setupEventHandlers.InvokeAsync((handler, context) => handler.Setup(
-                    context.SiteName,
-                    context.AdminUsername,
-                    context.AdminUserId,
-                    context.AdminEmail,
-                    context.AdminPassword,
-                    context.DatabaseProvider,
-                    context.DatabaseConnectionString,
-                    context.DatabaseTablePrefix,
-                    context.SiteTimeZone,
-                    reportError,
-                    context.Properties
-                ), context, logger);
+                    context.Properties,
+                    reportError
+                    ), context, logger);
             });
 
             if (context.Errors.Any())

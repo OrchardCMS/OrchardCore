@@ -10,17 +10,8 @@ namespace OrchardCore.Setup.Events
     public interface ISetupEventHandler
     {
         Task Setup(
-            string siteName,
-            string userName,
-            string userId,
-            string email,
-            string password,
-            string dbProvider,
-            string dbConnectionString,
-            string dbTablePrefix,
-            string siteTimeZone,
-            Action<string, string> reportError,
-            IDictionary<string, string> properties
-            );
+            IDictionary<string, object> properties,
+            Action<string, string> reportError
+        );
     }
 }

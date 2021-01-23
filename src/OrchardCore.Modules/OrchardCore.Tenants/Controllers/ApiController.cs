@@ -249,17 +249,20 @@ namespace OrchardCore.Tenants.Controllers
             var setupContext = new SetupContext
             {
                 ShellSettings = shellSettings,
-                SiteName = model.SiteName,
                 EnabledFeatures = null, // default list,
-                AdminUsername = model.UserName,
-                AdminEmail = model.Email,
-                AdminPassword = model.Password,
                 Errors = new Dictionary<string, string>(),
                 Recipe = recipeDescriptor,
-                SiteTimeZone = model.SiteTimeZone,
-                DatabaseProvider = selectedProvider.Value,
-                DatabaseConnectionString = connectionString,
-                DatabaseTablePrefix = tablePrefix
+                Properties = new Dictionary<string, object>()
+                {
+                    {"SiteName", model.SiteName},
+                    {"AdminUsername", model.UserName},
+                    {"AdminEmail", model.Email},
+                    {"AdminPassword", model.Password},
+                    {"SiteTimeZone", model.SiteTimeZone},
+                    {"DatabaseProvider", selectedProvider.Value},
+                    {"DatabaseConnectionString", connectionString},
+                    {"DatabaseTablePrefix", tablePrefix},
+                }
             };
 
             var executionId = await _setupService.SetupAsync(setupContext);
@@ -277,6 +280,8 @@ namespace OrchardCore.Tenants.Controllers
 
             return Ok(executionId);
         }
+
+
 
         private bool IsDefaultShell()
         {

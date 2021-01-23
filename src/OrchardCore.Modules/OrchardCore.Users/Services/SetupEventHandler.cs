@@ -19,29 +19,20 @@ namespace OrchardCore.Users.Services
         }
 
         public Task Setup(
-            string siteName,
-            string userName,
-            string userId,
-            string email,
-            string password,
-            string dbProvider,
-            string dbConnectionString,
-            string dbTablePrefix,
-            string siteTimeZone,
-            Action<string, string> reportError,
-            IDictionary<string, string> properties
+            IDictionary<string, object> properties,
+            Action<string, string> reportError
             )
         {
             var user = new User
             {
-                UserName = userName,
-                UserId = userId,
-                Email = email,
+                UserName = properties["AdminUsername"].ToString(),
+                UserId = properties["AdminUserId"].ToString(),
+                Email =properties["AdminEmail"].ToString(),
                 RoleNames = new string[] { "Administrator" },
                 EmailConfirmed = true
             };
 
-            return _userService.CreateUserAsync(user, password, reportError);
+            return _userService.CreateUserAsync(user, properties["AdminPassword"].ToString(), reportError);
         }
     }
 }
