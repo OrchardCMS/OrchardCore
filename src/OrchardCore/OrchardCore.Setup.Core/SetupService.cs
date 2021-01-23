@@ -208,7 +208,7 @@ namespace OrchardCore.Setup.Services
                 var setupEventHandlers = scope.ServiceProvider.GetServices<ISetupEventHandler>();
                 var logger = scope.ServiceProvider.GetRequiredService<ILogger<SetupService>>();
 
-                await setupEventHandlers.InvokeAsync((handler, context) => handler.Setup(
+                await setupEventHandlers.InvokeAsync((handler, handlerContext) => handler.Setup(
                     context.Properties,
                     reportError
                     ), context, logger);
