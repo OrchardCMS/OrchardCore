@@ -153,17 +153,20 @@ namespace OrchardCore.Tenants.Workflows.Activities
             var setupContext = new SetupContext
             {
                 ShellSettings = shellSettings,
-                SiteName = siteName,
                 EnabledFeatures = null,
-                AdminUsername = adminUsername,
-                AdminEmail = adminEmail,
-                AdminPassword = adminPassword,
                 Errors = new Dictionary<string, string>(),
                 Recipe = recipe,
-                SiteTimeZone = _clock.GetSystemTimeZone().TimeZoneId,
-                DatabaseProvider = databaseProvider,
-                DatabaseConnectionString = databaseConnectionString,
-                DatabaseTablePrefix = databaseTablePrefix
+                Properties = new Dictionary<string, object>()
+                {
+                    {"SiteName", siteName},
+                    {"AdminUsername", adminUsername},
+                    {"AdminEmail", AdminEmail},
+                    {"AdminPassword", adminPassword},
+                    {"SiteTimeZone", _clock.GetSystemTimeZone().TimeZoneId},
+                    {"DatabaseProvider", databaseProvider},
+                    {"DatabaseConnectionString", databaseConnectionString},
+                    {"DatabaseTablePrefix", databaseTablePrefix},
+                }
             };
 
             var executionId = await SetupService.SetupAsync(setupContext);
