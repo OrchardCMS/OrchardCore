@@ -1,5 +1,13 @@
 @model OrchardCore.Admin.ViewModels.AdminSettingsViewModel
 
+<fieldset class="form-group" asp-validation-class-for="DisplayDarkMode">
+    <div class="custom-control custom-checkbox">
+        <input asp-for="DisplayDarkMode" class="custom-control-input" type="checkbox" />
+        <label asp-for="DisplayDarkMode" class="custom-control-label">@T["Enable dark mode admin theme"]</label>
+    </div>
+    <span class="hint">@T["Whether a dark mode admin theme can be displayed."]</span>
+</fieldset>
+
 <fieldset class="form-group" asp-validation-class-for="DisplayMenuFilter">
     <div class="custom-control custom-checkbox">
         <input asp-for="DisplayMenuFilter" class="custom-control-input" type="checkbox" />
@@ -8,12 +16,12 @@
     <span class="hint">@T["Whether a quick search to filter the admin menu is displayed."]</span>
 </fieldset>
 
-<fieldset class="form-group" asp-validation-class-for="DisplayDarkMode">
+<fieldset class="form-group" asp-validation-class-for="DisplayNewMenu">
     <div class="custom-control custom-checkbox">
-        <input asp-for="DisplayDarkMode" class="custom-control-input" type="checkbox" />
-        <label asp-for="DisplayDarkMode" class="custom-control-label">@T["Enable dark mode admin theme"]</label>
+        <input asp-for="DisplayNewMenu" class="custom-control-input" type="checkbox" />
+        <label asp-for="DisplayNewMenu" class="custom-control-label">@T["Display New menu"]</label>
     </div>
-    <span class="hint">@T["Whether a dark mode admin theme can be displayed."]</span>
+    <span class="hint">@T["Whether a New menu is displayed in the admin menu."]</span>
 </fieldset>
 
 <fieldset class="form-group" asp-validation-class-for="DisplayTitlesInTopbar">

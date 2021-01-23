@@ -214,7 +214,7 @@ When adding the field to a content type, use the settings to specify whether to
     }
 
     <div class="field field-type-userpickerfield field-name-@name">
-        <span class="name">@Model.PartFieldDefinition.DisplayName():</span>
+        <span class="name">@Model.PartFieldDefinition.DisplayName()</span>
         @if (users.Any())
         {
             foreach (var user in users)

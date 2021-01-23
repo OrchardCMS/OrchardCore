@@ -223,11 +223,7 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                     setting.UseCulture(Culture);
                 }
 
-                if (At == ResourceLocation.Inline)
-                {
-                    _resourceManager.RenderLocalStyle(setting, output.Content);
-                }
-                else if (At != ResourceLocation.Unspecified)
+                if (At != ResourceLocation.Unspecified)
                 {
                     setting.AtLocation(At);
                 }
@@ -235,6 +231,11 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                 {
                     setting.AtLocation(ResourceLocation.Head);
                 }
+
+                if (At == ResourceLocation.Inline)
+                {
+                    _resourceManager.RenderLocalStyle(setting, output.Content);
+                }                
             }
             else if (String.IsNullOrEmpty(Name) && String.IsNullOrEmpty(Src))
             {
@@ -257,7 +258,14 @@ namespace OrchardCore.ResourceManagement.TagHelpers
                     builder.Attributes.Add("type", "text/css");
                 }
 
-                _resourceManager.RegisterStyle(builder);
+                if (At == ResourceLocation.Inline)
+                {
+                    output.Content.SetHtmlContent(builder);
+                }
+                else
+                {
+                    _resourceManager.RegisterStyle(builder);
+                }
             }
         }
     }

@@ -1,8 +1,10 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Moq;
 using OrchardCore.Security;
@@ -13,7 +15,7 @@ using Xunit;
 
 namespace OrchardCore.Tests.OrchardCore.Users.Core
 {
-    public class DefaultUserClaimsPrincipalFactoryTests
+    public class DefaultUserClaimsPrincipalProviderFactoryTests
     {
         [Theory]
         [InlineData(true)]
@@ -26,6 +28,7 @@ namespace OrchardCore.Tests.OrchardCore.Users.Core
             userManager.Setup(m => m.GetUserIdAsync(user)).ReturnsAsync(user.UserId);
             userManager.Setup(m => m.GetUserNameAsync(user)).ReturnsAsync(user.UserName);
             userManager.Setup(m => m.GetEmailAsync(user)).ReturnsAsync(user.Email);
+
             if (emailVerified)
             {
                 userManager.Setup(m => m.IsEmailConfirmedAsync(user)).ReturnsAsync(emailVerified);
@@ -36,7 +39,12 @@ namespace OrchardCore.Tests.OrchardCore.Users.Core
             var options = new Mock<IOptions<IdentityOptions>>();
             options.Setup(a => a.Value).Returns(new IdentityOptions());
 
-            var factory = new DefaultUserClaimsPrincipalFactory(userManager.Object, roleManager, options.Object);
+            var claimsProviders = new List<IUserClaimsProvider>()
+            {
+                new EmailClaimsProvider(userManager.Object)
+            };
+
+            var factory = new DefaultUserClaimsPrincipalProviderFactory(userManager.Object, roleManager, options.Object, claimsProviders, null);
 
             //Act
             var principal = await factory.CreateAsync(user);

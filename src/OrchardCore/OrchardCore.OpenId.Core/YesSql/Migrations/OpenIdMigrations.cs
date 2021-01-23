@@ -44,7 +44,7 @@ namespace OrchardCore.OpenId.YesSql.Migrations
                 .Column<string>(nameof(OpenIdTokenIndex.TokenId), column => column.WithLength(48))
                 .Column<string>(nameof(OpenIdTokenIndex.ApplicationId), column => column.WithLength(48))
                 .Column<string>(nameof(OpenIdTokenIndex.AuthorizationId), column => column.WithLength(48))
-                .Column<DateTimeOffset>(nameof(OpenIdTokenIndex.ExpirationDate))
+                .Column<DateTime>(nameof(OpenIdTokenIndex.ExpirationDate))
                 .Column<string>(nameof(OpenIdTokenIndex.ReferenceId))
                 .Column<string>(nameof(OpenIdTokenIndex.Status))
                 .Column<string>(nameof(OpenIdTokenIndex.Subject))
@@ -89,10 +89,10 @@ namespace OrchardCore.OpenId.YesSql.Migrations
         public int UpdateFrom3()
         {
             SchemaBuilder.AlterIndexTable<OpenIdAuthorizationIndex>(table => table
-                .AddColumn<DateTimeOffset>(nameof(OpenIdAuthorizationIndex.CreationDate)));
+                .AddColumn<DateTime>(nameof(OpenIdAuthorizationIndex.CreationDate)));
 
             SchemaBuilder.AlterIndexTable<OpenIdTokenIndex>(table => table
-                .AddColumn<DateTimeOffset>(nameof(OpenIdTokenIndex.CreationDate)));
+                .AddColumn<DateTime>(nameof(OpenIdTokenIndex.CreationDate)));
 
             return 4;
         }
