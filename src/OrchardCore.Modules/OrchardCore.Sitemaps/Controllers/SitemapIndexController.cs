@@ -74,7 +74,7 @@ namespace OrchardCore.Sitemaps.Controllers
 
             if (!string.IsNullOrWhiteSpace(options.Search))
             {
-                sitemaps = sitemaps.Where(x => x.Name.Contains(options.Search));
+                sitemaps = sitemaps.Where(x => x.Name.Contains(options.Search, StringComparison.OrdinalIgnoreCase));
             }
 
             var count = sitemaps.Count();
@@ -296,7 +296,7 @@ namespace OrchardCore.Sitemaps.Controllers
 
             await _sitemapManager.DeleteSitemapAsync(sitemapId);
 
-            _notifier.Success(H["Sitemap index deleted successfully"]);
+            _notifier.Success(H["Sitemap index deleted successfully."]);
 
             return RedirectToAction(nameof(List));
         }
@@ -320,7 +320,7 @@ namespace OrchardCore.Sitemaps.Controllers
 
             await _sitemapManager.UpdateSitemapAsync(sitemap);
 
-            _notifier.Success(H["Sitemap index menu toggled successfully"]);
+            _notifier.Success(H["Sitemap index menu toggled successfully."]);
 
             return RedirectToAction(nameof(List));
         }

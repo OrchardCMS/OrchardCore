@@ -161,7 +161,7 @@ namespace OrchardCore.Queries.Controllers
             {
                 await _queryManager.SaveQueryAsync(query.Name, query);
 
-                _notifier.Success(H["Query created successfully"]);
+                _notifier.Success(H["Query created successfully."]);
                 return RedirectToAction("Index");
             }
 
@@ -217,7 +217,7 @@ namespace OrchardCore.Queries.Controllers
             {
                 await _queryManager.SaveQueryAsync(model.Name, query);
 
-                _notifier.Success(H["Query updated successfully"]);
+                _notifier.Success(H["Query updated successfully."]);
                 return RedirectToAction("Index");
             }
 
@@ -244,7 +244,7 @@ namespace OrchardCore.Queries.Controllers
 
             await _queryManager.DeleteQueryAsync(id);
 
-            _notifier.Success(H["Query deleted successfully"]);
+            _notifier.Success(H["Query deleted successfully."]);
 
             return RedirectToAction("Index");
         }

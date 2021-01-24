@@ -2,8 +2,4 @@
 
   <Import Project="..\OrchardCore.Build\OrchardCore.Commons.targets" />
 
-  <PropertyGroup>
-    <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
-  </PropertyGroup>
-
 </Project>

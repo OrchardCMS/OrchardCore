@@ -45,7 +45,7 @@ namespace OrchardCore.Redis.Services
         /// </summary>
         public async Task<(ILocker locker, bool locked)> TryAcquireLockAsync(string key, TimeSpan timeout, TimeSpan? expiration = null)
         {
-            using (var cts = new CancellationTokenSource(timeout))
+            using (var cts = new CancellationTokenSource(timeout != TimeSpan.MaxValue ? timeout : Timeout.InfiniteTimeSpan))
             {
                 var retries = 0.0;
 
@@ -64,13 +64,35 @@ namespace OrchardCore.Redis.Services
                     }
                     catch (TaskCanceledException)
                     {
-                        _logger.LogWarning("Fails to acquire the named lock '{LockName}' after the given timeout of '{Timeout}'.",
-                            _prefix + key, timeout.ToString());
+                        if (_logger.IsEnabled(LogLevel.Debug))
+                        {
+                            _logger.LogDebug("Timeout elapsed before acquiring the named lock '{LockName}' after the given timeout of '{Timeout}'.",
+                                _prefix + key, timeout.ToString());
+                        }
                     }
                 }
             }
 
             return (null, false);
+        }
+
+        public async Task<bool> IsLockAcquiredAsync(string key)
+        {
+            if (_redis.Database == null)
+            {
+                await _redis.ConnectAsync();
+            }
+
+            try
+            {
+                return (await _redis.Database.LockQueryAsync(_prefix + key)).HasValue;
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Fails to check whether the named lock '{LockName}' is already acquired.", _prefix + key);
+            }
+
+            return false;
         }
 
         private async Task<bool> LockAsync(string key, TimeSpan expiry)
