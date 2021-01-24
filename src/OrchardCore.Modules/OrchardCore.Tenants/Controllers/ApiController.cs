@@ -256,14 +256,14 @@ namespace OrchardCore.Tenants.Controllers
                 Recipe = recipeDescriptor,
                 Properties = new Dictionary<string, object>
                 {
-                    {SetupConstants.SiteName, model.SiteName},
-                    {SetupConstants.AdminUsername, model.UserName},
-                    {SetupConstants.AdminEmail, model.Email},
-                    {SetupConstants.AdminPassword, model.Password},
-                    {SetupConstants.SiteTimeZone, model.SiteTimeZone},
-                    {SetupConstants.DatabaseProvider, selectedProvider.Value},
-                    {SetupConstants.DatabaseConnectionString, connectionString},
-                    {SetupConstants.DatabaseTablePrefix, tablePrefix},
+                    { SetupConstants.SiteName, model.SiteName },
+                    { SetupConstants.AdminUsername, model.UserName },
+                    { SetupConstants.AdminEmail, model.Email },
+                    { SetupConstants.AdminPassword, model.Password },
+                    { SetupConstants.SiteTimeZone, model.SiteTimeZone },
+                    { SetupConstants.DatabaseProvider, selectedProvider.Value },
+                    { SetupConstants.DatabaseConnectionString, connectionString },
+                    { SetupConstants.DatabaseTablePrefix, tablePrefix },
                 }
             };
 

@@ -160,14 +160,14 @@ namespace OrchardCore.Tenants.Workflows.Activities
                 Recipe = recipe,
                 Properties = new Dictionary<string, object>
                 {
-                    {SetupConstants.SiteName, siteName},
-                    {SetupConstants.AdminUsername, adminUsername},
-                    {SetupConstants.AdminEmail, AdminEmail},
-                    {SetupConstants.AdminPassword, adminPassword},
-                    {SetupConstants.SiteTimeZone, _clock.GetSystemTimeZone().TimeZoneId},
-                    {SetupConstants.DatabaseProvider, databaseProvider},
-                    {SetupConstants.DatabaseConnectionString, databaseConnectionString},
-                    {SetupConstants.DatabaseConnectionString, databaseTablePrefix},
+                    { SetupConstants.SiteName, siteName },
+                    { SetupConstants.AdminUsername, adminUsername },
+                    { SetupConstants.AdminEmail, AdminEmail },
+                    { SetupConstants.AdminPassword, adminPassword },
+                    { SetupConstants.SiteTimeZone, _clock.GetSystemTimeZone().TimeZoneId },
+                    { SetupConstants.DatabaseProvider, databaseProvider },
+                    { SetupConstants.DatabaseConnectionString, databaseConnectionString },
+                    { SetupConstants.DatabaseConnectionString, databaseTablePrefix },
                 }
             };
 

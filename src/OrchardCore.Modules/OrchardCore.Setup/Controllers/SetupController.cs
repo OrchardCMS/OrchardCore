@@ -151,11 +151,11 @@ namespace OrchardCore.Setup.Controllers
                 Recipe = selectedRecipe,
                 Properties = new Dictionary<string, object>
                 {
-                    {SetupConstants.SiteName, model.SiteName},
-                    {SetupConstants.AdminUsername, model.UserName},
-                    {SetupConstants.AdminEmail, model.Email},
-                    {SetupConstants.AdminPassword, model.Password},
-                    {SetupConstants.SiteTimeZone, model.SiteTimeZone},
+                    { SetupConstants.SiteName, model.SiteName },
+                    { SetupConstants.AdminUsername, model.UserName },
+                    { SetupConstants.AdminEmail, model.Email },
+                    { SetupConstants.AdminPassword, model.Password },
+                    { SetupConstants.SiteTimeZone, model.SiteTimeZone },
                 }
             };
 
