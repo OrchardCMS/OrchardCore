@@ -39,7 +39,7 @@ namespace OrchardCore.Recipes.Services
             _logger = logger;
         }
 
-        public async Task<string> ExecuteAsync(string executionId, RecipeDescriptor recipeDescriptor, Dictionary<string,object> environment, CancellationToken cancellationToken)
+        public async Task<string> ExecuteAsync(string executionId, RecipeDescriptor recipeDescriptor, IDictionary<string,object> environment, CancellationToken cancellationToken)
         {
             await _recipeEventHandlers.InvokeAsync((handler, executionId, recipeDescriptor) => handler.RecipeExecutingAsync(executionId, recipeDescriptor), executionId, recipeDescriptor, _logger);
 
