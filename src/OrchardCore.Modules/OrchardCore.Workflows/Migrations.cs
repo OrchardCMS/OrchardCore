@@ -37,9 +37,9 @@ namespace OrchardCore.Workflows
                 .CreateIndex("IDX_WorkflowTypeStartActivitiesIndex_DocumentId",
                 "DocumentId",
                 "WorkflowTypeId",
-                "IsEnabled",
                 "StartActivityId",
-                "StartActivityName")
+                "StartActivityName",
+                "IsEnabled")
             );
 
             SchemaBuilder.CreateMapIndexTable<WorkflowIndex>(table => table
@@ -114,9 +114,9 @@ namespace OrchardCore.Workflows
                 .CreateIndex("IDX_WorkflowTypeStartActivitiesIndex_DocumentId",
                 "DocumentId",
                 "WorkflowTypeId",
-                "IsEnabled",
                 "StartActivityId",
-                "StartActivityName")
+                "StartActivityName",
+                "IsEnabled")
             );
 
             SchemaBuilder.AlterIndexTable<WorkflowIndex>(table => table

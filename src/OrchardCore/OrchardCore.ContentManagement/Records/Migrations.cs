@@ -35,47 +35,43 @@ namespace OrchardCore.ContentManagement.Records
                     "DocumentId",
                     "ContentItemId",
                     "ContentItemVersionId",
-                    "Latest",
                     "Published",
+                    "Latest")
+            );
+
+            SchemaBuilder.AlterIndexTable<ContentItemIndex>(table => table
+                .CreateIndex("IDX_ContentItemIndex_DocumentId_ContentType",
+                    "DocumentId",
+                    "ContentType",
+                    "CreatedUtc",
                     "ModifiedUtc",
                     "PublishedUtc",
-                    "CreatedUtc")
+                    "Published",
+                    "Latest")
             );
 
             SchemaBuilder.AlterIndexTable<ContentItemIndex>(table => table
                 .CreateIndex("IDX_ContentItemIndex_DocumentId_Owner",
                     "DocumentId",
-                    "Latest",
+                    "Owner",
                     "Published",
-                    "ContentType",
-                    "ModifiedUtc",
-                    "PublishedUtc",
-                    "CreatedUtc",
-                    "Owner")
+                    "Latest")
             );
 
             SchemaBuilder.AlterIndexTable<ContentItemIndex>(table => table
                 .CreateIndex("IDX_ContentItemIndex_DocumentId_Author",
                     "DocumentId",
-                    "Latest",
+                    "Author",
                     "Published",
-                    "ContentType",
-                    "ModifiedUtc",
-                    "PublishedUtc",
-                    "CreatedUtc",
-                    "Author")
+                    "Latest")
             );
 
             SchemaBuilder.AlterIndexTable<ContentItemIndex>(table => table
                 .CreateIndex("IDX_ContentItemIndex_DocumentId_DisplayText",
                     "DocumentId",
-                    "Latest",
+                    "DisplayText",
                     "Published",
-                    "ContentType",
-                    "ModifiedUtc",
-                    "PublishedUtc",
-                    "CreatedUtc",
-                    "DisplayText")
+                    "Latest")
             );
 
             // Shortcut other migration steps on new content definition schemas.
@@ -194,47 +190,43 @@ namespace OrchardCore.ContentManagement.Records
                     "DocumentId",
                     "ContentItemId",
                     "ContentItemVersionId",
-                    "Latest",
                     "Published",
+                    "Latest")
+            );
+
+            SchemaBuilder.AlterIndexTable<ContentItemIndex>(table => table
+                .CreateIndex("IDX_ContentItemIndex_DocumentId_ContentType",
+                    "DocumentId",
+                    "ContentType",
+                    "CreatedUtc",
                     "ModifiedUtc",
                     "PublishedUtc",
-                    "CreatedUtc")
+                    "Published",
+                    "Latest")
             );
 
             SchemaBuilder.AlterIndexTable<ContentItemIndex>(table => table
                 .CreateIndex("IDX_ContentItemIndex_DocumentId_Owner",
                     "DocumentId",
-                    "Latest",
+                    "Owner",
                     "Published",
-                    "ContentType",
-                    "ModifiedUtc",
-                    "PublishedUtc",
-                    "CreatedUtc",
-                    "Owner")
+                    "Latest")
             );
 
             SchemaBuilder.AlterIndexTable<ContentItemIndex>(table => table
                 .CreateIndex("IDX_ContentItemIndex_DocumentId_Author",
                     "DocumentId",
-                    "Latest",
+                    "Author",
                     "Published",
-                    "ContentType",
-                    "ModifiedUtc",
-                    "PublishedUtc",
-                    "CreatedUtc",
-                    "Author")
+                    "Latest")
             );
 
             SchemaBuilder.AlterIndexTable<ContentItemIndex>(table => table
                 .CreateIndex("IDX_ContentItemIndex_DocumentId_DisplayText",
                     "DocumentId",
-                    "Latest",
+                    "DisplayText",
                     "Published",
-                    "ContentType",
-                    "ModifiedUtc",
-                    "PublishedUtc",
-                    "CreatedUtc",
-                    "DisplayText")
+                    "Latest")
             );
 
             return 6;
