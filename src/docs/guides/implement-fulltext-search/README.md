@@ -30,7 +30,7 @@ https://github.com/apache/lucenenet/tree/master/src/Lucene.Net.Analysis.Common/A
 
 You can register for example a custom analyzer with the DI using this example from a startup.cs file in your custom module : 
 
-```C#
+```csharp
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Lucene.Model;
 using OrchardCore.Lucene.Services;
