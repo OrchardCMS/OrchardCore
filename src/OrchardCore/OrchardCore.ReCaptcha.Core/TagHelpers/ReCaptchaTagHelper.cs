@@ -1,15 +1,12 @@
-using System.Globalization;
-using System.Linq;
+using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc.TagHelpers;
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Localization;
-using OrchardCore.Modules;
 using OrchardCore.ReCaptcha.ActionFilters;
 using OrchardCore.ReCaptcha.ActionFilters.Detection;
 using OrchardCore.ReCaptcha.Configuration;
@@ -22,16 +19,22 @@ namespace OrchardCore.ReCaptcha.TagHelpers
     public class ReCaptchaTagHelper : TagHelper
     {
         private readonly IResourceManager _resourceManager;
-        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IEnumerable<IDetectRobots> _robotDetectors;
         private readonly ReCaptchaSettings _settings;
         private readonly ILogger _logger;
         private readonly ILocalizationService _localizationService;
-        private readonly IStringLocalizer S;
+        private readonly IStringLocalizer<ReCaptchaTagHelper> S;
 
-        public ReCaptchaTagHelper(IOptions<ReCaptchaSettings> optionsAccessor, IResourceManager resourceManager, ILocalizationService localizationService, IHttpContextAccessor httpContextAccessor, ILogger<ReCaptchaTagHelper> logger, IStringLocalizer<ReCaptchaTagHelper> localizer)
+        public ReCaptchaTagHelper(
+            IOptions<ReCaptchaSettings> optionsAccessor,
+            IResourceManager resourceManager,
+            ILocalizationService localizationService,
+            IEnumerable<IDetectRobots> robotDetectors,
+            ILogger<ReCaptchaTagHelper> logger,
+            IStringLocalizer<ReCaptchaTagHelper> localizer)
         {
             _resourceManager = resourceManager;
-            _httpContextAccessor = httpContextAccessor;
+            _robotDetectors = robotDetectors;
             _settings = optionsAccessor.Value;
             Mode = ReCaptchaMode.PreventRobots;
             _logger = logger;
@@ -51,55 +54,21 @@ namespace OrchardCore.ReCaptcha.TagHelpers
 
         public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
         {
-            var robotDetectors = _httpContextAccessor.HttpContext.RequestServices.GetServices<IDetectRobots>();
-            var robotDetected = robotDetectors.Invoke(d => d.DetectRobot(), _logger).Any(d => d.IsRobot) && Mode == ReCaptchaMode.PreventRobots;
-            var alwaysShow = Mode == ReCaptchaMode.AlwaysShow;
-            var isConfigured = _settings != null;
-
-            if (isConfigured && (robotDetected || alwaysShow))
+            void RenderDivToTagHelper(TagBuilder builder)
             {
-                await ShowCaptcha(output);
+                output.TagName = builder.TagName;
+                output.MergeAttributes(builder);
+                output.TagMode = TagMode.StartTagAndEndTag;
             }
-            else
+
+            void DoNotRenderTagHelper()
             {
                 output.SuppressOutput();
             }
-        }
 
-        private async Task ShowCaptcha(TagHelperOutput output)
-        {
-            output.TagName = "div";
-            output.Attributes.SetAttribute("class", "g-recaptcha");
-            output.Attributes.SetAttribute("data-sitekey", _settings.SiteKey);
-            output.TagMode = TagMode.StartTagAndEndTag;
-
-            var builder = new TagBuilder("script");
-            var cultureInfo = await GetCultureAsync();
-
-            var settingsUrl = $"{_settings.ReCaptchaScriptUri}?hl={cultureInfo.TwoLetterISOLanguageName}";
-
-            builder.Attributes.Add("src", settingsUrl);
-            _resourceManager.RegisterFootScript(builder);
-        }
-
-        private async Task<CultureInfo> GetCultureAsync()
-        {
-            var language = Language;
-            CultureInfo culture = null;
-
-            if (string.IsNullOrWhiteSpace(language))
-                language = await _localizationService.GetDefaultCultureAsync();
-
-            try
-            {
-                culture = CultureInfo.GetCultureInfo(language);
-            }
-            catch (CultureNotFoundException)
-            {
-                _logger.LogWarning(S["Language with name {0} not found", language]);
-            }
-
-            return culture;
+            await ReCaptchaRenderer.ShowCaptchaOrCallback(
+                _settings, Mode, Language, _robotDetectors, _localizationService, _resourceManager, S, _logger,
+                RenderDivToTagHelper, DoNotRenderTagHelper);
         }
     }
 }
