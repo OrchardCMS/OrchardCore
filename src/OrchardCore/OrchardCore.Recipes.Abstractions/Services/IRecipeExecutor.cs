@@ -7,6 +7,6 @@ namespace OrchardCore.Recipes.Services
 {
     public interface IRecipeExecutor
     {
-        Task<string> ExecuteAsync(string executionId, RecipeDescriptor recipeDescriptor, Dictionary<string,object> environment, CancellationToken cancellationToken);
+        Task<string> ExecuteAsync(string executionId, RecipeDescriptor recipeDescriptor, IDictionary<string,object> environment, CancellationToken cancellationToken);
     }
 }
