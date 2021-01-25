@@ -5,7 +5,6 @@ using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Accessors;
-using Fluid.Values;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Abstractions;
@@ -23,86 +22,25 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement.Layout;
-using OrchardCore.DisplayManagement.Liquid.Filters;
 using OrchardCore.DisplayManagement.Liquid.Internal;
-using OrchardCore.DisplayManagement.Liquid.Tags;
 using OrchardCore.DisplayManagement.Shapes;
-using OrchardCore.DisplayManagement.Zones;
-using OrchardCore.DynamicCache.Liquid;
 using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Liquid;
 
 namespace OrchardCore.DisplayManagement.Liquid
 {
-    public class LiquidViewTemplate : BaseFluidTemplate<LiquidViewTemplate>
+    public class LiquidViewTemplate
     {
+        public static LiquidViewParser Parser = new LiquidViewParser();
+        
         public static readonly string ViewsFolder = "Views";
         public static readonly string ViewExtension = ".liquid";
         public static readonly MemoryCache Cache = new MemoryCache(new MemoryCacheOptions());
+        public IFluidTemplate FluidTemplate { get; }
 
-        static LiquidViewTemplate()
+        public LiquidViewTemplate(IFluidTemplate fluidTemplate)
         {
-            FluidValue.SetTypeMapping<Shape>(o => new ObjectValue(o));
-            FluidValue.SetTypeMapping<ZoneHolding>(o => new ObjectValue(o));
-
-            TemplateContext.GlobalMemberAccessStrategy.Register<Shape>("*", new ShapeAccessor());
-            TemplateContext.GlobalMemberAccessStrategy.Register<ZoneHolding>("*", new ShapeAccessor());
-            TemplateContext.GlobalMemberAccessStrategy.Register<ShapeMetadata>();
-
-            Factory.RegisterTag<RenderBodyTag>("render_body");
-            Factory.RegisterTag<RenderSectionTag>("render_section");
-            Factory.RegisterTag<RenderTitleSegmentsTag>("page_title");
-            Factory.RegisterTag<AntiForgeryTokenTag>("antiforgerytoken");
-            Factory.RegisterTag<LayoutTag>("layout");
-
-            Factory.RegisterTag<ClearAlternatesTag>("shape_clear_alternates");
-            Factory.RegisterTag<AddAlternatesTag>("shape_add_alternates");
-            Factory.RegisterTag<ClearWrappers>("shape_clear_wrappers");
-            Factory.RegisterTag<AddWrappersTag>("shape_add_wrappers");
-            Factory.RegisterTag<ClearClassesTag>("shape_clear_classes");
-            Factory.RegisterTag<AddClassesTag>("shape_add_classes");
-            Factory.RegisterTag<ClearAttributesTag>("shape_clear_attributes");
-            Factory.RegisterTag<AddAttributesTag>("shape_add_attributes");
-            Factory.RegisterTag<ShapeTypeTag>("shape_type");
-            Factory.RegisterTag<ShapeDisplayTypeTag>("shape_display_type");
-            Factory.RegisterTag<ShapePositionTag>("shape_position");
-            Factory.RegisterTag<ShapeCacheTag>("shape_cache");
-            Factory.RegisterTag<ShapeTabTag>("shape_tab");
-            Factory.RegisterTag<ShapeRemoveItemTag>("shape_remove_item");
-            Factory.RegisterTag<ShapeAddPropertyTag>("shape_add_properties");
-            Factory.RegisterTag<ShapeRemovePropertyTag>("shape_remove_property");
-            Factory.RegisterTag<ShapePagerTag>("shape_pager");
-
-            Factory.RegisterTag<HttpContextAddItemTag>("httpcontext_add_items");
-            Factory.RegisterTag<HttpContextRemoveItemTag>("httpcontext_remove_items");
-
-            Factory.RegisterTag<HelperTag>("helper");
-            Factory.RegisterTag<NamedHelperTag>("shape");
-            Factory.RegisterTag<NamedHelperTag>("contentitem");
-            Factory.RegisterTag<NamedHelperTag>("link");
-            Factory.RegisterTag<NamedHelperTag>("meta");
-            Factory.RegisterTag<NamedHelperTag>("resources");
-            Factory.RegisterTag<NamedHelperTag>("script");
-            Factory.RegisterTag<NamedHelperTag>("style");
-
-            Factory.RegisterBlock<HelperBlock>("block");
-            Factory.RegisterBlock<NamedHelperBlock>("a");
-            Factory.RegisterBlock<NamedHelperBlock>("zone");
-            Factory.RegisterBlock<NamedHelperBlock>("form");
-            Factory.RegisterBlock<NamedHelperBlock>("scriptblock");
-            Factory.RegisterBlock<NamedHelperBlock>("styleblock");
-
-            // Dynamic caching
-            Factory.RegisterBlock<CacheBlock>("cache");
-            Factory.RegisterTag<CacheDependencyTag>("cache_dependency");
-            Factory.RegisterTag<CacheExpiresOnTag>("cache_expires_on");
-            Factory.RegisterTag<CacheExpiresAfterTag>("cache_expires_after");
-            Factory.RegisterTag<CacheExpiresSlidingTag>("cache_expires_sliding");
-
-            NamedHelperTag.RegisterDefaultArgument("shape", "type");
-            NamedHelperBlock.RegisterDefaultArgument("zone", "name");
-
-            TemplateContext.GlobalFilters.WithLiquidViewFilters();
+            FluidTemplate = fluidTemplate;
         }
 
         /// <summary>
@@ -126,7 +64,7 @@ namespace OrchardCore.DisplayManagement.Liquid
             try
             {
                 await context.EnterScopeAsync(page.ViewContext, (object)page.Model, scopeAction: null);
-                await template.RenderAsync(page.Output, htmlEncoder, context);
+                await template.FluidTemplate.RenderAsync(page.Output, htmlEncoder, context);
             }
             finally
             {
@@ -150,9 +88,9 @@ namespace OrchardCore.DisplayManagement.Liquid
                 {
                     using (var sr = new StreamReader(stream))
                     {
-                        if (TryParse(await sr.ReadToEndAsync(), out var template, out var errors))
+                        if (Parser.TryParse(await sr.ReadToEndAsync(), out var template, out var errors))
                         {
-                            return template;
+                            return new LiquidViewTemplate(template);
                         }
                         else
                         {
@@ -216,7 +154,7 @@ namespace OrchardCore.DisplayManagement.Liquid
             try
             {
                 await context.EnterScopeAsync(viewContext, model, scopeAction);
-                return await template.RenderAsync(context, encoder);
+                return await template.FluidTemplate.RenderAsync(context, encoder);
             }
             finally
             {
@@ -237,7 +175,7 @@ namespace OrchardCore.DisplayManagement.Liquid
             try
             {
                 await context.EnterScopeAsync(viewContext, model, scopeAction);
-                await template.RenderAsync(writer, encoder, context);
+                await template.FluidTemplate.RenderAsync(writer, encoder, context);
             }
             finally
             {
@@ -384,8 +322,6 @@ namespace OrchardCore.DisplayManagement.Liquid
 
         internal static void AddAsyncFilters(this LiquidTemplateContext context, LiquidOptions options)
         {
-            context.Filters.EnsureCapacity(options.FilterRegistrations.Count);
-
             foreach (var registration in options.FilterRegistrations)
             {
                 context.Filters.AddAsyncFilter(registration.Key, (input, arguments, ctx) =>

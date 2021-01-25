@@ -4,22 +4,15 @@ using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Ast;
-using Fluid.Tags;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Environment.Cache;
 
 namespace OrchardCore.DynamicCache.Liquid
 {
-    public class CacheDependencyTag : ArgumentsTag
+    public class CacheDependencyTag
     {
-        public override async ValueTask<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context, FilterArgument[] arguments)
+        public static async ValueTask<Completion> WriteToAsync(Expression argument, TextWriter writer, TextEncoder encoder, TemplateContext context)
         {
-            if (arguments.Length < 1)
-            {
-                // No dependency has been provided, so return
-                return Completion.Normal;
-            }
-
             if (!context.AmbientValues.TryGetValue("Services", out var servicesObj))
             {
                 throw new ArgumentException("Services missing while invoking 'cache_dependency' tag");
@@ -34,7 +27,7 @@ namespace OrchardCore.DynamicCache.Liquid
                 return Completion.Normal;
             }
 
-            var dependency = (await arguments[0].Expression.EvaluateAsync(context)).ToStringValue();
+            var dependency = (await argument.EvaluateAsync(context)).ToStringValue();
 
             cacheScopeManager.AddDependencies(dependency);
 

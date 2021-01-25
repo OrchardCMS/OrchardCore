@@ -42,6 +42,11 @@ namespace OrchardCore.DisplayManagement.Liquid
 
         public override void Write(char value)
         {
+            // perf: when a string is encoded (e.g. {{ value }} in a view) and the content contains some encoded chars,
+            // the TextWriter implementation will call Write(char) for the whole string, creating as many fragments as chars in the string.
+            // This could be optimized by creating a custom HTML encoder that finds blocks
+            // https://source.dot.net/#System.Text.Encodings.Web/System/Text/Encodings/Web/TextEncoder.cs,365
+
             if (value < _internedCharsLength)
             {
                 _fragments.Add(_internedChars[value]);
@@ -67,6 +72,11 @@ namespace OrchardCore.DisplayManagement.Liquid
             {
                 _fragments.Add(new CharrArrayFragmentHtmlContent(buffer, index, count));
             }
+        }
+
+        public override void Write(ReadOnlySpan<char> buffer)
+        {
+            _fragments.Add(new CharrArrayHtmlContent(buffer.ToArray()));
         }
 
         // Invoked by IHtmlContent when rendered on the final output

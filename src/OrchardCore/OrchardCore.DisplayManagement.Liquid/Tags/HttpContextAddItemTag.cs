@@ -1,19 +1,18 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Ast;
-using Fluid.Tags;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
-using OrchardCore.Liquid.Ast;
 
 namespace OrchardCore.DisplayManagement.Liquid.Tags
 {
-    public class HttpContextAddItemTag : ArgumentsTag
+    public class HttpContextAddItemTag
     {
-        public override async ValueTask<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context, FilterArgument[] args)
+        public static async ValueTask<Completion> WriteToAsync(List<FilterArgument> expressions, TextWriter writer, TextEncoder encoder, TemplateContext context)
         {
             if (!context.AmbientValues.TryGetValue("Services", out var servicesValue))
             {
@@ -26,11 +25,9 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
 
             if (httpContext != null)
             {
-                var arguments = (FilterArguments)(await new ArgumentsExpression(args).EvaluateAsync(context)).ToObjectValue();
-
-                foreach (var name in arguments.Names)
+                foreach (var argument in expressions)
                 {
-                    httpContext.Items[name] = arguments[name].ToObjectValue();
+                    httpContext.Items[argument.Name] = (await argument.Expression.EvaluateAsync(context)).ToObjectValue();
                 }
             }
             return Completion.Normal;

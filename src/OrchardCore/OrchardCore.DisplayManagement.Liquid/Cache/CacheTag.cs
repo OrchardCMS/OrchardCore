@@ -10,21 +10,14 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.DisplayManagement;
 using OrchardCore.Environment.Cache;
-using OrchardCore.Liquid.Ast;
 
 namespace OrchardCore.DynamicCache.Liquid
 {
-    public class CacheStatement : TagStatement
+    public class CacheTag
     {
         private static readonly char[] SplitChars = new[] { ',', ' ' };
-        private readonly ArgumentsExpression _arguments;
 
-        public CacheStatement(ArgumentsExpression arguments, List<Statement> statements = null) : base(statements)
-        {
-            _arguments = arguments;
-        }
-
-        public override async ValueTask<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context)
+        public static async ValueTask<Completion> WriteToAsync(List<FilterArgument> arguments, IReadOnlyList<Statement> statements, TextWriter writer, TextEncoder encoder, TemplateContext context)
         {
             if (!context.AmbientValues.TryGetValue("Services", out var servicesObj))
             {
@@ -36,7 +29,7 @@ namespace OrchardCore.DynamicCache.Liquid
             var dynamicCache = services.GetService<IDynamicCacheService>();
             var cacheScopeManager = services.GetService<ICacheScopeManager>();
             var loggerFactory = services.GetService<ILoggerFactory>();
-            var logger = loggerFactory.CreateLogger<CacheStatement>();
+            var logger = loggerFactory.CreateLogger<CacheTag>();
             var cacheOptions = services.GetRequiredService<IOptions<CacheOptions>>().Value;
 
             if (dynamicCache == null || cacheScopeManager == null)
@@ -45,17 +38,22 @@ namespace OrchardCore.DynamicCache.Liquid
                                         The contents of the cache block will not be cached.
                                         To enable caching, make sure that a feature that contains an implementation of IDynamicCacheService and ICacheScopeManager is enabled (for example, 'Dynamic Cache').");
 
-                await writer.WriteAsync(await EvaluateStatementsAsync(encoder, context));
+                await writer.WriteAsync(await EvaluateStatementsAsync(statements, encoder, context));
 
                 return Completion.Normal;
             }
 
-            var arguments = (FilterArguments)(await _arguments.EvaluateAsync(context)).ToObjectValue();
-            var cacheKey = arguments.At(0).ToStringValue();
-            var contexts = arguments["vary_by"].ToStringValue();
-            var tags = arguments["dependencies"].ToStringValue();
-            var durationString = arguments["expires_after"].ToStringValue();
-            var slidingDurationString = arguments["expires_sliding"].ToStringValue();
+            var filterArguments = new FilterArguments();
+            foreach (var argument in arguments)
+            {
+                filterArguments.Add(argument.Name, await argument.Expression.EvaluateAsync(context));
+            }
+
+            var cacheKey = filterArguments.At(0).ToStringValue();
+            var contexts = filterArguments["vary_by"].ToStringValue();
+            var tags = filterArguments["dependencies"].ToStringValue();
+            var durationString = filterArguments["expires_after"].ToStringValue();
+            var slidingDurationString = filterArguments["expires_sliding"].ToStringValue();
 
             var cacheContext = new CacheContext(cacheKey)
                 .AddContext(contexts.Split(SplitChars, StringSplitOptions.RemoveEmptyEntries))
@@ -84,7 +82,7 @@ namespace OrchardCore.DynamicCache.Liquid
 
             try
             {
-                content = await EvaluateStatementsAsync(encoder, context);
+                content = await EvaluateStatementsAsync(statements, encoder, context);
             }
             finally
             {
@@ -119,13 +117,13 @@ namespace OrchardCore.DynamicCache.Liquid
             return Completion.Normal;
         }
 
-        private async Task<string> EvaluateStatementsAsync(TextEncoder encoder, TemplateContext context)
+        private static async Task<string> EvaluateStatementsAsync(IReadOnlyList<Statement> statements, TextEncoder encoder, TemplateContext context)
         {
             using (var sb = StringBuilderPool.GetInstance())
             {
                 using (var content = new StringWriter(sb.Builder))
                 {
-                    foreach (var statement in Statements)
+                    foreach (var statement in statements)
                     {
                         await statement.WriteToAsync(content, encoder, context);
                     }

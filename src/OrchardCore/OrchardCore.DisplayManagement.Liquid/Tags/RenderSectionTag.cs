@@ -1,19 +1,18 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Ast;
-using Fluid.Tags;
 using Microsoft.AspNetCore.Html;
 using OrchardCore.DisplayManagement.Shapes;
-using OrchardCore.Liquid.Ast;
 
 namespace OrchardCore.DisplayManagement.Liquid.Tags
 {
-    public class RenderSectionTag : ArgumentsTag
+    public class RenderSectionTag
     {
-        public override async ValueTask<Completion> WriteToAsync(TextWriter writer, TextEncoder encoder, TemplateContext context, FilterArgument[] args)
+        public static async ValueTask<Completion> WriteToAsync(List<FilterArgument> argumentsList, TextWriter writer, TextEncoder encoder, TemplateContext context)
         {
             if (!context.AmbientValues.TryGetValue("ThemeLayout", out dynamic layout))
             {
@@ -25,10 +24,14 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
                 throw new ArgumentException("DisplayHelper missing while invoking 'render_section'");
             }
 
-            var arguments = (FilterArguments)(await new ArgumentsExpression(args).EvaluateAsync(context)).ToObjectValue();
+            var arguments = new NamedExpressionList(argumentsList);
 
-            var name = arguments["name"].Or(arguments.At(0)).ToStringValue();
-            var required = arguments.HasNamed("required") && Convert.ToBoolean(arguments["required"].ToStringValue());
+            var nameExpression = arguments["name", 0] ?? throw new ArgumentException("render_section tag requires a name argument");
+            var name = (await nameExpression.EvaluateAsync(context)).ToStringValue();
+
+            var requiredExpression = arguments["required", 1];
+            var required = requiredExpression == null ? false : (await requiredExpression.EvaluateAsync(context)).ToBooleanValue();
+
             var zone = layout[name];
 
             if (required && zone != null && zone is Shape && zone.Items.Count == 0)

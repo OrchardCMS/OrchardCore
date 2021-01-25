@@ -20,6 +20,9 @@ namespace OrchardCore.DataProtection.Azure
         private readonly ShellSettings _shellSettings;
         private readonly ILogger _logger;
 
+        // Local instance since it can be discarded once the startup is over
+        private readonly FluidParser _fluidParser = new FluidParser();
+
         public Startup(
             IShellConfiguration configuration,
             IOptions<ShellOptions> shellOptions,
@@ -57,7 +60,7 @@ namespace OrchardCore.DataProtection.Azure
                 templateContext.MemberAccessStrategy.Register<ShellSettings>();
                 templateContext.SetValue("ShellSettings", _shellSettings);
 
-                var template = FluidTemplate.Parse(containerName);
+                var template = _fluidParser.Parse(containerName);
 
                 // container name must be lowercase
                 containerName = template.Render(templateContext, NullEncoder.Default).ToLower();
@@ -107,7 +110,7 @@ namespace OrchardCore.DataProtection.Azure
                     templateContext.MemberAccessStrategy.Register<ShellSettings>();
                     templateContext.SetValue("ShellSettings", _shellSettings);
 
-                    var template = FluidTemplate.Parse(blobName);
+                    var template = _fluidParser.Parse(blobName);
 
                     blobName = template.Render(templateContext, NullEncoder.Default);
                     blobName.Replace("\r", String.Empty).Replace("\n", String.Empty);
