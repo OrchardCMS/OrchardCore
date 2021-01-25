@@ -54,7 +54,7 @@ namespace OrchardCore.Workflows
                 "DocumentId",
                 "WorkflowTypeId",
                 "WorkflowId",
-                "WorkflowStatus",
+                //"WorkflowStatus",
                 "CreatedUtc")
             );
 
@@ -124,7 +124,7 @@ namespace OrchardCore.Workflows
                 "DocumentId",
                 "WorkflowTypeId",
                 "WorkflowId",
-                "WorkflowStatus",
+                //"WorkflowStatus",
                 "CreatedUtc")
             );
 
