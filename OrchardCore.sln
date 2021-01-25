@@ -353,7 +353,6 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Contents.TagHelpers", "src\OrchardCore\OrchardCore.Contents.TagHelpers\OrchardCore.Contents.TagHelpers.csproj", "{6236734E-507B-461B-8E92-068886058E84}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Search.Abstractions", "src\OrchardCore\OrchardCore.Search.Abstractions\OrchardCore.Search.Abstractions.csproj", "{5283A8BC-DFF4-436D-AA9C-EE2DBFC5D51A}"
->>>>>>> dev
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.PublishLater", "src\OrchardCore.Modules\OrchardCore.PublishLater\OrchardCore.PublishLater.csproj", "{FADCA695-7A6C-40F1-B17C-8A011EBC6F10}"
 EndProject

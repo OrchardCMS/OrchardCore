@@ -16,6 +16,7 @@ Some fields are available in their specific module.
 | `LocalizationSetContentPickerField` | `string[] LocalizationSets` |
 | `MarkdownField` | `string Markdown` |
 | `MediaField` | `string[] Paths` |
+| `MultiTextField` | `string[] Values` |
 | `NumericField` | `decimal? Value` |
 | `TaxonomyField` | `string TaxonomyContentItemId, string[] TaxonomyContentItemId` |
 | `TextField` | `string Text` |
@@ -214,7 +215,7 @@ When adding the field to a content type, use the settings to specify whether to
     }
 
     <div class="field field-type-userpickerfield field-name-@name">
-        <span class="name">@Model.PartFieldDefinition.DisplayName():</span>
+        <span class="name">@Model.PartFieldDefinition.DisplayName()</span>
         @if (users.Any())
         {
             foreach (var user in users)

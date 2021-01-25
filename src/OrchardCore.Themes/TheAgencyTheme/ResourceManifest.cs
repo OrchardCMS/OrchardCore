@@ -11,7 +11,7 @@ namespace OrchardCore.Themes.TheAgencyTheme
             manifest
                 .DefineScript("TheAgencyTheme")
                 .SetDependencies("jQuery")
-                .SetUrl("~/TheAgencyTheme/scripts/scripts.min.css", "~/TheAgencyTheme/scripts/scripts.js")
+                .SetUrl("~/TheAgencyTheme/scripts/scripts.min.js", "~/TheAgencyTheme/scripts/scripts.js")
                 .SetVersion("6.0.3");
 
             manifest

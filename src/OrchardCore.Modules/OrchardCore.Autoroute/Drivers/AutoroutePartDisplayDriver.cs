@@ -16,6 +16,7 @@ using OrchardCore.DisplayManagement.Views;
 using OrchardCore.Mvc.ModelBinding;
 using OrchardCore.Settings;
 using YesSql;
+using YesSql.Services;
 
 namespace OrchardCore.Autoroute.Drivers
 {
@@ -115,16 +116,14 @@ namespace OrchardCore.Autoroute.Drivers
                 // This can only validate the path if the Autoroute is not managing content item routes or the path is absolute.
                 if (!String.IsNullOrEmpty(model.Path) && (!settings.ManageContainedItemRoutes || (settings.ManageContainedItemRoutes && model.Absolute)))
                 {
-                    var possibleConflicts = await _session.QueryIndex<AutoroutePartIndex>(o => (o.Published || o.Latest) && o.Path == model.Path).ListAsync();
+                    var path = model.Path.Trim('/');
+                    var paths = new string[] { path, "/" + path, path + "/", "/" + path + "/" };
+
+                    var possibleConflicts = await _session.QueryIndex<AutoroutePartIndex>(o => (o.Published || o.Latest) && o.Path.IsIn(paths)).ListAsync();
                     if (possibleConflicts.Any())
                     {
-                        var hasConflict = false;
                         if (possibleConflicts.Any(x => x.ContentItemId != model.ContentItem.ContentItemId) ||
-                            possibleConflicts.Any(x => !string.IsNullOrEmpty(x.ContainedContentItemId) && x.ContainedContentItemId != model.ContentItem.ContentItemId))
-                        {
-                            hasConflict = true;
-                        }
-                        if (hasConflict)
+                            possibleConflicts.Any(x => !String.IsNullOrEmpty(x.ContainedContentItemId) && x.ContainedContentItemId != model.ContentItem.ContentItemId))
                         {
                             updater.ModelState.AddModelError(Prefix, nameof(model.Path), S["Your permalink is already in use."]);
                         }
