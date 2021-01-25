@@ -16,14 +16,14 @@ namespace OrchardCore.Workflows
                 .Column<bool>("HasStart")
             );
 
-            //SchemaBuilder.AlterIndexTable<WorkflowTypeIndex>(table => table
-            //    .CreateIndex("IDX_WorkflowTypeIndex_DocumentId",
-            //    "DocumentId",
-            //    "WorkflowTypeId",
-            //    "Name",
-            //    "IsEnabled",
-            //    "HasStart")
-            //);
+            SchemaBuilder.AlterIndexTable<WorkflowTypeIndex>(table => table
+                .CreateIndex("IDX_WorkflowTypeIndex_DocumentId",
+                "DocumentId",
+                "WorkflowTypeId",
+                "Name",
+                "IsEnabled",
+                "HasStart")
+            );
 
             SchemaBuilder.CreateMapIndexTable<WorkflowTypeStartActivitiesIndex>(table => table
                 .Column<string>("WorkflowTypeId")
@@ -33,14 +33,14 @@ namespace OrchardCore.Workflows
                 .Column<string>("StartActivityName")
             );
 
-            //SchemaBuilder.AlterIndexTable<WorkflowTypeStartActivitiesIndex>(table => table
-            //    .CreateIndex("IDX_WorkflowTypeStartActivitiesIndex_DocumentId",
-            //    "DocumentId",
-            //    "WorkflowTypeId",
-            //    "StartActivityId",
-            //    "StartActivityName",
-            //    "IsEnabled")
-            //);
+            SchemaBuilder.AlterIndexTable<WorkflowTypeStartActivitiesIndex>(table => table
+                .CreateIndex("IDX_WorkflowTypeStartActivitiesIndex_DocumentId",
+                "DocumentId",
+                "WorkflowTypeId",
+                "StartActivityId",
+                "StartActivityName",
+                "IsEnabled")
+            );
 
             SchemaBuilder.CreateMapIndexTable<WorkflowIndex>(table => table
                 .Column<string>("WorkflowTypeId")
@@ -67,21 +67,21 @@ namespace OrchardCore.Workflows
                 .Column<string>("WorkflowCorrelationId")
             );
 
-            //SchemaBuilder.AlterIndexTable<WorkflowBlockingActivitiesIndex>(table => table
-            //    .CreateIndex("IDX_WorkflowBlockingActivitiesIndex_DocumentId_ActivityId",
-            //    "DocumentId",
-            //    "ActivityId",
-            //    "WorkflowTypeId",
-            //    "WorkflowId")
-            //);
+            SchemaBuilder.AlterIndexTable<WorkflowBlockingActivitiesIndex>(table => table
+                .CreateIndex("IDX_WorkflowBlockingActivitiesIndex_DocumentId_ActivityId",
+                "DocumentId",
+                "ActivityId",
+                "WorkflowTypeId",
+                "WorkflowId")
+            );
 
-            //SchemaBuilder.AlterIndexTable<WorkflowBlockingActivitiesIndex>(table => table
-            //    .CreateIndex("IDX_WorkflowBlockingActivitiesIndex_DocumentId_ActivityName",
-            //    "DocumentId",
-            //    "ActivityName",
-            //    "WorkflowTypeId",
-            //    "WorkflowCorrelationId")
-            //);
+            SchemaBuilder.AlterIndexTable<WorkflowBlockingActivitiesIndex>(table => table
+                .CreateIndex("IDX_WorkflowBlockingActivitiesIndex_DocumentId_ActivityName",
+                "DocumentId",
+                "ActivityName",
+                "WorkflowTypeId",
+                "WorkflowCorrelationId")
+            );
 
             // Shortcut other migration steps on new content definition schemas.
             return 3;
