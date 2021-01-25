@@ -98,7 +98,7 @@ To include Content Types displayed with Razor Pages, enable the Sitemaps for Dec
 
 In your `Startup.cs`, configure the `SitemapsRazorPagesOptions` to support the routes for your Content Types.
 
-```
+```csharp
 public override void ConfigureServices(IServiceCollection services)
 {
     services.Configure<SitemapsRazorPagesOptions>(options =>

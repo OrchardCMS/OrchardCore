@@ -16,6 +16,7 @@ Some fields are available in their specific module.
 | `LocalizationSetContentPickerField` | `string[] LocalizationSets` |
 | `MarkdownField` | `string Markdown` |
 | `MediaField` | `string[] Paths` |
+| `MultiTextField` | `string[] Values` |
 | `NumericField` | `decimal? Value` |
 | `TaxonomyField` | `string TaxonomyContentItemId, string[] TaxonomyContentItemId` |
 | `TextField` | `string Text` |
