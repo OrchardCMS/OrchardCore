@@ -93,10 +93,10 @@ namespace OrchardCore.Workflows.Controllers
             switch (model.Options.Filter)
             {
                 case WorkflowFilter.Finished:
-                    query = query.Where(x => x.WorkflowStatus == (int)WorkflowStatus.Finished);
+                    query = query.Where(x => x.WorkflowStatus == WorkflowStatus.Finished.ToString());
                     break;
                 case WorkflowFilter.Faulted:
-                    query = query.Where(x => x.WorkflowStatus == (int)WorkflowStatus.Faulted);
+                    query = query.Where(x => x.WorkflowStatus == WorkflowStatus.Faulted.ToString());
                     break;
                 case WorkflowFilter.All:
                 default:

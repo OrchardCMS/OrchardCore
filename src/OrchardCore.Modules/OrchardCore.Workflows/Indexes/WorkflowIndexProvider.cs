@@ -10,7 +10,7 @@ namespace OrchardCore.Workflows.Indexes
         public int DocumentId { get; set; }
         public string WorkflowTypeId { get; set; }
         public string WorkflowId { get; set; }
-        public int WorkflowStatus { get; set; }
+        public string WorkflowStatus { get; set; }
         public DateTime CreatedUtc { get; set; }
     }
 
@@ -35,7 +35,7 @@ namespace OrchardCore.Workflows.Indexes
                         WorkflowTypeId = workflow.WorkflowTypeId,
                         WorkflowId = workflow.WorkflowId,
                         CreatedUtc = workflow.CreatedUtc,
-                        WorkflowStatus = (int)workflow.Status
+                        WorkflowStatus = workflow.Status.ToString()
                     }
                 );
 

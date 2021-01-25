@@ -49,14 +49,14 @@ namespace OrchardCore.Workflows
                 .Column<DateTime>("CreatedUtc")
             );
 
-            //SchemaBuilder.AlterIndexTable<WorkflowIndex>(table => table
-            //    .CreateIndex("IDX_WorkflowIndex_DocumentId",
-            //    "DocumentId",
-            //    "WorkflowTypeId",
-            //    "WorkflowId",
-            //    "WorkflowStatus",
-            //    "CreatedUtc")
-            //);
+            SchemaBuilder.AlterIndexTable<WorkflowIndex>(table => table
+                .CreateIndex("IDX_WorkflowIndex_DocumentId",
+                "DocumentId",
+                "WorkflowTypeId",
+                "WorkflowId",
+                "WorkflowStatus",
+                "CreatedUtc")
+            );
 
             SchemaBuilder.CreateMapIndexTable<WorkflowBlockingActivitiesIndex>(table => table
                 .Column<string>("ActivityId")
