@@ -36,11 +36,11 @@ namespace OrchardCore.Sitemaps.Builders
 
         private bool BuildUrl(SitemapBuilderContext context, CustomPathSitemapSource source, XElement url)
         {
-            if (string.IsNullOrEmpty(source.Url))
+            if (string.IsNullOrEmpty(source.Path))
                 return false;
 
-            //add ~/ to the path, because the user insert it without leading /
-            var path = "~/" + source.Url;
+            // Add ~/ to the path, because the it is inserted without leading /.
+            var path = "~/" + source.Path;
 
             var loc = new XElement(Namespace + "loc");
             loc.Add(context.HostPrefix + context.UrlHelper.Content(path));
@@ -66,7 +66,7 @@ namespace OrchardCore.Sitemaps.Builders
 
         private void PopulateLastMod(CustomPathSitemapSource source, XElement url)
         {
-            // Last modified is not required. Do not include if content item has no modified date.
+            // Last modified is not required. Do not include if the path has no modified date.
             if (source.LastUpdate.HasValue)
             {
                 var lastMod = new XElement(Namespace + "lastmod");

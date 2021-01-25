@@ -37,7 +37,7 @@ namespace OrchardCore.Sitemaps.Drivers
         {
             return Initialize<CustomPathSitemapSourceViewModel>("CustomPathSitemapSource_Edit", model =>
             {
-                model.Url = sitemapSource.Url;
+                model.Path = sitemapSource.Path;
                 model.Priority = sitemapSource.Priority;
                 model.ChangeFrequency = sitemapSource.ChangeFrequency;
                 
@@ -50,25 +50,25 @@ namespace OrchardCore.Sitemaps.Drivers
 
             if (await context.Updater.TryUpdateModelAsync(model,
                     Prefix,
-                    m => m.Url,
+                    m => m.Path,
                     m => m.Priority,
                     m => m.ChangeFrequency
                 ))
             {
-                sitemap.Url = model.Url;
+                sitemap.Path = model.Path;
                 sitemap.Priority = model.Priority;
                 sitemap.ChangeFrequency = model.ChangeFrequency;     
                 sitemap.LastUpdate = DateTime.Now;
 
-                if (sitemap.Url?.IndexOfAny(CustomPathSitemapSource.InvalidCharactersForPath) > -1 || sitemap.Url?.IndexOf(' ') > -1 || sitemap.Url?.IndexOf("//") > -1)
+                if (sitemap.Path?.IndexOfAny(CustomPathSitemapSource.InvalidCharactersForPath) > -1 || sitemap.Path?.IndexOf(' ') > -1 || sitemap.Path?.IndexOf("//") > -1)
                 {
                     var invalidCharactersForMessage = string.Join(", ", CustomPathSitemapSource.InvalidCharactersForPath.Select(c => $"\"{c}\""));
-                    context.Updater.ModelState.AddModelError(Prefix, sitemap.Url, S["Please do not use any of the following characters in your permalink: {0}. No spaces, or consecutive slashes, are allowed (please use dashes or underscores instead).", invalidCharactersForMessage]);
+                    context.Updater.ModelState.AddModelError(Prefix, sitemap.Path, S["Please do not use any of the following characters in your permalink: {0}. No spaces, or consecutive slashes, are allowed (please use dashes or underscores instead).", invalidCharactersForMessage]);
                 }
 
-                if (sitemap.Url?.Length > CustomPathSitemapSource.MaxPathLength)
+                if (sitemap.Path?.Length > CustomPathSitemapSource.MaxPathLength)
                 {
-                    context.Updater.ModelState.AddModelError(Prefix, sitemap.Url, S["Your path is too long. The path can only be up to {0} characters.", CustomPathSitemapSource.MaxPathLength]);
+                    context.Updater.ModelState.AddModelError(Prefix, sitemap.Path, S["Your path is too long. The path can only be up to {0} characters.", CustomPathSitemapSource.MaxPathLength]);
                 }
             };
 

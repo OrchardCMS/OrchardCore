@@ -3,7 +3,7 @@ using System;
 namespace OrchardCore.Sitemaps.Models
 {
     /// <summary>
-    /// A sitemap source for managing custom url.
+    /// A sitemap source for managing a custom path.
     /// </summary>
     public class CustomPathSitemapSource : SitemapSource
     {
@@ -11,9 +11,9 @@ namespace OrchardCore.Sitemaps.Models
         public const int MaxPathLength = 1024;
 
         /// <summary>
-        /// Gets and sets the custom url.
+        /// Gets and sets the custom path.
         /// </summary>
-        public string Url { get; set; }
+        public string Path { get; set; }
 
         /// <summary>
         /// Gets and sets last update date time. Updated automatically by te system.

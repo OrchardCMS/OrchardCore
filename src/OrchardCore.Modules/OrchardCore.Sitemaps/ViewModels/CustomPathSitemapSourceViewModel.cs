@@ -13,7 +13,7 @@ namespace OrchardCore.Sitemaps.ViewModels
         /// Gets and sets the custom url.
         /// </summary>
         [Required]
-        public string Url { get; set; }
+        public string Path { get; set; }
 
         /// <summary>
         /// Gets and sets the frequency to apply to sitemap entries.

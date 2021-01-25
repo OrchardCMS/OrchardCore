@@ -82,7 +82,7 @@ namespace OrchardCore.Sitemaps
                 .UseDisplayDriver<SitemapPartDisplayDriver>()
                 .AddHandler<SitemapPartHandler>();
 
-            //custom url in sitemap
+            // Custom sitemap path.
             services.AddScoped<ISitemapSourceBuilder, CustomPathSitemapSourceBuilder>();
             services.AddScoped<ISitemapSourceUpdateHandler, CustomPathSitemapSourceUpdateHandler>();
             services.AddScoped<ISitemapSourceModifiedDateProvider, CustomPathSitemapSourceModifiedDateProvider>();
