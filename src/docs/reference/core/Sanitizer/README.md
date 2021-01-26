@@ -38,11 +38,3 @@ services
 ```
 
 Refer https://github.com/mganss/HtmlSanitizer for options.
-
-## CREDITS
-
-### HtmlSanitizer
-
-<https://github.com/mganss/HtmlSanitizer>  
-Copyright (c) 2013-2016 Michael Ganss and HtmlSanitizer contributors 
-License: MIT
