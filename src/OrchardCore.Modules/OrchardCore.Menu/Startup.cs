@@ -52,6 +52,10 @@ namespace OrchardCore.Menu
             services.AddContentPart<ContentMenuItemPart>()
                 .UseDisplayDriver<ContentMenuItemPartDisplayDriver>();
 
+            // HtmlMenuItemPart
+            services.AddContentPart<HtmlMenuItemPart>()
+                .UseDisplayDriver<HtmlMenuItemPartDisplayDriver>();
+
             services.AddTagHelpers<MenuTagHelper>();
         }
 
