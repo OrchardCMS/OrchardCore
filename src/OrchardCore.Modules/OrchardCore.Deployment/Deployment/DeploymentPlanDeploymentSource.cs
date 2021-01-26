@@ -9,14 +9,14 @@ namespace OrchardCore.Deployment.Deployment
 {
     public class DeploymentPlanDeploymentSource : IDeploymentSource
     {
-        private readonly IDeploymentPlanService _deploymentPlanService;
+        private readonly IEnumerable<IDeploymentStepFactory> _deploymentStepFactories;
         private readonly IServiceProvider _serviceProvider;
 
         public DeploymentPlanDeploymentSource(
-            IDeploymentPlanService deploymentPlanService,
-            IServiceProvider serviceProvider)
+            IServiceProvider serviceProvider,
+            IEnumerable<IDeploymentStepFactory> deploymentStepFactories)
         {
-            _deploymentPlanService = deploymentPlanService;
+            _deploymentStepFactories = deploymentStepFactories;
             _serviceProvider = serviceProvider;
         }
 
@@ -27,16 +27,19 @@ namespace OrchardCore.Deployment.Deployment
                 return;
             }
 
-            if (!await _deploymentPlanService.DoesUserHavePermissionsAsync())
+            // Resolved from service provider as this is a scoped service.
+            var deploymentPlanService = _serviceProvider.GetService<IDeploymentPlanService>();
+
+            if (!await deploymentPlanService.DoesUserHavePermissionsAsync())
             {
                 return;
             }
 
-            var deploymentStepFactories = _serviceProvider.GetServices<IDeploymentStepFactory>().ToDictionary(f => f.Name);
+            var deploymentStepFactories = _deploymentStepFactories.ToDictionary(f => f.Name);
       
             var deploymentPlans = deploymentPlanStep.IncludeAll
-                ? (await _deploymentPlanService.GetAllDeploymentPlansAsync()).ToArray()
-                : (await _deploymentPlanService.GetDeploymentPlansAsync(deploymentPlanStep.DeploymentPlanNames)).ToArray();
+                ? (await deploymentPlanService.GetAllDeploymentPlansAsync()).ToArray()
+                : (await deploymentPlanService.GetDeploymentPlansAsync(deploymentPlanStep.DeploymentPlanNames)).ToArray();
 
             var plans = (from plan in deploymentPlans
                          select new
