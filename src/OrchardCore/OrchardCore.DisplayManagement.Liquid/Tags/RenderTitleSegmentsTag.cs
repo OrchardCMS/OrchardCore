@@ -22,8 +22,6 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
 
             var arguments = new NamedExpressionList(argumentsList);
 
-            
-
             var titleBuilder = ((IServiceProvider)services).GetRequiredService<IPageTitleBuilder>();
 
             var segmentExpression = arguments["segment", 0] ?? throw new ArgumentException("page_title tag requires a segment argument");
@@ -33,7 +31,7 @@ namespace OrchardCore.DisplayManagement.Liquid.Tags
             var position = positionExpression == null ? "0" : (await positionExpression.EvaluateAsync(context)).ToStringValue();
 
             var separatorExpression = arguments["separator", 2];
-            var separator = separatorExpression == null ? null : new HtmlString((await positionExpression.EvaluateAsync(context)).ToStringValue());
+            var separator = separatorExpression == null ? null : new HtmlString((await separatorExpression.EvaluateAsync(context)).ToStringValue());
 
             titleBuilder.AddSegment(new HtmlString(segment), position);
             titleBuilder.GenerateTitle(separator).WriteTo(writer, (HtmlEncoder)encoder);
