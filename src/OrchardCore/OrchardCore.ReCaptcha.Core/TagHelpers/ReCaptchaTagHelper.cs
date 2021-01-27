@@ -1,16 +1,9 @@
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.TagHelpers;
 using Microsoft.AspNetCore.Razor.TagHelpers;
-using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using OrchardCore.Localization;
 using OrchardCore.ReCaptcha.ActionFilters;
-using OrchardCore.ReCaptcha.ActionFilters.Detection;
-using OrchardCore.ReCaptcha.Configuration;
-using OrchardCore.ResourceManagement;
+using OrchardCore.ReCaptcha.Services;
 
 namespace OrchardCore.ReCaptcha.TagHelpers
 {
@@ -18,28 +11,12 @@ namespace OrchardCore.ReCaptcha.TagHelpers
     [HtmlTargetElement("captcha", Attributes = "mode,language", TagStructure = TagStructure.WithoutEndTag)]
     public class ReCaptchaTagHelper : TagHelper
     {
-        private readonly IResourceManager _resourceManager;
-        private readonly IEnumerable<IDetectRobots> _robotDetectors;
-        private readonly ReCaptchaSettings _settings;
-        private readonly ILogger _logger;
-        private readonly ILocalizationService _localizationService;
-        private readonly IStringLocalizer<ReCaptchaTagHelper> S;
+        private readonly ReCaptchaService _reCaptchaService;
 
-        public ReCaptchaTagHelper(
-            IOptions<ReCaptchaSettings> optionsAccessor,
-            IResourceManager resourceManager,
-            ILocalizationService localizationService,
-            IEnumerable<IDetectRobots> robotDetectors,
-            ILogger<ReCaptchaTagHelper> logger,
-            IStringLocalizer<ReCaptchaTagHelper> localizer)
+        public ReCaptchaTagHelper(ReCaptchaService reCaptchaService)
         {
-            _resourceManager = resourceManager;
-            _robotDetectors = robotDetectors;
-            _settings = optionsAccessor.Value;
-            Mode = ReCaptchaMode.PreventRobots;
-            _logger = logger;
-            _localizationService = localizationService;
-            S = localizer;
+            _reCaptchaService = reCaptchaService;
+
         }
 
         [HtmlAttributeName("mode")]
@@ -52,7 +29,7 @@ namespace OrchardCore.ReCaptcha.TagHelpers
         [HtmlAttributeName("language")]
         public string Language { get; set; }
 
-        public override async Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
+        public override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
         {
             void RenderDivToTagHelper(TagBuilder builder)
             {
@@ -66,9 +43,9 @@ namespace OrchardCore.ReCaptcha.TagHelpers
                 output.SuppressOutput();
             }
 
-            await ReCaptchaRenderer.ShowCaptchaOrCallback(
-                _settings, Mode, Language, _robotDetectors, _localizationService, _resourceManager, S, _logger,
-                RenderDivToTagHelper, DoNotRenderTagHelper);
+            _reCaptchaService.ShowCaptchaOrCallCalback(Mode, Language, RenderDivToTagHelper, DoNotRenderTagHelper);
+
+            return Task.CompletedTask;
         }
     }
 }

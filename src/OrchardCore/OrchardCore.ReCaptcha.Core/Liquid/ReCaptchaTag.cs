@@ -8,16 +8,12 @@ using Fluid.Ast;
 using Fluid.Tags;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using OrchardCore.Liquid.Ast;
-using OrchardCore.Localization;
 using OrchardCore.ReCaptcha.ActionFilters;
 using OrchardCore.ReCaptcha.ActionFilters.Detection;
 using OrchardCore.ReCaptcha.Configuration;
-using OrchardCore.ReCaptcha.TagHelpers;
-using OrchardCore.ResourceManagement;
+using OrchardCore.ReCaptcha.Services;
 
 namespace OrchardCore.ReCaptcha.Liquid
 {
@@ -32,9 +28,13 @@ namespace OrchardCore.ReCaptcha.Liquid
 
             var services = servicesValue as IServiceProvider;
 
+            ReCaptchaService reCaptchaService = services.GetRequiredService<ReCaptchaService>();
+
             var arguments = (FilterArguments)(await new ArgumentsExpression(args).EvaluateAsync(context)).ToObjectValue();
-            var mode = arguments.HasNamed("mode") ? Enum.Parse<ReCaptchaMode>(arguments["mode"].ToString()) : ReCaptchaMode.PreventRobots;
+            var mode = arguments.HasNamed("mode") ? Enum.Parse<ReCaptchaMode>(arguments["mode"].ToStringValue()) : ReCaptchaMode.PreventRobots;
             var language = arguments.HasNamed("language") ? arguments["language"].ToStringValue() : null;
+
+
 
             var settings = services.GetRequiredService<IOptions<ReCaptchaSettings>>().Value;
             var robotDetectors = services.GetRequiredService<IEnumerable<IDetectRobots>>();
@@ -43,18 +43,7 @@ namespace OrchardCore.ReCaptcha.Liquid
             {
                 builder.WriteTo(writer, (HtmlEncoder)encoder);
             }
-
-            await ReCaptchaRenderer.ShowCaptchaOrCallback(
-                services.GetRequiredService<IOptions<ReCaptchaSettings>>().Value,
-                mode,
-                language,
-                services.GetRequiredService<IEnumerable<IDetectRobots>>(),
-                services.GetRequiredService<ILocalizationService>(),
-                services.GetRequiredService<IResourceManager>(),
-                services.GetRequiredService<IStringLocalizer<ReCaptchaTagHelper>>(),
-                services.GetRequiredService<ILogger>(),
-                RenderDivToTagHelper,
-                () => { });
+            reCaptchaService.ShowCaptchaOrCallCalback(mode, language, RenderDivToTagHelper, () => { });
 
             return Completion.Normal;
         }
