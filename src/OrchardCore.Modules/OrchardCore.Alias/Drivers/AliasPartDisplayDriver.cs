@@ -27,6 +27,12 @@ namespace OrchardCore.Alias.Drivers
             S = localizer;
         }
 
+        public override IDisplayResult Display(AliasPart part, BuildPartDisplayContext context)
+        {
+            context.Shape.Metadata.Alternates.Add($"Content__{part.ContentItem.ContentType}__{part.Alias}");
+            return base.Display(part, context);
+        }
+
         public override IDisplayResult Edit(AliasPart aliasPart, BuildPartEditorContext context)
         {
             return Initialize<AliasPartViewModel>(GetEditorShapeType(context), m => BuildViewModel(m, aliasPart, context.TypePartDefinition.GetSettings<AliasPartSettings>()));
