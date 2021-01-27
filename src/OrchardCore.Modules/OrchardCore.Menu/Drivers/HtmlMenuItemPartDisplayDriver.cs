@@ -46,7 +46,7 @@ namespace OrchardCore.Menu.Drivers
         {
             return Initialize<HtmlMenuItemPartEditViewModel>("HtmlMenuItemPart_Edit", model =>
             {
-                model.Name = part.Name;
+                model.Name = part.ContentItem.DisplayText;
                 model.Url = part.Url;
                 model.Html = part.Html;
                 model.MenuItemPart = part;
@@ -56,10 +56,12 @@ namespace OrchardCore.Menu.Drivers
         public override async Task<IDisplayResult> UpdateAsync(HtmlMenuItemPart part, IUpdateModel updater, UpdatePartEditorContext context)
         {
             var settings = context.TypePartDefinition.GetSettings<HtmlMenuItemPartSettings>();
-
-            if (await updater.TryUpdateModelAsync(part, Prefix, x => x.Name, x => x.Url, x => x.Html))
+            var model = new HtmlMenuItemPartEditViewModel();
+            if (await updater.TryUpdateModelAsync(model, Prefix))
             {
-                part.Html = settings.SanitizeHtml ? _htmlSanitizerService.Sanitize(part.Html) : part.Html;
+                part.ContentItem.DisplayText = model.Name;
+                part.Html = settings.SanitizeHtml ? _htmlSanitizerService.Sanitize(model.Html) : model.Html;
+                part.Url = model.Url;
             }
 
             return Edit(part, context);

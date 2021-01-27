@@ -9,7 +9,6 @@ namespace OrchardCore.Menu.GraphQL
         {
             Name = "HtmlMenuItemPart";
 
-            Field(x => x.Name, nullable: true);
             Field(x => x.Url, nullable: true);
             Field(x => x.Html, nullable: true);
         }
