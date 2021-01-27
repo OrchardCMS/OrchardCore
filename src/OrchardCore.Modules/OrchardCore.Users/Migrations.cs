@@ -28,11 +28,11 @@ namespace OrchardCore.Users
 
             SchemaBuilder.AlterIndexTable<UserIndex>(table => table
                 .CreateIndex("IDX_UserIndex_DocumentId",
-                "DocumentId",
-                "NormalizedUserName",
-                "NormalizedEmail",
-                "IsEnabled",
-                "UserId")
+                    "DocumentId",
+                    "UserId",
+                    "NormalizedUserName",
+                    "NormalizedEmail",
+                    "IsEnabled")
             );
 
             SchemaBuilder.CreateReduceIndexTable<UserByRoleNameIndex>(table => table
@@ -46,9 +46,9 @@ namespace OrchardCore.Users
 
             SchemaBuilder.AlterIndexTable<UserByLoginInfoIndex>(table => table
                 .CreateIndex("IDX_UserByLoginInfoIndex_DocumentId",
-                "DocumentId",
-                "LoginProvider",
-                "ProviderKey")
+                    "DocumentId",
+                    "LoginProvider",
+                    "ProviderKey")
             );
 
             SchemaBuilder.CreateMapIndexTable<UserByClaimIndex>(table => table
@@ -58,9 +58,9 @@ namespace OrchardCore.Users
 
             SchemaBuilder.AlterIndexTable<UserByClaimIndex>(table => table
                 .CreateIndex("IDX_UserByClaimIndex_DocumentId",
-                "DocumentId",
-                nameof(UserByClaimIndex.ClaimType),
-                nameof(UserByClaimIndex.ClaimValue))
+                    "DocumentId",
+                    nameof(UserByClaimIndex.ClaimType),
+                    nameof(UserByClaimIndex.ClaimValue))
             );
 
             // Shortcut other migration steps on new content definition schemas.
@@ -114,7 +114,7 @@ namespace OrchardCore.Users
         public async Task<int> UpdateFrom5Async()
         {
             var users = await _session.Query<User>().ListAsync();
-            foreach(var user in users)
+            foreach (var user in users)
             {
                 user.UserId = user.UserName;
                 _session.Save(user);
@@ -135,7 +135,7 @@ namespace OrchardCore.Users
         public async Task<int> UpdateFrom7Async()
         {
             var users = await _session.Query<User, UserIndex>(u => u.NormalizedUserName.Contains("@")).ListAsync();
-            foreach(var user in users)
+            foreach (var user in users)
             {
                 user.UserName = user.UserName.Replace('@', '+');
                 user.NormalizedUserName = user.NormalizedUserName.Replace('@', '+');
@@ -150,25 +150,25 @@ namespace OrchardCore.Users
         {
             SchemaBuilder.AlterIndexTable<UserIndex>(table => table
                 .CreateIndex("IDX_UserIndex_DocumentId",
-                "DocumentId",
-                "NormalizedUserName",
-                "NormalizedEmail",
-                "IsEnabled",
-                "UserId")
+                    "DocumentId",
+                    "UserId",
+                    "NormalizedUserName",
+                    "NormalizedEmail",
+                    "IsEnabled")
             );
 
             SchemaBuilder.AlterIndexTable<UserByLoginInfoIndex>(table => table
                 .CreateIndex("IDX_UserByLoginInfoIndex_DocumentId",
-                "DocumentId",
-                "LoginProvider",
-                "ProviderKey")
+                    "DocumentId",
+                    "LoginProvider",
+                    "ProviderKey")
             );
 
             SchemaBuilder.AlterIndexTable<UserByClaimIndex>(table => table
                 .CreateIndex("IDX_UserByClaimIndex_DocumentId",
-                "DocumentId",
-                nameof(UserByClaimIndex.ClaimType),
-                nameof(UserByClaimIndex.ClaimValue))
+                    "DocumentId",
+                    nameof(UserByClaimIndex.ClaimType),
+                    nameof(UserByClaimIndex.ClaimValue))
             );
 
             return 9;

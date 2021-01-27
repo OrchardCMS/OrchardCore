@@ -29,7 +29,7 @@ namespace OrchardCore.ContentFields.Indexing.SQL
             );
 
             SchemaBuilder.AlterIndexTable<UserPickerFieldIndex>(table => table
-                .CreateIndex("IDX_UserPickerFieldIndex_DocumentId_ContentPart",
+                .CreateIndex("IDX_UserPickerFieldIndex_DocumentId_ContentType",
                     "DocumentId",
                     "ContentType",
                     "ContentPart",
@@ -41,11 +41,9 @@ namespace OrchardCore.ContentFields.Indexing.SQL
             SchemaBuilder.AlterIndexTable<UserPickerFieldIndex>(table => table
                 .CreateIndex("IDX_UserPickerFieldIndex_DocumentId_SelectedUserId",
                     "DocumentId",
-                    "ContentType",
-                    "ContentField",
+                    "SelectedUserId",
                     "Published",
-                    "Latest",
-                    "SelectedUserId")
+                    "Latest")
             );
 
             // Shortcut other migration steps on new content definition schemas.
@@ -65,7 +63,7 @@ namespace OrchardCore.ContentFields.Indexing.SQL
             );
 
             SchemaBuilder.AlterIndexTable<UserPickerFieldIndex>(table => table
-                .CreateIndex("IDX_UserPickerFieldIndex_DocumentId_ContentPart",
+                .CreateIndex("IDX_UserPickerFieldIndex_DocumentId_ContentType",
                     "DocumentId",
                     "ContentType",
                     "ContentPart",
@@ -77,11 +75,9 @@ namespace OrchardCore.ContentFields.Indexing.SQL
             SchemaBuilder.AlterIndexTable<UserPickerFieldIndex>(table => table
                 .CreateIndex("IDX_UserPickerFieldIndex_DocumentId_SelectedUserId",
                     "DocumentId",
-                    "ContentType",
-                    "ContentField",
+                    "SelectedUserId",
                     "Published",
-                    "Latest",
-                    "SelectedUserId")
+                    "Latest")
             );
 
             return 2;

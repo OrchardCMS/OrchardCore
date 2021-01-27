@@ -41,20 +41,17 @@ namespace OrchardCore.OpenId.YesSql.Migrations
                 .Column<DateTime>(nameof(OpenIdAuthorizationIndex.CreationDate)));
 
             SchemaBuilder.AlterIndexTable<OpenIdAuthorizationIndex>(table => table
-                .CreateIndex("IDX_OpenIdAuthorizationIndex_DocumentId_Subject",
+                .CreateIndex("IDX_OpenIdAuthorizationIndex_DocumentId_ApplicationId",
                     "DocumentId",
-                    nameof(OpenIdAuthorizationIndex.AuthorizationId),
                     nameof(OpenIdAuthorizationIndex.ApplicationId),
                     nameof(OpenIdAuthorizationIndex.Status),
-                    nameof(OpenIdAuthorizationIndex.Subject),
-                    nameof(OpenIdAuthorizationIndex.CreationDate))
+                    nameof(OpenIdAuthorizationIndex.Subject))
             );
 
             SchemaBuilder.AlterIndexTable<OpenIdAuthorizationIndex>(table => table
-                .CreateIndex("IDX_OpenIdAuthorizationIndex_DocumentId_Type",
+                .CreateIndex("IDX_OpenIdAuthorizationIndex_DocumentId_AuthorizationId",
                     "DocumentId",
                     nameof(OpenIdAuthorizationIndex.AuthorizationId),
-                    nameof(OpenIdAuthorizationIndex.ApplicationId),
                     nameof(OpenIdAuthorizationIndex.Status),
                     nameof(OpenIdAuthorizationIndex.Type),
                     nameof(OpenIdAuthorizationIndex.CreationDate))
@@ -87,23 +84,28 @@ namespace OrchardCore.OpenId.YesSql.Migrations
                 .Column<DateTime>(nameof(OpenIdTokenIndex.CreationDate)));
 
             SchemaBuilder.AlterIndexTable<OpenIdTokenIndex>(table => table
-                .CreateIndex("IDX_OpenIdTokenIndex_DocumentId_Subject",
+                .CreateIndex("IDX_OpenIdTokenIndex_DocumentId_ApplicationId",
                     "DocumentId",
                     nameof(OpenIdTokenIndex.ApplicationId),
-                    nameof(OpenIdTokenIndex.AuthorizationId),
                     nameof(OpenIdTokenIndex.Status),
-                    nameof(OpenIdTokenIndex.Subject),
-                    nameof(OpenIdTokenIndex.CreationDate))
+                    nameof(OpenIdTokenIndex.Subject))
             );
 
             SchemaBuilder.AlterIndexTable<OpenIdTokenIndex>(table => table
-                .CreateIndex("IDX_OpenIdTokenIndex_DocumentId_Type",
+                .CreateIndex("IDX_OpenIdTokenIndex_DocumentId_AuthorizationId",
                     "DocumentId",
-                    nameof(OpenIdTokenIndex.ApplicationId),
                     nameof(OpenIdTokenIndex.AuthorizationId),
                     nameof(OpenIdTokenIndex.Status),
                     nameof(OpenIdTokenIndex.Type),
-                    nameof(OpenIdTokenIndex.CreationDate))
+                    nameof(OpenIdTokenIndex.CreationDate),
+                    nameof(OpenIdTokenIndex.ExpirationDate))
+            );
+
+            SchemaBuilder.AlterIndexTable<OpenIdTokenIndex>(table => table
+                .CreateIndex("IDX_OpenIdTokenIndex_DocumentId_TokenId",
+                    "DocumentId",
+                    nameof(OpenIdTokenIndex.TokenId),
+                    nameof(OpenIdTokenIndex.ReferenceId))
             );
 
             // Shortcut other migration steps on new content definition schemas.
@@ -168,20 +170,17 @@ namespace OrchardCore.OpenId.YesSql.Migrations
             );
 
             SchemaBuilder.AlterIndexTable<OpenIdAuthorizationIndex>(table => table
-                .CreateIndex("IDX_OpenIdAuthorizationIndex_DocumentId_Subject",
+                .CreateIndex("IDX_OpenIdAuthorizationIndex_DocumentId_ApplicationId",
                     "DocumentId",
-                    nameof(OpenIdAuthorizationIndex.AuthorizationId),
                     nameof(OpenIdAuthorizationIndex.ApplicationId),
                     nameof(OpenIdAuthorizationIndex.Status),
-                    nameof(OpenIdAuthorizationIndex.Subject),
-                    nameof(OpenIdAuthorizationIndex.CreationDate))
+                    nameof(OpenIdAuthorizationIndex.Subject))
             );
 
             SchemaBuilder.AlterIndexTable<OpenIdAuthorizationIndex>(table => table
-                .CreateIndex("IDX_OpenIdAuthorizationIndex_DocumentId_Type",
+                .CreateIndex("IDX_OpenIdAuthorizationIndex_DocumentId_AuthorizationId",
                     "DocumentId",
                     nameof(OpenIdAuthorizationIndex.AuthorizationId),
-                    nameof(OpenIdAuthorizationIndex.ApplicationId),
                     nameof(OpenIdAuthorizationIndex.Status),
                     nameof(OpenIdAuthorizationIndex.Type),
                     nameof(OpenIdAuthorizationIndex.CreationDate))
@@ -195,23 +194,28 @@ namespace OrchardCore.OpenId.YesSql.Migrations
             );
 
             SchemaBuilder.AlterIndexTable<OpenIdTokenIndex>(table => table
-                .CreateIndex("IDX_OpenIdTokenIndex_DocumentId_Subject",
+                .CreateIndex("IDX_OpenIdTokenIndex_DocumentId_ApplicationId",
                     "DocumentId",
                     nameof(OpenIdTokenIndex.ApplicationId),
-                    nameof(OpenIdTokenIndex.AuthorizationId),
                     nameof(OpenIdTokenIndex.Status),
-                    nameof(OpenIdTokenIndex.Subject),
-                    nameof(OpenIdTokenIndex.CreationDate))
+                    nameof(OpenIdTokenIndex.Subject))
             );
 
             SchemaBuilder.AlterIndexTable<OpenIdTokenIndex>(table => table
-                .CreateIndex("IDX_OpenIdTokenIndex_DocumentId_Type",
+                .CreateIndex("IDX_OpenIdTokenIndex_DocumentId_AuthorizationId",
                     "DocumentId",
-                    nameof(OpenIdTokenIndex.ApplicationId),
                     nameof(OpenIdTokenIndex.AuthorizationId),
                     nameof(OpenIdTokenIndex.Status),
                     nameof(OpenIdTokenIndex.Type),
-                    nameof(OpenIdTokenIndex.CreationDate))
+                    nameof(OpenIdTokenIndex.CreationDate),
+                    nameof(OpenIdTokenIndex.ExpirationDate))
+            );
+
+            SchemaBuilder.AlterIndexTable<OpenIdTokenIndex>(table => table
+                .CreateIndex("IDX_OpenIdTokenIndex_DocumentId_TokenId",
+                    "DocumentId",
+                    nameof(OpenIdTokenIndex.TokenId),
+                    nameof(OpenIdTokenIndex.ReferenceId))
             );
 
             return 5;

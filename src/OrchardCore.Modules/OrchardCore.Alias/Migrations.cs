@@ -33,7 +33,12 @@ namespace OrchardCore.Alias
             );
 
             SchemaBuilder.AlterIndexTable<AliasPartIndex>(table => table
-                .CreateIndex("IDX_AliasPartIndex_DocumentId", "DocumentId", "Alias", "ContentItemId", "Latest", "Published")
+                .CreateIndex("IDX_AliasPartIndex_DocumentId",
+                    "DocumentId",
+                    "Alias",
+                    "ContentItemId",
+                    "Published",
+                    "Latest")
             );
 
             // Shortcut other migration steps on new content definition schemas.
@@ -60,7 +65,9 @@ namespace OrchardCore.Alias
             // Can't be fully created on existing databases where the 'Alias' may be of 767 chars.
             SchemaBuilder.AlterIndexTable<AliasPartIndex>(table => table
                 //.CreateIndex("IDX_AliasPartIndex_DocumentId", "DocumentId", "Alias", "ContentItemId", "Latest", "Published")
-                .CreateIndex("IDX_AliasPartIndex_DocumentId", "DocumentId", "Alias")
+                .CreateIndex("IDX_AliasPartIndex_DocumentId",
+                    "DocumentId",
+                    "Alias")
             );
 
             return 3;
