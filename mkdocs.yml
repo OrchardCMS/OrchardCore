@@ -157,6 +157,7 @@ nav:
             - Users: 
                 - Configuration: docs/reference/modules/Users/Configuration/README.md
                 - Custom User Settings: docs/reference/modules/Users/CustomUserSettings/README.md
+            - Home Route: docs/reference/modules/HomeRoute/README.md
         - Core Modules: 
             - Features: docs/reference/modules/Features/README.md
             - Contents: docs/reference/modules/Contents/README.md
