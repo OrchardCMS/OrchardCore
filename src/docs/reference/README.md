@@ -8,3 +8,26 @@ Check out the reference pages for each module under the following categories in 
 - Core Modules: Modules that usually provide some fundamental features for a web app which is not connected to content management, or framework-like functionality that you can build on. These modules include e.g. user and role management, or the UI localization and background task management infrastructure.
 
 The above distinction is also present in the Orchard Core source code with solution folders. However, this is just a logical categorization and technically all the modules are alike.
+
+## Overview of all Orchard Core features
+
+
+### Admin
+
+- [Admin (`OrchardCore.Admin`)](modules/Admin/README.md)
+- [Admin Menu (`OrchardCore.AdminMenu`)](modules/AdminMenu/README.md)
+- [Custom Settings (`OrchardCore.CustomSettings`)](modules/CustomSettings/README.md)
+
+### Content
+
+### Core
+
+### Design
+
+### Extensibility
+
+### Localization
+
+### Search
+
+### Security
