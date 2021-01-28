@@ -116,7 +116,7 @@ nav:
                 - Alias: docs/reference/modules/Alias/README.md
                 - Html: docs/reference/modules/Html/README.md
                 - Markdown: docs/reference/modules/Markdown/README.md
-                - List: docs/reference/modules/List/README.md
+                - List: docs/reference/modules/Lists/README.md
                 - Flow: docs/reference/modules/Flow/README.md 
                 - Bag: docs/reference/modules/Flow/BagPart.md
                 - Publish Later: docs/reference/modules/PublishLater/README.md
