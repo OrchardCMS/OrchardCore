@@ -8,7 +8,7 @@ The module contains the following features apart from the base feature:
 
 - Users Change Email: Allows users to change their email address.
 - Users Registration: Allows external users to sign up to the site and ask to confirm their email.
-- Reset Password: Allows users to reset their password
+- Reset Password: Allows users to reset their password.
 - User Time Zone: Provides a way to set the time zone per user.
 - Custom User Settings: See [its own documentation page](CustomUserSettings/README.md).
 
