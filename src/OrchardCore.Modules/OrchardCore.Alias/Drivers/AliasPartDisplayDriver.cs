@@ -29,7 +29,9 @@ namespace OrchardCore.Alias.Drivers
 
         public override IDisplayResult Display(AliasPart part, BuildPartDisplayContext context)
         {
-            context.Shape.Metadata.Alternates.Add($"Content__{part.ContentItem.ContentType}__{part.Alias}");
+            var contentType = part.ContentItem.ContentType;
+            var alias = part.Alias;
+            context.Shape.Metadata.Alternates.Add($"Content__{contentType}__{alias}");
             return base.Display(part, context);
         }
 
