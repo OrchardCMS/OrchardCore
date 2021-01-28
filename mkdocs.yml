@@ -189,6 +189,7 @@ nav:
             - Tenants: docs/reference/modules/Tenants/README.md
             - Workflows: docs/reference/modules/Workflows/README.md
             - DataProtection (Azure Storage): docs/reference/modules/DataProtection.Azure/README.md
+            - Background Tasks: docs/reference/modules/BackgroundTasks/README.md
     - Resources: 
         - Learning: docs/resources/README.md
         - Tutorials: docs/resources/tutorials/README.md
