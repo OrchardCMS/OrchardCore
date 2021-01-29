@@ -109,10 +109,30 @@ namespace OrchardCore.ContentManagement
             }
             else
             {
-                contentItems = (await _session
-                    .Query<ContentItem, ContentItemIndex>()
-                    .Where(x => x.ContentItemId.IsIn(contentItemIds) && x.Published == true)
-                    .ListAsync()).ToList();
+                contentItems = new List<ContentItem>();
+                var contentItemIdsAdded = new List<string>();
+
+                foreach (var contentItemId in contentItemIds)
+                {
+                    // If the published version is already loaded, we can return it.
+                    if (_contentManagerSession.RecallPublishedItemId(contentItemId, out var contentItem))
+                    {
+                        contentItems.Add(contentItem);
+                        contentItemIdsAdded.Add(contentItemId);
+                    }
+                }
+
+                // Remove the ids already added
+                contentItemIds = contentItemIds.Except(contentItemIdsAdded);
+
+                // Get the remaining content items
+                if (contentItemIds.Any())
+                {
+                    contentItems.AddRange((await _session
+                        .Query<ContentItem, ContentItemIndex>()
+                        .Where(x => x.ContentItemId.IsIn(contentItemIds) && x.Published == true)
+                        .ListAsync()).ToList());
+                }
             }
 
             for (var i = 0; i < contentItems.Count; i++)
