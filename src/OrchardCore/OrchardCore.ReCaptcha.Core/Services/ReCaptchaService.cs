@@ -96,7 +96,7 @@ namespace OrchardCore.ReCaptcha.Services
             }
             catch (CultureNotFoundException)
             {
-                _logger.LogWarning("Language with name {0} not found", language);
+                _logger.LogWarning("Language with name {Language} not found", language);
             }
 
             return culture;
