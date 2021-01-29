@@ -28,7 +28,7 @@ namespace OrchardCore.ReCaptcha.Liquid
 
             var services = servicesValue as IServiceProvider;
 
-            ReCaptchaService reCaptchaService = services.GetRequiredService<ReCaptchaService>();
+            var reCaptchaService = services.GetRequiredService<ReCaptchaService>();
 
             var arguments = (FilterArguments)(await new ArgumentsExpression(args).EvaluateAsync(context)).ToObjectValue();
             var mode = arguments.HasNamed("mode") ? Enum.Parse<ReCaptchaMode>(arguments["mode"].ToStringValue()) : ReCaptchaMode.PreventRobots;
