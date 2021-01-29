@@ -63,7 +63,7 @@ namespace OrchardCore.Recipes.Controllers
             var recipes = recipeCollections.SelectMany(x => x);
 
             // Do not display the setup recipes and the ones whith the hidden tag
-            recipes = recipes.Where(r => r.IsSetupRecipe = false && !r.Tags.Contains("hidden", StringComparer.InvariantCultureIgnoreCase));
+            recipes = recipes.Where(r => r.IsSetupRecipe == false && !r.Tags.Contains("hidden", StringComparer.InvariantCultureIgnoreCase));
 
             var features = _extensionManager.GetFeatures();
 
