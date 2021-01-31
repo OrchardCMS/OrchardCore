@@ -1,23 +1,21 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
 
 namespace OrchardCore.Deployment.Deployment
 {
     public class DeploymentPlanDeploymentSource : IDeploymentSource
     {
+        private readonly IDeploymentPlanService _deploymentPlanService;
         private readonly IEnumerable<IDeploymentStepFactory> _deploymentStepFactories;
-        private readonly IServiceProvider _serviceProvider;
 
         public DeploymentPlanDeploymentSource(
-            IServiceProvider serviceProvider,
+            IDeploymentPlanService deploymentPlanService,
             IEnumerable<IDeploymentStepFactory> deploymentStepFactories)
         {
+            _deploymentPlanService = deploymentPlanService;
             _deploymentStepFactories = deploymentStepFactories;
-            _serviceProvider = serviceProvider;
         }
 
         public async Task ProcessDeploymentStepAsync(DeploymentStep deploymentStep, DeploymentPlanResult result)
@@ -27,19 +25,16 @@ namespace OrchardCore.Deployment.Deployment
                 return;
             }
 
-            // Resolved from service provider as this is a scoped service.
-            var deploymentPlanService = _serviceProvider.GetService<IDeploymentPlanService>();
-
-            if (!await deploymentPlanService.DoesUserHavePermissionsAsync())
+            if (!await _deploymentPlanService.DoesUserHavePermissionsAsync())
             {
                 return;
             }
 
             var deploymentStepFactories = _deploymentStepFactories.ToDictionary(f => f.Name);
-      
+
             var deploymentPlans = deploymentPlanStep.IncludeAll
-                ? (await deploymentPlanService.GetAllDeploymentPlansAsync()).ToArray()
-                : (await deploymentPlanService.GetDeploymentPlansAsync(deploymentPlanStep.DeploymentPlanNames)).ToArray();
+                ? (await _deploymentPlanService.GetAllDeploymentPlansAsync()).ToArray()
+                : (await _deploymentPlanService.GetDeploymentPlansAsync(deploymentPlanStep.DeploymentPlanNames)).ToArray();
 
             var plans = (from plan in deploymentPlans
                          select new
@@ -61,7 +56,7 @@ namespace OrchardCore.Deployment.Deployment
         }
 
         /// <summary>
-        /// A Site Setting Step is generic and the name is mapped to the <see cref="IDeploymentStepFactory.Name"/> so its 'Type' should be determined though a lookup.
+        /// A Site Settings Step is generic and the name is mapped to the <see cref="IDeploymentStepFactory.Name"/> so its 'Type' should be determined though a lookup.
         /// A normal steps name is not mapped to the <see cref="IDeploymentStepFactory.Name"/> and should use its type.
         /// </summary>
         private string GetStepType(IDictionary<string, IDeploymentStepFactory> deploymentStepFactories, DeploymentStep step)
