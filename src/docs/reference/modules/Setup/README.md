@@ -97,3 +97,11 @@ The following configuration values are used by default and can be customized:
 | --- | --- |
 | `DefaultCulture` | The default culture that will be used for the setup screen. |
 | `SupportedCultures` | The list of the supported cultures for the setup screen. |
+
+## CDN disabled by default
+
+The `UseCdn` option, configured in the _Configuration -> Settings -> General_ section, is disabled by default.
+This is to allow access to resources when an internet connection is not available or in countries like China, where CDNs are not always accessible.  
+
+!!! note
+    It is recommended to enable the CDN setting after setup.

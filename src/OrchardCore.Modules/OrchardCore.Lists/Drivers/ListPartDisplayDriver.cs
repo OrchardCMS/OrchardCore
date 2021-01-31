@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentManagement.Display.Models;
+using OrchardCore.ContentManagement.Display.ViewModels;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
@@ -75,7 +76,9 @@ namespace OrchardCore.Lists.Drivers
                         model.EnableOrdering = settings.EnableOrdering;
                         model.Pager = await context.New.PagerSlim(pager);
                     })
-                    .Location("DetailAdmin", "Content:10")
+                    .Location("DetailAdmin", "Content:10"),
+                    Initialize<ContentItemViewModel>("ListPart", model => model.ContentItem = listPart.ContentItem)
+                    .Location("SummaryAdmin", "Actions:4")
                 );
         }
 

@@ -45,16 +45,6 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
                 }
             },
             {
-                nameof(HtmlField),
-                new FieldTypeDescriptor
-                {
-                    Description = "Html field",
-                    FieldType = typeof(StringGraphType),
-                    UnderlyingType = typeof(HtmlField),
-                    FieldAccessor = field => field.Content.Html
-                }
-            },
-            {
                 nameof(NumericField),
                 new FieldTypeDescriptor
                 {

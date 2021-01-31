@@ -626,6 +626,11 @@ namespace OrchardCore.ResourceManagement
 
             foreach (var context in styleSheets)
             {
+                if (context.Settings.Location == ResourceLocation.Inline)
+                {
+                    continue;
+                }
+
                 if (!first)
                 {
                     builder.AppendHtml(System.Environment.NewLine);

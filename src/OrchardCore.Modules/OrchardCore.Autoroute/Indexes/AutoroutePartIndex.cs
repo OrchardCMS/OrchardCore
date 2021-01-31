@@ -1,10 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Autoroute.Models;
+using OrchardCore.Autoroute.Services;
 using OrchardCore.ContentManagement.Handlers;
+using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Routing;
 using OrchardCore.Data;
 using YesSql.Indexes;
@@ -49,6 +52,7 @@ namespace OrchardCore.ContentManagement.Records
         private readonly IServiceProvider _serviceProvider;
         private readonly HashSet<ContentItem> _removed = new HashSet<ContentItem>();
         private IContentManager _contentManager;
+        private IContentDefinitionManager _contentDefinitionManager;
 
         public AutoroutePartIndexProvider(IServiceProvider serviceProvider)
         {
@@ -97,19 +101,37 @@ namespace OrchardCore.ContentManagement.Records
                         return null;
                     }
 
+                    // Lazy initialization because of ISession cyclic dependency
+                    _contentDefinitionManager = _contentDefinitionManager ?? _serviceProvider.GetRequiredService<IContentDefinitionManager>();
+
+                    // Search for AutoroutePart
+                    var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
+
+                    // Validate that the content definition contains an AutoroutePart.
+                    // This prevents indexing parts that have been removed from the type definition, but are still present in the elements.
+                    var removedFromTypeDefinition = false;
+                    if (contentTypeDefinition == null || !contentTypeDefinition.Parts.Any(ctpd => ctpd.Name == nameof(AutoroutePart)))
+                    {
+                        // When the part has been removed enlist an update for after the session has been commited.
+                        removedFromTypeDefinition = true;
+                        contentItem.Remove<AutoroutePart>();
+                        var autorouteEntries = _serviceProvider.GetRequiredService<IAutorouteEntries>();
+                        await autorouteEntries.UpdateEntriesAsync();
+                    }
+
                     var results = new List<AutoroutePartIndex>
                     {
-                        // If the part is disabled, a record is still added but with a null path.
+                        // If the part is disabled, or removed, a record is still added but with a null path.
                         new AutoroutePartIndex
                         {
                             ContentItemId = contentItem.ContentItemId,
-                            Path = !part.Disabled ? part.Path : null,
+                            Path = !part.Disabled && !removedFromTypeDefinition ? part.Path : null,
                             Published = contentItem.Published,
                             Latest = contentItem.Latest
                         }
                     };
 
-                    if (!part.RouteContainedItems || part.Disabled || _removed.Contains(contentItem))
+                    if (!part.RouteContainedItems || part.Disabled || _removed.Contains(contentItem) || removedFromTypeDefinition)
                     {
                         return results;
                     }
