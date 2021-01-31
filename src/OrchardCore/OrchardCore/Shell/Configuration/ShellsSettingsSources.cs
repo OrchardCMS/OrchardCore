@@ -23,6 +23,23 @@ namespace OrchardCore.Environment.Shell.Configuration
             return Task.CompletedTask;
         }
 
+        public Task DeleteAsync(string tenant)
+        {
+            lock (this)
+            {
+                var settings = GetSettings();
+
+                if (settings.GetValue(tenant) == null) return Task.CompletedTask;
+
+                settings.Remove(tenant);
+                File.WriteAllText(_tenants, settings.ToString());
+            }
+            return Task.CompletedTask;
+        }
+
+        private JObject GetSettings() =>
+            !File.Exists(_tenants) ? new JObject() : JObject.Parse(File.ReadAllText(_tenants));
+
         public async Task SaveAsync(string tenant, IDictionary<string, string> data)
         {
             JObject tenantsSettings;

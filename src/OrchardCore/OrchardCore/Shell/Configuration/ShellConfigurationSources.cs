@@ -70,5 +70,20 @@ namespace OrchardCore.Environment.Shell.Configuration
                 }
             }
         }
+
+        public Task DeleteAsync(string tenant)
+        {
+            lock (this)
+            {
+                var appsettings = Path.Combine(BuildTenantFolderName(tenant), "appsettings.json");
+
+                File.Delete(appsettings);
+            }
+            return Task.CompletedTask;
+        }
+
+        private string BuildTenantFolderName(string tenant) =>
+            Path.Combine(_container, tenant);
+
     }
 }

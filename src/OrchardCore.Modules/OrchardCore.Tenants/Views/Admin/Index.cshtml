@@ -82,7 +82,7 @@
     <div class="card mb-3 position-sticky action-bar">
         <div class="card-body bg-primary p-3">
             <div class="form-group mb-n1">
-                <div class="input-group input-group-sm w-50 d-inline-flex has-search">                    
+                <div class="input-group input-group-sm w-50 d-inline-flex has-search">
                     <i class="fa fa-search form-control-feedback"></i>
                     <input id="search-box" asp-for="Options.Search" class="form-control" placeholder="@T["Search"]" type="search" autofocus />
                 </div>
@@ -195,6 +195,10 @@
                                     <a class="btn btn-info btn-sm setup" id="btn-setup-@entry.Name" href="@GetEncodedUrl(entry, originalPathBase)">@T["Setup"]</a>
                                 }
                                 <a asp-action="Reload" asp-route-id="@entry.Name" class="btn btn-secondary btn-sm reload" itemprop="UnsafeUrl">@T["Reload"]</a>
+                                @if (entry.Name != ShellHelper.DefaultShellName)
+                                {
+                                    <a asp-action="Delete" asp-route-id="@entry.Name" class="btn btn-dark btn-sm" data-url-af="UnsafeUrl RemoveUrl" data-message="@T["Are you sure you want to delete this tenant?"]">@T["Delete"]</a>
+                                }
                             </div>
                         </div>
                     </div>
