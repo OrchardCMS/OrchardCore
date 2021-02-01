@@ -4,7 +4,6 @@
       Parts_Contents_Publish_Summary
       Parts_Contents_Publish_SummaryAdmin
 */
-
 {
   "Content_PublishButton": [
     {
@@ -34,6 +33,23 @@
       "place": "Actions:6"
     }
   ]
+  ,
+  "MediaField_Edit": [
+    {
+      "place": "Parts:0|Media;0",
+      "contentType": [
+        "BlogPost"
+      ]
+    }
+  ],
+  "MarkdownBodyPart_Edit": [
+    {
+      "place": "Parts:0%Other;1",
+      "contentType": [
+        "BlogPost"
+      ]
+    }
+  ]
   //,
   //"TextField_Edit": [
   //  {
@@ -47,7 +63,6 @@
   //    "place": "Content:50"
   //  }
   //]
-
 }
 /*
 

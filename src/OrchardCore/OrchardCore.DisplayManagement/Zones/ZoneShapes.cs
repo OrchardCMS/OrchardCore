@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
 using OrchardCore.DisplayManagement.Descriptors;
 using OrchardCore.DisplayManagement.Shapes;
+using OrchardCore.DisplayManagement.ViewModels;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Utilities;
 
@@ -14,28 +15,33 @@ namespace OrchardCore.DisplayManagement.Zones
     public class ZoneShapes : IShapeAttributeProvider
     {
         [Shape]
-        public async Task<IHtmlContent> Zone(dynamic DisplayAsync, dynamic Shape)
+        public async Task<IHtmlContent> Zone(IDisplayHelper DisplayAsync, IEnumerable<object> Shape)
         {
             var htmlContentBuilder = new HtmlContentBuilder();
             foreach (var item in Shape)
             {
-                htmlContentBuilder.AppendHtml(await DisplayAsync(item));
+                htmlContentBuilder.AppendHtml(await DisplayAsync.ShapeExecuteAsync(item));
             }
 
             return htmlContentBuilder;
         }
 
         [Shape]
-        public async Task<IHtmlContent> ContentZone(dynamic DisplayAsync, dynamic Shape, IShapeFactory ShapeFactory)
+        public async Task<IHtmlContent> ContentZone(IDisplayHelper DisplayAsync, dynamic Shape, IShapeFactory ShapeFactory)
         {
             var htmlContentBuilder = new HtmlContentBuilder();
 
             var shapes = ((IEnumerable<dynamic>)Shape);
 
+            // TODO evaluate these for null before perfoming all the groupings.
+
+            string identifier = Shape.Identifier;
+
             var groupings = shapes.GroupBy(x =>
             {
+                var s = (IShape)x;
                 // By convention all placement delimiters default to the name 'Content' when not specified during placement.
-                var key = (string)x.Metadata.Tab;
+                var key = s.Metadata.Tab;
                 if (String.IsNullOrEmpty(key))
                 {
                     key = "Content";
@@ -49,7 +55,7 @@ namespace OrchardCore.DisplayManagement.Zones
                 }
 
                 return key;
-            }).ToList();
+            }, x => (IShape)x).ToList(); //
 
             // Process Tabs first, then Cards, then Columns.
             if (groupings.Count > 1)
@@ -58,7 +64,7 @@ namespace OrchardCore.DisplayManagement.Zones
                 {
                     var firstGroupWithModifier = grouping.FirstOrDefault(group =>
                     {
-                        var key = (string)group.Metadata.Tab;
+                        var key = group.Metadata.Tab;
                         if (!String.IsNullOrEmpty(key))
                         {
                             var modifierIndex = key.IndexOf(';');
@@ -72,7 +78,7 @@ namespace OrchardCore.DisplayManagement.Zones
 
                     if (firstGroupWithModifier != null)
                     {
-                        var key = (string)firstGroupWithModifier.Metadata.Tab;
+                        var key = firstGroupWithModifier.Metadata.Tab;
                         var modifierIndex = key.IndexOf(';');
                         return new PositionalGrouping(key.Substring(modifierIndex));
                     }
@@ -80,20 +86,20 @@ namespace OrchardCore.DisplayManagement.Zones
                     return new PositionalGrouping(null);
                 }, FlatPositionComparer.Instance).ToList();
 
-                Shape container = (Shape)await ShapeFactory.CreateAsync("TabContainer", Arguments.From(
-                    new
-                    {
-                        ContentItem = Shape.ContentItem,
-                        Grouping = orderedGroupings
-                    }));
+                var container = (GroupingsViewModel)await ShapeFactory.CreateAsync<GroupingsViewModel>("TabContainer", m =>
+                {
+                    m.Identifier = identifier;
+                    m.Groupings = orderedGroupings;
+                });
+
                 foreach (var orderedGrouping in orderedGroupings)
                 {
-                    Shape groupingShape = (Shape)await ShapeFactory.CreateAsync("Tab", Arguments.From(
-                        new
-                        {
-                            Grouping = orderedGrouping,
-                            ContentItem = Shape.ContentItem
-                        }));
+                    var groupingShape = (GroupingViewModel)await ShapeFactory.CreateAsync<GroupingViewModel>("Tab", m =>
+                    {
+                        m.Identifier = identifier;
+                        m.Grouping = orderedGrouping;
+                    });
+
                     foreach (var item in orderedGrouping)
                     {
                         groupingShape.Add(item);
@@ -101,34 +107,32 @@ namespace OrchardCore.DisplayManagement.Zones
                     container.Add(groupingShape);
                 }
 
-                htmlContentBuilder.AppendHtml(await DisplayAsync(container));
+                htmlContentBuilder.AppendHtml(await DisplayAsync.ShapeExecuteAsync(container));
             }
             else if (groupings.Count == 1)
             {
                 // Evaluate for cards.
-                var cardGrouping = await ShapeFactory.CreateAsync("CardGrouping", Arguments.From(
-                    new
-                    {
-                        Grouping = groupings[0],
-                        ContentItem = Shape.ContentItem
-                    }));
-
-                htmlContentBuilder.AppendHtml(await DisplayAsync(cardGrouping));
+                var cardGrouping = (GroupingViewModel)await ShapeFactory.CreateAsync<GroupingViewModel>("CardGrouping", m =>
+                {
+                    m.Identifier = identifier;
+                    m.Grouping = groupings[0];
+                });
+                htmlContentBuilder.AppendHtml(await DisplayAsync.ShapeExecuteAsync(cardGrouping));
             }
 
             return htmlContentBuilder;
         }
 
         [Shape]
-        public async Task<IHtmlContent> CardGrouping(dynamic DisplayAsync, dynamic Shape, IShapeFactory ShapeFactory)
+        public async Task<IHtmlContent> CardGrouping(IDisplayHelper DisplayAsync, GroupingViewModel Shape, IShapeFactory ShapeFactory)
         {
             var htmlContentBuilder = new HtmlContentBuilder();
-            IGrouping<string, dynamic> grouping = Shape.Grouping;
+            var grouping = Shape.Grouping;
 
             var groupings = grouping.GroupBy(x =>
             {
                 // By convention all placement delimiters default to the name 'Content' when not specified during placement.
-                var key = (string)x.Metadata.Card;
+                var key = x.Metadata.Card;
                 if (String.IsNullOrEmpty(key))
                 {
                     key = "Content";
@@ -144,13 +148,15 @@ namespace OrchardCore.DisplayManagement.Zones
                 return key;
             }).ToList();
 
+            string identifier = Shape.Identifier;
+
             if (groupings.Count > 1)
             {
                 var orderedGroupings = groupings.OrderBy(grouping =>
                 {
                     var firstGroupWithModifier = grouping.FirstOrDefault(group =>
                     {
-                        var key = (string)group.Metadata.Card;
+                        var key = group.Metadata.Card;
                         if (!String.IsNullOrEmpty(key))
                         {
                             var modifierIndex = key.IndexOf(';');
@@ -164,7 +170,7 @@ namespace OrchardCore.DisplayManagement.Zones
 
                     if (firstGroupWithModifier != null)
                     {
-                        var key = (string)firstGroupWithModifier.Metadata.Card;
+                        var key = firstGroupWithModifier.Metadata.Card;
                         var modifierIndex = key.IndexOf(';');
                         return new PositionalGrouping(key.Substring(modifierIndex));
                     }
@@ -172,19 +178,20 @@ namespace OrchardCore.DisplayManagement.Zones
                     return new PositionalGrouping();
                 }, FlatPositionComparer.Instance).ToList();
 
-                Shape container = (Shape)await ShapeFactory.CreateAsync("CardContainer", Arguments.From(
-                    new
-                    {
-                        ContentItem = Shape.ContentItem
-                    }));
+
+                var container = (GroupViewModel)await ShapeFactory.CreateAsync<GroupViewModel>("CardContainer", m =>
+                {
+                    m.Identifier = identifier;
+                });
+                
                 foreach (var orderedGrouping in orderedGroupings)
                 {
-                    Shape groupingShape = (Shape)await ShapeFactory.CreateAsync("Card", Arguments.From(
-                        new
-                        {
-                            Grouping = orderedGrouping,
-                            ContentItem = Shape.ContentItem
-                        }));
+                    var groupingShape = (GroupingViewModel)await ShapeFactory.CreateAsync<GroupingViewModel>("Card", m =>
+                    {
+                        m.Identifier = identifier;
+                        m.Grouping = orderedGrouping;
+                    });
+
                     foreach (var item in orderedGrouping)
                     {
                         groupingShape.Add(item);
@@ -192,18 +199,18 @@ namespace OrchardCore.DisplayManagement.Zones
                     container.Add(groupingShape);
                 }
 
-                htmlContentBuilder.AppendHtml(await DisplayAsync(container));
+                htmlContentBuilder.AppendHtml(await DisplayAsync.ShapeExecuteAsync(container));
             }
             else
             {
                 // Evaluate for columns.
-                var groupingShape = await ShapeFactory.CreateAsync("ColumnGrouping", Arguments.From(
-                    new
-                    {
-                        Grouping = grouping,
-                        ContentItem = Shape.ContentItem
-                    }));
-                htmlContentBuilder.AppendHtml(await DisplayAsync(groupingShape));
+                var groupingShape = (GroupingViewModel)await ShapeFactory.CreateAsync<GroupingViewModel>("ColumnGrouping", m =>
+                {
+                    m.Identifier = identifier;
+                    m.Grouping = grouping;
+                });
+
+                htmlContentBuilder.AppendHtml(await DisplayAsync.ShapeExecuteAsync(groupingShape));
             }
 
             return htmlContentBuilder;
@@ -211,15 +218,15 @@ namespace OrchardCore.DisplayManagement.Zones
 
 
         [Shape]
-        public async Task<IHtmlContent> ColumnGrouping(dynamic DisplayAsync, dynamic Shape, IShapeFactory ShapeFactory)
+        public async Task<IHtmlContent> ColumnGrouping(IDisplayHelper DisplayAsync, GroupingViewModel Shape, IShapeFactory ShapeFactory)
         {
             var htmlContentBuilder = new HtmlContentBuilder();
-            IGrouping<string, dynamic> grouping = Shape.Grouping;
+            var grouping = Shape.Grouping;
 
             var groupings = grouping.GroupBy(x =>
             {
                 // By convention all placement delimiters default to the name 'Content' when not specified during placement.
-                var key = (string)x.Metadata.Column;
+                var key = x.Metadata.Column;
                 if (String.IsNullOrEmpty(key))
                 {
                     key = "Content";
@@ -242,6 +249,8 @@ namespace OrchardCore.DisplayManagement.Zones
                 return key;
             }).ToList();
 
+            string identifier = Shape.Identifier;
+
             if (groupings.Count > 1)
             {
                 var positionModifiers = GetColumnPositions(groupings);
@@ -260,19 +269,19 @@ namespace OrchardCore.DisplayManagement.Zones
 
                 var columnModifiers = GetColumnModifiers(orderedGroupings);
 
-                Shape container = (Shape)await ShapeFactory.CreateAsync("ColumnContainer", Arguments.From(
-                    new
-                    {
-                        ContentItem = Shape.ContentItem
-                    }));
+                var container = (GroupViewModel)await ShapeFactory.CreateAsync<GroupViewModel>("ColumnContainer", m =>
+                {
+                    m.Identifier = identifier;
+                });
+
                 foreach (var orderedGrouping in orderedGroupings)
                 {
-                    Shape groupingShape = (Shape)await ShapeFactory.CreateAsync("Column", Arguments.From(
-                        new
-                        {
-                            Grouping = orderedGrouping,
-                            ContentItem = Shape.ContentItem
-                        }));
+                    var groupingShape = (GroupingViewModel)await ShapeFactory.CreateAsync<GroupingViewModel>("Column", m =>
+                    {
+                        m.Identifier = identifier;
+                        m.Grouping = orderedGrouping;
+                    });
+
                     groupingShape.Classes.Add("ta-col-grouping");
                     groupingShape.Classes.Add("column-" + orderedGrouping.Key.HtmlClassify());
 
@@ -300,19 +309,19 @@ namespace OrchardCore.DisplayManagement.Zones
                     container.Add(groupingShape);
                 }
 
-                htmlContentBuilder.AppendHtml(await DisplayAsync(container));
+                htmlContentBuilder.AppendHtml(await DisplayAsync.ShapeExecuteAsync(container));
             }
             else
             {
                 foreach (var item in grouping)
                 {
-                    htmlContentBuilder.AppendHtml(await DisplayAsync(item));
+                    htmlContentBuilder.AppendHtml(await DisplayAsync.ShapeExecuteAsync(item));
                 }
             }
 
             return htmlContentBuilder;
         }
-        private static Dictionary<string, string> GetColumnPositions(IList<IGrouping<string, dynamic>> groupings)
+        private static Dictionary<string, string> GetColumnPositions(IList<IGrouping<string, IShape>> groupings)
         {
             var positionModifiers = new Dictionary<string, string>();
             foreach (var grouping in groupings)
@@ -347,7 +356,7 @@ namespace OrchardCore.DisplayManagement.Zones
             return positionModifiers;
         }
 
-        private static Dictionary<string, string> GetColumnModifiers(IList<IGrouping<string, dynamic>> groupings)
+        private static Dictionary<string, string> GetColumnModifiers(IList<IGrouping<string, IShape>> groupings)
         {
             var columnModifiers = new Dictionary<string, string>();
             foreach (var grouping in groupings)
@@ -382,7 +391,7 @@ namespace OrchardCore.DisplayManagement.Zones
             return columnModifiers;
         }
 
-        private static dynamic FirstGroupingWithModifierOrDefault(IGrouping<string, dynamic> grouping, char modifier)
+        private static dynamic FirstGroupingWithModifierOrDefault(IGrouping<string, IShape> grouping, char modifier)
         {
             var firstGroupWithModifier = grouping.FirstOrDefault(group =>
             {
