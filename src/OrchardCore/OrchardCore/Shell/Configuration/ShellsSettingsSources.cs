@@ -25,15 +25,13 @@ namespace OrchardCore.Environment.Shell.Configuration
 
         public Task DeleteAsync(string tenant)
         {
-            lock (this)
-            {
-                var settings = GetSettings();
+            var settings = GetSettings();
 
-                if (settings.GetValue(tenant) == null) return Task.CompletedTask;
+            if (settings.GetValue(tenant) == null) return Task.CompletedTask;
 
-                settings.Remove(tenant);
-                File.WriteAllText(_tenants, settings.ToString());
-            }
+            settings.Remove(tenant);
+            File.WriteAllText(_tenants, settings.ToString());
+
             return Task.CompletedTask;
         }
 

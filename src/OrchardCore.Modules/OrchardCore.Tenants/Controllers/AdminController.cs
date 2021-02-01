@@ -617,6 +617,11 @@ namespace OrchardCore.Tenants.Controllers
         [HttpPost]
         public async Task<IActionResult> Delete(string id)
         {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTenants))
+            {
+                return Forbid();
+            }
+
             if (!IsDefaultShell() || id == ShellHelper.DefaultShellName)
             {
                 return Forbid();

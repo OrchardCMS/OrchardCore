@@ -73,12 +73,10 @@ namespace OrchardCore.Environment.Shell.Configuration
 
         public Task DeleteAsync(string tenant)
         {
-            lock (this)
-            {
-                var appsettings = Path.Combine(BuildTenantFolderName(tenant), "appsettings.json");
+            var appsettings = Path.Combine(BuildTenantFolderName(tenant), "appsettings.json");
 
-                File.Delete(appsettings);
-            }
+            File.Delete(appsettings);
+
             return Task.CompletedTask;
         }
 
