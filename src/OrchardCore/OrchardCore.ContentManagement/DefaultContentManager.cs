@@ -122,16 +122,19 @@ namespace OrchardCore.ContentManagement
                     }
                 }
 
-                // Remove the ids already added
-                contentItemIds = contentItemIds.Except(contentItemIdsAdded);
+                // Query only the ids not already added
+                var contentItemIdsToQuery = contentItemIds.Except(contentItemIdsAdded);
 
                 // Get the remaining content items
-                if (contentItemIds.Any())
+                if (contentItemIdsToQuery.Any())
                 {
-                    contentItems.AddRange((await _session
-                        .Query<ContentItem, ContentItemIndex>()
-                        .Where(x => x.ContentItemId.IsIn(contentItemIds) && x.Published == true)
-                        .ListAsync()).ToList());
+                    var contentItemsToLoad = (await _session
+                           .Query<ContentItem, ContentItemIndex>()
+                           .Where(x => x.ContentItemId.IsIn(contentItemIdsToQuery) && x.Published == true)
+                           .ListAsync()).ToList();
+
+                    contentItems.AddRange(contentItemsToLoad);
+                    contentItems.ForEach(c => _contentManagerSession.Store(c));                    
                 }
             }
 
