@@ -14,6 +14,9 @@ namespace OrchardCore.DisplayManagement.Zones
     [Feature(Application.DefaultFeatureId)]
     public class ZoneShapes : IShapeAttributeProvider
     {
+        // By convention all placement delimiters default to the name 'Content' when not specified during placement.
+        private const string ContentKey = "Content";
+
         [Shape]
         public async Task<IHtmlContent> Zone(IDisplayHelper DisplayAsync, IEnumerable<object> Shape)
         {
@@ -31,12 +34,12 @@ namespace OrchardCore.DisplayManagement.Zones
         {
             var htmlContentBuilder = new HtmlContentBuilder();
 
-            var shapes = ((IEnumerable<dynamic>)Shape);
+            var shapes = ((IEnumerable<object>)Shape);
 
-            // Evaluate shapes for grouping metadata.
-            var isGrouped = shapes.Any(x => x is IShape s && 
-                (!String.IsNullOrEmpty(s.Metadata.Tab) || 
-                !String.IsNullOrEmpty(s.Metadata.Card) || 
+            // Evaluate shapes for grouping metadata, when it is not an IShape it cannot be group.
+            var isGrouped = shapes.Any(x => x is IShape s &&
+                (!String.IsNullOrEmpty(s.Metadata.Tab) ||
+                !String.IsNullOrEmpty(s.Metadata.Card) ||
                 !String.IsNullOrEmpty(s.Metadata.Column)));
 
             // When there is no grouping metadata on any shapes just render the Zone.
@@ -54,23 +57,26 @@ namespace OrchardCore.DisplayManagement.Zones
 
             var groupings = shapes.GroupBy(x =>
             {
-                var s = (IShape)x;
-                // By convention all placement delimiters default to the name 'Content' when not specified during placement.
-                var key = s.Metadata.Tab;
-                if (String.IsNullOrEmpty(key))
+                if (x is IShape s)
                 {
-                    key = "Content";
+                    var key = s.Metadata.Tab;
+                    if (String.IsNullOrEmpty(key))
+                    {
+                        return ContentKey;
+                    }
+
+                    // Remove any positioning modifier.
+                    var modifierIndex = key.IndexOf(';');
+                    if (modifierIndex != -1)
+                    {
+                        key = key.Substring(0, modifierIndex);
+                    }
+
+                    return key;
                 }
 
-                // Remove any positioning modifier.
-                var modifierIndex = key.IndexOf(';');
-                if (modifierIndex != -1)
-                {
-                    key = key.Substring(0, modifierIndex);
-                }
-
-                return key;
-            }, x => (IShape)x).ToList();
+                return ContentKey;
+            }).ToList();
 
             // Process Tabs first, then Cards, then Columns.
             if (groupings.Count > 1)
@@ -79,22 +85,19 @@ namespace OrchardCore.DisplayManagement.Zones
                 {
                     var firstGroupWithModifier = grouping.FirstOrDefault(group =>
                     {
-                        var key = group.Metadata.Tab;
-                        if (!String.IsNullOrEmpty(key))
+                        if (group is IShape s && !String.IsNullOrEmpty(s.Metadata.Tab) && s.Metadata.Tab.IndexOf(';') != -1)
                         {
-                            var modifierIndex = key.IndexOf(';');
-                            if (modifierIndex != -1)
-                            {
-                                return true;
-                            }
+                            return true;
                         }
+
                         return false;
                     });
 
-                    if (firstGroupWithModifier != null)
+                    if (firstGroupWithModifier is IShape shape)
                     {
-                        var key = firstGroupWithModifier.Metadata.Tab;
+                        var key = shape.Metadata.Tab;
                         var modifierIndex = key.IndexOf(';');
+
                         return new PositionalGrouping(key.Substring(modifierIndex));
                     }
 
@@ -145,21 +148,26 @@ namespace OrchardCore.DisplayManagement.Zones
 
             var groupings = Shape.Grouping.GroupBy(x =>
             {
-                // By convention all placement delimiters default to the name 'Content' when not specified during placement.
-                var key = x.Metadata.Card;
-                if (String.IsNullOrEmpty(key))
+                if (x is IShape s)
                 {
-                    key = "Content";
+                    var key = s.Metadata.Card;
+                    if (String.IsNullOrEmpty(key))
+                    {
+                        return ContentKey;
+                    }
+
+                    // Remove positional modifier.
+                    var modifierIndex = key.IndexOf(';');
+                    if (modifierIndex != -1)
+                    {
+                        key = key.Substring(0, modifierIndex);
+                    }
+
+                    return key;
                 }
 
-                // Remove positional modifier.
-                var modifierIndex = key.IndexOf(';');
-                if (modifierIndex != -1)
-                {
-                    key = key.Substring(0, modifierIndex);
-                }
+                return ContentKey;
 
-                return key;
             }).ToList();
 
             if (groupings.Count > 1)
@@ -168,21 +176,17 @@ namespace OrchardCore.DisplayManagement.Zones
                 {
                     var firstGroupWithModifier = grouping.FirstOrDefault(group =>
                     {
-                        var key = group.Metadata.Card;
-                        if (!String.IsNullOrEmpty(key))
+                        if (group is IShape s && !String.IsNullOrEmpty(s.Metadata.Card) && s.Metadata.Card.IndexOf(';') != -1)
                         {
-                            var modifierIndex = key.IndexOf(';');
-                            if (modifierIndex != -1)
-                            {
-                                return true;
-                            }
+                            return true;
                         }
+
                         return false;
                     });
 
-                    if (firstGroupWithModifier != null)
+                    if (firstGroupWithModifier is IShape shape)
                     {
-                        var key = firstGroupWithModifier.Metadata.Card;
+                        var key = shape.Metadata.Card;
                         var modifierIndex = key.IndexOf(';');
                         return new PositionalGrouping(key.Substring(modifierIndex));
                     }
@@ -195,7 +199,7 @@ namespace OrchardCore.DisplayManagement.Zones
                 {
                     m.Identifier = Shape.Identifier;
                 });
-                
+
                 foreach (var orderedGrouping in orderedGroupings)
                 {
                     var groupingShape = (GroupingViewModel)await ShapeFactory.CreateAsync<GroupingViewModel>("Card", m =>
@@ -236,28 +240,32 @@ namespace OrchardCore.DisplayManagement.Zones
 
             var groupings = Shape.Grouping.GroupBy(x =>
             {
-                // By convention all placement delimiters default to the name 'Content' when not specified during placement.
-                var key = x.Metadata.Column;
-                if (String.IsNullOrEmpty(key))
+                if (x is IShape s)
                 {
-                    key = "Content";
+                    var key = s.Metadata.Column;
+                    if (String.IsNullOrEmpty(key))
+                    {
+                        return ContentKey;
+                    }
+
+                    // Remove column modifier.
+                    var modifierIndex = key.IndexOf('_');
+                    if (modifierIndex != -1)
+                    {
+                        key = key.Substring(0, modifierIndex);
+                    }
+
+                    // Remove positional modifier.
+                    modifierIndex = key.IndexOf(';');
+                    if (modifierIndex != -1)
+                    {
+                        key = key.Substring(0, modifierIndex);
+                    }
+
+                    return key;
                 }
 
-                // Remove column modifier.
-                var modifierIndex = key.IndexOf('_');
-                if (modifierIndex != -1)
-                {
-                    key = key.Substring(0, modifierIndex);
-                }
-
-                // Remove positional modifier.
-                modifierIndex = key.IndexOf(';');
-                if (modifierIndex != -1)
-                {
-                    key = key.Substring(0, modifierIndex);
-                }
-
-                return key;
+                return ContentKey;
             }).ToList();
 
             if (groupings.Count > 1)
@@ -331,15 +339,15 @@ namespace OrchardCore.DisplayManagement.Zones
 
             return htmlContentBuilder;
         }
-        private static Dictionary<string, string> GetColumnPositions(IList<IGrouping<string, IShape>> groupings)
+        private static Dictionary<string, string> GetColumnPositions(IList<IGrouping<string, object>> groupings)
         {
             var positionModifiers = new Dictionary<string, string>();
             foreach (var grouping in groupings)
             {
                 var firstGroupWithModifier = FirstGroupingWithModifierOrDefault(grouping, ';');
-                if (firstGroupWithModifier != null)
+                if (firstGroupWithModifier is IShape shape)
                 {
-                    var key = (string)firstGroupWithModifier.Metadata.Column;
+                    var key = shape.Metadata.Column;
                     var columnModifierIndex = key.IndexOf('_');
                     if (columnModifierIndex != -1)
                     {
@@ -366,15 +374,15 @@ namespace OrchardCore.DisplayManagement.Zones
             return positionModifiers;
         }
 
-        private static Dictionary<string, string> GetColumnModifiers(IList<IGrouping<string, IShape>> groupings)
+        private static Dictionary<string, string> GetColumnModifiers(IList<IGrouping<string, object>> groupings)
         {
             var columnModifiers = new Dictionary<string, string>();
             foreach (var grouping in groupings)
             {
                 var firstGroupWithModifier = FirstGroupingWithModifierOrDefault(grouping, '_');
-                if (firstGroupWithModifier != null)
+                if (firstGroupWithModifier is IShape shape)
                 {
-                    var key = (string)firstGroupWithModifier.Metadata.Column;
+                    var key = shape.Metadata.Column;
                     var posModifierIndex = key.IndexOf(';');
                     if (posModifierIndex != -1)
                     {
@@ -401,19 +409,15 @@ namespace OrchardCore.DisplayManagement.Zones
             return columnModifiers;
         }
 
-        private static dynamic FirstGroupingWithModifierOrDefault(IGrouping<string, IShape> grouping, char modifier)
+        private static object FirstGroupingWithModifierOrDefault(IGrouping<string, object> grouping, char modifier)
         {
             var firstGroupWithModifier = grouping.FirstOrDefault(group =>
             {
-                var key = (string)group.Metadata.Column;
-                if (!String.IsNullOrEmpty(key))
+                if (group is IShape s && !String.IsNullOrEmpty(s.Metadata.Column) && s.Metadata.Column.IndexOf(modifier) != -1)
                 {
-                    var modifierIndex = key.IndexOf(modifier);
-                    if (modifierIndex != -1)
-                    {
-                        return true;
-                    }
+                    return true;
                 }
+
                 return false;
             });
 

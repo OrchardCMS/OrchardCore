@@ -1,7 +1,7 @@
 @using OrchardCore.Mvc.Utilities
 @{    
     @* TODO VIEWMODEL *@
-    var tabsGrouping = (IList<IGrouping<string, IShape>>)Model.Tabs;
+    var tabsGrouping = (IList<IGrouping<string, object>>)Model.Tabs;
     var tabs = tabsGrouping.Select(x => x.Key).ToArray(); 
 }
 @if (tabs.Any())
