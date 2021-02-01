@@ -36,7 +36,7 @@ namespace OrchardCore.ReverseProxy.Drivers
         {
             var user = _httpContextAccessor.HttpContext?.User;
 
-            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ReverseProxySettings))
+            if (user == null || !await _authorizationService.AuthorizeAsync(user, Permissions.ReverseProxySettings))
             {
                 return null;
             }
@@ -53,7 +53,7 @@ namespace OrchardCore.ReverseProxy.Drivers
         {
             var user = _httpContextAccessor.HttpContext?.User;
 
-            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ReverseProxySettings))
+            if (user == null || !await _authorizationService.AuthorizeAsync(user, Permissions.ReverseProxySettings))
             {
                 return null;
             }

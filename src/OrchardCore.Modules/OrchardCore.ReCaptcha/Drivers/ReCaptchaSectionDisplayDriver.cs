@@ -35,7 +35,7 @@ namespace OrchardCore.ReCaptcha.Drivers
         {
             var user = _httpContextAccessor.HttpContext?.User;
 
-            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageReCaptchaSettings))
+            if (user == null || !await _authorizationService.AuthorizeAsync(user, Permissions.ManageReCaptchaSettings))
             {
                 return null;
             }
@@ -53,7 +53,7 @@ namespace OrchardCore.ReCaptcha.Drivers
         {
             var user = _httpContextAccessor.HttpContext?.User;
 
-            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageReCaptchaSettings))
+            if (user == null || !await _authorizationService.AuthorizeAsync(user, Permissions.ManageReCaptchaSettings))
             {
                 return null;
             }

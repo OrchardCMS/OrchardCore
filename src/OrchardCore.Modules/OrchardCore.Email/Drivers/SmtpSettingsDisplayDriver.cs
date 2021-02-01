@@ -39,7 +39,7 @@ namespace OrchardCore.Email.Drivers
         {
             var user = _httpContextAccessor.HttpContext?.User;
 
-            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageEmailSettings))
+            if (user == null || !await _authorizationService.AuthorizeAsync(user, Permissions.ManageEmailSettings))
             {
                 return null;
             }
@@ -74,7 +74,7 @@ namespace OrchardCore.Email.Drivers
         {
             var user = _httpContextAccessor.HttpContext?.User;
 
-            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageEmailSettings))
+            if (user == null || !await _authorizationService.AuthorizeAsync(user, Permissions.ManageEmailSettings))
             {
                 return null;
             }

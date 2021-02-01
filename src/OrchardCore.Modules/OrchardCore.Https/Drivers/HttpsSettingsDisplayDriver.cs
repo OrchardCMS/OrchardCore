@@ -67,6 +67,12 @@ namespace OrchardCore.Https.Drivers
 
         public override async Task<IDisplayResult> UpdateAsync(HttpsSettings settings, BuildEditorContext context)
         {
+            var user = _httpContextAccessor.HttpContext?.User;
+            if (user == null || !await _authorizationService.AuthorizeAsync(user, Permissions.ManageHttps))
+            {
+                return null;
+            }
+
             if (context.GroupId == SettingsGroupId)
             {
                 var model = new HttpsSettingsViewModel();
