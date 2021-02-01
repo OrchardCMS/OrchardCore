@@ -69,6 +69,12 @@ namespace OrchardCore.Twitter.Drivers
 
         public override async Task<IDisplayResult> UpdateAsync(TwitterSettings settings, BuildEditorContext context)
         {
+            var user = _httpContextAccessor.HttpContext?.User;
+            if (user == null || !await _authorizationService.AuthorizeAsync(user, Permissions.ManageTwitterSignin))
+            {
+                return null;
+            }
+
             if (context.GroupId == TwitterConstants.Features.Twitter)
             {
                 var user = _httpContextAccessor.HttpContext?.User;
