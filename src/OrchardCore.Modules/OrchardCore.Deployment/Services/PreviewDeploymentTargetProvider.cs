@@ -28,7 +28,6 @@ namespace OrchardCore.Deployment.Services
                             area = "OrchardCore.Deployment",
                             controller = "ExportFile",
                             action = "Preview",
-                            target="_blank"
                         })
                     )
                 }
