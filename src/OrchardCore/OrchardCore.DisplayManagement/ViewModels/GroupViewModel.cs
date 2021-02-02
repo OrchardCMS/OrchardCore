@@ -7,6 +7,7 @@ namespace OrchardCore.DisplayManagement.ViewModels
     {
         public string Identifier { get; set; }
     }
+    
     public class GroupingsViewModel : GroupViewModel
     {
         public IGrouping<string, object>[] Groupings { get; set; }
