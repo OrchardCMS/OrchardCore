@@ -1,6 +1,7 @@
+using System.Threading.Tasks;
+using OrchardCore.AuditTrail.Models;
 using OrchardCore.AuditTrail.Services.Models;
 using OrchardCore.DisplayManagement.Shapes;
-using System.Threading.Tasks;
 
 namespace OrchardCore.AuditTrail.Services
 {
@@ -13,6 +14,11 @@ namespace OrchardCore.AuditTrail.Services
         /// Modify the context when creating an Audit Trail event.
         /// </summary>
         Task CreateAsync(AuditTrailCreateContext context);
+
+        /// <summary>
+        /// Alter Audit Trail event document after it has been built and before saving it.
+        /// </summary>
+        Task AlterAsync(AuditTrailCreateContext context, AuditTrailEvent auditTrailEvent);
 
         /// <summary>
         /// Filter Audit Trail events based on the values from the query string.
