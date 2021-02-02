@@ -10,7 +10,7 @@ namespace OrchardCore.DisplayManagement.ViewModels
     }
     public class GroupingsViewModel : GroupViewModel
     {
-        public List<IGrouping<string, object>> Groupings { get; set; }
+        public IGrouping<string, object>[] Groupings { get; set; }
     }
 
     public class GroupingViewModel : GroupViewModel

@@ -55,7 +55,7 @@ namespace OrchardCore.DisplayManagement.Zones
 
             string identifier = Shape.Identifier ?? String.Empty;
 
-            var groupings = shapes.GroupBy(x =>
+            var groupings = shapes.ToLookup(x =>
             {
                 if (x is IShape s)
                 {
@@ -76,7 +76,7 @@ namespace OrchardCore.DisplayManagement.Zones
                 }
 
                 return ContentKey;
-            }).ToList();
+            });
 
             // Process Tabs first, then Cards, then Columns.
             if (groupings.Count > 1)
@@ -102,7 +102,7 @@ namespace OrchardCore.DisplayManagement.Zones
                     }
 
                     return new PositionalGrouping(null);
-                }, FlatPositionComparer.Instance).ToList();
+                }, FlatPositionComparer.Instance).ToArray();
 
                 var container = (GroupingsViewModel)await ShapeFactory.CreateAsync<GroupingsViewModel>("TabContainer", m =>
                 {
@@ -133,7 +133,7 @@ namespace OrchardCore.DisplayManagement.Zones
                 var cardGrouping = (GroupingViewModel)await ShapeFactory.CreateAsync<GroupingViewModel>("CardGrouping", m =>
                 {
                     m.Identifier = identifier;
-                    m.Grouping = groupings[0];
+                    m.Grouping = groupings.ElementAt(0);
                 });
                 htmlContentBuilder.AppendHtml(await DisplayAsync.ShapeExecuteAsync(cardGrouping));
             }
@@ -146,7 +146,7 @@ namespace OrchardCore.DisplayManagement.Zones
         {
             var htmlContentBuilder = new HtmlContentBuilder();
 
-            var groupings = Shape.Grouping.GroupBy(x =>
+            var groupings = Shape.Grouping.ToLookup(x =>
             {
                 if (x is IShape s)
                 {
@@ -168,7 +168,7 @@ namespace OrchardCore.DisplayManagement.Zones
 
                 return ContentKey;
 
-            }).ToList();
+            });
 
             if (groupings.Count > 1)
             {
@@ -192,8 +192,7 @@ namespace OrchardCore.DisplayManagement.Zones
                     }
 
                     return new PositionalGrouping();
-                }, FlatPositionComparer.Instance).ToList();
-
+                }, FlatPositionComparer.Instance);
 
                 var container = (GroupViewModel)await ShapeFactory.CreateAsync<GroupViewModel>("CardContainer", m =>
                 {
@@ -238,7 +237,7 @@ namespace OrchardCore.DisplayManagement.Zones
         {
             var htmlContentBuilder = new HtmlContentBuilder();
 
-            var groupings = Shape.Grouping.GroupBy(x =>
+            var groupings = Shape.Grouping.ToLookup(x =>
             {
                 if (x is IShape s)
                 {
@@ -266,7 +265,7 @@ namespace OrchardCore.DisplayManagement.Zones
                 }
 
                 return ContentKey;
-            }).ToList();
+            });
 
             if (groupings.Count > 1)
             {
@@ -282,7 +281,7 @@ namespace OrchardCore.DisplayManagement.Zones
                     {
                         return new PositionalGrouping();
                     }
-                }, FlatPositionComparer.Instance).ToList();
+                }, FlatPositionComparer.Instance);
 
                 var columnModifiers = GetColumnModifiers(orderedGroupings);
 
@@ -339,7 +338,7 @@ namespace OrchardCore.DisplayManagement.Zones
 
             return htmlContentBuilder;
         }
-        private static Dictionary<string, string> GetColumnPositions(IList<IGrouping<string, object>> groupings)
+        private static Dictionary<string, string> GetColumnPositions(ILookup<string, object> groupings)
         {
             var positionModifiers = new Dictionary<string, string>();
             foreach (var grouping in groupings)
@@ -374,7 +373,7 @@ namespace OrchardCore.DisplayManagement.Zones
             return positionModifiers;
         }
 
-        private static Dictionary<string, string> GetColumnModifiers(IList<IGrouping<string, object>> groupings)
+        private static Dictionary<string, string> GetColumnModifiers(IEnumerable<IGrouping<string, object>> groupings)
         {
             var columnModifiers = new Dictionary<string, string>();
             foreach (var grouping in groupings)
