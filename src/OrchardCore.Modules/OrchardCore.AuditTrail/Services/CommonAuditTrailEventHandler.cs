@@ -1,11 +1,11 @@
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using OrchardCore.AuditTrail.Extensions;
 using OrchardCore.AuditTrail.Indexes;
 using OrchardCore.AuditTrail.Services.Models;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace OrchardCore.AuditTrail.Services
 {
@@ -26,14 +26,14 @@ namespace OrchardCore.AuditTrail.Services
 
         public override void Filter(QueryFilterContext context)
         {
-            var userName = context.Filters.Get("username");
+            var userName = context.Filters.Get("username")?.Trim();
             var category = context.Filters.Get("category");
             var from = GetDateFromFilter(context.Filters, "From", "from");
             var to = GetDateFromFilter(context.Filters, "To", "to");
 
             if (!string.IsNullOrWhiteSpace(userName))
             {
-                context.Query.With<AuditTrailEventIndex>(eventIndex => eventIndex.UserName == userName);
+                context.Query.With<AuditTrailEventIndex>(eventIndex => eventIndex.UserName.Contains(userName));
             }
             if (!string.IsNullOrWhiteSpace(category))
             {
@@ -79,7 +79,7 @@ namespace OrchardCore.AuditTrail.Services
             if (string.IsNullOrEmpty(dateString)) return null;
 
             try
-            {   
+            {
                 return DateTime.Parse(dateString).ToUniversalTime();
             }
             catch (FormatException ex)
