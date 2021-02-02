@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using OrchardCore.AuditTrail.Extensions;
 using OrchardCore.AuditTrail.Models;
@@ -7,8 +9,6 @@ using OrchardCore.ContentManagement.Records;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Shapes;
 using OrchardCore.Modules;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using YesSql;
 using IYesSqlSession = YesSql.ISession;
 
@@ -45,7 +45,7 @@ namespace OrchardCore.AuditTrail.Services
             var filterDisplay = await _shapeFactory.CreateAsync("AuditTrailFilter");
             var filterDisplayContext = new DisplayFilterContext(_shapeFactory, filters, filterDisplay as Shape);
 
-            _auditTrailEventHandlers.Invoke((handler, context) => handler.DisplayFilterAsync(context), filterDisplayContext, Logger);
+            await _auditTrailEventHandlers.InvokeAsync((handler, context) => handler.DisplayFilterAsync(context), filterDisplayContext, Logger);
 
             // Give each provider a chance to provide a filter display.
             var providersContext = _auditTrailManager.DescribeProviders();
@@ -61,7 +61,7 @@ namespace OrchardCore.AuditTrail.Services
         {
             var additionalColumnNamesDisplay = await _shapeFactory.CreateAsync("AuditTrailEventAdditionalColumnName");
 
-            _auditTrailEventHandlers.Invoke((handler, display) => handler.DisplayAdditionalColumnNamesAsync(display), additionalColumnNamesDisplay as Shape, Logger);
+            await _auditTrailEventHandlers.InvokeAsync((handler, display) => handler.DisplayAdditionalColumnNamesAsync(display), additionalColumnNamesDisplay as Shape, Logger);
 
             return additionalColumnNamesDisplay;
         }
@@ -70,7 +70,7 @@ namespace OrchardCore.AuditTrail.Services
         {
             var additionalColumnDisplay = await _shapeFactory.CreateAsync("AuditTrailEventAdditionalColumn");
 
-            _auditTrailEventHandlers.Invoke((handler, display) => handler.DisplayAdditionalColumnsAsync(display),
+            await _auditTrailEventHandlers.InvokeAsync((handler, display) => handler.DisplayAdditionalColumnsAsync(display),
                 new DisplayAdditionalColumnsContext(auditTrailEvent, additionalColumnDisplay as Shape), Logger);
 
             return additionalColumnDisplay;
