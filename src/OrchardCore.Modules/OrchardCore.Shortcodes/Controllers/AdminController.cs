@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -13,7 +14,6 @@ using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Liquid;
 using OrchardCore.Modules;
-using OrchardCore.Mvc.Utilities;
 using OrchardCore.Navigation;
 using OrchardCore.Routing;
 using OrchardCore.Settings;
@@ -34,6 +34,8 @@ namespace OrchardCore.Shortcodes.Controllers
         private readonly IStringLocalizer S;
         private readonly IHtmlLocalizer H;
         private readonly dynamic New;
+
+        private const string NameValidationRegex = "[a-zA-Z$_][a-zA-Z0-9$_]*";
 
         public AdminController(
             IAuthorizationService authorizationService,
@@ -69,7 +71,7 @@ namespace OrchardCore.Shortcodes.Controllers
 
             var shortcodeTemplates = shortcodeTemplatesDocument.ShortcodeTemplates.ToList();
 
-            if (!string.IsNullOrWhiteSpace(options.Search))
+            if (!String.IsNullOrWhiteSpace(options.Search))
             {
                 shortcodeTemplates = shortcodeTemplates.Where(x => x.Key.Contains(options.Search, StringComparison.OrdinalIgnoreCase)).ToList();
             }
@@ -129,7 +131,7 @@ namespace OrchardCore.Shortcodes.Controllers
                 {
                     ModelState.AddModelError(nameof(ShortcodeTemplateViewModel.Name), S["The name is mandatory."]);
                 }
-                else if (!String.Equals(model.Name, model.Name.ToSafeName(), StringComparison.OrdinalIgnoreCase))
+                else if (!Regex.IsMatch(model.Name, NameValidationRegex))
                 {
                     ModelState.AddModelError(nameof(ShortcodeTemplateViewModel.Name), S["The name contains invalid characters."]);
                 }
@@ -149,7 +151,7 @@ namespace OrchardCore.Shortcodes.Controllers
                 }
                 else if (!_liquidTemplateManager.Validate(model.Content, out var errors))
                 {
-                    ModelState.AddModelError(nameof(ShortcodeTemplateViewModel.Content), S["The template doesn't contain a valid Liquid expression. Details: {0}", string.Join(" ", errors)]);
+                    ModelState.AddModelError(nameof(ShortcodeTemplateViewModel.Content), S["The template doesn't contain a valid Liquid expression. Details: {0}", String.Join(" ", errors)]);
                 }
             }
 
@@ -230,7 +232,7 @@ namespace OrchardCore.Shortcodes.Controllers
                 {
                     ModelState.AddModelError(nameof(ShortcodeTemplateViewModel.Name), S["The name is mandatory."]);
                 }
-                else if (!String.Equals(model.Name, model.Name.ToSafeName(), StringComparison.OrdinalIgnoreCase))
+                else if (!Regex.IsMatch(model.Name, NameValidationRegex))
                 {
                     ModelState.AddModelError(nameof(ShortcodeTemplateViewModel.Name), S["The name contains invalid characters."]);
                 }
@@ -246,7 +248,7 @@ namespace OrchardCore.Shortcodes.Controllers
                 }
                 else if (!_liquidTemplateManager.Validate(model.Content, out var errors))
                 {
-                    ModelState.AddModelError(nameof(ShortcodeTemplateViewModel.Content), S["The template doesn't contain a valid Liquid expression. Details: {0}", string.Join(" ", errors)]);
+                    ModelState.AddModelError(nameof(ShortcodeTemplateViewModel.Content), S["The template doesn't contain a valid Liquid expression. Details: {0}", String.Join(" ", errors)]);
                 }
             }
 
