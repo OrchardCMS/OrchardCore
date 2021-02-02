@@ -16,7 +16,7 @@ namespace OrchardCore.Taxonomies.Settings
 {
     public class TaxonomyContentsAdminListSettingsDisplayDriver : SectionDisplayDriver<ISite, TaxonomyContentsAdminListSettings>
     {
-        public const string GroupId = "TaxonomyContentsAdminList";
+        public const string GroupId = "taxonomyContentsAdminList";
 
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthorizationService _authorizationService;

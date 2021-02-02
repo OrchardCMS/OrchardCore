@@ -59,6 +59,10 @@ dotnet new occms --logger none
 dotnet new ocmvc  
 ```
 
+### From Visual Studio (New Project dialog)
+
+The templates can also be used from the New Project dialog in Visual Studio.
+
 ### From Visual Studio (manual way)
 
 Fire up Visual Studio, create a new solution file (`.sln`) by creating a new ASP.NET Core Web Application:
@@ -74,7 +78,7 @@ Now that we created a new Web Application we need to add proper dependencies so 
 
 Finally, we will need to register Orchard CMS service in our `Startup.cs` file like this:
 
-```C#
+```csharp
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -173,7 +177,7 @@ Once done, your new module will look like this:
 
 For Orchard Core to identify this module it will now require a `Manifest.cs` file. Here is an example of that file:
 
-```C#
+```csharp
 using OrchardCore.Modules.Manifest;
 
 [assembly: Module(
@@ -205,7 +209,7 @@ dotnet new octheme -n "ThemeName.OrchardCore"
 
 Should be the same procedure as with modules but instead, we need to reference `OrchardCore.Theme.Targets` and the `Manifest.cs` file differs slightly:
 
-```C#
+```csharp
 using OrchardCore.DisplayManagement.Manifest;
 
 [assembly: Theme(

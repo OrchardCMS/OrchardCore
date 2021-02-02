@@ -54,7 +54,7 @@
             </div>
             <div class="modal-body">
                 <div class="form-group">
-                    <input class="form-control" id="search-box" type="search" placeholder="@T["Filter"]" aria-label="@T["Filter"]" autofocus>
+                    <input class="form-control" id="search-box" type="search" placeholder="@T["Filter"]" aria-label="@T["Filter"]" autofocus />
                 </div>
                 <div id="cards" class="row">
                     @foreach (var thumbnail in Model.Thumbnails.OrderBy(t => t.Key))
@@ -97,7 +97,7 @@
                                     <p>@target.Description</p>
                                 </div>
                                 <div class="card-footer text-muted text-xs-right">
-                                    <a class="btn btn-primary btn-sm" href="@Url.RouteUrl(routeWithId)" itemprop="UnsafeUrl">@T["Select"]</a>
+                                    <a class="btn btn-primary btn-sm" href="@Url.RouteUrl(routeWithId)" data-url-af="UnsafeUrl">@T["Select"]</a>
                                 </div>
                             </div>
                         </div>

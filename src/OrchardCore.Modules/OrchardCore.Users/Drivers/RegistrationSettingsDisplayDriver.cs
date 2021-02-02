@@ -13,7 +13,7 @@ namespace OrchardCore.Users.Drivers
     [Feature("OrchardCore.Users.Registration")]
     public class RegistrationSettingsDisplayDriver : SectionDisplayDriver<ISite, RegistrationSettings>
     {
-        public const string GroupId = "RegistrationSettings";
+        public const string GroupId = "userRegistration";
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthorizationService _authorizationService;
 

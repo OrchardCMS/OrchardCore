@@ -66,8 +66,8 @@ namespace OrchardCore.Users
                .Column<string>(nameof(UserByClaimIndex.ClaimValue)),
                 null);
 
-            // Return 6 here to skip migrations on new database schemas.
-            return 6;
+            // Return 8 here to skip migrations on new database schemas.
+            return 8;
         }
 
         public int UpdateFrom3()
@@ -116,7 +116,28 @@ namespace OrchardCore.Users
                 _session.Save(user);
             }
 
-            return 6;
+            // Return 7 to shortcut a buggy migration which has been removed.
+            return 7;
+        }
+
+        // This migration has been removed.
+        public int UpdateFrom6()
+        {
+            return 7;
+        }
+
+        // Migrate any user names replacing '@' with '+' as user names can no longer be an email address.
+        public async Task<int> UpdateFrom7Async()
+        {
+            var users = await _session.Query<User, UserIndex>(u => u.NormalizedUserName.Contains("@")).ListAsync();
+            foreach(var user in users)
+            {
+                user.UserName = user.UserName.Replace('@', '+');
+                user.NormalizedUserName = user.NormalizedUserName.Replace('@', '+');
+                _session.Save(user);
+            }
+
+            return 8;
         }
     }
 }

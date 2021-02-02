@@ -122,7 +122,7 @@ namespace OrchardCore.Sitemaps.Controllers
 
                 await _sitemapManager.UpdateSitemapAsync(sitemap);
 
-                _notifier.Success(H["Sitemap source added successfully"]);
+                _notifier.Success(H["Sitemap source added successfully."]);
                 return RedirectToAction("Display", "Admin", new { sitemapId = model.SitemapId });
             }
 
@@ -194,11 +194,11 @@ namespace OrchardCore.Sitemaps.Controllers
             {
                 await _sitemapManager.UpdateSitemapAsync(sitemap);
 
-                _notifier.Success(H["Sitemap source updated successfully"]);
+                _notifier.Success(H["Sitemap source updated successfully."]);
                 return RedirectToAction("Display", "Admin", new { sitemapId = model.SitemapId });
             }
 
-            _notifier.Error(H["The sitemap source has validation errors"]);
+            _notifier.Error(H["The sitemap source has validation errors."]);
             model.Editor = editor;
 
             // If we got this far, something failed, redisplay form
@@ -231,7 +231,7 @@ namespace OrchardCore.Sitemaps.Controllers
 
             await _sitemapManager.UpdateSitemapAsync(sitemap);
 
-            _notifier.Success(H["Sitemap source deleted successfully"]);
+            _notifier.Success(H["Sitemap source deleted successfully."]);
 
             return RedirectToAction("Display", "Admin", new { sitemapId });
         }

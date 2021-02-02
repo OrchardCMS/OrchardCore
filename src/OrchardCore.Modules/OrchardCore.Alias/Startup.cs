@@ -12,17 +12,16 @@ using OrchardCore.Alias.ViewModels;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
 using OrchardCore.ContentTypes.Editors;
+using OrchardCore.Data;
 using OrchardCore.Data.Migration;
 using OrchardCore.Indexing;
 using OrchardCore.Liquid;
 using OrchardCore.Modules;
-using YesSql.Indexes;
 
 namespace OrchardCore.Alias
 {
     public class Startup : StartupBase
     {
-
         static Startup()
         {
             TemplateContext.GlobalMemberAccessStrategy.Register<AliasPartViewModel>();
@@ -30,7 +29,7 @@ namespace OrchardCore.Alias
 
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton<IIndexProvider, AliasPartIndexProvider>();
+            services.AddScoped<IScopedIndexProvider, AliasPartIndexProvider>();
             services.AddScoped<IDataMigration, Migrations>();
             services.AddScoped<IContentHandleProvider, AliasPartContentHandleProvider>();
 

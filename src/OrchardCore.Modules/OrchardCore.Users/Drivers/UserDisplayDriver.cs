@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Localization;
-using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.DisplayManagement.Notify;
@@ -30,9 +29,7 @@ namespace OrchardCore.Users.Drivers
         private readonly INotifier _notifier;
         private readonly IAuthorizationService _authorizationService;
         private readonly ILogger _logger;
-        private readonly IStringLocalizer S;
         private readonly IHtmlLocalizer H;
-
 
         public UserDisplayDriver(
             UserManager<IUser> userManager,
@@ -43,8 +40,7 @@ namespace OrchardCore.Users.Drivers
             ILogger<UserDisplayDriver> logger,
             IEnumerable<IUserEventHandler> handlers,
             IAuthorizationService authorizationService,
-            IHtmlLocalizer<UserDisplayDriver> htmlLocalizer,
-            IStringLocalizer<UserDisplayDriver> stringLocalizer)
+            IHtmlLocalizer<UserDisplayDriver> htmlLocalizer)
         {
             _userManager = userManager;
             _roleService = roleService;
@@ -55,7 +51,6 @@ namespace OrchardCore.Users.Drivers
             _logger = logger;
             Handlers = handlers;
             H = htmlLocalizer;
-            S = stringLocalizer;
         }
 
         public IEnumerable<IUserEventHandler> Handlers { get; private set; }
@@ -81,7 +76,7 @@ namespace OrchardCore.Users.Drivers
                 model.IsEnabled = user.IsEnabled;
             })
             .Location("Content:1.5")
-            .RenderWhen(async () => await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.ManageUsers)));
+            .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.ManageUsers)));
         }
 
         public override async Task<IDisplayResult> UpdateAsync(User user, UpdateEditorContext context)
@@ -113,6 +108,9 @@ namespace OrchardCore.Users.Drivers
                     {
                         user.IsEnabled = model.IsEnabled;
                         var userContext = new UserContext(user);
+                        // TODO This handler should be invoked through the create or update methods.
+                        // otherwise it will not be invoked when a workflow changes this value.
+                        // or other operation.
                         await Handlers.InvokeAsync((handler, context) => handler.DisabledAsync(userContext), userContext, _logger);
                     }
                     else
@@ -125,6 +123,9 @@ namespace OrchardCore.Users.Drivers
             {
                 user.IsEnabled = model.IsEnabled;
                 var userContext = new UserContext(user);
+                // TODO This handler should be invoked through the or update methods.
+                // otherwise it will not be invoked when a workflow changes this value.
+                // or other operation.
                 await Handlers.InvokeAsync((handler, context) => handler.EnabledAsync(userContext), userContext, _logger);
             }
 

@@ -38,7 +38,7 @@ Shortcode templates are designed to be able to override a code based Shortcode o
 | `Name` | display_text |
 | `Hint` | Returns the display text of the content item. |
 | `Usage` | [display_text] |
-| `Content` | `{{ Context.ContentItem.DisplayText }}`<br>`{{ More}}` |
+| `Content` | `{{ Context.ContentItem.DisplayText }}`<br>`{{ More }}` |
 
 !!! note
     The `ContentItem` `Context` is only available when the caller, i.e. an `HtmlBodyPart`, has passed the `ContentItem` value to the `Context`. 
@@ -146,11 +146,3 @@ You can disable this behavior by passing `false` as the second argument of the s
 ## Video
 
 <iframe width="560" height="315" src="https://www.youtube.com/embed/ofPKGsW5Ftg" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-
-## CREDITS
-
-### Shortcodes
-
-<https://github.com/sebastienros/shortcodes>  
-Copyright (c) 2020 Sébastien Ros  
-MIT License

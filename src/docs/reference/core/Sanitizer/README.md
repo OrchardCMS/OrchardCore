@@ -27,7 +27,7 @@ By default it allows css classes, but can be configured to accept other attribut
 
 You may call this extension method multiple times during the startup pipeline to alter configurations.
 
-```
+```csharp
 services
     .AddOrchardCms()
     .ConfigureServices(tenantServices =>
@@ -38,11 +38,3 @@ services
 ```
 
 Refer https://github.com/mganss/HtmlSanitizer for options.
-
-## CREDITS
-
-### HtmlSanitizer
-
-<https://github.com/mganss/HtmlSanitizer>  
-Copyright (c) 2013-2016 Michael Ganss and HtmlSanitizer contributors 
-License: MIT

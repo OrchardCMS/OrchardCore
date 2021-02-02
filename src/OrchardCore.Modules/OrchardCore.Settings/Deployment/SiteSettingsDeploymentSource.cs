@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using OrchardCore.Deployment;
@@ -94,8 +95,7 @@ namespace OrchardCore.Settings.Deployment
                         break;
 
                     default:
-                        data.Add(new JProperty(settingName, site.Properties[settingName]));
-                        break;
+                        throw new InvalidOperationException($"Unsupported setting '{settingName}'");
                 }
             }
 
