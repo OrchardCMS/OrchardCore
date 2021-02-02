@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Localization;
@@ -75,25 +76,37 @@ namespace OrchardCore.AuditTrail.Services
 
                 _auditTrailEventHandlers.Invoke((handler, context)
                     => handler.CreateAsync(context), auditTrailCreateContext, Logger);
-                
+
                 var auditTrailEvent = new AuditTrailEvent
                 {
                     Id = _iidGenerator.GenerateUniqueId(),
                     Category = eventDescriptor.CategoryDescriptor.Category,
                     EventName = auditTrailCreateContext.EventName,
                     FullEventName = eventDescriptor.FullEventName,
-                    UserName = !string.IsNullOrEmpty(auditTrailCreateContext.UserName) ? auditTrailCreateContext.UserName : T["[empty]"],
+                    UserName = !string.IsNullOrEmpty(auditTrailCreateContext.UserName)
+                        ? auditTrailCreateContext.UserName
+                        : T["[empty]"],
                     CreatedUtc = auditTrailCreateContext.CreatedUtc ?? _clock.UtcNow,
                     Comment = auditTrailCreateContext.Comment.NewlinesToHtml(),
                     EventFilterData = auditTrailCreateContext.EventFilterData,
                     EventFilterKey = auditTrailCreateContext.EventFilterKey,
-                    ClientIpAddress = string.IsNullOrEmpty(auditTrailCreateContext.ClientIpAddress) ?
-                        await GetClientAddressAsync() : auditTrailCreateContext.ClientIpAddress
+                    ClientIpAddress = string.IsNullOrEmpty(auditTrailCreateContext.ClientIpAddress)
+                        ? await GetClientAddressAsync()
+                        : auditTrailCreateContext.ClientIpAddress
                 };
 
                 eventDescriptor.BuildAuditTrailEvent(auditTrailEvent, auditTrailCreateContext.EventData);
 
                 _session.Save(auditTrailEvent);
+
+                // This forces the session to not skip the FlushAsync right after. Without that if two threads add documents
+                // at the same time (as can happen with AuditTrailEvents) the second will not be added into the internal
+                // document registry (IdentityMap._documents) corrupting the state and causing an "Incorrect attempt to
+                // update an object that doesn't exist..." exception.
+                typeof(Session)
+                    .GetField("_flushing", BindingFlags.Instance | BindingFlags.NonPublic)!
+                    .SetValue((Session)_session, false);
+                await _session.FlushAsync();
             }
         }
 
