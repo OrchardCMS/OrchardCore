@@ -34,9 +34,10 @@ namespace OrchardCore.DisplayManagement.Zones
         {
             var htmlContentBuilder = new HtmlContentBuilder();
 
+            // This maybe a collection of IShape, IHtmlContent, or plain object.
             var shapes = ((IEnumerable<object>)Shape);
 
-            // Evaluate shapes for grouping metadata, when it is not an IShape it cannot be group.
+            // Evaluate shapes for grouping metadata, when it is not an IShape it cannot be grouped.
             var isGrouped = shapes.Any(x => x is IShape s &&
                 (!String.IsNullOrEmpty(s.Metadata.Tab) ||
                 !String.IsNullOrEmpty(s.Metadata.Card) ||
