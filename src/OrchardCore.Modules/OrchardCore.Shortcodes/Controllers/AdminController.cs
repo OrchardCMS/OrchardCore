@@ -35,7 +35,7 @@ namespace OrchardCore.Shortcodes.Controllers
         private readonly IHtmlLocalizer H;
         private readonly dynamic New;
 
-        private const string NameValidationRegex = "[a-zA-Z$_][a-zA-Z0-9$_]*";
+        private const string NameValidationRegex = "^[a-zA-Z$_][a-zA-Z0-9$_]*$";
 
         public AdminController(
             IAuthorizationService authorizationService,
