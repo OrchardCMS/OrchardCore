@@ -49,6 +49,8 @@ namespace OrchardCore.Taxonomies
                 .Column<string>("ContentPart", column => column.WithLength(ContentItemIndex.MaxContentPartSize))
                 .Column<string>("ContentField", column => column.WithLength(ContentItemIndex.MaxContentFieldSize))
                 .Column<string>("TermContentItemId", column => column.WithLength(26))
+                .Column<bool>("Published", c => c.WithDefault(true))
+                .Column<bool>("Latest", c => c.WithDefault(false))
             );
 
             SchemaBuilder.AlterIndexTable<TaxonomyIndex>(table => table
@@ -56,7 +58,9 @@ namespace OrchardCore.Taxonomies
                 "DocumentId",
                 "TaxonomyContentItemId",
                 "ContentItemId",
-                "TermContentItemId")
+                "TermContentItemId",
+                "Published",
+                "Latest")
             );
 
             SchemaBuilder.AlterIndexTable<TaxonomyIndex>(table => table
@@ -64,11 +68,13 @@ namespace OrchardCore.Taxonomies
                 "DocumentId",
                 "ContentType",
                 "ContentPart",
-                "ContentField")
+                "ContentField",
+                "Published",
+                "Latest")
             );
 
             // Shortcut other migration steps on new content definition schemas.
-            return 4;
+            return 5;
         }
 
         // Migrate FieldSettings. This only needs to run on old content definition schemas.
@@ -99,13 +105,24 @@ namespace OrchardCore.Taxonomies
         // This code can be removed in a later version.
         public int UpdateFrom3()
         {
+            // This step has been updated to also add these new columns.
+            SchemaBuilder.AlterIndexTable<TaxonomyIndex>(table => table
+                .AddColumn<bool>("Published", c => c.WithDefault(true))
+            );
 
+            SchemaBuilder.AlterIndexTable<TaxonomyIndex>(table => table
+                .AddColumn<bool>("Latest", c => c.WithDefault(false))
+            );
+
+            // So that the new indexes can be fully created.
             SchemaBuilder.AlterIndexTable<TaxonomyIndex>(table => table
                 .CreateIndex("IDX_TaxonomyIndex_DocumentId",
                 "DocumentId",
                 "TaxonomyContentItemId",
                 "ContentItemId",
-                "TermContentItemId")
+                "TermContentItemId",
+                "Published",
+                "Latest")
             );
 
             SchemaBuilder.AlterIndexTable<TaxonomyIndex>(table => table
@@ -113,10 +130,37 @@ namespace OrchardCore.Taxonomies
                 "DocumentId",
                 "ContentType",
                 "ContentPart",
-                "ContentField")
+                "ContentField",
+                "Published",
+                "Latest")
             );
 
-            return 4;
+            // We then shortcut the next migration step.
+            return 5;
+        }
+
+        // This code can be removed in a later version.
+        public int UpdateFrom4()
+        {
+            // This step run only if the previous one was executed before
+            // it was updated, so here we also add the following columns.
+            SchemaBuilder.AlterIndexTable<TaxonomyIndex>(table => table
+                .AddColumn<bool>("Published", c => c.WithDefault(true))
+            );
+
+            SchemaBuilder.AlterIndexTable<TaxonomyIndex>(table => table
+                .AddColumn<bool>("Latest", c => c.WithDefault(false))
+            );
+
+            // But we create a separate index for these new columns.
+            SchemaBuilder.AlterIndexTable<TaxonomyIndex>(table => table
+                .CreateIndex("IDX_TaxonomyIndex_DocumentId_Published",
+                "DocumentId",
+                "Published",
+                "Latest")
+            );
+
+            return 5;
         }
     }
 
