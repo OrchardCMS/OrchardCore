@@ -20,6 +20,7 @@ using OrchardCore.Settings;
 using OrchardCore.Shortcodes.Models;
 using OrchardCore.Shortcodes.Services;
 using OrchardCore.Shortcodes.ViewModels;
+using Parlot;
 
 namespace OrchardCore.Shortcodes.Controllers
 {
@@ -131,7 +132,7 @@ namespace OrchardCore.Shortcodes.Controllers
                 {
                     ModelState.AddModelError(nameof(ShortcodeTemplateViewModel.Name), S["The name is mandatory."]);
                 }
-                else if (!Regex.IsMatch(model.Name, NameValidationRegex))
+                else if (!IsValidShortcodeName(model.Name))
                 {
                     ModelState.AddModelError(nameof(ShortcodeTemplateViewModel.Name), S["The name contains invalid characters."]);
                 }
@@ -232,7 +233,7 @@ namespace OrchardCore.Shortcodes.Controllers
                 {
                     ModelState.AddModelError(nameof(ShortcodeTemplateViewModel.Name), S["The name is mandatory."]);
                 }
-                else if (!Regex.IsMatch(model.Name, NameValidationRegex))
+                else if (!IsValidShortcodeName(model.Name))
                 {
                     ModelState.AddModelError(nameof(ShortcodeTemplateViewModel.Name), S["The name contains invalid characters."]);
                 }
@@ -333,6 +334,14 @@ namespace OrchardCore.Shortcodes.Controllers
             }
 
             return RedirectToAction("Index");
+        }
+
+        private static bool IsValidShortcodeName(string name)
+        {
+            var scanner = new Scanner(name);
+            var result = new TokenResult();
+            scanner.ReadIdentifier(result);
+            return result.Success && name.Length == result.Length;
         }
     }
 }
