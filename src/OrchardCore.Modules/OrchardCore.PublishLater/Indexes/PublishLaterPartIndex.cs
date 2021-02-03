@@ -29,17 +29,11 @@ namespace OrchardCore.PublishLater.Indexes
         public override void Describe(DescribeContext<ContentItem> context)
         {
             context.For<PublishLaterPartIndex>()
-                .When(contentItem => contentItem.Has<PublishLaterPart>())
+                .When(contentItem => !contentItem.IsPublished() && contentItem.Latest && contentItem.Has<PublishLaterPart>())
                 .Map(contentItem =>
                 {
                     var publishLaterPart = contentItem.As<PublishLaterPart>();
                     if (publishLaterPart == null || !publishLaterPart.ScheduledPublishUtc.HasValue)
-                    {
-                        return null;
-                    }
-
-                    // Remove index for items that are already published or not the latest version
-                    if (contentItem.Published || !contentItem.Latest)
                     {
                         return null;
                     }
