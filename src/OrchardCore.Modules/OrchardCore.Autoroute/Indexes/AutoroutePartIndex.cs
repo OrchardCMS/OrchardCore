@@ -111,12 +111,7 @@ namespace OrchardCore.ContentManagement.Records
                 .Map(async contentItem =>
                 {
                     var part = contentItem.As<AutoroutePart>();
-                    if (part == null)
-                    {
-                        return null;
-                    }
-
-                    if (String.IsNullOrEmpty(part.Path))
+                    if (part == null || String.IsNullOrEmpty(part.Path))
                     {
                         return null;
                     }

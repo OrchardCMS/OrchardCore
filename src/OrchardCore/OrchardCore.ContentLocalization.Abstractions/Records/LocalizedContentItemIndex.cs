@@ -52,19 +52,13 @@ namespace OrchardCore.ContentLocalization.Records
                 .Map(contentItem =>
                 {
                     var part = contentItem.As<LocalizationPart>();
-
-                    if (part == null)
+                    if (part == null || String.IsNullOrEmpty(part.LocalizationSet) || part.Culture == null)
                     {
                         return null;
                     }
 
                     // If the related content item was removed, a record is still added.
                     if (!contentItem.Published && !contentItem.Latest && !_removed.Contains(contentItem))
-                    {
-                        return null;
-                    }
-
-                    if (String.IsNullOrEmpty(part.LocalizationSet) || part.Culture == null)
                     {
                         return null;
                     }

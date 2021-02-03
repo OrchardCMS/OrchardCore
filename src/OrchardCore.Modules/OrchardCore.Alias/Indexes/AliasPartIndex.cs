@@ -36,8 +36,7 @@ namespace OrchardCore.Alias.Indexes
                 .Map(contentItem =>
                 {
                     var aliasPart = contentItem.As<AliasPart>();
-
-                    if (aliasPart == null)
+                    if (aliasPart == null || String.IsNullOrEmpty(aliasPart.Alias))
                     {
                         return null;
                     }
@@ -66,20 +65,13 @@ namespace OrchardCore.Alias.Indexes
                         return null;
                     }
 
-                    var alias = aliasPart.Alias;
-
-                    if (!String.IsNullOrEmpty(alias) && (contentItem.Published || contentItem.Latest))
+                    return new AliasPartIndex
                     {
-                        return new AliasPartIndex
-                        {
-                            Alias = alias.ToLowerInvariant(),
-                            ContentItemId = contentItem.ContentItemId,
-                            Latest = contentItem.Latest,
-                            Published = contentItem.Published
-                        };
-                    }
-
-                    return null;
+                        Alias = aliasPart.Alias.ToLowerInvariant(),
+                        ContentItemId = contentItem.ContentItemId,
+                        Latest = contentItem.Latest,
+                        Published = contentItem.Published
+                    };
                 });
         }
     }
