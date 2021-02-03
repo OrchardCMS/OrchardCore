@@ -107,13 +107,16 @@ namespace OrchardCore.ContentManagement.Records
         public void Describe(DescribeContext<ContentItem> context)
         {
             context.For<AutoroutePartIndex>()
+                .When(contentItem => contentItem.Has<AutoroutePart>())
                 .Map(async contentItem =>
                 {
                     var part = contentItem.As<AutoroutePart>();
+                    if (part == null)
+                    {
+                        return null;
+                    }
 
-                    // When the part has been removed from the type definition it will return null here but we still need to process the index.
-                    var partRemoved = _partRemoved.Contains(contentItem);
-                    if (!partRemoved && part == null)
+                    if (String.IsNullOrEmpty(part.Path))
                     {
                         return null;
                     }
@@ -125,11 +128,7 @@ namespace OrchardCore.ContentManagement.Records
                         return null;
                     }
 
-                    if (!partRemoved && String.IsNullOrEmpty(part.Path))
-                    {
-                        return null;
-                    }
-
+                    var partRemoved = _partRemoved.Contains(contentItem);
                     var results = new List<AutoroutePartIndex>
                     {
                         // If the part is disabled, or removed, a record is still added but with a null path.

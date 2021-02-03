@@ -15,7 +15,7 @@ namespace OrchardCore.Lists.Indexes
         public override void Describe(DescribeContext<ContentItem> context)
         {
             context.For<ContainedPartIndex>()
-                .When(contentItem => contentItem.Has<ContainedPart>())
+                .When(contentItem => (contentItem.IsPublished() || contentItem.Latest) && contentItem.Has<ContainedPart>())
                 .Map(contentItem =>
                 {
                     var containedPart = contentItem.As<ContainedPart>();

@@ -48,6 +48,7 @@ namespace OrchardCore.ContentLocalization.Records
         public void Describe(DescribeContext<ContentItem> context)
         {
             context.For<LocalizedContentItemIndex>()
+                .When(contentItem => contentItem.Has<LocalizationPart>())
                 .Map(contentItem =>
                 {
                     var part = contentItem.As<LocalizationPart>();
