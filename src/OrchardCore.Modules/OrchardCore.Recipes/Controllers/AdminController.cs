@@ -111,9 +111,9 @@ namespace OrchardCore.Recipes.Controllers
             {
                 await _recipeExecutor.ExecuteAsync(executionId, recipe, new Dictionary<string, object>
                 {
-                    {"SiteName", site.SiteName},
-                    {"AdminUsername", User.Identity.Name},
-                    {"AdminUserId", User.FindFirstValue(ClaimTypes.NameIdentifier)}
+                    { "SiteName", site.SiteName },
+                    { "AdminUsername", User.Identity.Name },
+                    { "AdminUserId", User.FindFirstValue(ClaimTypes.NameIdentifier) }
                 },
                 CancellationToken.None);
             }
