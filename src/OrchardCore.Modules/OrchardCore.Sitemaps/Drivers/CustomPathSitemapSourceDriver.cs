@@ -18,9 +18,7 @@ namespace OrchardCore.Sitemaps.Drivers
     {
         private readonly IStringLocalizer S;
 
-        public CustomPathSitemapSourceDriver(
-            IStringLocalizer<CustomPathSitemapSourceDriver> localizer
-        )
+        public CustomPathSitemapSourceDriver(IStringLocalizer<CustomPathSitemapSourceDriver> localizer)
         {
             S = localizer;
         }
