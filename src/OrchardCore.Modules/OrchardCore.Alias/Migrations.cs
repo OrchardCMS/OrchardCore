@@ -1,4 +1,3 @@
-using OrchardCore.Alias.Drivers;
 using OrchardCore.Alias.Indexes;
 using OrchardCore.Alias.Models;
 using OrchardCore.ContentManagement.Metadata;
@@ -25,6 +24,7 @@ namespace OrchardCore.Alias
 
             // NOTE: The Alias Length has been upgraded from 64 characters to 767.
             // For existing SQL databases update the AliasPartIndex tables Alias column length manually.
+            // INFO: The Alias Length is now of 740 chars, but this is only used on a new installation.
             SchemaBuilder.CreateMapIndexTable<AliasPartIndex>(table => table
                 .Column<string>("Alias", col => col.WithLength(AliasPart.MaxAliasLength))
                 .Column<string>("ContentItemId", c => c.WithLength(26))
@@ -33,11 +33,16 @@ namespace OrchardCore.Alias
             );
 
             SchemaBuilder.AlterIndexTable<AliasPartIndex>(table => table
-                .CreateIndex("IDX_AliasPartIndex_Alias", "Alias", "Published", "Latest")
+                .CreateIndex("IDX_AliasPartIndex_DocumentId",
+                    "DocumentId",
+                    "Alias",
+                    "ContentItemId",
+                    "Published",
+                    "Latest")
             );
 
-            // Return 2 to shortcut the second migration on new content definition schemas.
-            return 2;
+            // Shortcut other migration steps on new content definition schemas.
+            return 3;
         }
 
         // This code can be removed in a later version as Latest and Published are alterations.
@@ -52,6 +57,20 @@ namespace OrchardCore.Alias
             );
 
             return 2;
+        }
+
+        // This code can be removed in a later version.
+        public int UpdateFrom2()
+        {
+            // Can't be fully created on existing databases where the 'Alias' may be of 767 chars.
+            SchemaBuilder.AlterIndexTable<AliasPartIndex>(table => table
+                //.CreateIndex("IDX_AliasPartIndex_DocumentId", "DocumentId", "Alias", "ContentItemId", "Latest", "Published")
+                .CreateIndex("IDX_AliasPartIndex_DocumentId",
+                    "DocumentId",
+                    "Alias")
+            );
+
+            return 3;
         }
     }
 }
