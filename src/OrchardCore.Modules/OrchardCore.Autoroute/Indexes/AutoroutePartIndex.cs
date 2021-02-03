@@ -83,7 +83,7 @@ namespace OrchardCore.ContentManagement.Records
             if (part != null)
             {
                 // Lazy initialization because of ISession cyclic dependency.
-                _contentDefinitionManager = _contentDefinitionManager ?? _serviceProvider.GetRequiredService<IContentDefinitionManager>();
+                _contentDefinitionManager ??= _serviceProvider.GetRequiredService<IContentDefinitionManager>();
 
                 // Search for AutoroutePart.
                 var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);

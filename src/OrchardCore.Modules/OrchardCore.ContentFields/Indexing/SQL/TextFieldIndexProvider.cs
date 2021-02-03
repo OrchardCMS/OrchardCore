@@ -33,6 +33,7 @@ namespace OrchardCore.ContentFields.Indexing.SQL
         public override void Describe(DescribeContext<ContentItem> context)
         {
             context.For<TextFieldIndex>()
+                .When(contentItem => contentItem.IsPublished() || contentItem.Latest)
                 .Map(contentItem =>
                 {
                     // Can we safely ignore this content item?
@@ -42,7 +43,7 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                     }
 
                     // Lazy initialization because of ISession cyclic dependency
-                    _contentDefinitionManager = _contentDefinitionManager ?? _serviceProvider.GetRequiredService<IContentDefinitionManager>();
+                    _contentDefinitionManager ??= _serviceProvider.GetRequiredService<IContentDefinitionManager>();
 
                     // Search for TextField
                     var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
@@ -58,7 +59,7 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                         .Parts.SelectMany(x => x.PartDefinition.Fields.Where(f => f.FieldDefinition.Name == nameof(TextField)))
                         .ToArray();
 
-                   // This type doesn't have any TextField, ignore it
+                    // This type doesn't have any TextField, ignore it
                     if (fieldDefinitions.Length == 0)
                     {
                         _ignoredTypes.Add(contentItem.ContentType);

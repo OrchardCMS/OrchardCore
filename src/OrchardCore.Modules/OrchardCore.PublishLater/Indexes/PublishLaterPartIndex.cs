@@ -29,6 +29,7 @@ namespace OrchardCore.PublishLater.Indexes
         public override void Describe(DescribeContext<ContentItem> context)
         {
             context.For<PublishLaterPartIndex>()
+                .When(contentItem => contentItem.Has<PublishLaterPart>())
                 .Map(contentItem =>
                 {
                     var publishLaterPart = contentItem.As<PublishLaterPart>();
