@@ -29,6 +29,7 @@ namespace OrchardCore.ContentFields.Indexing.SQL
         public override void Describe(DescribeContext<ContentItem> context)
         {
             context.For<ContentPickerFieldIndex>()
+                .When(contentItem => contentItem.IsPublished() || contentItem.Latest)
                 .Map(contentItem =>
                 {
                     // Can we safely ignore this content item?
