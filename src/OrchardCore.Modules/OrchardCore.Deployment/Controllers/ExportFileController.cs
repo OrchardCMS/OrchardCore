@@ -64,6 +64,7 @@ namespace OrchardCore.Deployment.Controllers
             return new PhysicalFileResult(archiveFileName, "application/zip") { FileDownloadName = filename };
         }
 
+        [HttpPost]
         public async Task<IActionResult> Preview(int id)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.Export))
