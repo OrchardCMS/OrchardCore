@@ -1,7 +1,7 @@
 # Contributors ✨
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-231-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-232-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
@@ -61,7 +61,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
   <tr>
     <td align="center"><a href="http://www.endlessmountainsolutions.com"><img src="https://avatars0.githubusercontent.com/u/1848585?v=4" width="100px;" alt=""/><br /><sub><b>Jeff Olmstead</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=jeffolmstead" title="Code">💻</a></td>
     <td align="center"><a href="https://github.com/duncanhoggan"><img src="https://avatars3.githubusercontent.com/u/6050438?v=4" width="100px;" alt=""/><br /><sub><b>Duncan Hoggan</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=duncanhoggan" title="Code">💻</a></td>
-    <td align="center"><a href="https://github.com/netwavebe"><img src="https://avatars2.githubusercontent.com/u/3008547?v=4" width="100px;" alt=""/><br /><sub><b>Steven Spits</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=netwavebe" title="Code">💻</a> <a href="#question-netwavebe" title="Answering Questions">💬</a></td>
+    <td align="center"><a href="https://github.com/netwavebe"><img src="https://avatars2.githubusercontent.com/u/3008547?v=4" width="100px;" alt=""/><br /><sub><b>Steven Spits</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=netwavebe" title="Code">💻</a> <a href="#question-netwavebe" title="Answering Questions">💬</a> <a href="#translation-netwavebe" title="Translation">🌍</a></td>
     <td align="center"><a href="http://qbit.cnblogs.com"><img src="https://avatars1.githubusercontent.com/u/15613121?v=4" width="100px;" alt=""/><br /><sub><b>Tony Han</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=hyzx86" title="Code">💻</a> <a href="#translation-hyzx86" title="Translation">🌍</a></td>
     <td align="center"><a href="http://www.davidouwinga.com"><img src="https://avatars1.githubusercontent.com/u/11961383?v=4" width="100px;" alt=""/><br /><sub><b>David Ouwinga</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=douwinga" title="Code">💻</a></td>
     <td align="center"><a href="https://github.com/Tsjerno"><img src="https://avatars0.githubusercontent.com/u/41969645?v=4" width="100px;" alt=""/><br /><sub><b>Henk Schoemaker</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=Tsjerno" title="Code">💻</a></td>
@@ -318,6 +318,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <td align="center"><a href="https://github.com/odavid0414"><img src="https://avatars0.githubusercontent.com/u/59338719?v=4" width="100px;" alt=""/><br /><sub><b>David Olah</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=odavid0414" title="Code">💻</a></td>
     <td align="center"><a href="https://github.com/Diman96"><img src="https://avatars3.githubusercontent.com/u/12182810?v=4" width="100px;" alt=""/><br /><sub><b>Diman96</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=Diman96" title="Code">💻</a></td>
     <td align="center"><a href="https://github.com/flew2bits"><img src="https://avatars.githubusercontent.com/u/4671044?v=4" width="100px;" alt=""/><br /><sub><b>Titus Anderson</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=flew2bits" title="Code">💻</a></td>
+    <td align="center"><a href="https://github.com/agono"><img src="https://avatars.githubusercontent.com/u/22931999?v=4" width="100px;" alt=""/><br /><sub><b>agono</b></sub></a><br /><a href="#translation-agono" title="Translation">🌍</a></td>
   </tr>
 </table>
 

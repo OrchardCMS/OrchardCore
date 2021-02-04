@@ -406,7 +406,8 @@
       "profile": "https://github.com/netwavebe",
       "contributions": [
         "code",
-        "question"
+        "question",
+        "translation"
       ]
     },
     {
@@ -2160,6 +2161,15 @@
       "profile": "https://github.com/flew2bits",
       "contributions": [
         "code"
+      ]
+    },
+    {
+      "login": "agono",
+      "name": "agono",
+      "avatar_url": "https://avatars.githubusercontent.com/u/22931999?v=4",
+      "profile": "https://github.com/agono",
+      "contributions": [
+        "translation"
       ]
     }
   ],
