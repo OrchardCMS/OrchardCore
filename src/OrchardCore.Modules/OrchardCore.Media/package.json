@@ -2,7 +2,7 @@
   "name": "orchardcore.media",
   "version": "1.0.0",
   "dependencies": {
-    "bootstrap": "4.5.3",
-    "blueimp-file-upload": "10.31.0"
+    "blueimp-file-upload": "10.31.0",
+    "bootstrap": "4.5.3"
   }
 }

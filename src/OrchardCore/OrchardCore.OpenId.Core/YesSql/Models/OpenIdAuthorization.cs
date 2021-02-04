@@ -20,7 +20,7 @@ namespace OrchardCore.OpenId.YesSql.Models
         /// <summary>
         /// Gets or sets the creation date of the current authorization.
         /// </summary>
-        public DateTimeOffset? CreationDate { get; set; }
+        public DateTime? CreationDate { get; set; }
 
         /// <summary>
         /// Gets or sets the physical identifier associated with the current authorization.

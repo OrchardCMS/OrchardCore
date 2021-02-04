@@ -214,7 +214,7 @@ namespace OrchardCore.Themes.Controllers
 
             await _shellFeaturesManager.DisableFeaturesAsync(new[] { feature }, force: true);
 
-            _notifier.Success(H["{0} was disabled", feature.Name ?? feature.Id]);
+            _notifier.Success(H["{0} was disabled.", feature.Name ?? feature.Id]);
 
             return RedirectToAction("Index");
         }
@@ -236,7 +236,7 @@ namespace OrchardCore.Themes.Controllers
 
             await _shellFeaturesManager.EnableFeaturesAsync(new[] { feature }, force: true);
 
-            _notifier.Success(H["{0} was enabled", feature.Name ?? feature.Id]);
+            _notifier.Success(H["{0} was enabled.", feature.Name ?? feature.Id]);
 
             return RedirectToAction("Index");
         }

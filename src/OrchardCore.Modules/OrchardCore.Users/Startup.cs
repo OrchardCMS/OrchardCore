@@ -130,7 +130,15 @@ namespace OrchardCore.Users
 
             // Adds the default token providers used to generate tokens for reset passwords, change email
             // and change telephone number operations, and for two factor authentication token generation.
-            services.AddIdentity<IUser, IRole>().AddDefaultTokenProviders();
+            services.AddIdentity<IUser, IRole>(options =>
+            {
+                // Specify OrchardCore User requirements.
+                // A user name cannot include an @ symbol, i.e. be an email address
+                // An email address must be provided, and be unique.
+                options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._+";
+                options.User.RequireUniqueEmail = true;
+            })
+            .AddDefaultTokenProviders();
 
             // Configure the authentication options to use the application cookie scheme as the default sign-out handler.
             // This is required for security modules like the OpenID module (that uses SignOutAsync()) to work correctly.
@@ -168,7 +176,8 @@ namespace OrchardCore.Users
             services.AddScoped<IDataMigration, Migrations>();
 
             services.AddScoped<IUserService, UserService>();
-            services.AddScoped<IUserClaimsPrincipalFactory<IUser>, DefaultUserClaimsPrincipalFactory>();
+            services.AddScoped<IUserClaimsPrincipalFactory<IUser>, DefaultUserClaimsPrincipalProviderFactory>();
+            services.AddScoped<IUserClaimsProvider, EmailClaimsProvider>();
             services.AddIdGeneration();
             services.AddSingleton<IUserIdGenerator, DefaultUserIdGenerator>();
 
@@ -181,8 +190,6 @@ namespace OrchardCore.Users
             services.AddScoped<INavigationProvider, AdminMenu>();
 
             services.AddScoped<IDisplayDriver<ISite>, LoginSettingsDisplayDriver>();
-
-            services.AddScoped<ILiquidTemplateEventHandler, UserLiquidTemplateEventHandler>();
 
             services.AddScoped<IDisplayManager<User>, DisplayManager<User>>();
             services.AddScoped<IDisplayDriver<User>, UserDisplayDriver>();
@@ -203,6 +210,8 @@ namespace OrchardCore.Users
             services.AddLiquidFilter<HasClaimFilter>("has_claim");
             services.AddLiquidFilter<IsInRoleFilter>("is_in_role");
             services.AddLiquidFilter<UserEmailFilter>("user_email");
+            services.AddLiquidFilter<UserIdFilter>("user_id");
+            services.AddLiquidFilter<UsersByIdFilter>("users_by_id");
         }
     }
 

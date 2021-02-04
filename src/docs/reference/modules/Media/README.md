@@ -58,7 +58,10 @@ Convert the input URL to create a resized image with the specified size argument
 #### Arguments
 
 Refer [Query string tokens](#query-string-tokens) to understand the valid values for a width or height command,
-and how the query string will differ from the examples provided.
+and when a query string must utilize a token.
+
+!!! note
+    You cannot mix named and indexed arguments. If any of the arguments is named, all arguments must be named.
 
 #### `width` (or first argument)
 
@@ -137,12 +140,26 @@ The anchor of the new image.
 
 ```
 {% assign anchor = Model.ContentItem.Content.Blog.Image.Anchors.first %}
-{{ 'animals/kittens.jpg' | asset_url | resize_url: width:100, height:240, mode:'crop', anchor: anchor }}
+{{ 'animals/kittens.jpg' | asset_url | resize_url: width:100, height:240, mode:'crop', anchor:anchor }}
 ```
 
 #### anchor Output
 
 `<img src="~/media/animals/kittens.jpg?width=100&height=240&rmode=crop&rxy=0.5,0.5" />`
+
+### `bgcolor` (or seventh argument)
+
+The background color of the new image when `mode` is `pad` or `boxpad`. Examples of valid values: `white`, `ffff00`, `ffff0080`, `128,64,32` and `128,64,32,16`.
+
+#### bgcolor Input
+
+```
+{{ 'animals/kittens.jpg' | asset_url | resize_url: width:100, height:240, mode:'pad', bgcolor:'white' }}
+```
+
+#### bgcolor Output
+
+`<img src="~/media/animals/kittens.jpg?width=100&height=240&rmode=pad&bgcolor=white" />`
 
 ### `profile` (named argument)
 
@@ -182,6 +199,10 @@ To obtain the correct URL for a resized asset use `AssetUrl` with the optional w
 
 `@Orchard.AssetUrl(Model.Paths[0], width: 100 , height: 240, resizeMode: ResizeMode.Crop, quality: 50, format: Format.Jpg)`
 
+To obtain the correct URL for a resized asset use `AssetUrl` with the optional width, height, resizeMode and bgcolor, e.g.:
+
+`@Orchard.AssetUrl(Model.Paths[0], width: 100 , height: 240, resizeMode: ResizeMode.Pad, bgcolor: "white")`
+
 To append a version hash for an asset use `AssetUrl` with the append version parameter, e.g.:
 
 `@Orchard.AssetUrl(Model.Paths[0], appendVersion: true)`
@@ -209,6 +230,10 @@ To use the image tag helpers add `@addTagHelper *, OrchardCore.Media` to `_ViewI
 Alternatively the Asset Url can be resolved independently and the `src` attribute used:
 
 `<img src="@Orchard.AssetUrl(Model.Paths[0])" alt="..." img-width="100" img-height="240" img-resize-mode="Crop" img-quality="50" img-format="Jpg" />`
+
+When resize mode is `pad` or `boxpad`, the background color can be set using `img-bgcolor`, e.g.:
+
+`<img asset-src="Model.Paths[0]" alt="..." img-width="100" img-height="240" img-resize-mode="Pad" img-bgcolor="white" />`
 
 To use a [Media Profile](#media-profiles) set the `asset-src` property and the `img-profile` attribute.
 
@@ -397,7 +422,7 @@ This can be used for the `alt` tag of an image.
 
 When the setting is enabled the template must read and provide the value to the `img` tag.
 
-The `MediaText[]` is kept in sync with the `Paths[]` array and the index for a given path represents the index of a `MediaText` value.
+The `MediaTexts[]` is kept in sync with the `Paths[]` array and the index for a given path represents the index of a `MediaText` value.
 
 ## Image Anchors
 
@@ -431,7 +456,7 @@ The `Anchors[]` is kept in sync with the `Paths[]` array and the index for a giv
 
 ## Query string tokens
 
-When resizing images, the query string command values are, by default, encrypted, and the encrypted values are cached.
+When resizing images, the query string command values are, by default, signed with an HMAC signature that is unique to the tenant.
 
 This prevents prevent malicious clients from creating too many variations of the same image. 
 
@@ -440,11 +465,11 @@ If the `UseTokenizedQueryString` is set to `false` the following features will b
 - Cache busting, or query string versioning.
 - Anchors.
 - The width or height must match a value from the `SupportedSizes` configuration.
+- Background color.
 
-When the query string is tokenized it will no longer contain the plain text commands shown in the examples above, but will be an encrypted version of 
-those commands. e.g.
+When the query string is signed with a token any width, height value may be used.
 
-`<img src="/media/kitten.jpg?token=CfDJ8ML-t4y_bo9InuZxvH6ig5IiGTc0BWLzVfnTMJg-2Cc08xmElsv_O2ZcMCKfcicXKDiF1pS-Z1xcMIWn-c5GH5W0UNd9ZN1xVOaom5gZatm5dLwjRG7aYAevqWXLrsNdbqV_CyOekgKsQJo89-qadoXVNaQh-PAXWuoBwitnkQOjzUyUxGXZFjK5akYuEcQRt0KbT24gj0WUETKU9Cd-6Go">`
+`<img src="/media/kittens.jpg?width=101&height=241&token=0J3hyv6jIPEsSdlvTCrf30fIdygkpmrF6mphqgYQyas%3D">`
 
 !!! note
     Tokens are only available from the [Preview Feed](../../../getting-started/preview-package-source)
@@ -455,11 +480,3 @@ those commands. e.g.
 <iframe width="560" height="315" src="https://www.youtube.com/embed/BQHUlvPFRR4" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 <iframe width="560" height="315" src="https://www.youtube.com/embed/K0_i4vj00yM" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-
-## CREDITS
-
-### ImageSharp
-
-<https://sixlabors.com/products/imagesharpweb/>  
-Copyright 2012 James South  
-Licensed under the Apache License, Version 2.0, or with a commercial support license <https://sixlabors.com/pricing>

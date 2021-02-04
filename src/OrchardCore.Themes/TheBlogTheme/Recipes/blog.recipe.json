@@ -11,6 +11,7 @@
 
   // The variables are evaluated the first time they are accessed, and reused across steps
   "variables": {
+    "adminUrlPrefix": "[js: configuration('OrchardCore_Admin:AdminUrlPrefix', 'Admin')]",
     "blogContentItemId": "[js:uuid()]",
     "menuContentItemId": "[js:uuid()]",
     "tagsContentItemId": "[js:uuid()]",
@@ -63,6 +64,7 @@
         "OrchardCore.Markdown",
         "OrchardCore.Media",
         "OrchardCore.Menu",
+        "OrchardCore.Placements",
         "OrchardCore.Queries",
         "OrchardCore.Shortcodes.Templates",
         "OrchardCore.Taxonomies",
@@ -1311,8 +1313,9 @@
             {
               "$type": "OrchardCore.AdminMenu.AdminNodes.LinkAdminNode, OrchardCore.AdminMenu",
               "LinkText": "Blog",
-              "LinkUrl": "[js: 'Admin/Contents/ContentItems/' +  variables('blogContentItemId') + '/Display']",
+              "LinkUrl": "[js: variables('adminUrlPrefix') + '/Contents/ContentItems/' +  variables('blogContentItemId') + '/Display']",
               "IconClass": "fas fa-rss",
+              "PermissionNames": [],
               "UniqueId": "7b293d57056a4eebb3713f07f12c65d8",
               "Enabled": true,
               "Text": null,
@@ -1323,17 +1326,15 @@
               "LinkToFirstChild": true,
               "LocalNav": false,
               "Culture": null,
-              "Resource": null,
               "Items": [],
-              "RouteValues": null,
-              "Permissions": [],
               "Classes": []
             },
             {
               "$type": "OrchardCore.AdminMenu.AdminNodes.LinkAdminNode, OrchardCore.AdminMenu",
               "LinkText": "Main Menu",
-              "LinkUrl": "[js: 'Admin/Contents/ContentItems/' +  variables('menuContentItemId') + '/Edit']",
+              "LinkUrl": "[js: variables('adminUrlPrefix') + '/Contents/ContentItems/' +  variables('menuContentItemId') + '/Edit']",
               "IconClass": "fas fa-sitemap",
+              "PermissionNames": [],
               "UniqueId": "5118cecfde834dacb26ac08980f1b5a7",
               "Enabled": true,
               "Text": null,
@@ -1344,16 +1345,14 @@
               "LinkToFirstChild": true,
               "LocalNav": false,
               "Culture": null,
-              "Resource": null,
               "Items": [],
-              "RouteValues": null,
-              "Permissions": [],
               "Classes": []
             },
             {
               "$type": "OrchardCore.AdminMenu.AdminNodes.PlaceholderAdminNode, OrchardCore.AdminMenu",
               "LinkText": "Content",
               "IconClass": null,
+              "PermissionNames": [],
               "UniqueId": "3e590d44f8704e4588e272dd966ce291",
               "Enabled": true,
               "Text": null,
@@ -1364,12 +1363,11 @@
               "LinkToFirstChild": true,
               "LocalNav": false,
               "Culture": null,
-              "Resource": null,
               "Items": [
                 {
                   "$type": "OrchardCore.AdminMenu.AdminNodes.LinkAdminNode, OrchardCore.AdminMenu",
                   "LinkText": "Content Items",
-                  "LinkUrl": "Admin/Contents/ContentItems/",
+                  "LinkUrl": "[js: variables('adminUrlPrefix') + '/Contents/ContentItems/']",
                   "IconClass": null,
                   "UniqueId": "7b293d57056a4eebb3713f07f12c65d9",
                   "Enabled": true,
@@ -1381,16 +1379,14 @@
                   "LinkToFirstChild": true,
                   "LocalNav": false,
                   "Culture": null,
-                  "Resource": null,
                   "Items": [],
-                  "RouteValues": null,
-                  "Permissions": [],
                   "Classes": []
                 },
                 {
                   "$type": "OrchardCore.AdminMenu.AdminNodes.PlaceholderAdminNode, OrchardCore.AdminMenu",
                   "LinkText": "Content Types",
                   "IconClass": null,
+                  "PermissionNames": [],
                   "UniqueId": "2f1fc33133334a1abf7d1a0516ee8b4e",
                   "Enabled": true,
                   "Text": null,
@@ -1402,7 +1398,6 @@
                   "LinkToFirstChild": true,
                   "LocalNav": false,
                   "Culture": null,
-                  "Resource": null,
                   "Items": [
                     {
                       "$type": "OrchardCore.Contents.AdminNodes.ContentTypesAdminNode, OrchardCore.Contents",
@@ -1419,20 +1414,13 @@
                       "LinkToFirstChild": true,
                       "LocalNav": false,
                       "Culture": null,
-                      "Resource": null,
                       "Items": [],
-                      "RouteValues": null,
-                      "Permissions": [],
                       "Classes": []
                     }
                   ],
-                  "RouteValues": null,
-                  "Permissions": [],
                   "Classes": []
                 }
               ],
-              "RouteValues": null,
-              "Permissions": [],
               "Classes": []
             }
           ]

@@ -20,10 +20,14 @@ jobs:
         os: [ubuntu-latest, windows-latest]
     steps:
     - uses: actions/checkout@v2
-    - name: Setup .NET Core on ${{ matrix.os }}
+    - name: Setup .NET Core 3.1 on ${{ matrix.os }}
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 5.0.100
+        dotnet-version: 5.0.102
+    - name: Setup .NET Core 5.0 on ${{ matrix.os }}
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 5.0.102
     - name: Set build number 
       if: matrix.os == 'ubuntu-latest'
       run: echo "BuildNumber=$(( $GITHUB_RUN_NUMBER + 15471 ))" >> $GITHUB_ENV
@@ -46,7 +50,7 @@ jobs:
         name: Functional Test failure
         path: |
           test/Functional/cms-tests/cypress/screenshots
-          src/OrchardCore.Cms.Web/App_Data/logs
+          src/OrchardCore.Cms.Web/App_Data_Tests/logs
     - name: Deploy preview nuget packages
       if: matrix.os == 'ubuntu-latest'
       run: |
@@ -60,19 +64,17 @@ jobs:
         password: ${{ secrets.DOCKERHUB_PASSWORD }}
     - name: Deploy preview docker image for linux
       if: matrix.os == 'ubuntu-latest'
-      # Buildkit Only working in linux
-      env:
-        DOCKER_BUILDKIT: 1
       run: |
         rm -rf ./src/OrchardCore.Cms.Web/App_Data
+        rm -rf ./src/OrchardCore.Cms.Web/App_Data_Tests
         dotnet publish -c Release -o ./.build/release --no-build --no-restore
         docker build -f Dockerfile-CI -t orchardproject/orchardcore-cms-linux:dev .
-        echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u="${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
         docker push orchardproject/orchardcore-cms-linux
     - name: Deploy preview docker image for windows
       if: matrix.os == 'windows-latest'
       run: |
         Get-ChildItem ./src/OrchardCore.Cms.Web/App_Data -Recurse | Remove-Item
+        Get-ChildItem ./src/OrchardCore.Cms.Web/App_Data_Tests -Recurse | Remove-Item
         dotnet publish -c Release -o ./.build/release --no-build --no-restore
         docker build -f Dockerfile-CI -t orchardproject/orchardcore-cms-windows:dev .
         echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u="${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin

@@ -114,7 +114,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     // Get rid name from identifierQuote and preceding dot(.)
     if (name.charAt(0) == ".") {
       name = name.substr(1);
-    } // replace doublicated identifierQuotes with single identifierQuotes
+    } // replace duplicated identifierQuotes with single identifierQuotes
     // and remove single identifierQuotes
 
 
@@ -131,7 +131,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     var nameParts = getText(name).split(".");
 
     for (var i = 0; i < nameParts.length; i++) {
-      nameParts[i] = identifierQuote + // doublicate identifierQuotes
+      nameParts[i] = identifierQuote + // duplicate identifierQuotes
       nameParts[i].replace(new RegExp(identifierQuote, "g"), identifierQuote + identifierQuote) + identifierQuote;
     }
 

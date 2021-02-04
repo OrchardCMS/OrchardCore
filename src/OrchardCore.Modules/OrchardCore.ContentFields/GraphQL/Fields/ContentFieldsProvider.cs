@@ -45,16 +45,6 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
                 }
             },
             {
-                nameof(HtmlField),
-                new FieldTypeDescriptor
-                {
-                    Description = "Html field",
-                    FieldType = typeof(StringGraphType),
-                    UnderlyingType = typeof(HtmlField),
-                    FieldAccessor = field => field.Content.Html
-                }
-            },
-            {
                 nameof(NumericField),
                 new FieldTypeDescriptor
                 {
@@ -82,6 +72,16 @@ namespace OrchardCore.ContentFields.GraphQL.Fields
                     FieldType = typeof(TimeSpanGraphType),
                     UnderlyingType = typeof(TimeField),
                     FieldAccessor = field => (TimeSpan?)field.Content.Value
+                }
+            },
+            {
+                nameof(MultiTextField),
+                new FieldTypeDescriptor
+                {
+                    Description = "Multi text field",
+                    FieldType = typeof(ListGraphType<StringGraphType>),
+                    UnderlyingType = typeof(MultiTextField),
+                    FieldAccessor = field => field.Content.Values
                 }
             }
         };

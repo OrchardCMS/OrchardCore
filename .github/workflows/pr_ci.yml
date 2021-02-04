@@ -1,9 +1,9 @@
 name: PR - CI
 on: 
   pull_request:
-    paths-ignore:
-      - '**/*.md'
-      - 'mkdocs.yml'
+    paths-ignore:	
+      - '**/*.md'	
+      - 'mkdocs.yml'	
       - 'src/docs/**/*'
     branches:
       - dev
@@ -20,10 +20,14 @@ jobs:
     name: Build & Test
     steps:
     - uses: actions/checkout@v2
-    - name: Setup .NET Core on ${{ matrix.os }}
+    - name: Setup .NET Core 3.1 on ${{ matrix.os }}
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 5.0.100
+        dotnet-version: 5.0.102
+    - name: Setup .NET Core 5.0 on ${{ matrix.os }}
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 5.0.102
     - name: Build
       run: |
         dotnet build --configuration Release
@@ -43,5 +47,5 @@ jobs:
         name: functional-test-failure
         path: |
           test/Functional/cms-tests/cypress/screenshots
-          src/OrchardCore.Cms.Web/App_Data/logs
+          src/OrchardCore.Cms.Web/App_Data_Tests/logs
   

@@ -10,13 +10,17 @@ jobs:
     name: Functional Tests - MVC
     runs-on: ubuntu-latest
     container:
-      image: cypress/browsers:node12.13.0-chrome78-ff70
+      image: cypress/included:6.4.0
     steps:
     - uses: actions/checkout@v2
-    - name: Setup .NET Core
+    - name: Setup .NET Core 3.1
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 5.0.100
+        dotnet-version: 5.0.102
+    - name: Setup .NET Core 5.0
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 5.0.102
     - name: Functional Tests
       run: |
         cd test/Functional
@@ -33,13 +37,17 @@ jobs:
     name: Functional Tests - CMS Sqlite
     runs-on: ubuntu-latest
     container:
-      image: cypress/browsers:node12.13.0-chrome78-ff70
+      image: cypress/included:6.4.0
     steps:
     - uses: actions/checkout@v2
-    - name: Setup .NET Core
+    - name: Setup .NET Core 3.1
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 5.0.100
+        dotnet-version: 5.0.102
+    - name: Setup .NET Core 5.0
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 5.0.102
     - name: Functional Tests
       run: |
         cd test/Functional
@@ -51,14 +59,14 @@ jobs:
         name: functional-cms-sqlite-failure
         path: |
           test/Functional/cms-tests/cypress/screenshots
-          src/OrchardCore.Cms.Web/App_Data/logs
+          src/OrchardCore.Cms.Web/App_Data_Tests/logs
         retention-days: 3
   
   test_functional_cms_postgresql:
     name: Functional Tests - CMS Postgres
     runs-on: ubuntu-latest
     container:
-      image: cypress/browsers:node12.13.0-chrome78-ff70
+      image: cypress/included:6.4.0
     services:
       postgres:
         image: postgres:11
@@ -77,10 +85,14 @@ jobs:
       OrchardCore__DatabaseProvider: "Postgres"
     steps:
     - uses: actions/checkout@v2
-    - name: Setup .NET Core
+    - name: Setup .NET Core 3.1
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 5.0.100
+        dotnet-version: 3.1.405
+    - name: Setup .NET Core 5.0
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 5.0.102
     - name: Functional Tests
       run: |
         cd test/Functional
@@ -92,14 +104,14 @@ jobs:
         name: functional-cms-postgresql-failure
         path: |
           test/Functional/cms-tests/cypress/screenshots
-          src/OrchardCore.Cms.Web/App_Data/logs
+          src/OrchardCore.Cms.Web/App_Data_Tests/logs
         retention-days: 3
   
   test_functional_cms_mysql:
     name: Functional Tests - CMS MySql
     runs-on: ubuntu-latest
     container:
-      image: cypress/browsers:node12.13.0-chrome78-ff70
+      image: cypress/included:6.4.0
     services:
       mariadb:
         image: mariadb:latest
@@ -111,13 +123,17 @@ jobs:
         options: --health-cmd="mysqladmin ping" --health-interval=5s --health-timeout=2s --health-retries=3
     env:
       OrchardCore__ConnectionString: "server=mariadb;uid=root;pwd=test123;database=test"
-      OrchardCore__DatabaseProvider: "Mysql"
+      OrchardCore__DatabaseProvider: "MySql"
     steps:
     - uses: actions/checkout@v2
-    - name: Setup .NET Core
+    - name: Setup .NET Core 3.1
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 5.0.100
+        dotnet-version: 3.1.405
+    - name: Setup .NET Core 5.0
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 5.0.102
     - name: Functional Tests
       run: |
         cd test/Functional
@@ -129,14 +145,14 @@ jobs:
         name: functional-cms-mysql-failure
         path: |
           test/Functional/cms-tests/cypress/screenshots
-          src/OrchardCore.Cms.Web/App_Data/logs
+          src/OrchardCore.Cms.Web/App_Data_Tests/logs
         retention-days: 3
 
   test_functional_cms_mssql:
     name: Functional Tests - CMS SqlServer 2019
     runs-on: ubuntu-latest
     container:
-      image: cypress/browsers:node12.13.0-chrome78-ff70
+      image: cypress/included:6.4.0
     services:
       mssql:
         image: mcr.microsoft.com/mssql/server:2019-latest
@@ -150,10 +166,14 @@ jobs:
       OrchardCore__DatabaseProvider: "SqlConnection"
     steps:
     - uses: actions/checkout@v2
-    - name: Setup .NET Core
+    - name: Setup .NET Core 3.1
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 5.0.100
+        dotnet-version: 3.1.405
+    - name: Setup .NET Core 5.0
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 5.0.102
     - name: Functional Tests
       run: |
         cd test/Functional
@@ -165,5 +185,5 @@ jobs:
         name: functional-cms-mssql-failure
         path: |
           test/Functional/cms-tests/cypress/screenshots
-          src/OrchardCore.Cms.Web/App_Data/logs
+          src/OrchardCore.Cms.Web/App_Data_Tests/logs
         retention-days: 3

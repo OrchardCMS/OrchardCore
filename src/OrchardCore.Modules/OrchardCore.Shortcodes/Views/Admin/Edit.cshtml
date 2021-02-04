@@ -34,7 +34,7 @@
 <style asp-src="~/OrchardCore.Shortcodes/Styles/shortcodes.min.css" debug-src="~/OrchardCore.Shortcodes/Styles/shortcodes.css" asp-name="shortcodes"></style>
 <script asp-src="~/OrchardCore.Shortcodes/Scripts/shortcode-templates.min.js" debug-src="~/OrchardCore.Shortcodes/Scripts/shortcode-templates.js" at="Foot" depends-on="vuejs, vue-multiselect"></script>
 
-<h1>@RenderTitleSegments(T["Edit Shortcode"])</h1>
+<zone Name="Title"><h1>@RenderTitleSegments(T["Edit Shortcode"])</h1></zone>
 
 <div asp-validation-summary="All"></div>
 <form asp-action="Edit" method="post">
@@ -91,7 +91,7 @@
             <div class="form-group" asp-validation-class-for="DefaultValue">
                 <label asp-for="DefaultValue">@T["Default Shortcode Value"]</label>
                 <input asp-for="DefaultValue" class="form-control" />
-                <span class="hint">@T["The default value of the short code when selected. Defaults to [name]."]</span>
+                <span class="hint">@T["The default value of the shortcode when selected. Defaults to [name]."]</span>
             </div>  
         </div>
         <div class="col-12 col-md-6 d-flex align-items-center justify-content-center">
@@ -120,8 +120,8 @@
     </div>
     <div class="form-group">
         <div class="btn-group">
-            <button type="submit" name="submit" class="btn btn-success save">@T["Save"]</button>
-            <button type="button" class="btn btn-success dropdown-toggle dropdown-toggle-split" data-reference="parent" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <button type="submit" name="submit" class="btn btn-primary save">@T["Save"]</button>
+            <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-reference="parent" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <span class="sr-only">@T["Toggle Dropdown"]</span>
             </button>
             <div class="dropdown-menu">

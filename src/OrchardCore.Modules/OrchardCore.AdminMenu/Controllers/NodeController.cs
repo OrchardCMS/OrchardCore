@@ -11,6 +11,7 @@ using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Navigation;
+using OrchardCore.Security.Permissions;
 
 namespace OrchardCore.AdminMenu.Controllers
 {
@@ -28,6 +29,7 @@ namespace OrchardCore.AdminMenu.Controllers
 
         public NodeController(
             IAuthorizationService authorizationService,
+            IEnumerable<IPermissionProvider> permissionProviders,
             IDisplayManager<MenuItem> displayManager,
             IEnumerable<IAdminNodeProviderFactory> factories,
             IAdminMenuService adminMenuService,
@@ -147,7 +149,7 @@ namespace OrchardCore.AdminMenu.Controllers
                 adminMenu.MenuItems.Add(treeNode);
                 await _adminMenuService.SaveAsync(adminMenu);
 
-                _notifier.Success(H["Admin node added successfully"]);
+                _notifier.Success(H["Admin node added successfully."]);
                 return RedirectToAction("List", new { id = model.AdminMenuId });
             }
 
@@ -227,11 +229,11 @@ namespace OrchardCore.AdminMenu.Controllers
 
                 await _adminMenuService.SaveAsync(adminMenu);
 
-                _notifier.Success(H["Admin node updated successfully"]);
+                _notifier.Success(H["Admin node updated successfully."]);
                 return RedirectToAction(nameof(List), new { id = model.AdminMenuId });
             }
 
-            _notifier.Error(H["The admin node has validation errors"]);
+            _notifier.Error(H["The admin node has validation errors."]);
             model.Editor = editor;
 
             // If we got this far, something failed, redisplay form
@@ -268,7 +270,7 @@ namespace OrchardCore.AdminMenu.Controllers
 
             await _adminMenuService.SaveAsync(adminMenu);
 
-            _notifier.Success(H["Admin node deleted successfully"]);
+            _notifier.Success(H["Admin node deleted successfully."]);
 
             return RedirectToAction(nameof(List), new { id });
         }
@@ -300,7 +302,7 @@ namespace OrchardCore.AdminMenu.Controllers
 
             await _adminMenuService.SaveAsync(adminMenu);
 
-            _notifier.Success(H["Admin node toggled successfully"]);
+            _notifier.Success(H["Admin node toggled successfully."]);
 
             return RedirectToAction(nameof(List), new { id = id });
         }

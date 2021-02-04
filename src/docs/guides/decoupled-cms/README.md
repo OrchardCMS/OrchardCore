@@ -77,7 +77,7 @@ This will add the packages from Orchard Core CMS
 
 - Edit the `Startup.cs` file `ConfigureServices` method like this:
 
-```cs
+```csharp
 public void ConfigureServices(IServiceCollection services)
 {
     services.AddOrchardCms();
@@ -90,7 +90,7 @@ public void ConfigureServices(IServiceCollection services)
 - Edit the `Startup.cs` file `Configure`
 - Remove everything after `app.UseStaticFiles();` and replace it by `app.UseOrchardCore();` like this:
 
-```cs
+```csharp
    ...
    
    app.UseHttpsRedirection();

@@ -1,19 +1,18 @@
 @model ListContentsViewModel
 
 <script asp-name="bootstrap-select" depends-on="admin" at="Foot"></script>
-<style asp-name="bootstrap-select"></style>
 
 <!-- Hidden submit button do not remove -->
-<input type="submit" name="submit.Filter" id="submitFilter" class="d-none" />
-<input type="submit" name="submit.BulkAction" class="d-none" />
+<input type="submit" name="submit.Filter" id="submitFilter" class="sr-only" />
+<input type="submit" name="submit.BulkAction" class="sr-only" />
 @Html.HiddenFor(o => o.Options.BulkAction)
 
-<div class="row">
-    <div class="col-xl-4 col-sm-6">
-        @await DisplayAsync(Model.Header.Search)
-    </div>
-    <div class="col-xl-8 col-sm-6 d-flex justify-content-start flex-row-reverse">
-        @await DisplayAsync(Model.Header.Create)
+<div class="card mb-3 position-sticky action-bar">
+    <div class="card-body bg-primary p-3">
+        <div class="form-group mb-n1">
+            @await DisplayAsync(Model.Header.Search)
+            @await DisplayAsync(Model.Header.Create)
+        </div>
     </div>
 </div>
 <ul class="list-group with-checkbox">
@@ -39,7 +38,7 @@
     else
     {
         <li class="list-group-item">
-            <div class="alert alert-info">
+            <div class="alert alert-info mb-0">
                 @T["No results found."]
             </div>
         </li>

@@ -54,20 +54,22 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
                         continue;
                     }
                     var type = querySchema["type"].ToString();
+                    FieldType fieldType;
 
                     if (query.ReturnContentItems &&
                         type.StartsWith("ContentItem/", StringComparison.OrdinalIgnoreCase))
                     {
                         var contentType = type.Remove(0, 12);
-                        var queryField = BuildContentTypeFieldType(schema, contentType, query);
-                        if (queryField != null)
-                        {
-                            schema.Query.AddField(queryField);
-                        }
+                        fieldType = BuildContentTypeFieldType(schema, contentType, query);
                     }
                     else
                     {
-                        schema.Query.AddField(BuildSchemaBasedFieldType(query, querySchema));
+                        fieldType = BuildSchemaBasedFieldType(query, querySchema);
+                    }
+
+                    if (fieldType != null)
+                    {
+                        schema.Query.AddField(fieldType);
                     }
                 }
                 catch (Exception e)
@@ -77,26 +79,32 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
             }
         }
 
-        private FieldType BuildSchemaBasedFieldType(LuceneQuery query, JToken schema)
+        private FieldType BuildSchemaBasedFieldType(LuceneQuery query, JToken querySchema)
         {
+            var properties = querySchema["properties"];
+            if (properties == null)
+            {
+                return null;
+            }
+
             var typetype = new ObjectGraphType<JObject>
             {
                 Name = query.Name
             };
 
-            var properties = schema["Properties"];
-
-            foreach (var child in properties.Children())
+            foreach (JProperty child in properties.Children())
             {
-                var name = ((JProperty)child).Name;
+                var name = child.Name;
                 var nameLower = name.Replace('.', '_');
-                var type = child["type"].ToString();
+                var type = child.Value["type"].ToString();
+                var description = child.Value["description"]?.ToString();
 
-                if (type == "String")
+                if (type == "string")
                 {
                     var field = typetype.Field(
                         typeof(StringGraphType),
                         nameLower,
+                        description: description,
                         resolve: context =>
                         {
                             var source = context.Source;
@@ -104,11 +112,12 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
                         });
                     field.Metadata.Add("Name", name);
                 }
-                if (type == "Integer")
+                else if (type == "integer")
                 {
                     var field = typetype.Field(
                         typeof(IntGraphType),
                         nameLower,
+                        description: description,
                         resolve: context =>
                         {
                             var source = context.Source;
@@ -149,7 +158,6 @@ namespace OrchardCore.Queries.Lucene.GraphQL.Queries
         private FieldType BuildContentTypeFieldType(ISchema schema, string contentType, LuceneQuery query)
         {
             var typetype = schema.Query.Fields.OfType<ContentItemsFieldType>().FirstOrDefault(x => x.Name == contentType);
-
             if (typetype == null)
             {
                 return null;

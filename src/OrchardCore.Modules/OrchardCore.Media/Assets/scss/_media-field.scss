@@ -44,5 +44,12 @@
 .icon-media-anchor {
     position: absolute;
     line-height: 0px;
-    color: $pink;
+    color: $white;
+    font-size: 1.875rem;
+
+    path
+    {
+        stroke:$black;
+        stroke-width: 10;
+    }
 }

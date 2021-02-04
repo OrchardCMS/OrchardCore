@@ -118,7 +118,7 @@ namespace OrchardCore.Deployment.Controllers
                 deploymentPlan.DeploymentSteps.Add(step);
                 _session.Save(deploymentPlan);
 
-                _notifier.Success(H["Deployment plan step added successfully"]);
+                _notifier.Success(H["Deployment plan step added successfully."]);
                 return RedirectToAction("Display", "DeploymentPlan", new { id = model.DeploymentPlanId });
             }
 
@@ -191,11 +191,11 @@ namespace OrchardCore.Deployment.Controllers
             {
                 _session.Save(deploymentPlan);
 
-                _notifier.Success(H["Deployment plan step updated successfully"]);
+                _notifier.Success(H["Deployment plan step updated successfully."]);
                 return RedirectToAction("Display", "DeploymentPlan", new { id = model.DeploymentPlanId });
             }
 
-            _notifier.Error(H["The deployment plan step has validation errors"]);
+            _notifier.Error(H["The deployment plan step has validation errors."]);
             model.Editor = editor;
 
             // If we got this far, something failed, redisplay form
@@ -227,7 +227,7 @@ namespace OrchardCore.Deployment.Controllers
             deploymentPlan.DeploymentSteps.Remove(step);
             _session.Save(deploymentPlan);
 
-            _notifier.Success(H["Deployment step deleted successfully"]);
+            _notifier.Success(H["Deployment step deleted successfully."]);
 
             return RedirectToAction("Display", "DeploymentPlan", new { id });
         }

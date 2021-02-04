@@ -3,7 +3,7 @@
 function generateUniqueName() {
     var date = new Date();
     var today = new Date(date.getFullYear(), date.getMonth(), date.getDay());
-    return 't' + (date - today).toString(32);
+    return 't' + Math.abs(date - today).toString(32);
 }
 
 function generateTenantInfo(setupRecipeName, description) {

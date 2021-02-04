@@ -1,11 +1,12 @@
 @model WorkflowTypeViewModel
 @using OrchardCore.Workflows.ViewModels;
 
-<h1>@RenderTitleSegments(Model.WorkflowType.Name)</h1>
+<zone Name="Title"><h1>@RenderTitleSegments(Model.WorkflowType.Name)</h1></zone>
+
 <zone name="Breadcrumbs">
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a asp-action="Index">@T["Workflow Types"]</a></li>
+            <li class="breadcrumb-item"><a asp-action="Index">@T["Workflows"]</a></li>
             <li class="breadcrumb-item active" aria-current="page">@Model.WorkflowType.Name</li>
         </ol>
     </nav>
@@ -22,7 +23,7 @@
         </div>
         <div class="btn-group float-right">
             <a class="btn btn-secondary btn-sm" asp-action="EditProperties" asp-route-id="@Model.WorkflowType.Id" asp-route-returnUrl="@FullRequestPath">@T["Properties"]</a>
-            <a class="btn btn-secondary btn-sm" asp-action="Index" asp-controller="Workflow" asp-route-workflowtypeid="@Model.WorkflowType.Id" asp-route-returnUrl="@FullRequestPath">@T["Workflows"] <span class="badge badge-light">@Model.WorkflowCount</span></a>
+            <a class="btn btn-secondary btn-sm" asp-action="Index" asp-controller="Workflow" asp-route-workflowtypeid="@Model.WorkflowType.Id" asp-route-returnUrl="@FullRequestPath">@T["Instances"] <span class="badge ta-badge">@Model.WorkflowCount</span></a>
         </div>
     </div>
 </div>
@@ -65,7 +66,7 @@
                 <div class="row">
                     <div class="col-sm-3 col-md-3 col-lg-2">
                         <div class="form-group">
-                            <input class="form-control" type="search" placeholder="@T["Filter"]" aria-label="@T["Filter"]" autofocus>
+                            <input class="form-control" type="search" placeholder="@T["Filter"]" aria-label="@T["Filter"]" autofocus />
                         </div>
                         <ul class="nav nav-pills flex-column activity-picker-categories">
                             <li class="nav-item">

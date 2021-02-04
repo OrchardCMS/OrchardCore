@@ -7104,11 +7104,15 @@ $(window).on("load", function () {
   $("body").removeClass("preload");
 });
 $(function () {
-  $("body").on("click", "[itemprop~='RemoveUrl']", function () {
-    var _this = $(this); // don't show the confirm dialog if the link is also UnsafeUrl, as it will already be handled below.
+  $("body").on("click", "[data-url-af~='RemoveUrl'], a[itemprop~='RemoveUrl']", function () {
+    var _this = $(this);
+
+    if (_this.filter("a[itemprop~='UnsafeUrl']").length == 1) {
+      console.warn('Please use data-url-af instead of itemprop attribute for confirm modals. Using itemprop will eventually become deprecated.');
+    } // don't show the confirm dialog if the link is also UnsafeUrl, as it will already be handled below.
 
 
-    if (_this.filter("[itemprop~='UnsafeUrl']").length == 1) {
+    if (_this.filter("[data-url-af~='UnsafeUrl'], a[itemprop~='UnsafeUrl']").length == 1) {
       return false;
     }
 
@@ -7136,8 +7140,12 @@ $(function () {
   var magicToken = $("input[name=__RequestVerificationToken]").first();
 
   if (magicToken) {
-    $("body").on("click", "a[itemprop~='UnsafeUrl'], a[data-unsafe-url]", function () {
+    $("body").on("click", "a[data-url-af~='UnsafeUrl'], a[itemprop~='UnsafeUrl']", function () {
       var _this = $(this);
+
+      if (_this.filter("a[itemprop~='UnsafeUrl']").length == 1) {
+        console.warn('Please use data-url-af instead of itemprop attribute for confirm modals. Using itemprop will eventually become deprecated.');
+      }
 
       var hrefParts = _this.attr("href").split("?");
 
@@ -7173,7 +7181,7 @@ $(function () {
         return false;
       }
 
-      if (_this.filter("[itemprop~='RemoveUrl']").length == 1) {
+      if (_this.filter("[data-url-af~='RemoveUrl'], a[itemprop~='RemoveUrl']").length == 1) {
         confirmDialog(_objectSpread(_objectSpread({}, _this.data()), {}, {
           callback: function callback(resp) {
             if (resp) {
@@ -7263,22 +7271,28 @@ function isLetter(str) {
 function isNumber(str) {
   return str.length === 1 && str.match(/[0-9]/i);
 }
+
+$('[data-toggle="tooltip"]').tooltip();
 $('#btn-darkmode').click(function () {
-  if ($('#admin-darkmode').attr('media') === 'all') {
-    $('#admin-default').attr('media', 'all');
-    $('#admin-darkmode').attr('media', 'not all');
-    $(document.body).removeClass('darkmode');
+  if ($('html').attr('data-theme') === 'darkmode') {
+    $('html').attr('data-theme', 'default');
     $(this).children(':first').removeClass('fa-sun');
     $(this).children(':first').addClass('fa-moon');
   } else {
-    $('#admin-default').attr('media', 'not all');
-    $('#admin-darkmode').attr('media', 'all');
-    $(document.body).addClass('darkmode');
+    $('html').attr('data-theme', 'darkmode');
     $(this).children(':first').removeClass('fa-moon');
     $(this).children(':first').addClass('fa-sun');
   }
 
   persistAdminPreferences();
+});
+$(function () {
+  if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+    if ($('html').attr('data-theme') === 'darkmode') {
+      $('#btn-darkmode').children(':first').removeClass('fa-moon');
+      $('#btn-darkmode').children(':first').addClass('fa-sun');
+    }
+  }
 });
 // When we load compact status from preferences we need to do some other tasks besides adding the class to the body.
 // UserPreferencesLoader has already added the needed class.
@@ -8909,7 +8923,10 @@ function persistAdminPreferences() {
     var adminPreferences = {};
     adminPreferences.leftSidebarCompact = $('body').hasClass('left-sidebar-compact') ? true : false;
     adminPreferences.isCompactExplicit = isCompactExplicit;
-    adminPreferences.darkMode = $('body').hasClass('darkmode') ? true : false;
+    adminPreferences.darkMode = $('html').attr('data-theme') === 'darkmode' ? true : false;
     localStorage.setItem('adminPreferences', JSON.stringify(adminPreferences));
+    Cookies.set('adminPreferences', JSON.stringify(adminPreferences), {
+      expires: 360
+    });
   }, 200);
 }

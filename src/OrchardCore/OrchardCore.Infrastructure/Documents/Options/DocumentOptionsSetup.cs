@@ -30,12 +30,24 @@ namespace OrchardCore.Documents.Options
                 options.CacheIdKey ??= "ID_" + name;
                 options.CheckConcurrency ??= true;
                 options.CheckConsistency ??= true;
+                options.SynchronizationLatency ??= TimeSpan.FromSeconds(1);
 
                 options.Serializer = DefaultDocumentSerializer.Instance;
 
                 if (options.CompressThreshold == 0)
                 {
                     options.CompressThreshold = 10_000;
+                }
+
+                // Only used by an explicit atomic update.
+                if (options.LockTimeout <= 0)
+                {
+                    options.LockTimeout = 10_000;
+                }
+
+                if (options.LockExpiration <= 0)
+                {
+                    options.LockExpiration = 10_000;
                 }
 
                 return options;
@@ -45,8 +57,13 @@ namespace OrchardCore.Documents.Options
             options.CacheIdKey = config.CacheIdKey;
             options.CheckConcurrency = config.CheckConcurrency;
             options.CheckConsistency = config.CheckConsistency;
+            options.SynchronizationLatency = config.SynchronizationLatency;
             options.Serializer = config.Serializer;
             options.CompressThreshold = config.CompressThreshold;
+
+            // Only used by an explicit atomic update.
+            options.LockTimeout = config.LockTimeout;
+            options.LockExpiration = config.LockExpiration;
         }
     }
 }

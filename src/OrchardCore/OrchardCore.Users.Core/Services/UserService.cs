@@ -141,7 +141,7 @@ namespace OrchardCore.Users.Services
                 return await Task.FromResult<IUser>(null);
             }
 
-            var user = await FindByUsernameOrEmailAsync(userIdentifier) as User;
+            var user = await _userManager.FindByEmailAsync(userIdentifier) as User;
 
             if (user == null)
             {
@@ -179,7 +179,7 @@ namespace OrchardCore.Users.Services
                 return result;
             }
 
-            var user = await FindByUsernameOrEmailAsync(userIdentifier) as User;
+            var user = await _userManager.FindByEmailAsync(userIdentifier) as User;
 
             if (user == null)
             {
@@ -205,14 +205,6 @@ namespace OrchardCore.Users.Services
 
             return _signInManager.CreateUserPrincipalAsync(user);
         }
-
-        /// <summary>
-        /// Gets the user, if any, associated with the normalized value of the specified identifier, which can refer both to username or email
-        /// </summary>
-        /// <param name="userIdentifier">The username or email address to refer to</param>
-        private async Task<IUser> FindByUsernameOrEmailAsync(string userIdentifier)
-            => await _userManager.FindByNameAsync(userIdentifier) ??
-               await _userManager.FindByEmailAsync(userIdentifier);
 
         public Task<IUser> GetUserAsync(string userName) => _userManager.FindByNameAsync(userName);
 
@@ -264,6 +256,7 @@ namespace OrchardCore.Users.Services
                     case "InvalidEmail":
                         reportError("Email", S["Email '{0}' is invalid.", user.Email]);
                         break;
+
                     default:
                         reportError(string.Empty, S["Unexpected error: '{0}'.", error.Code]);
                         break;

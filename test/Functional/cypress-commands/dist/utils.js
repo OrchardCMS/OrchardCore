@@ -6,7 +6,7 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 function generateUniqueName() {
     var date = new Date();
-    var today = new Date(date.getFullYear(), date.getMonth(), date.getDay());
+    var today = new Date(date.getFullYear(), date.getMonth(), date.getDate());
     return 't' + (date - today).toString(32);
 }
 

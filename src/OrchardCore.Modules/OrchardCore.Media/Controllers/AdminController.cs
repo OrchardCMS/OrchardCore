@@ -18,15 +18,20 @@ namespace OrchardCore.Media.Controllers
 {
     public class AdminController : Controller
     {
+        private static readonly char[] _invalidFolderNameCharacters = new char[] { '\\', '/' };
+
         private readonly HashSet<string> _allowedFileExtensions;
         private readonly IMediaFileStore _mediaFileStore;
+        private readonly IMediaNameNormalizerService _mediaNameNormalizerService;
         private readonly IAuthorizationService _authorizationService;
         private readonly IContentTypeProvider _contentTypeProvider;
         private readonly ILogger _logger;
         private readonly IStringLocalizer S;
+        private readonly MediaOptions _mediaOptions;
 
         public AdminController(
             IMediaFileStore mediaFileStore,
+            IMediaNameNormalizerService mediaNameNormalizerService,
             IAuthorizationService authorizationService,
             IContentTypeProvider contentTypeProvider,
             IOptions<MediaOptions> options,
@@ -35,9 +40,11 @@ namespace OrchardCore.Media.Controllers
             )
         {
             _mediaFileStore = mediaFileStore;
+            _mediaNameNormalizerService = mediaNameNormalizerService;
             _authorizationService = authorizationService;
             _contentTypeProvider = contentTypeProvider;
-            _allowedFileExtensions = options.Value.AllowedFileExtensions;
+            _mediaOptions = options.Value;
+            _allowedFileExtensions = _mediaOptions.AllowedFileExtensions;
             _logger = logger;
             S = stringLocalizer;
         }
@@ -177,10 +184,12 @@ namespace OrchardCore.Media.Controllers
                     continue;
                 }
 
+                var fileName = _mediaNameNormalizerService.NormalizeFileName(file.FileName);
+
                 Stream stream = null;
                 try
                 {
-                    var mediaFilePath = _mediaFileStore.Combine(path, file.FileName);
+                    var mediaFilePath = _mediaFileStore.Combine(path, fileName);
                     stream = file.OpenReadStream();
                     mediaFilePath = await _mediaFileStore.CreateFileFromStreamAsync(mediaFilePath, stream);
 
@@ -194,7 +203,7 @@ namespace OrchardCore.Media.Controllers
 
                     result.Add(new
                     {
-                        name = file.FileName,
+                        name = fileName,
                         size = file.Length,
                         folder = path,
                         error = ex.Message
@@ -377,6 +386,13 @@ namespace OrchardCore.Media.Controllers
                 path = "";
             }
 
+            name = _mediaNameNormalizerService.NormalizeFolderName(name);
+
+            if (_invalidFolderNameCharacters.Any(invalidChar => name.Contains(invalidChar)))
+            {
+                return StatusCode(StatusCodes.Status400BadRequest, S["Cannot create folder because the folder name contains invalid characters"]);
+            }
+
             var newPath = _mediaFileStore.Combine(path, name);
 
             if (!await authorizationService.AuthorizeAsync(User, Permissions.ManageMedia)
@@ -404,11 +420,6 @@ namespace OrchardCore.Media.Controllers
             return new ObjectResult(mediaFolder);
         }
 
-        public IActionResult MediaApplication()
-        {
-            return View();
-        }
-
         public object CreateFileResult(IFileStoreEntry mediaFile)
         {
             _contentTypeProvider.TryGetContentType(mediaFile.Name, out var contentType);
@@ -425,6 +436,21 @@ namespace OrchardCore.Media.Controllers
                 mediaText = String.Empty,
                 anchor = new { x = 0.5f, y = 0.5f }
             };
+        }
+
+        public IActionResult MediaApplication()
+        {
+            return View();
+        }
+
+        public async Task<IActionResult> Options()
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ViewMediaOptions))
+            {
+                return Forbid();
+            }
+
+            return View(_mediaOptions);
         }
     }
 }

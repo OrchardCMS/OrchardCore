@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
@@ -80,21 +81,25 @@ namespace OrchardCore.Media.Filters
                 var quality = arguments["quality"];
                 var format = arguments["format"];
                 var anchor = arguments["anchor"];
+                var bgcolor = arguments["bgcolor"];
 
-                ApplyQueryStringParams(queryStringParams, width, height, mode, quality, format, anchor);
+                ApplyQueryStringParams(queryStringParams, width, height, mode, quality, format, anchor, bgcolor);
             }
             else
             {
                 queryStringParams = new Dictionary<string, string>();
 
-                var width = arguments["width"].Or(arguments.At(0));
-                var height = arguments["height"].Or(arguments.At(1));
-                var mode = arguments["mode"].Or(arguments.At(2));
-                var quality = arguments["quality"].Or(arguments.At(3));
-                var format = arguments["format"].Or(arguments.At(4));
-                var anchor = arguments["anchor"].Or(arguments.At(5));
+                var useNamed = arguments.Names.Any(); // Never mix named and indexed arguments as this leads to unpredictable results
 
-                ApplyQueryStringParams(queryStringParams, width, height, mode, quality, format, anchor);
+                var width = useNamed ? arguments["width"] : arguments.At(0);
+                var height = useNamed ? arguments["height"] : arguments.At(1);
+                var mode = useNamed ? arguments["mode"] : arguments.At(2);
+                var quality = useNamed ? arguments["quality"] : arguments.At(3);
+                var format = useNamed ? arguments["format"] : arguments.At(4);
+                var anchor = useNamed ? arguments["anchor"] : arguments.At(5);
+                var bgcolor = useNamed ? arguments["bgcolor"] : arguments.At(6);
+
+                ApplyQueryStringParams(queryStringParams, width, height, mode, quality, format, anchor, bgcolor);
             }
 
             var resizedUrl = QueryHelpers.AddQueryString(url, queryStringParams);
@@ -104,13 +109,13 @@ namespace OrchardCore.Media.Filters
             if (mediaOptions.UseTokenizedQueryString)
             {
                 var mediaTokenService = serviceProvider.GetRequiredService<IMediaTokenService>();
-                resizedUrl = mediaTokenService.TokenizePath(resizedUrl);
+                resizedUrl = mediaTokenService.AddTokenToPath(resizedUrl);
             }
 
             return new StringValue(resizedUrl);
         }
 
-        private static void ApplyQueryStringParams(IDictionary<string, string> queryStringParams, FluidValue width, FluidValue height, FluidValue mode, FluidValue quality, FluidValue format, FluidValue anchorValue)
+        private static void ApplyQueryStringParams(IDictionary<string, string> queryStringParams, FluidValue width, FluidValue height, FluidValue mode, FluidValue quality, FluidValue format, FluidValue anchorValue, FluidValue bgcolor)
         {
             if (!width.IsNil())
             {
@@ -154,6 +159,11 @@ namespace OrchardCore.Media.Filters
                 {
                     queryStringParams["rxy"] = anchor.X.ToString(CultureInfo.InvariantCulture) + ',' + anchor.Y.ToString(CultureInfo.InvariantCulture);
                 }
+            }
+
+            if (!bgcolor.IsNil())
+            {
+                queryStringParams["bgcolor"] = bgcolor.ToStringValue();
             }
         }
     }
