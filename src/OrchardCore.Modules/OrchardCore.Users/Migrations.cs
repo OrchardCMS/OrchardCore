@@ -178,7 +178,7 @@ namespace OrchardCore.Users
         public int UpdateFrom9()
         {
             SchemaBuilder.AlterIndexTable<UserIndex>(table => table
-                .AddColumn<bool>(nameof(UserIndex.LockoutEnabled), c => c.NotNull().WithDefault(false)));
+                .AddColumn<bool>(nameof(UserIndex.IsLockedOut), c => c.NotNull().WithDefault(false)));
 
             SchemaBuilder.AlterIndexTable<UserIndex>(table => table
                 .AddColumn<DateTimeOffset?>(nameof(UserIndex.LockoutEnd), c => c.Nullable()));
@@ -187,7 +187,7 @@ namespace OrchardCore.Users
                 .AddColumn<int>(nameof(UserIndex.AccessFailedCount), c => c.NotNull().WithDefault(0)));
 
             SchemaBuilder.AlterIndexTable<UserIndex>(table => table
-                .CreateIndex("IDX_UserIndex_LockoutEnabled", "LockoutEnabled"));
+                .CreateIndex("IDX_UserIndex_IsLockedOut", "IsLockedOut"));
 
             return 10;
         }                

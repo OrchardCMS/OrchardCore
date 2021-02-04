@@ -685,7 +685,7 @@ namespace OrchardCore.Users.Services
                 throw new ArgumentNullException(nameof(user));
             }
 
-            return Task.FromResult(((User)user).LockoutEnabled);
+            return Task.FromResult(((User)user).IsLockedOut);
         }
 
         public Task<DateTimeOffset?> GetLockoutEndDateAsync(IUser user, CancellationToken cancellationToken)
@@ -695,7 +695,7 @@ namespace OrchardCore.Users.Services
                 throw new ArgumentNullException(nameof(user));
             }
 
-            return Task.FromResult(((User)user).LockoutEnd);
+            return Task.FromResult(((User)user).LockoutEndUtc);
         }
 
         public Task<int> IncrementAccessFailedCountAsync(IUser user, CancellationToken cancellationToken)
@@ -729,7 +729,7 @@ namespace OrchardCore.Users.Services
                 throw new ArgumentNullException(nameof(user));
             }
 
-            ((User)user).LockoutEnabled = enabled;
+            ((User)user).IsLockedOut = enabled;
 
             return Task.CompletedTask;
         }
@@ -741,7 +741,14 @@ namespace OrchardCore.Users.Services
                 throw new ArgumentNullException(nameof(user));
             }
 
-            ((User)user).LockoutEnd = lockoutEnd;
+            if (lockoutEnd.HasValue)
+            {
+                ((User)user).LockoutEndUtc = lockoutEnd.Value.UtcDateTime;
+            }
+            else
+            {
+                ((User)user).LockoutEndUtc = null;
+            }
 
             return Task.CompletedTask;
         }
