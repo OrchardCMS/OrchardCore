@@ -18,6 +18,21 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest]
     name: Build & Test
+    services:
+      postgres:
+        image: postgres:11
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: admin
+          POSTGRES_DB: app
+        # Set health checks to wait until postgres has started
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      ORCHARD_TEST_POSTGRESQL_CONNECTION_STRING: "User ID=postgres;Password=admin;Host=postgres;Port=5432;Database=app;"
     steps:
     - uses: actions/checkout@v2
     - name: Setup .NET Core 3.1 on ${{ matrix.os }}
