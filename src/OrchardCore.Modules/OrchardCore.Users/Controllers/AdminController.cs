@@ -379,6 +379,11 @@ namespace OrchardCore.Users.Controllers
             }
             else
             {
+                if (!String.IsNullOrEmpty(returnUrl))
+                {
+                    return LocalRedirect(returnUrl);
+                }
+
                 return RedirectToAction(nameof(Index));
             }
         }
