@@ -36,12 +36,13 @@ namespace OrchardCore.Title
                 .WithDefaultPosition("0")
                 );
 
+            // Shortcut other migration steps on new content definition schemas.
             return 2;
         }
 
+        // This code can be removed in a later version.
         public async Task<int> UpdateFrom1()
         {
-            // This code can be removed in RC
             // We are patching all content item versions by moving the Title to DisplayText
             // This step doesn't need to be executed for a brand new site
 
