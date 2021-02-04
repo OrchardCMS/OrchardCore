@@ -695,7 +695,14 @@ namespace OrchardCore.Users.Services
                 throw new ArgumentNullException(nameof(user));
             }
 
-            return Task.FromResult(((User)user).LockoutEndUtc);
+            if (((User)user).LockoutEndUtc.HasValue)
+            {
+                return Task.FromResult(new DateTimeOffset?(((User)user).LockoutEndUtc.Value));
+            }
+            else
+            {
+                return Task.FromResult(new DateTimeOffset?());
+            }
         }
 
         public Task<int> IncrementAccessFailedCountAsync(IUser user, CancellationToken cancellationToken)
