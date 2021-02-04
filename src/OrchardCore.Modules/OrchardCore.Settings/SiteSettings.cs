@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Routing;
+
 using OrchardCore.Documents;
 
 namespace OrchardCore.Settings
@@ -22,5 +23,7 @@ namespace OrchardCore.Settings
         public RouteValueDictionary HomeRoute { get; set; } = new RouteValueDictionary();
         public bool AppendVersion { get; set; } = true;
         public CacheMode CacheMode { get; set; }
+        public ContentsOrder ContentsOrderBy { get; set; } = ContentsOrder.Modified;
+        public ContentsStatus ContentsStatus { get; set; } = ContentsStatus.Latest;
     }
 }

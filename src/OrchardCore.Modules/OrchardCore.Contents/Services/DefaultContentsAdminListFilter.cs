@@ -13,6 +13,8 @@ using OrchardCore.ContentManagement.Records;
 using OrchardCore.Contents.Security;
 using OrchardCore.Contents.ViewModels;
 using OrchardCore.DisplayManagement.ModelBinding;
+using OrchardCore.Settings;
+
 using YesSql;
 using YesSql.Services;
 

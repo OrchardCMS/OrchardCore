@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Routing;
 
+using OrchardCore.Settings;
+
 namespace OrchardCore.Contents.ViewModels
 {
     public class ContentOptionsViewModel
@@ -54,23 +56,6 @@ namespace OrchardCore.Contents.ViewModels
         public List<SelectListItem> CreatableTypes { get; set; }
 
         #endregion Lists to populate
-    }
-
-    public enum ContentsOrder
-    {
-        Modified,
-        Published,
-        Created,
-        Title,
-    }
-
-    public enum ContentsStatus
-    {
-        Draft,
-        Published,
-        AllVersions,
-        Latest,
-        Owner
     }
 
     public enum ContentsBulkAction

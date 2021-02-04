@@ -13,5 +13,7 @@ namespace OrchardCore.Settings.ViewModels
         public bool AppendVersion { get; set; }
         public string Meta { get; set; }
         public CacheMode CacheMode { get; set; }
+        public ContentsOrder ContentsOrderBy { get; set; } = ContentsOrder.Modified;
+        public ContentsStatus ContentsStatus { get; set; } = ContentsStatus.Latest;
     }
 }

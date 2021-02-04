@@ -107,6 +107,10 @@ namespace OrchardCore.Contents.Controllers
                 model.Options.SelectedContentType = contentTypeId;
             }
 
+            // Set the contents options
+            model.Options.OrderBy = siteSettings.ContentsOrderBy;
+            model.Options.ContentsStatus = siteSettings.ContentsStatus;
+
             // Populate the creatable types.
             if (!String.IsNullOrEmpty(model.Options.SelectedContentType))
             {

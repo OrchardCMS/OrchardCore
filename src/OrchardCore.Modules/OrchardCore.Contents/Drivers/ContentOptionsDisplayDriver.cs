@@ -32,13 +32,12 @@ namespace OrchardCore.Contents.Drivers
 
         public override async Task<IDisplayResult> UpdateAsync(ContentOptionsViewModel model, IUpdateModel updater)
         {
-            var viewModel = new ContentOptionsViewModel();
-            if (await updater.TryUpdateModelAsync(viewModel, Prefix))
+            if (await updater.TryUpdateModelAsync(model, Prefix))
             {
-                model.RouteValues.TryAdd("Options.OrderBy", viewModel.OrderBy);
-                model.RouteValues.TryAdd("Options.ContentsStatus", viewModel.ContentsStatus);
-                model.RouteValues.TryAdd("Options.SelectedContentType", viewModel.SelectedContentType);
-                model.RouteValues.TryAdd("Options.DisplayText", viewModel.DisplayText);
+                model.RouteValues.TryAdd("Options.OrderBy", model.OrderBy);
+                model.RouteValues.TryAdd("Options.ContentsStatus", model.ContentsStatus);
+                model.RouteValues.TryAdd("Options.SelectedContentType", model.SelectedContentType);
+                model.RouteValues.TryAdd("Options.DisplayText", model.DisplayText);
             }
 
             return Edit(model);
@@ -55,6 +54,8 @@ namespace OrchardCore.Contents.Drivers
             m.EndIndex = model.EndIndex;
             m.ContentItemsCount = model.ContentItemsCount;
             m.TotalItemCount = model.TotalItemCount;
+            m.OrderBy = model.OrderBy;
+            m.ContentsStatus = model.ContentsStatus;
         }
     }
 }

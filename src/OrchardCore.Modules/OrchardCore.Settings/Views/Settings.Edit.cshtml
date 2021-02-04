@@ -9,9 +9,12 @@
     </li>
     <li class="nav-item pr-md-2">
         <a class="nav-link" id="resources-tab" data-toggle="tab" href="#resources" role="tab" aria-controls="resources">@T["Resources"]</a>
-    </li>    
-    <li class="nav-item">
+    </li>
+    <li class="nav-item pr-md-2">
         <a class="nav-link" id="cache-tab" data-toggle="tab" href="#cache" role="tab" aria-controls="cache">@T["Cache"]</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" id="contents-tab" data-toggle="tab" href="#contents" role="tab" aria-controls="contents">@T["Contents"]</a>
     </li>
 </ul>
 <div class="tab-content" id="tabs">
@@ -63,6 +66,7 @@
             </div>
         </div>
     </div>
+
     <div class="tab-pane fade" id="resources" role="tabpanel" aria-labelledby="resources-tab">
         <h5>@T["Settings for scripts and stylesheets"]</h5>
         <div class="form-group" asp-validation-class-for="AppendVersion">
@@ -100,6 +104,7 @@
             </div>
         </div>
     </div>
+
     <div class="tab-pane fade" id="cache" role="tabpanel" aria-labelledby="cache-tab">
         <h5>@T["Settings for dynamic caches"]</h5>
         <div class="row form-group">
@@ -114,5 +119,35 @@
                 <span class="hint">@T["Determines whether caches are enabled or disabled."]</span>
             </div>
         </div>
-    </div>    
+    </div>
+
+    <div class="tab-pane fade" id="contents" role="tabpanel" aria-labelledby="contents-tab">
+        <h5>@T["Settings for content items"]</h5>
+        <div class="row form-group">
+            <div class="col-xl-6" asp-validation-class-for="ContentsStatus">
+                <label asp-for="ContentsStatus">@T["Contents Status"]</label>
+                <select asp-for="ContentsStatus" class="form-control">
+                    <option value="@ContentsStatus.Latest.ToString()">@T["Latest"]</option>
+                    <option value="@ContentsStatus.Published.ToString()">@T["Published"]</option>
+                    <option value="@ContentsStatus.Draft.ToString()">@T["Unpublished"]</option>
+                    <option value="@ContentsStatus.AllVersions.ToString()">@T["All versions"]</option>
+                    <option value="@ContentsStatus.Owner.ToString()">@T["Owned by me"]</option>
+                </select>
+                <span class="hint">@T["Determines the default status to filter on when listing content items."]</span>
+            </div>
+        </div>
+
+        <div class="row form-group">
+            <div class="col-xl-6" asp-validation-class-for="ContentsOrderBy">
+                <label asp-for="ContentsOrderBy">@T["Contents Order By"]</label>
+                <select asp-for="ContentsOrderBy" class="form-control">
+                    <option value="@ContentsOrder.Created.ToString()">@T["Recently created"]</option>
+                    <option value="@ContentsOrder.Modified.ToString()">@T["Recently modified"]</option>
+                    <option value="@ContentsOrder.Published.ToString()">@T["Recently published"]</option>
+                    <option value="@ContentsOrder.Title.ToString()">@T["Title"]</option>
+                </select>
+                <span class="hint">@T["Determines the default order to apply when listing content items."]</span>
+            </div>
+        </div>
+    </div>
 </div>
