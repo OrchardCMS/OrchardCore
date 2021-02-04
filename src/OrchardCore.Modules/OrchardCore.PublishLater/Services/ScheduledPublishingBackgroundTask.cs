@@ -28,7 +28,7 @@ namespace OrchardCore.PublishLater.Services
         {
             var itemsToPublish = await serviceProvider
                 .GetRequiredService<ISession>()
-                .Query<ContentItem, PublishLaterPartIndex>(index => index.ScheduledPublishUtc < _clock.UtcNow)
+                .Query<ContentItem, PublishLaterPartIndex>(index => index.ScheduledPublishDateTimeUtc < _clock.UtcNow)
                 .ListAsync();
 
             if (!itemsToPublish.Any())

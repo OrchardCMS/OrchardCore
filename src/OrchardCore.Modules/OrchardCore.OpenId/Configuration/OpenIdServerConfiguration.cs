@@ -54,7 +54,6 @@ namespace OrchardCore.OpenId.Configuration
                 return;
             }
 
-            options.IgnoreScopePermissions = true;
             options.Issuer = settings.Authority;
             options.DisableAccessTokenEncryption = settings.DisableAccessTokenEncryption;
             options.DisableRollingRefreshTokens = settings.DisableRollingRefreshTokens;

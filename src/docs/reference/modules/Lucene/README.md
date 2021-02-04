@@ -73,11 +73,3 @@ other instances that could have their own local index.
 It is recommended to use it only if you are running the same tenant on multiple instances (farm) and are using a Lucene file system index.
 
 If you are running on Azure App Services or if you are using Elasticsearch, then you don't need this feature.
-
-## CREDITS
-
-### Lucene.net
-
-<http://lucenenet.apache.org/index.html>  
-Copyright 2013 The Apache Software Foundation  
-Licensed under the Apache License, Version 2.0.
