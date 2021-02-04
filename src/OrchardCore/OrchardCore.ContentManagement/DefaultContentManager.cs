@@ -435,9 +435,8 @@ namespace OrchardCore.ContentManagement
         public async Task ImportAsync(IEnumerable<ContentItem> contentItems)
         {
             var skip = 0;
-            var take = ImportBatchSize;
 
-            var batchedContentItems = contentItems.Take(take);
+            var batchedContentItems = contentItems.Take(ImportBatchSize);
 
             while (batchedContentItems.Any())
             {
@@ -549,8 +548,7 @@ namespace OrchardCore.ContentManagement
                 }
 
                 skip += ImportBatchSize;
-                take += ImportBatchSize;
-                batchedContentItems = contentItems.Skip(skip).Take(take);
+                batchedContentItems = contentItems.Skip(skip).Take(ImportBatchSize);
             }
         }
 
