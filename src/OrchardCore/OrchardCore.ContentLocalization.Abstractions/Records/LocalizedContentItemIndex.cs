@@ -27,7 +27,6 @@ namespace OrchardCore.ContentLocalization.Records
         private readonly HashSet<ContentItem> _itemRemoved = new HashSet<ContentItem>();
         private readonly HashSet<string> _partRemoved = new HashSet<string>();
         private IContentDefinitionManager _contentDefinitionManager;
-        private IContentManager _contentManager;
 
         public LocalizedContentItemIndexProvider(IServiceProvider serviceProvider)
         {
