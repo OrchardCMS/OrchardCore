@@ -1,7 +1,7 @@
 # Contributors ✨
 
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-232-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-233-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
@@ -319,6 +319,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <td align="center"><a href="https://github.com/Diman96"><img src="https://avatars3.githubusercontent.com/u/12182810?v=4" width="100px;" alt=""/><br /><sub><b>Diman96</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=Diman96" title="Code">💻</a></td>
     <td align="center"><a href="https://github.com/flew2bits"><img src="https://avatars.githubusercontent.com/u/4671044?v=4" width="100px;" alt=""/><br /><sub><b>Titus Anderson</b></sub></a><br /><a href="https://github.com/OrchardCMS/OrchardCore/commits?author=flew2bits" title="Code">💻</a></td>
     <td align="center"><a href="https://github.com/agono"><img src="https://avatars.githubusercontent.com/u/22931999?v=4" width="100px;" alt=""/><br /><sub><b>agono</b></sub></a><br /><a href="#translation-agono" title="Translation">🌍</a></td>
+    <td align="center"><a href="https://github.com/vleitzgen"><img src="https://avatars.githubusercontent.com/u/7782936?v=4" width="100px;" alt=""/><br /><sub><b>vleitzgen</b></sub></a><br /><a href="#translation-vleitzgen" title="Translation">🌍</a></td>
   </tr>
 </table>
 

@@ -2171,6 +2171,15 @@
       "contributions": [
         "translation"
       ]
+    },
+    {
+      "login": "vleitzgen",
+      "name": "vleitzgen",
+      "avatar_url": "https://avatars.githubusercontent.com/u/7782936?v=4",
+      "profile": "https://github.com/vleitzgen",
+      "contributions": [
+        "translation"
+      ]
     }
   ],
   "skipCi": true
