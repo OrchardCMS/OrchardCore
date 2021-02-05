@@ -2190,6 +2190,24 @@
       "contributions": [
         "translation"
       ]
+    },
+    {
+      "login": "actsgo",
+      "name": "ACTSGO",
+      "avatar_url": "https://avatars.githubusercontent.com/u/461413?v=4",
+      "profile": "https://github.com/actsgo",
+      "contributions": [
+        "translation"
+      ]
+    },
+    {
+      "login": "bdrajer",
+      "name": "bdrajer",
+      "avatar_url": "https://avatars.githubusercontent.com/u/17597722?v=4",
+      "profile": "https://github.com/bdrajer",
+      "contributions": [
+        "translation"
+      ]
     }
   ],
   "skipCi": true
