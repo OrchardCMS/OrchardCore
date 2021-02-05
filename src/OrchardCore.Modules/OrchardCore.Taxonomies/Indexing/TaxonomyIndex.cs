@@ -51,7 +51,7 @@ namespace OrchardCore.Taxonomies.Indexing
                     }
 
                     // Lazy initialization because of ISession cyclic dependency
-                    _contentDefinitionManager = _contentDefinitionManager ?? _serviceProvider.GetRequiredService<IContentDefinitionManager>();
+                    _contentDefinitionManager ??= _serviceProvider.GetRequiredService<IContentDefinitionManager>();
 
                     // Search for Taxonomy fields
                     var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
@@ -62,7 +62,7 @@ namespace OrchardCore.Taxonomies.Indexing
                         _ignoredTypes.Add(contentItem.ContentType);
                         return null;
                     }
-                    
+
                     var fieldDefinitions = contentTypeDefinition
                         .Parts.SelectMany(x => x.PartDefinition.Fields.Where(f => f.FieldDefinition.Name == nameof(TaxonomyField)))
                         .ToArray();

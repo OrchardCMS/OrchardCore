@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Data;
 using OrchardCore.PublishLater.Models;
@@ -15,59 +17,61 @@ namespace OrchardCore.PublishLater.Indexes
         public DateTime? ScheduledPublishDateTimeUtc { get; set; }
     }
 
-    public class PublishLaterPartIndexProvider : IndexProvider<ContentItem>, IScopedIndexProvider
+    public class PublishLaterPartIndexProvider : ContentHandlerBase, IIndexProvider, IScopedIndexProvider
     {
         private readonly IServiceProvider _serviceProvider;
+        private readonly HashSet<string> _partRemoved = new HashSet<string>();
         private IContentDefinitionManager _contentDefinitionManager;
-        private HashSet<string> _ignoredTypes;
 
         public PublishLaterPartIndexProvider(IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;
         }
 
-        public override void Describe(DescribeContext<ContentItem> context)
+        public override Task UpdatedAsync(UpdateContentContext context)
+        {
+            var part = context.ContentItem.As<PublishLaterPart>();
+
+            // Validate that the content definition contains this part, this prevents indexing parts
+            // that have been removed from the type definition, but are still present in the elements.            
+            if (part != null)
+            {
+                // Lazy initialization because of ISession cyclic dependency.
+                _contentDefinitionManager ??= _serviceProvider.GetRequiredService<IContentDefinitionManager>();
+
+                // Search for this part.
+                var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
+                if (!contentTypeDefinition.Parts.Any(ctpd => ctpd.Name == nameof(PublishLaterPart)))
+                {
+                    context.ContentItem.Remove<PublishLaterPart>();
+                    _partRemoved.Add(context.ContentItem.ContentItemId);
+                }
+            }
+
+            return Task.CompletedTask;
+        }
+
+        public string CollectionName { get; set; }
+        public Type ForType() => typeof(ContentItem);
+        public void Describe(IDescriptor context) => Describe((DescribeContext<ContentItem>)context);
+
+        public void Describe(DescribeContext<ContentItem> context)
         {
             context.For<PublishLaterPartIndex>()
+                .When(contentItem => contentItem.Has<PublishLaterPart>() || _partRemoved.Contains(contentItem.ContentItemId))
                 .Map(contentItem =>
                 {
-                    var publishLaterPart = contentItem.As<PublishLaterPart>();
-                    if (publishLaterPart == null || !publishLaterPart.ScheduledPublishUtc.HasValue)
-                    {
-                        return null;
-                    }
-
-                    // Remove index for items that are already published or not the latest version
+                    // Remove index records of items that are already published or not the latest version.
                     if (contentItem.Published || !contentItem.Latest)
                     {
                         return null;
                     }
 
-                    // Can we safely ignore this content item?
-                    if (_ignoredTypes != null && _ignoredTypes.Contains(contentItem.ContentType))
+                    var publishLaterPart = contentItem.As<PublishLaterPart>();
+                    if (publishLaterPart == null || !publishLaterPart.ScheduledPublishUtc.HasValue)
                     {
-                        contentItem.Remove<PublishLaterPart>();
                         return null;
                     }
-
-                    // Lazy initialization because of ISession cyclic dependency
-                    _contentDefinitionManager ??= _serviceProvider.GetRequiredService<IContentDefinitionManager>();
-
-                    // Search for AliasPart
-                    var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
-
-                    // Validate that the content definition contains an PublishLaterPart.
-                    // This prevents indexing parts that have been removed from the type definition, but are still present in the elements.
-                    if (contentTypeDefinition == null || !contentTypeDefinition.Parts.Any(ctpd => ctpd.Name == nameof(PublishLaterPart)))
-                    {
-                        _ignoredTypes ??= new HashSet<string>();
-                        _ignoredTypes.Add(contentItem.ContentType);
-                        contentItem.Remove<PublishLaterPart>();
-
-                        return null;
-                    }
-
-                    // wouldn't it be better to do valid types?
 
                     return new PublishLaterPartIndex
                     {

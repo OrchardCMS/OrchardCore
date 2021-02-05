@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Alias.Models;
 using OrchardCore.ContentManagement;
+using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.Data;
 using YesSql.Indexes;
@@ -18,67 +20,69 @@ namespace OrchardCore.Alias.Indexes
         public bool Published { get; set; }
     }
 
-    public class AliasPartIndexProvider : IndexProvider<ContentItem>, IScopedIndexProvider
+    public class AliasPartIndexProvider : ContentHandlerBase, IIndexProvider, IScopedIndexProvider
     {
         private readonly IServiceProvider _serviceProvider;
+        private readonly HashSet<string> _partRemoved = new HashSet<string>();
         private IContentDefinitionManager _contentDefinitionManager;
-        private HashSet<string> _ignoredTypes;
 
         public AliasPartIndexProvider(IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;
         }
 
-        public override void Describe(DescribeContext<ContentItem> context)
+        public override Task UpdatedAsync(UpdateContentContext context)
+        {
+            var part = context.ContentItem.As<AliasPart>();
+
+            // Validate that the content definition contains this part, this prevents indexing parts
+            // that have been removed from the type definition, but are still present in the elements.            
+            if (part != null)
+            {
+                // Lazy initialization because of ISession cyclic dependency.
+                _contentDefinitionManager ??= _serviceProvider.GetRequiredService<IContentDefinitionManager>();
+
+                // Search for this part.
+                var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(context.ContentItem.ContentType);
+                if (!contentTypeDefinition.Parts.Any(ctpd => ctpd.Name == nameof(AliasPart)))
+                {
+                    context.ContentItem.Remove<AliasPart>();
+                    _partRemoved.Add(context.ContentItem.ContentItemId);
+                }
+            }
+
+            return Task.CompletedTask;
+        }
+
+        public string CollectionName { get; set; }
+        public Type ForType() => typeof(ContentItem);
+        public void Describe(IDescriptor context) => Describe((DescribeContext<ContentItem>)context);
+
+        public void Describe(DescribeContext<ContentItem> context)
         {
             context.For<AliasPartIndex>()
+                .When(contentItem => contentItem.Has<AliasPart>() || _partRemoved.Contains(contentItem.ContentItemId))
                 .Map(contentItem =>
                 {
-                    var aliasPart = contentItem.As<AliasPart>();
-
-                    if (aliasPart == null)
+                    // Remove index records of soft deleted items.
+                    if (!contentItem.Published && !contentItem.Latest)
                     {
                         return null;
                     }
 
-                    // Can we safely ignore this content item?
-                    if (_ignoredTypes != null && _ignoredTypes.Contains(contentItem.ContentType))
+                    var part = contentItem.As<AliasPart>();
+                    if (part == null || String.IsNullOrEmpty(part.Alias))
                     {
-                        contentItem.Remove<AliasPart>();
                         return null;
                     }
 
-                    // Lazy initialization because of ISession cyclic dependency
-                    _contentDefinitionManager ??= _serviceProvider.GetRequiredService<IContentDefinitionManager>();
-
-                    // Search for AliasPart
-                    var contentTypeDefinition = _contentDefinitionManager.GetTypeDefinition(contentItem.ContentType);
-
-                    // Validate that the content definition contains an AliasPart.
-                    // This prevents indexing parts that have been removed from the type definition, but are still present in the elements.
-                    if (contentTypeDefinition == null || !contentTypeDefinition.Parts.Any(ctpd => ctpd.Name == nameof(AliasPart)))
+                    return new AliasPartIndex
                     {
-                        _ignoredTypes ??= new HashSet<string>();
-                        _ignoredTypes.Add(contentItem.ContentType);
-                        contentItem.Remove<AliasPart>();
-
-                        return null;
-                    }
-
-                    var alias = aliasPart.Alias;
-
-                    if (!String.IsNullOrEmpty(alias) && (contentItem.Published || contentItem.Latest))
-                    {
-                        return new AliasPartIndex
-                        {
-                            Alias = alias.ToLowerInvariant(),
-                            ContentItemId = contentItem.ContentItemId,
-                            Latest = contentItem.Latest,
-                            Published = contentItem.Published
-                        };
-                    }
-
-                    return null;
+                        Alias = part.Alias.ToLowerInvariant(),
+                        ContentItemId = contentItem.ContentItemId,
+                        Latest = contentItem.Latest,
+                        Published = contentItem.Published
+                    };
                 });
         }
     }
