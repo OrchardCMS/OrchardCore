@@ -67,15 +67,15 @@ namespace OrchardCore.PublishLater.Indexes
                         return null;
                     }
 
-                    var publishLaterPart = contentItem.As<PublishLaterPart>();
-                    if (publishLaterPart == null || !publishLaterPart.ScheduledPublishUtc.HasValue)
+                    var part = contentItem.As<PublishLaterPart>();
+                    if (part == null || !part.ScheduledPublishUtc.HasValue)
                     {
                         return null;
                     }
 
                     return new PublishLaterPartIndex
                     {
-                        ScheduledPublishDateTimeUtc = publishLaterPart.ScheduledPublishUtc,
+                        ScheduledPublishDateTimeUtc = part.ScheduledPublishUtc,
                     };
                 });
         }

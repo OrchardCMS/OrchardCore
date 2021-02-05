@@ -81,7 +81,7 @@ namespace OrchardCore.ContentLocalization.Records
                 .When(contentItem => contentItem.Has<LocalizationPart>() || _partRemoved.Contains(contentItem.ContentItemId))
                 .Map(contentItem =>
                 {
-                    // If the related content item was removed, a record is still added.
+                    // If the content item was removed, a record is still added.
                     if (!contentItem.Published && !contentItem.Latest && !_itemRemoved.Contains(contentItem))
                     {
                         return null;

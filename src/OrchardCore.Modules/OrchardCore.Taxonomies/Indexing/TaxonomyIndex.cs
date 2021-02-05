@@ -39,6 +39,7 @@ namespace OrchardCore.Taxonomies.Indexing
             context.For<TaxonomyIndex>()
                 .Map(contentItem =>
                 {
+                    // Remove index records of soft deleted items.
                     if (!contentItem.Published && !contentItem.Latest)
                     {
                         return null;

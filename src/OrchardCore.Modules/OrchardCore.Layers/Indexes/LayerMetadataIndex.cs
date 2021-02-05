@@ -17,16 +17,22 @@ namespace OrchardCore.Layers.Indexes
                 .When(contentItem => contentItem.Has<LayerMetadata>())
                 .Map(contentItem =>
                 {
-                    var layerMetadata = contentItem.As<LayerMetadata>();
-                    if (layerMetadata != null)
+                    // Remove index records of soft deleted items.
+                    if (!contentItem.Published && !contentItem.Latest)
                     {
-                        return new LayerMetadataIndex
-                        {
-                            Zone = layerMetadata.Zone,
-                        };
+                        return null;
                     }
 
-                    return null;
+                    var layerMetadata = contentItem.As<LayerMetadata>();
+                    if (layerMetadata == null)
+                    {
+                        return null;
+                    }
+
+                    return new LayerMetadataIndex
+                    {
+                        Zone = layerMetadata.Zone,
+                    };
                 });
         }
     }

@@ -18,17 +18,23 @@ namespace OrchardCore.Lists.Indexes
                 .When(contentItem => contentItem.Has<ContainedPart>())
                 .Map(contentItem =>
                 {
-                    var containedPart = contentItem.As<ContainedPart>();
-                    if (containedPart != null)
+                    // Remove index records of soft deleted items.
+                    if (!contentItem.Published && !contentItem.Latest)
                     {
-                        return new ContainedPartIndex
-                        {
-                            ListContentItemId = containedPart.ListContentItemId,
-                            Order = containedPart.Order
-                        };
+                        return null;
                     }
 
-                    return null;
+                    var containedPart = contentItem.As<ContainedPart>();
+                    if (containedPart == null)
+                    {
+                        return null;
+                    }
+
+                    return new ContainedPartIndex
+                    {
+                        ListContentItemId = containedPart.ListContentItemId,
+                        Order = containedPart.Order
+                    };
                 });
         }
     }
