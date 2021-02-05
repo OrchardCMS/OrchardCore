@@ -42,7 +42,9 @@ namespace OrchardCore.Html.Drivers
         {
             return Initialize<HtmlBodyPartViewModel>(GetDisplayShapeType(context), m => BuildViewModelAsync(m, HtmlBodyPart, context))
                 .Location("Detail", "Content:5")
-                .Location("Summary", "Content:10");
+                .Location("Summary", "Content:10")
+                .Location("DetailAdmin", "Content:10") // For dashboard widgets;
+                ;
         }
 
         public override IDisplayResult Edit(HtmlBodyPart HtmlBodyPart, BuildPartEditorContext context)
