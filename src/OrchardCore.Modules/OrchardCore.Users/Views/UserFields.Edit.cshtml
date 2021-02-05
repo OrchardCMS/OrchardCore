@@ -10,7 +10,7 @@
 {
     <div class="form-group">
         <div class="custom-control custom-checkbox">
-            <input asp-for="EmailConfirmed" type="checkbox" class="custom-control-input">
+            <input asp-for="EmailConfirmed" type="checkbox" class="custom-control-input" asp-is-disabled="@Model.IsEditingDisabled">
             <label class="custom-control-label" asp-for="EmailConfirmed">@T["Email confirmed"]</label>
         </div>
     </div>
@@ -18,7 +18,7 @@
 
 <div class="form-group">
     <div class="custom-control custom-switch">
-        <input asp-for="IsEnabled" type="checkbox" class="custom-control-input" checked="@Model.IsEnabled" />
+        <input asp-for="IsEnabled" type="checkbox" class="custom-control-input" checked="@Model.IsEnabled" asp-is-disabled="@Model.IsEditingDisabled"/>
         <label asp-for="IsEnabled" class="custom-control-label cursor-pointer">@T["Is enabled?"]</label>
         <span class="hint dashed">@T["Uncheck to disable this user account."]</span>
     </div>

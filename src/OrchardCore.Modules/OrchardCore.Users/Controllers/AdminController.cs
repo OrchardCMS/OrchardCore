@@ -77,15 +77,13 @@ namespace OrchardCore.Users.Controllers
 
         public async Task<ActionResult> Index(UserIndexOptions options, PagerParameters pagerParameters)
         {
-            // Check a dummy user account to see if the current user has permission to manage it.
+            // Check a dummy user account to see if the current user has permission to view users.
             var authUser = new User();
 
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers, authUser))
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ViewUsers, authUser))
             {
                 return Forbid();
             }
-
-
 
             var siteSettings = await _siteService.GetSiteSettingsAsync();
             var pager = new Pager(pagerParameters, siteSettings.PageSize);
@@ -127,87 +125,6 @@ namespace OrchardCore.Users.Controllers
                 case UsersOrder.LastLoginUtc:
                     //users = users.OrderBy(u => u.LastLoginUtc);
                     break;
-            }
-
-            var roleNames = await GetNormalizedRoleNamesAsync();
-            var authorizedRoleNames = await GetAuthorizedRoleNamesAsync(roleNames);
-            var hasManageAuthenticatedPermission = await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsersInAuthenticatedRole);
-
-            // Alter the query if the user does not have permission for all roles.
-            if (roleNames.Count() != authorizedRoleNames.Count())
-            {
-                /*  Filter users and return on users who are in a role which the current user is authorized to manage.
-                    If a user is in two roles and the current user can only manage one of those roles they are not authorized to manage the user.
-
-                    Sample code for Sqlite
-                    SELECT DISTINCT [Document].*, [UserIndex_a1].[NormalizedUserName]
-                    FROM [Document]
-                    INNER JOIN [UserIndex] AS [UserIndex_a1] ON [UserIndex_a1].[DocumentId] = [Document].[Id]
-
-                    WHERE not exists (
-                        SELECT [RoleName]
-                        FROM UserByRoleNameIndex
-                        INNER JOIN [UserByRoleNameIndex_Document] ON [UserByRoleNameIndex].[Id] = [UserByRoleNameIndex_Document].[UserByRoleNameIndexId]
-                        WHERE [UserByRoleNameIndex_Document].[DocumentId] = [Document].[Id]
-                        GROUP BY [RoleName]
-                        HAVING [RoleName]  IN ('MODERATOR', 'CONTRIBUTOR', 'AUTHOR', 'ADMINISTRATOR')
-                    )
-
-                    ORDER BY [UserIndex_a1].[NormalizedUserName] LIMIT 10 OFFSET 0
-
-                */
-
-                var dialect = _session.Store.Dialect;
-                var builderNotExists = dialect.CreateBuilder(_session.Store.Configuration.TablePrefix);
-                var indexType = typeof(UserByRoleNameIndex);
-                var indexTable = _session.Store.Configuration.TableNameConvention.GetIndexTable(indexType);
-                var documentTable = _session.Store.Configuration.TableNameConvention.GetDocumentTable();
-                var bridgeTableName = indexTable + "_" + documentTable;
-                var bridgeTableIndexColumnName = indexType.Name + "Id";
-
-                builderNotExists.Select();
-                builderNotExists.AddSelector(dialect.QuoteForColumnName("RoleName"));
-                builderNotExists.From(indexTable);
-                builderNotExists.InnerJoin(bridgeTableName, indexTable, "Id", bridgeTableName, bridgeTableIndexColumnName);
-
-
-                builderNotExists.WhereAnd($"{dialect.QuoteForTableName(bridgeTableName)}.{dialect.QuoteForColumnName("DocumentId")} = {dialect.QuoteForTableName(documentTable)}.{dialect.QuoteForColumnName("Id")}");
-                builderNotExists.GroupBy($"{dialect.QuoteForColumnName("RoleName")}");
-
-                var notAuthorizedRolesQueryValue = String.Join(", ", roleNames.Except(authorizedRoleNames).Select(x => dialect.GetSqlValue(x)));
-                builderNotExists.Having($"{dialect.QuoteForColumnName("RoleName")} {dialect.InOperator(notAuthorizedRolesQueryValue)}");
-
-                var notExistsCmd = builderNotExists.ToSqlString();
-
-                if (!hasManageAuthenticatedPermission)
-                {
-                    /* When the user does not have permission to manage authenticated users append this predicate to ensure that users with no roles in the database are not included.
-
-                    Sample code for Sqlite
-                        AND EXISTS
-                        (   SELECT [RoleName]
-                            FROM UserByRoleNameIndex
-                            INNER JOIN [UserByRoleNameIndex_Document] ON [UserByRoleNameIndex].[Id] = [UserByRoleNameIndex_Document].[UserByRoleNameIndexId]
-                            WHERE [UserByRoleNameIndex_Document].[DocumentId] = [Document].[Id]
-                        )
-                    */
-
-                    var builderExists = dialect.CreateBuilder(_session.Store.Configuration.TablePrefix);
-
-                    builderExists.Select();
-                    builderExists.AddSelector(dialect.QuoteForColumnName("RoleName"));
-                    builderExists.From(indexTable);
-                    builderExists.InnerJoin(bridgeTableName, indexTable, "Id", bridgeTableName, bridgeTableIndexColumnName);
-                    builderExists.WhereAnd($"{dialect.QuoteForTableName(bridgeTableName)}.{dialect.QuoteForColumnName("DocumentId")} = {dialect.QuoteForTableName(documentTable)}.{dialect.QuoteForColumnName("Id")}");
-
-                    var existsCmd = builderExists.ToSqlString();
-
-                    users.Where($"not exists ({notExistsCmd}) and exists ({existsCmd})");
-                }
-                else
-                {
-                    users.Where($"not exists ({notExistsCmd})");
-                }
             }
 
             var count = await users.CountAsync();
@@ -295,6 +212,7 @@ namespace OrchardCore.Users.Controllers
             {
                 var checkedUsers = await _session.Query<User, UserIndex>().Where(x => x.UserId.IsIn(itemIds)).ListAsync();
 
+                // Bulk actions require the ManageUsers permission on all the checked users.
                 // To prevent html injection we authorize each user before performing any operations.
                 foreach (var user in checkedUsers)
                 {
@@ -365,7 +283,7 @@ namespace OrchardCore.Users.Controllers
         {
             var user = new User();
 
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers, user))
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ViewUsers, user))
             {
                 return Forbid();
             }
@@ -381,7 +299,7 @@ namespace OrchardCore.Users.Controllers
         {
             var user = new User();
 
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers, user))
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ViewUsers, user))
             {
                 return Forbid();
             }
@@ -425,7 +343,7 @@ namespace OrchardCore.Users.Controllers
                 return NotFound();
             }
 
-            if (!editingOwnUser && !await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers, user))
+            if (!editingOwnUser && !await _authorizationService.AuthorizeAsync(User, Permissions.ViewUsers, user))
             {
                 return Forbid();
             }
@@ -459,7 +377,7 @@ namespace OrchardCore.Users.Controllers
                 return NotFound();
             }
 
-            if (!editingOwnUser && !await _authorizationService.AuthorizeAsync(User, Permissions.ManageUsers, user))
+            if (!editingOwnUser && !await _authorizationService.AuthorizeAsync(User, Permissions.ViewUsers, user))
             {
                 return Forbid();
             }
@@ -588,26 +506,6 @@ namespace OrchardCore.Users.Controllers
             }
 
             return View(model);
-        }
-
-        private async Task<IEnumerable<string>> GetNormalizedRoleNamesAsync()
-        {
-            var roleNames = await _roleService.GetNormalizedRoleNamesAsync();
-            return roleNames.Except(new[] { "Anonymous", "Authenticated" }, StringComparer.OrdinalIgnoreCase);
-        }
-
-        private async Task<IEnumerable<string>> GetAuthorizedRoleNamesAsync(IEnumerable<string> roleNames)
-        {
-            var authorizedRoleNames = new List<string>();
-            foreach (var roleName in roleNames)
-            {
-                if (await _authorizationService.AuthorizeAsync(User, CommonPermissions.CreatePermissionForManageUsersInRole(roleName)))
-                {
-                    authorizedRoleNames.Add(roleName);
-                }
-            }
-
-            return authorizedRoleNames;
         }
     }
 }

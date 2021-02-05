@@ -7,26 +7,32 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Security;
+using OrchardCore.Security.Services;
 
 namespace OrchardCore.Users.Services
 {
     /// <summary>
-    /// This provides authorization when we request ManageUsers and the supplied user resource has permission
-    /// to edit all of the roles the current user resource has permission for.
+    /// This provides authorization when the permission request is ManageUsers and the current authenticated User
+    /// has permission to edit any of the roles the user being managed is a member of.
     /// Callers should supply a <see cref="IUser"/> resource
     /// </summary>
     /// <remarks>
-    /// This handler will not be triggered when only requesting ManagerUsers permission.
+    /// This handler will not be triggered when only requesting ManagerUsers permission with supplying an <see href="IUser"/>.
     /// </remarks>
     public class UserAuthorizationHandler : AuthorizationHandler<PermissionRequirement>
     {
         private readonly IServiceProvider _serviceProvider;
         private readonly UserManager<IUser> _userManager;
+        private readonly IRoleService _roleService;
 
-        public UserAuthorizationHandler(IServiceProvider serviceProvider, UserManager<IUser> userManager)
+        public UserAuthorizationHandler(
+            IServiceProvider serviceProvider, 
+            UserManager<IUser> userManager,
+            IRoleService roleService)
         {
             _serviceProvider = serviceProvider;
             _userManager = userManager;
+            _roleService = roleService;
         }
 
         protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, PermissionRequirement requirement)
@@ -58,18 +64,20 @@ namespace OrchardCore.Users.Services
             var authorizationService = _serviceProvider.GetService<IAuthorizationService>();
 
             var userRoleNames = await _userManager.GetRolesAsync(user);
-            if (!userRoleNames.Any())
+
+            if (userRoleNames.Any())
             {
-                // When the user has no roles we are able to check if the current user can manage authenticated roles.
-                if (await authorizationService.AuthorizeAsync(context.User, CommonPermissions.ManageUsersInAuthenticatedRole))
+                // When the user has roles we check to see if any of these roles are not authorized before succeeding.
+                if (await AuthorizeRolesAsync(authorizationService, context.User, userRoleNames))
                 {
                     context.Succeed(requirement);
                 }
             }
-            else
+            else 
             {
-                // When the user has roles we check to see if any of these roles are not authorized before succeeding.
-                if (await AuthorizeRolesAsync(authorizationService, context.User, userRoleNames))
+                var roleNames = await _roleService.GetRoleNamesAsync();
+                // When the user is in no roles, we check to see if the current user can manage any roles.
+                if (await HasAuthorizationToManageAnyRoleAsync(authorizationService, context.User, roleNames))
                 {
                     context.Succeed(requirement);
                 }
@@ -88,5 +96,18 @@ namespace OrchardCore.Users.Services
 
             return true;
         }
+
+        private async Task<bool> HasAuthorizationToManageAnyRoleAsync(IAuthorizationService authorizationService, ClaimsPrincipal user, IEnumerable<string> roleNames)
+        {
+            foreach (var roleName in roleNames)
+            {
+                if (await authorizationService.AuthorizeAsync(user, CommonPermissions.CreatePermissionForManageUsersInRole(roleName)))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }        
     }
 }

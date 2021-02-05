@@ -29,7 +29,7 @@ namespace OrchardCore.Users
                         .Add(S["Users"], S["Users"].PrefixPosition(), users => users
                             .AddClass("users").Id("users")
                             .Action("Index", "Admin", "OrchardCore.Users")
-                            .Permission(Permissions.ManageUsers)
+                            .Permission(Permissions.ViewUsers)
                             .Resource(new User())
                             .LocalNav()
                          )

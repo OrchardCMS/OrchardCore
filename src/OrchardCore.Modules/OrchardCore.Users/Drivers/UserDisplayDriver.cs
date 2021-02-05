@@ -57,19 +57,22 @@ namespace OrchardCore.Users.Drivers
 
         public override IDisplayResult Edit(User user)
         {
-            return Initialize<EditUserViewModel>("UserFields_Edit", model =>
+            return Initialize<EditUserViewModel>("UserFields_Edit", async model =>
             {
                 model.EmailConfirmed = user.EmailConfirmed;
                 model.IsEnabled = user.IsEnabled;
+                // The current user cannot disable themselves, nor can a user without permission to manage this user disable them.
+                model.IsEditingDisabled = !await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.ManageUsers, user) ||
+                    String.Equals(_httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier), user.UserId, StringComparison.OrdinalIgnoreCase);
             })
             .Location("Content:1.5")
-            .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.ManageUsers, user));
+            .RenderWhen(() => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.ViewUsers, user));
         }
 
         public override async Task<IDisplayResult> UpdateAsync(User user, UpdateEditorContext context)
         {
             // To prevent html injection when updating the user must meet all authorization requirements.
-            if (!(await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.ManageUsers, user)))
+            if (!await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.ManageUsers, user))
             {
                 // When the user is only editing their profile never update this part of the user.
                 return Edit(user);
@@ -110,7 +113,7 @@ namespace OrchardCore.Users.Drivers
                 user.IsEnabled = model.IsEnabled;
                 var userContext = new UserContext(user);
                 // TODO This handler should be invoked through the create or update methods.
-                // otherwise it will not be invoked when a workflow, or othcr hperation,anges this value.
+                // otherwise it will not be invoked when a workflow, or other operation, changes this value.
                 await _userEventHandlers.InvokeAsync((handler, context) => handler.EnabledAsync(userContext), userContext, _logger);
             }
 

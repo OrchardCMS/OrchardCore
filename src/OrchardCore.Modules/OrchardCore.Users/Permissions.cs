@@ -10,7 +10,8 @@ namespace OrchardCore.Users
     public class Permissions : IPermissionProvider
     {
         public static readonly Permission ManageUsers = CommonPermissions.ManageUsers;
-        public static readonly Permission ManageUsersInAuthenticatedRole = CommonPermissions.ManageUsersInAuthenticatedRole;
+        public static readonly Permission ViewUsers = CommonPermissions.ViewUsers;
+
         public static readonly Permission ManageOwnUserInformation = new Permission("ManageOwnUserInformation", "Manage own user information", new Permission[] { ManageUsers });
 
         private readonly IRoleService _roleService;
@@ -26,7 +27,7 @@ namespace OrchardCore.Users
             {
                 ManageUsers,
                 ManageOwnUserInformation,
-                ManageUsersInAuthenticatedRole
+                ViewUsers
             };
 
             var roles = (await _roleService.GetRoleNamesAsync())

@@ -27,18 +27,19 @@ namespace OrchardCore.Users.Drivers
 
         public override IDisplayResult Edit(User user)
         {
-            return Initialize<EditUserInformationViewModel>("UserInformationFields_Edit", model =>
+            return Initialize<EditUserInformationViewModel>("UserInformationFields_Edit", async model =>
             {
                 model.UserName = user.UserName;
                 model.Email = user.Email;
+                model.IsEditingDisabled = !await AuthorizeUpdateAsync(user);
             })
             .Location("Content:1")
-            .RenderWhen(() => AuthorizeAsync(user));
+            .RenderWhen(() => AuthorizeEditAsync(user));
         }
 
         public override async Task<IDisplayResult> UpdateAsync(User user, UpdateEditorContext context)
         {
-            if (!await AuthorizeAsync(user))
+            if (!await AuthorizeUpdateAsync(user))
             {
                 return Edit(user);
             }
@@ -60,7 +61,7 @@ namespace OrchardCore.Users.Drivers
             return Edit(user);
         }
 
-        private async Task<bool> AuthorizeAsync(User user)
+        private async Task<bool> AuthorizeUpdateAsync(User user)
         {
             // When the current user matches this user we can ask for ManageOwnUserInformation
             if (String.Equals(user.UserId, _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier), StringComparison.OrdinalIgnoreCase))
@@ -71,5 +72,17 @@ namespace OrchardCore.Users.Drivers
             // Otherwise we require permission to manage this users information.
             return await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.ManageUsers, user);
         }
+
+        private async Task<bool> AuthorizeEditAsync(User user)
+        {
+            // When the current user matches this user we can ask for ManageOwnUserInformation
+            if (String.Equals(user.UserId, _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier), StringComparison.OrdinalIgnoreCase))
+            {
+                return await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.ManageOwnUserInformation);
+            }
+
+            // Otherwise we require permission to manage this users information.
+            return await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, Permissions.ViewUsers, user);
+        }        
     }
 }
