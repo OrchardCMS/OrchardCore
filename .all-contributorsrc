@@ -2181,6 +2181,15 @@
       "contributions": [
         "translation"
       ]
+    },
+    {
+      "login": "IvoCZ",
+      "name": "ivocz",
+      "avatar_url": "https://avatars.githubusercontent.com/u/38103008?v=4",
+      "profile": "https://github.com/IvoCZ",
+      "contributions": [
+        "translation"
+      ]
     }
   ],
   "skipCi": true
