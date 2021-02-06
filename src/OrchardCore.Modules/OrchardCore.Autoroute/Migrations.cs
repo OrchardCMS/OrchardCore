@@ -35,7 +35,7 @@ namespace OrchardCore.Autoroute
                 .CreateIndex("IDX_AutoroutePartIndex_DocumentId", "DocumentId")
             );
 
-            // Return 5 to shortcut other migrations on new content definition schemas.
+            // Shortcut other migration steps on new content definition schemas.
             return 5;
         }
 
