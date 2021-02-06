@@ -32,6 +32,11 @@
     <None Remove="Localization\PoFiles\MultipleEntries.po" />
     <None Remove="Localization\PoFiles\PoeditHeader.po" />
     <None Remove="Localization\PoFiles\SimpleEntry.po" />
+    <None Remove="Recipes\RecipeFiles\recipe1.json" />
+    <None Remove="Recipes\RecipeFiles\recipe2.json" />
+    <None Remove="Recipes\RecipeFiles\recipe3.json" />
+    <None Remove="Recipes\RecipeFiles\recipe4.json" />
+    <None Remove="Recipes\RecipeFiles\recipe5.json" />
   </ItemGroup>
 
   <ItemGroup>
@@ -46,6 +51,11 @@
     <EmbeddedResource Include="Localization\PoFiles\MultipleEntries.po" />
     <EmbeddedResource Include="Localization\PoFiles\PoeditHeader.po" />
     <EmbeddedResource Include="Localization\PoFiles\SimpleEntry.po" />
+    <EmbeddedResource Include="Recipes\RecipeFiles\recipe5.json" />
+    <EmbeddedResource Include="Recipes\RecipeFiles\recipe4.json" />
+    <EmbeddedResource Include="Recipes\RecipeFiles\recipe1.json" />
+    <EmbeddedResource Include="Recipes\RecipeFiles\recipe2.json" />
+    <EmbeddedResource Include="Recipes\RecipeFiles\recipe3.json" />
   </ItemGroup>
 
   <ItemGroup>
@@ -65,6 +75,7 @@
     <PackageReference Include="AngleSharp" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="System.Linq.Async" Version="5.0.0" />
     <PackageReference Include="Moq" />
     <PackageReference Include="xunit" />
     <PackageReference Include="xunit.analyzers" />

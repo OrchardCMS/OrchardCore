@@ -3,13 +3,14 @@
 @using OrchardCore.Workflows.ViewModels;
 @inject OrchardCore.Modules.ILocalClock LocalClock
 
-<h1>@RenderTitleSegments(Model.WorkflowType.Name)</h1>
+<zone Name="Title"><h1>@RenderTitleSegments(Model.WorkflowType.Name)</h1></zone>
+
 <zone name="Breadcrumbs">
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a asp-action="Index" asp-controller="WorkflowType">@T["Workflow Types"]</a></li>
+        <li class="breadcrumb-item"><a asp-action="Index" asp-controller="WorkflowType">@T["Workflows"]</a></li>
         <li class="breadcrumb-item"><a asp-action="Edit" asp-controller="WorkflowType" asp-route-id="@Model.WorkflowType.Id">@Model.WorkflowType.Name</a></li>
-        <li class="breadcrumb-item"><a asp-action="Index" asp-controller="Workflow" asp-route-workflowtypeid="@Model.WorkflowType.Id">@T["Workflows"]</a></li>
+        <li class="breadcrumb-item"><a asp-action="Index" asp-controller="Workflow" asp-route-workflowtypeid="@Model.WorkflowType.Id">@T["Instances"]</a></li>
         <li class="breadcrumb-item active" aria-current="page">@Model.Workflow.WorkflowId</li>
     </ol>
 </nav>
@@ -90,7 +91,7 @@
 </div>
 <div class="form-group">
     <a class="btn btn-secondary" asp-route-action="Index" asp-route-workflowTypeId="@Model.WorkflowType.Id">@T["Back"]</a>
-    <a class="btn btn-danger" data-unsafe-url="@T["Are you sure you want to delete this workflow?"]" asp-action="Delete" asp-route-id="@Model.Workflow.Id">@T["Delete"]</a>
+    <a class="btn btn-danger" data-message="@T["Are you sure you want to delete this workflow instance?"]" data-url-af="RemoveUrl UnsafeUrl" asp-action="Delete" asp-route-id="@Model.Workflow.Id">@T["Delete"]</a>
 </div>
 
 <style asp-src="~/OrchardCore.Workflows/Styles/jsplumbtoolkit-defaults.min.css" debug-src="~/OrchardCore.Workflows/Styles/jsplumbtoolkit-defaults.css" cdn-src="https://cdnjs.cloudflare.com/ajax/libs/jsPlumb/2.5.5/css/jsplumbtoolkit-defaults.min.css" debug-cdn-src="https://cdnjs.cloudflare.com/ajax/libs/jsPlumb/2.5.5/css/jsplumbtoolkit-defaults.css" version="2.5.5"></style>

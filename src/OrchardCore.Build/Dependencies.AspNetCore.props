@@ -1,6 +1,6 @@
 <Project>
   <PropertyGroup>
-    <AspNetCoreVersion>3.1.8</AspNetCoreVersion>
+    <AspNetCoreVersion>3.1.11</AspNetCoreVersion>
     <AspNetCoreTargetFramework>netcoreapp3.1</AspNetCoreTargetFramework>
   </PropertyGroup>
   <ItemGroup>
@@ -10,7 +10,6 @@
     <PackageManagement Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" Version="$(AspNetCoreVersion)" />
     <PackageManagement Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="$(AspNetCoreVersion)" />
     <PackageManagement Include="Microsoft.AspNetCore.Authentication.Twitter" Version="$(AspNetCoreVersion)" />
-    <PackageManagement Include="Microsoft.AspNetCore.DataProtection.AzureStorage" Version="$(AspNetCoreVersion)" />
     <PackageManagement Include="Microsoft.AspNetCore.DataProtection.StackExchangeRedis" Version="$(AspNetCoreVersion)" />
     <PackageManagement Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="$(AspNetCoreVersion)" />
     <PackageManagement Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="$(AspNetCoreVersion)" />

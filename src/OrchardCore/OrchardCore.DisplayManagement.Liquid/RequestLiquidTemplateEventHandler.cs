@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Fluid;
 using Fluid.Values;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Liquid;
 
@@ -113,9 +112,9 @@ namespace OrchardCore.DisplayManagement.Liquid
 
         private class HttpContextItemsWrapper
         {
-            public readonly IDictionary<object,object> Items;
+            public readonly IDictionary<object, object> Items;
 
-            public HttpContextItemsWrapper(IDictionary<object,object> items)
+            public HttpContextItemsWrapper(IDictionary<object, object> items)
             {
                 Items = items;
             }

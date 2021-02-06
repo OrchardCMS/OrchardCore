@@ -38,9 +38,7 @@ namespace OrchardCore.ContentManagement
         public static IServiceCollection AddFileContentDefinitionStore(this IServiceCollection services)
         {
             services.RemoveAll<IContentDefinitionStore>();
-            services.AddSingleton<IContentDefinitionStore, FileContentDefinitionStore>();
-            services.AddScoped<FileContentDefinitionScopedCache>();
-
+            services.AddScoped<IContentDefinitionStore, FileContentDefinitionStore>();
             return services;
         }
     }

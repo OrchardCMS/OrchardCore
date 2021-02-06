@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using OrchardCore.Data;
 using OrchardCore.Email;
 using OrchardCore.Environment.Shell;
@@ -19,33 +21,36 @@ namespace OrchardCore.Setup.Controllers
 {
     public class SetupController : Controller
     {
+        private readonly IClock _clock;
         private readonly ISetupService _setupService;
         private readonly ShellSettings _shellSettings;
         private readonly IShellHost _shellHost;
+        private IdentityOptions _identityOptions;
+        private readonly IEmailAddressValidator _emailAddressValidator;
         private readonly IEnumerable<DatabaseProvider> _databaseProviders;
-        private readonly IClock _clock;
         private readonly ILogger _logger;
         private readonly IStringLocalizer S;
-        private readonly IEmailAddressValidator _emailAddressValidator;
 
         public SetupController(
-            ILogger<SetupController> logger,
             IClock clock,
             ISetupService setupService,
             ShellSettings shellSettings,
-            IEnumerable<DatabaseProvider> databaseProviders,
             IShellHost shellHost,
+            IOptions<IdentityOptions> identityOptions,
+            IEmailAddressValidator emailAddressValidator,
+            IEnumerable<DatabaseProvider> databaseProviders,
             IStringLocalizer<SetupController> localizer,
-            IEmailAddressValidator emailAddressValidator)
+            ILogger<SetupController> logger)
         {
-            _logger = logger;
             _clock = clock;
-            _shellHost = shellHost;
             _setupService = setupService;
             _shellSettings = shellSettings;
-            _databaseProviders = databaseProviders;
-            S = localizer;
+            _shellHost = shellHost;
+            _identityOptions = identityOptions.Value;
             _emailAddressValidator = emailAddressValidator;
+            _databaseProviders = databaseProviders;
+            _logger = logger;
+            S = localizer;
         }
 
         public async Task<ActionResult> Index(string token)
@@ -130,9 +135,15 @@ namespace OrchardCore.Setup.Controllers
                 ModelState.AddModelError(nameof(model.RecipeName), S["Invalid recipe."]);
             }
 
-            if (!_emailAddressValidator.Validate(model.Email))
+            // Only add additional errors if attribute validation has passed.
+            if (!String.IsNullOrEmpty(model.Email) && !_emailAddressValidator.Validate(model.Email))
             {
-                ModelState.AddModelError(nameof(model.Email), S["Invalid email."]);
+                ModelState.AddModelError(nameof(model.Email), S["The email is invalid."]);
+            }
+
+            if (!String.IsNullOrEmpty(model.UserName) && model.UserName.Any(c => !_identityOptions.User.AllowedUserNameCharacters.Contains(c)))
+            {
+                ModelState.AddModelError(nameof(model.UserName), S["User name '{0}' is invalid, can only contain letters or digits.", model.UserName]);
             }
 
             if (!ModelState.IsValid)

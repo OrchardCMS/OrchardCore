@@ -22,3 +22,11 @@ using OrchardCore.Modules.Manifest;
     Category = "Infrastructure",
     DefaultTenantOnly = false
 )]
+
+[assembly: Feature(
+    Id = "OrchardCore.Tenants.Distributed",
+    Name = "Distributed Tenants",
+    Description = "Keeps in sync tenants states, needs a distributed cache e.g. 'Redis Cache'.",
+    Category = "Distributed",
+    DefaultTenantOnly = true
+)]

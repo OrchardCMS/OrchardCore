@@ -13,7 +13,7 @@ namespace OrchardCore.ContentManagement.GraphQL
 {
     public static class DataLoaderExtensions
     {
-        public static IDataLoader<string, ContentItem> GetorAddPublishedContentItemByIdDataLoader<T>(this ResolveFieldContext<T> context)
+        public static IDataLoader<string, ContentItem> GetOrAddPublishedContentItemByIdDataLoader<T>(this ResolveFieldContext<T> context)
         {
             var serviceProvider = context.ResolveServiceProvider();
 

@@ -13,7 +13,7 @@
 }
 
 <form id="@formId" action="@formPart.Action" method="@formPart.Method"  enctype="@encType" class="form-content @formContentTypeClassName">
-    @if(formPart.EnableAntiForgeryToken)
+    @if (formPart.EnableAntiForgeryToken)
     {
         @Html.AntiForgeryToken()
     }

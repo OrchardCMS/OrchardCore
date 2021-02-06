@@ -1,10 +1,10 @@
 using System;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
 using Fluid;
 using Fluid.Values;
-using OrchardCore.Liquid;
+using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.Infrastructure.Html;
+using OrchardCore.Liquid;
 
 namespace OrchardCore.DisplayManagement.Liquid.Filters
 {

@@ -180,7 +180,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
             return ret(kw.type, kw.style, word);
           }
 
-          if (word == "async" && stream.match(/^(\s|\/\*.*?\*\/)*[\[\(\w]/, false)) return ret("async", "keyword", word);
+          if (word == "async" && stream.match(/^(\s|\/\*([^*]|\*(?!\/))*?\*\/)*[\[\(\w]/, false)) return ret("async", "keyword", word);
         }
 
         return ret("variable", "variable", word);
@@ -797,13 +797,19 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       if (value == "|" || value == "&") return cont(typeexpr);
       if (type == "string" || type == "number" || type == "atom") return cont(afterType);
       if (type == "[") return cont(pushlex("]"), commasep(typeexpr, "]", ","), poplex, afterType);
-      if (type == "{") return cont(pushlex("}"), commasep(typeprop, "}", ",;"), poplex, afterType);
+      if (type == "{") return cont(pushlex("}"), typeprops, poplex, afterType);
       if (type == "(") return cont(commasep(typearg, ")"), maybeReturnType, afterType);
       if (type == "<") return cont(commasep(typeexpr, ">"), typeexpr);
     }
 
     function maybeReturnType(type) {
       if (type == "=>") return cont(typeexpr);
+    }
+
+    function typeprops(type) {
+      if (type.match(/[\}\)\]]/)) return cont();
+      if (type == "," || type == ";") return cont(typeprops);
+      return pass(typeprop, typeprops);
     }
 
     function typeprop(type, value) {
@@ -818,6 +824,8 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         return cont(expect("variable"), maybetypeOrIn, expect("]"), typeprop);
       } else if (type == "(") {
         return pass(functiondecl, typeprop);
+      } else if (!type.match(/[;\}\)\],]/)) {
+        return cont();
       }
     }
 
@@ -1145,7 +1153,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         return parseJS(state, style, type, content, stream);
       },
       indent: function indent(state, textAfter) {
-        if (state.tokenize == tokenComment) return CodeMirror.Pass;
+        if (state.tokenize == tokenComment || state.tokenize == tokenQuasi) return CodeMirror.Pass;
         if (state.tokenize != tokenBase) return 0;
         var firstChar = textAfter && textAfter.charAt(0),
             lexical = state.lexical,
@@ -1193,6 +1201,10 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
     json: true
   });
   CodeMirror.defineMIME("application/x-json", {
+    name: "javascript",
+    json: true
+  });
+  CodeMirror.defineMIME("application/manifest+json", {
     name: "javascript",
     json: true
   });

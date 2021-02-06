@@ -152,8 +152,8 @@ namespace OrchardCore.Environment.Shell.Scope
         /// </summary>
         public static Task<ShellScope> CreateChildScopeAsync()
         {
-            var shellHost = ShellScope.Services.GetRequiredService<IShellHost>();
-            return shellHost.GetScopeAsync(ShellScope.Context.Settings);
+            var shellHost = Services.GetRequiredService<IShellHost>();
+            return shellHost.GetScopeAsync(Context.Settings);
         }
 
         /// <summary>
@@ -161,7 +161,7 @@ namespace OrchardCore.Environment.Shell.Scope
         /// </summary>
         public static Task<ShellScope> CreateChildScopeAsync(ShellSettings settings)
         {
-            var shellHost = ShellScope.Services.GetRequiredService<IShellHost>();
+            var shellHost = Services.GetRequiredService<IShellHost>();
             return shellHost.GetScopeAsync(settings);
         }
 
@@ -170,32 +170,32 @@ namespace OrchardCore.Environment.Shell.Scope
         /// </summary>
         public static Task<ShellScope> CreateChildScopeAsync(string tenant)
         {
-            var shellHost = ShellScope.Services.GetRequiredService<IShellHost>();
+            var shellHost = Services.GetRequiredService<IShellHost>();
             return shellHost.GetScopeAsync(tenant);
         }
 
         /// <summary>
         /// Execute a delegate using a child scope created from the current one.
         /// </summary>
-        public static async Task UsingChildScopeAsync(Func<ShellScope, Task> execute)
+        public static async Task UsingChildScopeAsync(Func<ShellScope, Task> execute, bool activateShell = true)
         {
-            await (await CreateChildScopeAsync()).UsingAsync(execute);
+            await (await CreateChildScopeAsync()).UsingAsync(execute, activateShell);
         }
 
         /// <summary>
         /// Execute a delegate using a child scope created from the current one.
         /// </summary>
-        public static async Task UsingChildScopeAsync(ShellSettings settings, Func<ShellScope, Task> execute)
+        public static async Task UsingChildScopeAsync(ShellSettings settings, Func<ShellScope, Task> execute, bool activateShell = true)
         {
-            await (await CreateChildScopeAsync(settings)).UsingAsync(execute);
+            await (await CreateChildScopeAsync(settings)).UsingAsync(execute, activateShell);
         }
 
         /// <summary>
         /// Execute a delegate using a child scope created from the current one.
         /// </summary>
-        public static async Task UsingChildScopeAsync(string tenant, Func<ShellScope, Task> execute)
+        public static async Task UsingChildScopeAsync(string tenant, Func<ShellScope, Task> execute, bool activateShell = true)
         {
-            await (await CreateChildScopeAsync(tenant)).UsingAsync(execute);
+            await (await CreateChildScopeAsync(tenant)).UsingAsync(execute, activateShell);
         }
 
         /// <summary>
@@ -218,7 +218,7 @@ namespace OrchardCore.Environment.Shell.Scope
         /// Executes a delegate using this shell scope in an isolated async flow,
         /// while managing the shell state and invoking tenant events.
         /// </summary>
-        public async Task UsingAsync(Func<ShellScope, Task> execute)
+        public async Task UsingAsync(Func<ShellScope, Task> execute, bool activateShell = true)
         {
             if (Current == this)
             {
@@ -229,7 +229,11 @@ namespace OrchardCore.Environment.Shell.Scope
             using (this)
             {
                 StartAsyncFlow();
-                await ActivateShellInternalAsync();
+
+                if (activateShell)
+                {
+                    await ActivateShellInternalAsync();
+                }
 
                 await execute(this);
 
@@ -281,7 +285,7 @@ namespace OrchardCore.Environment.Shell.Scope
                 // The tenant gets activated here.
                 if (!ShellContext.IsActivated)
                 {
-                    await new ShellScope(ShellContext).UsingServiceScopeAsync(async scope =>
+                    await new ShellScope(ShellContext).UsingAsync(async scope =>
                     {
                         var tenantEvents = scope.ServiceProvider.GetServices<IModularTenantEvents>();
                         foreach (var tenantEvent in tenantEvents)
@@ -293,7 +297,7 @@ namespace OrchardCore.Environment.Shell.Scope
                         {
                             await tenantEvent.ActivatedAsync();
                         }
-                    });
+                    }, activateShell: false);
 
                     ShellContext.IsActivated = true;
                 }

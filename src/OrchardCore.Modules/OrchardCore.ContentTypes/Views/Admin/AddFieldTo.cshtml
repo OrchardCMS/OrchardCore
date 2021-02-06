@@ -7,24 +7,24 @@
     var returnUrl = ViewData["returnUrl"]?.ToString();
 }
 
-<h1>@RenderTitleSegments(T["Add New Field To \"{0}\"", Model.Part.DisplayName()])</h1>
+<zone Name="Title"><h1>@RenderTitleSegments(T["Add New Field To \"{0}\"", Model.Part.DisplayName()])</h1></zone>
 
 <form asp-action="AddFieldTo" asp-route-returnUrl="@ViewData["returnUrl"]">
     @Html.ValidationSummary()
     <div class="form-group">
-        <div class="row col-medium">
+        <div class="w-md-75 w-xl-50">
             <label for="DisplayName">@T["Display Name"]</label>
             <input asp-for="DisplayName" class="form-control" autofocus />
-            <span class="hint">@T["Name of the field as it will be displayed in screens."]</span>
         </div>
+        <span class="hint">@T["Name of the field as it will be displayed in screens."]</span>
     </div>
 
     <div class="form-group">
-        <div class="row col-small">
+        <div class="w-sm-75 w-md-50 w-lg-25">
             <label for="Name">@T["Technical Name"]</label>
             <input asp-for="Name" class="form-control" />
-            <span class="hint">@T["Technical name of the field."]</span>
         </div>
+        <span class="hint">@T["Technical name of the field."]</span>
     </div>
 
     <div class="form-group">
@@ -43,10 +43,10 @@
     </div>
 
     <div class="form-group">
-        <button class="btn btn-primary" type="submit">@T["Save"]</button>
+        <button class="btn btn-primary save" type="submit">@T["Save"]</button>
         @if (Url.IsLocalUrl(returnUrl))
         {
-            <a class="btn btn-secondary" href="@returnUrl">@T["Cancel"]</a>
+            <a class="btn btn-secondary cancel" role="button" href="@returnUrl">@T["Cancel"]</a>
         }
     </div>
 </form>
@@ -64,7 +64,7 @@
 
         var compute = function() {
             // stop processing automatically if altered by the user
-            if(nameAltered) {
+            if (nameAltered) {
                 return true;
             }
 

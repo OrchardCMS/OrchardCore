@@ -20,6 +20,11 @@ namespace OrchardCore.Environment.Shell
             return Task.FromResult((new ShellSettings[] { CreateDefaultSettings() }).AsEnumerable());
         }
 
+        public Task<IEnumerable<string>> LoadSettingsNamesAsync()
+        {
+            return Task.FromResult((new string[] { ShellHelper.DefaultShellName }).AsEnumerable());
+        }
+
         public Task<ShellSettings> LoadSettingsAsync(string tenant) => Task.FromResult(CreateDefaultSettings());
 
         public Task SaveSettingsAsync(ShellSettings shellSettings) => Task.CompletedTask;

@@ -11,11 +11,13 @@ namespace OrchardCore.ContentLocalization
         /// </summary>
         /// <returns>List of all items matching a localizationSet</returns>
         Task<IEnumerable<ContentItem>> GetItemsForSetAsync(string localizationSet);
+
         /// <summary>
         /// Get the content item that matches the localizationSet / culture combination
         /// </summary>
         /// <returns>ContentItem or null if not found</returns>
         Task<ContentItem> GetContentItemAsync(string localizationSet, string culture);
+
         /// <summary>
         /// Localizes the content item to the target culture.
         /// This method will clone the ContentItem of the default locale
@@ -24,14 +26,16 @@ namespace OrchardCore.ContentLocalization
         /// <returns>The localized content item</returns>
         Task<ContentItem> LocalizeAsync(ContentItem content, string targetCulture);
 
+        /// <summary>
         /// Deduplicate the list of contentItems to only keep a single contentItem per LocalizationSet.
         /// Each ContentItem is chosen with the following rules:
         /// - ContentItemId of the current culture for the set
         /// - OR ContentItemId of the default culture for the set
         /// - OR First ContentItemId found in the set
-        /// </summary
+        /// </summary>
         /// <returns>Cleaned list of ContentItem</returns>
         Task<IDictionary<string, ContentItem>> DeduplicateContentItemsAsync(IEnumerable<ContentItem> contentItems);
+        
         /// <summary>
         /// Gets a list of ContentItemId for the LocalizationSet based on some rules
         /// Order of elements is kept.

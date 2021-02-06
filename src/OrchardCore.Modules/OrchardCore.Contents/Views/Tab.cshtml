@@ -7,7 +7,7 @@
     Model.Metadata.Alternates.Clear();
     Model.Metadata.Type = "CardGrouping";
 
-    tag.Attributes["id"] = $"tab-{Model.Grouping.Key}-{Model.ContentItem.ContentItemId}".HtmlClassify();
+    tag.Attributes["id"] = $"tab-{Model.Grouping.Key}-{Model.ContentItem?.ContentItemId}".HtmlClassify();
     tag.AddCssClass("tab-pane fade");
     @if (Model.TabIndex == 0)
     {

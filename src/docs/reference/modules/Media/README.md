@@ -57,9 +57,11 @@ Convert the input URL to create a resized image with the specified size argument
 
 #### Arguments
 
-The `width` and `height` arguments are limited to a specific list of values to prevent malicious clients from creating too many variations of the same image.  
-The values can be
-`16`, `32`, `50`, `100`, `160`, `240`, `480`, `600`, `1024`, `2048`.
+Refer [Query string tokens](#query-string-tokens) to understand the valid values for a width or height command,
+and when a query string must utilize a token.
+
+!!! note
+    You cannot mix named and indexed arguments. If any of the arguments is named, all arguments must be named.
 
 #### `width` (or first argument)
 
@@ -130,6 +132,47 @@ Can be combined with the `quality` argument to convert an image to a `JPG` and r
 
 `<img src="~/media/animals/kittens.jpg?width=100&height=240&rmode=crop&quality=50&format=jpg" />`
 
+### `anchor` (or sixth argument)
+
+The anchor of the new image.
+
+#### anchor Input
+
+```
+{% assign anchor = Model.ContentItem.Content.Blog.Image.Anchors.first %}
+{{ 'animals/kittens.jpg' | asset_url | resize_url: width:100, height:240, mode:'crop', anchor:anchor }}
+```
+
+#### anchor Output
+
+`<img src="~/media/animals/kittens.jpg?width=100&height=240&rmode=crop&rxy=0.5,0.5" />`
+
+### `bgcolor` (or seventh argument)
+
+The background color of the new image when `mode` is `pad` or `boxpad`. Examples of valid values: `white`, `ffff00`, `ffff0080`, `128,64,32` and `128,64,32,16`.
+
+#### bgcolor Input
+
+```
+{{ 'animals/kittens.jpg' | asset_url | resize_url: width:100, height:240, mode:'pad', bgcolor:'white' }}
+```
+
+#### bgcolor Output
+
+`<img src="~/media/animals/kittens.jpg?width=100&height=240&rmode=pad&bgcolor=white" />`
+
+### `profile` (named argument)
+
+A [Media Profile](#media-profiles) can be specified as a named argument to provide preset formatting commands.
+
+#### `profile` Input
+
+`{{ 'animals/kittens.jpg' | asset_url | resize_url: profile : 'medium' }}`
+
+#### `profile` Output
+
+`<img src="~/media/animals/kittens.jpg?width=240&height=240" />`
+
 ### `append_version`
 
 Appends a version hash for an asset. Can be piped together with the other media filters.
@@ -156,6 +199,10 @@ To obtain the correct URL for a resized asset use `AssetUrl` with the optional w
 
 `@Orchard.AssetUrl(Model.Paths[0], width: 100 , height: 240, resizeMode: ResizeMode.Crop, quality: 50, format: Format.Jpg)`
 
+To obtain the correct URL for a resized asset use `AssetUrl` with the optional width, height, resizeMode and bgcolor, e.g.:
+
+`@Orchard.AssetUrl(Model.Paths[0], width: 100 , height: 240, resizeMode: ResizeMode.Pad, bgcolor: "white")`
+
 To append a version hash for an asset use `AssetUrl` with the append version parameter, e.g.:
 
 `@Orchard.AssetUrl(Model.Paths[0], appendVersion: true)`
@@ -163,6 +210,14 @@ To append a version hash for an asset use `AssetUrl` with the append version par
 or with resizing options as well, noting that the version hash is based on the source image
 
 `@Orchard.AssetUrl(Model.Paths[0], width: 100 , height: 240, resizeMode: ResizeMode.Crop, appendVersion: true)`
+
+To use a [Media Profile](#media-profiles), use the `AssetProfileUrlAsync` helper extension method on the view's base `Orchard` property, e.g.:
+
+`@await Orchard.AssetProfileUrlAsync(Model.Paths[0], "medium")`
+
+To use [Image Anchors](#image-anchors), use the `GetAnchors` helper extension method on the media field, e.g.:
+
+`@await Orchard.AssetUrl(Model.Paths[0], , width: 100 , height: 240, resizeMode: ResizeMode.Crop, @Model.Field.GetAnchors()[0])`
 
 ### Razor image resizing tag helpers
 
@@ -175,6 +230,26 @@ To use the image tag helpers add `@addTagHelper *, OrchardCore.Media` to `_ViewI
 Alternatively the Asset Url can be resolved independently and the `src` attribute used:
 
 `<img src="@Orchard.AssetUrl(Model.Paths[0])" alt="..." img-width="100" img-height="240" img-resize-mode="Crop" img-quality="50" img-format="Jpg" />`
+
+When resize mode is `pad` or `boxpad`, the background color can be set using `img-bgcolor`, e.g.:
+
+`<img asset-src="Model.Paths[0]" alt="..." img-width="100" img-height="240" img-resize-mode="Pad" img-bgcolor="white" />`
+
+To use a [Media Profile](#media-profiles) set the `asset-src` property and the `img-profile` attribute.
+
+`<img asset-src="Model.Paths[0]" alt="..." img-profile="medium" />`
+
+You can optionally include more formatting information, or override the profiles properties.
+
+`<img asset-src="Model.Paths[0]" alt="..." img-profile="medium" img-quality="50" img-format="Jpg" />`
+
+To use a [Media Text](#media-text) set the `alt` attribute.
+
+`<img asset-src="Model.Paths[0]" alt="@Model.MediaTexts[0]" />`
+
+To use a [Image Anchor](#image-anchors) set the `asset-src` property and the `img-anchor` attribute.
+
+`<img asset-src="Model.Paths[0]" alt="..." img-width="100" img-height="240" img-profile="medium" img-anchor="@Model.GetAnchors()[0]" />`
 
 ### Razor append version
 
@@ -211,7 +286,8 @@ The following configuration values are used by default and can be customized:
 ```json
     "OrchardCore_Media": {
 
-      // The accepted sizes for custom width and height
+      // The accepted sizes for custom width and height.
+      // When the 'UseTokenizedQueryString' is True (default) all sizes are valid.
       "SupportedSizes": [ 16, 32, 50, 100, 160, 240, 480, 600, 1024, 2048 ],
 
       // The number of days to store images in the browser cache.
@@ -233,6 +309,9 @@ The following configuration values are used by default and can be customized:
 
       // The path used to store media assets. The path can be relative to the tenant's App_Data folder, or absolute.
       "AssetsPath": "Media",
+
+      // Whether to use a token in the query string to prevent disc filling.
+      "UseTokenizedQueryString": true,
 
       // The list of allowed file extensions
       "AllowedFileExtensions": [
@@ -301,10 +380,103 @@ To configure `wwwroot` static file options apply:
 services.Configure<StaticFileOptions>(o => ...);
 ```
 
-## CREDITS
+## Media Profiles
 
-### ImageSharp
+Media profiles allow you to defined preset image resizing and formatting commands.
 
-<https://sixlabors.com/products/imagesharpweb/>  
-Copyright 2012 James South  
-Licensed under the Apache License, Version 2.0, or with a commercial support license <https://sixlabors.com/pricing>
+You can create a media profile from the _Configuration -> Media -> Media Profiles_ menu.
+
+When specifying a media profile with either the liquid, razor helper, or tag helper you provide the profile name, and any additional commands which you want to apply to the media item.
+
+=== "Liquid"
+
+    ``` liquid
+    {% resize_url profile: 'medium' %}
+    {% resize_url profile: 'medium', mode: 'crop' %}
+    ```
+
+=== "Razor"
+
+    ``` html
+    @await Orchard.AssetProfileUrlAsync(Model.Paths[0], "medium");
+    @await Orchard.AssetProfileUrlAsync(Model.Paths[0], "medium", resizeMode: ResizeMode.Crop);
+    ```
+
+=== "Tag"
+
+    ``` html
+    <img asset-src="Model.Paths[0]" img-profile="medium" />
+    <img asset-src="Model.Paths[0]" img-profile="medium" img-resize-mode="Crop"/>
+    ```
+
+!!! note
+    Media Profiles are only available from the [Preview Feed](../../../getting-started/preview-package-source)
+
+## Media Text
+
+Media text is an optional setting, on by default, on the `MediaField`.
+
+When provided it allows the editor of the field to include a text value for each selected media item.
+
+This can be used for the `alt` tag of an image.
+
+When the setting is enabled the template must read and provide the value to the `img` tag.
+
+The `MediaTexts[]` is kept in sync with the `Paths[]` array and the index for a given path represents the index of a `MediaText` value.
+
+## Image Anchors
+
+Image anchors are an optional setting, off by default, on the `MediaField`.
+
+When enabled they allow a media field to provide an anchor point, or x and y value for use when cropping, or padding the image.
+
+The anchor value provided can be used to specify the center point of a crop or pad.
+
+When the setting is enabled the template must read and provide the value to the resizing helpers or filters.
+
+The `Anchors[]` is a less well known property of a `MediaField` and can be accessed via the `GetAnchors()` extension, or directly.
+
+=== "Liquid"
+
+    ``` liquid
+    {% assign anchor = Model.ContentItem.Content.Blog.Image.Anchors.first %}
+    ```
+
+=== "Razor"
+
+    ``` html
+    var anchors = @Model.Field.GetAnchors();
+    var anchors = (Anchor[])Model.ContentItem.Content.Blog.Image.Anchors.ToObject<Anchor[]>();
+    ```
+
+The `Anchors[]` is kept in sync with the `Paths[]` array and the index for a given path represents the index of a `Anchor` value.
+
+!!! note
+    Anchors are only available from the [Preview Feed](../../../getting-started/preview-package-source)
+
+## Query string tokens
+
+When resizing images, the query string command values are, by default, signed with an HMAC signature that is unique to the tenant.
+
+This prevents prevent malicious clients from creating too many variations of the same image. 
+
+If the `UseTokenizedQueryString` is set to `false` the following features will be removed.
+
+- Cache busting, or query string versioning.
+- Anchors.
+- The width or height must match a value from the `SupportedSizes` configuration.
+- Background color.
+
+When the query string is signed with a token any width, height value may be used.
+
+`<img src="/media/kittens.jpg?width=101&height=241&token=0J3hyv6jIPEsSdlvTCrf30fIdygkpmrF6mphqgYQyas%3D">`
+
+!!! note
+    Tokens are only available from the [Preview Feed](../../../getting-started/preview-package-source)
+    Prior to this the width or height values are limited to `16`, `32`, `50`, `100`, `160`, `240`, `480`, `600`, `1024`, `2048`.
+
+## Videos
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/BQHUlvPFRR4" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/K0_i4vj00yM" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>

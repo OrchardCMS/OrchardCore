@@ -29,43 +29,29 @@ namespace OrchardCore.ContentTypes.RecipeSteps
 
             var step = context.Step.ToObject<ReplaceContentDefinitionStepModel>();
 
+            // Delete existing parts first, as deleting them later will clear any imported content types using them.
+            foreach (var contentPart in step.ContentParts)
+            {
+                _contentDefinitionManager.DeletePartDefinition(contentPart.Name);
+            }
+
             foreach (var contentType in step.ContentTypes)
             {
-                var newType = _contentDefinitionManager.LoadTypeDefinition(contentType.Name);
-                if (newType != null)
-                {   
-                    ReplaceContentType(newType, contentType, true);
-                }
-                else
-                {
-                    ReplaceContentType(new ContentTypeDefinition(contentType.Name, contentType.DisplayName), contentType, false);
-                }
+                _contentDefinitionManager.DeleteTypeDefinition(contentType.Name);
+                AlterContentType(contentType);
             }
 
             foreach (var contentPart in step.ContentParts)
             {
-                var newPart = _contentDefinitionManager.LoadPartDefinition(contentPart.Name);
-                if (newPart != null)
-                {
-                    ReplaceContentPart(newPart, contentPart, true);    
-                }
-                else
-                {
-                    ReplaceContentPart(new ContentPartDefinition(contentPart.Name), contentPart, false);
-                }
+                AlterContentPart(contentPart);
             }
 
             return Task.CompletedTask;
         }
 
-        private void ReplaceContentType(ContentTypeDefinition type, ContentTypeDefinitionRecord record, bool exists)
+        private void AlterContentType(ContentTypeDefinitionRecord record)
         {
-            if (exists)
-            {
-                _contentDefinitionManager.DeleteTypeDefinition(type.Name);
-            }
-
-            _contentDefinitionManager.AlterTypeDefinition(type.Name, builder =>
+            _contentDefinitionManager.AlterTypeDefinition(record.Name, builder =>
             {
                 if (!String.IsNullOrEmpty(record.DisplayName))
                 {
@@ -80,14 +66,9 @@ namespace OrchardCore.ContentTypes.RecipeSteps
             });
         }
 
-        private void ReplaceContentPart(ContentPartDefinition part, ContentPartDefinitionRecord record, bool exists)
+        private void AlterContentPart(ContentPartDefinitionRecord record)
         {
-            if (exists)
-            {
-                _contentDefinitionManager.DeletePartDefinition(part.Name);
-            }
-
-            _contentDefinitionManager.AlterPartDefinition(part.Name, builder =>
+            _contentDefinitionManager.AlterPartDefinition(record.Name, builder =>
             {
                 builder.MergeSettings(record.Settings);
 

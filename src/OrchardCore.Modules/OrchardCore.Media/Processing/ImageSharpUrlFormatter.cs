@@ -1,4 +1,8 @@
-using System.Web;
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using Microsoft.AspNetCore.WebUtilities;
+using OrchardCore.Media.Fields;
 
 namespace OrchardCore.Media.Processing
 {
@@ -25,42 +29,54 @@ namespace OrchardCore.Media.Processing
 
     internal class ImageSharpUrlFormatter
     {
-        public static string GetImageResizeUrl(string path, int? width = null, int? height = null, ResizeMode resizeMode = ResizeMode.Undefined, int? quality = null, Format format = Format.Undefined)
+        public static string GetImageResizeUrl(string path, IDictionary<string, string> queryStringParams = null, int? width = null, int? height = null, ResizeMode resizeMode = ResizeMode.Undefined, int? quality = null, Format format = Format.Undefined, Anchor anchor = null, string bgcolor = null)
         {
-            if (string.IsNullOrEmpty(path) || (!width.HasValue && !height.HasValue))
+            if (string.IsNullOrEmpty(path) || (!width.HasValue && !height.HasValue && queryStringParams == null))
             {
                 return path;
             }
 
-            var pathParts = path.Split('?');
-            var query = HttpUtility.ParseQueryString(pathParts.Length > 1 ? pathParts[1] : string.Empty);
+            if (queryStringParams == null)
+            {
+                queryStringParams = new Dictionary<string, string>();
+            }
 
             if (width.HasValue)
             {
-                query["width"] = width.ToString();
+                queryStringParams["width"] = width.ToString();
             }
 
             if (height.HasValue)
             {
-                query["height"] = height.ToString();
+                queryStringParams["height"] = height.ToString();
             }
 
             if (resizeMode != ResizeMode.Undefined)
             {
-                query["rmode"] = resizeMode.ToString().ToLower();
+                queryStringParams["rmode"] = resizeMode.ToString().ToLower();
             }
 
             if (quality.HasValue)
             {
-                query["quality"] = quality.ToString();
+                queryStringParams["quality"] = quality.ToString();
             }
 
             if (format != Format.Undefined)
             {
-                query["format"] = format.ToString().ToLower();
+                queryStringParams["format"] = format.ToString().ToLower();
             }
 
-            return $"{pathParts[0]}?{query.ToString()}";
+            if (anchor != null)
+            {
+                queryStringParams["rxy"] = anchor.X.ToString(CultureInfo.InvariantCulture) + ',' + anchor.Y.ToString(CultureInfo.InvariantCulture);
+            }
+
+            if (!String.IsNullOrEmpty(bgcolor))
+            {
+                queryStringParams["bgcolor"] = bgcolor;
+            }
+
+            return QueryHelpers.AddQueryString(path, queryStringParams);
         }
     }
 }

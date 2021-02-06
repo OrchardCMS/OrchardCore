@@ -20,6 +20,7 @@ Here are some available functions:
 | `isHomepage(): Boolean` | Returns true if the current request Url is the current homepage |
 | `isAnonymous(): Boolean` | Returns true if there is no authenticated user on the current request |
 | `isAuthenticated(): Boolean` | Returns true if there is an authenticated user on the current request |
+| `isInRole(role: String): Boolean` | Returns true if the user is in the provided role |
 | `url(url: String): Boolean` | Returns true if the current url matches the provided url. Add a `*` to the end of the url parameter to match any url that start with  |
 | `culture(name: String): Boolean` | Returns true if the current culture name or the current culture's parent name matches the `name` argument |
 
@@ -39,6 +40,6 @@ You must have declared the corresponding zones as sections in your theme :
 
 === "Razor"
 
-``` html
-@await RenderSectionAsync("Header", required: false)
-```
+    ``` html
+    @await RenderSectionAsync("Header", required: false)
+    ```

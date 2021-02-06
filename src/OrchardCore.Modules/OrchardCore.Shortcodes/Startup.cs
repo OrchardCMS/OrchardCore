@@ -6,14 +6,19 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
+using OrchardCore.Deployment;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.Handlers;
 using OrchardCore.Modules;
 using OrchardCore.Mvc.Core.Utilities;
 using OrchardCore.Navigation;
+using OrchardCore.Recipes;
 using OrchardCore.Security.Permissions;
 using OrchardCore.Shortcodes.Controllers;
+using OrchardCore.Shortcodes.Deployment;
 using OrchardCore.Shortcodes.Drivers;
+using OrchardCore.Shortcodes.Providers;
+using OrchardCore.Shortcodes.Recipes;
 using OrchardCore.Shortcodes.Services;
 using OrchardCore.Shortcodes.ViewModels;
 using Shortcodes;
@@ -71,6 +76,8 @@ namespace OrchardCore.Shortcodes
             services.AddScoped<IPermissionProvider, Permissions>();
             services.AddScoped<INavigationProvider, AdminMenu>();
 
+            services.AddRecipeExecutionStep<ShortcodeTemplateStep>();
+
             services.AddScoped<IShortcodeProvider, TemplateShortcodeProvider>();
             services.AddScoped<IShortcodeDescriptorProvider, ShortcodeTemplatesDescriptorProvider>();
         }
@@ -99,6 +106,39 @@ namespace OrchardCore.Shortcodes
                 pattern: _adminOptions.AdminUrlPrefix + "/Shortcodes/Edit/{name}",
                 defaults: new { controller = templateControllerName, action = nameof(AdminController.Edit) }
             );
+        }
+    }
+
+    [RequireFeatures("OrchardCore.Localization")]
+    public class LocaleShortcodeProviderStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddShortcode<LocaleShortcodeProvider>("locale", d =>
+            {
+                d.DefaultValue = "[locale {language_code}] [/locale]";
+                d.Hint = "Conditionally render content in the specified language";
+                d.Usage =
+@"[locale en]English Text[/locale][locale fr false]French Text[/locale]<br>
+<table>
+  <tr>
+    <td>Args:</td>
+    <td>lang, fallback</td>
+  </tr>
+</table>";
+                d.Categories = new string[] { "Localization" };
+            });
+        }
+    }
+
+    [RequireFeatures("OrchardCore.Deployment", "OrchardCore.Shortcodes.Templates")]
+    public class ShortcodeTemplatesDeployementStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddTransient<IDeploymentSource, AllShortcodeTemplatesDeploymentSource>();
+            services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<AllShortcodeTemplatesDeploymentStep>());
+            services.AddScoped<IDisplayDriver<DeploymentStep>, AllShortcodeTemplatesDeploymentStepDriver>();
         }
     }
 }

@@ -11,13 +11,13 @@ namespace OrchardCore.Themes.TheAgencyTheme
             manifest
                 .DefineScript("TheAgencyTheme")
                 .SetDependencies("jQuery")
-                .SetUrl("~/TheAgencyTheme/Scripts/scripts.min.css", "~/TheAgencyTheme/Scripts/scripts.js")
-                .SetVersion("6.0.2");
+                .SetUrl("~/TheAgencyTheme/scripts/scripts.min.js", "~/TheAgencyTheme/scripts/scripts.js")
+                .SetVersion("6.0.3");
 
             manifest
                 .DefineStyle("TheAgencyTheme")
                 .SetUrl("~/TheAgencyTheme/Styles/styles.min.css", "~/TheAgencyTheme/Styles/styles.css")
-                .SetVersion("6.0.2");
+                .SetVersion("6.0.3");
 
             manifest
                 .DefineStyle("TheAgencyTheme-bootstrap-oc")

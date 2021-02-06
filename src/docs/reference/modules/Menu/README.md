@@ -30,7 +30,7 @@ The `Menu` shape is used to render a Menu.
             {% endfor %}
         </ul>
     </nav>
-```
+    ```
 
 === "Razor"
 

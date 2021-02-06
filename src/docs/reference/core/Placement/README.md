@@ -66,6 +66,14 @@ Placement information consists of:
 }
 ```
 
+### Placement precedence
+
+The placement info chosen for a shape is based on the following order:
+
+1. The main startup project (This can act as a super theme)
+2. Active theme (This will be the active front end theme if you're viewing the front end, or the active admin theme if you're viewing the admin)
+3. Modules (Ordered by dependencies)
+
 ### Placing Fields
 
 Fields have a custom differentiator as their shape is used in many places.  
@@ -115,7 +123,7 @@ You can use the `<shape>` tag helper to render any shape, even pass properties.
     ```
 
 For rendering content items, you could also use the following tag helper.
-Note: you need to add `@addTagHelper *, OrchardCore.Contents` to your `_ViewImports.cshtml` file to load this tag helper.
+Note: you need to add `@addTagHelper *, OrchardCore.Contents.TagHelpers` to your `_ViewImports.cshtml` file to load this tag helper. Ensure your project file also has a reference to OrchardCore.Contents.TagHelpers.
 
 === "Razor"
 

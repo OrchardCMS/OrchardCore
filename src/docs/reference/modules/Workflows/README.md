@@ -353,7 +353,7 @@ public class NotifyTask : TaskActivity
 The following is an example of a simple activity display driver:
 
 ```csharp
-public class NotifyTaskDisplay : ActivityDisplayDriver<NotifyTask, NotifyTaskViewModel>
+public class NotifyTaskDisplayDriver : ActivityDisplayDriver<NotifyTask, NotifyTaskViewModel>
 {
     protected override void EditActivity(NotifyTask activity, NotifyTaskViewModel model)
     {
@@ -414,17 +414,3 @@ Continuing with the `NotifyTask` example, we now need to create the following Ra
 - `NotifyTask.Fields.Design.cshtml`
 - `NotifyTask.Fields.Thumbnail.cshtml`
 - `NotifyTask.Fields.Edit.cshtml`
-
-## CREDITS
-
-### jsPlumb
-
-<https://github.com/jsplumb/jsplumb>  
-Copyright (c) 2010 - 2014 jsPlumb, <http://jsplumbtoolkit.com>  
-License: dual-licensed under both MIT and GPLv
-
-### NCrontab
-
-<https://github.com/atifaziz/NCrontab>  
-Copyright (C) Atif Aziz  
-License: Apache License 2.0

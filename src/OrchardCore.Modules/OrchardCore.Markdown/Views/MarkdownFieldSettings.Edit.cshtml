@@ -1,7 +1,7 @@
 @model MarkdownFieldSettingsViewModel
 
 <div class="form-group">
-    <div class="w-md-50">
+    <div class="w-md-50 pr-md-3">
         <label asp-for="Hint">@T["Hint"]</label>
         <textarea asp-for="Hint" rows="2" class="form-control"></textarea>
         <span class="hint">@T["The hint text to display for this field on the editor."]</span>
@@ -12,6 +12,9 @@
     <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input" asp-for="SanitizeHtml" checked="@Model.SanitizeHtml" />
         <label class="custom-control-label" asp-for="SanitizeHtml">@T["Sanitize Html"]</label>
-        <span class="hint">— @T["Whether the Html output is sanitized to prevent custom scripts."]</span>
+        <span class="hint dashed">
+            @T["Whether the Html output is sanitized to prevent custom scripts."]
+            <a class="seedoc" href="@(OrchardCore.Admin.Constants.DocsUrl)reference/core/Sanitizer" target="_blank">@T["See documentation"]</a>
+        </span>
     </div>
 </div>

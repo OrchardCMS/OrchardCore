@@ -123,15 +123,18 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                 return query;
             }
 
+            string defaultTableAlias = query.GetTypeAlias(typeof(ContentItemIndex));
+
             var transaction = await session.DemandAsync();
 
             IPredicateQuery predicateQuery = new PredicateQuery(
-                dialect: SqlDialectFactory.For(transaction.Connection),
+                dialect: session.Store.Configuration.SqlDialect,
                 shellSettings: context.ServiceProvider.GetService<ShellSettings>(),
                 propertyProviders: context.ServiceProvider.GetServices<IIndexPropertyProvider>());
 
             // Create the default table alias
             predicateQuery.CreateAlias("", nameof(ContentItemIndex));
+            predicateQuery.CreateTableAlias(nameof(ContentItemIndex), defaultTableAlias);
 
             // Add all provided table alias to the current predicate query
             var providers = context.ServiceProvider.GetServices<IIndexAliasProvider>();
@@ -144,7 +147,6 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
                 {
                     predicateQuery.CreateAlias(alias.Alias, alias.Index);
                     indexAliases.Add(alias.Alias, alias.Alias);
-
                     if (!indexes.ContainsKey(alias.Index))
                     {
                         indexes.Add(alias.Index, alias);
@@ -154,24 +156,30 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries
 
             var expressions = Expression.Conjunction();
             BuildWhereExpressions(where, expressions, null, fieldContext, indexAliases);
+            expressions.SearchUsedAlias(predicateQuery);
+
+            // Add all Indexes that were used in the predicate query
+
+            IQuery<ContentItem> contentQuery = query;
+            foreach (var usedAlias in predicateQuery.GetUsedAliases())
+            {
+                if (indexes.ContainsKey(usedAlias))
+                {
+                    contentQuery = contentQuery.With(indexes[usedAlias].IndexType);
+                    var tableAlias = query.GetTypeAlias(indexes[usedAlias].IndexType);
+                    predicateQuery.CreateTableAlias(indexes[usedAlias].Index, tableAlias);
+                }
+            }
 
             var whereSqlClause = expressions.ToSqlString(predicateQuery);
+
+
             query = query.Where(whereSqlClause);
 
             // Add all parameters that were used in the predicate query
             foreach (var parameter in predicateQuery.Parameters)
             {
                 query = query.WithParameter(parameter.Key, parameter.Value);
-            }
-
-            // Add all Indexes that were used in the predicate query
-            IQuery<ContentItem> contentQuery = query;
-            foreach (var usedAlias in predicateQuery.GetUsedAliases())
-            {
-                if (indexes.ContainsKey(usedAlias))
-                {
-                    contentQuery = indexes[usedAlias].With(contentQuery);
-                }
             }
 
             return contentQuery;
