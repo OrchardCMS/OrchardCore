@@ -358,17 +358,3 @@ and register `MyCustomTextFieldDisplayDriver` to resolve for only the custom edi
     When registering a custom display mode or editor driver you must alter the registrations for existing drivers.
     You should also take a dependency in your modules `Manifest.cs` on the module that the fields reside in.
     This will make your modules `Startup.cs` run later, and allow your registrations to override the original modules. 
-
-## CREDITS
-
-### bootstrap-slider
-
-<https://github.com/seiyria/bootstrap-slider>  
-Copyright (c) 2017 Kyle Kemp, Rohit Kalkur, and contributors  
-License: MIT
-
-### Bootstrap Switch
-
-<https://github.com/Bttstrp/bootstrap-switch>  
-Copyright (c) 2013-2015 The authors of Bootstrap Switch  
-License: MIT

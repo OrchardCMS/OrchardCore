@@ -11,6 +11,7 @@ namespace OrchardCore.ContentFields.Indexing.SQL
         {
             // NOTE: The Text Length has been decreased from 4000 characters to 768.
             // For existing SQL databases update the TextFieldIndex tables Text column length manually.
+            // INFO: The Text Length is now of 766 chars, but this is only used on a new installation.
             SchemaBuilder.CreateMapIndexTable<TextFieldIndex>(table => table
                 .Column<string>("ContentItemId", column => column.WithLength(26))
                 .Column<string>("ContentItemVersionId", column => column.WithLength(26))
@@ -24,35 +25,30 @@ namespace OrchardCore.ContentFields.Indexing.SQL
             );
 
             SchemaBuilder.AlterIndexTable<TextFieldIndex>(table => table
-                .CreateIndex("IDX_TextFieldIndex_ContentItemId", "ContentItemId")
+                .CreateIndex("IDX_TextFieldIndex_DocumentId",
+                    "DocumentId",
+                    "ContentItemId",
+                    "ContentItemVersionId",
+                    "Published",
+                    "Latest")
             );
 
             SchemaBuilder.AlterIndexTable<TextFieldIndex>(table => table
-                .CreateIndex("IDX_TextFieldIndex_ContentItemVersionId", "ContentItemVersionId")
+                .CreateIndex("IDX_TextFieldIndex_DocumentId_ContentType",
+                    "DocumentId",
+                    "ContentType",
+                    "ContentPart",
+                    "ContentField",
+                    "Published",
+                    "Latest")
             );
 
             SchemaBuilder.AlterIndexTable<TextFieldIndex>(table => table
-                .CreateIndex("IDX_TextFieldIndex_ContentType", "ContentType")
-            );
-
-            SchemaBuilder.AlterIndexTable<TextFieldIndex>(table => table
-                .CreateIndex("IDX_TextFieldIndex_ContentPart", "ContentPart")
-            );
-
-            SchemaBuilder.AlterIndexTable<TextFieldIndex>(table => table
-                .CreateIndex("IDX_TextFieldIndex_ContentField", "ContentField")
-            );
-
-            SchemaBuilder.AlterIndexTable<TextFieldIndex>(table => table
-                .CreateIndex("IDX_TextFieldIndex_Published", "Published")
-            );
-
-            SchemaBuilder.AlterIndexTable<TextFieldIndex>(table => table
-                .CreateIndex("IDX_TextFieldIndex_Latest", "Latest")
-            );
-
-            SchemaBuilder.AlterIndexTable<TextFieldIndex>(table => table
-                .CreateIndex("IDX_TextFieldIndex_Text", "Text")
+                .CreateIndex("IDX_TextFieldIndex_DocumentId_Text",
+                    "DocumentId",
+                    "Text",
+                    "Published",
+                    "Latest")
             );
 
             SchemaBuilder.CreateMapIndexTable<BooleanFieldIndex>(table => table
@@ -67,35 +63,23 @@ namespace OrchardCore.ContentFields.Indexing.SQL
             );
 
             SchemaBuilder.AlterIndexTable<BooleanFieldIndex>(table => table
-                .CreateIndex("IDX_BooleanFieldIndex_ContentItemId", "ContentItemId")
+                .CreateIndex("IDX_BooleanFieldIndex_DocumentId",
+                    "DocumentId",
+                    "ContentItemId",
+                    "ContentItemVersionId",
+                    "Published",
+                    "Latest")
             );
 
             SchemaBuilder.AlterIndexTable<BooleanFieldIndex>(table => table
-                .CreateIndex("IDX_BooleanFieldIndex_ContentItemVersionId", "ContentItemVersionId")
-            );
-
-            SchemaBuilder.AlterIndexTable<BooleanFieldIndex>(table => table
-                .CreateIndex("IDX_BooleanFieldIndex_ContentType", "ContentType")
-            );
-
-            SchemaBuilder.AlterIndexTable<BooleanFieldIndex>(table => table
-                .CreateIndex("IDX_BooleanFieldIndex_ContentPart", "ContentPart")
-            );
-
-            SchemaBuilder.AlterIndexTable<BooleanFieldIndex>(table => table
-                .CreateIndex("IDX_BooleanFieldIndex_ContentField", "ContentField")
-            );
-
-            SchemaBuilder.AlterIndexTable<BooleanFieldIndex>(table => table
-                .CreateIndex("IDX_BooleanFieldIndex_Published", "Published")
-            );
-
-            SchemaBuilder.AlterIndexTable<BooleanFieldIndex>(table => table
-                .CreateIndex("IDX_BooleanFieldIndex_Latest", "Latest")
-            );
-
-            SchemaBuilder.AlterIndexTable<BooleanFieldIndex>(table => table
-                .CreateIndex("IDX_BooleanFieldIndex_Boolean", "Boolean")
+                .CreateIndex("IDX_BooleanFieldIndex_DocumentId_ContentType",
+                    "DocumentId",
+                    "ContentType",
+                    "ContentPart",
+                    "ContentField",
+                    "Boolean",
+                    "Published",
+                    "Latest")
             );
 
             SchemaBuilder.CreateMapIndexTable<NumericFieldIndex>(table => table
@@ -110,35 +94,30 @@ namespace OrchardCore.ContentFields.Indexing.SQL
             );
 
             SchemaBuilder.AlterIndexTable<NumericFieldIndex>(table => table
-                .CreateIndex("IDX_NumericFieldIndex_ContentItemId", "ContentItemId")
+                .CreateIndex("IDX_NumericFieldIndex_DocumentId",
+                    "DocumentId",
+                    "ContentItemId",
+                    "ContentItemVersionId",
+                    "Published",
+                    "Latest")
             );
 
             SchemaBuilder.AlterIndexTable<NumericFieldIndex>(table => table
-                .CreateIndex("IDX_NumericFieldIndex_ContentItemVersionId", "ContentItemVersionId")
+                .CreateIndex("IDX_NumericFieldIndex_DocumentId_ContentType",
+                    "DocumentId",
+                    "ContentType",
+                    "ContentPart",
+                    "ContentField",
+                    "Published",
+                    "Latest")
             );
 
             SchemaBuilder.AlterIndexTable<NumericFieldIndex>(table => table
-                .CreateIndex("IDX_NumericFieldIndex_ContentType", "ContentType")
-            );
-
-            SchemaBuilder.AlterIndexTable<NumericFieldIndex>(table => table
-                .CreateIndex("IDX_NumericFieldIndex_ContentPart", "ContentPart")
-            );
-
-            SchemaBuilder.AlterIndexTable<NumericFieldIndex>(table => table
-                .CreateIndex("IDX_NumericFieldIndex_ContentField", "ContentField")
-            );
-
-            SchemaBuilder.AlterIndexTable<NumericFieldIndex>(table => table
-                .CreateIndex("IDX_NumericFieldIndex_Published", "Published")
-            );
-
-            SchemaBuilder.AlterIndexTable<NumericFieldIndex>(table => table
-                .CreateIndex("IDX_NumericFieldIndex_Latest", "Latest")
-            );
-
-            SchemaBuilder.AlterIndexTable<NumericFieldIndex>(table => table
-                .CreateIndex("IDX_NumericFieldIndex_Numeric", "Numeric")
+                .CreateIndex("IDX_NumericFieldIndex_DocumentId_Numeric",
+                    "DocumentId",
+                    "Numeric",
+                    "Published",
+                    "Latest")
             );
 
             SchemaBuilder.CreateMapIndexTable<DateTimeFieldIndex>(table => table
@@ -153,35 +132,30 @@ namespace OrchardCore.ContentFields.Indexing.SQL
             );
 
             SchemaBuilder.AlterIndexTable<DateTimeFieldIndex>(table => table
-                .CreateIndex("IDX_DateTimeFieldIndex_ContentItemId", "ContentItemId")
+                .CreateIndex("IDX_DateTimeFieldIndex_DocumentId",
+                    "DocumentId",
+                    "ContentItemId",
+                    "ContentItemVersionId",
+                    "Published",
+                    "Latest")
             );
 
             SchemaBuilder.AlterIndexTable<DateTimeFieldIndex>(table => table
-                .CreateIndex("IDX_DateTimeFieldIndex_ContentItemVersionId", "ContentItemVersionId")
+                .CreateIndex("IDX_DateTimeFieldIndex_DocumentId_ContentType",
+                    "DocumentId",
+                    "ContentType",
+                    "ContentPart",
+                    "ContentField",
+                    "Published",
+                    "Latest")
             );
 
             SchemaBuilder.AlterIndexTable<DateTimeFieldIndex>(table => table
-                .CreateIndex("IDX_DateTimeFieldIndex_ContentType", "ContentType")
-            );
-
-            SchemaBuilder.AlterIndexTable<DateTimeFieldIndex>(table => table
-                .CreateIndex("IDX_DateTimeFieldIndex_ContentPart", "ContentPart")
-            );
-
-            SchemaBuilder.AlterIndexTable<DateTimeFieldIndex>(table => table
-                .CreateIndex("IDX_DateTimeFieldIndex_ContentField", "ContentField")
-            );
-
-            SchemaBuilder.AlterIndexTable<DateTimeFieldIndex>(table => table
-                .CreateIndex("IDX_DateTimeFieldIndex_Published", "Published")
-            );
-
-            SchemaBuilder.AlterIndexTable<DateTimeFieldIndex>(table => table
-                .CreateIndex("IDX_DateTimeFieldIndex_Latest", "Latest")
-            );
-
-            SchemaBuilder.AlterIndexTable<DateTimeFieldIndex>(table => table
-                .CreateIndex("IDX_DateTimeFieldIndex_DateTime", "DateTime")
+                .CreateIndex("IDX_DateTimeFieldIndex_DocumentId_DateTime",
+                    "DocumentId",
+                    "DateTime",
+                    "Published",
+                    "Latest")
             );
 
             SchemaBuilder.CreateMapIndexTable<DateFieldIndex>(table => table
@@ -196,35 +170,31 @@ namespace OrchardCore.ContentFields.Indexing.SQL
             );
 
             SchemaBuilder.AlterIndexTable<DateFieldIndex>(table => table
-                .CreateIndex("IDX_DateFieldIndex_ContentItemId", "ContentItemId")
+                .CreateIndex("IDX_DateFieldIndex_DocumentId",
+                    "DocumentId",
+                    "ContentItemId",
+                    "ContentItemVersionId",
+                    "Published",
+                    "Latest")
             );
 
             SchemaBuilder.AlterIndexTable<DateFieldIndex>(table => table
-                .CreateIndex("IDX_DateFieldIndex_ContentItemVersionId", "ContentItemVersionId")
+                .CreateIndex("IDX_DateFieldIndex_DocumentId_ContentType",
+                    "DocumentId",
+                    "ContentType",
+                    "ContentPart",
+                    "ContentField",
+                    "Published",
+                    "Latest")
             );
 
             SchemaBuilder.AlterIndexTable<DateFieldIndex>(table => table
-                .CreateIndex("IDX_DateFieldIndex_ContentType", "ContentType")
-            );
-
-            SchemaBuilder.AlterIndexTable<DateFieldIndex>(table => table
-                .CreateIndex("IDX_DateFieldIndex_ContentPart", "ContentPart")
-            );
-
-            SchemaBuilder.AlterIndexTable<DateFieldIndex>(table => table
-                .CreateIndex("IDX_DateFieldIndex_ContentField", "ContentField")
-            );
-
-            SchemaBuilder.AlterIndexTable<DateFieldIndex>(table => table
-                .CreateIndex("IDX_DateFieldIndex_Published", "Published")
-            );
-
-            SchemaBuilder.AlterIndexTable<DateFieldIndex>(table => table
-                .CreateIndex("IDX_DateFieldIndex_Latest", "Latest")
-            );
-
-            SchemaBuilder.AlterIndexTable<DateFieldIndex>(table => table
-                .CreateIndex("IDX_DateFieldIndex_Date", "Date")
+                .CreateIndex("IDX_DateFieldIndex_DocumentId_Date",
+                    "DocumentId",
+                    "ContentType",
+                    "Date",
+                    "Published",
+                    "Latest")
             );
 
             SchemaBuilder.CreateMapIndexTable<ContentPickerFieldIndex>(table => table
@@ -239,35 +209,30 @@ namespace OrchardCore.ContentFields.Indexing.SQL
             );
 
             SchemaBuilder.AlterIndexTable<ContentPickerFieldIndex>(table => table
-                .CreateIndex("IDX_ContentPickerFieldIndex_ContentItemId", "ContentItemId")
+                .CreateIndex("IDX_ContentPickerFieldIndex_DocumentId",
+                    "DocumentId",
+                    "ContentItemId",
+                    "ContentItemVersionId",
+                    "Published",
+                    "Latest")
             );
 
             SchemaBuilder.AlterIndexTable<ContentPickerFieldIndex>(table => table
-                .CreateIndex("IDX_ContentPickerFieldIndex_ContentItemVersionId", "ContentItemVersionId")
+                .CreateIndex("IDX_ContentPickerFieldIndex_DocumentId_ContentType",
+                    "DocumentId",
+                    "ContentType",
+                    "ContentPart",
+                    "ContentField",
+                    "Published",
+                    "Latest")
             );
 
             SchemaBuilder.AlterIndexTable<ContentPickerFieldIndex>(table => table
-                .CreateIndex("IDX_ContentPickerFieldIndex_ContentType", "ContentType")
-            );
-
-            SchemaBuilder.AlterIndexTable<ContentPickerFieldIndex>(table => table
-                .CreateIndex("IDX_ContentPickerFieldIndex_ContentPart", "ContentPart")
-            );
-
-            SchemaBuilder.AlterIndexTable<ContentPickerFieldIndex>(table => table
-                .CreateIndex("IDX_ContentPickerFieldIndex_ContentField", "ContentField")
-            );
-
-            SchemaBuilder.AlterIndexTable<ContentPickerFieldIndex>(table => table
-                .CreateIndex("IDX_ContentPickerFieldIndex_Published", "Published")
-            );
-
-            SchemaBuilder.AlterIndexTable<ContentPickerFieldIndex>(table => table
-                .CreateIndex("IDX_ContentPickerFieldIndex_Latest", "Latest")
-            );
-
-            SchemaBuilder.AlterIndexTable<ContentPickerFieldIndex>(table => table
-                .CreateIndex("IDX_ContentPickerFieldIndex_SelectedContentItemId", "SelectedContentItemId")
+                .CreateIndex("IDX_ContentPickerFieldIndex_DocumentId_SelectedContentItemId",
+                    "DocumentId",
+                    "SelectedContentItemId",
+                    "Published",
+                    "Latest")
             );
 
             SchemaBuilder.CreateMapIndexTable<TimeFieldIndex>(table => table
@@ -282,40 +247,36 @@ namespace OrchardCore.ContentFields.Indexing.SQL
             );
 
             SchemaBuilder.AlterIndexTable<TimeFieldIndex>(table => table
-                .CreateIndex("IDX_TimeFieldIndex_ContentItemId", "ContentItemId")
+                .CreateIndex("IDX_TimeFieldIndex_DocumentId",
+                    "DocumentId",
+                    "ContentItemId",
+                    "ContentItemVersionId",
+                    "Published",
+                    "Latest")
             );
 
             SchemaBuilder.AlterIndexTable<TimeFieldIndex>(table => table
-                .CreateIndex("IDX_TimeFieldIndex_ContentItemVersionId", "ContentItemVersionId")
+                .CreateIndex("IDX_TimeFieldIndex_DocumentId_ContentType",
+                    "DocumentId",
+                    "ContentType",
+                    "ContentPart",
+                    "ContentField",
+                    "Published",
+                    "Latest")
             );
 
             SchemaBuilder.AlterIndexTable<TimeFieldIndex>(table => table
-                .CreateIndex("IDX_TimeFieldIndex_ContentType", "ContentType")
-            );
-
-            SchemaBuilder.AlterIndexTable<TimeFieldIndex>(table => table
-                .CreateIndex("IDX_TimeFieldIndex_ContentPart", "ContentPart")
-            );
-
-            SchemaBuilder.AlterIndexTable<TimeFieldIndex>(table => table
-                .CreateIndex("IDX_TimeFieldIndex_ContentField", "ContentField")
-            );
-
-            SchemaBuilder.AlterIndexTable<TimeFieldIndex>(table => table
-                .CreateIndex("IDX_TimeFieldIndex_Published", "Published")
-            );
-
-            SchemaBuilder.AlterIndexTable<TimeFieldIndex>(table => table
-                .CreateIndex("IDX_TimeFieldIndex_Latest", "Latest")
-            );
-
-            SchemaBuilder.AlterIndexTable<TimeFieldIndex>(table => table
-                .CreateIndex("IDX_TimeFieldIndex_Time", "Time")
+                .CreateIndex("IDX_TimeFieldIndex_DocumentId_Time",
+                    "DocumentId",
+                    "Time",
+                    "Published",
+                    "Latest")
             );
 
             // NOTE: The Url and Text Length has been decreased from 4000 characters to 768.
             // For existing SQL databases update the LinkFieldIndex tables Url and Text column length manually.
             // The BigText and BigUrl columns are new additions so will not be populated until the content item is republished.
+            // INFO: The Url and Text Length is now of 766 chars, but this is only used on a new installation.
             SchemaBuilder.CreateMapIndexTable<LinkFieldIndex>(table => table
                 .Column<string>("ContentItemId", column => column.WithLength(26))
                 .Column<string>("ContentItemVersionId", column => column.WithLength(26))
@@ -331,39 +292,38 @@ namespace OrchardCore.ContentFields.Indexing.SQL
             );
 
             SchemaBuilder.AlterIndexTable<LinkFieldIndex>(table => table
-                .CreateIndex("IDX_LinkFieldIndex_ContentItemId", "ContentItemId")
+                .CreateIndex("IDX_LinkFieldIndex_DocumentId",
+                    "DocumentId",
+                    "ContentItemId",
+                    "ContentItemVersionId",
+                    "Published",
+                    "Latest")
             );
 
             SchemaBuilder.AlterIndexTable<LinkFieldIndex>(table => table
-                .CreateIndex("IDX_LinkFieldIndex_ContentItemVersionId", "ContentItemVersionId")
+                .CreateIndex("IDX_LinkFieldIndex_DocumentId_ContentType",
+                    "DocumentId",
+                    "ContentType",
+                    "ContentPart",
+                    "ContentField",
+                    "Published",
+                    "Latest")
             );
 
             SchemaBuilder.AlterIndexTable<LinkFieldIndex>(table => table
-                .CreateIndex("IDX_LinkFieldIndex_ContentType", "ContentType")
+                .CreateIndex("IDX_LinkFieldIndex_DocumentId_Url",
+                    "DocumentId",
+                    "Url",
+                    "Published",
+                    "Latest")
             );
 
             SchemaBuilder.AlterIndexTable<LinkFieldIndex>(table => table
-                .CreateIndex("IDX_LinkFieldIndex_ContentPart", "ContentPart")
-            );
-
-            SchemaBuilder.AlterIndexTable<LinkFieldIndex>(table => table
-                .CreateIndex("IDX_LinkFieldIndex_ContentField", "ContentField")
-            );
-
-            SchemaBuilder.AlterIndexTable<LinkFieldIndex>(table => table
-                .CreateIndex("IDX_LinkFieldIndex_Published", "Published")
-            );
-
-            SchemaBuilder.AlterIndexTable<LinkFieldIndex>(table => table
-                .CreateIndex("IDX_LinkFieldIndex_Latest", "Latest")
-            );
-
-            SchemaBuilder.AlterIndexTable<LinkFieldIndex>(table => table
-                .CreateIndex("IDX_LinkFieldIndex_Url", "Url")
-            );
-
-            SchemaBuilder.AlterIndexTable<LinkFieldIndex>(table => table
-                .CreateIndex("IDX_LinkFieldIndex_Text", "Text")
+                .CreateIndex("IDX_LinkFieldIndex_DocumentId_Text",
+                    "DocumentId",
+                    "Text",
+                    "Published",
+                    "Latest")
             );
 
             SchemaBuilder.CreateMapIndexTable<HtmlFieldIndex>(table => table
@@ -378,37 +338,68 @@ namespace OrchardCore.ContentFields.Indexing.SQL
             );
 
             SchemaBuilder.AlterIndexTable<HtmlFieldIndex>(table => table
-                .CreateIndex("IDX_HtmlFieldIndex_ContentItemId", "ContentItemId")
+                .CreateIndex("IDX_HtmlFieldIndex_DocumentId",
+                    "DocumentId",
+                    "ContentItemId",
+                    "ContentItemVersionId",
+                    "Published",
+                    "Latest")
             );
 
             SchemaBuilder.AlterIndexTable<HtmlFieldIndex>(table => table
-                .CreateIndex("IDX_HtmlFieldIndex_ContentItemVersionId", "ContentItemVersionId")
+                .CreateIndex("IDX_HtmlFieldIndex_DocumentId_ContentType",
+                    "DocumentId",
+                    "ContentType",
+                    "ContentPart",
+                    "ContentField",
+                    "Published",
+                    "Latest")
             );
 
-            SchemaBuilder.AlterIndexTable<HtmlFieldIndex>(table => table
-                .CreateIndex("IDX_HtmlFieldIndex_ContentType", "ContentType")
+            SchemaBuilder.CreateMapIndexTable<MultiTextFieldIndex>(table => table
+                .Column<string>("ContentItemId", column => column.WithLength(26))
+                .Column<string>("ContentItemVersionId", column => column.WithLength(26))
+                .Column<string>("ContentType", column => column.WithLength(ContentItemIndex.MaxContentTypeSize))
+                .Column<string>("ContentPart", column => column.WithLength(ContentItemIndex.MaxContentPartSize))
+                .Column<string>("ContentField", column => column.WithLength(ContentItemIndex.MaxContentFieldSize))
+                .Column<bool>("Published", column => column.Nullable())
+                .Column<bool>("Latest", column => column.Nullable())
+                .Column<string>("Value", column => column.Nullable().WithLength(MultiTextFieldIndex.MaxValueSize))
+                .Column<string>("BigValue", column => column.Nullable().Unlimited())
             );
 
-            SchemaBuilder.AlterIndexTable<HtmlFieldIndex>(table => table
-                .CreateIndex("IDX_HtmlFieldIndex_ContentPart", "ContentPart")
+            SchemaBuilder.AlterIndexTable<MultiTextFieldIndex>(table => table
+                .CreateIndex("IDX_MultiTextFieldIndex_DocumentId",
+                    "DocumentId",
+                    "ContentItemId",
+                    "ContentItemVersionId",
+                    "Published",
+                    "Latest")
             );
 
-            SchemaBuilder.AlterIndexTable<HtmlFieldIndex>(table => table
-                .CreateIndex("IDX_HtmlFieldIndex_ContentField", "ContentField")
+            SchemaBuilder.AlterIndexTable<MultiTextFieldIndex>(table => table
+                .CreateIndex("IDX_MultiTextFieldIndex_DocumentId_ContentType",
+                    "DocumentId",
+                    "ContentType",
+                    "ContentPart",
+                    "ContentField",
+                    "Published",
+                    "Latest")
             );
 
-            SchemaBuilder.AlterIndexTable<HtmlFieldIndex>(table => table
-                .CreateIndex("IDX_HtmlFieldIndex_Published", "Published")
+            SchemaBuilder.AlterIndexTable<MultiTextFieldIndex>(table => table
+                .CreateIndex("IDX_MultiTextFieldIndex_DocumentId_Value",
+                    "DocumentId",
+                    "Value",
+                    "Published",
+                    "Latest")
             );
 
-            SchemaBuilder.AlterIndexTable<HtmlFieldIndex>(table => table
-                .CreateIndex("IDX_HtmlFieldIndex_Latest", "Latest")
-            );
-
-            // Return 2 to shorcut migrations on new installations.
-            return 2;
+            // Shortcut other migration steps on new content definition schemas.
+            return 4;
         }
 
+        // This code can be removed in a later version.
         public int UpdateFrom1()
         {
             SchemaBuilder.AlterIndexTable<LinkFieldIndex>(table => table
@@ -420,6 +411,7 @@ namespace OrchardCore.ContentFields.Indexing.SQL
             return 2;
         }
 
+        // This code can be removed in a later version.
         public int UpdateFrom2()
         {
             SchemaBuilder.CreateMapIndexTable<MultiTextFieldIndex>(table => table
@@ -434,21 +426,279 @@ namespace OrchardCore.ContentFields.Indexing.SQL
                 .Column<string>("BigValue", column => column.Nullable().Unlimited())
             );
 
-            // The indexes here represent a change in technique to always include the DocumentId
-            SchemaBuilder.AlterIndexTable<MultiTextFieldIndex>(table => table
-                .CreateIndex("IDX_MultiTextFieldIndex_Ids", "DocumentId", "ContentItemId", "Published", "Latest", "ContentItemVersionId")
-            );
-
-            SchemaBuilder.AlterIndexTable<MultiTextFieldIndex>(table => table
-                .CreateIndex("IDX_MultiTextFieldIndex_Types", "DocumentId", "ContentType", "ContentPart", "ContentField")
-            );
-
-            // This must stay under the MySql limits on length for key value indexes.
-            SchemaBuilder.AlterIndexTable<MultiTextFieldIndex>(table => table
-                .CreateIndex("IDX_MultiTextFieldIndex_Value", "DocumentId", "Value")
-            );
-
             return 3;
+        }
+
+        // This code can be removed in a later version.
+        public int UpdateFrom3()
+        {
+            SchemaBuilder.AlterIndexTable<TextFieldIndex>(table => table
+                .CreateIndex("IDX_TextFieldIndex_DocumentId",
+                    "DocumentId",
+                    "ContentItemId",
+                    "ContentItemVersionId",
+                    "Published",
+                    "Latest")
+            );
+
+            SchemaBuilder.AlterIndexTable<TextFieldIndex>(table => table
+                .CreateIndex("IDX_TextFieldIndex_DocumentId_ContentType",
+                    "DocumentId",
+                    "ContentType",
+                    "ContentPart",
+                    "ContentField",
+                    "Published",
+                    "Latest")
+            );
+
+            // Can't be created on existing databases where the 'Text' may be of 768 chars.
+            //SchemaBuilder.AlterIndexTable<TextFieldIndex>(table => table
+            //    .CreateIndex("IDX_TextFieldIndex_DocumentId_Text",
+            //        "DocumentId",
+            //        "Text",
+            //        "Published",
+            //        "Latest")
+            //);
+
+            SchemaBuilder.AlterIndexTable<BooleanFieldIndex>(table => table
+                .CreateIndex("IDX_BooleanFieldIndex_DocumentId",
+                    "DocumentId",
+                    "ContentItemId",
+                    "ContentItemVersionId",
+                    "Published",
+                    "Latest")
+            );
+
+            SchemaBuilder.AlterIndexTable<BooleanFieldIndex>(table => table
+                .CreateIndex("IDX_BooleanFieldIndex_DocumentId_ContentType",
+                    "DocumentId",
+                    "ContentType",
+                    "ContentPart",
+                    "ContentField",
+                    "Boolean",
+                    "Published",
+                    "Latest")
+            );
+
+            SchemaBuilder.AlterIndexTable<NumericFieldIndex>(table => table
+                .CreateIndex("IDX_NumericFieldIndex_DocumentId",
+                    "DocumentId",
+                    "ContentItemId",
+                    "ContentItemVersionId",
+                    "Published",
+                    "Latest")
+            );
+
+            SchemaBuilder.AlterIndexTable<NumericFieldIndex>(table => table
+                .CreateIndex("IDX_NumericFieldIndex_DocumentId_ContentType",
+                    "DocumentId",
+                    "ContentType",
+                    "ContentPart",
+                    "ContentField",
+                    "Published",
+                    "Latest")
+            );
+
+            SchemaBuilder.AlterIndexTable<NumericFieldIndex>(table => table
+                .CreateIndex("IDX_NumericFieldIndex_DocumentId_Numeric",
+                    "DocumentId",
+                    "Numeric",
+                    "Published",
+                    "Latest")
+            );
+
+            SchemaBuilder.AlterIndexTable<DateTimeFieldIndex>(table => table
+                .CreateIndex("IDX_DateTimeFieldIndex_DocumentId",
+                    "DocumentId",
+                    "ContentItemId",
+                    "ContentItemVersionId",
+                    "Published",
+                    "Latest")
+            );
+
+            SchemaBuilder.AlterIndexTable<DateTimeFieldIndex>(table => table
+                .CreateIndex("IDX_DateTimeFieldIndex_DocumentId_ContentType",
+                    "DocumentId",
+                    "ContentType",
+                    "ContentPart",
+                    "ContentField",
+                    "Published",
+                    "Latest")
+            );
+
+            SchemaBuilder.AlterIndexTable<DateTimeFieldIndex>(table => table
+                .CreateIndex("IDX_DateTimeFieldIndex_DocumentId_DateTime",
+                    "DocumentId",
+                    "DateTime",
+                    "Published",
+                    "Latest")
+            );
+
+            SchemaBuilder.AlterIndexTable<DateFieldIndex>(table => table
+                .CreateIndex("IDX_DateFieldIndex_DocumentId",
+                    "DocumentId",
+                    "ContentItemId",
+                    "ContentItemVersionId",
+                    "Published",
+                    "Latest")
+            );
+
+            SchemaBuilder.AlterIndexTable<DateFieldIndex>(table => table
+                .CreateIndex("IDX_DateFieldIndex_DocumentId_ContentType",
+                    "DocumentId",
+                    "ContentType",
+                    "ContentPart",
+                    "ContentField",
+                    "Published",
+                    "Latest")
+            );
+
+            SchemaBuilder.AlterIndexTable<DateFieldIndex>(table => table
+                .CreateIndex("IDX_DateFieldIndex_DocumentId_Date",
+                    "DocumentId",
+                    "Date",
+                    "Published",
+                    "Latest")
+            );
+
+            SchemaBuilder.AlterIndexTable<ContentPickerFieldIndex>(table => table
+                .CreateIndex("IDX_ContentPickerFieldIndex_DocumentId",
+                    "DocumentId",
+                    "ContentItemId",
+                    "ContentItemVersionId",
+                    "Published",
+                    "Latest")
+            );
+
+            SchemaBuilder.AlterIndexTable<ContentPickerFieldIndex>(table => table
+                .CreateIndex("IDX_ContentPickerFieldIndex_DocumentId_ContentType",
+                    "DocumentId",
+                    "ContentType",
+                    "ContentPart",
+                    "ContentField",
+                    "Published",
+                    "Latest")
+            );
+
+            SchemaBuilder.AlterIndexTable<ContentPickerFieldIndex>(table => table
+                .CreateIndex("IDX_ContentPickerFieldIndex_DocumentId_SelectedContentItemId",
+                    "DocumentId",
+                    "SelectedContentItemId",
+                    "Published",
+                    "Latest")
+            );
+
+            SchemaBuilder.AlterIndexTable<TimeFieldIndex>(table => table
+                .CreateIndex("IDX_TimeFieldIndex_DocumentId",
+                    "DocumentId",
+                    "ContentItemId",
+                    "ContentItemVersionId",
+                    "Published",
+                    "Latest")
+            );
+
+            SchemaBuilder.AlterIndexTable<TimeFieldIndex>(table => table
+                .CreateIndex("IDX_TimeFieldIndex_DocumentId_ContentType",
+                    "DocumentId",
+                    "ContentType",
+                    "ContentPart",
+                    "ContentField",
+                    "Published",
+                    "Latest")
+            );
+
+            SchemaBuilder.AlterIndexTable<TimeFieldIndex>(table => table
+                .CreateIndex("IDX_TimeFieldIndex_DocumentId_Time",
+                    "DocumentId",
+                    "Time",
+                    "Published",
+                    "Latest")
+            );
+
+            SchemaBuilder.AlterIndexTable<LinkFieldIndex>(table => table
+                .CreateIndex("IDX_LinkFieldIndex_DocumentId",
+                    "DocumentId",
+                    "ContentItemId",
+                    "ContentItemVersionId",
+                    "Published",
+                    "Latest")
+            );
+
+            SchemaBuilder.AlterIndexTable<LinkFieldIndex>(table => table
+                .CreateIndex("IDX_LinkFieldIndex_DocumentId_ContentType",
+                    "DocumentId",
+                    "ContentType",
+                    "ContentPart",
+                    "ContentField",
+                    "Published",
+                    "Latest")
+            );
+
+            // Can't be created on existing databases where the 'Url' may be of 768 chars.
+            //SchemaBuilder.AlterIndexTable<LinkFieldIndex>(table => table
+            //    .CreateIndex("IDX_LinkFieldIndex_DocumentId_Url",
+            //        "DocumentId",
+            //        "Url",
+            //        "Published",
+            //        "Latest")
+            //);
+
+            // Can't be created on existing databases where the 'Text' may be of 768 chars.
+            //SchemaBuilder.AlterIndexTable<LinkFieldIndex>(table => table
+            //    .CreateIndex("IDX_LinkFieldIndex_DocumentId_Text",
+            //        "DocumentId",
+            //        "Text",
+            //        "Published",
+            //        "Latest")
+            //);
+
+            SchemaBuilder.AlterIndexTable<HtmlFieldIndex>(table => table
+                .CreateIndex("IDX_HtmlFieldIndex_DocumentId",
+                    "DocumentId",
+                    "ContentItemId",
+                    "ContentItemVersionId",
+                    "Published",
+                    "Latest")
+            );
+
+            SchemaBuilder.AlterIndexTable<HtmlFieldIndex>(table => table
+                .CreateIndex("IDX_HtmlFieldIndex_DocumentId_ContentType",
+                    "DocumentId",
+                    "ContentType",
+                    "ContentPart",
+                    "ContentField",
+                    "Published",
+                    "Latest")
+            );
+
+            SchemaBuilder.AlterIndexTable<MultiTextFieldIndex>(table => table
+                .CreateIndex("IDX_MultiTextFieldIndex_DocumentId",
+                    "DocumentId",
+                    "ContentItemId",
+                    "ContentItemVersionId",
+                    "Published",
+                    "Latest")
+            );
+
+            SchemaBuilder.AlterIndexTable<MultiTextFieldIndex>(table => table
+                .CreateIndex("IDX_MultiTextFieldIndex_DocumentId_ContentType",
+                    "DocumentId",
+                    "ContentType",
+                    "ContentPart",
+                    "ContentField",
+                    "Published",
+                    "Latest")
+            );
+
+            SchemaBuilder.AlterIndexTable<MultiTextFieldIndex>(table => table
+                .CreateIndex("IDX_MultiTextFieldIndex_DocumentId_Value",
+                    "DocumentId",
+                    "Value",
+                    "Published",
+                    "Latest")
+            );
+
+            return 4;
         }
     }
 }

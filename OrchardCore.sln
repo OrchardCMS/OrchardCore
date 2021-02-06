@@ -386,6 +386,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Placements", "s
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.Configuration.KeyVault", "src\OrchardCore\OrchardCore.Configuration.KeyVault\OrchardCore.Configuration.KeyVault.csproj", "{17187E9E-90EE-4484-AC5E-8920D9126025}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrchardCore.AdminDashboard", "src\OrchardCore.Modules\OrchardCore.AdminDashboard\OrchardCore.AdminDashboard.csproj", "{231F7904-FAD1-4E7A-8BCB-061C41C55BDC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -1048,6 +1050,10 @@ Global
 		{17187E9E-90EE-4484-AC5E-8920D9126025}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{17187E9E-90EE-4484-AC5E-8920D9126025}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{17187E9E-90EE-4484-AC5E-8920D9126025}.Release|Any CPU.Build.0 = Release|Any CPU
+		{231F7904-FAD1-4E7A-8BCB-061C41C55BDC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{231F7904-FAD1-4E7A-8BCB-061C41C55BDC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{231F7904-FAD1-4E7A-8BCB-061C41C55BDC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{231F7904-FAD1-4E7A-8BCB-061C41C55BDC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1231,6 +1237,7 @@ Global
 		{2CA507BD-5517-4CD2-8F30-093AC5D11EBA} = {B8D16C60-99B4-43D5-A3AD-4CD89AF39B25}
 		{5F94223B-CD69-47E1-B4AE-DEA03CBC4D3D} = {90030E85-0C4F-456F-B879-443E8A3F220D}
 		{17187E9E-90EE-4484-AC5E-8920D9126025} = {F23AC6C2-DE44-4699-999D-3C478EF3D691}
+		{231F7904-FAD1-4E7A-8BCB-061C41C55BDC} = {A066395F-6F73-45DC-B5A6-B4E306110DCE}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {46A1D25A-78D1-4476-9CBF-25B75E296341}

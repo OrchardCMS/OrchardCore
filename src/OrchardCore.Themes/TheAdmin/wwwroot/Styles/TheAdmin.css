@@ -15531,6 +15531,8 @@
     background: transparent !important; }
   [dir]:root[data-theme='default'] .CodeMirror-focused .CodeMirror-activeline-background {
     background: rgba(100, 100, 100, 0.1) !important; }
+  :root[data-theme='default'] .trumbowyg-fullscreen {
+    z-index: 1040; }
   :root[data-theme='default'] .switch {
     font-size: 1rem;
     position: relative; }
@@ -32211,6 +32213,8 @@
     background: transparent !important; }
   [dir]:root[data-theme='darkmode'] .CodeMirror-focused .CodeMirror-activeline-background {
     background: rgba(100, 100, 100, 0.1) !important; }
+  :root[data-theme='darkmode'] .trumbowyg-fullscreen {
+    z-index: 1040; }
   :root[data-theme='darkmode'] .switch {
     font-size: 1rem;
     position: relative; }
