@@ -29,7 +29,7 @@ namespace OrchardCore.Layers.Drivers
         {
             var user = _httpContextAccessor.HttpContext?.User;
 
-            if (user == null || !await _authorizationService.AuthorizeAsync(user, Permissions.ManageLayers))
+            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageLayers))
             {
                 return null;
             }
@@ -44,7 +44,7 @@ namespace OrchardCore.Layers.Drivers
         {
             var user = _httpContextAccessor.HttpContext?.User;
 
-            if (user == null || !await _authorizationService.AuthorizeAsync(user, Permissions.ManageLayers))
+            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageLayers))
             {
                 return null;
             }

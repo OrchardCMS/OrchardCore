@@ -37,7 +37,7 @@ namespace OrchardCore.Google.Authentication.Drivers
         public override async Task<IDisplayResult> EditAsync(GoogleAuthenticationSettings settings, BuildEditorContext context)
         {
             var user = _httpContextAccessor.HttpContext?.User;
-            if (user == null || !await _authorizationService.AuthorizeAsync(user, Permissions.ManageGoogleAuthentication))
+            if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageGoogleAuthentication))
             {
                 return null;
             }
@@ -67,7 +67,7 @@ namespace OrchardCore.Google.Authentication.Drivers
             if (context.GroupId == GoogleConstants.Features.GoogleAuthentication)
             {
                 var user = _httpContextAccessor.HttpContext?.User;
-                if (user == null || !await _authorizationService.AuthorizeAsync(user, Permissions.ManageGoogleAuthentication))
+                if (!await _authorizationService.AuthorizeAsync(user, Permissions.ManageGoogleAuthentication))
                 {
                     return null;
                 }
