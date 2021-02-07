@@ -1,4 +1,4 @@
-@model OrchardCore.Layers.ViewModels.LayerEditViewModel
+@model LayerEditViewModel
 
 <zone Name="Title"><h1>@RenderTitleSegments(T["Edit Layer - {0}", Model.Name])</h1></zone>
 
@@ -20,6 +20,49 @@
         <textarea asp-for="Description" class="form-control" rows="3" type="text"></textarea>
         <span asp-validation-for="Description"></span>
     </div>
+    <div class="properties">
+        <div class="related">
+            <!-- Button trigger modal -->
+            <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modalRules">
+                @T["Add Rule"]
+            </button>            
+        </div>
+        @await DisplayAsync(Model.LayerRule)
+    </div>
+
 
     <input class="button" type="submit" value="@T["Save"]" />
 </form>
+
+
+<!-- Modal -->
+<div class="modal fade" id="modalRules" tabindex="-1" role="dialog" aria-labelledby="available-rules-title" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="available-rules-title">@T["Available Rules"]</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <input class="form-control" id="search-box" type="search" placeholder="@T["Filter"]" aria-label="@T["Filter"]" autofocus />
+                </div>
+                <div id="cards" class="row">
+                    @foreach (var thumbnail in Model.Thumbnails.OrderBy(t => t.Key))
+                    {
+                        thumbnail.Value.Link = Url.ActionLink("Create", "Rule", new { name = Model.Name, type = thumbnail.Key });
+
+                        <div class="col-sm-12 col-md-6 col-lg-4 d-flex align-items-stretch card-item">
+                            @await DisplayAsync(thumbnail.Value)
+                        </div>
+                    }
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">@T["Cancel"]</button>
+            </div>
+        </div>
+    </div>
+</div>

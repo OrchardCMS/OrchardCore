@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.Extensions.Localization;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display;
+using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Documents;
@@ -16,6 +17,8 @@ using OrchardCore.Layers.Handlers;
 using OrchardCore.Layers.Models;
 using OrchardCore.Layers.Services;
 using OrchardCore.Layers.ViewModels;
+using OrchardCore.Rules.Models;
+using OrchardCore.Rules.Services;
 using OrchardCore.Settings;
 using YesSql;
 
@@ -31,6 +34,8 @@ namespace OrchardCore.Layers.Controllers
         private readonly ISession _session;
         private readonly IUpdateModelAccessor _updateModelAccessor;
         private readonly IVolatileDocumentManager<LayerState> _layerStateManager;
+        private readonly IDisplayManager<Rule> _displayManager;
+        private readonly IEnumerable<IRuleFactory> _ruleFactories;
         private readonly IStringLocalizer S;
         private readonly IHtmlLocalizer H;
         private readonly INotifier _notifier;
@@ -44,6 +49,8 @@ namespace OrchardCore.Layers.Controllers
             ISession session,
             IUpdateModelAccessor updateModelAccessor,
             IVolatileDocumentManager<LayerState> layerStateManager,
+            IDisplayManager<Rule> displayManager,
+            IEnumerable<IRuleFactory> ruleFactories,
             IStringLocalizer<AdminController> stringLocalizer,
             IHtmlLocalizer<AdminController> htmlLocalizer,
             INotifier notifier)
@@ -56,6 +63,8 @@ namespace OrchardCore.Layers.Controllers
             _session = session;
             _updateModelAccessor = updateModelAccessor;
             _layerStateManager = layerStateManager;
+            _displayManager = displayManager;
+            _ruleFactories = ruleFactories;
             _notifier = notifier;
             S = stringLocalizer;
             H = htmlLocalizer;
@@ -159,11 +168,27 @@ namespace OrchardCore.Layers.Controllers
                 return NotFound();
             }
 
+            var layerRule = await _displayManager.BuildDisplayAsync(layer.AllRule, _updateModelAccessor.ModelUpdater, "Summary");
+
+            var thumbnails = new Dictionary<string, dynamic>();
+            foreach (var factory in _ruleFactories)
+            {
+                var rule = factory.Create();
+                dynamic thumbnail = await _displayManager.BuildDisplayAsync(rule, _updateModelAccessor.ModelUpdater, "Thumbnail");
+                thumbnail.Rule = rule;
+                thumbnail.Controller = "Rule";
+                
+                thumbnails.Add(factory.Name, thumbnail);
+            }
+
+
             var model = new LayerEditViewModel
             {
                 Name = layer.Name,
                 Rule = layer.Rule,
-                Description = layer.Description
+                Description = layer.Description,
+                LayerRule = layerRule,
+                Thumbnails = thumbnails,
             };
 
             return View(model);

@@ -1,0 +1,25 @@
+@model dynamic
+
+<div class="properties">
+    <div class="related">
+        @*TODO will need a data attribute.*@
+        <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modalRules">
+            @T["Add Rule"]
+        </button>
+
+        <a asp-action="Edit"
+           asp-controller="Role"
+           asp-route-id="@Model.DeploymentPlanId"
+           asp-route-stepId="@Model.DeploymentStep.Id"
+           class="btn btn-primary btn-sm">@T["Edit"]</a>
+
+        <a asp-action="Delete"
+           asp-controller="Role"
+           asp-route-id="@Model.DeploymentPlanId"
+           asp-route-stepId="@Model.DeploymentStep.Id"
+           class="btn btn-danger btn-sm"
+           data-url-af="RemoveUrl UnsafeUrl">@T["Delete"]</a>
+    </div>
+
+    @await DisplayAsync(Model.Content)
+</div>
