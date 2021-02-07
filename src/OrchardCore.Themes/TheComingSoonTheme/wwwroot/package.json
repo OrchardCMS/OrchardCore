@@ -1,7 +1,7 @@
 {
     "title": "Coming Soon",
     "name": "startbootstrap-coming-soon",
-    "version": "5.0.7",
+    "version": "5.0.9",
     "scripts": {
         "start": "node_modules/.bin/gulp watch"
     },
@@ -14,35 +14,35 @@
         "theme",
         "template"
     ],
-    "homepage": "https://startbootstrap.com/template-overviews/coming-soon",
+    "homepage": "https://startbootstrap.com/theme/coming-soon",
     "bugs": {
-        "url": "https://github.com/BlackrockDigital/startbootstrap-coming-soon/issues",
+        "url": "https://github.com/StartBootstrap/startbootstrap-coming-soon/issues",
         "email": "feedback@startbootstrap.com"
     },
     "license": "MIT",
     "author": "Start Bootstrap",
     "contributors": [
-        "David Miller (http://davidmiller.io/)"
+        "David Miller (https://davidmiller.io/)"
     ],
     "repository": {
         "type": "git",
-        "url": "https://github.com/BlackrockDigital/startbootstrap-coming-soon.git"
+        "url": "https://github.com/StartBootstrap/startbootstrap-coming-soon.git"
     },
     "dependencies": {
-        "@fortawesome/fontawesome-free": "5.10.2",
-        "bootstrap": "4.3.1",
-        "jquery": "3.4.1"
+        "@fortawesome/fontawesome-free": "5.15.1",
+        "bootstrap": "4.5.3",
+        "jquery": "3.5.1"
     },
     "devDependencies": {
-        "browser-sync": "2.26.7",
-        "del": "5.1.0",
+        "browser-sync": "2.26.13",
+        "del": "6.0.0",
         "gulp": "4.0.2",
-        "gulp-autoprefixer": "7.0.0",
-        "gulp-clean-css": "4.2.0",
+        "gulp-autoprefixer": "7.0.1",
+        "gulp-clean-css": "4.3.0",
         "gulp-header": "2.0.9",
         "gulp-plumber": "^1.2.1",
-        "gulp-rename": "1.4.0",
-        "gulp-sass": "4.0.2",
+        "gulp-rename": "2.0.0",
+        "gulp-sass": "4.1.0",
         "gulp-uglify": "3.0.2",
         "merge-stream": "2.0.0"
     }

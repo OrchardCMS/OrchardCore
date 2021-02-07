@@ -14,19 +14,23 @@
     $.extend(true, $.trumbowyg, {
         langs: {
             // jshint camelcase:false
-            cs: {
-                foreColor: 'Barva textu',
-                backColor: 'Barva pozadí'
-            },
             en: {
                 foreColor: 'Text color',
                 backColor: 'Background color',
                 foreColorRemove: 'Remove text color',
                 backColorRemove: 'Remove background color'
             },
+            cs: {
+                foreColor: 'Barva textu',
+                backColor: 'Barva pozadí'
+            },
             da: {
                 foreColor: 'Tekstfarve',
                 backColor: 'Baggrundsfarve'
+            },
+            de: {
+                foreColor: 'Textfarbe',
+                backColor: 'Hintergrundfarbe'
             },
             fr: {
                 foreColor: 'Couleur du texte',
@@ -34,17 +38,41 @@
                 foreColorRemove: 'Supprimer la couleur du texte',
                 backColorRemove: 'Supprimer la couleur de fond'
             },
-            de: {
-                foreColor: 'Textfarbe',
-                backColor: 'Hintergrundfarbe'
+            hu: {
+                foreColor: 'Betű szín',
+                backColor: 'Háttér szín',
+                foreColorRemove: 'Betű szín eltávolítása',
+                backColorRemove: 'Háttér szín eltávolítása'
+            },
+            ja: {
+                foreColor: '文字色',
+                backColor: '背景色'
+            },
+            ko: {
+                foreColor: '글자색',
+                backColor: '배경색',
+                foreColorRemove: '글자색 지우기',
+                backColorRemove: '배경색 지우기'
             },
             nl: {
                 foreColor: 'Tekstkleur',
                 backColor: 'Achtergrondkleur'
             },
+            pt_br: {
+                foreColor: 'Cor de fonte',
+                backColor: 'Cor de fundo'
+            },
+            ru: {
+                foreColor: 'Цвет текста',
+                backColor: 'Цвет выделения текста'
+            },
             sk: {
                 foreColor: 'Farba textu',
                 backColor: 'Farba pozadia'
+            },
+            tr: {
+                foreColor: 'Yazı rengi',
+                backColor: 'Arkaplan rengi'
             },
             zh_cn: {
                 foreColor: '文字颜色',
@@ -53,28 +81,6 @@
             zh_tw: {
                 foreColor: '文字顏色',
                 backColor: '背景顏色'
-            },
-            ru: {
-                foreColor: 'Цвет текста',
-                backColor: 'Цвет выделения текста'
-            },
-            ja: {
-                foreColor: '文字色',
-                backColor: '背景色'
-            },
-            tr: {
-                foreColor: 'Yazı rengi',
-                backColor: 'Arkaplan rengi'
-            },
-            pt_br: {
-                foreColor: 'Cor de fonte',
-                backColor: 'Cor de fundo'
-            },
-            ko: {
-                foreColor: '글자색',
-                backColor: '배경색',
-                foreColorRemove: '글자색 지우기',
-                backColorRemove: '배경색 지우기'
             },
         }
     });

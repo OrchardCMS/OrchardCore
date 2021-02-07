@@ -1,5 +1,5 @@
 @*TODO: Replace by display name*@
-<h1>@RenderTitleSegments(T["Edit {0}", (string)Model.ContentItem.ContentType])</h1>
+<zone Name="Title"><h1>@RenderTitleSegments(T["Edit {0}", (string)Model.ContentItem.ContentType])</h1></zone>
 
 <form asp-action="Edit" method="post">
     @Html.ValidationSummary()

@@ -3,6 +3,12 @@
   <PropertyGroup>
     <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
     <RootNamespace>OrchardCore.Queries</RootNamespace>
+    <!-- NuGet properties-->
+    <Title>OrchardCore Queries Abstractions</Title>
+    <Description>$(OCCMSDescription)
+    
+    Abstractions for Queries.</Description>
+    <PackageTags>$(PackageTags) OrchardCoreCMS ContentManagement</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>

@@ -70,10 +70,10 @@ namespace OrchardCore.Workflows.Services
         public async Task<WorkflowExecutionContext> CreateWorkflowExecutionContextAsync(WorkflowType workflowType, Workflow workflow, IDictionary<string, object> input = null)
         {
             var state = workflow.State.ToObject<WorkflowState>();
-            var activityQuery = await Task.WhenAll(workflowType.Activities.Select(async x =>
+            var activityQuery = await Task.WhenAll(workflowType.Activities.Select(x =>
             {
                 var activityState = state.ActivityStates.ContainsKey(x.ActivityId) ? state.ActivityStates[x.ActivityId] : new JObject();
-                return await CreateActivityExecutionContextAsync(x, activityState);
+                return CreateActivityExecutionContextAsync(x, activityState);
             }));
             var mergedInput = (await DeserializeAsync(state.Input)).Merge(input ?? new Dictionary<string, object>());
             var properties = await DeserializeAsync(state.Properties);

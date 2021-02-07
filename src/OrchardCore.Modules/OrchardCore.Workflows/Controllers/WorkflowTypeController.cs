@@ -108,7 +108,7 @@ namespace OrchardCore.Workflows.Controllers
 
             if (!string.IsNullOrWhiteSpace(options.Search))
             {
-                query = query.Where(w => w.Name.Contains(options.Search));
+                query = query.Where(x => x.Name.Contains(options.Search));
             }
 
             switch (options.Order)
@@ -354,7 +354,7 @@ namespace OrchardCore.Workflows.Controllers
 
             var workflow = _workflowManager.NewWorkflow(workflowType);
             var workflowContext = await _workflowManager.CreateWorkflowExecutionContextAsync(workflowType, workflow);
-            var activityContexts = await Task.WhenAll(workflowType.Activities.Select(async x => await _workflowManager.CreateActivityExecutionContextAsync(x, x.Properties)));
+            var activityContexts = await Task.WhenAll(workflowType.Activities.Select(x => _workflowManager.CreateActivityExecutionContextAsync(x, x.Properties)));
             var workflowCount = await _session.QueryIndex<WorkflowIndex>(x => x.WorkflowTypeId == workflowType.WorkflowTypeId).CountAsync();
 
             var activityThumbnailShapes = new List<dynamic>();
@@ -454,7 +454,7 @@ namespace OrchardCore.Workflows.Controllers
 
             await _workflowTypeStore.SaveAsync(workflowType);
             await _session.CommitAsync();
-            _notifier.Success(H["Workflow type has been saved."]);
+            _notifier.Success(H["Workflow has been saved."]);
             return RedirectToAction(nameof(Edit), new { id = model.Id });
         }
 
@@ -474,7 +474,7 @@ namespace OrchardCore.Workflows.Controllers
             }
 
             await _workflowTypeStore.DeleteAsync(workflowType);
-            _notifier.Success(H["Workflow type {0} deleted", workflowType.Name]);
+            _notifier.Success(H["Workflow {0} deleted", workflowType.Name]);
 
             return RedirectToAction("Index");
         }

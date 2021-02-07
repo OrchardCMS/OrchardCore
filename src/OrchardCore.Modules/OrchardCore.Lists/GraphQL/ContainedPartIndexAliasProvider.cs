@@ -12,7 +12,7 @@ namespace OrchardCore.Lists.GraphQL
             {
                 Alias = "containedPart",
                 Index = nameof(ContainedPartIndex),
-                With = q => q.With<ContainedPartIndex>()
+                IndexType = typeof(ContainedPartIndex)
             }
         };
 

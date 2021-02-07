@@ -99,6 +99,12 @@ namespace OrchardCore.Navigation
             return this;
         }
 
+        public NavigationItemBuilder Permissions(IEnumerable<Permission> permissions)
+        {
+            _item.Permissions.AddRange(permissions);
+            return this;
+        }
+
         public NavigationItemBuilder Resource(object resource)
         {
             _item.Resource = resource;

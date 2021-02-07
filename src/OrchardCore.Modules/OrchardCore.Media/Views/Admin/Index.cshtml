@@ -1,9 +1,8 @@
-<script asp-src="~/OrchardCore.Media/Scripts/media.js" asp-name="media" at="Foot" depends-on="admin, vuejs, sortable, vuedraggable"></script>
+<script asp-src="~/OrchardCore.Media/Scripts/media.js" asp-name="media" at="Foot" depends-on="admin, vuejs, sortable, vuedraggable, jQuery-ui"></script>
 <style asp-src="~/OrchardCore.Media/Styles/media.min.css" debug-src="~/OrchardCore.Media/Styles/media.css"></style>
 
 <script at="Foot">
-
-    initializeMediaApplication(true, '@Url.Action("MediaApplication", "Admin", new { area = "OrchardCore.Media" })');
+    initializeMediaApplication(true, '@Url.Action("MediaApplication", "Admin", new { area = "OrchardCore.Media" })', '@Context.Request.PathBase.ToString()');
 
     @* mediaApp is absolutely positioned. When a warning is shown we need to move it down to avoid overlapping. *@
     $(function () {
@@ -41,4 +40,4 @@
     });
 </script>
 
-<h1>@RenderTitleSegments(T["Assets"])</h1>
+<h1 style="display:none">@RenderTitleSegments(T["Assets"])</h1>

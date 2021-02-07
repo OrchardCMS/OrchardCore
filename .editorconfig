@@ -6,7 +6,7 @@ charset = utf-8
 indent_style = space
 indent_size = 4
 
-[*.{json,csproj,props,targets}]
+[*.{json,yml,csproj,props,targets}]
 indent_size = 2
 
 [*.cs]

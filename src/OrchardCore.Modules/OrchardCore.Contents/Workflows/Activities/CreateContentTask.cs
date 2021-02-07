@@ -6,7 +6,7 @@ using Microsoft.Extensions.Localization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement;
-using OrchardCore.Contents.Workflows.Handlers;
+using OrchardCore.ContentManagement.Workflows;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Models;
@@ -21,8 +21,8 @@ namespace OrchardCore.Contents.Workflows.Activities
 
         public CreateContentTask(
             IContentManager contentManager,
-            IWorkflowExpressionEvaluator expressionEvaluator, 
-            IWorkflowScriptEvaluator scriptEvaluator, 
+            IWorkflowExpressionEvaluator expressionEvaluator,
+            IWorkflowScriptEvaluator scriptEvaluator,
             IStringLocalizer<CreateContentTask> localizer,
             JavaScriptEncoder javaScriptEncoder)
             : base(contentManager, scriptEvaluator, localizer)
@@ -67,6 +67,29 @@ namespace OrchardCore.Contents.Workflows.Activities
 
         public async override Task<ActivityExecutionResult> ExecuteAsync(WorkflowExecutionContext workflowContext, ActivityContext activityContext)
         {
+            if (InlineEvent.IsStart && InlineEvent.ContentType == ContentType)
+            {
+                if (InlineEvent.Name == nameof(ContentUpdatedEvent))
+                {
+                    throw new InvalidOperationException($"The '{nameof(CreateContentTask)}' can't update the content item as it is executed inline from a starting '{nameof(ContentUpdatedEvent)}' of the same content type, which would result in an infinitive loop.");
+                }
+
+                if (InlineEvent.Name == nameof(ContentCreatedEvent))
+                {
+                    throw new InvalidOperationException($"The '{nameof(CreateContentTask)}' can't create the content item as it is executed inline from a starting '{nameof(ContentCreatedEvent)}' of the same content type, which would result in an infinitive loop.");
+                }
+
+                if (Publish && InlineEvent.Name == nameof(ContentPublishedEvent))
+                {
+                    throw new InvalidOperationException($"The '{nameof(CreateContentTask)}' can't publish the content item as it is executed inline from a starting '{nameof(ContentPublishedEvent)}' of the same content type, which would result in an infinitive loop.");
+                }
+
+                if (!Publish && InlineEvent.Name == nameof(ContentDraftSavedEvent))
+                {
+                    throw new InvalidOperationException($"The '{nameof(CreateContentTask)}' can't create the content item as it is executed inline from a starting '{nameof(ContentDraftSavedEvent)}' of the same content type, which would result in an infinitive loop.");
+                }
+            }
+
             var contentItem = await ContentManager.NewAsync(ContentType);
 
             if (!String.IsNullOrWhiteSpace(ContentProperties.Expression))
@@ -75,21 +98,29 @@ namespace OrchardCore.Contents.Workflows.Activities
                 contentItem.Merge(JObject.Parse(contentProperties));
             }
 
-            var result = await ContentManager.UpdateValidateAndCreateAsync(contentItem, Publish ? VersionOptions.Published : VersionOptions.Draft);
+            var result = await ContentManager.UpdateValidateAndCreateAsync(contentItem, VersionOptions.Draft);
+
             if (result.Succeeded)
             {
-                workflowContext.LastResult = contentItem;
+                if (Publish)
+                {
+                    await ContentManager.PublishAsync(contentItem);
+                }
+                else
+                {
+                    await ContentManager.SaveDraftAsync(contentItem);
+                }
+
                 workflowContext.CorrelationId = contentItem.ContentItemId;
-                workflowContext.Properties[ContentsHandler.ContentItemInputKey] = contentItem;
+                workflowContext.Properties[ContentEventConstants.ContentItemInputKey] = contentItem;
+                workflowContext.LastResult = contentItem;
 
                 return Outcomes("Done");
             }
-            else
-            {
-                workflowContext.LastResult = result;
 
-                return Outcomes("Failed");
-            }
+            workflowContext.LastResult = result;
+
+            return Outcomes("Failed");
         }
     }
 }

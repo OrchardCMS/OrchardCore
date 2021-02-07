@@ -1,5 +1,5 @@
-using OrchardCore.Modules.Manifest;
 using OrchardCore.Google;
+using OrchardCore.Modules.Manifest;
 
 [assembly: Module(
     Name = "Google",

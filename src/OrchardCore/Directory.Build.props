@@ -2,9 +2,5 @@
 
   <Import Project="..\OrchardCore.Build\OrchardCore.Commons.props" />
 
-  <PropertyGroup>
-    <DebugType>embedded</DebugType>
-    <EmbedAllSources>true</EmbedAllSources>
-  </PropertyGroup>
 
 </Project>

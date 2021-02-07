@@ -79,6 +79,7 @@ namespace OrchardCore.Twitter.Signin.Configuration
             options.RetrieveUserDetails = true;
             options.SignInScheme = "Identity.External";
             options.StateCookie.Path = _tenantPrefix;
+            options.SaveTokens = settings.Item2.SaveTokens;
         }
 
         public void Configure(TwitterOptions options) => Debug.Fail("This infrastructure method shouldn't be called.");

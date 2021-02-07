@@ -2,6 +2,12 @@
 
   <PropertyGroup>
     <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
+    <!-- NuGet properties-->
+    <Title>OrchardCore Logging Serilog</Title>
+    <Description>$(OCFrameworkDescription)
+    
+    Provides Serilog logging for application.</Description>
+    <PackageTags>$(PackageTags) OrchardCoreFramework Logging</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>

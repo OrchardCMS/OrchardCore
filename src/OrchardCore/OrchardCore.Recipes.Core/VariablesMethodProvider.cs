@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
+using OrchardCore.Environment.Shell.Scope;
 using OrchardCore.Scripting;
 
 namespace OrchardCore.Recipes
@@ -9,7 +11,7 @@ namespace OrchardCore.Recipes
     {
         private readonly GlobalMethod _globalMethod;
 
-        public VariablesMethodProvider(JObject variables)
+        public VariablesMethodProvider(JObject variables, List<IGlobalMethodProvider> scopedMethodProviders)
         {
             _globalMethod = new GlobalMethod
             {
@@ -22,7 +24,7 @@ namespace OrchardCore.Recipes
                     while (value.StartsWith('[') && value.EndsWith(']'))
                     {
                         value = value.Trim('[', ']');
-                        value = (ScriptingManager.Evaluate(value, null, null, null) ?? "").ToString();
+                        value = (ScriptingManager.Evaluate(value, null, null, scopedMethodProviders) ?? "").ToString();
                         variables[name] = new JValue(value);
                     }
 
@@ -31,7 +33,7 @@ namespace OrchardCore.Recipes
             };
         }
 
-        public IScriptingManager ScriptingManager { get; set; }
+        public IScriptingManager ScriptingManager => ShellScope.Services.GetRequiredService<IScriptingManager>();
 
         public IEnumerable<GlobalMethod> GetMethods()
         {

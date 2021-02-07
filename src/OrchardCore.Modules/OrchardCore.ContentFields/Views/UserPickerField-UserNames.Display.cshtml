@@ -1,0 +1,25 @@
+@model OrchardCore.ContentFields.ViewModels.DisplayUserPickerFieldUserNamesViewModel
+@using OrchardCore.Mvc.Utilities
+
+@{
+    var name = (Model.PartFieldDefinition.PartDefinition.Name + "-" + Model.PartFieldDefinition.Name).HtmlClassify();
+}
+
+<div class="field field-type-userpickerfield field-name-@name">
+    <span class="name">@Model.PartFieldDefinition.DisplayName()</span>
+    @if (Model.UserNames.Any())
+    {
+        foreach (var userName in Model.UserNames)
+        {
+            <span class="value">@userName</span>
+            if (userName != Model.UserNames.Last())
+            {
+                <span>,</span>
+            }
+        }
+    }
+    else
+    {
+        <span class="value">@T["No users."]</span>
+    }
+</div>

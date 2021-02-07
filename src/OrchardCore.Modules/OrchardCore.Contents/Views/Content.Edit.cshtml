@@ -1,7 +1,4 @@
 @using OrchardCore.DisplayManagement.Zones
-@{
-    var tabs = (IEnumerable<string>)ZoneShapes.HarvestAndSortTabs(Model.Parts);
-}
 
 <style asp-src="~/OrchardCore.Contents/Styles/Contents.min.css" debug-src="~/OrchardCore.Contents/Styles/Contents.css"></style>
 
@@ -16,10 +13,6 @@
             }
         </div>
         <div class="edit-item-parts">
-            @if (tabs.Any())
-            {
-                @await DisplayAsync(await New.LocalNavigation(ContentItem: Model.ContentItem, Tabs: tabs))
-            }
             @if (Model.Parts != null)
             {
                 @await DisplayAsync(Model.Parts)
@@ -38,7 +31,7 @@
 
                 @if (!String.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
                 {
-                    <a id="button-cancel" href="@returnUrl" class="btn btn-secondary">@T["Cancel"]</a>
+                    <a class="btn btn-secondary cancel" role="button" href="@returnUrl">@T["Cancel"]</a>
                 }
             </div>
         </div>

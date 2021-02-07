@@ -45,11 +45,11 @@
 
     <ItemGroup>
       <ModuleAssets
-        Include="Areas\$(MSBuildProjectName)\%(ModuleAssetFiles.RelativeDir)%(Filename)%(Extension)|%(ModuleAssetFiles.FullPath)"
+        Include="Areas\$(AssemblyName)\%(ModuleAssetFiles.RelativeDir)%(Filename)%(Extension)|%(ModuleAssetFiles.FullPath)"
         Condition="'%(ModuleAssetFiles.Link)' == '' and '%(ModuleAssetFiles.Filename)' != ''"/>
 
       <ModuleAssets
-        Include="Areas\$(MSBuildProjectName)\%(ModuleAssetFiles.Link)|%(ModuleAssetFiles.FullPath)"
+        Include="Areas\$(AssemblyName)\%(ModuleAssetFiles.Link)|%(ModuleAssetFiles.FullPath)"
         Condition="'%(ModuleAssetFiles.Link)' != '' and '%(ModuleAssetFiles.Filename)' != ''" />
     </ItemGroup>
 
@@ -57,10 +57,10 @@
       <EmbeddedResource Remove="@(EmbeddedResource)" />
       <EmbeddedResource Include="@(ModuleAssetFiles)" />
       <EmbeddedResource Update="@(EmbeddedResource)" Condition="'%(EmbeddedResource.Link)' == '' and '%(Extension)' != '.resx'">
-        <LogicalName>$([System.String]::new('$(MSBuildProjectName).%(RelativeDir)%(FileName)%(Extension)').Replace('\', '>').Replace('/', '>'))</LogicalName>
+        <LogicalName>$([System.String]::new('$(AssemblyName).%(RelativeDir)%(FileName)%(Extension)').Replace('\', '>').Replace('/', '>'))</LogicalName>
       </EmbeddedResource>
       <EmbeddedResource Update="@(EmbeddedResource)" Condition="'%(EmbeddedResource.Link)' != '' and '%(Extension)' != '.resx'">
-        <LogicalName>$([System.String]::new('$(MSBuildProjectName).%(EmbeddedResource.Link)').Replace('\', '>').Replace('/', '>'))</LogicalName>
+        <LogicalName>$([System.String]::new('$(AssemblyName).%(EmbeddedResource.Link)').Replace('\', '>').Replace('/', '>'))</LogicalName>
       </EmbeddedResource>
     </ItemGroup>
 

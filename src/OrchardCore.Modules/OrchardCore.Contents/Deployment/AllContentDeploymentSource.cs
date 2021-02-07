@@ -18,9 +18,9 @@ namespace OrchardCore.Contents.Deployment
 
         public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
         {
-            var allContentState = step as AllContentDeploymentStep;
+            var allContentStep = step as AllContentDeploymentStep;
 
-            if (allContentState == null)
+            if (allContentStep == null)
             {
                 return;
             }
@@ -37,6 +37,17 @@ namespace OrchardCore.Contents.Deployment
 
                 // Don't serialize the Id as it could be interpreted as an updated object when added back to YesSql
                 objectData.Remove(nameof(ContentItem.Id));
+
+                if (allContentStep.ExportAsSetupRecipe)
+                {
+                    objectData[nameof(ContentItem.Owner)] = "[js: parameters('AdminUserId')]";
+                    objectData[nameof(ContentItem.Author)] = "[js: parameters('AdminUsername')]";
+                    objectData[nameof(ContentItem.ContentItemId)] = "[js: uuid()]";
+                    objectData.Remove(nameof(ContentItem.ContentItemVersionId));
+                    objectData.Remove(nameof(ContentItem.CreatedUtc));
+                    objectData.Remove(nameof(ContentItem.ModifiedUtc));
+                    objectData.Remove(nameof(ContentItem.PublishedUtc));
+                }
                 data.Add(objectData);
             }
 

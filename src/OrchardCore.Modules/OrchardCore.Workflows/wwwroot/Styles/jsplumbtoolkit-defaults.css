@@ -4,10 +4,19 @@
 */
 
 /* 
-    Default styles for jsPlumb Toolkit
+    Default styles for jsPlumb Toolkit/Community Editions.
 
-    Copyright 2018 https://jsplumbtoolkit.com
+    Copyright 2020 https://jsplumbtoolkit.com
 */
+
+/**
+jtk-connector is assigned to connector SVG elements. overflow:visible here ensures we dont have to take into account path
+width and overlay sizes when computing the size of the svg element. In the Community edition this is a change from
+2.14.0 onwards.
+ */
+.jtk-connector {
+    overflow:visible;
+}
 
 /* --------------------------------------------------------------------------------------------- */
 /* --- SURFACE WIDGET -------------------------------------------------------------------------- */

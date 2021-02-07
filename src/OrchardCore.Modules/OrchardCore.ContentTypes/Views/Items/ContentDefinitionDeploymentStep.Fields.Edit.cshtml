@@ -5,13 +5,13 @@
     var contentTypes = (string[])Model.ContentTypes;
     var contentParts = (string[])Model.ContentParts;
 
-    var allTypes = ContentDefinitionManager.ListTypeDefinitions();
-    var allParts = ContentDefinitionManager.ListPartDefinitions();
+    var allTypes = ContentDefinitionManager.ListTypeDefinitions().OrderBy(d => d.Name);
+    var allParts = ContentDefinitionManager.ListPartDefinitions().OrderBy(d => d.Name);
 
     var avaParts = allParts.Where(x => !allTypes.Any(y => y.Name == x.Name));
 }
 
-<h5>@T["Content Definitions"]</h5>
+<h5>@T["Update Content Definitions"]</h5>
 
 <div class="form-group mt-4 mb-5">
     <div class="row">

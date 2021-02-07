@@ -11,7 +11,6 @@ using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.Settings;
-using OrchardCore.Sitemaps.Cache;
 using OrchardCore.Sitemaps.Models;
 using OrchardCore.Sitemaps.Services;
 using OrchardCore.Sitemaps.ViewModels;
@@ -26,7 +25,6 @@ namespace OrchardCore.Sitemaps.Controllers
         private readonly IEnumerable<ISitemapSourceFactory> _factories;
         private readonly ISitemapManager _sitemapManager;
         private readonly ISiteService _siteService;
-        private readonly ISitemapCacheProvider _sitemapCacheProvider;
         private readonly IUpdateModelAccessor _updateModelAccessor;
         private readonly INotifier _notifier;
         private readonly dynamic New;
@@ -39,7 +37,6 @@ namespace OrchardCore.Sitemaps.Controllers
             IEnumerable<ISitemapSourceFactory> factories,
             ISitemapManager sitemapManager,
             ISiteService siteService,
-            ISitemapCacheProvider sitemapCacheProvider,
             IUpdateModelAccessor updateModelAccessor,
             INotifier notifier,
             IShapeFactory shapeFactory,
@@ -51,7 +48,6 @@ namespace OrchardCore.Sitemaps.Controllers
             _authorizationService = authorizationService;
             _sitemapManager = sitemapManager;
             _siteService = siteService;
-            _sitemapCacheProvider = sitemapCacheProvider;
             _updateModelAccessor = updateModelAccessor;
             _notifier = notifier;
             New = shapeFactory;
@@ -124,11 +120,9 @@ namespace OrchardCore.Sitemaps.Controllers
                 source.Id = model.SitemapSourceId;
                 sitemap.SitemapSources.Add(source);
 
-                // Clear sitemap cache when new source added.
-                await _sitemapCacheProvider.ClearSitemapCacheAsync(sitemap.Path);
-                await _sitemapManager.SaveSitemapAsync(sitemap.SitemapId, sitemap);
+                await _sitemapManager.UpdateSitemapAsync(sitemap);
 
-                _notifier.Success(H["Sitemap source added successfully"]);
+                _notifier.Success(H["Sitemap source added successfully."]);
                 return RedirectToAction("Display", "Admin", new { sitemapId = model.SitemapId });
             }
 
@@ -198,16 +192,13 @@ namespace OrchardCore.Sitemaps.Controllers
 
             if (ModelState.IsValid)
             {
-                // Clear sitemap cache when source edited.
-                await _sitemapCacheProvider.ClearSitemapCacheAsync(sitemap.Path);
+                await _sitemapManager.UpdateSitemapAsync(sitemap);
 
-                await _sitemapManager.SaveSitemapAsync(sitemap.SitemapId, sitemap);
-
-                _notifier.Success(H["Sitemap source updated successfully"]);
+                _notifier.Success(H["Sitemap source updated successfully."]);
                 return RedirectToAction("Display", "Admin", new { sitemapId = model.SitemapId });
             }
 
-            _notifier.Error(H["The sitemap source has validation errors"]);
+            _notifier.Error(H["The sitemap source has validation errors."]);
             model.Editor = editor;
 
             // If we got this far, something failed, redisplay form
@@ -238,12 +229,9 @@ namespace OrchardCore.Sitemaps.Controllers
 
             sitemap.SitemapSources.Remove(source);
 
-            // Clear sitemap cache when new source deleted.
-            await _sitemapCacheProvider.ClearSitemapCacheAsync(sitemap.Path);
+            await _sitemapManager.UpdateSitemapAsync(sitemap);
 
-            await _sitemapManager.SaveSitemapAsync(sitemap.SitemapId, sitemap);
-
-            _notifier.Success(H["Sitemap source deleted successfully"]);
+            _notifier.Success(H["Sitemap source deleted successfully."]);
 
             return RedirectToAction("Display", "Admin", new { sitemapId });
         }

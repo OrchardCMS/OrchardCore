@@ -1,9 +1,6 @@
-using System;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
-using GraphQL.Builders;
 using GraphQL.Types;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
@@ -11,13 +8,14 @@ using Newtonsoft.Json.Linq;
 using OrchardCore.Apis.GraphQL;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Metadata;
-using OrchardCore.ShortCodes.Services;
 using OrchardCore.Infrastructure.Html;
 using OrchardCore.Liquid;
 using OrchardCore.Markdown.Fields;
 using OrchardCore.Markdown.Services;
 using OrchardCore.Markdown.Settings;
 using OrchardCore.Markdown.ViewModels;
+using OrchardCore.Shortcodes.Services;
+using Shortcodes;
 
 namespace OrchardCore.Markdown.GraphQL
 {
@@ -27,16 +25,14 @@ namespace OrchardCore.Markdown.GraphQL
         {
             Name = nameof(MarkdownField);
             Description = S["Content stored as Markdown. You can also query the HTML interpreted version of Markdown."];
-            
+
             Field("markdown", x => x.Markdown, nullable: true)
                 .Description(S["the markdown value"]);
-
             Field<StringGraphType>()
                 .Name("html")
                 .Description(S["the HTML representation of the markdown content"])
                 .ResolveLockedAsync(ToHtml);
         }
-
 
         private static async Task<object> ToHtml(ResolveFieldContext<MarkdownField> ctx)
         {
@@ -47,7 +43,7 @@ namespace OrchardCore.Markdown.GraphQL
 
             var serviceProvider = ctx.ResolveServiceProvider();
             var markdownService = serviceProvider.GetRequiredService<IMarkdownService>();
-            var shortCodeService = serviceProvider.GetRequiredService<IShortCodeService>();
+            var shortcodeService = serviceProvider.GetRequiredService<IShortcodeService>();
 
             var contentDefinitionManager = serviceProvider.GetRequiredService<IContentDefinitionManager>();
 
@@ -86,7 +82,12 @@ namespace OrchardCore.Markdown.GraphQL
                     scope => scope.SetValue("ContentItem", ctx.Source.ContentItem));
             }
 
-            html = await shortCodeService.ProcessAsync(html);
+            html = await shortcodeService.ProcessAsync(html,
+                new Context
+                {
+                    ["ContentItem"] = ctx.Source.ContentItem,
+                    ["PartFieldDefinition"] = contentPartFieldDefintion
+                });
 
             if (settings.SanitizeHtml)
             {

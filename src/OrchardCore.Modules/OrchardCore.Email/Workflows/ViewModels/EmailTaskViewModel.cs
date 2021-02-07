@@ -4,9 +4,11 @@ namespace OrchardCore.Email.Workflows.ViewModels
 {
     public class EmailTaskViewModel
     {
+        public string AuthorExpression { get; set; }
+
         public string SenderExpression { get; set; }
 
-        public string AuthorExpression { get; set; }
+        public string ReplyToExpression { get; set; }
 
         [Required]
         public string RecipientsExpression { get; set; }

@@ -3,6 +3,12 @@
   <PropertyGroup>
     <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
     <RootNamespace>OrchardCore.Lucene</RootNamespace>
+    <!-- NuGet properties-->
+    <Title>OrchardCore Lucene Core</Title>
+    <Description>$(OCCMSDescription)
+    
+    Core Implementation for Lucene module.</Description>
+    <PackageTags>$(PackageTags) OrchardCoreCMS</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>

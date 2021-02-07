@@ -22,7 +22,12 @@ namespace OrchardCore.Contents.Handlers
 
         public override Task RemovedAsync(RemoveContentContext context)
         {
-            return _tagCache.RemoveTagAsync($"contentitemid:{context.ContentItem.ContentItemId}");
+            if (context.NoActiveVersionLeft)
+            {
+                return _tagCache.RemoveTagAsync($"contentitemid:{context.ContentItem.ContentItemId}");
+            }
+
+            return Task.CompletedTask;
         }
 
         public override Task UnpublishedAsync(PublishContentContext context)

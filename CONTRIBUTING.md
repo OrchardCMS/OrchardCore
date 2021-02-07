@@ -11,7 +11,7 @@ Security issues should be reported privately, via email, to contact@orchardcore.
 ## Other discussions
 Our team members also monitor other discussion forums:
 
-* [Stack Overflow](https://stackoverflow.com/) with the [`orchardcms`](https://stackoverflow.com/questions/tagged/orchardcms) tags.
+* [GitHub Discussions](https://github.com/OrchardCMS/OrchardCore/discussions).
 
 ## Contributing code and content
 

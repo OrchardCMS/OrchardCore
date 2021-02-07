@@ -15,10 +15,10 @@ namespace OrchardCore.Tenants.Workflows.Activities
     public class CreateTenantTask : TenantTask
     {
         public CreateTenantTask(
-            IShellSettingsManager shellSettingsManager, 
-            IShellHost shellHost, 
-            IWorkflowExpressionEvaluator expressionEvaluator, 
-            IWorkflowScriptEvaluator scriptEvaluator, 
+            IShellSettingsManager shellSettingsManager,
+            IShellHost shellHost,
+            IWorkflowExpressionEvaluator expressionEvaluator,
+            IWorkflowScriptEvaluator scriptEvaluator,
             IStringLocalizer<CreateTenantTask> localizer)
             : base(shellSettingsManager, shellHost, expressionEvaluator, scriptEvaluator, localizer)
         {

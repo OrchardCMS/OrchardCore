@@ -8,6 +8,7 @@ public static class HtmlSanitizerRazorExtensions
     /// <summary>
     /// Sanitizes a string of html.
     /// </summary>
+    /// <param name="orchardHelper">The <see cref="IOrchardHelper"/>.</param>
     /// <param name="html">The html to sanitize.</param>
     public static IHtmlContent SanitizeHtml(this IOrchardHelper orchardHelper, string html)
     {

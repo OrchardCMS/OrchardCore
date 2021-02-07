@@ -29,11 +29,6 @@ namespace OrchardCore.Contents.Controllers
 
         public async Task<IActionResult> Display(string contentItemId, string jsonPath)
         {
-            if (contentItemId == null)
-            {
-                return NotFound();
-            }
-
             var contentItem = await _contentManager.GetAsync(contentItemId, jsonPath);
 
             if (contentItem == null)
@@ -41,7 +36,7 @@ namespace OrchardCore.Contents.Controllers
                 return NotFound();
             }
 
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ViewContent, contentItem))
+            if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.ViewContent, contentItem))
             {
                 return this.ChallengeOrForbid();
             }
@@ -67,7 +62,7 @@ namespace OrchardCore.Contents.Controllers
                 return NotFound();
             }
 
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.PreviewContent, contentItem))
+            if (!await _authorizationService.AuthorizeAsync(User, CommonPermissions.PreviewContent, contentItem))
             {
                 return this.ChallengeOrForbid();
             }

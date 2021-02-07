@@ -11,7 +11,7 @@
 
 <div class="form-group" asp-validation-class-for="SecretKey">
     <label asp-for="SecretKey">@T["Secret Key"]</label>
-    <input asp-for="SecretKey" class="form-control" type="text" />
+    <input asp-for="SecretKey" class="form-control" type="text" autocomplete="off" />
     <span asp-validation-for="SecretKey"></span>
     <span class="hint">@T["Your Google's reCaptcha Secret Key."]</span>
 </div>

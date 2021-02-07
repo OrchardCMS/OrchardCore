@@ -10,26 +10,29 @@
             da: {
                 fontFamily: 'Skrifttype'
             },
-            fr: {
-                fontFamily: 'Police'
-            },
             de: {
                 fontFamily: 'Schriftart'
             },
+            fr: {
+                fontFamily: 'Police'
+            },
+            hu: {
+                fontFamily: 'Betűtípus'
+            },
+            ko: {
+                fontFamily: '글꼴'
+            },
             nl: {
                 fontFamily: 'Lettertype'
+            },
+            pt_br: {
+                fontFamily: 'Fonte',
             },
             tr: {
                 fontFamily: 'Yazı Tipi'
             },
             zh_tw: {
                 fontFamily: '字體',
-            },
-            pt_br: {
-                fontFamily: 'Fonte',
-            },
-            ko: {
-                fontFamily: '글꼴'
             },
         }
     });

@@ -45,21 +45,26 @@ namespace OrchardCore.Contents
                 .OnProcessing(async context =>
                 {
                     dynamic content = context.Shape;
-                    string alias = content.Alias;
+                    string handle = content.Handle;
                     string displayType = content.DisplayType;
                     string alternate = content.Alternate;
 
-                    if (String.IsNullOrEmpty(alias))
+                    if (String.IsNullOrEmpty(handle))
                     {
-                        return;
+                        // This code is provided for backwards compatability and can be removed in a future version.
+                        handle = content.Alias;
+                        if (String.IsNullOrEmpty(handle))
+                        {
+                            return;
+                        }
                     }
 
                     var contentManager = context.ServiceProvider.GetRequiredService<IContentManager>();
-                    var aliasManager = context.ServiceProvider.GetRequiredService<IContentAliasManager>();
+                    var handleManager = context.ServiceProvider.GetRequiredService<IContentHandleManager>();
                     var displayManager = context.ServiceProvider.GetRequiredService<IContentItemDisplayManager>();
                     var updateModelAccessor = context.ServiceProvider.GetRequiredService<IUpdateModelAccessor>();
 
-                    var contentItemId = await aliasManager.GetContentItemIdAsync(alias);
+                    var contentItemId = await handleManager.GetContentItemIdAsync(handle);
 
                     if (string.IsNullOrEmpty(contentItemId))
                     {

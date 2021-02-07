@@ -8,7 +8,7 @@ namespace OrchardCore.Tenants.ViewModels
     public class AdminIndexViewModel
     {
         public List<ShellSettingsEntry> ShellSettingsEntries { get; set; } = new List<ShellSettingsEntry>();
-        public TenantIndexOptions Options { get; set; }
+        public TenantIndexOptions Options { get; set; } = new TenantIndexOptions();
 
         [BindNever]
         public dynamic Pager { get; set; }

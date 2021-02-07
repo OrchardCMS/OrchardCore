@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using Microsoft.Extensions.Options;
 using OrchardCore.Data;
+using OrchardCore.Data.Documents;
 using OrchardCore.Data.Migration;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Models;
@@ -42,7 +43,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
                 // Configuring data access
 
-                services.AddSingleton<IStore>(sp =>
+                services.AddSingleton(sp =>
                 {
                     var shellSettings = sp.GetService<ShellSettings>();
 
@@ -90,7 +91,7 @@ namespace Microsoft.Extensions.DependencyInjection
                         storeConfiguration = storeConfiguration.SetTablePrefix(shellSettings["TablePrefix"] + "_");
                     }
 
-                    var store = StoreFactory.CreateAsync(storeConfiguration).GetAwaiter().GetResult();
+                    var store = StoreFactory.CreateAndInitializeAsync(storeConfiguration).GetAwaiter().GetResult();
                     var indexes = sp.GetServices<IIndexProvider>();
 
                     store.RegisterIndexes(indexes);
@@ -115,13 +116,16 @@ namespace Microsoft.Extensions.DependencyInjection
 
                     ShellScope.RegisterBeforeDispose(scope =>
                     {
-                        return session.CommitAsync();
+                        return scope.ServiceProvider
+                            .GetRequiredService<IDocumentStore>()
+                            .CommitAsync();
                     });
 
                     return session;
                 });
 
-                services.AddScoped<ISessionHelper, SessionHelper>();
+                services.AddScoped<IDocumentStore, DocumentStore>();
+                services.AddSingleton<IFileDocumentStore, FileDocumentStore>();
 
                 services.AddTransient<IDbConnectionAccessor, DbConnectionAccessor>();
             });

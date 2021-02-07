@@ -22,12 +22,6 @@ namespace OrchardCore.MiniProfiler
             // Forward the call to the actual factory
             var connection = _factory.CreateConnection();
 
-            // Reuse the actual dialect if not already defined
-            if (!SqlDialectFactory.SqlDialects.ContainsKey(ConnectionName))
-            {
-                SqlDialectFactory.SqlDialects[ConnectionName] = SqlDialectFactory.SqlDialects[connection.GetType().Name.ToLower()];
-            }
-
             return new ProfiledDbConnection(connection, new CurrentDbProfiler(() => StackExchange.Profiling.MiniProfiler.Current));
         }
     }

@@ -13,13 +13,17 @@
         <label asp-for="Title">@T["Title"]</label>
         <input asp-for="Title" class="form-control content-preview-text content-caption-text" disabled="@(Model.Settings?.Options == TitlePartOptions.GeneratedDisabled)" autofocus="autofocus" dir="@culture.GetLanguageDirection()" />
         <span asp-validation-for="Title"></span>
-        @if (String.IsNullOrWhiteSpace(Model.Settings?.Pattern) && Model.Settings?.Options == TitlePartOptions.Editable)
+        @if (!String.IsNullOrWhiteSpace(Model.Settings?.Pattern))
         {
-            <span class="hint">@T["The title of the content item. Set empty to generate it using the pattern."]</span>
-        }
-        else
-        {
-            <span class="hint">@T["The title of the content item. It will be automatically generated."]</span>
+            switch (Model.Settings?.Options)
+            {
+                case TitlePartOptions.Editable:
+                    <span class="hint">@T["Leave empty to auto-generate the title using the pattern."]</span>
+                    break;
+                case TitlePartOptions.GeneratedDisabled:
+                    <span class="hint">@T["The title will be auto-generated using the pattern."]</span>
+                    break;
+            }
         }
     </div>
 }

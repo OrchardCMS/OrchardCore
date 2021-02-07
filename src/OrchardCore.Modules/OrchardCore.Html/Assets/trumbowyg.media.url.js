@@ -17,16 +17,27 @@
                             $("#mediaApp").show();
                             mediaApp.selectedMedias = [];
                             var modal = $('#mediaModalBody').modal();
+                            //disable an reset on click event over the button to avoid issue if press button multiple times or have multiple editor
+                            $('#mediaHtmlFieldSelectButton').off('click');
                             $('#mediaBodySelectButton').on('click', function (v) {
-                                var mediaBodyContent = "";
+                                //avoid multiple image insert
+                                trumbowyg.restoreRange();
+                                trumbowyg.range.deleteContents();
+                                
+                                $(window).trigger('scroll');
+
                                 for (i = 0; i < mediaApp.selectedMedias.length; i++) {
                                     var img = document.createElement("img");
                                     img.src = mediaApp.selectedMedias[i].url;
                                     img.alt = mediaApp.selectedMedias[i].name;
                                     trumbowyg.range.insertNode(img);
                                 }
-                                trumbowyg.syncTextarea();
-                                $(document).trigger('contentpreview:render');
+
+                                trumbowyg.syncCode();
+                                trumbowyg.$c.trigger('tbwchange');
+                                //avoid image to be selected after add it
+                                trumbowyg.$c.focus();
+
                                 $('#mediaModalBody').modal('hide');
                                 return true;
                             });

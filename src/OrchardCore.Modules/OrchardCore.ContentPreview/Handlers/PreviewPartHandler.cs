@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Fluid;
+using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Handlers;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentPreview.Models;
@@ -22,6 +23,7 @@ namespace OrchardCore.ContentPreview.Handlers
             _liquidTemplateManager = liquidTemplateManager;
             _contentDefinitionManager = contentDefinitionManager;
         }
+
         /// <summary>
         /// Get the pattern from the AutoroutePartSettings property for its type
         /// </summary>

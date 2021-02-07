@@ -9,7 +9,7 @@ Attach this part to a content type to specify aliases for your content items.
 
 ## Liquid
 
-With Alias enabled, you can retrieve content by alias in your liquid views and templates:
+With Alias enabled, you can retrieve content by its alias handle in your liquid views and templates:
 
 ```liquid
 {% assign my_content = Content["alias:footer-widget"] %}

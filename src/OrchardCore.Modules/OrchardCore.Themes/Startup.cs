@@ -39,6 +39,7 @@ namespace OrchardCore.Themes
             services.AddScoped<ISiteThemeService, SiteThemeService>();
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddScoped<IThemeService, ThemeService>();
+            services.AddScoped<DarkModeService, DarkModeService>();
 
             services.AddTransient<IDeploymentSource, ThemesDeploymentSource>();
             services.AddSingleton<IDeploymentStepFactory>(new DeploymentStepFactory<ThemesDeploymentStep>());

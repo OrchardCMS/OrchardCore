@@ -56,7 +56,7 @@ namespace OrchardCore.ContentManagement
         Task ImportAsync(IEnumerable<ContentItem> contentItems);
 
         /// <summary>
-        /// Validates a content item 
+        /// Validates a content item
         /// </summary>
         /// <param name="contentItem"></param>
         /// <returns>The validation <see cref="ContentValidateResult"/> result.</returns>
@@ -111,9 +111,17 @@ namespace OrchardCore.ContentManagement
         /// </summary>
         /// <param name="contentItem"></param>
         Task DiscardDraftAsync(ContentItem contentItem);
+
+        /// <summary>
+        /// Saves the content item if it is a draft version.
+        /// </summary>
+        /// <param name="contentItem"></param>
+        Task SaveDraftAsync(ContentItem contentItem);
+
         Task PublishAsync(ContentItem contentItem);
         Task UnpublishAsync(ContentItem contentItem);
         Task<TAspect> PopulateAspectAsync<TAspect>(IContent content, TAspect aspect);
+
         /// <summary>
         /// Makes a clone of the content item
         /// </summary>
@@ -127,6 +135,7 @@ namespace OrchardCore.ContentManagement
         /// <summary>
         /// Creates (persists) a new Published content item
         /// </summary>
+        /// <param name="contentManager">The <see cref="IContentManager"/> instance.</param>
         /// <param name="contentItem">The content instance filled with all necessary data</param>
 
         public static Task CreateAsync(this IContentManager contentManager, ContentItem contentItem)
@@ -182,6 +191,7 @@ namespace OrchardCore.ContentManagement
         /// <summary>
         /// Gets either the published container content item with the specified id, or if the json path supplied gets the contained content item. 
         /// </summary>
+        /// <param name="contentManager">The <see cref="IContentManager"/> instance.</param>
         /// <param name="id">The content item id to load</param>
         /// <param name="jsonPath">The json path of the contained content item</param>
         public static Task<ContentItem> GetAsync(this IContentManager contentManager, string id, string jsonPath)
@@ -192,6 +202,7 @@ namespace OrchardCore.ContentManagement
         /// <summary>
         /// Gets either the container content item with the specified id and version, or if the json path supplied gets the contained content item.
         /// </summary>
+        /// <param name="contentManager">The <see cref="IContentManager"/> instance.</param>
         /// <param name="id">The id content item id to load</param>
         /// <param name="options">The version option</param>
         /// <param name="jsonPath">The json path of the contained content item</param>

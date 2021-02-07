@@ -34,7 +34,7 @@
                                 }
                                 else
                                 {
-                                    <a class="list-group-item list-group-item-action" itemprop="UnsafeUrl" asp-action="Localize" asp-controller="Admin" asp-route-area="OrchardCore.ContentLocalization" asp-route-contentItemId="@Model.LocalizationPart.ContentItem.ContentItemId" asp-route-targetCulture="@culture.Culture.Name" title=@T["Create {0}", culture.Culture.DisplayName]><i class="fa fa-plus"></i> @culture.Culture.DisplayName | @culture.Culture.Name</a>
+                                    <a class="list-group-item list-group-item-action" data-url-af="UnsafeUrl" asp-action="Localize" asp-controller="Admin" asp-route-area="OrchardCore.ContentLocalization" asp-route-contentItemId="@Model.LocalizationPart.ContentItem.ContentItemId" asp-route-targetCulture="@culture.Culture.Name" title=@T["Create {0}", culture.Culture.DisplayName]><i class="fa fa-plus"></i> @culture.Culture.DisplayName | @culture.Culture.Name</a>
                                 }
                             }
                         </div>

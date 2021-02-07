@@ -43,7 +43,9 @@ namespace OrchardCore.ContentLocalization.Services
             {
                 // Try to get from autorouteEntries.
                 // This should not consider contained items, so will redirect to the parent item.
-                if (_autorouteEntries.TryGetEntryByPath(url.Value, out var entry))
+                (var found, var entry) = await _autorouteEntries.TryGetEntryByPathAsync(url.Value);
+
+                if (found)
                 {
                     contentItemId = entry.ContentItemId;
                 };
@@ -63,7 +65,9 @@ namespace OrchardCore.ContentLocalization.Services
 
             if (!string.IsNullOrEmpty(contentItemId))
             {
-                if (_localizationEntries.TryGetLocalization(contentItemId, out var localization))
+                (var found, var localization) = await _localizationEntries.TryGetLocalizationAsync(contentItemId);
+
+                if (found)
                 {
                     return localization;
                 }
@@ -78,9 +82,11 @@ namespace OrchardCore.ContentLocalization.Services
 
             if (!string.IsNullOrEmpty(contentItemId))
             {
-                if (_localizationEntries.TryGetLocalization(contentItemId, out var localization))
+                (var found, var localization) = await _localizationEntries.TryGetLocalizationAsync(contentItemId);
+
+                if (found)
                 {
-                    return _localizationEntries.GetLocalizations(localization.LocalizationSet);
+                    return await _localizationEntries.GetLocalizationsAsync(localization.LocalizationSet);
                 }
             }
 

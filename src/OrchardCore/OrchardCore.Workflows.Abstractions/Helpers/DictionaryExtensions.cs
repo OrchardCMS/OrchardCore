@@ -17,7 +17,14 @@ namespace OrchardCore.Workflows.Helpers
         /// </summary>
         public static TValue GetValue<TValue>(this IDictionary<string, object> dictionary, string key)
         {
-            return (TValue)GetValue(dictionary, key);
+            var value = dictionary.GetValue(key);
+
+            if (value != null)
+            {
+                return (TValue)value;
+            }
+
+            return default;
         }
 
         /// <summary>

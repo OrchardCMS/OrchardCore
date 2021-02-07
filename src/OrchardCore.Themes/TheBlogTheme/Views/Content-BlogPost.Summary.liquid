@@ -10,7 +10,7 @@
     <p class="post-meta">
         {% assign format = "MMMM dd, yyyy" | t %}
         {% assign dateTime = "DateTime" | shape_new: utc: Model.ContentItem.CreatedUtc, format: format | shape_stringify %}
-        {{ "Posted by" | t }} <a href="#">{{ Model.ContentItem.Owner }}</a> {{ "on {0}" | t: dateTime | raw }}
+        {{ "Posted by" | t }} <a href="#">{{ Model.ContentItem.Author }}</a> {{ "on {0}" | t: dateTime | raw }}
   
         <span class="term-badge">
             {% assign categoryTerms = Model.ContentItem.Content.BlogPost.Category | taxonomy_terms %}

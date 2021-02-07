@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Localization;
+using OrchardCore.ContentManagement.Workflows;
 using OrchardCore.Workflows.Abstractions.Models;
 using OrchardCore.Workflows.Activities;
 using OrchardCore.Workflows.Models;
@@ -51,7 +52,7 @@ namespace OrchardCore.Workflows.UserTasks.Activities
 
         private string GetProvidedAction(WorkflowExecutionContext workflowContext)
         {
-            return (string)workflowContext.Input["UserAction"];
+            return (string)workflowContext.Input[ContentEventConstants.UserActionInputKey];
         }
     }
 }

@@ -1,6 +1,6 @@
 @model EditDeploymentPlanStepViewModel
 
-<h1>@RenderTitleSegments(T["Edit Step"])</h1>
+<zone Name="Title"><h1>@RenderTitleSegments(T["Edit Step"])</h1></zone>
 
 <div asp-validation-summary="ModelOnly"></div>
 <form asp-action="Edit" method="post">
@@ -11,16 +11,18 @@
     <input type="hidden" asp-for="DeploymentStepType" />
 
     <div class="form-group">
-        <button class="btn btn-primary" type="submit">@T["Save"]</button>
+        <button class="btn btn-primary save" type="submit">@T["Save"]</button>
 
-        <a asp-action="Delete"
+        <a class="btn btn-danger delete"
+           role="button"
+           asp-action="Delete"
            asp-controller="Step"
            asp-route-id="@Model.DeploymentPlanId"
            asp-route-stepId="@Model.DeploymentStepId"
-           class="btn btn-danger"
-           itemprop="RemoveUrl UnsafeUrl">@T["Delete"]</a>
+           data-url-af="RemoveUrl UnsafeUrl">@T["Delete"]</a>
 
-        <a class="btn btn-secondary"
+        <a class="btn btn-secondary cancel"
+           role="button"
            asp-route-action="Display"
            asp-route-controller="DeploymentPlan"
            asp-route-id="@Model.DeploymentPlanId">@T["Cancel"]</a>

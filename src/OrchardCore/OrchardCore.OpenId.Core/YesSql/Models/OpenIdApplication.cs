@@ -1,4 +1,5 @@
 using System.Collections.Immutable;
+using System.Globalization;
 using Newtonsoft.Json.Linq;
 
 namespace OrchardCore.OpenId.YesSql.Models
@@ -6,14 +7,12 @@ namespace OrchardCore.OpenId.YesSql.Models
     public class OpenIdApplication
     {
         /// <summary>
-        /// Gets or sets the unique identifier
-        /// associated with the current application.
+        /// Gets or sets the unique identifier associated with the current application.
         /// </summary>
         public string ApplicationId { get; set; }
 
         /// <summary>
-        /// Gets or sets the client identifier
-        /// associated with the current application.
+        /// Gets or sets the client identifier associated with the current application.
         /// </summary>
         public string ClientId { get; set; }
 
@@ -25,20 +24,23 @@ namespace OrchardCore.OpenId.YesSql.Models
         public string ClientSecret { get; set; }
 
         /// <summary>
-        /// Gets or sets the consent type
-        /// associated with the current application.
+        /// Gets or sets the consent type associated with the current application.
         /// </summary>
         public string ConsentType { get; set; }
 
         /// <summary>
-        /// Gets or sets the display name
-        /// associated with the current application.
+        /// Gets or sets the display name associated with the current application.
         /// </summary>
         public string DisplayName { get; set; }
 
         /// <summary>
-        /// Gets or sets the physical identifier
-        /// associated with the current application.
+        /// Gets or sets the localized display names associated with the application.
+        /// </summary>
+        public ImmutableDictionary<CultureInfo, string> DisplayNames { get; set; }
+            = ImmutableDictionary.Create<CultureInfo, string>();
+
+        /// <summary>
+        /// Gets or sets the physical identifier associated with the current application.
         /// </summary>
         public int Id { get; set; }
 
@@ -55,15 +57,20 @@ namespace OrchardCore.OpenId.YesSql.Models
             = ImmutableArray.Create<string>();
 
         /// <summary>
-        /// Gets or sets the additional properties
-        /// associated with the current application.
+        /// Gets or sets the additional properties associated with the current application.
         /// </summary>
-        public virtual JObject Properties { get; set; }
+        public JObject Properties { get; set; }
 
         /// <summary>
         /// Gets or sets the callback URLs associated with the current application.
         /// </summary>
         public ImmutableArray<string> RedirectUris { get; set; }
+            = ImmutableArray.Create<string>();
+
+        /// <summary>
+        /// Gets or sets the requirements associated with the current application.
+        /// </summary>
+        public ImmutableArray<string> Requirements { get; set; }
             = ImmutableArray.Create<string>();
 
         /// <summary>
@@ -73,8 +80,7 @@ namespace OrchardCore.OpenId.YesSql.Models
             = ImmutableArray.Create<string>();
 
         /// <summary>
-        /// Gets or sets the application type
-        /// associated with the current application.
+        /// Gets or sets the application type associated with the current application.
         /// </summary>
         public string Type { get; set; }
     }

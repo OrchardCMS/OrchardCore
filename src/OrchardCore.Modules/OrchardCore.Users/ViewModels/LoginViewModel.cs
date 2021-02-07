@@ -19,7 +19,7 @@ namespace OrchardCore.Users.ViewModels
             var S = validationContext.GetService<IStringLocalizer<LoginViewModel>>();
             if (string.IsNullOrWhiteSpace(UserName))
             {
-                    yield return new ValidationResult(S["Username is required."], new[] { "UserName" });
+                yield return new ValidationResult(S["Username is required."], new[] { "UserName" });
             }
 
             if (string.IsNullOrWhiteSpace(Password))

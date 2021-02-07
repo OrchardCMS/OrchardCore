@@ -2,6 +2,13 @@
 
   <PropertyGroup>
     <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
+    
+    <!-- NuGet properties-->
+    <Title>OrchardCore GraphQL for ContentManagement</Title>
+    <Description>$(OCCMSDescription)
+
+    GraphQL implementation for ContentManagement</Description>
+    <PackageTags>$(PackageTags) OrchardCoreCMS ContentManagement GraphQL</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>

@@ -2,6 +2,12 @@
 
   <PropertyGroup>
     <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
+    <!-- NuGet properties-->
+    <Title>OrchardCore Navigation Core</Title>
+    <Description>$(OCFrameworkDescription)
+    
+    Core Implementation for OrchardCore Navigation.</Description>
+    <PackageTags>$(PackageTags) OrchardCoreFramework</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>

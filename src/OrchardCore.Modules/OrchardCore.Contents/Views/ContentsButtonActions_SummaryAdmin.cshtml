@@ -1,0 +1,46 @@
+@using OrchardCore.Contents
+@inject IAuthorizationService AuthorizationService
+@inject IContentManager ContentManager
+
+@{
+    ContentItem contentItem = Model.ContentItem;
+    var hasPublished = await ContentManager.HasPublishedVersionAsync(contentItem);
+    var hasDraft = contentItem.HasDraft();
+    var hasDeletePermission = await AuthorizationService.AuthorizeAsync(User, CommonPermissions.DeleteContent, contentItem);
+    var hasEditPermission = await AuthorizationService.AuthorizeAsync(User, CommonPermissions.EditContent, contentItem);
+    var hasPublishPermission = await AuthorizationService.AuthorizeAsync(User, CommonPermissions.PublishContent, contentItem);
+    var hasClonePermission = await AuthorizationService.AuthorizeAsync(User, CommonPermissions.CloneContent, contentItem);
+}
+
+@if (hasDraft)
+{
+    if (hasPublishPermission)
+    {
+        <a asp-action="Publish" asp-controller="Admin" asp-route-area="OrchardCore.Contents" asp-route-contentItemId="@contentItem.ContentItemId" asp-route-returnUrl="@FullRequestPath" data-url-af="UnsafeUrl" class="dropdown-item btn-sm">@T["Publish Draft"]</a>
+    }
+
+    if (hasPublishPermission)
+    {
+        <div class="dropdown-divider"></div>
+    }
+}
+
+@if (hasDraft && hasEditPermission)
+{
+    <a asp-action="DiscardDraft" asp-controller="Admin" asp-route-area="OrchardCore.Contents" asp-route-contentItemId="@contentItem.ContentItemId" asp-route-returnUrl="@FullRequestPath" data-url-af="UnsafeUrl RemoveUrl" data-title=@T["Discard Draft"] data-message=@T["Are you sure you want to discard this draft?"] data-ok-text="@T["Yes"]" data-cancel-text="@T["No"]" data-ok-class="btn-primary" class="dropdown-item btn-sm">@T["Discard Draft"]</a>
+}
+
+@if (hasPublished && hasPublishPermission)
+{
+    <a asp-action="Unpublish" asp-controller="Admin" asp-route-area="OrchardCore.Contents" asp-route-contentItemId="@contentItem.ContentItemId" asp-route-returnUrl="@FullRequestPath" data-url-af="UnsafeUrl RemoveUrl" data-title=@T["Unpublish"] data-message=@T["Are you sure you want to unpublish this item?"] data-ok-text="@T["Yes"]" data-cancel-text="@T["No"]" data-ok-class="btn-primary" class="dropdown-item btn-sm">@T["Unpublish"]</a>
+}
+
+@if ((hasDraft || hasPublished) && hasDeletePermission)
+{
+    <a remove-for="@contentItem" class="dropdown-item btn-sm" asp-route-returnUrl="@FullRequestPath" data-url-af="RemoveUrl UnsafeUrl" data-title="@T["Delete"]" data-message="@T["Are you sure you want to delete this content item?"]" data-ok-text="@T["Ok"]" data-cancel-text="@T["Cancel"]">@T["Delete"]</a>
+}
+
+@if (hasClonePermission)
+{
+    <a asp-action="Clone" asp-controller="Admin" asp-route-area="OrchardCore.Contents" asp-route-contentItemId="@contentItem.ContentItemId" asp-route-returnUrl="@FullRequestPath" data-url-af="UnsafeUrl" class="dropdown-item btn-sm">@T["Clone"]</a>
+}

@@ -17,7 +17,7 @@ namespace OrchardCore.Widgets
         {
             _contentDefinitionManager.AlterPartDefinition("WidgetsListPart", builder => builder
                 .Attachable()
-                .WithDescription("Provides a way to add widgets per content items.")
+                .WithDescription("Provides a way to add widgets to Layout zones for your content item.")
                 );
 
             return 1;

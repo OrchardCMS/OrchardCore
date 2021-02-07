@@ -1,0 +1,6 @@
+@import "../../node_modules/bootstrap/scss/functions";
+@import "../../node_modules/bootstrap/scss/variables";
+
+// media-specific
+$media-border-content: 1px solid rgba(140, 130, 115, 0.13);
+$selected-background-color: darken($gray-900, 10%);

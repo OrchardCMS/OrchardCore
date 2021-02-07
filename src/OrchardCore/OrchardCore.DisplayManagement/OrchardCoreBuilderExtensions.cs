@@ -63,6 +63,8 @@ namespace Microsoft.Extensions.DependencyInjection
 
                     services.AddScoped<IPlacementNodeFilterProvider, PathPlacementNodeFilterProvider>();
 
+                    services.AddScoped<IShapePlacementProvider, ShapeTablePlacementProvider>();
+
                     services.TryAddEnumerable(
                         ServiceDescriptor.Transient<IConfigureOptions<ShapeTemplateOptions>, ShapeTemplateOptionsSetup>());
                     services.TryAddSingleton<IShapeTemplateFileProviderAccessor, ShapeTemplateFileProviderAccessor>();

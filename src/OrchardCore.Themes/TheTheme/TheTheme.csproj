@@ -3,6 +3,13 @@
   <PropertyGroup>
     <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
     <AddRazorSupportForMvc>true</AddRazorSupportForMvc>
+    
+    <!-- NuGet properties-->
+    <Title>OrchardCore Default theme</Title>
+    <Description>$(OCCMSDescription)
+    
+    The default Theme - Can be used as base theme for new themes.</Description>
+    <PackageTags>$(PackageTags) OrchardCoreCMS Theme</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>

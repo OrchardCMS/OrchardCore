@@ -72,7 +72,7 @@ namespace OrchardCore.OpenId.Controllers
                 Pager = (await New.Pager(pager)).TotalItemCount(count)
             };
 
-            foreach (var scope in await _scopeManager.ListAsync(pager.PageSize, pager.GetStartIndex()))
+            await foreach (var scope in _scopeManager.ListAsync(pager.PageSize, pager.GetStartIndex()))
             {
                 model.Scopes.Add(new OpenIdScopeEntry
                 {

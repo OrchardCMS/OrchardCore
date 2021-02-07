@@ -7,7 +7,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using OrchardCore.Environment.Extensions.Utility;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Builders;
 using OrchardCore.Environment.Shell.Configuration;
@@ -42,10 +41,10 @@ namespace OrchardCore.Shells.Database.Configuration
 
         public async Task AddSourcesAsync(IConfigurationBuilder builder)
         {
-            DatabaseShellsSettings document;
+            DatabaseShellsSettings document = null;
 
             using var context = await _shellContextFactory.GetDatabaseContextAsync(_options);
-            using (var scope = context.ServiceProvider.CreateScope())
+            await context.CreateScope().UsingServiceScopeAsync(async scope =>
             {
                 var session = scope.ServiceProvider.GetRequiredService<ISession>();
 
@@ -62,15 +61,18 @@ namespace OrchardCore.Shells.Database.Configuration
 
                     session.Save(document, checkConcurrency: true);
                 }
-            }
+            });
 
-            builder.AddJsonStream(new MemoryStream(Encoding.UTF8.GetBytes(document.ShellsSettings.ToString(Formatting.None))));
+            if (document.ShellsSettings != null)
+            {
+                builder.AddJsonStream(new MemoryStream(Encoding.UTF8.GetBytes(document.ShellsSettings.ToString(Formatting.None))));
+            }
         }
 
         public async Task SaveAsync(string tenant, IDictionary<string, string> data)
         {
             using var context = await _shellContextFactory.GetDatabaseContextAsync(_options);
-            using (var scope = context.ServiceProvider.CreateScope())
+            await context.CreateScope().UsingServiceScopeAsync(async scope =>
             {
                 var session = scope.ServiceProvider.GetRequiredService<ISession>();
 
@@ -106,7 +108,7 @@ namespace OrchardCore.Shells.Database.Configuration
                 document.ShellsSettings = tenantsSettings;
 
                 session.Save(document, checkConcurrency: true);
-            }
+            });
         }
 
         private async Task<bool> TryMigrateFromFileAsync(DatabaseShellsSettings document)

@@ -6,11 +6,12 @@
     var matchAllQuery = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(@"SELECT * FROM ContentItemIndex"));
 }
 
+<style asp-name="codemirror"></style>
 <script asp-name="codemirror" depends-on="admin" at="Foot"></script>
 <script asp-name="codemirror-mode-javascript" at="Foot"></script>
 <script asp-name="codemirror-mode-sql" at="Foot"></script>
 
-<h1>@RenderTitleSegments(T["SQL Query"])</h1>
+<zone Name="Title"><h1>@RenderTitleSegments(T["SQL Query"])</h1></zone>
 
 <div asp-validation-summary="All" class="text-danger"></div>
 

@@ -1,6 +1,6 @@
 @model dynamic
 
-<h1>@RenderTitleSegments(T["Configure OpenID validation settings"])</h1>
+<zone Name="Title"><h1>@RenderTitleSegments(T["Configure OpenID validation settings"])</h1></zone>
 
 <form asp-action="Index" method="post">
     @Html.ValidationSummary()

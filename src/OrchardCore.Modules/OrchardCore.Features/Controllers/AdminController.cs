@@ -191,7 +191,7 @@ namespace OrchardCore.Features.Controllers
         {
             foreach (var feature in features)
             {
-                _notifier.Success(H["{0} was {1}", feature.Name ?? feature.Id, enabled ? "enabled" : "disabled"]);
+                _notifier.Success(H["{0} was {1}.", feature.Name ?? feature.Id, enabled ? "enabled" : "disabled"]);
             }
         }
     }

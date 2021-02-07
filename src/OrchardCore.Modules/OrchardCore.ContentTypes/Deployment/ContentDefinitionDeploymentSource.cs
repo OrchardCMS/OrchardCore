@@ -39,8 +39,6 @@ namespace OrchardCore.ContentTypes.Deployment
                 new JProperty("ContentTypes", JArray.FromObject(contentTypes)),
                 new JProperty("ContentParts", JArray.FromObject(contentParts))
             ));
-
-            return;
         }
     }
 }

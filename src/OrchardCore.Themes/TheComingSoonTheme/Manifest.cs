@@ -6,6 +6,6 @@ using OrchardCore.Modules.Manifest;
     Author = ManifestConstants.OrchardCoreTeam,
     Website = ManifestConstants.OrchardCoreWebsite,
     Version = ManifestConstants.OrchardCoreVersion,
-    Description = "Landing page for a project that is under construction",
+    Description = "Landing page for a project that is under construction.",
     Tags = new[] { "Landing page" }
 )]

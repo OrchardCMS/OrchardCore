@@ -13,5 +13,6 @@ namespace OrchardCore.Contents.Workflows.ViewModels
         public string ContentType { get; set; }
         public string ContentItemIdExpression { get; set; }
         public string ContentProperties { get; set; }
+        public bool Publish { get; set; }
     }
 }

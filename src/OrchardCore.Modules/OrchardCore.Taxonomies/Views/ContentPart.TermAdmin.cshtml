@@ -1,0 +1,15 @@
+@using OrchardCore.Mvc.Utilities
+
+@{
+    string name = Model.Metadata.Name;
+}
+
+@if (Model.Content != null)
+{
+    // We don't render anything from custom parts in the terms list
+    // This can be customized per part by creating custom templates
+
+    @*<div class="contentpart contentpart-@name.HtmlClassify()">
+        @await DisplayAsync(Model.Content)
+    </div>*@    
+}

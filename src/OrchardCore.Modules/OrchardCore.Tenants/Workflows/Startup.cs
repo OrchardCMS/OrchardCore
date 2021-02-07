@@ -11,10 +11,10 @@ namespace OrchardCore.Tenants.Workflows
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddActivity<DisableTenantTask, DisableTenantTaskDisplay>();
-            services.AddActivity<EnableTenantTask, EnableTenantTaskDisplay>();
-            services.AddActivity<CreateTenantTask, CreateTenantTaskDisplay>();
-            services.AddActivity<SetupTenantTask, SetupTenantTaskDisplay>();
+            services.AddActivity<DisableTenantTask, DisableTenantTaskDisplayDriver>();
+            services.AddActivity<EnableTenantTask, EnableTenantTaskDisplayDriver>();
+            services.AddActivity<CreateTenantTask, CreateTenantTaskDisplayDriver>();
+            services.AddActivity<SetupTenantTask, SetupTenantTaskDisplayDriver>();
         }
     }
 }

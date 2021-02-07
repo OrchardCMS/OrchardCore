@@ -8,67 +8,54 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
-using OrchardCore.Data;
-using OrchardCore.Infrastructure.Cache;
+using OrchardCore.Documents;
 using OrchardCore.Modules;
 using OrchardCore.Roles.Models;
 using OrchardCore.Security;
-using YesSql;
 
 namespace OrchardCore.Roles.Services
 {
     public class RoleStore : IRoleClaimStore<IRole>, IQueryableRoleStore<IRole>
     {
-        private readonly ISession _session;
-        private readonly ISessionHelper _sessionHelper;
-        private readonly IScopedDistributedCache _scopedDistributedCache;
         private readonly IServiceProvider _serviceProvider;
+        private readonly IDocumentManager<RolesDocument> _documentManager;
         private readonly IStringLocalizer S;
         private readonly ILogger _logger;
 
+        private bool _updating;
+
         public RoleStore(
-            ISession session,
-            ISessionHelper sessionHelper,
-            IScopedDistributedCache scopedDistributedCache,
             IServiceProvider serviceProvider,
+            IDocumentManager<RolesDocument> documentManager,
             IStringLocalizer<RoleStore> stringLocalizer,
             ILogger<RoleStore> logger)
         {
-            _session = session;
-            _sessionHelper = sessionHelper;
-            _scopedDistributedCache = scopedDistributedCache;
             _serviceProvider = serviceProvider;
+            _documentManager = documentManager;
             S = stringLocalizer;
             _logger = logger;
-        }
-
-        public void Dispose()
-        {
         }
 
         public IQueryable<IRole> Roles => GetRolesAsync().GetAwaiter().GetResult().Roles.AsQueryable();
 
         /// <summary>
-        /// Returns the document from the database to be updated.
+        /// Loads the roles document from the store for updating and that should not be cached.
         /// </summary>
-        public Task<RolesDocument> LoadRolesAsync() => _sessionHelper.LoadForUpdateAsync<RolesDocument>();
+        private Task<RolesDocument> LoadRolesAsync() => _documentManager.GetOrCreateMutableAsync();
 
         /// <summary>
-        /// Returns the document from the cache or creates a new one. The result should not be updated.
+        /// Gets the roles document from the cache for sharing and that should not be updated.
         /// </summary>
-        private async Task<RolesDocument> GetRolesAsync()
-        {
-            return await _scopedDistributedCache.GetOrSetAsync(() =>
-            {
-                return _sessionHelper.GetForCachingAsync<RolesDocument>();
-            });
-        }
+        private Task<RolesDocument> GetRolesAsync() => _documentManager.GetOrCreateImmutableAsync();
 
+        /// <summary>
+        /// Updates the store with the provided roles document and then updates the cache.
+        /// </summary>
         private Task UpdateRolesAsync(RolesDocument roles)
         {
-            roles.Serial++;
-            _session.Save(roles);
-            return _scopedDistributedCache.SetAsync(roles);
+            _updating = true;
+
+            return _documentManager.UpdateAsync(roles);
         }
 
         #region IRoleStore<IRole>
@@ -116,16 +103,32 @@ namespace OrchardCore.Roles.Services
 
         public async Task<IRole> FindByIdAsync(string roleId, CancellationToken cancellationToken)
         {
-            var roles = await GetRolesAsync();
+            // While updating find a role from the loaded document being mutated.
+            var roles = _updating ? await LoadRolesAsync() : await GetRolesAsync();
+
             var role = roles.Roles.FirstOrDefault(x => x.RoleName == roleId);
-            return role;
+
+            if (role == null)
+            {
+                return null;
+            }
+
+            return _updating ? role : role.Clone();
         }
 
         public async Task<IRole> FindByNameAsync(string normalizedRoleName, CancellationToken cancellationToken)
         {
-            var roles = await GetRolesAsync();
+            // While updating find a role from the loaded document being mutated.
+            var roles = _updating ? await LoadRolesAsync() : await GetRolesAsync();
+
             var role = roles.Roles.FirstOrDefault(x => x.NormalizedRoleName == normalizedRoleName);
-            return role;
+
+            if (role == null)
+            {
+                return null;
+            }
+
+            return _updating ? role : role.Clone();
         }
 
         public Task<string> GetNormalizedRoleNameAsync(IRole role, CancellationToken cancellationToken)
@@ -248,5 +251,9 @@ namespace OrchardCore.Roles.Services
         }
 
         #endregion IRoleClaimStore<IRole>
+
+        public void Dispose()
+        {
+        }
     }
 }

@@ -5,14 +5,19 @@
     var culture = await Orchard.GetContentCultureAsync(Model.ContentItem);
 }
 
+@await DisplayAsync(await New.ShortcodeModal())
+
 <div class="form-group">
     <label asp-for="Html">@Model.TypePartDefinition.DisplayName()</label>
     <textarea asp-for="Html" rows="5" class="form-control content-preview-text" dir="@culture.GetLanguageDirection()"></textarea>
     <span class="hint">@T["The body of the content item."]</span>
 </div>
 
+<style asp-name="codemirror"></style>
 <script asp-name="codemirror" depends-on="admin" at="Foot"></script>
 <script asp-name="codemirror-addon-display-autorefresh" at="Foot"></script>
+<script asp-name="codemirror-addon-edit-closetag" at="Foot"></script>
+<script asp-name="codemirror-addon-selection-active-line" at="Foot"></script>
 <script asp-name="codemirror-mode-css" at="Foot"></script>
 <script asp-name="codemirror-mode-htmlmixed" at="Foot"></script>
 <script asp-name="codemirror-mode-javascript" at="Foot"></script>
@@ -20,15 +25,19 @@
 <script at="Foot">
     $(function () {
         var optionsTextArea = document.getElementById('@Html.IdFor(x => x.Html)');
-        // When part rendered by a flow part only the elements scripts are rendered, so the html element will not exist.
+        @* When part rendered by a flow part only the elements scripts are rendered, so the html element will not exist. *@
         if (optionsTextArea) {
             var editor = CodeMirror.fromTextArea(optionsTextArea, {
+                autoCloseTags: true,
                 autoRefresh: true,
-                lineNumbers: false,
+                lineNumbers: true,
                 lineWrapping: true,
                 matchBrackets: true,
+                styleActiveLine: true,
                 mode: { name: "htmlmixed" }
             });
+
+            initializeCodeMirrorShortcodeWrapper(editor);
         }
     });
 </script>

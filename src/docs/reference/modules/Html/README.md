@@ -33,6 +33,12 @@ The following properties are available on `HtmlBodyPart`:
 | `Content` | The raw content of the part. |
 | `ContentItem` | The content item containing this part. |
 
+## Sanitization
+
+By default all HTML input is sanitized when the `HtmlBodyPart` is saved.
+
+You can disable this by unchecking the `Sanitize HTML` setting, or further configuring the [HTML Sanitizer](../../core/Sanitizer/README.md)
+
 ## Editors
 
 The __HtmlBody Part__ editor can be different for each content type. In the __HtmlBody Part__ settings of a 
@@ -88,15 +94,3 @@ Sample content:
 You can override the HTML editor for the `Default` editor by creating a shape file named  
 `HtmlBodyPart.Edit.cshtml`. The Wysiwyg editor is defined by using the file named  
 `HtmlBodyPart-Wysiwyg.Edit.cshtml`.
-
-## CREDITS
-
-### Trumbowyg
-
-<https://github.com/Alex-D/Trumbowyg>  
-Copyright (c) 2012-2016 Alexandre Demode (Alex-D)  
-License: MIT
-
-<https://github.com/RickStrahl/jquery-resizable>  
-Copyright (c) 2013-2019 West Wind Technologies
-License: MIT

@@ -3,6 +3,12 @@
   <PropertyGroup>
     <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
     <RootNamespace>OrchardCore.Indexing</RootNamespace>
+    <!-- NuGet properties-->
+    <Title>OrchardCore Indexing Abstractions</Title>
+    <Description>$(OCCMSDescription)
+    
+    Abstractions for Indexing.</Description>
+    <PackageTags>$(PackageTags) OrchardCoreCMS Abstractions</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>

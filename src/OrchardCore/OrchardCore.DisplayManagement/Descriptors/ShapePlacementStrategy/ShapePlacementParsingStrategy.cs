@@ -14,7 +14,7 @@ using OrchardCore.Environment.Shell;
 namespace OrchardCore.DisplayManagement.Descriptors.ShapePlacementStrategy
 {
     /// <summary>
-    /// This component discovers and announces the shape alterations implied by the contents of the Placement.info files
+    /// This component discovers and announces the shape alterations implied by the contents of the Placement.json files
     /// </summary>
     public class ShapePlacementParsingStrategy : IShapeTableHarvester
     {

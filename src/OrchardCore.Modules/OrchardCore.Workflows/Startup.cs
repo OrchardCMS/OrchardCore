@@ -54,28 +54,28 @@ namespace OrchardCore.Workflows
             services.AddScoped<IDataMigration, Migrations>();
             services.AddScoped<INavigationProvider, AdminMenu>();
             services.AddScoped<IPermissionProvider, Permissions>();
-            services.AddScoped<IDisplayDriver<IActivity>, MissingActivityDisplay>();
+            services.AddScoped<IDisplayDriver<IActivity>, MissingActivityDisplayDriver>();
             services.AddSingleton<IIndexProvider, WorkflowTypeIndexProvider>();
             services.AddSingleton<IIndexProvider, WorkflowIndexProvider>();
             services.AddScoped<IWorkflowExecutionContextHandler, DefaultWorkflowExecutionContextHandler>();
             services.AddScoped<IWorkflowExpressionEvaluator, LiquidWorkflowExpressionEvaluator>();
             services.AddScoped<IWorkflowScriptEvaluator, JavaScriptWorkflowScriptEvaluator>();
 
-            services.AddActivity<Activity, ActivityMetadataDisplay>();
-            services.AddActivity<NotifyTask, NotifyTaskDisplay>();
-            services.AddActivity<SetPropertyTask, SetVariableTaskDisplay>();
-            services.AddActivity<SetOutputTask, SetOutputTaskDisplay>();
-            services.AddActivity<CorrelateTask, CorrelateTaskDisplay>();
-            services.AddActivity<ForkTask, ForkTaskDisplay>();
-            services.AddActivity<JoinTask, JoinTaskDisplay>();
-            services.AddActivity<ForLoopTask, ForLoopTaskDisplay>();
-            services.AddActivity<ForEachTask, ForEachTaskDisplay>();
-            services.AddActivity<WhileLoopTask, WhileLoopTaskDisplay>();
-            services.AddActivity<IfElseTask, IfElseTaskDisplay>();
-            services.AddActivity<ScriptTask, ScriptTaskDisplay>();
-            services.AddActivity<LogTask, LogTaskDisplay>();
+            services.AddActivity<Activity, ActivityMetadataDisplayDriver>();
+            services.AddActivity<NotifyTask, NotifyTaskDisplayDriver>();
+            services.AddActivity<SetPropertyTask, SetVariableTaskDisplayDriver>();
+            services.AddActivity<SetOutputTask, SetOutputTaskDisplayDriver>();
+            services.AddActivity<CorrelateTask, CorrelateTaskDisplayDriver>();
+            services.AddActivity<ForkTask, ForkTaskDisplayDriver>();
+            services.AddActivity<JoinTask, JoinTaskDisplayDriver>();
+            services.AddActivity<ForLoopTask, ForLoopTaskDisplayDriver>();
+            services.AddActivity<ForEachTask, ForEachTaskDisplayDriver>();
+            services.AddActivity<WhileLoopTask, WhileLoopTaskDisplayDriver>();
+            services.AddActivity<IfElseTask, IfElseTaskDisplayDriver>();
+            services.AddActivity<ScriptTask, ScriptTaskDisplayDriver>();
+            services.AddActivity<LogTask, LogTaskDisplayDriver>();
 
-            services.AddActivity<CommitTransactionTask, CommitTransactionTaskDisplay>();
+            services.AddActivity<CommitTransactionTask, CommitTransactionTaskDisplayDriver>();
 
             services.AddRecipeExecutionStep<WorkflowTypeStep>();
         }

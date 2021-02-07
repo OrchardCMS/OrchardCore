@@ -7,6 +7,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
 using OrchardCore.Admin;
 using OrchardCore.Environment.Shell;
+using OrchardCore.Environment.Shell.Distributed;
 using OrchardCore.Modules;
 using OrchardCore.Modules.FileProviders;
 using OrchardCore.Mvc.Core.Utilities;
@@ -119,6 +120,15 @@ namespace OrchardCore.Tenants
         private string GetContentRoot(ShellOptions shellOptions, ShellSettings shellSettings)
         {
             return Path.Combine(shellOptions.ShellsApplicationDataPath, shellOptions.ShellsContainerName, shellSettings.Name, AssetsPath);
+        }
+    }
+
+    [Feature("OrchardCore.Tenants.Distributed")]
+    public class DistributedStartup : StartupBase
+    {
+        public override void ConfigureServices(IServiceCollection services)
+        {
+            services.AddSingleton<DistributedShellMarkerService>();
         }
     }
 }

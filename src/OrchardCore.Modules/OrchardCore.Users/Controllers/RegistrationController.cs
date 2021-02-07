@@ -74,10 +74,13 @@ namespace OrchardCore.Users.Controllers
                 return NotFound();
             }
 
-            if (!string.IsNullOrEmpty(model.Email) && !_emailAddressValidator.Validate(model.Email))
+            if (string.IsNullOrEmpty(model.Email))
             {
-                ModelState.AddModelError("Email", S["Invalid email."]);
+                ModelState.AddModelError("Email", S["Email is required."]);
+            }
 
+            if (_emailAddressValidator.Validate(model.Email))
+            {
                 // Check if user with same email already exists
                 var userWithEmail = await _userManager.FindByEmailAsync(model.Email);
 
@@ -86,7 +89,11 @@ namespace OrchardCore.Users.Controllers
                     ModelState.AddModelError("Email", S["A user with the same email already exists."]);
                 }
             }
-            
+            else
+            {
+                ModelState.AddModelError("Email", S["Invalid email."]);
+            }
+
             ViewData["ReturnUrl"] = returnUrl;
 
             if (TryValidateModel(model) && ModelState.IsValid)

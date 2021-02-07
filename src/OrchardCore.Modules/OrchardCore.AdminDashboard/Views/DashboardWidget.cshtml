@@ -1,0 +1,23 @@
+<div class="@String.Join(" ", Model.Classes.ToArray())">
+    @if (Model.Header != null || Model.Meta != null)
+    {
+        <div class="widget-header">
+            @await DisplayAsync(Model.Header)
+            @if (Model.Meta != null)
+            {
+                <div class="widget-metadata">
+                    @await DisplayAsync(Model.Meta)
+                </div>
+            }
+        </div>
+    }
+    <div class="widget-body">
+        @await DisplayAsync(Model.Content)
+    </div>
+    @if (Model.Footer != null)
+    {
+        <div class="widget-footer">
+            @await DisplayAsync(Model.Footer)
+        </div>
+    }
+</div>

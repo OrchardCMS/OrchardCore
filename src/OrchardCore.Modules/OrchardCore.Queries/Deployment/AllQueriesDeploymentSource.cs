@@ -16,9 +16,9 @@ namespace OrchardCore.Queries.Deployment
 
         public async Task ProcessDeploymentStepAsync(DeploymentStep step, DeploymentPlanResult result)
         {
-            var allQueriesState = step as AllQueriesDeploymentStep;
+            var allQueriesStep = step as AllQueriesDeploymentStep;
 
-            if (allQueriesState == null)
+            if (allQueriesStep == null)
             {
                 return;
             }

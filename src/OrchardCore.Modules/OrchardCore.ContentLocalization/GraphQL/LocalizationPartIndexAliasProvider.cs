@@ -12,7 +12,7 @@ namespace OrchardCore.ContentLocalization.GraphQL
             {
                 Alias = "localizationPart",
                 Index = nameof(LocalizedContentItemIndex),
-                With = q => q.With<LocalizedContentItemIndex>()
+                IndexType = typeof(LocalizedContentItemIndex)
             }
         };
 

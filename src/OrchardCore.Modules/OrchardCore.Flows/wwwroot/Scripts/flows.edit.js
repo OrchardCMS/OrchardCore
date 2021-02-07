@@ -65,7 +65,7 @@ $(function () {
   });
   $(document).on('click', '.widget-delete', function () {
     var $this = $(this);
-    confirmDialog(_objectSpread({}, $this.data(), {
+    confirmDialog(_objectSpread(_objectSpread({}, $this.data()), {}, {
       callback: function callback(r) {
         if (r) {
           $this.closest('.widget-template').remove();

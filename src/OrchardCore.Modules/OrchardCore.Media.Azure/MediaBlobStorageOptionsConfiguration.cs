@@ -3,7 +3,6 @@ using Fluid;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using OrchardCore.Environment.Extensions.Utility;
 using OrchardCore.Environment.Shell;
 using OrchardCore.Environment.Shell.Configuration;
 

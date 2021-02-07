@@ -5,5 +5,8 @@ namespace OrchardCore.Liquid
     /// </summary>
     public class LiquidContentAccessor
     {
+        public string Content { get; set; }
+
+        public override string ToString() => Content;
     }
 }

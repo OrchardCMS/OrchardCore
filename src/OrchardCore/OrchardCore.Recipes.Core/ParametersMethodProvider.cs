@@ -18,7 +18,7 @@ namespace OrchardCore.Recipes
                 Name = "parameters",
                 Method = serviceprovider => (Func<string, object>)(name =>
                {
-                   return environmentObject[name].Value<string>();
+                   return environmentObject.SelectToken(name)?.Value<string>();
                })
             };
         }

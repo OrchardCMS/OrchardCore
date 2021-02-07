@@ -35,11 +35,20 @@
     <span class="hint">@T["The unique name associated with this tenant. If none is provided, the tenant name is automatically used as the default audience."]</span>
 </div>
 
-<script at="Foot" type="text/javascript">
+<div class="form-group" asp-validation-class-for="DisableTokenTypeValidation">
+    <div class="custom-control custom-checkbox">
+        <input type="checkbox" class="custom-control-input" asp-for="DisableTokenTypeValidation">
+        <label class="custom-control-label" asp-for="DisableTokenTypeValidation">@T["Disable token type validation"]</label>
+        <span class="hint dashed">@T["Token type validation can be disabled to accept JWT tokens issued by servers that don't support the 'at+jwt' type header."]</span>
+    </div>
+</div>
+
+    <script at="Foot">
     $(function () {
         var authority = $('#@Html.IdFor(model => model.Authority)');
         var audience = $('#@Html.IdFor(model => model.Audience)');
         var tenant = $('#@Html.IdFor(model => model.Tenant)');
+        var disableTokenTypeValidation = $('#@Html.IdFor(model => model.DisableTokenTypeValidation)');
 
         tenant.change(function () {
             if (tenant.val() != '') {
@@ -47,13 +56,16 @@
                 authority.parent().hide();
                 audience.val(null);
                 audience.parent().hide();
+                disableTokenTypeValidation.val(false);
+                disableTokenTypeValidation.parent().hide();
             }
             else {
                 authority.parent().show();
                 audience.parent().show();
+                disableTokenTypeValidation.parent().show();
             }
         });
 
         tenant.trigger('change');
     });
-</script>
+    </script>

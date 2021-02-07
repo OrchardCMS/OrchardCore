@@ -12,9 +12,11 @@ namespace OrchardCore.AdminMenu.AdminNodes
     public class PlaceholderAdminNodeNavigationBuilder : IAdminNodeNavigationBuilder
     {
         private readonly ILogger _logger;
+        private readonly IAdminMenuPermissionService _adminMenuPermissionService;
 
-        public PlaceholderAdminNodeNavigationBuilder(ILogger<PlaceholderAdminNodeNavigationBuilder> logger)
+        public PlaceholderAdminNodeNavigationBuilder(IAdminMenuPermissionService adminMenuPermissionService, ILogger<PlaceholderAdminNodeNavigationBuilder> logger)
         {
+            _adminMenuPermissionService = adminMenuPermissionService;
             _logger = logger;
         }
 
@@ -24,7 +26,7 @@ namespace OrchardCore.AdminMenu.AdminNodes
         {
             var node = menuItem as PlaceholderAdminNode;
 
-            if (node == null || string.IsNullOrEmpty(node.LinkText) || !node.Enabled)
+            if (node == null || String.IsNullOrEmpty(node.LinkText) || !node.Enabled)
             {
                 return Task.CompletedTask;
             }
@@ -33,6 +35,14 @@ namespace OrchardCore.AdminMenu.AdminNodes
             {
                 itemBuilder.Priority(node.Priority);
                 itemBuilder.Position(node.Position);
+
+                if (node.PermissionNames.Any())
+                {
+                    var permissions = await _adminMenuPermissionService.GetPermissionsAsync();
+                    // Find the actual permissions and apply them to the menu.
+                    var selectedPermissions = permissions.Where(p => node.PermissionNames.Contains(p.Name));
+                    itemBuilder.Permissions(selectedPermissions);
+                }
 
                 // Add adminNode's IconClass property values to menuItem.Classes.
                 // Add them with a prefix so that later the shape template can extract them to use them on a <i> tag.

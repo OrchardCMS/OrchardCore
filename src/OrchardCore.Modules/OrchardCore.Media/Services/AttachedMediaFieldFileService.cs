@@ -4,8 +4,10 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using OrchardCore.ContentManagement;
+using OrchardCore.ContentPreview;
 using OrchardCore.FileStorage;
 using OrchardCore.Media.ViewModels;
 
@@ -17,12 +19,16 @@ namespace OrchardCore.Media.Services
     public class AttachedMediaFieldFileService
     {
         private readonly IMediaFileStore _fileStore;
+        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ILogger _logger;
 
-        public AttachedMediaFieldFileService(IMediaFileStore fileStore,
+        public AttachedMediaFieldFileService(
+            IMediaFileStore fileStore,
+            IHttpContextAccessor httpContextAccessor,
             ILogger<AttachedMediaFieldFileService> logger)
         {
             _fileStore = fileStore;
+            _httpContextAccessor = httpContextAccessor;
             _logger = logger;
 
             MediaFieldsFolder = "mediafields";
@@ -51,6 +57,11 @@ namespace OrchardCore.Media.Services
             if (items == null)
             {
                 throw new ArgumentNullException(nameof(items));
+            }
+
+            if (_httpContextAccessor.HttpContext?.Features.Get<ContentPreviewFeature>()?.Previewing == true)
+            {
+                return;
             }
 
             await EnsureGlobalDirectoriesAsync();

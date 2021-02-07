@@ -23,6 +23,7 @@ namespace OrchardCore.Tenants.ViewModels
 
         public IEnumerable<RecipeDescriptor> Recipes { get; set; }
 
-        public bool CanSetDatabasePresets { get; set; }
+        public bool CanEditDatabasePresets { get; set; }
+        public bool DatabaseConfigurationPreset { get; set; }
     }
 }

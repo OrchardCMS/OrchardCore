@@ -58,21 +58,25 @@ be able to render a title, and uses it as a container for both the title and the
 
 The actual template for the `Widget` shape can be found in `src/OrchardCore.Modules/OrchardCore.Widgets/Views/Widgets.cshtml` but can be simplified to this:
 
-``` liquid tab="Liquid"
-<div class="{{ Model.Classes | join " "}}">
-    <div class="widget-body">
-    {{ Model.Content | shape_render }}
-    </div>
-</div>
-```
+=== "Liquid"
 
-``` html tab="Razor"
-<div class="@String.Join(" ", Model.Classes.ToArray())">
-    <div class="widget-body">
-    @await DisplayAsync(Model.Content)
+    ``` liquid
+    <div class="{{ Model.Classes | join " "}}">
+        <div class="widget-body">
+        {{ Model.Content | shape_render }}
+        </div>
     </div>
-</div>
-```
+    ```
+
+=== "Razor"
+
+    ``` html
+    <div class="@String.Join(" ", Model.Classes.ToArray())">
+        <div class="widget-body">
+        @await DisplayAsync(Model.Content)
+        </div>
+    </div>
+    ```
 
 Alternates are available per Content Type.
 
@@ -88,13 +92,17 @@ The actual template for this wrapper shape can be found in `src/OrchardCore.Modu
 
 A common requirement is to remove these tags, which can be done by creating this template instead:
 
-``` liquid tab="Liquid"
-{{ Model.Content | shape_render }}
-```
+=== "Liquid"
 
-``` html tab="Razor"
-@await DisplayAsync(Model.Content)
-```
+    ``` liquid
+    {{ Model.Content | shape_render }}
+    ```
+
+=== "Razor"
+
+    ``` html
+    @await DisplayAsync(Model.Content)
+    ```
 
 Optionally, you can change these alternates:
 

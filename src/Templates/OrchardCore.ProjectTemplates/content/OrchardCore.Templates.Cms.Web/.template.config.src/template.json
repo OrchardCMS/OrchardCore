@@ -6,27 +6,45 @@
   "identity": "OrchardCore.Templates.Cms.Web",
   "shortName": "occms",
   "sourceName": "OrchardCore.Templates.Cms.Web",
+  "defaultName": "OrchardCore.Cms.Web",
   "preferNameDirectory": true,
   "symbols": {
-    "logger": {
+    "Framework": {
+      "type": "parameter",
+      "description": "The target framework for the project.",
+      "datatype": "choice",
+      "choices": [
+        {
+          "choice": "netcoreapp3.1",
+          "description": "Target netcoreapp3.1"
+        },
+        {
+          "choice": "net5.0",
+          "description": "Target net5.0"
+        }
+      ],
+      "replaces": "netcoreapp3.1",
+      "defaultValue": "netcoreapp3.1"
+    },
+    "Logger": {
       "type": "parameter",
       "dataType": "choice",
       "choices": [
         {
-          "choice": "nlog",
+          "choice": "NLog",
           "description": "Configures NLog as the logger component."
         },
         {
-          "choice": "serilog",
+          "choice": "Serilog",
           "description": "Configures Serilog as the logger component."
         },
         {
-          "choice": "none",
+          "choice": "None",
           "description": "Do not configure logger."
         }
       ],
       "description": "Configures the logger component.",
-      "defaultValue": "nlog"
+      "defaultValue": "NLog"
     },
     "OrchardVersion": {
       "type": "parameter",
@@ -37,11 +55,11 @@
     },
     "UseNLog": {
       "type": "computed",
-      "value": "(logger == \"nlog\")"
+      "value": "(Logger == \"NLog\")"
     },
     "UseSerilog": {
       "type": "computed",
-      "value": "(logger == \"serilog\")"
+      "value": "(Logger == \"Serilog\")"
     }
   },
   "sources": [

@@ -58,7 +58,7 @@
     <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input" asp-for="StoreExternalTokens">
         <label class="custom-control-label" asp-for="StoreExternalTokens">@T["Store tokens"]</label>
-        <span class="hint">— @T["Store external authentication tokens for reuse"]</span>
+        <span class="hint dashed">@T["Store external authentication tokens for reuse"]</span>
     </div>
 </div>
 
@@ -68,7 +68,7 @@
     <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input" asp-for="UseCodeFlow">
         <label class="custom-control-label" asp-for="UseCodeFlow">@T["Use 'code' response type"]</label>
-        <span class="hint"><a href="http://openid.net/specs/openid-connect-core-1_0.html#codeExample" target="_blank">— @T["example:"] http://openid.net/specs/openid-connect-core-1_0.html#codeExample</a></span>
+        <span class="hint dashed"><a href="http://openid.net/specs/openid-connect-core-1_0.html#codeExample" target="_blank">@T["example:"] http://openid.net/specs/openid-connect-core-1_0.html#codeExample</a></span>
     </div>
 </div>
 
@@ -79,7 +79,7 @@
     <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input" asp-for="UseCodeIdTokenFlow">
         <label class="custom-control-label" asp-for="UseCodeIdTokenFlow">@T["Use 'code id_token' response type"]</label>
-        <span class="hint"><a href="http://openid.net/specs/openid-connect-core-1_0.html#code-id_tokenExample" target="_blank">— @T["example:"] http://openid.net/specs/openid-connect-core-1_0.html#code-id_tokenExample</a></span>
+        <span class="hint dashed"><a href="http://openid.net/specs/openid-connect-core-1_0.html#code-id_tokenExample" target="_blank">@T["example:"] http://openid.net/specs/openid-connect-core-1_0.html#code-id_tokenExample</a></span>
     </div>
 </div>
 
@@ -87,7 +87,7 @@
     <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input" asp-for="UseCodeIdTokenTokenFlow">
         <label class="custom-control-label" asp-for="UseCodeIdTokenTokenFlow">@T["Use 'code id_token token' response type"]</label>
-        <span class="hint"><a href="http://openid.net/specs/openid-connect-core-1_0.html#code-id_token-tokenExample" target="_blank">— @T["example:"] http://openid.net/specs/openid-connect-core-1_0.html#code-id_token-tokenExample</a></span>
+        <span class="hint dashed"><a href="http://openid.net/specs/openid-connect-core-1_0.html#code-id_token-tokenExample" target="_blank">@T["example:"] http://openid.net/specs/openid-connect-core-1_0.html#code-id_token-tokenExample</a></span>
     </div>
 </div>
 
@@ -95,7 +95,7 @@
     <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input" asp-for="UseCodeTokenFlow">
         <label class="custom-control-label" asp-for="UseCodeTokenFlow">@T["Use 'code token' response type"]</label>
-        <span class="hint"><a href="http://openid.net/specs/openid-connect-core-1_0.html#code-tokenExample" target="_blank">— @T["example:"] http://openid.net/specs/openid-connect-core-1_0.html#code-tokenExample</a></span>
+        <span class="hint dashed"><a href="http://openid.net/specs/openid-connect-core-1_0.html#code-tokenExample" target="_blank">@T["example:"] http://openid.net/specs/openid-connect-core-1_0.html#code-tokenExample</a></span>
     </div>
 </div>
 
@@ -106,7 +106,7 @@
     <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input" asp-for="UseIdTokenFlow">
         <label class="custom-control-label" asp-for="UseIdTokenFlow">@T["Use 'id_token' response type"]</label>
-        <span class="hint"><a href="http://openid.net/specs/openid-connect-core-1_0.html#id_tokenExample" target="_blank">— @T["example:"] http://openid.net/specs/openid-connect-core-1_0.html#id_tokenExample</a></span>
+        <span class="hint dashed"><a href="http://openid.net/specs/openid-connect-core-1_0.html#id_tokenExample" target="_blank">@T["example:"] http://openid.net/specs/openid-connect-core-1_0.html#id_tokenExample</a></span>
     </div>
 </div>
 
@@ -114,7 +114,7 @@
     <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input" asp-for="UseIdTokenTokenFlow">
         <label class="custom-control-label" asp-for="UseIdTokenTokenFlow">@T["Use 'id_token token' response type"]</label>
-        <span class="hint"><a href="http://openid.net/specs/openid-connect-core-1_0.html#id_token-tokenExample" target="_blank">— @T["example:"] http://openid.net/specs/openid-connect-core-1_0.html#id_token-tokenExample</a></span>
+        <span class="hint dashed"><a href="http://openid.net/specs/openid-connect-core-1_0.html#id_token-tokenExample" target="_blank">@T["example:"] http://openid.net/specs/openid-connect-core-1_0.html#id_token-tokenExample</a></span>
     </div>
 </div>
 
@@ -136,7 +136,7 @@
     <span class="hint">@T["set client secret."]</span>
 </div>
 
-<script at="Foot" type="text/javascript">
+<script at="Foot">
 ////<![CDATA[
     window.onload = function () {
         refreshFlows();

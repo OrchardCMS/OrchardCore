@@ -16,7 +16,7 @@ namespace OrchardCore.Workflows.Http.Activities
 {
     public class HttpRequestTask : TaskActivity
     {
-        private static readonly  Dictionary<int, string> HttpStatusCodeDictionary = new Dictionary<int, string>
+        private static readonly Dictionary<int, string> HttpStatusCodeDictionary = new Dictionary<int, string>
         {
             { 100, "Continue" },
             { 101, " Switching Protocols" },
@@ -148,7 +148,7 @@ namespace OrchardCore.Workflows.Http.Activities
                 {
                     var status = int.Parse(x.Trim());
 
-                    var description = HttpStatusCodeDictionary.TryGetValue(status, out var text) 
+                    var description = HttpStatusCodeDictionary.TryGetValue(status, out var text)
                         ? $"{status} {text}"
                         : status.ToString()
                         ;

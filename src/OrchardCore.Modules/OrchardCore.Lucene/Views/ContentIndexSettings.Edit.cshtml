@@ -4,36 +4,21 @@
     <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input" asp-for="ContentIndexSettings.Included" data-toggle="collapse" data-target="#index-settings" checked="@Model.ContentIndexSettings.Included" />
         <label class="custom-control-label" asp-for="ContentIndexSettings.Included">@T["Include this element in the index"]</label>
-        <span class="hint">— @T["Check to include the value of this element in the index."]</span>
+        <span class="hint dashed">@T["Check to include the value of this element in the index."]</span>
     </div>
     <div id="index-settings" class="collapse">
 
         <div class="custom-control custom-checkbox">
             <input type="checkbox" class="custom-control-input" asp-for="ContentIndexSettings.Stored" checked="@Model.ContentIndexSettings.Stored" />
             <label class="custom-control-label" asp-for="ContentIndexSettings.Stored">@T["Stored"]</label>
-            <span class="hint">— @T["Check to be able to retrieve the value from the index."]</span>
+            <span class="hint dashed">@T["Check to be able to retrieve the value from the index."]</span>
         </div>
 
         <div class="custom-control custom-checkbox">
             <input type="checkbox" class="custom-control-input" asp-for="ContentIndexSettings.Analyzed" checked="@Model.ContentIndexSettings.Analyzed" />
             <label class="custom-control-label" asp-for="ContentIndexSettings.Analyzed">@T["Analyzed"]</label>
-            <span class="hint">— @T["Check to analyze the value as readable text."]</span>
-        </div>
-
-        <div class="custom-control custom-checkbox">
-            <input type="checkbox" class="custom-control-input" asp-for="ContentIndexSettings.Sanitized" checked="@Model.ContentIndexSettings.Sanitized" />
-            <label class="custom-control-label" asp-for="ContentIndexSettings.Sanitized">@T["Sanitized"]</label>
-            <span class="hint">— @T["Check to remove any extraneous characters from the text (e.g., HTML)."]</span>
-        </div>
-
-        <div class="custom-control custom-checkbox">
-            <input type="checkbox" class="custom-control-input" asp-for="ContentIndexSettings.Tokenized" data-toggle="collapse" data-target="#index-template" checked="@Model.ContentIndexSettings.Tokenized" />
-            <label class="custom-control-label" asp-for="ContentIndexSettings.Tokenized">@T["Tokenized"]</label>
-            <span class="hint">— @T["Check to be able alter the indexed value using tokens."]</span>
+            <span class="hint dashed">@T["Check to analyze the value as readable text."]</span>
         </div>
     </div>
 </div>
-<div class="form-group collapse" id="index-template">
-    <input asp-for="ContentIndexSettings.Template" type="text" class="form-control" />
-    <span class="hint">@T["Use tokens to customize the value. Use the <code>content</code> helper to reference the current element."]</span>
-</div>
+

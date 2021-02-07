@@ -1,0 +1,46 @@
+@inject IContentManager ContentManager
+
+@{
+    ContentItem contentItem = Model.ContentItem;
+    var hasPublished = await ContentManager.HasPublishedVersionAsync(contentItem);
+    var hasDraft = contentItem.HasDraft();
+    var exportId = Guid.NewGuid().ToString("n");
+    var exportPublishedId = Guid.NewGuid().ToString("n");
+    var exportDraftId = Guid.NewGuid().ToString("n");
+}
+
+<div class="dropdown-divider"></div>
+@if (hasDraft)
+{
+    <a asp-action="Display" asp-controller="Download" asp-area="OrchardCore.Contents" asp-route-contentItemId="@contentItem.ContentItemId" asp-route-returnUrl="@FullRequestPath" asp-route-latest="true" class="dropdown-item btn btn-primary btn-sm">@T["View Draft as JSON"]</a>
+    <a id="@exportDraftId" asp-action="Download" asp-controller="Download" asp-area="OrchardCore.Contents" asp-route-contentItemId="@contentItem.ContentItemId" asp-route-latest="@Boolean.TrueString" class="dropdown-item btn btn-primary btn-sm" data-url-af="UnsafeUrl">@T["Download Draft as JSON"]</a>
+
+    if (hasPublished)
+    {
+        <div class="dropdown-divider"></div>
+
+        <a asp-action="Display" asp-controller="Download" asp-area="OrchardCore.Contents" asp-route-contentItemId="@contentItem.ContentItemId" asp-route-returnUrl="@FullRequestPath" class="dropdown-item btn btn-primary btn-sm">@T["View Published as JSON"]</a>
+        <a id="@exportPublishedId" asp-action="Download" asp-controller="Download" asp-area="OrchardCore.Contents" asp-route-contentItemId="@contentItem.ContentItemId" class="dropdown-item btn btn-primary btn-sm" data-url-af="UnsafeUrl">@T["Download Published as JSON"]</a>
+    }
+}
+else
+{
+    <a asp-action="Display" asp-controller="Download" asp-area="OrchardCore.Contents" asp-route-contentItemId="@contentItem.ContentItemId" asp-route-returnUrl="@FullRequestPath" class="dropdown-item btn btn-primary btn-sm">@T["View as JSON"]</a>
+    <a id="@exportId" asp-action="Download" asp-controller="Download" asp-area="OrchardCore.Contents" asp-route-contentItemId="@contentItem.ContentItemId" class="dropdown-item btn btn-primary btn-sm" data-url-af="UnsafeUrl">@T["Download as JSON"]</a>
+}
+
+<script at="Foot">
+    $(function () {
+        $('#@exportDraftId').on('click', function () {
+            $(this).closest(".dropdown-menu").prev().dropdown("toggle");
+        });
+
+        $('#@exportPublishedId').on('click', function () {
+            $(this).closest(".dropdown-menu").prev().dropdown("toggle");
+        });
+
+        $('#@exportId').on('click', function () {
+            $(this).closest(".dropdown-menu").prev().dropdown("toggle");
+        });
+    });
+</script>

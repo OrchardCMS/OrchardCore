@@ -13,7 +13,7 @@ using OrchardCore.Modules.Manifest;
     Name = "Content Fields",
     Category = "Content Management",
     Description = "Content Fields module adds common content fields to be used with your custom types.",
-    Dependencies = new[] { "OrchardCore.ContentTypes", "OrchardCore.ShortCodes" }
+    Dependencies = new[] { "OrchardCore.ContentTypes", "OrchardCore.Shortcodes" }
 )]
 
 [assembly: Feature(

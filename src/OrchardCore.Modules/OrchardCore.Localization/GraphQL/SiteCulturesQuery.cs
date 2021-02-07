@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using GraphQL.Types;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Primitives;
 using OrchardCore.Apis.GraphQL;
 using OrchardCore.Apis.GraphQL.Resolvers;
 
@@ -27,8 +26,10 @@ namespace OrchardCore.Localization.GraphQL
             S = localizer;
         }
 
+        public Task<string> GetIdentifierAsync() => Task.FromResult(String.Empty);
+
         /// <inheritdocs/>
-        public Task<IChangeToken> BuildAsync(ISchema schema)
+        public Task BuildAsync(ISchema schema)
         {
             var field = new FieldType
             {
@@ -40,7 +41,7 @@ namespace OrchardCore.Localization.GraphQL
 
             schema.Query.AddField(field);
 
-            return Task.FromResult<IChangeToken>(null);
+            return Task.CompletedTask;
         }
 
         private async Task<IEnumerable<SiteCulture>> ResolveAsync(ResolveFieldContext resolveContext)

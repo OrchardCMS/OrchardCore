@@ -49,7 +49,8 @@ namespace OrchardCore.Tests.ResourceManagement
             Assert.NotNull(resourceDefinition);
             Assert.Equal("foo", resourceDefinition.Type);
             Assert.Equal("bar2", resourceDefinition.Name);
-            Assert.Equal("bar2", Assert.Contains("attr", (IDictionary<string, string>)resourceDefinition.Attributes));
+            Assert.Contains("bar2", ((IDictionary<string, string>)resourceDefinition.Attributes).Values);
+            Assert.Contains("attr", ((IDictionary<string, string>)resourceDefinition.Attributes).Keys);
         }
 
         [Fact]
@@ -282,7 +283,8 @@ namespace OrchardCore.Tests.ResourceManagement
                 StubFileVersionProvider.Instance
             );
 
-            var linkEntry = new LinkEntry {
+            var linkEntry = new LinkEntry
+            {
                 Rel = "foo",
                 Href = "bar.ext"
             };
@@ -587,6 +589,44 @@ namespace OrchardCore.Tests.ResourceManagement
                 )
             );
         }
+
+        [Fact]
+        public async Task RenderLocalStyle()
+        {
+            var resourceManager = new ResourceManager(
+                new[] {
+                    new StubResourceManifestProvider(builder => {
+                        var manifest = builder.Add();
+                        manifest.DefineStyle("required").SetUrl("required.css")
+                            .SetDependencies("dependency");
+                        manifest.DefineStyle("dependency").SetUrl("dependency.css");
+                        manifest.DefineStyle("not-required").SetUrl("not-required.css");
+                    })
+                },
+                new ResourceManifestState(),
+                new OptionsWrapper<ResourceManagementOptions>(new ResourceManagementOptions()),
+                StubFileVersionProvider.Instance
+            );
+
+            var requireSetting = resourceManager.RegisterResource("stylesheet", "required").AtLocation(ResourceLocation.Inline);
+
+            var htmlBuilder = new HtmlContentBuilder();
+            resourceManager.RenderLocalStyle(requireSetting, htmlBuilder);
+
+            var document = await ParseHtmlAsync(htmlBuilder);
+            var scripts = document
+                .QuerySelectorAll<IHtmlLinkElement>("link");
+
+            Assert.Equal(2, scripts.Count());
+            Assert.Contains(scripts, script => script.Href.EndsWith("dependency.css"));
+            Assert.Contains(scripts, script => script.Href.EndsWith("required.css"));
+            Assert.Equal(DocumentPositions.Following, scripts.First(script => script.Href.EndsWith("dependency.css"))
+                .CompareDocumentPosition(
+                    scripts.First(script => script.Href.EndsWith("required.css"))
+                )
+            );
+        }
+
 
         #region Helpers
         private async Task<IDocument> ParseHtmlAsync(IHtmlContent content)

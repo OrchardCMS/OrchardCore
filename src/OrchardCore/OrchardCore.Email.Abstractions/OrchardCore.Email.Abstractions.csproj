@@ -3,6 +3,12 @@
   <PropertyGroup>
     <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
     <RootNamespace>OrchardCore.Email</RootNamespace>
+    <!-- NuGet properties-->
+    <Title>OrchardCore Email Abstractions</Title>
+    <Description>$(OCFrameworkDescription)
+    
+    Abstractions for Email.</Description>
+    <PackageTags>$(PackageTags) OrchardCoreFramework Abstractions</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
@@ -10,4 +16,3 @@
   </ItemGroup>
 
 </Project>
-

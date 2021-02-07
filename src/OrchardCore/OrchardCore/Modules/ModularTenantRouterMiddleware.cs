@@ -16,7 +16,7 @@ using OrchardCore.Environment.Shell.Scope;
 namespace OrchardCore.Modules
 {
     /// <summary>
-    /// Handles a request by forwarding it to the tenant specific <see cref="IRouter"/> instance.
+    /// Handles a request by forwarding it to the tenant specific pipeline.
     /// It also initializes the middlewares for the requested tenant on the first request.
     /// </summary>
     public class ModularTenantRouterMiddleware

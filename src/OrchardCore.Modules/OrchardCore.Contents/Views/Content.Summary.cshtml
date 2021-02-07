@@ -5,16 +5,18 @@
 <article class="content content-@contentTypeClassName">
     <header>
         @await DisplayAsync(Model.Header)
-        @if (Model.Meta != null) {
-        <div class="metadata">
-            @await DisplayAsync(Model.Meta)
-        </div>
+        @if (Model.Meta != null) 
+        {
+            <div class="metadata">
+                @await DisplayAsync(Model.Meta)
+            </div>
         }
     </header>
     @await DisplayAsync(Model.Content)
-    @if(Model.Footer != null) {
-    <footer>
-        @await DisplayAsync(Model.Footer)
-    </footer>
+    @if (Model.Footer != null) 
+    {
+        <footer>
+            @await DisplayAsync(Model.Footer)
+        </footer>
     }
 </article>

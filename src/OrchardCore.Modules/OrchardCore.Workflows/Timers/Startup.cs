@@ -10,7 +10,7 @@ namespace OrchardCore.Workflows.Timers
     {
         public override void ConfigureServices(IServiceCollection services)
         {
-            services.AddActivity<TimerEvent, TimerEventDisplay>();
+            services.AddActivity<TimerEvent, TimerEventDisplayDriver>();
             services.AddSingleton<IBackgroundTask, TimerBackgroundTask>();
         }
     }

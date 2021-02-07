@@ -7,5 +7,6 @@ namespace OrchardCore.Microsoft.Authentication.Settings
         public string AppId { get; set; }
         public string AppSecret { get; set; }
         public PathString CallbackPath { get; set; }
+        public bool SaveTokens { get; set; }
     }
 }

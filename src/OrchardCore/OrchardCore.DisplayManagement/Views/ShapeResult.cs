@@ -14,6 +14,7 @@ namespace OrchardCore.DisplayManagement.Views
     {
         private string _defaultLocation;
         private Dictionary<string, string> _otherLocations;
+        private string _name;
         private string _differentiator;
         private string _prefix;
         private string _cacheId;
@@ -23,6 +24,7 @@ namespace OrchardCore.DisplayManagement.Views
         private Action<CacheContext> _cache;
         private string _groupId;
         private Action<ShapeDisplayContext> _displaying;
+        private Func<Task<bool>> _renderPredicateAsync;
 
         public ShapeResult(string shapeType, Func<IBuildShapeContext, ValueTask<IShape>> shapeBuilder)
             : this(shapeType, shapeBuilder, null)
@@ -57,7 +59,7 @@ namespace OrchardCore.DisplayManagement.Views
                 _defaultLocation = context.DefaultZone;
             }
 
-            // Look into specific implementations of placements (like placement.json files)
+            // Look into specific implementations of placements (like placement.json files and IShapePlacementProviders)
             var placement = context.FindPlacement(_shapeType, _differentiator, displayType, context);
 
             // Look for mapped display type locations
@@ -103,6 +105,12 @@ namespace OrchardCore.DisplayManagement.Views
                 return;
             }
 
+            // If a condition has been applied to this result evaluate it only if the shape has been placed.
+            if (_renderPredicateAsync != null && !(await _renderPredicateAsync()))
+            {
+                return;
+            }
+
             var newShape = Shape = await _shapeBuilder(context);
 
             // Ignore it if the driver returned a null shape.
@@ -111,12 +119,15 @@ namespace OrchardCore.DisplayManagement.Views
                 return;
             }
 
-            ShapeMetadata newShapeMetadata = newShape.Metadata;
+            var newShapeMetadata = newShape.Metadata;
             newShapeMetadata.Prefix = _prefix;
-            newShapeMetadata.Name = _differentiator ?? _shapeType;
+            newShapeMetadata.Name = _name ?? _differentiator ?? _shapeType;
+            newShapeMetadata.Differentiator = _differentiator ?? _shapeType;
             newShapeMetadata.DisplayType = displayType;
             newShapeMetadata.PlacementSource = placement.Source;
             newShapeMetadata.Tab = placement.GetTab();
+            newShapeMetadata.Card = placement.GetCard();
+            newShapeMetadata.Column = placement.GetColumn();
             newShapeMetadata.Type = _shapeType;
 
             if (_displaying != null)
@@ -246,6 +257,15 @@ namespace OrchardCore.DisplayManagement.Views
         }
 
         /// <summary>
+        /// Sets the shape name regardless its 'Differentiator'.
+        /// </summary>
+        public ShapeResult Name(string name)
+        {
+            _name = name;
+            return this;
+        }
+
+        /// <summary>
         /// Sets a discriminator that is used to find the location of the shape when two shapes of the same type are displayed.
         /// </summary>
         public ShapeResult Differentiator(string differentiator)
@@ -272,6 +292,16 @@ namespace OrchardCore.DisplayManagement.Views
         {
             _cacheId = cacheId;
             _cache = cache;
+            return this;
+        }
+
+        /// <summary>
+        /// Sets a condition that must return true for the shape to render.
+        /// The condition is only evaluated if the shape has been placed.
+        /// </summary>
+        public ShapeResult RenderWhen(Func<Task<bool>> renderPredicateAsync)
+        {
+            _renderPredicateAsync = renderPredicateAsync;
             return this;
         }
 

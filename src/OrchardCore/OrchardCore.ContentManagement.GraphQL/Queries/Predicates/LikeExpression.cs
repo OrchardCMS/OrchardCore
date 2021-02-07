@@ -19,6 +19,11 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Predicates
             _value = value;
         }
 
+        public void SearchUsedAlias(IPredicateQuery predicateQuery)
+        {
+            predicateQuery.SearchUsedAlias(_propertyName);
+        }
+
         public string ToSqlString(IPredicateQuery predicateQuery)
         {
             var columnName = predicateQuery.GetColumnName(_propertyName);

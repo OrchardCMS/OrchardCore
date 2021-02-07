@@ -7,9 +7,11 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
 using OrchardCore.Data;
 using OrchardCore.Email;
 using OrchardCore.Environment.Shell;
@@ -28,14 +30,15 @@ namespace OrchardCore.Tenants.Controllers
     public class ApiController : Controller
     {
         private readonly IShellHost _shellHost;
-        private readonly IShellSettingsManager _shellSettingsManager;
-        private readonly IEnumerable<DatabaseProvider> _databaseProviders;
+        private readonly ShellSettings _currentShellSettings;
         private readonly IAuthorizationService _authorizationService;
+        private readonly IShellSettingsManager _shellSettingsManager;
         private readonly IDataProtectionProvider _dataProtectorProvider;
         private readonly ISetupService _setupService;
-        private readonly ShellSettings _currentShellSettings;
         private readonly IClock _clock;
         private readonly IEmailAddressValidator _emailAddressValidator;
+        private readonly IdentityOptions _identityOptions;
+        private readonly IEnumerable<DatabaseProvider> _databaseProviders;
         private readonly IStringLocalizer S;
 
         public ApiController(
@@ -43,22 +46,24 @@ namespace OrchardCore.Tenants.Controllers
             ShellSettings currentShellSettings,
             IAuthorizationService authorizationService,
             IShellSettingsManager shellSettingsManager,
-            IEnumerable<DatabaseProvider> databaseProviders,
             IDataProtectionProvider dataProtectorProvider,
             ISetupService setupService,
             IClock clock,
             IEmailAddressValidator emailAddressValidator,
+            IOptions<IdentityOptions> identityOptions,
+            IEnumerable<DatabaseProvider> databaseProviders,
             IStringLocalizer<AdminController> stringLocalizer)
         {
+            _shellHost = shellHost;
+            _currentShellSettings = currentShellSettings;
+            _authorizationService = authorizationService;
             _dataProtectorProvider = dataProtectorProvider;
+            _shellSettingsManager = shellSettingsManager;
             _setupService = setupService;
             _clock = clock;
-            _shellHost = shellHost;
-            _authorizationService = authorizationService;
-            _shellSettingsManager = shellSettingsManager;
+            _emailAddressValidator = emailAddressValidator;
+            _identityOptions = identityOptions.Value;
             _databaseProviders = databaseProviders;
-            _currentShellSettings = currentShellSettings;
-            _emailAddressValidator = emailAddressValidator ?? throw new ArgumentNullException(nameof(emailAddressValidator));
             S = stringLocalizer;
         }
 
@@ -73,10 +78,10 @@ namespace OrchardCore.Tenants.Controllers
 
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTenants))
             {
-                return this.ChallengeOrForbid();
+                return this.ChallengeOrForbid("Api");
             }
 
-            if (!string.IsNullOrEmpty(model.Name) && !Regex.IsMatch(model.Name, @"^\w+$"))
+            if (!String.IsNullOrEmpty(model.Name) && !Regex.IsMatch(model.Name, @"^\w+$"))
             {
                 ModelState.AddModelError(nameof(CreateApiViewModel.Name), S["Invalid tenant name. Must contain characters only and no spaces."]);
             }
@@ -95,12 +100,12 @@ namespace OrchardCore.Tenants.Controllers
             shellSettings["Secret"] = Guid.NewGuid().ToString();
             shellSettings["RecipeName"] = model.RecipeName;
 
-            if (!IsDefaultShell() && string.IsNullOrWhiteSpace(shellSettings.RequestUrlHost) && string.IsNullOrWhiteSpace(shellSettings.RequestUrlPrefix))
+            if (String.IsNullOrWhiteSpace(shellSettings.RequestUrlHost) && String.IsNullOrWhiteSpace(shellSettings.RequestUrlPrefix))
             {
                 ModelState.AddModelError(nameof(CreateApiViewModel.RequestUrlPrefix), S["Host and url prefix can not be empty at the same time."]);
             }
 
-            if (!string.IsNullOrWhiteSpace(shellSettings.RequestUrlPrefix))
+            if (!String.IsNullOrWhiteSpace(shellSettings.RequestUrlPrefix))
             {
                 if (shellSettings.RequestUrlPrefix.Contains('/'))
                 {
@@ -137,22 +142,28 @@ namespace OrchardCore.Tenants.Controllers
         {
             if (!IsDefaultShell())
             {
-                return this.ChallengeOrForbid();
+                return this.ChallengeOrForbid("Api");
             }
 
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageTenants))
             {
-                return this.ChallengeOrForbid();
+                return this.ChallengeOrForbid("Api");
+            }
+
+            if (!String.IsNullOrEmpty(model.UserName) && model.UserName.Any(c => !_identityOptions.User.AllowedUserNameCharacters.Contains(c)))
+            {
+                ModelState.AddModelError(nameof(model.UserName), S["User name '{0}' is invalid, can only contain letters or digits.", model.UserName]);
+            }
+
+            // Only add additional error if attribute validation has passed.
+            if (!String.IsNullOrEmpty(model.Email) && !_emailAddressValidator.Validate(model.Email))
+            {
+                ModelState.AddModelError(nameof(model.Email), S["The email is invalid."]);
             }
 
             if (!ModelState.IsValid)
             {
                 return BadRequest();
-            }
-
-            if (!_emailAddressValidator.Validate(model.Email))
-            {
-                return BadRequest(S["Invalid email."]);
             }
 
             if (!_shellHost.TryGetSettings(model.Name, out var shellSettings))
@@ -280,7 +291,7 @@ namespace OrchardCore.Tenants.Controllers
 
         private bool IsDefaultShell()
         {
-            return string.Equals(_currentShellSettings.Name, ShellHelper.DefaultShellName, StringComparison.OrdinalIgnoreCase);
+            return String.Equals(_currentShellSettings.Name, ShellHelper.DefaultShellName, StringComparison.OrdinalIgnoreCase);
         }
 
         private string GetEncodedUrl(ShellSettings shellSettings, string token)
@@ -299,14 +310,14 @@ namespace OrchardCore.Tenants.Controllers
 
             var pathString = HttpContext.Features.Get<ShellContextFeature>().OriginalPathBase;
 
-            if (!string.IsNullOrEmpty(shellSettings.RequestUrlPrefix))
+            if (!String.IsNullOrEmpty(shellSettings.RequestUrlPrefix))
             {
                 pathString = pathString.Add('/' + shellSettings.RequestUrlPrefix);
             }
 
             QueryString queryString;
 
-            if (!string.IsNullOrEmpty(token))
+            if (!String.IsNullOrEmpty(token))
             {
                 queryString = QueryString.Create("token", token);
             }

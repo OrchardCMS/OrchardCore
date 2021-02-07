@@ -20,6 +20,7 @@ namespace OrchardCore.Users.Services
         public Task Setup(
             string siteName,
             string userName,
+            string userId,
             string email,
             string password,
             string dbProvider,
@@ -32,6 +33,7 @@ namespace OrchardCore.Users.Services
             var user = new User
             {
                 UserName = userName,
+                UserId = userId,
                 Email = email,
                 RoleNames = new string[] { "Administrator" },
                 EmailConfirmed = true

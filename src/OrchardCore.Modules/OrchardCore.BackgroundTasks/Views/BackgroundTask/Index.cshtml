@@ -1,7 +1,7 @@
 @model BackgroundTaskIndexViewModel
 @inject OrchardCore.Modules.ILocalClock LocalClock
 
-<h1>@RenderTitleSegments(T["Background Tasks"])</h1>
+<zone Name="Title"><h1>@RenderTitleSegments(T["Background Tasks"])</h1></zone>
 
 <form asp-action="Index"> @* the form is necessary to generate an antiforgery token for the delete action *@
 
@@ -15,18 +15,18 @@
                         <div class="related">
                         @if (@settings.Enable)
                         {
-                            <a asp-action="Disable" asp-route-name="@settings.Name" class="btn btn-danger btn-sm" itemprop="UnsafeUrl">@T["Disable"]</a>
+                            <a asp-action="Disable" asp-route-name="@settings.Name" class="btn btn-danger btn-sm" data-url-af="UnsafeUrl">@T["Disable"]</a>
                         }
                         else
                         {
-                            <a asp-action="Enable" asp-route-name="@settings.Name" class="btn btn-success btn-sm" itemprop="UnsafeUrl">@T["Enable"]</a>
+                            <a asp-action="Enable" asp-route-name="@settings.Name" class="btn btn-success btn-sm" data-url-af="UnsafeUrl">@T["Enable"]</a>
                         }
 
                             <a asp-action="Edit" asp-route-name="@settings.Name" class="btn btn-primary btn-sm">@T["Edit"]</a>
                         </div>
                         <span class="text-primary" title="@T["Settings"]"><i class="fa fa-cog" aria-hidden="true"></i></span>
                         <span class="text-primary"><a asp-action="Edit" asp-route-name="@settings.Name">@settings.Name</a></span>
-                        <span class="hint">— @settings.Description</span>
+                        <span class="hint dashed">@settings.Description</span>
                     </div>
                 </li>
             }
@@ -34,7 +34,7 @@
     }
     else
     {
-        <div class="alert alert-info" role="alert">
+        <div class="alert alert-info mb-0" role="alert">
             @T["<strong>Nothing here!</strong> There are no background task for the moment."]
         </div>
     }

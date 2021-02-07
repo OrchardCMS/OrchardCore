@@ -4,7 +4,7 @@ namespace OrchardCore.ResourceManagement
 {
     public class ResourceManagementOptions
     {
-        public bool UseCdn { get; set; } = true;
+        public bool UseCdn { get; set; }
 
         public string CdnBaseUrl { get; set; }
 

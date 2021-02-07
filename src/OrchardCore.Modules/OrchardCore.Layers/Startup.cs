@@ -89,7 +89,7 @@ namespace OrchardCore.Layers
             );
 
             routes.MapAreaControllerRoute(
-                name: "Layers.Create",
+                name: "Layers.Edit",
                 areaName: "OrchardCore.Layers",
                 pattern: _adminOptions.AdminUrlPrefix + "/Layers/Edit",
                 defaults: new { controller = adminControllerName, action = nameof(AdminController.Edit) }

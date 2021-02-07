@@ -62,8 +62,8 @@ namespace OrchardCore.Environment.Shell.Builders
 
             foreach (var dependency in blueprint.Dependencies.Where(t => typeof(IStartup).IsAssignableFrom(t.Key)))
             {
-                moduleServiceCollection.AddSingleton(typeof(IStartup), dependency.Key);
-                tenantServiceCollection.AddSingleton(typeof(IStartup), dependency.Key);
+                moduleServiceCollection.TryAddEnumerable(ServiceDescriptor.Singleton(typeof(IStartup), dependency.Key));
+                tenantServiceCollection.TryAddEnumerable(ServiceDescriptor.Singleton(typeof(IStartup), dependency.Key));
             }
 
             // To not trigger features loading before it is normally done by 'ShellHost',

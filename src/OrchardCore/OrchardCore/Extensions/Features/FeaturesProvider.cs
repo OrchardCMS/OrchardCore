@@ -6,7 +6,7 @@ namespace OrchardCore.Environment.Extensions.Features
 {
     public class FeaturesProvider : IFeaturesProvider
     {
-        public const string FeatureProviderCacheKey = "FeatureProvider:Features";
+        public const string FeatureProviderStateKey = "FeatureProvider:Features";
 
         private readonly IEnumerable<IFeatureBuilderEvents> _featureBuilderEvents;
 

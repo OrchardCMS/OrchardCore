@@ -29,7 +29,7 @@ namespace OrchardCore.XmlRpc.Controllers
 
         [HttpPost, ActionName("Index")]
         [IgnoreAntiforgeryToken]
-        public async Task<IActionResult> ServiceEndpoint([ModelBinder(BinderType = typeof(MethodCallModelBinder))]XRpcMethodCall methodCall)
+        public async Task<IActionResult> ServiceEndpoint([ModelBinder(BinderType = typeof(MethodCallModelBinder))] XRpcMethodCall methodCall)
         {
             if (_logger.IsEnabled(LogLevel.Debug))
             {

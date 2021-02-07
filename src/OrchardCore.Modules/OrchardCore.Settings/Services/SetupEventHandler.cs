@@ -19,6 +19,7 @@ namespace OrchardCore.Settings.Services
         public async Task Setup(
             string siteName,
             string userName,
+            string userId,
             string email,
             string password,
             string dbProvider,
@@ -31,7 +32,7 @@ namespace OrchardCore.Settings.Services
             // Updating site settings
             var siteSettings = await _siteService.LoadSiteSettingsAsync();
             siteSettings.SiteName = siteName;
-            siteSettings.SuperUser = userName;
+            siteSettings.SuperUser = userId;
             siteSettings.TimeZoneId = siteTimeZone;
             await _siteService.UpdateSiteSettingsAsync(siteSettings);
 

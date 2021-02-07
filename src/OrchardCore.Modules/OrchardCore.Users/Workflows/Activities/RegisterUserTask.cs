@@ -122,7 +122,7 @@ namespace OrchardCore.Users.Workflows.Activities
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
 
                     var uri = _linkGenerator.GetUriByAction(_httpContextAccessor.HttpContext, "ConfirmEmail",
-                        "Registration", new { area = "OrchardCore.Users", userId = user.Id, code });
+                        "Registration", new { area = "OrchardCore.Users", userId = user.UserId, code });
 
                     workflowContext.Properties["EmailConfirmationUrl"] = uri;
 

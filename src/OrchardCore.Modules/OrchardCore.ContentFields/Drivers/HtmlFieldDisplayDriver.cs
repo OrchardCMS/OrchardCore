@@ -9,9 +9,11 @@ using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
-using OrchardCore.ShortCodes.Services;
 using OrchardCore.Infrastructure.Html;
 using OrchardCore.Liquid;
+using OrchardCore.Mvc.ModelBinding;
+using OrchardCore.Shortcodes.Services;
+using Shortcodes;
 
 namespace OrchardCore.ContentFields.Drivers
 {
@@ -20,19 +22,19 @@ namespace OrchardCore.ContentFields.Drivers
         private readonly ILiquidTemplateManager _liquidTemplateManager;
         private readonly HtmlEncoder _htmlEncoder;
         private readonly IHtmlSanitizerService _htmlSanitizerService;
-        private readonly IShortCodeService _shortCodeService;
+        private readonly IShortcodeService _shortcodeService;
         private readonly IStringLocalizer S;
 
         public HtmlFieldDisplayDriver(ILiquidTemplateManager liquidTemplateManager,
             HtmlEncoder htmlEncoder,
             IHtmlSanitizerService htmlSanitizerService,
-            IShortCodeService shortCodeService,
+            IShortcodeService shortcodeService,
             IStringLocalizer<HtmlFieldDisplayDriver> localizer)
         {
             _liquidTemplateManager = liquidTemplateManager;
             _htmlEncoder = htmlEncoder;
             _htmlSanitizerService = htmlSanitizerService;
-            _shortCodeService = shortCodeService;
+            _shortcodeService = shortcodeService;
             S = localizer;
         }
 
@@ -52,7 +54,12 @@ namespace OrchardCore.ContentFields.Drivers
                         scope => scope.SetValue("ContentItem", field.ContentItem));
                 }
 
-                model.Html = await _shortCodeService.ProcessAsync(model.Html);
+                model.Html = await _shortcodeService.ProcessAsync(model.Html,
+                    new Context
+                    {
+                        ["ContentItem"] = field.ContentItem,
+                        ["PartFieldDefinition"] = context.PartFieldDefinition
+                    });
 
             })
             .Location("Detail", "Content")
@@ -81,7 +88,7 @@ namespace OrchardCore.ContentFields.Drivers
                 if (!string.IsNullOrEmpty(viewModel.Html) && !_liquidTemplateManager.Validate(viewModel.Html, out var errors))
                 {
                     var fieldName = context.PartFieldDefinition.DisplayName();
-                    context.Updater.ModelState.AddModelError(nameof(field.Html), S["{0} doesn't contain a valid Liquid expression. Details: {1}", fieldName, string.Join(" ", errors)]);
+                    context.Updater.ModelState.AddModelError(Prefix, nameof(viewModel.Html), S["{0} doesn't contain a valid Liquid expression. Details: {1}", fieldName, string.Join(" ", errors)]);
                 }
                 else
                 {

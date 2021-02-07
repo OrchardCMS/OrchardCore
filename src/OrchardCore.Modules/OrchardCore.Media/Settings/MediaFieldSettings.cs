@@ -9,5 +9,9 @@ namespace OrchardCore.Media.Settings
 
         [DefaultValue(true)]
         public bool Multiple { get; set; } = true;
+        
+        [DefaultValue(true)]
+        public bool AllowMediaText { get; set; } = true;
+        public bool AllowAnchors { get; set; }
     }
 }

@@ -54,12 +54,12 @@ namespace OrchardCore.Taxonomies
 
                     var shapeFactory = context.ServiceProvider.GetRequiredService<IShapeFactory>();
                     var contentManager = context.ServiceProvider.GetRequiredService<IContentManager>();
-                    var aliasManager = context.ServiceProvider.GetRequiredService<IContentAliasManager>();
+                    var handleManager = context.ServiceProvider.GetRequiredService<IContentHandleManager>();
                     var orchardHelper = context.ServiceProvider.GetRequiredService<IOrchardHelper>();
                     var contentDefinitionManager = context.ServiceProvider.GetRequiredService<IContentDefinitionManager>();
 
                     string taxonomyContentItemId = termShape.Alias != null
-                        ? await aliasManager.GetContentItemIdAsync(termShape.Alias)
+                        ? await handleManager.GetContentItemIdAsync(termShape.Alias)
                         : termShape.TaxonomyContentItemId;
 
                     if (taxonomyContentItemId == null)
@@ -90,7 +90,7 @@ namespace OrchardCore.Taxonomies
                     if (!String.IsNullOrEmpty(termContentItemId))
                     {
                         level = FindTerm(taxonomyContentItem.Content.TaxonomyPart.Terms as JArray, termContentItemId, level, out var termContentItem);
-                        
+
                         if (termContentItem == null)
                         {
                             return;
@@ -111,13 +111,13 @@ namespace OrchardCore.Taxonomies
                         return;
                     }
 
-                    string differentiator = FormatName((string)termShape.TaxonomyName);
+                    var differentiator = FormatName((string)termShape.TaxonomyName);
 
                     if (!String.IsNullOrEmpty(differentiator))
                     {
                         // Term__[Differentiator] e.g. Term-Categories, Term-Tags
                         termShape.Metadata.Alternates.Add("Term__" + differentiator);
-                        termShape.Differentiator = differentiator;
+                        termShape.Metadata.Differentiator = differentiator;
                         termShape.Classes.Add(("term-" + differentiator).HtmlClassify());
                     }
 
@@ -144,9 +144,10 @@ namespace OrchardCore.Taxonomies
                             Term = termShape,
                             TermContentItem = termContentItem,
                             Terms = childTerms ?? Array.Empty<ContentItem>(),
-                            TaxonomyContentItem = taxonomyContentItem,
-                            Differentiator = differentiator
+                            TaxonomyContentItem = taxonomyContentItem
                         }));
+
+                        shape.Metadata.Differentiator = differentiator;
 
                         // Don't use Items.Add() or the collection won't be sorted
                         termShape.Add(shape);
@@ -161,7 +162,7 @@ namespace OrchardCore.Taxonomies
                     int level = termItem.Level;
                     ContentItem taxonomyContentItem = termItem.TaxonomyContentItem;
                     var taxonomyPart = taxonomyContentItem.As<TaxonomyPart>();
-                    string differentiator = termItem.Differentiator;
+                    string differentiator = termItem.Metadata.Differentiator;
 
                     var shapeFactory = context.ServiceProvider.GetRequiredService<IShapeFactory>();
 
@@ -178,11 +179,12 @@ namespace OrchardCore.Taxonomies
                             {
                                 Level = level + 1,
                                 TaxonomyContentItem = taxonomyContentItem,
-                                Differentiator = differentiator,
                                 TermContentItem = termContentItem,
                                 Term = termShape,
                                 Terms = childTerms ?? Array.Empty<ContentItem>()
                             }));
+
+                            shape.Metadata.Differentiator = differentiator;
 
                             // Don't use Items.Add() or the collection won't be sorted
                             termItem.Add(shape);
@@ -218,7 +220,7 @@ namespace OrchardCore.Taxonomies
                 {
                     dynamic termItem = displaying.Shape;
                     int level = termItem.Level;
-                    string differentiator = termItem.Differentiator;
+                    string differentiator = termItem.Metadata.Differentiator;
 
                     ContentItem termContentItem = termItem.TermContentItem;
 

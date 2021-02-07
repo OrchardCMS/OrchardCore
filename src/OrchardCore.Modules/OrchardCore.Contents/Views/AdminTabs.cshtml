@@ -1,7 +1,7 @@
 @using OrchardCore.Mvc.Utilities;
-@{
-    var tabs = ((IEnumerable<dynamic>)Model.Tabs).ToArray();
-    string contentItemId = Model.ContentItem != null ? (string)Model.ContentItem.ContentItemId : "";
+@{    
+    var tabsGrouping = (IList<IGrouping<string, dynamic>>)Model.Tabs;
+    var tabs = tabsGrouping.Select(x => x.Key).ToArray(); 
 }
 @if (tabs.Any())
 {
@@ -9,13 +9,11 @@
     <ul class="nav nav-tabs flex-column flex-md-row" role="tablist">
         @foreach (var tab in tabs)
         {
-            var tabText = tab.ToString();
-            var defaultTabId = $"tab-{contentItemId}-{tabText}".HtmlClassify();
-            var tabId = tab is string ? defaultTabId : (string)(tab.TabName ?? defaultTabId);
-            var tabCssClasses = tabIndex == 0 ? "nav-item nav-link active" : "nav-item nav-link";
-            var itemCssClasses = tabIndex == tabs.Length -1 ? "nav-item" : "nav-item pr-md-2";
-            <li class="@itemCssClasses">
-                <a class="@tabCssClasses" href="#@tabId" data-toggle="tab" role="tab" aria-controls="@tabId" aria-selected="false">@tabText</a>
+            var tabId = $"tab-{tab}-{Model.ContentItem?.ContentItemId}".HtmlClassify();
+            var tabClasses = tabIndex == 0 ? "nav-item nav-link active" : "nav-item nav-link";
+            var itemClasses = tabIndex == tabs.Length -1 ? "nav-item" : "nav-item pr-md-2";
+            <li class="@itemClasses">
+                <a class="@tabClasses" href="#@tabId" data-toggle="tab" role="tab" aria-controls="@tabId" aria-selected="false">@tab</a>
             </li>
             tabIndex++;
         }

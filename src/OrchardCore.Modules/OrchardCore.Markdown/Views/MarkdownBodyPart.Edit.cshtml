@@ -9,8 +9,10 @@
     var culture = await Orchard.GetContentCultureAsync(Model.MarkdownBodyPart.ContentItem);
 }
 
+@await DisplayAsync(await New.ShortcodeModal())
+
 <div class="form-group">
     <label asp-for="Markdown">@Model.TypePartDefinition.DisplayName()</label>
-    <textarea asp-for="Markdown" rows="5" class="form-control content-preview-text" dir="@culture.GetLanguageDirection()"></textarea>
+    <textarea asp-for="Markdown" rows="5" class="form-control content-preview-text shortcode-modal-input" dir="@culture.GetLanguageDirection()"></textarea>
     <span class="hint">@T["The body of the content item, in Markdown format."]</span>
 </div>

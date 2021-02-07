@@ -12,7 +12,7 @@ namespace OrchardCore.Modules.FileProviders
         /// <summary>
         /// Initializes an instance of <see cref="EmbeddedDirectoryInfo"/>
         /// </summary>
-        /// <param name="info">The directory</param>
+        /// <param name="name">The directory</param>
         public EmbeddedDirectoryInfo(string name)
         {
             Name = name;

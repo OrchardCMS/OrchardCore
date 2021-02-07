@@ -10,6 +10,9 @@
       fr: {
         giphy: 'Insérer un GIF',
       },
+      hu: {
+        giphy: 'GIF beszúrás',
+      },
       // jshint camelcase:true
     }
   });

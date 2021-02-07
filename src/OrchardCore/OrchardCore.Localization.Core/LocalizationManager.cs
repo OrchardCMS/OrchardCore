@@ -36,7 +36,7 @@ namespace OrchardCore.Localization
             _cache = cache;
         }
 
-        /// <inheritdocs />
+        /// <inheritdoc />
         public CultureDictionary GetDictionary(CultureInfo culture)
         {
             var cachedDictionary = _cache.GetOrCreate(CacheKeyPrefix + culture.Name, k => new Lazy<CultureDictionary>(() =>

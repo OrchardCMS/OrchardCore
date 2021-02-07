@@ -1,6 +1,6 @@
 @model EditSitemapViewModel
 
-<h1>@RenderTitleSegments(T["Edit Sitemap"])</h1>
+<zone Name="Title"><h1>@RenderTitleSegments(T["Edit Sitemap"])</h1></zone>
 
 @if (String.IsNullOrEmpty(Site.BaseUrl))
 {
@@ -26,9 +26,9 @@
                 </div>
             }
             <input asp-for="Path" class="form-control" />
-            <span asp-validation-for="Path"></span>
         </div>
-        <span class="hint">@T["The url of the sitemap. Leave empty to auto-generate it."]</span>
+        <span class="hint d-block">@T["The url of the sitemap. Leave empty to auto-generate it."]</span>
+        <span asp-validation-for="Path" class="text-danger d-block"></span>
     </div>
 
     <div class="form-group custom-control custom-checkbox">
@@ -38,7 +38,7 @@
     </div>
 
     <div class="form-group">
-        <button class="btn btn-primary" type="submit">@T["Save"]</button>
-        <a class="btn btn-secondary" asp-route-action="List">@T["Cancel"]</a>
+        <button class="btn btn-primary save" type="submit">@T["Save"]</button>
+        <a class="btn btn-secondary cancel" role="button" asp-route-action="List">@T["Cancel"]</a>
     </div>
 </form>

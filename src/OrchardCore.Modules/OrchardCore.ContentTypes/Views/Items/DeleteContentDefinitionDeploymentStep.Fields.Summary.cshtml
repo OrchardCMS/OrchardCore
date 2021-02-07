@@ -1,0 +1,15 @@
+@using OrchardCore.DisplayManagement.Views
+@using OrchardCore.ContentTypes.Deployment
+@model ShapeViewModel<DeleteContentDefinitionDeploymentStep>
+
+<h5>@T["Delete Content Definitions"]</h5>
+
+@foreach (var contentType in Model.Value.ContentTypes)
+{
+    <span class="badge ta-badge">@contentType</span>
+}
+   
+@foreach (var contentPart in Model.Value.ContentParts)
+{
+    <span class="badge ta-badge">@contentPart</span>
+}

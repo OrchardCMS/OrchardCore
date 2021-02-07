@@ -10,6 +10,7 @@ using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Views;
+using OrchardCore.Mvc.ModelBinding;
 
 namespace OrchardCore.ContentFields.Drivers
 {
@@ -55,7 +56,7 @@ namespace OrchardCore.ContentFields.Drivers
                 var settings = context.PartFieldDefinition.GetSettings<YoutubeFieldSettings>();
                 if (settings.Required && String.IsNullOrWhiteSpace(model.RawAddress))
                 {
-                    updater.ModelState.AddModelError(Prefix, S["A value is required for '{0}'.", context.PartFieldDefinition.DisplayName()]);
+                    updater.ModelState.AddModelError(Prefix, nameof(model.RawAddress), S["A value is required for '{0}'.", context.PartFieldDefinition.DisplayName()]);
                 }
                 else
                 {
@@ -73,7 +74,7 @@ namespace OrchardCore.ContentFields.Drivers
                             }
                             else
                             {
-                                updater.ModelState.AddModelError(Prefix + "." + nameof(model.RawAddress), S["The format of the url is invalid"]);
+                                updater.ModelState.AddModelError(Prefix, nameof(model.RawAddress), S["The format of the url is invalid"]);
                             }
                         }
                         else

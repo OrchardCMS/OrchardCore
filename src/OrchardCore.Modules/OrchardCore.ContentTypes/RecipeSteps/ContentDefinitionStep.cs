@@ -9,7 +9,7 @@ using OrchardCore.Recipes.Services;
 namespace OrchardCore.ContentTypes.RecipeSteps
 {
     /// <summary>
-    /// This recipe step creates custom content definition.
+    /// This recipe step creates content definitions.
     /// </summary>
     public class ContentDefinitionStep : IRecipeStepHandler
     {

@@ -4,14 +4,14 @@
         <div class="custom-control custom-checkbox">
             <input asp-for="OverrideSitemapConfig" class="custom-control-input" />
             <label asp-for="OverrideSitemapConfig" class="custom-control-label">@T["Override sitemap configuration"]</label>
-            <span class="hint">— @T["Check to override sitemap configuration."]</span>
+            <span class="hint dashed">@T["Check to override sitemap configuration."]</span>
         </div>
     </div>
     <div class="col-12 form-group">
         <div class="custom-control custom-checkbox sitemap-form-group" style="@(Model.OverrideSitemapConfig ? "" : "display: none")">
             <input asp-for="Exclude" class="custom-control-input" />
             <label asp-for="Exclude" class="custom-control-label">@T["Exclude"]</label>
-            <span class="hint">— @T["Check to exclude this content item from the site map."]</span>
+            <span class="hint dashed">@T["Check to exclude this content item from the site map."]</span>
         </div>
     </div>
 </div>

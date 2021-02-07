@@ -14,7 +14,6 @@ using OrchardCore.Modules.Manifest;
     Dependencies = new[]
     {
         "OrchardCore.Indexing",
-        "OrchardCore.Liquid",
         "OrchardCore.ContentTypes"
     },
     Category = "Content Management"

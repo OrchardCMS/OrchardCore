@@ -45,3 +45,11 @@ using OrchardCore.Modules.Manifest;
     Dependencies = new[] { "OrchardCore.Users" },
     Category = "Settings"
 )]
+
+[assembly: Feature(
+    Id = "OrchardCore.Users.CustomUserSettings",
+    Name = "Custom User Settings",
+    Description = "The custom user settings feature allows content types to become custom user settings.",
+    Dependencies = new[] { "OrchardCore.Contents", "OrchardCore.Users" },
+    Category = "Settings"
+)]

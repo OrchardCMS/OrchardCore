@@ -1,6 +1,6 @@
 @model EditSourceViewModel
 
-<h1>@RenderTitleSegments(T["Edit Sitemap Source"])</h1>
+<zone Name="Title"><h1>@RenderTitleSegments(T["Edit Sitemap Source"])</h1></zone>
 
 @if (String.IsNullOrEmpty(Site.BaseUrl))
 {
@@ -16,16 +16,18 @@
 
     <fieldset>
         <div class="form-group">
-            <button class="btn btn-primary" type="submit">@T["Save"]</button>
+            <button class="btn btn-primary save" type="submit">@T["Save"]</button>
 
-            <a asp-action="Delete"
+            <a class="btn btn-danger delete"
+               role="button"
+               asp-action="Delete"
                asp-controller="Source"
                asp-route-sitemapId="@Model.SitemapId"
                asp-route-sourceId="@Model.SitemapSourceId"
-               class="btn btn-danger"
-               itemprop="RemoveUrl UnsafeUrl">@T["Delete"]</a>
+               data-url-af="RemoveUrl UnsafeUrl">@T["Delete"]</a>
 
-            <a class="btn btn-secondary"
+            <a class="btn btn-secondary cancel"
+               role="button"
                asp-route-action="Display"
                asp-route-controller="Admin"
                asp-route-sitemapId="@Model.SitemapId">@T["Cancel"]</a>

@@ -46,7 +46,7 @@ namespace OrchardCore.Deployment.Remote.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Execute(int id, string remoteInstanceId)
+        public async Task<IActionResult> Execute(int id, string remoteInstanceId, string returnUrl)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.Export))
             {
@@ -114,6 +114,11 @@ namespace OrchardCore.Deployment.Remote.Controllers
             finally
             {
                 System.IO.File.Delete(archiveFileName);
+            }
+
+            if (!string.IsNullOrEmpty(returnUrl))
+            {
+                return LocalRedirect(returnUrl);
             }
 
             return RedirectToAction("Display", "DeploymentPlan", new { area = "OrchardCore.Deployment", id });

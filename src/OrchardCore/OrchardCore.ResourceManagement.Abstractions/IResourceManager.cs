@@ -121,5 +121,10 @@ namespace OrchardCore.ResourceManagement
         /// Renders the registered local script tags.
         /// </summary>
         void RenderLocalScript(RequireSettings settings, IHtmlContentBuilder builder);
+
+        /// <summary>
+        /// Renders the registered local style tags.
+        /// </summary>
+        void RenderLocalStyle(RequireSettings settings, IHtmlContentBuilder builder);
     }
 }

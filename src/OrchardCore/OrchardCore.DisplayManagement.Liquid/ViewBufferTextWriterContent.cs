@@ -79,7 +79,7 @@ namespace OrchardCore.DisplayManagement.Liquid
         }
 
         /// <summary>
-        /// An <see cref="IHtmlContent"/> implementation that wraps an HTML encoded <see cref="char[]"/>.
+        /// An <see cref="IHtmlContent"/> implementation that wraps an HTML encoded <see langword="char[]"/>.
         /// </summary>
         private class CharrArrayHtmlContent : IHtmlContent
         {
@@ -109,7 +109,7 @@ namespace OrchardCore.DisplayManagement.Liquid
         }
 
         /// <summary>
-        /// An <see cref="IHtmlContent"/> implementation that wraps an HTML encoded <see cref="char[]"/>.
+        /// An <see cref="IHtmlContent"/> implementation that wraps an HTML encoded <see langword="char[]"/>.
         /// </summary>
         private class CharrArrayFragmentHtmlContent : IHtmlContent
         {

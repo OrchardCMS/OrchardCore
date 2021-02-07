@@ -113,6 +113,10 @@ namespace OrchardCore.Tests.OrchardCore.Queries
         [InlineData("select a from b inner join c on b.b1 = c.c1", "SELECT [a] FROM [tp_b] INNER JOIN [tp_c] ON [tp_b].[b1] = [tp_c].[c1];")]
         [InlineData("select a from b as ba inner join c as ca on ba.b1 = ca.c1", "SELECT [a] FROM [tp_b] AS ba INNER JOIN [tp_c] AS ca ON ba.[b1] = ca.[c1];")]
         [InlineData("select a from b inner join c on b.b1 = c.c1 left join d on d.a = d.b", "SELECT [a] FROM [tp_b] INNER JOIN [tp_c] ON [tp_b].[b1] = [tp_c].[c1] LEFT JOIN [tp_d] ON [tp_d].[a] = [tp_d].[b];")]
+        [InlineData("select a from b inner join c on b.b1 = c.c1 and b.b2 = c.c2", "SELECT [a] FROM [tp_b] INNER JOIN [tp_c] ON [tp_b].[b1] = [tp_c].[c1] AND [tp_b].[b2] = [tp_c].[c2];")]
+        [InlineData("select a from b inner join c on b.b1 = c.c1 and b.b2 = @param", "SELECT [a] FROM [tp_b] INNER JOIN [tp_c] ON [tp_b].[b1] = [tp_c].[c1] AND [tp_b].[b2] = @param;")]
+        [InlineData("select a from b inner join c on 1 = 1 and @param = 'foo'", "SELECT [a] FROM [tp_b] INNER JOIN [tp_c] ON 1 = 1 AND @param = 'foo';")]
+        [InlineData("select a from b inner join c on 1 = @param left join d on d.a = @param left join e on e.a = 'foo'", "SELECT [a] FROM [tp_b] INNER JOIN [tp_c] ON 1 = @param LEFT JOIN [tp_d] ON [tp_d].[a] = @param LEFT JOIN [tp_e] ON [tp_e].[a] = 'foo';")]
         public void ShouldParseJoinClause(string sql, string expectedSql)
         {
             var result = SqlParser.TryParse(sql, _defaultDialect, _defaultTablePrefix, null, out var rawQuery, out var messages);

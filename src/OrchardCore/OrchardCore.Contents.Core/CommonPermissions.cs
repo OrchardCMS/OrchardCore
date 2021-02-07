@@ -25,5 +25,6 @@ namespace OrchardCore.Contents
         public static readonly Permission PreviewOwnContent = new Permission("PreviewOwnContent", "Preview own content", new[] { PreviewContent });
         public static readonly Permission CloneContent = new Permission("CloneContent", "Clone content", new[] { EditContent });
         public static readonly Permission CloneOwnContent = new Permission("CloneOwnContent", "Clone own content", new[] { CloneContent });
+        public static readonly Permission ListContent = new Permission("ListContent", "List content item(s) owned by all users");
     }
 }

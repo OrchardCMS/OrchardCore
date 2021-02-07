@@ -295,7 +295,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
 
     function Context(state, tagName, startOfLine) {
       this.prev = state.context;
-      this.tagName = tagName;
+      this.tagName = tagName || "";
       this.indent = state.indented;
       this.startOfLine = startOfLine;
       if (config.doNotIndent.hasOwnProperty(tagName) || state.context && state.context.noIndent) this.noIndent = true;
@@ -518,7 +518,7 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
         var context = [];
 
         for (var cx = state.context; cx; cx = cx.prev) {
-          if (cx.tagName) context.push(cx.tagName);
+          context.push(cx.tagName);
         }
 
         return context.reverse();

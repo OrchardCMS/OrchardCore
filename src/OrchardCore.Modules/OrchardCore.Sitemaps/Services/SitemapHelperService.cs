@@ -5,6 +5,7 @@ using Microsoft.Extensions.Localization;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.Liquid;
 using OrchardCore.Mvc.ModelBinding;
+using OrchardCore.Sitemaps.Models;
 
 namespace OrchardCore.Sitemaps.Services
 {
@@ -15,7 +16,6 @@ namespace OrchardCore.Sitemaps.Services
         public const int MaxPathLength = 1024;
         public const string Prefix = "";
         public const string Path = "Path";
-        public const string SitemapPathExtension = ".xml";
 
         private readonly ISlugService _slugService;
         private readonly ISitemapManager _sitemapManager;
@@ -40,16 +40,16 @@ namespace OrchardCore.Sitemaps.Services
                 updater.ModelState.AddModelError(Prefix, Path, S["Your permalink can't be set to the homepage"]);
             }
 
-            if (path.IndexOfAny(InvalidCharactersForPath) > -1 || path.IndexOf(' ') > -1 || path.IndexOf("//") > -1)
+            if (path.IndexOfAny(InvalidCharactersForPath) > -1 || path.IndexOf(' ') > -1)
             {
                 var invalidCharactersForMessage = string.Join(", ", InvalidCharactersForPath.Select(c => $"\"{c}\""));
-                updater.ModelState.AddModelError(Prefix, Path, S["Please do not use any of the following characters in your permalink: {0}. No spaces, or consecutive slashes, are allowed (please use dashes or underscores instead).", invalidCharactersForMessage]);
+                updater.ModelState.AddModelError(Prefix, Path, S["Please do not use any of the following characters in your permalink: {0}. No spaces are allowed (please use dashes or underscores instead).", invalidCharactersForMessage]);
             }
 
             // Precludes possibility of collision with Autoroute as Autoroute excludes . as a valid path character.
-            if (!path.EndsWith(SitemapPathExtension))
+            if (!path.EndsWith(Sitemap.PathExtension))
             {
-                updater.ModelState.AddModelError(Prefix, Path, S["Your permalink must end with {0}.", SitemapPathExtension]);
+                updater.ModelState.AddModelError(Prefix, Path, S["Your permalink must end with {0}.", Sitemap.PathExtension]);
             }
 
             if (path.Length > MaxPathLength)
@@ -60,13 +60,13 @@ namespace OrchardCore.Sitemaps.Services
             var routeExists = false;
             if (string.IsNullOrEmpty(sitemapId))
             {
-                routeExists = (await _sitemapManager.ListSitemapsAsync())
-                    .Any(p => String.Equals(p.Path, path, StringComparison.OrdinalIgnoreCase));
+                routeExists = (await _sitemapManager.GetSitemapsAsync())
+                    .Any(p => String.Equals(p.Path, path.TrimStart('/'), StringComparison.OrdinalIgnoreCase));
             }
             else
             {
-                routeExists = (await _sitemapManager.ListSitemapsAsync())
-                    .Any(p => p.SitemapId != sitemapId && String.Equals(p.Path, path, StringComparison.OrdinalIgnoreCase));
+                routeExists = (await _sitemapManager.GetSitemapsAsync())
+                    .Any(p => p.SitemapId != sitemapId && String.Equals(p.Path, path.TrimStart('/'), StringComparison.OrdinalIgnoreCase));
             }
 
             if (routeExists)
@@ -77,7 +77,7 @@ namespace OrchardCore.Sitemaps.Services
 
         public string GetSitemapSlug(string name)
         {
-            return _slugService.Slugify(name) + SitemapPathExtension;
+            return _slugService.Slugify(name) + Sitemap.PathExtension;
         }
 
     }

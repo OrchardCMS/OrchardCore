@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using OrchardCore.ContentManagement.Display.Models;
 using OrchardCore.ContentManagement.Metadata.Models;
@@ -16,6 +17,9 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
     /// <typeparam name="TPart"></typeparam>
     public abstract class ContentPartDisplayDriver<TPart> : DisplayDriverBase, IContentPartDisplayDriver where TPart : ContentPart, new()
     {
+        private const string DisplayToken = "_Display";
+        private const string DisplaySeparator = "_Display__";
+
         private ContentTypePartDefinition _typePartDefinition;
 
         public override ShapeResult Factory(string shapeType, Func<IBuildShapeContext, ValueTask<IShape>> shapeBuilder, Func<IShape, Task> initializeAsync)
@@ -41,13 +45,22 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
 
                 if (!String.IsNullOrEmpty(stereotype) && !String.Equals("Content", stereotype, StringComparison.OrdinalIgnoreCase))
                 {
-                    stereotype = stereotype + "__";
+                    stereotype += "__";
                 }
 
                 var partName = _typePartDefinition.Name;
                 var partType = _typePartDefinition.PartDefinition.Name;
                 var contentType = _typePartDefinition.ContentTypeDefinition.Name;
                 var editorPartType = GetEditorShapeType(_typePartDefinition);
+                var displayMode = _typePartDefinition.DisplayMode();
+                var hasDisplayMode = !String.IsNullOrEmpty(displayMode);
+
+                // If the shape type and the field type only differ by the display mode
+                if (hasDisplayMode && shapeType == partType + DisplaySeparator + displayMode)
+                {
+                    // Preserve the shape name regardless its differentiator
+                    result.Name(partName);
+                }
 
                 if (partType == shapeType || editorPartType == shapeType)
                 {
@@ -107,8 +120,32 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
                     }
                     else
                     {
-                        foreach (var displayType in displayTypes)
+                        if (hasDisplayMode)
                         {
+                            // [PartType]_[DisplayType]__[DisplayMode]_Display, e.g. HtmlBodyPart-MyDisplayMode.Display.Summary
+                            ctx.Shape.Metadata.Alternates.Add($"{partType}_{ctx.Shape.Metadata.DisplayType}__{displayMode}{DisplayToken}");
+                        }
+
+                        var lastAlternatesOfNamedPart = new List<string>();
+
+                        for (var i = 0; i < displayTypes.Length; i++)
+                        {
+                            var displayType = displayTypes[i];
+
+                            if (hasDisplayMode)
+                            {
+                                shapeType = $"{partType}__{displayMode}";
+
+                                if (displayType == "")
+                                {
+                                    displayType = DisplayToken;
+                                }
+                                else
+                                {
+                                    shapeType += DisplayToken;
+                                }
+                            }
+
                             // [ContentType]_[DisplayType]__[PartType]__[ShapeType], e.g. Blog-ListPart-ListPartFeed
                             ctx.Shape.Metadata.Alternates.Add($"{contentType}{displayType}__{partType}__{shapeType}");
 
@@ -117,22 +154,21 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
                                 // [Stereotype]_[DisplayType]__[PartType]__[ShapeType], e.g. Blog-ListPart-ListPartFeed
                                 ctx.Shape.Metadata.Alternates.Add($"{stereotype}{displayType}__{partType}__{shapeType}");
                             }
-                        }
 
-                        if (partType != partName)
-                        {
-                            foreach (var displayType in displayTypes)
+                            if (partType != partName)
                             {
                                 // [ContentType]_[DisplayType]__[PartName]__[ShapeType], e.g. LandingPage-Services-BagPartSummary
-                                ctx.Shape.Metadata.Alternates.Add($"{contentType}{displayType}__{partName}__{shapeType}");
+                                lastAlternatesOfNamedPart.Add($"{contentType}{displayType}__{partName}__{shapeType}");
 
                                 if (!String.IsNullOrEmpty(stereotype))
                                 {
                                     // [Stereotype]_[DisplayType]__[PartName]__[ShapeType], e.g. LandingPage-Services-BagPartSummary
-                                    ctx.Shape.Metadata.Alternates.Add($"{stereotype}{displayType}__{partName}__{shapeType}");
+                                    lastAlternatesOfNamedPart.Add($"{stereotype}{displayType}__{partName}__{shapeType}");
                                 }
                             }
                         }
+
+                        ctx.Shape.Metadata.Alternates.AddRange(lastAlternatesOfNamedPart);
                     }
                 });
             }
@@ -199,9 +235,13 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
             {
                 var updateEditorContext = new UpdatePartEditorContext(typePartDefinition, context);
 
+                _typePartDefinition = typePartDefinition;
+
                 var result = await UpdateAsync(part, context.Updater, updateEditorContext);
 
                 part.ContentItem.Apply(typePartDefinition.Name, part);
+
+                _typePartDefinition = null;
 
                 return result;
             }
@@ -279,7 +319,7 @@ namespace OrchardCore.ContentManagement.Display.ContentDisplay
         {
             var displayMode = context.TypePartDefinition.DisplayMode();
             return !String.IsNullOrEmpty(displayMode)
-                ? shapeType + "_Display__" + displayMode
+                ? shapeType + DisplaySeparator + displayMode
                 : shapeType;
         }
 

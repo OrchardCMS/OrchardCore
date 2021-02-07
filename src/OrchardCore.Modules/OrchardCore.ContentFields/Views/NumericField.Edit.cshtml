@@ -8,23 +8,28 @@
 }
 
 <div class="form-group">
-    <div class="row col-sm-3">
-        <label asp-for="Value">@name</label>
-        <div class="input-group mb-2">
-            @if (settings.Minimum.HasValue)
-            {
-                <div class="input-group-prepend">
-                    <div class="input-group-text">@min</div>
-                </div>
-            }
-            <input asp-for="Value" class="form-control content-preview-select" placeholder="@settings.Placeholder" required="@settings.Required" />
-            @if (settings.Maximum.HasValue)
-            {
-                <div class="input-group-append">
-                    <div class="input-group-text">@max</div>
-                </div>
-            }
+    <div class="row">
+        <div class="col-md-6 col-lg-4">
+            <label asp-for="Value">@name</label>
+            <div class="input-group">
+                @if (settings.Minimum.HasValue)
+                {
+                    <div class="input-group-prepend">
+                        <div class="input-group-text">@min</div>
+                    </div>
+                }
+                <input asp-for="Value" class="form-control content-preview-select" placeholder="@settings.Placeholder" required="@settings.Required" />
+                @if (settings.Maximum.HasValue)
+                {
+                    <div class="input-group-append">
+                        <div class="input-group-text">@max</div>
+                    </div>
+                }
+            </div>
         </div>
-        <span class="hint">@settings.Hint</span>
     </div>
+    @if (!String.IsNullOrEmpty(settings.Hint))
+    {
+        <span class="hint">@settings.Hint</span>
+    }
 </div>

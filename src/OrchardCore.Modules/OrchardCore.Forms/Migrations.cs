@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using OrchardCore.ContentManagement.Metadata;
 using OrchardCore.ContentManagement.Metadata.Settings;
 using OrchardCore.Data.Migration;
@@ -21,7 +22,13 @@ namespace OrchardCore.Forms
                 .WithDescription("Turns your content item into a form."));
 
             _contentDefinitionManager.AlterTypeDefinition("Form", type => type
-                .WithPart("TitlePart")
+                .WithPart("TitlePart", part => part
+                    .WithSettings(new TitlePartSettings { RenderTitle = false })
+                    .WithPosition("0")
+                )
+                .WithPart("FormElementPart", part =>
+                   part.WithPosition("1")
+                )
                 .WithPart("FormPart")
                 .WithPart("FlowPart")
                 .Stereotype("Widget"));
@@ -39,7 +46,9 @@ namespace OrchardCore.Forms
                 .WithDescription("Provides label properties."));
 
             _contentDefinitionManager.AlterTypeDefinition("Label", type => type
-                .WithPart("TitlePart")
+                .WithPart("TitlePart", part => part
+                    .WithSettings(new TitlePartSettings { RenderTitle = false })
+                )
                 .WithPart("FormElementPart")
                 .WithPart("LabelPart")
                 .Stereotype("Widget"));
@@ -100,7 +109,47 @@ namespace OrchardCore.Forms
                 .WithPart("ValidationPart")
                 .Stereotype("Widget"));
 
-            return 1;
+            // Shortcut other migration steps on new content definition schemas.
+            return 3;
+        }
+
+        // This code can be removed in a later version.
+        public int UpdateFrom1()
+        {
+            _contentDefinitionManager.AlterTypeDefinition("Form", type => type
+                .WithPart("TitlePart", part => part.MergeSettings<TitlePartSettings>(setting => setting.RenderTitle = false))
+            );
+
+            _contentDefinitionManager.AlterTypeDefinition("Label", type => type
+                .WithPart("TitlePart", part => part.MergeSettings<TitlePartSettings>(setting => setting.RenderTitle = false))
+            );
+
+            return 2;
+        }
+
+        // This code can be removed in a later version.
+        public int UpdateFrom2()
+        {
+            _contentDefinitionManager.AlterTypeDefinition("Form", type => type
+                .WithPart("TitlePart", part => part
+                    .WithPosition("0")
+                )
+                .WithPart("FormElementPart", part =>
+                   part.WithPosition("1")
+                )
+            );
+
+            return 3;
+        }
+
+        internal class TitlePartSettings
+        {
+            public int Options { get; set; }
+
+            public string Pattern { get; set; }
+
+            [DefaultValue(true)]
+            public bool RenderTitle { get; set; }
         }
     }
 }

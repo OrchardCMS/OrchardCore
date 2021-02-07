@@ -11,6 +11,7 @@ namespace OrchardCore.Setup.Events
         Task Setup(
             string siteName,
             string userName,
+            string userId,
             string email,
             string password,
             string dbProvider,

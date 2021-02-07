@@ -3,6 +3,12 @@
   <PropertyGroup>
     <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
     <RootNamespace>OrchardCore.Liquid</RootNamespace>
+    <!-- NuGet properties-->
+    <Title>OrchardCore Liquid Abstractions</Title>
+    <Description>$(OCFrameworkDescription)
+
+    Abstractions for liquid syntax.</Description>
+    <PackageTags>$(PackageTags) OrchardCoreFramework Liquid</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>

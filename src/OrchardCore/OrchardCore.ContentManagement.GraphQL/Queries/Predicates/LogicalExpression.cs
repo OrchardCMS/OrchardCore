@@ -33,6 +33,12 @@ namespace OrchardCore.ContentManagement.GraphQL.Queries.Predicates
         /// </summary>
         protected abstract string Operator { get; }
 
+        public void SearchUsedAlias(IPredicateQuery predicateQuery)
+        {
+            Left.SearchUsedAlias(predicateQuery);
+            Right.SearchUsedAlias(predicateQuery);
+        }
+
         public string ToSqlString(IPredicateQuery predicateQuery)
         {
             var left = Left.ToSqlString(predicateQuery);

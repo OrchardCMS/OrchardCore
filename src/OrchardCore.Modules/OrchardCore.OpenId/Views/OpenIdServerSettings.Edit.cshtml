@@ -10,7 +10,7 @@
     <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input" asp-for="EnableTokenEndpoint">
         <label class="custom-control-label" asp-for="EnableTokenEndpoint">@T["Enable Token Endpoint"]</label>
-        <span class="hint">— @T["Enables action"] /connect/token</span>
+        <span class="hint dashed">@T["Enables action"] /connect/token</span>
     </div>
 </div>
 
@@ -18,7 +18,7 @@
     <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input" asp-for="EnableAuthorizationEndpoint">
         <label class="custom-control-label" asp-for="EnableAuthorizationEndpoint">@T["Enable Authorization Endpoint"]</label>
-        <span class="hint">— @T["Enables action"] /connect/authorize</span>
+        <span class="hint dashed">@T["Enables action"] /connect/authorize</span>
     </div>
 </div>
 
@@ -26,7 +26,7 @@
     <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input" asp-for="EnableLogoutEndpoint">
         <label class="custom-control-label" asp-for="EnableLogoutEndpoint">@T["Enable Logout Endpoint"]</label>
-        <span class="hint">— @T["Enables action"] /connect/logout</span>
+        <span class="hint dashed">@T["Enables action"] /connect/logout</span>
     </div>
 </div>
 
@@ -34,7 +34,7 @@
     <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input" asp-for="EnableUserInfoEndpoint">
         <label class="custom-control-label" asp-for="EnableUserInfoEndpoint">@T["Enable User Info Endpoint"]</label>
-        <span class="hint">— @T["Enables action"] /connect/userinfo</span>
+        <span class="hint dashed">@T["Enables action"] /connect/userinfo</span>
     </div>
 </div>
 
@@ -44,7 +44,7 @@
     <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input" asp-for="AllowAuthorizationCodeFlow">
         <label class="custom-control-label" asp-for="AllowAuthorizationCodeFlow">@T["Allow Authorization Code Flow"]</label>
-        <span class="hint">— @T["More info:"] <a href="http://openid.net/specs/openid-connect-core-1_0.html#CodeFlowAuth">http://openid.net/specs/openid-connect-core-1_0.html#CodeFlowAuth</a></span>
+        <span class="hint dashed">@T["More info:"] <a href="http://openid.net/specs/openid-connect-core-1_0.html#CodeFlowAuth">http://openid.net/specs/openid-connect-core-1_0.html#CodeFlowAuth</a></span>
     </div>
 </div>
 
@@ -52,7 +52,15 @@
     <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input" asp-for="AllowImplicitFlow">
         <label class="custom-control-label" asp-for="AllowImplicitFlow">@T["Allow Implicit Flow"]</label>
-        <span class="hint">— @T["More info:"] <a href="http://openid.net/specs/openid-connect-core-1_0.html#ImplicitFlowAuth">http://openid.net/specs/openid-connect-core-1_0.html#ImplicitFlowAuth</a></span>
+        <span class="hint dashed">@T["More info:"] <a href="http://openid.net/specs/openid-connect-core-1_0.html#ImplicitFlowAuth">http://openid.net/specs/openid-connect-core-1_0.html#ImplicitFlowAuth</a></span>
+    </div>
+</div>
+
+<div class="form-group collapse" asp-validation-class-for="AllowHybridFlow">
+    <div class="custom-control custom-checkbox">
+        <input type="checkbox" class="custom-control-input" asp-for="AllowHybridFlow">
+        <label class="custom-control-label" asp-for="AllowHybridFlow">@T["Allow Hybrid Flow"]</label>
+        <span class="hint dashed">@T["More info:"] <a href="http://openid.net/specs/openid-connect-core-1_0.html#HybridFlowAuth">http://openid.net/specs/openid-connect-core-1_0.html#HybridFlowAuth</a></span>
     </div>
 </div>
 
@@ -60,7 +68,7 @@
     <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input" asp-for="AllowPasswordFlow">
         <label class="custom-control-label" asp-for="AllowPasswordFlow">@T["Allow Password Flow"]</label>
-        <span class="hint">— @T["More info:"] <a href="https://tools.ietf.org/html/rfc6749#section-1.3.3">https://tools.ietf.org/html/rfc6749#section-1.3.3</a></span>
+        <span class="hint dashed">@T["More info:"] <a href="https://tools.ietf.org/html/rfc6749#section-1.3.3">https://tools.ietf.org/html/rfc6749#section-1.3.3</a></span>
     </div>
 </div>
 
@@ -68,7 +76,7 @@
     <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input" asp-for="AllowRefreshTokenFlow">
         <label class="custom-control-label" asp-for="AllowRefreshTokenFlow">@T["Allow Refresh Token Flow"]</label>
-        <span class="hint">— @T["More info:"] <a href="http://openid.net/specs/openid-connect-core-1_0.html#RefreshTokens">http://openid.net/specs/openid-connect-core-1_0.html#RefreshTokens</a></span>
+        <span class="hint dashed">@T["More info:"] <a href="http://openid.net/specs/openid-connect-core-1_0.html#RefreshTokens">http://openid.net/specs/openid-connect-core-1_0.html#RefreshTokens</a></span>
     </div>
 </div>
 
@@ -76,7 +84,7 @@
     <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input" asp-for="AllowClientCredentialsFlow">
         <label class="custom-control-label" asp-for="AllowClientCredentialsFlow">@T["Allow Client Credentials Flow"]</label>
-        <span class="hint">— @T["More info:"] <a href="https://tools.ietf.org/html/rfc6749#section-1.3.4">https://tools.ietf.org/html/rfc6749#section-1.3.4</a></span>
+        <span class="hint dashed">@T["More info:"] <a href="https://tools.ietf.org/html/rfc6749#section-1.3.4">https://tools.ietf.org/html/rfc6749#section-1.3.4</a></span>
     </div>
 </div>
 
@@ -91,46 +99,46 @@
     <span class="hint">@T["The base URL of the identity server (this site). If none is provided, a default value based on the site host is automatically computed."]</span>
 </div>
 
-<div class="form-group" asp-validation-class-for="CertificateStoreLocation">
-    <label asp-for="CertificateStoreLocation">@T["Certificate Store Location"]</label>
-    <select asp-for="CertificateStoreLocation" class="form-control">
+<div class="form-group" asp-validation-class-for="EncryptionCertificateStoreLocation">
+    <label asp-for="EncryptionCertificateStoreLocation">@T["Encryption Certificate Store Location"]</label>
+    <select asp-for="EncryptionCertificateStoreLocation" class="form-control">
         <option value="">@T["None"]</option>
 
         @foreach (StoreLocation location in Enum.GetValues(typeof(StoreLocation)))
         {
-            <option value="@location" selected="@(Model.CertificateStoreLocation == location)">@location.ToString()</option>
+            <option value="@location" selected="@(Model.EncryptionCertificateStoreLocation == location)">@location.ToString()</option>
         }
     </select>
-    <span asp-validation-for="CertificateStoreLocation"></span>
-    <span class="hint">@T["Select the certificate location."]</span>
+    <span asp-validation-for="EncryptionCertificateStoreLocation"></span>
+    <span class="hint">@T["Select the encryption certificate location."]</span>
 </div>
 
-<div class="form-group" asp-validation-class-for="CertificateStoreName">
-    <label asp-for="CertificateStoreName">@T["Certificate Store Name"]</label>
-    <select asp-for="CertificateStoreName" class="form-control">
+<div class="form-group" asp-validation-class-for="EncryptionCertificateStoreName">
+    <label asp-for="EncryptionCertificateStoreName">@T["Encryption Certificate Store Name"]</label>
+    <select asp-for="EncryptionCertificateStoreName" class="form-control">
         <option value="">@T["None"]</option>
 
         @foreach (StoreName store in Enum.GetValues(typeof(StoreName)))
         {
-            <option value="@store" selected="@(Model.CertificateStoreName == store)">@store.ToString()</option>
+            <option value="@store" selected="@(Model.EncryptionCertificateStoreName == store)">@store.ToString()</option>
         }
     </select>
-    <span asp-validation-for="CertificateStoreName"></span>
-    <span class="hint">@T["Select the certificate store."]</span>
+    <span asp-validation-for="EncryptionCertificateStoreName"></span>
+    <span class="hint">@T["Select the encryption certificate store."]</span>
 </div>
 
-<div class="form-group" asp-validation-class-for="CertificateThumbprint">
+<div class="form-group" asp-validation-class-for="EncryptionCertificateThumbprint">
     @if (Model.AvailableCertificates.Count != 0)
     {
-        <label asp-for="CertificateThumbprint">@T["Certificate"]</label>
-        <select asp-for="CertificateThumbprint" class="form-control">
+        <label asp-for="EncryptionCertificateThumbprint">@T["Encryption Certificate"]</label>
+        <select asp-for="EncryptionCertificateThumbprint" class="form-control">
             <option value="">@T["None"]</option>
 
             @foreach (var certificate in Model.AvailableCertificates)
             {
-                var selectedCertificate = Model.CertificateThumbprint == certificate.ThumbPrint
-                                            && Model.CertificateStoreLocation.HasValue && Model.CertificateStoreLocation.Value == certificate.StoreLocation
-                                            && Model.CertificateStoreName.HasValue && Model.CertificateStoreName == certificate.StoreName;
+                var selectedCertificate = Model.EncryptionCertificateThumbprint == certificate.ThumbPrint
+                                            && Model.EncryptionCertificateStoreLocation.HasValue && Model.EncryptionCertificateStoreLocation.Value == certificate.StoreLocation
+                                            && Model.EncryptionCertificateStoreName.HasValue && Model.EncryptionCertificateStoreName == certificate.StoreName;
                 if (string.IsNullOrWhiteSpace(certificate.ThumbPrint))
                 {
                     <option value="" data-StoreLocation="@certificate.StoreLocation" data-StoreName="@certificate.StoreName" selected="@(selectedCertificate)"></option>
@@ -146,8 +154,8 @@
                 </option>
             }
         </select>
-        <span asp-validation-for="CertificateThumbprint"></span>
-        <span class="hint">@T["Select the certificate for signing tokens."]</span>
+        <span asp-validation-for="EncryptionCertificateThumbprint"></span>
+        <span class="hint">@T["Select the encryption certificate."]</span>
     }
     else
     {
@@ -155,57 +163,162 @@
     }
 </div>
 
-<div class="form-group" asp-validation-class-for="UseRollingTokens">
-    <div class="custom-control custom-checkbox">
-        <input type="checkbox" class="custom-control-input" asp-for="UseRollingTokens">
-        <label class="custom-control-label" asp-for="UseRollingTokens">@T["Use Rolling Tokens"]</label>
-        <span class="hint">— @T["When this option is enabled, a new refresh token is issued for each refresh token request (and the previous one is automatically revoked)."]</span>
-    </div>
+<div class="form-group" asp-validation-class-for="SigningCertificateStoreLocation">
+    <label asp-for="SigningCertificateStoreLocation">@T["Signing Certificate Store Location"]</label>
+    <select asp-for="SigningCertificateStoreLocation" class="form-control">
+        <option value="">@T["None"]</option>
+
+        @foreach (StoreLocation location in Enum.GetValues(typeof(StoreLocation)))
+        {
+            <option value="@location" selected="@(Model.SigningCertificateStoreLocation == location)">@location.ToString()</option>
+        }
+    </select>
+    <span asp-validation-for="SigningCertificateStoreLocation"></span>
+    <span class="hint">@T["Select the signing certificate location."]</span>
 </div>
 
+<div class="form-group" asp-validation-class-for="SigningCertificateStoreName">
+    <label asp-for="SigningCertificateStoreName">@T["Signing Certificate Store Name"]</label>
+    <select asp-for="SigningCertificateStoreName" class="form-control">
+        <option value="">@T["None"]</option>
+
+        @foreach (StoreName store in Enum.GetValues(typeof(StoreName)))
+        {
+            <option value="@store" selected="@(Model.SigningCertificateStoreName == store)">@store.ToString()</option>
+        }
+    </select>
+    <span asp-validation-for="SigningCertificateStoreName"></span>
+    <span class="hint">@T["Select the signing certificate store."]</span>
+</div>
+
+<div class="form-group" asp-validation-class-for="SigningCertificateThumbprint">
+    @if (Model.AvailableCertificates.Count != 0)
+    {
+        <label asp-for="SigningCertificateThumbprint">@T["Signing Certificate"]</label>
+        <select asp-for="SigningCertificateThumbprint" class="form-control">
+            <option value="">@T["None"]</option>
+
+            @foreach (var certificate in Model.AvailableCertificates)
+            {
+                var selectedCertificate = Model.SigningCertificateThumbprint == certificate.ThumbPrint
+                                            && Model.SigningCertificateStoreLocation.HasValue && Model.SigningCertificateStoreLocation.Value == certificate.StoreLocation
+                                            && Model.SigningCertificateStoreName.HasValue && Model.SigningCertificateStoreName == certificate.StoreName;
+                if (string.IsNullOrWhiteSpace(certificate.ThumbPrint))
+                {
+                    <option value="" data-StoreLocation="@certificate.StoreLocation" data-StoreName="@certificate.StoreName" selected="@(selectedCertificate)"></option>
+                    continue;
+                }
+                var friendlyName = certificate.FriendlyName;
+                if (string.IsNullOrWhiteSpace(friendlyName) && !string.IsNullOrWhiteSpace(certificate.ThumbPrint))
+                {
+                    friendlyName = "No Friendly Name";
+                }
+                <option value="@certificate.ThumbPrint" data-StoreLocation="@certificate.StoreLocation" data-StoreName="@certificate.StoreName" selected="@(selectedCertificate)">
+                    @friendlyName [@certificate.NotBefore.ToString("dd/MM/yy") - @certificate.NotAfter.ToString("dd/MM/yy")] @certificate.Subject
+                </option>
+            }
+        </select>
+        <span asp-validation-for="SigningCertificateThumbprint"></span>
+        <span class="hint">@T["Select the signing certificate."]</span>
+    }
+    else
+    {
+        <div class="alert alert-warning" asp-validation-for="CertificateThumbprint">@T["You need to add a certificate to your server for setting up OpenID Connect module."]</div>
+    }
+</div>
+
+<div class="form-group" asp-validation-class-for="DisableRollingRefreshTokens">
+    <div class="custom-control custom-checkbox">
+        <input type="checkbox" class="custom-control-input" asp-for="DisableRollingRefreshTokens">
+        <label class="custom-control-label" asp-for="DisableRollingRefreshTokens">@T["Disable Rolling Refresh Tokens"]</label>
+        <span class="hint dashed">@T["When this option is enabled, refresh tokens are not marked as redeemed and can be reused until they expire."]</span>
+    </div>
+</div>
 
 <div class="form-group" asp-validation-class-for="AccessTokenFormat">
     <label asp-for="AccessTokenFormat">@T["Token Format"]</label>
     <select asp-for="AccessTokenFormat" class="form-control">
-        @foreach (OpenIdServerSettings.TokenFormat format in Enum.GetValues(typeof(OpenIdServerSettings.TokenFormat)))
-        {
-            <option value="@format" selected="@(Model.AccessTokenFormat == format)">@format.ToString()</option>
-        }
+        <option value="@OpenIdServerSettings.TokenFormat.DataProtection" selected="@(Model.AccessTokenFormat == OpenIdServerSettings.TokenFormat.DataProtection)">
+            @T["ASP.NET Core Data Protection"]
+        </option>
+        <option value="@OpenIdServerSettings.TokenFormat.JsonWebToken" selected="@(Model.AccessTokenFormat == OpenIdServerSettings.TokenFormat.JsonWebToken)">
+            @T["JSON Web Token (JWT)"]
+        </option>
     </select>
     <span asp-validation-for="AccessTokenFormat"></span>
 </div>
 
-<div class="form-group" asp-validation-class-for="UseReferenceTokens">
+<div class="form-group" asp-validation-class-for="DisableAccessTokenEncryption">
     <div class="custom-control custom-checkbox">
-        <input type="checkbox" class="custom-control-input" asp-for="UseReferenceTokens" >
-        <label class="custom-control-label" asp-for="UseReferenceTokens">@T["Use Reference Tokens"]</label>
-        <span class="hint">— @T["When this option is enabled, it allows to keep track of all the issued tokens, when storing a very large number of claims in the authorization codes, access tokens and refresh tokens or when immediate revocation of reference access tokens is desired."]</span>
+        <input type="checkbox" class="custom-control-input" asp-for="DisableAccessTokenEncryption">
+        <label class="custom-control-label" asp-for="DisableAccessTokenEncryption">@T["Disable Access Token Encryption (only for JWT tokens)"]</label>
+        <span class="hint dashed">@T["When this option is enabled, the JWT access token tokens are not encrypted."]</span>
     </div>
 </div>
 
-<script at="Foot" type="text/javascript">
+<div class="form-group" asp-validation-class-for="UseReferenceAccessTokens">
+    <div class="custom-control custom-checkbox">
+        <input type="checkbox" class="custom-control-input" asp-for="UseReferenceAccessTokens">
+        <label class="custom-control-label" asp-for="UseReferenceAccessTokens">@T["Use Reference Access Tokens"]</label>
+        <span class="hint dashed">@T["When this option is enabled, the access token are stored in the database and fixed size tokens are returned to the client, which can be useful when storing a very large number of claims. Important: this option cannot be currently enabled when other tenants are configured to use this server."]</span>
+    </div>
+</div>
+
+<script at="Foot">
 ////<![CDATA[
     window.onload = function () {
-        refreshCertificates();
+        refreshEncryptionCertificates();
+        refreshSigningCertificates();
         refreshEndpoints();
-        refreshUseReferenceTokens();
+        refreshDisableAccessTokenEncryption();
 
         $("#@Html.IdFor(m => m.AccessTokenFormat)").change(function () {
-            refreshUseReferenceTokens();
+            refreshDisableAccessTokenEncryption();
         });
-        $("#@Html.IdFor(m => m.CertificateStoreLocation)").change(function () {
-            refreshCertificates();
+        $("#@Html.IdFor(m => m.EncryptionCertificateStoreLocation)").change(function () {
+            refreshEncryptionCertificates();
         });
-        $("#@Html.IdFor(m => m.CertificateStoreName)").change(function () {
-            refreshCertificates()
+        $("#@Html.IdFor(m => m.EncryptionCertificateStoreName)").change(function () {
+            refreshEncryptionCertificates();
         });
-        $("#@Html.IdFor(m => m.EnableTokenEndpoint), #@Html.IdFor(m => m.EnableAuthorizationEndpoint), #@Html.IdFor(m => m.AllowPasswordFlow), #@Html.IdFor(m => m.AllowAuthorizationCodeFlow)").change(function () {
+        $("#@Html.IdFor(m => m.SigningCertificateStoreLocation)").change(function () {
+            refreshSigningCertificates();
+        });
+        $("#@Html.IdFor(m => m.SigningCertificateStoreName)").change(function () {
+            refreshSigningCertificates();
+        });
+        $("#@Html.IdFor(m => m.EnableTokenEndpoint), #@Html.IdFor(m => m.EnableAuthorizationEndpoint), #@Html.IdFor(m => m.AllowPasswordFlow), #@Html.IdFor(m => m.AllowAuthorizationCodeFlow), #@Html.IdFor(m => m.AllowAuthorizationCodeFlow), #@Html.IdFor(m => m.AllowHybridFlow)").change(function () {
             refreshEndpoints();
         });
-        function refreshCertificates() {
-            var location = $("#@Html.IdFor(m => m.CertificateStoreLocation)"),
-                name = $("#@Html.IdFor(m => m.CertificateStoreName)"),
-                thumbprint = $("#@Html.IdFor(m => m.CertificateThumbprint)");
+        function refreshEncryptionCertificates() {
+            var location = $("#@Html.IdFor(m => m.EncryptionCertificateStoreLocation)"),
+                name = $("#@Html.IdFor(m => m.EncryptionCertificateStoreName)"),
+                thumbprint = $("#@Html.IdFor(m => m.EncryptionCertificateThumbprint)");
+
+            if (location.val()) {
+                name.parent().show();
+
+                if (name.val()) {
+                    thumbprint.parent().show();
+                    thumbprint.children("option[value!='']").hide();
+                    thumbprint.children("option[data-StoreLocation=" + location.val() + "][data-StoreName=" + name.val() + "]").show();
+                }
+                else {
+                    thumbprint.parent().hide();
+                    thumbprint.val("");
+                }
+            }
+            else {
+                name.parent().hide();
+                name.val("");
+                thumbprint.parent().hide();
+                thumbprint.val("");
+            }
+        }
+        function refreshSigningCertificates() {
+            var location = $("#@Html.IdFor(m => m.SigningCertificateStoreLocation)"),
+                name = $("#@Html.IdFor(m => m.SigningCertificateStoreName)"),
+                thumbprint = $("#@Html.IdFor(m => m.SigningCertificateThumbprint)");
 
             if (location.val()) {
                 name.parent().show();
@@ -231,18 +344,19 @@
             refreshEnableTokenEndpoint();
             refreshAllowAuthorizationCodeFlowVisibility();
             refreshEnableAuthorizationEndpoint();
+            refreshAllowHybridFlowVisibility();
             refreshAllowRefreshTokenFlowVisibility();
         }
-        function refreshUseReferenceTokens() {
+        function refreshDisableAccessTokenEncryption() {
             var accessTokenFormat = $("#@Html.IdFor(m => m.AccessTokenFormat)");
-            var useReferenceTokens = $("#@Html.IdFor(m => m.UseReferenceTokens)");
+            var disableAccessTokenEncryption = $("#@Html.IdFor(m => m.DisableAccessTokenEncryption)");
 
-            if (accessTokenFormat.val() !== '@OpenIdServerSettings.TokenFormat.JWT') {                
-                useReferenceTokens.removeAttr("disabled");
+            if (accessTokenFormat.val() === '@OpenIdServerSettings.TokenFormat.JsonWebToken') {
+                disableAccessTokenEncryption.removeAttr("disabled");
             }
             else {
-                useReferenceTokens.attr('disabled', true);
-                useReferenceTokens.prop("checked", false);
+                disableAccessTokenEncryption.attr('disabled', true);
+                disableAccessTokenEncryption.prop("checked", false);
             }
         }
         function refreshEnableTokenEndpoint() {
@@ -275,10 +389,22 @@
                 allowAuthorizationCodeFlow.parent().parent().collapse("hide");
             }
         }
+        function refreshAllowHybridFlowVisibility() {
+            var allowHybridFlow = $("#@Html.IdFor(m => m.AllowHybridFlow)");
+            if ($("#@Html.IdFor(m => m.EnableTokenEndpoint)").prop("checked") && $("#@Html.IdFor(m => m.EnableAuthorizationEndpoint)").prop("checked")) {
+                allowHybridFlow.parent().parent().collapse("show");
+            }
+            else {
+                allowHybridFlow.prop("checked", false);
+                allowHybridFlow.parent().parent().collapse("hide");
+            }
+        }
         function refreshAllowRefreshTokenFlowVisibility() {
             var allowRefreshTokenFlow = $("#@Html.IdFor(m => m.AllowRefreshTokenFlow)");
             if ($("#@Html.IdFor(m => m.EnableTokenEndpoint)").prop("checked")
-                && ($("#@Html.IdFor(m => m.AllowPasswordFlow)").prop("checked") || $("#@Html.IdFor(m => m.AllowAuthorizationCodeFlow)").prop("checked"))) {
+                && ($("#@Html.IdFor(m => m.AllowPasswordFlow)").prop("checked") ||
+                    $("#@Html.IdFor(m => m.AllowAuthorizationCodeFlow)").prop("checked") ||
+                    $("#@Html.IdFor(m => m.AllowHybridFlow)").prop("checked"))) {
                 allowRefreshTokenFlow.parent().parent().collapse("show");
             }
             else {

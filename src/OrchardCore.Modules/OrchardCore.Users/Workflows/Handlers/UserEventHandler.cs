@@ -20,6 +20,11 @@ namespace OrchardCore.Users.Workflows.Handlers
             return TriggerWorkflowEventAsync(nameof(UserCreatedEvent), (User)context.User);
         }
 
+        public Task DeletedAsync(UserContext context)
+        {
+            return TriggerWorkflowEventAsync(nameof(UserDeletedEvent), (User)context.User);
+        }
+
         public Task DisabledAsync(UserContext context)
         {
             return TriggerWorkflowEventAsync(nameof(UserDisabledEvent), (User)context.User);
@@ -30,11 +35,16 @@ namespace OrchardCore.Users.Workflows.Handlers
             return TriggerWorkflowEventAsync(nameof(UserEnabledEvent), (User)context.User);
         }
 
+        public Task UpdatedAsync(UserContext context)
+        {
+            return TriggerWorkflowEventAsync(nameof(UserUpdatedEvent), (User)context.User);
+        }
+
         private Task TriggerWorkflowEventAsync(string name, User user)
         {
             return _workflowManager.TriggerEventAsync(name,
                 input: new { User = user },
-                correlationId: user.Id.ToString()
+                correlationId: user.UserId
             );
         }
     }

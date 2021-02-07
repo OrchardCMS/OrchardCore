@@ -74,7 +74,8 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
       name: "xml",
       htmlMode: true,
       multilineTagIndentFactor: parserConfig.multilineTagIndentFactor,
-      multilineTagIndentPastTag: parserConfig.multilineTagIndentPastTag
+      multilineTagIndentPastTag: parserConfig.multilineTagIndentPastTag,
+      allowMissingTagName: parserConfig.allowMissingTagName
     });
     var tags = {};
     var configTags = parserConfig && parserConfig.tags,

@@ -6,20 +6,22 @@
     var index = 0;
 }
 
-<script asp-src="~/OrchardCore.AdminMenu/Scripts/admin-menu.min.js" at="Foot" depends-on="admin"></script>
+<script asp-src="~/OrchardCore.AdminMenu/Scripts/admin-menu.min.js" at="Foot" depends-on="admin, jQuery-ui"></script>
 <style asp-src="~/OrchardCore.AdminMenu/Styles/admin-menu.min.css" debug-src="~/OrchardCore.AdminMenu/Styles/admin-menu.css"></style>
 
-<h1>@RenderTitleSegments(T["Edit Nodes for '{0}'", Model.AdminMenu.Name])</h1>
+<zone Name="Title"><h1>@RenderTitleSegments(T["Edit Nodes for '{0}'", Model.AdminMenu.Name])</h1></zone>
 
-<nav class="admin-toolbar">
-    <ul class="navbar-nav mr-auto">
-        <li class="nav-item">
-            <!-- Button trigger modal -->
-            <a asp-route-action="Create" class="btn btn-primary" role="button" data-toggle="modal" data-target="#modalTreeNodes">
-                @T["Add Node"]
-            </a>
-        </li>
-    </ul>
+<nav class="card mb-3">
+    <div class="card-body bg-primary p-3">
+        <div class="form-group mb-n1">
+            <div class="dropdown float-right order-md-1">
+                <!-- Button trigger modal -->
+                <a asp-route-action="Create" class="btn btn-sm btn-primary" role="button" data-toggle="modal" data-target="#modalTreeNodes">
+                    @T["Add Node"]
+                </a>
+            </div>
+        </div>
+    </div>
 </nav>
 
 <div asp-validation-summary="All"></div>
@@ -30,7 +32,7 @@
         {
             var updater = ModelUpdaterAccessor.ModelUpdater;
 
-            <ol id="menu" data-treenode-id="content-preset">
+            <ol id="menu" data-treenode-id="content-preset" class="list-group">
                 @foreach (var menuItem in Model.AdminMenu.MenuItems)
                 {
                     if (menuItem != null)
@@ -47,7 +49,7 @@
         }
         else
         {
-            <div class="alert alert-info" role="alert">
+            <div class="alert alert-info mb-0" role="alert">
                 @T["<strong>Nothing here!</strong> There are no nodes on this tree for the moment."]
             </div>
         }
@@ -59,11 +61,11 @@
 </form>
 
 <!-- Modal -->
-<div class="modal fade" id="modalTreeNodes" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div class="modal fade" id="modalTreeNodes" tabindex="-1" role="dialog" aria-labelledby="admin-tree-nodes-title" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">@T["Available Admin Nodes"]</h5>
+                <h5 class="modal-title" id="admin-tree-nodes-title">@T["Available Admin Nodes"]</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>

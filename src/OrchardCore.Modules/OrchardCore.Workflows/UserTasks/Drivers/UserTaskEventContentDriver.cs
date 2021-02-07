@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Localization;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
+using OrchardCore.ContentManagement.Workflows;
 using OrchardCore.DisplayManagement.ModelBinding;
 using OrchardCore.DisplayManagement.Notify;
 using OrchardCore.DisplayManagement.Views;
@@ -59,7 +60,7 @@ namespace OrchardCore.Workflows.UserTasks.Drivers
         public override async Task<IDisplayResult> UpdateAsync(ContentItem model, IUpdateModel updater)
         {
             var httpContext = _httpContextAccessor.HttpContext;
-            var action = (string)httpContext.Request.Form["submit.Save"];
+            var action = (string)httpContext.Request.Form["submit.Save"] ?? httpContext.Request.Form["submit.Publish"];
             if (action?.StartsWith("user-task.", StringComparison.Ordinal) == true)
             {
                 action = action.Substring("user-task.".Length);
@@ -68,12 +69,25 @@ namespace OrchardCore.Workflows.UserTasks.Drivers
 
                 if (!availableActions.Contains(action))
                 {
-                    _notifier.Error(H["Not authorized to trigger '{0}'", action]);
+                    _notifier.Error(H["Not authorized to trigger '{0}'.", action]);
                 }
                 else
                 {
-                    var input = new { UserAction = action };
-                    await _workflowManager.TriggerEventAsync(nameof(UserTaskEvent), input, model.ContentItemId);
+                    var contentEvent = new ContentEventContext()
+                    {
+                        Name = nameof(UserTaskEvent),
+                        ContentType = model.ContentType,
+                        ContentItemId = model.ContentItemId
+                    };
+
+                    var input = new Dictionary<string, object>
+                    {
+                        { ContentEventConstants.UserActionInputKey, action },
+                        { ContentEventConstants.ContentItemInputKey, model },
+                        { ContentEventConstants.ContentEventInputKey, contentEvent }
+                    };
+
+                    await _workflowManager.TriggerEventAsync(nameof(UserTaskEvent), input, correlationId: model.ContentItemId);
                 }
             }
 

@@ -5,39 +5,63 @@
 @{
     var settings = Model.PartFieldDefinition.GetSettings<NumericFieldSettings>();
     string name = Model.PartFieldDefinition.DisplayName();
+    int scale = settings.Scale;
     string step = Math.Pow(10, 0 - settings.Scale).ToString(CultureInfo.InvariantCulture);
     decimal min = settings.Minimum.HasValue ? settings.Minimum.Value : 0;
     decimal max = settings.Maximum.HasValue ? settings.Maximum.Value : 10000;
     string id = Html.IdFor(m => m.Value);
+    string javascriptDecimalSeparator = CultureInfo.InvariantCulture.NumberFormat.NumberDecimalSeparator;
+    string serverDecimalSeparator = CultureInfo.CurrentUICulture.NumberFormat.NumberDecimalSeparator;
 }
 
 <div class="form-group">
-    <div class="row col-sm">
-        <label asp-for="Value">@name</label>
-        <div class="input-group mb-2">
-            @if (settings.Minimum.HasValue)
-            {
-            <div class="input-group-prepend">
-                <div class="input-group-text">@min</div>
+    <div class="row">
+        <div class="col-md-6 col-lg-4">
+            <label asp-for="Value">@name</label>
+            <div class="input-group mb-2">
+                @if (settings.Minimum.HasValue)
+                {
+                    <div class="input-group-prepend">
+                        <div class="input-group-text">@min</div>
+                    </div>
+                }
+                <input asp-for="Value" typeof="text" class="form-control content-preview-select" placeholder="@settings.Placeholder" required="@settings.Required" />
+                <div class="input-group-append">
+                    <button class="btn btn-outline-secondary" type="button" onclick="numericFieldSpinner('@(id)', @(scale), -@(step), @(min), @(max))"><i class="fa fa-minus" aria-hidden="true"></i></button>
+                    <button class="btn btn-outline-secondary" type="button" onclick="numericFieldSpinner('@(id)', @(scale), +@(step), @(min), @(max))"><i class="fa fa-plus" aria-hidden="true"></i></button>
+                </div>
+                @if (settings.Maximum.HasValue)
+                {
+                    <div class="input-group-append">
+                        <div class="input-group-text">@max</div>
+                    </div>
+                }
             </div>
-            }
-            <input asp-for="Value" typeof="text" class="form-control content-preview-select" type="number" required="@settings.Required" />
-            @if (settings.Maximum.HasValue)
-            {
-            <div class="input-group-append">
-                <div class="input-group-text">@max</div>
-            </div>
-            }
         </div>
-        <span class="hint">@settings.Hint</span>
     </div>
+    @if (!String.IsNullOrEmpty(settings.Hint))
+    {
+        <span class="hint">@settings.Hint</span>
+    }
 </div>
-<script at="Foot">
-    $(function () {
-        $('#@(id)').spinner({
-            min: @min,
-            max: @max,
-            step: @step
-        });
-    });
+
+<script asp-name="numericFieldSpinner" at="Foot">
+
+    function numericFieldSpinner(id, scale, step, min, max) {
+        let value = $('#' + id).val();
+        @if (javascriptDecimalSeparator != serverDecimalSeparator)
+        {
+            <text>value = value.replace('@(serverDecimalSeparator)', '@(javascriptDecimalSeparator)');</text>
+        }
+        value = (Number(value) || 0) + step;
+        value = Math.min(value, max); // Never go above max
+        value = Math.max(value, min); // or below min
+        value = Number(value.toFixed(scale)).toString(); // Drop insignificant trailing zeros
+        @if (javascriptDecimalSeparator != serverDecimalSeparator)
+        {
+            <text>value = value.replace('@(javascriptDecimalSeparator)', '@(serverDecimalSeparator)');</text>
+        }
+        $('#' + id).val(value);
+    }
+
 </script>

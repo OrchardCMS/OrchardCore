@@ -3,6 +3,12 @@
   <PropertyGroup>
     <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
     <RootNamespace>OrchardCore.Setup</RootNamespace>
+    <!-- NuGet properties-->
+    <Title>OrchardCore Setup Abstractions</Title>
+    <Description>$(OCCMSDescription)
+    
+    Abstractions for setup module.</Description>
+    <PackageTags>$(PackageTags) OrchardCoreCMS Abstractions</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>

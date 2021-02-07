@@ -1,14 +1,18 @@
 @model OrchardCore.Queries.Sql.ViewModels.SqlQueryViewModel
 
+<style asp-name="codemirror"></style>
+<style asp-name="codemirror-addon-hint-show-hint"></style>
 <script asp-name="codemirror" depends-on="admin" at="Foot"></script>
+<script asp-name="codemirror-addon-selection-active-line" at="Foot"></script>
 <script asp-name="codemirror-mode-javascript" at="Foot"></script>
 <script asp-name="codemirror-mode-sql" at="Foot"></script>
+<script asp-name="codemirror-addon-hint-sql-hint" at="Foot"></script>
 
 <div class="form-group">
     <div class="custom-control custom-checkbox">
         <input type="checkbox" class="custom-control-input" asp-for="ReturnDocuments" checked="@Model.ReturnDocuments" />
         <label class="custom-control-label" asp-for="ReturnDocuments">@T["Return Documents"]</label>
-        <span class="hint">— @T["Check to return the corresponding documents."]</span>
+        <span class="hint dashed">@T["Check to return the corresponding documents."]</span>
     </div>
     <span class="hint">@T["When checked, the result has to be a list of document ids."]</span>
 </div>
@@ -21,6 +25,11 @@
 
 <script at="Foot">
     $(function () {
-        CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.Query)'), { mode: "text/x-pgsql", lineNumbers: true, viewportMargin: Infinity });
+        CodeMirror.fromTextArea(document.getElementById('@Html.IdFor(x => x.Query)'), { mode: "text/x-pgsql",
+            indentWithTabs: true, smartIndent: true, matchBrackets : true, lineNumbers: true, styleActiveLine: true, viewportMargin: Infinity,
+            extraKeys: {"Ctrl-Space": "autocomplete"},
+            hintOptions: {tables: {
+              ContentItemIndex: ["DocumentId"]
+            }} });
     });
 </script>

@@ -212,64 +212,62 @@ namespace OrchardCore.Tests.Apis.GraphQL
         [Fact]
         public async Task ShouldNotBeAbleToExecuteAnyQueriesWithoutPermission()
         {
-            using (var context = new SiteContext())
-            {
-                await context.InitializeAsync(new PermissionsContext { UsePermissionsContext = true });
+            using var context = new SiteContext()
+                .WithPermissionsContext(new PermissionsContext { UsePermissionsContext = true });
 
-                var response = await context.GraphQLClient.Client.GetAsync("api/graphql");
-                Assert.Equal(System.Net.HttpStatusCode.Unauthorized, response.StatusCode);
-            }
+            await context.InitializeAsync();
+
+            var response = await context.GraphQLClient.Client.GetAsync("api/graphql");
+            Assert.Equal(System.Net.HttpStatusCode.Unauthorized, response.StatusCode);
         }
 
         [Fact]
         public async Task ShouldReturnBlogsWithViewBlogContentPermission()
         {
-            var permissionContext = new PermissionsContext
-            {
-                UsePermissionsContext = true,
-                AuthorizedPermissions = new[] {
-                    GraphQLApi.Permissions.ExecuteGraphQL,
-                    Contents.Permissions.ViewContent
-                }
-            };
-
-            using (var context = new SiteContext())
-            {
-                await context.InitializeAsync(permissionContext);
-
-                var result = await context.GraphQLClient.Content
-                    .Query("blog", builder =>
+            using var context = new SiteContext()
+                .WithPermissionsContext(new PermissionsContext
+                {
+                    UsePermissionsContext = true,
+                    AuthorizedPermissions = new[]
                     {
-                        builder.WithField("contentItemId");
-                    });
+                        GraphQLApi.Permissions.ExecuteGraphQL,
+                        Contents.Permissions.ViewContent
+                    }
+                });
 
-                Assert.NotEmpty(result["data"]["blog"]);
-            }
+            await context.InitializeAsync();
+
+            var result = await context.GraphQLClient.Content
+                .Query("blog", builder =>
+                {
+                    builder.WithField("contentItemId");
+                });
+
+            Assert.NotEmpty(result["data"]["blog"]);
         }
 
         [Fact]
         public async Task ShouldNotReturnBlogsWithoutViewBlogContentPermission()
         {
-            var permissionContext = new PermissionsContext
-            {
-                UsePermissionsContext = true,
-                AuthorizedPermissions = new[] {
-                    GraphQLApi.Permissions.ExecuteGraphQL
-                }
-            };
-
-            using (var context = new SiteContext())
-            {
-                await context.InitializeAsync(permissionContext);
-
-                var result = await context.GraphQLClient.Content
-                    .Query("blog", builder =>
+            using var context = new SiteContext()
+                .WithPermissionsContext(new PermissionsContext
+                {
+                    UsePermissionsContext = true,
+                    AuthorizedPermissions = new[]
                     {
-                        builder.WithField("contentItemId");
-                    });
+                        GraphQLApi.Permissions.ExecuteGraphQL
+                    }
+                });
 
-                Assert.Equal(GraphQLApi.ValidationRules.RequiresPermissionValidationRule.ErrorCode, result["errors"][0]["extensions"]["code"]);
-            }
+            await context.InitializeAsync();
+
+            var result = await context.GraphQLClient.Content
+                .Query("blog", builder =>
+                {
+                    builder.WithField("contentItemId");
+                });
+
+            Assert.Equal(GraphQLApi.ValidationRules.RequiresPermissionValidationRule.ErrorCode, result["errors"][0]["extensions"]["code"]);
         }
     }
 }

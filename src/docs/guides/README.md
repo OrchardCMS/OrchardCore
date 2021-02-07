@@ -19,6 +19,7 @@ These guides are specific to Orchard Core CMS
 - [Installing Localization Files](install-localization-files/README.md)
 - [Integrate facebook plugins](integrate-facebook-plugins/README.md)
 - [Implement Full Text search](implement-fulltext-search/README.md)
+- [Integrate AzureAD as external provider](azuread-integration/README.md)
 
 ## Tutorials
 

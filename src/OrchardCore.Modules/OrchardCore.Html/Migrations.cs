@@ -35,18 +35,25 @@ namespace OrchardCore.Html
                 .Attachable()
                 .WithDescription("Provides an HTML Body for your content item."));
 
+            // Shortcut other migration steps on new content definition schemas.
+            return 5;
+        }
+
+        // This code can be removed in a later version.
+        public int UpdateFrom1()
+        {
             return 2;
         }
 
+        // This code can be removed in a later version.
         public int UpdateFrom2()
         {
             return 3;
         }
 
+        // This code can be removed in a later version.
         public async Task<int> UpdateFrom3()
         {
-            // This code can be removed in RC
-
             // Update content type definitions
             foreach (var contentType in _contentDefinitionManager.LoadTypeDefinitions())
             {

@@ -36,7 +36,14 @@ namespace OrchardCore.Autoroute.Routing
                 contentItemId = address.ExplicitValues[_options.ContentItemIdKey]?.ToString();
             }
 
-            if (string.IsNullOrEmpty(contentItemId) || !_entries.TryGetEntryByContentItemId(contentItemId, out var autorouteEntry))
+            if (string.IsNullOrEmpty(contentItemId))
+            {
+                return Enumerable.Empty<Endpoint>();
+            }
+
+            (var found, var autorouteEntry) = _entries.TryGetEntryByContentItemIdAsync(contentItemId).GetAwaiter().GetResult();
+
+            if (!found)
             {
                 return Enumerable.Empty<Endpoint>();
             }

@@ -93,6 +93,8 @@ namespace OrchardCore.Facebook.Login.Configuration
             {
                 options.CallbackPath = loginSettings.CallbackPath;
             }
+
+            options.SaveTokens = loginSettings.SaveTokens;
         }
 
         public void Configure(FacebookOptions options) => Debug.Fail("This infrastructure method shouldn't be called.");

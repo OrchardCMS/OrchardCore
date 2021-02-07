@@ -1,8 +1,9 @@
-using Microsoft.Extensions.DependencyInjection;
 using Fluid;
+using Microsoft.Extensions.DependencyInjection;
 using OrchardCore.BackgroundTasks;
 using OrchardCore.ContentManagement;
 using OrchardCore.ContentManagement.Display.ContentDisplay;
+using OrchardCore.Data;
 using OrchardCore.Data.Migration;
 using OrchardCore.Modules;
 using OrchardCore.PublishLater.Drivers;
@@ -11,7 +12,6 @@ using OrchardCore.PublishLater.Indexes;
 using OrchardCore.PublishLater.Models;
 using OrchardCore.PublishLater.Services;
 using OrchardCore.PublishLater.ViewModels;
-using YesSql.Indexes;
 
 namespace OrchardCore.PublishLater
 {
@@ -29,7 +29,7 @@ namespace OrchardCore.PublishLater
                 .UseDisplayDriver<PublishLaterPartDisplayDriver>()
                 .AddHandler<PublishLaterPartHandler>();
             services.AddScoped<IDataMigration, Migrations>();
-            services.AddSingleton<IIndexProvider, PublishLaterPartIndexProvider>();
+            services.AddScoped<IScopedIndexProvider, PublishLaterPartIndexProvider>();
 
             services.AddSingleton<IBackgroundTask, ScheduledPublishingBackgroundTask>();
         }

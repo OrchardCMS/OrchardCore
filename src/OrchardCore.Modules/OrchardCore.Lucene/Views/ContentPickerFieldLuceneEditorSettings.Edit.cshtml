@@ -2,7 +2,7 @@
 
 <div class="field-editor field-editor-lucene">
     <div class="form-group">
-        <div class="row col-sm-6">
+        <div class="w-sm-50">
             <label asp-for="Index">@T["Index"]</label>
             <select asp-for="Index" class="form-control">
                 @foreach (var index in Model.Indices)
@@ -10,7 +10,7 @@
                     <option value="@index">@index</option>
                 }
             </select>
-            <span class="hint">@T["The Lucene index to query for content items"]</span>
         </div>
+        <span class="hint">@T["The Lucene index to query for content items"]</span>
     </div>
 </div>

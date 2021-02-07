@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using OrchardCore.ContentManagement.Metadata.Models;
 using OrchardCore.ContentManagement.Utilities;
@@ -152,6 +153,39 @@ namespace OrchardCore.ContentManagement.Metadata.Builders
             var configurer = new PartConfigurerImpl(existingPart);
             configuration(configurer);
             _parts.Add(configurer.Build());
+            return this;
+        }
+
+        public Task<ContentTypeDefinitionBuilder> WithPartAsync(string name, string partName, Func<ContentTypePartDefinitionBuilder, Task> configurationAsync)
+        {
+            return WithPartAsync(name, new ContentPartDefinition(partName), configurationAsync);
+        }
+
+        public Task<ContentTypeDefinitionBuilder> WithPartAsync(string partName, Func<ContentTypePartDefinitionBuilder, Task> configurationAsync)
+        {
+            return WithPartAsync(partName, new ContentPartDefinition(partName), configurationAsync);
+        }
+
+        public async Task<ContentTypeDefinitionBuilder> WithPartAsync(string name, ContentPartDefinition partDefinition, Func<ContentTypePartDefinitionBuilder, Task> configurationAsync)
+        {
+            var existingPart = _parts.FirstOrDefault(x => x.Name == name);
+
+            if (existingPart != null)
+            {
+                _parts.Remove(existingPart);
+            }
+            else
+            {
+                existingPart = new ContentTypePartDefinition(name, partDefinition, new JObject());
+                existingPart.ContentTypeDefinition = Current;
+            }
+
+            var configurer = new PartConfigurerImpl(existingPart);
+
+            await configurationAsync(configurer);
+
+            _parts.Add(configurer.Build());
+
             return this;
         }
 

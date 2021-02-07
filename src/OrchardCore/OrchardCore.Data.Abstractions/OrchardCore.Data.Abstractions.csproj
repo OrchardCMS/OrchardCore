@@ -3,6 +3,12 @@
   <PropertyGroup>
     <TargetFramework>$(AspNetCoreTargetFramework)</TargetFramework>
     <RootNamespace>OrchardCore.Data</RootNamespace>
+    <!-- NuGet properties-->
+    <Title>OrchardCore Data Abstractions</Title>
+    <Description>$(OCCMSDescription)
+    
+    Abstractions for data access functionality</Description>
+    <PackageTags>$(PackageTags) OrchardCoreCMS Data Abstractions</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
