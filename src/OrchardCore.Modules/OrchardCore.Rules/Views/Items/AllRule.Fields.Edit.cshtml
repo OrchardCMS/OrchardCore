@@ -1,0 +1,9 @@
+@model AllRuleViewModel
+
+<h5>@T["All Rule"]</h5>
+
+<div class="form-group" asp-validation-class-for="Name">
+    <label asp-for="Name">@T["Name"]</label>
+    <input asp-for="Name" class="form-control" type="text" />
+    <span asp-validation-for="Name"></span>
+</div>

@@ -25,7 +25,8 @@ namespace OrchardCore.Rules
             services.AddScoped<IDisplayDriver<Rule>, AllRuleDisplayDriver>();
 
 
-            services.AddRuleMethod<AllRule, AllRuleEvaluator>()
+            services.AddRuleMethod<RuleContainer, RuleContainerEvaluator>()
+                .AddRuleMethod<AllRule, AllRuleEvaluator>()
                 .AddRuleMethod<BooleanRule, BooleanRuleEvaluator>()
                 .AddRuleMethod<IsHomepageRule, IsHomepageRuleEvaluator>();
 
@@ -36,8 +37,10 @@ namespace OrchardCore.Rules
 
             services.AddScoped<IDisplayManager<Rule>, DisplayManager<Rule>>();
 
-            services.AddSingleton<IRuleIdGenerator, RuleIdGenerator>();
+            services.AddScoped<IDisplayManager<RuleContainer>, DisplayManager<RuleContainer>>();
+            services.AddScoped<IDisplayDriver<RuleContainer>, RuleContainerDisplayDriver>();
 
+            services.AddSingleton<IRuleIdGenerator, RuleIdGenerator>();
 
 
             services.AddTransient<IRuleResolver, RuleResolver>();

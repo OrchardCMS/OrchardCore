@@ -1,0 +1,16 @@
+@model RuleGroupViewModel
+@inject IDisplayManager<Rule> DisplayManager
+
+@if (Model.Entries.Any())
+{
+    <ol class="rule-group pt-3">
+        @foreach (var entry in Model.Entries)
+        {
+            dynamic summary = await DisplayManager.BuildDisplayAsync(entry.Rule, null, "Summary");
+            summary.Rule = entry.Rule;
+            <li class="list-group-item pr-0">
+                @await DisplayAsync(summary)
+            </li>
+        }
+    </ol>
+}

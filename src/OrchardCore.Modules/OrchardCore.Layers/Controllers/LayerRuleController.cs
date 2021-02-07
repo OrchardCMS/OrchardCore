@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Localization;
-using Microsoft.Extensions.Options;
 using OrchardCore.Admin;
 using OrchardCore.DisplayManagement;
 using OrchardCore.DisplayManagement.ModelBinding;
@@ -14,9 +13,7 @@ using OrchardCore.Rules.Models;
 using OrchardCore.Rules.Services;
 using OrchardCore.Layers.Services;
 using OrchardCore.Layers.ViewModels;
-using OrchardCore.Security.Permissions;
 using OrchardCore.Settings;
-using YesSql;
 
 namespace OrchardCore.Layers.Controllers
 {
@@ -58,7 +55,7 @@ namespace OrchardCore.Layers.Controllers
             H = htmlLocalizer;
         }
 
-        public async Task<IActionResult> Create(string queryType, string name, string type)
+        public async Task<IActionResult> Create(string queryType, string name, string type, string ruleGroupId)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageLayers))
             {
@@ -73,6 +70,13 @@ namespace OrchardCore.Layers.Controllers
                 return NotFound();
             }
 
+            var ruleGroup = FindRuleGroup(layer.RuleContainer, ruleGroupId);
+
+            if (ruleGroup == null)
+            {
+                return NotFound();
+            }
+
             var rule = _factories.FirstOrDefault(x => x.Name == type)?.Create();
 
             if (rule == null)
@@ -80,34 +84,36 @@ namespace OrchardCore.Layers.Controllers
                 return NotFound();
             }
 
-            // rule.RuleId = _ruleIdGenerator.GenerateUniqueId();
-
-            var model = new EditLayerRuleViewModel
+            var model = new LayerRuleCreateViewModel
             {
-                LayerName = name,
-                // DeploymentStep = rule,
-                // DeploymentStepId = rule.Id,
+                Name = name,
+                RuleGroupId = ruleGroup.RuleId,
                 RuleType = type,
                 Editor = await _displayManager.BuildEditorAsync(rule, updater: _updateModelAccessor.ModelUpdater, isNew: true)
             };
-
-            // model.Editor.Rule = rule;
 
             return View(model);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(EditLayerRuleViewModel model)
+        public async Task<IActionResult> Create(LayerRuleCreateViewModel model)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageLayers))
             {
                 return Forbid();
             }
 
-            var layers = await _layerService.GetLayersAsync();
-            var layer = layers.Layers.FirstOrDefault(x => String.Equals(x.Name, model.LayerName));
+            var layers = await _layerService.LoadLayersAsync();
+            var layer = layers.Layers.FirstOrDefault(x => String.Equals(x.Name, model.Name));
 
             if (layer == null)
+            {
+                return NotFound();
+            }
+
+            var ruleGroup = FindRuleGroup(layer.RuleContainer, model.RuleGroupId);
+
+            if (ruleGroup == null)
             {
                 return NotFound();
             }
@@ -120,15 +126,14 @@ namespace OrchardCore.Layers.Controllers
             }
 
             var editor = await _displayManager.UpdateEditorAsync(rule, updater: _updateModelAccessor.ModelUpdater, isNew: true);
-            // editor.DeploymentStep = rule;
 
             if (ModelState.IsValid)
             {
                 rule.RuleId = _ruleIdGenerator.GenerateUniqueId();
-                // TODO find nested rule, will need id, and add it...
-
+                ruleGroup.Rules.Add(rule);
+                await _layerService.UpdateAsync(layers);
                 _notifier.Success(H["Rule added successfully."]);
-                return RedirectToAction("Edit", "Admin", new { name = model.LayerName });
+                return RedirectToAction("Edit", "Admin", new { name = model.Name });
             }
 
             model.Editor = editor;
@@ -153,44 +158,39 @@ namespace OrchardCore.Layers.Controllers
                 return NotFound();
             }
 
-            var rule = FindRule(layer.AllRule, ruleId);
+            var rule = FindRule(layer.RuleContainer, ruleId);
 
             if (rule == null)
             {
                 return NotFound();
             }
 
-            var model = new EditLayerRuleViewModel
+            var model = new LayerRuleEditViewModel
             {
-                LayerName = name,
-                // DeploymentStep = step,
-                // DeploymentStepId = step.Id,
-                // DeploymentStepType = rule.GetType().Name,
+                Name = name,
                 Editor = await _displayManager.BuildEditorAsync(rule, updater: _updateModelAccessor.ModelUpdater, isNew: false)
             };
-
-            // model.Editor.DeploymentStep = step;
 
             return View(model);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(EditLayerRuleViewModel model)
+        public async Task<IActionResult> Edit(LayerRuleEditViewModel model)
         {
             if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageLayers))
             {
                 return Forbid();
             }
 
-            var layers = await _layerService.GetLayersAsync();
-            var layer = layers.Layers.FirstOrDefault(x => String.Equals(x.Name, model.LayerName));
+            var layers = await _layerService.LoadLayersAsync();
+            var layer = layers.Layers.FirstOrDefault(x => String.Equals(x.Name, model.Name));
 
             if (layer == null)
             {
                 return NotFound();
             }
 
-            var rule = FindRule(layer.AllRule, model.RuleId);
+            var rule = FindRule(layer.RuleContainer, model.RuleId);
 
             if (rule == null)
             {
@@ -201,11 +201,9 @@ namespace OrchardCore.Layers.Controllers
 
             if (ModelState.IsValid)
             {
-                // This should be updated by reference here.
-
                 await _layerService.UpdateAsync(layers);
                 _notifier.Success(H["Rule updated successfully."]);
-                return RedirectToAction("Edit", "Admin", new { name = model.LayerName });
+                return RedirectToAction("Edit", "Admin", new { name = model.Name });
             }
 
             _notifier.Error(H["The rule has validation errors."]);
@@ -215,8 +213,6 @@ namespace OrchardCore.Layers.Controllers
             return View(model);
         }
 
-        // TODO move to helper service.
-
         private Rule FindRule(Rule rule, string ruleId)
         {
             if (String.Equals(rule.RuleId, ruleId, StringComparison.OrdinalIgnoreCase))
@@ -224,22 +220,22 @@ namespace OrchardCore.Layers.Controllers
                 return rule;
             }
 
-            if (!(rule is GroupRule groupRule))
+            if (!(rule is RuleGroup groupRule))
             {
                 return null;
             }
 
-            if (!groupRule.Children.Any())
+            if (!groupRule.Rules.Any())
             {
                 return null;
             }
 
             Rule result;
 
-            foreach (var nestedRule in groupRule.Children)
+            foreach (var nestedRule in groupRule.Rules)
             {
                 // Search in inner rules
-                result = FindRule(rule, ruleId);
+                result = FindRule(nestedRule, ruleId);
 
                 if (result != null)
                 {
@@ -248,37 +244,95 @@ namespace OrchardCore.Layers.Controllers
             }
 
             return null;
-        }        
-/*
-        [HttpPost]
-        public async Task<IActionResult> Delete(int id, string stepId)
+        }
+
+        private RuleGroup FindRuleGroup(RuleGroup rule, string groupRuleId)
         {
-            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageDeploymentPlan))
+            if (String.Equals(rule.RuleId, groupRuleId, StringComparison.OrdinalIgnoreCase))
+            {
+                return rule;
+            }
+
+            if (!rule.Rules.Any())
+            {
+                return null;
+            }
+
+            RuleGroup result;
+
+            foreach (var nestedRule in rule.Rules.OfType<RuleGroup>())
+            {
+                // Search in inner rules
+                result = FindRuleGroup(nestedRule, groupRuleId);
+
+                if (result != null)
+                {
+                    return result;
+                }
+            }
+
+            return null;
+        }
+        private RuleGroup FindRuleParent(RuleGroup rule, string ruleId)
+        {
+            RuleGroup result;
+
+            foreach (var nestedRule in rule.Rules)
+            {
+                if (String.Equals(nestedRule.RuleId, ruleId, StringComparison.OrdinalIgnoreCase))
+                {
+                    return rule;
+                }
+
+                if (nestedRule is RuleGroup nestedRuleGroup)
+                {
+                    result = FindRuleParent(nestedRuleGroup, ruleId);
+                    if (result != null)
+                    {
+                        return result;
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Delete(string name, string ruleId)
+        {
+            if (!await _authorizationService.AuthorizeAsync(User, Permissions.ManageLayers))
             {
                 return Forbid();
             }
 
-            var deploymentPlan = await _session.GetAsync<DeploymentPlan>(id);
+            var layers = await _layerService.LoadLayersAsync();
+            var layer = layers.Layers.FirstOrDefault(x => String.Equals(x.Name, name));
 
-            if (deploymentPlan == null)
+            if (layer == null)
             {
                 return NotFound();
             }
 
-            var step = deploymentPlan.DeploymentSteps.FirstOrDefault(x => String.Equals(x.Id, stepId, StringComparison.OrdinalIgnoreCase));
+            var rule = FindRule(layer.RuleContainer, ruleId);
 
-            if (step == null)
+            if (rule == null)
             {
                 return NotFound();
             }
 
-            deploymentPlan.DeploymentSteps.Remove(step);
-            _session.Save(deploymentPlan);
+            var ruleParent = FindRuleParent(layer.RuleContainer, ruleId);
 
-            _notifier.Success(H["Deployment step deleted successfully."]);
+            if (ruleParent == null)
+            {
+                return NotFound();
+            }
 
-            return RedirectToAction("Display", "DeploymentPlan", new { id });
+            ruleParent.Rules.Remove(rule);
+            await _layerService.UpdateAsync(layers);
+
+            _notifier.Success(H["Rule deleted successfully."]);
+
+            return RedirectToAction("Edit", "Admin", new { name = name });
         }
-        */
     }
 }

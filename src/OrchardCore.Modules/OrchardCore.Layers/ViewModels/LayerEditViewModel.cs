@@ -8,7 +8,7 @@ namespace OrchardCore.Layers.ViewModels
         public string Name { get; set; }
         public string Rule { get; set; }
         public string Description { get; set; }
-        public IShape LayerRule { get; set; }
+        public dynamic RuleContainer { get; set; }
         public Dictionary<string, dynamic> Thumbnails { get; set; }
     }
 }

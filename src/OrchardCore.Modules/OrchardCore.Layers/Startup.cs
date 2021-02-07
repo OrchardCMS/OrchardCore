@@ -106,12 +106,12 @@ namespace OrchardCore.Layers
                 defaults: new { controller = layerRuleControllerName, action = nameof(LayerRuleController.Create) }
             );
 
-            // routes.MapAreaControllerRoute(
-            //     name: "Layers.Rules.Delete",
-            //     areaName: "OrchardCore.Layers",
-            //     pattern: _adminOptions.AdminUrlPrefix + "/Layers/Rules/Delete",
-            //     defaults: new { controller = roleControllerName, action = nameof(LayerRuleController.Delete) }
-            // );
+            routes.MapAreaControllerRoute(
+                name: "Layers.Rules.Delete",
+                areaName: "OrchardCore.Layers",
+                pattern: _adminOptions.AdminUrlPrefix + "/Layers/Rules/Delete",
+                defaults: new { controller = layerRuleControllerName, action = nameof(LayerRuleController.Delete) }
+            );
 
             routes.MapAreaControllerRoute(
                 name: "Layers.Rules.Edit",

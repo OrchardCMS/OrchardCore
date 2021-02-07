@@ -34,7 +34,9 @@ namespace OrchardCore.Layers.Controllers
         private readonly ISession _session;
         private readonly IUpdateModelAccessor _updateModelAccessor;
         private readonly IVolatileDocumentManager<LayerState> _layerStateManager;
-        private readonly IDisplayManager<Rule> _displayManager;
+        private readonly IDisplayManager<Rule> _ruleDisplayManager;
+        private readonly IDisplayManager<RuleContainer> _ruleContainerDisplayManager;
+        private readonly IRuleIdGenerator _ruleIdGenerator;
         private readonly IEnumerable<IRuleFactory> _ruleFactories;
         private readonly IStringLocalizer S;
         private readonly IHtmlLocalizer H;
@@ -49,7 +51,9 @@ namespace OrchardCore.Layers.Controllers
             ISession session,
             IUpdateModelAccessor updateModelAccessor,
             IVolatileDocumentManager<LayerState> layerStateManager,
-            IDisplayManager<Rule> displayManager,
+            IDisplayManager<Rule> ruleDisplayManager,
+            IDisplayManager<RuleContainer> ruleContainerDisplayManager,
+            IRuleIdGenerator ruleIdGenerator,
             IEnumerable<IRuleFactory> ruleFactories,
             IStringLocalizer<AdminController> stringLocalizer,
             IHtmlLocalizer<AdminController> htmlLocalizer,
@@ -63,7 +67,9 @@ namespace OrchardCore.Layers.Controllers
             _session = session;
             _updateModelAccessor = updateModelAccessor;
             _layerStateManager = layerStateManager;
-            _displayManager = displayManager;
+            _ruleDisplayManager = ruleDisplayManager;
+            _ruleContainerDisplayManager = ruleContainerDisplayManager;
+            _ruleIdGenerator = ruleIdGenerator;
             _ruleFactories = ruleFactories;
             _notifier = notifier;
             S = stringLocalizer;
@@ -137,12 +143,17 @@ namespace OrchardCore.Layers.Controllers
 
             if (ModelState.IsValid)
             {
-                layers.Layers.Add(new Layer
+                var layer = new Layer
                 {
                     Name = model.Name,
                     Rule = model.Rule,
                     Description = model.Description
-                });
+                };
+                
+                layer.RuleContainer = new RuleContainer();
+                layer.RuleContainer.RuleId = _ruleIdGenerator.GenerateUniqueId();
+
+                layers.Layers.Add(layer);
 
                 await _layerService.UpdateAsync(layers);
 
@@ -168,26 +179,33 @@ namespace OrchardCore.Layers.Controllers
                 return NotFound();
             }
 
-            var layerRule = await _displayManager.BuildDisplayAsync(layer.AllRule, _updateModelAccessor.ModelUpdater, "Summary");
+            // This code is for backwards compatability.
+            if (layer.RuleContainer == null)
+            {
+                layers = await _layerService.LoadLayersAsync();
+                layer.RuleContainer = new RuleContainer();
+                layer.RuleContainer.RuleId = _ruleIdGenerator.GenerateUniqueId();
+                await _layerService.UpdateAsync(layers);
+            }
+
+            dynamic ruleContainer = await _ruleContainerDisplayManager.BuildDisplayAsync(layer.RuleContainer, _updateModelAccessor.ModelUpdater, "Summary");
+            ruleContainer.RuleId = layer.RuleContainer.RuleId;
 
             var thumbnails = new Dictionary<string, dynamic>();
             foreach (var factory in _ruleFactories)
             {
                 var rule = factory.Create();
-                dynamic thumbnail = await _displayManager.BuildDisplayAsync(rule, _updateModelAccessor.ModelUpdater, "Thumbnail");
+                dynamic thumbnail = await _ruleDisplayManager.BuildDisplayAsync(rule, _updateModelAccessor.ModelUpdater, "Thumbnail");
                 thumbnail.Rule = rule;
-                thumbnail.Controller = "Rule";
-                
                 thumbnails.Add(factory.Name, thumbnail);
             }
-
 
             var model = new LayerEditViewModel
             {
                 Name = layer.Name,
                 Rule = layer.Rule,
                 Description = layer.Description,
-                LayerRule = layerRule,
+                RuleContainer = ruleContainer,
                 Thumbnails = thumbnails,
             };
 

@@ -1,25 +1,44 @@
 @model dynamic
 
-<div class="properties">
-    <div class="related">
-        @*TODO will need a data attribute.*@
-        <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modalRules">
-            @T["Add Rule"]
-        </button>
+@{
+    var rule = Model.Rule as Rule;
+    var isGroup = false;
+    if (rule is RuleGroup)
+    {
+        isGroup = true;
+    }
 
-        <a asp-action="Edit"
-           asp-controller="Role"
-           asp-route-id="@Model.DeploymentPlanId"
-           asp-route-stepId="@Model.DeploymentStep.Id"
+    var routeValues = (RouteValueDictionary)ViewData["RuleRouteValues"];
+
+    routeValues["action"] = "Edit";
+    routeValues["ruleId"] = rule.RuleId;
+
+    var editUrl = Url.RouteUrl(routeValues);
+
+    routeValues["action"] = "Delete";
+    var deleteUrl = Url.RouteUrl(routeValues);
+}
+
+<div class="properties rule.summary pr-3">
+    <div class="related">
+        @if (isGroup)
+        {
+            <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modalRules" data-rule-group-id="@Model.Rule.RuleId">
+                @T["Add"]
+            </button>
+        }
+
+        <a href="@editUrl"
            class="btn btn-primary btn-sm">@T["Edit"]</a>
 
-        <a asp-action="Delete"
-           asp-controller="Role"
-           asp-route-id="@Model.DeploymentPlanId"
-           asp-route-stepId="@Model.DeploymentStep.Id"
+        <a href="@deleteUrl"
            class="btn btn-danger btn-sm"
            data-url-af="RemoveUrl UnsafeUrl">@T["Delete"]</a>
     </div>
 
-    @await DisplayAsync(Model.Content)
 </div>
+
+@* we might move the groupfields.rules (children) into Model.Footer to render here.
+and summary in Model.Content if summaries are looking bad
+*@
+@await DisplayAsync(Model.Content)

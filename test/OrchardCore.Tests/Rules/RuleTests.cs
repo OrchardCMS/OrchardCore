@@ -15,9 +15,24 @@ namespace OrchardCore.Tests.Rules
     public class RuleTests
     {
         [Fact]
-        public async Task ShouldEvaluateFalseWhenNoChildren()
+        public async Task ShouldEvaluateAllRuleFalseWhenNoChildren()
         {
             var rule = new AllRule();
+
+            var services = CreateServiceCollection()
+                .AddRuleMethod<AllRule, AllRuleEvaluator>();
+
+            var serviceProvider = services.BuildServiceProvider();
+
+            var ruleService = serviceProvider.GetRequiredService<IRuleService>();
+
+            Assert.False(await ruleService.EvaluateAsync(rule));
+        }  
+
+        [Fact]
+        public async Task ShouldEvaluateRuleContainerFalseWhenNoChildren()
+        {
+            var rule = new RuleContainer();
 
             var services = CreateServiceCollection();
 
@@ -26,16 +41,16 @@ namespace OrchardCore.Tests.Rules
             var ruleService = serviceProvider.GetRequiredService<IRuleService>();
 
             Assert.False(await ruleService.EvaluateAsync(rule));
-        }        
+        }                
 
         [Theory]
         [InlineData("/", true)]
         [InlineData("/notthehomepage", false)]
         public async Task ShouldEvaluateIsHomepage(string path, bool expected)
         {
-            var rule = new AllRule
+            var rule = new RuleContainer
             {
-                Children = new[]
+                Rules = new List<Rule>
                 {
                     new IsHomepageRule()
                 }
@@ -63,9 +78,9 @@ namespace OrchardCore.Tests.Rules
         [InlineData(false, false)]
         public async Task ShouldEvaluateBoolean(bool boolean, bool expected)
         {
-            var rule = new AllRule
+            var rule = new RuleContainer
             {
-                Children = new[]
+                Rules = new List<Rule>
                 {
                     new BooleanRule { Value = boolean }
                 }
@@ -86,9 +101,9 @@ namespace OrchardCore.Tests.Rules
         [InlineData("/bar", "/foo", false)]
         public async Task ShouldEvaluateUrlEquals(string path, string requestPath, bool expected)
         {
-            var rule = new AllRule
+            var rule = new RuleContainer
             {
-                Children = new[]
+                Rules = new List<Rule>
                 {
                     new UrlRule 
                     {
@@ -158,7 +173,7 @@ namespace OrchardCore.Tests.Rules
             var services = new ServiceCollection();
             services.AddOptions<RuleOptions>();
 
-            services.AddRuleMethod<AllRule, AllRuleEvaluator>();
+            services.AddRuleMethod<RuleContainer, RuleContainerEvaluator>();
 
             services.AddTransient<IRuleResolver, RuleResolver>();
             services.AddTransient<IOperatorResolver, OperatorResolver>();

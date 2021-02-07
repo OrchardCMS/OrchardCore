@@ -14,7 +14,6 @@ namespace OrchardCore.Rules.Services
         public string Name => TypeName;
 
         public Rule Create()
-            => new Rule();     
+            => new TRule();     
     }
-
 }

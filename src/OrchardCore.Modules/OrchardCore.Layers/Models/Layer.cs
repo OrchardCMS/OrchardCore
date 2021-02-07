@@ -8,6 +8,6 @@ namespace OrchardCore.Layers.Models
         public string Rule { get; set; }
         public string Description { get; set; }
 
-        public AllRule AllRule { get; set; } = new AllRule();
+        public RuleContainer RuleContainer { get; set; }
     }
 }

@@ -1,0 +1,12 @@
+@model dynamic
+
+<div class="properties">
+    <div class="related">
+        <!-- Button trigger modal -->
+        <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#modalRules" data-rule-group-id="@Model.RuleId">
+            @T["Add"]
+        </button>            
+    </div>
+    
+    @await DisplayAsync(Model.Content)
+</div>

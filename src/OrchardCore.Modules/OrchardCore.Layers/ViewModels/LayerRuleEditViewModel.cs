@@ -2,9 +2,10 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace OrchardCore.Layers.ViewModels
 {
-    public class EditLayerRuleViewModel
+    public class LayerRuleEditViewModel
     {
-        public string LayerName { get; set; }
+        public string Name { get; set; }
+        public string RuleGroupId { get; set; }
         public string RuleId { get; set; }
         public string RuleType { get; set; }
         public dynamic Editor { get; set; }
