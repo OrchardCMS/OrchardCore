@@ -215,10 +215,9 @@ namespace OrchardCore.Users.Controllers
                             }
                         }
                     }
-                    else
-                    {
-                        ModelState.AddModelError(string.Empty, S["Invalid login attempt."]);
-                    }
+
+                    ModelState.AddModelError(string.Empty, S["Invalid login attempt."]);
+
                     await _accountEvents.InvokeAsync((e, model) => e.LoggingInFailedAsync(model.UserName), model, _logger);
                 }
             }
