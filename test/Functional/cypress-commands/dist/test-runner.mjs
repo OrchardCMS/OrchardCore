@@ -53,7 +53,7 @@ function host(dir, assembly, { appDataLocation='./App_Data', dotnetVersion='net5
 }
 
 // combines the functions above, useful when triggering tests from CI
-function e2e(dir, assembly, { dotnetVersion='netcoreapp3.1' }={}) {
+function e2e(dir, assembly, { dotnetVersion='net5.0' }={}) {
   deleteDirectory(path.join(dir, "App_Data_Tests"));
   var server = host(dir, assembly, { appDataLocation: "./App_Data_Tests", dotnetVersion });
 
