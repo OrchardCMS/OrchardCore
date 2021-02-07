@@ -50,6 +50,9 @@
 			"program": "${workspaceRoot}/src/OrchardCore.Cms.Web/bin/Release/netcoreapp3.1/OrchardCore.Cms.Web.dll",
 			"args": [],
 			"cwd": "${workspaceRoot}/src/OrchardCore.Cms.Web",
+      "env": {
+				"ASPNETCORE_ENVIRONMENT": "Development"
+			},
 			"stopAtEntry": false,
 			"launchBrowser": {
 				"enabled": true,
@@ -75,6 +78,9 @@
 			"program": "${workspaceRoot}/.build/release/OrchardCore.Cms.Web.dll",
 			"args": [],
 			"cwd": "${workspaceRoot}/.build/release",
+      "env": {
+				"ASPNETCORE_ENVIRONMENT": "Development"
+			},
 			"stopAtEntry": false,
 			"launchBrowser": {
 				"enabled": true,
@@ -94,6 +100,9 @@
 			"program": "${workspaceRoot}/.build/release/OrchardCore.Cms.Web.dll",
 			"args": [],
 			"cwd": "${workspaceRoot}/.build/release",
+      "env": {
+				"ASPNETCORE_ENVIRONMENT": "Development"
+			},
 			"stopAtEntry": false,
 			"launchBrowser": {
 				"enabled": true,

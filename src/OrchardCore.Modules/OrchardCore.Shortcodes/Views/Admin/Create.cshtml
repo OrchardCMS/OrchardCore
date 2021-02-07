@@ -105,6 +105,7 @@
             <div class="form-group" asp-validation-class-for="Content">
                 <label asp-for="Content">@T["Content"]</label>
                 <textarea asp-for="Content" rows="10" class="form-control"></textarea>
+                <span asp-validation-for="Content"></span>
                 <span class="hint">@T["The Shortcode Liquid template."]</span>
             </div>
         </div>

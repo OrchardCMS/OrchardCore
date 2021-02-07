@@ -1,6 +1,6 @@
 <Project>
   <PropertyGroup>
-    <AspNetCoreVersion>3.1.10</AspNetCoreVersion>
+    <AspNetCoreVersion>3.1.11</AspNetCoreVersion>
     <AspNetCoreTargetFramework>netcoreapp3.1</AspNetCoreTargetFramework>
   </PropertyGroup>
   <ItemGroup>
